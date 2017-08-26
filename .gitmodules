@@ -1,0 +1,6 @@
+[submodule "Dependencies/LuaJIT"]
+	path = Dependencies/LuaJIT
+	url = https://github.com/playmer/LuaJIT.git
+[submodule "Dependencies/VkHLF"]
+	path = Dependencies/VkHLF
+	url = https://github.com/playmer/VkHLF.git
