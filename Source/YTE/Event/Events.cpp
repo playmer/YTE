@@ -123,7 +123,7 @@ namespace YTE
     // remove the speaker from this handler's speaker container
     std::vector<BaseEventHandler*>& speakers = mSpeakers[aEventName];
     auto speaker = std::find(speakers.begin(), speakers.end(), &aSpeaker);
-    DebugAssert(speaker == speakers.end(), 
+    DebugObjection(speaker == speakers.end(), 
                 "We're deregistering from an event we're not currently listening to. This is continuable, but odd and should be looked at.");
 
     if (speaker != speakers.end())

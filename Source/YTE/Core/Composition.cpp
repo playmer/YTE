@@ -197,7 +197,7 @@ namespace YTE
   {
     RSValue *archetype = aSerialization;
 
-    DebugAssert(false == archetype->IsObject(), 
+    DebugObjection(false == archetype->IsObject(), 
                 "We're trying to serialize something that isn't a composition.");
 
     // On release just exit out on these errors.
@@ -207,7 +207,7 @@ namespace YTE
       return nullptr;
     }
 
-    DebugAssert(nullptr == archetype, 
+    DebugObjection(nullptr == archetype, 
                 "Archetype given is not an object for the object of the name: %s.\n",
                 aObjectName.c_str());
 
@@ -290,12 +290,12 @@ namespace YTE
     std::string json = buffer.GetString();
 
     // Annoyingly warn on debug.
-    DebugAssert(false == aValue->IsObject(), "We're trying to serialize something that isn't a composition.");
-    DebugAssert(false == aValue->HasMember("Compositions") || 
+    DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't a composition.");
+    DebugObjection(false == aValue->HasMember("Compositions") || 
                 false == (*aValue)["Compositions"].IsObject(), 
                 "We're trying to serialize something without Compositions: \n%s",
                 json.c_str());
-    DebugAssert(false == aValue->HasMember("Components") ||
+    DebugObjection(false == aValue->HasMember("Components") ||
                 false == (*aValue)["Components"].IsObject(), 
                 "We're trying to serialize something without Components: \n%s",
                 json.c_str());

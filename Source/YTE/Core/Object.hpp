@@ -52,7 +52,7 @@ namespace YTE
     // If you've asserted here, this isn't implemented, but Serialize has been called.
     virtual RSValue Serialize(RSAllocator &)
     {
-      DebugAssert(true, "Serialize has not been implemented for this type.");
+      DebugObjection(true, "Serialize has not been implemented for this type.");
 
       return RSValue();
     };
@@ -116,14 +116,14 @@ namespace YTE
         BoundType *enumType = setterType;
       
         // TODO (Josh): Would prefer to give an error like this, but we cannot find the name of just a Type.
-        //DebugAssert(enumType == nullptr, 
+        //DebugObjection(enumType == nullptr, 
         //            "Type %s contains a property named %s of type %s, "
         //            "a bound type could not be found for this type.", 
         //            aType->Name.c_str(),
         //            namedProperty->Name.c_str(),
         //            namedProperty->PropertyType->NameLocation.
         //            );
-        DebugAssert(enumType == nullptr, 
+        DebugObjection(enumType == nullptr, 
                     "Type %s contains a property named %s, "
                     "a bound type could not be found for this property.", 
                     aType->GetName().c_str(),
@@ -131,7 +131,7 @@ namespace YTE
       
         auto enumValue = enumType->GetFirstProperty(value->GetString());
           
-        DebugAssert(enumValue == nullptr,
+        DebugObjection(enumValue == nullptr,
                     "Did not find value for enum property %s, on type %s", 
                     namedProperty->GetName().c_str(),
                     enumType->GetName().c_str());

@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 
   // RUNNING THE GAME
   YTE::InitializeYTETypes();
-  YTE::Engine mainEngine{ "Config", true };
+  YTE::Engine mainEngine{ "../../../../../Assets/Bin/Config", true };
   
   // Construct the main window
   YTEditorMainWindow *mainWindow = new YTEditorMainWindow(&mainEngine, &app);

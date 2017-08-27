@@ -2,10 +2,10 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
+#include "YTE/Core/AssetLoader.hpp"
+
 #include "YTE/Graphics/Texture.hpp"
 #include "YTE/Graphics/Mesh.hpp"
-
-#include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
@@ -13,7 +13,8 @@ namespace YTE
   {
     Assimp::Importer Importer;
 
-    auto meshFile = GetMesh(aFile);
+    // TODO: Are meshes always in the game's asset path?
+    auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
 
     auto pScene = Importer.ReadFile(meshFile.c_str(),
                                     aiProcess_FlipWindingOrder |

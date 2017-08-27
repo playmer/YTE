@@ -40,7 +40,7 @@ namespace YTE
 
   void CapsuleCollider::PhysicsInitialize()
   {
-    DebugAssert(mOwner->GetComponent<RigidBody>()     == nullptr && 
+    DebugObjection(mOwner->GetComponent<RigidBody>()     == nullptr && 
                 mOwner->GetComponent<CollisionBody>() == nullptr && 
                 mOwner->GetComponent<GhostBody>()     == nullptr,
                 "Colliders require a Body component of some sort, sorry!\n ObjectName: %s", mOwner->GetName().c_str());

@@ -51,7 +51,7 @@ namespace YTE
                         std::vector<std::vector<Type*>> aTypes)
   {
     auto typeAddingTo = dynamic_cast<Type*>(aObject);
-    DebugAssert(nullptr == typeAddingTo,
+    DebugObjection(nullptr == typeAddingTo,
                 "ComponentDependencies Attribute being added to unknown object type.");
 
     for (auto typeOptions : aTypes)
@@ -59,7 +59,7 @@ namespace YTE
       std::vector<Type*> types;
       for (auto type : typeOptions)
       {
-        DebugAssert(false == type->IsA(Component::GetStaticType()),
+        DebugObjection(false == type->IsA(Component::GetStaticType()),
                     "Type %s is not a component but it's being used as a component"
                     " dependency on type %s",
                     type->GetName().c_str(),

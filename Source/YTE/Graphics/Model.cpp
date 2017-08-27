@@ -1,3 +1,4 @@
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
@@ -74,21 +75,17 @@ namespace YTE
     Destroy();
   }
 
-  static bool FileCheck(const wchar_t *aDirectory, std::string &aFile)
+  static bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile)
   {
     if (0 == aFile.size())
     {
       return false;
     }
 
-    std::wstring toReturn = L"../";
-
-    toReturn = toReturn + aDirectory + L"/" +
-                std::wstring(aFile.begin(), aFile.end());
-
-    toReturn = std::experimental::filesystem::canonical(toReturn, cWorkingDirectory);
-
-    return std::experimental::filesystem::exists(toReturn);
+    std::experimental::filesystem::path pathName{ aPath.String() };
+    pathName.append(aDirectory);
+    pathName.append(aFile);
+    return std::experimental::filesystem::exists(pathName);
   }
   
   void Model::Create()
@@ -97,7 +94,7 @@ namespace YTE
 
     auto name = mOwner->GetName().c_str();
 
-    if (false == FileCheck(L"Models", mMesh))
+    if (false == FileCheck(Path::GetGamePath(), "Models", mMesh))
     {
       printf("Model (%s): Needs valid ModelName, provided: %s\n",
              name,

@@ -2,6 +2,7 @@
 #include <array>
 #include <filesystem>
 
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/PrivateImplementation.hpp"
 
@@ -399,7 +400,7 @@ namespace YTE
 
       mWindow->SetExtent(extent.height, extent.width);
 
-      //TODO (Josh): Change asserts to DebugAsserts
+      //TODO (Josh): Change asserts to DebugObjections
       assert((0 <= extent.width) && (0 <= extent.height));
 
       // TODO (Josh): According to vkhlf, you have to do this little dance,
@@ -435,7 +436,7 @@ namespace YTE
     void SelectDevice()
     {
       // Find a physical device with presentation support
-      DebugAssert(mInstance->getPhysicalDeviceCount() == 0,
+      DebugObjection(mInstance->getPhysicalDeviceCount() == 0,
         "We can't find any graphics devices!");
 
       QueueFamilyIndices::AddRequiredExtension("VK_KHR_swapchain");
@@ -480,7 +481,7 @@ namespace YTE
         FindDeviceOfType(vk::PhysicalDeviceType::eOther);
       }
 
-      DebugAssert(mMainDevice == false, "We can't find a suitible graphics device!");
+      DebugObjection(mMainDevice == false, "We can't find a suitible graphics device!");
 
       printf("Chosen Device: %s\n", mMainDevice->getProperties().deviceName);
     }
@@ -661,7 +662,7 @@ namespace YTE
 
     if (surfaceIt == mSurfaces.end())
     {
-      DebugAssert(true, "We can't find a surface corresponding to the provided window.");
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
       return nullptr;
     }
 
@@ -931,8 +932,8 @@ namespace YTE
     auto vertex = aSubMesh->mShaderSetName + ".vert";
     auto fragment = aSubMesh->mShaderSetName + ".frag";
 
-    auto vertexFile = GetShader(vertex.c_str());
-    auto fragmentFile = GetShader(fragment.c_str());
+    auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
+    auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
     std::string vertexText;
     ReadFileToString(vertexFile, vertexText);
@@ -1071,25 +1072,22 @@ namespace YTE
   Mesh* VkRenderer::AddMesh(RenderedSurface *aSurface, 
                             std::string &aFilename)
   {
-    fs::path file = aFilename;
-    std::string meshName = file.string();
-
     auto update = aSurface->mCommandPool->allocateCommandBuffer();
     auto device = aSurface->mDevice;
 
     auto &meshMap = mMeshes[device.get()];
 
-    auto it = meshMap.find(meshName);
+    auto it = meshMap.find(aFilename);
 
     if (it != meshMap.end())
     {
       return it->second.get();
     }
 
-    auto meshIt = meshMap.emplace(meshName,
+    auto meshIt = meshMap.emplace(aFilename,
                                   std::make_unique<Mesh>(aSurface->mRenderer, 
                                                          aSurface->mWindow, 
-                                                         meshName));
+                                                         aFilename));
 
     auto mesh = meshIt.first->second.get();
 
@@ -1147,7 +1145,7 @@ namespace YTE
 
     if (surfaceIt == mSurfaces.end())
     {
-      DebugAssert(true, "We can't find a surface corresponding to the provided window.");
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
       return nullptr;
     }
 
@@ -1229,7 +1227,7 @@ namespace YTE
 
     if (surfaceIt == mSurfaces.end())
     {
-      DebugAssert(true, "We can't find a surface corresponding to the provided window.");
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
       return;
     }
 
@@ -1252,7 +1250,7 @@ namespace YTE
 
     if (surfaceIt == mSurfaces.end())
     {
-      DebugAssert(true, "We can't find a surface corresponding to the provided window.");
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
       return;
     }
 

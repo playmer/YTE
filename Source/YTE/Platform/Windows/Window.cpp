@@ -143,7 +143,7 @@ namespace YTE
     std::map<HWND, int>::iterator it = cFullScreenWindows->find(mHandle);
 
 
-    DebugAssert((it == cFullScreenWindows->end()),
+    DebugObjection((it == cFullScreenWindows->end()),
                 "Destructing window doesn't exist!");
 
     if (--it->second == 0)
@@ -527,7 +527,7 @@ namespace YTE
 
     auto result = GetMonitorInfo(monitorHandle, &monitorInformation);
 
-    DebugAssert(!result, "Couldn't retrieve monitor information.");
+    DebugObjection(!result, "Couldn't retrieve monitor information.");
 
 
     auto right  = monitorInformation.rcMonitor.right;

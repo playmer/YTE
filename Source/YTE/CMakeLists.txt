@@ -42,3 +42,5 @@ EndForEach()
 ForEach(library ${StaticLibrariesDebug})
   Target_Link_Libraries(YTE debug ${library})
 EndForEach()
+
+Target_Link_Libraries(YTE ${StaticLibraries})

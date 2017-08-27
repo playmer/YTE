@@ -17,7 +17,6 @@
 #include <unordered_map>
 #include <chrono>
 
-#include "YTE/WWise//WWiseSystem.hpp"
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
@@ -70,7 +69,6 @@ namespace YTE
 
 
     inline GamepadSystem *GetGamepadSystem() { return &mGamepadSystem; }
-    inline WWiseSystem *GetWWiseSystem() { return GetComponent<WWiseSystem>(); }
     RSDocument* GetArchetype(String &aArchetype);
     std::unordered_map<String, UniquePointer<RSDocument>>* GetArchetypes(void);
     RSDocument* GetLevel(String &aLevel);

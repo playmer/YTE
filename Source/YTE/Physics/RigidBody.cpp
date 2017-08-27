@@ -91,16 +91,16 @@ namespace YTE
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider =  GetColliderFromObject(mOwner);
 
-    DebugAssert(collider == nullptr, 
+    DebugObjection(collider == nullptr, 
                 "RigidBodies require a collider currently, sorry!\n ObjectName: %s",
                 mOwner->GetName().c_str());
 
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mMass != 0.f) && !mStatic;
-    DebugAssert((mMass != 0.f) && mStatic, 
+    DebugObjection((mMass != 0.f) && mStatic, 
                 "Shouldn't make a non-zero mass object that's also static.\n ObjectName: %s", 
                 mOwner->GetName().c_str());
-    DebugAssert((mMass == 0.f) && !mStatic, 
+    DebugObjection((mMass == 0.f) && !mStatic, 
                 "Can't make a zero mass object that's also non-static.\n ObjectName: %s", 
                 mOwner->GetName().c_str());
 

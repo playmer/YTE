@@ -5,6 +5,8 @@
 #include "crunch/inc/crn_decomp.h"
 #include "stb/stb_image.h"
 
+#include "YTE/Core/AssetLoader.hpp"
+
 #include "YTE/Graphics/Texture.hpp"
 
 #include "YTE/Utilities/Utilities.h"
@@ -16,7 +18,7 @@ namespace YTE
 {
   Texture::Texture(std::string &aFile)
   {
-    auto textureFile = GetTexture(aFile);
+    auto textureFile = Path::GetTexturePath(Path::GetGamePath(), aFile);
 
     fs::path type{ textureFile };
     type = type.extension();
@@ -30,22 +32,22 @@ namespace YTE
                                       &texHeight, 
                                       &texChannels, 
                                       STBI_rgb_alpha); 
-      DebugAssert(texWidth <= 0,  
+      DebugObjection(texWidth <= 0,  
                   "Texture: %s, has negative width!",  
                   aFile.c_str()); 
  
-      DebugAssert(texHeight <= 0, 
+      DebugObjection(texHeight <= 0, 
                   "Texture: %s, has negative height!",  
                   aFile.c_str()); 
 
       mWidth = static_cast<u32>(texWidth);
       mHeight = static_cast<u32>(texHeight);
 
-      //DebugAssert(texChannels < 4, 
+      //DebugObjection(texChannels < 4, 
       //            "Texture: %s, has only %d channels, we require 4 (RGBA)", 
       //            aFile.c_str(), 
       //            texChannels);
-      DebugAssert(loadedFile == nullptr,
+      DebugObjection(loadedFile == nullptr,
                   "Failed to load texture: %s", 
                   aFile.c_str());
 

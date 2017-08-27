@@ -12,12 +12,15 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/Utilities.h"
 
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/JobSystem.h"
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
+
+#include "YTE/WWise//WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -34,6 +37,16 @@ namespace YTE
   Engine::Engine(const char *aFile, bool aEditorMode)
     : Composition(this, nullptr, cEngineName), mShouldRun(true), mEditorMode(aEditorMode)
   {
+    namespace fs = std::experimental::filesystem;
+    
+    auto enginePath = Path::SetEnginePath(fs::current_path().string());
+
+    fs::path configFilePath{ aFile };
+    configFilePath = configFilePath.parent_path();
+
+    Path::SetEnginePath(fs::current_path().parent_path().string());
+    Path::SetGamePath(fs::canonical(configFilePath).parent_path().string());
+
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
     mComponents.Emplace(ComponentSystem::GetStaticType(), std::make_unique<ComponentSystem>(this, nullptr));
@@ -83,11 +96,11 @@ namespace YTE
 
   void Engine::Deserialize(RSValue *aValue)
   {
-    DebugAssert(false == aValue->IsObject(), "We're trying to serialize something that isn't an Engine.");
-    DebugAssert(false == aValue->HasMember("Windows") || 
+    DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't an Engine.");
+    DebugObjection(false == aValue->HasMember("Windows") || 
                 false == (*aValue)["Windows"].IsObject(), 
                 "We're trying to serialize something without Windows.");
-    DebugAssert(false == aValue->HasMember("Spaces") ||
+    DebugObjection(false == aValue->HasMember("Spaces") ||
                 false == (*aValue)["Spaces"].IsObject(), 
                 "We're trying to serialize something without Spaces.");
 
@@ -242,7 +255,7 @@ namespace YTE
       return iter->second.get();
     }
 
-    auto path = GetArchetypePath(aArchetype);
+    auto path = Path::GetArchetypePath(Path::GetGamePath(), aArchetype.c_str());
     
     std::string fileText;
     auto success = ReadFileToString(path, fileText);
@@ -273,7 +286,7 @@ namespace YTE
       return iter->second.get();
     }
 
-    auto path = GetLevelPath(aLevel);
+    auto path = Path::GetLevelPath(Path::GetGamePath(), aLevel.c_str());
 
     std::string fileText;
     auto success = ReadFileToString(path, fileText);

@@ -80,7 +80,7 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
     mRunningLevelName(""),
     mUndoRedo(new UndoRedo())
 {
-  DebugAssert(!aEngine, 
+  DebugObjection(!aEngine, 
               "Critical Error in YTEditorMainWindow constructor.\n "
               "YTE::Engine *aEngine is nullptr.");
 

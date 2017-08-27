@@ -77,6 +77,3 @@ Target_Link_Libraries(YTEditor YTE ${StaticLibraries} Qt5::Widgets)
 
 Set(Build_Flags "/WX- /W4")
 Set_Target_Properties(YTEditor PROPERTIES COMPILE_FLAGS  ${Build_Flags})
-
-#Set the working directory and startup project. 
-Set_Target_Properties(YTEditor PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTEditor_Root}/Assets/bin) 

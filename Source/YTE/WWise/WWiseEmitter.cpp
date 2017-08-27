@@ -15,6 +15,7 @@
 #include "YTE/Physics/Orientation.h"
 #include "YTE/Physics/Transform.h"
 
+#include "YTE/WWise//WWiseSystem.hpp"
 #include "YTE/WWise//WWiseEmitter.hpp"
 #include "YTE/WWise//Utilities.hpp"
 
@@ -45,12 +46,12 @@ namespace YTE
 
   void WWiseEmitter::Play()
   {
-    mSpace->GetEngine()->GetWWiseSystem()->SendEvent(mSound, OwnerId());
+    mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(mSound, OwnerId());
   }
 
   void WWiseEmitter::PlayEvent(String aEvent)
   {
-    mSpace->GetEngine()->GetWWiseSystem()->SendEvent(aEvent, OwnerId());
+    mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(aEvent, OwnerId());
   }
 
   void WWiseEmitter::Initialize()

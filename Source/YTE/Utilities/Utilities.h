@@ -33,14 +33,6 @@ namespace YTE
   std::string GetConfigPath(const char *name);
   std::string GetConfigPath(const std::string &name);
 
-  std::string GetArchetypePath(const String &name);
-  std::string GetLevelPath(const String &name);
-  std::string GetArchetypePath(const std::string &name);
-  std::string GetLevelPath(const std::string &name);
-  std::string GetShader(const char *name);
-  std::string GetMesh(const String &name);
-  std::string GetTexture(const String &name);
-
   std::string RemoveExtension(const std::string & filename);
 
   filesystem::path relativeTo(filesystem::path from, filesystem::path to);

@@ -51,45 +51,46 @@ namespace YTE
 
 #ifdef Windows
   #ifndef NDEBUG
-    #define DebugAssert(aCondition, aString, ...)                    \
-    do                                                               \
-    {                                                                \
-      if (aCondition)                                                \
-      {                                                              \
-        switch (YTE::CreateDebugErrorDialog(aString, ##__VA_ARGS__)) \
-        {                                                            \
-         case YTE::DebugErrorDialog::Continue:                       \
-         {                                                           \
-           /* Do nothing. */                                         \
-           break;                                                    \
-         }                                                           \
-         case YTE::DebugErrorDialog::DebugBreak:                     \
-         {                                                           \
-           debugbreak();                                             \
-           break;                                                    \
-         }                                                           \
-         case YTE::DebugErrorDialog::Abort:                          \
-         {                                                           \
-           exit(1);                                                  \
-           break;                                                    \
-         }                                                           \
-         case YTE::DebugErrorDialog::ErrorOccured:                   \
-         {                                                           \
-           break;                                                    \
-         }                                                           \
-         default:                                                    \
-         {                                                           \
-           break;                                                    \
-         }                                                           \
-        }                                                            \
-      }                                                              \
+    #define DebugObjection(aCondition, aString, ...)                    \
+    do                                                                  \
+    {                                                                   \
+      if (aCondition)                                                   \
+      {                                                                 \
+        switch (YTE::CreateDebugErrorDialog(aString, ##__VA_ARGS__))    \
+        {                                                               \
+         case YTE::DebugErrorDialog::Continue:                          \
+         {                                                              \
+           /* Do nothing. */                                            \
+           break;                                                       \
+         }                                                              \
+         case YTE::DebugErrorDialog::DebugBreak:                        \
+         {                                                              \
+           debugbreak();                                                \
+           break;                                                       \
+         }                                                              \
+         case YTE::DebugErrorDialog::Abort:                             \
+         {                                                              \
+           exit(1);                                                     \
+           break;                                                       \
+         }                                                              \
+         case YTE::DebugErrorDialog::ErrorOccured:                      \
+         {                                                              \
+           break;                                                       \
+         }                                                              \
+         default:                                                       \
+         {                                                              \
+           break;                                                       \
+         }                                                              \
+        }                                                               \
+      }                                                                 \
     } while (false)
 
+#define DebugAssert(aCondition, aString, ...) DebugObjection(!aCondition, aString, __VA_ARGS__)
   #else
-    #define DebugAssert(aCondition, aString, ...)
+    #define DebugObjection(aCondition, aString, ...)
   #endif
 #else
-  #define DebugAssert(aCondition, aString, ...)
+  #define DebugObjection(aCondition, aString, ...)
 #endif
 
 #endif

@@ -65,7 +65,7 @@ namespace YTE
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider = GetColliderFromObject(mOwner);
 
-    DebugAssert(collider == nullptr,
+    DebugObjection(collider == nullptr,
                 "CollisionBodies require a collider currently, sorry!\n ObjectName: %s",
                 mOwner->GetName().c_str());
 

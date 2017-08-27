@@ -157,7 +157,7 @@ namespace YTE
 
     toReturn = std::experimental::filesystem::canonical(toReturn, cWorkingDirectory);
 
-    DebugAssert(std::experimental::filesystem::exists(toReturn) == false, 
+    DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
                 "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
 
     return toReturn;
@@ -187,59 +187,6 @@ namespace YTE
     auto wpath = GetFileOfType(L"Config", L"Bin", name.c_str(), L".json");
     std::string str{ wpath.begin(), wpath.end() };
 
-    return str;
-  }
-
-  std::string GetArchetypePath(const String &name)
-  {
-    auto wpath = GetFileOfType(L"Archetype", L"Archetypes", name.c_str(), L".json");
-    std::string str{ wpath.begin(), wpath.end() };
-
-    return str;
-  }
-
-  std::string GetLevelPath(const String &name)
-  {
-    auto wpath = GetFileOfType(L"Level", L"Levels", name.c_str(), L".json");
-    std::string str{ wpath.begin(), wpath.end() };
-
-    return str;
-  }
-
-  std::string GetArchetypePath(const std::string &name)
-  {
-    auto wpath = GetFileOfType(L"Archetype", L"Archetypes", name.c_str(), L".json");
-    std::string str{ wpath.begin(), wpath.end() };
-
-    return str;
-  }
-
-  std::string GetLevelPath(const std::string &name)
-  {
-    auto wpath = GetFileOfType(L"Level", L"Levels", name.c_str(), L".json");
-    std::string str{ wpath.begin(), wpath.end() };
-
-    return str;
-  }
-
-  std::string GetShader(const char *name)
-  {
-    auto wpath = GetFileOfType(L"Shader", L"Shaders", name, L"");
-    std::string str{ wpath.begin(), wpath.end() };
-    return str;
-  }
-
-  std::string GetMesh(const String &name)
-  {
-    auto wpath = GetFileOfType(L"Mesh", L"Models", name.c_str(), L"");
-    std::string str{ wpath.begin(), wpath.end() };
-    return str;
-  }
-
-  std::string GetTexture(const String &name)
-  {
-    auto wpath = GetFileOfType(L"Texture", L"Textures", name.c_str(), L"");
-    std::string str{ wpath.begin(), wpath.end() };
     return str;
   }
     

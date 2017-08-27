@@ -21,7 +21,5 @@ namespace YTE
   struct Mesh;
   struct Texture;
   struct Vertex;
-
-  class VulkanRenderer;
 }
 #endif

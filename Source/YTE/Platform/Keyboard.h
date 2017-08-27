@@ -37,7 +37,7 @@ namespace YTE
     bool *mKeysPrevious;
     bool *mKeysCurrent;
 
-    Keyboard(const Keyboard&) { DebugAssert(true, "This should have never been called."); }
+    Keyboard(const Keyboard&) { DebugObjection(true, "This should have never been called."); }
   private:
     bool mArrayOne[static_cast<size_t>(Keys::Keys_Number)];
     bool mArrayTwo[static_cast<size_t>(Keys::Keys_Number)];

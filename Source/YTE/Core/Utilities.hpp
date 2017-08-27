@@ -36,6 +36,10 @@
 
 #include "YTE/Utilities/String/String.h"
 
+#include "YTE/Core/StaticIntents.hpp"
+
+#define enum_cast(aEnum) static_cast<size_t>(aEnum)
+
 namespace YTE
 {
   using RSValue = rapidjson::Value;

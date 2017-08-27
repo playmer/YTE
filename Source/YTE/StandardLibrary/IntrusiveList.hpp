@@ -34,7 +34,7 @@ public:
                 throw std::exception();
             }
             
-            // DebugAssert(aOwner != nullptr, "Hook node moved without supplying an owner", __FUNCTION__);
+            // DebugObjection(aOwner != nullptr, "Hook node moved without supplying an owner", __FUNCTION__);
             aHook.Unlink();
 
             previous_->next_ = this;
