@@ -30,7 +30,6 @@ Set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Source_Root}/cmake/modules/")
 ################################################################################
 ## Includes
 ################################################################################
-Include(CPack)
 Include(${CMake_Include}/AddFile.cmake)
 Include(${CMake_Include}/FindDependency.cmake)
 
@@ -53,10 +52,9 @@ Set_Property(GLOBAL PROPERTY USE_FOLDERS ON)
 ################################################################################
 ## Sets the folder to check for dependencies in, based on architecture.
 ################################################################################
-If($ENV{Qt} STREQUAL "")
+Set(QtPath $ENV{Qt})
+If(NOT QtPath) 
   Message(FATAL_ERROR "Please define the environment variable `Qt` with the path to Qt 5.9.0 - i.e. export Qt = C:/Qt/5.9")
-Else()
-  Set(QtPath $ENV{Qt})
 EndIf()
 
 If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
