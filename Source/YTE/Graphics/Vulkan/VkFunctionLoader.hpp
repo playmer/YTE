@@ -5,7 +5,7 @@
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
 
-#include "vulkan/vkel.h"
+#include "vkel/vkel.h"
 
 #if defined(MemoryBarrier)
   #undef MemoryBarrier

@@ -5,7 +5,7 @@ Add_Subdirectory(Bullet)
 Add_Subdirectory(crunch)
 Add_Subdirectory(LuaJIT)
 Add_Subdirectory(stb)
-Add_Subdirectory(vulkan)
+Add_Subdirectory(vkel)
 
 Set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
 option(BUILD_VKCPP_GLFW "Build GLFW" OFF)
