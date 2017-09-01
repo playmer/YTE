@@ -18,6 +18,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditorMainWindow.hpp"
 #include "ObjectBrowser.hpp"
 #include "YTE/Core/Composition.hpp"
+#include "YTE/Core/Engine.hpp"
+#include "YTE/Physics/Transform.h"
 
 #include <qpushbutton.h>
 #include <qlayout.h>
@@ -28,9 +30,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 
 
-ArchetypeTools::ArchetypeTools(ComponentBrowser * aBrowser) 
+ArchetypeTools::ArchetypeTools(ComponentBrowser * aBrowser)
   : QWidget(aBrowser), mBrowser(aBrowser), mLayout(new QHBoxLayout(this)),
-    mIsArchetype(false), mIsDifferent(false), mChanges(0)
+  mIsArchetype(false), mIsDifferent(false), mChanges(0)
 {
   mLabel = new QLabel("Archetype", this);
   mLayout->addWidget(mLabel);
@@ -60,113 +62,148 @@ ArchetypeTools::~ArchetypeTools()
 
 int ArchetypeTools::IncrementChanges()
 {
-    mRevertButton->show();
-    mOverwriteButton->show();
-    mIsDifferent = true;
-    return ++mChanges;
+  mRevertButton->show();
+  mOverwriteButton->show();
+  mIsDifferent = true;
+  return ++mChanges;
 }
 
 int ArchetypeTools::DecrementChanges()
 {
-    if (--mChanges == 0)
-    {
-        ClearChanges();
-    }
+  if (--mChanges == 0)
+  {
+    ClearChanges();
+  }
 
-    return mChanges;
+  return mChanges;
 }
 
 void ArchetypeTools::ClearChanges()
 {
-    mChanges = 0;
-    mIsDifferent = false;
-    HideButtons();
+  mChanges = 0;
+  mIsDifferent = false;
+  HideButtons();
 }
 
 QLineEdit * ArchetypeTools::GetLineEdit()
 {
-    return mArchNameBar;
+  return mArchNameBar;
 }
 
 void ArchetypeTools::SetButtonMode(int aMode)
 {
-    switch (aMode)
-    {
-    case NoArchetype:
-    {
-        mRevertButton->hide();
-        mSaveAsButton->show();
-        mOverwriteButton->hide();
-        break;
-    }
+  switch (aMode)
+  {
+  case NoArchetype:
+  {
+    mRevertButton->hide();
+    mSaveAsButton->show();
+    mOverwriteButton->hide();
+    break;
+  }
 
-    case IsSame:
-    {
-        mRevertButton->hide();
-        mSaveAsButton->hide();
-        mOverwriteButton->hide();
-        break;
-    }
+  case IsSame:
+  {
+    mRevertButton->hide();
+    mSaveAsButton->hide();
+    mOverwriteButton->hide();
+    break;
+  }
 
-    case HasChanged:
-    {
-        mRevertButton->show();
-        mSaveAsButton->hide();
-        mOverwriteButton->show();
-        break;
-    }
-    }
+  case HasChanged:
+  {
+    mRevertButton->show();
+    mSaveAsButton->hide();
+    mOverwriteButton->show();
+    break;
+  }
+  }
 }
 
 void ArchetypeTools::Revert()
 {
-    mIsDifferent = false;
-    ClearChanges();
+  // diff RSValues to see if reloading is necessary
+  YTEditorMainWindow *mainWin = mBrowser->GetMainWindow();
+
+  YTE::Composition *obj = mainWin->GetObjectBrowser().GetCurrentObject();
+  YTE::RSAllocator allocator;
+  YTE::RSValue currArchValue = obj->Serialize(allocator);
+
+  YTE::String archName = mArchNameBar->text().toStdString();
+
+  YTE::RSValue *trueArchValue = mainWin->GetRunningEngine()->GetArchetype(archName);
+
+
+  // if they're different, we need to reinstantiate all the objects
+  if (currArchValue != *trueArchValue)
+  {
+    // save the position and rotation
+    YTE::Transform *trans = obj->GetComponent<YTE::Transform>();
+    auto pos = trans->GetWorldTranslation();
+    auto rot = trans->GetWorldRotation();
+
+    YTE::String name = obj->GetName();
+
+    // delete the old instances
+    YTE::Composition *parent = obj->GetParent();
+    parent->RemoveComposition(obj);
+
+    // instantiate new instances
+    obj = parent->AddComposition(trueArchValue, name);
+
+    // set their positions and rotations to the stored values
+    trans = obj->GetComponent<YTE::Transform>();
+    trans->SetWorldTranslation(pos);
+    trans->SetWorldRotation(rot);
+  }
+
+  mIsDifferent = false;
+  ClearChanges();
 }
 
 void ArchetypeTools::SaveAs()
 {
-    mIsArchetype = true;
-    mIsDifferent = false;
+  mIsArchetype = true;
+  mIsDifferent = false;
 
-    YTE::Composition *cmp = mBrowser->GetMainWindow()->GetObjectBrowser().GetCurrentObject();
+  YTE::Composition *cmp = mBrowser->GetMainWindow()->GetObjectBrowser().GetCurrentObject();
 
-    std::string str = mArchNameBar->text().toStdString();
-    YTE::String arch = str.c_str();
+  std::string str = mArchNameBar->text().toStdString();
+  YTE::String arch = str.c_str();
 
-    cmp->SetArchetypeName(arch);
+  cmp->SetArchetypeName(arch);
 
-    YTE::RSAllocator allocator;
+  YTE::RSAllocator allocator;
 
-    YTE::RSValue archetype = cmp->Serialize(allocator);
+  YTE::RSValue archetype = cmp->Serialize(allocator);
 
-    YTE::RSStringBuffer sb;
-    YTE::RSPrettyWriter writer(sb);
-    archetype.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
-    std::string archOut = sb.GetString();
+  YTE::RSStringBuffer sb;
+  YTE::RSPrettyWriter writer(sb);
+  archetype.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
+  std::string archOut = sb.GetString();
 
-    std::string archName(arch.c_str());
-    std::wstring archWStr{ archName.begin(), archName.end() };
+  std::string archName(arch.c_str());
+  std::wstring archWStr{ archName.begin(), archName.end() };
 
-    archWStr = L"../Archetypes/" + archWStr + L".json";
+  archWStr = L"../Archetypes/" + archWStr + L".json";
 
-    std::ofstream newArch;
-    newArch.open(archWStr);
-    newArch << archOut;
-    newArch.close();
+  std::ofstream newArch;
+  newArch.open(archWStr);
+  newArch << archOut;
+  newArch.close();
 
-    mBrowser->GetMainWindow()->SaveCurrentLevel();
+  mBrowser->GetMainWindow()->SaveCurrentLevel();
 }
 
 void ArchetypeTools::Overwrite()
 {
-    mIsDifferent = false;
-    ClearChanges();
+  mIsDifferent = false;
+  ClearChanges();
 }
 
 void ArchetypeTools::HideButtons()
 {
-    mRevertButton->hide();
-    mSaveAsButton->hide();
-    mOverwriteButton->hide();
+  mRevertButton->hide();
+  mSaveAsButton->hide();
+  mOverwriteButton->hide();
 }

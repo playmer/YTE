@@ -30,20 +30,20 @@ namespace YTE
 class ObjectItem : public QTreeWidgetItem
 {
 public:
-  ObjectItem(YTE::String &aItemName, 
-             ObjectBrowser *aParentTree, 
-             YTE::Composition *aEngineObj, 
-             YTE::Composition *aEngineLevel);
+  ObjectItem(YTE::String &aItemName,
+    ObjectBrowser *aParentTree,
+    YTE::Composition *aEngineObj,
+    YTE::Composition *aEngineLevel);
 
-  ObjectItem(YTE::String &aItemName, 
-             ObjectItem *aParentItem, 
-             YTE::Composition *aEngineObj, 
-             YTE::Composition *aEngineLevel);
+  ObjectItem(YTE::String &aItemName,
+    ObjectItem *aParentItem,
+    YTE::Composition *aEngineObj,
+    YTE::Composition *aEngineLevel);
 
   ~ObjectItem();
 
   void Rename(YTE::String &aName);
-  void DeleteFromEngine();
+  void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
   ObjectBrowser * GetObjectBrowser() const;
   YTE::Composition * GetEngineObject() const;

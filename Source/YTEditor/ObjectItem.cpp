@@ -6,7 +6,7 @@
 \par    Course: GAM 300
 \date   8/15/2017
 \brief
-Implementation of the object item class that 
+Implementation of the object item class that
 represents item in the ObjectBrowser.
 
 All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
@@ -28,27 +28,27 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.h"
 #include "qapplication.h"
 
-ObjectItem::ObjectItem(YTE::String &aItemName, 
-                       ObjectBrowser *aParentTree, 
-                       YTE::Composition *aEngineObj, 
-                       YTE::Composition *aEngineLevel)
-  : QTreeWidgetItem(aParentTree), 
-    mObjectBrowser(aParentTree), 
-    mEngineObject(aEngineObj), 
-    mEngineLevel(aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName,
+  ObjectBrowser *aParentTree,
+  YTE::Composition *aEngineObj,
+  YTE::Composition *aEngineLevel)
+  : QTreeWidgetItem(aParentTree),
+  mObjectBrowser(aParentTree),
+  mEngineObject(aEngineObj),
+  mEngineLevel(aEngineLevel)
 {
   setText(0, aItemName.c_str());
   setFlags(flags() | Qt::ItemIsEditable);
 }
 
-ObjectItem::ObjectItem(YTE::String &aItemName, 
-                       ObjectItem *aParentItem, 
-                       YTE::Composition *aEngineObj, 
-                       YTE::Composition *aEngineLevel)
-  : QTreeWidgetItem(aParentItem), 
-    mObjectBrowser(aParentItem->GetObjectBrowser()), 
-    mEngineObject(aEngineObj), 
-    mEngineLevel(aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName,
+  ObjectItem *aParentItem,
+  YTE::Composition *aEngineObj,
+  YTE::Composition *aEngineLevel)
+  : QTreeWidgetItem(aParentItem),
+  mObjectBrowser(aParentItem->GetObjectBrowser()),
+  mEngineObject(aEngineObj),
+  mEngineLevel(aEngineLevel)
 {
   setText(0, aItemName.c_str());
   setFlags(flags() | Qt::ItemIsEditable);
@@ -64,9 +64,16 @@ void ObjectItem::Rename(YTE::String &aName)
   mEngineObject->SetName(aName);
 }
 
-void ObjectItem::DeleteFromEngine()
+void ObjectItem::DeleteFromEngine(YTE::Composition *aParentObj)
 {
-  mEngineLevel->RemoveComposition(mEngineObject);
+  if (aParentObj == nullptr)
+  {
+    mEngineLevel->RemoveComposition(mEngineObject);
+  }
+  else
+  {
+    aParentObj->RemoveComposition(mEngineObject);
+  }
 }
 
 ObjectBrowser * ObjectItem::GetObjectBrowser() const
@@ -84,9 +91,9 @@ ObjectItemDelegate::ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget * aParen
 {
 }
 
-void ObjectItemDelegate::paint(QPainter * painter, 
-                               const QStyleOptionViewItem & option,
-                               const QModelIndex & index) const
+void ObjectItemDelegate::paint(QPainter * painter,
+  const QStyleOptionViewItem & option,
+  const QModelIndex & index) const
 {
   Q_UNUSED(index);
 
@@ -114,9 +121,9 @@ void ObjectItemDelegate::paint(QPainter * painter,
 
 
 bool ObjectItemDelegate::editorEvent(QEvent *event,
-                                     QAbstractItemModel *model,
-                                     const QStyleOptionViewItem &option,
-                                     const QModelIndex &index)
+  QAbstractItemModel *model,
+  const QStyleOptionViewItem &option,
+  const QModelIndex &index)
 {
   Q_UNUSED(index);
   Q_UNUSED(model);
@@ -146,12 +153,21 @@ bool ObjectItemDelegate::editorEvent(QEvent *event,
 
         auto name = item->text(0).toStdString();
         auto cmd = std::make_unique<RemoveObjectCmd>(name.c_str(),
-                                  &mBrowser->GetMainWindow()->GetOutputConsole());
+          &mBrowser->GetMainWindow()->GetOutputConsole());
 
         mBrowser->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
 
-        // remove current object from engine
-        item->DeleteFromEngine();
+        ObjectItem *parent = dynamic_cast<ObjectItem*>(item->parent());
+
+        if (parent)
+        {
+          YTE::Composition *parentObj = parent->GetEngineObject();
+          item->DeleteFromEngine(parentObj);
+        }
+        else
+        {
+          item->DeleteFromEngine();
+        }
 
         mBrowser->RemoveObjectFromViewer(item);
 
