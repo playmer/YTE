@@ -25,6 +25,8 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/Window.hpp"
 
+#include "YTE/StandardLibrary/Vector.hpp"
+
 
 namespace YTE
 {
@@ -99,7 +101,7 @@ namespace YTE
     RSDocument* GetLevel(String &aLevel);
     std::unordered_map<String, UniquePointer<RSDocument>>* GetLevels(void);
 
-    OrderedMultiMap<Composition*, CompositionMap::iterator> mCompositionsToRemove;
+    OrderedMultiMap<Composition*, UniquePointer<Composition>> mCompositionsToRemove;
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
     bool IsEditor()

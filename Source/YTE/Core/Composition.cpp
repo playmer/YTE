@@ -173,7 +173,16 @@ namespace YTE
     {
       for (auto end = compositionRange.end() - 1; end >= compositionRange.begin(); --end)
       {
-        RemoveCompositionInternal(end->second);
+        Composition *comp = end->second.get();
+
+        auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+        {
+          return aLhs.get() == aRhs;
+        };
+
+        auto iter = mCompositions.FindIteratorByPointer(comp->mName, comp, compare);
+
+        RemoveCompositionInternal(iter);
       }
     }
 
@@ -590,12 +599,12 @@ namespace YTE
   {
     mCompositions.Erase(aComposition);
   }
-
+  
   void Composition::RemoveComposition(Composition *aComposition)
   { 
     auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
                     {
-                      return aLhs.get() == aRhs;
+                      return aLhs.get() == aRhs; 
                     };
 
     auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
@@ -604,7 +613,10 @@ namespace YTE
 
     if (iter != mCompositions.end())
     {
-      mEngine->mCompositionsToRemove.Emplace(this, iter);
+      for (iter; iter != mCompositions.end(); ++iter)
+      {
+        mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second.get()));
+      }
     }
 
     GetUniverseOrSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
