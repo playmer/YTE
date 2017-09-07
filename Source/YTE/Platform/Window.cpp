@@ -10,6 +10,9 @@
 
 namespace YTE
 {
+  DefineEvent(WindowResizeEvent);
+  DefineEvent(WindowFocusLostOrGained);
+  DefineEvent(WindowMinimizedOrRestored);
   DefineType(Window)
   {
     YTERegisterType(Window);

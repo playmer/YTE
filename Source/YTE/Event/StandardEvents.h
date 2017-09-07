@@ -41,10 +41,7 @@ namespace YTE
     extern const std::string KeyPress;
     extern const std::string KeyRelease;
     extern const std::string KeyPersist;
-    extern const std::string WindowResize;
     extern const std::string RendererResize;
-    extern const std::string WindowFocusLostOrGained;
-    extern const std::string WindowMinimizedOrRestored;
     extern const std::string XboxStickFlicked;
     extern const std::string XboxButtonPress;
     extern const std::string XboxButtonRelease;
@@ -116,25 +113,6 @@ namespace YTE
 
     Keys Key;
     Keyboard *Keyboard;
-  };
-
-  class WindowResizeEvent : public Event
-  {
-  public:
-    int width;
-    int height;
-  };
-
-  class WindowFocusLostOrGained : public Event
-  {
-  public:
-    bool Focused;
-  };
-
-  class WindowMinimizedOrRestored : public Event
-  {
-  public:
-    bool Minimized;
   };
 
   class XboxFlickEvent :public Event
