@@ -169,23 +169,6 @@ namespace YTE
     // Delete Attached Compositions
     auto compositionRange = mEngine->mCompositionsToRemove.FindAll(this);
 
-    if (compositionRange.IsRange())
-    {
-      for (auto end = compositionRange.end() - 1; end >= compositionRange.begin(); --end)
-      {
-        Composition *comp = end->second.get();
-
-        auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
-        {
-          return aLhs.get() == aRhs;
-        };
-
-        auto iter = mCompositions.FindIteratorByPointer(comp->mName, comp, compare);
-
-        RemoveCompositionInternal(iter);
-      }
-    }
-
     mEngine->mCompositionsToRemove.Erase(compositionRange);
 
     // Stop handling deletions, as we've completed all of them thus far.
@@ -616,6 +599,7 @@ namespace YTE
       for (iter; iter != mCompositions.end(); ++iter)
       {
         mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second.get()));
+        mCompositions.Erase(iter);
       }
     }
 
