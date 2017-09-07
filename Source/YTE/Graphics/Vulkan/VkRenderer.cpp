@@ -22,6 +22,7 @@ namespace fs = std::experimental::filesystem;
 
 namespace YTE
 {
+  DefineEvent(RendererResize);
   struct MeshToRender
   {
     MeshToRender(std::shared_ptr<vkhlf::PipelineLayout> const *aPipelineLayout,

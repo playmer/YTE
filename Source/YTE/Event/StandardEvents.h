@@ -41,7 +41,6 @@ namespace YTE
     extern const std::string KeyPress;
     extern const std::string KeyRelease;
     extern const std::string KeyPersist;
-    extern const std::string RendererResize;
     extern const std::string XboxStickFlicked;
     extern const std::string XboxButtonPress;
     extern const std::string XboxButtonRelease;
