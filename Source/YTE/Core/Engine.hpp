@@ -22,8 +22,8 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Platform/GamepadSystem.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/GamepadSystem.hpp"
+#include "YTE/Platform/Window.hpp"
 
 
 namespace YTE

@@ -9,7 +9,7 @@
  
 #include "YTE/Graphics/ForwardDeclarations.hpp" 
  
-#include "YTE/Platform/ForwardDeclarations.h" 
+#include "YTE/Platform/ForwardDeclarations.hpp" 
  
 #include "YTE/Physics/ForwardDeclarations.h" 
  

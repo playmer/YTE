@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Graphics/Mesh.hpp"
 
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/Window.hpp"
 
 #include <qcombobox.h>
 #include <qwindow.h>

@@ -18,7 +18,7 @@
 
 #include "YTE/Physics/Transform.h"
 
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/Window.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 

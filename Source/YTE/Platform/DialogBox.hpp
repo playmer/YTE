@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 namespace YTE
 {

@@ -12,7 +12,7 @@
 #define YTE_Platform_Keyboard_h
 
 #include "YTE/Event/Events.h"
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 #include <stdint.h>
 
 namespace YTE

@@ -17,9 +17,9 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/PrivateImplementation.hpp"
 
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Mouse.h"
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"

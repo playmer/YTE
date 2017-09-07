@@ -16,7 +16,7 @@
 
 #include "YTE/Event/Events.h"
 
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 namespace YTE
 {

@@ -10,7 +10,7 @@
 #include "YTE/Event/Events.h"
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"

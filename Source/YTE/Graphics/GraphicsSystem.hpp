@@ -19,7 +19,7 @@
 
 #include "YTE/Graphics/Renderer.hpp"
 
-#include "YTE/Platform/ForwardDeclarations.h"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {

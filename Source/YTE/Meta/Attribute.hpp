@@ -1,7 +1,7 @@
 #pragma once
 #include "YTE/Meta/Type.hpp"
 
-#include "YTE/Platform/DialogBox.h"
+#include "YTE/Platform/DialogBox.hpp"
 
 namespace YTE
 {

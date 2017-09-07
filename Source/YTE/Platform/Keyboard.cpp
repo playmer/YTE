@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Keyboard.h"
+#include "YTE/Platform/Keyboard.hpp"
 
 namespace YTE
 {

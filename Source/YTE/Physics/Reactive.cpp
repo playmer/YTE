@@ -10,7 +10,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 #include "YTE/Physics/Reactive.h"
 

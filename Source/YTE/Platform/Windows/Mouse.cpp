@@ -6,12 +6,12 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 #ifdef Windows
 
 #include <YTE/Platform/Windows/WindowsInclude.hpp>
 #include <Winuser.h>
-#include "YTE/Platform/Mouse.h"
+#include "YTE/Platform/Mouse.hpp"
 
 namespace YTE
 {

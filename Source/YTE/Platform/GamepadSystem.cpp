@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/ScriptBind.hpp"
 
-#include "YTE/Platform/GamepadSystem.h"
+#include "YTE/Platform/GamepadSystem.hpp"
 
 namespace YTE
 {

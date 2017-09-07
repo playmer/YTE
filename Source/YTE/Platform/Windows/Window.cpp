@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 
 #ifdef Windows
@@ -29,9 +29,9 @@
 
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/DialogBox.h"
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/DialogBox.hpp"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Window.hpp"
 
 
 namespace YTE

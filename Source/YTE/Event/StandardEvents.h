@@ -13,9 +13,9 @@
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Platform/Gamepad.h"
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Mouse.h"
+#include "YTE/Platform/Gamepad.hpp"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Mouse.hpp"
 
 #include "YTE/Event/Events.h"
 

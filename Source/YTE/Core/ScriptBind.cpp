@@ -42,11 +42,11 @@
 #include "YTE/Physics/SphereCollider.h"
 #include "YTE/Physics/Transform.h"
 
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Mouse.h"
-#include "YTE/Platform/Gamepad.h"
-#include "YTE/Platform/GamepadSystem.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/Gamepad.hpp"
+#include "YTE/Platform/GamepadSystem.hpp"
+#include "YTE/Platform/Window.hpp"
 
 #include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"

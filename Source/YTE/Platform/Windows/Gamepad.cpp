@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #ifdef Windows
 
@@ -16,8 +16,8 @@
 
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Gamepad.h"
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/Gamepad.hpp"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 #undef max
 #undef min

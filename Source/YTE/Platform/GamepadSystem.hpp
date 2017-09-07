@@ -13,7 +13,7 @@
 
 #include <array>
 
-#include "YTE/Platform/Gamepad.h"
+#include "YTE/Platform/Gamepad.hpp"
 
 namespace YTE
 {

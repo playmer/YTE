@@ -20,8 +20,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/TargetDefinitions.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
+#include "YTE/Platform/Window.hpp"
 
 #ifdef Windows
 #include "YTE/Platform/Windows/WindowsInclude.hpp"

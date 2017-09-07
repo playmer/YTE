@@ -16,8 +16,8 @@
 
 #include "YTE/Utilities/String/String.h"
 
-#include "YTE/Platform/DialogBox.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/DialogBox.hpp"
+#include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {

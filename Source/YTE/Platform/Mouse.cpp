@@ -10,7 +10,7 @@
 
 #include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Mouse.h"
+#include "YTE/Platform/Mouse.hpp"
 
 namespace
 {
