@@ -97,14 +97,14 @@ namespace YTE
       EventHandler& callbacker);
 
     template <typename ClassType, typename EventType>
-    void RegisterListener(std::string eventName, ClassType& otherObj,
+    void CONNECT(std::string eventName, ClassType& otherObj,
       void (ClassType::*callback)(EventType*))
     {
-      RegisterListener(eventName, new
+      CONNECT(eventName, new
         MemberFunctionEventCallback<ClassType, EventType>(&otherObj, callback), otherObj);
     }
 
-    void RegisterListener(std::string eventName, EventCallback* eventCallback,
+    void CONNECT(std::string eventName, EventCallback* eventCallback,
       EventHandler& otherObj)
     {
       // if nothing has registered for this Event on this object

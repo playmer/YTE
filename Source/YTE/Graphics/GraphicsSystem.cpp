@@ -49,7 +49,7 @@ namespace YTE
 
   void GraphicsSystem::Initialize()
   {
-    mEngine->RegisterListener(Events::FrameUpdate, *this, &GraphicsSystem::Update);
+    mEngine->CONNECT(Events::FrameUpdate, *this, &GraphicsSystem::Update);
 
     auto vulkanSuccess = vkelInit();
 

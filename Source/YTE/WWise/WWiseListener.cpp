@@ -42,8 +42,8 @@ namespace YTE
   {
     auto transform = mOwner->GetComponent<Transform>();
 
-    mOwner->RegisterListener(Events::PositionChanged, *this, &WWiseListener::OnPositionChange);
-    mOwner->RegisterListener(Events::OrientationChanged, *this, &WWiseListener::OnOrientationChange);
+    mOwner->CONNECT(Events::PositionChanged, *this, &WWiseListener::OnPositionChange);
+    mOwner->CONNECT(Events::OrientationChanged, *this, &WWiseListener::OnOrientationChange);
     mListenerPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
 
     auto orientation = mOwner->GetComponent<Orientation>();

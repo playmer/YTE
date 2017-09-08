@@ -126,9 +126,9 @@ namespace YTE
 
   void Model::Initialize()
   {
-    mOwner->RegisterListener(Events::PositionChanged, *this, &Model::OnPositionChange);
-    mOwner->RegisterListener(Events::ScaleChanged, *this, &Model::OnScaleChange);
-    mOwner->RegisterListener(Events::RotationChanged, *this, &Model::OnRotationChange);
+    mOwner->CONNECT(Events::PositionChanged, *this, &Model::OnPositionChange);
+    mOwner->CONNECT(Events::ScaleChanged, *this, &Model::OnScaleChange);
+    mOwner->CONNECT(Events::RotationChanged, *this, &Model::OnRotationChange);
 
     auto transform = mOwner->GetComponent<Transform>();
 
@@ -158,7 +158,7 @@ namespace YTE
 
     if (false == mUpdating)
     {
-      mSpace->RegisterListener(Events::FrameUpdate, *this, &Model::Update);
+      mSpace->CONNECT(Events::FrameUpdate, *this, &Model::Update);
       mUpdating = true;
     }
   }
@@ -172,7 +172,7 @@ namespace YTE
 
     if (false == mUpdating)
     {
-      mSpace->RegisterListener(Events::FrameUpdate, *this, &Model::Update);
+      mSpace->CONNECT(Events::FrameUpdate, *this, &Model::Update);
       mUpdating = true;
     }
   }
@@ -186,7 +186,7 @@ namespace YTE
 
     if (false == mUpdating)
     {
-      mSpace->RegisterListener(Events::FrameUpdate, *this, &Model::Update);
+      mSpace->CONNECT(Events::FrameUpdate, *this, &Model::Update);
       mUpdating = true;
     }
   }

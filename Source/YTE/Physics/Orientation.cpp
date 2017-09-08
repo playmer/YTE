@@ -41,7 +41,7 @@ namespace YTE
 
   void Orientation::Initialize()
   {
-    mOwner->RegisterListener(Events::RotationChanged, *this, &Orientation::OnRotationChanged);
+    mOwner->CONNECT(Events::RotationChanged, *this, &Orientation::OnRotationChanged);
   }
 
   void Orientation::OnRotationChanged(RotationChanged *aEvent)

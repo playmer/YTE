@@ -26,7 +26,7 @@ namespace YTE
     : Component(aOwner, nullptr)
   {
     CoreComponentFactoryInitilization(static_cast<Engine*>(mOwner), mComponentFactories);
-    GetOwner()->RegisterListener(Events::BoundTypeChanged, *this, &ComponentSystem::BoundTypeChangedHandler);
+    GetOwner()->CONNECT(Events::BoundTypeChanged, *this, &ComponentSystem::BoundTypeChangedHandler);
   };
 
   void ComponentSystem::BoundTypeChangedHandler(BoundTypeChanged *aEvent)

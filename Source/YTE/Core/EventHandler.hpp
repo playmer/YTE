@@ -20,10 +20,10 @@ namespace Events                             \
     const std::string aName = #aName;        \
 }
 
-#define CONNECT(function, eventName, receiver) \
+#define CONNECT(eventName, receiver, function) \
 RegisterEvent<decltype(function), function>(eventName, receiver)
 
-#define DISCONNECT(function, eventName, receiver) \
+#define DISCONNECT(eventName, receiver, function) \
 DeregisterEvent<decltype(function), function>(eventName, receiver)
 
 using String = std::string;

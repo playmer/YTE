@@ -40,7 +40,7 @@ namespace YTE
 
     mTime = mCurrentPosition.z < 0.0f ? glm::pi<float>() : 0.0f;
 
-    mSpace->RegisterListener(Events::LogicUpdate, *this, &TestComponent::Update);
+    mSpace->CONNECT(Events::LogicUpdate, *this, &TestComponent::Update);
   }
 
   void TestComponent::Update(LogicUpdate *aEvent)

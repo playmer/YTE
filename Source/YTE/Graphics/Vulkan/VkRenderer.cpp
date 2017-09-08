@@ -268,10 +268,10 @@ namespace YTE
 
       Resize(&event);
 
-      mWindow->RegisterListener(Events::WindowResize,
+      mWindow->CONNECT(Events::WindowResize,
                                 *this,
                                 &RenderedSurface::Resize);
-      mWindow->mEngine->RegisterListener(Events::FrameUpdate,
+      mWindow->mEngine->CONNECT(Events::FrameUpdate,
                                          *this,
                                          &RenderedSurface::Render);
     }

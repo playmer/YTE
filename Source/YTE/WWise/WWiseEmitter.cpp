@@ -60,8 +60,8 @@ namespace YTE
 
     if (transform != nullptr)
     {
-      mOwner->RegisterListener(Events::PositionChanged, *this, &WWiseEmitter::OnPositionChange);
-      mOwner->RegisterListener(Events::OrientationChanged, *this, &WWiseEmitter::OnOrientationChange);
+      mOwner->CONNECT(Events::PositionChanged, *this, &WWiseEmitter::OnPositionChange);
+      mOwner->CONNECT(Events::OrientationChanged, *this, &WWiseEmitter::OnOrientationChange);
       mEmitterPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
 
       auto orientation = mOwner->GetComponent<Orientation>();

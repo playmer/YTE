@@ -34,7 +34,7 @@ namespace YTE
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    mSpace->RegisterListener(Events::LogicUpdate, *this, &PhysicsSystem::OnLogicUpdate);
+    mSpace->CONNECT(Events::LogicUpdate, *this, &PhysicsSystem::OnLogicUpdate);
 
 
       // collision configuration contains default setup for memory , collision setup . Advanced
@@ -78,9 +78,9 @@ namespace YTE
 
       //TODO (Josh): Reimplement the debug drawing functionality.
       //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->RegisterListener(Events::BeginDebugDrawUpdate, *this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->RegisterListener(Events::DebugDrawUpdate, *this, &PhysicsSystem::DebugDrawUpdate);
-      //system->RegisterListener(Events::EndDebugDrawUpdate, *this, &PhysicsSystem::EndDebugDrawUpdate);
+      //system->CONNECT(Events::BeginDebugDrawUpdate, *this, &PhysicsSystem::BeginDebugDrawUpdate);
+      //system->CONNECT(Events::DebugDrawUpdate, *this, &PhysicsSystem::DebugDrawUpdate);
+      //system->CONNECT(Events::EndDebugDrawUpdate, *this, &PhysicsSystem::EndDebugDrawUpdate);
 
       auto debugMode = mDebugDrawer->getDebugMode();
       debugMode |= 0 << DebugDrawer::DBG_NoDebug;

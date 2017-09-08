@@ -180,7 +180,7 @@ namespace YTE
     mEngine->mCompositionsToRemove.Erase(compositionRange);
 
     // Stop handling deletions, as we've completed all of them thus far.
-    StopListening(Events::DeletionUpdate, *GetUniverseOrSpaceOrEngine());
+    DISCONNECT(Events::DeletionUpdate, *GetUniverseOrSpaceOrEngine());
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
