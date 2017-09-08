@@ -339,11 +339,11 @@ namespace YTE
 
         WindowMinimizedOrRestored minimizeEvent;
         minimizeEvent.Minimized = true;
-        aWindow->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+        aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
 
         if (aWindow->Constructed)
         {
-          aWindow->mEngine->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+          aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
         }
       }
       else if (aWParam == SIZE_RESTORED)
@@ -354,11 +354,11 @@ namespace YTE
 
           WindowMinimizedOrRestored minimizeEvent;
           minimizeEvent.Minimized = false;
-          aWindow->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+          aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
 
           if (aWindow->Constructed)
           {
-            aWindow->mEngine->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+            aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
           }
         }
 
@@ -371,7 +371,7 @@ namespace YTE
         self->mWidth = resizeEvent.width;
         self->mHeight = resizeEvent.height;
 
-        aWindow->Trigger(Events::WindowResize, &resizeEvent);
+        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
       }
 
       break;
@@ -384,11 +384,11 @@ namespace YTE
       WindowFocusLostOrGained focusEvent;
       focusEvent.Focused = true;
       self->mFocus = true;
-      aWindow->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
         
       if (aWindow->Constructed)
       {
-        aWindow->mEngine->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
       }
 
       break;
@@ -399,11 +399,11 @@ namespace YTE
       WindowFocusLostOrGained focusEvent;
       focusEvent.Focused = false;
       self->mFocus = false;
-      aWindow->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
 
       if (aWindow->Constructed)
       {
-        aWindow->mEngine->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
       }
 
       break;

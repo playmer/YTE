@@ -47,7 +47,7 @@ namespace YTE
         keyEvent.Key = static_cast<Keys>(i);
         keyEvent.Keyboard = this;
 
-        Trigger(Events::KeyPersist, &keyEvent);
+        SendEvent(Events::KeyPersist, &keyEvent);
       }
 
       mKeysPrevious[i] = mKeysCurrent[i];
@@ -85,7 +85,7 @@ namespace YTE
     keyboardEvent.Key = aKey;
     keyboardEvent.Keyboard = this;
       
-    Trigger(*state, &keyboardEvent);
+    SendEvent(*state, &keyboardEvent);
   }
 
   bool Keyboard::IsKeyPressed(Keys aKey)

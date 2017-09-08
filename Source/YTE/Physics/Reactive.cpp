@@ -49,7 +49,7 @@ namespace YTE
 
       // Send a MouseEntered event
     MouseEnter mouseEnter;
-    mOwner->Trigger(Events::MouseEnter, &mouseEnter);
+    mOwner->SendEvent(Events::MouseEnter, &mouseEnter);
   }
 
   void Reactive::OnCollisionEnded(CollisionEnded *aEvent)
@@ -58,7 +58,7 @@ namespace YTE
 
       // Send a MouseExit event
     MouseExit mouseExit;
-    mOwner->Trigger(Events::MouseExit, &mouseExit);
+    mOwner->SendEvent(Events::MouseExit, &mouseExit);
   }
 
   void Reactive::OnMousePress(MouseButtonEvent *aEvent)
@@ -66,7 +66,7 @@ namespace YTE
       // Receive the global mouse click event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
     {
-      mOwner->Trigger(Events::MousePress, aEvent);
+      mOwner->SendEvent(Events::MousePress, aEvent);
     }
   }
 
@@ -75,7 +75,7 @@ namespace YTE
       // Receive the global mouse release event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
     {
-      mOwner->Trigger(Events::MouseRelease, aEvent);
+      mOwner->SendEvent(Events::MouseRelease, aEvent);
     }
   }
 

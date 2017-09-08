@@ -45,7 +45,7 @@ void SubWindow::resizeEvent(QResizeEvent *aEvent)
   event.height = size.height();
   event.width = size.width();
 
-  mWindow->Trigger(YTE::Events::WindowResize, &event);
+  mWindow->SendEvent(YTE::Events::WindowResize, &event);
   mWindow->mEngine->Update();
 }
 

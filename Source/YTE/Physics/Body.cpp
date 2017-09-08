@@ -45,12 +45,12 @@ namespace YTE
       if (prevComposition == mCollidedLastFrame.end())
       {
         // Collision Started
-        mOwner->Trigger(Events::CollisionStarted, &newEvent);
+        mOwner->SendEvent(Events::CollisionStarted, &newEvent);
       }
       else
       {
         // Collision Persisted
-        mOwner->Trigger(Events::CollisionPersisted, &newEvent);
+        mOwner->SendEvent(Events::CollisionPersisted, &newEvent);
 
         // Remove Composition From mCollidedLastFrame
         mCollidedLastFrame.erase(prevComposition);
@@ -61,7 +61,7 @@ namespace YTE
     {
       // Collision Ended
       newEvent.OtherObject = composition;
-      mOwner->Trigger(Events::CollisionEnded, &newEvent);
+      mOwner->SendEvent(Events::CollisionEnded, &newEvent);
     }
 
     mCollidedLastFrame.clear();

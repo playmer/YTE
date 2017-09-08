@@ -101,14 +101,14 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = aDt;
 
-    Trigger(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::DeletionUpdate, &updateEvent);
 
-    Trigger(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, &updateEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
     if (mPaused == false)
     {
-      Trigger(Events::LogicUpdate, &updateEvent);
+      SendEvent(Events::LogicUpdate, &updateEvent);
     }
   }
     

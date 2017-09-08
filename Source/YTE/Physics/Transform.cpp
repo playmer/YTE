@@ -62,7 +62,7 @@ namespace YTE
 
     PositionChanged newPosition;
     newPosition.Position = mTranslation;
-    mOwner->Trigger(Events::PositionChanged, &newPosition);
+    mOwner->SendEvent(Events::PositionChanged, &newPosition);
   }
 
   void Transform::SetTranslation(float aX, float aY, float aZ)
@@ -82,7 +82,7 @@ namespace YTE
 
     PositionChanged newPosition;
     newPosition.Position = mTranslation;
-    mOwner->Trigger(Events::PositionChanged, &newPosition);
+    mOwner->SendEvent(Events::PositionChanged, &newPosition);
   }
 
   const glm::vec3& Transform::GetScale() const
@@ -96,7 +96,7 @@ namespace YTE
 
     ScaleChanged newScale;
     newScale.Scale = mScale;
-    mOwner->Trigger(Events::ScaleChanged, &newScale);
+    mOwner->SendEvent(Events::ScaleChanged, &newScale);
   }
 
   void Transform::SetScale(float aX, float aY, float aZ)
@@ -105,7 +105,7 @@ namespace YTE
 
     ScaleChanged newScale;
     newScale.Scale = mScale;
-    mOwner->Trigger(Events::ScaleChanged, &newScale);
+    mOwner->SendEvent(Events::ScaleChanged, &newScale);
   }
 
   const glm::quat& Transform::GetRotation() const
@@ -130,7 +130,7 @@ namespace YTE
 
     RotationChanged newRotation;
     newRotation.Rotation = mRotation;
-    mOwner->Trigger(Events::RotationChanged, &newRotation);
+    mOwner->SendEvent(Events::RotationChanged, &newRotation);
   }
 
   void Transform::SetRotation(const glm::vec3& aEulerRot)
@@ -145,7 +145,7 @@ namespace YTE
     
     RotationChanged newRotation;
     newRotation.Rotation = mRotation;
-    mOwner->Trigger(Events::RotationChanged, &newRotation);
+    mOwner->SendEvent(Events::RotationChanged, &newRotation);
   }
 
   void Transform::SetRotation(float aThetaX, float aThetaY, float aThetaZ)
@@ -160,7 +160,7 @@ namespace YTE
     
     RotationChanged newRotation;
     newRotation.Rotation = mRotation;
-    mOwner->Trigger(Events::RotationChanged, &newRotation);
+    mOwner->SendEvent(Events::RotationChanged, &newRotation);
   }
 
   const glm::vec3& Transform::GetWorldTranslation() const

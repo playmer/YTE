@@ -57,7 +57,7 @@ namespace YTE
       mName(aName), mShouldSerialize(true), mShouldIntialize(true), mIsInitialized(false),
       mArchetypeName("")
   {
-    mEngine->RegisterListener(Events::BoundTypeChanged, *this, &Composition::BoundTypeChangedHandler);
+    mEngine->Connect(Events::BoundTypeChanged, *this, &Composition::BoundTypeChangedHandler);
   };
 
   Composition::Composition(Engine *aEngine, Space *aSpace)
@@ -65,7 +65,7 @@ namespace YTE
       mName(), mShouldSerialize(true), mShouldIntialize(true), mIsInitialized(false),
       mArchetypeName("")
   {
-    mEngine->RegisterListener(Events::BoundTypeChanged, *this, &Composition::BoundTypeChangedHandler);
+    mEngine->Connect(Events::BoundTypeChanged, *this, &Composition::BoundTypeChangedHandler);
   };
 
   Composition::~Composition()
@@ -181,7 +181,7 @@ namespace YTE
 
     // Stop handling deletions, as we've completed all of them thus far.
     StopListening(Events::DeletionUpdate, *GetUniverseOrSpaceOrEngine());
-    Trigger(Events::DeletionUpdate, aUpdate);
+    SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
@@ -607,7 +607,7 @@ namespace YTE
       mEngine->mCompositionsToRemove.Emplace(this, iter);
     }
 
-    GetUniverseOrSpaceOrEngine()->RegisterListener(Events::DeletionUpdate, *this, &Composition::DeletionUpdate);
+    GetUniverseOrSpaceOrEngine()->Connect(Events::DeletionUpdate, *this, &Composition::DeletionUpdate);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -624,7 +624,7 @@ namespace YTE
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
 
-    GetUniverseOrSpaceOrEngine()->RegisterListener(Events::DeletionUpdate, *this, &Composition::DeletionUpdate);
+    GetUniverseOrSpaceOrEngine()->Connect(Events::DeletionUpdate, *this, &Composition::DeletionUpdate);
   }
 
   void Composition::RemoveComponent(Component *aComponent)

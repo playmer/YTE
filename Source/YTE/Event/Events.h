@@ -91,7 +91,7 @@ namespace YTE
 
     EventHandler();
 
-    void Trigger(const std::string &eventName, Event *e);
+    void SendEvent(const std::string &eventName, Event *e);
 
     void StopListening(const std::string &eventName,
       EventHandler& callbacker);

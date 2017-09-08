@@ -205,7 +205,7 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = dt;
 
-    Trigger(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::DeletionUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(dt);
   
@@ -216,8 +216,8 @@ namespace YTE
       space.second->Update(dt);
     }
 
-    Trigger(Events::LogicUpdate, &updateEvent);
-    Trigger(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, &updateEvent);
   }
 
   void Engine::SetFrameRate(Window &aWindow, float aDt)

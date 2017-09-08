@@ -419,7 +419,7 @@ namespace YTE
       WindowResizeEvent event;
       event.height = extent.height;
       event.width = extent.width;
-      mWindow->Trigger(Events::RendererResize, &event);
+      mWindow->SendEvent(Events::RendererResize, &event);
     }
 
     void PrintFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)

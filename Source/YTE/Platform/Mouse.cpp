@@ -59,7 +59,7 @@ namespace YTE
         mouseEvent.Button = static_cast<Mouse_Buttons>(i);
         mouseEvent.Mouse = this;
 
-        Trigger(Events::MousePersist, &mouseEvent);
+        SendEvent(Events::MousePersist, &mouseEvent);
       }
 
       mMousePrevious[i] = mMouseCurrent[i];
@@ -98,7 +98,7 @@ namespace YTE
     mouseEvent.WorldCoordinates = aPosition;
     mouseEvent.Mouse = this;
 
-    Trigger(*state, &mouseEvent);
+    SendEvent(*state, &mouseEvent);
   }
 
 
@@ -110,7 +110,7 @@ namespace YTE
     mouseEvent.ScrollMovement = aWheelMove;
     mouseEvent.WorldCoordinates = aPosition;
 
-    Trigger(Events::MouseScroll, &mouseEvent);
+    SendEvent(Events::MouseScroll, &mouseEvent);
   }
 
   void Mouse::UpdatePosition(glm::vec2 aPosition)
@@ -120,7 +120,7 @@ namespace YTE
     MouseMoveEvent mouseEvent;
     mouseEvent.WorldCoordinates = aPosition;
 
-    Trigger(Events::MouseMove, &mouseEvent);
+    SendEvent(Events::MouseMove, &mouseEvent);
   }
 
   bool Mouse::IsButtonDown(Mouse_Buttons aButton)
