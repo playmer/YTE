@@ -33,11 +33,7 @@ namespace YTE
     extern const std::string BoundTypeChanged;
 
     // Input
-    extern const std::string MousePress;
-    extern const std::string MouseRelease;
-    extern const std::string MousePersist;
-    extern const std::string MouseScroll;
-    extern const std::string MouseMove;
+
 
     //Physics
     extern const std::string PositionChanged;
@@ -67,36 +63,7 @@ namespace YTE
     BoundType *aOldType;
     BoundType *aNewType;
   };
-    
-  class MouseButtonEvent : public Event
-  {
-  public:
-    DeclareType(MouseButtonEvent);
-
-    glm::vec2 WorldCoordinates;
-    Mouse_Buttons Button;
-    Mouse *Mouse;
-  };
-
-
-  class MouseWheelEvent : public Event
-  {
-  public:
-    DeclareType(MouseWheelEvent);
-
-    glm::vec2 WorldCoordinates;
-    glm::vec2 ScrollMovement;
-    Mouse *Mouse;
-  };
-
-  class MouseMoveEvent : public Event
-  {
-  public:
-    DeclareType(MouseMoveEvent);
-
-    glm::vec2 WorldCoordinates;
-    Mouse *Mouse;
-  };
+   
 
   class PositionChanged :public Event
   {

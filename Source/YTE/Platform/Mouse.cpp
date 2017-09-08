@@ -19,6 +19,12 @@ namespace
 
 namespace YTE
 {
+  DefineEvent(MousePress);
+  DefineEvent(MouseRelease);
+  DefineEvent(MousePersist);
+  DefineEvent(MouseScroll);
+  DefineEvent(MouseMove);
+
   DefineType(Mouse)
   {
     YTERegisterType(Mouse);
