@@ -5,7 +5,7 @@
  
 #include "YTE/Core/Component.hpp" 
  
-#include "YTE/Event/StandardEvents.h" 
+ 
  
 #include "YTE/Graphics/ForwardDeclarations.hpp" 
  

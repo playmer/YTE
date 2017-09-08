@@ -21,7 +21,7 @@
 
 namespace YTE
 {
-  class BaseEventHandler;
+  class EventHandler;
 
   class Event : public Object
   {
@@ -40,8 +40,8 @@ namespace YTE
   {
   public:
     EventCallback *mCallback;
-    BaseEventHandler *mHandler;
-    Listener(EventCallback *aCallback, BaseEventHandler *aHandler) :
+    EventHandler *mHandler;
+    Listener(EventCallback *aCallback, EventHandler *aHandler) :
       mCallback(aCallback), mHandler(aHandler) {}
   };
 
@@ -51,10 +51,10 @@ namespace YTE
   {
   public:
     std::string mEventName;
-    BaseEventHandler *mHandler;
+    EventHandler *mHandler;
     ConversationRole mRoleOfHandler;
     ConversationGoodbye(const std::string& aEventName,
-      BaseEventHandler *aHandler, ConversationRole aRoleOfHandler) :
+      EventHandler *aHandler, ConversationRole aRoleOfHandler) :
         mEventName(aEventName), mHandler(aHandler),
         mRoleOfHandler(aRoleOfHandler) {}
   };
@@ -84,17 +84,17 @@ namespace YTE
     ClassType *objectThis;
   };
 
-  class BaseEventHandler : public Object
+  class EventHandler : public Object
   {
   public:
-    DeclareType(BaseEventHandler);
+    DeclareType(EventHandler);
 
-    BaseEventHandler();
+    EventHandler();
 
     void Trigger(const std::string &eventName, Event *e);
 
     void StopListening(const std::string &eventName,
-      BaseEventHandler& callbacker);
+      EventHandler& callbacker);
 
     template <typename ClassType, typename EventType>
     void RegisterListener(std::string eventName, ClassType& otherObj,
@@ -105,7 +105,7 @@ namespace YTE
     }
 
     void RegisterListener(std::string eventName, EventCallback* eventCallback,
-      BaseEventHandler& otherObj)
+      EventHandler& otherObj)
     {
       // if nothing has registered for this Event on this object
       if (mListeners.count(eventName) == 0)
@@ -121,17 +121,17 @@ namespace YTE
 
       // store a pointer to this handler inside the speaker container of the
       // listener, so the listener can end the conversation if it dies first
-      std::vector<BaseEventHandler*>& speakers =otherObj.mSpeakers[eventName];
+      std::vector<EventHandler*>& speakers =otherObj.mSpeakers[eventName];
       speakers.emplace_back(this);
     }
 
-    ~BaseEventHandler();
+    ~EventHandler();
   private:
     void AddGoodbye(ConversationGoodbye aGoodbye);
     bool HandleGoodbyes();
 
     std::unordered_map<std::string, std::vector<Listener> > mListeners;
-    std::unordered_map<std::string, std::vector<BaseEventHandler*>> mSpeakers;
+    std::unordered_map<std::string, std::vector<EventHandler*>> mSpeakers;
 
     std::vector<ConversationGoodbye> mGoodbyes;
     int mActiveInvokeLoops;

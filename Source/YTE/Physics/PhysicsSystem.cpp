@@ -12,7 +12,7 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Physics/CollisionBody.h"
 #include "YTE/Physics/GhostBody.h"

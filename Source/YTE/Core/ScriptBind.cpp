@@ -16,8 +16,8 @@
 #include "YTE/Core/JobSystem.h"
 #include "YTE/Core/TestComponent.hpp"
 
-#include "YTE/Event/Events.h"
-#include "YTE/Event/StandardEvents.h"
+#include "YTE/Core/EventHandler.hpp"
+
 
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -66,7 +66,7 @@ namespace YTE
     InitializeType<TestComponent>();
 
     InitializeType<Event>();
-    InitializeType<BaseEventHandler>();
+    InitializeType<EventHandler>();
     InitializeType<LogicUpdate>();
     InitializeType<MouseButtonEvent>();
     InitializeType<MouseMoveEvent>();

@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Platform/Keyboard.hpp"
 

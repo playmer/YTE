@@ -4,7 +4,7 @@
 #include "YTE/Core/Space.hpp" 
 #include "YTE/Core/Utilities.hpp" 
  
-#include "YTE/Event/StandardEvents.h" 
+ 
  
 #include "YTE/Graphics/Camera.hpp" 
 #include "YTE/Graphics/GraphicsView.hpp" 

@@ -135,7 +135,7 @@ namespace YTE
     return VK_TRUE;
   }
 
-  struct RenderedSurface : public BaseEventHandler
+  struct RenderedSurface : public EventHandler
   {
     ~RenderedSurface()
     {

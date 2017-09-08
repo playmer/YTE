@@ -14,7 +14,7 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Platform/DeviceEnums.hpp"
 
@@ -60,7 +60,7 @@ namespace YTE
   void SurveyMouse(bool *aMouse);
 
 
-  struct Mouse : public BaseEventHandler
+  struct Mouse : public EventHandler
   {
   public:
     DeclareType(Mouse);

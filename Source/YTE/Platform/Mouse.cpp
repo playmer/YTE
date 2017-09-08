@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include <utility>
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Platform/Mouse.hpp"
 

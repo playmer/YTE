@@ -6,10 +6,10 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Object.hpp"
-#include "YTE/Event/StandardEvents.h"
+
 
 namespace YTE
 {
@@ -18,16 +18,16 @@ namespace YTE
     YTERegisterType(Event);
   }
 
-  BaseEventHandler::BaseEventHandler() : mActiveInvokeLoops(0)
+  EventHandler::EventHandler() : mActiveInvokeLoops(0)
   {
   }
 
-  DefineType(BaseEventHandler)
+  DefineType(EventHandler)
   {
-    YTERegisterType(BaseEventHandler);
+    YTERegisterType(EventHandler);
   }
 
-  bool BaseEventHandler::HandleGoodbyes()
+  bool EventHandler::HandleGoodbyes()
   {
     assert(mActiveInvokeLoops >= 0);
 
@@ -59,7 +59,7 @@ namespace YTE
       {
         assert(goodbye.mRoleOfHandler == ConversationRole::Speaker);
 
-        std::vector<BaseEventHandler*>& speakers =
+        std::vector<EventHandler*>& speakers =
           mSpeakers[goodbye.mEventName];
         for (auto iter = speakers.begin(); iter != speakers.end(); ++iter)
         {
@@ -76,7 +76,7 @@ namespace YTE
     return true;
   }
 
-  void BaseEventHandler::Trigger(const std::string &eventName, Event *e)
+  void EventHandler::Trigger(const std::string &eventName, Event *e)
   {
     HandleGoodbyes();
     ++mActiveInvokeLoops;
@@ -106,22 +106,22 @@ namespace YTE
     HandleGoodbyes();
   }
 
-  void BaseEventHandler::AddGoodbye(ConversationGoodbye aGoodbye)
+  void EventHandler::AddGoodbye(ConversationGoodbye aGoodbye)
   {
     // TODO@@@ (Austin): Switch goodbye string to YTE::String or at least move
     // REVIEW@@@ (Austin): Should this goodbye be handled now if it's safe?
     mGoodbyes.emplace_back(aGoodbye);
   }
 
-  void BaseEventHandler::StopListening(
-    const std::string &aEventName, BaseEventHandler& aSpeaker)
+  void EventHandler::StopListening(
+    const std::string &aEventName, EventHandler& aSpeaker)
   {
     // let the speaker know it should forget this handler's callback
     aSpeaker.AddGoodbye(
       ConversationGoodbye(aEventName, this, ConversationRole::Listener));
 
     // remove the speaker from this handler's speaker container
-    std::vector<BaseEventHandler*>& speakers = mSpeakers[aEventName];
+    std::vector<EventHandler*>& speakers = mSpeakers[aEventName];
     auto speaker = std::find(speakers.begin(), speakers.end(), &aSpeaker);
     DebugObjection(speaker == speakers.end(), 
                 "We're deregistering from an event we're not currently listening to. This is continuable, but odd and should be looked at.");
@@ -132,7 +132,7 @@ namespace YTE
     }
   }
 
-  BaseEventHandler::~BaseEventHandler()
+  EventHandler::~EventHandler()
   {
     HandleGoodbyes();
 
@@ -151,7 +151,7 @@ namespace YTE
     {
       ConversationGoodbye goodbye(iter.first,this,ConversationRole::Listener);
 
-      for (BaseEventHandler *handler : mSpeakers[iter.first])
+      for (EventHandler *handler : mSpeakers[iter.first])
       {
         handler->AddGoodbye(goodbye);
       }

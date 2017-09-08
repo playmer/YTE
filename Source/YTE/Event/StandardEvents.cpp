@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/Composition.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+
 #include "YTE/Core/Composition.hpp"
 
 namespace YTE

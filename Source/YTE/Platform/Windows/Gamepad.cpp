@@ -14,7 +14,7 @@
 #include <XInput.h>
 #include <algorithm>
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Platform/Gamepad.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"

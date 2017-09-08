@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "YTE/Core/Object.hpp"
 #include "YTE/StandardLibrary/Delegate.hpp"
 #include "YTE/StandardLibrary/IntrusiveList.hpp"
 #include "YTE/StandardLibrary/BlockAllocator.hpp"
@@ -27,12 +28,12 @@ DeregisterEvent<decltype(function), function>(eventName, receiver)
 
 using String = std::string;
 
-struct Event
+struct Event : public Object
 {
     
 };
 
-class EventHandler
+class EventHandler : public Object
 {
 public:
     template <typename tReturn, typename Arg = tReturn>

@@ -7,8 +7,8 @@
 #ifndef YTE_Core_Space_h
 #define YTE_Core_Space_h
 
-#include "YTE/Event/Events.h"
-#include "YTE/Event/StandardEvents.h"
+#include "YTE/Core/EventHandler.hpp"
+
 
 #include "YTE/Platform/DeviceEnums.hpp"
 

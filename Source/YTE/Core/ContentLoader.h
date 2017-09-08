@@ -11,14 +11,14 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <shared_mutex>
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Core/Utilities.hpp"
 
 namespace YTE
 {
   template<typename Type>
-  class Resource : BaseEventHandler
+  class Resource : EventHandler
   {
   public:
     SharedPointer<Type> operator *()  { return mData; }

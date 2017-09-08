@@ -15,7 +15,7 @@
 #include "YTE/Core/PrivateImplementation.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Graphics/Renderer.hpp"
 

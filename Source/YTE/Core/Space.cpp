@@ -11,7 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <fstream>
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Physics/PhysicsSystem.h"
 

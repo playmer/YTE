@@ -17,7 +17,7 @@
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
 namespace YTE
 {

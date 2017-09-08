@@ -32,7 +32,7 @@ namespace YTE
   Keys TranslateKey(uint64_t aOsKey);
   void SurveyKeyboard(bool *aKeyboard);
 
-  struct Keyboard : public BaseEventHandler
+  struct Keyboard : public EventHandler
   {
   public:
     DeclareType(Keyboard);

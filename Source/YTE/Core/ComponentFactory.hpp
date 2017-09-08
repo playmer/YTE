@@ -13,14 +13,14 @@
 
 #include <memory>
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Utilities.hpp"
 
 namespace YTE
 {
-  class StringComponentFactory : public BaseEventHandler
+  class StringComponentFactory : public EventHandler
   {
   public:
     virtual UniquePointer<Component> MakeComponent(Composition *aOwner,

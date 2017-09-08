@@ -11,7 +11,7 @@
 #ifndef YTE_Physics_Collider_h
 #define YTE_Physics_Collider_h
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Core/Component.hpp"
 

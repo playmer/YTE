@@ -50,7 +50,7 @@ namespace YTE
   };
 
 
-  class XboxController : public BaseEventHandler
+  class XboxController : public EventHandler
   {
   public:
     DeclareType(XboxController);
