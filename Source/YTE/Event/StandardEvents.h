@@ -38,9 +38,6 @@ namespace YTE
     extern const std::string MousePersist;
     extern const std::string MouseScroll;
     extern const std::string MouseMove;
-    extern const std::string KeyPress;
-    extern const std::string KeyRelease;
-    extern const std::string KeyPersist;
 
     //Physics
     extern const std::string PositionChanged;
@@ -99,15 +96,6 @@ namespace YTE
 
     glm::vec2 WorldCoordinates;
     Mouse *Mouse;
-  };
-
-  class KeyboardEvent : public Event
-  {
-  public:
-    DeclareType(KeyboardEvent);
-
-    Keys Key;
-    Keyboard *Keyboard;
   };
 
   class PositionChanged :public Event

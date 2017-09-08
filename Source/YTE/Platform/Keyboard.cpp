@@ -12,6 +12,10 @@
 
 namespace YTE
 {
+  DefineEvent(KeyPress);
+  DefineEvent(KeyRelease);
+  DefineEvent(KeyPersist);
+
   DefineType(Keyboard)
   {
     YTERegisterType(Keyboard);
