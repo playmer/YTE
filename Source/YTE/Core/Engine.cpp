@@ -24,6 +24,14 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  DefineEvent(LogicUpdate);
+  DefineEvent(FrameUpdate);
+  DefineEvent(BeginDebugDrawUpdate);
+  DefineEvent(DebugDrawUpdate);
+  DefineEvent(EndDebugDrawUpdate);
+  DefineEvent(DeletionUpdate);
+  DefineEvent(BoundTypeChanged);
+
   DefineType(Engine)
   {
     YTERegisterType(Engine);

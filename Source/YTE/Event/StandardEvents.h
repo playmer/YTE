@@ -24,34 +24,16 @@ namespace YTE
   namespace Events
   {
     // Core
-    extern const std::string LogicUpdate;
-    extern const std::string FrameUpdate;
-    extern const std::string BeginDebugDrawUpdate;
-    extern const std::string DebugDrawUpdate;
-    extern const std::string EndDebugDrawUpdate;
-    extern const std::string DeletionUpdate;
+
     extern const std::string BoundTypeChanged;
 
     //Physics
 
   }
 
-  class LogicUpdate : public Event
-  {
-  public:
-    DeclareType(LogicUpdate);
 
-    float Dt;
-  };
 
-  class BoundTypeChanged : public Event
-  {
-  public:
-    DeclareType(BoundTypeChanged);
 
-    BoundType *aOldType;
-    BoundType *aNewType;
-  };
    
 
 
