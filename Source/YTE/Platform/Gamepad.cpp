@@ -10,6 +10,11 @@
 
 namespace YTE
 {
+  DefineEvent(XboxStickFlicked);
+  DefineEvent(XboxButtonPress);
+  DefineEvent(XboxButtonRelease);
+  DefineEvent(XboxButtonPersist);
+
   DefineType(XboxController)
   {
     YTERegisterType(XboxController);

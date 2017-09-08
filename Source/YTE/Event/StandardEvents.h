@@ -41,10 +41,6 @@ namespace YTE
     extern const std::string KeyPress;
     extern const std::string KeyRelease;
     extern const std::string KeyPersist;
-    extern const std::string XboxStickFlicked;
-    extern const std::string XboxButtonPress;
-    extern const std::string XboxButtonRelease;
-    extern const std::string XboxButtonPersist;
 
     //Physics
     extern const std::string PositionChanged;
@@ -112,25 +108,6 @@ namespace YTE
 
     Keys Key;
     Keyboard *Keyboard;
-  };
-
-  class XboxFlickEvent :public Event
-  {
-  public:
-    DeclareType(XboxFlickEvent);
-
-    glm::vec2 FlickDirection;
-    Xbox_Buttons FlickedStick;
-    XboxController *Controller;
-  };
-
-  class XboxButtonEvent :public Event
-  {
-  public:
-    DeclareType(XboxButtonEvent);
-
-    Xbox_Buttons Button;
-    XboxController *Controller;
   };
 
   class PositionChanged :public Event
