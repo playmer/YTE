@@ -598,7 +598,7 @@ namespace YTE
     {
       for (iter; iter != mCompositions.end(); ++iter)
       {
-        mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second.get()));
+        mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
         mCompositions.Erase(iter);
       }
     }
