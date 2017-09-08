@@ -16,6 +16,8 @@
 
 namespace YTE
 {
+  DefineEvent(MouseEnter);
+  DefineEvent(MouseExit);
   DefineType(Reactive)
   {
     YTERegisterType(Reactive);

@@ -11,7 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <memory>
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
@@ -19,7 +19,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  class Component : public BaseEventHandler
+  class Component : public EventHandler
   {
   public:
     DeclareType(Component);

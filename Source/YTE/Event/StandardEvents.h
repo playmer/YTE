@@ -32,19 +32,8 @@ namespace YTE
     extern const std::string DeletionUpdate;
     extern const std::string BoundTypeChanged;
 
-    // Input
-
-
     //Physics
-    extern const std::string PositionChanged;
-    extern const std::string RotationChanged;
-    extern const std::string ScaleChanged;
-    extern const std::string OrientationChanged;
-    extern const std::string CollisionStarted;
-    extern const std::string CollisionPersisted;
-    extern const std::string CollisionEnded;
-    extern const std::string MouseEnter;
-    extern const std::string MouseExit;
+
   }
 
   class LogicUpdate : public Event
@@ -65,91 +54,9 @@ namespace YTE
   };
    
 
-  class PositionChanged :public Event
-  {
-  public:
-    DeclareType(PositionChanged);
 
-    glm::vec3 Position;
-  };
 
-  class RotationChanged : public Event
-  {
-  public:
-    DeclareType(RotationChanged);
 
-    glm::quat Rotation;
-  };
-
-  class ScaleChanged : public Event
-  {
-  public:
-    DeclareType(ScaleChanged);
-
-    glm::vec3 Scale;
-  };
-
-  class OrientationChanged : public Event
-  {
-  public:
-    DeclareType(OrientationChanged);
-
-    glm::vec3 Forward;
-    glm::vec3 Right;
-    glm::vec3 Up;
-  };
-
-  class CollisionEvent : public Event
-  {
-  public:
-    DeclareType(CollisionEvent);
-    Composition *OtherObject;
-  };
-
-  class CollisionStarted : public Event
-  {
-  public:
-    DeclareType(CollisionStarted);
-    Composition *OtherObject;
-    String Name;
-    Composition* Object;
-  };
-
-  class CollisionPersisted : public Event
-  {
-  public:
-    DeclareType(CollisionPersisted);
-    Composition *OtherObject;
-
-    String Name;
-    Composition* Object;
-  };
-
-  class CollisionEnded : public Event
-  {
-  public:
-    DeclareType(CollisionEnded);
-    Composition *OtherObject;
-
-    String Name;
-    Composition* Object;
-  };
-
-  class MouseEnter : public Event
-  {
-  public:
-    DeclareType(MouseEnter);
-
-    String Name;
-  };
-
-  class MouseExit : public Event
-  {
-  public:
-    DeclareType(MouseExit);
-
-    String Name;
-  };
 } // End yte
 
 #endif

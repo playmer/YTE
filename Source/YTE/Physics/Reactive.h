@@ -13,12 +13,28 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Event/StandardEvents.h"
-
 #include "YTE/Physics/MenuCollider.h"
 
 namespace YTE
 {
+  DeclareEvent(MouseEnter);
+  DeclareEvent(MouseExit);
+  class MouseEnter : public Event
+  {
+  public:
+    DeclareType(MouseEnter);
+
+    String Name;
+  };
+
+  class MouseExit : public Event
+  {
+  public:
+    DeclareType(MouseExit);
+
+    String Name;
+  };
+
   class Reactive : public Component
   {
   public:

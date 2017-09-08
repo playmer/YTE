@@ -22,6 +22,10 @@
 
 namespace YTE
 {
+  DefineEvent(CollisionStarted);
+  DefineEvent(CollisionPersisted);
+  DefineEvent(CollisionEnded);
+
   DefineType(Collider)
   {
     YTERegisterType(Collider);

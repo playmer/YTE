@@ -15,6 +15,10 @@
 
 namespace YTE
 {
+  DefineEvent(PositionChanged);
+  DefineEvent(RotationChanged);
+  DefineEvent(ScaleChanged);
+  DefineEvent(OrientationChanged);
   DefineType(Transform)
   {
     YTERegisterType(Transform);
