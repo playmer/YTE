@@ -93,7 +93,7 @@ namespace YTE
 
     void SendEvent(const std::string &eventName, Event *e);
 
-    void StopListening(const std::string &eventName,
+    void DISCONNECT(const std::string &eventName,
       EventHandler& callbacker);
 
     template <typename ClassType, typename EventType>

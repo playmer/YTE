@@ -90,9 +90,9 @@ namespace YTE
     {
       //TODO (Josh): Reimplement the debug drawing functionality.
       //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //StopListening(Events::BeginDebugDrawUpdate, *system);
-      //StopListening(Events::DebugDrawUpdate, *system);
-      //StopListening(Events::EndDebugDrawUpdate, *system);
+      //DISCONNECT(Events::BeginDebugDrawUpdate, *system);
+      //DISCONNECT(Events::DebugDrawUpdate, *system);
+      //DISCONNECT(Events::EndDebugDrawUpdate, *system);
 
       auto debugMode = mDebugDrawer->getDebugMode();
       debugMode &= ~(1 << DebugDrawer::DBG_NoDebug);

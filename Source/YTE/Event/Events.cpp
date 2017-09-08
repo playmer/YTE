@@ -113,7 +113,7 @@ namespace YTE
     mGoodbyes.emplace_back(aGoodbye);
   }
 
-  void EventHandler::StopListening(
+  void EventHandler::DISCONNECT(
     const std::string &aEventName, EventHandler& aSpeaker)
   {
     // let the speaker know it should forget this handler's callback

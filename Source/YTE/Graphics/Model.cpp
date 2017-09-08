@@ -145,7 +145,7 @@ namespace YTE
   void Model::Update(LogicUpdate *aEvent)
   {
     SetUBO();
-    StopListening(Events::FrameUpdate, *mSpace);
+    DISCONNECT(Events::FrameUpdate, *mSpace);
     mUpdating = false;
   }
 
