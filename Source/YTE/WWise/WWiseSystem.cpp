@@ -137,8 +137,8 @@ namespace YTE
     //LoadBank("Init.bnk");
     //LoadBank("SoundBank.bnk");
 
-    mOwner->CONNECT(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
-    mOwner->CONNECT(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
+    mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
+    mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
 
       //Events::WindowFocusLostOrGained, &focusEvent);
   }

@@ -364,7 +364,7 @@ namespace YTE
 
         RECT windowDimensions;
         GetClientRect(aWindowHandle, &windowDimensions);
-        WindowResizeEvent resizeEvent;
+        WindowResize resizeEvent;
         resizeEvent.width = windowDimensions.right;
         resizeEvent.height = windowDimensions.bottom;
 

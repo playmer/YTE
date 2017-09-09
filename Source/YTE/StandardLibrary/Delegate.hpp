@@ -48,6 +48,14 @@ namespace YTE
       mCallerFunction(mObject, aArguments...);
     }
 
+    void *GetObject() const {
+      return mObject;
+    }
+
+    Invoker GetCallerFunction() const {
+      return mCallerFunction;
+    }
+
   protected:
 
     void *mObject;

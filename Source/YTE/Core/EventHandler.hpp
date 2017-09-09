@@ -30,11 +30,11 @@ namespace Events                             \
     const std::string aName = #aName;        \
 }
 
-#define CONNECT(eventName, receiver, function) \
-RegisterEvent<decltype(function), function>(eventName, receiver)
+#define YTERegister(aEventName, aReceiver, aFunction) \
+RegisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
-#define DISCONNECT(eventName, receiver, function) \
-DeregisterEvent<decltype(function), function>(eventName, receiver)
+#define YTEDeregister(aEventName, aReceiver, aFunction) \
+DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
   class Event : public Object
   {
@@ -140,7 +140,7 @@ DeregisterEvent<decltype(function), function>(eventName, receiver)
 
       for (auto it = mHooks.begin(); it != mHooks.end(); ++it)
       {
-        if (it->get()->mName == aName && it->get()->object_ == aObject && it->get()->invoker_ == callerFunction)
+        if (it->get()->mName == aName && it->get()->GetObject() == aObject && it->get()->GetCallerFunction() == callerFunction)
         {
           it->get()->mHook.Unlink();
           break;
@@ -158,7 +158,6 @@ DeregisterEvent<decltype(function), function>(eventName, receiver)
 
         for (auto& eventDelegate : it->second)
         {
-
           eventDelegate.Invoke(aEvent);
         }
       }
