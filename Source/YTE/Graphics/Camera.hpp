@@ -4,12 +4,11 @@
 #define YTE_Graphics_Camera_hpp 
  
 #include "YTE/Core/Component.hpp" 
- 
- 
- 
+
 #include "YTE/Graphics/ForwardDeclarations.hpp" 
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
+#include "YTE/Platform/Mouse.hpp"
  
 #include "YTE/Physics/ForwardDeclarations.h" 
  

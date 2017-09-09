@@ -21,7 +21,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  class Delegate
+  class BaseJob
   {
   public:
     virtual void Invoke() = 0;
@@ -29,7 +29,7 @@ namespace YTE
 
 
   template <typename ClassType>
-  class Job : public Delegate
+  class Job : public BaseJob
   {
   public:
     using Function = void (ClassType::*)();
@@ -95,7 +95,7 @@ namespace YTE
     {
       while (mEngineClosing == false)
       {
-        UniquePointer<Delegate> job{nullptr};
+        UniquePointer<BaseJob> job{nullptr};
 
         mJobsMutex.lock();
         if (mJobs.size() > 0)
@@ -115,7 +115,7 @@ namespace YTE
     }
 
     std::vector<UniquePointer<std::thread>> mThreads;
-    std::vector<UniquePointer<Delegate>> mJobs;
+    std::vector<UniquePointer<BaseJob>> mJobs;
     std::mutex mJobsMutex;
     std::atomic_bool mEngineClosing;
   };

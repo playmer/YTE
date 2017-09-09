@@ -21,6 +21,7 @@ namespace YTE
   DeclareEvent(XboxButtonRelease);
   DeclareEvent(XboxButtonPersist);
 
+  class XboxController;
   class XboxFlickEvent : public Event
   {
   public:
