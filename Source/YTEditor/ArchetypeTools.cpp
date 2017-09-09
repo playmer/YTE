@@ -20,6 +20,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Physics/Transform.h"
+#include "YTE/Core/AssetLoader.hpp"
 #include "ComponentTree.hpp"
 #include "ObjectItem.hpp"
 
@@ -226,7 +227,10 @@ void ArchetypeTools::SaveAs()
   std::string archName(arch.c_str());
   std::wstring archWStr{ archName.begin(), archName.end() };
 
-  archWStr = L"../Archetypes/" + archWStr + L".json";
+  std::string path = YTE::Path::GetGamePath().String();
+  std::wstring pathWStr{ path.begin(), path.end() };
+
+  archWStr = pathWStr + L"Archetypes/" + archWStr + L".json";
 
   std::ofstream newArch;
   newArch.open(archWStr);
