@@ -7,14 +7,6 @@ namespace YTE
 {
   struct RenderedSurface;
 
-  DeclareEvent(RendererResize);
-  class RendererResize : public Event
-  {
-  public:
-    int width;
-    int height;
-  };
-
   struct InstantiatedMeshRendererData
   {
     InstantiatedMeshRendererData(Renderer *aRenderer,

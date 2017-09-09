@@ -35,6 +35,7 @@ namespace YTE
   DeclareEvent(EndDebugDrawUpdate);
   DeclareEvent(DeletionUpdate);
   DeclareEvent(BoundTypeChanged);
+
   class LogicUpdate : public Event
   {
   public:
@@ -51,6 +52,7 @@ namespace YTE
     BoundType *aOldType;
     BoundType *aNewType;
   };
+
   class Engine : public Composition
   {
   public:

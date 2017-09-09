@@ -23,6 +23,15 @@
 
 namespace YTE
 {
+  DeclareEvent(RendererResize);
+
+  class RendererResize : public Event
+  {
+  public:
+    int width;
+    int height;
+  };
+
   class GraphicsSystem : public Component
   {
     public:

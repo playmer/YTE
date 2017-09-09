@@ -24,6 +24,10 @@ namespace YTE
     class Orientation;
     class RigidBody;
     class Transform;
+    class OrientationChanged;
+    class PositionChanged;
+    class RotationChanged;
+    class ScaleChanged;
 }
 
 #endif

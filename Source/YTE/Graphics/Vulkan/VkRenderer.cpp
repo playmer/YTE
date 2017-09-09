@@ -8,6 +8,7 @@
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Graphics/ShaderDescriptions.hpp"
@@ -22,7 +23,6 @@ namespace fs = std::experimental::filesystem;
 
 namespace YTE
 {
-  DefineEvent(RendererResize);
   struct MeshToRender
   {
     MeshToRender(std::shared_ptr<vkhlf::PipelineLayout> const *aPipelineLayout,
@@ -262,18 +262,18 @@ namespace YTE
       mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
 
       // create Framebuffer & Swapchain
-      WindowResizeEvent event;
+      WindowResize event;
       event.height = mWindow->GetHeight();
       event.width = mWindow->GetWidth();
 
       Resize(&event);
 
       mWindow->CONNECT(Events::WindowResize,
-                                this,
-                                &RenderedSurface::Resize);
+                       this,
+                       &RenderedSurface::Resize);
       mWindow->mEngine->CONNECT(Events::FrameUpdate,
-                                         this,
-                                         &RenderedSurface::Render);
+                                this,
+                                &RenderedSurface::Render);
     }
 
     void UpdateUniformBuffer()
@@ -312,7 +312,7 @@ namespace YTE
       vkhlf::submitAndWait(mGraphicsQueue, update);
     }
 
-    void Render()
+    void RenderFrame()
     {
       // TODO (Josh): Reuse command buffers;
       mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
@@ -383,11 +383,11 @@ namespace YTE
     {
       // Get the index of the next available swapchain image:
       mFramebufferSwapchain->acquireNextFrame();
-      Render();
+      RenderFrame();
       mFramebufferSwapchain->present(mGraphicsQueue, mRenderCompleteSemaphore);
     }
 
-    void Resize(WindowResizeEvent *aEvent)
+    void Resize(WindowResize *aEvent)
     {
       auto baseDevice = static_cast<vk::PhysicalDevice>(*mMainDevice);
       vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
@@ -416,7 +416,7 @@ namespace YTE
       assert(mFramebufferSwapchain->getExtent() == extent);
 
       UpdateUniformBuffer();
-      WindowResizeEvent event;
+      WindowResize event;
       event.height = extent.height;
       event.width = extent.width;
       mWindow->SendEvent(Events::RendererResize, &event);

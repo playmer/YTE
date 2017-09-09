@@ -260,7 +260,7 @@ namespace YTE
     UpdateView(); 
   } 
  
-  void Camera::RendererResize(WindowResizeEvent *aEvent) 
+  void Camera::RendererResize(WindowResize *aEvent) 
   { 
     UpdateView(); 
   } 

@@ -19,10 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <memory>
 
-#include "YTE/Core/ForwardDeclarations.hpp"
-
-#include "YTE/Core/Engine.hpp"
 #include "YTE/Core/EventHandler.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Utilities/String/String.h"
 

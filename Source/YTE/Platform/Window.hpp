@@ -27,10 +27,10 @@
 namespace YTE
 {
 
-  DeclareEvent(WindowResizeEvent);
+  DeclareEvent(WindowResize);
   DeclareEvent(WindowFocusLostOrGained);
   DeclareEvent(WindowMinimizedOrRestored);
-  class WindowResizeEvent : public Event
+  class WindowResize : public Event
   {
   public:
     int width;

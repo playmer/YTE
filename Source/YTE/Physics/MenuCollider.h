@@ -11,10 +11,10 @@
 #ifndef YTE_Physics_MenuCollider_h
 #define YTE_Physics_MenuCollider_h
 
-
-
 #include "YTE/Core/Component.hpp"
+
 #include "YTE/Physics/Collider.h"
+#include "YTE/Physics/ForwardDeclarations.h"
 
 namespace YTE
 {

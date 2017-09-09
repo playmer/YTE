@@ -47,7 +47,7 @@ namespace YTE
       return mCameraType; 
     } 
  
-    void RendererResize(WindowResizeEvent *aEvent); 
+    void RendererResize(WindowResize *aEvent); 
  
     void SetCameraType(std::string &aCameraType);
  
