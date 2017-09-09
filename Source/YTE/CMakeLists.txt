@@ -2,7 +2,6 @@ Set(YTE_Source)
 
 Get_Filename_Component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 Add_Subdirectory(Core)
-Add_Subdirectory(Event)
 Add_Subdirectory(Graphics)
 Add_Subdirectory(Physics)
 Add_Subdirectory(Meta)
