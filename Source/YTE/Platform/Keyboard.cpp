@@ -16,6 +16,12 @@ namespace YTE
   DefineEvent(KeyRelease);
   DefineEvent(KeyPersist);
 
+  DefineType(KeyboardEvent)
+  {
+    YTERegisterType(KeyboardEvent);
+    YTEBindField(&KeyboardEvent::Key, "Key", PropertyBinding::Get);
+  }
+
   DefineType(Keyboard)
   {
     YTERegisterType(Keyboard);

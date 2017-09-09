@@ -26,6 +26,34 @@ namespace YTE
   DefineEvent(CollisionPersisted);
   DefineEvent(CollisionEnded);
 
+  DefineType(CollisionEvent)
+  {
+    YTERegisterType(CollisionEvent);
+    YTEBindField(&CollisionEvent::OtherObject, "OtherObject", PropertyBinding::Get);
+  }
+
+
+  DefineType(CollisionStarted)
+  {
+    YTERegisterType(CollisionStarted);
+    YTEBindField(&CollisionStarted::Name, "Name", PropertyBinding::Get);
+    YTEBindField(&CollisionStarted::Object, "Object", PropertyBinding::Get);
+  }
+
+  DefineType(CollisionPersisted)
+  {
+    YTERegisterType(CollisionPersisted);
+    YTEBindField(&CollisionPersisted::Name, "Name", PropertyBinding::Get);
+    YTEBindField(&CollisionPersisted::Object, "Object", PropertyBinding::Get);
+  }
+
+  DefineType(CollisionEnded)
+  {
+    YTERegisterType(CollisionEnded);
+    YTEBindField(&CollisionEnded::Name, "Name", PropertyBinding::Get);
+    YTEBindField(&CollisionEnded::Object, "Object", PropertyBinding::Get);
+  }
+
   DefineType(Collider)
   {
     YTERegisterType(Collider);

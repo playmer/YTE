@@ -32,6 +32,19 @@ namespace YTE
   DefineEvent(DeletionUpdate);
   DefineEvent(BoundTypeChanged);
 
+  DefineType(LogicUpdate)
+  {
+    YTERegisterType(LogicUpdate);
+    YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
+  }
+
+  DefineType(BoundTypeChanged)
+  {
+    YTERegisterType(BoundTypeChanged);
+    YTEBindField(&BoundTypeChanged::aOldType, "OldType", PropertyBinding::GetSet);
+    YTEBindField(&BoundTypeChanged::aNewType, "NewType", PropertyBinding::GetSet);
+  }
+
   DefineType(Engine)
   {
     YTERegisterType(Engine);

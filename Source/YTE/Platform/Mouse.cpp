@@ -25,6 +25,26 @@ namespace YTE
   DefineEvent(MouseScroll);
   DefineEvent(MouseMove);
 
+  DefineType(MouseWheelEvent)
+  {
+    YTERegisterType(MouseWheelEvent);
+    YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
+  }
+
+  DefineType(MouseButtonEvent)
+  {
+    YTERegisterType(MouseButtonEvent);
+    YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
+  }
+
+  DefineType(MouseMoveEvent)
+  {
+    YTERegisterType(MouseMoveEvent);
+    YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+  }
+
   DefineType(Mouse)
   {
     YTERegisterType(Mouse);
