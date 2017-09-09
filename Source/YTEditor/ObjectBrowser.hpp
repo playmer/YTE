@@ -38,16 +38,22 @@ public:
   void ClearObjectBrowser();
 
   ObjectItem* AddObject(const char *aCompositionName, 
-                        const char *aArchetypeName);
+                        const char *aArchetypeName,
+                        int aIndex = 0);
+
   ObjectItem* AddChildObject(const char *aCompositionName,
                              const char *aArchetypeName,
-                             ObjectItem *aParentObj);
+                             ObjectItem *aParentObj,
+                             int aIndex = 0);
 
   ObjectItem* AddTreeItem(const char *aItemName, 
-                          YTE::Composition *aEngineObj);
+                          YTE::Composition *aEngineObj,
+                          int aIndex = 0);
+
   ObjectItem* AddTreeItem(const char *aItemName, 
                           ObjectItem * aParentObj, 
-                          YTE::Composition *aEngineObj);
+                          YTE::Composition *aEngineObj,
+                          int aIndex = 0);
 
   ObjectItem* AddExistingComposition(const char *aCompositionName,
                                      YTE::Composition *aComposition);
@@ -56,6 +62,8 @@ public:
                            ObjectItem *aParentItem);
 
   YTE::Composition* GetCurrentObject();
+
+  //ObjectItem* SetCurrentItemEnginePtr(YTE::Composition *aComposition);
 
   void RemoveObjectFromViewer(ObjectItem *aItem);
 

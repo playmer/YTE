@@ -20,6 +20,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Physics/Transform.h"
+#include "ComponentTree.hpp"
+#include "ObjectItem.hpp"
 
 #include <qpushbutton.h>
 #include <qlayout.h>
@@ -133,7 +135,6 @@ void ArchetypeTools::Revert()
 
   YTE::RSValue *trueArchValue = mainWin->GetRunningEngine()->GetArchetype(archName);
 
-
   // if they're different, we need to reinstantiate all the objects
   if (currArchValue != *trueArchValue)
   {
@@ -147,9 +148,49 @@ void ArchetypeTools::Revert()
     // delete the old instances
     YTE::Composition *parent = obj->GetParent();
     parent->RemoveComposition(obj);
+    
+    
+    ObjectBrowser &objBrowser = mBrowser->GetMainWindow()->GetObjectBrowser();
+    
+    ObjectItem *currItem = dynamic_cast<ObjectItem*>(objBrowser.currentItem());
 
-    // instantiate new instances
-    obj = parent->AddComposition(trueArchValue, name);
+    // is the item parented?
+    bool isChild = currItem->parent();
+    int index = 0;
+
+    if (isChild)
+    {
+      index = currItem->parent()->indexOfChild(currItem);
+    }
+    else
+    {
+      index = objBrowser.indexOfTopLevelItem(currItem);
+    }
+
+    // remove old object item
+    objBrowser.RemoveObjectFromViewer(currItem);
+
+    ObjectItem *newItem = nullptr;
+
+    // item has a parent object
+    if (isChild)
+    {
+      newItem = objBrowser.AddChildObject(name.c_str(), 
+                                          archName.c_str(), 
+                                          objBrowser.FindItemByComposition(parent), 
+                                          index);
+    }
+    // item has no parent
+    else
+    {
+      newItem = objBrowser.AddObject(name.c_str(), archName.c_str(), index);
+    }
+
+    // set obj to the new composition
+    obj = newItem->GetEngineObject();
+
+    // load all the children of the new object
+    //objBrowser.LoadAllChildObjects(obj, newItem);
 
     // set their positions and rotations to the stored values
     trans = obj->GetComponent<YTE::Transform>();

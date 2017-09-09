@@ -71,7 +71,8 @@ void ObjectBrowser::ClearObjectBrowser()
 }
 
 ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
-                                     const char *aArchetypeName)
+                                     const char *aArchetypeName,
+                                     int aIndex)
 {
   auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
   auto space = spaces->begin()->second.get();
@@ -83,7 +84,7 @@ ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
                                             this);
 
   mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
-  return AddTreeItem(aCompositionName, composition);
+  return AddTreeItem(aCompositionName, composition, aIndex);
 }
 
 ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
@@ -94,7 +95,8 @@ ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
 
 ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
                                           const char *aArchetypeName,
-                                          ObjectItem *aParentObj)
+                                          ObjectItem *aParentObj,
+                                          int aIndex)
 {
   auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
   auto space = spaces->begin()->second.get();
@@ -107,11 +109,12 @@ ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
                                             this);
 
   mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
-  return AddTreeItem(aCompositionName, aParentObj, composition);
+  return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
 }
 
 ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName, 
-                                       YTE::Composition *aEngineObj)
+                                       YTE::Composition *aEngineObj,
+                                       int aIndex)
 {
   YTE::String name{ aItemName };
 
@@ -122,7 +125,7 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
 
   // Add new item as a top level member in the tree heirarchy
   // (object should have no parent objects)
-  this->addTopLevelItem(item);
+  this->insertTopLevelItem(aIndex, item);
 
   this->setCurrentItem(item);
 
@@ -131,7 +134,8 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
 
 ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName, 
                                        ObjectItem *aParentObj, 
-                                       YTE::Composition *aEngineObj)
+                                       YTE::Composition *aEngineObj,
+                                       int aIndex)
 {
   YTE::String name{ aItemName };
 
@@ -141,7 +145,7 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
   ObjectItem *item = new ObjectItem(name, aParentObj, aEngineObj, space);
 
   // add this object as a child of another tree item
-  aParentObj->addChild(item);
+  aParentObj->insertChild(aIndex, item);
 
   this->setCurrentItem(item);
 
@@ -166,8 +170,8 @@ void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
 
   ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
-  // Save the old item out
-  if (currObj)
+
+  if (currObj && currObj->GetEngineObject())
   {
     if (currObj->GetEngineObject()->GetArchetypeName().Empty())
     {
@@ -278,22 +282,22 @@ void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
   // hide and remove from the tree
   aItem->setHidden(true);
 
-  //auto parent = aItem->parent();
-  //
-  //if (nullptr == parent)
-  //{
-  //  parent->removeChild(aItem);
-  //}
-  //else
-  //{
-  //}
+  auto parent = aItem->parent();
+  
+  if (nullptr == parent)
+  {
+    int index = this->indexOfTopLevelItem(aItem);
+    auto item = takeTopLevelItem(index);
+    delete item;
+  }
+  else
+  {
+    int index = parent->indexOfChild(aItem);
+    auto item = parent->takeChild(index);
+    delete item;
+  }
 
-  this->removeItemWidget(aItem, 0);
   setCurrentItem(topLevelItem(0));
-
-  //auto idx = currentIndex();
-  //model()->removeRow(idx.row(), idx.parent());
-  //
 
   ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
@@ -344,6 +348,15 @@ YTE::Composition * ObjectBrowser::GetCurrentObject()
 {
   return dynamic_cast<ObjectItem*>(currentItem())->GetEngineObject();
 }
+
+//ObjectItem * ObjectBrowser::SetCurrentItemEnginePtr(YTE::Composition * aComposition)
+//{
+//  ObjectItem *item = dynamic_cast<ObjectItem*>(currentItem());
+//  
+//  item->SetEngineObject(aComposition);
+//
+//  return item;
+//}
 
 ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
 {

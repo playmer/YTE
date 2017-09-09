@@ -45,8 +45,10 @@ public:
   void Rename(YTE::String &aName);
   void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
-  ObjectBrowser * GetObjectBrowser() const;
-  YTE::Composition * GetEngineObject() const;
+  ObjectBrowser *GetObjectBrowser() const;
+  YTE::Composition *GetEngineObject() const;
+
+  void SetEngineObject(YTE::Composition *aComposition);
 
 private:
 

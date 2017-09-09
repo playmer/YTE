@@ -88,6 +88,11 @@ YTE::Composition * ObjectItem::GetEngineObject() const
   return mEngineObject;
 }
 
+void ObjectItem::SetEngineObject(YTE::Composition * aComposition)
+{
+  mEngineObject = aComposition;
+}
+
 ObjectItemDelegate::ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget * aParent)
   : QStyledItemDelegate(aParent), mBrowser(aBrowser)
 {
