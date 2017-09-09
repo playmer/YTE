@@ -9,8 +9,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
-
 #include "YTE/Platform/DeviceEnums.hpp"
+#include "YTE/Platform/Window.hpp"
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"

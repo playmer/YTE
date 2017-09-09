@@ -36,16 +36,16 @@ RegisterEvent<decltype(function), function>(eventName, receiver)
 #define DISCONNECT(eventName, receiver, function) \
 DeregisterEvent<decltype(function), function>(eventName, receiver)
 
-  using String = std::string;
-
-  struct Event : public Object
+  class Event : public Object
   {
-
+  public:
+    DeclareType(Event);
   };
 
   class EventHandler : public Object
   {
   public:
+    DeclareType(EventHandler);
     template <typename tReturn, typename Arg = tReturn>
     struct Binding {};
 
