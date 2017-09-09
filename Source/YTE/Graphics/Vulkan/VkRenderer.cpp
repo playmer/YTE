@@ -269,10 +269,10 @@ namespace YTE
       Resize(&event);
 
       mWindow->CONNECT(Events::WindowResize,
-                                *this,
+                                this,
                                 &RenderedSurface::Resize);
       mWindow->mEngine->CONNECT(Events::FrameUpdate,
-                                         *this,
+                                         this,
                                          &RenderedSurface::Render);
     }
 

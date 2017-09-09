@@ -49,8 +49,8 @@ namespace YTE
     mPosition = myTransform->GetTranslation() + mOffset;
     mScale = glm::vec3(myTransform->GetScale().x * mSize.x, myTransform->GetScale().y * mSize.y, myTransform->GetScale().z * mSize.z);
 
-    mOwner->CONNECT(Events::PositionChanged, *this, &MenuCollider::OnPositionChanged);
-    mOwner->CONNECT(Events::ScaleChanged, *this, &MenuCollider::OnScaleChanged);
+    mOwner->CONNECT(Events::PositionChanged, this, &MenuCollider::OnPositionChanged);
+    mOwner->CONNECT(Events::ScaleChanged, this, &MenuCollider::OnScaleChanged);
   }
 
   void MenuCollider::OnPositionChanged(PositionChanged *aEvent)

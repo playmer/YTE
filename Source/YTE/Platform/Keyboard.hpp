@@ -20,6 +20,8 @@ namespace YTE
   DeclareEvent(KeyPress);
   DeclareEvent(KeyRelease);
   DeclareEvent(KeyPersist);
+
+  struct Keyboard;
   class KeyboardEvent : public Event
   {
   public:

@@ -1,4 +1,14 @@
-﻿#pragma once
+﻿/******************************************************************************/
+/*!
+\author Evan T. Collier
+\date   2015-10-26
+All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
+*/
+/******************************************************************************/
+#pragma once
+
+#ifndef YTE_Core_EventHandler_hpp
+#define YTE_Core_EventHandler_hpp
 
 #include "YTE/Core/Object.hpp"
 #include "YTE/StandardLibrary/Delegate.hpp"
@@ -162,3 +172,4 @@ protected:
     std::unordered_map<String, IntrusiveList<EventDelegate>> mEventLists;
     static std::unordered_map<std::string, BlockAllocator<EventDelegate>> mDelegateAllocators;
 };
+#endif

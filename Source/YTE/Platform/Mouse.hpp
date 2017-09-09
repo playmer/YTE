@@ -25,6 +25,7 @@ namespace YTE
   DeclareEvent(MousePersist);
   DeclareEvent(MouseScroll);
   DeclareEvent(MouseMove);
+  struct Mouse;
   class MouseButtonEvent : public Event
   {
   public:

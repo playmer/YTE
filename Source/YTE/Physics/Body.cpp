@@ -24,7 +24,7 @@ namespace YTE
     : Component(aOwner, aSpace)
   {
     DeserializeByType<Body*>(aProperties, this, Body::GetStaticType());
-    mSpace->CONNECT(Events::LogicUpdate, *this, &Body::OnLogicUpdate);
+    mSpace->CONNECT(Events::LogicUpdate, this, &Body::OnLogicUpdate);
   };
 
   Body::~Body()

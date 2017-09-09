@@ -80,20 +80,20 @@ namespace YTE
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
  
     mWindow = mGraphicsView->GetWindow(); 
-    mWindow->CONNECT(Events::RendererResize, *this, &Camera::RendererResize); 
+    mWindow->CONNECT(Events::RendererResize, this, &Camera::RendererResize); 
     mConstructing = false; 
   } 
  
   void Camera::Initialize() 
   { 
-    mOwner->CONNECT(Events::PositionChanged, *this, &Camera::PositionEvent); 
-    mOwner->CONNECT(Events::OrientationChanged, *this, &Camera::OrientationEvent); 
+    mOwner->CONNECT(Events::PositionChanged, this, &Camera::PositionEvent); 
+    mOwner->CONNECT(Events::OrientationChanged, this, &Camera::OrientationEvent); 
 
     mMouse = &mWindow->mMouse;
 
-    mMouse->CONNECT(Events::MouseMove, *this, &Camera::MouseMove);
-    mMouse->CONNECT(Events::MouseScroll, *this, &Camera::MouseScroll);
-    mMouse->CONNECT(Events::MousePress, *this, &Camera::MousePress);
+    mMouse->CONNECT(Events::MouseMove, this, &Camera::MouseMove);
+    mMouse->CONNECT(Events::MouseScroll, this, &Camera::MouseScroll);
+    mMouse->CONNECT(Events::MousePress, this, &Camera::MousePress);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
