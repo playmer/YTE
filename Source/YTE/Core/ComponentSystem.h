@@ -21,7 +21,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
-#include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 namespace YTE

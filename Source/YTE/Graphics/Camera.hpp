@@ -8,7 +8,6 @@
 #include "YTE/Graphics/ForwardDeclarations.hpp" 
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
-#include "YTE/Platform/Mouse.hpp"
  
 #include "YTE/Physics/ForwardDeclarations.h" 
  

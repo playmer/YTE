@@ -5,7 +5,7 @@
 #include "glm/glm.hpp"
 
 #include "YTE/Core/Component.hpp"
-#include "YTE/Core/Engine.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Physics/Transform.h"
 
