@@ -166,23 +166,22 @@ void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
 
   ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
-  if (currObj->GetEngineObject()->GetArchetypeName().Empty())
-  {
-      archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
-  }
-  else if (currObj->GetEngineObject()->SameAsArchetype())
-  {
-      archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
-  }
-  else
-  {
-      archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
-  }
-
-
   // Save the old item out
   if (currObj)
   {
+    if (currObj->GetEngineObject()->GetArchetypeName().Empty())
+    {
+      archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
+    }
+    else if (currObj->GetEngineObject()->SameAsArchetype())
+    {
+      archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
+    }
+    else
+    {
+      archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
+    }
+
     // Load the new current object into the component browser
     mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
 
@@ -290,15 +289,17 @@ void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
   //}
 
   this->removeItemWidget(aItem, 0);
+  setCurrentItem(topLevelItem(0));
 
   //auto idx = currentIndex();
   //model()->removeRow(idx.row(), idx.parent());
   //
-  //setCurrentItem(topLevelItem(0));
 
-  if (currentItem())
+  ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
+
+  if (currentItem() && currItem->GetEngineObject())
   {
-    YTE::Model * model = dynamic_cast<ObjectItem*>(currentItem())->GetEngineObject()->GetComponent<YTE::Model>();
+    YTE::Model * model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
 
     if (model)
     {

@@ -596,11 +596,16 @@ namespace YTE
 
     if (iter != mCompositions.end())
     {
+      // store copy to erase items after moving
+      auto iterCopy = iter;
+
       for (iter; iter != mCompositions.end(); ++iter)
       {
         mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
-        mCompositions.Erase(iter);
       }
+
+      Range<RandomAccessIterator<std::pair<const String, UniquePointer<Composition>>>> eraseRange(iterCopy, mCompositions.end());
+      mCompositions.Erase(eraseRange);
     }
 
     GetUniverseOrSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);

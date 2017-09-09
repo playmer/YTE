@@ -74,6 +74,8 @@ void ObjectItem::DeleteFromEngine(YTE::Composition *aParentObj)
   {
     aParentObj->RemoveComposition(mEngineObject);
   }
+  
+  mEngineObject = nullptr;
 }
 
 ObjectBrowser * ObjectItem::GetObjectBrowser() const
@@ -170,6 +172,7 @@ bool ObjectItemDelegate::editorEvent(QEvent *event,
         }
 
         mBrowser->RemoveObjectFromViewer(item);
+        
 
         return true;
       }
