@@ -178,11 +178,13 @@ namespace YTE
     VolumeUp,
     VolumeDown,
 
-
+    Control,
     LeftControl,
     RightControl,
+    Shift,
     LeftShift,
     RightShift,
+    Alt,
     LeftAlt,
     RightAlt,
 
