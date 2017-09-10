@@ -12,6 +12,10 @@
  
 #include "YTE/Physics/Orientation.h" 
 #include "YTE/Physics/Transform.h" 
+
+
+// Andrew Griffin Notes
+// 
  
 namespace YTE 
 { 
@@ -82,6 +86,9 @@ namespace YTE
     mWindow = mGraphicsView->GetWindow(); 
     mWindow->RegisterListener(Events::RendererResize, *this, &Camera::RendererResize); 
     mConstructing = false; 
+
+    mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
+    mCameraPosition = mTargetPoint;
   } 
  
   void Camera::Initialize() 
@@ -90,6 +97,7 @@ namespace YTE
     mOwner->RegisterListener(Events::OrientationChanged, *this, &Camera::OrientationEvent); 
 
     mMouse = &mWindow->mMouse;
+    mKeyboard = &mWindow->mKeyboard;
 
     mMouse->RegisterListener(Events::MouseMove, *this, &Camera::MouseMove);
     mMouse->RegisterListener(Events::MouseScroll, *this, &Camera::MouseScroll);
@@ -97,6 +105,7 @@ namespace YTE
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
+    mCameraPosition = mCameraTransform->GetTranslation();
   } 
 
 
@@ -149,7 +158,7 @@ namespace YTE
   // Handle the moment a mouse button is pressed
   void Camera::MousePress(MouseButtonEvent *aEvent)
   {
-    const float zoomSpeed = 1.06f;
+    //const float zoomSpeed = 1.06f;
     mMouseInitialPosition = aEvent->WorldCoordinates;
   }
 
@@ -158,13 +167,7 @@ namespace YTE
   {
     const float zoomSpeed = 1.06f;
 
-    //mMouseInitialPosition = aEvent->WorldCoordinates;
-
-    //auto current = mCameraTransform->GetTranslation();
-    //current.z += aEvent->ScrollMovement.y * zoomSpeed;
-    //mCameraTransform->SetTranslation(current);
-
-    mZoom += aEvent->ScrollMovement.y * zoomSpeed;
+    UpdateZoom(-(aEvent->ScrollMovement.y * zoomSpeed));
 
     UpdateView();
   }
@@ -172,6 +175,13 @@ namespace YTE
   // Handle movement of the mouse. Should be fairly clear by code alone.
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
+    // if the alt key is not being pressed, then there is no camera movement
+    //? change this to the alt keys, current error though (they dont work)
+    if (mKeyboard->IsKeyDown(Keys::A) == false && mKeyboard->IsKeyDown(Keys::B) == false)
+    {
+      return;
+    }
+
     const float rotationSpeed = 0.01f;
     
     auto dx = aEvent->WorldCoordinates.x - mMouseInitialPosition.x;
@@ -179,70 +189,22 @@ namespace YTE
 
     if (mMouse->IsButtonDown(Mouse_Buttons::Left))
     {
-      mTilt -= dy * rotationSpeed;
-      mSpin += dx * rotationSpeed;
-
-      // For assignment 2 we must limit tilt.
-      //if (CameraType::CameraOrientation == mType)
-      //{
-      //  if (mTilt < -glm::pi<float>())
-      //  {
-      //    mTilt = -glm::pi<float>();
-      //  }
-      //  else if (mTilt > 0.0f)
-      //  {
-      //    mTilt = 0.0f;
-      //  }
-      //}
+      // Left Mouse does Arc ball rotation
+      UpdateCameraRotation(dy * rotationSpeed, 0.0f, -(dx * rotationSpeed));
     }
 
     if (mMouse->IsButtonDown(Mouse_Buttons::Right))
     {
-      mTilt += dy * rotationSpeed;
-      mTwist -= dx * rotationSpeed;
+      // Right Mouse does Zoom
+      const float zoomSpeed = 0.01f;  // note different zoom speed since the mouse move is faster
+      UpdateZoom(dy * zoomSpeed);
     }
-
-    //auto position = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
-    //auto rotation = mCameraTransform->GetRotation();
-    //
-    //glm::vec4 target;
-    //
-    //switch (mType)
-    //{
-    //  case CameraType::TargetPoint:
-    //  {
-    //    target = glm::vec4(mTargetPoint, 1.0f);;
-    //    break;
-    //  }
-    //  case CameraType::TargetObject:
-    //  {
-    //    target = glm::vec4(mTargetObject->GetTranslation(), 1.0f);;;
-    //    break;
-    //  }
-    //}
 
     if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
     {
-      mTilt += dy * rotationSpeed;
-      mSpin -= dx * rotationSpeed;
+      // middle mouse does camera panning
     }
 
-
-    ////pitch
-    //position = (glm::rotate(glm::mat4(), pitch, mCameraOrientation->GetRightVector()) * (position - target)) + target;
-    //
-    ////yaw, Y-up system
-    //position = (glm::rotate(glm::mat4(), yaw, { 0, 1, 0 }) * (position - target)) + target;
-
-
-    //if (mMouse->IsButtonDown(Mouse_Buttons::Left))
-    //{
-    //  rotation += glm::quat(pitch * mCameraOrientation->GetRightVector());
-    //  rotation += glm::quat(yaw * glm::vec3{ 0, 1, 0 });
-    //  mCameraTransform->SetRotation(rotation);
-    //}
-
-    //mCameraTransform->SetTranslation(glm::vec3(position));
 
     mMouseInitialPosition.x = aEvent->WorldCoordinates.x;
     mMouseInitialPosition.y = aEvent->WorldCoordinates.y;
@@ -349,52 +311,79 @@ namespace YTE
         view.mViewMatrix = CreateViewMatrix(right, up, forward, position); 
         break; 
       } 
-      case CameraType::TargetPoint: 
-      { 
-        //view.mViewMatrix = glm::translate(glm::mat4(), mTargetPoint) * Rotate(rotation);
-        //view.mViewMatrix = glm::lookAt(position, mTargetPoint, glm::vec3(0.0f, 1.0f, 0.0f));
+      case CameraType::TargetObject:
+      {
+        // there is no break here since the math is the same, it just uses a different target pos
+        if (mTargetObject)
+        {
+          mTargetPoint = mTargetObject->GetTranslation();
+        }
+      }
+      case CameraType::TargetPoint:
+      {
+        // NOTE this math doesnt allow for 3 axis rotation, only 2 axis
 
         glm::mat4 rotationMatrix = glm::mat4(1.0);
 
         rotationMatrix = glm::rotate(rotationMatrix, mSpin, glm::vec3(0.0, 1.0, 0.0));
         rotationMatrix = glm::rotate(rotationMatrix, mTilt, glm::vec3(1.0, 0.0, 0.0));
 
-        const glm::vec4 cameraPosition4 = rotationMatrix * glm::vec4(mTargetPoint, 1.0);
-        const glm::vec3 camPos = mZoom * glm::vec3(cameraPosition4);
+        glm::vec4 upReal(0.0f, 1.0f, 0.0f, 1.0f);
+        upReal = rotationMatrix * upReal;
 
-        //printf("Spin: %f, Tilt: %f\n", mSpin, mTilt);
-        //printf("x: %f, y: %f, z: %f\n\n", camPos.x, camPos.y, camPos.z);
+        const glm::vec4 cameraPosition4 = rotationMatrix * (glm::vec4(mTargetPoint, 1.0) + glm::vec4(0.0f, 0.0f, -mZoom, 1.0f));
 
-        view.mViewMatrix = glm::lookAt(camPos, mTargetPoint, glm::vec3(0.0, 1.0, 0.0));
-        break; 
-      } 
-      case CameraType::TargetObject: 
-      { 
-        glm::vec3 targetPos; 
- 
-        if (mTargetObject) 
-        { 
-          targetPos = mTargetObject->GetTranslation(); 
-        } 
 
-        //auto arcball = glm::yawPitchRoll(mSpin, mTilt, 0.0f);
 
-        //view.mViewMatrix = glm::translate(glm::mat4(), targetPos) * Rotate(rotation);
-        //view.mViewMatrix = glm::lookAt(position, targetPos, glm::vec3(0.0f, 1.0f, 0.0f));
+        view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
+        break;
 
-        glm::mat4 rotationMatrix = glm::mat4(1.0);
 
-        rotationMatrix = glm::rotate(rotationMatrix, mSpin, glm::vec3(0.0, 1.0, 0.0));
-        rotationMatrix = glm::rotate(rotationMatrix, mTilt, glm::vec3(1.0, 0.0, 0.0));
-
-        const glm::vec4 cameraPosition4 = rotationMatrix * glm::vec4(0.0, 0.0, 1.0, 1.0);
-        const glm::vec3 cameraPositionFinal = 1.0f * glm::vec3(cameraPosition4);
-
-        view.mViewMatrix = glm::lookAt(cameraPositionFinal, targetPos, glm::vec3(0.0, 1.0, 0.0));
-        break; 
-      } 
+        break;
+      }
     } 
  
     mGraphicsView->UpdateView(view); 
   } 
+
+  void Camera::UpdateCameraRotation(float aTilt, float aTwist, float aSpin)
+  {
+    //! 0.1f is a generic number, we dont want it to be exactly half of pi, so we take some
+    float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
+
+    // apply rotation
+    mTilt += aTilt;
+    mTwist += aTwist;
+    mSpin += aSpin;
+
+    //? Change to use settable variable for ymin ymax
+
+    // clamp tilt (y axis) to half pi (nearly straight up and down)
+    if (mTilt >= pidiv2)
+    {
+      mTilt = pidiv2;
+    }
+    else if (mTilt <= -pidiv2)
+    {
+      mTilt = -pidiv2;
+    }
+
+    // Note that the other two axis are free to move without issues, y axis is the only issue 
+  }
+
+  void Camera::UpdateZoom(float aZoom)
+  {
+    mZoom += aZoom;
+
+    //? Change to use settable variable for zoomMin and zoomMax
+    if (mZoom >= 30.0f)
+    {
+      mZoom = 30.0f;
+    }
+    else if (mZoom <= 2.0f)
+    {
+      mZoom = 2.0f;
+    }
+  }
+
 }
