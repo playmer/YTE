@@ -21,6 +21,7 @@ namespace YTE
       TargetObject, 
       TargetPoint, 
       CameraOrientation, 
+      Flyby,
       Unknown 
     }; 
  
@@ -40,6 +41,7 @@ namespace YTE
     void MousePress(MouseButtonEvent *aEvent);
     void MouseScroll(MouseWheelEvent *aEvent);
     void MouseMove(MouseMoveEvent *aEvent);
+    void MousePersist(MouseButtonEvent *aEvent);
  
     std::string& GetCameraType() 
     { 
