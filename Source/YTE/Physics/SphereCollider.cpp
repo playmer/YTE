@@ -11,11 +11,11 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/CollisionBody.h"
-#include "YTE/Physics/GhostBody.h"
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/SphereCollider.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/CollisionBody.hpp"
+#include "YTE/Physics/GhostBody.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {

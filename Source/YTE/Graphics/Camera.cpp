@@ -4,14 +4,12 @@
 #include "YTE/Core/Space.hpp" 
 #include "YTE/Core/Utilities.hpp" 
  
- 
- 
 #include "YTE/Graphics/Camera.hpp" 
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
  
-#include "YTE/Physics/Orientation.h" 
-#include "YTE/Physics/Transform.h" 
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Transform.hpp"
 
  
 namespace YTE 

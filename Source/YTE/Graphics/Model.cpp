@@ -6,13 +6,13 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
 
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Orientation.h"
-#include "YTE/Physics/Collider.h"
-#include "YTE/Physics/BoxCollider.h"
-#include "YTE/Physics/CylinderCollider.h"
-#include "YTE/Physics/SphereCollider.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 

@@ -10,8 +10,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {

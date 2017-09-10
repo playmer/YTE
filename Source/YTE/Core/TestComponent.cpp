@@ -3,7 +3,7 @@
 
 #include "YTE/Core/TestComponent.hpp"
 
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 

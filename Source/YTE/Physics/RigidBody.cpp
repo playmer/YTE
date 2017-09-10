@@ -9,9 +9,9 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -86,8 +86,6 @@ namespace YTE
 
   void RigidBody::PhysicsInitialize()
   {
-
-
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider =  GetColliderFromObject(mOwner);
 

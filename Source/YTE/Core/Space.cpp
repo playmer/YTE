@@ -16,8 +16,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/PhysicsSystem.h"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 

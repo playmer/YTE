@@ -12,7 +12,7 @@
 
 #include "YTE/Platform/DeviceEnums.hpp"
 
-#include "YTE/Physics/Reactive.h"
+#include "YTE/Physics/Reactive.hpp"
 
 namespace YTE
 {

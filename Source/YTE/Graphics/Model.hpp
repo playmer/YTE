@@ -7,7 +7,7 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Graphics/Renderer.hpp"
 

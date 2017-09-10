@@ -13,7 +13,7 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Physics/ForwardDeclarations.h"
+#include "YTE/Physics/ForwardDeclarations.hpp"
 
 namespace YTE
 {

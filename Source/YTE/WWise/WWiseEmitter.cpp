@@ -12,12 +12,12 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Orientation.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Transform.hpp"
 
-#include "YTE/WWise//WWiseSystem.hpp"
-#include "YTE/WWise//WWiseEmitter.hpp"
-#include "YTE/WWise//Utilities.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/Utilities.hpp"
 
 namespace YTE
 {

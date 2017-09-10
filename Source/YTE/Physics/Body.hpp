@@ -14,10 +14,8 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Physics/Collider.h"
-#include "YTE/Physics/ForwardDeclarations.h"
-
-
+#include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/ForwardDeclarations.hpp"
 
 namespace YTE
 {

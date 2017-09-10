@@ -10,8 +10,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Transform.h"
-#include "YTE/Physics/MenuCollider.h"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/MenuCollider.hpp"
 
 namespace YTE
 {

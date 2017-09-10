@@ -13,9 +13,9 @@
 #include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
 
 
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/GhostBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/GhostBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {

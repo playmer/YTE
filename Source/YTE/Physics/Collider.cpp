@@ -11,14 +11,14 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/BoxCollider.h"
-#include "YTE/Physics/CapsuleCollider.h"
-#include "YTE/Physics/CylinderCollider.h"
-#include "YTE/Physics/Collider.h"
-#include "YTE/Physics/SphereCollider.h"
-#include "YTE/Physics/MeshCollider.h"
-#include "YTE/Physics/Transform.h"
-#include "PhysicsSystem.h"
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CapsuleCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
+#include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+#include "YTE/Physics/MeshCollider.hpp"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
 
 namespace YTE
 {

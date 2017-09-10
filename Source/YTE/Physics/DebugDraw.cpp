@@ -6,8 +6,8 @@
 * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-#include "YTE/Physics/DebugDraw.h"
-#include "YTE/Physics/PhysicsSystem.h"
+#include "YTE/Physics/DebugDraw.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
 
 namespace YTE
 {

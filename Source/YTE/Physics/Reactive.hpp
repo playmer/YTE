@@ -13,7 +13,7 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Physics/MenuCollider.h"
+#include "YTE/Physics/MenuCollider.hpp"
 
 namespace YTE
 {
