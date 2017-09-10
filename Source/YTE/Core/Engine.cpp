@@ -24,8 +24,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  float DeltaTime::dt = 0.016f; // static dt initialization
-
   DefineEvent(LogicUpdate);
   DefineEvent(FrameUpdate);
   DefineEvent(BeginDebugDrawUpdate);
@@ -192,7 +190,7 @@ namespace YTE
     mShouldIntialize = false;
     mIsInitialized = true;
 
-    dt.SetDt(0.016f);
+    dt = 0.016f;
   }
 
   
@@ -202,35 +200,35 @@ namespace YTE
     using namespace std::chrono;
     duration<float> time_span = duration_cast<duration<float>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
-    dt.SetDt(time_span.count());
+    dt = time_span.count();
   
     // TODO (Josh): Should this be like it is?
-    if (dt.GetDt() > 0.5)
+    if (dt > 0.5)
     {
-      dt.SetDt(0.016f);
+      dt = 0.016f;
     }
 
     if (false == mEditorMode)
     {
       for (auto &window : mWindows)
       {
-        SetFrameRate(*window.second, dt.GetDt());
+        SetFrameRate(*window.second, dt);
         window.second->Update();
       }
     }
 
     LogicUpdate updateEvent;
-    updateEvent.Dt = dt.GetDt();
+    updateEvent.Dt = dt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
-    GetComponent<WWiseSystem>()->Update(dt.GetDt());
+    GetComponent<WWiseSystem>()->Update(dt);
   
-    mGamepadSystem.Update(dt.GetDt());
+    mGamepadSystem.Update(dt);
   
     for (auto &space : mCompositions)
     {
-      space.second->Update(dt.GetDt());
+      space.second->Update(dt);
     }
 
     SendEvent(Events::LogicUpdate, &updateEvent);
