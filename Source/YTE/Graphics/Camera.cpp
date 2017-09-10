@@ -142,6 +142,20 @@ namespace YTE
     }
     else if (aCameraType == "TargetPoint")
     {
+      // only do this if we were a flyby camera
+      if (mType == CameraType::Flyby)
+      {
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
+        glm::vec4 transVector(0.0f, 0.0f, mZoomMin, 1.0f);
+        transVector = rotationMatrix * transVector;
+        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+
+        mSpin += glm::pi<float>();
+        mZoom = mZoomMin;
+        mMoveUp = 0.0f;
+        mMoveRight = 0.0f;
+      }
+
       mType = CameraType::TargetPoint;
     }
     else if (aCameraType == "CameraOrientation")
@@ -157,21 +171,22 @@ namespace YTE
     }
     else if (aCameraType == "Flyby")
     {
+      if (mType == CameraType::TargetObject || mType == CameraType::TargetPoint)
+      {
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, mTilt, 0.0f);
+
+        glm::vec4 transVector(0.0f, 0.0f, mZoom, 1.0f); // move forward one unit
+        transVector = rotationMatrix * transVector;
+
+        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+
+        mZoom = 0.0f;
+        mMoveUp = 0.0f;
+        mMoveRight = 0.0f;
+        mSpin -= glm::pi<float>();
+      }
+
       mType = CameraType::Flyby;
-      mZoom = 0.0f;
-      mMoveUp = 0.0f;
-      mMoveRight = 0.0f;
-
-      //? change target position to be unit vector from the camera position so no spanning occurs
-      glm::mat4 rotationMatrix = glm::yawPitchRoll(mSpin, mTilt, 0.0f);
-
-      glm::vec4 camPos4 = glm::vec4(mCameraTransform->GetWorldTranslation(), 1.0f);
-
-      glm::vec4 unitVector(0.0f, 0.0f, -1.0f, 1.0f); // used to translate away from target point by 1
-      unitVector = rotationMatrix * unitVector;
-      unitVector = glm::normalize(unitVector);
-
-      mTargetPoint = glm::vec3(camPos4 + unitVector);
     }
 
     if (false == mConstructing)
@@ -465,12 +480,12 @@ namespace YTE
       }
       case CameraType::Flyby:
       {
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(mSpin, mTilt, 0.0f);
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
         
-        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        glm::vec4 up4(0.0f, -1.0f, 0.0f, 1.0f);
         up4 = rotationMatrix * up4;
 
-        glm::vec4 transVector(-mMoveRight, -mMoveUp, mZoom, 1.0f);
+        glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
         transVector = rotationMatrix * transVector;
 
         mTargetPoint = mTargetPoint + glm::vec3(transVector);
