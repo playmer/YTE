@@ -17,6 +17,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Platform/DeviceEnums.hpp"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -25,7 +26,7 @@ namespace YTE
   DeclareEvent(MousePersist);
   DeclareEvent(MouseScroll);
   DeclareEvent(MouseMove);
-  struct Mouse;
+  
   class MouseButtonEvent : public Event
   {
   public:
@@ -61,7 +62,7 @@ namespace YTE
   void SurveyMouse(bool *aMouse);
 
 
-  struct Mouse : public EventHandler
+  class Mouse : public EventHandler
   {
   public:
     DeclareType(Mouse);

@@ -13,6 +13,7 @@
 
 namespace YTE
 {
+  class Keyboard;
   class Mouse;
   class MouseButtonEvent;
   class MouseWheelEvent;

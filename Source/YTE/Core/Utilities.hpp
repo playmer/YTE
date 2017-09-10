@@ -39,6 +39,7 @@
 #include "YTE/Core/StaticIntents.hpp"
 
 #define enum_cast(aEnum) static_cast<size_t>(aEnum)
+#define YTEUnusedArgument(aArgument) (void)aArgument
 
 namespace YTE
 {

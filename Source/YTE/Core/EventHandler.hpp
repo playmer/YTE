@@ -164,8 +164,13 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     }
 
     EventHandler() {}
-    EventHandler(const EventHandler& aEventHandler) {}
-    EventHandler& operator=(const EventHandler& aEventHandler) { return *this; }
+    EventHandler(const EventHandler& aEventHandler) { YTEUnusedArgument(aEventHandler); }
+    EventHandler& operator=(const EventHandler& aEventHandler) 
+    { 
+      YTEUnusedArgument(aEventHandler); 
+      return *this; 
+    }
+
   protected:
     std::vector<UniqueEvent> mHooks;
     std::unordered_map<String, IntrusiveList<EventDelegate>> mEventLists;
