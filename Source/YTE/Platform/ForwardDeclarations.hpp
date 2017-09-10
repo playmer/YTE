@@ -13,7 +13,12 @@
 
 namespace YTE
 {
+  class Mouse;
+  class MouseButtonEvent;
+  class MouseWheelEvent;
+  class MouseMoveEvent;
   class Window;
+  class WindowResize;
 }
 
 #endif

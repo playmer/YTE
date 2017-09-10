@@ -10,9 +10,8 @@
 #include <algorithm>
 
 #include "YTE/Core/Composition.hpp"
+#include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
-
-#include "YTE/Event/StandardEvents.h"
 
 #include "YTE/Physics/CollisionBody.h"
 #include "YTE/Physics/GhostBody.h"
@@ -34,7 +33,7 @@ namespace YTE
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    mSpace->RegisterListener(Events::LogicUpdate, *this, &PhysicsSystem::OnLogicUpdate);
+    mSpace->YTERegister(Events::LogicUpdate, this, &PhysicsSystem::OnLogicUpdate);
 
 
       // collision configuration contains default setup for memory , collision setup . Advanced
@@ -78,9 +77,9 @@ namespace YTE
 
       //TODO (Josh): Reimplement the debug drawing functionality.
       //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->RegisterListener(Events::BeginDebugDrawUpdate, *this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->RegisterListener(Events::DebugDrawUpdate, *this, &PhysicsSystem::DebugDrawUpdate);
-      //system->RegisterListener(Events::EndDebugDrawUpdate, *this, &PhysicsSystem::EndDebugDrawUpdate);
+      //system->YTERegister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
+      //system->YTERegister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      //system->YTERegister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
 
       auto debugMode = mDebugDrawer->getDebugMode();
       debugMode |= 0 << DebugDrawer::DBG_NoDebug;
@@ -90,9 +89,9 @@ namespace YTE
     {
       //TODO (Josh): Reimplement the debug drawing functionality.
       //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //StopListening(Events::BeginDebugDrawUpdate, *system);
-      //StopListening(Events::DebugDrawUpdate, *system);
-      //StopListening(Events::EndDebugDrawUpdate, *system);
+      //system->YTEDeregister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
+      //system->YTEDeregister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      //system->YTEDeregister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
 
       auto debugMode = mDebugDrawer->getDebugMode();
       debugMode &= ~(1 << DebugDrawer::DBG_NoDebug);

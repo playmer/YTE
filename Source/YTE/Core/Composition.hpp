@@ -19,16 +19,14 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <memory>
 
+#include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
-
-#include "YTE/Event/Events.h"
-#include "YTE/Event/StandardEvents.h"
 
 #include "YTE/Utilities/String/String.h"
 
 namespace YTE
 {
-  class Composition : public BaseEventHandler
+  class Composition : public EventHandler
   {
   public:
     DeclareType(Composition);

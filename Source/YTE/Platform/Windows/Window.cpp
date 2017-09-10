@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 
 #ifdef Windows
@@ -27,11 +27,11 @@
 
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/DialogBox.h"
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Window.h"
+
+#include "YTE/Platform/DialogBox.hpp"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Window.hpp"
 
 
 namespace YTE
@@ -339,11 +339,11 @@ namespace YTE
 
         WindowMinimizedOrRestored minimizeEvent;
         minimizeEvent.Minimized = true;
-        aWindow->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+        aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
 
         if (aWindow->Constructed)
         {
-          aWindow->mEngine->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+          aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
         }
       }
       else if (aWParam == SIZE_RESTORED)
@@ -354,24 +354,24 @@ namespace YTE
 
           WindowMinimizedOrRestored minimizeEvent;
           minimizeEvent.Minimized = false;
-          aWindow->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+          aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
 
           if (aWindow->Constructed)
           {
-            aWindow->mEngine->Trigger(Events::WindowMinimizedOrRestored, &minimizeEvent);
+            aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
           }
         }
 
         RECT windowDimensions;
         GetClientRect(aWindowHandle, &windowDimensions);
-        WindowResizeEvent resizeEvent;
+        WindowResize resizeEvent;
         resizeEvent.width = windowDimensions.right;
         resizeEvent.height = windowDimensions.bottom;
 
         self->mWidth = resizeEvent.width;
         self->mHeight = resizeEvent.height;
 
-        aWindow->Trigger(Events::WindowResize, &resizeEvent);
+        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
       }
 
       break;
@@ -384,11 +384,11 @@ namespace YTE
       WindowFocusLostOrGained focusEvent;
       focusEvent.Focused = true;
       self->mFocus = true;
-      aWindow->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
         
       if (aWindow->Constructed)
       {
-        aWindow->mEngine->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
       }
 
       break;
@@ -399,11 +399,11 @@ namespace YTE
       WindowFocusLostOrGained focusEvent;
       focusEvent.Focused = false;
       self->mFocus = false;
-      aWindow->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
 
       if (aWindow->Constructed)
       {
-        aWindow->mEngine->Trigger(Events::WindowFocusLostOrGained, &focusEvent);
+        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
       }
 
       break;

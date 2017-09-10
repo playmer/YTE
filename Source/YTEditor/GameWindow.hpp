@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QWidget.h>
 #include <QWindow.h>
 
-#include "YTE/Platform/ForwardDeclarations.h"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 class YTEditorMainWindow;
 

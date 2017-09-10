@@ -22,12 +22,37 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Platform/GamepadSystem.h"
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/GamepadSystem.hpp"
+#include "YTE/Platform/Window.hpp"
 
 
 namespace YTE
 {
+  DeclareEvent(LogicUpdate);
+  DeclareEvent(FrameUpdate);
+  DeclareEvent(BeginDebugDrawUpdate);
+  DeclareEvent(DebugDrawUpdate);
+  DeclareEvent(EndDebugDrawUpdate);
+  DeclareEvent(DeletionUpdate);
+  DeclareEvent(BoundTypeChanged);
+
+  class LogicUpdate : public Event
+  {
+  public:
+    DeclareType(LogicUpdate);
+
+    float Dt;
+  };
+
+  class BoundTypeChanged : public Event
+  {
+  public:
+    DeclareType(BoundTypeChanged);
+
+    BoundType *aOldType;
+    BoundType *aNewType;
+  };
+
   class Engine : public Composition
   {
   public:

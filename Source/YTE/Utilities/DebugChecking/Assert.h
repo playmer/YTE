@@ -10,7 +10,7 @@
 
 #ifndef YTE_Utilities_Assert_H
 #define YTE_Utilities_Assert_H
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #ifndef NDEBUG
   #define YTE_Error_Checking

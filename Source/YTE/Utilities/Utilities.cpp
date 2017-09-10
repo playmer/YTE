@@ -13,7 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <stdio.h>
 
 
-#include "YTE/Platform/DialogBox.h"
+#include "YTE/Platform/DialogBox.hpp"
 
 #include "YTE/Utilities/String/String.h"
 #include "YTE/Utilities/Utilities.h"

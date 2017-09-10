@@ -18,12 +18,14 @@
 
 #include "YTE/Physics/Transform.h"
 
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/Window.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
+  DefineEvent(RendererResize);
+
   DefineType(GraphicsSystem)
   {
     YTERegisterType(GraphicsSystem);
@@ -49,7 +51,7 @@ namespace YTE
 
   void GraphicsSystem::Initialize()
   {
-    mEngine->RegisterListener(Events::FrameUpdate, *this, &GraphicsSystem::Update);
+    mEngine->YTERegister(Events::FrameUpdate, this, &GraphicsSystem::Update);
 
     auto vulkanSuccess = vkelInit();
 

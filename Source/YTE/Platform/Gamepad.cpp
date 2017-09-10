@@ -6,10 +6,31 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/Gamepad.h"
+#include "YTE/Platform/Gamepad.hpp"
 
 namespace YTE
 {
+  DefineEvent(XboxStickFlicked);
+  DefineEvent(XboxButtonPress);
+  DefineEvent(XboxButtonRelease);
+  DefineEvent(XboxButtonPersist);
+
+  DefineType(XboxFlickEvent)
+  {
+    YTERegisterType(XboxFlickEvent);
+    YTEBindField(&XboxFlickEvent::FlickDirection, "FlickDirection", PropertyBinding::Get);
+    YTEBindField(&XboxFlickEvent::FlickedStick, "FlickedStick", PropertyBinding::Get);
+    YTEBindField(&XboxFlickEvent::Controller, "Controller", PropertyBinding::Get);
+  }
+
+  DefineType(XboxButtonEvent)
+  {
+    YTERegisterType(XboxButtonEvent);
+    YTEBindField(&XboxButtonEvent::Button, "Button", PropertyBinding::GetSet);
+    YTEBindField(&XboxButtonEvent::Controller, "Controller", PropertyBinding::GetSet);
+  }
+
+
   DefineType(XboxController)
   {
     YTERegisterType(XboxController);

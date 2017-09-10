@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #ifdef Windows
 
@@ -14,10 +14,10 @@
 #include <XInput.h>
 #include <algorithm>
 
-#include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Gamepad.h"
-#include "YTE/Platform/DeviceEnums.h"
+
+#include "YTE/Platform/Gamepad.hpp"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 #undef max
 #undef min
@@ -75,19 +75,19 @@ namespace YTE
     if (mCurrentButtons[index] && mPreviousButtons[index])              \
     {                                                                   \
       eventState = &Events::XboxButtonPersist;                          \
-      Trigger(*eventState, &xboxEvent);                                 \
+      SendEvent(*eventState, &xboxEvent);                                 \
     }                                                                   \
     /* Key has been pressed */                                          \
     else if (down)                                                      \
     {                                                                   \
       eventState = &Events::XboxButtonPress;                            \
-      Trigger(*eventState, &xboxEvent);                                 \
+      SendEvent(*eventState, &xboxEvent);                                 \
     }                                                                   \
     /* Key has been released */                                         \
     else if (down == false && mPreviousButtons[index] == true)          \
     {                                                                   \
       eventState = &Events::XboxButtonRelease;                          \
-      Trigger(*eventState, &xboxEvent);                                 \
+      SendEvent(*eventState, &xboxEvent);                                 \
     }
 
   void XboxController::UpdateState(XboxControllerState *aState, float aDt)
@@ -128,7 +128,7 @@ namespace YTE
       flickEvent.FlickedStick = Xbox_Buttons::LeftStick;
       flickEvent.FlickDirection = glm::normalize(mLeftStick);
       flickEvent.Controller = this;
-      Trigger(Events::XboxStickFlicked, &flickEvent);
+      SendEvent(Events::XboxStickFlicked, &flickEvent);
     }
 
     if (rightStickFlicked && !mRightStickFlicked)
@@ -137,7 +137,7 @@ namespace YTE
       flickEvent.FlickedStick = Xbox_Buttons::RightStick;
       flickEvent.FlickDirection = glm::normalize(mRightStick);
       flickEvent.Controller = this;
-      Trigger(Events::XboxStickFlicked, &flickEvent);
+      SendEvent(Events::XboxStickFlicked, &flickEvent);
     }
 
     mLeftStickFlicked = leftStickFlicked;

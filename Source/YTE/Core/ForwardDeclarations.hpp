@@ -18,6 +18,8 @@ namespace YTE
   class Object;
   class Composition;
   class Component;
+  class LogicUpdate;
+  class BoundTypeChanged;
   template <typename T> class ComponentFactory;
   class ComponentSystem;
   class StringComponentFactory;

@@ -4,7 +4,7 @@
 #include "YTE/Core/Space.hpp" 
 #include "YTE/Core/Utilities.hpp" 
  
-#include "YTE/Event/StandardEvents.h" 
+ 
  
 #include "YTE/Graphics/Camera.hpp" 
 #include "YTE/Graphics/GraphicsView.hpp" 
@@ -80,20 +80,20 @@ namespace YTE
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
  
     mWindow = mGraphicsView->GetWindow(); 
-    mWindow->RegisterListener(Events::RendererResize, *this, &Camera::RendererResize); 
+    mWindow->YTERegister(Events::RendererResize, this, &Camera::RendererResize); 
     mConstructing = false; 
   } 
  
   void Camera::Initialize() 
   { 
-    mOwner->RegisterListener(Events::PositionChanged, *this, &Camera::PositionEvent); 
-    mOwner->RegisterListener(Events::OrientationChanged, *this, &Camera::OrientationEvent); 
+    mOwner->YTERegister(Events::PositionChanged, this, &Camera::PositionEvent); 
+    mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent); 
 
     mMouse = &mWindow->mMouse;
 
-    mMouse->RegisterListener(Events::MouseMove, *this, &Camera::MouseMove);
-    mMouse->RegisterListener(Events::MouseScroll, *this, &Camera::MouseScroll);
-    mMouse->RegisterListener(Events::MousePress, *this, &Camera::MousePress);
+    mMouse->YTERegister(Events::MouseMove, this, &Camera::MouseMove);
+    mMouse->YTERegister(Events::MouseScroll, this, &Camera::MouseScroll);
+    mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
@@ -260,7 +260,7 @@ namespace YTE
     UpdateView(); 
   } 
  
-  void Camera::RendererResize(WindowResizeEvent *aEvent) 
+  void Camera::RendererResize(WindowResize *aEvent) 
   { 
     UpdateView(); 
   } 

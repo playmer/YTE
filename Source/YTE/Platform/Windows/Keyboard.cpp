@@ -6,7 +6,7 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #ifdef Windows
 
@@ -14,7 +14,7 @@
 #include <Winuser.h>
 #include <stdint.h>
 
-#include "YTE/Platform/Keyboard.h"
+#include "YTE/Platform/Keyboard.hpp"
 
 namespace YTE
 {

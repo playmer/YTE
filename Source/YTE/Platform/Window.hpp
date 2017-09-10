@@ -13,14 +13,13 @@
 
 #include <string>
 
+#include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/PrivateImplementation.hpp"
 
-#include "YTE/Event/Events.h"
-
-#include "YTE/Platform/Keyboard.h"
-#include "YTE/Platform/Mouse.h"
-#include "YTE/Platform/TargetDefinitions.h"
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/TargetDefinitions.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -28,10 +27,31 @@
 namespace YTE
 {
 
+  DeclareEvent(WindowResize);
+  DeclareEvent(WindowFocusLostOrGained);
+  DeclareEvent(WindowMinimizedOrRestored);
+  class WindowResize : public Event
+  {
+  public:
+    int width;
+    int height;
+  };
+
+  class WindowFocusLostOrGained : public Event
+  {
+  public:
+    bool Focused;
+  };
+
+  class WindowMinimizedOrRestored : public Event
+  {
+  public:
+    bool Minimized;
+  };
 
   bool SetCursorView(bool aShow);
     
-  class Window : public BaseEventHandler
+  class Window : public EventHandler
   {
   public:
     DeclareType(Window);

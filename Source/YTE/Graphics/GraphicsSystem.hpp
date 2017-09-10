@@ -15,14 +15,23 @@
 #include "YTE/Core/PrivateImplementation.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Graphics/Renderer.hpp"
 
-#include "YTE/Platform/ForwardDeclarations.h"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {
+  DeclareEvent(RendererResize);
+
+  class RendererResize : public Event
+  {
+  public:
+    int width;
+    int height;
+  };
+
   class GraphicsSystem : public Component
   {
     public:

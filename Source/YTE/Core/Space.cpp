@@ -11,7 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <fstream>
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Physics/PhysicsSystem.h"
 
@@ -49,8 +49,8 @@ namespace YTE
   Space::Space(Engine *aEngine, RSValue *aProperties)
                 : Composition(aEngine, this), mLevelToLoad(nullptr)
   {
-    mEngine->GetWindow()->RegisterListener(Events::WindowFocusLostOrGained, *this, &Space::WindowLostOrGainedFocusHandler);
-    mEngine->GetWindow()->RegisterListener(Events::WindowMinimizedOrRestored, *this, &Space::WindowMinimizedOrRestoredHandler);
+    mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, this, &Space::WindowLostOrGainedFocusHandler);
+    mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
 
     DeserializeByType(aProperties, this, TypeId<Space>());
   }
@@ -101,14 +101,14 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = aDt;
 
-    Trigger(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::DeletionUpdate, &updateEvent);
 
-    Trigger(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, &updateEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
     if (mPaused == false)
     {
-      Trigger(Events::LogicUpdate, &updateEvent);
+      SendEvent(Events::LogicUpdate, &updateEvent);
     }
   }
     

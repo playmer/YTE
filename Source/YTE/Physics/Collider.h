@@ -11,7 +11,7 @@
 #ifndef YTE_Physics_Collider_h
 #define YTE_Physics_Collider_h
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Core/Component.hpp"
 
@@ -19,6 +19,45 @@
 
 namespace YTE
 {
+  DeclareEvent(CollisionStarted);
+  DeclareEvent(CollisionPersisted);
+  DeclareEvent(CollisionEnded);
+  class CollisionEvent : public Event
+  {
+  public:
+    DeclareType(CollisionEvent);
+    Composition *OtherObject;
+  };
+
+  class CollisionStarted : public Event
+  {
+  public:
+    DeclareType(CollisionStarted);
+    Composition *OtherObject;
+    String Name;
+    Composition* Object;
+  };
+
+  class CollisionPersisted : public Event
+  {
+  public:
+    DeclareType(CollisionPersisted);
+    Composition *OtherObject;
+
+    String Name;
+    Composition* Object;
+  };
+
+  class CollisionEnded : public Event
+  {
+  public:
+    DeclareType(CollisionEnded);
+    Composition *OtherObject;
+
+    String Name;
+    Composition* Object;
+  };
+
   enum class CollisionStatus {None, Started, Persisted};
 
   class Collider : public Component

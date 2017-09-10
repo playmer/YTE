@@ -6,12 +6,22 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Keyboard.h"
+
+#include "YTE/Platform/Keyboard.hpp"
 
 namespace YTE
 {
+  DefineEvent(KeyPress);
+  DefineEvent(KeyRelease);
+  DefineEvent(KeyPersist);
+
+  DefineType(KeyboardEvent)
+  {
+    YTERegisterType(KeyboardEvent);
+    YTEBindField(&KeyboardEvent::Key, "Key", PropertyBinding::Get);
+  }
+
   DefineType(Keyboard)
   {
     YTERegisterType(Keyboard);
@@ -43,7 +53,7 @@ namespace YTE
         keyEvent.Key = static_cast<Keys>(i);
         keyEvent.Keyboard = this;
 
-        Trigger(Events::KeyPersist, &keyEvent);
+        SendEvent(Events::KeyPersist, &keyEvent);
       }
 
       mKeysPrevious[i] = mKeysCurrent[i];
@@ -81,7 +91,7 @@ namespace YTE
     keyboardEvent.Key = aKey;
     keyboardEvent.Keyboard = this;
       
-    Trigger(*state, &keyboardEvent);
+    SendEvent(*state, &keyboardEvent);
   }
 
   bool Keyboard::IsKeyPressed(Keys aKey)

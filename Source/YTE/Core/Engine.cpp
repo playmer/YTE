@@ -24,6 +24,27 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  DefineEvent(LogicUpdate);
+  DefineEvent(FrameUpdate);
+  DefineEvent(BeginDebugDrawUpdate);
+  DefineEvent(DebugDrawUpdate);
+  DefineEvent(EndDebugDrawUpdate);
+  DefineEvent(DeletionUpdate);
+  DefineEvent(BoundTypeChanged);
+
+  DefineType(LogicUpdate)
+  {
+    YTERegisterType(LogicUpdate);
+    YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
+  }
+
+  DefineType(BoundTypeChanged)
+  {
+    YTERegisterType(BoundTypeChanged);
+    YTEBindField(&BoundTypeChanged::aOldType, "OldType", PropertyBinding::GetSet);
+    YTEBindField(&BoundTypeChanged::aNewType, "NewType", PropertyBinding::GetSet);
+  }
+
   DefineType(Engine)
   {
     YTERegisterType(Engine);
@@ -197,7 +218,7 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = dt;
 
-    Trigger(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::DeletionUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(dt);
   
@@ -208,8 +229,8 @@ namespace YTE
       space.second->Update(dt);
     }
 
-    Trigger(Events::LogicUpdate, &updateEvent);
-    Trigger(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, &updateEvent);
   }
 
   void Engine::SetFrameRate(Window &aWindow, float aDt)

@@ -9,7 +9,7 @@
 #include "YTE/Graphics/Renderer.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 
-#include "YTE/Platform/ForwardDeclarations.h"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 struct aiScene;
 struct aiMesh;

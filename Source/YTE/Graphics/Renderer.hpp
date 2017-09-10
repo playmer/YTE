@@ -6,7 +6,7 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/InstantiatedMesh.hpp"
 
-#include "YTE/Platform/ForwardDeclarations.h"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {

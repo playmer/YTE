@@ -14,18 +14,54 @@
 #include <unordered_map>
 #include <stdint.h>
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 
 namespace YTE
 {
+  DeclareEvent(MousePress);
+  DeclareEvent(MouseRelease);
+  DeclareEvent(MousePersist);
+  DeclareEvent(MouseScroll);
+  DeclareEvent(MouseMove);
+  struct Mouse;
+  class MouseButtonEvent : public Event
+  {
+  public:
+    DeclareType(MouseButtonEvent);
+
+    glm::vec2 WorldCoordinates;
+    Mouse_Buttons Button;
+    Mouse *Mouse;
+  };
+
+
+  class MouseWheelEvent : public Event
+  {
+  public:
+    DeclareType(MouseWheelEvent);
+
+    glm::vec2 WorldCoordinates;
+    glm::vec2 ScrollMovement;
+    Mouse *Mouse;
+  };
+
+  class MouseMoveEvent : public Event
+  {
+  public:
+    DeclareType(MouseMoveEvent);
+
+    glm::vec2 WorldCoordinates;
+    Mouse *Mouse;
+  };
+
   glm::vec2 GetMousePosition();
   bool GetLRSwapped();
   void SurveyMouse(bool *aMouse);
 
 
-  struct Mouse : public BaseEventHandler
+  struct Mouse : public EventHandler
   {
   public:
     DeclareType(Mouse);

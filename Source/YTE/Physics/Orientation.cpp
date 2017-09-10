@@ -41,7 +41,7 @@ namespace YTE
 
   void Orientation::Initialize()
   {
-    mOwner->RegisterListener(Events::RotationChanged, *this, &Orientation::OnRotationChanged);
+    mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
   }
 
   void Orientation::OnRotationChanged(RotationChanged *aEvent)
@@ -60,7 +60,7 @@ namespace YTE
     newOrientation.Forward = mForwardVector;
     newOrientation.Right = mRightVector;
     newOrientation.Up = mUpVector;
-    mOwner->Trigger(Events::OrientationChanged, &newOrientation);
+    mOwner->SendEvent(Events::OrientationChanged, &newOrientation);
   }
 
   const glm::vec3& Orientation::GetForwardVector() const

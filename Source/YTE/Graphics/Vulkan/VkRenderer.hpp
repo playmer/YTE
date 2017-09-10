@@ -7,7 +7,6 @@ namespace YTE
 {
   struct RenderedSurface;
 
-
   struct InstantiatedMeshRendererData
   {
     InstantiatedMeshRendererData(Renderer *aRenderer,

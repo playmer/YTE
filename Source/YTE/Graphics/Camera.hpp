@@ -4,12 +4,10 @@
 #define YTE_Graphics_Camera_hpp 
  
 #include "YTE/Core/Component.hpp" 
- 
-#include "YTE/Event/StandardEvents.h" 
- 
+
 #include "YTE/Graphics/ForwardDeclarations.hpp" 
  
-#include "YTE/Platform/ForwardDeclarations.h" 
+#include "YTE/Platform/ForwardDeclarations.hpp" 
  
 #include "YTE/Physics/ForwardDeclarations.h" 
  
@@ -48,7 +46,7 @@ namespace YTE
       return mCameraType; 
     } 
  
-    void RendererResize(WindowResizeEvent *aEvent); 
+    void RendererResize(WindowResize *aEvent); 
  
     void SetCameraType(std::string &aCameraType);
  

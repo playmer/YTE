@@ -18,10 +18,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/TargetDefinitions.h"
-#include "YTE/Platform/Window.h"
+
+#include "YTE/Platform/TargetDefinitions.hpp"
+#include "YTE/Platform/Window.hpp"
 
 #ifdef Windows
 #include "YTE/Platform/Windows/WindowsInclude.hpp"
@@ -41,11 +41,11 @@ void SubWindow::resizeEvent(QResizeEvent *aEvent)
 {
   auto size = aEvent->size();
 
-  YTE::WindowResizeEvent event;
+  YTE::WindowResize event;
   event.height = size.height();
   event.width = size.width();
 
-  mWindow->Trigger(YTE::Events::WindowResize, &event);
+  mWindow->SendEvent(YTE::Events::WindowResize, &event);
   mWindow->mEngine->Update();
 }
 

@@ -11,16 +11,30 @@
 #ifndef YTE_Platform_Keyboard_h
 #define YTE_Platform_Keyboard_h
 
-#include "YTE/Event/Events.h"
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Core/EventHandler.hpp"
+#include "YTE/Platform/DeviceEnums.hpp"
 #include <stdint.h>
 
 namespace YTE
 {
+  DeclareEvent(KeyPress);
+  DeclareEvent(KeyRelease);
+  DeclareEvent(KeyPersist);
+
+  struct Keyboard;
+  class KeyboardEvent : public Event
+  {
+  public:
+    DeclareType(KeyboardEvent);
+
+    Keys Key;
+    Keyboard *Keyboard;
+  };
+
   Keys TranslateKey(uint64_t aOsKey);
   void SurveyKeyboard(bool *aKeyboard);
 
-  struct Keyboard : public BaseEventHandler
+  struct Keyboard : public EventHandler
   {
   public:
     DeclareType(Keyboard);

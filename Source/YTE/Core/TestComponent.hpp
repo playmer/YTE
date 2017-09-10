@@ -5,8 +5,8 @@
 #include "glm/glm.hpp"
 
 #include "YTE/Core/Component.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Event/StandardEvents.h"
 
 namespace YTE
 {

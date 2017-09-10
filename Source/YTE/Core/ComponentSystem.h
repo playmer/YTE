@@ -23,8 +23,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Event/StandardEvents.h"
-
 namespace YTE
 {
   class ComponentSystem : public Component

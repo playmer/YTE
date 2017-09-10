@@ -28,7 +28,7 @@
 
 #include "YTE/Meta/Type.hpp"
 
-#include "YTE/Platform/DialogBox.h"
+#include "YTE/Platform/DialogBox.hpp"
 
 #include "YTE/StandardLibrary/OrderedMultiMap.hpp"
 #include "YTE/StandardLibrary/OrderedMap.hpp"

@@ -6,10 +6,13 @@
 * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-#include "YTE/Platform/Window.h"
+#include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {
+  DefineEvent(WindowResize);
+  DefineEvent(WindowFocusLostOrGained);
+  DefineEvent(WindowMinimizedOrRestored);
   DefineType(Window)
   {
     YTERegisterType(Window);

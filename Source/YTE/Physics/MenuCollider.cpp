@@ -49,8 +49,8 @@ namespace YTE
     mPosition = myTransform->GetTranslation() + mOffset;
     mScale = glm::vec3(myTransform->GetScale().x * mSize.x, myTransform->GetScale().y * mSize.y, myTransform->GetScale().z * mSize.z);
 
-    mOwner->RegisterListener(Events::PositionChanged, *this, &MenuCollider::OnPositionChanged);
-    mOwner->RegisterListener(Events::ScaleChanged, *this, &MenuCollider::OnScaleChanged);
+    mOwner->YTERegister(Events::PositionChanged, this, &MenuCollider::OnPositionChanged);
+    mOwner->YTERegister(Events::ScaleChanged, this, &MenuCollider::OnScaleChanged);
   }
 
   void MenuCollider::OnPositionChanged(PositionChanged *aEvent)
@@ -75,7 +75,7 @@ namespace YTE
       {
           // Send CollisionStarted event
         CollisionStarted collisionStarted;
-        mOwner->Trigger(Events::CollisionStarted, &collisionStarted);
+        mOwner->SendEvent(Events::CollisionStarted, &collisionStarted);
 
           // Set CollisionStatus to started
         mCollisionStatus = CollisionStatus::Started;
@@ -85,7 +85,7 @@ namespace YTE
       {
           // Send CollisionPersisted event
         CollisionPersisted collisionPersist;
-        mOwner->Trigger(Events::CollisionPersisted, &collisionPersist);
+        mOwner->SendEvent(Events::CollisionPersisted, &collisionPersist);
 
           // Set CollisionStatus to persisted
         mCollisionStatus = CollisionStatus::Persisted;
@@ -99,7 +99,7 @@ namespace YTE
       {
           // Send CollisionEnded event
         CollisionEnded collisionEnd;
-        mOwner->Trigger(Events::CollisionEnded, &collisionEnd);
+        mOwner->SendEvent(Events::CollisionEnded, &collisionEnd);
 
           // Set collisionStatus to none
         mCollisionStatus = CollisionStatus::None;
@@ -117,7 +117,7 @@ namespace YTE
       {
         // Send CollisionStarted event
         CollisionStarted collisionStarted;
-        mOwner->Trigger(Events::CollisionStarted, &collisionStarted);
+        mOwner->SendEvent(Events::CollisionStarted, &collisionStarted);
 
         // Set CollisionStatus to started
         mCollisionStatus = CollisionStatus::Started;
@@ -127,7 +127,7 @@ namespace YTE
       {
         // Send CollisionPersisted event
         CollisionPersisted collisionPersist;
-        mOwner->Trigger(Events::CollisionPersisted, &collisionPersist);
+        mOwner->SendEvent(Events::CollisionPersisted, &collisionPersist);
 
         // Set CollisionStatus to persisted
         mCollisionStatus = CollisionStatus::Persisted;
@@ -141,7 +141,7 @@ namespace YTE
       {
         // Send CollisionEnded event
         CollisionEnded collisionEnd;
-        mOwner->Trigger(Events::CollisionEnded, &collisionEnd);
+        mOwner->SendEvent(Events::CollisionEnded, &collisionEnd);
 
         // Set collisionStatus to none
         mCollisionStatus = CollisionStatus::None;

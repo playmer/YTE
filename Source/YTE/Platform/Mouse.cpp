@@ -8,9 +8,9 @@
 /******************************************************************************/
 #include <utility>
 
-#include "YTE/Event/StandardEvents.h"
 
-#include "YTE/Platform/Mouse.h"
+
+#include "YTE/Platform/Mouse.hpp"
 
 namespace
 {
@@ -19,6 +19,32 @@ namespace
 
 namespace YTE
 {
+  DefineEvent(MousePress);
+  DefineEvent(MouseRelease);
+  DefineEvent(MousePersist);
+  DefineEvent(MouseScroll);
+  DefineEvent(MouseMove);
+
+  DefineType(MouseWheelEvent)
+  {
+    YTERegisterType(MouseWheelEvent);
+    YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
+  }
+
+  DefineType(MouseButtonEvent)
+  {
+    YTERegisterType(MouseButtonEvent);
+    YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
+  }
+
+  DefineType(MouseMoveEvent)
+  {
+    YTERegisterType(MouseMoveEvent);
+    YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+  }
+
   DefineType(Mouse)
   {
     YTERegisterType(Mouse);
@@ -53,7 +79,7 @@ namespace YTE
         mouseEvent.Button = static_cast<Mouse_Buttons>(i);
         mouseEvent.Mouse = this;
 
-        Trigger(Events::MousePersist, &mouseEvent);
+        SendEvent(Events::MousePersist, &mouseEvent);
       }
 
       mMousePrevious[i] = mMouseCurrent[i];
@@ -92,7 +118,7 @@ namespace YTE
     mouseEvent.WorldCoordinates = aPosition;
     mouseEvent.Mouse = this;
 
-    Trigger(*state, &mouseEvent);
+    SendEvent(*state, &mouseEvent);
   }
 
 
@@ -104,7 +130,7 @@ namespace YTE
     mouseEvent.ScrollMovement = aWheelMove;
     mouseEvent.WorldCoordinates = aPosition;
 
-    Trigger(Events::MouseScroll, &mouseEvent);
+    SendEvent(Events::MouseScroll, &mouseEvent);
   }
 
   void Mouse::UpdatePosition(glm::vec2 aPosition)
@@ -114,7 +140,7 @@ namespace YTE
     MouseMoveEvent mouseEvent;
     mouseEvent.WorldCoordinates = aPosition;
 
-    Trigger(Events::MouseMove, &mouseEvent);
+    SendEvent(Events::MouseMove, &mouseEvent);
   }
 
   bool Mouse::IsButtonDown(Mouse_Buttons aButton)

@@ -11,11 +11,36 @@
 #ifndef YTE_Platform_Gamepad_h
 #define YTE_Platform_Gamepad_h
 
-#include "YTE/Event/Events.h"
+#include "YTE/Core/EventHandler.hpp"
 
-#include "YTE/Platform/DeviceEnums.h"
+#include "YTE/Platform/DeviceEnums.hpp"
 namespace YTE
 {
+  DeclareEvent(XboxStickFlicked);
+  DeclareEvent(XboxButtonPress);
+  DeclareEvent(XboxButtonRelease);
+  DeclareEvent(XboxButtonPersist);
+
+  class XboxController;
+  class XboxFlickEvent : public Event
+  {
+  public:
+    DeclareType(XboxFlickEvent);
+
+    glm::vec2 FlickDirection;
+    Xbox_Buttons FlickedStick;
+    XboxController *Controller;
+  };
+
+  class XboxButtonEvent : public Event
+  {
+  public:
+    DeclareType(XboxButtonEvent);
+
+    Xbox_Buttons Button;
+    XboxController *Controller;
+  };
+
   class XboxControllerState;
 
   struct Vibration
@@ -26,7 +51,7 @@ namespace YTE
   };
 
 
-  class XboxController : public BaseEventHandler
+  class XboxController : public EventHandler
   {
   public:
     DeclareType(XboxController);

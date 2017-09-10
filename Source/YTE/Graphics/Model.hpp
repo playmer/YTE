@@ -5,8 +5,9 @@
 #include "glm/glm.hpp"
 
 #include "YTE/Core/Component.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+#include "YTE/Physics/Transform.h"
 
 #include "YTE/Graphics/Renderer.hpp"
 

@@ -12,7 +12,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Event/StandardEvents.h"
+
 
 #include "YTE/Physics/Orientation.h"
 #include "YTE/Physics/Transform.h"
@@ -42,8 +42,8 @@ namespace YTE
   {
     auto transform = mOwner->GetComponent<Transform>();
 
-    mOwner->RegisterListener(Events::PositionChanged, *this, &WWiseListener::OnPositionChange);
-    mOwner->RegisterListener(Events::OrientationChanged, *this, &WWiseListener::OnOrientationChange);
+    mOwner->YTERegister(Events::PositionChanged, this, &WWiseListener::OnPositionChange);
+    mOwner->YTERegister(Events::OrientationChanged, this, &WWiseListener::OnOrientationChange);
     mListenerPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
 
     auto orientation = mOwner->GetComponent<Orientation>();
