@@ -163,9 +163,9 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       }
     }
 
-    inline EventHandler() {}
-    inline EventHandler(const EventHandler& aEventHandler) {}
-    inline EventHandler& operator=(const EventHandler& aEventHandler) { return *this; }
+    EventHandler() {}
+    EventHandler(const EventHandler& aEventHandler) {}
+    EventHandler& operator=(const EventHandler& aEventHandler) { return *this; }
   protected:
     std::vector<UniqueEvent> mHooks;
     std::unordered_map<String, IntrusiveList<EventDelegate>> mEventLists;

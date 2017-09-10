@@ -11,6 +11,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <array>
 #include <list>
 
+#include "YTE/Meta/Type.hpp"
+
 namespace YTE
 {
   template <typename T, size_t S = 128>
@@ -37,7 +39,7 @@ namespace YTE
 
       void operator()(value_type *aToDelete)
       {
-
+        GenericDestruct<value_type>(aToDelete);
         allocator_->deallocate(aToDelete);
       }
 
