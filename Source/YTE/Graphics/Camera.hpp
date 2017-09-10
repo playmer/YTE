@@ -144,7 +144,7 @@ namespace YTE
       mZoomMin = aDist.x;
     }
 
-    glm::vec2 GetZoomingMaxAndMin()
+    glm::vec2 GetZoomingMaxAndMin() const
     {
       return glm::vec2(mZoomMin, mZoomMax);
     }
@@ -178,6 +178,8 @@ namespace YTE
     float mZoom;
     float mZoomMin;
     float mZoomMax;
+    float mMoveUp;
+    float mMoveRight;
  
  
     bool mConstructing; 

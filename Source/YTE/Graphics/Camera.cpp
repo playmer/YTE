@@ -81,6 +81,8 @@ namespace YTE
       mZoom(5.0f),
       mZoomMin(2.0f),
       mZoomMax(30.0f),
+      mMoveUp(0.0f),
+      mMoveRight(0.0f),
       mConstructing(true), 
       mType(CameraType::CameraOrientation) 
   { 
@@ -110,6 +112,9 @@ namespace YTE
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
+
+    mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
+
   } 
 
 
@@ -208,6 +213,17 @@ namespace YTE
     if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
     {
       // middle mouse does camera panning
+
+      // we change the camera type since we were following an object and we just
+      // jumped off to walk on our own
+      if (mType == CameraType::TargetObject)
+      {
+        mType = CameraType::TargetPoint;
+        mCameraType = "TargetPoint";
+      }
+
+      mMoveUp = dy * rotationSpeed;
+      mMoveRight = dx * rotationSpeed;
     }
 
 
@@ -323,23 +339,39 @@ namespace YTE
       {
         // NOTE this math doesnt allow for 3 axis rotation, only 2 axis
 
+        // create the rotation matrix, note that glm::yawpitchroll does the same thing
         glm::mat4 rotationMatrix = glm::mat4(1.0);
-
-        //rotationMatrix = glm::yawPitchRoll(mSpin, mTilt, 0.0f);
-
         rotationMatrix = glm::rotate(rotationMatrix, -mSpin, glm::vec3(0.0, 1.0, 0.0));
         rotationMatrix = glm::rotate(rotationMatrix, mTilt, glm::vec3(1.0, 0.0, 0.0));
 
+        // create the up vector, and then rotate it. Note that it is -1 to flip the world right side up
         glm::vec4 upReal(0.0f, -1.0f, 0.0f, 1.0f);
         upReal = rotationMatrix * upReal;
 
+        // This is the vector that will transplate the camera
+        glm::vec4 transVector(-mMoveRight, mMoveUp, 0.0f, 1.0f);
+        transVector = rotationMatrix * transVector;
+
+        // now we need a rotated zoom vector
         glm::vec4 rotatedZoom = rotationMatrix * glm::vec4(0.0f, 0.0f, -mZoom, 1.0f);
 
+        // change the target we are looking at to be in line with the new translation
+        mTargetPoint = mTargetPoint + glm::vec3(transVector);
+
+        // apply the zoom to the target point to get the camera location
         glm::vec4 cameraPosition4 = glm::vec4(mTargetPoint, 1.0f) + rotatedZoom;
 
+        // reset the data to the transform component
+        // note that the camera position is not saved to the transform, rather where the camera
+        // is rotating around is saved. This is more intuitive
         mCameraTransform->SetWorldTranslation(mTargetPoint);
         
+        // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
+
+        // reset for no translation next frame
+        mMoveUp = 0.0f;
+        mMoveRight = 0.0f;
 
         break;
       }
@@ -350,7 +382,7 @@ namespace YTE
 
   void Camera::UpdateCameraRotation(float aTilt, float aTwist, float aSpin)
   {
-    //! 0.1f is a generic number, we dont want it to be exactly half of pi, so we take some
+    // 0.1f is a generic number, we dont want it to be exactly half of pi, so we take some
     float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
 
     // apply rotation
