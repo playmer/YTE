@@ -18,6 +18,11 @@ namespace YTE
   DefineType(MenuCollider)
   {
     YTERegisterType(MenuCollider);
+
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size")->AddAttribute<EditorProperty>();
     YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset")->AddAttribute<EditorProperty>();
 

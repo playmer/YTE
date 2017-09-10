@@ -52,7 +52,7 @@ namespace YTE
   {
     auto typeAddingTo = dynamic_cast<Type*>(aObject);
     DebugObjection(nullptr == typeAddingTo,
-                "ComponentDependencies Attribute being added to unknown object type.");
+                   "ComponentDependencies Attribute being added to unknown object type.");
 
     for (auto typeOptions : aTypes)
     {
@@ -60,10 +60,10 @@ namespace YTE
       for (auto type : typeOptions)
       {
         DebugObjection(false == type->IsA(Component::GetStaticType()),
-                    "Type %s is not a component but it's being used as a component"
-                    " dependency on type %s",
-                    type->GetName().c_str(),
-                    typeAddingTo->GetName().c_str());
+                       "Type %s is not a component but it's being used as a component"
+                       " dependency on type %s",
+                       type->GetName().c_str(),
+                       typeAddingTo->GetName().c_str());
 
         types.emplace_back(type);
       }
