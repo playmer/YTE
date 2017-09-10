@@ -51,6 +51,10 @@ namespace YTE
     YTEBindProperty(&Camera::GetFieldOfViewY, &Camera::SetFieldOfViewY, "FieldOfViewY") 
       ->AddAttribute<EditorProperty>() 
       .SetDocumentation("The field of view (y) the view will be rendered with."); 
+
+    YTEBindProperty(&Camera::GetZoomingMaxAndMin, &Camera::SetZoomingMaxAndMin, "Zoom Planes")
+      ->AddAttribute<EditorProperty>()
+      .SetDocumentation("The min (x) and max (y) zoom of the camera.");
  
     YTEBindProperty(&Camera::GetCameraType, &Camera::SetCameraType, "CameraType") 
       ->AddAttribute<EditorProperty>() 
@@ -75,6 +79,8 @@ namespace YTE
       mTwist(0.0f),
       mSpin(0.0f),
       mZoom(5.0f),
+      mZoomMin(2.0f),
+      mZoomMax(30.0f),
       mConstructing(true), 
       mType(CameraType::CameraOrientation) 
   { 
@@ -88,7 +94,6 @@ namespace YTE
     mConstructing = false; 
 
     mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
-    mCameraPosition = mTargetPoint;
   } 
  
   void Camera::Initialize() 
@@ -105,7 +110,6 @@ namespace YTE
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
-    mCameraPosition = mCameraTransform->GetTranslation();
   } 
 
 
@@ -176,8 +180,9 @@ namespace YTE
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
     // if the alt key is not being pressed, then there is no camera movement
-    //? change this to the alt keys, current error though (they dont work)
-    if (mKeyboard->IsKeyDown(Keys::A) == false && mKeyboard->IsKeyDown(Keys::B) == false)
+    // note this only works because the scroll event is a different function
+    // the scroll wheel must zoom without pressing the alt key
+    if (mKeyboard->IsKeyDown(Keys::Alt) == false)
     {
       return;
     }
@@ -287,11 +292,6 @@ namespace YTE
       position = mCameraTransform->GetTranslation();
     }
 
-    glm::vec4 rotation;
-    rotation.x = mTilt;
-    rotation.y = mTwist;
-    rotation.z = mSpin;
-
 
     switch (mType) 
     { 
@@ -325,19 +325,21 @@ namespace YTE
 
         glm::mat4 rotationMatrix = glm::mat4(1.0);
 
-        rotationMatrix = glm::rotate(rotationMatrix, mSpin, glm::vec3(0.0, 1.0, 0.0));
+        //rotationMatrix = glm::yawPitchRoll(mSpin, mTilt, 0.0f);
+
+        rotationMatrix = glm::rotate(rotationMatrix, -mSpin, glm::vec3(0.0, 1.0, 0.0));
         rotationMatrix = glm::rotate(rotationMatrix, mTilt, glm::vec3(1.0, 0.0, 0.0));
 
-        glm::vec4 upReal(0.0f, 1.0f, 0.0f, 1.0f);
+        glm::vec4 upReal(0.0f, -1.0f, 0.0f, 1.0f);
         upReal = rotationMatrix * upReal;
 
-        const glm::vec4 cameraPosition4 = rotationMatrix * (glm::vec4(mTargetPoint, 1.0) + glm::vec4(0.0f, 0.0f, -mZoom, 1.0f));
+        glm::vec4 rotatedZoom = rotationMatrix * glm::vec4(0.0f, 0.0f, -mZoom, 1.0f);
 
+        glm::vec4 cameraPosition4 = glm::vec4(mTargetPoint, 1.0f) + rotatedZoom;
 
-
+        mCameraTransform->SetWorldTranslation(mTargetPoint);
+        
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
-        break;
-
 
         break;
       }
@@ -356,8 +358,6 @@ namespace YTE
     mTwist += aTwist;
     mSpin += aSpin;
 
-    //? Change to use settable variable for ymin ymax
-
     // clamp tilt (y axis) to half pi (nearly straight up and down)
     if (mTilt >= pidiv2)
     {
@@ -375,14 +375,13 @@ namespace YTE
   {
     mZoom += aZoom;
 
-    //? Change to use settable variable for zoomMin and zoomMax
-    if (mZoom >= 30.0f)
+    if (mZoom >= mZoomMax)
     {
-      mZoom = 30.0f;
+      mZoom = mZoomMax;
     }
-    else if (mZoom <= 2.0f)
+    else if (mZoom <= mZoomMin)
     {
-      mZoom = 2.0f;
+      mZoom = mZoomMin;
     }
   }
 

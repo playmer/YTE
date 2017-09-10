@@ -131,6 +131,24 @@ namespace YTE
       } 
     } 
 
+    void SetZoomingMaxAndMin(glm::vec2 aDist)
+    {
+      // prevents weirdness
+      if (aDist.x > aDist.y)
+      {
+        mZoomMax = aDist.x;
+        mZoomMin = aDist.y;
+      }
+
+      mZoomMax = aDist.y;
+      mZoomMin = aDist.x;
+    }
+
+    glm::vec2 GetZoomingMaxAndMin()
+    {
+      return glm::vec2(mZoomMin, mZoomMax);
+    }
+
   private:
     void UpdateCameraRotation(float aTilt, float aTwist, float aSpin);
     void UpdateZoom(float aZoom);
@@ -147,7 +165,6 @@ namespace YTE
  
     Window *mWindow; 
     Transform *mTargetObject; 
-    glm::vec3 mCameraPosition;
     glm::vec3 mTargetPoint; 
     glm::i32vec2 mMouseInitialPosition;
  
@@ -159,6 +176,8 @@ namespace YTE
     float mTwist;
     float mSpin;
     float mZoom;
+    float mZoomMin;
+    float mZoomMax;
  
  
     bool mConstructing; 
