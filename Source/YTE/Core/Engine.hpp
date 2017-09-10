@@ -53,23 +53,6 @@ namespace YTE
     BoundType *aNewType;
   };
 
-  // statically accessable class for deltatime
-  class DeltaTime
-  {
-  public:
-    static float GetDt()
-    {
-      return dt;
-    }
-    static void SetDt(float aDt)
-    {
-      dt = aDt;
-    }
-
-  private:
-    static float dt;
-  };
-
   class Engine : public Composition
   {
   public:
@@ -124,6 +107,11 @@ namespace YTE
       return mEditorMode;
     }
 
+    float GetDt()
+    {
+      return dt;
+    }
+
   private:
     GamepadSystem mGamepadSystem;
 
@@ -140,7 +128,7 @@ namespace YTE
     bool mShouldRun;
     bool mEditorMode;
 
-    DeltaTime dt;
+    float dt;
   };
 }
 
