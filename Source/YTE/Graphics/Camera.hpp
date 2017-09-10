@@ -128,6 +128,28 @@ namespace YTE
         UpdateView(); 
       } 
     } 
+
+    void SetZoomingMaxAndMin(glm::vec2 aDist)
+    {
+      // prevents weirdness
+      if (aDist.x > aDist.y)
+      {
+        mZoomMax = aDist.x;
+        mZoomMin = aDist.y;
+      }
+
+      mZoomMax = aDist.y;
+      mZoomMin = aDist.x;
+    }
+
+    glm::vec2 GetZoomingMaxAndMin() const
+    {
+      return glm::vec2(mZoomMin, mZoomMax);
+    }
+
+  private:
+    void UpdateCameraRotation(float aTilt, float aTwist, float aSpin);
+    void UpdateZoom(float aZoom);
  
   private: 
     std::string mCameraType; 
@@ -137,6 +159,7 @@ namespace YTE
     Orientation *mCameraOrientation; 
 
     Mouse *mMouse;
+    Keyboard *mKeyboard;
  
     Window *mWindow; 
     Transform *mTargetObject; 
@@ -151,6 +174,10 @@ namespace YTE
     float mTwist;
     float mSpin;
     float mZoom;
+    float mZoomMin;
+    float mZoomMax;
+    float mMoveUp;
+    float mMoveRight;
  
  
     bool mConstructing; 
