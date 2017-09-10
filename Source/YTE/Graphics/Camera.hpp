@@ -130,6 +130,10 @@ namespace YTE
         UpdateView(); 
       } 
     } 
+
+  private:
+    void UpdateCameraRotation(float aTilt, float aTwist, float aSpin);
+    void UpdateZoom(float aZoom);
  
   private: 
     std::string mCameraType; 
@@ -139,9 +143,11 @@ namespace YTE
     Orientation *mCameraOrientation; 
 
     Mouse *mMouse;
+    Keyboard *mKeyboard;
  
     Window *mWindow; 
     Transform *mTargetObject; 
+    glm::vec3 mCameraPosition;
     glm::vec3 mTargetPoint; 
     glm::i32vec2 mMouseInitialPosition;
  
