@@ -95,6 +95,12 @@ QLineEdit * ArchetypeTools::GetLineEdit()
 
 void ArchetypeTools::SetButtonMode(int aMode)
 {
+
+  mRevertButton->show();
+  mSaveAsButton->show();
+  mOverwriteButton->show();
+
+  /*
   switch (aMode)
   {
   case NoArchetype:
@@ -121,6 +127,7 @@ void ArchetypeTools::SetButtonMode(int aMode)
     break;
   }
   }
+  */
 }
 
 void ArchetypeTools::Revert()
