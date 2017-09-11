@@ -55,6 +55,7 @@ namespace YTE
       mData.resize(size);
 
       memcpy(mData.data(), loadedFile, size);
+      stbi_image_free(loadedFile),
 
       mType = TextureType::RGBA;
     }

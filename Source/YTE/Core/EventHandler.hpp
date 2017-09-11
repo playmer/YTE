@@ -185,7 +185,7 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
   protected:
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<String, IntrusiveList<EventDelegate>> mEventLists;
+    std::unordered_map<std::string, IntrusiveList<EventDelegate>> mEventLists;
     static std::unordered_map<std::string, BlockAllocator<EventDelegate>> mDelegateAllocators;
   };
 }

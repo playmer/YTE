@@ -18,7 +18,6 @@ namespace YTE
   DefineEvent(PositionChanged);
   DefineEvent(RotationChanged);
   DefineEvent(ScaleChanged);
-  DefineEvent(OrientationChanged);
 
   DefineType(PositionChanged)
   {
@@ -36,14 +35,6 @@ namespace YTE
   {
     YTERegisterType(ScaleChanged);
     YTEBindField(&ScaleChanged::Scale, "Scale", PropertyBinding::Get);
-  }
-
-  DefineType(OrientationChanged)
-  {
-    YTERegisterType(OrientationChanged);
-    YTEBindField(&OrientationChanged::Forward, "Forward", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::Right, "Right", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::Up, "Up", PropertyBinding::Get);
   }
 
   DefineType(Transform)

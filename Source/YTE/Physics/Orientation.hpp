@@ -17,6 +17,18 @@
 
 namespace YTE
 {
+  DeclareEvent(OrientationChanged);
+
+  class OrientationChanged : public Event
+  {
+  public:
+    DeclareType(OrientationChanged);
+
+    glm::vec3 Forward;
+    glm::vec3 Right;
+    glm::vec3 Up;
+  };
+
   class Orientation : public Component
   {
   public:

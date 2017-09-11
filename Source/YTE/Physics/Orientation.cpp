@@ -16,6 +16,16 @@
 
 namespace YTE
 {
+  DefineEvent(OrientationChanged);
+
+  DefineType(OrientationChanged)
+  {
+    YTERegisterType(OrientationChanged);
+    YTEBindField(&OrientationChanged::Forward, "Forward", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::Right, "Right", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::Up, "Up", PropertyBinding::Get);
+  }
+
   DefineType(Orientation)
   {
     YTERegisterType(Orientation);
