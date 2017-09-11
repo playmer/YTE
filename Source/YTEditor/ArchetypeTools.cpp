@@ -210,6 +210,10 @@ void ArchetypeTools::Revert()
   ClearChanges();
 }
 
+void ArchetypeTools::RevertObject(ObjectItem * aObject)
+{
+}
+
 void ArchetypeTools::SaveAs()
 {
   mIsArchetype = true;
@@ -249,6 +253,11 @@ void ArchetypeTools::SaveAs()
 
 void ArchetypeTools::Overwrite()
 {
+  std::string str = mArchNameBar->text().toStdString();
+  YTE::String arch = str.c_str();
+
+  auto items = mBrowser->GetMainWindow()->GetObjectBrowser().FindAllObjectsOfArchetype(arch);
+
   mIsDifferent = false;
   ClearChanges();
 }

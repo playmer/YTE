@@ -26,6 +26,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Utilities/String/String.h"
 
 #include "YTE/Graphics/InstantiatedMesh.hpp"
 #include "YTE/Graphics/Mesh.hpp"
@@ -382,6 +383,25 @@ ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composit
   return nullptr;
 }
 
+void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String & aArchetypeName, 
+                                                   YTE::vector<ObjectItem*>* aResult, 
+                                                   ObjectItem* aItem)
+{
+  for (int i = 0; i < aItem->childCount(); ++i)
+  {
+    ObjectItem *item = dynamic_cast<ObjectItem*>(aItem->child(i));
+
+    if (item->GetEngineObject()->GetArchetypeName() == aArchetypeName)
+    {
+      aResult->emplace_back(item);
+    }
+
+    FindObjectsByArchetypeInternal(aArchetypeName, aResult, item);
+  }
+
+  return;
+}
+
 ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i)
@@ -409,4 +429,24 @@ ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
 YTEditorMainWindow * ObjectBrowser::GetMainWindow() const
 {
   return mMainWindow;
+}
+
+YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String & aArchetypeName)
+{
+  YTE::vector<ObjectItem*> *result = new YTE::vector<ObjectItem*>();
+
+  // loop through all items in the object browser
+  for (int i = 0; i < topLevelItemCount(); ++i)
+  {
+    ObjectItem* objItem = dynamic_cast<ObjectItem*>(topLevelItem(i));
+
+    if (objItem->GetEngineObject()->GetArchetypeName() == aArchetypeName)
+    {
+      result->emplace_back(objItem);
+    }
+
+    FindObjectsByArchetypeInternal(aArchetypeName, result, objItem);
+  }
+
+  return result;
 }

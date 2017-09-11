@@ -15,6 +15,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include <QtWidgets/qtreewidget.h>
+#include "YTE/StandardLibrary/Vector.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -24,6 +25,7 @@ typedef QMap<QString, Component> Archetype;
 namespace YTE
 {
   class Composition;
+  class String;
 }
 
 class YTEditorMainWindow;
@@ -71,6 +73,8 @@ public:
 
   YTEditorMainWindow* GetMainWindow() const;
 
+  YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+
 private:
   YTEditorMainWindow *mMainWindow;
   void SetWidgetSettings();
@@ -86,4 +90,9 @@ private:
   void keyPressEvent(QKeyEvent *aEvent);
 
   ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+
+  void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
+                                      YTE::vector<ObjectItem*>* aResult, 
+                                      ObjectItem* aItem);
+
 };

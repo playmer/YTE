@@ -22,6 +22,7 @@ class QPushButton;
 class QHBoxLayout;
 class QLineEdit;
 class QLabel;
+class ObjectItem;
 
 class ArchetypeTools : public QWidget
 {
@@ -39,6 +40,7 @@ public:
 
 private:
 
+
   ComponentBrowser *mBrowser;
   QHBoxLayout *mLayout;
 
@@ -47,6 +49,7 @@ private:
 
   QPushButton *mRevertButton;
   void Revert();
+  void RevertObject(ObjectItem *aObject);
 
   QPushButton *mSaveAsButton;
   void SaveAs();
