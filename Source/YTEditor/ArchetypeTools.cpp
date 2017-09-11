@@ -136,57 +136,76 @@ void ArchetypeTools::Revert()
   YTEditorMainWindow *mainWin = mBrowser->GetMainWindow();
 
   YTE::Composition *obj = mainWin->GetObjectBrowser().GetCurrentObject();
-  YTE::RSAllocator allocator;
-  YTE::RSValue currArchValue = obj->Serialize(allocator);
 
-  YTE::String archName = mArchNameBar->text().toStdString();
+  RevertObject(obj);
+
+  mIsDifferent = false;
+  ClearChanges();
+}
+
+void ArchetypeTools::RevertObject(ObjectItem * aObject)
+{
+  YTEditorMainWindow *mainWin = mBrowser->GetMainWindow();
+
+  YTE::Composition *obj = aObject->GetEngineObject();
+
+  RevertObject(obj);
+}
+
+void ArchetypeTools::RevertObject(YTE::Composition * aObject)
+{
+  YTEditorMainWindow *mainWin = mBrowser->GetMainWindow();
+
+  YTE::RSAllocator allocator;
+  YTE::RSValue archValue = aObject->Serialize(allocator);
+
+  YTE::String archName = aObject->GetArchetypeName();
 
   YTE::RSValue *trueArchValue = mainWin->GetRunningEngine()->GetArchetype(archName);
 
   // if they're different, we need to reinstantiate all the objects
-  if (currArchValue != *trueArchValue)
+  if (archValue != *trueArchValue)
   {
     // save the position and rotation
-    YTE::Transform *trans = obj->GetComponent<YTE::Transform>();
-    auto pos = trans->GetWorldTranslation();
-    auto rot = trans->GetWorldRotation();
+    YTE::Transform *trans = aObject->GetComponent<YTE::Transform>();
+    auto pos = trans->GetTranslation();
+    auto rot = trans->GetRotation();
 
-    YTE::String name = obj->GetName();
+    YTE::String name = aObject->GetName();
 
     // delete the old instances
-    YTE::Composition *parent = obj->GetParent();
-    parent->RemoveComposition(obj);
-    
-    
+    YTE::Composition *parent = aObject->GetParent();
+    parent->RemoveComposition(aObject);
+
     ObjectBrowser &objBrowser = mBrowser->GetMainWindow()->GetObjectBrowser();
-    
-    ObjectItem *currItem = dynamic_cast<ObjectItem*>(objBrowser.currentItem());
+
+    ObjectItem *item = objBrowser.FindItemByComposition(aObject);
 
     // is the item parented?
-    bool isChild = currItem->parent();
+    bool isChild = item->parent();
     int index = 0;
 
     if (isChild)
     {
-      index = currItem->parent()->indexOfChild(currItem);
+      index = item->parent()->indexOfChild(item);
     }
     else
     {
-      index = objBrowser.indexOfTopLevelItem(currItem);
+      index = objBrowser.indexOfTopLevelItem(item);
     }
 
     // remove old object item
-    objBrowser.RemoveObjectFromViewer(currItem);
+    objBrowser.RemoveObjectFromViewer(item);
 
     ObjectItem *newItem = nullptr;
 
     // item has a parent object
     if (isChild)
     {
-      newItem = objBrowser.AddChildObject(name.c_str(), 
-                                          archName.c_str(), 
-                                          objBrowser.FindItemByComposition(parent), 
-                                          index);
+      newItem = objBrowser.AddChildObject(name.c_str(),
+        archName.c_str(),
+        objBrowser.FindItemByComposition(parent),
+        index);
     }
     // item has no parent
     else
@@ -195,23 +214,16 @@ void ArchetypeTools::Revert()
     }
 
     // set obj to the new composition
-    obj = newItem->GetEngineObject();
+    aObject = newItem->GetEngineObject();
 
     // load all the children of the new object
-    //objBrowser.LoadAllChildObjects(obj, newItem);
+    objBrowser.LoadAllChildObjects(aObject, newItem);
 
     // set their positions and rotations to the stored values
-    trans = obj->GetComponent<YTE::Transform>();
-    trans->SetWorldTranslation(pos);
-    trans->SetWorldRotation(rot);
+    trans = aObject->GetComponent<YTE::Transform>();
+    trans->SetTranslation(pos);
+    trans->SetRotation(rot);
   }
-
-  mIsDifferent = false;
-  ClearChanges();
-}
-
-void ArchetypeTools::RevertObject(ObjectItem * aObject)
-{
 }
 
 void ArchetypeTools::SaveAs()
@@ -258,8 +270,10 @@ void ArchetypeTools::Overwrite()
 
   auto items = mBrowser->GetMainWindow()->GetObjectBrowser().FindAllObjectsOfArchetype(arch);
 
-  mIsDifferent = false;
-  ClearChanges();
+  for (ObjectItem *obj : *items)
+  {
+    RevertObject(obj);
+  }
 }
 
 void ArchetypeTools::HideButtons()
