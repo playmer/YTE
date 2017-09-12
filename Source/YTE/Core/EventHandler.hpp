@@ -10,10 +10,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #ifndef YTE_Core_EventHandler_hpp
 #define YTE_Core_EventHandler_hpp
 
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
 #include "YTE/Core/Object.hpp"
 
@@ -67,14 +68,18 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     {
     public:
       template<typename ObjectType = EventHandler>
-      EventDelegate(ObjectType * aObj, Invoker aInvoker)
-        : DelegateType(aObj, aInvoker), mHook(this)
+      EventDelegate(ObjectType * aObj, Invoker aInvoker, const std::string &aName)
+        : DelegateType(aObj, aInvoker), 
+          mName(aName), 
+          mHook(this)
       {
 
       }
 
       EventDelegate(EventDelegate &&aEventDelegate)
-        : Delegate(std::move(*this)), mHook(std::move(aEventDelegate.mHook), this)
+        : Delegate(std::move(*this)), 
+          mName(aEventDelegate.mName),
+          mHook(std::move(aEventDelegate.mHook), this)
       {
       }
 
@@ -89,49 +94,53 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       {
         return Delegate(aObj, Caller<tFunctionType, aFunction, tObjectType, tEventType>);
       }
-      String mName;
+
+      const std::string &mName;
       IntrusiveList<EventDelegate>::Hook mHook;
     };
 
     using Deleter = BlockAllocator<EventDelegate>::Deleter;
     using UniqueEvent = std::unique_ptr<EventDelegate, Deleter>;
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename SenderType = EventHandler>
+    template <typename FunctionType, FunctionType aFunction, typename StringType = std::string, typename SenderType = EventHandler>
     void Connect(SenderType* aSender, const StringType& aName)
     {
       aSender->template RegisterEvent<FunctionType, aFunction, StringType>(aName, &*this);
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
+    template <typename FunctionType, FunctionType aFunction, typename StringType = std::string, typename ObjectType = EventHandler>
     void RegisterEvent(const StringType &aName, ObjectType* aObject)
     {
       auto delegate = aObject->template MakeEventDelegate<FunctionType, aFunction, typename StringType, typename ObjectType>(aName, aObject);
-      mEventLists[aName].InsertBack(delegate->mHook);
+      mEventLists[delegate->mName].InsertFront(delegate->mHook);
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
+    template <typename FunctionType, FunctionType aFunction, typename StringType = std::string, typename ObjectType = EventHandler>
     void DeregisterEvent(const StringType& aName, ObjectType* aObject)
     {
       aObject->template RemoveEventDelegate<FunctionType, aFunction, StringType, ObjectType>(aName, aObject);
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
+    template <typename FunctionType, FunctionType aFunction, typename StringType = std::string, typename ObjectType = EventHandler>
     EventDelegate* MakeEventDelegate(const StringType& aName, ObjectType* aObject)
     {
       using EventType = typename Binding<FunctionType>::EventType;
 
       static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
       Invoker callerFunction = EventDelegate::Caller<FunctionType, aFunction, ObjectType, EventType>;
+
+      // TODO: Don't do this this way.
       auto &allocator = mDelegateAllocators[aName];
+      auto it = mDelegateAllocators.find(aName);
+
       auto ptr = allocator.allocate();
 
-      new(ptr) EventDelegate(aObject, callerFunction);
-      ptr->mName = aName;
+      new(ptr) EventDelegate(aObject, callerFunction, it->first);
       mHooks.emplace_back(std::move(UniqueEvent(ptr, allocator.GetDeleter())));
       return mHooks.back().get();
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
+    template <typename FunctionType, FunctionType aFunction, typename StringType = std::string, typename ObjectType = EventHandler>
     void RemoveEventDelegate(const StringType& aName, ObjectType* aObject)
     {
       using EventType = typename Binding<FunctionType>::EventType;
@@ -154,10 +163,9 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       }
     }
 
-    template <typename StringType = String>
-    void SendEvent(const StringType& aName, Event* aEvent)
+    void SendEvent(const std::string &aName, Event *aEvent)
     {
-      auto && range = mEventLists[aName];
+      auto &&range = mEventLists[aName];
       
       for (auto begin = range.begin(), end = range.end(); 
            begin != end;
@@ -168,7 +176,7 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
         // We need to check to see if we're reached the end due to some number of events
         // (including the current) removing itself from the list.
-        if (begin != end)
+        if (begin == end)
         {
           break;
         }
@@ -184,9 +192,36 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     }
 
   protected:
+    struct StdStringRefWrapperEquality
+    {
+      bool operator()(const std::reference_wrapper<const std::string>& aLeft,
+                      const std::reference_wrapper<const std::string>& aRight) const
+      {
+        return aLeft.get() == aRight.get();
+      }
+
+      bool operator()(const std::reference_wrapper<std::string>& aLeft,
+                      const std::string &aRight) const
+      {
+        return aLeft.get() == aRight;
+      }
+
+      bool operator()(const std::string &aLeft,
+                      const std::reference_wrapper<std::string> &aRight) const
+      {
+        return aLeft == aRight.get();
+      }
+    };
+
+
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<std::string, IntrusiveList<EventDelegate>> mEventLists;
+    std::unordered_map<std::reference_wrapper<const std::string>, 
+                       IntrusiveList<EventDelegate>, 
+                       std::hash<std::string>, 
+                       StdStringRefWrapperEquality> mEventLists;
+
     static std::unordered_map<std::string, BlockAllocator<EventDelegate>> mDelegateAllocators;
   };
 }
+
 #endif
