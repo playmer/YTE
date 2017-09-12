@@ -208,13 +208,10 @@ namespace YTE
       dt = 0.016f;
     }
 
-    if (false == mEditorMode)
+    for (auto &window : mWindows)
     {
-      for (auto &window : mWindows)
-      {
-        SetFrameRate(*window.second, dt);
-        window.second->Update();
-      }
+      SetFrameRate(*window.second, dt);
+      window.second->Update();
     }
 
     LogicUpdate updateEvent;

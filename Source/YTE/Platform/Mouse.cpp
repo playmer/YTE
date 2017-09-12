@@ -70,7 +70,7 @@ namespace YTE
   {
     MouseButtonEvent mouseEvent;
 
-    for (size_t i = 0; i < static_cast<size_t>(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
     {
       mouseEvent.WorldCoordinates = mMousePosition;
 
@@ -78,6 +78,8 @@ namespace YTE
       {
         mouseEvent.Button = static_cast<Mouse_Buttons>(i);
         mouseEvent.Mouse = this;
+
+        std::cout << "Mouse Persist:" << i << std::endl;
 
         SendEvent(Events::MousePersist, &mouseEvent);
       }
@@ -88,13 +90,17 @@ namespace YTE
 
   void Mouse::UpdateButton(Mouse_Buttons aButton, bool aDown, glm::vec2 aPosition)
   {
-    size_t index = static_cast<size_t>(aButton);
+    size_t index = enum_cast(aButton);
         
       // Button got resent.
     if (mMouseCurrent[index] == aDown)
     {
       return;
     }
+
+    auto truth = aDown ? "Down: " : "Up: ";
+
+    std::cout << "Mouse " << truth << enum_cast(aButton) << std::endl;
 
     mMousePosition = aPosition;
 
@@ -145,11 +151,11 @@ namespace YTE
 
   bool Mouse::IsButtonDown(Mouse_Buttons aButton)
   {
-    return mMouseCurrent[static_cast<size_t>(aButton)];
+    return mMouseCurrent[enum_cast(aButton)];
   }
   bool Mouse::WasButtonDown(Mouse_Buttons aButton)
   {
-    return mMousePrevious[static_cast<size_t>(aButton)];
+    return mMousePrevious[enum_cast(aButton)];
   }
   glm::vec2 Mouse::GetCursorPosition()
   {
