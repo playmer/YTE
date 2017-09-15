@@ -15,6 +15,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include <QtWidgets/qtreewidget.h>
+#include "YTE/StandardLibrary/Vector.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -24,6 +25,7 @@ typedef QMap<QString, Component> Archetype;
 namespace YTE
 {
   class Composition;
+  class String;
 }
 
 class YTEditorMainWindow;
@@ -38,16 +40,22 @@ public:
   void ClearObjectBrowser();
 
   ObjectItem* AddObject(const char *aCompositionName, 
-                        const char *aArchetypeName);
+                        const char *aArchetypeName,
+                        int aIndex = 0);
+
   ObjectItem* AddChildObject(const char *aCompositionName,
                              const char *aArchetypeName,
-                             ObjectItem *aParentObj);
+                             ObjectItem *aParentObj,
+                             int aIndex = 0);
 
   ObjectItem* AddTreeItem(const char *aItemName, 
-                          YTE::Composition *aEngineObj);
+                          YTE::Composition *aEngineObj,
+                          int aIndex = 0);
+
   ObjectItem* AddTreeItem(const char *aItemName, 
                           ObjectItem * aParentObj, 
-                          YTE::Composition *aEngineObj);
+                          YTE::Composition *aEngineObj,
+                          int aIndex = 0);
 
   ObjectItem* AddExistingComposition(const char *aCompositionName,
                                      YTE::Composition *aComposition);
@@ -62,6 +70,8 @@ public:
   ObjectItem* FindItemByComposition(YTE::Composition *aComp);
 
   YTEditorMainWindow* GetMainWindow() const;
+
+  YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
 private:
   YTEditorMainWindow *mMainWindow;
@@ -78,4 +88,9 @@ private:
   void keyPressEvent(QKeyEvent *aEvent);
 
   ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+
+  void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
+                                      YTE::vector<ObjectItem*>* aResult, 
+                                      ObjectItem* aItem);
+
 };

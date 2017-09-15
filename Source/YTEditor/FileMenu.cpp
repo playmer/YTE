@@ -17,13 +17,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/String/String.h"
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Core/AssetLoader.hpp"
 
 #include <qfiledialog.h>
 #include <qdesktopservices.h>
 
 #include <qapplication.h>
 
-FileMenu::FileMenu(YTEditorMainWindow * aMainWindow) : QMenu("File"), mMainWindow(aMainWindow)
+FileMenu::FileMenu(YTEditorMainWindow * aMainWindow)
+  : QMenu("File"), mMainWindow(aMainWindow)
 {
   QAction * newLevelAct = new QAction("New Level");
   addAction(newLevelAct);
@@ -60,9 +62,11 @@ void FileMenu::NewLevel()
 
 void FileMenu::OpenLevel()
 {
+  std::string gamePath = YTE::Path::GetGamePath().String();
+
   // Construct a file dialog for selecting the correct file
   QString fileName = QFileDialog::getOpenFileName(this,
-    tr("Open Level"), QDir::currentPath() + "/../Levels/", tr("Level Files (*.json)"));
+    tr("Open Level"), QString(gamePath.c_str()) + "Levels/", tr("Level Files (*.json)"));
 
   if (fileName == "")
   {

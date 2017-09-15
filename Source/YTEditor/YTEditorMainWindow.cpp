@@ -243,6 +243,8 @@ void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
 
   mainSession->LoadLevel(aLevelName);
 
+  mRunningEngine->Update();
+
   LoadCurrentLevelInfo();
 }
 

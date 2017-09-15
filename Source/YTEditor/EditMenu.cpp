@@ -16,7 +16,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditorMainWindow.hpp"
 
-EditMenu::EditMenu(YTEditorMainWindow * aMainWindow) : QMenu("Edit"), mMainWindow(aMainWindow)
+EditMenu::EditMenu(YTEditorMainWindow * aMainWindow) 
+  : QMenu("Edit"), mMainWindow(aMainWindow)
 {
   addAction(new QAction("Placeholder"));
 }

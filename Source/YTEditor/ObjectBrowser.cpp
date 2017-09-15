@@ -26,6 +26,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Utilities/String/String.h"
 
 #include "YTE/Graphics/InstantiatedMesh.hpp"
 #include "YTE/Graphics/Mesh.hpp"
@@ -71,7 +72,8 @@ void ObjectBrowser::ClearObjectBrowser()
 }
 
 ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
-                                     const char *aArchetypeName)
+                                     const char *aArchetypeName,
+                                     int aIndex)
 {
   auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
   auto space = spaces->begin()->second.get();
@@ -83,7 +85,7 @@ ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
                                             this);
 
   mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
-  return AddTreeItem(aCompositionName, composition);
+  return AddTreeItem(aCompositionName, composition, aIndex);
 }
 
 ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
@@ -94,7 +96,8 @@ ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
 
 ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
                                           const char *aArchetypeName,
-                                          ObjectItem *aParentObj)
+                                          ObjectItem *aParentObj,
+                                          int aIndex)
 {
   auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
   auto space = spaces->begin()->second.get();
@@ -107,11 +110,12 @@ ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
                                             this);
 
   mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
-  return AddTreeItem(aCompositionName, aParentObj, composition);
+  return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
 }
 
 ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName, 
-                                       YTE::Composition *aEngineObj)
+                                       YTE::Composition *aEngineObj,
+                                       int aIndex)
 {
   YTE::String name{ aItemName };
 
@@ -122,7 +126,7 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
 
   // Add new item as a top level member in the tree heirarchy
   // (object should have no parent objects)
-  this->addTopLevelItem(item);
+  this->insertTopLevelItem(aIndex, item);
 
   this->setCurrentItem(item);
 
@@ -131,7 +135,8 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
 
 ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName, 
                                        ObjectItem *aParentObj, 
-                                       YTE::Composition *aEngineObj)
+                                       YTE::Composition *aEngineObj,
+                                       int aIndex)
 {
   YTE::String name{ aItemName };
 
@@ -141,7 +146,7 @@ ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
   ObjectItem *item = new ObjectItem(name, aParentObj, aEngineObj, space);
 
   // add this object as a child of another tree item
-  aParentObj->addChild(item);
+  aParentObj->insertChild(aIndex, item);
 
   this->setCurrentItem(item);
 
@@ -166,23 +171,22 @@ void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
 
   ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
-  if (currObj->GetEngineObject()->GetArchetypeName().Empty())
+
+  if (currObj && currObj->GetEngineObject())
   {
+    if (currObj->GetEngineObject()->GetArchetypeName().Empty())
+    {
       archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
-  }
-  else if (currObj->GetEngineObject()->SameAsArchetype())
-  {
+    }
+    else if (currObj->GetEngineObject()->SameAsArchetype())
+    {
       archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
-  }
-  else
-  {
+    }
+    else
+    {
       archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
-  }
+    }
 
-
-  // Save the old item out
-  if (currObj)
-  {
     // Load the new current object into the component browser
     mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
 
@@ -279,26 +283,28 @@ void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
   // hide and remove from the tree
   aItem->setHidden(true);
 
-  //auto parent = aItem->parent();
-  //
-  //if (nullptr == parent)
-  //{
-  //  parent->removeChild(aItem);
-  //}
-  //else
-  //{
-  //}
-
-  this->removeItemWidget(aItem, 0);
-
-  //auto idx = currentIndex();
-  //model()->removeRow(idx.row(), idx.parent());
-  //
-  //setCurrentItem(topLevelItem(0));
-
-  if (currentItem())
+  auto parent = aItem->parent();
+  
+  if (nullptr == parent)
   {
-    YTE::Model * model = dynamic_cast<ObjectItem*>(currentItem())->GetEngineObject()->GetComponent<YTE::Model>();
+    int index = this->indexOfTopLevelItem(aItem);
+    auto item = takeTopLevelItem(index);
+    delete item;
+  }
+  else
+  {
+    int index = parent->indexOfChild(aItem);
+    auto item = parent->takeChild(index);
+    delete item;
+  }
+
+  setCurrentItem(topLevelItem(0));
+
+  ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
+
+  if (currItem && currItem->GetEngineObject())
+  {
+    YTE::Model * model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
 
     if (model)
     {
@@ -368,6 +374,23 @@ ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composit
   return nullptr;
 }
 
+void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String & aArchetypeName, 
+                                                   YTE::vector<ObjectItem*>* aResult, 
+                                                   ObjectItem* aItem)
+{
+  for (int i = 0; i < aItem->childCount(); ++i)
+  {
+    ObjectItem *item = dynamic_cast<ObjectItem*>(aItem->child(i));
+
+    if (item->GetEngineObject()->GetArchetypeName() == aArchetypeName)
+    {
+      aResult->emplace_back(item);
+    }
+
+    FindObjectsByArchetypeInternal(aArchetypeName, aResult, item);
+  }
+}
+
 ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
 {
   for (int i = 0; i < this->topLevelItemCount(); ++i)
@@ -395,4 +418,24 @@ ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
 YTEditorMainWindow * ObjectBrowser::GetMainWindow() const
 {
   return mMainWindow;
+}
+
+YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String & aArchetypeName)
+{
+  YTE::vector<ObjectItem*> *result = new YTE::vector<ObjectItem*>();
+
+  // loop through all items in the object browser
+  for (int i = 0; i < topLevelItemCount(); ++i)
+  {
+    ObjectItem* objItem = dynamic_cast<ObjectItem*>(topLevelItem(i));
+
+    if (objItem->GetEngineObject()->GetArchetypeName() == aArchetypeName)
+    {
+      result->emplace_back(objItem);
+    }
+
+    FindObjectsByArchetypeInternal(aArchetypeName, result, objItem);
+  }
+
+  return result;
 }

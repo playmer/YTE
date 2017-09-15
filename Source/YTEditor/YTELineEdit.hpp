@@ -22,7 +22,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 class YTELineEdit : public QLineEdit
 {
 public:
-  YTELineEdit(QWidget *aParent, YTEditorMainWindow *aMainWindow) : QLineEdit(aParent), mMainWindow(aMainWindow) { }
+  YTELineEdit(QWidget *aParent, YTEditorMainWindow *aMainWindow) 
+    : QLineEdit(aParent), mMainWindow(aMainWindow) { }
 
   ~YTELineEdit() { }
 

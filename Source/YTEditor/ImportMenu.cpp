@@ -37,7 +37,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "stb/stb_image.h"
 
 
-ImportMenu::ImportMenu(YTEditorMainWindow * aMainWindow) : QMenu("Import"), mMainWindow(aMainWindow)
+ImportMenu::ImportMenu(YTEditorMainWindow * aMainWindow) 
+  : QMenu("Import"), mMainWindow(aMainWindow)
 {
   QAction * importModelAct = new QAction("Model");
   addAction(importModelAct);

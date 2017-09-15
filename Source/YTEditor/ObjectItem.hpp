@@ -30,23 +30,25 @@ namespace YTE
 class ObjectItem : public QTreeWidgetItem
 {
 public:
-  ObjectItem(YTE::String &aItemName, 
-             ObjectBrowser *aParentTree, 
-             YTE::Composition *aEngineObj, 
+  ObjectItem(YTE::String &aItemName,
+             ObjectBrowser *aParentTree,
+             YTE::Composition *aEngineObj,
              YTE::Composition *aEngineLevel);
 
-  ObjectItem(YTE::String &aItemName, 
-             ObjectItem *aParentItem, 
-             YTE::Composition *aEngineObj, 
+  ObjectItem(YTE::String &aItemName,
+             ObjectItem *aParentItem,
+             YTE::Composition *aEngineObj,
              YTE::Composition *aEngineLevel);
 
   ~ObjectItem();
 
   void Rename(YTE::String &aName);
-  void DeleteFromEngine();
+  void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
-  ObjectBrowser * GetObjectBrowser() const;
-  YTE::Composition * GetEngineObject() const;
+  ObjectBrowser *GetObjectBrowser() const;
+  YTE::Composition *GetEngineObject() const;
+
+  void SetEngineObject(YTE::Composition *aComposition);
 
 private:
 
@@ -60,13 +62,14 @@ class ObjectItemDelegate : public QStyledItemDelegate
 public:
   ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget *aParent = nullptr);
 
-  void paint(QPainter *painter, const QStyleOptionViewItem &option,
-    const QModelIndex &index) const override;
+  void paint(QPainter *painter, 
+             const QStyleOptionViewItem &option,
+             const QModelIndex &index) const override;
 
   bool editorEvent(QEvent *event,
-    QAbstractItemModel *model,
-    const QStyleOptionViewItem &option,
-    const QModelIndex &index);
+                   QAbstractItemModel *model,
+                   const QStyleOptionViewItem &option,
+                   const QModelIndex &index);
 
 private:
   ObjectBrowser *mBrowser;

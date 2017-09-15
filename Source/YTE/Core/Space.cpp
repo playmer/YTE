@@ -21,6 +21,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
+#include "YTE/Core/AssetLoader.hpp"
 
 #include "YTE/Physics/RigidBody.h"
 
@@ -131,8 +132,11 @@ namespace YTE
 
     std::string levelNameTemp(aLevelName.c_str());
     std::wstring level{levelNameTemp.begin(), levelNameTemp.end()};
+
+    std::string path = YTE::Path::GetGamePath().String();
+    std::wstring pathWStr{ path.begin(), path.end() };
     
-    level = L"../levels/" + level + L".json";
+    level = pathWStr + L"Levels/" + level + L".json";
     
     level = std::experimental::filesystem::canonical(level, cWorkingDirectory);
     

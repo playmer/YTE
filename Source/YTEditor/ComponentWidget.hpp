@@ -42,7 +42,11 @@ class ComponentWidget : public QFrame
 {
 public:
 
-  ComponentWidget(YTE::Type * type, const char * name, YTE::Component * engineComp, YTEditorMainWindow *aMainWindow, QWidget * parent = nullptr);
+  ComponentWidget(YTE::Type * type, const char * name, 
+                  YTE::Component * engineComp, 
+                  YTEditorMainWindow *aMainWindow, 
+                  QWidget * parent = nullptr);
+
   ~ComponentWidget();
 
   std::string const& GetName() const;
@@ -114,13 +118,14 @@ class ComponentDelegate : public QStyledItemDelegate
 public:
   ComponentDelegate(ComponentTree *aTree, QWidget *aParent = nullptr);
 
-  void paint(QPainter *painter, const QStyleOptionViewItem &option,
-    const QModelIndex &index) const override;
+  void paint(QPainter *painter, 
+             const QStyleOptionViewItem &option,
+             const QModelIndex &index) const override;
 
   bool editorEvent(QEvent *event,
-    QAbstractItemModel *model,
-    const QStyleOptionViewItem &option,
-    const QModelIndex &index);
+                   QAbstractItemModel *model,
+                   const QStyleOptionViewItem &option,
+                   const QModelIndex &index);
 
 private:
   ComponentTree *mTree;

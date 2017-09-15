@@ -22,6 +22,12 @@ class QPushButton;
 class QHBoxLayout;
 class QLineEdit;
 class QLabel;
+class ObjectItem;
+
+namespace YTE
+{
+  class Composition;
+}
 
 class ArchetypeTools : public QWidget
 {
@@ -39,6 +45,7 @@ public:
 
 private:
 
+
   ComponentBrowser *mBrowser;
   QHBoxLayout *mLayout;
 
@@ -47,6 +54,8 @@ private:
 
   QPushButton *mRevertButton;
   void Revert();
+  void RevertObject(ObjectItem *aObject);
+  void RevertObject(YTE::Composition *aObject);
 
   QPushButton *mSaveAsButton;
   void SaveAs();
