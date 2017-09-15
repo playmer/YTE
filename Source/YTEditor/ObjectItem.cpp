@@ -28,10 +28,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.h"
 #include "qapplication.h"
 
-ObjectItem::ObjectItem(YTE::String &aItemName,
-  ObjectBrowser *aParentTree,
-  YTE::Composition *aEngineObj,
-  YTE::Composition *aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName, ObjectBrowser *aParentTree, 
+                       YTE::Composition *aEngineObj, YTE::Composition *aEngineLevel)
   : QTreeWidgetItem(aParentTree),
   mObjectBrowser(aParentTree),
   mEngineObject(aEngineObj),
@@ -41,10 +39,8 @@ ObjectItem::ObjectItem(YTE::String &aItemName,
   setFlags(flags() | Qt::ItemIsEditable);
 }
 
-ObjectItem::ObjectItem(YTE::String &aItemName,
-  ObjectItem *aParentItem,
-  YTE::Composition *aEngineObj,
-  YTE::Composition *aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName, ObjectItem *aParentItem,
+                       YTE::Composition *aEngineObj, YTE::Composition *aEngineLevel)
   : QTreeWidgetItem(aParentItem),
   mObjectBrowser(aParentItem->GetObjectBrowser()),
   mEngineObject(aEngineObj),

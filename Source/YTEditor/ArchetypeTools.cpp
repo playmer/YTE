@@ -95,39 +95,9 @@ QLineEdit * ArchetypeTools::GetLineEdit()
 
 void ArchetypeTools::SetButtonMode(int aMode)
 {
-
   mRevertButton->show();
   mSaveAsButton->show();
   mOverwriteButton->show();
-
-  /*
-  switch (aMode)
-  {
-  case NoArchetype:
-  {
-    mRevertButton->hide();
-    mSaveAsButton->show();
-    mOverwriteButton->hide();
-    break;
-  }
-
-  case IsSame:
-  {
-    mRevertButton->hide();
-    mSaveAsButton->hide();
-    mOverwriteButton->hide();
-    break;
-  }
-
-  case HasChanged:
-  {
-    mRevertButton->show();
-    mSaveAsButton->hide();
-    mOverwriteButton->show();
-    break;
-  }
-  }
-  */
 }
 
 void ArchetypeTools::Revert()
@@ -145,8 +115,6 @@ void ArchetypeTools::Revert()
 
 void ArchetypeTools::RevertObject(ObjectItem * aObject)
 {
-  YTEditorMainWindow *mainWin = mBrowser->GetMainWindow();
-
   YTE::Composition *obj = aObject->GetEngineObject();
 
   RevertObject(obj);
@@ -177,7 +145,7 @@ void ArchetypeTools::RevertObject(YTE::Composition * aObject)
     YTE::Composition *parent = aObject->GetParent();
     parent->RemoveComposition(aObject);
 
-    ObjectBrowser &objBrowser = mBrowser->GetMainWindow()->GetObjectBrowser();
+    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
 
     ObjectItem *item = objBrowser.FindItemByComposition(aObject);
 

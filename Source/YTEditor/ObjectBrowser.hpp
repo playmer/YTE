@@ -65,8 +65,6 @@ public:
 
   YTE::Composition* GetCurrentObject();
 
-  //ObjectItem* SetCurrentItemEnginePtr(YTE::Composition *aComposition);
-
   void RemoveObjectFromViewer(ObjectItem *aItem);
 
   ObjectItem* FindItemByComposition(YTE::Composition *aComp);

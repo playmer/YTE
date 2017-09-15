@@ -302,7 +302,7 @@ void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
 
   ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
-  if (currentItem() && currItem->GetEngineObject())
+  if (currItem && currItem->GetEngineObject())
   {
     YTE::Model * model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
 
@@ -350,15 +350,6 @@ YTE::Composition * ObjectBrowser::GetCurrentObject()
   return dynamic_cast<ObjectItem*>(currentItem())->GetEngineObject();
 }
 
-//ObjectItem * ObjectBrowser::SetCurrentItemEnginePtr(YTE::Composition * aComposition)
-//{
-//  ObjectItem *item = dynamic_cast<ObjectItem*>(currentItem());
-//  
-//  item->SetEngineObject(aComposition);
-//
-//  return item;
-//}
-
 ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
 {
   for (int i = 0; i < aItem->childCount(); ++i)
@@ -398,8 +389,6 @@ void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String & aArchetypeName,
 
     FindObjectsByArchetypeInternal(aArchetypeName, aResult, item);
   }
-
-  return;
 }
 
 ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
