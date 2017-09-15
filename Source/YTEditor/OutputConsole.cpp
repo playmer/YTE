@@ -24,8 +24,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QtWidgets/qgridlayout.h>
 #include <QtWidgets/qtextedit.h>
 
-OutputConsole::OutputConsole(QWidget *aParent) : QWidget(aParent), 
-mLayout(nullptr), mConsole(nullptr)
+OutputConsole::OutputConsole(QWidget *aParent)
+  : QWidget(aParent), mLayout(nullptr), mConsole(nullptr)
 {
   SetWindowSettings();
   ConstructInnerWidget();

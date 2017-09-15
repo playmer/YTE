@@ -28,23 +28,27 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.h"
 #include "qapplication.h"
 
-ObjectItem::ObjectItem(YTE::String &aItemName, ObjectBrowser *aParentTree, 
-                       YTE::Composition *aEngineObj, YTE::Composition *aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName, 
+                       ObjectBrowser *aParentTree, 
+                       YTE::Composition *aEngineObj, 
+                       YTE::Composition *aEngineLevel)
   : QTreeWidgetItem(aParentTree),
-  mObjectBrowser(aParentTree),
-  mEngineObject(aEngineObj),
-  mEngineLevel(aEngineLevel)
+    mObjectBrowser(aParentTree),
+    mEngineObject(aEngineObj),
+    mEngineLevel(aEngineLevel)
 {
   setText(0, aItemName.c_str());
   setFlags(flags() | Qt::ItemIsEditable);
 }
 
-ObjectItem::ObjectItem(YTE::String &aItemName, ObjectItem *aParentItem,
-                       YTE::Composition *aEngineObj, YTE::Composition *aEngineLevel)
+ObjectItem::ObjectItem(YTE::String &aItemName, 
+                       ObjectItem *aParentItem,
+                       YTE::Composition *aEngineObj, 
+                       YTE::Composition *aEngineLevel)
   : QTreeWidgetItem(aParentItem),
-  mObjectBrowser(aParentItem->GetObjectBrowser()),
-  mEngineObject(aEngineObj),
-  mEngineLevel(aEngineLevel)
+    mObjectBrowser(aParentItem->GetObjectBrowser()),
+    mEngineObject(aEngineObj),
+    mEngineLevel(aEngineLevel)
 {
   setText(0, aItemName.c_str());
   setFlags(flags() | Qt::ItemIsEditable);
@@ -124,9 +128,9 @@ void ObjectItemDelegate::paint(QPainter * painter,
 
 
 bool ObjectItemDelegate::editorEvent(QEvent *event,
-  QAbstractItemModel *model,
-  const QStyleOptionViewItem &option,
-  const QModelIndex &index)
+                                     QAbstractItemModel *model,
+                                     const QStyleOptionViewItem &option,
+                                     const QModelIndex &index)
 {
   Q_UNUSED(index);
   Q_UNUSED(model);

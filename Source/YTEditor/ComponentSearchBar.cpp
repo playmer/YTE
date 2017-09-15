@@ -30,7 +30,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qcompleter.h>
 
-ComponentSearchBar::ComponentSearchBar(ComponentTools *compTools, QWidget *parent) : QLineEdit(parent), mComponentTools(compTools), mCompleter(nullptr)
+ComponentSearchBar::ComponentSearchBar(ComponentTools *compTools, QWidget *parent) 
+  : QLineEdit(parent), mComponentTools(compTools), mCompleter(nullptr)
 {
   // signal from qlineedit
   //connect(this, &QLineEdit::returnPressed, this, &ComponentSearchBar::OnReturnPressed);

@@ -19,7 +19,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 
 
-GameObjectMenu::GameObjectMenu(YTEditorMainWindow * aMainWindow) : QMenu("Game Object"), mMainWindow(aMainWindow)
+GameObjectMenu::GameObjectMenu(YTEditorMainWindow * aMainWindow) 
+  : QMenu("Game Object"), mMainWindow(aMainWindow)
 {
   addAction(MakeEmptyObjectAction());
   addMenu(Make3DObjectMenu());

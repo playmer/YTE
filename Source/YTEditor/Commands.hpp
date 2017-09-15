@@ -89,8 +89,12 @@ private:
 class ChangePropValCmd : public Command
 {
 public:
-  ChangePropValCmd(YTE::Type *aCmpType, YTE::Any *aOldVal, YTE::Any *aNewVal, 
-                   OutputConsole *aConsole, ArchetypeTools *aTools);
+  ChangePropValCmd(YTE::Type *aCmpType, 
+                   YTE::Any *aOldVal, 
+                   YTE::Any *aNewVal, 
+                   OutputConsole *aConsole, 
+                   ArchetypeTools *aTools);
+
   ~ChangePropValCmd();
 
   void Execute() override;

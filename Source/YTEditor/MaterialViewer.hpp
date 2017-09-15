@@ -39,7 +39,9 @@ class PropertyWidgetBase;
 class MaterialViewer : public QWidget
 {
 public:
-  MaterialViewer(YTEditorMainWindow *mainWindow, QWidget *parent = nullptr, YTE::Window *aWindow = nullptr);
+  MaterialViewer(YTEditorMainWindow *mainWindow, 
+                 QWidget *parent = nullptr, 
+                 YTE::Window *aWindow = nullptr);
   ~MaterialViewer();
 
   void LoadMaterial(YTE::UBOMaterial const& aMaterial);

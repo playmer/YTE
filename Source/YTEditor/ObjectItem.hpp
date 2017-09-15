@@ -31,14 +31,14 @@ class ObjectItem : public QTreeWidgetItem
 {
 public:
   ObjectItem(YTE::String &aItemName,
-    ObjectBrowser *aParentTree,
-    YTE::Composition *aEngineObj,
-    YTE::Composition *aEngineLevel);
+             ObjectBrowser *aParentTree,
+             YTE::Composition *aEngineObj,
+             YTE::Composition *aEngineLevel);
 
   ObjectItem(YTE::String &aItemName,
-    ObjectItem *aParentItem,
-    YTE::Composition *aEngineObj,
-    YTE::Composition *aEngineLevel);
+             ObjectItem *aParentItem,
+             YTE::Composition *aEngineObj,
+             YTE::Composition *aEngineLevel);
 
   ~ObjectItem();
 
@@ -62,13 +62,14 @@ class ObjectItemDelegate : public QStyledItemDelegate
 public:
   ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget *aParent = nullptr);
 
-  void paint(QPainter *painter, const QStyleOptionViewItem &option,
-    const QModelIndex &index) const override;
+  void paint(QPainter *painter, 
+             const QStyleOptionViewItem &option,
+             const QModelIndex &index) const override;
 
   bool editorEvent(QEvent *event,
-    QAbstractItemModel *model,
-    const QStyleOptionViewItem &option,
-    const QModelIndex &index);
+                   QAbstractItemModel *model,
+                   const QStyleOptionViewItem &option,
+                   const QModelIndex &index);
 
 private:
   ObjectBrowser *mBrowser;

@@ -22,7 +22,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <iostream>
 
-SearchBarEventFilter::SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent) : QObject(aParent), mSearchBar(aLineEdit), mCompleter(aParent)
+SearchBarEventFilter::SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent) 
+  : QObject(aParent), mSearchBar(aLineEdit), mCompleter(aParent)
 {
 }
 

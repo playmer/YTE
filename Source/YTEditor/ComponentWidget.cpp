@@ -25,7 +25,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qapplication.h>
 #include "ComponentBrowser.hpp"
 
-ComponentWidget::ComponentWidget(YTE::Type *type, const char *name, YTE::Component *engineComp, YTEditorMainWindow *aMainWindow, QWidget *parent)
+ComponentWidget::ComponentWidget(YTE::Type *type, 
+                                 const char *name, 
+                                 YTE::Component *engineComp, 
+                                 YTEditorMainWindow *aMainWindow, 
+                                 QWidget *parent)
   : QFrame(parent),
     mEngineComponent(engineComp),
     mType(type),
@@ -323,7 +327,9 @@ ComponentDelegate::ComponentDelegate(ComponentTree * aTree, QWidget * aParent)
 {
 }
 
-void ComponentDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void ComponentDelegate::paint(QPainter * painter, 
+                              const QStyleOptionViewItem & option, 
+                              const QModelIndex & index) const
 {
   Q_UNUSED(index);
 
@@ -355,7 +361,10 @@ void ComponentDelegate::paint(QPainter * painter, const QStyleOptionViewItem & o
     &button, painter);
 }
 
-bool ComponentDelegate::editorEvent(QEvent * event, QAbstractItemModel * model, const QStyleOptionViewItem & option, const QModelIndex & index)
+bool ComponentDelegate::editorEvent(QEvent * event, 
+                                    QAbstractItemModel * model, 
+                                    const QStyleOptionViewItem & option, 
+                                    const QModelIndex & index)
 {
   Q_UNUSED(index);
   Q_UNUSED(model);

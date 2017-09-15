@@ -32,8 +32,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditorMainWindow.hpp"
 
 
-SubWindow::SubWindow(YTE::Window *aWindow, YTEditorMainWindow *aMainWindow) : 
-  mWindow(aWindow), mMainWindow(aMainWindow)
+SubWindow::SubWindow(YTE::Window *aWindow, YTEditorMainWindow *aMainWindow) 
+  : mWindow(aWindow), mMainWindow(aMainWindow)
 {
 }
 

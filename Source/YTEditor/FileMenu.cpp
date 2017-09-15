@@ -24,7 +24,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qapplication.h>
 
-FileMenu::FileMenu(YTEditorMainWindow * aMainWindow) : QMenu("File"), mMainWindow(aMainWindow)
+FileMenu::FileMenu(YTEditorMainWindow * aMainWindow)
+  : QMenu("File"), mMainWindow(aMainWindow)
 {
   QAction * newLevelAct = new QAction("New Level");
   addAction(newLevelAct);

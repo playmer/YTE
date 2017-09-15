@@ -34,8 +34,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 
 ArchetypeTools::ArchetypeTools(ComponentBrowser * aBrowser)
-  : QWidget(aBrowser), mBrowser(aBrowser), mLayout(new QHBoxLayout(this)),
-  mIsArchetype(false), mIsDifferent(false), mChanges(0)
+  : QWidget(aBrowser), 
+    mBrowser(aBrowser), 
+    mLayout(new QHBoxLayout(this)),
+    mIsArchetype(false), 
+    mIsDifferent(false), 
+    mChanges(0)
 {
   mLabel = new QLabel("Archetype", this);
   mLayout->addWidget(mLabel);

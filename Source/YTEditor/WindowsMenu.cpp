@@ -23,7 +23,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qdockwidget.h>
 
-WindowsMenu::WindowsMenu(YTEditorMainWindow * aMainWindow) : QMenu("Windows"), mMainWindow(aMainWindow)
+WindowsMenu::WindowsMenu(YTEditorMainWindow * aMainWindow) 
+  : QMenu("Windows"), mMainWindow(aMainWindow)
 {
   addMenu(MakeObjectBrowserMenu());
   addMenu(MakeComponentBrowserMenu());
