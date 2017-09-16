@@ -16,6 +16,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditorMainWindow.hpp"
 #include "ObjectBrowser.hpp"
 #include "ObjectItem.hpp"
+#include "ComponentBrowser.hpp"
+#include "ComponentTree.hpp"
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
@@ -26,6 +28,8 @@ LevelMenu::LevelMenu(YTEditorMainWindow *aMainWindow)
     mMainWindow(aMainWindow)
 {
   addMenu(MakeCurrentLevelMenu());
+  addMenu(MakeSpaceMenu());
+  addMenu(MakeEngineMenu());
 }
 
 LevelMenu::~LevelMenu()
@@ -79,4 +83,52 @@ void LevelMenu::ReloadCurrentLevel()
 
     mMainWindow->GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
   }
+}
+
+QMenu* LevelMenu::MakeSpaceMenu()
+{
+  QMenu *menu = new QMenu("Space");
+
+  QAction *selectAct = new QAction("Select");
+  menu->addAction(selectAct);
+  connect(selectAct, &QAction::triggered, this, &LevelMenu::SelectSpace);
+
+  return menu;
+}
+
+void LevelMenu::SelectSpace()
+{
+  // Get all the compositions on the engine
+  YTE::CompositionMap *engineMap = mMainWindow->GetRunningEngine()->GetCompositions();
+
+  // iterator to the main session space
+  auto it_lvl = engineMap->begin();
+
+  // Get the space that represents the main session
+  YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
+
+  mMainWindow->GetObjectBrowser().SelectNoItem();
+
+  mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(lvl);
+}
+
+QMenu* LevelMenu::MakeEngineMenu()
+{
+  QMenu *menu = new QMenu("Engine");
+
+  QAction *selectAct = new QAction("Select");
+  menu->addAction(selectAct);
+  connect(selectAct, &QAction::triggered, this, &LevelMenu::SelectEngine);
+
+  return menu;
+}
+
+void LevelMenu::SelectEngine()
+{
+  // Get all the compositions on the engine
+  YTE::Composition *engine = mMainWindow->GetRunningEngine();
+
+  mMainWindow->GetObjectBrowser().SelectNoItem();
+
+  mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(engine);
 }

@@ -73,6 +73,8 @@ public:
 
   YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
+  void SelectNoItem();
+
 private:
   YTEditorMainWindow *mMainWindow;
   void SetWidgetSettings();

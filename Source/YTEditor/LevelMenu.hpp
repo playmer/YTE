@@ -27,9 +27,15 @@ public:
 
 private:
 
-  QMenu * MakeCurrentLevelMenu();
+  QMenu* MakeCurrentLevelMenu();
   void ReloadCurrentLevel();
 
-  YTEditorMainWindow * mMainWindow;
+  QMenu* MakeSpaceMenu();
+  void SelectSpace();
+
+  QMenu* MakeEngineMenu();
+  void SelectEngine();
+
+  YTEditorMainWindow *mMainWindow;
 
 };

@@ -60,6 +60,8 @@ ComponentTree::~ComponentTree()
 
 void ComponentTree::LoadGameObject(YTE::Composition * aObj)
 {
+  this->ClearComponents();
+
   // Load all of the components on the object into the browser
   YTE::ComponentMap & components = *(aObj->GetComponents());
 
