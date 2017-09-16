@@ -12,15 +12,16 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+
+#include "YTE/Core/Engine.hpp"
+#include "YTE/Core/Utilities.hpp"
+
 #include "ComponentBrowser.hpp"
 #include "ComponentTree.hpp"
 #include "LevelMenu.hpp"
 #include "ObjectBrowser.hpp"
 #include "ObjectItem.hpp"
 #include "YTEditorMainWindow.hpp"
-
-#include "YTE/Core/Engine.hpp"
-#include "YTE/Core/Utilities.hpp"
 
 
 LevelMenu::LevelMenu(YTEditorMainWindow *aMainWindow)
