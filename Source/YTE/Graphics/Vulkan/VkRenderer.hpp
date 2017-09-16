@@ -75,7 +75,6 @@ namespace YTE
     void UpdateViewBuffer(Window *aWindow, 
                           UBOView &aView) override; 
 
-  public:
     virtual void UpdateModelTransformation(Model *aModel) override;
     
     Texture* AddTexture(RenderedSurface *aSurface,
@@ -96,8 +95,11 @@ namespace YTE
 
     void RemoveMeshId(Window *aWindow, u64 aId) override;
 
-    virtual std::unique_ptr<InstantiatedMesh> AddModel(Window *aWindow,
-                                                       std::string &aMeshFile) override;
+    std::unique_ptr<InstantiatedMesh> AddModel(Window *aWindow,
+                                               std::string &aMeshFile) override;
+
+	glm::vec4 GetClearColor(Window *aWindow) override;
+	void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
 
     std::unordered_map<vkhlf::Device*, AllocatorMap>& GetAllocators()
     {
