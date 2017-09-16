@@ -68,7 +68,7 @@ namespace YTE
   ///////////////////////////////
   inline glm::vec4 ValueAsReal4(RSValue *aValue)
   {
-    auto real4 = aValue->FindMember("Vector3");
+    auto real4 = aValue->FindMember("Vector4");
     auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
     auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
     auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());
@@ -95,7 +95,7 @@ namespace YTE
   ///////////////////////////////
   inline glm::quat ValueAsQuaternion(RSValue *aValue)
   {
-    auto real4 = aValue->FindMember("Vector3");
+    auto real4 = aValue->FindMember("Vector4");
     auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
     auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
     auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());

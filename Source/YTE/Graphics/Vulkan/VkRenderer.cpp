@@ -152,7 +152,8 @@ namespace YTE
         mSurface(aSurface),
         mInstance(aInstance),
         mCameraPosition(-5.0f, 0.0f, 0.0f),
-        mCameraRotation()
+        mCameraRotation(),
+		mClearColor(0.42f, 0.63f, 0.98f, 1.0f)
     {
       SelectDevice();
 
@@ -317,14 +318,20 @@ namespace YTE
       // TODO (Josh): Reuse command buffers;
       mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
 
-      std::array<float, 4> ccv = { 0.42f, 0.63f, 0.98f };
+	  std::array<float, 4> colorValues;
+	  colorValues[0] = mClearColor.r;
+	  colorValues[1] = mClearColor.g;
+	  colorValues[2] = mClearColor.b;
+	  colorValues[3] = mClearColor.a;
+
+	  vk::ClearValue color{ colorValues };
       mRenderingCommandBuffer->begin();
 
       mRenderingCommandBuffer->beginRenderPass(mRenderPass,
                                                mFramebufferSwapchain->getFramebuffer(),
                                                vk::Rect2D({ 0, 0 },
                                                  mFramebufferSwapchain->getExtent()),
-                                                 { vk::ClearValue(ccv),
+                                                 { color,
                                                vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0)) },
                                                vk::SubpassContents::eInline);
 
@@ -575,7 +582,7 @@ namespace YTE
     glm::vec3 mCameraPosition;
     glm::quat mCameraRotation;
 
-
+	glm::vec4 mClearColor;
 
     std::unordered_map<std::string, PipelineData> mPipelines;
   };
@@ -1243,6 +1250,32 @@ namespace YTE
         models.Erase(it);
       }
     }
+  }
+
+  glm::vec4 VkRenderer::GetClearColor(Window *aWindow)
+  {
+	  auto surfaceIt = mSurfaces.find(aWindow);
+
+	  if (surfaceIt == mSurfaces.end())
+	  {
+		  DebugObjection(true, "We can't find a surface corresponding to the provided window.");
+		  return glm::vec4{};
+	  }
+
+	  return surfaceIt->second->mClearColor;
+  }
+
+  void VkRenderer::SetClearColor(Window *aWindow, const glm::vec4 &aColor)
+  {
+	  auto surfaceIt = mSurfaces.find(aWindow);
+
+	  if (surfaceIt == mSurfaces.end())
+	  {
+		  DebugObjection(true, "We can't find a surface corresponding to the provided window.");
+		  return;
+	  }
+
+	  surfaceIt->second->mClearColor = aColor;
   }
 
   void VkRenderer::UpdateViewBuffer(Window *aWindow, UBOView &aView)
