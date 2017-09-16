@@ -24,7 +24,7 @@ namespace YTE
   {
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
-    filesystem::path fsPath = filesystem::path(wStrPath);
+    filesystem::path fsPath = Path::GetGamePath().String();
 
     filesystem::path finalPath = fsPath.parent_path() / L"Models";
 
@@ -145,8 +145,8 @@ namespace YTE
   void Model::Update(LogicUpdate *aEvent)
   {
     SetUBO();
-    mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
-    mUpdating = false;
+    //mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
+    //mUpdating = false;
   }
 
   void Model::OnPositionChange(const PositionChanged *aEvent)
