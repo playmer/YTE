@@ -439,3 +439,8 @@ YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &
 
   return result;
 }
+
+void ObjectBrowser::SelectNoItem()
+{
+  this->setCurrentItem(nullptr);
+}
