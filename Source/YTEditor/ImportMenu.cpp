@@ -222,7 +222,6 @@ void ImportMenu::ImportModel()
   fs::path textureOriginalDir{ textureDir / L"Originals" };
   fs::path textureCrunchDir{ textureDir / L"Crunch" };
 
-
   // Check textures meeting our expectations.
   bool correctTextures = true;
   for (auto &texture : textures)
@@ -237,7 +236,9 @@ void ImportMenu::ImportModel()
       continue;
     }
 
-    if ("png" != texture.extension())
+    auto extension = texture.extension();
+
+    if (".png" != extension)
     {
       mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
                                                "Texture %s isn't a png.\n",
