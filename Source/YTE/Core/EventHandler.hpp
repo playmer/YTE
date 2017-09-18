@@ -112,8 +112,6 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       aObject->template RemoveEventDelegate<FunctionType, aFunction, StringType, ObjectType>(aName, aObject);
     }
 
-
-
     template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
     EventDelegate* MakeEventDelegate(const StringType& aName, ObjectType* aObject)
     {
@@ -156,20 +154,15 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     template <typename StringType = String>
     void SendEvent(const StringType& aName, Event* aEvent)
     {
-      auto it = mEventLists.find(aName);;
-
-      if (it != mEventLists.end())
+      auto && range = mEventLists[aName];
+      for (auto begin = range.begin(), end = range.end();
+            begin != end; 
+            (begin != end) 
+              ? ++begin
+              : begin)
       {
-        auto && __range = it->second;
-        for (auto __begin = __range.begin(), __end = __range.end();
-             __begin != __end; 
-             (__begin != __end) 
-               ? ++__begin 
-               : (IntrusiveList<EventDelegate>::iterator&)__begin)
-        {
-          auto &eventDelegate = *__begin;
-          eventDelegate.Invoke(aEvent);
-        }
+        auto &eventDelegate = *begin;
+        eventDelegate.Invoke(aEvent);
       }
     }
 
