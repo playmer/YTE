@@ -60,6 +60,8 @@ namespace YTE
 
     mCurrentRotation.y = mTime;
 
+    //printf("%s: %f\n", mOwner->GetName().c_str(), mCurrentRotation.y);
+
     //transform->SetTranslation(mCurrentPosition);
     //transform->SetScale(scale);
     transform->SetRotationProperty(mCurrentRotation);

@@ -4,8 +4,6 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-
-
 #include "YTE/Physics/CollisionBody.h"
 #include "YTE/Physics/Collider.h"
 #include "YTE/Physics/GhostBody.h"
@@ -53,17 +51,27 @@ namespace YTE
   }
 
   Composition::Composition(Engine *aEngine, Space *aSpace, String &aName)
-    : mEngine(aEngine), mSpace(aSpace), mOwner(nullptr),
-      mName(aName), mShouldSerialize(true), mShouldIntialize(true), mIsInitialized(false),
-      mArchetypeName("")
+    : mEngine(aEngine)
+    , mSpace(aSpace)
+    , mOwner(nullptr)
+    , mName(aName)
+    , mShouldSerialize(true)
+    , mShouldIntialize(true)
+    , mIsInitialized(false)
+    , mBeingDeleted(false)
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
   };
 
   Composition::Composition(Engine *aEngine, Space *aSpace)
-    : mEngine(aEngine), mSpace(aSpace), mOwner(nullptr),
-      mName(), mShouldSerialize(true), mShouldIntialize(true), mIsInitialized(false),
-      mArchetypeName("")
+    : mEngine(aEngine)
+    , mSpace(aSpace)
+    , mOwner(nullptr)
+    , mName()
+    , mShouldSerialize(true)
+    , mShouldIntialize(true)
+    , mIsInitialized(false)
+    , mBeingDeleted(false)
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
   };
@@ -578,6 +586,21 @@ namespace YTE
     return parent;
   }
 
+  bool Composition::ParentBeingDeleted()
+  {
+    for (Composition *parent = GetParent();
+         nullptr != parent;
+         parent = GetParent())
+    {
+      if (true == parent->mBeingDeleted)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   void  Composition::RemoveCompositionInternal(CompositionMap::iterator &aComposition)
   {
     mCompositions.Erase(aComposition);
@@ -627,7 +650,11 @@ namespace YTE
 
   void Composition::Remove()
   {
-    GetParent()->RemoveComposition(this);
+    if (false == ParentBeingDeleted())
+    {
+      mBeingDeleted = true;
+      GetParent()->RemoveComposition(this);
+    }
   }
 
   RSValue Composition::RemoveSerialized(RSAllocator &aAllocator)

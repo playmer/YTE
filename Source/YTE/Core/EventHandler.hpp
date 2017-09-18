@@ -103,7 +103,7 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     void RegisterEvent(const StringType &aName, ObjectType* aObject)
     {
       auto delegate = aObject->template MakeEventDelegate<FunctionType, aFunction, typename StringType, typename ObjectType>(aName, aObject);
-      mEventLists[aName].InsertFront(delegate->mHook);
+      mEventLists[aName].InsertBack(delegate->mHook);
     }
 
     template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
@@ -138,13 +138,18 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
       Invoker callerFunction = EventDelegate::Caller<FunctionType, aFunction, ObjectType, EventType>;
 
-      for (auto it = mHooks.begin(); it != mHooks.end(); ++it)
+      auto it = std::find_if(mHooks.begin(), 
+                             mHooks.end(), 
+                             [&aName, &aObject, &callerFunction](const UniqueEvent &aEvent)
       {
-        if (it->get()->mName == aName && it->get()->GetObject() == aObject && it->get()->GetCallerFunction() == callerFunction)
-        {
-          it->get()->mHook.Unlink();
-          break;
-        }
+        return aEvent->mName == aName && 
+               aEvent->GetObject() == aObject && 
+               aEvent->GetCallerFunction() == callerFunction;
+      });
+
+      if (it != mHooks.end())
+      {
+        mHooks.erase(it);
       }
     }
 
@@ -155,9 +160,14 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
       if (it != mEventLists.end())
       {
-
-        for (auto& eventDelegate : it->second)
+        auto && __range = it->second;
+        for (auto __begin = __range.begin(), __end = __range.end();
+             __begin != __end; 
+             (__begin != __end) 
+               ? ++__begin 
+               : (IntrusiveList<EventDelegate>::iterator&)__begin)
         {
+          auto &eventDelegate = *__begin;
           eventDelegate.Invoke(aEvent);
         }
       }

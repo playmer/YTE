@@ -101,6 +101,7 @@ namespace YTE
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);
     Composition* AddCompositionInternal(String aArchetype, String aObjectName);
     Composition* AddCompositionInternal(RSValue *aSerialization, String aObjectName);
+    bool ParentBeingDeleted();
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
@@ -112,6 +113,7 @@ namespace YTE
     bool mShouldSerialize;
     bool mShouldIntialize;
     bool mIsInitialized;
+    bool mBeingDeleted;
 
     String mArchetypeName;
 

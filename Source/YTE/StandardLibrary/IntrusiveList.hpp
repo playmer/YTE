@@ -20,12 +20,18 @@ namespace YTE
     public:
       Hook& operator=(Hook& aHook) = delete;
 
-      Hook() : mPrevious(this), mNext(this), mOwner(nullptr)
+      Hook()
+        : mPrevious(this)
+        , mNext(this)
+        , mOwner(nullptr)
       {
 
       }
 
-      Hook(OwnerType * aOwner) : mPrevious(this), mNext(this), mOwner(aOwner)
+      Hook(OwnerType * aOwner)
+        : mPrevious(this)
+        , mNext(this)
+        , mOwner(aOwner)
       {
         if (aOwner == nullptr)
         {
@@ -33,8 +39,12 @@ namespace YTE
         }
       }
 
+      Hook(Hook &aHook) = delete;
+
       Hook(Hook &&aHook, OwnerType * aOwner = nullptr)
-        : mPrevious(aHook.mPrevious), mNext(aHook.mNext), mOwner(aOwner)
+        : mPrevious(aHook.mPrevious)
+        , mNext(aHook.mNext)
+        , mOwner(aOwner)
       {
         if (aOwner == nullptr)
         {
@@ -98,17 +108,19 @@ namespace YTE
         mCurrent.InsertAfter(*aHook);
       }
 
+      //inline iterator(const iterator &aIterator) = delete;
       inline iterator(const iterator &aIterator)
-        : mCurrent(aIterator.mCurrent)
+        : mCurrent(std::move(aIterator.mCurrent))
       {
-
+      
       }
 
-      inline iterator& operator=(const iterator &aIterator)
-      {
-        mCurrent = aIterator.mCurrent;
-        return *this;
-      }
+      inline iterator& operator=(const iterator &aIterator) = delete;
+      //inline iterator& operator=(const iterator &aIterator)
+      //{
+      //  mCurrent = aIterator.mCurrent;
+      //  return *this;
+      //}
 
       inline iterator& operator++()
       {
@@ -163,6 +175,11 @@ namespace YTE
     void InsertFront(Hook &aHook)
     {
       aHook.InsertAfter(mHead);
+    }
+
+    void InsertBack(Hook &aHook)
+    {
+      aHook.InsertAfter(*mHead.mPrevious);
     }
 
     void UnlinkAll()
