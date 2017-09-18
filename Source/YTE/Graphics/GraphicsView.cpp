@@ -12,19 +12,19 @@ namespace YTE
 
     YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
 
-	YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")->AddAttribute<EditorProperty>();
   }
 
   GraphicsView::GraphicsView(Composition *aOwner, 
                              Space *aSpace, 
                              RSValue *aProperties)
     : Component(aOwner, aSpace),
-	  mWindow(nullptr)
+    mWindow(nullptr)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-	DeserializeByType<GraphicsView*>(aProperties, this, GraphicsView::GetStaticType());
+    DeserializeByType<GraphicsView*>(aProperties, this, GraphicsView::GetStaticType());
 
     auto it = engine->GetWindows().find(mWindowName);
 
@@ -33,7 +33,7 @@ namespace YTE
 
   void GraphicsView::Initialize()
   {
-	  SetClearColor(mClearColor);
+    SetClearColor(mClearColor);
   }
 
   void GraphicsView::UpdateView(UBOView &aView)
@@ -44,23 +44,23 @@ namespace YTE
 
   glm::vec4 GraphicsView::GetClearColor()
   {
-	  if (nullptr == mWindow)
-	  {
-		  return glm::vec4{};
-	  }
+    if (nullptr == mWindow)
+    {
+      return glm::vec4{};
+    }
 
-	  return mRenderer->GetClearColor(mWindow);
+    return mRenderer->GetClearColor(mWindow);
   }
 
   void GraphicsView::SetClearColor(const glm::vec4 &aColor)
   {
-	  if (nullptr == mWindow)
-	  {
-		  mClearColor = aColor;
-		  return;
-	  }
+    if (nullptr == mWindow)
+    {
+      mClearColor = aColor;
+      return;
+    }
 
-	  mRenderer->SetClearColor(mWindow, aColor);
+    mRenderer->SetClearColor(mWindow, aColor);
   }
 
 }

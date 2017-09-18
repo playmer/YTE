@@ -50,15 +50,15 @@ namespace YTE
       (void)aView; 
     }
 
-	virtual glm::vec4 GetClearColor(Window *aWindow)
-	{
-		return glm::vec4{};
-	}
+     virtual glm::vec4 GetClearColor(Window *aWindow)
+     {
+       return glm::vec4{};
+     }
 
-	virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor)
-	{
-		(void)aWindow;
-		(void)aColor;
-	}
+     virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor)
+     {
+       (void)aWindow;
+       (void)aColor;
+     }
   };
 }

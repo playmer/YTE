@@ -13,8 +13,8 @@ namespace YTE
       Mesh *aMesh,
       Window *aWindow)
       : mRenderer(aRenderer),
-        mMesh(aMesh),
-        mWindow(aWindow)
+      mMesh(aMesh),
+      mWindow(aWindow)
     {
 
     }
@@ -54,52 +54,52 @@ namespace YTE
 
   class VkRenderer : public Renderer
   {
-    
-    using TextureMap = std::unordered_map<std::string, 
-                                          std::unique_ptr<Texture>>;
 
-    using MeshMap = std::unordered_map<std::string, 
-                                       std::unique_ptr<Mesh>>;
-    
-    using AllocatorMap = std::unordered_map<std::string, 
-                                            std::shared_ptr<vkhlf::DeviceMemoryAllocator>>;
+    using TextureMap = std::unordered_map<std::string,
+      std::unique_ptr<Texture>>;
+
+    using MeshMap = std::unordered_map<std::string,
+      std::unique_ptr<Mesh>>;
+
+    using AllocatorMap = std::unordered_map<std::string,
+      std::shared_ptr<vkhlf::DeviceMemoryAllocator>>;
   public:
 
     ~VkRenderer();
 
     VkRenderer(Engine *aEngine);
 
-    Texture *AddTexture(Window *aWindow, 
-                        const char *aTexture) override;
-    
-    void UpdateViewBuffer(Window *aWindow, 
-                          UBOView &aView) override; 
+    Texture *AddTexture(Window *aWindow,
+      const char *aTexture) override;
+
+    void UpdateViewBuffer(Window *aWindow,
+      UBOView &aView) override;
 
     virtual void UpdateModelTransformation(Model *aModel) override;
-    
+
     Texture* AddTexture(RenderedSurface *aSurface,
-                        const char *aTextureName);
+      const char *aTextureName);
 
     void AddDescriptorSet(RenderedSurface *aSurface,
-                          InstantiatedMesh *aModel,
-                          Mesh::SubMesh *aSubMesh,
-                          InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
+      InstantiatedMesh *aModel,
+      Mesh::SubMesh *aSubMesh,
+      InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
 
     std::shared_ptr<vkhlf::Pipeline> AddPipeline(RenderedSurface *aSurface,
-                                                 InstantiatedMesh *aModel,
-                                                 Mesh::SubMesh *aSubMesh,
-                                                 InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
+      InstantiatedMesh *aModel,
+      Mesh::SubMesh *aSubMesh,
+      InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
 
-    Mesh* AddMesh(RenderedSurface *aSurface, 
-                  std::string &aFilename);
+    Mesh* AddMesh(RenderedSurface *aSurface,
+      std::string &aFilename);
 
     void RemoveMeshId(Window *aWindow, u64 aId) override;
 
     std::unique_ptr<InstantiatedMesh> AddModel(Window *aWindow,
-                                               std::string &aMeshFile) override;
+      std::string &aMeshFile) override;
 
-	glm::vec4 GetClearColor(Window *aWindow) override;
-	void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
+    glm::vec4 GetClearColor(Window *aWindow) override;
+    void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
 
     std::unordered_map<vkhlf::Device*, AllocatorMap>& GetAllocators()
     {
