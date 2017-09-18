@@ -145,8 +145,8 @@ namespace YTE
   void Model::Update(LogicUpdate *aEvent)
   {
     SetUBO();
-    //mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
-    //mUpdating = false;
+    mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
+    mUpdating = false;
   }
 
   void Model::OnPositionChange(const PositionChanged *aEvent)
