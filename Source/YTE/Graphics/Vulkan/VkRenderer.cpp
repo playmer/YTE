@@ -26,25 +26,25 @@ namespace YTE
   struct MeshToRender
   {
     MeshToRender(std::shared_ptr<vkhlf::PipelineLayout> const *aPipelineLayout,
-                 std::shared_ptr<vkhlf::DescriptorSet> const *aDescriptorSet,
-                 std::shared_ptr<vkhlf::Buffer> const *aVertexBuffer,
-                 std::shared_ptr<vkhlf::Buffer> const *aIndexBuffer,
-                 u64 aIndexCount)
+      std::shared_ptr<vkhlf::DescriptorSet> const *aDescriptorSet,
+      std::shared_ptr<vkhlf::Buffer> const *aVertexBuffer,
+      std::shared_ptr<vkhlf::Buffer> const *aIndexBuffer,
+      u64 aIndexCount)
       : mPipelineLayout(aPipelineLayout),
-        mDescriptorSet(aDescriptorSet),
-        mVertexBuffer(aVertexBuffer),
-        mIndexBuffer(aIndexBuffer),
-        mIndexCount(aIndexCount)
+      mDescriptorSet(aDescriptorSet),
+      mVertexBuffer(aVertexBuffer),
+      mIndexBuffer(aIndexBuffer),
+      mIndexCount(aIndexCount)
     {
 
     }
 
     MeshToRender(const MeshToRender &aRight)
       : mPipelineLayout(aRight.mPipelineLayout),
-        mDescriptorSet(aRight.mDescriptorSet),
-        mVertexBuffer(aRight.mVertexBuffer),
-        mIndexBuffer(aRight.mIndexBuffer),
-        mIndexCount(aRight.mIndexCount)
+      mDescriptorSet(aRight.mDescriptorSet),
+      mVertexBuffer(aRight.mVertexBuffer),
+      mIndexBuffer(aRight.mIndexBuffer),
+      mIndexCount(aRight.mIndexCount)
     {
 
     }
@@ -88,47 +88,47 @@ namespace YTE
   }
 
   static VKAPI_ATTR
-  VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT flags,
-                                          VkDebugReportObjectTypeEXT objectType,
-                                          uint64_t object,
-                                          size_t location,
-                                          int32_t messageCode,
-                                          const char* pLayerPrefix,
-                                          const char* pMessage,
-                                          void* pUserData)
+    VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT flags,
+      VkDebugReportObjectTypeEXT objectType,
+      uint64_t object,
+      size_t location,
+      int32_t messageCode,
+      const char* pLayerPrefix,
+      const char* pMessage,
+      void* pUserData)
   {
     switch (flags)
     {
-      case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
-      {
-        printf("INFORMATION: %s\n", pMessage);
-        return VK_FALSE;
-      }
-      case VK_DEBUG_REPORT_WARNING_BIT_EXT:
-      {
-        printf("WARNING: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
-      {
-        printf("PERFORMANCE WARNING: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_ERROR_BIT_EXT:
-      {
-        printf("ERROR: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
-      {
-        printf("DEBUG: %s\n", pMessage);
-        return VK_FALSE;
-      }
-      default:
-      {
-        printf("Unknown Flag (%u): ", flags);
-        break;
-      }
+    case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
+    {
+      printf("INFORMATION: %s\n", pMessage);
+      return VK_FALSE;
+    }
+    case VK_DEBUG_REPORT_WARNING_BIT_EXT:
+    {
+      printf("WARNING: ");
+      break;
+    }
+    case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
+    {
+      printf("PERFORMANCE WARNING: ");
+      break;
+    }
+    case VK_DEBUG_REPORT_ERROR_BIT_EXT:
+    {
+      printf("ERROR: ");
+      break;
+    }
+    case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
+    {
+      printf("DEBUG: %s\n", pMessage);
+      return VK_FALSE;
+    }
+    default:
+    {
+      printf("Unknown Flag (%u): ", flags);
+      break;
+    }
     }
     printf("%s\n", pMessage);
     assert(!pMessage);
@@ -144,16 +144,16 @@ namespace YTE
     }
 
     RenderedSurface(Window *aWindow,
-                    VkRenderer *aRenderer,
-                    std::shared_ptr<vkhlf::Surface> &aSurface,
-                    std::shared_ptr<vkhlf::Instance> aInstance)
+      VkRenderer *aRenderer,
+      std::shared_ptr<vkhlf::Surface> &aSurface,
+      std::shared_ptr<vkhlf::Instance> aInstance)
       : mWindow(aWindow),
-        mRenderer(aRenderer),
-        mSurface(aSurface),
-        mInstance(aInstance),
-        mCameraPosition(-5.0f, 0.0f, 0.0f),
-        mCameraRotation(),
-		mClearColor(0.42f, 0.63f, 0.98f, 1.0f)
+      mRenderer(aRenderer),
+      mSurface(aSurface),
+      mInstance(aInstance),
+      mCameraPosition(-5.0f, 0.0f, 0.0f),
+      mCameraRotation(),
+      mClearColor(0.42f, 0.63f, 0.98f, 1.0f)
     {
       SelectDevice();
 
@@ -163,15 +163,15 @@ namespace YTE
       mQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(baseDevice);
 
       auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                           baseSurfaceKhr);
+        baseSurfaceKhr);
       auto formats = supportDetails.Formats();
 
       // If the format list includes just one entry of VK_FORMAT_UNDEFINED, 
       // the surface has no preferred format.  Otherwise, at least one 
       // supported format will be returned.
       mColorFormat = ((formats.size() == 1) && (formats[0].format == vk::Format::eUndefined)) ?
-                     vk::Format::eB8G8R8A8Unorm :
-                     formats[0].format;
+        vk::Format::eB8G8R8A8Unorm :
+        formats[0].format;
 
       PrintFormats(formats);
       mDepthFormat = vk::Format::eD24UnormS8Uint;
@@ -185,14 +185,14 @@ namespace YTE
                                                  0.0f };
 
       mDevice = mMainDevice->createDevice(deviceCreate,
-                                          nullptr,
-                                          { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                          enabledFeatures);
+        nullptr,
+        { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+        enabledFeatures);
 
       mGraphicsQueue = mDevice->getQueue(mQueueFamilyIndices.GetGraphicsFamily(), 0);
 
       // Attachment Descriptions
-      vk::AttachmentDescription colorAttachment{{},
+      vk::AttachmentDescription colorAttachment{ {},
                                                 mColorFormat,
                                                 vk::SampleCountFlagBits::e1,
                                                 vk::AttachmentLoadOp::eClear,
@@ -202,8 +202,8 @@ namespace YTE
                                                 vk::ImageLayout::eUndefined,
                                                 vk::ImageLayout::ePresentSrcKHR };
 
-      vk::AttachmentDescription depthAttachment{{}, 
-                                                mDepthFormat, 
+      vk::AttachmentDescription depthAttachment{ {},
+                                                mDepthFormat,
                                                 vk::SampleCountFlagBits::e1,
                                                 vk::AttachmentLoadOp::eClear,
                                                 vk::AttachmentStoreOp::eStore, // depth
@@ -212,14 +212,14 @@ namespace YTE
                                                 vk::ImageLayout::eUndefined,
                                                 vk::ImageLayout::eDepthStencilAttachmentOptimal };
 
-      std::array<vk::AttachmentDescription, 2> attachmentDescriptions{ colorAttachment , 
+      std::array<vk::AttachmentDescription, 2> attachmentDescriptions{ colorAttachment ,
                                                                        depthAttachment };
 
       // Subpass Description
       vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
       vk::AttachmentReference depthReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
-      vk::SubpassDescription subpass{{},
+      vk::SubpassDescription subpass{ {},
                                      vk::PipelineBindPoint::eGraphics,
                                      0,
                                      nullptr,
@@ -236,7 +236,7 @@ namespace YTE
 
       // create a command pool for command buffer allocation
       mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                                mQueueFamilyIndices.GetGraphicsFamily());
+        mQueueFamilyIndices.GetGraphicsFamily());
 
       auto deviceAllocator = aRenderer->GetAllocators()[mDevice.get()];
 
@@ -251,12 +251,12 @@ namespace YTE
 
       auto uboAllocator = deviceAllocator[AllocatorTypes::UniformBufferObject];
       mUBOView = mDevice->createBuffer(sizeof(UBOView),
-                                       vk::BufferUsageFlagBits::eTransferDst |
-                                       vk::BufferUsageFlagBits::eUniformBuffer,
-                                       vk::SharingMode::eExclusive,
-                                       nullptr,
-                                       vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                       uboAllocator);
+        vk::BufferUsageFlagBits::eTransferDst |
+        vk::BufferUsageFlagBits::eUniformBuffer,
+        vk::SharingMode::eExclusive,
+        nullptr,
+        vk::MemoryPropertyFlagBits::eDeviceLocal,
+        uboAllocator);
 
       UpdateUniformBuffer();
 
@@ -270,11 +270,11 @@ namespace YTE
       Resize(&event);
 
       mWindow->YTERegister(Events::WindowResize,
-                       this,
-                       &RenderedSurface::Resize);
+        this,
+        &RenderedSurface::Resize);
       mWindow->mEngine->YTERegister(Events::FrameUpdate,
-                                this,
-                                &RenderedSurface::Render);
+        this,
+        &RenderedSurface::Render);
     }
 
     void UpdateUniformBuffer()
@@ -285,10 +285,10 @@ namespace YTE
       auto width = mWindow->GetWidth();
 
       view.mProjectionMatrix = glm::perspective(glm::radians(45.0f),
-                                                static_cast<float>(width) /
-                                                static_cast<float>(height),
-                                                0.1f,
-                                                256.0f);
+        static_cast<float>(width) /
+        static_cast<float>(height),
+        0.1f,
+        256.0f);
 
       view.mViewMatrix = glm::lookAt(mCameraPosition, glm::vec3(), glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -318,32 +318,32 @@ namespace YTE
       // TODO (Josh): Reuse command buffers;
       mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
 
-	  std::array<float, 4> colorValues;
-	  colorValues[0] = mClearColor.r;
-	  colorValues[1] = mClearColor.g;
-	  colorValues[2] = mClearColor.b;
-	  colorValues[3] = mClearColor.a;
+      std::array<float, 4> colorValues;
+      colorValues[0] = mClearColor.r;
+      colorValues[1] = mClearColor.g;
+      colorValues[2] = mClearColor.b;
+      colorValues[3] = mClearColor.a;
 
-	  vk::ClearValue color{ colorValues };
+      vk::ClearValue color{ colorValues };
       mRenderingCommandBuffer->begin();
 
       mRenderingCommandBuffer->beginRenderPass(mRenderPass,
-                                               mFramebufferSwapchain->getFramebuffer(),
-                                               vk::Rect2D({ 0, 0 },
-                                                 mFramebufferSwapchain->getExtent()),
-                                                 { color,
-                                               vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0)) },
-                                               vk::SubpassContents::eInline);
+        mFramebufferSwapchain->getFramebuffer(),
+        vk::Rect2D({ 0, 0 },
+          mFramebufferSwapchain->getExtent()),
+          { color,
+        vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0)) },
+        vk::SubpassContents::eInline);
 
       auto &extent = mFramebufferSwapchain->getExtent();
 
       auto width = static_cast<float>(extent.width);
       auto height = static_cast<float>(extent.height);
 
-      vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f }; 
-       
-      mRenderingCommandBuffer->setViewport(0, viewport); 
-      vk::Rect2D scissor{ { 0, 0 }, extent }; 
+      vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
+
+      mRenderingCommandBuffer->setViewport(0, viewport);
+      vk::Rect2D scissor{ { 0, 0 }, extent };
       mRenderingCommandBuffer->setScissor(0, scissor);
 
       for (auto &pipelineIt : mPipelines)
@@ -351,23 +351,23 @@ namespace YTE
         auto &pipeline = pipelineIt.second.mPipeline;
         auto &models = pipelineIt.second.mModels;
         mRenderingCommandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics,
-                                              pipelineIt.second.mPipeline);
+          pipelineIt.second.mPipeline);
         for (auto &model : models)
         {
           auto &mesh = model.second;
 
           mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                      *mesh.mPipelineLayout,
-                                                      0,
-                                                      *mesh.mDescriptorSet,
-                                                      nullptr);
+            *mesh.mPipelineLayout,
+            0,
+            *mesh.mDescriptorSet,
+            nullptr);
           mRenderingCommandBuffer->bindVertexBuffer(0,
-                                                    *mesh.mVertexBuffer,
-                                                    0);
+            *mesh.mVertexBuffer,
+            0);
 
           mRenderingCommandBuffer->bindIndexBuffer(*mesh.mIndexBuffer,
-                                                   0,
-                                                   vk::IndexType::eUint32);
+            0,
+            vk::IndexType::eUint32);
 
           mRenderingCommandBuffer->drawIndexed(static_cast<u32>(mesh.mIndexCount), 1, 0, 0, 0);
         }
@@ -380,7 +380,7 @@ namespace YTE
                                 { vk::PipelineStageFlagBits::eColorAttachmentOutput },
                                 mRenderingCommandBuffer,
                                 mRenderCompleteSemaphore };
-      
+
       mGraphicsQueue->submit(submit);
 
       mGraphicsQueue->waitIdle();
@@ -402,7 +402,7 @@ namespace YTE
       mQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(baseDevice);
 
       auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                           baseSurfaceKhr);
+        baseSurfaceKhr);
 
       auto extent = supportDetails.Capabilities().currentExtent;
 
@@ -415,10 +415,10 @@ namespace YTE
       //              unsure why, should find out.
       mFramebufferSwapchain.reset();
       mFramebufferSwapchain.reset(new vkhlf::FramebufferSwapchain(mDevice,
-                                                                  mSurface,
-                                                                  mColorFormat,
-                                                                  mDepthFormat,
-                                                                  mRenderPass));
+        mSurface,
+        mColorFormat,
+        mDepthFormat,
+        mRenderPass));
 
       assert(mFramebufferSwapchain->getExtent() == extent);
 
@@ -520,35 +520,35 @@ namespace YTE
 
       switch (type)
       {
-        case vk::PhysicalDeviceType::eOther:
-        {
-          printf("  Device Type: Other\n");
-          break;
-        }
+      case vk::PhysicalDeviceType::eOther:
+      {
+        printf("  Device Type: Other\n");
+        break;
+      }
 
-        case vk::PhysicalDeviceType::eIntegratedGpu:
-        {
-          printf("  Device Type: Integrated GPU\n");
-          break;
-        }
+      case vk::PhysicalDeviceType::eIntegratedGpu:
+      {
+        printf("  Device Type: Integrated GPU\n");
+        break;
+      }
 
-        case vk::PhysicalDeviceType::eDiscreteGpu:
-        {
-          printf("  Device Type: Discrete GPU\n");
-          break;
-        }
+      case vk::PhysicalDeviceType::eDiscreteGpu:
+      {
+        printf("  Device Type: Discrete GPU\n");
+        break;
+      }
 
-        case vk::PhysicalDeviceType::eVirtualGpu:
-        {
-          printf("  Device Type: Virtual GPU\n");
-          break;
-        }
+      case vk::PhysicalDeviceType::eVirtualGpu:
+      {
+        printf("  Device Type: Virtual GPU\n");
+        break;
+      }
 
-        case vk::PhysicalDeviceType::eCpu:
-        {
-          printf("  Device Type: CPU\n");
-          break;
-        }
+      case vk::PhysicalDeviceType::eCpu:
+      {
+        printf("  Device Type: CPU\n");
+        break;
+      }
       }
 
       // TODO (Josh): Print/Store device limits.
@@ -582,7 +582,7 @@ namespace YTE
     glm::vec3 mCameraPosition;
     glm::quat mCameraRotation;
 
-	glm::vec4 mClearColor;
+    glm::vec4 mClearColor;
 
     std::unordered_map<std::string, PipelineData> mPipelines;
   };
@@ -616,34 +616,34 @@ namespace YTE
     std::vector<std::string>  enabledExtensions, enabledLayers;
 
     enabledExtensions.emplace_back("VK_KHR_surface");
-      
-    #if defined(Windows)
-      enabledExtensions.emplace_back("VK_KHR_win32_surface");
-    #endif
 
-    #if !defined(NDEBUG)
-      enabledExtensions.emplace_back("VK_EXT_debug_report");
+#if defined(Windows)
+    enabledExtensions.emplace_back("VK_KHR_win32_surface");
+#endif
 
-      // Enable standard validation layer to find as much errors as possible!
-      enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
-    #endif
+#if !defined(NDEBUG)
+    enabledExtensions.emplace_back("VK_EXT_debug_report");
+
+    // Enable standard validation layer to find as much errors as possible!
+    enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+#endif
 
     // Create a new vulkan instance using the required extensions
-    mInstance = vkhlf::Instance::create("Yours Truly Engine", 
-                                        1, 
-                                        enabledLayers, 
-                                        enabledExtensions);
+    mInstance = vkhlf::Instance::create("Yours Truly Engine",
+      1,
+      enabledLayers,
+      enabledExtensions);
 
-    #if !defined(NDEBUG)
-      vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation        |
-                                    vk::DebugReportFlagBitsEXT::eWarning            |
-                                    vk::DebugReportFlagBitsEXT::ePerformanceWarning |
-                                    vk::DebugReportFlagBitsEXT::eError              |
-                                    vk::DebugReportFlagBitsEXT::eDebug);
-      mDebugReportCallback 
-        = mInstance->createDebugReportCallback(flags,
-                                                &debugReportCallback);
-    #endif
+#if !defined(NDEBUG)
+    vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation        |
+      vk::DebugReportFlagBitsEXT::eWarning |
+      vk::DebugReportFlagBitsEXT::ePerformanceWarning |
+      vk::DebugReportFlagBitsEXT::eError |
+      vk::DebugReportFlagBitsEXT::eDebug);
+    mDebugReportCallback
+      = mInstance->createDebugReportCallback(flags,
+        &debugReportCallback);
+#endif
 
     vkelInstanceInit(static_cast<vk::Instance>(*mInstance));
 
@@ -654,17 +654,17 @@ namespace YTE
       if (window.second->mShouldBeRenderedTo)
       {
         auto surface = window.second->SetUpVulkanWindow(static_cast<void*>(mInstance.get()));
-        mSurfaces.emplace(window.second.get(), 
-                          std::make_unique<RenderedSurface>(window.second.get(),
-                                                            this,
-                                                            surface,
-                                                            mInstance));
+        mSurfaces.emplace(window.second.get(),
+          std::make_unique<RenderedSurface>(window.second.get(),
+            this,
+            surface,
+            mInstance));
       }
     }
   }
 
   Texture* VkRenderer::AddTexture(Window *aWindow,
-                                  const char *aTextureFile)
+    const char *aTextureFile)
   {
     auto surfaceIt = mSurfaces.find(aWindow);
 
@@ -684,9 +684,9 @@ namespace YTE
     auto data = aModel->GetInstantiatedMesh()->mData.Get<InstantiatedMeshRendererData>();
     data->UpdateUniformBuffer(*aModel->GetInstantiatedMesh());
   }
-    
+
   Texture* VkRenderer::AddTexture(RenderedSurface *aSurface,
-                                  const char *aTexture)
+    const char *aTexture)
   {
     auto device = aSurface->mDevice;
 
@@ -723,47 +723,47 @@ namespace YTE
 
     switch (texture->mType)
     {
-      case TextureType::DXT1_sRGB:
-      {
-        format = vk::Format::eBc1RgbaSrgbBlock;
-        break;
-      }
-      case TextureType::DXT5_sRGB:
-      {
-        format = vk::Format::eBc3SrgbBlock;
-        break;
-      }
-      case TextureType::RGBA:
-      {
-        format = vk::Format::eR8G8B8A8Unorm;
-        break;
-      }
+    case TextureType::DXT1_sRGB:
+    {
+      format = vk::Format::eBc1RgbaSrgbBlock;
+      break;
+    }
+    case TextureType::DXT5_sRGB:
+    {
+      format = vk::Format::eBc3SrgbBlock;
+      break;
+    }
+    case TextureType::RGBA:
+    {
+      format = vk::Format::eR8G8B8A8Unorm;
+      break;
+    }
     }
 
     vk::FormatProperties imageFormatProperties = aSurface->mMainDevice->getFormatProperties(format);
 
-    assert((imageFormatProperties.linearTilingFeatures & 
-            vk::FormatFeatureFlagBits::eSampledImage) || 
-            (imageFormatProperties.optimalTilingFeatures & 
-            vk::FormatFeatureFlagBits::eSampledImage));
+    assert((imageFormatProperties.linearTilingFeatures &
+      vk::FormatFeatureFlagBits::eSampledImage) ||
+      (imageFormatProperties.optimalTilingFeatures &
+        vk::FormatFeatureFlagBits::eSampledImage));
 
     vk::Extent3D imageExtent{ texture->mWidth, texture->mHeight, 1 };
 
     rendererData->mImage = device->createImage({},
-                                               vk::ImageType::e2D, 
-                                               format, 
-                                               imageExtent,
-                                               1,
-                                               1, 
-                                               vk::SampleCountFlagBits::e1, 
-                                               vk::ImageTiling::eOptimal,
-                                               vk::ImageUsageFlagBits::eTransferDst | 
-                                               vk::ImageUsageFlagBits::eSampled, 
-                                               vk::SharingMode::eExclusive, 
-                                               {}, 
-                                               vk::ImageLayout::eUndefined,
-                                               vk::MemoryPropertyFlagBits::eDeviceLocal, 
-                                               allocator);
+      vk::ImageType::e2D,
+      format,
+      imageExtent,
+      1,
+      1,
+      vk::SampleCountFlagBits::e1,
+      vk::ImageTiling::eOptimal,
+      vk::ImageUsageFlagBits::eTransferDst |
+      vk::ImageUsageFlagBits::eSampled,
+      vk::SharingMode::eExclusive,
+      {},
+      vk::ImageLayout::eUndefined,
+      vk::MemoryPropertyFlagBits::eDeviceLocal,
+      allocator);
 
     update->begin();
     {
@@ -798,20 +798,20 @@ namespace YTE
 
     // 2. init sampler
     rendererData->mSampler = device->createSampler(vk::Filter::eNearest,
-                                                   vk::Filter::eNearest, 
-                                                   vk::SamplerMipmapMode::eNearest, 
-                                                   vk::SamplerAddressMode::eClampToEdge, 
-                                                   vk::SamplerAddressMode::eClampToEdge,
-                                                   vk::SamplerAddressMode::eClampToEdge, 
-                                                   0.0f, 
-                                                   false, 
-                                                   1.0f, 
-                                                   false, 
-                                                   vk::CompareOp::eNever, 
-                                                   0.0f, 
-                                                   0.0f, 
-                                                   vk::BorderColor::eFloatOpaqueWhite, 
-                                                   false);
+      vk::Filter::eNearest,
+      vk::SamplerMipmapMode::eNearest,
+      vk::SamplerAddressMode::eClampToEdge,
+      vk::SamplerAddressMode::eClampToEdge,
+      vk::SamplerAddressMode::eClampToEdge,
+      0.0f,
+      false,
+      1.0f,
+      false,
+      vk::CompareOp::eNever,
+      0.0f,
+      0.0f,
+      vk::BorderColor::eFloatOpaqueWhite,
+      false);
 
 
     return texture;
@@ -820,33 +820,33 @@ namespace YTE
 
 
   void VkRenderer::AddDescriptorSet(RenderedSurface *aSurface,
-                                    InstantiatedMesh *aModel,
-                                    Mesh::SubMesh *aSubMesh,
-                                    InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData)
+    InstantiatedMesh *aModel,
+    Mesh::SubMesh *aSubMesh,
+    InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData)
   {
     auto device = aSurface->mDevice;
 
     // init descriptor and pipeline layouts
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
     dslbs.emplace_back(0,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
+      vk::DescriptorType::eUniformBuffer,
+      vk::ShaderStageFlagBits::eVertex,
+      nullptr);
     dslbs.emplace_back(1,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
+      vk::DescriptorType::eUniformBuffer,
+      vk::ShaderStageFlagBits::eVertex,
+      nullptr);
     dslbs.emplace_back(2,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
+      vk::DescriptorType::eUniformBuffer,
+      vk::ShaderStageFlagBits::eFragment,
+      nullptr);
 
     u32 samplers = 0;
 
     if (nullptr != aSubMesh->mDiffuseMap) ++samplers;
     if (nullptr != aSubMesh->mSpecularMap) ++samplers;
     if (nullptr != aSubMesh->mNormalMap) ++samplers;
-    
+
     std::shared_ptr<vkhlf::DescriptorPool> descriptorPool;
 
     if (0 != samplers)
@@ -859,9 +859,9 @@ namespace YTE
       for (u32 i = 0; i < samplers; ++i)
       {
         dslbs.emplace_back(i + 3,
-                           vk::DescriptorType::eCombinedImageSampler,
-                           vk::ShaderStageFlagBits::eFragment,
-                           nullptr);
+          vk::DescriptorType::eCombinedImageSampler,
+          vk::ShaderStageFlagBits::eFragment,
+          nullptr);
 
         descriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1);
       }
@@ -871,9 +871,9 @@ namespace YTE
     else
     {
       descriptorPool = device->createDescriptorPool({},
-                                                    1,
-                                                    { { vk::DescriptorType::eUniformBuffer, 3 },
-                                                    });
+        1,
+        { { vk::DescriptorType::eUniformBuffer, 3 },
+        });
     }
 
     auto modelData = aModel->mData.Get<InstantiatedMeshRendererData>();
@@ -894,10 +894,10 @@ namespace YTE
     u32 binding = 0;
 
     // Add Uniform Buffers
-    vkhlf::DescriptorBufferInfo uboView{aSurface->mUBOView, 0, sizeof(UBOView)};
+    vkhlf::DescriptorBufferInfo uboView{ aSurface->mUBOView, 0, sizeof(UBOView) };
     vkhlf::DescriptorBufferInfo uboModel{ modelData->mUBOModel, 0, sizeof(UBOModel) };
     vkhlf::DescriptorBufferInfo uboMaterial{ subMeshData->mUBOMaterial, 0, sizeof(UBOMaterial) };
-    
+
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
@@ -926,14 +926,14 @@ namespace YTE
     addTS(aSubMesh->mDiffuseMap, dTexInfo);
     addTS(aSubMesh->mSpecularMap, sTexInfo);
     addTS(aSubMesh->mNormalMap, nTexInfo);
-      
+
     device->updateDescriptorSets(wdss, nullptr);
   }
 
   std::shared_ptr<vkhlf::Pipeline> VkRenderer::AddPipeline(RenderedSurface *aSurface,
-                                                           InstantiatedMesh *aModel,
-                                                           Mesh::SubMesh *aSubMesh, 
-                                                           InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData)
+    InstantiatedMesh *aModel,
+    Mesh::SubMesh *aSubMesh,
+    InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData)
   {
     auto device = aSurface->mDevice;
 
@@ -949,10 +949,10 @@ namespace YTE
     std::string fragmetText;
     ReadFileToString(fragmentFile, fragmetText);
 
-    auto vertexData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, 
-                                                vertexText);
-    auto fragmentData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, 
-                                                  fragmetText);
+    auto vertexData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex,
+      vertexText);
+    auto fragmentData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment,
+      fragmetText);
 
     auto vertexModule = device->createShaderModule(vertexData);
     auto fragmentModule = device->createShaderModule(fragmentData);
@@ -983,102 +983,102 @@ namespace YTE
     //glm::vec3 mBitangent;
     descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
 
-      // Initialize Pipeline
+    // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
 
-    vkhlf::PipelineShaderStageCreateInfo vertexStage(vk::ShaderStageFlagBits::eVertex, 
-                                                     vertexModule, 
-                                                     "main");
-    vkhlf::PipelineShaderStageCreateInfo fragmentStage(vk::ShaderStageFlagBits::eFragment, 
-                                                       fragmentModule, 
-                                                       "main");
+    vkhlf::PipelineShaderStageCreateInfo vertexStage(vk::ShaderStageFlagBits::eVertex,
+      vertexModule,
+      "main");
+    vkhlf::PipelineShaderStageCreateInfo fragmentStage(vk::ShaderStageFlagBits::eFragment,
+      fragmentModule,
+      "main");
 
-    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(descriptions.Bindings(), 
-                                                          descriptions.Attributes());
-    vk::PipelineInputAssemblyStateCreateInfo assembly({}, 
-                                                      vk::PrimitiveTopology::eTriangleList, 
-                                                      VK_FALSE);
+    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(descriptions.Bindings(),
+      descriptions.Attributes());
+    vk::PipelineInputAssemblyStateCreateInfo assembly({},
+      vk::PrimitiveTopology::eTriangleList,
+      VK_FALSE);
 
-      // One dummy viewport and scissor, as dynamic state sets them.
+    // One dummy viewport and scissor, as dynamic state sets them.
     vkhlf::PipelineViewportStateCreateInfo viewport({ {} }, { {} });
-    vk::PipelineRasterizationStateCreateInfo rasterization({}, 
-                                                            false, 
-                                                            false, 
-                                                            vk::PolygonMode::eFill, 
-                                                            //vk::CullModeFlagBits::eNone, 
-                                                            vk::CullModeFlagBits::eBack, 
-                                                            vk::FrontFace::eCounterClockwise, 
-                                                            false, 
-                                                            0.0f, 
-                                                            0.0f, 
-                                                            0.0f, 
-                                                            1.0f);
+    vk::PipelineRasterizationStateCreateInfo rasterization({},
+      false,
+      false,
+      vk::PolygonMode::eFill,
+      //vk::CullModeFlagBits::eNone, 
+      vk::CullModeFlagBits::eBack,
+      vk::FrontFace::eCounterClockwise,
+      false,
+      0.0f,
+      0.0f,
+      0.0f,
+      1.0f);
 
-    vkhlf::PipelineMultisampleStateCreateInfo multisample(vk::SampleCountFlagBits::e1, 
-                                                          false, 
-                                                          0.0f, 
-                                                          nullptr, 
-                                                          false, 
-                                                          false);
+    vkhlf::PipelineMultisampleStateCreateInfo multisample(vk::SampleCountFlagBits::e1,
+      false,
+      0.0f,
+      nullptr,
+      false,
+      false);
 
-    vk::StencilOpState stencilOpState(vk::StencilOp::eKeep, 
-                                      vk::StencilOp::eKeep, 
-                                      vk::StencilOp::eKeep, 
-                                      vk::CompareOp::eAlways, 
-                                      0, 
-                                      0, 
-                                      0);
-    vk::PipelineDepthStencilStateCreateInfo depthStencil({}, 
-                                                         true, 
-                                                         true, 
-                                                         vk::CompareOp::eLessOrEqual, 
-                                                         false, 
-                                                         false, 
-                                                         stencilOpState, 
-                                                         stencilOpState, 
-                                                         0.0f, 
-                                                         0.0f);
+    vk::StencilOpState stencilOpState(vk::StencilOp::eKeep,
+      vk::StencilOp::eKeep,
+      vk::StencilOp::eKeep,
+      vk::CompareOp::eAlways,
+      0,
+      0,
+      0);
+    vk::PipelineDepthStencilStateCreateInfo depthStencil({},
+      true,
+      true,
+      vk::CompareOp::eLessOrEqual,
+      false,
+      false,
+      stencilOpState,
+      stencilOpState,
+      0.0f,
+      0.0f);
 
     vk::PipelineColorBlendAttachmentState colorBlendAttachment(false,
-                                                               vk::BlendFactor::eDstAlpha, 
-                                                               vk::BlendFactor::eOne, 
-                                                               vk::BlendOp::eAdd, 
-                                                               vk::BlendFactor::eZero, 
-                                                               vk::BlendFactor::eOneMinusSrcAlpha, 
-                                                               vk::BlendOp::eAdd,
-                                                               vk::ColorComponentFlagBits::eR | 
-                                                               vk::ColorComponentFlagBits::eG | 
-                                                               vk::ColorComponentFlagBits::eB | 
-                                                               vk::ColorComponentFlagBits::eA);
+      vk::BlendFactor::eDstAlpha,
+      vk::BlendFactor::eOne,
+      vk::BlendOp::eAdd,
+      vk::BlendFactor::eZero,
+      vk::BlendFactor::eOneMinusSrcAlpha,
+      vk::BlendOp::eAdd,
+      vk::ColorComponentFlagBits::eR |
+      vk::ColorComponentFlagBits::eG |
+      vk::ColorComponentFlagBits::eB |
+      vk::ColorComponentFlagBits::eA);
 
-    vkhlf::PipelineColorBlendStateCreateInfo colorBlend(false, 
-                                                        vk::LogicOp::eNoOp, 
-                                                        colorBlendAttachment, 
-                                                        { 1.0f, 1.0f, 1.0f, 1.0f });
+    vkhlf::PipelineColorBlendStateCreateInfo colorBlend(false,
+      vk::LogicOp::eNoOp,
+      colorBlendAttachment,
+      { 1.0f, 1.0f, 1.0f, 1.0f });
 
-    vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport, 
+    vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
                                                     vk::DynamicState::eScissor });
 
-    auto pipeline = device->createGraphicsPipeline(pipelineCache, 
-                                                    {}, 
-                                                    { vertexStage, fragmentStage }, 
-                                                    vertexInput, 
-                                                    assembly, 
-                                                    nullptr, 
-                                                    viewport, 
-                                                    rasterization, 
-                                                    multisample, 
-                                                    depthStencil, 
-                                                    colorBlend, 
-                                                    dynamic, 
-                                                    aSubmeshPipelineData->mPipelineLayout,
-                                                    aSurface->mRenderPass);
+    auto pipeline = device->createGraphicsPipeline(pipelineCache,
+    {},
+    { vertexStage, fragmentStage },
+      vertexInput,
+      assembly,
+      nullptr,
+      viewport,
+      rasterization,
+      multisample,
+      depthStencil,
+      colorBlend,
+      dynamic,
+      aSubmeshPipelineData->mPipelineLayout,
+      aSurface->mRenderPass);
 
     return pipeline;
   }
 
-  Mesh* VkRenderer::AddMesh(RenderedSurface *aSurface, 
-                            std::string &aFilename)
+  Mesh* VkRenderer::AddMesh(RenderedSurface *aSurface,
+    std::string &aFilename)
   {
     auto update = aSurface->mCommandPool->allocateCommandBuffer();
     auto device = aSurface->mDevice;
@@ -1093,9 +1093,9 @@ namespace YTE
     }
 
     auto meshIt = meshMap.emplace(aFilename,
-                                  std::make_unique<Mesh>(aSurface->mRenderer, 
-                                                         aSurface->mWindow, 
-                                                         aFilename));
+      std::make_unique<Mesh>(aSurface->mRenderer,
+        aSurface->mWindow,
+        aFilename));
 
     auto mesh = meshIt.first->second.get();
 
@@ -1104,33 +1104,33 @@ namespace YTE
     for (auto &subMesh : mesh->mParts)
     {
       auto subMeshData = subMesh.mRendererData.ConstructAndGet<MeshRendererData>();
-      
+
       subMeshData->mVertexBuffer =
         aSurface->mDevice->createBuffer(subMesh.mVertexBufferSize,
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eVertexBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
+          vk::BufferUsageFlagBits::eTransferDst |
+          vk::BufferUsageFlagBits::eVertexBuffer,
+          vk::SharingMode::eExclusive,
+          nullptr,
+          vk::MemoryPropertyFlagBits::eDeviceLocal,
+          allocator);
 
       subMeshData->mIndexBuffer =
         aSurface->mDevice->createBuffer(subMesh.mIndexBufferSize,
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eIndexBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
-      
-      subMeshData->mUBOMaterial = 
+          vk::BufferUsageFlagBits::eTransferDst |
+          vk::BufferUsageFlagBits::eIndexBuffer,
+          vk::SharingMode::eExclusive,
+          nullptr,
+          vk::MemoryPropertyFlagBits::eDeviceLocal,
+          allocator);
+
+      subMeshData->mUBOMaterial =
         aSurface->mDevice->createBuffer(sizeof(UBOMaterial),
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eUniformBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
+          vk::BufferUsageFlagBits::eTransferDst |
+          vk::BufferUsageFlagBits::eUniformBuffer,
+          vk::SharingMode::eExclusive,
+          nullptr,
+          vk::MemoryPropertyFlagBits::eDeviceLocal,
+          allocator);
 
       auto update = aSurface->mCommandPool->allocateCommandBuffer();
 
@@ -1147,7 +1147,7 @@ namespace YTE
   }
 
   std::unique_ptr<InstantiatedMesh> VkRenderer::AddModel(Window *aWindow,
-                                                         std::string &aMeshFile)
+    std::string &aMeshFile)
   {
     auto surfaceIt = mSurfaces.find(aWindow);
 
@@ -1168,12 +1168,12 @@ namespace YTE
 
     iMeshData->mSurface = surface;
     iMeshData->mUBOModel = surface->mDevice->createBuffer(sizeof(UBOModel),
-                                                          vk::BufferUsageFlagBits::eTransferDst |
-                                                          vk::BufferUsageFlagBits::eUniformBuffer,
-                                                          vk::SharingMode::eExclusive,
-                                                          nullptr,
-                                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                          allocator);
+      vk::BufferUsageFlagBits::eTransferDst |
+      vk::BufferUsageFlagBits::eUniformBuffer,
+      vk::SharingMode::eExclusive,
+      nullptr,
+      vk::MemoryPropertyFlagBits::eDeviceLocal,
+      allocator);
 
     iMeshData->UpdateUniformBuffer(*iMesh);
 
@@ -1196,18 +1196,18 @@ namespace YTE
       submeshPipelineData.mId = mMeshIdCounter++;
 
       AddDescriptorSet(surface,
-                       iMesh.get(),
-                       &subMesh,
-                       &submeshPipelineData);
+        iMesh.get(),
+        &subMesh,
+        &submeshPipelineData);
 
       auto it = pipelines.find(subMesh.mShaderSetName);
 
       if (it == pipelines.end())
       {
         auto pipeline = AddPipeline(surface,
-                                    iMesh.get(),
-                                    &subMesh,
-                                    &submeshPipelineData);
+          iMesh.get(),
+          &subMesh,
+          &submeshPipelineData);
 
         PipelineData pipelineData{ pipeline };
 
@@ -1218,7 +1218,7 @@ namespace YTE
                              &submeshPipelineData.mDescriptorSet,
                              &subMeshData->mVertexBuffer,
                              &subMeshData->mIndexBuffer,
-                             subMesh.mIndexBuffer.size()};
+                             subMesh.mIndexBuffer.size() };
 
 
       auto &models = it->second.mModels;
@@ -1254,28 +1254,28 @@ namespace YTE
 
   glm::vec4 VkRenderer::GetClearColor(Window *aWindow)
   {
-	  auto surfaceIt = mSurfaces.find(aWindow);
+    auto surfaceIt = mSurfaces.find(aWindow);
 
-	  if (surfaceIt == mSurfaces.end())
-	  {
-		  DebugObjection(true, "We can't find a surface corresponding to the provided window.");
-		  return glm::vec4{};
-	  }
+    if (surfaceIt == mSurfaces.end())
+    {
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
+      return glm::vec4{};
+    }
 
-	  return surfaceIt->second->mClearColor;
+    return surfaceIt->second->mClearColor;
   }
 
   void VkRenderer::SetClearColor(Window *aWindow, const glm::vec4 &aColor)
   {
-	  auto surfaceIt = mSurfaces.find(aWindow);
+    auto surfaceIt = mSurfaces.find(aWindow);
 
-	  if (surfaceIt == mSurfaces.end())
-	  {
-		  DebugObjection(true, "We can't find a surface corresponding to the provided window.");
-		  return;
-	  }
+    if (surfaceIt == mSurfaces.end())
+    {
+      DebugObjection(true, "We can't find a surface corresponding to the provided window.");
+      return;
+    }
 
-	  surfaceIt->second->mClearColor = aColor;
+    surfaceIt->second->mClearColor = aColor;
   }
 
   void VkRenderer::UpdateViewBuffer(Window *aWindow, UBOView &aView)

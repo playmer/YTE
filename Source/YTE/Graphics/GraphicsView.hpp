@@ -30,13 +30,13 @@ namespace YTE
       return mWindow;
     }
 
-	glm::vec4 GetClearColor();
-	void SetClearColor(const glm::vec4 &aColor);
+    glm::vec4 GetClearColor();
+    void SetClearColor(const glm::vec4 &aColor);
 
   private:
     Window *mWindow;
     Renderer *mRenderer;
-	glm::vec4 mClearColor;
+    glm::vec4 mClearColor;
     std::string mWindowName;
   };
 }
