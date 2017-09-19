@@ -32,6 +32,7 @@ Set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Source_Root}/cmake/modules/")
 ################################################################################
 Include(${CMake_Include}/AddFile.cmake)
 Include(${CMake_Include}/FindDependency.cmake)
+Include(${CMake_Include}/YTE_Source_Group.cmake) 
 
 ################################################################################
 ## Setting compiler warnings based on platform.

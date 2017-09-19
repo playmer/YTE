@@ -15,8 +15,7 @@ Include_Directories(${ParentDirectory}
 
 Add_Library(YTE ${YTE_Source})
 
-Source_Group(TREE ${YTE_Root} 
-             FILES ${YTE_Source}) 
+YTE_Source_Group(YTE_Root YTE_Source)
 
 Target_Link_Libraries(YTE assimp) 
 Target_Link_Libraries(YTE Bullet) 

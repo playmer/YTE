@@ -18,8 +18,9 @@ namespace YTE
   GraphicsView::GraphicsView(Composition *aOwner, 
                              Space *aSpace, 
                              RSValue *aProperties)
-    : Component(aOwner, aSpace),
-    mWindow(nullptr)
+    : Component(aOwner, aSpace)
+    , mWindow(nullptr)
+    , mClearColor(0.44f, 0.44f, 0.44f, 1.0f)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();

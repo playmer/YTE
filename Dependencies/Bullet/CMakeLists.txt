@@ -22,4 +22,6 @@ Set(Bullet_Source ${Bullet_Source}
 
 Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DB3_USE_CLEW")
 
-Add_Library(Bullet ${Bullet_Source})
+Add_Library(Bullet ${Bullet_Source}) 
+
+YTE_Source_Group(CMAKE_CURRENT_SOURCE_DIR Bullet_Source) 
