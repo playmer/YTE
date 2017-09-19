@@ -158,17 +158,19 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     void SendEvent(const StringType& aName, Event* aEvent)
     {
       auto && range = mEventLists[aName];
-      auto begin = range.begin();
-      auto end = range.end();
-
-      while (begin != end)
+      
+      for (auto begin = range.begin(), end = range.end(); 
+           begin != end;
+           ++begin)
       {
         auto &eventDelegate = *begin;
         eventDelegate.Invoke(aEvent);
 
+        // We need to check to see if we're reached the end due to some number of events
+        // (including the current) removing itself from the list.
         if (begin != end)
         {
-          ++begin;
+          break;
         }
       }
     }
