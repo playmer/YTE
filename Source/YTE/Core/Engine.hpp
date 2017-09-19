@@ -30,18 +30,18 @@
 
 namespace YTE
 {
-  DeclareEvent(LogicUpdate);
-  DeclareEvent(FrameUpdate);
-  DeclareEvent(BeginDebugDrawUpdate);
-  DeclareEvent(DebugDrawUpdate);
-  DeclareEvent(EndDebugDrawUpdate);
-  DeclareEvent(DeletionUpdate);
-  DeclareEvent(BoundTypeChanged);
+  YTEDeclareEvent(LogicUpdate);
+  YTEDeclareEvent(FrameUpdate);
+  YTEDeclareEvent(BeginDebugDrawUpdate);
+  YTEDeclareEvent(DebugDrawUpdate);
+  YTEDeclareEvent(EndDebugDrawUpdate);
+  YTEDeclareEvent(DeletionUpdate);
+  YTEDeclareEvent(BoundTypeChanged);
 
   class LogicUpdate : public Event
   {
   public:
-    DeclareType(LogicUpdate);
+    YTEDeclareType(LogicUpdate);
 
     float Dt;
   };
@@ -49,7 +49,7 @@ namespace YTE
   class BoundTypeChanged : public Event
   {
   public:
-    DeclareType(BoundTypeChanged);
+    YTEDeclareType(BoundTypeChanged);
 
     BoundType *aOldType;
     BoundType *aNewType;
@@ -58,7 +58,7 @@ namespace YTE
   class Engine : public Composition
   {
   public:
-    DeclareType(Engine);
+    YTEDeclareType(Engine);
     
     Engine(const char *aFile = nullptr, bool aEditorMode = false);
     void Update();

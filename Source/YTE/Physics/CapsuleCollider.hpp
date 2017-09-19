@@ -11,18 +11,16 @@
 #ifndef YTE_Physics_CapsuleCollider_h
 #define YTE_Physics_CapsuleCollider_h
 
-
-
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Physics/Collider.h"
+#include "YTE/Physics/Collider.hpp"
 
 namespace YTE
 {
   class CapsuleCollider : public Collider
   {
   public:
-    DeclareType(CapsuleCollider);
+    YTEDeclareType(CapsuleCollider);
 
     CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

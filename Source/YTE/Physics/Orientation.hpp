@@ -13,14 +13,26 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Physics/ForwardDeclarations.h"
+#include "YTE/Physics/ForwardDeclarations.hpp"
 
 namespace YTE
 {
+  YTEDeclareEvent(OrientationChanged);
+
+  class OrientationChanged : public Event
+  {
+  public:
+    YTEDeclareType(OrientationChanged);
+
+    glm::vec3 Forward;
+    glm::vec3 Right;
+    glm::vec3 Up;
+  };
+
   class Orientation : public Component
   {
   public:
-    DeclareType(Orientation);
+    YTEDeclareType(Orientation);
 
     Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

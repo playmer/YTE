@@ -36,13 +36,13 @@
 
 namespace YTE
 {
-  DefineType(WWiseSystem)
+  YTEDefineType(WWiseSystem)
   {
     YTERegisterType(WWiseSystem);
 
     YTEBindProperty(&WWiseSystem::GetMute, &WWiseSystem::SetMute, "Mute");
-    YTEAddFunction( &WWiseSystem::SetRTPC, YTENoOverload, "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
-    YTEAddFunction( &WWiseSystem::GetRTPC, YTENoOverload, "GetRTPC", YTEParameterNames("aRTPC"));
+    YTEBindFunction(&WWiseSystem::SetRTPC, YTENoOverload, "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
+    YTEBindFunction(&WWiseSystem::GetRTPC, YTENoOverload, "GetRTPC", YTEParameterNames("aRTPC"));
   }
 
   // We're using the default Low-Level I/O implementation that's part

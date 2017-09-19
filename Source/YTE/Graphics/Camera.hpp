@@ -9,7 +9,7 @@
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
  
-#include "YTE/Physics/ForwardDeclarations.h" 
+#include "YTE/Physics/ForwardDeclarations.hpp" 
  
 namespace YTE 
 { 
@@ -25,7 +25,7 @@ namespace YTE
       Unknown 
     }; 
  
-    DeclareType(Camera); 
+    YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties); 
  
     void Initialize() override; 

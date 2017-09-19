@@ -3,13 +3,13 @@
 
 #include "YTE/Core/TestComponent.hpp"
 
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
-  DefineType(TestComponent)
+  YTEDefineType(TestComponent)
   {
     YTERegisterType(TestComponent);
   }
@@ -59,6 +59,8 @@ namespace YTE
     //glm::vec3 scale{ mCurrentScale, mCurrentScale, mCurrentScale };
 
     mCurrentRotation.y = mTime;
+
+    //printf("%s: %f\n", mOwner->GetName().c_str(), mCurrentRotation.y);
 
     //transform->SetTranslation(mCurrentPosition);
     //transform->SetScale(scale);

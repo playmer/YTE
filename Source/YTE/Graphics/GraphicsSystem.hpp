@@ -23,7 +23,7 @@
 
 namespace YTE
 {
-  DeclareEvent(RendererResize);
+  YTEDeclareEvent(RendererResize);
 
   class RendererResize : public Event
   {
@@ -35,7 +35,7 @@ namespace YTE
   class GraphicsSystem : public Component
   {
     public:
-    DeclareType(GraphicsSystem);
+    YTEDeclareType(GraphicsSystem);
 
     GraphicsSystem(Composition *aOwner, RSValue *aProperties);
     ~GraphicsSystem();

@@ -29,7 +29,7 @@ namespace YTE
   class Composition : public EventHandler
   {
   public:
-    DeclareType(Composition);
+    YTEDeclareType(Composition);
 
     Composition(Engine *aEngine, Space *aSpace, String &aName);
     Composition(Engine *aEngine, Space *aSpace);
@@ -101,6 +101,7 @@ namespace YTE
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);
     Composition* AddCompositionInternal(String aArchetype, String aObjectName);
     Composition* AddCompositionInternal(RSValue *aSerialization, String aObjectName);
+    bool ParentBeingDeleted();
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
@@ -112,6 +113,7 @@ namespace YTE
     bool mShouldSerialize;
     bool mShouldIntialize;
     bool mIsInitialized;
+    bool mBeingDeleted;
 
     String mArchetypeName;
 
@@ -159,6 +161,6 @@ namespace YTE
   }
 }
 
-DeclareExternalType(CompositionMap::range);
+YTEDeclareExternalType(CompositionMap::range);
 
 #endif

@@ -10,26 +10,31 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Transform.h"
-#include "YTE/Physics/MenuCollider.h"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/MenuCollider.hpp"
 
 namespace YTE
 {
-  DefineType(MenuCollider)
+  YTEDefineType(MenuCollider)
   {
     YTERegisterType(MenuCollider);
-    YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size")->AddAttribute<EditorProperty>();
-    YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset")->AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &MenuCollider::SetSize, (void (MenuCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("size"))
-      ->Description() = "Sets the size of the box collider from a Real3";
-    YTEAddFunction( &MenuCollider::SetSize, (void (MenuCollider::*) (float, float, float)), "SetSize", YTEParameterNames("x", "y", "z"))
-      ->Description() = "Sets the size of the box collider from three Reals X, Y, and Z";
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
-    YTEAddFunction( &MenuCollider::SetOffset, (void (MenuCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("offset"))
-      ->Description() = "Sets the position offset of the box collider from a Real3 of x, y, and z coordinates";
-    YTEAddFunction( &MenuCollider::SetOffset, (void (MenuCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("x", "y", "z"))
-      ->Description() = "Sets the position offset of the box collider from three Reals X, Y, and Z";
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
+    YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size").AddAttribute<EditorProperty>();
+    YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
+
+    YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("size"))
+      .Description() = "Sets the size of the box collider from a Real3";
+    YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (float, float, float)), "SetSize", YTEParameterNames("x", "y", "z"))
+      .Description() = "Sets the size of the box collider from three Reals X, Y, and Z";
+
+    YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("offset"))
+      .Description() = "Sets the position offset of the box collider from a Real3 of x, y, and z coordinates";
+    YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("x", "y", "z"))
+      .Description() = "Sets the position offset of the box collider from three Reals X, Y, and Z";
   }
 
   MenuCollider::MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

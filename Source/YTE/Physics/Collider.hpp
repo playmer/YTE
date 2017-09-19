@@ -19,20 +19,20 @@
 
 namespace YTE
 {
-  DeclareEvent(CollisionStarted);
-  DeclareEvent(CollisionPersisted);
-  DeclareEvent(CollisionEnded);
+  YTEDeclareEvent(CollisionStarted);
+  YTEDeclareEvent(CollisionPersisted);
+  YTEDeclareEvent(CollisionEnded);
   class CollisionEvent : public Event
   {
   public:
-    DeclareType(CollisionEvent);
+    YTEDeclareType(CollisionEvent);
     Composition *OtherObject;
   };
 
   class CollisionStarted : public Event
   {
   public:
-    DeclareType(CollisionStarted);
+    YTEDeclareType(CollisionStarted);
     Composition *OtherObject;
     String Name;
     Composition* Object;
@@ -41,7 +41,7 @@ namespace YTE
   class CollisionPersisted : public Event
   {
   public:
-    DeclareType(CollisionPersisted);
+    YTEDeclareType(CollisionPersisted);
     Composition *OtherObject;
 
     String Name;
@@ -51,7 +51,7 @@ namespace YTE
   class CollisionEnded : public Event
   {
   public:
-    DeclareType(CollisionEnded);
+    YTEDeclareType(CollisionEnded);
     Composition *OtherObject;
 
     String Name;
@@ -63,7 +63,7 @@ namespace YTE
   class Collider : public Component
   {
   public:
-    DeclareType(Collider);
+    YTEDeclareType(Collider);
 
     Collider(Composition *aOwner, Space *aSpace);
 

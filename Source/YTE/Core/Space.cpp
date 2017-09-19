@@ -6,16 +6,9 @@
 All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-
 #include <memory>
 #include <iostream>
 #include <fstream>
-
-
-
-#include "YTE/Physics/PhysicsSystem.h"
-
-#include "YTE/Utilities/Utilities.h"
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
@@ -23,27 +16,30 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Physics/RigidBody.h"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+
+#include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
-  DefineType(Space)
+  YTEDefineType(Space)
   {
     YTERegisterType(Space);
-    YTEAddFunction( &Space::LoadLevel, YTENoOverload, "LoadLevel", YTEParameterNames("aLevel"))->Description()
+    YTEBindFunction(&Space::LoadLevel, YTENoOverload, "LoadLevel", YTEParameterNames("aLevel")).Description()
       = "Loads a level within the current space on the next frame. Current level will be torn down.";
 
-    YTEAddFunction( &Space::SaveLevel, YTENoOverload, "SaveLevel", YTEParameterNames("aLevelName"))->Description()
+    YTEBindFunction(&Space::SaveLevel, YTENoOverload, "SaveLevel", YTEParameterNames("aLevelName")).Description()
       = "Saves a level.";
 
-    YTEAddFunction( &Space::Remove, YTENoOverload, "Remove", YTENoNames)->Description()
+    YTEBindFunction(&Space::Remove, YTENoOverload, "Remove", YTENoNames).Description()
       = "Removes the Space from the Engine at the start of the next frame.";
       
-    YTEBindProperty(&Space::IsPaused, &Space::SetPaused, "Paused")->Description() = "Sets if the space is paused or not.";
+    YTEBindProperty(&Space::IsPaused, &Space::SetPaused, "Paused").Description() = "Sets if the space is paused or not.";
 
     YTEBindProperty(&Space::GetEngine, YTENoSetter, "Engine");
 
-    YTEBindField(&Space::mStartingLevel, "StartingLevel", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
+    YTEBindField(&Space::mStartingLevel, "StartingLevel", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
   }
 
   // Sets up the Space, probably could just be the constructor.

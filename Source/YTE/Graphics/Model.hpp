@@ -7,7 +7,7 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Graphics/Renderer.hpp"
 
@@ -16,7 +16,7 @@ namespace YTE
   class Model : public Component
   {
   public:
-    DeclareType(Model);
+    YTEDeclareType(Model);
 
     Model(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

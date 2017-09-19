@@ -12,23 +12,23 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Orientation.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Transform.hpp"
 
-#include "YTE/WWise//WWiseSystem.hpp"
-#include "YTE/WWise//WWiseEmitter.hpp"
-#include "YTE/WWise//Utilities.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/Utilities.hpp"
 
 namespace YTE
 {
-  DefineType(WWiseEmitter)
+  YTEDefineType(WWiseEmitter)
   {
     YTERegisterType(WWiseEmitter);
 
-    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
+    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
-    YTEAddFunction( &WWiseEmitter::PlayEvent, YTENoOverload, "PlaySound", YTEParameterNames("aSound"));
+    YTEBindFunction(&WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
+    YTEBindFunction(&WWiseEmitter::PlayEvent, YTENoOverload, "PlaySound", YTEParameterNames("aSound"));
   }
 
   WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)

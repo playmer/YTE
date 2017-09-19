@@ -24,31 +24,31 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  DefineEvent(LogicUpdate);
-  DefineEvent(FrameUpdate);
-  DefineEvent(BeginDebugDrawUpdate);
-  DefineEvent(DebugDrawUpdate);
-  DefineEvent(EndDebugDrawUpdate);
-  DefineEvent(DeletionUpdate);
-  DefineEvent(BoundTypeChanged);
+  YTEDefineEvent(LogicUpdate);
+  YTEDefineEvent(FrameUpdate);
+  YTEDefineEvent(BeginDebugDrawUpdate);
+  YTEDefineEvent(DebugDrawUpdate);
+  YTEDefineEvent(EndDebugDrawUpdate);
+  YTEDefineEvent(DeletionUpdate);
+  YTEDefineEvent(BoundTypeChanged);
 
-  DefineType(LogicUpdate)
+  YTEDefineType(LogicUpdate)
   {
     YTERegisterType(LogicUpdate);
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
-  DefineType(BoundTypeChanged)
+  YTEDefineType(BoundTypeChanged)
   {
     YTERegisterType(BoundTypeChanged);
     YTEBindField(&BoundTypeChanged::aOldType, "OldType", PropertyBinding::GetSet);
     YTEBindField(&BoundTypeChanged::aNewType, "NewType", PropertyBinding::GetSet);
   }
 
-  DefineType(Engine)
+  YTEDefineType(Engine)
   {
     YTERegisterType(Engine);
-    YTEAddFunction( &Engine::EndExecution, YTENoOverload, "EndExecution", YTENoNames)->Description()
+    YTEBindFunction(&Engine::EndExecution, YTENoOverload, "EndExecution", YTENoNames).Description()
       = "End the execution of the program before the beginning of the next frame.";
     YTEBindProperty(&Engine::GetGamepadSystem, YTENoSetter, "GamepadSystem");
   }
@@ -208,13 +208,10 @@ namespace YTE
       dt = 0.016f;
     }
 
-    if (false == mEditorMode)
+    for (auto &window : mWindows)
     {
-      for (auto &window : mWindows)
-      {
-        SetFrameRate(*window.second, dt);
-        window.second->Update();
-      }
+      SetFrameRate(*window.second, dt);
+      window.second->Update();
     }
 
     LogicUpdate updateEvent;

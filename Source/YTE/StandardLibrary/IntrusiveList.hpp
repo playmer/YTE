@@ -20,32 +20,37 @@ namespace YTE
     public:
       Hook& operator=(Hook& aHook) = delete;
 
-      Hook() : previous_(this), next_(this), owner_(nullptr)
+      Hook()
+        : mPrevious(this)
+        , mNext(this)
+        , mOwner(nullptr)
       {
 
       }
 
-      Hook(OwnerType * aOwner) : previous_(this), next_(this), owner_(aOwner)
+      Hook(OwnerType *aOwner)
+        : mPrevious(this)
+        , mNext(this)
+        , mOwner(aOwner)
       {
-        if (aOwner == nullptr)
-        {
-          throw std::exception();
-        }
+        DebugObjection(mOwner == nullptr, 
+                       "When constructing a Hook, Owner must be valid.");
       }
 
-      Hook(Hook &&aHook, OwnerType * aOwner = nullptr)
-        : previous_(aHook.previous_), next_(aHook.next_), owner_(aOwner)
-      {
-        if (aOwner == nullptr)
-        {
-          throw std::exception();
-        }
+      Hook(Hook &aHook) = delete;
 
-        // DebugObjection(aOwner != nullptr, "Hook node moved without supplying an owner", __FUNCTION__);
+      Hook(Hook &&aHook, OwnerType *aOwner)
+        : mPrevious(aHook.mPrevious)
+        , mNext(aHook.mNext)
+        , mOwner(aOwner)
+      {
+        DebugObjection(mOwner == nullptr,
+                       "When constructing a Hook, Owner must be valid.");
+
         aHook.Unlink();
 
-        previous_->next_ = this;
-        next_->previous_ = this;
+        mPrevious->mNext = this;
+        mNext->mPrevious = this;
       }
 
       ~Hook()
@@ -55,33 +60,33 @@ namespace YTE
 
       void RemoveFromList()
       {
-        next_->previous_ = previous_;
-        previous_->next_ = next_;
+        mNext->mPrevious = mPrevious;
+        mPrevious->mNext = mNext;
       }
 
       void Unlink()
       {
         RemoveFromList();
 
-        previous_ = this;
-        next_ = this;
+        mPrevious = this;
+        mNext = this;
       }
 
       void InsertAfter(Hook &aHook)
       {
         RemoveFromList();
 
-        previous_ = &aHook;
-        next_ = aHook.next_;
+        mPrevious = &aHook;
+        mNext = aHook.mNext;
 
-        aHook.next_ = this;
+        aHook.mNext = this;
 
-        next_->previous_ = this;
+        mNext->mPrevious = this;
       }
 
-      Hook * previous_;
-      Hook * next_;
-      OwnerType * owner_;
+      Hook *mPrevious;
+      Hook *mNext;
+      OwnerType *mOwner;
     };
 
     class iterator : public std::iterator<std::bidirectional_iterator_tag, OwnerType>
@@ -93,101 +98,93 @@ namespace YTE
       using pointer = OwnerType*;
       using reference = OwnerType&;
 
-      inline iterator(Hook *aHook = nullptr) : current_(aHook)
+      inline iterator(Hook *aHook)
       {
+        DebugObjection(aHook == nullptr,
+                       "When constructing an iterator, Hook must be valid.");
 
+        mCurrent.InsertAfter(*aHook);
       }
 
-      inline iterator(const iterator &aIterator) : current_(aIterator.current_)
+      inline iterator(const iterator &aIterator)
+        : mCurrent(std::move(aIterator.mCurrent))
       {
-
+      
       }
 
-      inline iterator& operator=(const iterator &aIterator)
-      {
-        current_ = aIterator.current_;
-        return *this;
-      }
+      inline iterator& operator=(const iterator &aIterator) = delete;
 
       inline iterator& operator++()
       {
-        current_ = current_->next_;
-        return *this;
-      }
+        mCurrent.InsertAfter(*mCurrent.mNext);
 
-      inline iterator& operator++(int)
-      {
-        iterator previousIter(*this);
-        current_ = current_->next_;
         return *this;
       }
 
       inline iterator& operator--()
       {
-        current_ = current_->previous_;
+        mCurrent.InsertAfter(*mCurrent.mPrevious->mPrevious);
         return *this;
       }
 
-      inline iterator& operator--(int)
-      {
-        iterator previousIter(*this);
-        current_ = current_->previous_;
-        return *this;
-      }
+      inline iterator operator++(int) = delete;
+      inline iterator operator--(int) = delete;
 
       inline bool operator==(const iterator& aIterator)
       {
-        return current_ == aIterator.current_;
+        return mCurrent.mNext == &aIterator.mCurrent;
       }
 
       inline bool operator!=(const iterator& aIterator)
       {
-        return current_ != aIterator.current_;
+        return mCurrent.mNext != &aIterator.mCurrent;
       }
-
 
       inline reference operator*()
       {
-        return *current_->owner_;
+        return *mCurrent.mNext->mOwner;
       }
 
       inline pointer operator->()
       {
-        return current_->owner_;
+        return mCurrent.mNext->mOwner;
       }
 
     private:
-      Hook *current_;
+      Hook mCurrent;
     };
 
     iterator begin()
     {
-      return iterator(head_.next_);
+      return iterator(&mHead);
     }
 
     iterator end()
     {
-      return iterator(&head_);
+      return iterator(mHead.mPrevious);
     }
 
     void InsertFront(Hook &aHook)
     {
-      aHook.InsertAfter(head_);
+      aHook.InsertAfter(mHead);
+    }
+
+    void InsertBack(Hook &aHook)
+    {
+      aHook.InsertAfter(*mHead.mPrevious);
     }
 
     void UnlinkAll()
     {
-      for (;;)
+      Hook *hook = mHead.mPrevious;
+
+      while (hook != &mHead)
       {
-        Hook *hook = head_.previous_;
-        if (hook == &head_)
-        {
-          break;
-        }
         hook->Unlink();
+        hook = mHead.mPrevious;
       }
     }
 
-    Hook head_;
+    Hook mHead;
   };
 }

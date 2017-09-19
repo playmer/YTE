@@ -24,8 +24,6 @@ namespace YTE
     virtual ~Base() {};
   };
 
-
-
   template <typename T>
   typename T::SelfType GetSelfType(typename T::SelfType*) {}
 
@@ -39,9 +37,9 @@ namespace YTE
 
 
   // Used to declare a static type within a class
-  // Requires DefineType be used at some point in a
+  // Requires YTEDefineType be used at some point in a
   // translation unit.
-#define DeclareType(Name)                                      \
+#define YTEDeclareType(Name)                                   \
 void Dummy() {}                                                \
 typedef decltype(GetDummy(&Name::Dummy)) TempSelfType;         \
 typedef decltype(GetSelfType<TempSelfType>(nullptr)) BaseType; \
@@ -52,7 +50,7 @@ Type* GetType() { return &sType; };                            \
 static void InitializeType();
 
 
-#define DefineType(Name)                                 \
+#define YTEDefineType(Name)                              \
 Type Name::sType{#Name,                                  \
                  static_cast<Name*>(nullptr),            \
                  static_cast<Name::BaseType*>(nullptr)}; \
@@ -74,7 +72,7 @@ void Name::InitializeType()
 
 #define YTERegisterType(aType) Type::AddGlobalType(TypeId<aType>()->GetName(), TypeId<aType>())
 
-#define YTEAddFunction(aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames)  \
+#define YTEBindFunction(aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames)  \
   BindFunction<decltype(aOverloadResolution aFunctionPointer),                                         \
                aFunctionPointer,                                                                       \
                std::initializer_list<const char*>aInitializerListOfNames.size()>(                      \
@@ -101,7 +99,7 @@ void Name::InitializeType()
   class DocumentedObject : public Base
   {
   public:
-    DeclareType(DocumentedObject);
+    YTEDeclareType(DocumentedObject);
 
     DocumentedObject(const DocumentedObject &) = delete;
 
@@ -148,7 +146,7 @@ void Name::InitializeType()
   class Type : public DocumentedObject
   {
   public:
-    DeclareType(Type)
+    YTEDeclareType(Type)
 
     using DefaultConstructor = void(*)(void*);
     using CopyConstructor = void(*)(const void*, void*);
@@ -514,7 +512,7 @@ void Name::InitializeType()
   }
 }
 
-#define DeclareExternalType(Name)                          \
+#define YTEDeclareExternalType(Name)                          \
 namespace YTE                                              \
 {                                                          \
   template<>                                               \
@@ -538,23 +536,23 @@ namespace YTE                                              \
 }
 
 
-  #define DefineExternalType(Name) template<> void YTE::InitializeType<Name>()
+  #define YTEDefineExternalType(Name) template<> void YTE::InitializeType<Name>()
 
-  DeclareExternalType(void)
-  DeclareExternalType(bool)
-  DeclareExternalType(s8)
-  DeclareExternalType(i8)
-  DeclareExternalType(i16)
-  DeclareExternalType(i32)
-  DeclareExternalType(i64)
-  DeclareExternalType(u8)
-  DeclareExternalType(u16)
-  DeclareExternalType(u32)
-  DeclareExternalType(u64)
-  DeclareExternalType(float)
-  DeclareExternalType(double)
-  DeclareExternalType(std::string)
-  DeclareExternalType(YTE::String)
+  YTEDeclareExternalType(void)
+  YTEDeclareExternalType(bool)
+  YTEDeclareExternalType(s8)
+  YTEDeclareExternalType(i8)
+  YTEDeclareExternalType(i16)
+  YTEDeclareExternalType(i32)
+  YTEDeclareExternalType(i64)
+  YTEDeclareExternalType(u8)
+  YTEDeclareExternalType(u16)
+  YTEDeclareExternalType(u32)
+  YTEDeclareExternalType(u64)
+  YTEDeclareExternalType(float)
+  YTEDeclareExternalType(double)
+  YTEDeclareExternalType(std::string)
+  YTEDeclareExternalType(YTE::String)
 
 #include "YTE/Meta/Function.hpp"
 #include "YTE/Meta/Property.hpp"

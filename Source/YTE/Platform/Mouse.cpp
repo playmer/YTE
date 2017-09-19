@@ -8,52 +8,45 @@
 /******************************************************************************/
 #include <utility>
 
-
-
 #include "YTE/Platform/Mouse.hpp"
-
-namespace
-{
-  const int YTE_NUM_MOUSEBUTTONS = 3;
-}
 
 namespace YTE
 {
-  DefineEvent(MousePress);
-  DefineEvent(MouseRelease);
-  DefineEvent(MousePersist);
-  DefineEvent(MouseScroll);
-  DefineEvent(MouseMove);
+  YTEDefineEvent(MousePress);
+  YTEDefineEvent(MouseRelease);
+  YTEDefineEvent(MousePersist);
+  YTEDefineEvent(MouseScroll);
+  YTEDefineEvent(MouseMove);
 
-  DefineType(MouseWheelEvent)
+  YTEDefineType(MouseWheelEvent)
   {
     YTERegisterType(MouseWheelEvent);
     YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
     YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
   }
 
-  DefineType(MouseButtonEvent)
+  YTEDefineType(MouseButtonEvent)
   {
     YTERegisterType(MouseButtonEvent);
     YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
     YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
   }
 
-  DefineType(MouseMoveEvent)
+  YTEDefineType(MouseMoveEvent)
   {
     YTERegisterType(MouseMoveEvent);
     YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
   }
 
-  DefineType(Mouse)
+  YTEDefineType(Mouse)
   {
     YTERegisterType(Mouse);
-    YTEAddFunction( &Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton"))->Description()
+    YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
       = "Finds if the given button is pressed right now.";
-    YTEAddFunction( &Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton"))->Description()
+    YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
       = "Finds if the given button is pressed last frame.";
 
-    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition"))->Description() = "Get's the current cursor position in screen coordinates.";
+    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description() = "Get's the current cursor position in screen coordinates.";
   }
 
   Mouse::Mouse()
@@ -70,7 +63,7 @@ namespace YTE
   {
     MouseButtonEvent mouseEvent;
 
-    for (size_t i = 0; i < static_cast<size_t>(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
     {
       mouseEvent.WorldCoordinates = mMousePosition;
 
@@ -88,7 +81,7 @@ namespace YTE
 
   void Mouse::UpdateButton(Mouse_Buttons aButton, bool aDown, glm::vec2 aPosition)
   {
-    size_t index = static_cast<size_t>(aButton);
+    size_t index = enum_cast(aButton);
         
       // Button got resent.
     if (mMouseCurrent[index] == aDown)
@@ -145,11 +138,11 @@ namespace YTE
 
   bool Mouse::IsButtonDown(Mouse_Buttons aButton)
   {
-    return mMouseCurrent[static_cast<size_t>(aButton)];
+    return mMouseCurrent[enum_cast(aButton)];
   }
   bool Mouse::WasButtonDown(Mouse_Buttons aButton)
   {
-    return mMousePrevious[static_cast<size_t>(aButton)];
+    return mMousePrevious[enum_cast(aButton)];
   }
   glm::vec2 Mouse::GetCursorPosition()
   {

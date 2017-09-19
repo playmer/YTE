@@ -31,14 +31,14 @@ namespace YTE
 
     template <typename ObjectType>
     inline Delegate(ObjectType *aObject, Invoker aInvoker)
-      : mObject(static_cast<void*>(aObject)),
-      mCallerFunction(aInvoker)
+      : mObject(static_cast<void*>(aObject))
+      , mCallerFunction(aInvoker)
     {
     }
 
     inline Delegate(Delegate &&aDelegate)
-      : mObject(aDelegate.mObject),
-      mCallerFunction(aDelegate.mCallerFunction)
+      : mObject(aDelegate.mObject)
+      , mCallerFunction(aDelegate.mCallerFunction)
     {
 
     }

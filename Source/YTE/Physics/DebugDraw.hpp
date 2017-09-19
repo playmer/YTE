@@ -51,6 +51,6 @@ namespace YTE
   };
 }
 
-DeclareExternalType(btIDebugDraw::DebugDrawModes);
+YTEDeclareExternalType(btIDebugDraw::DebugDrawModes);
 
 #endif

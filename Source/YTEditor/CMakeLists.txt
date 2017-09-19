@@ -66,9 +66,7 @@ Set_Target_Properties(YTEditor
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
 	 
-Source_Group(TREE ${YTEditor_Root} 
-             PREFIX ""
-             FILES ${YTEditorSource})
+YTE_Source_Group(YTEditor_Root YTEditorSource) 
                           
 # Find the QtWidgets library
 Find_Package(Qt5Widgets)

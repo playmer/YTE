@@ -9,43 +9,49 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #ifndef YTE_Core_EventHandler_hpp
 #define YTE_Core_EventHandler_hpp
-#include "YTE/Core/Object.hpp"
-#include "YTE/StandardLibrary/Delegate.hpp"
-#include "YTE/StandardLibrary/IntrusiveList.hpp"
-#include "YTE/StandardLibrary/BlockAllocator.hpp"
+
+#include <functional>
+#include <iostream>
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include <iostream>
 
-namespace YTE {
-#define DeclareEvent(aName)                  \
-namespace Events                             \
-{                                            \
-    extern const std::string aName;          \
-}
-#define DefineEvent(aName)                   \
-namespace Events                             \
-{                                            \
-    const std::string aName = #aName;        \
-}
+#include "YTE/Core/Object.hpp"
 
-#define YTERegister(aEventName, aReceiver, aFunction) \
-RegisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
+#include "YTE/StandardLibrary/Delegate.hpp"
+#include "YTE/StandardLibrary/IntrusiveList.hpp"
+#include "YTE/StandardLibrary/BlockAllocator.hpp"
 
-#define YTEDeregister(aEventName, aReceiver, aFunction) \
-DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
+namespace YTE
+{
+  #define YTEDeclareEvent(aName)      \
+  namespace Events                    \
+  {                                   \
+      extern const std::string aName; \
+  }
+
+  #define YTEDefineEvent(aName)         \
+  namespace Events                      \
+  {                                     \
+      const std::string aName = #aName; \
+  }
+
+  #define YTERegister(aEventName, aReceiver, aFunction) \
+  RegisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
+
+  #define YTEDeregister(aEventName, aReceiver, aFunction) \
+  DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
 
   class Event : public Object
   {
   public:
-    DeclareType(Event);
+    YTEDeclareType(Event);
   };
 
   class EventHandler : public Object
   {
   public:
-    DeclareType(EventHandler);
+    YTEDeclareType(EventHandler);
     template <typename tReturn, typename Arg = tReturn>
     struct Binding {};
 
@@ -53,7 +59,7 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     struct Binding<tReturn(tObject::*)(tEvent*)>
     {
       using ReturnType = tReturn;
-      using ObjectType = tObject;
+      using tObjectType = tObject;
       using EventType = tEvent;
     };
 
@@ -63,15 +69,19 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     class EventDelegate : public DelegateType
     {
     public:
-      template<typename ObjectType = EventHandler>
-      EventDelegate(ObjectType * aObj, Invoker aInvoker)
-        : DelegateType(aObj, aInvoker), mHook(this)
+      template<typename tObjectType = EventHandler>
+      EventDelegate(tObjectType * aObj, Invoker aInvoker, const std::string &aName)
+        : DelegateType(aObj, aInvoker)
+        , mName(aName)
+        , mHook(this)
       {
 
       }
 
       EventDelegate(EventDelegate &&aEventDelegate)
-        : Delegate(std::move(*this)), mHook(std::move(aEventDelegate.mHook), this)
+        : Delegate(std::move(*this))
+        , mName(aEventDelegate.mName)
+        , mHook(std::move(aEventDelegate.mHook), this)
       {
       }
 
@@ -86,82 +96,74 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
       {
         return Delegate(aObj, Caller<tFunctionType, aFunction, tObjectType, tEventType>);
       }
-      String mName;
+
+      const std::string &mName;
       IntrusiveList<EventDelegate>::Hook mHook;
     };
 
     using Deleter = BlockAllocator<EventDelegate>::Deleter;
     using UniqueEvent = std::unique_ptr<EventDelegate, Deleter>;
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename SenderType = EventHandler>
-    void Connect(SenderType* aSender, const StringType& aName)
+    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    void RegisterEvent(const std::string &aName, tObjectType* aObject)
     {
-      aSender->template RegisterEvent<FunctionType, aFunction, StringType>(aName, &*this);
+      static_assert(std::is_base_of<EventHandler, tObjectType>::value,
+                    "tObjectType Must be derived from YTE::EventHandler");
+      auto delegate = aObject->template MakeEventDelegate<tFunctionType, aFunction, typename tObjectType>(aName, aObject);
+      mEventLists[delegate->mName].mList.InsertFront(delegate->mHook);
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
-    void RegisterEvent(const StringType &aName, ObjectType* aObject)
+    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    void DeregisterEvent(const std::string& aName, tObjectType* aObject)
     {
-      auto delegate = aObject->template MakeEventDelegate<FunctionType, aFunction, typename StringType, typename ObjectType>(aName, aObject);
-      mEventLists[aName].InsertFront(delegate->mHook);
+      static_assert(std::is_base_of<EventHandler, tObjectType>::value, 
+                    "tObjectType Must be derived from YTE::EventHandler");
+      aObject->template RemoveEventDelegate<tFunctionType, aFunction, tObjectType>(aName, aObject);
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
-    void DeregisterEvent(const StringType& aName, ObjectType* aObject)
+    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    EventDelegate* MakeEventDelegate(const std::string& aName, tObjectType* aObject)
     {
-      aObject->template RemoveEventDelegate<FunctionType, aFunction, StringType, ObjectType>(aName, aObject);
-    }
-
-
-
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
-    EventDelegate* MakeEventDelegate(const StringType& aName, ObjectType* aObject)
-    {
-      using EventType = typename Binding<FunctionType>::EventType;
+      using EventType = typename Binding<tFunctionType>::EventType;
 
       static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
-      Invoker callerFunction = EventDelegate::Caller<FunctionType, aFunction, ObjectType, EventType>;
+      Invoker callerFunction = EventDelegate::Caller<tFunctionType, aFunction, tObjectType, EventType>;
+
+      // TODO: Don't do this this way.
       auto &allocator = mDelegateAllocators[aName];
+      auto it = mDelegateAllocators.find(aName);
+
       auto ptr = allocator.allocate();
 
-      new(ptr) EventDelegate(aObject, callerFunction);
-      ptr->mName = aName;
+      new(ptr) EventDelegate(aObject, callerFunction, it->first);
       mHooks.emplace_back(std::move(UniqueEvent(ptr, allocator.GetDeleter())));
       return mHooks.back().get();
     }
 
-    template <typename FunctionType, FunctionType aFunction, typename StringType = String, typename ObjectType = EventHandler>
-    void RemoveEventDelegate(const StringType& aName, ObjectType* aObject)
+    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    void RemoveEventDelegate(const std::string& aName, tObjectType* aObject)
     {
-      using EventType = typename Binding<FunctionType>::EventType;
+      using EventType = typename Binding<tFunctionType>::EventType;
 
       static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
-      Invoker callerFunction = EventDelegate::Caller<FunctionType, aFunction, ObjectType, EventType>;
+      Invoker callerFunction = EventDelegate::Caller<tFunctionType, aFunction, tObjectType, EventType>;
 
-      for (auto it = mHooks.begin(); it != mHooks.end(); ++it)
+      auto it = std::find_if(mHooks.begin(), 
+                             mHooks.end(), 
+                             [&aName, &aObject, &callerFunction](const UniqueEvent &aEvent)
       {
-        if (it->get()->mName == aName && it->get()->GetObject() == aObject && it->get()->GetCallerFunction() == callerFunction)
-        {
-          it->get()->mHook.Unlink();
-          break;
-        }
+        return aEvent->mName == aName && 
+               aEvent->GetObject() == aObject && 
+               aEvent->GetCallerFunction() == callerFunction;
+      });
+
+      if (it != mHooks.end())
+      {
+        mHooks.erase(it);
       }
     }
 
-    template <typename StringType = String>
-    void SendEvent(const StringType& aName, Event* aEvent)
-    {
-      auto it = mEventLists.find(aName);;
-
-      if (it != mEventLists.end())
-      {
-
-        for (auto& eventDelegate : it->second)
-        {
-          eventDelegate.Invoke(aEvent);
-        }
-      }
-    }
+    void SendEvent(const std::string &aName, Event *aEvent);
 
     EventHandler() {}
     EventHandler(const EventHandler& aEventHandler) { YTEUnusedArgument(aEventHandler); }
@@ -172,9 +174,47 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     }
 
   protected:
+    struct StdStringRefWrapperEquality
+    {
+      bool operator()(const std::reference_wrapper<const std::string>& aLeft,
+                      const std::reference_wrapper<const std::string>& aRight) const
+      {
+        return aLeft.get() == aRight.get();
+      }
+
+      bool operator()(const std::reference_wrapper<std::string>& aLeft,
+                      const std::string &aRight) const
+      {
+        return aLeft.get() == aRight;
+      }
+
+      bool operator()(const std::string &aLeft,
+                      const std::reference_wrapper<std::string> &aRight) const
+      {
+        return aLeft == aRight.get();
+      }
+    };
+
+    struct EventList
+    {
+      EventList()
+        : mIterating(false)
+      {
+
+      }
+
+      bool mIterating;
+      IntrusiveList<EventDelegate> mList;
+    };
+
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<String, IntrusiveList<EventDelegate>> mEventLists;
+    std::unordered_map<std::reference_wrapper<const std::string>, 
+                       EventList,
+                       std::hash<std::string>, 
+                       StdStringRefWrapperEquality> mEventLists;
+
     static std::unordered_map<std::string, BlockAllocator<EventDelegate>> mDelegateAllocators;
   };
 }
+
 #endif

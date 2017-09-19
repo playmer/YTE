@@ -13,21 +13,21 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/CollisionBody.h"
-#include "YTE/Physics/GhostBody.h"
-#include "YTE/Physics/DebugDraw.h"
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/CollisionBody.hpp"
+#include "YTE/Physics/GhostBody.hpp"
+#include "YTE/Physics/DebugDraw.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
-  DefineType(PhysicsSystem)
+  YTEDefineType(PhysicsSystem)
   {
     YTERegisterType(PhysicsSystem);
-    YTEAddFunction( &PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
-    YTEAddFunction( &PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
-    YTEAddFunction( &PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
+    YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
+    YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
+    YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
   }
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -186,12 +186,12 @@ namespace YTE
     return info;
   }
 
-  DefineType(RayCollisionInfo)
+  YTEDefineType(RayCollisionInfo)
   {
     YTERegisterType(RayCollisionInfo);
-    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet)->AddAttribute<EditorProperty>();
+    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
   }
 } // namespace YTE

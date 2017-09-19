@@ -14,15 +14,15 @@
 
 
 
-#include "YTE/Physics/Orientation.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/WWise//WWiseListener.hpp"
 #include "YTE/WWise//Utilities.hpp"
 
 namespace YTE
 {
-  DefineType(WWiseListener)
+  YTEDefineType(WWiseListener)
   {
     YTERegisterType(WWiseListener);
 

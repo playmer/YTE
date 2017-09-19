@@ -10,16 +10,16 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "CylinderCollider.h"
-#include "CollisionBody.h"
-#include "GhostBody.h"
-#include "PhysicsSystem.h"
-#include "RigidBody.h"
-#include "Transform.h"
+#include "CylinderCollider.hpp"
+#include "CollisionBody.hpp"
+#include "GhostBody.hpp"
+#include "PhysicsSystem.hpp"
+#include "RigidBody.hpp"
+#include "Transform.hpp"
 
 namespace YTE
 {
-  DefineType(CylinderCollider)
+  YTEDefineType(CylinderCollider)
   {
     YTERegisterType(CylinderCollider);
   }

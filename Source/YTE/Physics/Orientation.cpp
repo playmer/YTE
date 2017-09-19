@@ -10,23 +10,33 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Orientation.h"
-#include "YTE/Physics/Transform.h"
-#include "YTE/Physics/Orientation.h"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/Orientation.hpp"
 
 namespace YTE
 {
-  DefineType(Orientation)
+  YTEDefineEvent(OrientationChanged);
+
+  YTEDefineType(OrientationChanged)
+  {
+    YTERegisterType(OrientationChanged);
+    YTEBindField(&OrientationChanged::Forward, "Forward", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::Right, "Right", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::Up, "Up", PropertyBinding::Get);
+  }
+
+  YTEDefineType(Orientation)
   {
     YTERegisterType(Orientation);
     YTEBindProperty(&Orientation::GetForwardVector, nullptr, "ForwardVector");
     YTEBindProperty(&Orientation::GetRightVector, nullptr, "RightVector");
     YTEBindProperty(&Orientation::GetUpVector, nullptr, "UpVector");
 
-    YTEAddFunction(&Orientation::LookAtDirection, YTENoOverload, "LookAtDirection", YTEParameterNames("aDirection"));
-    YTEAddFunction(&Orientation::LookAtDirectionWithUp, YTENoOverload, "LookAtDirectionWithUp", YTEParameterNames("aDirection", "aUp"));
-    YTEAddFunction(&Orientation::LookAtPoint, YTENoOverload, "LookAtPoint", YTEParameterNames("aPoint"));
-    YTEAddFunction(&Orientation::LookAtPointWithUp, YTENoOverload, "LookAtPointWithUp", YTEParameterNames("aPoint", "aUp"));
+    YTEBindFunction(&Orientation::LookAtDirection, YTENoOverload, "LookAtDirection", YTEParameterNames("aDirection"));
+    YTEBindFunction(&Orientation::LookAtDirectionWithUp, YTENoOverload, "LookAtDirectionWithUp", YTEParameterNames("aDirection", "aUp"));
+    YTEBindFunction(&Orientation::LookAtPoint, YTENoOverload, "LookAtPoint", YTEParameterNames("aPoint"));
+    YTEBindFunction(&Orientation::LookAtPointWithUp, YTENoOverload, "LookAtPointWithUp", YTEParameterNames("aPoint", "aUp"));
   }
 
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -10,30 +10,30 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/CollisionBody.h"
-#include "YTE/Physics/BoxCollider.h"
-#include "YTE/Physics/GhostBody.h"
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/CollisionBody.hpp"
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/GhostBody.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
-  DefineType(BoxCollider)
+  YTEDefineType(BoxCollider)
   {
     YTERegisterType(BoxCollider);
-    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size")->AddAttribute<EditorProperty>();
-    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size").AddAttribute<EditorProperty>();
+    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
-      ->Description() = "Sets the collider scale as a multiple of the scale of the transform";
-    YTEAddFunction( &BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
-      ->Description() = "Sets the collider scale as a multiple of the scale of the transform";
+    YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
+      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
+    YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
+      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
 
-    YTEAddFunction( &BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
-    YTEAddFunction( &BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
   }
 
   BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

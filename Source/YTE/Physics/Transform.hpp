@@ -15,14 +15,14 @@
 
 namespace YTE
 {
-  DeclareEvent(PositionChanged);
-  DeclareEvent(RotationChanged);
-  DeclareEvent(ScaleChanged);
-  DeclareEvent(OrientationChanged);
+  YTEDeclareEvent(PositionChanged);
+  YTEDeclareEvent(RotationChanged);
+  YTEDeclareEvent(ScaleChanged);
+
   class PositionChanged :public Event
   {
   public:
-    DeclareType(PositionChanged);
+    YTEDeclareType(PositionChanged);
 
     glm::vec3 Position;
   };
@@ -30,7 +30,7 @@ namespace YTE
   class RotationChanged : public Event
   {
   public:
-    DeclareType(RotationChanged);
+    YTEDeclareType(RotationChanged);
 
     glm::quat Rotation;
   };
@@ -38,25 +38,15 @@ namespace YTE
   class ScaleChanged : public Event
   {
   public:
-    DeclareType(ScaleChanged);
+    YTEDeclareType(ScaleChanged);
 
     glm::vec3 Scale;
-  };
-
-  class OrientationChanged : public Event
-  {
-  public:
-    DeclareType(OrientationChanged);
-
-    glm::vec3 Forward;
-    glm::vec3 Right;
-    glm::vec3 Up;
   };
 
   class Transform : public Component
   {
   public:
-    DeclareType(Transform);
+    YTEDeclareType(Transform);
 
     Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

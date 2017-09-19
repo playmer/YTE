@@ -19,7 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "ObjectBrowser.hpp"
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 #include "ComponentTree.hpp"
 #include "ObjectItem.hpp"
@@ -99,6 +99,8 @@ QLineEdit * ArchetypeTools::GetLineEdit()
 
 void ArchetypeTools::SetButtonMode(int aMode)
 {
+  YTEUnusedArgument(aMode);
+
   mRevertButton->show();
   mSaveAsButton->show();
   mOverwriteButton->show();

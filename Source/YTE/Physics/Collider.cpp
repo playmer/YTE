@@ -11,50 +11,50 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/BoxCollider.h"
-#include "YTE/Physics/CapsuleCollider.h"
-#include "YTE/Physics/CylinderCollider.h"
-#include "YTE/Physics/Collider.h"
-#include "YTE/Physics/SphereCollider.h"
-#include "YTE/Physics/MeshCollider.h"
-#include "YTE/Physics/Transform.h"
-#include "PhysicsSystem.h"
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CapsuleCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
+#include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+#include "YTE/Physics/MeshCollider.hpp"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
 
 namespace YTE
 {
-  DefineEvent(CollisionStarted);
-  DefineEvent(CollisionPersisted);
-  DefineEvent(CollisionEnded);
+  YTEDefineEvent(CollisionStarted);
+  YTEDefineEvent(CollisionPersisted);
+  YTEDefineEvent(CollisionEnded);
 
-  DefineType(CollisionEvent)
+  YTEDefineType(CollisionEvent)
   {
     YTERegisterType(CollisionEvent);
     YTEBindField(&CollisionEvent::OtherObject, "OtherObject", PropertyBinding::Get);
   }
 
 
-  DefineType(CollisionStarted)
+  YTEDefineType(CollisionStarted)
   {
     YTERegisterType(CollisionStarted);
     YTEBindField(&CollisionStarted::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionStarted::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(CollisionPersisted)
+  YTEDefineType(CollisionPersisted)
   {
     YTERegisterType(CollisionPersisted);
     YTEBindField(&CollisionPersisted::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionPersisted::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(CollisionEnded)
+  YTEDefineType(CollisionEnded)
   {
     YTERegisterType(CollisionEnded);
     YTEBindField(&CollisionEnded::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionEnded::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(Collider)
+  YTEDefineType(Collider)
   {
     YTERegisterType(Collider);
   }

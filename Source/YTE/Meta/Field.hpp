@@ -8,12 +8,12 @@ namespace YTE
   class Field : public Property
   {
   public:
-    DeclareType(Field)
+    YTEDeclareType(Field)
       Field(Field&) = delete;
 
     Field(const char *aName,
-      std::unique_ptr<Function> aGetter,
-      std::unique_ptr<Function> aSetter)
+          std::unique_ptr<Function> aGetter,
+          std::unique_ptr<Function> aSetter)
       : Property(aName, std::move(aGetter), std::move(aSetter))
     {
     }
@@ -40,7 +40,7 @@ namespace YTE
 
 
   template<typename FieldPointerType, FieldPointerType aFieldPointer>
-  static Field* BindField(const char *aName, PropertyBinding aBinding, Type *aType)
+  static Field& BindField(const char *aName, PropertyBinding aBinding, Type *aType)
   {
     using ObjectType = typename DecomposeFieldPointer<FieldPointerType>::ObjectType;
     using FieldType = typename DecomposeFieldPointer<FieldPointerType>::FieldType;
@@ -61,7 +61,7 @@ namespace YTE
     auto field = std::make_unique<Field>(aName, std::move(getter), std::move(setter));
     auto ptr = field.get();
     aType->AddField(std::move(field));
-    return ptr;
+    return *ptr;
   }
 
 }

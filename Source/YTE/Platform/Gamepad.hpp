@@ -16,16 +16,16 @@
 #include "YTE/Platform/DeviceEnums.hpp"
 namespace YTE
 {
-  DeclareEvent(XboxStickFlicked);
-  DeclareEvent(XboxButtonPress);
-  DeclareEvent(XboxButtonRelease);
-  DeclareEvent(XboxButtonPersist);
+  YTEDeclareEvent(XboxStickFlicked);
+  YTEDeclareEvent(XboxButtonPress);
+  YTEDeclareEvent(XboxButtonRelease);
+  YTEDeclareEvent(XboxButtonPersist);
 
   class XboxController;
   class XboxFlickEvent : public Event
   {
   public:
-    DeclareType(XboxFlickEvent);
+    YTEDeclareType(XboxFlickEvent);
 
     glm::vec2 FlickDirection;
     Xbox_Buttons FlickedStick;
@@ -35,7 +35,7 @@ namespace YTE
   class XboxButtonEvent : public Event
   {
   public:
-    DeclareType(XboxButtonEvent);
+    YTEDeclareType(XboxButtonEvent);
 
     Xbox_Buttons Button;
     XboxController *Controller;
@@ -54,7 +54,7 @@ namespace YTE
   class XboxController : public EventHandler
   {
   public:
-    DeclareType(XboxController);
+    YTEDeclareType(XboxController);
 
     XboxController(); 
     ~XboxController();

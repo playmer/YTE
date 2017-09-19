@@ -4,108 +4,108 @@ namespace YTE
 {
   std::unordered_map<std::string, Type*> Type::sGlobalTypes;
 
-  DefineType(DocumentedObject)
+  YTEDefineType(DocumentedObject)
   {
     YTERegisterType(DocumentedObject);
     YTEBindProperty(&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation, "Documentation");
   }
 
-  DefineType(Type)
+  YTEDefineType(Type)
   {
     YTERegisterType(Type);
 
   }
 
-  DefineType(Function)
+  YTEDefineType(Function)
   {
     YTERegisterType(Function);
 
   }
 
 
-  DefineType(Property)
+  YTEDefineType(Property)
   {
     YTERegisterType(Property);
 
   }
 
 
-  DefineType(Field)
+  YTEDefineType(Field)
   {
     YTERegisterType(Field);
   }
 
-  DefineExternalType(void)
+  YTEDefineExternalType(void)
   {
     YTERegisterType(void);
   }
 
-  DefineExternalType(bool)
+  YTEDefineExternalType(bool)
   {
     YTERegisterType(bool);
   }
 
-  DefineExternalType(s8)
+  YTEDefineExternalType(s8)
   {
     YTERegisterType(s8);
   }
 
-  DefineExternalType(i8)
+  YTEDefineExternalType(i8)
   {
     YTERegisterType(i8);
   }
 
-  DefineExternalType(i16)
+  YTEDefineExternalType(i16)
   {
     YTERegisterType(i16);
   }
 
-  DefineExternalType(i32)
+  YTEDefineExternalType(i32)
   {
     YTERegisterType(i32);
   }
 
-  DefineExternalType(i64)
+  YTEDefineExternalType(i64)
   {
     YTERegisterType(i64);
   }
 
-  DefineExternalType(u8)
+  YTEDefineExternalType(u8)
   {
     YTERegisterType(u8);
   }
 
-  DefineExternalType(u16)
+  YTEDefineExternalType(u16)
   {
     YTERegisterType(u16);
   }
 
-  DefineExternalType(u32)
+  YTEDefineExternalType(u32)
   {
     YTERegisterType(u32);
   }
 
-  DefineExternalType(u64)
+  YTEDefineExternalType(u64)
   {
     YTERegisterType(u64);
   }
 
-  DefineExternalType(float)
+  YTEDefineExternalType(float)
   {
     YTERegisterType(float);
   }
 
-  DefineExternalType(double)
+  YTEDefineExternalType(double)
   {
     YTERegisterType(double);
   }
 
-  DefineExternalType(std::string)
+  YTEDefineExternalType(std::string)
   {
     YTERegisterType(std::string);
   }
 
-  DefineExternalType(YTE::String)
+  YTEDefineExternalType(YTE::String)
   {
     YTERegisterType(YTE::String);
   }

@@ -56,7 +56,7 @@ namespace YTE
   class WWiseSystem : public Component
   {
   public:
-    DeclareType(WWiseSystem);
+    YTEDeclareType(WWiseSystem);
 
     // Sets up the system, probably could just be the constructor.
 

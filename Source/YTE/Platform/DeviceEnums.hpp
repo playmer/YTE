@@ -246,9 +246,9 @@ namespace YTE
   }
 }
 
-DeclareExternalType(YTE::Controller_Id);
-DeclareExternalType(YTE::Xbox_Buttons);
-DeclareExternalType(YTE::Mouse_Buttons);
-DeclareExternalType(YTE::Keys);
+YTEDeclareExternalType(YTE::Controller_Id);
+YTEDeclareExternalType(YTE::Xbox_Buttons);
+YTEDeclareExternalType(YTE::Mouse_Buttons);
+YTEDeclareExternalType(YTE::Keys);
 
 #endif

@@ -19,7 +19,7 @@ namespace YTE
   class GraphicsView : public Component
   {
   public:
-    DeclareType(GraphicsView);
+    YTEDeclareType(GraphicsView);
     GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;

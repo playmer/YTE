@@ -27,9 +27,9 @@
 namespace YTE
 {
 
-  DeclareEvent(WindowResize);
-  DeclareEvent(WindowFocusLostOrGained);
-  DeclareEvent(WindowMinimizedOrRestored);
+  YTEDeclareEvent(WindowResize);
+  YTEDeclareEvent(WindowFocusLostOrGained);
+  YTEDeclareEvent(WindowMinimizedOrRestored);
   class WindowResize : public Event
   {
   public:
@@ -54,7 +54,7 @@ namespace YTE
   class Window : public EventHandler
   {
   public:
-    DeclareType(Window);
+    YTEDeclareType(Window);
 
     static i64 MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow);
  

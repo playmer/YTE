@@ -16,7 +16,7 @@
 #include "YTE/Graphics/Vulkan/VkPrimitives.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Platform/Window.hpp"
 
@@ -24,9 +24,9 @@
 
 namespace YTE
 {
-  DefineEvent(RendererResize);
+  YTEDefineEvent(RendererResize);
 
-  DefineType(GraphicsSystem)
+  YTEDefineType(GraphicsSystem)
   {
     YTERegisterType(GraphicsSystem);
   }

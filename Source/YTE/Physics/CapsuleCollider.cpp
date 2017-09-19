@@ -11,25 +11,25 @@
 #include "YTE/Core/Space.hpp"
 
 
-#include "YTE/Physics/CollisionBody.h"
-#include "YTE/Physics/CapsuleCollider.h"
-#include "YTE/Physics/GhostBody.h"
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/RigidBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/CollisionBody.hpp"
+#include "YTE/Physics/CapsuleCollider.hpp"
+#include "YTE/Physics/GhostBody.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
-  DefineType(CapsuleCollider)
+  YTEDefineType(CapsuleCollider)
   {
     YTERegisterType(CapsuleCollider);
-    auto radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
-    radius->Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    radius->AddAttribute<EditorProperty>();
+    auto &radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
+    radius.Description() = "Only works for getting. Setting is used exclusively for serialization.";
+    radius.AddAttribute<EditorProperty>();
 
-    auto height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
-    height->Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    height->AddAttribute<EditorProperty>();
+    auto &height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
+    height.Description() = "Only works for getting. Setting is used exclusively for serialization.";
+    height.AddAttribute<EditorProperty>();
   }
 
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -13,7 +13,7 @@ namespace YTE
   class TestComponent : public Component
   {
   public:
-    DeclareType(TestComponent);
+    YTEDeclareType(TestComponent);
 
     TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

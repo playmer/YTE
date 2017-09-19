@@ -182,7 +182,7 @@ namespace YTE
     return glm::vec2((float)(int)(short)LOWORD(lParam), (float)(int)(short)HIWORD(lParam));
   }
 
-  Mouse_Buttons ButtonFromWParam(WPARAM aButton)
+  Mouse_Buttons XButtonFromWParam(WPARAM aButton)
   {
     if (HIWORD(aButton) == XBUTTON1)
     {
@@ -261,7 +261,7 @@ namespace YTE
       aWindow->mMouse.UpdateButton(Mouse_Buttons::Middle, true, PositionFromLParam(aLParam));
       break;
     case WM_XBUTTONDOWN:
-      aWindow->mMouse.UpdateButton(ButtonFromWParam(aWParam), true, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), true, PositionFromLParam(aLParam));
       break;
 
       // Mouse Button was released.
@@ -275,7 +275,7 @@ namespace YTE
       aWindow->mMouse.UpdateButton(Mouse_Buttons::Middle, false, PositionFromLParam(aLParam));
       break;
     case WM_XBUTTONUP:
-      aWindow->mMouse.UpdateButton(ButtonFromWParam(aWParam), false, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), false, PositionFromLParam(aLParam));
       break;
 
       // A key has been pressed.
@@ -578,12 +578,14 @@ namespace YTE
 
   void Window::Update()
   {
-    MSG message;
-    while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+    if (false == mEngine->IsEditor())
     {
-
-      TranslateMessage(&message);
-      DispatchMessage(&message);
+      MSG message;
+      while (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
+      {
+        TranslateMessage(&message);
+        DispatchMessage(&message);
+      }
     }
 
     mMouse.Update();

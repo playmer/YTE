@@ -8,28 +8,26 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Physics_CylinderCollder_h
-#define YTE_Physics_CylinderCollder_h
+#ifndef YTE_Physics_MeshCollider_h
+#define YTE_Physics_MeshCollider_h
 
 #include "YTE/Core/Component.hpp"
 
-
-
-#include "YTE/Physics/Collider.h"
+#include "YTE/Physics/Collider.hpp"
 
 namespace YTE
 {
-  class CylinderCollider : public Collider
+  class MeshCollider : public Collider
   {
   public:
-    DeclareType(CylinderCollider);
+    YTEDeclareType(MeshCollider);
 
-    CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void PhysicsInitialize();
-
   private:
-    UniquePointer<btCylinderShape> mCylinderShape;
+    UniquePointer<btBvhTriangleMeshShape> mTriangleMeshShape;
+    btTriangleMesh mTriangles;
   };
 }
 

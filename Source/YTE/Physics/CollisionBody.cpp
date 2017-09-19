@@ -13,13 +13,13 @@
 #include "Bullet/BulletCollision/CollisionDispatch/btCollisionObject.h"
 
 
-#include "YTE/Physics/PhysicsSystem.h"
-#include "YTE/Physics/CollisionBody.h"
-#include "YTE/Physics/Transform.h"
+#include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Physics/CollisionBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
-  DefineType(CollisionBody)
+  YTEDefineType(CollisionBody)
   {
     YTERegisterType(CollisionBody);
   }
