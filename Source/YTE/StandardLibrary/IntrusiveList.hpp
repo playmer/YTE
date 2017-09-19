@@ -28,28 +28,24 @@ namespace YTE
 
       }
 
-      Hook(OwnerType * aOwner)
+      Hook(OwnerType *aOwner)
         : mPrevious(this)
         , mNext(this)
         , mOwner(aOwner)
       {
-        if (aOwner == nullptr)
-        {
-          throw std::exception();
-        }
+        DebugObjection(mOwner == nullptr, 
+                       "When constructing a Hook, Owner must be valid.");
       }
 
       Hook(Hook &aHook) = delete;
 
-      Hook(Hook &&aHook, OwnerType * aOwner = nullptr)
+      Hook(Hook &&aHook, OwnerType *aOwner)
         : mPrevious(aHook.mPrevious)
         , mNext(aHook.mNext)
         , mOwner(aOwner)
       {
-        if (aOwner == nullptr)
-        {
-          throw std::exception();
-        }
+        DebugObjection(mOwner == nullptr,
+                       "When constructing a Hook, Owner must be valid.");
 
         aHook.Unlink();
 
@@ -102,8 +98,11 @@ namespace YTE
       using pointer = OwnerType*;
       using reference = OwnerType&;
 
-      inline iterator(Hook *aHook = nullptr)
+      inline iterator(Hook *aHook)
       {
+        DebugObjection(aHook == nullptr,
+                       "When constructing an iterator, Hook must be valid.");
+
         mCurrent.InsertAfter(*aHook);
       }
 
@@ -177,14 +176,12 @@ namespace YTE
 
     void UnlinkAll()
     {
-      for (;;)
+      Hook *hook = mHead.mPrevious;
+
+      while (hook != &mHead)
       {
-        Hook *hook = mHead.mPrevious;
-        if (hook == &mHead)
-        {
-          break;
-        }
         hook->Unlink();
+        hook = mHead.mPrevious;
       }
     }
 

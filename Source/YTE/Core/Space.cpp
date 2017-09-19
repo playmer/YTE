@@ -6,17 +6,9 @@
 All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include <thread>
-
-
-
-#include "YTE/Physics/PhysicsSystem.h"
-
-#include "YTE/Utilities/Utilities.h"
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
@@ -25,6 +17,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/AssetLoader.hpp"
 
 #include "YTE/Physics/RigidBody.h"
+#include "YTE/Physics/PhysicsSystem.h"
+
+#include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
