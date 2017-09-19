@@ -18,47 +18,48 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedMesh> AddModel(Window *aWindow,
                                                        std::string &aMeshFile)
     {
-      (void)aWindow;
-      (void)aMeshFile;
+      YTEUnusedArgument(aWindow);
+      YTEUnusedArgument(aMeshFile);
 
       return nullptr;
     }
 
     virtual void RemoveMeshId(Window *aWindow, u64 aId) 
     {
-      (void)aWindow;
-      (void)aId;
+      YTEUnusedArgument(aWindow);
+      YTEUnusedArgument(aId);
     };
 
     virtual void UpdateModelTransformation(Model *aModel) 
     {
-      (void)aModel;
+      YTEUnusedArgument(aModel);
     };
 
     virtual Texture *AddTexture(Window *aWindow,
                                 const char *aTextureFile) 
     {
-      (void)aWindow;
-      (void)aTextureFile;
+      YTEUnusedArgument(aWindow);
+      YTEUnusedArgument(aTextureFile);
       return nullptr;
     };
 
      virtual void UpdateViewBuffer(Window *aWindow, 
                                    UBOView &aView) 
-    { 
-      (void)aWindow; 
-      (void)aView; 
+    {
+      YTEUnusedArgument(aWindow);
+      YTEUnusedArgument(aView);
     }
 
      virtual glm::vec4 GetClearColor(Window *aWindow)
      {
+       YTEUnusedArgument(aWindow);
        return glm::vec4{};
      }
 
      virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor)
      {
-       (void)aWindow;
-       (void)aColor;
+       YTEUnusedArgument(aWindow);
+       YTEUnusedArgument(aColor);
      }
   };
 }

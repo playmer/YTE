@@ -19,19 +19,19 @@
 
 namespace YTE
 {
-  DefineType(SphereCollider)
+  YTEDefineType(SphereCollider)
   {
     YTERegisterType(SphereCollider);
-    YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius")->AddAttribute<EditorProperty>();
-    YTEBindProperty(&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty, "Offset")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius").AddAttribute<EditorProperty>();
+    YTEBindProperty(&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &SphereCollider::SetRadius, (void (SphereCollider::*) (float)), "SetRadius", YTEParameterNames("aRadius"))
-      ->Description() = "Sets the collider scale as a multiple of the scale of the transform";
+    YTEBindFunction(&SphereCollider::SetRadius, (void (SphereCollider::*) (float)), "SetRadius", YTEParameterNames("aRadius"))
+      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
 
-    YTEAddFunction( &SphereCollider::SetOffset, (void (SphereCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
-    YTEAddFunction( &SphereCollider::SetOffset, (void (SphereCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&SphereCollider::SetOffset, (void (SphereCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&SphereCollider::SetOffset, (void (SphereCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
   }
 
   SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

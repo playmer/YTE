@@ -20,7 +20,7 @@ namespace YTE
   class Space : public Composition
   {
   public:
-    DeclareType(Space);
+    YTEDeclareType(Space);
   
     Space(Engine *aEngine, RSValue *aProperties);
     void Load();

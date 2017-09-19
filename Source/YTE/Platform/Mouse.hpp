@@ -21,16 +21,16 @@
 
 namespace YTE
 {
-  DeclareEvent(MousePress);
-  DeclareEvent(MouseRelease);
-  DeclareEvent(MousePersist);
-  DeclareEvent(MouseScroll);
-  DeclareEvent(MouseMove);
+  YTEDeclareEvent(MousePress);
+  YTEDeclareEvent(MouseRelease);
+  YTEDeclareEvent(MousePersist);
+  YTEDeclareEvent(MouseScroll);
+  YTEDeclareEvent(MouseMove);
   
   class MouseButtonEvent : public Event
   {
   public:
-    DeclareType(MouseButtonEvent);
+    YTEDeclareType(MouseButtonEvent);
 
     glm::vec2 WorldCoordinates;
     Mouse_Buttons Button;
@@ -41,7 +41,7 @@ namespace YTE
   class MouseWheelEvent : public Event
   {
   public:
-    DeclareType(MouseWheelEvent);
+    YTEDeclareType(MouseWheelEvent);
 
     glm::vec2 WorldCoordinates;
     glm::vec2 ScrollMovement;
@@ -51,7 +51,7 @@ namespace YTE
   class MouseMoveEvent : public Event
   {
   public:
-    DeclareType(MouseMoveEvent);
+    YTEDeclareType(MouseMoveEvent);
 
     glm::vec2 WorldCoordinates;
     Mouse *Mouse;
@@ -65,7 +65,7 @@ namespace YTE
   class Mouse : public EventHandler
   {
   public:
-    DeclareType(Mouse);
+    YTEDeclareType(Mouse);
 
     Mouse();
 

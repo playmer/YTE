@@ -25,7 +25,7 @@ namespace YTE
   class CollisionBody : public Body
   {
   public:
-    DeclareType(CollisionBody);
+    YTEDeclareType(CollisionBody);
 
     CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

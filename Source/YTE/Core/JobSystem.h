@@ -50,7 +50,7 @@ namespace YTE
   class JobSystem : public Component
   {
   public:
-    DeclareType(JobSystem);
+    YTEDeclareType(JobSystem);
 
     JobSystem(Composition *aOwner, RSValue *aProperties)
       : Component(aOwner, nullptr), mEngineClosing(false)

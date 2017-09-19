@@ -25,7 +25,7 @@ namespace YTE
   class RigidBody : public Body
   {
   public:
-    DeclareType(RigidBody);
+    YTEDeclareType(RigidBody);
 
     RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

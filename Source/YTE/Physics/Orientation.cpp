@@ -16,9 +16,9 @@
 
 namespace YTE
 {
-  DefineEvent(OrientationChanged);
+  YTEDefineEvent(OrientationChanged);
 
-  DefineType(OrientationChanged)
+  YTEDefineType(OrientationChanged)
   {
     YTERegisterType(OrientationChanged);
     YTEBindField(&OrientationChanged::Forward, "Forward", PropertyBinding::Get);
@@ -26,17 +26,17 @@ namespace YTE
     YTEBindField(&OrientationChanged::Up, "Up", PropertyBinding::Get);
   }
 
-  DefineType(Orientation)
+  YTEDefineType(Orientation)
   {
     YTERegisterType(Orientation);
     YTEBindProperty(&Orientation::GetForwardVector, nullptr, "ForwardVector");
     YTEBindProperty(&Orientation::GetRightVector, nullptr, "RightVector");
     YTEBindProperty(&Orientation::GetUpVector, nullptr, "UpVector");
 
-    YTEAddFunction(&Orientation::LookAtDirection, YTENoOverload, "LookAtDirection", YTEParameterNames("aDirection"));
-    YTEAddFunction(&Orientation::LookAtDirectionWithUp, YTENoOverload, "LookAtDirectionWithUp", YTEParameterNames("aDirection", "aUp"));
-    YTEAddFunction(&Orientation::LookAtPoint, YTENoOverload, "LookAtPoint", YTEParameterNames("aPoint"));
-    YTEAddFunction(&Orientation::LookAtPointWithUp, YTENoOverload, "LookAtPointWithUp", YTEParameterNames("aPoint", "aUp"));
+    YTEBindFunction(&Orientation::LookAtDirection, YTENoOverload, "LookAtDirection", YTEParameterNames("aDirection"));
+    YTEBindFunction(&Orientation::LookAtDirectionWithUp, YTENoOverload, "LookAtDirectionWithUp", YTEParameterNames("aDirection", "aUp"));
+    YTEBindFunction(&Orientation::LookAtPoint, YTENoOverload, "LookAtPoint", YTEParameterNames("aPoint"));
+    YTEBindFunction(&Orientation::LookAtPointWithUp, YTENoOverload, "LookAtPointWithUp", YTEParameterNames("aPoint", "aUp"));
   }
 
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)

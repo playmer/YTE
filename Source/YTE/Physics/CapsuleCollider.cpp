@@ -20,16 +20,16 @@
 
 namespace YTE
 {
-  DefineType(CapsuleCollider)
+  YTEDefineType(CapsuleCollider)
   {
     YTERegisterType(CapsuleCollider);
-    auto radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
-    radius->Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    radius->AddAttribute<EditorProperty>();
+    auto &radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
+    radius.Description() = "Only works for getting. Setting is used exclusively for serialization.";
+    radius.AddAttribute<EditorProperty>();
 
-    auto height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
-    height->Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    height->AddAttribute<EditorProperty>();
+    auto &height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
+    height.Description() = "Only works for getting. Setting is used exclusively for serialization.";
+    height.AddAttribute<EditorProperty>();
   }
 
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

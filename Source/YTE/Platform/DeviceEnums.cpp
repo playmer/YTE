@@ -11,7 +11,7 @@
 /*******************************************************************************
 YTE Enums
 *******************************************************************************/
-DefineExternalType(YTE::Controller_Id)
+YTEDefineExternalType(YTE::Controller_Id)
 {
   YTERegisterType(YTE::Controller_Id);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);
@@ -23,7 +23,7 @@ DefineExternalType(YTE::Controller_Id)
 //  YTEBindEnumValue(builder, type, Controller_Id::Unknown, "Unknown");
 }
 
-DefineExternalType(YTE::Xbox_Buttons)
+YTEDefineExternalType(YTE::Xbox_Buttons)
 {
   YTERegisterType(YTE::Xbox_Buttons);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);
@@ -45,7 +45,7 @@ DefineExternalType(YTE::Xbox_Buttons)
 //  YTEBindEnumValue(builder, type, Xbox_Buttons::Unknown, "Unknown");
 }
 
-DefineExternalType(YTE::Mouse_Buttons)
+YTEDefineExternalType(YTE::Mouse_Buttons)
 {
   YTERegisterType(YTE::Mouse_Buttons);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);
@@ -58,7 +58,7 @@ DefineExternalType(YTE::Mouse_Buttons)
 //  YTEBindEnumValue(builder, type, Mouse_Buttons::Unknown, "Unknown");
 }
 
-DefineExternalType(YTE::Keys)
+YTEDefineExternalType(YTE::Keys)
 {
   YTERegisterType(YTE::Keys);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);

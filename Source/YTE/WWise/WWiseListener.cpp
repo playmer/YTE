@@ -22,7 +22,7 @@
 
 namespace YTE
 {
-  DefineType(WWiseListener)
+  YTEDefineType(WWiseListener)
   {
     YTERegisterType(WWiseListener);
 

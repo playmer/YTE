@@ -1,12 +1,12 @@
 ﻿#include "YTE/Core/EventHandler.hpp"
 
 namespace YTE {
-  DefineType(Event)
+  YTEDefineType(Event)
   {
     YTERegisterType(Event);
   }
 
-  DefineType(EventHandler)
+  YTEDefineType(EventHandler)
   {
     YTERegisterType(EventHandler);
   }

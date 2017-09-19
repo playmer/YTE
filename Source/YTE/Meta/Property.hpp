@@ -10,19 +10,19 @@ namespace YTE
   class Property : public DocumentedObject
   {
   public:
-    DeclareType(Property)
+    YTEDeclareType(Property)
 
-      Property(Property&) = delete;
+    Property(Property&) = delete;
 
     Property(const char *aName,
              std::unique_ptr<Function> aGetter,
              std::unique_ptr<Function> aSetter)
-      : mName(aName),
-        mGetter(std::move(aGetter)),
-        mSetter(std::move(aSetter))
+      : mName(aName)
+      , mGetter(std::move(aGetter))
+      , mSetter(std::move(aSetter))
     {
       runtime_assert((nullptr != mGetter) || (nullptr != mSetter),
-        "At least one of the getter and setter must be set.");
+                     "At least one of the getter and setter must be set.");
     }
 
     const std::string& GetName() const { return mName; }
@@ -37,8 +37,8 @@ namespace YTE
 
 
   template <typename GetterFunctionSignature, GetterFunctionSignature GetterFunction,
-    typename SetterFunctionSignature, SetterFunctionSignature SetterFunction>
-  static Property* BindProperty(const char *aName, Type *aType)
+            typename SetterFunctionSignature, SetterFunctionSignature SetterFunction>
+  static Property& BindProperty(const char *aName, Type *aType)
   {
     auto getter = Binding<GetterFunctionSignature>:: template BindFunction<GetterFunction>("Getter");
     auto setter = Binding<SetterFunctionSignature>:: template BindFunction<SetterFunction>("Setter");
@@ -47,6 +47,6 @@ namespace YTE
     auto ptr = property.get();
     aType->AddProperty(std::move(property));
 
-    return ptr;
+    return *ptr;
   }
 }

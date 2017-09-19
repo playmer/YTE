@@ -20,7 +20,7 @@ namespace YTE
   class CapsuleCollider : public Collider
   {
   public:
-    DeclareType(CapsuleCollider);
+    YTEDeclareType(CapsuleCollider);
 
     CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

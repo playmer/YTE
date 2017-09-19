@@ -13,7 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  DefineType(Object)
+  YTEDefineType(Object)
   {
     YTERegisterType(Object);
   }

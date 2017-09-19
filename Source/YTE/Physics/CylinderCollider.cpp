@@ -19,7 +19,7 @@
 
 namespace YTE
 {
-  DefineType(CylinderCollider)
+  YTEDefineType(CylinderCollider)
   {
     YTERegisterType(CylinderCollider);
   }

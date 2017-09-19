@@ -9,16 +9,16 @@ namespace YTE
   class Function : public DocumentedObject
   {
   public:
-    DeclareType(Function)
-      Function(Function&) = delete;
+    YTEDeclareType(Function)
+    Function(Function&) = delete;
 
     using CallingFunction = Any(*)(std::vector<Any>& arguments);
 
     struct Parameter
     {
       Parameter(Type *aType, const char *aName)
-        : mType(aType),
-        mName(aName)
+        : mType(aType)
+        , mName(aName)
       {
 
       }
@@ -28,16 +28,16 @@ namespace YTE
     };
 
     Function(const char *aName, Type *aReturnType, Type *aOwningType, bool aStaticOrFree)
-      : mName(aName),
-      mReturnType(aReturnType),
-      mCaller(nullptr),
-      mOwningType(aOwningType),
-      mStaticOrFree(aStaticOrFree)
+      : mName(aName)
+      , mReturnType(aReturnType)
+      , mCaller(nullptr)
+      , mOwningType(aOwningType)
+      , mStaticOrFree(aStaticOrFree)
     {
       if ((aOwningType == nullptr) && (mStaticOrFree == false))
       {
         runtime_assert(false,
-          "A function without an owning type is, by definition, static.");
+                       "A function without an owning type is, by definition, static.");
       }
     }
 
@@ -401,8 +401,6 @@ namespace YTE
     }
   };
 
-
-
   template <>
   struct Binding<nullptr_t>
   {
@@ -414,10 +412,10 @@ namespace YTE
   };
 
   template <typename FunctionSignature, FunctionSignature aBoundFunction, size_t aSize = 0>
-  static Function* BindFunction(const char *name, Type *aType, std::initializer_list<const char *> aParameterNames)
+  static Function& BindFunction(const char *name, Type *aType, std::initializer_list<const char *> aParameterNames)
   {
     static_assert(aSize == CountFunctionArguments<FunctionSignature>::template Size() || aSize == 0,
-      "If passing names of function parameters you must pass either the exactly as many names as there are arguments, or 0.");
+                  "If passing names of function parameters you must pass either the exactly as many names as there are arguments, or 0.");
 
     auto function = Binding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
     function->SetParameterNames(aParameterNames);
@@ -425,6 +423,6 @@ namespace YTE
     auto ptr = function.get();
     aType->AddFunction(std::move(function));
 
-    return ptr;
+    return *ptr;
   }
 }

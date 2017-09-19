@@ -29,7 +29,7 @@ namespace YTE
   class Composition : public EventHandler
   {
   public:
-    DeclareType(Composition);
+    YTEDeclareType(Composition);
 
     Composition(Engine *aEngine, Space *aSpace, String &aName);
     Composition(Engine *aEngine, Space *aSpace);
@@ -161,6 +161,6 @@ namespace YTE
   }
 }
 
-DeclareExternalType(CompositionMap::range);
+YTEDeclareExternalType(CompositionMap::range);
 
 #endif

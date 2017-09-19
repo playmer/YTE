@@ -17,12 +17,12 @@
 
 namespace YTE
 {
-  DeclareEvent(OrientationChanged);
+  YTEDeclareEvent(OrientationChanged);
 
   class OrientationChanged : public Event
   {
   public:
-    DeclareType(OrientationChanged);
+    YTEDeclareType(OrientationChanged);
 
     glm::vec3 Forward;
     glm::vec3 Right;
@@ -32,7 +32,7 @@ namespace YTE
   class Orientation : public Component
   {
   public:
-    DeclareType(Orientation);
+    YTEDeclareType(Orientation);
 
     Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

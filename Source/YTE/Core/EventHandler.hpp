@@ -23,12 +23,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/BlockAllocator.hpp"
 
 namespace YTE {
-#define DeclareEvent(aName)                  \
+#define YTEDeclareEvent(aName)                  \
 namespace Events                             \
 {                                            \
     extern const std::string aName;          \
 }
-#define DefineEvent(aName)                   \
+#define YTEDefineEvent(aName)                   \
 namespace Events                             \
 {                                            \
     const std::string aName = #aName;        \
@@ -43,13 +43,13 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
   class Event : public Object
   {
   public:
-    DeclareType(Event);
+    YTEDeclareType(Event);
   };
 
   class EventHandler : public Object
   {
   public:
-    DeclareType(EventHandler);
+    YTEDeclareType(EventHandler);
     template <typename tReturn, typename Arg = tReturn>
     struct Binding {};
 

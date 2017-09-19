@@ -19,21 +19,21 @@
 
 namespace YTE
 {
-  DefineType(BoxCollider)
+  YTEDefineType(BoxCollider)
   {
     YTERegisterType(BoxCollider);
-    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size")->AddAttribute<EditorProperty>();
-    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size").AddAttribute<EditorProperty>();
+    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
-      ->Description() = "Sets the collider scale as a multiple of the scale of the transform";
-    YTEAddFunction( &BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
-      ->Description() = "Sets the collider scale as a multiple of the scale of the transform";
+    YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
+      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
+    YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
+      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
 
-    YTEAddFunction( &BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
-    YTEAddFunction( &BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
-      ->Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
+    YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
+      .Description() = "Sets the collider position offset from the World Translation of the transform";
   }
 
   BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

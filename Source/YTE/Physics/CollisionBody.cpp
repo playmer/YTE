@@ -19,7 +19,7 @@
 
 namespace YTE
 {
-  DefineType(CollisionBody)
+  YTEDefineType(CollisionBody)
   {
     YTERegisterType(CollisionBody);
   }

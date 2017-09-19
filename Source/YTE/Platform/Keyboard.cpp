@@ -12,24 +12,24 @@
 
 namespace YTE
 {
-  DefineEvent(KeyPress);
-  DefineEvent(KeyRelease);
-  DefineEvent(KeyPersist);
+  YTEDefineEvent(KeyPress);
+  YTEDefineEvent(KeyRelease);
+  YTEDefineEvent(KeyPersist);
 
-  DefineType(KeyboardEvent)
+  YTEDefineType(KeyboardEvent)
   {
     YTERegisterType(KeyboardEvent);
     YTEBindField(&KeyboardEvent::Key, "Key", PropertyBinding::Get);
   }
 
-  DefineType(Keyboard)
+  YTEDefineType(Keyboard)
   {
     YTERegisterType(Keyboard);
-    YTEAddFunction( &Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey"))->Description()
+    YTEBindFunction(&Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey")).Description()
       = "Finds if the given button is pressed right now.";
-    YTEAddFunction( &Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey"))->Description()
+    YTEBindFunction(&Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey")).Description()
       = "Finds if the given button is down right now.";
-    YTEAddFunction( &Keyboard::WasKeyDown, YTENoOverload, "WasKeyDown", YTEParameterNames("aKey"))->Description()
+    YTEBindFunction(&Keyboard::WasKeyDown, YTENoOverload, "WasKeyDown", YTEParameterNames("aKey")).Description()
       = "Finds if the given button was down last frame.";
   }
 
@@ -46,7 +46,7 @@ namespace YTE
   {
     KeyboardEvent keyEvent;
 
-    for (size_t i = 0; i < static_cast<size_t>(Keys::Keys_Number); ++i)
+    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
     {
       if (mKeysCurrent[i] && mKeysPrevious[i])
       {

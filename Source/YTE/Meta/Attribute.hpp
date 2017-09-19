@@ -10,13 +10,13 @@ namespace YTE
   class Attribute : public Base
   {
   public:
-    DeclareType(Attribute)
+    YTEDeclareType(Attribute)
   };
 
   class EditorProperty : public Attribute
   {
   public:
-    DeclareType(EditorProperty);
+    YTEDeclareType(EditorProperty);
     EditorProperty(DocumentedObject *aObject, bool aVisible = true);
 
     bool mVisible;
@@ -27,7 +27,7 @@ namespace YTE
   class DropDownStrings : public Attribute
   {
   public:
-    DeclareType(DropDownStrings);
+    YTEDeclareType(DropDownStrings);
     DropDownStrings(DocumentedObject *aObject, StrGettor aStrGettor);
 
     StrGettor GetStringGettor();

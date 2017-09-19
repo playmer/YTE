@@ -25,7 +25,7 @@ namespace YTE
       Unknown 
     }; 
  
-    DeclareType(Camera); 
+    YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties); 
  
     void Initialize() override; 

@@ -17,12 +17,12 @@
 
 namespace YTE
 {
-  DeclareEvent(MouseEnter);
-  DeclareEvent(MouseExit);
+  YTEDeclareEvent(MouseEnter);
+  YTEDeclareEvent(MouseExit);
   class MouseEnter : public Event
   {
   public:
-    DeclareType(MouseEnter);
+    YTEDeclareType(MouseEnter);
 
     String Name;
   };
@@ -30,7 +30,7 @@ namespace YTE
   class MouseExit : public Event
   {
   public:
-    DeclareType(MouseExit);
+    YTEDeclareType(MouseExit);
 
     String Name;
   };
@@ -38,7 +38,7 @@ namespace YTE
   class Reactive : public Component
   {
   public:
-    DeclareType(Reactive);
+    YTEDeclareType(Reactive);
 
     Reactive(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

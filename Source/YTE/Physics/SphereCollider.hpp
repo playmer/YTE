@@ -20,7 +20,7 @@ namespace YTE
   class SphereCollider : public Collider
   {
   public:
-    DeclareType(SphereCollider);
+    YTEDeclareType(SphereCollider);
 
     SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

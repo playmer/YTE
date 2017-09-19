@@ -19,7 +19,7 @@ namespace YTE
     return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby" }; 
   } 
    
-  DefineType(Camera) 
+  YTEDefineType(Camera) 
   { 
     YTERegisterType(Camera); 
 
@@ -29,30 +29,30 @@ namespace YTE
     Camera::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
  
     YTEBindProperty(&Camera::GetTargetObject, &Camera::SetTargetObject, "TargetObject") 
-      ->SetDocumentation("Object the camera will point at if it's type is set to \"TargetObject\"."); 
+      .SetDocumentation("Object the camera will point at if it's type is set to \"TargetObject\"."); 
  
     YTEBindProperty(&Camera::GetTargetPoint, &Camera::SetTargetPoint, "TargetPoint") 
-      ->AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>() 
       .SetDocumentation("Point the camera will point at if it's type is set to \"TargetPoint\"."); 
  
     YTEBindProperty(&Camera::GetFarPlane, &Camera::SetFarPlane, "FarPlane") 
-      ->AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>() 
       .SetDocumentation("The far plane the view will be rendered with."); 
  
     YTEBindProperty(&Camera::GetNearPlane, &Camera::SetNearPlane, "NearPlane") 
-      ->AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>() 
       .SetDocumentation("The near plane the view will be rendered with."); 
  
     YTEBindProperty(&Camera::GetFieldOfViewY, &Camera::SetFieldOfViewY, "FieldOfViewY") 
-      ->AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>() 
       .SetDocumentation("The field of view (y) the view will be rendered with."); 
 
     YTEBindProperty(&Camera::GetZoomingMaxAndMin, &Camera::SetZoomingMaxAndMin, "Zoom Planes")
-      ->AddAttribute<EditorProperty>()
+      .AddAttribute<EditorProperty>()
       .SetDocumentation("The min (x) and max (y) zoom of the camera.");
  
     YTEBindProperty(&Camera::GetCameraType, &Camera::SetCameraType, "CameraType") 
-      ->AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>() 
       .AddAttribute<DropDownStrings>(PopulateDropDownList) 
       .SetDocumentation("The type of camera we'd like to have. Options include:\n" 
                         " - TargetObject: The camera will always face the chosen target object.\n" 
@@ -64,23 +64,23 @@ namespace YTE
   Camera::Camera(Composition *aOwner, 
                  Space *aSpace,  
                  RSValue *aProperties) 
-    : Component(aOwner, aSpace), 
-      mCameraTransform(nullptr), 
-      mCameraOrientation(nullptr), 
-      mTargetObject(nullptr), 
-      mFieldOfViewY(glm::radians(45.0f)), 
-      mNearPlane(0.1f), 
-      mFarPlane(256.0f), 
-      mTilt(0.0f),
-      mTwist(0.0f),
-      mSpin(0.0f),
-      mZoom(5.0f),
-      mZoomMin(2.0f),
-      mZoomMax(30.0f),
-      mMoveUp(0.0f),
-      mMoveRight(0.0f),
-      mConstructing(true), 
-      mType(CameraType::CameraOrientation) 
+    : Component(aOwner, aSpace)
+    , mCameraTransform(nullptr)
+    , mCameraOrientation(nullptr)
+    , mTargetObject(nullptr)
+    , mFieldOfViewY(glm::radians(45.0f))
+    , mNearPlane(0.1f)
+    , mFarPlane(256.0f)
+    , mTilt(0.0f)
+    , mTwist(0.0f)
+    , mSpin(0.0f)
+    , mZoom(5.0f)
+    , mZoomMin(2.0f)
+    , mZoomMax(30.0f)
+    , mMoveUp(0.0f)
+    , mMoveRight(0.0f)
+    , mConstructing(true)
+    , mType(CameraType::CameraOrientation) 
   { 
     auto engine = aSpace->GetEngine(); 
     DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 

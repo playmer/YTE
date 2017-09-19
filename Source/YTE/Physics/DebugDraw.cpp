@@ -58,7 +58,7 @@ namespace YTE
 }
 
 // TODO (Josh): Fix enum binding
-DefineExternalType(btIDebugDraw::DebugDrawModes)
+YTEDefineExternalType(btIDebugDraw::DebugDrawModes)
 {
   YTERegisterType(btIDebugDraw::DebugDrawModes);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);

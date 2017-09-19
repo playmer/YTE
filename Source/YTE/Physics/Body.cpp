@@ -15,7 +15,7 @@
 
 namespace YTE
 {
-  DefineType(Body)
+  YTEDefineType(Body)
   {
     YTERegisterType(Body);
   }

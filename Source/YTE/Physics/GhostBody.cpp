@@ -19,7 +19,7 @@
 
 namespace YTE
 {
-  DefineType(GhostBody)
+  YTEDefineType(GhostBody)
   {
     YTERegisterType(GhostBody);
   }

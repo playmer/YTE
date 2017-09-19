@@ -16,7 +16,7 @@ namespace YTE
   class Model : public Component
   {
   public:
-    DeclareType(Model);
+    YTEDeclareType(Model);
 
     Model(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

@@ -2,17 +2,17 @@
 
 namespace YTE
 {
-  DefineType(Attribute)
+  YTEDefineType(Attribute)
   {
     YTERegisterType(Attribute);
   }
 
-  DefineType(EditorProperty)
+  YTEDefineType(EditorProperty)
   {
     YTERegisterType(EditorProperty);
   }
 
-  DefineType(DropDownStrings)
+  YTEDefineType(DropDownStrings)
   {
     YTERegisterType(DropDownStrings);
   }

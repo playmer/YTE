@@ -24,9 +24,9 @@
 
 namespace YTE
 {
-  DefineEvent(RendererResize);
+  YTEDefineEvent(RendererResize);
 
-  DefineType(GraphicsSystem)
+  YTEDefineType(GraphicsSystem)
   {
     YTERegisterType(GraphicsSystem);
   }

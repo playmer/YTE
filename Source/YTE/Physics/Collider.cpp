@@ -22,39 +22,39 @@
 
 namespace YTE
 {
-  DefineEvent(CollisionStarted);
-  DefineEvent(CollisionPersisted);
-  DefineEvent(CollisionEnded);
+  YTEDefineEvent(CollisionStarted);
+  YTEDefineEvent(CollisionPersisted);
+  YTEDefineEvent(CollisionEnded);
 
-  DefineType(CollisionEvent)
+  YTEDefineType(CollisionEvent)
   {
     YTERegisterType(CollisionEvent);
     YTEBindField(&CollisionEvent::OtherObject, "OtherObject", PropertyBinding::Get);
   }
 
 
-  DefineType(CollisionStarted)
+  YTEDefineType(CollisionStarted)
   {
     YTERegisterType(CollisionStarted);
     YTEBindField(&CollisionStarted::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionStarted::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(CollisionPersisted)
+  YTEDefineType(CollisionPersisted)
   {
     YTERegisterType(CollisionPersisted);
     YTEBindField(&CollisionPersisted::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionPersisted::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(CollisionEnded)
+  YTEDefineType(CollisionEnded)
   {
     YTERegisterType(CollisionEnded);
     YTEBindField(&CollisionEnded::Name, "Name", PropertyBinding::Get);
     YTEBindField(&CollisionEnded::Object, "Object", PropertyBinding::Get);
   }
 
-  DefineType(Collider)
+  YTEDefineType(Collider)
   {
     YTERegisterType(Collider);
   }

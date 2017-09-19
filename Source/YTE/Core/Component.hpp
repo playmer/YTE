@@ -22,7 +22,7 @@ namespace YTE
   class Component : public EventHandler
   {
   public:
-    DeclareType(Component);
+    YTEDeclareType(Component);
 
     Component(Composition *aOwner, Space *aSpace)
       : mOwner(aOwner), mSpace(aSpace) { };
@@ -51,7 +51,7 @@ namespace YTE
   class ComponentDependencies : public Attribute
   {
   public:
-    DeclareType(ComponentDependencies);
+    YTEDeclareType(ComponentDependencies);
 
     ComponentDependencies(DocumentedObject *aObject,
                           std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());

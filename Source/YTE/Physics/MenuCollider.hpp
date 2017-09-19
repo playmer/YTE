@@ -21,7 +21,7 @@ namespace YTE
   class MenuCollider : public Collider
   {
   public:
-    DeclareType(MenuCollider);
+    YTEDeclareType(MenuCollider);
 
     MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

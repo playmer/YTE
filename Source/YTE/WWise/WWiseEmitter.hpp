@@ -22,7 +22,7 @@ namespace YTE
   class WWiseEmitter : public Component
   {
   public:
-    DeclareType(WWiseEmitter);
+    YTEDeclareType(WWiseEmitter);
 
     WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

@@ -21,7 +21,7 @@ namespace YTE
   class Object : public Base
   {
   public:
-    DeclareType(Object);
+    YTEDeclareType(Object);
 
     template <typename MetaBoundType>
     inline void DeserializeByType(RSValue *aProperties, MetaBoundType aSelf, BoundType *aType);

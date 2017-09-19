@@ -9,7 +9,7 @@
 
 namespace YTE
 {
-  DefineType(TestComponent)
+  YTEDefineType(TestComponent)
   {
     YTERegisterType(TestComponent);
   }

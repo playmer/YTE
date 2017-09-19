@@ -10,12 +10,12 @@
 
 namespace YTE
 {
-  DefineEvent(XboxStickFlicked);
-  DefineEvent(XboxButtonPress);
-  DefineEvent(XboxButtonRelease);
-  DefineEvent(XboxButtonPersist);
+  YTEDefineEvent(XboxStickFlicked);
+  YTEDefineEvent(XboxButtonPress);
+  YTEDefineEvent(XboxButtonRelease);
+  YTEDefineEvent(XboxButtonPersist);
 
-  DefineType(XboxFlickEvent)
+  YTEDefineType(XboxFlickEvent)
   {
     YTERegisterType(XboxFlickEvent);
     YTEBindField(&XboxFlickEvent::FlickDirection, "FlickDirection", PropertyBinding::Get);
@@ -23,7 +23,7 @@ namespace YTE
     YTEBindField(&XboxFlickEvent::Controller, "Controller", PropertyBinding::Get);
   }
 
-  DefineType(XboxButtonEvent)
+  YTEDefineType(XboxButtonEvent)
   {
     YTERegisterType(XboxButtonEvent);
     YTEBindField(&XboxButtonEvent::Button, "Button", PropertyBinding::GetSet);
@@ -31,7 +31,7 @@ namespace YTE
   }
 
 
-  DefineType(XboxController)
+  YTEDefineType(XboxController)
   {
     YTERegisterType(XboxController);
     YTEBindProperty(&XboxController::GetId, YTENoSetter, "Id");
@@ -41,13 +41,13 @@ namespace YTE
     YTEBindProperty(&XboxController::GetRightTrigger, YTENoSetter, "RightTrigger");
     YTEBindProperty(&XboxController::Active, YTENoSetter, "Active");
 
-    YTEAddFunction( &XboxController::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton"))->Description()
+    YTEBindFunction(&XboxController::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
       = "Finds if the given button is pressed right now.";
-    YTEAddFunction( &XboxController::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton"))->Description()
+    YTEBindFunction(&XboxController::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
       = "Finds if the given button is pressed last frame.";
-    //YTEAddFunction( &XboxController::Vibrate, YTENoOverload, "Vibrate", "aLeftSpeed, aRightSpeed")->Description()
+    //YTEBindFunction(&XboxController::Vibrate, YTENoOverload, "Vibrate", "aLeftSpeed, aRightSpeed").Description()
     //  = "Sets the controllers motors to vibrate via the specified amounts.";
-    YTEAddFunction( &XboxController::VibrateForTime, YTENoOverload, "VibrateForTime", YTEParameterNames("aLeftSpeed", "aRightSpeed", "aTime"))->Description()
+    YTEBindFunction(&XboxController::VibrateForTime, YTENoOverload, "VibrateForTime", YTEParameterNames("aLeftSpeed", "aRightSpeed", "aTime")).Description()
       = "The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.";
   }
 

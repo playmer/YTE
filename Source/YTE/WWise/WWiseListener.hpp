@@ -19,7 +19,7 @@ namespace YTE
   class WWiseListener : public Component
   {
   public:
-    DeclareType(WWiseListener);
+    YTEDeclareType(WWiseListener);
 
     WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

@@ -40,7 +40,7 @@ namespace YTE
     return result;
   }
 
-  DefineType(Model)
+  YTEDefineType(Model)
   {
     YTERegisterType(Model);
 
@@ -48,18 +48,18 @@ namespace YTE
 
     Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh")->AddAttribute<EditorProperty>()
+    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh").AddAttribute<EditorProperty>()
                                                               .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload").AddAttribute<EditorProperty>();
   }
 
   Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace),
-      mConstructing(true),
-      mRenderer(nullptr),
-      mInstantiatedMesh(nullptr),
-      mUpdating(false)
+    : Component(aOwner, aSpace)
+    , mConstructing(true)
+    , mRenderer(nullptr)
+    , mInstantiatedMesh(nullptr)
+    , mUpdating(false)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();

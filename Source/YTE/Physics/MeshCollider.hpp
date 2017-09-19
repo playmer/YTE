@@ -20,7 +20,7 @@ namespace YTE
   class MeshCollider : public Collider
   {
   public:
-    DeclareType(MeshCollider);
+    YTEDeclareType(MeshCollider);
 
     MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

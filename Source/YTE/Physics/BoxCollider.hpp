@@ -20,7 +20,7 @@ namespace YTE
   class BoxCollider : public Collider
   {
   public:
-    DeclareType(BoxCollider);
+    YTEDeclareType(BoxCollider);
 
     BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

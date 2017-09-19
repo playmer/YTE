@@ -25,7 +25,7 @@ namespace YTE
   class GhostBody : public Body
   {
   public:
-    DeclareType(GhostBody);
+    YTEDeclareType(GhostBody);
 
     GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

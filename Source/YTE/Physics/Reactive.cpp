@@ -16,22 +16,22 @@
 
 namespace YTE
 {
-  DefineEvent(MouseEnter);
-  DefineEvent(MouseExit);
+  YTEDefineEvent(MouseEnter);
+  YTEDefineEvent(MouseExit);
 
-  DefineType(MouseEnter)
+  YTEDefineType(MouseEnter)
   {
     YTERegisterType(MouseEnter);
     YTEBindField(&MouseEnter::Name, "Name", PropertyBinding::Get);
   }
 
-  DefineType(MouseExit)
+  YTEDefineType(MouseExit)
   {
     YTERegisterType(MouseExit);
     YTEBindField(&MouseExit::Name, "Name", PropertyBinding::Get);
   }
 
-  DefineType(Reactive)
+  YTEDefineType(Reactive)
   {
     YTERegisterType(Reactive);
   }

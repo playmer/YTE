@@ -15,26 +15,26 @@
 
 namespace YTE
 {
-  DefineType(RigidBody)
+  YTEDefineType(RigidBody)
   {
     YTERegisterType(RigidBody);
-    YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity")->AddAttribute<EditorProperty>();
+    YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity").AddAttribute<EditorProperty>();
 
-    auto mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet);
-    mass->Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    mass->AddAttribute<EditorProperty>();
+    auto &mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet);
+    mass.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
+    mass.AddAttribute<EditorProperty>();
 
-    auto isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet);
-    isStatic->Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    isStatic->AddAttribute<EditorProperty>();
+    auto &isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet);
+    isStatic.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
+    isStatic.AddAttribute<EditorProperty>();
 
-    YTEAddFunction( &RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
-      ->Description() = "Applys an impulse to the RigidBody.";
+    YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
+      .Description() = "Applys an impulse to the RigidBody.";
 
-    YTEAddFunction( &RigidBody::SetVelocity, (void (RigidBody::*) (const glm::vec3&)), "SetVelocity", YTEParameterNames("aVelocityVector"))
-      ->Description() = "Sets the object velocity from a Real3 of values";
-    YTEAddFunction( &RigidBody::SetVelocity, (void (RigidBody::*) (float, float, float)), "SetVelocity", YTEParameterNames("aVelX", "aVelY", "aVelZ"))
-      ->Description() = "Sets the object velocity from three float values";
+    YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (const glm::vec3&)), "SetVelocity", YTEParameterNames("aVelocityVector"))
+      .Description() = "Sets the object velocity from a Real3 of values";
+    YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (float, float, float)), "SetVelocity", YTEParameterNames("aVelX", "aVelY", "aVelZ"))
+      .Description() = "Sets the object velocity from three float values";
   }
 
   class MotionState : public btMotionState

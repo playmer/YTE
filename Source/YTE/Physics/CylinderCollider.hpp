@@ -20,7 +20,7 @@ namespace YTE
   class CylinderCollider : public Collider
   {
   public:
-    DeclareType(CylinderCollider);
+    YTEDeclareType(CylinderCollider);
 
     CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

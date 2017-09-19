@@ -23,7 +23,7 @@
 
 namespace YTE
 {
-  DefineType(MeshCollider)
+  YTEDefineType(MeshCollider)
   {
     YTERegisterType(MeshCollider);
 

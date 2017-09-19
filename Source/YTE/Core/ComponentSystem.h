@@ -28,7 +28,7 @@ namespace YTE
   class ComponentSystem : public Component
   {
   public:
-    DeclareType(ComponentSystem);
+    YTEDeclareType(ComponentSystem);
 
     // Sets up the system, probably could just be the constructor.
     ComponentSystem(Composition *aOwner,

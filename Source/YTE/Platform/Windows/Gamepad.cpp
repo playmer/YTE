@@ -52,7 +52,7 @@ namespace YTE
   }
 
   #define ProcessButton(aOsButton, aOurKey)                             \
-    index = static_cast<size_t>(Xbox_Buttons::aOurKey);                 \
+    index = enum_cast(Xbox_Buttons::aOurKey);                 \
                                                                         \
     /* Key got resent. */                                               \
                                                                         \
@@ -169,19 +169,17 @@ namespace YTE
     {
       mLeftVibe = leftVibe;
       mRightVibe = rightVibe;
-      std::cout << "Vibrating: " << aDt << std::endl;
       Vibrate(leftVibe, rightVibe);
     }
     else if ((mLeftVibe != 0.0f || mRightVibe != 0.0f) && (mVibrations.size() == 0))
     {
       mLeftVibe = 0.0f;
       mRightVibe = 0.0f;
-      std::cout << "No longer Vibrating." << std::endl;
       Vibrate(0.0f, 0.0f);
     }
 
     auto iterator = std::remove_if(mVibrations.begin(), mVibrations.end(),
-                                    [](const Vibration &aVibe) { return aVibe.mTime < 0.0f; });
+                                   [](const Vibration &aVibe) { return aVibe.mTime < 0.0f; });
 
     mVibrations.erase(iterator, mVibrations.end());
   }

@@ -194,7 +194,7 @@ namespace YTE
 
   struct RayCollisionInfo
   {
-    DeclareType(RayCollisionInfo);
+    YTEDeclareType(RayCollisionInfo);
 
     glm::vec3 mPosition;
     Composition *mObject;
@@ -206,7 +206,7 @@ namespace YTE
   class PhysicsSystem : public Component
   {
   public:
-    DeclareType(PhysicsSystem);
+    YTEDeclareType(PhysicsSystem);
 
     PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

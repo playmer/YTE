@@ -20,7 +20,7 @@ namespace YTE
   class GamepadSystem
   {
   public:
-    DeclareType(GamepadSystem);
+    YTEDeclareType(GamepadSystem);
       
     GamepadSystem();
 

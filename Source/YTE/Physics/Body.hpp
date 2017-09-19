@@ -22,7 +22,7 @@ namespace YTE
   class Body : public Component
   {
   public:
-    DeclareType(Body);
+    YTEDeclareType(Body);
 
     Body(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 

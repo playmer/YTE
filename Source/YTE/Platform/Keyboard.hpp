@@ -20,14 +20,14 @@
 
 namespace YTE
 {
-  DeclareEvent(KeyPress);
-  DeclareEvent(KeyRelease);
-  DeclareEvent(KeyPersist);
+  YTEDeclareEvent(KeyPress);
+  YTEDeclareEvent(KeyRelease);
+  YTEDeclareEvent(KeyPersist);
   
   class KeyboardEvent : public Event
   {
   public:
-    DeclareType(KeyboardEvent);
+    YTEDeclareType(KeyboardEvent);
 
     Keys Key;
     Keyboard *Keyboard;
@@ -39,7 +39,7 @@ namespace YTE
   class Keyboard : public EventHandler
   {
   public:
-    DeclareType(Keyboard);
+    YTEDeclareType(Keyboard);
       
     Keyboard();
 
