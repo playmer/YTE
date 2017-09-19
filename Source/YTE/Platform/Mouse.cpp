@@ -10,11 +10,6 @@
 
 #include "YTE/Platform/Mouse.hpp"
 
-namespace
-{
-  const int YTE_NUM_MOUSEBUTTONS = 3;
-}
-
 namespace YTE
 {
   YTEDefineEvent(MousePress);
