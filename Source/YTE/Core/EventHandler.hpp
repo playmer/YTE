@@ -9,14 +9,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #ifndef YTE_Core_EventHandler_hpp
 #define YTE_Core_EventHandler_hpp
-#include "YTE/Core/Object.hpp"
-#include "YTE/StandardLibrary/Delegate.hpp"
-#include "YTE/StandardLibrary/IntrusiveList.hpp"
-#include "YTE/StandardLibrary/BlockAllocator.hpp"
+
 #include <memory>
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+
+#include "YTE/Core/Object.hpp"
+
+#include "YTE/StandardLibrary/Delegate.hpp"
+#include "YTE/StandardLibrary/IntrusiveList.hpp"
+#include "YTE/StandardLibrary/BlockAllocator.hpp"
 
 namespace YTE {
 #define DeclareEvent(aName)                  \
@@ -155,14 +158,18 @@ DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
     void SendEvent(const StringType& aName, Event* aEvent)
     {
       auto && range = mEventLists[aName];
-      for (auto begin = range.begin(), end = range.end();
-            begin != end; 
-            (begin != end) 
-              ? ++begin
-              : begin)
+      auto begin = range.begin();
+      auto end = range.end();
+
+      while (begin != end)
       {
         auto &eventDelegate = *begin;
         eventDelegate.Invoke(aEvent);
+
+        if (begin != end)
+        {
+          ++begin;
+        }
       }
     }
 

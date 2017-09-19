@@ -51,7 +51,6 @@ namespace YTE
           throw std::exception();
         }
 
-        // DebugObjection(aOwner != nullptr, "Hook node moved without supplying an owner", __FUNCTION__);
         aHook.Unlink();
 
         mPrevious->mNext = this;
@@ -89,9 +88,9 @@ namespace YTE
         mNext->mPrevious = this;
       }
 
-      Hook * mPrevious;
-      Hook * mNext;
-      OwnerType * mOwner;
+      Hook *mPrevious;
+      Hook *mNext;
+      OwnerType *mOwner;
     };
 
     class iterator : public std::iterator<std::bidirectional_iterator_tag, OwnerType>
@@ -108,7 +107,6 @@ namespace YTE
         mCurrent.InsertAfter(*aHook);
       }
 
-      //inline iterator(const iterator &aIterator) = delete;
       inline iterator(const iterator &aIterator)
         : mCurrent(std::move(aIterator.mCurrent))
       {
@@ -116,11 +114,6 @@ namespace YTE
       }
 
       inline iterator& operator=(const iterator &aIterator) = delete;
-      //inline iterator& operator=(const iterator &aIterator)
-      //{
-      //  mCurrent = aIterator.mCurrent;
-      //  return *this;
-      //}
 
       inline iterator& operator++()
       {
