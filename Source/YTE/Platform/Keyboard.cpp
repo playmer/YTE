@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 
 
@@ -63,35 +63,43 @@ namespace YTE
   void Keyboard::UpdateKey(Keys aKey, bool aDown)
   {
     size_t index = static_cast<size_t>(aKey);
-        
-      // Key got resent.
+
+    // Key got resent.
     if (mKeysCurrent[index] == aDown)
     {
       return;
     }
-      
+
     mKeysPrevious[index] = mKeysCurrent[index];
 
     mKeysCurrent[index] = aDown;
 
     const std::string *state;
 
-      // Key has been pressed.
+    // Key has been pressed.
     if (aDown)
     {
       state = &Events::KeyPress;
     }
-      // Key has been released
+    // Key has been released
     else
     {
       state = &Events::KeyRelease;
     }
-      
+
     KeyboardEvent keyboardEvent;
     keyboardEvent.Key = aKey;
     keyboardEvent.Keyboard = this;
-      
+
     SendEvent(*state, &keyboardEvent);
+  }
+
+  void Keyboard::ForceAllKeysUp()
+  {
+    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
+    {
+      UpdateKey(static_cast<Keys>(i), false);
+    }
   }
 
   bool Keyboard::IsKeyPressed(Keys aKey)

@@ -1,13 +1,14 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #include <utility>
 
+#include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"
 
 namespace YTE
@@ -46,10 +47,12 @@ namespace YTE
     YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
       = "Finds if the given button is pressed last frame.";
 
-    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description() = "Get's the current cursor position in screen coordinates.";
+    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description()
+      = "Gets the current cursor position in screen coordinates.";
   }
 
   Mouse::Mouse()
+    : mPositionChanged(false)
   {
     std::memset(mArrayOne, 0, sizeof(mArrayOne));
     std::memset(mArrayTwo, 0, sizeof(mArrayTwo));
@@ -65,7 +68,7 @@ namespace YTE
 
     for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
     {
-      mouseEvent.WorldCoordinates = mMousePosition;
+      mouseEvent.WorldCoordinates = mPosition;
 
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
@@ -77,24 +80,33 @@ namespace YTE
 
       mMousePrevious[i] = mMouseCurrent[i];
     }
+
+    if (mPositionChanged)
+    {
+      MouseMoveEvent mouseEvent;
+      mouseEvent.WorldCoordinates = mPosition;
+
+      SendEvent(Events::MouseMove, &mouseEvent);
+      mPositionChanged = false;
+    }
   }
 
-  void Mouse::UpdateButton(Mouse_Buttons aButton, bool aDown, glm::vec2 aPosition)
+  void Mouse::UpdateButton(Mouse_Buttons aButton, bool aDown, glm::i32vec2 aPosition)
   {
     size_t index = enum_cast(aButton);
-        
-      // Button got resent.
+
+    // Button got resent.
     if (mMouseCurrent[index] == aDown)
     {
       return;
     }
 
-    mMousePosition = aPosition;
+    UpdatePosition(aPosition);
 
     mMousePrevious[index] = mMouseCurrent[index];
 
     mMouseCurrent[index] = aDown;
-  
+
     const std::string *state;
 
     if (aDown)
@@ -115,9 +127,9 @@ namespace YTE
   }
 
 
-  void Mouse::UpdateWheel(glm::vec2 aWheelMove, glm::vec2 aPosition)
+  void Mouse::UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition)
   {
-    mMousePosition = aPosition;
+    UpdatePosition(aPosition);
 
     MouseWheelEvent mouseEvent;
     mouseEvent.ScrollMovement = aWheelMove;
@@ -126,26 +138,52 @@ namespace YTE
     SendEvent(Events::MouseScroll, &mouseEvent);
   }
 
-  void Mouse::UpdatePosition(glm::vec2 aPosition)
+  void Mouse::UpdatePosition(glm::i32vec2 aPosition)
   {
-    mMousePosition = aPosition;
+    if (mPosition != aPosition)
+    {
+      mPosition = aPosition;
+      mPositionChanged = true;
+    }
+  }
 
-    MouseMoveEvent mouseEvent;
-    mouseEvent.WorldCoordinates = aPosition;
+  void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)
+  {
+    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    {
+      auto button = static_cast<Mouse_Buttons>(i);
+      auto osButton = TranslateFromMouseButtonToOsKey(button);
+      auto key = TranslateFromOsToOurKey(osButton);
+      auto down = CheckKey(key);
+      UpdateButton(button, down, aRelativePosition);
+    }
+  }
 
-    SendEvent(Events::MouseMove, &mouseEvent);
+  bool Mouse::AnyButtonDown()
+  {
+    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    {
+      if (mMouseCurrent[i])
+      {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   bool Mouse::IsButtonDown(Mouse_Buttons aButton)
   {
     return mMouseCurrent[enum_cast(aButton)];
   }
+
   bool Mouse::WasButtonDown(Mouse_Buttons aButton)
   {
     return mMousePrevious[enum_cast(aButton)];
   }
-  glm::vec2 Mouse::GetCursorPosition()
+
+  glm::i32vec2 Mouse::GetCursorPosition()
   {
-    return mMousePosition;
+    return mPosition;
   }
 }

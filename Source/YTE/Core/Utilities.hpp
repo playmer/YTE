@@ -63,6 +63,7 @@ namespace YTE
   using ComponentMap   = OrderedMap<Type*, std::unique_ptr<Component>>;
 }
 
+YTEDeclareExternalType(glm::i32vec2);
 YTEDeclareExternalType(glm::vec2);
 YTEDeclareExternalType(glm::vec3);
 YTEDeclareExternalType(glm::vec4);

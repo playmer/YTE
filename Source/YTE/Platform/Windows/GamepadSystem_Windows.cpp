@@ -9,7 +9,7 @@
 #include "YTE/Platform/TargetDefinitions.hpp"
 
 #ifdef Windows
-#include <YTE/Platform/Windows/WindowsInclude.hpp>
+#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #include <XInput.h>
 
 #include "YTE/Platform/GamepadSystem.hpp"
