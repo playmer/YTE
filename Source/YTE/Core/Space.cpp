@@ -46,8 +46,11 @@ namespace YTE
   Space::Space(Engine *aEngine, RSValue *aProperties)
                 : Composition(aEngine, this), mLevelToLoad(nullptr)
   {
-    mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, this, &Space::WindowLostOrGainedFocusHandler);
-    mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
+    if (false == mEngine->IsEditor())
+    {
+      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, this, &Space::WindowLostOrGainedFocusHandler);
+      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
+    }
 
     DeserializeByType(aProperties, this, TypeId<Space>());
   }

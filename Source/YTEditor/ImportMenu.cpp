@@ -16,6 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditorMainWindow.hpp"
 #include "OutputConsole.hpp"
 
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Utilities/Utilities.h"
 
@@ -215,7 +216,7 @@ void ImportMenu::ImportModel()
     }
   }
 
-  fs::path workingDir{ YTE::cWorkingDirectory };
+  fs::path workingDir{ YTE::Path::GetGamePath().String() };
   fs::path assetsDir{ workingDir.parent_path() };
   fs::path modelDir{ assetsDir / L"Models" };
   fs::path textureDir{ assetsDir / L"Textures" };
