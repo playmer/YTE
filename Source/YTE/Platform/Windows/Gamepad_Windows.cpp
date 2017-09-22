@@ -10,7 +10,7 @@
 
 #ifdef Windows
 
-#include <YTE/Platform/Windows/WindowsInclude.hpp>
+#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #include <XInput.h>
 #include <algorithm>
 
@@ -51,43 +51,43 @@ namespace YTE
     return glm::vec2(aX, aY);
   }
 
-  #define ProcessButton(aOsButton, aOurKey)                             \
-    index = enum_cast(Xbox_Buttons::aOurKey);                 \
-                                                                        \
-    /* Key got resent. */                                               \
-                                                                        \
-    if (state->Gamepad.wButtons & aOsButton)                            \
-    {                                                                   \
-      down  = true;                                                     \
-    }                                                                   \
-    else                                                                \
-    {                                                                   \
-      down = false;                                                     \
-    }                                                                   \
-                                                                        \
-    mPreviousButtons[index] = mCurrentButtons[index];                   \
-    mCurrentButtons[index] = down;                                      \
-                                                                        \
-    xboxEvent.Button = Xbox_Buttons::aOurKey;                           \
-    xboxEvent.Controller = this;                                        \
-                                                                        \
-    /* Key has been persisted */                                        \
-    if (mCurrentButtons[index] && mPreviousButtons[index])              \
-    {                                                                   \
-      eventState = &Events::XboxButtonPersist;                          \
-      SendEvent(*eventState, &xboxEvent);                                 \
-    }                                                                   \
-    /* Key has been pressed */                                          \
-    else if (down)                                                      \
-    {                                                                   \
-      eventState = &Events::XboxButtonPress;                            \
-      SendEvent(*eventState, &xboxEvent);                                 \
-    }                                                                   \
-    /* Key has been released */                                         \
-    else if (down == false && mPreviousButtons[index] == true)          \
-    {                                                                   \
-      eventState = &Events::XboxButtonRelease;                          \
-      SendEvent(*eventState, &xboxEvent);                                 \
+  #define ProcessButton(aOsButton, aOurKey)                     \
+    index = enum_cast(Xbox_Buttons::aOurKey);                   \
+                                                                \
+    /* Key got resent. */                                       \
+                                                                \
+    if (state->Gamepad.wButtons & aOsButton)                    \
+    {                                                           \
+      down  = true;                                             \
+    }                                                           \
+    else                                                        \
+    {                                                           \
+      down = false;                                             \
+    }                                                           \
+                                                                \
+    mPreviousButtons[index] = mCurrentButtons[index];           \
+    mCurrentButtons[index] = down;                              \
+                                                                \
+    xboxEvent.Button = Xbox_Buttons::aOurKey;                   \
+    xboxEvent.Controller = this;                                \
+                                                                \
+    /* Key has been persisted */                                \
+    if (mCurrentButtons[index] && mPreviousButtons[index])      \
+    {                                                           \
+      eventState = &Events::XboxButtonPersist;                  \
+      SendEvent(*eventState, &xboxEvent);                       \
+    }                                                           \
+    /* Key has been pressed */                                  \
+    else if (down)                                              \
+    {                                                           \
+      eventState = &Events::XboxButtonPress;                    \
+      SendEvent(*eventState, &xboxEvent);                       \
+    }                                                           \
+    /* Key has been released */                                 \
+    else if (down == false && mPreviousButtons[index] == true)  \
+    {                                                           \
+      eventState = &Events::XboxButtonRelease;                  \
+      SendEvent(*eventState, &xboxEvent);                       \
     }
 
   void XboxController::UpdateState(XboxControllerState *aState, float aDt)
@@ -104,7 +104,7 @@ namespace YTE
 
     XINPUT_STATE *state = reinterpret_cast<XINPUT_STATE *>(aState);
       
-      // Some variables for the macroexpansion.
+      // Some variables for the macro expansion.
     const std::string *eventState;
     XboxButtonEvent xboxEvent;
     size_t index;
@@ -112,7 +112,7 @@ namespace YTE
 
     // TODO (Josh): Make some way to do this contiguously instead of using the TODO trick.
       // Include trick for updating button states.
-    #include "OsXboxButtons.hpp"
+    #include "YTE/Platform/Windows/OsXboxButtons_Windows.hpp"
     #undef ProcessButton
 
     mLeftStick = GetStickState(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY, true);

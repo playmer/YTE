@@ -7,7 +7,7 @@
  */
 /******************************************************************************/
 #ifdef NDEBUG
-#include <YTE/Platform/Windows/WindowsInclude.hpp>
+#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 
 int main();
 

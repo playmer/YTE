@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #pragma once
 
@@ -61,7 +61,13 @@ namespace YTE
 
   enum class Keys : uint32_t
   {
-      // Standard English Alphabet
+    // Mouse Buttons are sometimes represented in keyboard space.
+    Mouse_Left,
+    Mouse_Right,
+    Mouse_Middle,
+    Mouse_Back,
+    Mouse_Forward,
+    // Standard English Alphabet
     A,
     B,
     C,
@@ -89,7 +95,7 @@ namespace YTE
     Y,
     Z,
 
-      // Numbers
+    // Numbers
     N1,
     N2,
     N3,
@@ -127,18 +133,18 @@ namespace YTE
     Home,
     End,
 
-      // Directions
+    // Directions
     Right,
     Left,
     Down,
     Up,
 
-      // Key locks
+    // Key locks
     Capslock,
     ScrollLock,
     NumLock,
 
-      // KP stands for Keypad.
+    // KP stands for Keypad.
     KP_Divide,
     KP_Multiply,
     KP_Minus,
@@ -200,7 +206,7 @@ namespace YTE
   {
     using IntType = std::underlying_type<Xbox_Buttons>::type;
 
-    aButton = static_cast<Xbox_Buttons>(static_cast<IntType>(aButton)+1);
+    aButton = static_cast<Xbox_Buttons>(static_cast<IntType>(aButton) + 1);
 
     return aButton;
   }

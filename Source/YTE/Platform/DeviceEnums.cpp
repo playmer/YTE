@@ -62,6 +62,11 @@ YTEDefineExternalType(YTE::Keys)
 {
   YTERegisterType(YTE::Keys);
 //  YTEBindEnum(builder, type, SpecialType::Enumeration);
+//  YTEBindEnumValue(builder, type, Keys::Mouse_Left, "Mouse_Left");
+//  YTEBindEnumValue(builder, type, Keys::Mouse_Right, "Mouse_Right");
+//  YTEBindEnumValue(builder, type, Keys::Mouse_Middle, "Mouse_Middle");
+//  YTEBindEnumValue(builder, type, Keys::Mouse_Forward, "Mouse_Forward");
+//  YTEBindEnumValue(builder, type, Keys::Mouse_Back, "Mouse_Back");
 //  YTEBindEnumValue(builder, type, Keys::A, "A");
 //  YTEBindEnumValue(builder, type, Keys::B, "B");
 //  YTEBindEnumValue(builder, type, Keys::C, "C");

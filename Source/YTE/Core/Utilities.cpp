@@ -1,5 +1,10 @@
 #include "YTE/Core/Utilities.hpp"
 
+YTEDefineExternalType(glm::i32vec2)
+{
+  YTERegisterType(glm::i32vec2);
+}
+
 YTEDefineExternalType(glm::vec2)
 {
   YTERegisterType(glm::vec2);

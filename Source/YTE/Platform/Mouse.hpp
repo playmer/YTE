@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #pragma once
 
@@ -26,7 +26,7 @@ namespace YTE
   YTEDeclareEvent(MousePersist);
   YTEDeclareEvent(MouseScroll);
   YTEDeclareEvent(MouseMove);
-  
+
   class MouseButtonEvent : public Event
   {
   public:
@@ -57,10 +57,10 @@ namespace YTE
     Mouse *Mouse;
   };
 
-  glm::vec2 GetMousePosition();
+  glm::i32vec2 GetMousePosition();
   bool GetLRSwapped();
   void SurveyMouse(bool *aMouse);
-
+  uint64_t TranslateFromMouseButtonToOsKey(Mouse_Buttons aOsKey);
 
   class Mouse : public EventHandler
   {
@@ -70,17 +70,22 @@ namespace YTE
     Mouse();
 
     void Update();
-    void UpdateButton(Mouse_Buttons aButton, bool aDown, glm::vec2 aPosition);
-    void UpdateWheel(glm::vec2 aWheelMove, glm::vec2 aPosition);
-    void UpdatePosition(glm::vec2 aPosition);
+    void UpdateButton(Mouse_Buttons aButton, bool aDown, glm::i32vec2 aPosition);
+    void UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition);
+    void UpdatePosition(glm::i32vec2 aPosition);
 
+    // Updates the buttons via the OS.
+    void UpdateAllButtons(glm::i32vec2 aRelativePosition);
+    bool AnyButtonDown();
     bool IsButtonDown(Mouse_Buttons aButton);
     bool WasButtonDown(Mouse_Buttons aButton);
-    glm::vec2 GetCursorPosition();
-      
+    glm::i32vec2 GetCursorPosition();
+
   private:
-    glm::vec2 mMousePosition;
-      
+    glm::i32vec2 mPosition;
+
+    bool mPositionChanged;
+
     bool *mMouseCurrent;
     bool *mMousePrevious;
 

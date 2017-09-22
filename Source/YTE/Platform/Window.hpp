@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #pragma once
 
@@ -26,10 +26,10 @@
 
 namespace YTE
 {
-
   YTEDeclareEvent(WindowResize);
   YTEDeclareEvent(WindowFocusLostOrGained);
   YTEDeclareEvent(WindowMinimizedOrRestored);
+
   class WindowResize : public Event
   {
   public:
@@ -50,17 +50,17 @@ namespace YTE
   };
 
   bool SetCursorView(bool aShow);
-    
+
   class Window : public EventHandler
   {
   public:
     YTEDeclareType(Window);
 
     static i64 MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow);
- 
+
     Window(Engine *aEngine, RSValue *aProperties);
     Window(Engine *aEngine);
-      
+
     void SetFullscreen(bool aFullscreen, bool aMetro);
     void SetWindowTitle(const char *aString);
 
@@ -72,6 +72,8 @@ namespace YTE
     u32 GetHeight();
     u32 GetWidth();
 
+    glm::i32vec2 GetPosition();
+
     std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
 
     void SetCursorVisibility(bool aShow);
@@ -80,6 +82,7 @@ namespace YTE
 
     ~Window();
 
+    void PlatformUpdate();
     void Update();
 
     Keyboard mKeyboard;
@@ -90,7 +93,6 @@ namespace YTE
     bool mFullscreen;
     bool Constructed = false;
     bool mShouldBeRenderedTo = false;
-
 
     int mRequestedWidth;
     int mRequestedHeight;

@@ -1,13 +1,12 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   6/7/2015
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   6/7/2015
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
-
 
 #ifdef Windows
 
@@ -15,19 +14,17 @@
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
-#include <YTE/Platform/Windows/WindowsInclude.hpp>
+#include <YTE/Platform/Windows/WindowsInclude_Windows.hpp>
 #include <Winuser.h>
 
 #if defined(MemoryBarrier)
-  #undef MemoryBarrier
+#undef MemoryBarrier
 #endif
 
 #include <map>
 #include <unordered_map>
 
 #include "YTE/Core/Engine.hpp"
-
-
 
 #include "YTE/Platform/DialogBox.hpp"
 #include "YTE/Platform/Keyboard.hpp"
@@ -90,7 +87,7 @@ namespace YTE
   // Scoping class that ensures a HWND remains hidden while it enters or leaves
   // the fullscreen state. This reduces some flicker-jank that an application UI
   // might suffer.
-  class ScopedFullscreenVisibility 
+  class ScopedFullscreenVisibility
   {
   public:
     explicit ScopedFullscreenVisibility(HWND aHandle);
@@ -128,13 +125,13 @@ namespace YTE
       // code can be called while a window is being deactivated, and activating
       // another window will screw up the activation that is already in progress.
       SetWindowPos(mHandle,
-                    NULL,
-                    0,
-                    0,
-                    0,
-                    0,
-                    SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
-                    SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+        NULL,
+        0,
+        0,
+        0,
+        0,
+        SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
+        SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
     }
   }
 
@@ -144,7 +141,7 @@ namespace YTE
 
 
     DebugObjection((it == cFullScreenWindows->end()),
-                "Destructing window doesn't exist!");
+      "Destructing window doesn't exist!");
 
     if (--it->second == 0)
     {
@@ -167,7 +164,7 @@ namespace YTE
     {
       return false;
     }
-    
+
     return cFullScreenWindows->find(hwnd) != cFullScreenWindows->end();
   }
 
@@ -175,11 +172,11 @@ namespace YTE
   ///////////////////////////////////////
   // Static Functions
   ///////////////////////////////////////
-    // Should change this to be an IntegerVector2D
-  glm::vec2 PositionFromLParam(LPARAM lParam)
+  // Should change this to be an IntegerVector2D
+  glm::i32vec2 PositionFromLParam(LPARAM lParam)
   {
-      // Systems with multiple monitors can have negative x and y coordinates
-    return glm::vec2((float)(int)(short)LOWORD(lParam), (float)(int)(short)HIWORD(lParam));
+    // Systems with multiple monitors can have negative x and y coordinates
+    return glm::vec2((int)(short)LOWORD(lParam), (int)(short)HIWORD(lParam));
   }
 
   Mouse_Buttons XButtonFromWParam(WPARAM aButton)
@@ -194,22 +191,22 @@ namespace YTE
     }
   }
 
-    // Should change this to be an IntegerVector2D
-  glm::vec2 LocalScreenToClient(HWND aWindowHandle, LPARAM windowPosition)
-  { 
-    glm::vec2 screenPosition = PositionFromLParam(windowPosition);
+  // Should change this to be an IntegerVector2D
+  glm::i32vec2 LocalScreenToClient(HWND aWindowHandle, LPARAM windowPosition)
+  {
+    glm::i32vec2 screenPosition = PositionFromLParam(windowPosition);
 
     POINT point;
-    point.x = static_cast<int>(screenPosition.x);
-    point.y = static_cast<int>(screenPosition.y);
+    point.x = screenPosition.x;
+    point.y = screenPosition.y;
 
     ::ScreenToClient(aWindowHandle, &point);
 
     glm::vec2 localPosition;
 
 
-    localPosition.x = static_cast<float>(point.x);
-    localPosition.y = static_cast<float>(point.y);
+    localPosition.x = point.x;
+    localPosition.y = point.y;
 
     return localPosition;
   }
@@ -243,14 +240,14 @@ namespace YTE
       // Window Creation
     case WM_CREATE:
     {
-        // Set it on the user data section of the window
+      // Set it on the user data section of the window
       SetWindowPointer(aWindowHandle, aWindow);
 
       aWindow->mData.Get<WindowData>()->mWindowHandle = aWindowHandle;
       break;
     }
 
-      // Mouse Button was pressed.
+    // Mouse Button was pressed.
     case WM_LBUTTONDOWN:
       aWindow->mMouse.UpdateButton(Mouse_Buttons::Left, true, PositionFromLParam(aLParam));
       break;
@@ -281,13 +278,13 @@ namespace YTE
       // A key has been pressed.
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
-      aWindow->mKeyboard.UpdateKey(TranslateKey(aWParam), true);
+      aWindow->mKeyboard.UpdateKey(TranslateFromOsToOurKey(aWParam), true);
       break;
 
       // A key has been released.
     case WM_KEYUP:
     case WM_SYSKEYUP:
-      aWindow->mKeyboard.UpdateKey(TranslateKey(aWParam), false);
+      aWindow->mKeyboard.UpdateKey(TranslateFromOsToOurKey(aWParam), false);
       break;
 
       // Should do mouse trapping
@@ -298,10 +295,10 @@ namespace YTE
       break;
     }
 
-      // Vertical Scroll
+    // Vertical Scroll
     case WM_MOUSEWHEEL:
     {
-      glm::vec2 mousePosition = LocalScreenToClient(aWindowHandle, aLParam);
+      glm::i32vec2 mousePosition = LocalScreenToClient(aWindowHandle, aLParam);
 
       int scrollAmount = GET_WHEEL_DELTA_WPARAM(aWParam);
 
@@ -312,10 +309,10 @@ namespace YTE
       break;
     }
 
-      // Horizontal Scroll
+    // Horizontal Scroll
     case WM_MOUSEHWHEEL:
     {
-      glm::vec2 mousePosition = LocalScreenToClient(aWindowHandle, aLParam);
+      glm::i32vec2 mousePosition = LocalScreenToClient(aWindowHandle, aLParam);
 
       int scrollAmount = GET_WHEEL_DELTA_WPARAM(aWParam);
 
@@ -340,11 +337,6 @@ namespace YTE
         WindowMinimizedOrRestored minimizeEvent;
         minimizeEvent.Minimized = true;
         aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
-
-        if (aWindow->Constructed)
-        {
-          aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
-        }
       }
       else if (aWParam == SIZE_RESTORED)
       {
@@ -355,11 +347,6 @@ namespace YTE
           WindowMinimizedOrRestored minimizeEvent;
           minimizeEvent.Minimized = false;
           aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
-
-          if (aWindow->Constructed)
-          {
-            aWindow->mEngine->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
-          }
         }
 
         RECT windowDimensions;
@@ -378,38 +365,31 @@ namespace YTE
     }
 
     case WM_ACTIVATE:
-    if (aWParam != WA_INACTIVE)
     {
-      //std::cout << "Focused" << std::endl;
-      WindowFocusLostOrGained focusEvent;
-      focusEvent.Focused = true;
-      self->mFocus = true;
-      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
-        
-      if (aWindow->Constructed)
+      if (aWParam != WA_INACTIVE)
       {
-        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
-      }
+        WindowFocusLostOrGained focusEvent;
+        focusEvent.Focused = true;
+        self->mFocus = true;
 
-      break;
+        aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
+
+        break;
+      }
     }
     case WM_KILLFOCUS:
     {
-      //std::cout << "Not focused" << std::endl;
       WindowFocusLostOrGained focusEvent;
       focusEvent.Focused = false;
       self->mFocus = false;
-      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
 
-      if (aWindow->Constructed)
-      {
-        aWindow->mEngine->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
-      }
+      aWindow->mKeyboard.ForceAllKeysUp();
+      aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
 
       break;
     }
 
-      // Should probably make sure DefWindowProc doesn't get called here. Return?
+    // Should probably make sure DefWindowProc doesn't get called here. Return?
     case WM_CLOSE:
     case WM_DESTROY:
 
@@ -424,15 +404,24 @@ namespace YTE
       //}
 
       aWindow->mEngine->EndExecution();
+
+      SetWindowPointer(aWindowHandle, nullptr);
       break;
 
     default:
       break;
     }
 
+    if ((nullptr != aWindow) && (false == aWindow->mEngine->IsEditor()))
+    {
       // Probably want to only do this sometimes not every time we pump.
-    return DefWindowProc(aWindowHandle, aMessage, aWParam, aLParam);
-  }    
+      return DefWindowProc(aWindowHandle, aMessage, aWParam, aLParam);
+    }
+    else
+    {
+      return 0;
+    }
+  }
 
   static LRESULT CALLBACK WindowsMessagePump(HWND aWindowHandle, UINT aMessage, WPARAM aWParam, LPARAM aLParam)
   {
@@ -476,7 +465,7 @@ namespace YTE
 
   Window::Window(Engine *aEngine, RSValue *aProperties)
     : mEngine(aEngine)
-  { 
+  {
     Window *parent = nullptr;
 
     DeserializeByType(aProperties, this, TypeId<Window>());
@@ -503,12 +492,12 @@ namespace YTE
     self->mWindowsData.hInstance = GetModuleHandle(nullptr);
 
     self->mWindowsData.hIcon = LoadIcon(NULL, 0 == mSerializedWindowIcon.size() ?
-                                              mSerializedWindowIcon.c_str() :
-                                              IDI_APPLICATION);
+      mSerializedWindowIcon.c_str() :
+      IDI_APPLICATION);
 
     self->mWindowsData.hCursor = LoadCursor(NULL, 0 == mSerializedCursorIcon.size() ?
-                                                  mSerializedCursorIcon.c_str() :
-                                                  IDC_ARROW);
+      mSerializedCursorIcon.c_str() :
+      IDC_ARROW);
 
     self->mWindowsData.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     self->mWindowsData.lpszMenuName = self->mWindowName.c_str();
@@ -530,12 +519,12 @@ namespace YTE
     DebugObjection(!result, "Couldn't retrieve monitor information.");
 
 
-    auto right  = monitorInformation.rcMonitor.right;
+    auto right = monitorInformation.rcMonitor.right;
     auto bottom = monitorInformation.rcMonitor.bottom;
-    auto width  = monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left;
+    auto width = monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left;
     auto height = monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top;
 
-    if (false ==  mSerializedStartingFullscreen)
+    if (false == mSerializedStartingFullscreen)
     {
       width = mSerializedStartingWidth;
       height = mSerializedStartingHeight;
@@ -552,17 +541,16 @@ namespace YTE
 
     self->mWindowHandle =
       CreateWindow(self->mWindowsData.lpszClassName,
-                   self->mWindowsData.lpszMenuName,
-                   WS_POPUP | WS_VISIBLE,
-                   leftPos,
-                   topPos,
-                   width,
-                   height,
-                   parent ? parent->mData.Get<WindowData>()->mWindowHandle : nullptr,
-                   NULL,
-                   self->mWindowsData.hInstance,
-                   this
-                    );
+        self->mWindowsData.lpszMenuName,
+        WS_POPUP | WS_VISIBLE,
+        leftPos,
+        topPos,
+        width,
+        height,
+        parent ? parent->mData.Get<WindowData>()->mWindowHandle : nullptr,
+        NULL,
+        self->mWindowsData.hInstance,
+        this);
 
     ShowWindow(self->mWindowHandle, SW_SHOWNORMAL);
     UpdateWindow(self->mWindowHandle);
@@ -576,7 +564,7 @@ namespace YTE
   {
   }
 
-  void Window::Update()
+  void Window::PlatformUpdate()
   {
     if (false == mEngine->IsEditor())
     {
@@ -587,20 +575,17 @@ namespace YTE
         DispatchMessage(&message);
       }
     }
-
-    mMouse.Update();
-    mKeyboard.Update();
   }
 
   void Window::SetCursorVisibility(bool aShow)
   {
     SetCursorView(aShow);
   }
-    
+
   //////////////////////////////////////////
   // Implementation mostly by Chromium (BSD)
   //////////////////////////////////////////
-  void Window::SetFullscreen(bool fullscreen, bool for_metro) 
+  void Window::SetFullscreen(bool fullscreen, bool for_metro)
   {
     auto self = mData.Get<WindowData>();
     ScopedFullscreenVisibility visibility(self->mWindowHandle);
@@ -610,38 +595,38 @@ namespace YTE
     if (mFullscreen)
     {
       // Set new window style and size.
-      SetWindowLong(self->mWindowHandle, 
-                    GWL_STYLE,
-                    WS_POPUP | WS_VISIBLE);
-        
+      SetWindowLong(self->mWindowHandle,
+        GWL_STYLE,
+        WS_POPUP | WS_VISIBLE);
+
       // On expand, if we're given a window_rect, grow to it, otherwise do
       // not resize.
       MONITORINFO monitorInformation;
       monitorInformation.cbSize = sizeof(MONITORINFO);
       GetMonitorInfo(MonitorFromWindow(self->mWindowHandle, MONITOR_DEFAULTTOPRIMARY),
-                      &monitorInformation);
+        &monitorInformation);
 
       RECT window_rect(monitorInformation.rcMonitor);
 
       SetWindowPos(self->mWindowHandle,
-                   NULL,
-                   monitorInformation.rcMonitor.left,
-                   monitorInformation.rcMonitor.top,
-                   monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left,
-                   monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top,
-                   SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+        NULL,
+        monitorInformation.rcMonitor.left,
+        monitorInformation.rcMonitor.top,
+        monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left,
+        monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top,
+        SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     }
-    else 
+    else
     {
       // Reset original window style and size.  The multiple window size/moves
       // here are ugly, but if SetWindowPos() doesn't redraw, the taskbar won't be
       // repainted.  Better-looking methods welcome.
-      SetWindowLong(self->mWindowHandle, GWL_STYLE, CS_HREDRAW | 
-                                                    CS_VREDRAW | 
-                                                    WS_OVERLAPPED | 
-                                                    WS_SYSMENU |
-                                                    WS_MINIMIZEBOX |
-                                                    WS_CAPTION); 
+      SetWindowLong(self->mWindowHandle, GWL_STYLE, CS_HREDRAW |
+        CS_VREDRAW |
+        WS_OVERLAPPED |
+        WS_SYSMENU |
+        WS_MINIMIZEBOX |
+        WS_CAPTION);
 
       // The window was sized to the values we want for the client area.
       // Add the difference between the two to grow the client area correctly,
@@ -655,15 +640,15 @@ namespace YTE
       RECT forPosition;
       GetWindowRect(self->mWindowHandle, &forPosition);
       int differenceX = mRequestedWidth - clientSize.right;
-      int differenceY = mRequestedHeight -  clientSize.bottom;
+      int differenceY = mRequestedHeight - clientSize.bottom;
 
-      SetWindowPos(self->mWindowHandle, 
-                   NULL,
-                   forPosition.left - differenceX / 2,
-                   forPosition.top - differenceY / 2, 
-                   mRequestedWidth,
-                   mRequestedHeight, 
-                   SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+      SetWindowPos(self->mWindowHandle,
+        NULL,
+        forPosition.left - differenceX / 2,
+        forPosition.top - differenceY / 2,
+        mRequestedWidth,
+        mRequestedHeight,
+        SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     }
 
     UpdateWindow(self->mWindowHandle);
@@ -674,9 +659,6 @@ namespace YTE
     auto self = mData.Get<WindowData>();
     SetWindowText(self->mWindowHandle, aString);
   }
-
-
-
 
   void Window::SetExtent(u32 aHeight, u32 aWidth)
   {
@@ -698,7 +680,6 @@ namespace YTE
     return !self->mFocus;
   }
 
-
   u32 Window::GetHeight()
   {
     auto self = mData.Get<WindowData>();
@@ -711,15 +692,28 @@ namespace YTE
     return self->mWidth;
   }
 
+  glm::i32vec2 Window::GetPosition()
+  {
+    auto self = mData.Get<WindowData>();
+
+    glm::i32vec2 toReturn;
+    RECT rect;
+    if (GetWindowRect(self->mWindowHandle, &rect))
+    {
+      toReturn.x = rect.left;
+      toReturn.y = rect.top;
+    }
+
+    return toReturn;
+  }
+
   std::shared_ptr<vkhlf::Surface> Window::SetUpVulkanWindow(void *aSetup)
   {
     auto self = mData.Get<WindowData>();
 
     auto instance = static_cast<vkhlf::Instance*>(aSetup);
 
-    #ifdef Windows
-     return instance->createSurface(self->mInstance, self->mWindowHandle);
-    #endif
+    return instance->createSurface(self->mInstance, self->mWindowHandle);
   }
 }
 #endif

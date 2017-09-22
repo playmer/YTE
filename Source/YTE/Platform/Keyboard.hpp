@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   2015-6-7
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #pragma once
 
@@ -23,7 +23,7 @@ namespace YTE
   YTEDeclareEvent(KeyPress);
   YTEDeclareEvent(KeyRelease);
   YTEDeclareEvent(KeyPersist);
-  
+
   class KeyboardEvent : public Event
   {
   public:
@@ -33,23 +33,28 @@ namespace YTE
     Keyboard *Keyboard;
   };
 
-  Keys TranslateKey(uint64_t aOsKey);
+  Keys TranslateFromOsToOurKey(uint64_t aOsKey);
+  uint64_t TranslateFromOurToOSKey(Keys aOsKey);
   void SurveyKeyboard(bool *aKeyboard);
+
+  // Checks key with OS.
+  bool CheckKey(Keys aKey);
 
   class Keyboard : public EventHandler
   {
   public:
     YTEDeclareType(Keyboard);
-      
+
     Keyboard();
 
     void Update();
     void UpdateKey(Keys aKey, bool aDown);
+    void ForceAllKeysUp();
 
     bool IsKeyPressed(Keys aKey);
     bool IsKeyDown(Keys aKey);
     bool WasKeyDown(Keys aKey);
-      
+
     bool *mKeysPrevious;
     bool *mKeysCurrent;
 

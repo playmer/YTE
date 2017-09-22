@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   6/7/2015
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
+* \author Joshua T. Fisher
+* \date   6/7/2015
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+*/
 /******************************************************************************/
 #define K_0 0x30
 #define K_1 0x31
@@ -43,6 +43,18 @@
 #define K_Y 0x59
 #define K_Z 0x5A
 
+
+#define LBUTTON 0x56
+#define RBUTTON 0x57
+#define MBUTTON 0x58
+#define XBUTTON1 0x59
+#define XBUTTON2 0x5A
+
+ProcessKey(VK_LBUTTON, Mouse_Left)
+ProcessKey(VK_RBUTTON, Mouse_Right)
+ProcessKey(VK_MBUTTON, Mouse_Middle)
+ProcessKey(VK_XBUTTON1, Mouse_Back)
+ProcessKey(VK_XBUTTON2, Mouse_Forward)
 ProcessKey(K_A, A)
 ProcessKey(K_B, B)
 ProcessKey(K_C, C)
@@ -114,7 +126,7 @@ ProcessKey(VK_DOWN, Down)
 ProcessKey(VK_RIGHT, Right)
 ProcessKey(VK_LEFT, Left)
 
-ProcessKey(VK_CAPITAL , Capslock)
+ProcessKey(VK_CAPITAL, Capslock)
 ProcessKey(VK_SCROLL, ScrollLock)
 ProcessKey(VK_NUMLOCK, NumLock)
 
