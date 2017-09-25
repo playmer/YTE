@@ -97,11 +97,11 @@ namespace YTE
   {
     Collider* collider = nullptr;
       
-    if ((collider = aOwner->GetComponent<BoxCollider>()) != nullptr) return collider;
-    if ((collider = aOwner->GetComponent<CylinderCollider>()) != nullptr) return collider;
-    if ((collider = aOwner->GetComponent<SphereCollider>()) != nullptr) return collider;
-    if ((collider = aOwner->GetComponent<CapsuleCollider>()) != nullptr) return collider;
-    if ((collider = aOwner->GetComponent<MeshCollider>()) != nullptr) return collider;
+    if (nullptr != (collider = aOwner->GetComponent<BoxCollider>())) return collider;
+    if (nullptr != (collider = aOwner->GetComponent<CylinderCollider>())) return collider;
+    if (nullptr != (collider = aOwner->GetComponent<SphereCollider>())) return collider;
+    if (nullptr != (collider = aOwner->GetComponent<CapsuleCollider>())) return collider;
+    if (nullptr != (collider = aOwner->GetComponent<MeshCollider>())) return collider;
 
     return collider;
   }

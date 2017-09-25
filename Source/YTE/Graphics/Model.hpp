@@ -72,9 +72,9 @@ namespace YTE
     void Destroy();
 
     void SetUBO();
-    void OnPositionChange(const PositionChanged *aEvent);
-    void OnScaleChange(const ScaleChanged *aEvent);
-    void OnRotationChange(const RotationChanged *aEvent);
+    void OnPositionChange(const TransformChanged *aEvent);
+    void OnScaleChange(const TransformChanged *aEvent);
+    void OnRotationChange(const TransformChanged *aEvent);
 
     std::string mMesh;
 

@@ -30,7 +30,7 @@ namespace YTE
 
   private:
     void SetListenerPosition();
-    void OnPositionChange(const PositionChanged *aEvent);
+    void OnPositionChange(const TransformChanged *aEvent);
     void OnOrientationChange(const OrientationChanged *aEvent);
 
     AkListenerPosition mListenerPosition;

@@ -149,7 +149,7 @@ namespace YTE
     mUpdating = false;
   }
 
-  void Model::OnPositionChange(const PositionChanged *aEvent)
+  void Model::OnPositionChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {
@@ -163,7 +163,7 @@ namespace YTE
     }
   }
 
-  void Model::OnScaleChange(const ScaleChanged *aEvent)
+  void Model::OnScaleChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {
@@ -177,7 +177,7 @@ namespace YTE
     }
   }
 
-  void Model::OnRotationChange(const RotationChanged *aEvent)
+  void Model::OnRotationChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {

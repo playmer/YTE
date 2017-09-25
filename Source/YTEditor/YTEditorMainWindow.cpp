@@ -27,7 +27,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "stb/stb_image.h"
 
-
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
 
@@ -70,6 +69,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "LevelMenu.hpp"
 #include "ImportMenu.hpp"
 
+#include "Physics/PhysicsHandler.hpp"
+
 #include "UndoRedo.hpp"
 
 
@@ -90,6 +91,18 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
   SetWindowSettings();
   ConstructMenuBar();
   ConstructSubWidgets();
+
+
+  // Get all the compositions on the engine
+  auto engineMap = mRunningEngine->GetCompositions();
+
+  // iterator to the main session space
+  auto it_lvl = engineMap->begin();
+
+  // Get the space that represents the main session
+  YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
+  mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, mRunningEngine->GetWindows().at("Yours Truly Engine").get());
+
   aEngine->Initialize();
   ConstructWWiseWidget();
   LoadCurrentLevelInfo();

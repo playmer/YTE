@@ -58,12 +58,12 @@ namespace YTE
     mOwner->YTERegister(Events::ScaleChanged, this, &MenuCollider::OnScaleChanged);
   }
 
-  void MenuCollider::OnPositionChanged(PositionChanged *aEvent)
+  void MenuCollider::OnPositionChanged(TransformChanged *aEvent)
   {
     mPosition = aEvent->Position + mOffset;
   }
 
-  void MenuCollider::OnScaleChanged(ScaleChanged* aEvent)
+  void MenuCollider::OnScaleChanged(TransformChanged* aEvent)
   {
     glm::vec3 scale = aEvent->Scale;
 

@@ -38,7 +38,7 @@ namespace YTE
 
   private:
     void SetEmitterPosition();
-    void OnPositionChange(const PositionChanged *aEvent);
+    void OnPositionChange(const TransformChanged *aEvent);
     void OnOrientationChange(const OrientationChanged *aEvent);
 
     AkSoundPosition mEmitterPosition;

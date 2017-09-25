@@ -54,7 +54,7 @@ namespace YTE
  
  
     void OrientationEvent(OrientationChanged *aEvent); 
-    void PositionEvent(PositionChanged *aEvent); 
+    void PositionEvent(TransformChanged *aEvent); 
  
     void SetNearPlane(float aNearPlane) 
     { 

@@ -17,6 +17,24 @@
 
 namespace YTE
 {
+  YTEDefineEvent(CompositionAdded);
+
+  YTEDefineType(CompositionAdded)
+  {
+    YTERegisterType(CompositionAdded);
+
+    YTEBindField(&CompositionAdded::mComposition, "Composition", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(CompositionRemoved);
+
+  YTEDefineType(CompositionRemoved)
+  {
+    YTERegisterType(CompositionRemoved);
+
+    YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
+  }
+
   YTEDefineExternalType(CompositionMap::range)
   {
     YTERegisterType(CompositionMap::range);

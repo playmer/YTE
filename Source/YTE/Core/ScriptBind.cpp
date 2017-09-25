@@ -74,9 +74,7 @@ namespace YTE
     InitializeType<KeyboardEvent>();
     InitializeType<XboxButtonEvent>();
     InitializeType<XboxFlickEvent>();
-    InitializeType<ScaleChanged>();
-    InitializeType<RotationChanged>();
-    InitializeType<PositionChanged>();
+    InitializeType<TransformChanged>();
     InitializeType<OrientationChanged>();
     InitializeType<CollisionEvent>();
     InitializeType<CollisionStarted>();

@@ -338,7 +338,7 @@ namespace YTE
     UpdateView(); 
   } 
  
-  void Camera::PositionEvent(PositionChanged *aEvent) 
+  void Camera::PositionEvent(TransformChanged *aEvent)
   { 
     UpdateView(); 
   } 

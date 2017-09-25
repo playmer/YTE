@@ -19,22 +19,12 @@ namespace YTE
   YTEDefineEvent(RotationChanged);
   YTEDefineEvent(ScaleChanged);
 
-  YTEDefineType(PositionChanged)
+  YTEDefineType(TransformChanged)
   {
-    YTERegisterType(PositionChanged);
-    YTEBindField(&PositionChanged::Position, "Position", PropertyBinding::Get);
-  }
-
-  YTEDefineType(RotationChanged)
-  {
-    YTERegisterType(RotationChanged);
-    YTEBindField(&RotationChanged::Rotation, "Rotation", PropertyBinding::Get);
-  }
-
-  YTEDefineType(ScaleChanged)
-  {
-    YTERegisterType(ScaleChanged);
-    YTEBindField(&ScaleChanged::Scale, "Scale", PropertyBinding::Get);
+    YTERegisterType(TransformChanged);
+    YTEBindField(&TransformChanged::Position, "Position", PropertyBinding::Get);
+    YTEBindField(&TransformChanged::Rotation, "Rotation", PropertyBinding::Get);
+    YTEBindField(&TransformChanged::Scale, "Scale", PropertyBinding::Get);
   }
 
   YTEDefineType(Transform)
@@ -78,9 +68,11 @@ namespace YTE
   {
     mTranslation = aTrans;
 
-    PositionChanged newPosition;
-    newPosition.Position = mTranslation;
-    mOwner->SendEvent(Events::PositionChanged, &newPosition);
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::PositionChanged, &newTransform);
   }
 
   void Transform::SetTranslation(float aX, float aY, float aZ)
@@ -98,9 +90,11 @@ namespace YTE
       rigidBody->SetPhysicsTransform(mTranslation, mRotation);
     }
 
-    PositionChanged newPosition;
-    newPosition.Position = mTranslation;
-    mOwner->SendEvent(Events::PositionChanged, &newPosition);
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::PositionChanged, &newTransform);
   }
 
   const glm::vec3& Transform::GetScale() const
@@ -112,18 +106,22 @@ namespace YTE
   {
     mScale = aScale;
 
-    ScaleChanged newScale;
-    newScale.Scale = mScale;
-    mOwner->SendEvent(Events::ScaleChanged, &newScale);
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::ScaleChanged, &newTransform);
   }
 
   void Transform::SetScale(float aX, float aY, float aZ)
   {
     mScale = glm::vec3(aX, aY, aZ);
 
-    ScaleChanged newScale;
-    newScale.Scale = mScale;
-    mOwner->SendEvent(Events::ScaleChanged, &newScale);
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::ScaleChanged, &newTransform);
   }
 
   const glm::quat& Transform::GetRotation() const
@@ -146,9 +144,11 @@ namespace YTE
       rigidBody->SetPhysicsTransform(mTranslation, mRotation);
     }
 
-    RotationChanged newRotation;
-    newRotation.Rotation = mRotation;
-    mOwner->SendEvent(Events::RotationChanged, &newRotation);
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::RotationChanged, &newTransform);
   }
 
   void Transform::SetRotation(const glm::vec3& aEulerRot)
@@ -160,10 +160,12 @@ namespace YTE
     {
       rigidBody->SetPhysicsTransform(mTranslation, mRotation);
     }
-    
-    RotationChanged newRotation;
-    newRotation.Rotation = mRotation;
-    mOwner->SendEvent(Events::RotationChanged, &newRotation);
+
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::RotationChanged, &newTransform);
   }
 
   void Transform::SetRotation(float aThetaX, float aThetaY, float aThetaZ)
@@ -175,10 +177,12 @@ namespace YTE
     {
       rigidBody->SetPhysicsTransform(mTranslation, mRotation);
     }
-    
-    RotationChanged newRotation;
-    newRotation.Rotation = mRotation;
-    mOwner->SendEvent(Events::RotationChanged, &newRotation);
+
+    TransformChanged newTransform;
+    newTransform.Position = mTranslation;
+    newTransform.Rotation = mRotation;
+    newTransform.Scale = mScale;
+    mOwner->SendEvent(Events::RotationChanged, &newTransform);
   }
 
   const glm::vec3& Transform::GetWorldTranslation() const

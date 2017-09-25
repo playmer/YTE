@@ -19,15 +19,12 @@ class btGhostObject;
 namespace YTE
 {
     class CollisionBody;
-    class DebugDrawer;
     class PhysicsSystem;
     class Orientation;
     class RigidBody;
     class Transform;
     class OrientationChanged;
-    class PositionChanged;
-    class RotationChanged;
-    class ScaleChanged;
+    class TransformChanged;
 }
 
 #endif

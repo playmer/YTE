@@ -15,6 +15,24 @@
 
 namespace YTE
 {
+  ///synchronizes world transform from user to physics
+  void MotionState::getWorldTransform(btTransform& centerOfMassWorldTrans) const
+  {
+    centerOfMassWorldTrans.setOrigin(OurVec3ToBt(mTransform->GetTranslation()));
+    centerOfMassWorldTrans.setRotation(OurQuatToBt(mTransform->GetRotation()));
+  }
+
+  ///synchronizes world transform from physics to user
+  ///Bullet only calls the update of world transform for active objects
+  void MotionState::setWorldTransform(const btTransform& centerOfMassWorldTrans)
+  {
+    if (mKinematic)
+      return;
+
+    mTransform->SetTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
+    mTransform->SetRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
+  }
+
   YTEDefineType(RigidBody)
   {
     YTERegisterType(RigidBody);
@@ -36,41 +54,6 @@ namespace YTE
     YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (float, float, float)), "SetVelocity", YTEParameterNames("aVelX", "aVelY", "aVelZ"))
       .Description() = "Sets the object velocity from three float values";
   }
-
-  class MotionState : public btMotionState
-  {
-  public:
-    MotionState(Transform *aTransform, bool kinematic = false) 
-      : mTransform(aTransform)
-      , mKinematic( kinematic ) { };
-    ///synchronizes world transform from user to physics
-    virtual void	getWorldTransform(btTransform& centerOfMassWorldTrans) const
-    {
-      centerOfMassWorldTrans.setOrigin(OurVec3ToBt(mTransform->GetTranslation()));
-      centerOfMassWorldTrans.setRotation(OurQuatToBt(mTransform->GetRotation()));
-    }
-
-    ///synchronizes world transform from physics to user
-    ///Bullet only calls the update of worldtransform for active objects
-    virtual void	setWorldTransform(const btTransform& centerOfMassWorldTrans)
-    {
-      if (mKinematic)
-        return;
-
-      mTransform->SetTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
-      mTransform->SetRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
-    }
-
-    void SetKinematic(bool flag)
-    {
-      mKinematic = flag;
-    }
-
-  private:
-    Transform *mTransform;
-    bool mKinematic;
-  };
-
 
   RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mMass(1.0f), mStatic(false), mIsInitialized(false)

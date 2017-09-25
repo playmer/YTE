@@ -8,8 +8,8 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Physics_DebugDraw_h
-#define YTE_Physics_DebugDraw_h
+#ifndef YTE_Physics_DebugDraw_hpp
+#define YTE_Physics_DebugDraw_hpp
 
 #include "Bullet/LinearMath/btIDebugDraw.h"
 

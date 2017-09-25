@@ -19,27 +19,13 @@ namespace YTE
   YTEDeclareEvent(RotationChanged);
   YTEDeclareEvent(ScaleChanged);
 
-  class PositionChanged :public Event
+  class TransformChanged :public Event
   {
   public:
-    YTEDeclareType(PositionChanged);
+    YTEDeclareType(TransformChanged);
 
     glm::vec3 Position;
-  };
-
-  class RotationChanged : public Event
-  {
-  public:
-    YTEDeclareType(RotationChanged);
-
     glm::quat Rotation;
-  };
-
-  class ScaleChanged : public Event
-  {
-  public:
-    YTEDeclareType(ScaleChanged);
-
     glm::vec3 Scale;
   };
 
