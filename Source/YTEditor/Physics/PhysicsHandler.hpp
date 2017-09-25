@@ -18,7 +18,6 @@ struct PickerObject : public YTE::EventHandler
   void ChangedScale(YTE::TransformChanged *aEvent);
 
   btCollisionShape *mShape;
-  std::unique_ptr<btCollisionObject> mCollider;
   std::unique_ptr<btGhostObject> mGhostBody;
   std::unique_ptr<YTE::MotionState> mMotionState;
   std::unique_ptr<btBoxShape> mBoxShape;

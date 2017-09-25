@@ -131,16 +131,18 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   auto cameraUp = OurVec3ToBt(orientation->GetUpVector());
   auto cameraForward = OurVec3ToBt(orientation->GetForwardVector());
 
-  btVector3 rayTo = getRayTo(rayFrom,
-                             cameraUp,
-                             cameraForward,
-                             aEvent->WorldCoordinates.x,
-                             aEvent->WorldCoordinates.y,
-                             mWindow->GetHeight(),
-                             mWindow->GetWidth(),
-                             camera->GetFarPlane(),  
-                             camera->GetNearPlane(),
-                             camera->GetFieldOfViewY());
+  //btVector3 rayTo = getRayTo(rayFrom,
+  //                           cameraUp,
+  //                           cameraForward,
+  //                           aEvent->WorldCoordinates.x,
+  //                           aEvent->WorldCoordinates.y,
+  //                           mWindow->GetHeight(),
+  //                           mWindow->GetWidth(),
+  //                           camera->GetFarPlane(),  
+  //                           camera->GetNearPlane(),
+  //                           camera->GetFieldOfViewY());
+
+  auto rayTo = rayFrom + (cameraForward * 10000.f);
   
   btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
   mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
@@ -148,6 +150,8 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   if (rayCallback.hasHit())
   {
     auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
+
+    std::cout << composition->GetName().c_str() << "\n";
   }
 }
 
@@ -155,7 +159,7 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
 {
   // We don't want to click the camera.
   // TODO: But maybe one day?
-  if (nullptr == aComposition->GetComponent<Camera>())
+  if (nullptr != aComposition->GetComponent<Camera>())
   {
     return;
   }
@@ -165,23 +169,29 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
   btTransform bTransform;
   btVector3 origin{ 0.f, 0.f, 0.f };
   btVector3 scale{ 1.f, 1.f, 1.f };
+  btQuaternion rotation;
 
   if (nullptr != transform)
   {
     scale = OurVec3ToBt(transform->GetScale());
 
     origin = OurVec3ToBt(transform->GetTranslation());
+    rotation = OurQuatToBt(transform->GetRotation());
   }
 
   bTransform.setOrigin(origin);
+  bTransform.setRotation(rotation);
 
   auto model = aComposition->GetComponent<Model>();
 
-  auto obj = std::make_unique<PickerObject>();
+  auto uPtr = std::make_unique<PickerObject>();
+  auto obj = uPtr.get();
 
-  aComposition->YTERegister(Events::PositionChanged, obj.get(), &PickerObject::ChangedPositionAndRotation);
-  aComposition->YTERegister(Events::RotationChanged, obj.get(), &PickerObject::ChangedPositionAndRotation);
-  aComposition->YTERegister(Events::ScaleChanged, obj.get(),    &PickerObject::ChangedScale);
+  mObjects.emplace(aComposition, std::move(uPtr));
+
+  aComposition->YTERegister(Events::PositionChanged, obj, &PickerObject::ChangedPositionAndRotation);
+  aComposition->YTERegister(Events::RotationChanged, obj, &PickerObject::ChangedPositionAndRotation);
+  aComposition->YTERegister(Events::ScaleChanged, obj,    &PickerObject::ChangedScale);
 
   if (nullptr != model)
   {
@@ -199,14 +209,12 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
 
         DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
 
-        for (size_t i = 0; i < submesh.mIndexBufferSize; i += 3)
+        for (size_t i = 0; i < indexSize; i += 3)
         {
           auto i1 = submesh.mIndexBuffer.at(i + 0);
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
-
-          submesh.mVertexBuffer.at(i1);
-
+          
           obj->mTriangles.addTriangle(OurVec3ToBt(submesh.mVertexBuffer.at(i1).mPosition),
                                       OurVec3ToBt(submesh.mVertexBuffer.at(i2).mPosition),
                                       OurVec3ToBt(submesh.mVertexBuffer.at(i3).mPosition));
@@ -219,21 +227,11 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
 
       obj->mTriangleMeshShape->setLocalScaling(scale);
       //mTriangleMeshShape->buildOptimizedBvh();
-
-      obj->mCollider = std::make_unique<btCollisionObject>();
-      obj->mCollider->setCollisionShape(obj->mTriangleMeshShape.get());
-      obj->mCollider->setWorldTransform(bTransform);
-      obj->mCollider->setUserPointer(aComposition);
     }
   }
   else
   {
     obj->mBoxShape = std::make_unique<btBoxShape>(scale / 2.0f);
-
-    obj->mCollider = std::make_unique<btCollisionObject>();
-    obj->mCollider->setCollisionShape(obj->mBoxShape.get());
-    obj->mCollider->setWorldTransform(bTransform);
-    obj->mCollider->setUserPointer(aComposition);
 
     obj->mShape = obj->mBoxShape.get();
   }
@@ -245,10 +243,7 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
   //mGhostBody->setActivationState(DISABLE_DEACTIVATION);
   obj->mGhostBody->setUserPointer(aComposition);
 
-  btTransform translationAndRotation;
-  translationAndRotation.setOrigin(OurVec3ToBt(transform->GetTranslation()));
-  translationAndRotation.setRotation(OurQuatToBt(transform->GetRotation()));
-  obj->mGhostBody->setWorldTransform(translationAndRotation);
+  obj->mGhostBody->setWorldTransform(bTransform);
 
   mDynamicsWorld->addCollisionObject(obj->mGhostBody.get());
 }
@@ -262,7 +257,7 @@ void PhysicsHandler::Remove(YTE::Composition *aComposition)
     printf("o no\n");
   }
 
-  mDynamicsWorld->removeCollisionObject(it->second->mCollider.get());
+  mDynamicsWorld->removeCollisionObject(it->second->mGhostBody.get());
 
   mObjects.erase(it);
 }

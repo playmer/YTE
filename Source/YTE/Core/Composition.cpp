@@ -175,7 +175,10 @@ namespace YTE
     CompositionAdded event;
     event.mComposition = this;
 
-    mSpace->SendEvent(Events::CompositionAdded, &event);
+    if (GetType() != Space::GetStaticType())
+    {
+      mSpace->SendEvent(Events::CompositionAdded, &event);
+    }
   }
 
 
