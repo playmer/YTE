@@ -146,7 +146,7 @@ namespace YTE
         glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
         glm::vec4 transVector(0.0f, 0.0f, mZoomMin, 1.0f);
         transVector = rotationMatrix * transVector;
-        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
 
         mSpin += glm::pi<float>();
         mZoom = mZoomMin;
@@ -176,7 +176,7 @@ namespace YTE
         glm::vec4 transVector(0.0f, 0.0f, mZoom, 1.0f); // move forward one unit
         transVector = rotationMatrix * transVector;
 
-        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
 
         mZoom = 0.0f;
         mMoveUp = 0.0f;
@@ -465,7 +465,7 @@ namespace YTE
         // reset the data to the transform component
         // note that the camera position is not saved to the transform, rather where the camera
         // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetWorldTranslation(mTargetPoint);
+        mCameraTransform->SetTranslation(glm::vec3{ cameraPosition4 });
         
         // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
@@ -494,7 +494,7 @@ namespace YTE
 
         glm::vec4 cameraPos4 = glm::vec4(mTargetPoint, 1.0f) + unitVector;
         
-        mCameraTransform->SetWorldTranslation(glm::vec3(cameraPos4));
+        mCameraTransform->SetTranslation(glm::vec3(cameraPos4));
 
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPos4), mTargetPoint, glm::vec3(up4));
 
@@ -506,7 +506,7 @@ namespace YTE
       }
     } 
  
-    mGraphicsView->UpdateView(view); 
+    mGraphicsView->UpdateView(this, view); 
   } 
 
   void Camera::UpdateCameraRotation(float aTilt, float aTwist, float aSpin)

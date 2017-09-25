@@ -8,6 +8,7 @@
 
 namespace YTE
 {
+  class Camera;
   class GraphicsSystem;
   class GraphicsView;
   class Instance;

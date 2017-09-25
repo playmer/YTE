@@ -170,6 +170,12 @@ namespace YTE
 
     mShouldIntialize = false;
     mIsInitialized = true;
+
+
+    CompositionAdded event;
+    event.mComposition = this;
+
+    mSpace->SendEvent(Events::CompositionAdded, &event);
   }
 
 

@@ -3,10 +3,12 @@
 
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
 
+#include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
@@ -68,47 +70,96 @@ PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow)
   aWindow->mMouse.YTERegister(Events::MousePress, this, &PhysicsHandler::Click);
 }
 
+
+btVector3 getRayTo(btVector3 aCameraTranslation, 
+                   btVector3 aCameraUp,
+                   btVector3 aCameraForward,
+                   int x, 
+                   int y,
+                   int aHeight,
+                   int aWidth,
+                   float aFarPlane,
+                   float aNearPlane,
+                   float aFieldOfView)
+{
+  float top = 1.f;
+  float bottom = -1.f;
+  float tanFov = (top - bottom)*0.5f / aNearPlane;
+
+  aCameraForward.normalize();
+  aCameraForward *= aFarPlane;
+
+  btVector3 rightOffset;
+
+  btVector3 hor;
+  hor = aCameraForward.cross(aCameraUp);
+  hor.safeNormalize();
+  aCameraUp = hor.cross(aCameraForward);
+  aCameraUp.safeNormalize();
+
+  float tanfov = tanf(0.5f * aFieldOfView);
+
+  hor *= 2.f * aFarPlane * tanfov;
+  aCameraUp *= 2.f * aFarPlane * tanfov;
+
+  btScalar aspect;
+  float width = float(aWidth);
+  float height = float(aHeight);
+
+  aspect = width / height;
+
+  hor *= aspect;
+
+  btVector3 rayToCenter = aCameraTranslation + aCameraForward;
+  btVector3 dHor = hor * 1.f / width;
+  btVector3 dVert = aCameraUp * 1.f / height;
+  
+  btVector3 rayTo = rayToCenter - 0.5f * hor + 0.5f * aCameraUp;
+  rayTo += btScalar(x) * dHor;
+  rayTo -= btScalar(y) * dVert;
+  return rayTo;
+}
+
 void PhysicsHandler::Click(MouseButtonEvent *aEvent)
 {
   auto view = mSpace->GetComponent<GraphicsView>();
+  auto camera = view->GetLastCamera();
+  auto owner = camera->GetOwner();
+  auto transform = owner->GetComponent<Transform>();
+  auto orientation = owner->GetComponent<Orientation>();
+  auto rayFrom = OurVec3ToBt(transform->GetTranslation());
+  auto cameraUp = OurVec3ToBt(orientation->GetUpVector());
+  auto cameraForward = OurVec3ToBt(orientation->GetForwardVector());
 
+  btVector3 rayTo = getRayTo(rayFrom,
+                             cameraUp,
+                             cameraForward,
+                             aEvent->WorldCoordinates.x,
+                             aEvent->WorldCoordinates.y,
+                             mWindow->GetHeight(),
+                             mWindow->GetWidth(),
+                             camera->GetFarPlane(),  
+                             camera->GetNearPlane(),
+                             camera->GetFieldOfViewY());
   
-  auto coords = aEvent->WorldCoordinates;
-  glm::vec4 lRayStart_NDC(
-    ((float)coords.x / (float)mWindow->GetWidth() - 0.5f) * 2.0f, // [0,1024] -> [-1,1]
-    ((float)coords.y / (float)mWindow->GetHeight() - 0.5f) * 2.0f, // [0, 768] -> [-1,1]
-    -1.0, // The near plane maps to Z=-1 in Normalized Device Coordinates
-    1.0f
-  );
-  glm::vec4 lRayEnd_NDC(
-    ((float)coords.x / (float)mWindow->GetWidth() - 0.5f) * 2.0f,
-    ((float)coords.y / (float)mWindow->GetHeight() - 0.5f) * 2.0f,
-    0.0,
-    1.0f
-  );
-
-  btCollisionWorld::ClosestRayResultCallback RayCallback(
-    btVector3(out_origin.x, out_origin.y, out_origin.z),
-    btVector3(out_end.x, out_end.y, out_end.z)
-  );
-  mDynamicsWorld->rayTest(
-    btVector3(out_origin.x, out_origin.y, out_origin.z),
-    btVector3(out_end.x, out_end.y, out_end.z),
-    RayCallback
-  );
-
-  if (RayCallback.hasHit()) {
-    std::ostringstream oss;
-    oss << "mesh " << (int)RayCallback.m_collisionObject->getUserPointer();
-    message = oss.str();
-  }
-  else {
-    message = "background";
+  btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
+  mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
+  
+  if (rayCallback.hasHit())
+  {
+    auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
   }
 }
 
 void PhysicsHandler::Add(YTE::Composition *aComposition)
 {
+  // We don't want to click the camera.
+  // TODO: But maybe one day?
+  if (nullptr == aComposition->GetComponent<Camera>())
+  {
+    return;
+  }
+
   auto transform = aComposition->GetComponent<Transform>();
 
   btTransform bTransform;
@@ -183,6 +234,8 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
     obj->mCollider->setCollisionShape(obj->mBoxShape.get());
     obj->mCollider->setWorldTransform(bTransform);
     obj->mCollider->setUserPointer(aComposition);
+
+    obj->mShape = obj->mBoxShape.get();
   }
 
   obj->mGhostBody = std::make_unique<btGhostObject>();
