@@ -76,9 +76,9 @@ namespace YTE
 
     namespace fs = std::experimental::filesystem;
 
-    fs::path archetypesPath = cWorkingDirectory;
+    fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();
-    archetypesPath /= L"archetypes";
+    archetypesPath /= L"Archetypes";
 
     for (auto& file : fs::directory_iterator(archetypesPath))
     {
@@ -87,9 +87,9 @@ namespace YTE
       mArchetypes.emplace(std::make_pair(archetypeName, std::unique_ptr<RSDocument>(nullptr)));
     }
 
-    fs::path levelsPath = cWorkingDirectory;
+    fs::path levelsPath = Path::GetGamePath().String();;
     levelsPath = levelsPath.parent_path();
-    levelsPath /= L"levels";
+    levelsPath /= L"Levels";
 
     for (auto& file : fs::directory_iterator(levelsPath))
     { 

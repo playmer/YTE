@@ -71,14 +71,13 @@ namespace YTE
 
 
     void SetPath(const std::wstring &aPath); //Sets the path for audio files for loading
+    
+    void LoadAllBanks();
     bool LoadBank(const char *aFilename);
-    //void LoadBankText(const char *aFilename);
 
     void UnloadBank(const std::string &aBankName);
     void UnloadAllBanks();
     void UnloadBankText(const std::string &file);
-
-    void PrintBankHierarchy();
 
     void SendEvent(String aEvent, AkGameObjectID aId);
     void SetRTPC(String aRTPC, float aValue);
@@ -86,8 +85,6 @@ namespace YTE
 
     bool GetMute();
     void SetMute(bool aMute);
-
-      
 
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
@@ -98,20 +95,12 @@ namespace YTE
 
     //1st = Bnk name, 2nd = Bank Data
     std::unordered_map<String, AudioBank> mBanks;
-    std::unordered_map<String, SoundMaterial> mSoundMaterials;
-    std::vector<String> mEvents;
-
-    std::unordered_map<String, AkUniqueID> mEventIds;
-
-    //1st = Event Name, 2nd All the event params from the event
-    std::unordered_map<String, std::vector<String>> mEventParameters;
 
     bool mPaused = false;
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
 
     bool mMuted;
-
 
     bool mMinimized = false;
     bool mFocused = false;

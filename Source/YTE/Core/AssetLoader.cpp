@@ -69,6 +69,15 @@ namespace YTE
     return path.string();
   }
 
+  std::string Path::GetWWisePath(const Path& aPath, const std::string &aName)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("WWise");
+    path.append(aName);
+
+    return path.string();
+  }
+
   std::string Path::GetShaderPath(const Path& aPath, const std::string &aName)
   {
     fs::path path{ aPath.mPath };

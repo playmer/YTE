@@ -22,9 +22,8 @@
 #include <iostream>
 #include <filesystem>
 
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
-
-
 
 #include "YTE/Utilities/Utilities.h"
 
@@ -134,8 +133,8 @@ namespace YTE
     }
     #endif // AK_OPTIMIZED
 
-    //LoadBank("Init.bnk");
-    //LoadBank("SoundBank.bnk");
+    LoadBank("Init.bnk");
+    LoadBank("SoundBank.bnk");
 
     mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
     mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
@@ -283,6 +282,29 @@ namespace YTE
     AK::MemoryMgr::Term();
   }
 
+  void WWiseSystem::LoadAllBanks()
+  {
+    namespace fs = std::experimental::filesystem;
+
+    fs::path wwisePath = Path::GetGamePath().String();
+    wwisePath = wwisePath.parent_path();
+    wwisePath /= L"WWise";
+
+    std::error_code error;
+
+    for (auto &file : fs::directory_iterator(wwisePath, error))
+    {
+      fs::path pathname{ file };
+
+      if (".bnk" == pathname.extension())
+      {
+        LoadBank(pathname.c_str());
+      }
+    }
+
+    //Path::GetWWisePath(Path::GetGamePath(), "");
+  }
+
   bool WWiseSystem::LoadBank(const char *aFilename)
   {
     String file{ aFilename };
@@ -297,7 +319,7 @@ namespace YTE
 
     auto relPath = relativeTo(filesystem::current_path(), path);
 
-    AKRESULT eResult = AK::SoundEngine::LoadBank(relPath.c_str(),
+    AKRESULT eResult = AK::SoundEngine::LoadBank(file1.c_str(),
                                                  AK_DEFAULT_POOL_ID, 
                                                  mBanks[file].mBankID);
 
@@ -334,55 +356,6 @@ namespace YTE
   void WWiseSystem::SetPath(const std::wstring &aPath)
   {
     g_lowLevelIO.SetBankPath(aPath.c_str());
-  }
-
-
-  void WWiseSystem::PrintBankHierarchy()
-  {
-    std::cout << "\n" << "Event:" << std::endl;
-    for (auto it = mBanks.begin(); it != mBanks.end(); ++it)
-    {
-      std::cout << "This file is " << it->first << std::endl;
-      for (auto it2 = it->second.mEvents.begin(); it2 != it->second.mEvents.end(); ++it2)
-      {
-        std::cout << *it2 << std::endl;
-      }
-    }
-
-    std::cout << "\nSwitch Group:" << std::endl;
-    for (auto it = mBanks.begin(); it != mBanks.end(); ++it)
-    {
-      for (auto it2 = it->second.mSwitchGroup.begin(); it2 != it->second.mSwitchGroup.end(); ++it2)
-      {
-        std::cout << *it2 << std::endl;
-
-      }
-    }
-
-    std::cout << "Switch:" << std::endl;
-    for (auto it = mBanks.begin(); it != mBanks.end(); ++it)
-    {
-      for (auto it2 = it->second.mSwitches.begin(); it2 != it->second.mSwitches.end(); ++it2)
-      {
-
-        std::cout << it2->first << std::endl;
-        for (auto it3 = it2->second.begin(); it3 != it2->second.end(); ++it3)
-        {
-          std::cout << "    :" << *it3 << std::endl;
-
-        }
-      }
-    }
-
-    std::cout << "\nGame Parameter:" << std::endl;
-    for (auto it = mBanks.begin(); it != mBanks.end(); ++it)
-    {
-      for (auto it2 = it->second.mGameParams.begin(); it2 != it->second.mGameParams.end(); ++it2)
-      {
-        std::cout << *it2 << std::endl;
-
-      }
-    }
   }
 
   void WWiseSystem::SendEvent(String aEvent, AkGameObjectID)
