@@ -169,6 +169,7 @@ namespace YTE
     static Any Caller(std::vector<Any>& arguments)
     {
       size_t i = 0;
+      (void)i;
       Return capture = BoundFunc(arguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
@@ -197,6 +198,7 @@ namespace YTE
     static Any Caller(std::vector<Any>& arguments)
     {
       size_t i = 0;
+      (void)i;
       BoundFunc(arguments.at(i++).As<Arguments>()...);
       return Any();
     }
@@ -238,8 +240,9 @@ namespace YTE
     {
       auto self = arguments.at(0).As<ObjectType*>();
 
-
       size_t i = 1;
+      (void)i;
+
       Return capture = (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
@@ -283,6 +286,7 @@ namespace YTE
       auto self = arguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
+      (void)i;
       (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
 
       return Any();
@@ -329,6 +333,7 @@ namespace YTE
       auto self = arguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
+      (void)i;
       Return capture = (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
@@ -372,6 +377,7 @@ namespace YTE
       auto self = arguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
+      (void)i;
       (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
 
       return Any();
@@ -407,6 +413,7 @@ namespace YTE
     template <nullptr_t BoundFunc>
     static std::unique_ptr<Function> BindFunction(const char *name)
     {
+      (void)name;
       return std::unique_ptr<Function>();
     }
   };

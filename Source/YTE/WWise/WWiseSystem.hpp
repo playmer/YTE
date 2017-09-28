@@ -53,14 +53,12 @@ namespace YTE
     // Cleans up anything in the system.
     virtual ~WWiseSystem();
 
-    void SetPath(const std::wstring &aPath); //Sets the path for audio files for loading
-    
     void LoadAllBanks();
     bool LoadBank(const std::string &aFilename);
+    bool LoadJson(const std::string &aFilename);
 
     void UnloadBank(const std::string &aBankName);
     void UnloadAllBanks();
-    void UnloadBankText(const std::string &file);
 
     void SendEvent(const std::string &aEvent, AkGameObjectID aId);
     void SetRTPC(const std::string &aRTPC, float aValue);

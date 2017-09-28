@@ -294,6 +294,7 @@ namespace YTE
     for (auto &fileIt : fs::directory_iterator(wwisePath, error))
     {
       fs::path pathname{ fileIt };
+      auto pathStr{ pathname.string() };
 
       if (pathname.has_filename())
       {
@@ -303,16 +304,21 @@ namespace YTE
         }
         else if (".bnk" == pathname.extension())
         {
-          LoadBank(pathname.string().c_str());
+          LoadBank(pathStr);
         }
         else if (".json" == pathname.extension())
         {
-          //LoadJson(relPath.string().c_str());
+          LoadJson(pathStr);
         }
       }
     }
 
     //Path::GetWWisePath(Path::GetGamePath(), "");
+  }
+  bool WWiseSystem::LoadJson(const std::string &aFilename)
+  {
+
+    return true;
   }
 
   bool WWiseSystem::LoadBank(const std::string &aFilename)
@@ -333,27 +339,17 @@ namespace YTE
       return;
     }
     else
+    {
       AK::SoundEngine::UnloadBank(mBanks[bnkName].mBankID, nullptr);
+    }
   }
 
   void WWiseSystem::UnloadAllBanks()
   {
-    for (auto it = mBanks.begin(); it != mBanks.end(); ++it)
+    for (auto &bank : mBanks)
     {
-      AK::SoundEngine::UnloadBank(it->second.mBankID, nullptr);
+      AK::SoundEngine::UnloadBank(bank.second.mBankID, nullptr);
     }
-  }
-
-  void WWiseSystem::UnloadBankText(const std::string &file)
-  {
-    std::string woExtention = RemoveExtension(file);
-    mBanks.erase(woExtention);
-  }
-
-
-  void WWiseSystem::SetPath(const std::wstring &aPath)
-  {
-    g_lowLevelIO.SetBankPath(aPath.c_str());
   }
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID)
