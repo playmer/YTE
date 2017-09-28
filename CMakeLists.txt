@@ -39,7 +39,6 @@ Include(${CMake_Include}/YTE_Source_Group.cmake)
 ################################################################################
 If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-  Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
   Set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /debug:FASTLINK")
 EndIf()
 

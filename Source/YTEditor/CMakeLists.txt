@@ -75,5 +75,4 @@ Find_Package(Qt5Widgets)
 
 Target_Link_Libraries(YTEditor YTE ${StaticLibraries} Qt5::Widgets)
 
-Set(Build_Flags "/WX- /W4")
-Set_Target_Properties(YTEditor PROPERTIES COMPILE_FLAGS  ${Build_Flags})
+Target_Compile_Options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W4)

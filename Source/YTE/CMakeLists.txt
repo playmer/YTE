@@ -42,3 +42,5 @@ ForEach(library ${StaticLibrariesDebug})
 EndForEach()
 
 Target_Link_Libraries(YTE ${StaticLibraries})
+
+Target_Compile_Options(YTE PRIVATE -permissive- -std:c++17 -WX- -W4)

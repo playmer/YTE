@@ -48,7 +48,6 @@ namespace YTE
   // of the SDK's sample code, with the file package extension
   CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
-    
   WWiseSystem::WWiseSystem(Composition *aOwner, RSValue *aProperties)
     : Component(aOwner, nullptr), mMuted(false)
   {
@@ -60,7 +59,6 @@ namespace YTE
     // Create and initialize an instance of the default memory manager. Note
     // that you can override the default memory manager with your own. Refer
     // to the SDK documentation for more information.
-
     AkMemSettings memSettings;
     memSettings.uMaxNumPools = 20;
 
@@ -72,12 +70,10 @@ namespace YTE
     // Create and initialize an instance of the default streaming manager. Note
     // that you can override the default streaming manager with your own. Refer
     // to the SDK documentation for more information.
-
     AkStreamMgrSettings stmSettings;
     AK::StreamMgr::GetDefaultSettings(stmSettings);
 
     // Customize the Stream Manager settings here.
-
     if (!AK::StreamMgr::Create(stmSettings))
     {
       assert(!"Could not create the Streaming Manager");
@@ -113,7 +109,6 @@ namespace YTE
 
     // Initialize the music engine
     // Using default initialization parameters
-
     AkMusicSettings musicInit;
     AK::MusicEngine::GetDefaultInitSettings(musicInit);
 
@@ -121,7 +116,6 @@ namespace YTE
     {
       assert(!"Could not initialize the Music Engine.");
     }
-
 
     #ifndef AK_OPTIMIZED
     // Initialize communications (not in release build!)
@@ -133,13 +127,12 @@ namespace YTE
     }
     #endif // AK_OPTIMIZED
 
-    LoadBank("Init.bnk");
-    LoadBank("SoundBank.bnk");
+    LoadAllBanks();
 
     mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
     mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
 
-      //Events::WindowFocusLostOrGained, &focusEvent);
+    //Events::WindowFocusLostOrGained, &focusEvent);
   }
 
   void WWiseSystem::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
@@ -195,7 +188,6 @@ namespace YTE
     }
   }
 
-
   bool WWiseSystem::GetMute()
   {
     return mMuted;
@@ -203,7 +195,7 @@ namespace YTE
 
   void WWiseSystem::SetMute(bool aMute)
   {
-    // They're the same, we don't care.
+      // They're the same, we don't care.
     if (aMute == mMuted)
     {
       return;
@@ -217,7 +209,6 @@ namespace YTE
       return;
     }
 
-
     if (aMute == false && mMuted == true)
     {
       mMuted = aMute;
@@ -229,13 +220,13 @@ namespace YTE
     }
   }
 
-  void WWiseSystem::SetRTPC(String aRTPC, float aValue)
+  void WWiseSystem::SetRTPC(const std::string &aRTPC, float aValue)
   {
     mRTPCs[aRTPC] = aValue;
     AK::SoundEngine::SetRTPCValue(aRTPC.c_str(), aValue);
   }
 
-  float WWiseSystem::GetRTPC(String aRTPC)
+  float WWiseSystem::GetRTPC(const std::string &aRTPC)
   {
     auto rtpc = mRTPCs.find(aRTPC);
 
@@ -286,42 +277,49 @@ namespace YTE
   {
     namespace fs = std::experimental::filesystem;
 
-    fs::path wwisePath = Path::GetGamePath().String();
+    auto gamePath{ Path::GetGamePath() };
+    auto gamePathStr{ gamePath.String() };
+
+    fs::path wwisePath = gamePathStr;
     wwisePath = wwisePath.parent_path();
-    wwisePath /= L"WWise";
+    wwisePath /= "WWise";
+
+    auto initBnk{ wwisePath };
+    initBnk /= "Init.bnk";
+
+    LoadBank(initBnk.string().c_str());
 
     std::error_code error;
 
-    for (auto &file : fs::directory_iterator(wwisePath, error))
+    for (auto &fileIt : fs::directory_iterator(wwisePath, error))
     {
-      fs::path pathname{ file };
+      fs::path pathname{ fileIt };
 
-      if (".bnk" == pathname.extension())
+      if (pathname.has_filename())
       {
-        LoadBank(pathname.c_str());
+        if ("Init.bnk" == pathname.filename())
+        {
+          continue;
+        }
+        else if (".bnk" == pathname.extension())
+        {
+          LoadBank(pathname.string().c_str());
+        }
+        else if (".json" == pathname.extension())
+        {
+          //LoadJson(relPath.string().c_str());
+        }
       }
     }
 
     //Path::GetWWisePath(Path::GetGamePath(), "");
   }
 
-  bool WWiseSystem::LoadBank(const char *aFilename)
+  bool WWiseSystem::LoadBank(const std::string &aFilename)
   {
-    String file{ aFilename };
-
-    std::string file1 { aFilename };
-    std::wstring file2{ file1.begin(), file1.end() };
-
-    file2 = L"../SoundBanks/" + file2;
-    file2 = filesystem::canonical(file2, cWorkingDirectory);
-
-    filesystem::path path{ file2 };
-
-    auto relPath = relativeTo(filesystem::current_path(), path);
-
-    AKRESULT eResult = AK::SoundEngine::LoadBank(file1.c_str(),
+    AKRESULT eResult = AK::SoundEngine::LoadBank(aFilename.c_str(),
                                                  AK_DEFAULT_POOL_ID, 
-                                                 mBanks[file].mBankID);
+                                                 mBanks[aFilename].mBankID);
 
     assert(eResult == AK_Success);
     return true;
@@ -358,7 +356,7 @@ namespace YTE
     g_lowLevelIO.SetBankPath(aPath.c_str());
   }
 
-  void WWiseSystem::SendEvent(String aEvent, AkGameObjectID)
+  void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID)
   {
     static bool didIt = false;
 
