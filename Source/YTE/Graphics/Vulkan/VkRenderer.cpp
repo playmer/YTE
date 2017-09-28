@@ -449,7 +449,9 @@ namespace YTE
 
       QueueFamilyIndices::AddRequiredExtension("VK_KHR_swapchain");
 
-      for (size_t i = 0; i < mInstance->getPhysicalDeviceCount(); ++i)
+	  auto count = mInstance->getPhysicalDeviceCount();
+
+      for (size_t i = 0; i < count; ++i)
       {
         auto device = mInstance->getPhysicalDevice(i);
         auto baseDevice = static_cast<vk::PhysicalDevice>(*device);
@@ -464,7 +466,6 @@ namespace YTE
 
         PrintDeviceProperties(device);
       }
-
 
       FindDeviceOfType(vk::PhysicalDeviceType::eDiscreteGpu);
 
@@ -626,6 +627,18 @@ namespace YTE
 
     // Enable standard validation layer to find as much errors as possible!
     enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+	
+	//enabledLayers.push_back("VK_LAYER_GOOGLE_threading");
+	//enabledLayers.push_back("VK_LAYER_GOOGLE_unique_objects");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_api_dump");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_device_limits");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_draw_state");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_image");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_mem_tracker");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_object_tracker");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_param_checker");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_screenshot");
+	//enabledLayers.push_back("VK_LAYER_LUNARG_swapchain");
 #endif
 
     // Create a new vulkan instance using the required extensions

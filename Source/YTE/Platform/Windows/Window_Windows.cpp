@@ -403,10 +403,16 @@ namespace YTE
       //  window->mEngine.GetWindows().find()
       //}
 
-      aWindow->mEngine->EndExecution();
+      if (aWindow)
+      {
+        aWindow->mEngine->EndExecution();
+      }
 
       SetWindowPointer(aWindowHandle, nullptr);
       break;
+
+    case WM_NCCREATE:
+      return DefWindowProc(aWindowHandle, aMessage, aWParam, aLParam);
 
     default:
       break;
@@ -491,11 +497,11 @@ namespace YTE
     // This needs to be changed for multiple windows to work, I think.
     self->mWindowsData.hInstance = GetModuleHandle(nullptr);
 
-    self->mWindowsData.hIcon = LoadIcon(NULL, 0 == mSerializedWindowIcon.size() ?
+    self->mWindowsData.hIcon = LoadIcon(NULL, 0 != mSerializedWindowIcon.size() ?
       mSerializedWindowIcon.c_str() :
       IDI_APPLICATION);
 
-    self->mWindowsData.hCursor = LoadCursor(NULL, 0 == mSerializedCursorIcon.size() ?
+    self->mWindowsData.hCursor = LoadCursor(NULL, 0 != mSerializedCursorIcon.size() ?
       mSerializedCursorIcon.c_str() :
       IDC_ARROW);
 
@@ -508,7 +514,7 @@ namespace YTE
     self->mMinimized = false;
     self->mFocus = true;
 
-    RegisterClass(&self->mWindowsData);
+    auto atom = RegisterClass(&self->mWindowsData);
 
     HMONITOR monitorHandle = GetPrimaryMonitor();
 
@@ -517,7 +523,6 @@ namespace YTE
     auto result = GetMonitorInfo(monitorHandle, &monitorInformation);
 
     DebugObjection(!result, "Couldn't retrieve monitor information.");
-
 
     auto right = monitorInformation.rcMonitor.right;
     auto bottom = monitorInformation.rcMonitor.bottom;
@@ -540,7 +545,7 @@ namespace YTE
     auto topPos = (bottom / 2) - (height / 2);
 
     self->mWindowHandle =
-      CreateWindow(self->mWindowsData.lpszClassName,
+      CreateWindow(MAKEINTATOM(atom),
         self->mWindowsData.lpszMenuName,
         WS_POPUP | WS_VISIBLE,
         leftPos,

@@ -88,9 +88,11 @@ namespace YTE
 #define DebugAssert(aCondition, aString, ...) DebugObjection(!aCondition, aString, __VA_ARGS__)
   #else
     #define DebugObjection(aCondition, aString, ...)
+    #define DebugAssert(aCondition, aString, ...)
   #endif
 #else
   #define DebugObjection(aCondition, aString, ...)
+  #define DebugAssert(aCondition, aString, ...)
 #endif
 
 #endif
