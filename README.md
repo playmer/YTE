@@ -6,7 +6,7 @@
 1.) Clone the repository
 ```
 cd [folder you want to put your enlistment in]
-git clone https://github.com/optic5471/lambplanet
+git clone https://github.com/playmer/LambPlanet
 git config branch.autosetuprebase always
 git config push.default simple
 cd lambplanet
