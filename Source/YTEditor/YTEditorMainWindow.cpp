@@ -383,7 +383,7 @@ void YTEditorMainWindow::ConstructObjectBrowser()
 void YTEditorMainWindow::ConstructWWiseWidget()
 {
   // dockable component browser window
-  mWWiseWidget = new QDockWidget("Component Browser", this);
+  mWWiseWidget = new QDockWidget("WWise Bank Browser", this);
   mWWiseWidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   YTE::WWiseWidget *wwiseWidget = new YTE::WWiseWidget(mWWiseWidget, mRunningEngine);
   mWWiseWidget->setWidget(wwiseWidget);

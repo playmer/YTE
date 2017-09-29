@@ -63,7 +63,7 @@ namespace YTE
   void WWiseListener::OnOrientationChange(const OrientationChanged *aEvent)
   {
     mListenerPosition.SetOrientation(MakeAkVec(aEvent->Forward),
-                                      MakeAkVec(aEvent->Up));
+                                     MakeAkVec(aEvent->Up));
 
     SetListenerPosition();
   }

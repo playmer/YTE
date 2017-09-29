@@ -41,6 +41,7 @@ namespace YTE
       std::string mName;
     };
 
+    std::string mName;
     std::vector<AudioEvent> mEvents;
     std::vector<std::string> mSwitchGroup;
 

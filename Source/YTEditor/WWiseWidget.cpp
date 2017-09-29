@@ -51,7 +51,7 @@ namespace YTE
         continue;
       }
 
-      auto groupBox = new QGroupBox(this);
+      auto groupBox = new QGroupBox(bank.second.mName.c_str(), this);
 
       QVBoxLayout *vbox = new QVBoxLayout(groupBox);
 

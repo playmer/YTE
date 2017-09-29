@@ -13,7 +13,7 @@
 #include "AK/MusicEngine/Common/AkMusicEngine.h"  // Music Engine
 #include "YTE/WWise/SoundEngine/Win32/AkFilePackageLowLevelIOBlocking.h"   // Sample low-level I/O implementation
 
-// Include for communication between Wwise and the game -- Not needed in the release version
+// Include for communication between WWise and the game -- Not needed in the release version
 #ifndef AK_OPTIMIZED
   #include <AK/Comm/AkCommunication.h>
 #endif // AK_OPTIMIZED
@@ -133,7 +133,9 @@ namespace YTE
     AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
 
     // Register the main listener.
-    AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
+    auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
+
+    assert(check == AK_Success);
 
     // Set one listener as the default.
     AK::SoundEngine::SetDefaultListeners(&MY_DEFAULT_LISTENER, 1);
@@ -146,12 +148,14 @@ namespace YTE
 
   void WWiseSystem::RegisterObject(AkGameObjectID aId, std::string &aName)
   {
-    AK::SoundEngine::RegisterGameObj(aId, aName.c_str());
+    auto check = AK::SoundEngine::RegisterGameObj(aId, aName.c_str());
+    assert(check == AK_Success);
   }
 
   void WWiseSystem::DeregisterObject(AkGameObjectID aId)
   {
-    AK::SoundEngine::UnregisterGameObj(aId);
+    auto check = AK::SoundEngine::UnregisterGameObj(aId);
+    assert(check == AK_Success);
   }
 
   void WWiseSystem::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
@@ -303,9 +307,6 @@ namespace YTE
     wwisePath = wwisePath.parent_path();
     wwisePath /= "WWise";
 
-    auto initBnk{ wwisePath };
-    initBnk /= "Init.bnk";
-
     auto bnkInfo{ wwisePath };
     bnkInfo /= "SoundbanksInfo.json";
     auto bnkInfoStr{ bnkInfo.string() };
@@ -326,15 +327,15 @@ namespace YTE
     for (auto bankIt = banks->value.Begin(); bankIt < banks->value.End(); ++bankIt)
     {
       std::string bankFilename{ bankIt->FindMember("Path")->value.GetString() };
-      std::string str{ bankIt->FindMember("Path")->value.GetString() };
+      std::string shortName{ bankIt->FindMember("ShortName")->value.GetString() };
 
       auto bankPath{ wwisePath };
       bankPath /= bankFilename;
       bankFilename = bankPath.string();
 
-      std::cout << str << std::endl;
-
       auto &bank{ LoadBank(bankFilename) };
+
+      bank.mName = shortName;
 
       auto events{ bankIt->FindMember("IncludedEvents") };
       
@@ -388,6 +389,8 @@ namespace YTE
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    //AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), 0);
+    std::cout << id << std::endl;
   }
 }
