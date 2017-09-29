@@ -49,6 +49,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "qdesktopservices.h"
 #include <qevent.h>
 
+
+#include "YTEditor/WWiseWidget.hpp"
+
 #include "YTEditorMainWindow.hpp"
 #include "ComponentBrowser.hpp"
 #include "ComponentWidget.hpp"
@@ -88,6 +91,7 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
   ConstructMenuBar();
   ConstructSubWidgets();
   aEngine->Initialize();
+  ConstructWWiseWidget();
   LoadCurrentLevelInfo();
 
   auto self = this;
@@ -373,6 +377,17 @@ void YTEditorMainWindow::ConstructObjectBrowser()
   ObjectBrowser * objBrowser = new ObjectBrowser(this, mObjectBrowser);
   mObjectBrowser->setWidget(objBrowser);
   this->addDockWidget(Qt::LeftDockWidgetArea, mObjectBrowser);
+}
+
+
+void YTEditorMainWindow::ConstructWWiseWidget()
+{
+  // dockable component browser window
+  mWWiseWidget = new QDockWidget("Component Browser", this);
+  mWWiseWidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+  YTE::WWiseWidget *wwiseWidget = new YTE::WWiseWidget(mWWiseWidget, mRunningEngine);
+  mWWiseWidget->setWidget(wwiseWidget);
+  this->addDockWidget(Qt::RightDockWidgetArea, mWWiseWidget);
 }
 
 void YTEditorMainWindow::ConstructComponentBrowser()

@@ -20,6 +20,8 @@
 
 #include "YTE/Meta/Type.hpp"
 
+#include "YTE/Platform/ForwardDeclarations.hpp"
+
 #include "YTE/Utilities/String/String.h"
 
 namespace YTE
@@ -65,6 +67,9 @@ namespace YTE
 
     // Cleans up anything in the system.
     virtual ~WWiseSystem();
+
+    void RegisterObject(AkGameObjectID aId, std::string &aName);
+    void DeregisterObject(AkGameObjectID aId);
 
     void LoadAllBanks();
     AudioBank& LoadBank(const std::string &aFilename);

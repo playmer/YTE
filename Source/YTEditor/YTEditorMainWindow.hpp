@@ -99,6 +99,7 @@ private:
   void ConstructOutputConsole();
   void ConstructMaterialViewer();
   void ConstructFileViewer();
+  void ConstructWWiseWidget();
   
   QTabWidget *mCentralTabs;
   GameWindow *mGameWindow;
@@ -108,6 +109,7 @@ private:
   QDockWidget *mOutputConsole;
   QDockWidget *mMaterialViewer;
   QDockWidget *mFileViewer;
+  QDockWidget *mWWiseWidget;
 
   OutputConsole *mConsole;
   /**************************************************/

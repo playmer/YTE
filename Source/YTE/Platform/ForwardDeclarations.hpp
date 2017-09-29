@@ -20,6 +20,8 @@ namespace YTE
   class MouseMoveEvent;
   class Window;
   class WindowResize;
+  class WindowFocusLostOrGained;
+  class WindowMinimizedOrRestored;
 }
 
 #endif

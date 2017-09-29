@@ -130,10 +130,28 @@ namespace YTE
 
     LoadAllBanks();
 
-    mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
-    mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
+    AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
+
+    // Register the main listener.
+    AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
+
+    // Set one listener as the default.
+    AK::SoundEngine::SetDefaultListeners(&MY_DEFAULT_LISTENER, 1);
+
+    //mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
+    //mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
 
     //Events::WindowFocusLostOrGained, &focusEvent);
+  }
+
+  void WWiseSystem::RegisterObject(AkGameObjectID aId, std::string &aName)
+  {
+    AK::SoundEngine::RegisterGameObj(aId, aName.c_str());
+  }
+
+  void WWiseSystem::DeregisterObject(AkGameObjectID aId)
+  {
+    AK::SoundEngine::UnregisterGameObj(aId);
   }
 
   void WWiseSystem::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
@@ -322,8 +340,6 @@ namespace YTE
       
       if (events != bankIt->MemberEnd())
       {
-        bool test = events->value.IsArray();
-
         for (auto eventsIt = events->value.Begin(); eventsIt < events->value.End(); ++eventsIt)
         {
           std::string idStr{ eventsIt->FindMember("Id")->value.GetString() };
@@ -370,16 +386,8 @@ namespace YTE
     }
   }
 
-  void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID)
+  void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    static bool didIt = false;
-
-    if (didIt == false)
-    {
-      AK::SoundEngine::SetSwitch(L"Stages", L"Stage_01", 0);
-      didIt = true;
-    }
-
-    AK::SoundEngine::PostEvent(aEvent.c_str(), 0);
+    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
   }
 }

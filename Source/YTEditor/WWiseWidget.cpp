@@ -8,11 +8,32 @@
 
 namespace YTE
 {
+  SendWWiseEvent::SendWWiseEvent(WWiseSystem *aSystem, 
+                                 std::string &aEvent)
+    : QPushButton(aEvent.c_str())
+    , mEvent(aEvent)
+    , mSystem(aSystem)
+  {
+    mSystem->RegisterObject(OwnerId(), aEvent);
+  }
+
+  void SendWWiseEvent::clicked()
+  {
+    mSystem->SendEvent(mEvent, reinterpret_cast<AkGameObjectID>(this));
+  }
+
+  SendWWiseEvent::~SendWWiseEvent()
+  {
+    mSystem->DeregisterObject(reinterpret_cast<AkGameObjectID>(this));
+  }
+
   WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
     : QWidget(aParent)
     , mEngine(aEngine)
   {
     mSystem = mEngine->GetComponent<WWiseSystem>();
+
+    LoadEvents();
   }
 
   void WWiseWidget::LoadEvents()
@@ -25,16 +46,25 @@ namespace YTE
 
     for (auto &bank : banks)
     {
+      if (0 == bank.second.mEvents.size())
+      {
+        continue;
+      }
+
       auto groupBox = new QGroupBox(this);
 
-      QVBoxLayout *vbox = new QVBoxLayout;
-
+      QVBoxLayout *vbox = new QVBoxLayout(groupBox);
 
       for (auto &event : bank.second.mEvents)
       {
-        QPushButton *toggleButton = new QPushButton(event.mName.c_str());
+        SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem, event.mName);
 
-        vbox->addWidget(radio1);
+        this->connect(toggleButton,
+                      &SendWWiseEvent::released,
+                      toggleButton,
+                      &SendWWiseEvent::clicked);
+
+        vbox->addWidget(toggleButton);
       }
 
       vbox->addStretch(1);

@@ -22,10 +22,9 @@ namespace YTE
     YTEDeclareType(WWiseListener);
 
     WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
 
     void Initialize() override;
-
-    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mOwner); };
 
     ~WWiseListener() override;
 
