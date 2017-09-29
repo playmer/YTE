@@ -57,8 +57,8 @@ Set(YTEditorSource main.cpp
                    Commands.cpp
                    YTELineEdit.hpp
                    YTECheckBox.hpp
-                   WWiseTools.hpp
-                   WWiseTools.cpp)
+                   WWiseWidget.hpp
+                   WWiseWidget.cpp)
 
 Add_Executable(YTEditor ${YTEditorSource})
 

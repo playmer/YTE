@@ -26,7 +26,20 @@ namespace YTE
 {
   struct AudioBank
   {
-    std::vector<std::string> mEvents;
+    struct AudioEvent
+    {
+      AudioEvent(u64 aId, std::string &aName)
+        : mId(aId)
+        , mName(aName)
+      {
+
+      }
+
+      u64 mId;
+      std::string mName;
+    };
+
+    std::vector<AudioEvent> mEvents;
     std::vector<std::string> mSwitchGroup;
 
     //All the Game param in the bank file itself in strings
@@ -54,8 +67,7 @@ namespace YTE
     virtual ~WWiseSystem();
 
     void LoadAllBanks();
-    bool LoadBank(const std::string &aFilename);
-    bool LoadJson(const std::string &aFilename);
+    AudioBank& LoadBank(const std::string &aFilename);
 
     void UnloadBank(const std::string &aBankName);
     void UnloadAllBanks();
@@ -66,6 +78,8 @@ namespace YTE
 
     bool GetMute();
     void SetMute(bool aMute);
+
+    std::unordered_map<std::string, AudioBank>& GetBanks() { return mBanks; }
 
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);

@@ -49,9 +49,10 @@ namespace YTE
   CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
   WWiseSystem::WWiseSystem(Composition *aOwner, RSValue *aProperties)
-    : Component(aOwner, nullptr), mMuted(false)
+    : Component(aOwner, nullptr)
+    , mMuted(false)
   {
-
+    YTEUnusedArgument(aProperties);
   }
 
   void WWiseSystem::Initialize()
@@ -287,48 +288,65 @@ namespace YTE
     auto initBnk{ wwisePath };
     initBnk /= "Init.bnk";
 
-    LoadBank(initBnk.string().c_str());
+    auto bnkInfo{ wwisePath };
+    bnkInfo /= "SoundbanksInfo.json";
+    auto bnkInfoStr{ bnkInfo.string() };
 
-    std::error_code error;
+    std::string fileText;
+    auto success = ReadFileToString(bnkInfoStr, fileText);
 
-    for (auto &fileIt : fs::directory_iterator(wwisePath, error))
+    RSDocument document;
+
+    if (success && document.Parse(fileText.c_str()).HasParseError())
     {
-      fs::path pathname{ fileIt };
-      auto pathStr{ pathname.string() };
+      std::cout << "Error in WWise JSON: " << bnkInfoStr << std::endl;
+    }
 
-      if (pathname.has_filename())
+    auto &info = document["SoundBanksInfo"];
+    auto banks = info.FindMember("SoundBanks");
+
+    for (auto bankIt = banks->value.Begin(); bankIt < banks->value.End(); ++bankIt)
+    {
+      std::string bankFilename{ bankIt->FindMember("Path")->value.GetString() };
+      std::string str{ bankIt->FindMember("Path")->value.GetString() };
+
+      auto bankPath{ wwisePath };
+      bankPath /= bankFilename;
+      bankFilename = bankPath.string();
+
+      std::cout << str << std::endl;
+
+      auto &bank{ LoadBank(bankFilename) };
+
+      auto events{ bankIt->FindMember("IncludedEvents") };
+      
+      if (events != bankIt->MemberEnd())
       {
-        if ("Init.bnk" == pathname.filename())
+        bool test = events->value.IsArray();
+
+        for (auto eventsIt = events->value.Begin(); eventsIt < events->value.End(); ++eventsIt)
         {
-          continue;
-        }
-        else if (".bnk" == pathname.extension())
-        {
-          LoadBank(pathStr);
-        }
-        else if (".json" == pathname.extension())
-        {
-          LoadJson(pathStr);
+          std::string idStr{ eventsIt->FindMember("Id")->value.GetString() };
+          std::string nameStr{ eventsIt->FindMember("Name")->value.GetString() };
+      
+          auto id{ std::stoull(idStr) };
+      
+          bank.mEvents.emplace_back(id, nameStr);
         }
       }
     }
-
-    //Path::GetWWisePath(Path::GetGamePath(), "");
-  }
-  bool WWiseSystem::LoadJson(const std::string &aFilename)
-  {
-
-    return true;
   }
 
-  bool WWiseSystem::LoadBank(const std::string &aFilename)
+  AudioBank& WWiseSystem::LoadBank(const std::string &aFilename)
   {
+    auto &bank{ mBanks[aFilename] };
+
     AKRESULT eResult = AK::SoundEngine::LoadBank(aFilename.c_str(),
                                                  AK_DEFAULT_POOL_ID, 
-                                                 mBanks[aFilename].mBankID);
+                                                 bank.mBankID);
 
     assert(eResult == AK_Success);
-    return true;
+    return bank;
   }
     
   void WWiseSystem::UnloadBank(const std::string &bnkName)
