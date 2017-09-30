@@ -6,17 +6,21 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
+
+#define UNICODE
 #include "AK/SoundEngine/Common/AkMemoryMgr.h"    // Memory Manager
 #include "AK/SoundEngine/Common/AkModule.h"       // Default memory and stream managers
 #include "AK/Tools/Common/AkPlatformFuncs.h"      // Thread defines
 #include "AK/SoundEngine/Common/IAkStreamMgr.h"
 #include "AK/MusicEngine/Common/AkMusicEngine.h"  // Music Engine
-#include "YTE/WWise/SoundEngine/Win32/AkFilePackageLowLevelIOBlocking.h"   // Sample low-level I/O implementation
+#include "SoundEngine/Win32/AkFilePackageLowLevelIOBlocking.h"   // Sample low-level I/O implementation
 
 // Include for communication between WWise and the game -- Not needed in the release version
 #ifndef AK_OPTIMIZED
   #include <AK/Comm/AkCommunication.h>
 #endif // AK_OPTIMIZED
+
+#undef UNICODE
 
 #include <fstream>
 #include <iostream>
@@ -134,7 +138,6 @@ namespace YTE
 
     // Register the main listener.
     auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
-
     assert(check == AK_Success);
 
     // Set one listener as the default.
@@ -309,6 +312,12 @@ namespace YTE
 
     auto bnkInfo{ wwisePath };
     bnkInfo /= "SoundbanksInfo.json";
+
+    if (false == fs::exists(wwisePath) || false == fs::exists(bnkInfo))
+    {
+      return;
+    }
+
     auto bnkInfoStr{ bnkInfo.string() };
 
     std::string fileText;

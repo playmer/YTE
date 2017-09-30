@@ -11,7 +11,6 @@
 All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-
 #pragma once
 
 #include <qmainwindow.h>
@@ -29,7 +28,6 @@ class QTabWidget;
 class QTreeView;
 class QApplication;
 class FileMenu;
-
 class UndoRedo;
 
 namespace YTE
@@ -41,7 +39,6 @@ namespace YTE
 class YTEditorMainWindow : public QMainWindow
 {
 public:
-
   YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQApp);
   ~YTEditorMainWindow();
 
