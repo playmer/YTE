@@ -122,6 +122,8 @@ btVector3 getRayTo(btVector3 aCameraTranslation,
 
 void PhysicsHandler::Click(MouseButtonEvent *aEvent)
 {
+  static size_t i = 0;
+
   auto view = mSpace->GetComponent<GraphicsView>();
   auto camera = view->GetLastCamera();
   auto owner = camera->GetOwner();
@@ -151,7 +153,7 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   {
     auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
 
-    std::cout << composition->GetName().c_str() << "\n";
+    std::cout << i++ << ": "<< composition->GetName().c_str() << "\n";
   }
 }
 
