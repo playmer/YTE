@@ -56,7 +56,10 @@ namespace YTE
   static String cEngineName{ "Engine" };
 
   Engine::Engine(const char *aFile, bool aEditorMode)
-    : Composition(this, nullptr, cEngineName), mShouldRun(true), mEditorMode(aEditorMode)
+    : Composition(this, nullptr, cEngineName)
+    , mShouldRun(true)
+    , mEditorMode(aEditorMode)
+    , mFrame(0)
   {
     namespace fs = std::experimental::filesystem;
     
@@ -230,6 +233,8 @@ namespace YTE
 
     SendEvent(Events::LogicUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
+
+    ++mFrame;
   }
 
   void Engine::SetFrameRate(Window &aWindow, float aDt)

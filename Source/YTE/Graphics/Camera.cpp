@@ -511,7 +511,6 @@ namespace YTE
         glm::vec4 up4(0.0f, -1.0f, 0.0f, 1.0f);
         up4 = rotationMatrix * up4;
 
-        std::cout << mZoom << std::endl;
         glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
         transVector = rotationMatrix * transVector;
 
@@ -535,6 +534,7 @@ namespace YTE
       }
     } 
  
+    std::cout << mOwner->GetEngine()->GetFrame() << ": View Updated\n";
     mGraphicsView->UpdateView(this, view); 
   } 
 

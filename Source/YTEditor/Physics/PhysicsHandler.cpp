@@ -122,6 +122,11 @@ btVector3 getRayTo(btVector3 aCameraTranslation,
 
 void PhysicsHandler::Click(MouseButtonEvent *aEvent)
 {
+  if (aEvent->Button != Mouse_Buttons::Left)
+  {
+    return;
+  }
+
   static size_t i = 0;
 
   auto view = mSpace->GetComponent<GraphicsView>();

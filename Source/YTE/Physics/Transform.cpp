@@ -14,6 +14,8 @@
 #include "YTE/Physics/RigidBody.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/Utilities/Utilities.h"
+
 namespace YTE
 {
   YTEDefineEvent(PositionChanged);
@@ -264,6 +266,12 @@ namespace YTE
   ////////////////////////////////////////////////////////////////////////////
   void Transform::SetInternalTranslation(const glm::vec3 &aParentTranslation, const glm::vec3 &aLocalTranslation)
   {
+    if (mOwner->GetName() == "Camera" && mWorldTranslation != aParentTranslation + aLocalTranslation)
+    {
+      std::cout << mOwner->GetEngine()->GetFrame() << Format(": {%f, %f, %f}\n", mWorldTranslation.x, mWorldTranslation.y, mWorldTranslation.z);
+    }
+
+
     mWorldTranslation = aParentTranslation + aLocalTranslation;
     mTranslation = aLocalTranslation;
 
