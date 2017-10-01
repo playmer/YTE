@@ -282,15 +282,6 @@ namespace YTE
   {
     auto difference{ glm::inverse(mRotation) * (aLocalRotation) };
 
-    if (mOwner->GetName() == "Parent")
-    {
-      std::cout << mOwner->GetName().c_str() << ": "
-        "{" << difference.x << ", " << difference.y << ", " << difference.z << ", " << difference.w << "} = " <<
-        "{" << mRotation.x << ", " << mRotation.y << ", " << mRotation.z << ", " << mRotation.w << "} * " <<
-        "inverse{" << aLocalRotation.x << ", " << aLocalRotation.y << ", " << aLocalRotation.z << ", " << aLocalRotation.w << "}" << "\n";
-    }
-
-
     mWorldRotation = aParentRotation * aLocalRotation;
     mRotation = aLocalRotation;
 
