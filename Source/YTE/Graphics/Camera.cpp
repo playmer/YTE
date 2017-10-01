@@ -166,7 +166,7 @@ namespace YTE
         mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
 
         rot.x += glm::pi<float>();
-        mCameraTransform->SetRotation(rot);
+        mCameraTransform->SetRotationProperty(rot);
 
         mZoom = mZoomMin;
         mMoveUp = 0.0f;
@@ -202,7 +202,7 @@ namespace YTE
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
         rot.x = glm::pi<float>();
-        mCameraTransform->SetRotation(rot);
+        mCameraTransform->SetRotationProperty(rot);
       }
 
       mType = CameraType::Flyby;
@@ -243,6 +243,14 @@ namespace YTE
       else if (mKeyboard->IsKeyDown(Keys::D))
       {
         mMoveRight = -moveSpeed;
+      }
+      if (mKeyboard->IsKeyDown(Keys::Space))
+      {
+        mMoveUp = moveSpeed;
+      }
+      else if (mKeyboard->IsKeyDown(Keys::Control))
+      {
+        mMoveUp = -moveSpeed;
       }
   
       UpdateView();
@@ -484,7 +492,7 @@ namespace YTE
         // reset the data to the transform component
         // note that the camera position is not saved to the transform, rather where the camera
         // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetTranslation(glm::vec3(cameraPosition4));
+        mCameraTransform->SetTranslationProperty(glm::vec3(cameraPosition4));
         
         // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
@@ -503,6 +511,7 @@ namespace YTE
         glm::vec4 up4(0.0f, -1.0f, 0.0f, 1.0f);
         up4 = rotationMatrix * up4;
 
+        std::cout << mZoom << std::endl;
         glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
         transVector = rotationMatrix * transVector;
 
@@ -514,7 +523,7 @@ namespace YTE
 
         glm::vec4 cameraPos4 = glm::vec4(mTargetPoint, 1.0f) + unitVector;
         
-        mCameraTransform->SetTranslation(glm::vec3(cameraPos4));
+        mCameraTransform->SetTranslationProperty(glm::vec3(cameraPos4));
 
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPos4), mTargetPoint, glm::vec3(up4));
 
@@ -552,7 +561,7 @@ namespace YTE
 
     // Note that the other two axis are free to move without issues, y axis is the only issue 
 
-    mCameraTransform->SetRotation(rot);
+    mCameraTransform->SetRotationProperty(rot);
   }
 
   void Camera::UpdateZoom(float aZoom)
