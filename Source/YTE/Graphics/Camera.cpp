@@ -66,13 +66,6 @@ namespace YTE
                         " - CameraOrientation: The camera will always face in the direction the orientation component suggests.\n"
                         " - Flyby: The camera behaves like an FPS, where it uses WASD."); 
 
-    YTEBindField(&Camera::mTilt, "Tilt", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
-    YTEBindField(&Camera::mTwist, "Twist", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
-    YTEBindField(&Camera::mSpin, "Spin", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
-
     YTEBindField(&Camera::mZoom, "Zoom", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
 
@@ -82,6 +75,11 @@ namespace YTE
       .AddAttribute<Serializable>();
   } 
    
+  // NOTE: Spin = x
+  //       Tilt = y
+  //       Twist = z
+
+
   Camera::Camera(Composition *aOwner, 
                  Space *aSpace,  
                  RSValue *aProperties) 
@@ -92,9 +90,6 @@ namespace YTE
     , mFieldOfViewY(glm::radians(45.0f))
     , mNearPlane(0.1f)
     , mFarPlane(256.0f)
-    , mTilt(0.0f)
-    , mTwist(0.0f)
-    , mSpin(0.0f)
     , mZoom(5.0f)
     , mZoomMin(2.0f)
     , mZoomMax(30.0f)
@@ -164,12 +159,15 @@ namespace YTE
       // only do this if we were a flyby camera
       if (mType == CameraType::Flyby)
       {
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
+        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, -rot.y, 0.0f);
         glm::vec4 transVector(0.0f, 0.0f, mZoomMin, 1.0f);
         transVector = rotationMatrix * transVector;
-        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
 
-        mSpin += glm::pi<float>();
+        rot.x += glm::pi<float>();
+        mCameraTransform->SetRotation(rot);
+
         mZoom = mZoomMin;
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
@@ -192,17 +190,19 @@ namespace YTE
     {
       if (mType == CameraType::TargetObject || mType == CameraType::TargetPoint)
       {
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, mTilt, 0.0f);
+        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, rot.y, 0.0f);
 
         glm::vec4 transVector(0.0f, 0.0f, mZoom, 1.0f); // move forward one unit
         transVector = rotationMatrix * transVector;
 
-        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
 
         mZoom = 0.0f;
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
-        mSpin -= glm::pi<float>();
+        rot.x = glm::pi<float>();
+        mCameraTransform->SetRotation(rot);
       }
 
       mType = CameraType::Flyby;
@@ -265,7 +265,7 @@ namespace YTE
       case CameraType::Flyby:
       {
         // modify mZoom directly since this is a movement, not a zooming motion
-        mZoom = -(aEvent->ScrollMovement.y * zoomSpeed);
+        mZoom += (-(aEvent->ScrollMovement.y * zoomSpeed));
         break;
       }
     }
@@ -426,7 +426,7 @@ namespace YTE
  
     if (mCameraTransform) 
     { 
-      position = mCameraTransform->GetWorldTranslation();
+      position = mCameraTransform->GetTranslation();
     }
 
 
@@ -453,7 +453,7 @@ namespace YTE
         // there is no break here since the math is the same, it just uses a different target pos
         if (mTargetObject)
         {
-          mTargetPoint = mTargetObject->GetWorldTranslation();
+          mTargetPoint = mTargetObject->GetTranslation();
         }
       }
       case CameraType::TargetPoint:
@@ -461,11 +461,9 @@ namespace YTE
         // NOTE this math doesn't allow for 3 axis rotation, only 2 axis
 
         // create the rotation matrix, note that glm::yawpitchroll does the same thing
-        //glm::mat4 rotationMatrix = glm::mat4(1.0);
-        //rotationMatrix = glm::rotate(rotationMatrix, -mSpin, glm::vec3(0.0, 1.0, 0.0));
-        //rotationMatrix = glm::rotate(rotationMatrix, mTilt, glm::vec3(1.0, 0.0, 0.0));
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, mTilt, 0.0f);
-
+        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, rot.y, 0.0f);
+        
         // create the up vector, and then rotate it. Note that it is -1 to flip the world right side up
         glm::vec4 upReal(0.0f, -1.0f, 0.0f, 1.0f);
         upReal = rotationMatrix * upReal;
@@ -486,7 +484,7 @@ namespace YTE
         // reset the data to the transform component
         // note that the camera position is not saved to the transform, rather where the camera
         // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetWorldTranslation(glm::vec3{ cameraPosition4 });
+        mCameraTransform->SetTranslation(glm::vec3(cameraPosition4));
         
         // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
@@ -499,7 +497,8 @@ namespace YTE
       }
       case CameraType::Flyby:
       {
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
+        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
+        glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, -rot.y, 0.0f);
         
         glm::vec4 up4(0.0f, -1.0f, 0.0f, 1.0f);
         up4 = rotationMatrix * up4;
@@ -515,7 +514,7 @@ namespace YTE
 
         glm::vec4 cameraPos4 = glm::vec4(mTargetPoint, 1.0f) + unitVector;
         
-        mCameraTransform->SetWorldTranslation(glm::vec3(cameraPos4));
+        mCameraTransform->SetTranslation(glm::vec3(cameraPos4));
 
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPos4), mTargetPoint, glm::vec3(up4));
 
@@ -534,23 +533,26 @@ namespace YTE
   {
     // 0.1f is a generic number, we don't want it to be exactly half of pi, so we take some
     float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
+    glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
 
     // apply rotation
-    mTilt += aTilt;
-    mTwist += aTwist;
-    mSpin += aSpin;
+    rot.y += aTilt;
+    rot.z += aTwist;
+    rot.x += aSpin;
 
     // clamp tilt (y axis) to half pi (nearly straight up and down)
-    if (mTilt >= pidiv2)
+    if (rot.y >= pidiv2)
     {
-      mTilt = pidiv2;
+      rot.y = pidiv2;
     }
-    else if (mTilt <= -pidiv2)
+    else if (rot.y <= -pidiv2)
     {
-      mTilt = -pidiv2;
+      rot.y = -pidiv2;
     }
 
     // Note that the other two axis are free to move without issues, y axis is the only issue 
+
+    mCameraTransform->SetRotation(rot);
   }
 
   void Camera::UpdateZoom(float aZoom)
@@ -566,5 +568,4 @@ namespace YTE
       mZoom = mZoomMin;
     }
   }
-
 }

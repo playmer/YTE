@@ -172,9 +172,6 @@ namespace YTE
     float mNearPlane; 
     float mFarPlane; 
 
-    float mTilt;
-    float mTwist;
-    float mSpin;
     float mZoom;
     float mZoomMin;
     float mZoomMax;
