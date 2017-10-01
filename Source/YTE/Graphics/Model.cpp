@@ -48,10 +48,14 @@ namespace YTE
 
     Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh").AddAttribute<EditorProperty>()
-                                                              .AddAttribute<DropDownStrings>(PopulateDropDownList);
+    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload").AddAttribute<EditorProperty>();
+    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -153,7 +157,7 @@ namespace YTE
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mPosition = aEvent->Position;
+      mInstantiatedMesh->mPosition = aEvent->WorldPosition;
     }
 
     if (false == mUpdating)
@@ -167,7 +171,7 @@ namespace YTE
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mScale = aEvent->Scale;
+      mInstantiatedMesh->mScale = aEvent->WorldScale;
     }
 
     if (false == mUpdating)
@@ -181,7 +185,7 @@ namespace YTE
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mRotation = aEvent->Rotation;
+      mInstantiatedMesh->mRotation = aEvent->WorldRotation;
     }
 
     if (false == mUpdating)

@@ -32,33 +32,54 @@ namespace YTE
       .SetDocumentation("Object the camera will point at if it's type is set to \"TargetObject\"."); 
  
     YTEBindProperty(&Camera::GetTargetPoint, &Camera::SetTargetPoint, "TargetPoint") 
-      .AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .SetDocumentation("Point the camera will point at if it's type is set to \"TargetPoint\"."); 
  
     YTEBindProperty(&Camera::GetFarPlane, &Camera::SetFarPlane, "FarPlane") 
-      .AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .SetDocumentation("The far plane the view will be rendered with."); 
  
     YTEBindProperty(&Camera::GetNearPlane, &Camera::SetNearPlane, "NearPlane") 
-      .AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with."); 
  
     YTEBindProperty(&Camera::GetFieldOfViewY, &Camera::SetFieldOfViewY, "FieldOfViewY") 
-      .AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .SetDocumentation("The field of view (y) the view will be rendered with."); 
 
     YTEBindProperty(&Camera::GetZoomingMaxAndMin, &Camera::SetZoomingMaxAndMin, "Zoom Planes")
       .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .SetDocumentation("The min (x) and max (y) zoom of the camera.");
  
     YTEBindProperty(&Camera::GetCameraType, &Camera::SetCameraType, "CameraType") 
-      .AddAttribute<EditorProperty>() 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList) 
       .SetDocumentation("The type of camera we'd like to have. Options include:\n" 
                         " - TargetObject: The camera will always face the chosen target object.\n" 
                         " - TargetPoint: The camera will always face the chosen target point.\n" 
                         " - CameraOrientation: The camera will always face in the direction the orientation component suggests.\n"
                         " - Flyby: The camera behaves like an FPS, where it uses WASD."); 
+
+    YTEBindField(&Camera::mTilt, "Tilt", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+    YTEBindField(&Camera::mTwist, "Twist", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+    YTEBindField(&Camera::mSpin, "Spin", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+
+    YTEBindField(&Camera::mZoom, "Zoom", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+
+    YTEBindField(&Camera::mMoveUp, "MoveUp", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+    YTEBindField(&Camera::mMoveRight, "MoveRight", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
   } 
    
   Camera::Camera(Composition *aOwner, 
@@ -146,7 +167,7 @@ namespace YTE
         glm::mat4 rotationMatrix = glm::yawPitchRoll(-mSpin, -mTilt, 0.0f);
         glm::vec4 transVector(0.0f, 0.0f, mZoomMin, 1.0f);
         transVector = rotationMatrix * transVector;
-        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
 
         mSpin += glm::pi<float>();
         mZoom = mZoomMin;
@@ -176,7 +197,7 @@ namespace YTE
         glm::vec4 transVector(0.0f, 0.0f, mZoom, 1.0f); // move forward one unit
         transVector = rotationMatrix * transVector;
 
-        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
+        mTargetPoint = mCameraTransform->GetWorldTranslation() - glm::vec3(transVector);
 
         mZoom = 0.0f;
         mMoveUp = 0.0f;
@@ -405,7 +426,7 @@ namespace YTE
  
     if (mCameraTransform) 
     { 
-      position = mCameraTransform->GetTranslation();
+      position = mCameraTransform->GetWorldTranslation();
     }
 
 
@@ -432,12 +453,12 @@ namespace YTE
         // there is no break here since the math is the same, it just uses a different target pos
         if (mTargetObject)
         {
-          mTargetPoint = mTargetObject->GetTranslation();
+          mTargetPoint = mTargetObject->GetWorldTranslation();
         }
       }
       case CameraType::TargetPoint:
       {
-        // NOTE this math doesnt allow for 3 axis rotation, only 2 axis
+        // NOTE this math doesn't allow for 3 axis rotation, only 2 axis
 
         // create the rotation matrix, note that glm::yawpitchroll does the same thing
         //glm::mat4 rotationMatrix = glm::mat4(1.0);
@@ -449,7 +470,7 @@ namespace YTE
         glm::vec4 upReal(0.0f, -1.0f, 0.0f, 1.0f);
         upReal = rotationMatrix * upReal;
 
-        // This is the vector that will transplate the camera
+        // This is the vector that will translate the camera
         glm::vec4 transVector(-mMoveRight, mMoveUp, 0.0f, 1.0f);
         transVector = rotationMatrix * transVector;
 
@@ -465,7 +486,7 @@ namespace YTE
         // reset the data to the transform component
         // note that the camera position is not saved to the transform, rather where the camera
         // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetTranslation(glm::vec3{ cameraPosition4 });
+        mCameraTransform->SetWorldTranslation(glm::vec3{ cameraPosition4 });
         
         // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
@@ -494,7 +515,7 @@ namespace YTE
 
         glm::vec4 cameraPos4 = glm::vec4(mTargetPoint, 1.0f) + unitVector;
         
-        mCameraTransform->SetTranslation(glm::vec3(cameraPos4));
+        mCameraTransform->SetWorldTranslation(glm::vec3(cameraPos4));
 
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPos4), mTargetPoint, glm::vec3(up4));
 
@@ -511,7 +532,7 @@ namespace YTE
 
   void Camera::UpdateCameraRotation(float aTilt, float aTwist, float aSpin)
   {
-    // 0.1f is a generic number, we dont want it to be exactly half of pi, so we take some
+    // 0.1f is a generic number, we don't want it to be exactly half of pi, so we take some
     float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
 
     // apply rotation

@@ -20,33 +20,6 @@
 
 namespace YTE
 {
-  class MotionState : public btMotionState
-  {
-  public:
-    MotionState(Transform *aTransform, bool kinematic = false)
-      : mTransform(aTransform)
-      , mKinematic(kinematic)
-    {
-
-    };
-
-    ///synchronizes world transform from user to physics
-    void getWorldTransform(btTransform& centerOfMassWorldTrans) const override;
-
-    ///synchronizes world transform from physics to user
-    ///Bullet only calls the update of world transform for active objects
-    void setWorldTransform(const btTransform& centerOfMassWorldTrans) override;
-
-    void SetKinematic(bool flag)
-    {
-      mKinematic = flag;
-    }
-
-  private:
-    Transform *mTransform;
-    bool mKinematic;
-  };
-
   class RigidBody : public Body
   {
   public:

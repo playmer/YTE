@@ -30,14 +30,14 @@ class PropertyWidget : public PropertyWidgetBase
 {
 public:
 
-  PropertyWidget(const char * aName, YTEditorMainWindow *aMainWindow, QWidget * aParent = nullptr)
+  PropertyWidget(const std::string &aName, YTEditorMainWindow *aMainWindow, QWidget * aParent = nullptr)
     : PropertyWidgetBase(aParent),
       mValues(new QHBoxLayout(this)),
       mPropertyName(aName),
       mMainWindow(aMainWindow)
   {
     this->setLayout(mValues);
-    QLabel * nameLabel = new QLabel(aName, this);
+    QLabel * nameLabel = new QLabel(aName.c_str(), this);
     mValues->addWidget(nameLabel);
 
     // check for the type and add the appropriate widgets

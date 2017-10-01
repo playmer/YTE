@@ -25,7 +25,9 @@ namespace YTE
   {
     YTERegisterType(WWiseEmitter);
 
-    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
     YTEBindFunction(&WWiseEmitter::PlayEvent, YTENoOverload, "PlaySound", YTEParameterNames("aSound"));

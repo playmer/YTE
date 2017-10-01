@@ -55,17 +55,18 @@ void ComponentWidget::RemoveProperty(QWidget * aWidget)
   mProperties->removeWidget(aWidget);
 }
 
-void ComponentWidget::LoadProperties(YTE::Component & aComponent)
-{
-  auto& propMap = aComponent.GetType()->GetProperties();
 
+void ComponentWidget::LoadPropertyMap(YTE::Component &aComponent, 
+                                      YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
+                                      bool aProperty)
+{
   // load all properties
-  for (auto& prop : propMap)
+  for (auto& prop : aProperties)
   {
     auto editAttrib = prop.second.get()->GetAttribute<YTE::EditorProperty>();
 
     // check if this property contains the editor attribute
-    if (!editAttrib)
+    if (nullptr == editAttrib || false == editAttrib->mVisible)
     {
       continue;
     }
@@ -76,21 +77,24 @@ void ComponentWidget::LoadProperties(YTE::Component & aComponent)
 
     if (value.IsType<int>())
     {
-      ComponentProperty<int> * comProp = this->AddProperty<int>(prop.first.c_str());
+      ComponentProperty<int> *comProp = AddPropertyOrField<int>(prop.first, aProperty);
       int propData = value.As<int>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<float>())
     {
-      ComponentProperty<float> * comProp = this->AddProperty<float>(prop.first.c_str());
+      ComponentProperty<float> *comProp = AddPropertyOrField<float>(prop.first, aProperty);
       float propData = value.As<float>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<YTE::String>())
     {
-      ComponentProperty<YTE::String> * comProp = this->AddProperty<YTE::String>(prop.first.c_str());
+      ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(prop.first, aProperty);
       YTE::String propData = value.As<YTE::String>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<std::string>())
     {
@@ -100,7 +104,7 @@ void ComponentWidget::LoadProperties(YTE::Component & aComponent)
       if (dropDownAttrib)
       {
         // get the property
-        ComponentProperty<QStringList> * comProp = this->AddProperty<QStringList>(prop.first.c_str());
+        ComponentProperty<QStringList> * comProp = AddPropertyOrField<QStringList>(prop.first, aProperty);
 
         // grab the list of strings from the attribute
         std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(this->mEngineComponent);
@@ -128,145 +132,56 @@ void ComponentWidget::LoadProperties(YTE::Component & aComponent)
             dynamic_cast<QComboBox*>(comProp->GetWidgets()[0])->setCurrentIndex(index);
           }
         }
+
+        comProp->SetEvents();
       }
       else
       {
         // otherwise it's just an editable text field
-        ComponentProperty<std::string> * comProp = this->AddField<std::string>(prop.first.c_str());
+        ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(prop.first, aProperty);
         std::string propData = value.As<std::string>();
         comProp->SetValue(propData);
+        comProp->SetEvents();
       }
     }
     else if (value.IsType<bool>())
     {
-      ComponentProperty<bool> * comProp = this->AddProperty<bool>(prop.first.c_str());
+      ComponentProperty<bool> *comProp = AddPropertyOrField<bool>(prop.first, aProperty);
       bool propData = value.As<bool>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<glm::vec2>())
     {
-      ComponentProperty<glm::vec2> * comProp = this->AddProperty<glm::vec2>(prop.first.c_str());
+      ComponentProperty<glm::vec2> *comProp = AddPropertyOrField<glm::vec2>(prop.first, aProperty);
       auto propData = value.As<glm::vec2>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<glm::vec3>())
     {
-      ComponentProperty<glm::vec3> * comProp = this->AddProperty<glm::vec3>(prop.first.c_str());
+      ComponentProperty<glm::vec3> *comProp = AddPropertyOrField<glm::vec3>(prop.first, aProperty);
       auto propData = value.As<glm::vec3>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
     else if (value.IsType<glm::vec4>())
     {
-      ComponentProperty<glm::vec4> * comProp = this->AddProperty<glm::vec4>(prop.first.c_str());
+      ComponentProperty<glm::vec4> *comProp = AddPropertyOrField<glm::vec4>(prop.first, aProperty);
       auto propData = value.As<glm::vec4>();
       comProp->SetValue(propData);
+      comProp->SetEvents();
     }
   }
+}
 
+void ComponentWidget::LoadProperties(YTE::Component &aComponent)
+{
+  auto& propertyMap = aComponent.GetType()->GetProperties();
   auto& fieldMap = aComponent.GetType()->GetFields();
 
-  // load all fields
-  for (auto& field : fieldMap)
-  {
-    auto editAttrib = field.second.get()->GetAttribute<YTE::EditorProperty>();
-
-    // check if this field contains the editor attribute
-    if (!editAttrib)
-    {
-      return;
-    }
-
-    auto getter = field.second.get()->GetGetter();
-
-    YTE::Any value = getter->Invoke(&aComponent);
-
-    if (value.IsType<int>())
-    {
-      ComponentProperty<int> * comProp = this->AddField<int>(field.first.c_str());
-      int propData = value.As<int>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<float>())
-    {
-      ComponentProperty<float> * comProp = this->AddField<float>(field.first.c_str());
-      float propData = value.As<float>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<YTE::String>())
-    {
-      ComponentProperty<YTE::String> * comProp = this->AddField<YTE::String>(field.first.c_str());
-      YTE::String propData = value.As<YTE::String>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<std::string>())
-    {
-      // check if it's a drop down of strings
-      auto dropDownAttrib = field.second.get()->GetAttribute<YTE::DropDownStrings>();
-
-      if (dropDownAttrib)
-      {
-        // get the property
-        ComponentProperty<QStringList> * comProp = this->AddField<QStringList>(field.first.c_str());
-
-        // grab the list of strings from the attribute
-        std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(this->mEngineComponent);
-
-        // build a QStringList from the vector of strings
-        QStringList argStrs;
-        for (std::string str : strList)
-        {
-          argStrs.push_back(str.c_str());
-        }
-
-        // set the list of strings on the property
-        comProp->SetValue(argStrs);
-
-        if (mFieldWidgets[0])
-        {
-          // get the current string
-          std::string propData = value.As<std::string>();
-         
-          // set the current string of text for the drop down
-          dynamic_cast<QComboBox*>(mFieldWidgets[0])->setCurrentText(propData.c_str());
-        }
-        else
-        {
-          dynamic_cast<QComboBox*>(mFieldWidgets[0])->setCurrentIndex(0);
-        }
-      }
-      else
-      {
-        // otherwise it's just an editable text field
-        ComponentProperty<std::string> * comProp = this->AddField<std::string>(field.first.c_str());
-        std::string propData = value.As<std::string>();
-        comProp->SetValue(propData);
-      }
-    }
-    else if (value.IsType<bool>())
-    {
-      ComponentProperty<bool> * comProp = this->AddField<bool>(field.first.c_str());
-      bool propData = value.As<bool>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<glm::vec2>())
-    {
-      ComponentProperty<glm::vec2> * comProp = this->AddField<glm::vec2>(field.first.c_str());
-      auto propData = value.As<glm::vec2>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<glm::vec3>())
-    {
-      ComponentProperty<glm::vec3> * comProp = this->AddField<glm::vec3>(field.first.c_str());
-      auto propData = value.As<glm::vec3>();
-      comProp->SetValue(propData);
-    }
-    else if (value.IsType<glm::vec4>())
-    {
-      ComponentProperty<glm::vec4> * comProp = this->AddField<glm::vec4>(field.first.c_str());
-      auto propData = value.As<glm::vec4>();
-      comProp->SetValue(propData);
-    }
-  }
+  LoadPropertyMap(aComponent, propertyMap, true);
+  LoadPropertyMap(aComponent, fieldMap, false);
 }
 
 void ComponentWidget::SavePropertiesToEngine()

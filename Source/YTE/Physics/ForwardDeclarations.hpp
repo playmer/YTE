@@ -25,6 +25,7 @@ namespace YTE
     class Transform;
     class OrientationChanged;
     class TransformChanged;
+    class MotionState;
 }
 
 #endif

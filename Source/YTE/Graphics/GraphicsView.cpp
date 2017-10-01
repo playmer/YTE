@@ -10,9 +10,13 @@ namespace YTE
   {
     YTERegisterType(GraphicsView);
 
-    YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
-    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor").AddAttribute<EditorProperty>();
+    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   GraphicsView::GraphicsView(Composition *aOwner, 

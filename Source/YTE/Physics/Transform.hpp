@@ -11,7 +11,11 @@
 #ifndef YTE_Physics_Transform_h
 #define YTE_Physics_Transform_h
 
+#include "Bullet/LinearMath/btMotionState.h"
+
 #include "YTE/Core/Component.hpp"
+
+#include "YTE/Physics/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -25,8 +29,41 @@ namespace YTE
     YTEDeclareType(TransformChanged);
 
     glm::vec3 Position;
-    glm::quat Rotation;
     glm::vec3 Scale;
+    glm::quat Rotation;
+
+    glm::vec3 WorldPosition;
+    glm::vec3 WorldScale;
+    glm::quat WorldRotation;
+
+    glm::quat RotationDifference;
+  };
+  
+  class MotionState : public btMotionState
+  {
+  public:
+    MotionState(Transform *aTransform, bool kinematic = false)
+      : mTransform(aTransform)
+      , mKinematic(kinematic)
+    {
+
+    };
+
+    ///synchronizes world transform from user to physics
+    void getWorldTransform(btTransform& centerOfMassWorldTrans) const override;
+
+    ///synchronizes world transform from physics to user
+    ///Bullet only calls the update of world transform for active objects
+    void setWorldTransform(const btTransform& centerOfMassWorldTrans) override;
+
+    void SetKinematic(bool flag)
+    {
+      mKinematic = flag;
+    }
+
+  private:
+    Transform *mTransform;
+    bool mKinematic;
   };
 
   class Transform : public Component
@@ -35,12 +72,12 @@ namespace YTE
     YTEDeclareType(Transform);
 
     Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    void Initialize();
 
     //void NativeInitialize() override;
 
     // LOCAL TRANSFORM INFORMATION
     const glm::vec3& GetTranslation() const;
-    void SetPhysicsTranslation(const glm::vec3& aTrans);
     void SetTranslation(const glm::vec3& aTrans);
     void SetTranslation(float aX, float aY, float aZ);
 
@@ -77,7 +114,21 @@ namespace YTE
     inline void SetWorldScaleProperty(const glm::vec3& aScale) { SetWorldScale(aScale); };
     inline void SetWorldRotationProperty(const glm::vec3& aEulerRot) { SetWorldRotation(aEulerRot); };
 
+    void ParentPositionChanged(TransformChanged *aEvent);
+    void ParentScaleChanged(TransformChanged *aEvent);
+    void ParentRotationChanged(TransformChanged *aEvent);
+
   private:
+    glm::vec3 GetAccumulatedParentTranslation();
+    glm::vec3 GetAccumulatedParentScale();
+    glm::quat GetAccumulatedParentRotation();
+
+    void SetInternalTranslation(const glm::vec3 &aParentTranslation, const glm::vec3 &aLocalTranslation);
+    void SetInternalScale(const glm::vec3 &aParentScale, const glm::vec3 &aLocalScale);
+    void SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation);
+
+    void InformPhysicsOfChange(const std::string &aEvent, glm::quat aRotationDifference = glm::quat{});
+
     glm::vec3 mTranslation;
     glm::vec3 mScale;
     glm::quat mRotation;

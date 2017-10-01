@@ -39,7 +39,9 @@ namespace YTE
 
     YTEBindProperty(&Space::GetEngine, YTENoSetter, "Engine");
 
-    YTEBindField(&Space::mStartingLevel, "StartingLevel", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&Space::mStartingLevel, "StartingLevel", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   // Sets up the Space, probably could just be the constructor.

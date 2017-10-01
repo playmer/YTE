@@ -31,9 +31,13 @@ template <class T>
 class ComponentProperty : public PropertyWidget<T>
 {
 public:
-  ComponentProperty(const char* aName, YTEditorMainWindow *aMainWindow, ComponentWidget* aParent)                      
+  ComponentProperty(const std::string &aName, YTEditorMainWindow *aMainWindow, ComponentWidget* aParent)
     : PropertyWidget<T>(aName, aMainWindow, aParent),
       mParentComponent(aParent)
+  {
+  }
+
+  void SetEvents()
   {
     if (std::is_same<bool, T>())
     {

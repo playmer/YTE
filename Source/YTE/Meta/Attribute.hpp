@@ -13,6 +13,13 @@ namespace YTE
     YTEDeclareType(Attribute)
   };
 
+  class Serializable : public Attribute
+  {
+  public:
+    YTEDeclareType(Serializable);
+    Serializable(DocumentedObject *aObject);
+  };
+
   class EditorProperty : public Attribute
   {
   public:

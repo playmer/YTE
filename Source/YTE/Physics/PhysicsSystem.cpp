@@ -25,10 +25,18 @@ namespace YTE
   YTEDefineType(RayCollisionInfo)
   {
     YTERegisterType(RayCollisionInfo);
-    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   YTEDefineType(PhysicsSystem)

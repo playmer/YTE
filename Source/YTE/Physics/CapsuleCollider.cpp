@@ -25,11 +25,13 @@ namespace YTE
     YTERegisterType(CapsuleCollider);
     auto &radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
     radius.Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    radius.AddAttribute<EditorProperty>();
+    radius.AddAttribute<EditorProperty>()
+          .AddAttribute<Serializable>();
 
     auto &height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
     height.Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    height.AddAttribute<EditorProperty>();
+    height.AddAttribute<EditorProperty>()
+          .AddAttribute<Serializable>();
   }
 
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -22,8 +22,12 @@ namespace YTE
   YTEDefineType(BoxCollider)
   {
     YTERegisterType(BoxCollider);
-    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size").AddAttribute<EditorProperty>();
-    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
+    YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
     YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
       .Description() = "Sets the collider scale as a multiple of the scale of the transform";
