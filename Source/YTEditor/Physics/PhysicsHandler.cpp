@@ -20,8 +20,8 @@ using namespace YTE;
 void PickerObject::ChangedPositionAndRotation(TransformChanged *aEvent)
 {
   btTransform transform;
-  transform.setOrigin(OurVec3ToBt(aEvent->Position));
-  transform.setRotation(OurQuatToBt(aEvent->Rotation));
+  transform.setOrigin(OurVec3ToBt(aEvent->WorldPosition));
+  transform.setRotation(OurQuatToBt(aEvent->WorldRotation));
 
   mGhostBody->setWorldTransform(transform);
 }
@@ -29,7 +29,7 @@ void PickerObject::ChangedPositionAndRotation(TransformChanged *aEvent)
 void PickerObject::ChangedScale(TransformChanged *aEvent)
 {
 
-  btVector3 scale{ OurVec3ToBt(aEvent->Scale) };
+  btVector3 scale{ OurVec3ToBt(aEvent->WorldScale) };
   if (nullptr != mTriangleMeshShape)
   {
     mTriangleMeshShape->setLocalScaling(scale);
@@ -138,18 +138,18 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   auto cameraUp = OurVec3ToBt(orientation->GetUpVector());
   auto cameraForward = OurVec3ToBt(orientation->GetForwardVector());
 
-  btVector3 rayTo = getRayTo(rayFrom,
-                             cameraUp,
-                             cameraForward,
-                             aEvent->WorldCoordinates.x,
-                             aEvent->WorldCoordinates.y,
-                             mWindow->GetHeight(),
-                             mWindow->GetWidth(),
-                             camera->GetFarPlane(),  
-                             camera->GetNearPlane(),
-                             camera->GetFieldOfViewY());
+  //btVector3 rayTo = getRayTo(rayFrom,
+  //                           cameraUp,
+  //                           cameraForward,
+  //                           aEvent->WorldCoordinates.x,
+  //                           aEvent->WorldCoordinates.y,
+  //                           mWindow->GetHeight(),
+  //                           mWindow->GetWidth(),
+  //                           camera->GetFarPlane(),  
+  //                           camera->GetNearPlane(),
+  //                           camera->GetFieldOfViewY());
 
-  //auto rayTo = rayFrom + (cameraForward * 10000.f);
+  auto rayTo = rayFrom + (cameraForward * 10000.f);
   
   btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
   mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
@@ -180,10 +180,10 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
 
   if (nullptr != transform)
   {
-    scale = OurVec3ToBt(transform->GetScale());
+    scale = OurVec3ToBt(transform->GetWorldScale());
 
-    origin = OurVec3ToBt(transform->GetTranslation());
-    rotation = OurQuatToBt(transform->GetRotation());
+    origin = OurVec3ToBt(transform->GetWorldTranslation());
+    rotation = OurQuatToBt(transform->GetWorldRotation());
   }
 
   bTransform.setOrigin(origin);
