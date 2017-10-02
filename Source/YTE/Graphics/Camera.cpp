@@ -161,12 +161,11 @@ namespace YTE
       {
         glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
         glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, -rot.y, 0.0f);
-        glm::vec4 transVector(0.0f, 0.0f, mZoomMin, 1.0f);
-        transVector = rotationMatrix * transVector;
-        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
+        glm::vec4 unitVector(0.0f, 0.0f, mZoomMin, 1.0f); // used to translate away from target point by 1
+        unitVector = rotationMatrix * unitVector;
 
-        rot.x += glm::pi<float>();
-        mCameraTransform->SetRotationProperty(rot);
+        // apply the new target position based on the camera translation
+        mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(unitVector);
 
         mZoom = mZoomMin;
         mMoveUp = 0.0f;
@@ -193,16 +192,16 @@ namespace YTE
         glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
         glm::mat4 rotationMatrix = glm::yawPitchRoll(-rot.x, rot.y, 0.0f);
 
-        glm::vec4 transVector(0.0f, 0.0f, mZoom, 1.0f); // move forward one unit
-        transVector = rotationMatrix * transVector;
+        glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
+        unitVector = rotationMatrix * unitVector;
+        unitVector = glm::normalize(unitVector);
 
-        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(transVector);
+        // apply the new target position based on the camera translation
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(unitVector);
 
         mZoom = 0.0f;
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
-        rot.x = glm::pi<float>();
-        mCameraTransform->SetRotationProperty(rot);
       }
 
       mType = CameraType::Flyby;
@@ -226,31 +225,39 @@ namespace YTE
   {
     if (CameraType::Flyby == mType && mMouse->IsButtonDown(Mouse_Buttons::Right))
     {
-      const float moveSpeed = 0.05f;
+      const float moveSpeed = 1.0f;
 
       if (mKeyboard->IsKeyDown(Keys::W))
       {
-        mZoom = -moveSpeed;
+        mZoom = moveSpeed;
       }
       else if (mKeyboard->IsKeyDown(Keys::S))
       {
-        mZoom = moveSpeed;
+        mZoom = -moveSpeed;
       }
       if (mKeyboard->IsKeyDown(Keys::A))
       {
-        mMoveRight = moveSpeed;
+        mMoveRight = -moveSpeed * 0.75f;
       }
       else if (mKeyboard->IsKeyDown(Keys::D))
       {
-        mMoveRight = -moveSpeed;
+        mMoveRight = moveSpeed * 0.75f;
       }
       if (mKeyboard->IsKeyDown(Keys::Space))
       {
-        mMoveUp = moveSpeed;
+        mMoveUp = moveSpeed * 0.75f;
       }
       else if (mKeyboard->IsKeyDown(Keys::Control))
       {
-        mMoveUp = -moveSpeed;
+        mMoveUp = -moveSpeed * 0.75f;
+      }
+
+      // speed mode
+      if (mKeyboard->IsKeyDown(Keys::Shift))
+      {
+        mMoveRight *= 2.0f;
+        mMoveUp *= 2.0f;
+        mZoom *= 2.0f;
       }
   
       UpdateView();
@@ -273,7 +280,7 @@ namespace YTE
       case CameraType::Flyby:
       {
         // modify mZoom directly since this is a movement, not a zooming motion
-        mZoom += (-(aEvent->ScrollMovement.y * zoomSpeed));
+        mZoom += (aEvent->ScrollMovement.y * (zoomSpeed + 0.29));
         break;
       }
     }
@@ -301,7 +308,7 @@ namespace YTE
           return;
         }
 
-        const float rotationSpeed = 0.01f;
+        const float rotationSpeed = 0.005f;
 
         if (mMouse->IsButtonDown(Mouse_Buttons::Left))
         {
@@ -320,6 +327,8 @@ namespace YTE
         {
           // middle mouse does camera panning
 
+          const float moveSpeed = 0.01f;
+
           // we change the camera type since we were following an object and we just
           // jumped off to walk on our own
           if (mType == CameraType::TargetObject)
@@ -328,27 +337,27 @@ namespace YTE
             mCameraType = "TargetPoint";
           }
 
-          mMoveUp = dy * rotationSpeed;
-          mMoveRight = dx * rotationSpeed;
+          mMoveUp = dy * moveSpeed;
+          mMoveRight = dx * moveSpeed;
         }
 
         break;
       }
       case CameraType::Flyby:
       {
-        const float rotationSpeed = 0.005f; // movement here is too fast, so it has a different speed
+        const float rotationSpeed = 0.001f; // movement here is too fast, so it has a different speed
 
         // allows look and move with WASD
         if (mMouse->IsButtonDown(Mouse_Buttons::Right))
         {
-          UpdateCameraRotation(dy * rotationSpeed, 0.0f, -(dx * rotationSpeed));
+          UpdateCameraRotation(-(dy * rotationSpeed), 0.0f, -(dx * rotationSpeed));
         }
 
         // allows panning
         if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
         {
-          mMoveUp = dy * rotationSpeed * 2.0f;
-          mMoveRight = dx * rotationSpeed * 2.0f;
+          mMoveUp = dy * rotationSpeed * 5.0f;
+          mMoveRight = -(dx * rotationSpeed * 5.0f);
         }
 
         break;
@@ -369,7 +378,7 @@ namespace YTE
  
   void Camera::PositionEvent(TransformChanged *aEvent)
   { 
-    UpdateView(); 
+    //UpdateView();  no need and other functions need to be calling it anyway
   } 
  
   void Camera::RendererResize(WindowResize *aEvent) 
@@ -492,7 +501,7 @@ namespace YTE
         // reset the data to the transform component
         // note that the camera position is not saved to the transform, rather where the camera
         // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetTranslationProperty(glm::vec3(cameraPosition4));
+        mCameraTransform->SetTranslation(glm::vec3(cameraPosition4));
         
         // finally get the view matrix
         view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
@@ -514,17 +523,17 @@ namespace YTE
         glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
         transVector = rotationMatrix * transVector;
 
-        mTargetPoint = mTargetPoint + glm::vec3(transVector);
+        // update camera translation
+        mCameraTransform->SetTranslation(mCameraTransform->GetTranslation() + glm::vec3(transVector));
 
         glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
         unitVector = rotationMatrix * unitVector;
         unitVector = glm::normalize(unitVector);
 
-        glm::vec4 cameraPos4 = glm::vec4(mTargetPoint, 1.0f) + unitVector;
-        
-        mCameraTransform->SetTranslationProperty(glm::vec3(cameraPos4));
+        // apply the new target position based on the camera translation
+        mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(unitVector);
 
-        view.mViewMatrix = glm::lookAt(glm::vec3(cameraPos4), mTargetPoint, glm::vec3(up4));
+        view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
 
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
@@ -534,7 +543,6 @@ namespace YTE
       }
     } 
  
-    std::cout << mOwner->GetEngine()->GetFrame() << ": View Updated\n";
     mGraphicsView->UpdateView(this, view); 
   } 
 
@@ -561,7 +569,7 @@ namespace YTE
 
     // Note that the other two axis are free to move without issues, y axis is the only issue 
 
-    mCameraTransform->SetRotationProperty(rot);
+    mCameraTransform->SetRotation(rot);
   }
 
   void Camera::UpdateZoom(float aZoom)
