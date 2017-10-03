@@ -149,8 +149,10 @@ namespace YTE
       return glm::vec2(mZoomMin, mZoomMax);
     }
 
+    void Update(LogicUpdate* aEvent);
+
   private:
-    void UpdateCameraRotation(float aTilt, float aTwist, float aSpin);
+    void UpdateCameraRotation(float aPitch, float aYaw, float aRoll);
     void UpdateZoom(float aZoom);
  
   private: 
@@ -177,6 +179,8 @@ namespace YTE
     float mZoomMax;
     float mMoveUp;
     float mMoveRight;
+
+    float mDt;
  
  
     bool mConstructing; 

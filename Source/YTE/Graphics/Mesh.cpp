@@ -17,7 +17,6 @@ namespace YTE
     auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
 
     auto pScene = Importer.ReadFile(meshFile.c_str(),
-                                    aiProcess_FlipWindingOrder |
                                     aiProcess_Triangulate |
                                     aiProcess_PreTransformVertices |
                                     aiProcess_CalcTangentSpace |
