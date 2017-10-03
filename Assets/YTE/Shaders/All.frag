@@ -34,7 +34,7 @@ void main()
   outFragColor = texture(specularSampler, inTextureCoordinates);
   outFragColor = texture(normalSampler, inTextureCoordinates);
   outFragColor = texture(diffuseSampler, inTextureCoordinates);
-  
+
   //outFragColor = vec4(1,0,0, Material.mOpacity);
 }
 
