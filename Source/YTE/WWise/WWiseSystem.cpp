@@ -135,6 +135,7 @@ namespace YTE
     LoadAllBanks();
 
     AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
+    
 
     // Register the main listener.
     auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
@@ -268,7 +269,7 @@ namespace YTE
 
   void WWiseSystem::Update(float)
   {
-    AK::SoundEngine::RenderAudio();
+    AK::SoundEngine::RenderAudio(true);
   }
 
   WWiseSystem::~WWiseSystem()
@@ -398,8 +399,8 @@ namespace YTE
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    //AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
-    auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), 0);
-    std::cout << id << std::endl;
+    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    //auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), 0);
+    //std::cout << id << std::endl;
   }
 }
