@@ -2,6 +2,8 @@
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLayout>
+#include <QHBoxLayout>
+#include <QLabel>
 
 #include "YTEditor/WWiseWidget.hpp"
 
@@ -118,10 +120,17 @@ namespace YTE
       QVBoxLayout *switchGroupVbox = new QVBoxLayout(switchGroupGroupBox);
       for (auto &switchGroup : bank.second.mSwitchGroups)
       {
-        auto comboBox = new SetWWiseSwitch(switchGroupGroupBox, 
+        auto dummy = new QWidget(switchGroupGroupBox);
+        auto hbox = new QHBoxLayout(dummy);
+
+        hbox->addWidget(new QLabel(switchGroup.first.c_str(), dummy));
+
+        auto comboBox = new SetWWiseSwitch(dummy,
                                            switchGroup.second.first.mId, 
                                            mSystem, 
                                            this);
+
+
 
         for (auto &aSwitch : switchGroup.second.second)
         {
@@ -135,7 +144,11 @@ namespace YTE
                       comboBox,
                       &SetWWiseSwitch::indexChanged);
 
-        switchGroupVbox->addWidget(comboBox);
+        hbox->addWidget(comboBox);
+
+        dummy->setLayout(hbox);
+
+        switchGroupVbox->addWidget(dummy);
       }
       switchGroupVbox->addStretch(1);
 
