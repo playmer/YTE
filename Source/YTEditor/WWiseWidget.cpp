@@ -21,6 +21,13 @@ namespace YTE
 
     }
 
+    void SetCurrentSwitch()
+    {
+      auto id = this->currentData().toULongLong();
+
+      mSystem->SetSwitch(mSwitchGroupId, id, OwnerId());
+    }
+
     ~SetWWiseSwitch()
     {
 
@@ -30,7 +37,8 @@ namespace YTE
 
     void indexChanged(int aIndex)
     {
-      //mSystem->SetSwitch(mSwitchGroupId, aSwitchId, OwnerId());
+      YTEUnusedArgument(aIndex);
+      SetCurrentSwitch();
     }
 
   private:
@@ -115,17 +123,17 @@ namespace YTE
                                            mSystem, 
                                            this);
 
-        //comboBox->setUserData(switchGroup.second.first.mId, nullptr);
-
         for (auto &aSwitch : switchGroup.second.second)
         {
           comboBox->addItem(aSwitch.mName.c_str(), aSwitch.mId);
         }
 
-        //this->connect(comboBox,
-        //              (void (SetWWiseSwitch::*)(int)) &SetWWiseSwitch::currentIndexChanged,
-        //              comboBox,
-        //              &SetWWiseSwitch::indexChanged);
+        comboBox->SetCurrentSwitch();
+
+        this->connect(static_cast<QComboBox*>(comboBox),
+                      static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                      comboBox,
+                      &SetWWiseSwitch::indexChanged);
 
         switchGroupVbox->addWidget(comboBox);
       }

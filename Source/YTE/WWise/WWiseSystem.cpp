@@ -325,7 +325,7 @@ namespace YTE
               aPairList.end(),
               [](AudioBank::AudioPair &aLeft, AudioBank::AudioPair &aRight)
     {
-      return aRight.mName < aLeft.mName;
+      return aRight.mName > aLeft.mName;
     });
   }
 
@@ -527,12 +527,12 @@ namespace YTE
     AK::SoundEngine::PostEvent(aEvent, aObject);
   }
 
-  void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)
+  void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)
   {
     AK::SoundEngine::SetSwitch(aSwitchGroup.c_str(), aSwitch.c_str(), aId);
   }
 
-  void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
+  void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
   {
     AK::SoundEngine::SetSwitch(aSwitchGroupId, aSwitchId, aId);
   }
