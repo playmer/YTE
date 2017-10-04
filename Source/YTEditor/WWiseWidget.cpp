@@ -21,7 +21,11 @@ namespace YTE
 
     }
 
-    ~SetWWiseSwitch();
+    ~SetWWiseSwitch()
+    {
+
+    }
+
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
 
     void indexChanged(int aIndex)
@@ -50,7 +54,11 @@ namespace YTE
 
     }
 
-    ~SendWWiseEvent();
+    ~SendWWiseEvent()
+    {
+
+    }
+
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
 
     void clicked()
