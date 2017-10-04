@@ -30,6 +30,13 @@ namespace YTE
   {
     struct AudioPair
     {
+      AudioPair()
+        : mId(0)
+        , mName()
+      {
+
+      }
+
       AudioPair(u64 aId, std::string &aName)
         : mId(aId)
         , mName(aName)
@@ -43,7 +50,7 @@ namespace YTE
 
     std::string mName;
     std::vector<AudioPair> mEvents;
-    std::unordered_map<std::string, std::vector<AudioPair>> mSwitchGroups;
+    std::unordered_map<std::string, std::pair<AudioPair, std::vector<AudioPair>>> mSwitchGroups;
     std::vector<AudioPair> mRTPCs;
 
     AkBankID mBankID;
@@ -75,6 +82,11 @@ namespace YTE
     void UnloadAllBanks();
 
     void SendEvent(const std::string &aEvent, AkGameObjectID aId);
+    void SendEvent(u64 aEventId, AkGameObjectID aId);
+
+    void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId);
+    void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId);
+
     void SetRTPC(const std::string &aRTPC, float aValue);
     float GetRTPC(const std::string &aRTPC);
 

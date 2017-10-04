@@ -24,18 +24,4 @@ namespace YTE
     Engine *mEngine;
     WWiseSystem *mSystem;
   };
-
-  class SendWWiseEvent : public QPushButton
-  {
-  public:
-    SendWWiseEvent(WWiseSystem *aSystem, std::string &aEvent, WWiseWidget *aWidget);
-    ~SendWWiseEvent();
-    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
-
-    void clicked();
-  private:
-    WWiseSystem *mSystem;
-    std::string mEvent;
-    WWiseWidget *mWidget;
-  };
 }

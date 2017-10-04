@@ -1,3 +1,4 @@
+#include <QComboBox>
 #include <QPushButton>
 #include <QGroupBox>
 #include <QLayout>
@@ -8,24 +9,60 @@
 
 namespace YTE
 {
-  SendWWiseEvent::SendWWiseEvent(WWiseSystem *aSystem, 
-                                 std::string &aEvent,
-                                 WWiseWidget *aWidget)
-    : QPushButton(aEvent.c_str())
-    , mEvent(aEvent)
-    , mSystem(aSystem)
-    , mWidget(aWidget)
+  class SetWWiseSwitch : public QComboBox
   {
-  }
+  public:
+    SetWWiseSwitch(QWidget *aOwner, u64 aSwitchGroupId, WWiseSystem *aSystem, WWiseWidget *aWidget)
+      : QComboBox(aOwner)
+      , mSwitchGroupId(aSwitchGroupId)
+      , mSystem(aSystem)
+      , mWidget(aWidget)
+    {
 
-  void SendWWiseEvent::clicked()
-  {
-    mSystem->SendEvent(mEvent, OwnerId());
-  }
+    }
 
-  SendWWiseEvent::~SendWWiseEvent()
+    ~SetWWiseSwitch();
+    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
+
+    void indexChanged(int aIndex)
+    {
+      //mSystem->SetSwitch(mSwitchGroupId, aSwitchId, OwnerId());
+    }
+
+  private:
+    WWiseSystem *mSystem;
+    u64 mSwitchGroupId;
+    WWiseWidget *mWidget;
+  };
+
+  class SendWWiseEvent : public QPushButton
   {
-  }
+  public:
+    SendWWiseEvent(WWiseSystem *aSystem, 
+                   const std::string &aEvent, 
+                   u64 aEventId, 
+                   WWiseWidget *aWidget)
+      : QPushButton(aEvent.c_str())
+      , mEventId(aEventId)
+      , mSystem(aSystem)
+      , mWidget(aWidget)
+    {
+
+    }
+
+    ~SendWWiseEvent();
+    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
+
+    void clicked()
+    {
+      mSystem->SendEvent(mEventId, OwnerId());
+    }
+
+  private:
+    WWiseSystem *mSystem;
+    u64 mEventId;
+    WWiseWidget *mWidget;
+  };
 
   WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
     : QWidget(aParent)
@@ -58,14 +95,41 @@ namespace YTE
         continue;
       }
 
-      auto groupBox = new QGroupBox(bank.second.mName.c_str(), this);
+      auto bankGroupBox = new QGroupBox(bank.second.mName.c_str(), this);
+      QVBoxLayout *bankVbox = new QVBoxLayout(bankGroupBox);
 
-      QVBoxLayout *vbox = new QVBoxLayout(groupBox);
+      auto switchGroupGroupBox = new QGroupBox("Switch Groups", bankGroupBox);
+      QVBoxLayout *switchGroupVbox = new QVBoxLayout(switchGroupGroupBox);
+      for (auto &switchGroup : bank.second.mSwitchGroups)
+      {
+        auto comboBox = new SetWWiseSwitch(switchGroupGroupBox, 
+                                           switchGroup.second.first.mId, 
+                                           mSystem, 
+                                           this);
 
+        //comboBox->setUserData(switchGroup.second.first.mId, nullptr);
+
+        for (auto &aSwitch : switchGroup.second.second)
+        {
+          comboBox->addItem(aSwitch.mName.c_str(), aSwitch.mId);
+        }
+
+        //this->connect(comboBox,
+        //              (void (SetWWiseSwitch::*)(int)) &SetWWiseSwitch::currentIndexChanged,
+        //              comboBox,
+        //              &SetWWiseSwitch::indexChanged);
+
+        switchGroupVbox->addWidget(comboBox);
+      }
+      switchGroupVbox->addStretch(1);
+
+      auto eventGroupBox = new QGroupBox("Events", bankGroupBox);
+      QVBoxLayout *eventVbox = new QVBoxLayout(eventGroupBox);
       for (auto &event : bank.second.mEvents)
       {
         SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem,
                                                           event.mName,
+                                                          event.mId,
                                                           this);
 
         this->connect(toggleButton,
@@ -73,15 +137,19 @@ namespace YTE
                       toggleButton,
                       &SendWWiseEvent::clicked);
 
-        vbox->addWidget(toggleButton);
+        eventVbox->addWidget(toggleButton);
       }
+      eventVbox->addStretch(1);
 
-      vbox->addStretch(1);
+      //bankVbox->addWidget(rtpcGroupBox);
+      bankVbox->addWidget(switchGroupGroupBox);
+      bankVbox->addWidget(eventGroupBox);
+      bankVbox->addStretch(1);
 
 
-      groupBox->setLayout(vbox);
+      bankGroupBox->setLayout(bankVbox);
 
-      layout->addWidget(groupBox);
+      layout->addWidget(bankGroupBox);
     }
   }
 }

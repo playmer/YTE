@@ -299,28 +299,7 @@ namespace YTE
     // Terminate the Memory Manager
     AK::MemoryMgr::Term();
   }
-
-
-  // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
-  std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty)
-  {
-    std::stringstream ss(aString);
-    std::string item;
-    std::vector<std::string> tokens;
-
-    while (std::getline(ss, item, aDelimiter))
-    {
-      if (aIgnoreEmpty && 0 == item.size())
-      {
-        continue;
-      }
-
-      tokens.push_back(item);
-    }
-
-    return tokens;
-  }
-
+  
   namespace WWiseStatics
   {
     static std::string Events{ "Event" };
@@ -340,6 +319,15 @@ namespace YTE
     }
   }
 
+  void SortAudioPairs(std::vector<AudioBank::AudioPair> &aPairList)
+  {
+    std::sort(aPairList.begin(),
+              aPairList.end(),
+              [](AudioBank::AudioPair &aLeft, AudioBank::AudioPair &aRight)
+    {
+      return aRight.mName < aLeft.mName;
+    });
+  }
 
   void WWiseSystem::ReadTxtFile(std::string &aFile, AudioBank &bank)
   {
@@ -409,12 +397,24 @@ namespace YTE
 
       bank.mEvents.emplace_back(id, event[1]);
     }
+    SortAudioPairs(bank.mEvents);
 
     for (auto &aSwitch : switches)
     {
       auto id{ std::stoull(aSwitch[0]) };
 
-      bank.mSwitchGroups[aSwitch[2]].emplace_back(id, aSwitch[1]);
+      bank.mSwitchGroups[aSwitch[2]].second.emplace_back(id, aSwitch[1]);
+    }
+
+    for (auto &switchGroup : switchGroups)
+    {
+      auto id{ std::stoull(switchGroup[0]) };
+
+      auto &group = bank.mSwitchGroups[switchGroup[1]];
+
+      group.first.mId = id;
+      group.first.mName = switchGroup[1];
+      SortAudioPairs(group.second);
     }
 
     for (auto &rtpc : rtpcs)
@@ -423,6 +423,8 @@ namespace YTE
 
       bank.mRTPCs.emplace_back(id, rtpc[1]);
     }
+
+    SortAudioPairs(bank.mRTPCs);
   }
 
   void WWiseSystem::LoadAllBanks()
@@ -517,6 +519,21 @@ namespace YTE
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+  }
+
+  void WWiseSystem::SendEvent(u64 aEvent, AkGameObjectID aObject)
+  {
+    AK::SoundEngine::PostEvent(aEvent, aObject);
+  }
+
+  void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)
+  {
+    AK::SoundEngine::SetSwitch(aSwitchGroup.c_str(), aSwitch.c_str(), aId);
+  }
+
+  void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
+  {
+    AK::SoundEngine::SetSwitch(aSwitchGroupId, aSwitchId, aId);
   }
 }

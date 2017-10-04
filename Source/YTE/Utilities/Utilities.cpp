@@ -5,6 +5,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <functional>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <streambuf>
 #include <memory>
 #include <cstdlib>
@@ -21,6 +22,26 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   std::wstring cWorkingDirectory = std::experimental::filesystem::current_path();
+
+  // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
+  std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty)
+  {
+    std::stringstream ss(aString);
+    std::string item;
+    std::vector<std::string> tokens;
+
+    while (std::getline(ss, item, aDelimiter))
+    {
+      if (aIgnoreEmpty && 0 == item.size())
+      {
+        continue;
+      }
+
+      tokens.push_back(item);
+    }
+
+    return tokens;
+  }
 
 
   filesystem::path relativeTo(filesystem::path from, filesystem::path to)
@@ -90,7 +111,7 @@ namespace YTE
   /*!
   \brief
   As the name.
-  Based on a stackoverflow:
+  Based on a StackOverflow:
   http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
 
   \param name
