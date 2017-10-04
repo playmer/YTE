@@ -28,9 +28,9 @@ namespace YTE
 {
   struct AudioBank
   {
-    struct AudioEvent
+    struct AudioPair
     {
-      AudioEvent(u64 aId, std::string &aName)
+      AudioPair(u64 aId, std::string &aName)
         : mId(aId)
         , mName(aName)
       {
@@ -42,15 +42,11 @@ namespace YTE
     };
 
     std::string mName;
-    std::vector<AudioEvent> mEvents;
-    std::vector<std::string> mSwitchGroup;
-
-    //All the Game param in the bank file itself in strings
-    std::vector<std::string> mGameParameters;
+    std::vector<AudioPair> mEvents;
+    std::unordered_map<std::string, std::vector<AudioPair>> mSwitchGroups;
+    std::vector<AudioPair> mRTPCs;
 
     AkBankID mBankID;
-    //1st = Switch Group, 2nd = Switches
-    std::unordered_map <std::string, std::vector<std::string>> mSwitches;
   };
 
   class WWiseSystem : public Component
@@ -90,6 +86,8 @@ namespace YTE
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
+
+    void ReadTxtFile(std::string &aFile, AudioBank &bank);
 
     std::unordered_map<std::string, float> mRTPCs;
     std::unordered_map<std::string, AudioBank> mBanks;

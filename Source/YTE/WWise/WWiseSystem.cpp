@@ -300,10 +300,130 @@ namespace YTE
     AK::MemoryMgr::Term();
   }
 
-  struct TextFileGarbage
-  {
 
-  };
+  // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
+  std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty)
+  {
+    std::stringstream ss(aString);
+    std::string item;
+    std::vector<std::string> tokens;
+
+    while (std::getline(ss, item, aDelimiter))
+    {
+      if (aIgnoreEmpty && 0 == item.size())
+      {
+        continue;
+      }
+
+      tokens.push_back(item);
+    }
+
+    return tokens;
+  }
+
+  namespace WWiseStatics
+  {
+    static std::string Events{ "Event" };
+    static std::string Switches{ "Switch" };
+    static std::string SwitchGroups{ "Switch Group" };
+    static std::string RTPCs{ "Game Parameter" };
+  }
+
+  void RemoveEmptyStrings(std::vector<std::vector<std::string>> &aLines)
+  {
+    for (auto &line : aLines)
+    {
+      line.erase(std::remove_if(line.begin(), 
+                                line.end(), 
+                                [](std::string &a) {return a.empty(); }), 
+                 line.end());
+    }
+  }
+
+
+  void WWiseSystem::ReadTxtFile(std::string &aFile, AudioBank &bank)
+  {
+    std::string fileText;
+    ReadFileToString(aFile, fileText);
+
+    std::vector<std::vector<std::string>> lines;
+
+
+    for (auto &line : split(fileText, '\n', true))
+    {
+      lines.emplace_back(split(line, '\t', false));
+    }
+
+    std::vector<std::vector<std::string>> events;       // Event
+    std::vector<std::vector<std::string>> switches;     // Switch
+    std::vector<std::vector<std::string>> switchGroups; // Switch Group
+    std::vector<std::vector<std::string>> rtpcs;        // Game Parameter
+
+    std::vector<std::vector<std::string>> otherTopLevel;
+    std::vector<std::vector<std::string>> other;
+
+    std::vector<std::vector<std::string>> *current{ &other };
+
+    for (auto &line : lines)
+    {
+      if (0 != line.size())
+      {
+        if (WWiseStatics::Events == line[0])
+        {
+          current = &events;
+        }
+        else if (WWiseStatics::Switches == line[0])
+        {
+          current = &switches;
+        }
+        else if (WWiseStatics::SwitchGroups == line[0])
+        {
+          current = &switchGroups;
+        }
+        else if (WWiseStatics::RTPCs == line[0])
+        {
+          current = &rtpcs;
+        }
+        else if (0 != line[0].size())
+        {
+          otherTopLevel.emplace_back(std::move(line));
+          current = &other;
+        }
+        else
+        {
+          current->emplace_back(std::move(line));
+        }
+      }
+    }
+
+    RemoveEmptyStrings(events);
+    RemoveEmptyStrings(switches);
+    RemoveEmptyStrings(switchGroups);
+    RemoveEmptyStrings(rtpcs);
+    RemoveEmptyStrings(otherTopLevel);
+    RemoveEmptyStrings(other);
+
+    for (auto &event : events)
+    {
+      auto id{ std::stoull(event[0]) };
+
+      bank.mEvents.emplace_back(id, event[1]);
+    }
+
+    for (auto &aSwitch : switches)
+    {
+      auto id{ std::stoull(aSwitch[0]) };
+
+      bank.mSwitchGroups[aSwitch[2]].emplace_back(id, aSwitch[1]);
+    }
+
+    for (auto &rtpc : rtpcs)
+    {
+      auto id{ std::stoull(rtpc[0]) };
+
+      bank.mRTPCs.emplace_back(id, rtpc[1]);
+    }
+  }
 
   void WWiseSystem::LoadAllBanks()
   {
@@ -352,20 +472,13 @@ namespace YTE
 
       bank.mName = shortName;
 
-      auto events{ bankIt->FindMember("IncludedEvents") };
-      
-      if (events != bankIt->MemberEnd())
-      {
-        for (auto eventsIt = events->value.Begin(); eventsIt < events->value.End(); ++eventsIt)
-        {
-          std::string idStr{ eventsIt->FindMember("Id")->value.GetString() };
-          std::string nameStr{ eventsIt->FindMember("Name")->value.GetString() };
-      
-          auto id{ std::stoull(idStr) };
-      
-          bank.mEvents.emplace_back(id, nameStr);
-        }
-      }
+
+      auto txtPath{ wwisePath };
+      txtPath /= shortName;
+      txtPath += ".txt";
+      std::string txtFilename{ txtPath.string() };
+
+      ReadTxtFile(txtFilename, bank);
     }
   }
 
