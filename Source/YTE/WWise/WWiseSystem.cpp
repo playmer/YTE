@@ -300,6 +300,11 @@ namespace YTE
     AK::MemoryMgr::Term();
   }
 
+  struct TextFileGarbage
+  {
+
+  };
+
   void WWiseSystem::LoadAllBanks()
   {
     namespace fs = std::experimental::filesystem;
@@ -399,8 +404,6 @@ namespace YTE
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
-    //auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), 0);
-    //std::cout << id << std::endl;
+    auto id = AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
   }
 }

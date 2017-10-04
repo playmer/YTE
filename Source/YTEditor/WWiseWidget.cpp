@@ -9,31 +9,38 @@
 namespace YTE
 {
   SendWWiseEvent::SendWWiseEvent(WWiseSystem *aSystem, 
-                                 std::string &aEvent)
+                                 std::string &aEvent,
+                                 WWiseWidget *aWidget)
     : QPushButton(aEvent.c_str())
     , mEvent(aEvent)
     , mSystem(aSystem)
+    , mWidget(aWidget)
   {
-    mSystem->RegisterObject(OwnerId(), aEvent);
   }
 
   void SendWWiseEvent::clicked()
   {
-    mSystem->SendEvent(mEvent, reinterpret_cast<AkGameObjectID>(this));
+    mSystem->SendEvent(mEvent, OwnerId());
   }
 
   SendWWiseEvent::~SendWWiseEvent()
   {
-    mSystem->DeregisterObject(reinterpret_cast<AkGameObjectID>(this));
   }
 
   WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
     : QWidget(aParent)
     , mEngine(aEngine)
   {
+    std::string name{ "WWiseWidget" };
     mSystem = mEngine->GetComponent<WWiseSystem>();
+    mSystem->RegisterObject(OwnerId(), name);
 
     LoadEvents();
+  }
+
+  WWiseWidget::~WWiseWidget()
+  {
+    mSystem->DeregisterObject(reinterpret_cast<AkGameObjectID>(this));
   }
 
   void WWiseWidget::LoadEvents()
@@ -57,7 +64,9 @@ namespace YTE
 
       for (auto &event : bank.second.mEvents)
       {
-        SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem, event.mName);
+        SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem,
+                                                          event.mName,
+                                                          this);
 
         this->connect(toggleButton,
                       &SendWWiseEvent::released,

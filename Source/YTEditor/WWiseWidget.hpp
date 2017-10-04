@@ -10,28 +10,32 @@
 
 namespace YTE
 {
-  class SendWWiseEvent : public QPushButton
-  {
-  public:
-    SendWWiseEvent(WWiseSystem *aSystem, std::string &aEvent);
-    ~SendWWiseEvent();
-    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
-
-    void clicked();
-  private:
-    WWiseSystem *mSystem;
-    std::string mEvent;
-  };
-
   class WWiseWidget : public QWidget
   {
   public:
     WWiseWidget(QWidget *aParent, Engine *aEngine);
+    ~WWiseWidget();
+
+    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
 
     void LoadEvents();
 
   private:
     Engine *mEngine;
     WWiseSystem *mSystem;
+  };
+
+  class SendWWiseEvent : public QPushButton
+  {
+  public:
+    SendWWiseEvent(WWiseSystem *aSystem, std::string &aEvent, WWiseWidget *aWidget);
+    ~SendWWiseEvent();
+    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mWidget); };
+
+    void clicked();
+  private:
+    WWiseSystem *mSystem;
+    std::string mEvent;
+    WWiseWidget *mWidget;
   };
 }
