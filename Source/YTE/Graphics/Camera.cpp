@@ -142,9 +142,9 @@ namespace YTE
   //       Twist = z
 
 
-  Camera::Camera(Composition *aOwner, 
-                 Space *aSpace,  
-                 RSValue *aProperties) 
+  Camera::Camera(Composition *aOwner,
+    Space *aSpace,
+    RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mCameraTransform(nullptr)
     , mCameraOrientation(nullptr)
@@ -157,6 +157,9 @@ namespace YTE
     , mZoomMax(75.0f)
     , mMoveUp(0.0f)
     , mMoveRight(0.0f)
+    , mPitch(0.0f)
+    , mYaw(0.0f)
+    , mRoll(0.0f)
     , mDt(0.0f)
     , mConstructing(true)
     , mType(CameraType::CameraOrientation) 
@@ -564,21 +567,19 @@ namespace YTE
       }
       case CameraType::Flyby:
       {
-        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(rot.y, rot.x, rot.z);    // yaw pitch roll
-        
+        glm::quat rot = mCameraTransform->GetRotation();
         glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
-        up4 = rotationMatrix * up4;
+        up4 = glm::rotate(rot, up4);
         //up4 = glm::normalize(up4);
 
         glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
-        transVector = rotationMatrix * transVector;
+        transVector = glm::rotate(rot, transVector);
 
         // update camera translation
         mCameraTransform->SetTranslation(mCameraTransform->GetTranslation() + glm::vec3(transVector));
 
         glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
-        unitVector = rotationMatrix * unitVector;
+        unitVector = glm::rotate(rot, unitVector);
         unitVector = glm::normalize(unitVector);
 
         // apply the new target position based on the camera translation
@@ -593,7 +594,7 @@ namespace YTE
         break;
       }
     } 
- 
+
     mGraphicsView->UpdateView(this, view); 
   } 
 
@@ -601,26 +602,13 @@ namespace YTE
   {
     // 0.1f is a generic number, we don't want it to be exactly half of pi, so we take some
     float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
-    glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
 
     // apply rotation
-    rot.x += aPitch;
-    rot.y += aYaw;
-    rot.z += aRoll;
+    mRoll += aRoll;
+    mPitch += aPitch;
+    mYaw += aYaw;
 
-    // clamp pitch to half pi (nearly straight up and down)
-    //if (rot.x >= pidiv2)
-    //{
-    //  rot.x = pidiv2;
-    //}
-    //else if (rot.x <= -pidiv2)
-    //{
-    //  rot.x = -pidiv2;
-    //}
-
-    // Note that the other two axis are free to move without issues, y axis is the only issue 
-
-    mCameraTransform->SetRotation(rot);
+    mCameraTransform->SetRotation(glm::quat(glm::vec3(mPitch, mYaw, mRoll)));
   }
 
   void Camera::UpdateZoom(float aZoom)

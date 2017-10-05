@@ -180,6 +180,10 @@ namespace YTE
     float mMoveUp;
     float mMoveRight;
 
+    float mPitch;
+    float mYaw;
+    float mRoll;
+
     float mDt;
  
  

@@ -56,11 +56,11 @@ namespace YTE
 
   void Orientation::OnRotationChanged(TransformChanged *aEvent)
   {
-    const glm::vec3 forwardReset(0, 0, 1);
+    const glm::vec3 forwardReset(0, 0, -1);
     const glm::vec3 rightReset(1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
 
-    glm::quat rotation = aEvent->Rotation;
+    glm::quat rotation = aEvent->WorldRotation;
     
     mForwardVector = glm::rotate(rotation, forwardReset);
     mRightVector = glm::rotate(rotation, rightReset);
