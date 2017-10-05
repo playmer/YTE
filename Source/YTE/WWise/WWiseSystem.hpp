@@ -51,6 +51,7 @@ namespace YTE
     std::string mName;
     std::vector<AudioPair> mEvents;
     std::unordered_map<std::string, std::pair<AudioPair, std::vector<AudioPair>>> mSwitchGroups;
+    std::unordered_map<std::string, std::pair<AudioPair, std::vector<AudioPair>>> mStateGroups;
     std::vector<AudioPair> mRTPCs;
 
     AkBankID mBankID;
@@ -86,6 +87,9 @@ namespace YTE
 
     void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId);
     void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId);
+
+    void SetState(const std::string &aStateGroup, const std::string &aState);
+    void SetState(u64 aStateGroupId, u64 aStateId);
 
     void SetRTPC(const std::string &aRTPC, float aValue);
     float GetRTPC(const std::string &aRTPC);

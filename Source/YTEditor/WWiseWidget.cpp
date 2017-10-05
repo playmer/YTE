@@ -14,20 +14,28 @@ namespace YTE
   class SetWWiseSwitch : public QComboBox
   {
   public:
-    SetWWiseSwitch(QWidget *aOwner, u64 aSwitchGroupId, WWiseSystem *aSystem, WWiseWidget *aWidget)
+    SetWWiseSwitch(QWidget *aOwner, u64 aGroupId, WWiseSystem *aSystem, WWiseWidget *aWidget, bool aSwitch)
       : QComboBox(aOwner)
-      , mSwitchGroupId(aSwitchGroupId)
+      , mGroupId(aGroupId)
       , mSystem(aSystem)
       , mWidget(aWidget)
+      , mSwitch(aSwitch)
     {
 
     }
 
-    void SetCurrentSwitch()
+    void SetCurrentSwitchOrState()
     {
       auto id = this->currentData().toULongLong();
 
-      mSystem->SetSwitch(mSwitchGroupId, id, OwnerId());
+      if (mSwitch)
+      {
+        mSystem->SetSwitch(mGroupId, id, OwnerId());
+      }
+      else
+      {
+        mSystem->SetState(mGroupId, id);
+      }
     }
 
     ~SetWWiseSwitch()
@@ -40,13 +48,14 @@ namespace YTE
     void indexChanged(int aIndex)
     {
       YTEUnusedArgument(aIndex);
-      SetCurrentSwitch();
+      SetCurrentSwitchOrState();
     }
 
   private:
     WWiseSystem *mSystem;
-    u64 mSwitchGroupId;
+    u64 mGroupId;
     WWiseWidget *mWidget;
+    bool mSwitch;
   };
 
   class SendWWiseEvent : public QPushButton
@@ -83,7 +92,7 @@ namespace YTE
   };
 
   WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
-    : QWidget(aParent)
+    : QScrollArea(aParent)
     , mEngine(aEngine)
   {
     std::string name{ "WWiseWidget" };
@@ -108,73 +117,128 @@ namespace YTE
 
     for (auto &bank : banks)
     {
-      if (0 == bank.second.mEvents.size())
-      {
-        continue;
-      }
-
       auto bankGroupBox = new QGroupBox(bank.second.mName.c_str(), this);
       QVBoxLayout *bankVbox = new QVBoxLayout(bankGroupBox);
 
-      auto switchGroupGroupBox = new QGroupBox("Switch Groups", bankGroupBox);
-      QVBoxLayout *switchGroupVbox = new QVBoxLayout(switchGroupGroupBox);
-      for (auto &switchGroup : bank.second.mSwitchGroups)
+      /////////////////////////////////////////////////////////////////////////////
+      // Switches
+      /////////////////////////////////////////////////////////////////////////////
+      QGroupBox *switchGroupGroupBox = nullptr;
+
+      if (bank.second.mSwitchGroups.size())
       {
-        auto dummy = new QWidget(switchGroupGroupBox);
-        auto hbox = new QHBoxLayout(dummy);
-
-        hbox->addWidget(new QLabel(switchGroup.first.c_str(), dummy));
-
-        auto comboBox = new SetWWiseSwitch(dummy,
-                                           switchGroup.second.first.mId, 
-                                           mSystem, 
-                                           this);
-
-
-
-        for (auto &aSwitch : switchGroup.second.second)
+        switchGroupGroupBox = new QGroupBox("Switch Groups", bankGroupBox);
+        QVBoxLayout *switchGroupVbox = new QVBoxLayout(switchGroupGroupBox);
+        for (auto &switchGroup : bank.second.mSwitchGroups)
         {
-          comboBox->addItem(aSwitch.mName.c_str(), aSwitch.mId);
+          auto dummy = new QWidget(switchGroupGroupBox);
+          auto hbox = new QHBoxLayout(dummy);
+
+          hbox->addWidget(new QLabel(switchGroup.first.c_str(), dummy));
+
+          auto comboBox = new SetWWiseSwitch(dummy,
+            switchGroup.second.first.mId,
+            mSystem,
+            this,
+            true);
+
+
+
+          for (auto &aSwitch : switchGroup.second.second)
+          {
+            comboBox->addItem(aSwitch.mName.c_str(), aSwitch.mId);
+          }
+
+          comboBox->SetCurrentSwitchOrState();
+
+          this->connect(static_cast<QComboBox*>(comboBox),
+            static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+            comboBox,
+            &SetWWiseSwitch::indexChanged);
+
+          hbox->addWidget(comboBox);
+
+          dummy->setLayout(hbox);
+
+          switchGroupVbox->addWidget(dummy);
         }
-
-        comboBox->SetCurrentSwitch();
-
-        this->connect(static_cast<QComboBox*>(comboBox),
-                      static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-                      comboBox,
-                      &SetWWiseSwitch::indexChanged);
-
-        hbox->addWidget(comboBox);
-
-        dummy->setLayout(hbox);
-
-        switchGroupVbox->addWidget(dummy);
+        switchGroupVbox->addStretch(1);
+        bankVbox->addWidget(switchGroupGroupBox);
       }
-      switchGroupVbox->addStretch(1);
 
-      auto eventGroupBox = new QGroupBox("Events", bankGroupBox);
-      QVBoxLayout *eventVbox = new QVBoxLayout(eventGroupBox);
-      for (auto &event : bank.second.mEvents)
+      /////////////////////////////////////////////////////////////////////////////
+      // States
+      /////////////////////////////////////////////////////////////////////////////
+      QGroupBox *stateGroupGroupBox = nullptr;
+
+      if (bank.second.mStateGroups.size())
       {
-        SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem,
-                                                          event.mName,
-                                                          event.mId,
-                                                          this);
+        stateGroupGroupBox = new QGroupBox("State Groups", bankGroupBox);
+        QVBoxLayout *stateGroupVbox = new QVBoxLayout(stateGroupGroupBox);
+        for (auto &stateGroup : bank.second.mStateGroups)
+        {
+          auto dummy = new QWidget(stateGroupGroupBox);
+          auto hbox = new QHBoxLayout(dummy);
 
-        this->connect(toggleButton,
-                      &SendWWiseEvent::released,
-                      toggleButton,
-                      &SendWWiseEvent::clicked);
+          hbox->addWidget(new QLabel(stateGroup.first.c_str(), dummy));
 
-        eventVbox->addWidget(toggleButton);
+          auto comboBox = new SetWWiseSwitch(dummy,
+            stateGroup.second.first.mId,
+            mSystem,
+            this,
+            false);
+
+          for (auto &state : stateGroup.second.second)
+          {
+            comboBox->addItem(state.mName.c_str(), state.mId);
+          }
+
+          comboBox->SetCurrentSwitchOrState();
+
+          this->connect(static_cast<QComboBox*>(comboBox),
+                        static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                        comboBox,
+                        &SetWWiseSwitch::indexChanged);
+
+          hbox->addWidget(comboBox);
+
+          dummy->setLayout(hbox);
+
+          stateGroupVbox->addWidget(dummy);
+        }
+        stateGroupVbox->addStretch(1);
+        bankVbox->addWidget(stateGroupGroupBox);
       }
-      eventVbox->addStretch(1);
+
+      /////////////////////////////////////////////////////////////////////////////
+      // Events
+      /////////////////////////////////////////////////////////////////////////////
+      QGroupBox *eventGroupBox = nullptr;
+
+      if (bank.second.mEvents.size())
+      {
+        eventGroupBox = new QGroupBox("Events", bankGroupBox);
+        QVBoxLayout *eventVbox = new QVBoxLayout(eventGroupBox);
+        for (auto &event : bank.second.mEvents)
+        {
+          SendWWiseEvent *toggleButton = new SendWWiseEvent(mSystem,
+                                                            event.mName,
+                                                            event.mId,
+                                                            this);
+
+          this->connect(toggleButton,
+                        &SendWWiseEvent::released,
+                        toggleButton,
+                        &SendWWiseEvent::clicked);
+
+          eventVbox->addWidget(toggleButton);
+        }
+        eventVbox->addStretch(1);
+        bankVbox->addWidget(eventGroupBox);
+      }
 
       //bankVbox->addWidget(rtpcGroupBox);
-      bankVbox->addWidget(switchGroupGroupBox);
-      bankVbox->addWidget(eventGroupBox);
       bankVbox->addStretch(1);
-
 
       bankGroupBox->setLayout(bankVbox);
 

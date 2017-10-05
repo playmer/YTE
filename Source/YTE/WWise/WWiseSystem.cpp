@@ -305,6 +305,8 @@ namespace YTE
     static std::string Events{ "Event" };
     static std::string Switches{ "Switch" };
     static std::string SwitchGroups{ "Switch Group" };
+    static std::string States{ "State" };
+    static std::string StateGroups{ "State Group" };
     static std::string RTPCs{ "Game Parameter" };
   }
 
@@ -345,6 +347,8 @@ namespace YTE
     std::vector<std::vector<std::string>> events;       // Event
     std::vector<std::vector<std::string>> switches;     // Switch
     std::vector<std::vector<std::string>> switchGroups; // Switch Group
+    std::vector<std::vector<std::string>> states;     // Switch
+    std::vector<std::vector<std::string>> stateGroups; // Switch Group
     std::vector<std::vector<std::string>> rtpcs;        // Game Parameter
 
     std::vector<std::vector<std::string>> otherTopLevel;
@@ -368,6 +372,14 @@ namespace YTE
         {
           current = &switchGroups;
         }
+        else if (WWiseStatics::States == line[0])
+        {
+          current = &states;
+        }
+        else if (WWiseStatics::StateGroups == line[0])
+        {
+          current = &stateGroups;
+        }
         else if (WWiseStatics::RTPCs == line[0])
         {
           current = &rtpcs;
@@ -387,6 +399,8 @@ namespace YTE
     RemoveEmptyStrings(events);
     RemoveEmptyStrings(switches);
     RemoveEmptyStrings(switchGroups);
+    RemoveEmptyStrings(states);
+    RemoveEmptyStrings(stateGroups);
     RemoveEmptyStrings(rtpcs);
     RemoveEmptyStrings(otherTopLevel);
     RemoveEmptyStrings(other);
@@ -414,6 +428,24 @@ namespace YTE
 
       group.first.mId = id;
       group.first.mName = switchGroup[1];
+      SortAudioPairs(group.second);
+    }
+
+    for (auto &state : states)
+    {
+      auto id{ std::stoull(state[0]) };
+
+      bank.mStateGroups[state[2]].second.emplace_back(id, state[1]);
+    }
+
+    for (auto &stateGroup : stateGroups)
+    {
+      auto id{ std::stoull(stateGroup[0]) };
+
+      auto &group = bank.mStateGroups[stateGroup[1]];
+
+      group.first.mId = id;
+      group.first.mName = stateGroup[1];
       SortAudioPairs(group.second);
     }
 
@@ -461,22 +493,39 @@ namespace YTE
     auto &info = document["SoundBanksInfo"];
     auto banks = info.FindMember("SoundBanks");
 
+    std::vector<std::pair<std::string, std::string>> bankAndShortName;
+
+    // Retreive banks from the Json file.
     for (auto bankIt = banks->value.Begin(); bankIt < banks->value.End(); ++bankIt)
     {
       std::string bankFilename{ bankIt->FindMember("Path")->value.GetString() };
       std::string shortName{ bankIt->FindMember("ShortName")->value.GetString() };
 
+      bankAndShortName.emplace_back(bankFilename, shortName);
+    }
+
+    // Make sure Init is the first bank we load.
+    for (auto &bankNames : bankAndShortName)
+    {
+      if ("Init" == bankNames.second && bankAndShortName[0].second != bankNames.second)
+      {
+        std::swap(bankNames, bankAndShortName[0]);
+      }
+    }
+
+    // Load the banks and their txt files.
+    for (auto &bankNames : bankAndShortName)
+    {
       auto bankPath{ wwisePath };
-      bankPath /= bankFilename;
-      bankFilename = bankPath.string();
+      bankPath /= bankNames.first;
+      std::string bankFilename = bankPath.string();
 
       auto &bank{ LoadBank(bankFilename) };
 
-      bank.mName = shortName;
-
+      bank.mName = bankNames.second;
 
       auto txtPath{ wwisePath };
-      txtPath /= shortName;
+      txtPath /= bankNames.second;
       txtPath += ".txt";
       std::string txtFilename{ txtPath.string() };
 
@@ -535,5 +584,15 @@ namespace YTE
   void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
   {
     AK::SoundEngine::SetSwitch(aSwitchGroupId, aSwitchId, aId);
+  }
+
+  void WWiseSystem::SetState(const std::string &aStateGroup, const std::string &aState)
+  {
+    AK::SoundEngine::SetState(aStateGroup.c_str(), aState.c_str());
+  }
+  
+  void WWiseSystem::SetState(u64 aStateGroupId, u64 aStateId)
+  {
+    AK::SoundEngine::SetState(aStateGroupId, aStateId);
   }
 }
