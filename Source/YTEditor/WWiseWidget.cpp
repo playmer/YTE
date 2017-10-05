@@ -1,3 +1,4 @@
+#include <QLineEdit>
 #include <QComboBox>
 #include <QPushButton>
 #include <QGroupBox>
@@ -56,6 +57,37 @@ namespace YTE
     u64 mGroupId;
     WWiseWidget *mWidget;
     bool mSwitch;
+  };
+
+  class SetWWiseRTPC : public QLineEdit
+  {
+  public:
+    SetWWiseRTPC(QWidget *aOwner, u64 aRTPCId, WWiseSystem *aSystem)
+      : QLineEdit(aOwner)
+      , mRTPCId(aRTPCId)
+      , mSystem(aSystem)
+    {
+      this->setValidator(new QDoubleValidator(this));
+    }
+
+    void SetRTPC(float aValue)
+    {
+      mSystem->SetRTPC(mRTPCId, aValue);
+    }
+
+    ~SetWWiseRTPC()
+    {
+
+    }
+
+    void changedText(const QString &aText)
+    {
+      SetRTPC(aText.toFloat());
+    }
+
+  private:
+    WWiseSystem *mSystem;
+    u64 mRTPCId;
   };
 
   class SendWWiseEvent : public QPushButton
@@ -119,6 +151,43 @@ namespace YTE
     {
       auto bankGroupBox = new QGroupBox(bank.second.mName.c_str(), this);
       QVBoxLayout *bankVbox = new QVBoxLayout(bankGroupBox);
+
+      /////////////////////////////////////////////////////////////////////////////
+      // RTPCs
+      /////////////////////////////////////////////////////////////////////////////
+      QGroupBox *rtpcGroupBox = nullptr;
+
+      if (bank.second.mRTPCs.size())
+      {
+        rtpcGroupBox = new QGroupBox("Game Parameters", bankGroupBox);
+        QVBoxLayout *rtpcGroupVbox = new QVBoxLayout(rtpcGroupBox);
+        for (auto &rtpc : bank.second.mRTPCs)
+        {
+          auto dummy = new QWidget(rtpcGroupBox);
+          auto hbox = new QHBoxLayout(dummy);
+
+          hbox->addWidget(new QLabel(rtpc.mName.c_str(), dummy));
+
+          auto lineEdit = new SetWWiseRTPC(dummy,
+                                           rtpc.mId,
+                                           mSystem);
+
+          lineEdit->SetRTPC(0.0f);
+
+          this->connect(static_cast<QLineEdit*>(lineEdit),
+                        static_cast<void (QLineEdit::*)(const QString &)>(&QLineEdit::textChanged),
+                        lineEdit,
+                        &SetWWiseRTPC::changedText);
+
+          hbox->addWidget(lineEdit);
+
+          dummy->setLayout(hbox);
+
+          rtpcGroupVbox->addWidget(dummy);
+        }
+        rtpcGroupVbox->addStretch(1);
+        bankVbox->addWidget(rtpcGroupBox);
+      }
 
       /////////////////////////////////////////////////////////////////////////////
       // Switches

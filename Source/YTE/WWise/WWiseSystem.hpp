@@ -92,7 +92,7 @@ namespace YTE
     void SetState(u64 aStateGroupId, u64 aStateId);
 
     void SetRTPC(const std::string &aRTPC, float aValue);
-    float GetRTPC(const std::string &aRTPC);
+    void SetRTPC(u64 aRTPC, float aValue);
 
     bool GetMute();
     void SetMute(bool aMute);
@@ -105,7 +105,6 @@ namespace YTE
 
     void ReadTxtFile(std::string &aFile, AudioBank &bank);
 
-    std::unordered_map<std::string, float> mRTPCs;
     std::unordered_map<std::string, AudioBank> mBanks;
 
     bool mPaused = false;

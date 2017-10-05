@@ -44,8 +44,8 @@ namespace YTE
     YTERegisterType(WWiseSystem);
 
     YTEBindProperty(&WWiseSystem::GetMute, &WWiseSystem::SetMute, "Mute");
-    YTEBindFunction(&WWiseSystem::SetRTPC, YTENoOverload, "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
-    YTEBindFunction(&WWiseSystem::GetRTPC, YTENoOverload, "GetRTPC", YTEParameterNames("aRTPC"));
+    YTEBindFunction(&WWiseSystem::SetRTPC, (void (WWiseSystem::*) (u64, float)), "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
+    YTEBindFunction(&WWiseSystem::SetRTPC, (void (WWiseSystem::*) (const std::string&, float)), "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
   }
 
   // We're using the default Low-Level I/O implementation that's part
@@ -249,22 +249,12 @@ namespace YTE
 
   void WWiseSystem::SetRTPC(const std::string &aRTPC, float aValue)
   {
-    mRTPCs[aRTPC] = aValue;
     AK::SoundEngine::SetRTPCValue(aRTPC.c_str(), aValue);
   }
 
-  float WWiseSystem::GetRTPC(const std::string &aRTPC)
+  void WWiseSystem::SetRTPC(u64 aRTPC, float aValue)
   {
-    auto rtpc = mRTPCs.find(aRTPC);
-
-    if (rtpc != mRTPCs.end())
-    {
-      return rtpc->second;
-    }
-    else
-    {
-      return -1.0f;
-    }
+    AK::SoundEngine::SetRTPCValue(aRTPC, aValue);
   }
 
   void WWiseSystem::Update(float)
@@ -495,7 +485,7 @@ namespace YTE
 
     std::vector<std::pair<std::string, std::string>> bankAndShortName;
 
-    // Retreive banks from the Json file.
+    // Retrieve banks from the JSON file.
     for (auto bankIt = banks->value.Begin(); bankIt < banks->value.End(); ++bankIt)
     {
       std::string bankFilename{ bankIt->FindMember("Path")->value.GetString() };
