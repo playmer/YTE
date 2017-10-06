@@ -28,19 +28,31 @@ namespace YTE
     //mPrimitiveBatcher.End();
   }
 
-  void DebugDrawer::drawLine(const btVector3 &aFrom, const btVector3 &aTo, const btVector3 &aFromColor, const btVector3 & aToColor)
+  void DebugDrawer::drawLine(const btVector3 &aFrom, const btVector3 &aTo, const btVector3 &aFromColor, const btVector3 &aToColor)
   {
+    YTEUnusedArgument(aFrom);
+    YTEUnusedArgument(aTo);
+    YTEUnusedArgument(aFromColor);
+    YTEUnusedArgument(aToColor);
     //mPrimitiveBatcher.drawLine(BtToOurVec3(aFrom), BtToOurVec3(aTo), BtToOurVec3(aFromColor), BtToOurVec3(aToColor));
   }
 
-  void DebugDrawer::drawLine(const btVector3 & aFrom, const btVector3 & aTo, const btVector3 & aColor)
+  void DebugDrawer::drawLine(const btVector3 &aFrom, const btVector3 &aTo, const btVector3 &aColor)
   {
+    YTEUnusedArgument(aFrom);
+    YTEUnusedArgument(aTo);
+    YTEUnusedArgument(aColor);
     //mPrimitiveBatcher.drawLine(BtToOurVec3(aFrom), BtToOurVec3(aTo), BtToOurVec3(aColor));
   }
 
-  void DebugDrawer::drawTriangle(const btVector3 & a, const btVector3 & b, const btVector3 & c, const btVector3 & color, btScalar alpha)
+  void DebugDrawer::drawTriangle(const btVector3 &aA, const btVector3 &aB, const btVector3 &aC, const btVector3 &aColor, btScalar aAlpha)
   {
-    //mPrimitiveBatcher.drawTriangle(BtToOurVec3(a), BtToOurVec3(b), BtToOurVec3(c), BtToOurVec3(color), alpha);
+    YTEUnusedArgument(aA);
+    YTEUnusedArgument(aB);
+    YTEUnusedArgument(aC);
+    YTEUnusedArgument(aColor);
+    YTEUnusedArgument(aAlpha);
+    //mPrimitiveBatcher.drawTriangle(BtToOurVec3(aA), BtToOurVec3(aB), BtToOurVec3(aC), BtToOurVec3(aColor), aAlpha);
   }
     
   void DebugDrawer::reportErrorWarning(const char * warningString)
@@ -48,13 +60,26 @@ namespace YTE
     std::cout << "Bullet Reported Warning: " << warningString << std::endl;
   }
 
-  void DebugDrawer::draw3dText(const btVector3 & location, const char * textString)
+  void DebugDrawer::draw3dText(const btVector3 &aLocation, const char *aTextString)
   {
+    YTEUnusedArgument(aLocation);
+    YTEUnusedArgument(aTextString);
   }
 
-  void DebugDrawer::setDebugMode(int debugMode)
+  void DebugDrawer::setDebugMode(int aDebugMode)
   {
+    YTEUnusedArgument(aDebugMode);
   }
+
+
+  void DebugDrawer::drawContactPoint(const btVector3& aPointOnB, const btVector3& aNormalOnB, btScalar aDistance, int aLifeTime, const btVector3& aColor)
+  {
+    YTEUnusedArgument(aPointOnB);
+    YTEUnusedArgument(aNormalOnB);
+    YTEUnusedArgument(aDistance);
+    YTEUnusedArgument(aLifeTime);
+    YTEUnusedArgument(aColor);
+  };
 }
 
 // TODO (Josh): Fix enum binding

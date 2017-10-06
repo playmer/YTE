@@ -24,7 +24,7 @@ Target_Link_Libraries(YTE glslang)
 Target_Link_Libraries(YTE LuaJIT)
 Target_Link_Libraries(YTE STB_Image)
 Target_Link_Libraries(YTE vkel)
-Target_Link_Libraries(YTE VkHLF)
+Target_Link_Libraries(YTE VkHLF) 
 Target_Link_Libraries(YTE "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib" ) 
 
 Set_Target_Properties(YTE
@@ -42,3 +42,5 @@ ForEach(library ${StaticLibrariesDebug})
 EndForEach()
 
 Target_Link_Libraries(YTE ${StaticLibraries})
+
+Target_Compile_Options(YTE PRIVATE -permissive- -std:c++17 -WX- -W4)

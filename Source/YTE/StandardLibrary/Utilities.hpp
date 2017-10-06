@@ -12,6 +12,9 @@
 #include <string>
 #include <unordered_map>
 
+#define enum_cast(aEnum) static_cast<size_t>(aEnum)
+#define YTEUnusedArgument(aArgument) (void)aArgument
+
 namespace YTE
 {
   using byte = std::uint8_t;

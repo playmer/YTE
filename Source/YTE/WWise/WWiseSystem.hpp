@@ -18,9 +18,9 @@
 
 #include "YTE/Core/Component.hpp"
 
-
-
 #include "YTE/Meta/Type.hpp"
+
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 #include "YTE/Utilities/String/String.h"
 
@@ -28,29 +28,33 @@ namespace YTE
 {
   struct AudioBank
   {
-    std::vector<String> mEvents;
-    std::vector<String> mSwitchGroup;
+    struct AudioPair
+    {
+      AudioPair()
+        : mId(0)
+        , mName()
+      {
 
-    //All the Game param in the bank file itself in strings
-    std::vector<String> mGameParams;
+      }
+
+      AudioPair(u64 aId, std::string &aName)
+        : mId(aId)
+        , mName(aName)
+      {
+
+      }
+
+      u64 mId;
+      std::string mName;
+    };
+
+    std::string mName;
+    std::vector<AudioPair> mEvents;
+    std::unordered_map<std::string, std::pair<AudioPair, std::vector<AudioPair>>> mSwitchGroups;
+    std::unordered_map<std::string, std::pair<AudioPair, std::vector<AudioPair>>> mStateGroups;
+    std::vector<AudioPair> mRTPCs;
 
     AkBankID mBankID;
-    //1st = Switch Group, 2nd = Switches
-    std::unordered_map <String, std::vector<String>> mSwitches;
-  };
-
-
-  struct SwitchGroup
-  {
-    std::string name;
-    std::string switches;
-  };
-
-  struct SoundMaterial
-  {
-    std::string EventName;
-    std::vector<SwitchGroup> EventChanger;
-    bool called;
   };
 
   class WWiseSystem : public Component
@@ -62,56 +66,52 @@ namespace YTE
 
     WWiseSystem(Composition *aOwner, RSValue *aProperties);
 
-    virtual void Initialize();
+    virtual void Initialize() override;
     // Updates the system to the current frame.
-    virtual void Update(float);
+    void Update(float);
 
     // Cleans up anything in the system.
     virtual ~WWiseSystem();
 
+    void RegisterObject(AkGameObjectID aId, std::string &aName);
+    void DeregisterObject(AkGameObjectID aId);
 
-    void SetPath(const std::wstring &aPath); //Sets the path for audio files for loading
-    bool LoadBank(const char *aFilename);
-    //void LoadBankText(const char *aFilename);
+    void LoadAllBanks();
+    AudioBank& LoadBank(const std::string &aFilename);
 
     void UnloadBank(const std::string &aBankName);
     void UnloadAllBanks();
-    void UnloadBankText(const std::string &file);
 
-    void PrintBankHierarchy();
+    void SendEvent(const std::string &aEvent, AkGameObjectID aId);
+    void SendEvent(u64 aEventId, AkGameObjectID aId);
 
-    void SendEvent(String aEvent, AkGameObjectID aId);
-    void SetRTPC(String aRTPC, float aValue);
-    float GetRTPC(String aRTPC);
+    void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId);
+    void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId);
+
+    void SetState(const std::string &aStateGroup, const std::string &aState);
+    void SetState(u64 aStateGroupId, u64 aStateId);
+
+    void SetRTPC(const std::string &aRTPC, float aValue);
+    void SetRTPC(u64 aRTPC, float aValue);
 
     bool GetMute();
     void SetMute(bool aMute);
 
-      
+    std::unordered_map<std::string, AudioBank>& GetBanks() { return mBanks; }
 
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
 
-    //String mPath;
-    std::unordered_map<String, float> mRTPCs;
+    void ReadTxtFile(std::string &aFile, AudioBank &bank);
 
-    //1st = Bnk name, 2nd = Bank Data
-    std::unordered_map<String, AudioBank> mBanks;
-    std::unordered_map<String, SoundMaterial> mSoundMaterials;
-    std::vector<String> mEvents;
-
-    std::unordered_map<String, AkUniqueID> mEventIds;
-
-    //1st = Event Name, 2nd All the event params from the event
-    std::unordered_map<String, std::vector<String>> mEventParameters;
+    std::unordered_map<std::string, AudioBank> mBanks;
 
     bool mPaused = false;
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
 
     bool mMuted;
-
 
     bool mMinimized = false;
     bool mFocused = false;

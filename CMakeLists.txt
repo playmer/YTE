@@ -39,7 +39,6 @@ Include(${CMake_Include}/YTE_Source_Group.cmake)
 ################################################################################
 If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
-  Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
   Set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /debug:FASTLINK")
 EndIf()
 
@@ -65,7 +64,8 @@ EndIf()
 ################################################################################
 ## Find the external dependencies we'll link to.
 ################################################################################
-FindWWise(Wwise_Static_Libraries_Release
+FindWWise(WWise_SoundEngine
+          Wwise_Static_Libraries_Release
           Wwise_Static_Libraries_Debug
           Wwise_Include_Directory)
 
@@ -86,8 +86,7 @@ If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   Set(StaticLibraries ${StaticLibraries} XInput9_1_0.lib)
 EndIf()
 
-Set(StaticLibrariesRelease ${StaticLibrariesRelease} ${Wwise_Static_Libraries_Release})
-Set(StaticLibrariesDebug ${StaticLibrariesDebug} ${Wwise_Static_Libraries_Debug})
+Set(StaticLibraries ${StaticLibraries} WWise_SoundEngine)
 
 ################################################################################
 ## Call the CMakeLists.txt in our engine folder, and game folder.

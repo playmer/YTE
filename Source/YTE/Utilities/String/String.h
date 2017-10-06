@@ -293,8 +293,11 @@ namespace YTE
 namespace std
 {
   template <>
-  struct hash<YTE::String> : public unary_function<YTE::String, size_t>
+  struct hash<YTE::String>
   {
+    using argument_type = YTE::String;
+    using result_type = size_t;
+    
     size_t operator()(const YTE::String& value) const
     {
       return value.Hash();
@@ -302,8 +305,11 @@ namespace std
   };
 
   template <>
-  struct equal_to<YTE::String> : public unary_function<YTE::String, bool>
+  struct equal_to<YTE::String>
   {
+    using argument_type = YTE::String;
+    using result_type = bool;
+
     bool operator()(const YTE::String& x, const YTE::String& y) const
     {
       return x == y;

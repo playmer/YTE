@@ -12,8 +12,6 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-
-
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
@@ -25,17 +23,19 @@ namespace YTE
   YTEDefineType(WWiseListener)
   {
     YTERegisterType(WWiseListener);
-
   }
 
   WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
+    AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
+
     DeserializeByType<WWiseListener*>(aProperties, this, WWiseListener::GetStaticType());
   }
 
   WWiseListener::~WWiseListener()
   {
+    AK::SoundEngine::UnregisterGameObj(OwnerId());
   }
 
   void WWiseListener::Initialize()
@@ -63,7 +63,7 @@ namespace YTE
   void WWiseListener::OnOrientationChange(const OrientationChanged *aEvent)
   {
     mListenerPosition.SetOrientation(MakeAkVec(aEvent->Forward),
-                                      MakeAkVec(aEvent->Up));
+                                     MakeAkVec(aEvent->Up));
 
     SetListenerPosition();
   }

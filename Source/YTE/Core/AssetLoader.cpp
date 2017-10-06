@@ -69,6 +69,15 @@ namespace YTE
     return path.string();
   }
 
+  std::string Path::GetWWisePath(const Path& aPath, const std::string &aName)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("WWise");
+    path.append(aName);
+
+    return path.string();
+  }
+
   std::string Path::GetShaderPath(const Path& aPath, const std::string &aName)
   {
     fs::path path{ aPath.mPath };
@@ -144,33 +153,35 @@ namespace YTE
       std::string file;
       switch (aType)
       {
-      case Asset::Type::Archetype:
-      {
-        file = Path::GetArchetypePath(aDirectory, aFileName);
-      } break;
-      case Asset::Type::Level:
-      {
-        file = Path::GetLevelPath(aDirectory, aFileName);
-      } break;
-      case Asset::Type::Shader:
-      {
-        file = Path::GetShaderPath(aDirectory, aFileName);
-      } break;
-      case Asset::Type::Mesh:
-      {
-        file = Path::GetModelPath(aDirectory, aFileName);
-      } break;
-      case Asset::Type::Texture:
-      {
-        file = Path::GetTexturePath(aDirectory, aFileName);
-      } break;
-      default:
-      {
-        DebugObjection(true, "That type isn't supported?");
-      } break;
+        case Asset::Type::Archetype:
+        {
+          file = Path::GetArchetypePath(aDirectory, aFileName);
+        } break;
+        case Asset::Type::Level:
+        {
+          file = Path::GetLevelPath(aDirectory, aFileName);
+        } break;
+        case Asset::Type::Shader:
+        {
+          file = Path::GetShaderPath(aDirectory, aFileName);
+        } break;
+        case Asset::Type::Mesh:
+        {
+          file = Path::GetModelPath(aDirectory, aFileName);
+        } break;
+        case Asset::Type::Texture:
+        {
+          file = Path::GetTexturePath(aDirectory, aFileName);
+        } break;
+        default:
+        {
+          DebugObjection(true, "That type isn't supported?");
+        } break;
       }
       std::vector<byte> data = LoadBinaryFile(file);
       mapContainer.insert(std::make_pair(aFileName, std::make_shared<Asset>(aDirectory, aFileName, aType, data)));
+
+      return nullptr;
     }
   }
 

@@ -39,7 +39,6 @@
 
 namespace YTE
 {
-
   #define DeclareComponent(component)                                                          \
   do                                                                                           \
   {                                                                                            \
@@ -49,7 +48,7 @@ namespace YTE
     if (it == currComponentFactories.end())                                                    \
     {                                                                                          \
       currComponentFactories.Emplace(##component::GetStaticType(),                             \
-	                                   std::make_unique<ComponentFactory<##component>>(aEngine));\
+                                     std::make_unique<ComponentFactory<##component>>(aEngine));\
     }                                                                                          \
   } while(false)
 
@@ -57,8 +56,6 @@ namespace YTE
 
   void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories)
   {
-    FactoryMap::iterator it;
-
     DeclareComponent(WWiseEmitter);
     DeclareComponent(WWiseListener);
 

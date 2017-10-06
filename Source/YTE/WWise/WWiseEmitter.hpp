@@ -29,7 +29,7 @@ namespace YTE
     ~WWiseEmitter() override;
 
     void Play();
-    void PlayEvent(String aEvent);
+    void PlayEvent(const std::string & aEvent);
 
     void Initialize() override;
 
@@ -44,7 +44,7 @@ namespace YTE
     AkSoundPosition mEmitterPosition;
     int mListenerId;
 
-    String mSound;
+    std::string mSound;
     //bool mPlaying;
     float mVolume;
   };

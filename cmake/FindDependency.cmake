@@ -3,21 +3,60 @@
 # Legal  : All content (C) 2017 DigiPen (USA) Corporation, all rights reserved. 
 # Author : Joshua T. Fisher (2017)
 ################################################################################
-Macro(FindWWise StaticLibrariesRelease StaticLibrariesDebug IncludeDirectory)
-  Set(WWisePath $ENV{WWISESDK})
+Function(FindWWise aTarget)
+  Get_Filename_Component(WWisePath $ENV{WWISESDK} ABSOLUTE) 
  
-  Message(STATUS WWise)
   File(GLOB_RECURSE 
-       StaticLibraryReleaseFiles 
+       CommonFiles 
+       "${WWisePath}/samples/SoundEngine/Common/*.inl"
+       "${WWisePath}/samples/SoundEngine/Common/*.cpp"
+       "${WWisePath}/samples/SoundEngine/Common/*.h"
+       "${WWisePath}/samples/SoundEngine/Common/*.hpp")
+
+  If (${WIN32})
+    Set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
+    
+    File(GLOB_RECURSE 
+         PlatformFiles 
+         "${WWisePath}/samples/SoundEngine/Win32/*.inl"
+         "${WWisePath}/samples/SoundEngine/Win32/*.cpp"
+         "${WWisePath}/samples/SoundEngine/Win32/*.h"
+         "${WWisePath}/samples/SoundEngine/Win32/*.hpp")
+  Else()
+    Set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
+
+    File(GLOB_RECURSE 
+         PlatformFiles 
+         "${WWisePath}/samples/SoundEngine/POSIX/*.inl"
+         "${WWisePath}/samples/SoundEngine/POSIX/*.cpp"
+         "${WWisePath}/samples/SoundEngine/POSIX/*.h"
+         "${WWisePath}/samples/SoundEngine/POSIX/*.hpp")
+  EndIf()
+  
+  Set(WWiseTargetFiles ${CommonFiles} ${PlatformFiles})
+
+  Add_Library(${aTarget} ${WWiseTargetFiles})
+
+  Target_Compile_Definitions(${aTarget} PRIVATE UNICODE)
+  Target_Include_Directories(${aTarget} PRIVATE ${PlatformIncludeDirectory})
+  Target_Include_Directories(${aTarget} PUBLIC ${WWisePath}/include)
+  Target_Include_Directories(${aTarget} PUBLIC ${WWisePath}/samples)
+
+  File(GLOB_RECURSE 
+       StaticLibraryRelease
        "${WWisePath}/x64_vc150/Release/lib"
        "${WWisePath}/x64_vc150/Release/lib/*.lib")
         
   File(GLOB_RECURSE 
-       StaticLibraryDebugFiles 
+       StaticLibraryDebug
        "${WWisePath}/x64_vc150/Debug/lib"
        "${WWisePath}/x64_vc150/Debug/lib/*.lib")
 
-  Set(${StaticLibrariesRelease} ${StaticLibraryReleaseFiles})
-  Set(${StaticLibrariesDebug} ${StaticLibraryDebugFiles})
-  Set(${IncludeDirectory} ${WWisePath}/include)
-EndMacro()
+  ForEach(library ${StaticLibraryRelease})
+    Target_Link_Libraries(${aTarget} optimized ${library})
+  EndForEach()
+    
+  ForEach(library ${StaticLibraryDebug})
+    Target_Link_Libraries(${aTarget} debug ${library})
+  EndForEach()
+EndFunction()

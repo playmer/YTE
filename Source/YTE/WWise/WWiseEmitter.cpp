@@ -49,7 +49,7 @@ namespace YTE
     mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(mSound, OwnerId());
   }
 
-  void WWiseEmitter::PlayEvent(String aEvent)
+  void WWiseEmitter::PlayEvent(const std::string &aEvent)
   {
     mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(aEvent, OwnerId());
   }
