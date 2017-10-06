@@ -3,7 +3,7 @@
 #include <qscrollarea.h>
 #include <qlayout.h>
 #include <QPushButton>
-#include <QScrollArea>
+#include <QWidget>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
@@ -11,7 +11,7 @@
 
 namespace YTE
 {
-  class WWiseWidget : public QScrollArea
+  class WWiseWidget : public QWidget
   {
   public:
     WWiseWidget(QWidget *aParent, Engine *aEngine);
@@ -24,5 +24,14 @@ namespace YTE
   private:
     Engine *mEngine;
     WWiseSystem *mSystem;
+
+    QVBoxLayout *mLayout;
+    QWidget *mSubWidget;
+    QVBoxLayout *mSubWidgetLayout;
+    QScrollArea *mScrollArea;
+
+    void ConstructSubWidgets();
+    
+
   };
 }

@@ -124,12 +124,14 @@ namespace YTE
   };
 
   WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
-    : QScrollArea(aParent)
+    : QWidget(aParent)
     , mEngine(aEngine)
   {
     std::string name{ "WWiseWidget" };
     mSystem = mEngine->GetComponent<WWiseSystem>();
     mSystem->RegisterObject(OwnerId(), name);
+
+    ConstructSubWidgets();
 
     LoadEvents();
   }
@@ -142,10 +144,6 @@ namespace YTE
   void WWiseWidget::LoadEvents()
   {
     auto &banks = mSystem->GetBanks();
-
-    auto layout = new QVBoxLayout(this);
-
-    this->setLayout(layout);
 
     for (auto &bank : banks)
     {
@@ -160,7 +158,11 @@ namespace YTE
       if (bank.second.mRTPCs.size())
       {
         rtpcGroupBox = new QGroupBox("Game Parameters", bankGroupBox);
+
         QVBoxLayout *rtpcGroupVbox = new QVBoxLayout(rtpcGroupBox);
+
+        rtpcGroupBox->setLayout(rtpcGroupVbox);
+
         for (auto &rtpc : bank.second.mRTPCs)
         {
           auto dummy = new QWidget(rtpcGroupBox);
@@ -197,7 +199,11 @@ namespace YTE
       if (bank.second.mSwitchGroups.size())
       {
         switchGroupGroupBox = new QGroupBox("Switch Groups", bankGroupBox);
+
         QVBoxLayout *switchGroupVbox = new QVBoxLayout(switchGroupGroupBox);
+
+        switchGroupGroupBox->setLayout(switchGroupVbox);
+
         for (auto &switchGroup : bank.second.mSwitchGroups)
         {
           auto dummy = new QWidget(switchGroupGroupBox);
@@ -243,6 +249,8 @@ namespace YTE
       if (bank.second.mStateGroups.size())
       {
         stateGroupGroupBox = new QGroupBox("State Groups", bankGroupBox);
+
+
         QVBoxLayout *stateGroupVbox = new QVBoxLayout(stateGroupGroupBox);
         for (auto &stateGroup : bank.second.mStateGroups)
         {
@@ -287,6 +295,8 @@ namespace YTE
       if (bank.second.mEvents.size())
       {
         eventGroupBox = new QGroupBox("Events", bankGroupBox);
+
+
         QVBoxLayout *eventVbox = new QVBoxLayout(eventGroupBox);
         for (auto &event : bank.second.mEvents)
         {
@@ -311,7 +321,28 @@ namespace YTE
 
       bankGroupBox->setLayout(bankVbox);
 
-      layout->addWidget(bankGroupBox);
+      mSubWidgetLayout->addWidget(bankGroupBox);
     }
+  }
+
+  void WWiseWidget::ConstructSubWidgets()
+  {
+    mLayout = new QVBoxLayout(this);
+
+    mScrollArea = new QScrollArea();
+    mScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+
+    mSubWidget = new QWidget(mScrollArea);
+
+    mSubWidgetLayout = new QVBoxLayout(mSubWidget);
+    mSubWidget->setLayout(mSubWidgetLayout);
+
+    mScrollArea->setWidget(mSubWidget);
+
+    mLayout->addWidget(mScrollArea);
+
+    mLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    mScrollArea->setWidgetResizable(true);
+
   }
 }
