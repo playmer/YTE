@@ -131,21 +131,25 @@ namespace YTE
 
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDebugDrawer->Begin();
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDynamicsWorld->debugDrawWorld();
   }
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDebugDrawer->End();
   }
 
   void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDynamicsWorld->stepSimulation(aEvent->Dt, 10);
 
     DispatchCollisionEvents();
@@ -175,16 +179,18 @@ namespace YTE
     }
   }
 
-  void PhysicsSystem::DispatchContactEvent(Composition *mainObject, Composition *otherObject, btPersistentManifold *manifold)
+  void PhysicsSystem::DispatchContactEvent(Composition *aMainObject, Composition *aOtherObject, btPersistentManifold *aManifold)
   {
-    Body *body = mainObject->GetComponent<RigidBody>();
+    YTEUnusedArgument(aManifold);
 
-    if (body == nullptr) body = mainObject->GetComponent<GhostBody>();
-    if (body == nullptr) body = mainObject->GetComponent<CollisionBody>();
+    Body *body = aMainObject->GetComponent<RigidBody>();
+
+    if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
+    if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
       
     if (body)
     {
-      body->AddCollidedThisFrame(otherObject);
+      body->AddCollidedThisFrame(aOtherObject);
     }
   }
 

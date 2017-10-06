@@ -82,6 +82,13 @@ namespace YTE
       u32 ddsSize;
       auto dds = crn_decompress_crn_to_dds(mData.data(), ddsSize);
 
+      mData.clear();
+      mData.resize(ddsSize);
+      memcpy(mData.data(), dds, ddsSize);
+
+      // TODO (Josh): Be sure this is safe.
+      free(dds);
+
       mWidth = info.m_width;
       mHeight = info.m_height;
 

@@ -107,7 +107,9 @@ namespace YTE
 
   void Orientation::LookAtDirectionWithUp(glm::vec3 &aDirection, glm::vec3 &aUp)
   {
-    ///Derived from pseudocode found here:
+    YTEUnusedArgument(aUp);
+
+    ///Derived from pseudo code found here:
     ///http://stackoverflow.com/questions/13014973/quaternion-rotate-to
     /// and actual code from :
     ///http://stackoverflow.com/questions/14337441/looking-at-an-object-with-a-quaternion

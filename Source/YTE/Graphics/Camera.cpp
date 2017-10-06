@@ -78,6 +78,7 @@ namespace YTE
 { 
   static std::vector<std::string> PopulateDropDownList(Component *aComponent) 
   { 
+    YTEUnusedArgument(aComponent);
     return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby" }; 
   } 
    
@@ -164,7 +165,6 @@ namespace YTE
     , mConstructing(true)
     , mType(CameraType::CameraOrientation) 
   { 
-    auto engine = aSpace->GetEngine(); 
     DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
  
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
@@ -277,12 +277,16 @@ namespace YTE
   // Handle the moment a mouse button is pressed
   void Camera::MousePress(MouseButtonEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     //const float zoomSpeed = 1.06f;
     mMouseInitialPosition = aEvent->WorldCoordinates;
   }
 
   void Camera::MousePersist(MouseButtonEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     if (CameraType::Flyby == mType && mMouse->IsButtonDown(Mouse_Buttons::Right))
     {
       if (mKeyboard->IsKeyDown(Keys::W))
@@ -423,17 +427,23 @@ namespace YTE
   }
  
   void Camera::OrientationEvent(OrientationChanged *aEvent) 
-  { 
+  {
+    YTEUnusedArgument(aEvent);
+
     UpdateView(); 
   } 
  
   void Camera::PositionEvent(TransformChanged *aEvent)
-  { 
+  {
+    YTEUnusedArgument(aEvent);
+
     //UpdateView();  no need and other functions need to be calling it anyway
   } 
  
   void Camera::RendererResize(WindowResize *aEvent) 
-  { 
+  {
+    YTEUnusedArgument(aEvent);
+
     UpdateView(); 
   } 
  
@@ -478,8 +488,6 @@ namespace YTE
  
   void Camera::UpdateView() 
   { 
-    auto window = GetSpace()->GetComponent<GraphicsView>()->GetWindow(); 
- 
     auto height = static_cast<float>(mWindow->GetHeight()); 
     auto width  = static_cast<float>(mWindow->GetWidth()); 
  
@@ -600,9 +608,6 @@ namespace YTE
 
   void Camera::UpdateCameraRotation(float aPitch, float aYaw, float aRoll)
   {
-    // 0.1f is a generic number, we don't want it to be exactly half of pi, so we take some
-    float pidiv2 = glm::half_pi<float>() - 0.1f; // used for later
-
     // apply rotation
     mRoll += aRoll;
     mPitch += aPitch;

@@ -74,8 +74,10 @@ namespace YTE
   {
     auto prop = dynamic_cast<Property*>(aObject);
 
-    DebugObjection(aStrGettor == nullptr, "SelectableStrings %s must be passed a valid function pointer"
-    "that returns a vector of strings.  It is currently being passed a nullptr.", prop->GetName());
+    DebugObjection(aStrGettor == nullptr, 
+                   "SelectableStrings %s must be passed a valid function pointer"
+                   "that returns a vector of strings.  It is currently being passed a nullptr.", 
+                   prop->GetName().c_str());
   }
 
   StrGettor DropDownStrings::GetStringGettor()

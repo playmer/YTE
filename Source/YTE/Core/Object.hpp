@@ -205,6 +205,9 @@ namespace YTE
                                                    MetaBoundType aSelf, 
                                                    BoundType *aType)
   {
+    // TODO (Josh): Why is this being passed?.
+    YTEUnusedArgument(aType);
+
     for (auto &property : aMap)
     {
       auto &propertyName = property.second->GetName();

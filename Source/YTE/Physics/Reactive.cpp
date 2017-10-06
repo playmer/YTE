@@ -58,6 +58,7 @@ namespace YTE
 
   void Reactive::OnCollisionStarted(CollisionStarted *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mIsMouseEntered = true;
 
       // Send a MouseEntered event
@@ -67,6 +68,7 @@ namespace YTE
 
   void Reactive::OnCollisionEnded(CollisionEnded *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mIsMouseEntered = false;
 
       // Send a MouseExit event
@@ -76,6 +78,8 @@ namespace YTE
 
   void Reactive::OnMousePress(MouseButtonEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
       // Receive the global mouse click event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
     {
@@ -85,6 +89,8 @@ namespace YTE
 
   void Reactive::OnMouseRelease(MouseButtonEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
       // Receive the global mouse release event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
     {

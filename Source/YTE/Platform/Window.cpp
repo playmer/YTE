@@ -73,9 +73,7 @@ namespace YTE
     auto relativeMousePostion = mousePosisiton - windowPosition;
 
     auto beyond = BeyondExtent(windowSize, relativeMousePostion);
-    auto truth = beyond ? "true" : "false";
-    auto mouseDown = false;
-    mouseDown = mMouse.AnyButtonDown();
+    auto mouseDown = mMouse.AnyButtonDown();
 
     if (beyond && mouseDown)
     {

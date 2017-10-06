@@ -141,7 +141,7 @@ namespace YTE
     va_start(variadicArguments, aFormatString);
 
     char *stringBuffer;
-    u64 newlineReturn = vasprintf(&stringBuffer, aFormatString, variadicArguments);
+    vasprintf(&stringBuffer, aFormatString, variadicArguments);
 
 
     DebugDialog dialog;
@@ -152,20 +152,20 @@ namespace YTE
                                         GetRootWindow(), NULL, windowsData.hInstance, &dialog);
 
 
-    HWND continueWindow = CreateWindow("BUTTON", "Continue",
-                                       WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                                       4, 140, 150, 24,
-                                       mainDebugWindow, (HMENU)DebugErrorDialog::Continue, windowsData.hInstance, 0);
+    CreateWindow("BUTTON", "Continue",
+                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                 4, 140, 150, 24,
+                 mainDebugWindow, (HMENU)DebugErrorDialog::Continue, windowsData.hInstance, 0);
 
-    HWND debugBreakWindow = CreateWindow("BUTTON", "Debug Break",
-                                         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                                         225, 140, 150, 24,
-                                         mainDebugWindow, (HMENU)DebugErrorDialog::DebugBreak, windowsData.hInstance, 0);
+    CreateWindow("BUTTON", "Debug Break",
+                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                 225, 140, 150, 24,
+                 mainDebugWindow, (HMENU)DebugErrorDialog::DebugBreak, windowsData.hInstance, 0);
 
-    HWND abortWindow = CreateWindow("BUTTON", "Abort",
-                                    WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-                                    430, 140, 150, 24,
-                                    mainDebugWindow, (HMENU)DebugErrorDialog::Abort, windowsData.hInstance, 0);
+    CreateWindow("BUTTON", "Abort",
+                 WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+                 430, 140, 150, 24,
+                 mainDebugWindow, (HMENU)DebugErrorDialog::Abort, windowsData.hInstance, 0);
 
     HWND hEdit = CreateWindow("EDIT", "",
                               WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_READONLY,

@@ -44,11 +44,11 @@
 #define K_Z 0x5A
 
 
-#define LBUTTON 0x56
-#define RBUTTON 0x57
-#define MBUTTON 0x58
-#define XBUTTON1 0x59
-#define XBUTTON2 0x5A
+//#define LBUTTON 0x56
+//#define RBUTTON 0x57
+//#define MBUTTON 0x58
+//#define XBUTTON1 0x59
+//#define XBUTTON2 0x5A
 
 ProcessKey(VK_LBUTTON, Mouse_Left)
 ProcessKey(VK_RBUTTON, Mouse_Right)

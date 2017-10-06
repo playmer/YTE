@@ -84,7 +84,6 @@ btVector3 getRayTo(btVector3 aCameraTranslation,
 {
   float top = 1.f;
   float bottom = -1.f;
-  float tanFov = (top - bottom)*0.5f / aNearPlane;
 
   aCameraForward.normalize();
   aCameraForward *= aFarPlane;
@@ -259,14 +258,12 @@ void PhysicsHandler::Remove(YTE::Composition *aComposition)
 {
   auto it = mObjects.find(aComposition);
 
-  if (it == mObjects.end())
+  if (it != mObjects.end())
   {
-    printf("o no\n");
+    mDynamicsWorld->removeCollisionObject(it->second->mGhostBody.get());
+
+    mObjects.erase(it);
   }
-
-  mDynamicsWorld->removeCollisionObject(it->second->mGhostBody.get());
-
-  mObjects.erase(it);
 }
 
 

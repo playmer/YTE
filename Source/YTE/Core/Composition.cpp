@@ -97,6 +97,13 @@ namespace YTE
 
   Composition::~Composition()
   {
+    if (nullptr != mSpace)
+    {
+      CompositionRemoved event;
+      event.mComposition = this;
+
+      mSpace->SendEvent(Events::CompositionRemoved, &event);
+    }
   };
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)

@@ -20,8 +20,10 @@
 
 namespace YTE
 {
-  static std::vector<std::string> PopulateDropDownList(Component * aComp)
+  static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
+    YTEUnusedArgument(aComponent);
+
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
     filesystem::path fsPath = Path::GetGamePath().String();
@@ -148,6 +150,7 @@ namespace YTE
 
   void Model::Update(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     SetUBO();
     mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
     mUpdating = false;

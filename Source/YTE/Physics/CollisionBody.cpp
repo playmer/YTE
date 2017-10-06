@@ -47,8 +47,6 @@ namespace YTE
     auto baseCollider = collider->GetCollider();
     auto collisionShape = baseCollider->getCollisionShape();
 
-    auto transform = mOwner->GetComponent<Transform>();
-
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 
     mCollisionBody = std::make_unique<btCollisionObject>();

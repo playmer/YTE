@@ -45,7 +45,8 @@ namespace YTE
 
     return indices.IsComplete() && 
            extensionsSupported && 
-           swapChainAdequate;
+           swapChainAdequate &&
+           supportsSurface;
   }
 
   bool QueueFamilyIndices::CheckDeviceExtensionSupport(vk::PhysicalDevice aDevice)
