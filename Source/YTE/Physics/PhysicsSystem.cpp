@@ -50,6 +50,8 @@ namespace YTE
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
+    YTEUnusedArgument(aProperties);
+
     mSpace->YTERegister(Events::LogicUpdate, this, &PhysicsSystem::OnLogicUpdate);
 
 

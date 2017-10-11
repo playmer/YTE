@@ -17,16 +17,15 @@ namespace YTE
   {
   public:
     using FunctionSignature = Return(*)(Arguments...);
-    using Invoker = void(*)(void*, Arguments...);
-
+    using Invoker = Return(*)(void*, Arguments...);
 
     // None of this for you.
     inline Delegate(const Delegate &aDelegate) = delete;
 
-    template <typename ObjectType, typename FunctionType, FunctionType aFunction, typename EventType>
-    static void Caller(void *aObject, Arguments... aArguments)
+    template <typename ObjectType, typename FunctionType, FunctionType aFunction>
+    static Return Caller(void *aObject, Arguments... aArguments)
     {
-      (static_cast<ObjectType*>(aObject)->*aFunction)(aArguments...);
+      return (static_cast<ObjectType*>(aObject)->*aFunction)(aArguments...);
     }
 
     template <typename ObjectType>
@@ -43,12 +42,18 @@ namespace YTE
 
     }
 
-    inline void Invoke(Arguments... aArguments)
+    inline Return Invoke(Arguments... aArguments)
     {
-      mCallerFunction(mObject, aArguments...);
+      return mCallerFunction(mObject, aArguments...);
     }
 
-    void *GetObject() const {
+    template<typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    static Delegate From(tObjectType * aObj)
+    {
+      return Delegate(aObj, Caller<tObjectType, tFunctionType, aFunction>);
+    }
+
+    void *GetCallingObject() const {
       return mObject;
     }
 

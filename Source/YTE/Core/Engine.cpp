@@ -15,7 +15,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/Engine.hpp"
-#include "YTE/Core/JobSystem.h"
+#include "YTE/Core/Threading/JobHandle.hpp"
+#include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -76,6 +77,7 @@ namespace YTE
     mComponents.Emplace(ComponentSystem::GetStaticType(), std::make_unique<ComponentSystem>(this, nullptr));
     mComponents.Emplace(WWiseSystem::GetStaticType(), std::make_unique<WWiseSystem>(this, nullptr));
     mComponents.Emplace(GraphicsSystem::GetStaticType(), std::make_unique<GraphicsSystem>(this, nullptr));
+    mComponents.Emplace(JobSystem::GetStaticType(), std::make_unique<JobSystem>(this, nullptr));
 
     namespace fs = std::experimental::filesystem;
 

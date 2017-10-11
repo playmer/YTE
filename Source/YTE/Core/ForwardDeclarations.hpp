@@ -23,6 +23,7 @@ namespace YTE
   template <typename T> class ComponentFactory;
   class ComponentSystem;
   class StringComponentFactory;
+  class JobHandle;
 } // End yte namespace
 
 #endif

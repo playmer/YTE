@@ -79,7 +79,7 @@ namespace YTE
       }
 
       EventDelegate(EventDelegate &&aEventDelegate)
-        : Delegate(std::move(*this))
+        : DelegateType(std::move(*this))
         , mName(aEventDelegate.mName)
         , mHook(std::move(aEventDelegate.mHook), this)
       {
@@ -92,9 +92,9 @@ namespace YTE
       }
 
       template<typename tFunctionType, tFunctionType aFunction, typename tObjectType, typename tEventType>
-      static Delegate From(tObjectType * aObj)
+      static DelegateType From(tObjectType * aObj)
       {
-        return Delegate(aObj, Caller<tFunctionType, aFunction, tObjectType, tEventType>);
+        return DelegateType(aObj, Caller<tFunctionType, aFunction, tObjectType, tEventType>);
       }
 
       const std::string &mName;
@@ -153,7 +153,7 @@ namespace YTE
                              [&aName, &aObject, &callerFunction](const UniqueEvent &aEvent)
       {
         return aEvent->mName == aName && 
-               aEvent->GetObject() == aObject && 
+               aEvent->GetCallingObject() == aObject &&
                aEvent->GetCallerFunction() == callerFunction;
       });
 

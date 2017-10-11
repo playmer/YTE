@@ -69,7 +69,6 @@ namespace YTE
 
     Window* AddWindow(const char *aName);
 
-
     bool KeepRunning() const { return mShouldRun; };
 
     void EndExecution();
