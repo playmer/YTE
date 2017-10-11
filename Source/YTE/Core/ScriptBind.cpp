@@ -13,8 +13,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/Object.hpp"
-#include "YTE/Core/JobSystem.h"
 #include "YTE/Core/TestComponent.hpp"
+#include "YTE/Core/Threading/JobSystem.hpp"
 
 #include "YTE/Core/EventHandler.hpp"
 

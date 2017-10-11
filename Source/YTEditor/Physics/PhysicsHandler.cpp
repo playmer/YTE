@@ -79,12 +79,8 @@ btVector3 getRayTo(btVector3 aCameraTranslation,
                    int aHeight,
                    int aWidth,
                    float aFarPlane,
-                   float aNearPlane,
                    float aFieldOfView)
 {
-  float top = 1.f;
-  float bottom = -1.f;
-
   aCameraForward.normalize();
   aCameraForward *= aFarPlane;
 
@@ -144,8 +140,7 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
                              aEvent->WorldCoordinates.y,
                              mWindow->GetHeight(),
                              mWindow->GetWidth(),
-                             camera->GetFarPlane(),  
-                             camera->GetNearPlane(),
+                             camera->GetFarPlane(),
                              camera->GetFieldOfViewY());
 
   //auto rayTo = rayFrom + (cameraForward * 10000.f);

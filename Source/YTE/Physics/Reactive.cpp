@@ -100,6 +100,8 @@ namespace YTE
 
   void Reactive::OnLogicUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     //TODO (Josh): Fix this.
     //  // Check for collision between owner and mouse position
     //  // Respond based on the collision events that are sent
