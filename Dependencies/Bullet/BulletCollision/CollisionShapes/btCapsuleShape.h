@@ -48,6 +48,7 @@ public:
 	
 	virtual void setMargin(btScalar collisionMargin)
 	{
+    (void)collisionMargin;
 		//don't override the margin for capsules, their entire radius == margin
 	}
 
