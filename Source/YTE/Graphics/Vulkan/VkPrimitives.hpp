@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include <set>
 
 #include "YTE/Core/Utilities.hpp"
@@ -18,6 +19,11 @@ namespace YTE
   class QueueFamilyIndices
   {
   public:
+    QueueFamilyIndices()
+      : mGraphicsFamily(std::numeric_limits<u32>::max())
+    {
+
+    }
 
     static QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice aDevice);
     static void AddRequiredExtension(const char *aExtension);
@@ -31,7 +37,7 @@ namespace YTE
   private:
     static std::vector<const char*> sDeviceExtensions;
 
-    u32 mGraphicsFamily = -1;
+    u32 mGraphicsFamily;
   };
 
 

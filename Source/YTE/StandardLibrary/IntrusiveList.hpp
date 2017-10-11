@@ -150,6 +150,16 @@ namespace YTE
         return mCurrent.mNext->mOwner;
       }
 
+      Hook* NextHook()
+      {
+        return mCurrent.mNext;
+      }
+
+      bool IsNextSame(Hook *aNext)
+      {
+        return mCurrent.mNext == aNext;
+      }
+
     private:
       Hook mCurrent;
     };

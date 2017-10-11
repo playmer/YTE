@@ -22,8 +22,12 @@ namespace YTE
   YTEDefineType(SphereCollider)
   {
     YTERegisterType(SphereCollider);
-    YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius").AddAttribute<EditorProperty>();
-    YTEBindProperty(&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
+    YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+    YTEBindProperty(&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty, "Offset")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&SphereCollider::SetRadius, (void (SphereCollider::*) (float)), "SetRadius", YTEParameterNames("aRadius"))
       .Description() = "Sets the collider scale as a multiple of the scale of the transform";

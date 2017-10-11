@@ -449,7 +449,7 @@ namespace YTE
 
   Window::Window(Engine *aEngine) : mEngine(aEngine)
   {
-    auto self = mData.ConstructAndGet<WindowData>();
+    mData.ConstructAndGet<WindowData>();
   }
 
   void Window::SetWindowId(void *aId)
@@ -590,12 +590,14 @@ namespace YTE
   //////////////////////////////////////////
   // Implementation mostly by Chromium (BSD)
   //////////////////////////////////////////
-  void Window::SetFullscreen(bool fullscreen, bool for_metro)
+  void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
   {
+    YTEUnusedArgument(aForMetro);
+
     auto self = mData.Get<WindowData>();
     ScopedFullscreenVisibility visibility(self->mWindowHandle);
 
-    mFullscreen = fullscreen;
+    mFullscreen = aFullscreen;
 
     if (mFullscreen)
     {

@@ -22,6 +22,23 @@
 
 namespace YTE
 {
+  YTEDefineType(RayCollisionInfo)
+  {
+    YTERegisterType(RayCollisionInfo);
+    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+  }
+
   YTEDefineType(PhysicsSystem)
   {
     YTERegisterType(PhysicsSystem);
@@ -40,11 +57,11 @@ namespace YTE
       // users can create their own configuration .
     mCollisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
       
-      // use the default collision dispatcher . For parallel processing you can use a diffent
+      // use the default collision dispatcher . For parallel processing you can use a different
       //  dispatcher(see Extras / BulletMultiThreaded)
     mDispatcher = std::make_unique<btCollisionDispatcher>(mCollisionConfiguration.get());
       
-      // btDbvtBroadphase is a good general purpose broadphase . You can also try out
+      // btDbvtBroadphase is a good general purpose broad phase . You can also try out
       // btAxis3Sweep .
     mOverlappingPairCache = std::make_unique<btDbvtBroadphase>();
        
@@ -58,6 +75,12 @@ namespace YTE
                                                                 mCollisionConfiguration.get());
       
     mDynamicsWorld->setGravity(btVector3(0, -10, 0));
+  }
+
+
+  PhysicsSystem::~PhysicsSystem()
+  {
+
   }
 
 
@@ -108,21 +131,25 @@ namespace YTE
 
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDebugDrawer->Begin();
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDynamicsWorld->debugDrawWorld();
   }
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDebugDrawer->End();
   }
 
   void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mDynamicsWorld->stepSimulation(aEvent->Dt, 10);
 
     DispatchCollisionEvents();
@@ -152,16 +179,18 @@ namespace YTE
     }
   }
 
-  void PhysicsSystem::DispatchContactEvent(Composition *mainObject, Composition *otherObject, btPersistentManifold *manifold)
+  void PhysicsSystem::DispatchContactEvent(Composition *aMainObject, Composition *aOtherObject, btPersistentManifold *aManifold)
   {
-    Body *body = mainObject->GetComponent<RigidBody>();
+    YTEUnusedArgument(aManifold);
 
-    if (body == nullptr) body = mainObject->GetComponent<GhostBody>();
-    if (body == nullptr) body = mainObject->GetComponent<CollisionBody>();
+    Body *body = aMainObject->GetComponent<RigidBody>();
+
+    if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
+    if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
       
     if (body)
     {
-      body->AddCollidedThisFrame(otherObject);
+      body->AddCollidedThisFrame(aOtherObject);
     }
   }
 
@@ -184,14 +213,5 @@ namespace YTE
     }
 
     return info;
-  }
-
-  YTEDefineType(RayCollisionInfo)
-  {
-    YTERegisterType(RayCollisionInfo);
-    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
-    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
   }
 } // namespace YTE

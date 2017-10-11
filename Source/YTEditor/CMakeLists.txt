@@ -57,6 +57,9 @@ Set(YTEditorSource main.cpp
                    Commands.cpp
                    YTELineEdit.hpp
                    YTECheckBox.hpp
+                   Physics/PhysicsHandler.hpp
+                   Physics/PhysicsHandler.cpp
+                   YTECheckBox.hpp
                    WWiseWidget.hpp
                    WWiseWidget.cpp)
 

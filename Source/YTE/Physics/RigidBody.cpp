@@ -18,15 +18,19 @@ namespace YTE
   YTEDefineType(RigidBody)
   {
     YTERegisterType(RigidBody);
-    YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity").AddAttribute<EditorProperty>();
+    YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
     auto &mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet);
     mass.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    mass.AddAttribute<EditorProperty>();
+    mass.AddAttribute<EditorProperty>()
+        .AddAttribute<Serializable>();
 
     auto &isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet);
     isStatic.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    isStatic.AddAttribute<EditorProperty>();
+    isStatic.AddAttribute<EditorProperty>()
+            .AddAttribute<Serializable>();
 
     YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
       .Description() = "Applys an impulse to the RigidBody.";
@@ -36,41 +40,6 @@ namespace YTE
     YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (float, float, float)), "SetVelocity", YTEParameterNames("aVelX", "aVelY", "aVelZ"))
       .Description() = "Sets the object velocity from three float values";
   }
-
-  class MotionState : public btMotionState
-  {
-  public:
-    MotionState(Transform *aTransform, bool kinematic = false) 
-      : mTransform(aTransform)
-      , mKinematic( kinematic ) { };
-    ///synchronizes world transform from user to physics
-    virtual void	getWorldTransform(btTransform& centerOfMassWorldTrans) const
-    {
-      centerOfMassWorldTrans.setOrigin(OurVec3ToBt(mTransform->GetTranslation()));
-      centerOfMassWorldTrans.setRotation(OurQuatToBt(mTransform->GetRotation()));
-    }
-
-    ///synchronizes world transform from physics to user
-    ///Bullet only calls the update of worldtransform for active objects
-    virtual void	setWorldTransform(const btTransform& centerOfMassWorldTrans)
-    {
-      if (mKinematic)
-        return;
-
-      mTransform->SetTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
-      mTransform->SetRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
-    }
-
-    void SetKinematic(bool flag)
-    {
-      mKinematic = flag;
-    }
-
-  private:
-    Transform *mTransform;
-    bool mKinematic;
-  };
-
 
   RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mMass(1.0f), mStatic(false), mIsInitialized(false)

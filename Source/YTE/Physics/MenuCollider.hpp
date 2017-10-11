@@ -26,8 +26,8 @@ namespace YTE
     MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
-    void OnPositionChanged(PositionChanged *aEvent);
-    void OnScaleChanged(ScaleChanged* aEvent);
+    void OnPositionChanged(TransformChanged *aEvent);
+    void OnScaleChanged(TransformChanged *aEvent);
 
     void PointToBox2D(const glm::vec2& aPoint);
     void PointToBox2D(const glm::vec2& aBox2D, const glm::vec2& aPoint);
@@ -39,13 +39,13 @@ namespace YTE
     const glm::vec3& GetPosition();
 
     // Mutators
-    void SetSize(const glm::vec3& aSize);
+    void SetSize(const glm::vec3 &aSize);
     void SetSize(float aX, float aY, float aZ);
-    void SetOffset(const glm::vec3& aOffset);
+    void SetOffset(const glm::vec3 &aOffset);
     void SetOffset(float aX, float aY, float aZ);
-    void SetScale(const glm::vec3& aScale);
+    void SetScale(const glm::vec3 &aScale);
     void SetScale(float aX, float aY, float aZ);
-    void SetPosition(const glm::vec3& aPosition);
+    void SetPosition(const glm::vec3 &aPosition);
     void SetPosition(float aX, float aY, float aZ);
 
   private:

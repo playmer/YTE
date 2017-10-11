@@ -17,6 +17,24 @@
 
 namespace YTE
 {
+  YTEDefineEvent(CompositionAdded);
+
+  YTEDefineType(CompositionAdded)
+  {
+    YTERegisterType(CompositionAdded);
+
+    YTEBindField(&CompositionAdded::mComposition, "Composition", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(CompositionRemoved);
+
+  YTEDefineType(CompositionRemoved)
+  {
+    YTERegisterType(CompositionRemoved);
+
+    YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
+  }
+
   YTEDefineExternalType(CompositionMap::range)
   {
     YTERegisterType(CompositionMap::range);
@@ -79,6 +97,13 @@ namespace YTE
 
   Composition::~Composition()
   {
+    if (nullptr != mSpace)
+    {
+      CompositionRemoved event;
+      event.mComposition = this;
+
+      mSpace->SendEvent(Events::CompositionRemoved, &event);
+    }
   };
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)
@@ -152,6 +177,15 @@ namespace YTE
 
     mShouldIntialize = false;
     mIsInitialized = true;
+
+
+    CompositionAdded event;
+    event.mComposition = this;
+
+    if (GetType() != Space::GetStaticType())
+    {
+      mSpace->SendEvent(Events::CompositionAdded, &event);
+    }
   }
 
 

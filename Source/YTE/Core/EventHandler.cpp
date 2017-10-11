@@ -24,19 +24,33 @@ namespace YTE {
 
     list.mIterating = true;
 
-    for (auto begin = list.mList.begin(), end = list.mList.end();
-      begin != end;
-      ++begin)
+    auto it = list.mList.begin();
+    auto end = list.mList.end();
+
+    while (it != end)
     {
-      auto &eventDelegate = *begin;
+      // While technically the next hook, this hook pointer represents the delegate we're
+      // about to invoke.
+      auto current = it.NextHook();
+
+      auto &eventDelegate = *it;
       eventDelegate.Invoke(aEvent);
 
       // We need to check to see if we're reached the end due to some number of events
       // (including the current) removing itself from the list.
-      if (begin == end)
+      if (it == end)
       {
         break;
       }
+
+      // We check to see if our current next hook is the same. If it isn't it means an
+      // event has removed itself, so we redo this loop without incrementing.
+      if (false == it.IsNextSame(current))
+      {
+        continue;
+      }
+
+      ++it;
     }
 
     list.mIterating = false;

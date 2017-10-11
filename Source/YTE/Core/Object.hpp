@@ -95,7 +95,7 @@ namespace YTE
         continue;
       }
     
-      if (!namedProperty->GetAttribute<EditorProperty>())
+      if (!namedProperty->GetAttribute<Serializable>())
       {
         std::cout << namedProperty->GetName() << " of Type " << aType->GetName()  
                   << " does not appear to be a serializable property." << std::endl;
@@ -205,12 +205,15 @@ namespace YTE
                                                    MetaBoundType aSelf, 
                                                    BoundType *aType)
   {
+    // TODO (Josh): Why is this being passed?.
+    YTEUnusedArgument(aType);
+
     for (auto &property : aMap)
     {
       auto &propertyName = property.second->GetName();
 
       // If the bound field/property does not have the Property Attribute, do nothing.
-      if (!property.second->GetAttribute<EditorProperty>())
+      if (!property.second->GetAttribute<Serializable>())
       {
         continue;
       }

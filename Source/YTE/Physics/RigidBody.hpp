@@ -20,8 +20,6 @@
 
 namespace YTE
 {
-  class MotionState;
-
   class RigidBody : public Body
   {
   public:

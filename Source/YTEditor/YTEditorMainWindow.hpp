@@ -17,6 +17,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/String/String.h"
 
+#include "Physics/PhysicsHandler.hpp"
+
 class GameWindow;
 class ObjectBrowser;
 class ComponentBrowser;
@@ -97,6 +99,8 @@ private:
   void ConstructMaterialViewer();
   void ConstructFileViewer();
   void ConstructWWiseWidget();
+
+  std::unique_ptr<PhysicsHandler> mPhysicsHandler;
   
   QTabWidget *mCentralTabs;
   GameWindow *mGameWindow;

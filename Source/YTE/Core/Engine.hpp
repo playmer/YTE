@@ -114,6 +114,8 @@ namespace YTE
       return dt;
     }
 
+    size_t GetFrame() { return mFrame; }
+
   private:
     GamepadSystem mGamepadSystem;
 
@@ -131,6 +133,7 @@ namespace YTE
     bool mEditorMode;
 
     float dt;
+    size_t mFrame;
   };
 }
 

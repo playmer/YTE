@@ -54,7 +54,7 @@ namespace YTE
  
  
     void OrientationEvent(OrientationChanged *aEvent); 
-    void PositionEvent(PositionChanged *aEvent); 
+    void PositionEvent(TransformChanged *aEvent); 
  
     void SetNearPlane(float aNearPlane) 
     { 
@@ -149,8 +149,10 @@ namespace YTE
       return glm::vec2(mZoomMin, mZoomMax);
     }
 
+    void Update(LogicUpdate* aEvent);
+
   private:
-    void UpdateCameraRotation(float aTilt, float aTwist, float aSpin);
+    void UpdateCameraRotation(float aPitch, float aYaw, float aRoll);
     void UpdateZoom(float aZoom);
  
   private: 
@@ -172,14 +174,17 @@ namespace YTE
     float mNearPlane; 
     float mFarPlane; 
 
-    float mTilt;
-    float mTwist;
-    float mSpin;
     float mZoom;
     float mZoomMin;
     float mZoomMax;
     float mMoveUp;
     float mMoveRight;
+
+    float mPitch;
+    float mYaw;
+    float mRoll;
+
+    float mDt;
  
  
     bool mConstructing; 

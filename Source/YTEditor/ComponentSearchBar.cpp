@@ -116,7 +116,7 @@ void ComponentSearchBar::AddComponent(QString aCompName)
     YTEditorMainWindow * mainWindow = mComponentTools->GetBrowser().GetMainWindow();
     YTE::Model * model = mainWindow->GetObjectBrowser().GetCurrentObject()->GetComponent<YTE::Model>();
 
-    if (model)
+    if (model && model->GetInstantiatedMesh())
     {
       mainWindow->GetMaterialViewer().LoadMaterial(model->GetInstantiatedMesh()->mMesh->mParts[0].mUBOMaterial);
 

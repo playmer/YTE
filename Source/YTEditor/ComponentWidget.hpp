@@ -20,6 +20,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qstyleditemdelegate.h>
 
+#include "YTE/Core/Utilities.hpp"
+
 template <class T>
 class PropertyWidget;
 
@@ -52,29 +54,29 @@ public:
   std::string const& GetName() const;
 
   // Add, Get, or Remove a property from the component
-  template <typename TYPE>
-  ComponentProperty<TYPE> * AddProperty(const char * aName)
+  template <typename tType>
+  ComponentProperty<tType>* AddPropertyOrField(const std::string &aName, bool aProperty)
   {
-    ComponentProperty<TYPE> * prop = new ComponentProperty<TYPE>(aName, mMainWindow, this);
+    ComponentProperty<tType> * prop = new ComponentProperty<tType>(aName, mMainWindow, this);
     mProperties->addWidget(prop);
-    mPropertyWidgets.push_back(prop);
-    return prop;
-  }
 
-
-  // Add, Get, or Remove a field from the component
-  template <typename TYPE>
-  ComponentProperty<TYPE> * AddField(const char * aName)
-  {
-    ComponentProperty<TYPE> * prop = new ComponentProperty<TYPE>(aName, mMainWindow, this);
-    mProperties->addWidget(prop);
-    mFieldWidgets.push_back(prop);
+    if (aProperty)
+    {
+      mPropertyWidgets.push_back(prop);
+    }
+    else
+    {
+      mFieldWidgets.push_back(prop);
+    }
     return prop;
   }
 
   void RemoveProperty(QWidget * aWidget);
 
   void LoadProperties(YTE::Component & aComponent);
+  void LoadPropertyMap(YTE::Component &aComponent, 
+                       YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
+                       bool aProperty);
 
   void SavePropertiesToEngine();
 

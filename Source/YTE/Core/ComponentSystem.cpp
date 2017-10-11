@@ -25,6 +25,8 @@ namespace YTE
                                    RSValue *aProperties)
     : Component(aOwner, nullptr)
   {
+    YTEUnusedArgument(aProperties);
+
     CoreComponentFactoryInitilization(static_cast<Engine*>(mOwner), mComponentFactories);
     GetOwner()->YTERegister(Events::BoundTypeChanged, this, &ComponentSystem::BoundTypeChangedHandler);
   };
@@ -37,8 +39,6 @@ namespace YTE
     {
       mComponentFactories.ChangeKey(iterator, aEvent->aNewType);
     }
-
-    auto engine = static_cast<Engine*>(GetOwner());
   }
 
   void ComponentSystem::FactorySetup(FactorySetupCallback aFunctionPtr)

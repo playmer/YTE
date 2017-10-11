@@ -23,8 +23,12 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size").AddAttribute<EditorProperty>();
-    YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset").AddAttribute<EditorProperty>();
+    YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
     YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("size"))
       .Description() = "Sets the size of the box collider from a Real3";
@@ -58,12 +62,12 @@ namespace YTE
     mOwner->YTERegister(Events::ScaleChanged, this, &MenuCollider::OnScaleChanged);
   }
 
-  void MenuCollider::OnPositionChanged(PositionChanged *aEvent)
+  void MenuCollider::OnPositionChanged(TransformChanged *aEvent)
   {
     mPosition = aEvent->Position + mOffset;
   }
 
-  void MenuCollider::OnScaleChanged(ScaleChanged* aEvent)
+  void MenuCollider::OnScaleChanged(TransformChanged* aEvent)
   {
     glm::vec3 scale = aEvent->Scale;
 

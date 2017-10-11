@@ -35,7 +35,7 @@ void main()
 {
   outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
-  outNormal = inNormal;
+  outNormal = vec3(inverse(transpose(View.mViewMatrix * Model.mModelMatrix)) * vec4(inNormal, 1.0f));
   
   gl_Position = View.mProjectionMatrix * 
                 View.mViewMatrix       *

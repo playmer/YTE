@@ -25,7 +25,9 @@ namespace YTE
   {
     YTERegisterType(WWiseEmitter);
 
-    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
     YTEBindFunction(&WWiseEmitter::PlayEvent, YTENoOverload, "PlaySound", YTEParameterNames("aSound"));
@@ -76,7 +78,7 @@ namespace YTE
     SetEmitterPosition();
   }
 
-  void WWiseEmitter::OnPositionChange(const PositionChanged *aEvent)
+  void WWiseEmitter::OnPositionChange(const TransformChanged *aEvent)
   {
     mEmitterPosition.SetPosition(MakeAkVec(aEvent->Position));
     SetEmitterPosition();

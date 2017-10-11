@@ -54,13 +54,13 @@ namespace YTE
     mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
   }
 
-  void Orientation::OnRotationChanged(RotationChanged *aEvent)
+  void Orientation::OnRotationChanged(TransformChanged *aEvent)
   {
-    const glm::vec3 forwardReset(0, 0, 1);
+    const glm::vec3 forwardReset(0, 0, -1);
     const glm::vec3 rightReset(1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
 
-    glm::quat rotation = aEvent->Rotation;
+    glm::quat rotation = aEvent->WorldRotation;
     
     mForwardVector = glm::rotate(rotation, forwardReset);
     mRightVector = glm::rotate(rotation, rightReset);
@@ -107,7 +107,9 @@ namespace YTE
 
   void Orientation::LookAtDirectionWithUp(glm::vec3 &aDirection, glm::vec3 &aUp)
   {
-    ///Derived from pseudocode found here:
+    YTEUnusedArgument(aUp);
+
+    ///Derived from pseudo code found here:
     ///http://stackoverflow.com/questions/13014973/quaternion-rotate-to
     /// and actual code from :
     ///http://stackoverflow.com/questions/14337441/looking-at-an-object-with-a-quaternion

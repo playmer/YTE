@@ -33,6 +33,8 @@ namespace YTE
 
   void Body::OnLogicUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     CollisionEvent newEvent;
     newEvent.OtherObject = nullptr;
 

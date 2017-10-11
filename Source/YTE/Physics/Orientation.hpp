@@ -14,6 +14,7 @@
 #include "YTE/Core/Component.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -37,7 +38,7 @@ namespace YTE
     Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
-    void OnRotationChanged(RotationChanged *aEvent);
+    void OnRotationChanged(TransformChanged *aEvent);
 
     const glm::vec3& GetForwardVector() const;
     const glm::vec3& GetRightVector() const;

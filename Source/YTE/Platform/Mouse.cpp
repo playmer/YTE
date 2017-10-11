@@ -65,11 +65,10 @@ namespace YTE
   void Mouse::Update()
   {
     MouseButtonEvent mouseEvent;
+    mouseEvent.WorldCoordinates = mPosition;
 
     for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
     {
-      mouseEvent.WorldCoordinates = mPosition;
-
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
         mouseEvent.Button = static_cast<Mouse_Buttons>(i);
@@ -83,9 +82,6 @@ namespace YTE
 
     if (mPositionChanged)
     {
-      MouseMoveEvent mouseEvent;
-      mouseEvent.WorldCoordinates = mPosition;
-
       SendEvent(Events::MouseMove, &mouseEvent);
       mPositionChanged = false;
     }

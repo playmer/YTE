@@ -10,15 +10,20 @@ namespace YTE
   {
     YTERegisterType(GraphicsView);
 
-    YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet).AddAttribute<EditorProperty>();
+    YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
-    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor").AddAttribute<EditorProperty>();
+    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   GraphicsView::GraphicsView(Composition *aOwner, 
                              Space *aSpace, 
                              RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mLastCamera(nullptr)
     , mWindow(nullptr)
     , mClearColor(0.44f, 0.44f, 0.44f, 1.0f)
   {
@@ -37,8 +42,9 @@ namespace YTE
     SetClearColor(mClearColor);
   }
 
-  void GraphicsView::UpdateView(UBOView &aView)
+  void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
   {
+    mLastCamera = aCamera;
     mRenderer->UpdateViewBuffer(mWindow, aView);
   }
 

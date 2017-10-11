@@ -20,8 +20,10 @@
 
 namespace YTE
 {
-  static std::vector<std::string> PopulateDropDownList(Component * aComp)
+  static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
+    YTEUnusedArgument(aComponent);
+
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
     filesystem::path fsPath = Path::GetGamePath().String();
@@ -48,10 +50,14 @@ namespace YTE
 
     Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh").AddAttribute<EditorProperty>()
-                                                              .AddAttribute<DropDownStrings>(PopulateDropDownList);
+    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload").AddAttribute<EditorProperty>();
+    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -144,16 +150,17 @@ namespace YTE
 
   void Model::Update(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     SetUBO();
     mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
     mUpdating = false;
   }
 
-  void Model::OnPositionChange(const PositionChanged *aEvent)
+  void Model::OnPositionChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mPosition = aEvent->Position;
+      mInstantiatedMesh->mPosition = aEvent->WorldPosition;
     }
 
     if (false == mUpdating)
@@ -163,11 +170,11 @@ namespace YTE
     }
   }
 
-  void Model::OnScaleChange(const ScaleChanged *aEvent)
+  void Model::OnScaleChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mScale = aEvent->Scale;
+      mInstantiatedMesh->mScale = aEvent->WorldScale;
     }
 
     if (false == mUpdating)
@@ -177,11 +184,11 @@ namespace YTE
     }
   }
 
-  void Model::OnRotationChange(const RotationChanged *aEvent)
+  void Model::OnRotationChange(const TransformChanged *aEvent)
   {
     if (mInstantiatedMesh)
     {
-      mInstantiatedMesh->mRotation = aEvent->Rotation;
+      mInstantiatedMesh->mRotation = aEvent->WorldRotation;
     }
 
     if (false == mUpdating)

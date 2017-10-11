@@ -23,17 +23,19 @@ namespace YTE
     GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
-    void UpdateView(UBOView &aView);
+    void UpdateView(Camera *aCamera, UBOView &aView);
 
     Window* GetWindow()
     {
       return mWindow;
     }
 
+    Camera* GetLastCamera() { return mLastCamera; }
     glm::vec4 GetClearColor();
     void SetClearColor(const glm::vec4 &aColor);
 
   private:
+    Camera *mLastCamera;
     Window *mWindow;
     Renderer *mRenderer;
     glm::vec4 mClearColor;

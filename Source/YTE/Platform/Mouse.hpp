@@ -32,7 +32,7 @@ namespace YTE
   public:
     YTEDeclareType(MouseButtonEvent);
 
-    glm::vec2 WorldCoordinates;
+    glm::i32vec2 WorldCoordinates;
     Mouse_Buttons Button;
     Mouse *Mouse;
   };
@@ -43,7 +43,7 @@ namespace YTE
   public:
     YTEDeclareType(MouseWheelEvent);
 
-    glm::vec2 WorldCoordinates;
+    glm::i32vec2 WorldCoordinates;
     glm::vec2 ScrollMovement;
     Mouse *Mouse;
   };
@@ -53,7 +53,7 @@ namespace YTE
   public:
     YTEDeclareType(MouseMoveEvent);
 
-    glm::vec2 WorldCoordinates;
+    glm::i32vec2 WorldCoordinates;
     Mouse *Mouse;
   };
 

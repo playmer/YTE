@@ -53,7 +53,7 @@ namespace YTE
     SetListenerPosition();
   }
 
-  void WWiseListener::OnPositionChange(const PositionChanged *aEvent)
+  void WWiseListener::OnPositionChange(const TransformChanged *aEvent)
   {
     mListenerPosition.SetPosition(MakeAkVec(aEvent->Position));
 

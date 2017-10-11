@@ -20,8 +20,6 @@
 
 namespace YTE
 {
-  class MotionState;
-
   class CollisionBody : public Body
   {
   public:

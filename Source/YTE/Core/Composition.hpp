@@ -26,6 +26,26 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(CompositionAdded);
+
+  class CompositionAdded : public Event
+  {
+  public:
+    YTEDeclareType(CompositionAdded);
+
+    Composition *mComposition;
+  };
+
+  YTEDeclareEvent(CompositionRemoved);
+
+  class CompositionRemoved : public Event
+  {
+  public:
+    YTEDeclareType(CompositionRemoved);
+
+    Composition *mComposition;
+  };
+
   class Composition : public EventHandler
   {
   public:
