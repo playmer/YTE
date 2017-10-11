@@ -486,7 +486,9 @@ public:
 			int littleEndian= 1;
 			littleEndian= ((char*)&littleEndian)[0];
 
-			if (sizeof(void*)==8)
+      const bool ptrCheck = sizeof(void*) == 8;
+
+			if (ptrCheck)
 			{
 				buffer[7] = '-';
 			} else

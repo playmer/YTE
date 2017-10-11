@@ -43,7 +43,7 @@ subject to the following restrictions:
 #if __cplusplus > 199711L
 #define BT_REGISTER
 #else
-#define BT_REGISTER register
+#define BT_REGISTER 
 #endif
 
 ///The btAlignedObjectArray template class uses a subset of the stl::vector interface for its methods
