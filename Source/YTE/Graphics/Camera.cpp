@@ -65,23 +65,18 @@
  *    Scrolling is the Z axis, -Z is scroll out (toward your body), Z is scroll in (towards screen)
  */
 
+ // NOTE: Spin = x
+ //       Tilt = y
+ //       Twist = z
 
-
-static const float moveSpeed = 25.0f;
-static const float rotationSpeed = 0.25f;
-static const float zoomSpeed = 100.0f;
-static const float panSpeed = 5.0f;
-
-
- 
 namespace YTE 
 { 
   static std::vector<std::string> PopulateDropDownList(Component *aComponent) 
   { 
     YTEUnusedArgument(aComponent);
     return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby" }; 
-  } 
-   
+  }
+
   YTEDefineType(Camera) 
   { 
     YTERegisterType(Camera); 
@@ -128,25 +123,42 @@ namespace YTE
                         " - TargetPoint: The camera will always face the chosen target point.\n" 
                         " - CameraOrientation: The camera will always face in the direction the orientation component suggests.\n"
                         " - Flyby: The camera behaves like an FPS, where it uses WASD."); 
+    
+    YTEBindProperty(&Camera::GetPanSpeed, &Camera::SetPanSpeed, "Pan Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the pan speed of the camera");
 
+    YTEBindProperty(&Camera::GetScrollSpeed, &Camera::SetScrollSpeed, "Scroll Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the Scroll speed of the camera");
+
+    YTEBindProperty(&Camera::GetMoveSpeed, &Camera::SetMoveSpeed, "Move Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the Move speed of the camera");
+
+    YTEBindProperty(&Camera::GetRotateSpeed, &Camera::SetRotateSpeed, "Rotate Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the Rotate speed of the camera");
+
+
+    // TODO: Do these need to be here?
     YTEBindField(&Camera::mZoom, "Zoom", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
-
     YTEBindField(&Camera::mMoveUp, "MoveUp", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
     YTEBindField(&Camera::mMoveRight, "MoveRight", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
   } 
-   
-  // NOTE: Spin = x
-  //       Tilt = y
-  //       Twist = z
-
-
+  
   Camera::Camera(Composition *aOwner,
     Space *aSpace,
     RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mEngine(nullptr)
     , mCameraTransform(nullptr)
     , mCameraOrientation(nullptr)
     , mTargetObject(nullptr)
@@ -163,24 +175,27 @@ namespace YTE
     , mRoll(0.0f)
     , mDt(0.0f)
     , mConstructing(true)
-    , mType(CameraType::CameraOrientation) 
+    , mType(CameraType::Flyby)
+    , mChanged(true)
+    , mPanSpeed(1.0f)
+    , mMoveSpeed(25.0f)
+    , mScrollSpeed(100.0f)
+    , mRotateSpeed(0.20f)
   { 
     DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
  
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
  
     mWindow = mGraphicsView->GetWindow(); 
+    mEngine = mSpace->GetEngine();
     mWindow->YTERegister(Events::RendererResize, this, &Camera::RendererResize); 
     mConstructing = false; 
 
     mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
   } 
  
-  void Camera::Initialize() 
+  void Camera::Initialize()
   { 
-    mOwner->YTERegister(Events::PositionChanged, this, &Camera::PositionEvent); 
-    mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent); 
-
     mMouse = &mWindow->mMouse;
     mKeyboard = &mWindow->mKeyboard;
 
@@ -188,23 +203,31 @@ namespace YTE
     mMouse->YTERegister(Events::MouseScroll, this, &Camera::MouseScroll);
     mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
     mMouse->YTERegister(Events::MousePersist, this, &Camera::MousePersist);
-    mSpace->YTERegister(Events::LogicUpdate, this, &Camera::Update);
+    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &Camera::Update);
+    mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
 
-    mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
+    glm::vec3 rotFromFile = mCameraTransform->GetRotationAsEuler();
+    mPitch = rotFromFile.x;
+    mYaw = rotFromFile.y;
+    mRoll = rotFromFile.z;
+    mConstructing = false;
   } 
 
-
-  void Camera::Update(LogicUpdate* aEvent)
+  void Camera::Update(GraphicsDataUpdate* aEvent)
   {
     mDt = aEvent->Dt;
+    if (mChanged)
+    {
+      UpdateView();
+    }
   }
-
 
   void Camera::SetCameraType(std::string &aCameraType)
   {
+    // make sure we use the correct types
     if ((false == (aCameraType != "TargetObject")) &&
         (false == (aCameraType != "TargetPoint")) &&
         (false == (aCameraType != "CameraOrientation")) &&
@@ -213,38 +236,28 @@ namespace YTE
       return;
     }
 
-    mCameraType = aCameraType;
 
+    // Set the string type
+    std::string oldCameraType = mCameraType;
+    mCameraType = aCameraType;
 
     if (aCameraType == "TargetObject")
     {
+      // validate we can be a target object
       if (nullptr == mTargetObject)
       {
         printf("TargetObject is not set on Camera named \"%s\" \n", 
                mOwner->GetName().c_str());
+        mCameraType = oldCameraType;
         return;
       }
 
+      ToTargetCamera(true);
       mType = CameraType::TargetObject;
     }
     else if (aCameraType == "TargetPoint")
     {
-      // only do this if we were a flyby camera
-      if (mType == CameraType::Flyby)
-      {
-        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(rot.y, rot.x, rot.z);
-        glm::vec4 unitVector(0.0f, 0.0f, mZoomMin, 1.0f); // used to translate away from target point by 1
-        unitVector = rotationMatrix * unitVector;
-
-        // apply the new target position based on the camera translation
-        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(unitVector);
-
-        mZoom = mZoomMin;
-        mMoveUp = 0.0f;
-        mMoveRight = 0.0f;
-      }
-
+      ToTargetCamera(false);
       mType = CameraType::TargetPoint;
     }
     else if (aCameraType == "CameraOrientation")
@@ -254,32 +267,87 @@ namespace YTE
       if (nullptr == mCameraOrientation)
       {
         return;
+        mCameraType = oldCameraType;
       }
 
       mType = CameraType::CameraOrientation;
     }
     else if (aCameraType == "Flyby")
     {
-      mZoom = 0.0f;
-      mMoveUp = 0.0f;
-      mMoveRight = 0.0f;
+      ToFlybyCamera();
 
       mType = CameraType::Flyby;
     }
 
+    // Update view for the new camera type
     if (false == mConstructing)
     {
-      UpdateView();
+      mChanged = true;
     }
   }
 
+  void Camera::ToTargetCamera(bool aUseObject)
+  {
+    if (true == mConstructing)
+    {
+      return;
+    }
+
+    if (aUseObject)
+    {
+      // Find the distance between the target object and the camera current position
+      glm::vec3 fromCamToObj = mCameraTransform->GetTranslation() - mTargetObject->GetTranslation();
+      float dist = glm::length(fromCamToObj);
+
+      // Set the zoom min or max to this value if it is out of bounds
+      if (dist >= mZoomMax)
+      {
+        mZoomMax = dist;
+      }
+      else if(dist <= mZoomMin)
+      {
+        mZoomMin = dist;
+      }
+      mZoom = dist;
+      mTargetPoint = mTargetObject->GetTranslation();
+    }
+    else
+    {
+      // Set the target point to be the point at the camera position + min zoom(rotated)
+      glm::quat rot = mCameraTransform->GetRotation();
+      glm::vec4 zoomFac(0.0f, 0.0f, mZoomMin, 1.0f);
+      zoomFac = glm::rotate(rot, zoomFac);
+
+      mZoom = mZoomMin;
+      mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(zoomFac);
+    }
+    mMoveRight = 0.0f;
+    mMoveUp = 0.0f;
+  }
+
+  void Camera::ToFlybyCamera()
+  {
+    if (true == mConstructing)
+    {
+      return;
+    }
+
+    // Set Target point to be 1 distance away from from the camera current position
+    glm::quat rot = mCameraTransform->GetRotation();
+    glm::vec4 unit(0.0f, 0.0f, 1.0f, 0.0f);
+    unit = glm::rotate(rot, unit);
+    mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(unit);
+
+    // reset zoom
+    mZoom = 0.0f;
+    mMoveRight = 0.0f;
+    mMoveUp = 0.0f;
+  }
 
   // Handle the moment a mouse button is pressed
   void Camera::MousePress(MouseButtonEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-
-    //const float zoomSpeed = 1.06f;
+    // Get the mouse position
     mMouseInitialPosition = aEvent->WorldCoordinates;
   }
 
@@ -289,40 +357,44 @@ namespace YTE
 
     if (CameraType::Flyby == mType && mMouse->IsButtonDown(Mouse_Buttons::Right))
     {
-      if (mKeyboard->IsKeyDown(Keys::W))
+      if (mKeyboard->IsKeyDown(Keys::W))              // forward movement
       {
-        mZoom = -moveSpeed * mDt;
+        mZoom = -mMoveSpeed * mDt;
+        mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::S))
+      else if (mKeyboard->IsKeyDown(Keys::S))         // backward movmenet
       {
-        mZoom = moveSpeed * mDt;
+        mZoom = mMoveSpeed * mDt;
+        mChanged = true;
       }
-      if (mKeyboard->IsKeyDown(Keys::A))
+      if (mKeyboard->IsKeyDown(Keys::A))              // Left Movement
       {
-        mMoveRight = -moveSpeed * mDt;
+        mMoveRight = -mMoveSpeed * mDt;
+        mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::D))
+      else if (mKeyboard->IsKeyDown(Keys::D))         // Right Movement
       {
-        mMoveRight = moveSpeed * mDt;
+        mMoveRight = mMoveSpeed * mDt;
+        mChanged = true;
       }
-      if (mKeyboard->IsKeyDown(Keys::Space))
+      if (mKeyboard->IsKeyDown(Keys::Space))          // Up Movement
       {
-        mMoveUp = moveSpeed * mDt;
+        mMoveUp = mMoveSpeed * mDt;
+        mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::Control))
+      else if (mKeyboard->IsKeyDown(Keys::Control))   // Down Movement
       {
-        mMoveUp = -moveSpeed * mDt;
+        mMoveUp = -mMoveSpeed * mDt;
+        mChanged = true;
       }
 
       // speed mode
-      if (mKeyboard->IsKeyDown(Keys::Shift))
+      if (mKeyboard->IsKeyDown(Keys::Shift))          // Speed increase
       {
         mMoveRight *= 2.0f;
         mMoveUp *= 2.0f;
         mZoom *= 2.0f;
       }
-  
-      UpdateView();
     }
   }
 
@@ -331,30 +403,31 @@ namespace YTE
   {
     switch (mType)
     {
+      // both of these act the same
       case CameraType::TargetObject:
       case CameraType::TargetPoint:
       {
-        UpdateZoom(aEvent->ScrollMovement.y * zoomSpeed * mDt);
+        UpdateZoom(aEvent->ScrollMovement.y * -mScrollSpeed * mDt);  // Zooms in and out
+        mChanged = true;
         break;
       }
       case CameraType::Flyby:
       {
         // modify mZoom directly since this is a movement, not a zooming motion
         // negate movement since scroll in is positive value
-        mZoom = zoomSpeed * -(aEvent->ScrollMovement.y) * mDt;
+        mZoom = mScrollSpeed * -(aEvent->ScrollMovement.y) * mDt;   // Moves in and out
+        mChanged = true;
         break;
       }
     }
-
-    UpdateView();
   }
 
   // Handle movement of the mouse. Should be fairly clear by code alone.
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
-
-    auto dx = aEvent->WorldCoordinates.x - mMouseInitialPosition.x;
-    auto dy = aEvent->WorldCoordinates.y - mMouseInitialPosition.y;
+    // finds the delta of mouse movement from the last frame
+    float dx = aEvent->WorldCoordinates.x - mMouseInitialPosition.x;
+    float dy = aEvent->WorldCoordinates.y - mMouseInitialPosition.y;
 
     switch (mType)
     {
@@ -372,13 +445,13 @@ namespace YTE
         if (mMouse->IsButtonDown(Mouse_Buttons::Left))
         {
           // Left Mouse does Arc ball rotation
-          UpdateCameraRotation(-dy * rotationSpeed * mDt, dx * rotationSpeed * mDt, 0.0f);
+          UpdateCameraRotation(-dy * mRotateSpeed * mDt, -dx * mRotateSpeed * mDt, 0.0f);
         }
 
         if (mMouse->IsButtonDown(Mouse_Buttons::Right))
         {
           // Right Mouse does Zoom
-          UpdateZoom(dy * zoomSpeed * mDt);
+          UpdateZoom(dy * mRotateSpeed * mDt);
         }
 
         if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
@@ -387,14 +460,9 @@ namespace YTE
 
           // we change the camera type since we were following an object and we just
           // jumped off to walk on our own
-          if (mType == CameraType::TargetObject)
-          {
-            mType = CameraType::TargetPoint;
-            mCameraType = "TargetPoint";
-          }
-
-          mMoveUp = dy * panSpeed * mDt;
-          mMoveRight = dx * panSpeed * mDt;
+          mMoveUp = dy * mPanSpeed * mDt;
+          mMoveRight = -dx * mPanSpeed * mDt;
+          mChanged = true;
         }
 
         break;
@@ -404,50 +472,41 @@ namespace YTE
         // allows look and move with WASD
         if (mMouse->IsButtonDown(Mouse_Buttons::Right))
         {
-          UpdateCameraRotation(-dy * rotationSpeed * mDt, -dx * rotationSpeed * mDt, 0.0f);
+          UpdateCameraRotation(-dy * mRotateSpeed * mDt, dx * mRotateSpeed * mDt, 0.0f);
         }
 
         // allows panning
         if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
         {
           // mouse moving up is a negative number, but it should drag the view up, which is translate down
-          mMoveUp = dy * panSpeed * mDt;
-          mMoveRight = -dx * panSpeed * mDt;
+          mMoveUp = dy * mPanSpeed * mDt;
+          mMoveRight = -dx * mPanSpeed * mDt;
+          mChanged = true;
         }
 
         break;
       }
     }
 
-
+    // Set mouse position for next frame
     mMouseInitialPosition.x = aEvent->WorldCoordinates.x;
     mMouseInitialPosition.y = aEvent->WorldCoordinates.y;
-
-    UpdateView();
   }
- 
-  void Camera::OrientationEvent(OrientationChanged *aEvent) 
+
+  void Camera::OrientationEvent(OrientationChanged *aEvent)
   {
     YTEUnusedArgument(aEvent);
-
-    UpdateView(); 
+    mChanged = true;
   } 
- 
-  void Camera::PositionEvent(TransformChanged *aEvent)
+
+  void Camera::RendererResize(WindowResize *aEvent)
   {
     YTEUnusedArgument(aEvent);
-
-    //UpdateView();  no need and other functions need to be calling it anyway
+    mChanged = true;
   } 
  
-  void Camera::RendererResize(WindowResize *aEvent) 
-  {
-    YTEUnusedArgument(aEvent);
-
-    UpdateView(); 
-  } 
- 
-  static glm::mat4 CreateViewMatrix(const glm::vec3 &aRight, 
+  // generic view matrix creation
+  static glm::mat4 CreateViewMatrix(const glm::vec3 &aRight,
                                     const glm::vec3 &aUp,  
                                     const glm::vec3 &aForward,  
                                     const glm::vec3 &aPosition) 
@@ -458,41 +517,20 @@ namespace YTE
             glm::vec4{aPosition.x, aPosition.y, aPosition.z, 1.0f}}; 
   } 
 
-
-  glm::mat4 Rotate(glm::vec4 aRotation)
-  {
-    float xCos = cos(aRotation.x);
-    float xSin = sin(aRotation.x);
-    float yCos = cos(aRotation.y);
-    float ySin = sin(aRotation.y);
-    float zCos = cos(aRotation.z);
-    float zSin = sin(aRotation.z);
-
-    float ySin_zCos = ySin * zCos;
-
-    glm::mat4 rotation;
-    rotation[0][0] = yCos * zCos;
-    rotation[0][1] = -yCos * zSin;
-    rotation[0][2] = ySin;
-
-    rotation[1][0] = xCos * zSin + xSin * ySin_zCos;
-    rotation[1][1] = xCos * zCos - xSin * ySin * zSin;
-    rotation[1][2] = -xSin * yCos;
-
-    rotation[2][0] = xSin * zSin - xCos * ySin_zCos;
-    rotation[2][1] = xCos * ySin * zSin + xSin * zCos;
-    rotation[2][2] = xCos * yCos;
-
-    return rotation;
-  }
- 
-  void Camera::UpdateView() 
+  void Camera::UpdateView()
   { 
+    if (mChanged == false)
+    {
+      return;
+    }
+
     auto height = static_cast<float>(mWindow->GetHeight()); 
     auto width  = static_cast<float>(mWindow->GetWidth()); 
  
-    UBOView view; 
+    UBOView view;
  
+    // projection matrix (since its an easy calculation, Ill leave it here for now, but
+    // it really doesnt need to happen every view update
     view.mProjectionMatrix = glm::perspective(mFieldOfViewY, 
                                               width / height, 
                                               mNearPlane, 
@@ -500,13 +538,6 @@ namespace YTE
 
     view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
  
-    glm::vec3 position;
- 
-    if (mCameraTransform) 
-    { 
-      position = mCameraTransform->GetTranslation();
-    }
-
 
     switch (mType) 
     { 
@@ -523,53 +554,54 @@ namespace YTE
           forward = mCameraOrientation->GetForwardVector(); 
         } 
  
-        view.mViewMatrix = CreateViewMatrix(right, up, forward, position); 
+        view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
         break; 
       } 
       case CameraType::TargetObject:
       {
-        // there is no break here since the math is the same, it just uses a different target pos
         if (mTargetObject)
         {
           mTargetPoint = mTargetObject->GetTranslation();
         }
+
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
+
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
+
+        // NOTE: No translation vector is allowed, our translation comes from the target object
+
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
+
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
+        break;
       }
       case CameraType::TargetPoint:
       {
-        // NOTE this math doesn't allow for 3 axis rotation, only 2 axis
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
 
-        // create the rotation matrix, note that glm::yawpitchroll does the same thing
-        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(rot.y, rot.x, rot.z);
-        
-        // create the up vector, and then rotate it. Note that it is -1 to flip the world right side up
-        glm::vec4 upReal(0.0f, 1.0f, 0.0f, 1.0f);
-        upReal = rotationMatrix * upReal;
-
-        // This is the vector that will translate the camera
         glm::vec4 transVector(mMoveRight, mMoveUp, 0.0f, 1.0f);
-        transVector = rotationMatrix * transVector;
+        transVector = glm::rotate(rot, transVector);
 
-        // now we need a rotated zoom vector
-        glm::vec4 rotatedZoom = rotationMatrix * glm::vec4(0.0f, 0.0f, mZoom, 1.0f);
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
 
-        // change the target we are looking at to be in line with the new translation
-        mTargetPoint = mTargetPoint + glm::vec3(transVector);
+        mTargetPoint += glm::vec3(transVector);
 
-        // apply the zoom to the target point to get the camera location
-        glm::vec4 cameraPosition4 = glm::vec4(mTargetPoint, 1.0f) + rotatedZoom;
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
 
-        // reset the data to the transform component
-        // note that the camera position is not saved to the transform, rather where the camera
-        // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetTranslation(glm::vec3(cameraPosition4));
-        
-        // finally get the view matrix
-        view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
 
-        // reset for no translation next frame
-        mMoveUp = 0.0f;
         mMoveRight = 0.0f;
+        mMoveUp = 0.0f;
 
         break;
       }
@@ -578,7 +610,6 @@ namespace YTE
         glm::quat rot = mCameraTransform->GetRotation();
         glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
         up4 = glm::rotate(rot, up4);
-        //up4 = glm::normalize(up4);
 
         glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
         transVector = glm::rotate(rot, transVector);
@@ -595,6 +626,7 @@ namespace YTE
 
         view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
 
+        // reset for next frame
         mMoveUp = 0.0f;
         mMoveRight = 0.0f;
         mZoom = 0.0f;
@@ -603,6 +635,7 @@ namespace YTE
       }
     } 
 
+    mChanged = false;
     mGraphicsView->UpdateView(this, view); 
   } 
 
@@ -613,13 +646,22 @@ namespace YTE
     mPitch += aPitch;
     mYaw += aYaw;
 
+    glm::quat rot = mCameraTransform->GetRotation();
+    std::cout << "Previous Rotation: (" << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << ") Now Is: (";
+
     mCameraTransform->SetRotation(glm::quat(glm::vec3(mPitch, mYaw, mRoll)));
+    rot = mCameraTransform->GetRotation();
+    std::cout << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << std::endl;
+
+    mChanged = true;
   }
 
   void Camera::UpdateZoom(float aZoom)
   {
     mZoom += aZoom;
 
+    // constrains zoom
+    // TODO: Useful for in game, not so much useful for editor
     if (mZoom >= mZoomMax)
     {
       mZoom = mZoomMax;
@@ -628,5 +670,6 @@ namespace YTE
     {
       mZoom = mZoomMin;
     }
+    mChanged = true;
   }
 }

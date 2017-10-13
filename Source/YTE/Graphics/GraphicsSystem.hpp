@@ -24,6 +24,16 @@
 namespace YTE
 {
   YTEDeclareEvent(RendererResize);
+  YTEDeclareEvent(GraphicsDataUpdate);
+
+
+  class GraphicsDataUpdate : public Event
+  {
+  public:
+    YTEDeclareType(GraphicsDataUpdate);
+
+    float Dt;
+  };
 
   class RendererResize : public Event
   {

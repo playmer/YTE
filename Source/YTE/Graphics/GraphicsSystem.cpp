@@ -25,10 +25,17 @@
 namespace YTE
 {
   YTEDefineEvent(RendererResize);
+  YTEDefineEvent(GraphicsDataUpdate);
 
   YTEDefineType(GraphicsSystem)
   {
     YTERegisterType(GraphicsSystem);
+  }
+
+  YTEDefineType(GraphicsDataUpdate)
+  {
+    YTERegisterType(GraphicsDataUpdate);
+    YTEBindField(&GraphicsDataUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
   GraphicsSystem::GraphicsSystem(Composition *aOwner, RSValue *aProperties)

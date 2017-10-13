@@ -11,6 +11,7 @@ namespace YTE
   class Camera;
   class GraphicsSystem;
   class GraphicsView;
+  class GraphicsDataUpdate;
   class Instance;
   class SimpleModel;
   class Model;
