@@ -6,16 +6,8 @@
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 
-#include "YTE/Platform/ForwardDeclarations.hpp"
-
 namespace YTE
 {
-  struct UBOView
-  {
-    glm::mat4 mProjectionMatrix;
-    glm::mat4 mViewMatrix;
-  };
-
   class GraphicsView : public Component
   {
   public:
@@ -25,14 +17,24 @@ namespace YTE
     void Initialize() override;
     void UpdateView(Camera *aCamera, UBOView &aView);
 
+    // Gettors / Settors
+    glm::vec4 GetClearColor();
+
+    Camera* GetLastCamera()
+    {
+      return mLastCamera;
+    }
+
     Window* GetWindow()
     {
       return mWindow;
     }
 
-    Camera* GetLastCamera() { return mLastCamera; }
-    glm::vec4 GetClearColor();
+
+
     void SetClearColor(const glm::vec4 &aColor);
+
+
 
   private:
     Camera *mLastCamera;

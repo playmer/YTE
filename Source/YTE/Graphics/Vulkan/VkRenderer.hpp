@@ -1,145 +1,67 @@
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics - Vulkan
+///////////////////
 
-#include "YTE/Graphics/Renderer.hpp"
-#include "YTE/Graphics/Vulkan/VkPrimitives.hpp"
+#pragma once
 
+#ifndef YTE_Graphics_Vulkan_VkRenderer_hpp
+#define YTE_Graphics_Vulkan_VkRenderer_hpp
+
+#include "YTE/Graphics/Generics/Renderer.hpp"
+#include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 
 namespace YTE
 {
-  struct RenderedSurface;
-
-  struct InstantiatedMeshRendererData
-  {
-    InstantiatedMeshRendererData(Renderer *aRenderer,
-      Mesh *aMesh,
-      Window *aWindow)
-      : mRenderer(aRenderer),
-      mMesh(aMesh),
-      mWindow(aWindow)
-    {
-
-    }
-
-    ~InstantiatedMeshRendererData()
-    {
-      for (auto &subMeshData : mSubmeshPipelineData)
-      {
-        mRenderer->RemoveMeshId(mWindow, subMeshData.mId);
-      }
-    }
-
-    void UpdateUniformBuffer(InstantiatedMesh &aModel);
-
-    struct SubmeshPipelineData
-    {
-      SubmeshPipelineData()
-      {
-
-      }
-
-      std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
-      std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
-
-      u64 mId;
-    };
-
-    RenderedSurface *mSurface;
-    std::shared_ptr<vkhlf::Buffer> mUBOModel;
-
-    std::vector<SubmeshPipelineData> mSubmeshPipelineData;
-
-    Renderer *mRenderer;
-    Mesh *mMesh;
-    Window *mWindow;
-  };
-
   class VkRenderer : public Renderer
   {
-
-    using TextureMap = std::unordered_map<std::string,
-      std::unique_ptr<Texture>>;
-
-    using MeshMap = std::unordered_map<std::string,
-      std::unique_ptr<Mesh>>;
-
-    using AllocatorMap = std::unordered_map<std::string,
-      std::shared_ptr<vkhlf::DeviceMemoryAllocator>>;
   public:
-
-    ~VkRenderer();
-
     VkRenderer(Engine *aEngine);
+    ~VkRenderer() override;
 
-    Texture *AddTexture(Window *aWindow,
-      const char *aTexture) override;
+    std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
+    void DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel) override;
+    
+    void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
 
-    void UpdateViewBuffer(Window *aWindow,
-      UBOView &aView) override;
+    void GraphicsDataUpdate() override;
+    void FrameUpdate(LogicUpdate *aEvent) override;
+    void PresentFrame() override;
 
-    virtual void UpdateModelTransformation(Model *aModel) override;
 
-    Texture* AddTexture(RenderedSurface *aSurface,
-      const char *aTextureName);
+    /////////////////////////////////
+    // Getter / Setter
+    /////////////////////////////////
+    glm::vec4 GetClearColor(Window *aWindow) const;
+    std::shared_ptr<VkRenderedSurface>& GetSurface(Window *aWindow);
 
-    void AddDescriptorSet(RenderedSurface *aSurface,
-      InstantiatedMesh *aModel,
-      Mesh::SubMesh *aSubMesh,
-      InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
-
-    std::shared_ptr<vkhlf::Pipeline> AddPipeline(RenderedSurface *aSurface,
-      InstantiatedMesh *aModel,
-      Mesh::SubMesh *aSubMesh,
-      InstantiatedMeshRendererData::SubmeshPipelineData *aSubmeshPipelineData);
-
-    Mesh* AddMesh(RenderedSurface *aSurface,
-      std::string &aFilename);
-
-    void RemoveMeshId(Window *aWindow, u64 aId) override;
-
-    std::unique_ptr<InstantiatedMesh> AddModel(Window *aWindow,
-      std::string &aMeshFile) override;
-
-    glm::vec4 GetClearColor(Window *aWindow) override;
-    void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
-
-    std::unordered_map<vkhlf::Device*, AllocatorMap>& GetAllocators()
+    Engine* GetEngine() const
     {
-      return mAllocators;
+      return mEngine;
     }
 
+    std::unordered_map<Window*, std::shared_ptr<VkRenderedSurface>>& GetSurfaces()
+    {
+      return mSurfaces;
+    }
+
+    VkInternals* GetVkInternals() const
+    {
+      return mVulkanInternals.get();
+    }
+
+
+
+    void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
+
+
+
   private:
-
-    std::unordered_map<vkhlf::Device*, AllocatorMap> mAllocators;
-    std::unordered_map<vkhlf::Device*, MeshMap> mMeshes;
-    std::unordered_map<vkhlf::Device*, TextureMap> mTextures;
-    std::shared_ptr<vkhlf::DebugReportCallback> mDebugReportCallback;
-    std::shared_ptr<vkhlf::Instance> mInstance;
-
-    std::unordered_map<Window*, std::unique_ptr<RenderedSurface>> mSurfaces;
-    u64 mMeshIdCounter = 0;
-
+    std::unique_ptr<VkInternals> mVulkanInternals;
+    std::unordered_map<Window*, std::shared_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;
   };
-
-
-  struct RenderedSurface;
-
-
-  struct TextureRendererData
-  {
-    std::shared_ptr<vkhlf::Sampler> mSampler;
-    std::shared_ptr<vkhlf::ImageView> mView;
-    std::shared_ptr<vkhlf::Image> mImage;
-
-    vk::ImageLayout mImageLayout;
-    vk::DeviceMemory mDeviceMemory;
-    vk::DescriptorImageInfo mDescriptor;
-  };
-
-  struct MeshRendererData
-  {
-    std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
-    std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
-    std::shared_ptr<vkhlf::Buffer> mUBOMaterial;
-  };
-
 }
+
+
+#endif

@@ -32,6 +32,8 @@ namespace YTE
   YTEDefineEvent(EndDebugDrawUpdate);
   YTEDefineEvent(DeletionUpdate);
   YTEDefineEvent(BoundTypeChanged);
+  YTEDefineEvent(GraphicsDataUpdate);
+  YTEDefineEvent(PresentFrame);
 
   YTEDefineType(LogicUpdate)
   {
@@ -237,8 +239,10 @@ namespace YTE
     }
 
     SendEvent(Events::LogicUpdate, &updateEvent);
-    SendEvent(Events::GraphicsDataUpdate, &graphicsEvent);
+    //TODO: Figure order of these with the rest
+    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::PresentFrame, &updateEvent);
 
     ++mFrame;
   }

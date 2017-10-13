@@ -1,22 +1,18 @@
-#include "YTE/Core/AssetLoader.hpp"
-#include "YTE/Core/Engine.hpp"
-#include "YTE/Core/Space.hpp"
-
-#include "YTE/Graphics/GraphicsSystem.hpp"
-#include "YTE/Graphics/GraphicsView.hpp"
-#include "YTE/Graphics/Model.hpp"
-
-#include "YTE/Physics/RigidBody.hpp"
-#include "YTE/Physics/Orientation.hpp"
-#include "YTE/Physics/Collider.hpp"
-#include "YTE/Physics/BoxCollider.hpp"
-#include "YTE/Physics/CylinderCollider.hpp"
-#include "YTE/Physics/SphereCollider.hpp"
-#include "YTE/Physics/Transform.hpp"
-
-#include "YTE/Utilities/Utilities.h"
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics
+///////////////////
 
 #include <filesystem>
+
+#include "YTE/Core/AssetLoader.hpp"
+#include "YTE/Core/Engine.hpp"
+
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/Model.hpp"
+
+#include "YTE/Utilities/Utilities.h"
 
 namespace YTE
 {
@@ -42,6 +38,8 @@ namespace YTE
     return result;
   }
 
+
+
   YTEDefineType(Model)
   {
     YTERegisterType(Model);
@@ -49,8 +47,8 @@ namespace YTE
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
     Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
-    
-    YTEBindProperty(&Model::GetMesh, &Model::SetMesh, "Mesh")
+
+    YTEBindProperty(&Model::GetMeshName, &Model::SetMeshName, "Mesh")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
@@ -60,27 +58,120 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
+
+
+  /////////////////////////////////
+  // Model Class Functions
+  /////////////////////////////////
   Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mConstructing(true)
     , mRenderer(nullptr)
-    , mInstantiatedMesh(nullptr)
-    , mUpdating(false)
+    , mWindow(nullptr)
+    , mMeshName("")
+    , mTransform(nullptr)
+    , mInstantiatedModel(nullptr)
+    , mConstructing(true)
   {
-    auto engine = aSpace->GetEngine();
-    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
+    mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mWindow = aSpace->GetComponent<GraphicsView>()->GetWindow();
+
     DeserializeByType<Model*>(aProperties, this, Model::GetStaticType());
-
-    mConstructing = false;
-
-    Create();
   }
+
+
 
   Model::~Model()
   {
     Destroy();
   }
 
+
+
+  void Model::Initialize()
+  {
+    mOwner->YTERegister(Events::PositionChanged, this, &Model::PositionUpdate);
+    mOwner->YTERegister(Events::RotationChanged, this, &Model::RotationUpdate);
+    mOwner->YTERegister(Events::ScaleChanged, this, &Model::ScaleUpdate);
+    mTransform = mOwner->GetComponent<Transform>();
+    mConstructing = false;
+    Create();
+  }
+
+
+
+  void Model::Reload()
+  {
+    if (mConstructing)
+    {
+      return;
+    }
+    Destroy();
+    Create();
+  }
+
+
+  
+  void Model::PositionUpdate(TransformChanged *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+
+    CreateTransform();
+
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+    }
+  }
+
+
+
+  void Model::RotationUpdate(TransformChanged *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+
+    CreateTransform();
+
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+    }
+  }
+
+
+
+  void Model::ScaleUpdate(TransformChanged *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+
+    CreateTransform();
+
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+    }
+  }
+
+
+
+  void Model::SetMesh(std::string aName)
+  {
+    if (aName == mMeshName)
+    {
+      return;
+    }
+
+    mMeshName = aName;
+
+    if (mConstructing)
+    {
+      return;
+    }
+    Destroy();
+    Create();
+  }
+
+
+  // file scoped function to check for file path correctness
   static bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile)
   {
     if (0 == aFile.size())
@@ -93,116 +184,56 @@ namespace YTE
     pathName.append(aFile);
     return std::experimental::filesystem::exists(pathName);
   }
-  
+
+
+
+  std::shared_ptr<Mesh> Model::GetMesh()
+  {
+    return mInstantiatedModel->GetMesh();
+  }
+
+
+
   void Model::Create()
   {
-    auto meshName = RemoveExtension(mMesh);
+    std::string MeshName = RemoveExtension(mMeshName);
+    std::string name = mOwner->GetName().c_str();
 
-    auto name = mOwner->GetName().c_str();
-
-    if (false == FileCheck(Path::GetGamePath(), "Models", mMesh))
+    if (false == FileCheck(Path::GetGamePath(), "Models", mMeshName))
     {
-      printf("Model (%s): Needs valid ModelName, provided: %s\n",
-             name,
-             mMesh.c_str());
-
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
       return;
     }
 
-    auto window = mSpace->GetComponent<GraphicsView>()->GetWindow();
-
-    mInstantiatedMesh = mRenderer->AddModel(window, mMesh);
-
-    auto transform = mOwner->GetComponent<Transform>();
-
-    if (mInstantiatedMesh && transform)
+    CreateTransform();
+    mInstantiatedModel = mRenderer->CreateModel(mWindow, mMeshName);
+    if (mInstantiatedModel && mTransform)
     {
-      mInstantiatedMesh->mPosition = transform->GetTranslation();
-      mInstantiatedMesh->mScale = transform->GetScale();
-      mInstantiatedMesh->mRotation = transform->GetRotation();
+      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
     }
-
-    SetUBO();
   }
+
+
 
   void Model::Destroy()
   {
-    mInstantiatedMesh.reset();
+    mRenderer->DestroyModel(mWindow, mInstantiatedModel);
+    mInstantiatedModel.reset();
   }
 
-  void Model::Initialize()
+
+
+  void Model::CreateTransform()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &Model::OnPositionChange);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Model::OnScaleChange);
-    mOwner->YTERegister(Events::RotationChanged, this, &Model::OnRotationChange);
-
-    auto transform = mOwner->GetComponent<Transform>();
-
-    if (mInstantiatedMesh && transform)
+    if (mTransform == nullptr)
     {
-      mInstantiatedMesh->mPosition = transform->GetTranslation();
-      mInstantiatedMesh->mScale = transform->GetScale();
-      mInstantiatedMesh->mRotation = transform->GetRotation();
+      return;
     }
 
-    SetUBO();
-  }
+    mUBOPerModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
 
-  void Model::Update(LogicUpdate *aEvent)
-  {
-    YTEUnusedArgument(aEvent);
-    SetUBO();
-    mSpace->YTEDeregister(Events::FrameUpdate, this, &Model::Update);
-    mUpdating = false;
-  }
+    mUBOPerModel.mModelMatrix = mUBOPerModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
 
-  void Model::OnPositionChange(const TransformChanged *aEvent)
-  {
-    if (mInstantiatedMesh)
-    {
-      mInstantiatedMesh->mPosition = aEvent->WorldPosition;
-    }
-
-    if (false == mUpdating)
-    {
-      mSpace->YTERegister(Events::FrameUpdate, this, &Model::Update);
-      mUpdating = true;
-    }
-  }
-
-  void Model::OnScaleChange(const TransformChanged *aEvent)
-  {
-    if (mInstantiatedMesh)
-    {
-      mInstantiatedMesh->mScale = aEvent->WorldScale;
-    }
-
-    if (false == mUpdating)
-    {
-      mSpace->YTERegister(Events::FrameUpdate, this, &Model::Update);
-      mUpdating = true;
-    }
-  }
-
-  void Model::OnRotationChange(const TransformChanged *aEvent)
-  {
-    if (mInstantiatedMesh)
-    {
-      mInstantiatedMesh->mRotation = aEvent->WorldRotation;
-    }
-
-    if (false == mUpdating)
-    {
-      mSpace->YTERegister(Events::FrameUpdate, this, &Model::Update);
-      mUpdating = true;
-    }
-  }
-
-  void Model::SetUBO()
-  {
-    if (mInstantiatedMesh)
-    {
-      mRenderer->UpdateModelTransformation(this);
-    }
+    mUBOPerModel.mModelMatrix = glm::scale(mUBOPerModel.mModelMatrix, mTransform->GetScale());
   }
 }

@@ -10,9 +10,9 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Graphics/InstantiatedMesh.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
-#include "YTE/Graphics/Mesh.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/GhostBody.hpp"
@@ -58,8 +58,7 @@ namespace YTE
     
     if (model != nullptr)
     {
-      auto inMesh = model->GetInstantiatedMesh();
-      mesh = inMesh->mMesh;
+      auto inMesh = model->GetMesh();
     }
 
     
@@ -68,17 +67,17 @@ namespace YTE
       for (auto &submesh : mesh->mParts)
       {
         auto indexSize = submesh.mIndexBuffer.size();
-
+      
         DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
-
+      
         for (size_t i = 0; i < submesh.mIndexBufferSize; i += 3)
         {
           auto i1 = submesh.mIndexBuffer.at(i + 0);
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
-
+      
           submesh.mVertexBuffer.at(i1);
-
+      
           mTriangles.addTriangle(OurVec3ToBt(submesh.mVertexBuffer.at(i1).mPosition),
                                  OurVec3ToBt(submesh.mVertexBuffer.at(i2).mPosition),
                                  OurVec3ToBt(submesh.mVertexBuffer.at(i3).mPosition));

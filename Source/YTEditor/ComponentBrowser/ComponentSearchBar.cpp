@@ -28,6 +28,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "ComponentTree.hpp"
 #include "SearchBarEventFilter.hpp"
 
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include <qcompleter.h>
 
@@ -117,13 +121,13 @@ void ComponentSearchBar::AddComponent(QString aCompName)
     YTEditorMainWindow * mainWindow = mComponentTools->GetBrowser().GetMainWindow();
     YTE::Model * model = mainWindow->GetObjectBrowser().GetCurrentObject()->GetComponent<YTE::Model>();
 
-    if (model && model->GetInstantiatedMesh())
+    if (model)
     {
-      mainWindow->GetMaterialViewer().LoadMaterial(model->GetInstantiatedMesh()->mMesh->mParts[0].mUBOMaterial);
-
+      mainWindow->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+    
       // get the list of materials from the submeshes
-      auto& submeshes = model->GetInstantiatedMesh()->mMesh->mParts;
-
+      auto& submeshes = model->GetMesh()->mParts;
+    
       mainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
     }
   }

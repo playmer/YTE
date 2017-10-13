@@ -20,9 +20,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "glm/glm.hpp"
 
-#include "YTE/Graphics/InstantiatedMesh.hpp"
-#include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Utilities/String/String.h"
+#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
 
 
 class YTEditorMainWindow;
@@ -47,7 +47,7 @@ public:
 
   void LoadMaterial(YTE::UBOMaterial const& aMaterial);
 
-  void SetMaterialsList(std::vector<YTE::Mesh::SubMesh> * aSubMeshList);
+  void SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList);
 
   void LoadNoMaterial();
 
@@ -85,5 +85,5 @@ private:
   std::vector<PropertyWidgetBase*> mProperties;
   YTE::String mCurrentMaterialName;
 
-  std::vector<YTE::Mesh::SubMesh> *mCurrentSubMeshes;
+  std::vector<YTE::Submesh> *mCurrentSubMeshes;
 };

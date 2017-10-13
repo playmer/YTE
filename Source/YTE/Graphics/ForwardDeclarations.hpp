@@ -15,13 +15,8 @@ namespace YTE
   class Instance;
   class SimpleModel;
   class Model;
-  class Renderer;
-  class Shader;
-  class TextureLoader;
-
-  struct InstanceData;
-  struct Mesh;
-  struct Texture;
+  struct UBOMaterial;
+  struct UBOPerModel;
   struct UBOView;
   struct Vertex;
 }

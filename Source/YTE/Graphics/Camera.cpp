@@ -7,6 +7,7 @@
 #include "YTE/Graphics/Camera.hpp" 
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
+#include "YTE/Graphics/UBOs.hpp"
  
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -216,6 +217,7 @@ namespace YTE
     mYaw = rotFromFile.y;
     mRoll = rotFromFile.z;
     mConstructing = false;
+    UpdateView();
   }
 
   // generic view matrix creation
