@@ -177,10 +177,11 @@ namespace YTE
     , mConstructing(true)
     , mType(CameraType::Flyby)
     , mChanged(true)
-    , mPanSpeed(1.0f)
-    , mMoveSpeed(25.0f)
-    , mScrollSpeed(100.0f)
-    , mRotateSpeed(0.20f)
+    , mPanSpeed(2.0f)
+    , mMoveSpeed(50.0f)
+    , mScrollSpeed(200.0f)
+    , mRotateSpeed(0.80f)
+    , mSpeedLimiter(0.0f)
   { 
     DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
  
@@ -232,6 +233,8 @@ namespace YTE
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
+
+    float limiter = width / 1920.0f; // make everything match 1080p movement
 
     UBOView view;
 
@@ -513,7 +516,7 @@ namespace YTE
 
   void Camera::Update(GraphicsDataUpdate* aEvent)
   {
-    mDt = aEvent->Dt;
+    mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)
     {
       UpdateView();
@@ -523,6 +526,13 @@ namespace YTE
   void Camera::RendererResize(WindowResize *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    float height = static_cast<float>(mWindow->GetHeight());
+    float width = static_cast<float>(mWindow->GetWidth());
+
+    // 1920 used to keep normalized movement over a 1080p screen to all other types
+    mSpeedLimiter = ((1.0f / (width / 1920.0f)) / 2.0f);
+
     mChanged = true;
   }
 

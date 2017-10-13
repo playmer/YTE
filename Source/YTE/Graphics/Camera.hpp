@@ -247,6 +247,7 @@ namespace YTE
     float mMoveSpeed;
     float mScrollSpeed;
     float mRotateSpeed;
+    float mSpeedLimiter;
   }; 
 } 
  
