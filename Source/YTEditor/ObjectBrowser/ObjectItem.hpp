@@ -14,10 +14,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <QtWidgets/qpushbutton.h>
-#include <qtreewidget.h>
 #include <qlabel.h>
+#include <qpushbutton.h>
 #include <qstyleditemdelegate.h>
+#include <qtreewidget.h>
 
 class ObjectBrowser;
 

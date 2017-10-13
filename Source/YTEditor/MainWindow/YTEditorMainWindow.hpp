@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/String/String.h"
 
-#include "Physics/PhysicsHandler.hpp"
+#include "../Physics/PhysicsHandler.hpp"
 
 class GameWindow;
 class ObjectBrowser;

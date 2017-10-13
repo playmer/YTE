@@ -13,20 +13,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include <QHBoxLayout>
-#include <qlineedit.h>
-#include <QtWidgets/qpushbutton.h>
-#include <qpainter.h>
+#include <qapplication.h>
 #include <qevent.h>
-
-#include "ObjectBrowser.hpp"
-#include "ObjectItem.hpp"
-#include "Commands.hpp"
-#include "YTEditorMainWindow.hpp"
+#include <qhboxLayout>
+#include <qlineedit.h>
+#include <qpainter.h>
+#include <qpushbutton.h>
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Utilities/String/String.h"
-#include "qapplication.h"
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../UndoRedo/Commands.hpp"
+
+#include "ObjectBrowser.hpp"
+#include "ObjectItem.hpp"
+
 
 ObjectItem::ObjectItem(YTE::String &aItemName, 
                        ObjectBrowser *aParentTree, 

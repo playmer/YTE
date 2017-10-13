@@ -15,14 +15,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "ArchetypeTools.hpp"
 #include "ComponentBrowser.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "ObjectBrowser.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 #include "ComponentTree.hpp"
-#include "ObjectItem.hpp"
+#include "../ObjectBrowser/ObjectItem.hpp"
 
 #include <qpushbutton.h>
 #include <qlayout.h>

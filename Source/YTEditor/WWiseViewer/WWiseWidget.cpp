@@ -6,9 +6,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
-#include "YTEditor/WWiseWidget.hpp"
-
 #include "YTE/Core/Engine.hpp"
+
+#include "WWiseWidget.hpp"
 
 namespace YTE
 {

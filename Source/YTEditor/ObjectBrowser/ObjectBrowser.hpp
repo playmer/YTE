@@ -14,7 +14,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <QtWidgets/qtreewidget.h>
+#include <qtreewidget.h>
+
 #include "YTE/StandardLibrary/Vector.hpp"
 
 // old typedefs from sandbox project

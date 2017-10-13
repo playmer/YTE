@@ -12,9 +12,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "ComponentTree.hpp"
-#include "ComponentWidget.hpp"
-#include "ArchetypeTools.hpp"
 #include <QtWidgets/qdockwidget.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qscrollarea.h>
@@ -25,18 +22,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
-#include "YTE/Meta/Type.hpp"
-#include "PropertyWidget.hpp"
-#include "ComponentBrowser.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "MaterialViewer.hpp"
-#include "UndoRedo.hpp"
-#include "Commands.hpp"
-
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Meta/Type.hpp"
 #include "YTE/Utilities/JsonHelpers.h"
 
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../MaterialViewer/MaterialViewer.hpp"
+#include "../UndoRedo/UndoRedo.hpp"
+#include "../UndoRedo/Commands.hpp"
+
+#include "ArchetypeTools.hpp"
+#include "ComponentBrowser.hpp"
+#include "ComponentTree.hpp"
+#include "ComponentWidget.hpp"
+#include "PropertyWidget.hpp"
 
 
 ComponentTree::ComponentTree(ComponentBrowser * parent)

@@ -12,18 +12,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "ImportMenu.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "OutputConsole.hpp"
-
-#include "YTE/Core/AssetLoader.hpp"
-#include "YTE/Core/Utilities.hpp"
-#include "YTE/Utilities/Utilities.h"
-
-#include "crunch/inc/crnlib.h"
-#include <qprogressdialog.h>
-#include <qfiledialog.h>
-
 #include <array>
 #include <filesystem>
 #include <set>
@@ -31,11 +19,24 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 #include <thread>
 
+#include <qprogressdialog.h>
+#include <qfiledialog.h>
+
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
-
+#include "crunch/inc/crnlib.h"
 #include "stb/stb_image.h"
+
+#include "YTE/Core/AssetLoader.hpp"
+#include "YTE/Core/Utilities.hpp"
+#include "YTE/Utilities/Utilities.h"
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../OutputConsole/OutputConsole.hpp"
+
+#include "ImportMenu.hpp"
+
 
 
 ImportMenu::ImportMenu(YTEditorMainWindow * aMainWindow) 

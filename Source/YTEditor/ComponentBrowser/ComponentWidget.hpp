@@ -15,10 +15,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <QtWidgets/qframe.h>
-#include <QtWidgets/qlayout.h>
-
+#include <qframe.h>
+#include <qlayout.h>
 #include <qstyleditemdelegate.h>
+
 
 #include "YTE/Core/Utilities.hpp"
 

@@ -15,6 +15,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QWindow.h>
 
 #include "YTE/Core/Engine.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
 
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
@@ -23,9 +24,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #endif
 
+
 #include "GameWindow.hpp"
 
-#include "YTEditorMainWindow.hpp"
 
 
 SubWindow::SubWindow(YTE::Window *aWindow, YTEditorMainWindow *aMainWindow)

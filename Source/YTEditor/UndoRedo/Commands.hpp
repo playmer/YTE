@@ -17,6 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Meta/Type.hpp"
 
+#include "../OutputConsole/OutputConsole.hpp"
 #include "UndoRedo.hpp"
 
 class ObjectItem;

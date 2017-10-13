@@ -17,15 +17,16 @@
 #include "QtWidgets/QTreeWidget.h"
 #include <qstylefactory.h>
 
-#include "YTEditorMainWindow.hpp"
-#include "ComponentBrowser.hpp"
-#include "ComponentWidget.hpp"
-#include "ObjectBrowser.hpp"
-#include "GameWindow.hpp"
-#include "OutputConsole.hpp"
-
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
+
+#include "ComponentBrowser/ComponentBrowser.hpp"
+#include "ComponentBrowser/ComponentWidget.hpp"
+#include "GameWindow/GameWindow.hpp"
+#include "MainWindow/YTEditorMainWindow.hpp"
+#include "ObjectBrowser/ObjectBrowser.hpp"
+#include "OutputConsole/OutputConsole.hpp"
+
 
 // Helper function
 void SetDarkTheme(QApplication& app)

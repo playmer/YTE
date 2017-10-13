@@ -12,17 +12,18 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "FileMenu.hpp"
-#include "YTEditorMainWindow.hpp"
-
-#include "YTE/Utilities/String/String.h"
-#include "YTE/Core/Engine.hpp"
-#include "YTE/Core/AssetLoader.hpp"
-
+#include <qapplication.h>
 #include <qfiledialog.h>
 #include <qdesktopservices.h>
 
-#include <qapplication.h>
+#include "YTE/Core/AssetLoader.hpp"
+#include "YTE/Core/Engine.hpp"
+#include "YTE/Utilities/String/String.h"
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+
+#include "FileMenu.hpp"
+
 
 FileMenu::FileMenu(YTEditorMainWindow * aMainWindow)
   : QMenu("File"), mMainWindow(aMainWindow)

@@ -16,7 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 #include <QtWidgets/qtreewidget.h>
-#include "UndoRedo.hpp"
+#include "../UndoRedo/UndoRedo.hpp"
 
 class ComponentWidget;
 class QScrollArea;

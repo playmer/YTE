@@ -12,11 +12,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "GameObjectMenu.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "ObjectBrowser.hpp"
-
 #include "YTE/Core/Engine.hpp"
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+
+#include "GameObjectMenu.hpp"
+
 
 
 GameObjectMenu::GameObjectMenu(YTEditorMainWindow * aMainWindow) 

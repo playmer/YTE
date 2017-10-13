@@ -13,21 +13,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include <qpushbutton.h>
+#include <qlabel.h>
+
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ComponentSystem.h"
 
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
 #include "ComponentTools.hpp"
 #include "ComponentSearchBar.hpp"
 #include "ComponentBrowser.hpp"
 #include "ComponentTree.hpp"
 #include "ComponentWidget.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "ObjectBrowser.hpp"
 
-#include <qpushbutton.h>
-#include <qlabel.h>
 
 ComponentTools::ComponentTools(ComponentBrowser * parent) : QWidget(parent)
 {

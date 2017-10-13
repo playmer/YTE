@@ -18,10 +18,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qscrollarea.h>
 #include <qlayout.h>
 
-#include "YTE/Utilities/String/String.h"
+#include "glm/glm.hpp"
+
 #include "YTE/Graphics/InstantiatedMesh.hpp"
 #include "YTE/Graphics/Mesh.hpp"
-#include "glm/glm.hpp"
+#include "YTE/Utilities/String/String.h"
 
 
 class YTEditorMainWindow;

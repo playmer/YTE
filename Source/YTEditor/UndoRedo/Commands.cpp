@@ -16,9 +16,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Space.hpp"
 
 #include "Commands.hpp"
-#include "ObjectItem.hpp"
-#include "ObjectBrowser.hpp"
-#include "ArchetypeTools.hpp"
+#include "../ObjectBrowser/ObjectItem.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+#include "../ComponentBrowser/ArchetypeTools.hpp"
 
 AddObjectCmd::AddObjectCmd(YTE::Composition *aComposition, 
                            OutputConsole *aConsole,

@@ -12,16 +12,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "WindowsMenu.hpp"
-
-#include "YTEditorMainWindow.hpp"
-
-#include "ObjectBrowser.hpp"
-#include "ComponentBrowser.hpp"
-#include "OutputConsole.hpp"
-#include "MaterialViewer.hpp"
-
 #include <qdockwidget.h>
+
+#include "../ComponentBrowser/ComponentBrowser.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../MaterialViewer/MaterialViewer.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+#include "../OutputConsole/OutputConsole.hpp"
+
+#include "WindowsMenu.hpp"
 
 WindowsMenu::WindowsMenu(YTEditorMainWindow * aMainWindow) 
   : QMenu("Windows"), mMainWindow(aMainWindow)

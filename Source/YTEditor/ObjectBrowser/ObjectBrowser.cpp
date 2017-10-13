@@ -23,7 +23,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qheaderview.h>
 
-
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Utilities/String/String.h"
@@ -32,15 +31,16 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
 
-#include "Commands.hpp"
-#include "ComponentBrowser.hpp"
-#include "ComponentTree.hpp"
+#include "../ComponentBrowser/ArchetypeTools.hpp"
+#include "../ComponentBrowser/ComponentBrowser.hpp"
+#include "../ComponentBrowser/ComponentTree.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../MaterialViewer/MaterialViewer.hpp"
+#include "../UndoRedo/Commands.hpp"
+#include "../UndoRedo/UndoRedo.hpp"
+
 #include "ObjectBrowser.hpp"
 #include "ObjectItem.hpp"
-#include "MaterialViewer.hpp"
-#include "UndoRedo.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "ArchetypeTools.hpp"
 
 
 ObjectBrowser::ObjectBrowser(YTEditorMainWindow * aMainWindow, QWidget * parent)

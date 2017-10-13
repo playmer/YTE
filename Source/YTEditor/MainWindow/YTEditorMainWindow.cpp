@@ -19,6 +19,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 #include <thread>
 
+#include <qtimer.h>
+#include <qprogressdialog.h>
+#include <qdockWidget.h>
+#include <qtextEdit.h>
+#include <qmenuBar.h>
+#include <qtoolBar.h>
+#include <qaction.h>
+#include <qfile.h>
+#include <qapplication.h>
+#include <qdir.h>
+#include <qfilesystemmodel.h>
+#include <qpushbutton.h>
+#include <qfiledialog.h>
+#include <qdesktopservices.h>
+#include <qevent.h>
+
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
@@ -32,47 +48,36 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/Utilities.h"
 
-#include <QTimer.h>
-#include "qprogressdialog.h"
-#include "QtWidgets/QDockWidget.h"
-#include "QtWidgets/QTextEdit.h"
-#include "QtWidgets/QMenuBar.h"
-#include "QtWidgets/QToolBar.h"
-#include "QtWidgets/QAction.h"
-#include "qfile.h"
-#include "qapplication.h"
-#include "qdir.h"
-#include "qfilesystemmodel.h"
-#include "qpushbutton.h"
-#include "qfiledialog.h"
-#include "qdesktopservices.h"
-#include <qevent.h>
+#include "../WWiseViewer/WWiseWidget.hpp"
+
+#include "../ComponentBrowser/ComponentBrowser.hpp"
+#include "../ComponentBrowser/ComponentWidget.hpp"
+#include "../ComponentBrowser/PropertyWidget.hpp"
+
+#include "../GameWindow/GameWindow.hpp"
+
+#include "../MaterialViewer/MaterialViewer.hpp"
+
+#include "../MenuBar/FileMenu.hpp"
+#include "../MenuBar/EditMenu.hpp"
+#include "../MenuBar/WindowsMenu.hpp"
+#include "../MenuBar/GameObjectMenu.hpp"
+#include "../MenuBar/LevelMenu.hpp"
+#include "../MenuBar/ImportMenu.hpp"
+
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+#include "../ObjectBrowser/ObjectItem.hpp"
+
+#include "../OutputConsole/OutputConsole.hpp"
+
+#include "../Physics/PhysicsHandler.hpp"
+
+#include "../UndoRedo/UndoRedo.hpp"
 
 
-#include "YTEditor/WWiseWidget.hpp"
+
 
 #include "YTEditorMainWindow.hpp"
-#include "ComponentBrowser.hpp"
-#include "ComponentWidget.hpp"
-#include "PropertyWidget.hpp"
-#include "ObjectBrowser.hpp"
-#include "GameWindow.hpp"
-#include "OutputConsole.hpp"
-#include "MaterialViewer.hpp"
-#include "ObjectItem.hpp"
-
-// menus
-#include "FileMenu.hpp"
-#include "EditMenu.hpp"
-#include "WindowsMenu.hpp"
-#include "GameObjectMenu.hpp"
-#include "LevelMenu.hpp"
-#include "ImportMenu.hpp"
-
-#include "Physics/PhysicsHandler.hpp"
-
-#include "UndoRedo.hpp"
-
 
 YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQApp)
   : QMainWindow(), 

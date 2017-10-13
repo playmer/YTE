@@ -29,6 +29,8 @@ Set(YTEditorSource main.cpp
                    ComponentBrowser/SearchBarEventFilter.cpp
                    ComponentBrowser/YTECheckBox.hpp
                    ComponentBrowser/YTELineEdit.hpp
+                   FileViewer/FileViewer.hpp
+                   FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
                    GameWindow/GameWindow.cpp					
                    MainWindow/YTEditorMainWindow.hpp

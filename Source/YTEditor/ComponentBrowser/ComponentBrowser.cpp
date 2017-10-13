@@ -24,9 +24,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Meta/Type.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
 #include "PropertyWidget.hpp"
 #include "ComponentTools.hpp"
-#include "YTEditorMainWindow.hpp"
 #include "ArchetypeTools.hpp"
 
 #include "YTE/Core/ScriptBind.hpp"

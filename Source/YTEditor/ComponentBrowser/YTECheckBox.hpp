@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qcheckbox.h>
 #include <qevent.h>
 
-#include "YTEditorMainWindow.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
 
 class YTECheckBox : public QCheckBox
 {

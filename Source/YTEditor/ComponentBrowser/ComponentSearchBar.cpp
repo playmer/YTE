@@ -12,21 +12,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "ComponentSearchBar.hpp"
-#include "ComponentTools.hpp"
-#include "ComponentBrowser.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "OutputConsole.hpp"
-#include "ObjectBrowser.hpp"
-#include "ComponentTree.hpp"
-#include "SearchBarEventFilter.hpp"
-#include "MaterialViewer.hpp"
-
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Graphics/InstantiatedMesh.hpp"
 #include "YTE/Graphics/Mesh.hpp"
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "../MaterialViewer/MaterialViewer.hpp"
+#include "../OutputConsole/OutputConsole.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+#include "ComponentSearchBar.hpp"
+#include "ComponentTools.hpp"
+#include "ComponentBrowser.hpp"
+#include "ComponentTree.hpp"
+#include "SearchBarEventFilter.hpp"
+
 
 #include <qcompleter.h>
 

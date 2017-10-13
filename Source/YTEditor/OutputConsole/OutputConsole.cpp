@@ -15,14 +15,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <stdarg.h> /* va_list, va_start, va_end*/
 #include <stdio.h>
 
-#include "YTE/Platform/TargetDefinitions.hpp"
+#include <qgridlayout.h>
+#include <qtextedit.h>
 
+#include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Utilities/Utilities.h"
 
 #include "OutputConsole.hpp"
-#include <QtWidgets/qgridlayout.h>
-#include <QtWidgets/qtextedit.h>
 
 OutputConsole::OutputConsole(QWidget *aParent)
   : QWidget(aParent), mLayout(nullptr), mConsole(nullptr)

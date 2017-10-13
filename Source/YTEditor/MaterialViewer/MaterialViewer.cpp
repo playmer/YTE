@@ -12,16 +12,16 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "MaterialViewer.hpp"
-#include "PropertyWidget.hpp"
-#include "GameWindow.hpp"
-
-#include "YTE/Graphics/Mesh.hpp"
-
-#include "YTE/Platform/Window.hpp"
-
 #include <qcombobox.h>
 #include <qwindow.h>
+
+#include "YTE/Graphics/Mesh.hpp"
+#include "YTE/Platform/Window.hpp"
+
+#include "../GameWindow/GameWindow.hpp"
+#include "../ComponentBrowser/PropertyWidget.hpp"
+
+#include "MaterialViewer.hpp"
 
 MaterialViewer::MaterialViewer(YTEditorMainWindow *aMainWindow, 
                                QWidget *aParent, 

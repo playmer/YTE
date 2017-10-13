@@ -14,16 +14,18 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "PropertyWidget.hpp"
+#include <qcheckbox.h>
+#include <qlineedit.h>
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Meta/Type.hpp"
 
-#include "Commands.hpp"
+#include "../UndoRedo/Commands.hpp"
+#include "ComponentWidget.hpp"
+#include "ComponentProperty.hpp"
+#include "PropertyWidget.hpp"
 #include "ArchetypeTools.hpp"
 
-#include <qcheckbox.h>
-#include <qlineedit.h>
 
 class YTEditorMainWindow;
 

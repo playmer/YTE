@@ -12,15 +12,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include <iostream>
+
+#include <qabstractitemview.h>
+#include <qcompleter.h>
+#include <qevent.h>
+#include <qlineedit.h>
+
 #include "SearchBarEventFilter.hpp"
 #include "ComponentSearchBar.hpp"
-
-#include <qlineedit.h>
-#include <qabstractitemview.h>
-#include <qevent.h>
-#include <qcompleter.h>
-
-#include <iostream>
 
 SearchBarEventFilter::SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent) 
   : QObject(aParent), mSearchBar(aLineEdit), mCompleter(aParent)

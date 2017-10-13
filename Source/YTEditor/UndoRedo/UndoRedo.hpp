@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <stack>
 
-#include "OutputConsole.hpp"
+#include "../OutputConsole/OutputConsole.hpp"
 
 class Command
 {

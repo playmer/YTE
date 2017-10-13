@@ -14,12 +14,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTE/Core/Utilities.hpp"
-#include <QtWidgets/qwidget.h>
-#include <QtWidgets/qformlayout.h>
-#include <qvalidator.h>
-#include <qlabel.h>
 #include <qcombobox.h>
+#include <qformlayout.h>
+#include <qlabel.h>
+#include <qvalidator.h>
+#include <qwidget.h>
+
+#include "YTE/Core/Utilities.hpp"
 
 #include "YTELineEdit.hpp"
 #include "YTECheckBox.hpp"

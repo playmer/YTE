@@ -13,17 +13,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "ComponentWidget.hpp"
-#include "ComponentProperty.hpp"
+#include <qapplication.h>
+#include <qlabel.h>
+
 #include "YTE/Core/Component.hpp"
-#include <QtWidgets/qlabel.h>
+#include "YTE/Core/Composition.hpp"
 #include "YTE/Meta/Type.hpp"
 #include "YTE/Meta/Attribute.hpp"
-#include "YTE/Core/Composition.hpp"
-#include "YTEditorMainWindow.hpp"
-#include "ComponentTree.hpp"
-#include <qapplication.h>
+
+#include "../MainWindow/YTEditorMainWindow.hpp"
+
 #include "ComponentBrowser.hpp"
+#include "ComponentProperty.hpp"
+#include "ComponentTree.hpp"
+#include "ComponentWidget.hpp"
+
 
 ComponentWidget::ComponentWidget(YTE::Type *type, 
                                  const char *name, 
