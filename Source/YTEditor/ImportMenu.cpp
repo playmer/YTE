@@ -266,6 +266,9 @@ void ImportMenu::ImportModel()
            code);
 
 
+  //mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+  //  code.message().c_str());
+
   // Process Texture files
   for (auto &texture : textures)
   {
