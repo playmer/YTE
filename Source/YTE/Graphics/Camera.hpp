@@ -45,13 +45,14 @@ namespace YTE
     void MouseScroll(MouseWheelEvent *aEvent);
     void MouseMove(MouseMoveEvent *aEvent);
     void MousePersist(MouseButtonEvent *aEvent);
+    void MouseRelease(MouseButtonEvent *aEvent);
     void OrientationEvent(OrientationChanged *aEvent);
     void Update(GraphicsDataUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
 
 
     ///////////////////////////////////////
-    // Gettors
+    // Getters
     ///////////////////////////////////////
     std::string& GetCameraType()
     { 
@@ -109,7 +110,7 @@ namespace YTE
     }
 
     ///////////////////////////////////////
-    // Settors
+    // Setters
     ///////////////////////////////////////
     void SetNearPlane(float aNearPlane) 
     { 

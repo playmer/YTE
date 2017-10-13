@@ -155,8 +155,8 @@ namespace YTE
   } 
   
   Camera::Camera(Composition *aOwner,
-    Space *aSpace,
-    RSValue *aProperties)
+                 Space *aSpace,
+                 RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mEngine(nullptr)
     , mCameraTransform(nullptr)
@@ -203,6 +203,7 @@ namespace YTE
     mMouse->YTERegister(Events::MouseMove, this, &Camera::MouseMove);
     mMouse->YTERegister(Events::MouseScroll, this, &Camera::MouseScroll);
     mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
+    mMouse->YTERegister(Events::MouseRelease, this, &Camera::MouseRelease);
     mMouse->YTERegister(Events::MousePersist, this, &Camera::MousePersist);
     mEngine->YTERegister(Events::GraphicsDataUpdate, this, &Camera::Update);
     mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
@@ -219,14 +220,14 @@ namespace YTE
 
   // generic view matrix creation
   static glm::mat4 CreateViewMatrix(const glm::vec3 &aRight,
-    const glm::vec3 &aUp,
-    const glm::vec3 &aForward,
-    const glm::vec3 &aPosition)
+                                    const glm::vec3 &aUp,
+                                    const glm::vec3 &aForward,
+                                    const glm::vec3 &aPosition)
   {
     return { glm::vec4{ aRight.x, aRight.y, aRight.z, 0.0f },
-      glm::vec4{ aUp.x, aUp.y, aUp.z, 0.0f },
-      glm::vec4{ aForward.x, aForward.y, aForward.z, 0.0f },
-      glm::vec4{ aPosition.x, aPosition.y, aPosition.z, 1.0f } };
+             glm::vec4{ aUp.x, aUp.y, aUp.z, 0.0f },
+             glm::vec4{ aForward.x, aForward.y, aForward.z, 0.0f },
+             glm::vec4{ aPosition.x, aPosition.y, aPosition.z, 1.0f } };
   }
 
   UBOView && Camera::ConstructUBOView()
@@ -234,114 +235,112 @@ namespace YTE
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
 
-    float limiter = width / 1920.0f; // make everything match 1080p movement
-
     UBOView view;
 
     // projection matrix (since its an easy calculation, Ill leave it here for now, but
-    // it really doesnt need to happen every view update
+    // it really doesn't need to happen every view update
     view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
-      width / height,
-      mNearPlane,
-      mFarPlane);
+                                              width / height,
+                                              mNearPlane,
+                                              mFarPlane);
 
     view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
 
 
     switch (mType)
     {
-    case CameraType::CameraOrientation:
-    {
-      glm::vec3 right{ 1.0f, 0.0f, 0.0f };
-      glm::vec3 up{ 0.0f, 1.0f, 0.0f };
-      glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
-
-      if (mCameraTransform)
+      case CameraType::CameraOrientation:
       {
-        right = mCameraOrientation->GetRightVector();
-        up = mCameraOrientation->GetUpVector();
-        forward = mCameraOrientation->GetForwardVector();
-      }
+        glm::vec3 right{ 1.0f, 0.0f, 0.0f };
+        glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+        glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
 
-      view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
-      break;
-    }
-    case CameraType::TargetObject:
-    {
-      if (mTargetObject)
+        if (mCameraTransform)
+        {
+          right = mCameraOrientation->GetRightVector();
+          up = mCameraOrientation->GetUpVector();
+          forward = mCameraOrientation->GetForwardVector();
+        }
+
+        view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
+        break;
+      }
+      case CameraType::TargetObject:
       {
-        mTargetPoint = mTargetObject->GetTranslation();
+        if (mTargetObject)
+        {
+          mTargetPoint = mTargetObject->GetTranslation();
+        }
+
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
+
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
+
+        // NOTE: No translation vector is allowed, our translation comes from the target object
+
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
+
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
+        break;
       }
+      case CameraType::TargetPoint:
+      {
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
 
-      glm::quat rot = mCameraTransform->GetRotation();
-      glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
-      up4 = glm::rotate(rot, up4);
+        glm::vec4 transVector(mMoveRight, mMoveUp, 0.0f, 1.0f);
+        transVector = glm::rotate(rot, transVector);
 
-      glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
-      zoomVector = glm::rotate(rot, zoomVector);
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
 
-      // NOTE: No translation vector is allowed, our translation comes from the target object
+        mTargetPoint += glm::vec3(transVector);
 
-      glm::vec3 camTrans = mCameraTransform->GetTranslation();
-      camTrans = mTargetPoint + glm::vec3(zoomVector);
-      mCameraTransform->SetTranslation(camTrans);
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
 
-      view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
-      break;
-    }
-    case CameraType::TargetPoint:
-    {
-      glm::quat rot = mCameraTransform->GetRotation();
-      glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
-      up4 = glm::rotate(rot, up4);
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
 
-      glm::vec4 transVector(mMoveRight, mMoveUp, 0.0f, 1.0f);
-      transVector = glm::rotate(rot, transVector);
+        mMoveRight = 0.0f;
+        mMoveUp = 0.0f;
 
-      glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
-      zoomVector = glm::rotate(rot, zoomVector);
+        break;
+      }
+      case CameraType::Flyby:
+      {
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
 
-      mTargetPoint += glm::vec3(transVector);
+        glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
+        transVector = glm::rotate(rot, transVector);
 
-      glm::vec3 camTrans = mCameraTransform->GetTranslation();
-      camTrans = mTargetPoint + glm::vec3(zoomVector);
-      mCameraTransform->SetTranslation(camTrans);
+        // update camera translation
+        mCameraTransform->SetTranslation(mCameraTransform->GetTranslation() + glm::vec3(transVector));
 
-      view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
+        glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
+        unitVector = glm::rotate(rot, unitVector);
+        unitVector = glm::normalize(unitVector);
 
-      mMoveRight = 0.0f;
-      mMoveUp = 0.0f;
+        // apply the new target position based on the camera translation
+        mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(unitVector);
 
-      break;
-    }
-    case CameraType::Flyby:
-    {
-      glm::quat rot = mCameraTransform->GetRotation();
-      glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
-      up4 = glm::rotate(rot, up4);
+        view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
 
-      glm::vec4 transVector(mMoveRight, mMoveUp, mZoom, 1.0f);
-      transVector = glm::rotate(rot, transVector);
+        // reset for next frame
+        mMoveUp = 0.0f;
+        mMoveRight = 0.0f;
+        mZoom = 0.0f;
 
-      // update camera translation
-      mCameraTransform->SetTranslation(mCameraTransform->GetTranslation() + glm::vec3(transVector));
-
-      glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
-      unitVector = glm::rotate(rot, unitVector);
-      unitVector = glm::normalize(unitVector);
-
-      // apply the new target position based on the camera translation
-      mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(unitVector);
-
-      view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
-
-      // reset for next frame
-      mMoveUp = 0.0f;
-      mMoveRight = 0.0f;
-      mZoom = 0.0f;
-
-      break;
-    }
+        break;
+      }
     }
     return std::move(view);
   }
@@ -364,6 +363,20 @@ namespace YTE
   {
     // Get the mouse position
     mMouseInitialPosition = aEvent->WorldCoordinates;
+
+    if (Mouse_Buttons::Right == aEvent->Button && CameraType::Flyby == mType)
+    {
+      mWindow->SetCursorVisibility(false);
+    }
+  }
+
+  // Handle the moment a mouse button is released
+  void Camera::MouseRelease(MouseButtonEvent *aEvent)
+  {
+    if (Mouse_Buttons::Right == aEvent->Button && CameraType::Flyby == mType)
+    {
+      mWindow->SetCursorVisibility(true);
+    }
   }
 
   // Handle the moment a mouse button is pressed
@@ -440,7 +453,7 @@ namespace YTE
       // allows look and move with WASD
       if (mMouse->IsButtonDown(Mouse_Buttons::Right))
       {
-        UpdateCameraRotation(-dy * mRotateSpeed * mDt, dx * mRotateSpeed * mDt, 0.0f);
+        UpdateCameraRotation(-dy * mRotateSpeed * mDt, -dx * mRotateSpeed * mDt, 0.0f);
       }
 
       // allows panning
@@ -465,14 +478,14 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
 
-    if (CameraType::Flyby == mType && mMouse->IsButtonDown(Mouse_Buttons::Right))
+    if (CameraType::Flyby == mType && Mouse_Buttons::Right == aEvent->Button)
     {
       if (mKeyboard->IsKeyDown(Keys::W))              // forward movement
       {
         mZoom = -mMoveSpeed * mDt;
         mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::S))         // backward movmenet
+      else if (mKeyboard->IsKeyDown(Keys::S))         // backward movement
       {
         mZoom = mMoveSpeed * mDt;
         mChanged = true;
@@ -531,7 +544,7 @@ namespace YTE
     float width = static_cast<float>(mWindow->GetWidth());
 
     // 1920 used to keep normalized movement over a 1080p screen to all other types
-    mSpeedLimiter = ((1.0f / (width / 1920.0f)) / 2.0f);
+    mSpeedLimiter = ((1.0f / (width / height)) / 2.0f);
 
     mChanged = true;
   }
