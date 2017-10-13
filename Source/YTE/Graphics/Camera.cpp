@@ -77,9 +77,6 @@ namespace YTE
     return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby" }; 
   }
 
-
-
-  // ------------------------------------ 
   YTEDefineType(Camera) 
   { 
     YTERegisterType(Camera); 
@@ -156,9 +153,7 @@ namespace YTE
     YTEBindField(&Camera::mMoveRight, "MoveRight", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
   } 
-   
   
-  // ------------------------------------ 
   Camera::Camera(Composition *aOwner,
     Space *aSpace,
     RSValue *aProperties)
@@ -199,8 +194,6 @@ namespace YTE
     mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
   } 
  
-
-  // ------------------------------------ 
   void Camera::Initialize()
   { 
     mMouse = &mWindow->mMouse;
@@ -223,9 +216,6 @@ namespace YTE
     mConstructing = false;
   } 
 
-
-  // ------------------------------------ 
-  // TODO: This event is currently in Engine.hpp and Space.cpp and should be called from 
   void Camera::Update(GraphicsDataUpdate* aEvent)
   {
     mDt = aEvent->Dt;
@@ -235,8 +225,6 @@ namespace YTE
     }
   }
 
-
-  // ------------------------------------ 
   void Camera::SetCameraType(std::string &aCameraType)
   {
     // make sure we use the correct types
@@ -267,13 +255,11 @@ namespace YTE
       ToTargetCamera(true);
       mType = CameraType::TargetObject;
     }
-    // --------------------------------------
     else if (aCameraType == "TargetPoint")
     {
       ToTargetCamera(false);
       mType = CameraType::TargetPoint;
     }
-    // --------------------------------------
     else if (aCameraType == "CameraOrientation")
     {
       mCameraOrientation = mOwner->GetComponent<Orientation>();
@@ -286,7 +272,6 @@ namespace YTE
 
       mType = CameraType::CameraOrientation;
     }
-    // --------------------------------------
     else if (aCameraType == "Flyby")
     {
       ToFlybyCamera();
@@ -301,8 +286,6 @@ namespace YTE
     }
   }
 
-
-  // ------------------------------------ 
   void Camera::ToTargetCamera(bool aUseObject)
   {
     if (true == mConstructing)
@@ -342,8 +325,6 @@ namespace YTE
     mMoveUp = 0.0f;
   }
 
-
-  // ------------------------------------
   void Camera::ToFlybyCamera()
   {
     if (true == mConstructing)
@@ -363,8 +344,6 @@ namespace YTE
     mMoveUp = 0.0f;
   }
 
-
-  // ------------------------------------ 
   // Handle the moment a mouse button is pressed
   void Camera::MousePress(MouseButtonEvent *aEvent)
   {
@@ -372,8 +351,6 @@ namespace YTE
     mMouseInitialPosition = aEvent->WorldCoordinates;
   }
 
-
-  // ------------------------------------ 
   void Camera::MousePersist(MouseButtonEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -421,8 +398,6 @@ namespace YTE
     }
   }
 
-
-  // ------------------------------------ 
   // Handle the moment a mouse button is pressed
   void Camera::MouseScroll(MouseWheelEvent *aEvent)
   {
@@ -447,8 +422,6 @@ namespace YTE
     }
   }
 
-
-  // ------------------------------------ 
   // Handle movement of the mouse. Should be fairly clear by code alone.
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
@@ -494,7 +467,6 @@ namespace YTE
 
         break;
       }
-      // --------------------------------------
       case CameraType::Flyby:
       {
         // allows look and move with WASD
@@ -520,25 +492,19 @@ namespace YTE
     mMouseInitialPosition.x = aEvent->WorldCoordinates.x;
     mMouseInitialPosition.y = aEvent->WorldCoordinates.y;
   }
- 
 
-  // ------------------------------------ 
   void Camera::OrientationEvent(OrientationChanged *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mChanged = true;
   } 
 
- 
-  // ------------------------------------ 
   void Camera::RendererResize(WindowResize *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mChanged = true;
   } 
  
-
-  // ------------------------------------ 
   // generic view matrix creation
   static glm::mat4 CreateViewMatrix(const glm::vec3 &aRight,
                                     const glm::vec3 &aUp,  
@@ -551,8 +517,6 @@ namespace YTE
             glm::vec4{aPosition.x, aPosition.y, aPosition.z, 1.0f}}; 
   } 
 
-
-  // ------------------------------------ 
   void Camera::UpdateView()
   { 
     if (mChanged == false)
@@ -593,7 +557,6 @@ namespace YTE
         view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
         break; 
       } 
-      // --------------------------------------
       case CameraType::TargetObject:
       {
         if (mTargetObject)
@@ -617,7 +580,6 @@ namespace YTE
         view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
         break;
       }
-      // --------------------------------------
       case CameraType::TargetPoint:
       {
         glm::quat rot = mCameraTransform->GetRotation();
@@ -643,7 +605,6 @@ namespace YTE
 
         break;
       }
-      // --------------------------------------
       case CameraType::Flyby:
       {
         glm::quat rot = mCameraTransform->GetRotation();
@@ -678,8 +639,6 @@ namespace YTE
     mGraphicsView->UpdateView(this, view); 
   } 
 
-
-  // ------------------------------------ 
   void Camera::UpdateCameraRotation(float aPitch, float aYaw, float aRoll)
   {
     // apply rotation
@@ -697,8 +656,6 @@ namespace YTE
     mChanged = true;
   }
 
-
-  // ------------------------------------ 
   void Camera::UpdateZoom(float aZoom)
   {
     mZoom += aZoom;

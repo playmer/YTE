@@ -14,15 +14,9 @@
  
 namespace YTE 
 {
-  // ******************** /
-  // Controls all Camera Movement, view and projection
-  // ******************** /
   class Camera : public Component 
   { 
   public:
-    // ******************** /
-    // Types of Cameras that we allow
-    // ******************** /
     enum class CameraType 
     { 
       TargetObject, 
@@ -32,27 +26,20 @@ namespace YTE
       Unknown 
     };
 
-
-
-    // ===================================================
-    // ===================================================
     // Component, Ctor and YTE stuff
     YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override; 
     void UpdateView();
-
  
-    // ------------------------------------
     Window* GetWindow()
     { 
       return mWindow; 
     }
 
-
-    // ===================================================
-    // ===================================================
+    // ////////////////////////////////////
     // Events
+    // ////////////////////////////////////
     void MousePress(MouseButtonEvent *aEvent);
     void MouseScroll(MouseWheelEvent *aEvent);
     void MouseMove(MouseMoveEvent *aEvent);
@@ -62,88 +49,67 @@ namespace YTE
     void RendererResize(WindowResize *aEvent);
 
 
-    // ===================================================
-    // ===================================================
+    // ////////////////////////////////////
     // Gettors
+    // ////////////////////////////////////
     std::string& GetCameraType()
     { 
       return mCameraType; 
     } 
-
-
-    // ------------------------------------
+    
     float GetNearPlane()
     {
       return mNearPlane;
     }
 
-
-    // ------------------------------------
     float GetFarPlane()
     {
       return mFarPlane;
     }
     
-    
-    // ------------------------------------
     float GetFieldOfViewY()
     {
       return glm::degrees(mFieldOfViewY);
     }
     
-    
-    // ------------------------------------
     glm::vec3 GetTargetPoint()
     {
       return mTargetPoint;
     }
     
-    
-    // ------------------------------------
     Transform* GetTargetObject()
     {
       return mTargetObject;
     }
     
-    
-    // ------------------------------------
     glm::vec2 GetZoomingMaxAndMin() const
     {
       return glm::vec2(mZoomMin, mZoomMax);
     }
 
-
-    // ------------------------------------
     float GetPanSpeed() const
     {
       return mPanSpeed;
     }
 
-
-    // ------------------------------------
     float GetRotateSpeed() const
     {
       return mRotateSpeed;
     }
 
-
-    // ------------------------------------
     float GetMoveSpeed() const
     {
       return mMoveSpeed;
     }
 
-
-    // ------------------------------------
     float GetScrollSpeed() const
     {
       return mScrollSpeed;
     }
 
-
-    // ===================================================
-    // ===================================================
+    // ////////////////////////////////////
     // Settors
+    // ////////////////////////////////////
     void SetNearPlane(float aNearPlane) 
     { 
       mNearPlane = aNearPlane; 
@@ -154,8 +120,6 @@ namespace YTE
       } 
     } 
     
-    
-    // ------------------------------------
     void SetFarPlane(float aFarPlane)
     { 
       mFarPlane = aFarPlane; 
@@ -166,8 +130,6 @@ namespace YTE
       } 
     } 
     
-    
-    // ------------------------------------
     void SetFieldOfViewY(float aFieldOfViewY)
     { 
       mFieldOfViewY = glm::radians(aFieldOfViewY); 
@@ -178,8 +140,6 @@ namespace YTE
       } 
     } 
     
-    
-    // ------------------------------------
     void SetTargetPoint(glm::vec3 &aTargetPoint)
     { 
       mTargetPoint = aTargetPoint; 
@@ -190,8 +150,6 @@ namespace YTE
       } 
     } 
     
-    
-    // ------------------------------------
     void SetTargetObject(Transform *aTargetObject)
     { 
       mTargetObject = aTargetObject; 
@@ -202,8 +160,6 @@ namespace YTE
       } 
     } 
     
-    
-    // ------------------------------------
     void SetZoomingMaxAndMin(glm::vec2 aDist)
     {
       // prevents weirdness
@@ -217,52 +173,35 @@ namespace YTE
       mZoomMin = aDist.x;
     }
 
-
-    // ------------------------------------
     void SetPanSpeed(float aPanSpeed)  
     {
       mPanSpeed = aPanSpeed;
     }
 
-
-    // ------------------------------------
     void SetRotateSpeed(float aRotateSpeed)  
     {
       mRotateSpeed = aRotateSpeed;
     }
 
-
-    // ------------------------------------
     void SetMoveSpeed(float aMoveSpeed)  
     {
       mMoveSpeed = aMoveSpeed;
     }
 
-
-    // ------------------------------------
     void SetScrollSpeed(float aScrollSpeed)  
     {
       mScrollSpeed = aScrollSpeed;
     }
 
-    
-    // ------------------------------------
     void SetCameraType(std::string &aCameraType);
 
 
-
-    // ===================================================
-    // ===================================================
-    // Private Functions
   private:
     void UpdateCameraRotation(float aPitch, float aYaw, float aRoll);
     void UpdateZoom(float aZoom);
     void ToTargetCamera(bool aUseTarget);
     void ToFlybyCamera();
 
-    // ===================================================
-    // ===================================================
-    // Private Variables
   private: 
     // YTE
     Engine *mEngine;
