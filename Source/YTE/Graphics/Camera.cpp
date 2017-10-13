@@ -595,11 +595,9 @@ namespace YTE
     mYaw += aYaw;
 
     glm::quat rot = mCameraTransform->GetRotation();
-    std::cout << "Previous Rotation: (" << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << ") Now Is: (";
 
     mCameraTransform->SetRotation(glm::quat(glm::vec3(mPitch, mYaw, mRoll)));
     rot = mCameraTransform->GetRotation();
-    std::cout << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << std::endl;
 
     mChanged = true;
   }
