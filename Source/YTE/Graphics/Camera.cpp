@@ -220,6 +220,7 @@ namespace YTE
     mPitch = rotFromFile.x;
     mYaw = rotFromFile.y;
     mRoll = rotFromFile.z;
+    mConstructing = false;
   } 
 
 
@@ -304,37 +305,62 @@ namespace YTE
   // ------------------------------------ 
   void Camera::ToTargetCamera(bool aUseObject)
   {
+    if (true == mConstructing)
+    {
+      return;
+    }
+
     if (aUseObject)
     {
-      // TODO: Find the distance between the target object and the camera current position
-      // TODO: Set the zoom min or max to this value if it is out of bounds
+      // Find the distance between the target object and the camera current position
+      glm::vec3 fromCamToObj = mCameraTransform->GetTranslation() - mTargetObject->GetTranslation();
+      float dist = glm::length(fromCamToObj);
+
+      // Set the zoom min or max to this value if it is out of bounds
+      if (dist >= mZoomMax)
+      {
+        mZoomMax = dist;
+      }
+      else if(dist <= mZoomMin)
+      {
+        mZoomMin = dist;
+      }
+      mZoom = dist;
+      mTargetPoint = mTargetObject->GetTranslation();
     }
     else
     {
-      // TODO: Set the target point to be the point at the camera position + min zoom(rotated)
+      // Set the target point to be the point at the camera position + min zoom(rotated)
+      glm::quat rot = mCameraTransform->GetRotation();
+      glm::vec4 zoomFac(0.0f, 0.0f, mZoomMin, 1.0f);
+      zoomFac = glm::rotate(rot, zoomFac);
+
+      mZoom = mZoomMin;
+      mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(zoomFac);
     }
-    // TODO: Set target point to be the target object translation
-
-
-    //glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
-    //glm::mat4 rotationMatrix = glm::yawPitchRoll(rot.y, rot.x, rot.z);
-    //glm::vec4 unitVector(0.0f, 0.0f, mZoomMin, 1.0f); // used to translate away from target point by 1
-    //unitVector = rotationMatrix * unitVector;
-    // // apply the new target position based on the camera translation
-    //mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(unitVector);
-    //mZoom = mZoomMin;
-    //mMoveUp = 0.0f;
-    //mMoveRight = 0.0f;
+    mMoveRight = 0.0f;
+    mMoveUp = 0.0f;
   }
 
 
   // ------------------------------------
   void Camera::ToFlybyCamera()
   {
-    // TODO: Set Target point to be 1 distance away from (1 rotated zoom) from the camera current position
+    if (true == mConstructing)
+    {
+      return;
+    }
+
+    // Set Target point to be 1 distance away from from the camera current position
+    glm::quat rot = mCameraTransform->GetRotation();
+    glm::vec4 unit(0.0f, 0.0f, 1.0f, 0.0f);
+    unit = glm::rotate(rot, unit);
+    mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(unit);
 
     // reset zoom
     mZoom = 0.0f;
+    mMoveRight = 0.0f;
+    mMoveUp = 0.0f;
   }
 
 
@@ -406,7 +432,7 @@ namespace YTE
       case CameraType::TargetObject:
       case CameraType::TargetPoint:
       {
-        UpdateZoom(aEvent->ScrollMovement.y * mScrollSpeed * mDt);  // Zooms in and out
+        UpdateZoom(aEvent->ScrollMovement.y * -mScrollSpeed * mDt);  // Zooms in and out
         mChanged = true;
         break;
       }
@@ -452,7 +478,7 @@ namespace YTE
         if (mMouse->IsButtonDown(Mouse_Buttons::Right))
         {
           // Right Mouse does Zoom
-          UpdateZoom(dy * mScrollSpeed * mDt);
+          UpdateZoom(dy * mRotateSpeed * mDt);
         }
 
         if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
@@ -461,14 +487,9 @@ namespace YTE
 
           // we change the camera type since we were following an object and we just
           // jumped off to walk on our own
-          if (mType == CameraType::TargetObject)
-          {
-            mType = CameraType::TargetPoint;
-            mCameraType = "TargetPoint";
-          }
-
           mMoveUp = dy * mPanSpeed * mDt;
-          mMoveRight = dx * mPanSpeed * mDt;
+          mMoveRight = -dx * mPanSpeed * mDt;
+          mChanged = true;
         }
 
         break;
@@ -531,36 +552,6 @@ namespace YTE
   } 
 
 
-  // TODO: Is this even needed?
-  // ------------------------------------ 
-  //glm::mat4 Rotate(glm::vec4 aRotation)
-  //{
-  //  float xCos = cos(aRotation.x);
-  //  float xSin = sin(aRotation.x);
-  //  float yCos = cos(aRotation.y);
-  //  float ySin = sin(aRotation.y);
-  //  float zCos = cos(aRotation.z);
-  //  float zSin = sin(aRotation.z);
-  //
-  //  float ySin_zCos = ySin * zCos;
-  //
-  //  glm::mat4 rotation;
-  //  rotation[0][0] = yCos * zCos;
-  //  rotation[0][1] = -yCos * zSin;
-  //  rotation[0][2] = ySin;
-  //
-  //  rotation[1][0] = xCos * zSin + xSin * ySin_zCos;
-  //  rotation[1][1] = xCos * zCos - xSin * ySin * zSin;
-  //  rotation[1][2] = -xSin * yCos;
-  //
-  //  rotation[2][0] = xSin * zSin - xCos * ySin_zCos;
-  //  rotation[2][1] = xCos * ySin * zSin + xSin * zCos;
-  //  rotation[2][2] = xCos * yCos;
-  //
-  //  return rotation;
-  //}
- 
-
   // ------------------------------------ 
   void Camera::UpdateView()
   { 
@@ -605,50 +596,50 @@ namespace YTE
       // --------------------------------------
       case CameraType::TargetObject:
       {
-        // there is no break here since the math is the same, it just uses a different target pos
         if (mTargetObject)
         {
           mTargetPoint = mTargetObject->GetTranslation();
         }
+
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
+
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
+
+        // NOTE: No translation vector is allowed, our translation comes from the target object
+
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
+
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
+        break;
       }
       // --------------------------------------
       case CameraType::TargetPoint:
       {
-        //TODO: 
-        // NOTE this math doesn't allow for 3 axis rotation, only 2 axis
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
 
-        // create the rotation matrix, note that glm::yawpitchroll does the same thing
-        glm::vec3 rot = mCameraTransform->GetRotationAsEuler();
-        glm::mat4 rotationMatrix = glm::yawPitchRoll(rot.y, rot.x, rot.z);
-        
-        // create the up vector, and then rotate it. Note that it is -1 to flip the world right side up
-        glm::vec4 upReal(0.0f, 1.0f, 0.0f, 1.0f);
-        upReal = rotationMatrix * upReal;
-
-        // This is the vector that will translate the camera
         glm::vec4 transVector(mMoveRight, mMoveUp, 0.0f, 1.0f);
-        transVector = rotationMatrix * transVector;
+        transVector = glm::rotate(rot, transVector);
 
-        // now we need a rotated zoom vector
-        glm::vec4 rotatedZoom = rotationMatrix * glm::vec4(0.0f, 0.0f, mZoom, 1.0f);
+        glm::vec4 zoomVector(0.0f, 0.0f, mZoom, 1.0f);
+        zoomVector = glm::rotate(rot, zoomVector);
 
-        // change the target we are looking at to be in line with the new translation
-        mTargetPoint = mTargetPoint + glm::vec3(transVector);
+        mTargetPoint += glm::vec3(transVector);
 
-        // apply the zoom to the target point to get the camera location
-        glm::vec4 cameraPosition4 = glm::vec4(mTargetPoint, 1.0f) + rotatedZoom;
+        glm::vec3 camTrans = mCameraTransform->GetTranslation();
+        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        mCameraTransform->SetTranslation(camTrans);
 
-        // reset the data to the transform component
-        // note that the camera position is not saved to the transform, rather where the camera
-        // is rotating around is saved. This is more intuitive
-        mCameraTransform->SetTranslation(glm::vec3(cameraPosition4));
-        
-        // finally get the view matrix
-        view.mViewMatrix = glm::lookAt(glm::vec3(cameraPosition4), mTargetPoint, glm::vec3(upReal));
+        view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
 
-        // reset for no translation next frame
-        mMoveUp = 0.0f;
         mMoveRight = 0.0f;
+        mMoveUp = 0.0f;
 
         break;
       }
