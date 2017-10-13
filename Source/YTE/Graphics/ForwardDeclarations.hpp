@@ -22,6 +22,7 @@ namespace YTE
   struct InstanceData;
   struct Mesh;
   struct Texture;
+  struct UBOView;
   struct Vertex;
 }
 #endif
