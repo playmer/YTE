@@ -27,6 +27,7 @@ namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(FrameUpdate);
+  YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
   YTEDefineEvent(DebugDrawUpdate);
   YTEDefineEvent(EndDebugDrawUpdate);
@@ -37,6 +38,12 @@ namespace YTE
   {
     YTERegisterType(LogicUpdate);
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
+  }
+
+  YTEDefineType(GraphicsDataUpdate)
+  {
+    YTERegisterType(GraphicsDataUpdate);
+    YTEBindField(&GraphicsDataUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
@@ -222,6 +229,9 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = dt;
 
+    GraphicsDataUpdate graphicsEvent;
+    graphicsEvent.Dt = dt;
+
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(dt);
@@ -234,6 +244,7 @@ namespace YTE
     }
 
     SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::GraphicsDataUpdate, &graphicsEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
 
     ++mFrame;

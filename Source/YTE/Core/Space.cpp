@@ -105,6 +105,7 @@ namespace YTE
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
+    // TODO: Move the frame update calls to the graphics system
     SendEvent(Events::FrameUpdate, &updateEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
