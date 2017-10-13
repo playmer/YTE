@@ -135,18 +135,6 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
     mWindow->GetWidth(), 
     mWindow->GetHeight(), 
     camera->GetFarPlane());
-
-  //btVector3 rayTo = getRayTo(rayFrom,
-  //                           cameraUp,
-  //                           cameraForward,
-  //                           aEvent->WorldCoordinates.x,
-  //                           aEvent->WorldCoordinates.y,
-  //                           mWindow->GetHeight(),
-  //                           mWindow->GetWidth(),
-  //                           camera->GetFarPlane(),
-  //                           camera->GetFieldOfViewY());
-
-  //auto rayTo = rayFrom + (cameraForward * 10000.f);
   
   btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
   mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
