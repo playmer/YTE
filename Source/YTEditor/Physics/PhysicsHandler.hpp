@@ -12,6 +12,8 @@
 #include "YTE/Platform/Mouse.hpp"
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
+class YTEditorMainWindow;
+
 struct PickerObject : public YTE::EventHandler
 {
   void ChangedPositionAndRotation(YTE::TransformChanged *aEvent);
@@ -28,7 +30,7 @@ struct PickerObject : public YTE::EventHandler
 class PhysicsHandler : public YTE::EventHandler
 {
   public:
-    PhysicsHandler(YTE::Space *aSpace, YTE::Window *aWindow);
+    PhysicsHandler(YTE::Space *aSpace, YTE::Window *aWindow, YTEditorMainWindow *aMainWindow);
 
     void Add(YTE::Composition *aComposition);
     void Remove(YTE::Composition *aComposition);
@@ -49,4 +51,5 @@ class PhysicsHandler : public YTE::EventHandler
 
     YTE::Space *mSpace;
     YTE::Window *mWindow;
+    YTEditorMainWindow *mMainWindow;
 };

@@ -12,6 +12,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTEditor/ObjectBrowser.hpp"
+#include "YTEditor/YTEditorMainWindow.hpp"
+
 #include "PhysicsHandler.hpp"
 
 using namespace YTE;
@@ -40,9 +43,10 @@ void PickerObject::ChangedScale(TransformChanged *aEvent)
   }
 }
 
-PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow)
+PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow, YTEditorMainWindow *aMainWindow)
   : mSpace(aSpace)
   , mWindow(aWindow)
+  , mMainWindow(aMainWindow)
 {
   // collision configuration contains default setup for memory , collision setup .
   // Advanced users can create their own configuration .
@@ -142,8 +146,12 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   if (rayCallback.hasHit())
   {
     auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
-
-    std::cout << i++ << ": "<< composition->GetName().c_str() << "\n";
+    
+    auto& browser = mMainWindow->GetObjectBrowser();
+    auto item = browser.FindItemByComposition(composition);
+    
+    // TODO(Evan/Nick): change to setSelectedItem for drag select in future
+    browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
   }
 }
 
