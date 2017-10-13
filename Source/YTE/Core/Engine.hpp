@@ -32,7 +32,6 @@ namespace YTE
 {
   YTEDeclareEvent(LogicUpdate);
   YTEDeclareEvent(FrameUpdate);
-  YTEDeclareEvent(GraphicsDataUpdate);
   YTEDeclareEvent(BeginDebugDrawUpdate);
   YTEDeclareEvent(DebugDrawUpdate);
   YTEDeclareEvent(EndDebugDrawUpdate);
@@ -43,14 +42,6 @@ namespace YTE
   {
   public:
     YTEDeclareType(LogicUpdate);
-
-    float Dt;
-  };
-
-  class GraphicsDataUpdate : public Event
-  {
-  public:
-    YTEDeclareType(GraphicsDataUpdate);
 
     float Dt;
   };

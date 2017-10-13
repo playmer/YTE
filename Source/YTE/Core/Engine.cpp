@@ -27,7 +27,6 @@ namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(FrameUpdate);
-  YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
   YTEDefineEvent(DebugDrawUpdate);
   YTEDefineEvent(EndDebugDrawUpdate);
@@ -38,12 +37,6 @@ namespace YTE
   {
     YTERegisterType(LogicUpdate);
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
-  }
-
-  YTEDefineType(GraphicsDataUpdate)
-  {
-    YTERegisterType(GraphicsDataUpdate);
-    YTEBindField(&GraphicsDataUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
