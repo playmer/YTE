@@ -215,6 +215,11 @@ namespace YTE
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
+
+    glm::vec3 rotFromFile = mCameraTransform->GetRotationAsEuler();
+    mPitch = rotFromFile.x;
+    mYaw = rotFromFile.y;
+    mRoll = rotFromFile.z;
   } 
 
 
@@ -474,7 +479,7 @@ namespace YTE
         // allows look and move with WASD
         if (mMouse->IsButtonDown(Mouse_Buttons::Right))
         {
-          UpdateCameraRotation(-dy * mRotateSpeed * mDt, -dx * mRotateSpeed * mDt, 0.0f);
+          UpdateCameraRotation(-dy * mRotateSpeed * mDt, dx * mRotateSpeed * mDt, 0.0f);
         }
 
         // allows panning
@@ -691,7 +696,13 @@ namespace YTE
     mPitch += aPitch;
     mYaw += aYaw;
 
+    glm::quat rot = mCameraTransform->GetRotation();
+    std::cout << "Previous Rotation: (" << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << ") Now Is: (";
+
     mCameraTransform->SetRotation(glm::quat(glm::vec3(mPitch, mYaw, mRoll)));
+    rot = mCameraTransform->GetRotation();
+    std::cout << rot.x << ", " << rot.y << ", " << rot.z << ", " << rot.w << std::endl;
+
     mChanged = true;
   }
 
