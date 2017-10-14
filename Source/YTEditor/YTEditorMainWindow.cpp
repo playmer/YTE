@@ -101,7 +101,7 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
 
   // Get the space that represents the main session
   YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
-  mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, mRunningEngine->GetWindows().at("Yours Truly Engine").get());
+  mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, mRunningEngine->GetWindows().at("Yours Truly Engine").get(), this);
 
   aEngine->Initialize();
   ConstructWWiseWidget();

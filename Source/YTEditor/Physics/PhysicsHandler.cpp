@@ -12,6 +12,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTEditor/ObjectBrowser.hpp"
+#include "YTEditor/YTEditorMainWindow.hpp"
+
 #include "PhysicsHandler.hpp"
 
 using namespace YTE;
@@ -40,9 +43,10 @@ void PickerObject::ChangedScale(TransformChanged *aEvent)
   }
 }
 
-PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow)
+PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow, YTEditorMainWindow *aMainWindow)
   : mSpace(aSpace)
   , mWindow(aWindow)
+  , mMainWindow(aMainWindow)
 {
   // collision configuration contains default setup for memory , collision setup .
   // Advanced users can create their own configuration .
@@ -71,48 +75,42 @@ PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow)
 }
 
 
-btVector3 getRayTo(btVector3 aCameraTranslation, 
-                   btVector3 aCameraUp,
-                   btVector3 aCameraForward,
-                   int x, 
-                   int y,
-                   int aHeight,
-                   int aWidth,
-                   float aFarPlane,
-                   float aFieldOfView)
+btVector3 getRayTo(UBOView& aView,
+                   btVector3& aRayFrom,
+                   glm::i32vec2 aMouseCoordinates,
+                   u32 aWidth,
+                   u32 aHeight,
+                   float aFar)
 {
-  aCameraForward.normalize();
-  aCameraForward *= aFarPlane;
+  UBOView& uboView = aView;
 
-  btVector3 rightOffset;
+  glm::vec2 mouse = aMouseCoordinates;
+  glm::vec2 screen(aWidth, aHeight);
 
-  btVector3 hor;
-  hor = aCameraForward.cross(aCameraUp);
-  hor.safeNormalize();
-  aCameraUp = hor.cross(aCameraForward);
-  aCameraUp.safeNormalize();
+  glm::vec4 rayFromNDC(
+    0,
+    0,
+    -1.0f,
+    1.0f
+  );
 
-  float tanfov = tanf(0.5f * aFieldOfView);
+  glm::vec4 rayToNDC(
+    (mouse.x / screen.x - 0.5f) * 2.0f,
+    (mouse.y / screen.y - 0.5f) * 2.0f,
+    1.0f,
+    1.0f
+  );
 
-  hor *= 2.f * aFarPlane * tanfov;
-  aCameraUp *= 2.f * aFarPlane * tanfov;
+  glm::mat4 invMat = glm::inverse(uboView.mProjectionMatrix * uboView.mViewMatrix);
+  glm::vec4 rayFromWorld = invMat * rayFromNDC;
+  rayFromWorld /= rayFromWorld.w;
+  glm::vec4 rayToWorld = invMat * rayToNDC;
+  rayToWorld /= rayToWorld.w;
 
-  btScalar aspect;
-  float width = float(aWidth);
-  float height = float(aHeight);
+  glm::vec3 rayDirectionWorld(rayToWorld - rayFromWorld);
+  rayDirectionWorld = glm::normalize(rayDirectionWorld);
 
-  aspect = width / height;
-
-  hor *= aspect;
-
-  btVector3 rayToCenter = aCameraTranslation + aCameraForward;
-  btVector3 dHor = hor * 1.f / width;
-  btVector3 dVert = aCameraUp * 1.f / height;
-  
-  btVector3 rayTo = rayToCenter - 0.5f * hor + 0.5f * aCameraUp;
-  rayTo += btScalar(x) * dHor;
-  rayTo -= btScalar(y) * dVert;
-  return rayTo;
+  return aRayFrom + OurVec3ToBt(rayDirectionWorld) * aFar;
 }
 
 void PhysicsHandler::Click(MouseButtonEvent *aEvent)
@@ -133,17 +131,14 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   auto cameraUp = OurVec3ToBt(orientation->GetUpVector());
   auto cameraForward = OurVec3ToBt(orientation->GetForwardVector());
 
-  btVector3 rayTo = getRayTo(rayFrom,
-                             cameraUp,
-                             cameraForward,
-                             aEvent->WorldCoordinates.x,
-                             aEvent->WorldCoordinates.y,
-                             mWindow->GetHeight(),
-                             mWindow->GetWidth(),
-                             camera->GetFarPlane(),
-                             camera->GetFieldOfViewY());
-
-  //auto rayTo = rayFrom + (cameraForward * 10000.f);
+  UBOView uboView = camera->ConstructUBOView();
+  
+  btVector3 rayTo = getRayTo(
+    uboView, 
+    rayFrom, aEvent->WorldCoordinates, 
+    mWindow->GetWidth(), 
+    mWindow->GetHeight(), 
+    camera->GetFarPlane());
   
   btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
   mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
@@ -151,8 +146,12 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   if (rayCallback.hasHit())
   {
     auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
-
-    std::cout << i++ << ": "<< composition->GetName().c_str() << "\n";
+    
+    auto& browser = mMainWindow->GetObjectBrowser();
+    auto item = browser.FindItemByComposition(composition);
+    
+    // TODO(Evan/Nick): change to setSelectedItem for drag select in future
+    browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
   }
 }
 

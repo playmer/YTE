@@ -266,12 +266,6 @@ namespace YTE
   ////////////////////////////////////////////////////////////////////////////
   void Transform::SetInternalTranslation(const glm::vec3 &aParentTranslation, const glm::vec3 &aLocalTranslation)
   {
-    if (mOwner->GetName() == "Camera" && mWorldTranslation != aParentTranslation + aLocalTranslation)
-    {
-      std::cout << mOwner->GetEngine()->GetFrame() << Format(": {%f, %f, %f}\n", mWorldTranslation.x, mWorldTranslation.y, mWorldTranslation.z);
-    }
-
-
     mWorldTranslation = aParentTranslation + aLocalTranslation;
     mTranslation = aLocalTranslation;
 
