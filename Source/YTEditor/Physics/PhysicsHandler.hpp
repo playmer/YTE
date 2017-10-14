@@ -35,7 +35,9 @@ class PhysicsHandler : public YTE::EventHandler
     void Add(YTE::Composition *aComposition);
     void Remove(YTE::Composition *aComposition);
 
-    void Click(YTE::MouseButtonEvent *aEvent);
+    void OnMousePress(YTE::MouseButtonEvent *aEvent);
+    void OnMousePersist(YTE::MouseButtonEvent *aEvent);
+    void OnMouseRelease(YTE::MouseButtonEvent *aEvent);
 
     void AddedComposition(YTE::CompositionAdded *aEvent);
     void RemovedComposition(YTE::CompositionRemoved *aEvent);
@@ -52,4 +54,7 @@ class PhysicsHandler : public YTE::EventHandler
     YTE::Space *mSpace;
     YTE::Window *mWindow;
     YTEditorMainWindow *mMainWindow;
+
+    bool mIsHittingObject;
+    YTE::Composition *mCurrentObj;
 };

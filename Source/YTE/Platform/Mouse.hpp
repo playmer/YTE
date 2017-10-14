@@ -74,6 +74,9 @@ namespace YTE
     void UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition);
     void UpdatePosition(glm::i32vec2 aPosition);
 
+    glm::i32vec2 GetPositionDelta();
+    glm::i32vec2 GetPrevPosition();
+
     // Updates the buttons via the OS.
     void UpdateAllButtons(glm::i32vec2 aRelativePosition);
     bool AnyButtonDown();
@@ -83,6 +86,7 @@ namespace YTE
 
   private:
     glm::i32vec2 mPosition;
+    glm::i32vec2 mPrevPosition;
 
     bool mPositionChanged;
 

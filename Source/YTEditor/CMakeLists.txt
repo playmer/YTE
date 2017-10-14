@@ -32,7 +32,17 @@ Set(YTEditorSource main.cpp
                    FileViewer/FileViewer.hpp
                    FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
-                   GameWindow/GameWindow.cpp					
+                   GameWindow/GameWindow.cpp
+                   Gizmos/Axis.hpp
+                   Gizmos/Axis.cpp
+                   Gizmos/Gizmo.hpp
+                   Gizmos/Gizmo.cpp
+                   Gizmos/Translate.hpp
+                   Gizmos/Translate.cpp
+                   Gizmos/Scale.hpp
+                   Gizmos/Scale.cpp
+                   Gizmos/Rotate.hpp
+                   Gizmos/Rotate.cpp
                    MainWindow/YTEditorMainWindow.hpp
                    MainWindow/YTEditorMainWindow.cpp
                    MaterialViewer/MaterialViewer.hpp

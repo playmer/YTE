@@ -31,6 +31,7 @@ class QTreeView;
 class QApplication;
 class FileMenu;
 class UndoRedo;
+class Gizmo;
 
 namespace YTE
 {
@@ -61,7 +62,7 @@ public:
   QTreeView& GetFileViewer();
   QDockWidget* GetFileViewerDock();
 
-  UndoRedo * GetUndoRedo();
+  UndoRedo* GetUndoRedo();
 
   void UpdateEngine();
 
@@ -74,7 +75,9 @@ public:
 
   void SaveCurrentLevel();
 
-  QApplication * GetApplication();
+  QApplication* GetApplication();
+
+  Gizmo* GetGizmo();
 
   void keyPressEvent(QKeyEvent *aEvent);
 
@@ -87,6 +90,8 @@ private:
   QApplication * mApplication;
 
   UndoRedo * mUndoRedo;
+
+  Gizmo *mGizmo;
 
   // Cstor helper functions and main subwindow vars //
   void SetWindowSettings();
