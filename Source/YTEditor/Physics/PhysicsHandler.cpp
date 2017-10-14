@@ -15,6 +15,12 @@
 #include "../ObjectBrowser/ObjectBrowser.hpp"
 #include "../MainWindow/YTEditorMainWindow.hpp"
 
+#include "../Gizmos/Gizmo.hpp"
+#include "../Gizmos/Axis.hpp"
+#include "../Gizmos/Translate.hpp"
+#include "../Gizmos/Scale.hpp"
+#include "../Gizmos/Rotate.hpp"
+
 #include "PhysicsHandler.hpp"
 
 using namespace YTE;
@@ -47,6 +53,7 @@ PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow, YTEditorMainWindo
   : mSpace(aSpace)
   , mWindow(aWindow)
   , mMainWindow(aMainWindow)
+  , mIsHittingObject(false)
 {
   // collision configuration contains default setup for memory , collision setup .
   // Advanced users can create their own configuration .
@@ -71,7 +78,9 @@ PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow, YTEditorMainWindo
 
   aSpace->YTERegister(Events::CompositionAdded, this, &PhysicsHandler::AddedComposition);
   aSpace->YTERegister(Events::CompositionRemoved, this, &PhysicsHandler::RemovedComposition);
-  aWindow->mMouse.YTERegister(Events::MousePress, this, &PhysicsHandler::Click);
+  aWindow->mMouse.YTERegister(Events::MousePress, this, &PhysicsHandler::OnMousePress);
+  aWindow->mMouse.YTERegister(Events::MousePersist, this, &PhysicsHandler::OnMousePersist);
+  aWindow->mMouse.YTERegister(Events::MouseRelease, this, &PhysicsHandler::OnMouseRelease);
 }
 
 
@@ -113,7 +122,7 @@ btVector3 getRayTo(UBOView& aView,
   return aRayFrom + OurVec3ToBt(rayDirectionWorld) * aFar;
 }
 
-void PhysicsHandler::Click(MouseButtonEvent *aEvent)
+void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
 {
   if (aEvent->Button != Mouse_Buttons::Left)
   {
@@ -145,14 +154,82 @@ void PhysicsHandler::Click(MouseButtonEvent *aEvent)
   
   if (rayCallback.hasHit())
   {
-    auto composition = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
+    mCurrentObj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
     
     auto& browser = mMainWindow->GetObjectBrowser();
-    auto item = browser.FindItemByComposition(composition);
+    auto item = browser.FindItemByComposition(mCurrentObj);
     
     // TODO(Evan/Nick): change to setSelectedItem for drag select in future
     browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+
+    mIsHittingObject = true;
   }
+}
+
+void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
+{
+  if (mIsHittingObject)
+  {
+    Gizmo *giz = mMainWindow->GetGizmo();
+
+    if (giz->IsAxis(mCurrentObj))
+    {
+      // get the change in position this frame for the mouse
+      glm::i32vec2 pos = aEvent->Mouse->GetCursorPosition();
+      glm::vec4 pos3 = glm::vec4(pos.x, pos.y, 0.0, 1.0);
+
+      glm::i32vec2 prevPos = aEvent->Mouse->GetPrevPosition();
+      glm::vec4 prevPos3 = glm::vec4(prevPos.x, prevPos.y, 0.0, 1.0);
+
+      // convert the two positions to world coordinates
+      auto view = mSpace->GetComponent<GraphicsView>();
+      auto camera = view->GetLastCamera();
+      UBOView uboView = camera->ConstructUBOView();
+
+      glm::mat4 invMat = glm::inverse(uboView.mProjectionMatrix * uboView.mViewMatrix);
+
+      glm::vec4 worldPos = invMat * pos3;
+      glm::vec4 prevWorldPos = invMat * prevPos3;
+
+      // get the change in positions
+      glm::vec4 delta = worldPos - prevWorldPos;
+      glm::vec3 delta3 = glm::vec3(delta.x, delta.y, delta.z);
+
+
+      switch (giz->GetCurrentMode())
+      {
+      case Gizmo::Select:
+      {
+        break;
+      }
+
+      case Gizmo::Translate:
+      {
+        mCurrentObj->GetComponent<Translate>()->MoveObject(delta3);
+        break;
+      }
+
+      case Gizmo::Scale:
+      {
+        mCurrentObj->GetComponent<Scale>()->ScaleObject(delta3);
+        break;
+      }
+
+      case Gizmo::Rotate:
+      {
+        // need to change to send amount object should be rotated
+        mCurrentObj->GetComponent<Rotate>()->RotateObject(delta3);
+        break;
+      }
+
+      }
+    }
+  }
+}
+
+void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
+{
+  mIsHittingObject = false;
 }
 
 void PhysicsHandler::Add(YTE::Composition *aComposition)

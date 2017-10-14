@@ -74,6 +74,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "../UndoRedo/UndoRedo.hpp"
 
+#include "../Gizmos/Gizmo.hpp"
+
 
 
 
@@ -87,7 +89,8 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
     mComponentBrowser(nullptr), 
     mOutputConsole(nullptr), 
     mRunningLevelName(""),
-    mUndoRedo(new UndoRedo())
+    mUndoRedo(new UndoRedo()),
+    mGizmo(nullptr)
 {
   DebugObjection(!aEngine, 
               "Critical Error in YTEditorMainWindow constructor.\n "
@@ -117,6 +120,9 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
   {
     self->UpdateEngine();
   });
+
+
+  mGizmo = new Gizmo(this);
 }
 
 YTEditorMainWindow::~YTEditorMainWindow()
@@ -243,6 +249,9 @@ void YTEditorMainWindow::LoadCurrentLevelInfo()
   {
     GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
   }
+
+
+  
 }
 
 void YTEditorMainWindow::SaveCurrentLevel()
@@ -273,6 +282,11 @@ void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
 QApplication * YTEditorMainWindow::GetApplication()
 {
   return mApplication;
+}
+
+Gizmo * YTEditorMainWindow::GetGizmo()
+{
+  return mGizmo;
 }
 
 void YTEditorMainWindow::keyPressEvent(QKeyEvent * aEvent)
