@@ -12,8 +12,8 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTEditor/ObjectBrowser.hpp"
-#include "YTEditor/YTEditorMainWindow.hpp"
+#include "../ObjectBrowser/ObjectBrowser.hpp"
+#include "../MainWindow/YTEditorMainWindow.hpp"
 
 #include "PhysicsHandler.hpp"
 
