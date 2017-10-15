@@ -56,5 +56,7 @@ class PhysicsHandler : public YTE::EventHandler
     YTEditorMainWindow *mMainWindow;
 
     bool mIsHittingObject;
+    bool mIsGizmoActive;
+    glm::vec4 mPrevMousePos;
     YTE::Composition *mCurrentObj;
 };

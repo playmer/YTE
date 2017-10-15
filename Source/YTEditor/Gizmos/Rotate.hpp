@@ -13,7 +13,7 @@ namespace YTE
 
     YTEDeclareType(Rotate);
 
-    Rotate(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Rotate(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void RotateObject(glm::vec3 aDelta);
 

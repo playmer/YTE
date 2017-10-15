@@ -54,6 +54,9 @@ PhysicsHandler::PhysicsHandler(Space *aSpace, Window *aWindow, YTEditorMainWindo
   , mWindow(aWindow)
   , mMainWindow(aMainWindow)
   , mIsHittingObject(false)
+  , mIsGizmoActive(false)
+  , mCurrentObj(nullptr)
+  , mPrevMousePos(0, 0, 0, 1)
 {
   // collision configuration contains default setup for memory , collision setup .
   // Advanced users can create their own configuration .
@@ -154,7 +157,16 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
   
   if (rayCallback.hasHit())
   {
-    mCurrentObj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
+    auto obj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
+
+    if (obj->GetName() == "Gizmo")
+    {
+      mIsGizmoActive = true;
+    }
+    else
+    {
+      mCurrentObj = obj;
+    }
     
     auto& browser = mMainWindow->GetObjectBrowser();
     auto item = browser.FindItemByComposition(mCurrentObj);
@@ -170,31 +182,31 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
 {
   if (mIsHittingObject)
   {
-    Gizmo *giz = mMainWindow->GetGizmo();
-
-    if (giz->IsAxis(mCurrentObj))
+    if (mIsGizmoActive)
     {
+      Gizmo *giz = mMainWindow->GetGizmo();
+
       // get the change in position this frame for the mouse
       glm::i32vec2 pos = aEvent->Mouse->GetCursorPosition();
-      glm::vec4 pos3 = glm::vec4(pos.x, pos.y, 0.0, 1.0);
-
-      glm::i32vec2 prevPos = aEvent->Mouse->GetPrevPosition();
-      glm::vec4 prevPos3 = glm::vec4(prevPos.x, prevPos.y, 0.0, 1.0);
+      glm::vec4 pos4 = glm::vec4(pos.x, pos.y, 0.0, 1.0);
 
       // convert the two positions to world coordinates
       auto view = mSpace->GetComponent<GraphicsView>();
       auto camera = view->GetLastCamera();
       UBOView uboView = camera->ConstructUBOView();
+      
+      auto camPos = camera->GetOwner()->GetComponent<Transform>()->GetWorldTranslation();
 
-      glm::mat4 invMat = glm::inverse(uboView.mProjectionMatrix * uboView.mViewMatrix);
+      // get distance between camera and object
+      auto gizPos = giz->mGizmoObj->GetComponent<Transform>()->GetWorldTranslation();
 
-      glm::vec4 worldPos = invMat * pos3;
-      glm::vec4 prevWorldPos = invMat * prevPos3;
+      auto dist = glm::length(camPos - gizPos);
 
-      // get the change in positions
-      glm::vec4 delta = worldPos - prevWorldPos;
-      glm::vec3 delta3 = glm::vec3(delta.x, delta.y, delta.z);
+      auto btCamPos = OurVec3ToBt(camPos);
 
+      auto gizmosFriendMouse = getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), dist);
+
+      auto realDelta = BtToOurVec3(gizmosFriendMouse) - gizPos;
 
       switch (giz->GetCurrentMode())
       {
@@ -205,24 +217,27 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
 
       case Gizmo::Translate:
       {
-        mCurrentObj->GetComponent<Translate>()->MoveObject(delta3);
+        YTE::String ax = "X_Axis";
+        giz->mGizmoObj->FindFirstCompositionByName(ax)->GetComponent<Translate>()->MoveObject(realDelta);
         break;
       }
 
       case Gizmo::Scale:
       {
-        mCurrentObj->GetComponent<Scale>()->ScaleObject(delta3);
+        giz->mGizmoObj->GetComponent<Scale>()->ScaleObject(realDelta);
         break;
       }
 
       case Gizmo::Rotate:
       {
         // need to change to send amount object should be rotated
-        mCurrentObj->GetComponent<Rotate>()->RotateObject(delta3);
+        giz->mGizmoObj->GetComponent<Rotate>()->RotateObject(realDelta);
         break;
       }
 
       }
+
+      mPrevMousePos = pos4;
     }
   }
 }
@@ -230,6 +245,7 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
 void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
 {
   mIsHittingObject = false;
+  mIsGizmoActive = false;
 }
 
 void PhysicsHandler::Add(YTE::Composition *aComposition)

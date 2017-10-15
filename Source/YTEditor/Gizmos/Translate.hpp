@@ -14,7 +14,7 @@ namespace YTE
 
     YTEDeclareType(Translate);
 
-    Translate(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void MoveObject(glm::vec3 aDelta);
 

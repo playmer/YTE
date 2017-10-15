@@ -14,20 +14,15 @@ public:
 
   Gizmo(YTEditorMainWindow *aMainWindow);
 
-  bool IsAxis(YTE::Composition *aObject);
-
   void SetMode(int aMode);
   int GetCurrentMode();
+
+  YTE::Composition *mGizmoObj;
 
 protected:
 
   YTEditorMainWindow *mMainWindow;
 
-  YTE::Composition *mCurrObj;
-
-  Axis *mX;
-  Axis *mY;
-  Axis *mZ;
 
   int mMode;
 

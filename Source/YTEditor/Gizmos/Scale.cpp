@@ -12,8 +12,8 @@ namespace YTE
     YTERegisterType(Scale);
   }
 
-  Scale::Scale(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties) 
-    : YTE::Component(aOwner, aSpace), mDir(aDir)
+  Scale::Scale(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
+    : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
 
   }

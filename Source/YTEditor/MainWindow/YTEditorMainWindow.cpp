@@ -123,6 +123,7 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
 
 
   mGizmo = new Gizmo(this);
+  mGizmo->mGizmoObj = lvl->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 YTEditorMainWindow::~YTEditorMainWindow()
@@ -250,8 +251,6 @@ void YTEditorMainWindow::LoadCurrentLevelInfo()
     GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
   }
 
-
-  
 }
 
 void YTEditorMainWindow::SaveCurrentLevel()
