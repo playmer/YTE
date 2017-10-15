@@ -11,8 +11,6 @@ public:
 
   Axis(int aDir, YTE::Engine *aEngine, YTE::Space *aSpace);
 
-  void AddComponents();
-
 private:
 
   YTE::Model *mTranslateModel;

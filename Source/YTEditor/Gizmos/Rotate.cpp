@@ -12,8 +12,8 @@ namespace YTE
     YTERegisterType(Rotate);
   }
 
-  Rotate::Rotate(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties) 
-    : YTE::Component(aOwner, aSpace), mDir(aDir)
+  Rotate::Rotate(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+    : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
 
   }

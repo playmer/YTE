@@ -12,14 +12,19 @@ namespace YTE
     YTERegisterType(Translate);
   }
 
-  Translate::Translate(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties) 
-    : Component(aOwner, aSpace), mDir(aDir)
+  Translate::Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
+    : Component(aOwner, aSpace), mDir(Axis::X)
   {
 
   }
 
   void Translate::MoveObject(glm::vec3 aDelta)
   {
+    if (aDelta.x > 1 || aDelta.y > 1 || aDelta.z > 1)
+    {
+      return;
+    }
+
     glm::vec3 change = glm::vec3(0.0f, 0.0f, 0.0f);
 
     switch (mDir)
@@ -43,7 +48,7 @@ namespace YTE
     }
     }
 
-    YTE::Transform *transform = mOwner->GetComponent<YTE::Transform>();
+    YTE::Transform *transform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
 
     glm::vec3 pos = transform->GetWorldTranslation();
 

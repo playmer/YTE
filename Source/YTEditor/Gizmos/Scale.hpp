@@ -14,7 +14,7 @@ namespace YTE
 
     YTEDeclareType(Scale);
 
-    Scale(int aDir, Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Scale(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void ScaleObject(glm::vec3 aDelta);
 

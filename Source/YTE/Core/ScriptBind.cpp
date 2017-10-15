@@ -52,6 +52,10 @@
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
 
+#include "YTEditor/Gizmos/Translate.hpp"
+#include "YTEditor/Gizmos/Scale.hpp"
+#include "YTEditor/Gizmos/Rotate.hpp"
+
 namespace YTE
 {
   void InitializeYTETypes()
@@ -114,6 +118,10 @@ namespace YTE
     InitializeType<WWiseSystem>();
     InitializeType<WWiseEmitter>();
     InitializeType<WWiseListener>();
+
+    InitializeType<Translate>();
+    InitializeType<Scale>();
+    InitializeType<Rotate>();
     
     InitializeType<void>();
     InitializeType<bool>();
