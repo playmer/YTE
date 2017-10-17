@@ -10,12 +10,14 @@ namespace YTE
   YTEDefineType(Rotate)
   {
     YTERegisterType(Rotate);
+    YTEBindProperty(&Rotate::GetDirection, &Rotate::SetDirection, "Direction")
+      .AddAttribute<Serializable>();
   }
 
   Rotate::Rotate(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
-
+    DeserializeByType<Rotate*>(aProperties, this, Rotate::GetStaticType());
   }
 
   void Rotate::RotateObject(glm::vec3 aDelta)

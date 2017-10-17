@@ -10,12 +10,14 @@ namespace YTE
   YTEDefineType(Scale)
   {
     YTERegisterType(Scale);
+    YTEBindProperty(&Scale::GetDirection, &Scale::SetDirection, "Direction")
+      .AddAttribute<Serializable>();
   }
 
   Scale::Scale(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
     : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
-
+    DeserializeByType<Scale*>(aProperties, this, Scale::GetStaticType());
   }
 
   void Scale::ScaleObject(glm::vec3 aDelta)

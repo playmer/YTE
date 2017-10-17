@@ -159,12 +159,14 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
   {
     auto obj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
 
-    if (obj->GetName() == "Gizmo")
+    if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
     {
       mIsGizmoActive = true;
+      mCurrentAxis = obj;
     }
     else
     {
+      mCurrentAxis = nullptr;
       mCurrentObj = obj;
     }
     
@@ -217,8 +219,7 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
 
       case Gizmo::Translate:
       {
-        YTE::String ax = "X_Axis";
-        giz->mGizmoObj->FindFirstCompositionByName(ax)->GetComponent<Translate>()->MoveObject(realDelta);
+        giz->mGizmoObj->FindFirstCompositionByName(mCurrentAxis->GetName())->GetComponent<Translate>()->MoveObject(realDelta);
         break;
       }
 

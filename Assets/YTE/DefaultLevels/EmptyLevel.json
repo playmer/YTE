@@ -1,0 +1,88 @@
+{
+    "Archetype": "",
+    "Compositions": {
+        "Camera": {
+            "Archetype": "",
+            "Compositions": {},
+            "Components": {
+                "Transform": {
+                    "Rotation": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "Scale": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "Translation": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "WorldRotation": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "WorldScale": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "WorldTranslation": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    }
+                },
+                "Camera": {
+                    "CameraType": "TargetPoint",
+                    "FarPlane": 2000.0,
+                    "FieldOfViewY": 45.0,
+                    "NearPlane": 0.10000000149011612,
+                    "TargetPoint": {
+                        "Vector3": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "Zoom Planes": {
+                        "Vector2": {
+                            "x": 2.0,
+                            "y": 30.0
+                        }
+                    }
+                },
+                "Orientation": {}
+            }
+        }
+    },
+    "Components": {
+        "GraphicsView": {
+            "WindowName": "Yours Truly Engine",
+            "ClearColor": {
+                "Vector4": {
+                    "x": 0.4399999976158142,
+                    "y": 0.4399999976158142,
+                    "z": 0.4399999976158142,
+                    "w": 1.0
+                }
+            }
+        }
+    }
+}

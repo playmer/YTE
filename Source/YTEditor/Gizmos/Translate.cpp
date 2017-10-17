@@ -10,12 +10,14 @@ namespace YTE
   YTEDefineType(Translate)
   {
     YTERegisterType(Translate);
+    YTEBindProperty(&Translate::GetDirection, &Translate::SetDirection, "Direction")
+      .AddAttribute<Serializable>();
   }
 
   Translate::Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
     : Component(aOwner, aSpace), mDir(Axis::X)
   {
-
+    DeserializeByType<Translate*>(aProperties, this, Translate::GetStaticType());
   }
 
   void Translate::MoveObject(glm::vec3 aDelta)
