@@ -59,4 +59,6 @@ class PhysicsHandler : public YTE::EventHandler
     bool mIsGizmoActive;
     glm::vec4 mPrevMousePos;
     YTE::Composition *mCurrentObj;
+    YTE::Composition *mCurrentAxis;
+
 };

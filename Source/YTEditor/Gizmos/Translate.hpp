@@ -18,6 +18,9 @@ namespace YTE
 
     void MoveObject(glm::vec3 aDelta);
 
+    void SetDirection(int aDir) { mDir = aDir; }
+    int GetDirection() { return mDir; }
+
   private:
     int mDir;
 

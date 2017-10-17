@@ -12,6 +12,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include <filesystem>
+#include <fstream>
+
 #include <qapplication.h>
 #include <qfiledialog.h>
 #include <qdesktopservices.h>
@@ -59,6 +62,23 @@ FileMenu::~FileMenu()
 
 void FileMenu::NewLevel()
 {
+  namespace fs = std::experimental::filesystem;
+  fs::path workingDir{ YTE::Path::GetGamePath().String() };
+  fs::path assetsDir{ workingDir.parent_path() };
+
+  QFileDialog dialog;
+
+  dialog.setWindowFilePath(QString(assetsDir.c_str()));
+  dialog.setFileMode(QFileDialog::AnyFile);
+  QString strFile = dialog.getSaveFileName(nullptr, "Create New File");
+
+  QFile file(strFile);
+  file.open(QIODevice::WriteOnly);
+
+
+  file.close();
+
+  mMainWindow->LoadLevel(strFile.toStdString());
 }
 
 void FileMenu::OpenLevel()
