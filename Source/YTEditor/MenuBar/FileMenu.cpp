@@ -68,7 +68,7 @@ void FileMenu::NewLevel()
 
   QFileDialog dialog;
 
-  dialog.setWindowFilePath(QString(assetsDir.c_str()));
+  dialog.setWindowFilePath(QString(assetsDir.generic_string().c_str()));
   dialog.setFileMode(QFileDialog::AnyFile);
   QString strFile = dialog.getSaveFileName(nullptr, "Create New File");
 
