@@ -15,7 +15,8 @@ namespace YTE
   }
 
   Translate::Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
-    : Component(aOwner, aSpace), mDir(Axis::X)
+    : Component(aOwner, aSpace)
+    , mDir(Axis::X)
   {
     DeserializeByType<Translate*>(aProperties, this, Translate::GetStaticType());
   }

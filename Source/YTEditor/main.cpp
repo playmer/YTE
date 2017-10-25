@@ -19,11 +19,14 @@
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
+#include "YTE/Core/ComponentSystem.h"
 
 #include "ComponentBrowser/ComponentBrowser.hpp"
 #include "ComponentBrowser/ComponentWidget.hpp"
 #include "GameWindow/GameWindow.hpp"
+#include "MainWindow/YTEditorComponentFactoryInit.hpp"
 #include "MainWindow/YTEditorMainWindow.hpp"
+#include "MainWindow/YTEditorScriptBind.hpp"
 #include "ObjectBrowser/ObjectBrowser.hpp"
 #include "OutputConsole/OutputConsole.hpp"
 
@@ -66,6 +69,16 @@ int main(int argc, char *argv[])
   YTE::InitializeYTETypes();
   YTE::Engine mainEngine{ "../../../../../Assets/Bin/Config", true };
   
+
+  // initialize types first
+  YTEditor::InitializeYTEditorTypes();
+
+  // then create factories for them
+  YTE::ComponentSystem *componentSystem = mainEngine.GetComponent<YTE::ComponentSystem>();
+  YTE::FactoryMap *factoryMap = componentSystem->GetComponentFactories();
+  YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
+
+
   // Construct the main window
   YTEditorMainWindow *mainWindow = new YTEditorMainWindow(&mainEngine, &app);
 

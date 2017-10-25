@@ -118,10 +118,6 @@ namespace YTE
     InitializeType<WWiseSystem>();
     InitializeType<WWiseEmitter>();
     InitializeType<WWiseListener>();
-
-    InitializeType<Translate>();
-    InitializeType<Scale>();
-    InitializeType<Rotate>();
     
     InitializeType<void>();
     InitializeType<bool>();
