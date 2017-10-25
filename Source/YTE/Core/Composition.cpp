@@ -1,21 +1,3 @@
-Skip to content
-This repository
-Search
-Pull requests
-Issues
-Marketplace
-Explore
-@nicholasammann
-Sign out
-Watch 6
-Star 1  Fork 0 playmer / YTE Private
-Code  Issues 43  Pull requests 0  Projects 0  Wiki  Insights
-Branch : joshua / for_nick Find file Copy pathYTE / Source / YTE / Core / Composition.cpp
-  b252594  12 minutes ago
-  @playmer playmer Friendly little composition work
-  3 contributors @playmer @etc597 @nicholasammann
-  RawBlameHistory
-  754 lines(589 sloc)  20.7 KB
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.h"
@@ -769,15 +751,3 @@ Branch : joshua / for_nick Find file Copy pathYTE / Source / YTE / Core / Compos
     return false;
   }
 }
-© 2017 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Help
-Contact GitHub
-API
-Training
-Shop
-Blog
-About
