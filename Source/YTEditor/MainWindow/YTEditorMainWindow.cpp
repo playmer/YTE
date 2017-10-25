@@ -263,13 +263,13 @@ void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
   mRunningLevelName = aLevelName;
 
   // Get all the compositions on the engine
-  YTE::CompositionMap * engineMap = mRunningEngine->GetCompositions();
+  YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
 
   // iterator to the main session space
   auto it_mainSession = engineMap->begin();
 
   // Get the space that represents the main session
-  YTE::Space * mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
+  YTE::Space *mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
 
   mainSession->LoadLevel(aLevelName);
 
@@ -278,12 +278,12 @@ void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
   LoadCurrentLevelInfo();
 }
 
-QApplication * YTEditorMainWindow::GetApplication()
+QApplication* YTEditorMainWindow::GetApplication()
 {
   return mApplication;
 }
 
-Gizmo * YTEditorMainWindow::GetGizmo()
+Gizmo* YTEditorMainWindow::GetGizmo()
 {
   return mGizmo;
 }

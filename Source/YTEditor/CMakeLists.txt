@@ -45,6 +45,10 @@ Set(YTEditorSource main.cpp
                    Gizmos/Rotate.cpp
                    MainWindow/YTEditorMainWindow.hpp
                    MainWindow/YTEditorMainWindow.cpp
+				   MainWindow/YTEditorScriptBind.hpp
+                   MainWindow/YTEditorScriptBind.cpp
+				   MainWindow/YTEditorComponentFactoryInit.hpp
+                   MainWindow/YTEditorComponentFactoryInit.cpp
                    MaterialViewer/MaterialViewer.hpp
                    MaterialViewer/MaterialViewer.cpp
                    MenuBar/EditMenu.hpp

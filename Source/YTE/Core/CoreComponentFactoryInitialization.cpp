@@ -83,9 +83,6 @@ namespace YTE
     DeclareComponent(RigidBody);
     DeclareComponent(SphereCollider);
     DeclareComponent(Transform);
-    DeclareComponent(Translate);
-    DeclareComponent(Scale);
-    DeclareComponent(Rotate);
   }
 
   #undef DeclareComponent

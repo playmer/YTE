@@ -44,6 +44,7 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
+
   // Sets up the Space, probably could just be the constructor.
   Space::Space(Engine *aEngine, RSValue *aProperties)
                 : Composition(aEngine, this), mLevelToLoad(nullptr)

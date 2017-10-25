@@ -62,23 +62,47 @@ FileMenu::~FileMenu()
 
 void FileMenu::NewLevel()
 {
-  namespace fs = std::experimental::filesystem;
-  fs::path workingDir{ YTE::Path::GetGamePath().String() };
-  fs::path assetsDir{ workingDir.parent_path() };
+  //namespace fs = std::experimental::filesystem;
+  //fs::path workingDir{ YTE::Path::GetGamePath().String() };
+  //fs::path assetsDir{ workingDir.parent_path() };
+  //
+  //QFileDialog dialog;
+  //
+  //dialog.setWindowFilePath(QString(assetsDir.generic_string().c_str()));
+  //dialog.setFileMode(QFileDialog::AnyFile);
+  //QString strFile = dialog.getSaveFileName(nullptr, "Create New File");
+  //
+  //QFile file(strFile);
+  //file.open(QIODevice::WriteOnly);
+  //
+  //
+  //file.close();
+  //
+  //mMainWindow->LoadLevel(strFile.toStdString());
 
-  QFileDialog dialog;
-
-  dialog.setWindowFilePath(QString(assetsDir.generic_string().c_str()));
-  dialog.setFileMode(QFileDialog::AnyFile);
-  QString strFile = dialog.getSaveFileName(nullptr, "Create New File");
-
-  QFile file(strFile);
-  file.open(QIODevice::WriteOnly);
 
 
-  file.close();
+  // Get all the compositions on the engine
+  YTE::CompositionMap *engineMap = mMainWindow->GetRunningEngine()->GetCompositions();
 
-  mMainWindow->LoadLevel(strFile.toStdString());
+  //// iterator to the main session space
+  //auto it_mainSession = engineMap->begin();
+  //
+  //// Get the space that represents the main session
+  //YTE::Space *mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
+
+  engineMap->Clear();
+
+
+
+  engineMap->Emplace("NewLevel", std::make_unique<YTE::Space>(mMainWindow->GetRunningEngine()));
+
+  engineMap->FindFirst("NewLevel")->second->Initialize();
+
+  mMainWindow->GetRunningEngine()->Update();
+
+  mMainWindow->LoadCurrentLevelInfo();
+
 }
 
 void FileMenu::OpenLevel()
