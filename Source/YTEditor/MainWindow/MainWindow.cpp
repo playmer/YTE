@@ -52,6 +52,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
+#include "YTEditor/FileViewer/FileViewer.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/MenuBar/EditMenu.hpp"
@@ -469,14 +470,9 @@ namespace YTEditor
     mFileViewer = new QDockWidget("File Browser", this);
     mFileViewer->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    QFileSystemModel *fileModel = new QFileSystemModel(mFileViewer);
-    fileModel->setRootPath(QDir::currentPath() + "/../");
-    fileModel->setResolveSymlinks(true);
-
-    QTreeView *tree = new QTreeView();
-    tree->setModel(fileModel);
-    tree->setRootIndex(fileModel->index(QDir::currentPath() + "/../"));
-    mFileViewer->setWidget(tree);
+    FileViewer *fileTree = new FileViewer(mFileViewer);
+    
+    mFileViewer->setWidget(fileTree);
 
     this->addDockWidget(Qt::BottomDockWidgetArea, mFileViewer);
   }

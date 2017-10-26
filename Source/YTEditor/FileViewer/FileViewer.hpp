@@ -1,13 +1,20 @@
 #pragma once
 
-#include <qfilesystemmodel.h>
+#include <qtreeview.h>
+#include <qdockwidget.h>
+
+#include "YTE/Utilities/String/String.h"
 
 namespace YTEditor
 {
 
-  class FileViewer
+  class FileViewer : public QTreeView
   {
   public:
+
+    FileViewer(QDockWidget *aParent);
+
+
   };
 
 }
