@@ -122,6 +122,9 @@ btVector3 getRayTo(UBOView& aView,
   glm::vec3 rayDirectionWorld(rayToWorld - rayFromWorld);
   rayDirectionWorld = glm::normalize(rayDirectionWorld);
 
+  // print out mouse click world coordinates
+  //auto mc = BtToOurVec3(aRayFrom);
+  //std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
 
   return aRayFrom + OurVec3ToBt(rayDirectionWorld) * aFar;
 }
@@ -158,6 +161,7 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
   
   if (rayCallback.hasHit())
   {
+    std::cout << "OBJECT HIT" << std::endl;
     auto obj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
 
     if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
@@ -183,7 +187,7 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
 
 
   
-
+  /*
   // debug printing for gizmo axis transform values
   {
     auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
@@ -213,7 +217,7 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
     std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
 
   }
-
+  */
 }
 
 void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
@@ -247,13 +251,14 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
       auto realDelta = BtToOurVec3(gizmosFriendMouse) - gizPos;
 
       // print out mouse click world coordinates
-      auto mc = BtToOurVec3(gizmosFriendMouse);
-      std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
+      //auto mc = BtToOurVec3(gizmosFriendMouse);
+      //std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
 
       // debug printing for gizmo axis transform values
       {
         auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
 
+        /*
         // x axis
         YTE::String name = "X_Axis";
         auto *axis = gizObj->FindFirstCompositionByName(name);
@@ -277,7 +282,7 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
         wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
         std::cout << "Z Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
         std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
+        */
       }
 
       switch (giz->GetCurrentMode())
