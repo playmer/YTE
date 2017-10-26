@@ -24,13 +24,14 @@ public:
 
   FileMenu(YTEditorMainWindow *aMainWindow);
   ~FileMenu();
+
+  void NewLevel();
   void SaveLevel();
 
 private:
 
   YTEditorMainWindow * mMainWindow;
 
-  void NewLevel();
   void OpenLevel();
   void OpenFile();
   void ExitEditor();

@@ -59,7 +59,7 @@ namespace YTE
   static String cEngineName{ "Engine" };
 
   Engine::Engine(const char *aFile, bool aEditorMode)
-    : Composition(this, nullptr, cEngineName)
+    : Composition(this, cEngineName, nullptr)
     , mShouldRun(true)
     , mEditorMode(aEditorMode)
     , mFrame(0)
@@ -148,13 +148,16 @@ namespace YTE
       }
     }
 
-    auto &spaces = (*aValue)["Spaces"];
-
-    for (auto spacesIt = spaces.MemberBegin(); spacesIt < spaces.MemberEnd(); ++spacesIt)
+    if (!mEditorMode)
     {
-      std::string spaceName = spacesIt->name.GetString();
+      auto &spaces = (*aValue)["Spaces"];
 
-      mCompositions.Emplace(spaceName, std::make_unique<Space>(this, &spacesIt->value));
+      for (auto spacesIt = spaces.MemberBegin(); spacesIt < spaces.MemberEnd(); ++spacesIt)
+      {
+        std::string spaceName = spacesIt->name.GetString();
+
+        mCompositions.Emplace(spaceName, std::make_unique<Space>(this, &spacesIt->value));
+      }
     }
   }
 

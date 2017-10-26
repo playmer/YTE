@@ -55,7 +55,10 @@ namespace YTE
       mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
     }
 
-    DeserializeByType(aProperties, this, TypeId<Space>());
+    if (nullptr != aProperties)
+    {
+      DeserializeByType(aProperties, this, TypeId<Space>());
+    }
   }
 
 
@@ -63,8 +66,17 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load()
   {
-    mLevelName = mStartingLevel;
-    Load(mEngine->GetLevel(mStartingLevel));
+    if (mStartingLevel.Empty())
+    {
+      String empty = "EmptyLevel";
+      Load(mEngine->GetLevel(empty));
+      mLevelName = empty;
+    }
+    else
+    {
+      Load(mEngine->GetLevel(mStartingLevel));
+      mLevelName = mStartingLevel;
+    }
   }
 
   // Loads a level into the current Space. If already loaded, destroys 

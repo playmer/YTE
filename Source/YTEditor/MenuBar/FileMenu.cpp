@@ -21,9 +21,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Utilities/String/String.h"
 
 #include "../MainWindow/YTEditorMainWindow.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 #include "FileMenu.hpp"
 
@@ -80,28 +83,34 @@ void FileMenu::NewLevel()
   //
   //mMainWindow->LoadLevel(strFile.toStdString());
 
-
-
-  // Get all the compositions on the engine
-  YTE::CompositionMap *engineMap = mMainWindow->GetRunningEngine()->GetCompositions();
-
-  //// iterator to the main session space
-  //auto it_mainSession = engineMap->begin();
+  //YTE::Engine *engine = mMainWindow->GetRunningEngine();
   //
-  //// Get the space that represents the main session
-  //YTE::Space *mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
+  //// current level name 
+  //YTE::String &lvlName = mMainWindow->GetRunningSpaceName();
+  //
+  //// get the current level
+  //YTE::Composition *currLvl = engine->FindFirstCompositionByName(lvlName);
+  //
+  //engine->RemoveComposition(currLvl);
+  //
+  //
+  //YTE::String newLevelName{ "NewLevel" };
+  //
+  //// add an empty composition to represent the new level
+  //YTE::Space *newLevel = engine->AddComposition<YTE::Space>(newLevelName, engine, nullptr);
+  //
+  //YTE::String camName{ "Camera" };
+  //
+  //// add the camera object to the new level
+  //YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, engine, camName, newLevel);
+  //
+  //// add the camera component to the camera object
+  //camera->AddComponent(YTE::Camera::GetStaticType());
 
-  engineMap->Clear();
+  //mMainWindow->GetRunningEngine()->Update();
+  //mMainWindow->LoadCurrentLevelInfo();
 
-
-
-  engineMap->Emplace("NewLevel", std::make_unique<YTE::Space>(mMainWindow->GetRunningEngine()));
-
-  engineMap->FindFirst("NewLevel")->second->Initialize();
-
-  mMainWindow->GetRunningEngine()->Update();
-
-  mMainWindow->LoadCurrentLevelInfo();
+  mMainWindow->LoadLevel("EmptyLevel");
 
 }
 

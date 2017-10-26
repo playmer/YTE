@@ -20,6 +20,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/ComponentSystem.h"
+#include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 
 #include "ComponentBrowser/ComponentBrowser.hpp"
 #include "ComponentBrowser/ComponentWidget.hpp"
@@ -27,6 +29,7 @@
 #include "MainWindow/YTEditorComponentFactoryInit.hpp"
 #include "MainWindow/YTEditorMainWindow.hpp"
 #include "MainWindow/YTEditorScriptBind.hpp"
+#include "MenuBar/FileMenu.hpp"
 #include "ObjectBrowser/ObjectBrowser.hpp"
 #include "OutputConsole/OutputConsole.hpp"
 
@@ -68,7 +71,6 @@ int main(int argc, char *argv[])
   // RUNNING THE GAME
   YTE::InitializeYTETypes();
   YTE::Engine mainEngine{ "../../../../../Assets/Bin/Config", true };
-  
 
   // initialize types first
   YTEditor::InitializeYTEditorTypes();
@@ -79,8 +81,24 @@ int main(int argc, char *argv[])
   YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
 
 
+  // create an empty level
+  YTE::String newLevelName{ "NewLevel" };
+
+  // add an empty composition to represent the new level
+  YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
+
+  YTE::String camName{ "Camera" };
+
+  // add the camera object to the new level
+  YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
+
+  // add the camera component to the camera object
+  camera->AddComponent(YTE::Camera::GetStaticType());
+
   // Construct the main window
   YTEditorMainWindow *mainWindow = new YTEditorMainWindow(&mainEngine, &app);
+
+  mainWindow->SetRunningSpaceName(newLevelName);
 
   // Change the theme/color palette to dark
   SetDarkTheme(app);
