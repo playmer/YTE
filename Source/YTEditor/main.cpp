@@ -6,15 +6,15 @@
  * \copyright All content 2017 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "QtWidgets/QApplication.h"
 
-#include "QtWidgets/QMainWindow.h"
-#include "QtWidgets/QDockWidget.h"
-#include "QtWidgets/QTextEdit.h"
-#include "QtWidgets/QMenuBar.h"
-#include "QtWidgets/QToolBar.h"
-#include "QtWidgets/QAction.h"
-#include "QtWidgets/QTreeWidget.h"
+#include <qapplication.h>
+#include <qmainwindow.h>
+#include <qdockwidget.h>
+#include <qtextedit.h>
+#include <qmenubar.h>
+#include <qtoolbar.h>
+#include <qaction.h>
+#include <qtreewidget.h>
 #include <qstylefactory.h>
 
 #include "YTE/Core/Engine.hpp"
@@ -23,15 +23,15 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
-#include "ComponentBrowser/ComponentBrowser.hpp"
-#include "ComponentBrowser/ComponentWidget.hpp"
-#include "GameWindow/GameWindow.hpp"
-#include "MainWindow/YTEditorComponentFactoryInit.hpp"
-#include "MainWindow/YTEditorMainWindow.hpp"
-#include "MainWindow/YTEditorScriptBind.hpp"
-#include "MenuBar/FileMenu.hpp"
-#include "ObjectBrowser/ObjectBrowser.hpp"
-#include "OutputConsole/OutputConsole.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MainWindow/ScriptBind.hpp"
+#include "YTEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 
 // Helper function
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
   camera->AddComponent(YTE::Camera::GetStaticType());
 
   // Construct the main window
-  YTEditorMainWindow *mainWindow = new YTEditorMainWindow(&mainEngine, &app);
+  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app);
 
   mainWindow->SetRunningSpaceName(newLevelName);
 

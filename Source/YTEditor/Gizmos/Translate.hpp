@@ -2,19 +2,19 @@
 
 #include <glm/vec3.hpp>
 
-#include "../../YTE/Core/Component.hpp"
+#include "YTE/Core/Component.hpp"
 
 class YTEditorMainWindow;
 
-namespace YTE
+namespace YTEditor
 {
-  class Translate : public Component
+  class Translate : public YTE::Component
   {
   public:
 
     YTEDeclareType(Translate);
 
-    Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Translate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
 
     void MoveObject(glm::vec3 aDelta);
 

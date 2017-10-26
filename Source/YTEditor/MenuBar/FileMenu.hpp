@@ -16,25 +16,30 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
-class YTEditorMainWindow;
-
-class FileMenu : public QMenu
+namespace YTEditor
 {
-public:
 
-  FileMenu(YTEditorMainWindow *aMainWindow);
-  ~FileMenu();
+  class MainWindow;
 
-  void NewLevel();
-  void SaveLevel();
+  class FileMenu : public QMenu
+  {
+  public:
 
-private:
+    FileMenu(MainWindow *aMainWindow);
+    ~FileMenu();
 
-  YTEditorMainWindow * mMainWindow;
+    void NewLevel();
+    void SaveLevel();
 
-  void OpenLevel();
-  void OpenFile();
-  void ExitEditor();
+  private:
+
+    MainWindow * mMainWindow;
+
+    void OpenLevel();
+    void OpenFile();
+    void ExitEditor();
 
 
-};
+  };
+
+}

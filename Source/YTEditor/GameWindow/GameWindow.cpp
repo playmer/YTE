@@ -10,12 +10,10 @@ Implementation of the GameWindow that displays the running game.
 All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-#include <QEvent.h>
-#include <QTimer.h>
-#include <QWindow.h>
+#include <qevent.h>
+#include <qtimer.h>
+#include <qwindow.h>
 
-#include "YTE/Core/Engine.hpp"
-#include "../MainWindow/YTEditorMainWindow.hpp"
 
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
@@ -24,57 +22,62 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #endif
 
+#include "YTE/Core/Engine.hpp"
 
-#include "GameWindow.hpp"
+#include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 
-
-
-SubWindow::SubWindow(YTE::Window *aWindow, YTEditorMainWindow *aMainWindow)
-  : mWindow(aWindow), mMainWindow(aMainWindow)
+namespace YTEditor
 {
-}
 
-void SubWindow::resizeEvent(QResizeEvent *aEvent)
-{
-  auto size = aEvent->size();
+  SubWindow::SubWindow(YTE::Window *aWindow, MainWindow *aMainWindow)
+    : mWindow(aWindow), mMainWindow(aMainWindow)
+  {
+  }
 
-  YTE::WindowResize event;
-  event.height = size.height();
-  event.width = size.width();
+  void SubWindow::resizeEvent(QResizeEvent *aEvent)
+  {
+    auto size = aEvent->size();
 
-  mWindow->SendEvent(YTE::Events::WindowResize, &event);
-  mWindow->mEngine->Update();
-}
+    YTE::WindowResize event;
+    event.height = size.height();
+    event.width = size.width();
 
-void SubWindow::keyPressEvent(QKeyEvent * aEvent)
-{
-  mMainWindow->keyPressEvent(aEvent);
-  aEvent->ignore();
-}
+    mWindow->SendEvent(YTE::Events::WindowResize, &event);
+    mWindow->mEngine->Update();
+  }
 
-bool SubWindow::nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult)
-{
-  auto qtVal = QWindow::nativeEvent(aEventType, aMessage, aResult);
+  void SubWindow::keyPressEvent(QKeyEvent * aEvent)
+  {
+    mMainWindow->keyPressEvent(aEvent);
+    aEvent->ignore();
+  }
 
-  // TODO Implement this on other platforms maybe?
+  bool SubWindow::nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult)
+  {
+    auto qtVal = QWindow::nativeEvent(aEventType, aMessage, aResult);
+
+    // TODO Implement this on other platforms maybe?
 #ifdef Windows
-  MSG message = *(static_cast<MSG*>(aMessage));
+    MSG message = *(static_cast<MSG*>(aMessage));
 
-  TranslateMessage(&message);
+    TranslateMessage(&message);
 
-  if ((WM_SIZE != message.message) &&
+    if ((WM_SIZE != message.message) &&
       (WM_DESTROY != message.message) &&
       (WM_CLOSE != message.message) &&
       (WM_NCDESTROY != message.message) &&
       (0x90 /*WM_UAHDESTROYWINDOW*/ != message.message))
-  {
-    YTE::Window::MessageHandler(message.hwnd,
-                                message.message,
-                                message.wParam,
-                                message.lParam,
-                                mWindow);
-  }
+    {
+      YTE::Window::MessageHandler(message.hwnd,
+        message.message,
+        message.wParam,
+        message.lParam,
+        mWindow);
+    }
 #endif
 
-  return qtVal;
+    return qtVal;
+  }
+
 }

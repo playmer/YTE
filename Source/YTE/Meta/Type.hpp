@@ -41,17 +41,17 @@ namespace YTE
   // translation unit.
 #define YTEDeclareType(Name)                                   \
 void Dummy() {}                                                \
-typedef decltype(GetDummy(&Name::Dummy)) TempSelfType;         \
-typedef decltype(GetSelfType<TempSelfType>(nullptr)) BaseType; \
+typedef decltype(::YTE::GetDummy(&Name::Dummy)) TempSelfType;         \
+typedef decltype(::YTE::GetSelfType<TempSelfType>(nullptr)) BaseType; \
 typedef TempSelfType SelfType;                                 \
-static Type sType;                                             \
-static Type* GetStaticType() { return &sType; };               \
-Type* GetType() { return &sType; };                            \
+static ::YTE::Type sType;                                             \
+static ::YTE::Type* GetStaticType() { return &sType; };               \
+::YTE::Type* GetType() { return &sType; };                            \
 static void InitializeType();
 
 
 #define YTEDefineType(Name)                              \
-Type Name::sType{#Name,                                  \
+::YTE::Type Name::sType{#Name,                                  \
                  static_cast<Name*>(nullptr),            \
                  static_cast<Name::BaseType*>(nullptr)}; \
 void Name::InitializeType()
@@ -70,30 +70,30 @@ void Name::InitializeType()
 #define YTENoSetter nullptr
 #define YTENoGetter nullptr
 
-#define YTERegisterType(aType) Type::AddGlobalType(TypeId<aType>()->GetName(), TypeId<aType>())
+#define YTERegisterType(aType) ::YTE::Type::AddGlobalType(::YTE::TypeId<aType>()->GetName(), ::YTE::TypeId<aType>())
 
 #define YTEBindFunction(aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames)  \
-  BindFunction<decltype(aOverloadResolution aFunctionPointer),                                         \
+  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                         \
                aFunctionPointer,                                                                       \
                std::initializer_list<const char*>aInitializerListOfNames.size()>(                      \
     aFunctionName,                                                                                     \
-    TypeId<DecomposeFunctionObjectType<decltype(aOverloadResolution aFunctionPointer)>::ObjectType>(), \
+    ::YTE::TypeId<::YTE::DecomposeFunctionObjectType<decltype(aOverloadResolution aFunctionPointer)>::ObjectType>(), \
     aInitializerListOfNames)
 
 
 #define YTEBindEnum(aType) ;
 
 #define YTEBindField(aFieldPointer, aName, aPropertyBinding)              \
-  BindField<decltype(aFieldPointer), aFieldPointer>(                      \
+  ::YTE::BindField<decltype(aFieldPointer), aFieldPointer>(                      \
     aName,                                                                \
     aPropertyBinding,                                                     \
-    TypeId<DecomposeFieldPointer<decltype(aFieldPointer)>::ObjectType>())
+    ::YTE::TypeId<::YTE::DecomposeFieldPointer<decltype(aFieldPointer)>::ObjectType>())
 
 #define YTEBindProperty(aGetterFunction, aSetterFunction, aName)            \
-  BindProperty<decltype(aGetterFunction), aGetterFunction,                  \
+  ::YTE::BindProperty<decltype(aGetterFunction), aGetterFunction,                  \
                decltype(aSetterFunction), aSetterFunction>(                 \
     aName,                                                                  \
-    TypeId<DecomposePropertyType<decltype(aGetterFunction),                 \
+    ::YTE::TypeId<::YTE::DecomposePropertyType<decltype(aGetterFunction),                 \
                                  decltype(aSetterFunction)>::ObjectType>())
 
   class DocumentedObject : public Base
@@ -511,6 +511,50 @@ void Name::InitializeType()
     TypeIdentification<T>::InitializeType();
   }
 }
+
+/*
+
+#define YTEDeclareExternalType(Name)                          \
+\
+template<>                                               \
+struct ::YTE::TypeIdentification<Name>                          \
+{                                                        \
+static inline ::YTE::Type* ::YTE::TypeId()                           \
+{                                                      \
+static ::YTE::Type type{ #Name,                             \
+static_cast<Name*>(nullptr) };     \
+return &type;                                        \
+}                                                      \
+\
+static inline void InitializeType()                    \
+{                                                      \
+::YTE::Type::AddGlobalType(::YTE::TypeId()->GetName(), ::YTE::TypeId());  \
+}                                                      \
+};                                                       \
+\
+template<>                                               \
+void ::YTE::InitializeType<Name>();                             \
+
+
+#define YTEDefineExternalType(Name) template<> void ::YTE::InitializeType<Name>()
+
+YTEDeclareExternalType(void)
+YTEDeclareExternalType(bool)
+YTEDeclareExternalType(YTE::s8)
+YTEDeclareExternalType(YTE::i8)
+YTEDeclareExternalType(YTE::i16)
+YTEDeclareExternalType(YTE::i32)
+YTEDeclareExternalType(YTE::i64)
+YTEDeclareExternalType(YTE::u8)
+YTEDeclareExternalType(YTE::u16)
+YTEDeclareExternalType(YTE::u32)
+YTEDeclareExternalType(YTE::u64)
+YTEDeclareExternalType(float)
+YTEDeclareExternalType(double)
+YTEDeclareExternalType(std::string)
+YTEDeclareExternalType(YTE::String)
+
+*/
 
 #define YTEDeclareExternalType(Name)                          \
 namespace YTE                                              \

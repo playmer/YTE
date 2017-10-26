@@ -22,64 +22,69 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Utilities/Utilities.h"
 
-#include "OutputConsole.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
-OutputConsole::OutputConsole(QWidget *aParent)
-  : QWidget(aParent), mLayout(nullptr), mConsole(nullptr)
+namespace YTEditor
 {
-  SetWindowSettings();
-  ConstructInnerWidget();
-}
 
-OutputConsole::~OutputConsole()
-{
-}
+  OutputConsole::OutputConsole(QWidget *aParent)
+    : QWidget(aParent), mLayout(nullptr), mConsole(nullptr)
+  {
+    SetWindowSettings();
+    ConstructInnerWidget();
+  }
 
-void OutputConsole::PrintToConsole(const char *aString)
-{
-  mConsole->append(aString);
-}
+  OutputConsole::~OutputConsole()
+  {
+  }
 
-void OutputConsole::PrintLn(const char *aFormatString, ...)
-{
-  va_list variadicArguments;
-  va_start(variadicArguments, aFormatString);
+  void OutputConsole::PrintToConsole(const char *aString)
+  {
+    mConsole->append(aString);
+  }
 
-  auto formatted = YTE::Format(aFormatString, variadicArguments);
+  void OutputConsole::PrintLn(const char *aFormatString, ...)
+  {
+    va_list variadicArguments;
+    va_start(variadicArguments, aFormatString);
 
-  PrintToConsole(formatted.c_str());
-}
+    auto formatted = YTE::Format(aFormatString, variadicArguments);
 
-QColor OutputConsole::Color::Black{ 0,0,0 };
-QColor OutputConsole::Color::Red{ 255,0,0 };
-QColor OutputConsole::Color::Blue{ 0,0,255 };
-QColor OutputConsole::Color::Green{ 0,255,0 };
+    PrintToConsole(formatted.c_str());
+  }
 
-void OutputConsole::PrintLnC(QColor aColor,const char *aFormatString, ...)
-{
-  mConsole->setTextColor(aColor);
+  QColor OutputConsole::Color::Black{ 0,0,0 };
+  QColor OutputConsole::Color::Red{ 255,0,0 };
+  QColor OutputConsole::Color::Blue{ 0,0,255 };
+  QColor OutputConsole::Color::Green{ 0,255,0 };
 
-  va_list variadicArguments;
-  va_start(variadicArguments, aFormatString);
+  void OutputConsole::PrintLnC(QColor aColor, const char *aFormatString, ...)
+  {
+    mConsole->setTextColor(aColor);
 
-  auto formatted = YTE::Format(aFormatString, variadicArguments);
+    va_list variadicArguments;
+    va_start(variadicArguments, aFormatString);
 
-  PrintToConsole(formatted.c_str());
+    auto formatted = YTE::Format(aFormatString, variadicArguments);
 
-  mConsole->setTextColor(Color::Black);
-}
+    PrintToConsole(formatted.c_str());
+
+    mConsole->setTextColor(Color::Black);
+  }
 
 
-void OutputConsole::SetWindowSettings()
-{
-  setMinimumHeight(100);
-}
+  void OutputConsole::SetWindowSettings()
+  {
+    setMinimumHeight(100);
+  }
 
-void OutputConsole::ConstructInnerWidget()
-{
-  mLayout = new QGridLayout(this);
-  mConsole = new QTextEdit();;
-  
-  mConsole->setReadOnly(true);
-  mLayout->addWidget(mConsole);
+  void OutputConsole::ConstructInnerWidget()
+  {
+    mLayout = new QGridLayout(this);
+    mConsole = new QTextEdit();;
+
+    mConsole->setReadOnly(true);
+    mLayout->addWidget(mConsole);
+  }
+
 }

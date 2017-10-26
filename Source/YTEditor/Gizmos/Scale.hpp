@@ -2,19 +2,19 @@
 
 #include <glm/vec3.hpp>
 
-#include "../../YTE/Core/Component.hpp"
+#include "YTE/Core/Component.hpp"
 
 class YTEditorMainWindow;
 
-namespace YTE
+namespace YTEditor
 {
-  class Scale : public Component
+  class Scale : public YTE::Component
   {
   public:
 
     YTEDeclareType(Scale);
 
-    Scale(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
 
     void ScaleObject(glm::vec3 aDelta);
 

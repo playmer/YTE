@@ -1,4 +1,3 @@
-/******************************************************************************/
 /*!
 \file   GameWindow.hpp
 \author Nicholas Ammann
@@ -14,26 +13,29 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <QWidget.h>
-#include <QWindow.h>
+#include <qwidget.h>
+#include <qwindow.h>
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
-class YTEditorMainWindow;
-
-class SubWindow : public QWindow
+namespace YTEditor
 {
-public:
-  SubWindow(YTE::Window *aWindow, YTEditorMainWindow *aMainWindow);
 
-  void resizeEvent(QResizeEvent *aEvent);
-  bool nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult) override;
+  class MainWindow;
 
-  void keyPressEvent(QKeyEvent *aEvent);
+  class SubWindow : public QWindow
+  {
+  public:
+    SubWindow(YTE::Window *aWindow, MainWindow *aMainWindow);
 
-  YTE::Window *mWindow;
+    void resizeEvent(QResizeEvent *aEvent);
+    bool nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult) override;
 
-  YTEditorMainWindow *mMainWindow;
-};
+    void keyPressEvent(QKeyEvent *aEvent);
 
+    YTE::Window *mWindow;
 
+    MainWindow *mMainWindow;
+  };
+
+}

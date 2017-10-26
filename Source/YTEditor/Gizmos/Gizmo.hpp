@@ -2,38 +2,42 @@
 
 #include <glm/vec3.hpp>
 
-#include "../../YTE/Core/Composition.hpp"
+#include "YTE/Core/Composition.hpp"
 
-class YTEditorMainWindow;
-
-class Axis;
-
-class Gizmo
+namespace YTEditor
 {
-public:
 
-  Gizmo(YTEditorMainWindow *aMainWindow);
+  class MainWindow;
 
-  void SetMode(int aMode);
-  int GetCurrentMode();
+  class Axis;
 
-  YTE::Composition *mGizmoObj;
-
-protected:
-
-  YTEditorMainWindow *mMainWindow;
-
-
-  int mMode;
-
-public:
-  enum Mode
+  class Gizmo
   {
-    Select,
-    Translate,
-    Scale,
-    Rotate
+  public:
+
+    Gizmo(MainWindow *aMainWindow);
+
+    void SetMode(int aMode);
+    int GetCurrentMode();
+
+    YTE::Composition *mGizmoObj;
+
+  protected:
+
+    MainWindow *mMainWindow;
+
+
+    int mMode;
+
+  public:
+    enum Mode
+    {
+      Select,
+      Translate,
+      Scale,
+      Rotate
+    };
+
   };
 
-};
-
+}

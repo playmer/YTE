@@ -1,8 +1,8 @@
-#include "YTEditorComponentFactoryInit.hpp"
 
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
 #include "YTEditor/Gizmos/Rotate.hpp"
+#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
 
 namespace YTEditor
 {
@@ -32,9 +32,9 @@ namespace YTEditor
   {
     ComponentFactoryHelper helper(aEngine, &currComponentFactories);
 
-    helper.CreateComponentFactory<YTE::Translate>();
-    helper.CreateComponentFactory<YTE::Scale>();
-    helper.CreateComponentFactory<YTE::Rotate>();
+    helper.CreateComponentFactory<Translate>();
+    helper.CreateComponentFactory<Scale>();
+    helper.CreateComponentFactory<Rotate>();
   }
 
 

@@ -12,42 +12,47 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "UndoRedo.hpp"
+#include "YTEditor/UndoRedo/UndoRedo.hpp"
 
-UndoRedo::UndoRedo() : mUndoStack(), mRedoStack()
+namespace YTEditor
 {
-}
 
-UndoRedo::~UndoRedo()
-{
-}
-
-void UndoRedo::ExecuteUndo()
-{
-  if (mUndoStack.size() == 0)
+  UndoRedo::UndoRedo() : mUndoStack(), mRedoStack()
   {
-    return;
   }
 
-  mUndoStack.top()->UnExecute();
-  mRedoStack.emplace(std::move(mUndoStack.top()));
-  mUndoStack.pop();
-}
-
-void UndoRedo::ExecuteRedo()
-{
-  if (mRedoStack.size() == 0)
+  UndoRedo::~UndoRedo()
   {
-    return;
   }
 
-  mRedoStack.top()->Execute();
-  mUndoStack.emplace(std::move(mRedoStack.top()));
-  mRedoStack.pop();
-}
+  void UndoRedo::ExecuteUndo()
+  {
+    if (mUndoStack.size() == 0)
+    {
+      return;
+    }
 
-void UndoRedo::InsertCommand(std::unique_ptr<Command> aUndo)
-{
-  mUndoStack.emplace(std::move(aUndo));
-  mRedoStack = std::stack<std::unique_ptr<Command>>();
+    mUndoStack.top()->UnExecute();
+    mRedoStack.emplace(std::move(mUndoStack.top()));
+    mUndoStack.pop();
+  }
+
+  void UndoRedo::ExecuteRedo()
+  {
+    if (mRedoStack.size() == 0)
+    {
+      return;
+    }
+
+    mRedoStack.top()->Execute();
+    mUndoStack.emplace(std::move(mRedoStack.top()));
+    mRedoStack.pop();
+  }
+
+  void UndoRedo::InsertCommand(std::unique_ptr<Command> aUndo)
+  {
+    mUndoStack.emplace(std::move(aUndo));
+    mRedoStack = std::stack<std::unique_ptr<Command>>();
+  }
+
 }

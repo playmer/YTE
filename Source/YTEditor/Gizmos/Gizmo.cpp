@@ -1,23 +1,27 @@
-#include "../../YTE/Core/Engine.hpp"
+#include "YTE/Core/Engine.hpp"
 
-#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "YTEditor/Gizmos/Axis.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 
-#include "Axis.hpp"
-#include "Gizmo.hpp"
-
-Gizmo::Gizmo(YTEditorMainWindow * aMainWindow) : mMode(Translate)
+namespace YTEditor
 {
-}
 
-void Gizmo::SetMode(int aMode)
-{
-  if (Select <= aMode && aMode <= Rotate)
+  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Translate)
   {
-    mMode = aMode;
   }
-}
 
-int Gizmo::GetCurrentMode()
-{
-  return mMode;
+  void Gizmo::SetMode(int aMode)
+  {
+    if (Select <= aMode && aMode <= Rotate)
+    {
+      mMode = aMode;
+    }
+  }
+
+  int Gizmo::GetCurrentMode()
+  {
+    return mMode;
+  }
+
 }

@@ -16,47 +16,52 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
-class YTEditorMainWindow;
-
-class GameObjectMenu : public QMenu
+namespace YTEditor
 {
-public:
 
-  GameObjectMenu(YTEditorMainWindow *aMainWindow);
-  ~GameObjectMenu();
+  class MainWindow;
 
-private:
+  class GameObjectMenu : public QMenu
+  {
+  public:
 
-  YTEditorMainWindow * mMainWindow;
+    GameObjectMenu(MainWindow *aMainWindow);
+    ~GameObjectMenu();
 
-  QAction * MakeEmptyObjectAction();
-  void CreateEmptyObject();
+  private:
 
-  QMenu * Make3DObjectMenu();
-  void CreateCube();
-  void CreateSphere();
-  void CreatePlane();
+    MainWindow * mMainWindow;
 
-  QMenu * Make2DObjectMenu();
-  void CreateSprite();
+    QAction * MakeEmptyObjectAction();
+    void CreateEmptyObject();
 
-  QMenu * MakeLightMenu();
-  void CreatePointLight();
-  void CreateDirectionalLight();
-  void CreateAreaLight();
+    QMenu * Make3DObjectMenu();
+    void CreateCube();
+    void CreateSphere();
+    void CreatePlane();
 
-  QMenu * MakeAudioMenu();
-  void CreateAudioSource();
+    QMenu * Make2DObjectMenu();
+    void CreateSprite();
 
-  QMenu * MakeUIMenu();
-  void CreateText();
-  void CreateImage();
-  void CreateButton();
+    QMenu * MakeLightMenu();
+    void CreatePointLight();
+    void CreateDirectionalLight();
+    void CreateAreaLight();
 
-  QAction * MakeParticleSystemAction();
-  void CreateParticleSystem();
+    QMenu * MakeAudioMenu();
+    void CreateAudioSource();
 
-  QAction * MakeCameraAction();
-  void CreateCamera();
+    QMenu * MakeUIMenu();
+    void CreateText();
+    void CreateImage();
+    void CreateButton();
 
-};
+    QAction * MakeParticleSystemAction();
+    void CreateParticleSystem();
+
+    QAction * MakeCameraAction();
+    void CreateCamera();
+
+  };
+
+}

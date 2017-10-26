@@ -1,20 +1,20 @@
-#include "../../YTE/Core/Composition.hpp"
-#include "../../YTE/Physics/Transform.hpp"
+#include "YTE/Core/Composition.hpp"
+#include "YTE/Physics/Transform.hpp"
 
-#include "Axis.hpp"
-#include "Scale.hpp"
+#include "YTEditor/Gizmos/Axis.hpp"
+#include "YTEditor/Gizmos/Scale.hpp"
 
-namespace YTE
+namespace YTEditor
 {
 
   YTEDefineType(Scale)
   {
     YTERegisterType(Scale);
     YTEBindProperty(&Scale::GetDirection, &Scale::SetDirection, "Direction")
-      .AddAttribute<Serializable>();
+      .AddAttribute<YTE::Serializable>();
   }
 
-  Scale::Scale(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
+  Scale::Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties) 
     : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
     DeserializeByType<Scale*>(aProperties, this, Scale::GetStaticType());

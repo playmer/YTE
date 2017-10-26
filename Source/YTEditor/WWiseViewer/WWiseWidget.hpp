@@ -2,19 +2,19 @@
 
 #include <qscrollarea.h>
 #include <qlayout.h>
-#include <QPushButton>
-#include <QWidget>
+#include <qpushButton>
+#include <qwidget>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/WWise/WWiseSystem.hpp"
 
-namespace YTE
+namespace YTEditor
 {
   class WWiseWidget : public QWidget
   {
   public:
-    WWiseWidget(QWidget *aParent, Engine *aEngine);
+    WWiseWidget(QWidget *aParent, YTE::Engine *aEngine);
     ~WWiseWidget();
 
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
@@ -22,8 +22,9 @@ namespace YTE
     void LoadEvents();
 
   private:
-    Engine *mEngine;
-    WWiseSystem *mSystem;
+
+    YTE::Engine *mEngine;
+    YTE::WWiseSystem *mSystem;
 
     QVBoxLayout *mLayout;
     QWidget *mSubWidget;

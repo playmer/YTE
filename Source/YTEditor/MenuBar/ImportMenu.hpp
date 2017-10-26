@@ -16,19 +16,24 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
-class YTEditorMainWindow;
-
-class ImportMenu : public QMenu
+namespace YTEditor
 {
-public:
 
-  ImportMenu(YTEditorMainWindow *aMainWindow);
-  ~ImportMenu();
+  class MainWindow;
 
-private:
+  class ImportMenu : public QMenu
+  {
+  public:
 
-  void ImportModel();
+    ImportMenu(MainWindow *aMainWindow);
+    ~ImportMenu();
 
-  YTEditorMainWindow * mMainWindow;
+  private:
 
-};
+    void ImportModel();
+
+    MainWindow * mMainWindow;
+
+  };
+
+}

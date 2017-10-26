@@ -29,71 +29,76 @@ namespace YTE
   class String;
 }
 
-class YTEditorMainWindow;
-class ObjectItem;
-
-class ObjectBrowser : public QTreeWidget
+namespace YTEditor
 {
-public:
-  ObjectBrowser(YTEditorMainWindow *aMainWindow, QWidget *parent = nullptr);
-  ~ObjectBrowser();
 
-  void ClearObjectBrowser();
+  class MainWindow;
+  class ObjectItem;
 
-  ObjectItem* AddObject(const char *aCompositionName, 
-                        const char *aArchetypeName,
-                        int aIndex = 0);
+  class ObjectBrowser : public QTreeWidget
+  {
+  public:
+    ObjectBrowser(MainWindow *aMainWindow, QWidget *parent = nullptr);
+    ~ObjectBrowser();
 
-  ObjectItem* AddChildObject(const char *aCompositionName,
-                             const char *aArchetypeName,
-                             ObjectItem *aParentObj,
-                             int aIndex = 0);
+    void ClearObjectBrowser();
 
-  ObjectItem* AddTreeItem(const char *aItemName, 
-                          YTE::Composition *aEngineObj,
-                          int aIndex = 0);
+    ObjectItem* AddObject(const char *aCompositionName,
+      const char *aArchetypeName,
+      int aIndex = 0);
 
-  ObjectItem* AddTreeItem(const char *aItemName, 
-                          ObjectItem * aParentObj, 
-                          YTE::Composition *aEngineObj,
-                          int aIndex = 0);
+    ObjectItem* AddChildObject(const char *aCompositionName,
+      const char *aArchetypeName,
+      ObjectItem *aParentObj,
+      int aIndex = 0);
 
-  ObjectItem* AddExistingComposition(const char *aCompositionName,
-                                     YTE::Composition *aComposition);
+    ObjectItem* AddTreeItem(const char *aItemName,
+      YTE::Composition *aEngineObj,
+      int aIndex = 0);
 
-  void LoadAllChildObjects(YTE::Composition *aParentObj, 
-                           ObjectItem *aParentItem);
+    ObjectItem* AddTreeItem(const char *aItemName,
+      ObjectItem * aParentObj,
+      YTE::Composition *aEngineObj,
+      int aIndex = 0);
 
-  YTE::Composition* GetCurrentObject();
+    ObjectItem* AddExistingComposition(const char *aCompositionName,
+      YTE::Composition *aComposition);
 
-  void RemoveObjectFromViewer(ObjectItem *aItem);
+    void LoadAllChildObjects(YTE::Composition *aParentObj,
+      ObjectItem *aParentItem);
 
-  ObjectItem* FindItemByComposition(YTE::Composition *aComp);
+    YTE::Composition* GetCurrentObject();
 
-  YTEditorMainWindow* GetMainWindow() const;
+    void RemoveObjectFromViewer(ObjectItem *aItem);
 
-  YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    ObjectItem* FindItemByComposition(YTE::Composition *aComp);
 
-  void SelectNoItem();
+    MainWindow* GetMainWindow() const;
 
-private:
-  YTEditorMainWindow *mMainWindow;
-  void SetWidgetSettings();
-  void OnCurrentItemChanged(QTreeWidgetItem *current, 
-                            QTreeWidgetItem *previous);
+    YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
-  void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
+    void SelectNoItem();
 
-  void CreateContextMenu(const QPoint & pos);
+  private:
+    MainWindow *mMainWindow;
+    void SetWidgetSettings();
+    void OnCurrentItemChanged(QTreeWidgetItem *current,
+      QTreeWidgetItem *previous);
 
-  void RemoveCurrentObject();
+    void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
 
-  void keyPressEvent(QKeyEvent *aEvent);
+    void CreateContextMenu(const QPoint & pos);
 
-  ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+    void RemoveCurrentObject();
 
-  void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-                                      YTE::vector<ObjectItem*>* aResult, 
-                                      ObjectItem* aItem);
+    void keyPressEvent(QKeyEvent *aEvent);
 
-};
+    ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+
+    void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
+      YTE::vector<ObjectItem*>* aResult,
+      ObjectItem* aItem);
+
+  };
+
+}
