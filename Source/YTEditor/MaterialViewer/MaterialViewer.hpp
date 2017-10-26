@@ -24,66 +24,71 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 
-
-class YTEditorMainWindow;
 class QVBoxLayout;
 class QWidget;
 class QComboBox;
-class SubWindow;
 class QWindow;
 
-template <class T>
-class PropertyWidget;
-class PropertyWidgetBase;
-
-
-class MaterialViewer : public QWidget
+namespace YTEditor
 {
-public:
-  MaterialViewer(YTEditorMainWindow *mainWindow, 
-                 QWidget *parent = nullptr, 
-                 YTE::Window *aWindow = nullptr);
-  ~MaterialViewer();
 
-  void LoadMaterial(YTE::UBOMaterial const& aMaterial);
+  class MainWindow;
+  class SubWindow;
 
-  void SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList);
+  template <class T>
+  class PropertyWidget;
+  class PropertyWidgetBase;
 
-  void LoadNoMaterial();
 
-private:
-
-  void OnCurrentMaterialChanged(int aIndex);
-
-  // Add, Get, or Remove a property
-  template <typename TYPE>
-  PropertyWidget<TYPE> * AddProperty(const char * aName)
+  class MaterialViewer : public QWidget
   {
-    PropertyWidget<TYPE> * prop = new PropertyWidget<TYPE>(aName, mMainWindow, mContainerLayout->widget());
-    mContainerLayout->addWidget(prop);
-    mContainer->setLayout(mContainerLayout);
-    mProperties.push_back(prop);
-    return prop;
-  }
+  public:
+    MaterialViewer(MainWindow *mainWindow,
+      QWidget *parent = nullptr,
+      YTE::Window *aWindow = nullptr);
+    ~MaterialViewer();
 
-  void AddVec3Property(const char * aName, glm::vec3 const& aVec);
-  void AddFloatProperty(const char * aName, float aVal);
+    void LoadMaterial(YTE::UBOMaterial const& aMaterial);
 
-  void Clear();
-  void ClearLayout();
+    void SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList);
 
-  YTEditorMainWindow *mMainWindow;
+    void LoadNoMaterial();
 
-  QComboBox *mComboBox;
-  SubWindow *mMaterialWindow;
+  private:
 
-  QGridLayout *mBaseLayout;
-  QScrollArea *mScrollArea;
-  QWidget *mContainer;
-  QVBoxLayout *mContainerLayout;
+    void OnCurrentMaterialChanged(int aIndex);
 
-  std::vector<PropertyWidgetBase*> mProperties;
-  YTE::String mCurrentMaterialName;
+    // Add, Get, or Remove a property
+    template <typename TYPE>
+    PropertyWidget<TYPE> * AddProperty(const char * aName)
+    {
+      PropertyWidget<TYPE> * prop = new PropertyWidget<TYPE>(aName, mMainWindow, mContainerLayout->widget());
+      mContainerLayout->addWidget(prop);
+      mContainer->setLayout(mContainerLayout);
+      mProperties.push_back(prop);
+      return prop;
+    }
 
-  std::vector<YTE::Submesh> *mCurrentSubMeshes;
-};
+    void AddVec3Property(const char * aName, glm::vec3 const& aVec);
+    void AddFloatProperty(const char * aName, float aVal);
+
+    void Clear();
+    void ClearLayout();
+
+    MainWindow *mMainWindow;
+
+    QComboBox *mComboBox;
+    SubWindow *mMaterialWindow;
+
+    QGridLayout *mBaseLayout;
+    QScrollArea *mScrollArea;
+    QWidget *mContainer;
+    QVBoxLayout *mContainerLayout;
+
+    std::vector<PropertyWidgetBase*> mProperties;
+    YTE::String mCurrentMaterialName;
+
+    std::vector<YTE::Submesh> *mCurrentSubMeshes;
+  };
+
+}

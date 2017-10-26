@@ -2,18 +2,21 @@
 
 #include <glm/vec3.hpp>
 
-#include "../../YTE/Core/Component.hpp"
-class YTEditorMainWindow;
+#include "YTE/Core/Component.hpp"
 
-namespace YTE
+
+namespace YTEditor
 {
-  class Rotate : public Component
+
+  class MainWindow;
+
+  class Rotate : public YTE::Component
   {
   public:
 
     YTEDeclareType(Rotate);
 
-    Rotate(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Rotate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
 
     void RotateObject(glm::vec3 aDelta);
 

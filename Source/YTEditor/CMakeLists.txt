@@ -10,6 +10,7 @@ Include_Directories(${ParentDirectory}
 Set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
+				   ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
                    ComponentBrowser/ComponentBrowser.hpp
@@ -27,8 +28,8 @@ Set(YTEditorSource main.cpp
                    ComponentBrowser/PropertyWidgetBase.hpp
                    ComponentBrowser/SearchBarEventFilter.hpp
                    ComponentBrowser/SearchBarEventFilter.cpp
-                   ComponentBrowser/YTECheckBox.hpp
-                   ComponentBrowser/YTELineEdit.hpp
+                   ComponentBrowser/CheckBox.hpp
+                   ComponentBrowser/LineEdit.hpp
                    FileViewer/FileViewer.hpp
                    FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
@@ -43,12 +44,12 @@ Set(YTEditorSource main.cpp
                    Gizmos/Scale.cpp
                    Gizmos/Rotate.hpp
                    Gizmos/Rotate.cpp
-                   MainWindow/YTEditorMainWindow.hpp
-                   MainWindow/YTEditorMainWindow.cpp
-				   MainWindow/YTEditorScriptBind.hpp
-                   MainWindow/YTEditorScriptBind.cpp
-				   MainWindow/YTEditorComponentFactoryInit.hpp
-                   MainWindow/YTEditorComponentFactoryInit.cpp
+                   MainWindow/MainWindow.hpp
+                   MainWindow/MainWindow.cpp
+				   MainWindow/ScriptBind.hpp
+                   MainWindow/ScriptBind.cpp
+				   MainWindow/ComponentFactoryInit.hpp
+                   MainWindow/ComponentFactoryInit.cpp
                    MaterialViewer/MaterialViewer.hpp
                    MaterialViewer/MaterialViewer.cpp
                    MenuBar/EditMenu.hpp

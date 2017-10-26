@@ -19,7 +19,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qstyleditemdelegate.h>
 #include <qtreewidget.h>
 
-class ObjectBrowser;
 
 namespace YTE
 {
@@ -27,51 +26,58 @@ namespace YTE
   class String;
 }
 
-class ObjectItem : public QTreeWidgetItem
+namespace YTEditor
 {
-public:
-  ObjectItem(YTE::String &aItemName,
-             ObjectBrowser *aParentTree,
-             YTE::Composition *aEngineObj,
-             YTE::Composition *aEngineLevel);
 
-  ObjectItem(YTE::String &aItemName,
-             ObjectItem *aParentItem,
-             YTE::Composition *aEngineObj,
-             YTE::Composition *aEngineLevel);
+  class ObjectBrowser;
 
-  ~ObjectItem();
+  class ObjectItem : public QTreeWidgetItem
+  {
+  public:
+    ObjectItem(YTE::String &aItemName,
+      ObjectBrowser *aParentTree,
+      YTE::Composition *aEngineObj,
+      YTE::Composition *aEngineLevel);
 
-  void Rename(YTE::String &aName);
-  void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
+    ObjectItem(YTE::String &aItemName,
+      ObjectItem *aParentItem,
+      YTE::Composition *aEngineObj,
+      YTE::Composition *aEngineLevel);
 
-  ObjectBrowser *GetObjectBrowser() const;
-  YTE::Composition *GetEngineObject() const;
+    ~ObjectItem();
 
-  void SetEngineObject(YTE::Composition *aComposition);
+    void Rename(YTE::String &aName);
+    void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
-private:
+    ObjectBrowser *GetObjectBrowser() const;
+    YTE::Composition *GetEngineObject() const;
 
-  ObjectBrowser * mObjectBrowser;
-  YTE::Composition * mEngineObject;
-  YTE::Composition * mEngineLevel;
-};
+    void SetEngineObject(YTE::Composition *aComposition);
 
-class ObjectItemDelegate : public QStyledItemDelegate
-{
-public:
-  ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget *aParent = nullptr);
+  private:
 
-  void paint(QPainter *painter, 
-             const QStyleOptionViewItem &option,
-             const QModelIndex &index) const override;
+    ObjectBrowser * mObjectBrowser;
+    YTE::Composition * mEngineObject;
+    YTE::Composition * mEngineLevel;
+  };
 
-  bool editorEvent(QEvent *event,
-                   QAbstractItemModel *model,
-                   const QStyleOptionViewItem &option,
-                   const QModelIndex &index);
+  class ObjectItemDelegate : public QStyledItemDelegate
+  {
+  public:
+    ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget *aParent = nullptr);
 
-private:
-  ObjectBrowser *mBrowser;
+    void paint(QPainter *painter,
+      const QStyleOptionViewItem &option,
+      const QModelIndex &index) const override;
 
-};
+    bool editorEvent(QEvent *event,
+      QAbstractItemModel *model,
+      const QStyleOptionViewItem &option,
+      const QModelIndex &index);
+
+  private:
+    ObjectBrowser *mBrowser;
+
+  };
+
+}

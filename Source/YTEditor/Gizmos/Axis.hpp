@@ -1,31 +1,34 @@
 #pragma once
 
-#include "../../YTE/Core/Composition.hpp"
+#include "YTE/Core/Composition.hpp"
+#include "YTE/Graphics/Model.hpp"
 
-#include "../../YTE/Graphics/Model.hpp"
-
-
-class Axis : public YTE::Composition
+namespace YTEditor
 {
-public:
 
-  Axis(int aDir, YTE::Engine *aEngine, YTE::Space *aSpace);
-
-private:
-
-  YTE::Model *mTranslateModel;
-  YTE::Model *mScaleModel;
-  YTE::Model *mRotateModel;
-
-  int mDir;
-
-public:
-  enum Dir
+  class Axis : public YTE::Composition
   {
-    X,
-    Y,
-    Z
+  public:
+
+    Axis(int aDir, YTE::Engine *aEngine, YTE::Space *aSpace);
+
+  private:
+
+    YTE::Model *mTranslateModel;
+    YTE::Model *mScaleModel;
+    YTE::Model *mRotateModel;
+
+    int mDir;
+
+  public:
+    enum Dir
+    {
+      X,
+      Y,
+      Z
+    };
+
+
   };
 
-
-};
+}

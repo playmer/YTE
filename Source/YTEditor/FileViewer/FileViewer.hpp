@@ -1,3 +1,13 @@
 #pragma once
 
-#include <qfileviewer>
+#include <qfilesystemmodel.h>
+
+namespace YTEditor
+{
+
+  class FileViewer
+  {
+  public:
+  };
+
+}

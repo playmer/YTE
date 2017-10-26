@@ -19,20 +19,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qlayout.h>
 #include <qstyleditemdelegate.h>
 
-
 #include "YTE/Core/Utilities.hpp"
 
-template <class T>
-class PropertyWidget;
-
-class PropertyWidgetBase;
-
-template <class T>
-class ComponentProperty;
-
-class ComponentTree;
-
-class YTEditorMainWindow;
 
 namespace YTE
 {
@@ -40,96 +28,115 @@ namespace YTE
   class Type;
 }
 
-class ComponentWidget : public QFrame
+
+namespace YTEditor
 {
-public:
 
-  ComponentWidget(YTE::Type * type, const char * name, 
-                  YTE::Component * engineComp, 
-                  YTEditorMainWindow *aMainWindow, 
-                  QWidget * parent = nullptr);
+  class MainWindow;
 
-  ~ComponentWidget();
+  template <class T>
+  class PropertyWidget;
 
-  std::string const& GetName() const;
+  class PropertyWidgetBase;
 
-  // Add, Get, or Remove a property from the component
-  template <typename tType>
-  ComponentProperty<tType>* AddPropertyOrField(const std::string &aName, bool aProperty)
+  template <class T>
+  class ComponentProperty;
+
+  class ComponentTree;
+
+
+  class ComponentWidget : public QFrame
   {
-    ComponentProperty<tType> * prop = new ComponentProperty<tType>(aName, mMainWindow, this);
-    mProperties->addWidget(prop);
+  public:
 
-    if (aProperty)
+    ComponentWidget(YTE::Type * type, const char * name,
+      YTE::Component * engineComp,
+      MainWindow *aMainWindow,
+      QWidget * parent = nullptr);
+
+    ~ComponentWidget();
+
+    std::string const& GetName() const;
+
+    // Add, Get, or Remove a property from the component
+    template <typename tType>
+    ComponentProperty<tType>* AddPropertyOrField(const std::string &aName, bool aProperty)
     {
-      mPropertyWidgets.push_back(prop);
+      ComponentProperty<tType> * prop = new ComponentProperty<tType>(aName, mMainWindow, this);
+      mProperties->addWidget(prop);
+
+      if (aProperty)
+      {
+        mPropertyWidgets.push_back(prop);
+      }
+      else
+      {
+        mFieldWidgets.push_back(prop);
+      }
+      return prop;
     }
-    else
+
+    void RemoveProperty(QWidget * aWidget);
+
+    void LoadProperties(YTE::Component & aComponent);
+    void LoadPropertyMap(YTE::Component &aComponent,
+      YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
+      bool aProperty);
+
+    void SavePropertiesToEngine();
+
+    YTE::Type * GetType()
     {
-      mFieldWidgets.push_back(prop);
+      return mType;
     }
-    return prop;
-  }
 
-  void RemoveProperty(QWidget * aWidget);
+    YTE::Component * GetEngineComponent()
+    {
+      return mEngineComponent;
+    }
 
-  void LoadProperties(YTE::Component & aComponent);
-  void LoadPropertyMap(YTE::Component &aComponent, 
-                       YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
-                       bool aProperty);
+    void RemoveComponentFromEngine();
 
-  void SavePropertiesToEngine();
+    std::vector<PropertyWidgetBase*> GetPropertyWidgets();
+    std::vector<PropertyWidgetBase*> GetFieldWidgets();
 
-  YTE::Type * GetType()
+    void keyPressEvent(QKeyEvent *aEvent);
+
+    MainWindow* GetMainWindow() { return mMainWindow; }
+
+  private:
+
+    MainWindow *mMainWindow;
+
+    std::string mCompName;
+    QVBoxLayout * mProperties;
+    YTE::Type * mType;
+
+    YTE::Component * mEngineComponent;
+
+    std::vector<PropertyWidgetBase*> mPropertyWidgets;
+    std::vector<PropertyWidgetBase*> mFieldWidgets;
+
+  };
+
+
+  class ComponentDelegate : public QStyledItemDelegate
   {
-    return mType;
-  }
+  public:
+    ComponentDelegate(ComponentTree *aTree, QWidget *aParent = nullptr);
 
-  YTE::Component * GetEngineComponent()
-  {
-    return mEngineComponent;
-  }
+    void paint(QPainter *painter,
+      const QStyleOptionViewItem &option,
+      const QModelIndex &index) const override;
 
-  void RemoveComponentFromEngine();
+    bool editorEvent(QEvent *event,
+      QAbstractItemModel *model,
+      const QStyleOptionViewItem &option,
+      const QModelIndex &index);
 
-  std::vector<PropertyWidgetBase*> GetPropertyWidgets();
-  std::vector<PropertyWidgetBase*> GetFieldWidgets();
+  private:
+    ComponentTree *mTree;
 
-  void keyPressEvent(QKeyEvent *aEvent);
+  };
 
-  YTEditorMainWindow* GetMainWindow() { return mMainWindow; }
-
-private:
-
-  YTEditorMainWindow *mMainWindow;
-
-  std::string mCompName;
-  QVBoxLayout * mProperties;
-  YTE::Type * mType;
-
-  YTE::Component * mEngineComponent;
-
-  std::vector<PropertyWidgetBase*> mPropertyWidgets;
-  std::vector<PropertyWidgetBase*> mFieldWidgets;
-
-};
-
-
-class ComponentDelegate : public QStyledItemDelegate
-{
-public:
-  ComponentDelegate(ComponentTree *aTree, QWidget *aParent = nullptr);
-
-  void paint(QPainter *painter, 
-             const QStyleOptionViewItem &option,
-             const QModelIndex &index) const override;
-
-  bool editorEvent(QEvent *event,
-                   QAbstractItemModel *model,
-                   const QStyleOptionViewItem &option,
-                   const QModelIndex &index);
-
-private:
-  ComponentTree *mTree;
-
-};
+}

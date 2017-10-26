@@ -12,16 +12,20 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "EditMenu.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MenuBar/EditMenu.hpp"
 
-#include "../MainWindow/YTEditorMainWindow.hpp"
-
-EditMenu::EditMenu(YTEditorMainWindow * aMainWindow) 
-  : QMenu("Edit"), mMainWindow(aMainWindow)
+namespace YTEditor
 {
-  addAction(new QAction("Placeholder"));
-}
 
-EditMenu::~EditMenu()
-{
+  EditMenu::EditMenu(MainWindow * aMainWindow)
+    : QMenu("Edit"), mMainWindow(aMainWindow)
+  {
+    addAction(new QAction("Placeholder"));
+  }
+
+  EditMenu::~EditMenu()
+  {
+  }
+
 }

@@ -17,28 +17,33 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qwidget.h>
 #include <qlayout.h>
 
-class ComponentBrowser;
-class ComponentSearchBar;
 class QLabel;
 
-class ComponentTools : public QWidget
+namespace YTEditor
 {
-public:
+  class ComponentBrowser;
+  class ComponentSearchBar;
 
-  ComponentTools(ComponentBrowser * parent = nullptr);
-  ~ComponentTools();
+  class ComponentTools : public QWidget
+  {
+  public:
 
-  void CreateSubWidgets();
+    ComponentTools(ComponentBrowser * parent = nullptr);
+    ~ComponentTools();
 
-  ComponentBrowser& GetBrowser();
-  ComponentSearchBar& GetSearchBar();
+    void CreateSubWidgets();
 
-private:
+    ComponentBrowser& GetBrowser();
+    ComponentSearchBar& GetSearchBar();
 
-  QHBoxLayout * mLayout;
-  ComponentBrowser * mBrowser;
+  private:
 
-  QLabel *mLabel;
-  ComponentSearchBar * mSearchBar;
+    QHBoxLayout * mLayout;
+    ComponentBrowser * mBrowser;
 
-};
+    QLabel *mLabel;
+    ComponentSearchBar * mSearchBar;
+
+  };
+
+}

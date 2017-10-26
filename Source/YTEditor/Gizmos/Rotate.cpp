@@ -1,20 +1,20 @@
-#include "../../YTE/Core/Composition.hpp"
-#include "../../YTE/Physics/Transform.hpp"
+#include "YTE/Core/Composition.hpp"
+#include "YTE/Physics/Transform.hpp"
 
-#include "Axis.hpp"
-#include "Rotate.hpp"
+#include "YTEditor/Gizmos/Axis.hpp"
+#include "YTEditor/Gizmos/Rotate.hpp"
 
-namespace YTE
+namespace YTEditor
 {
 
   YTEDefineType(Rotate)
   {
     YTERegisterType(Rotate);
     YTEBindProperty(&Rotate::GetDirection, &Rotate::SetDirection, "Direction")
-      .AddAttribute<Serializable>();
+      .AddAttribute<YTE::Serializable>();
   }
 
-  Rotate::Rotate(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Rotate::Rotate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
     : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
     DeserializeByType<Rotate*>(aProperties, this, Rotate::GetStaticType());

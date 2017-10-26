@@ -14,70 +14,76 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qwidget.h>
 #include <stack>
 
-class ComponentBrowser;
+#include <qwidget.h>
+
 class QPushButton;
 class QHBoxLayout;
 class QLineEdit;
 class QLabel;
-class ObjectItem;
 
 namespace YTE
 {
   class Composition;
 }
 
-class ArchetypeTools : public QWidget
+namespace YTEditor
 {
-public:
-  ArchetypeTools(ComponentBrowser *aBrowser);
-  ~ArchetypeTools();
+  class ComponentBrowser;
+  class ObjectItem;
 
-  int IncrementChanges();
-  int DecrementChanges();
-  void ClearChanges();
+  class ArchetypeTools : public QWidget
+  {
+  public:
+    ArchetypeTools(ComponentBrowser *aBrowser);
+    ~ArchetypeTools();
 
-  QLineEdit* GetLineEdit();
+    int IncrementChanges();
+    int DecrementChanges();
+    void ClearChanges();
 
-  void SetButtonMode(int aMode);
+    QLineEdit* GetLineEdit();
 
-private:
+    void SetButtonMode(int aMode);
 
-
-  ComponentBrowser *mBrowser;
-  QHBoxLayout *mLayout;
-
-  QLabel *mLabel;
-  QLineEdit *mArchNameBar;
-
-  QPushButton *mRevertButton;
-  void Revert();
-  void RevertObject(ObjectItem *aObject);
-  void RevertObject(YTE::Composition *aObject);
-
-  QPushButton *mSaveAsButton;
-  void SaveAs();
-
-  QPushButton *mOverwriteButton;
-  void Overwrite();
-
-  bool mIsArchetype; // is the current object based on an archetype
-  bool mIsDifferent; // is the current object different than its archetype
-
-  int mChanges;
-
-  void HideButtons();
+  private:
 
 
-public:
+    ComponentBrowser *mBrowser;
+    QHBoxLayout *mLayout;
+
+    QLabel *mLabel;
+    QLineEdit *mArchNameBar;
+
+    QPushButton *mRevertButton;
+    void Revert();
+    void RevertObject(ObjectItem *aObject);
+    void RevertObject(YTE::Composition *aObject);
+
+    QPushButton *mSaveAsButton;
+    void SaveAs();
+
+    QPushButton *mOverwriteButton;
+    void Overwrite();
+
+    bool mIsArchetype; // is the current object based on an archetype
+    bool mIsDifferent; // is the current object different than its archetype
+
+    int mChanges;
+
+    void HideButtons();
+
+
+  public:
     enum Mode
     {
-        NoArchetype,
-        IsSame,
-        HasChanged
+      NoArchetype,
+      IsSame,
+      HasChanged
     };
 
 
-};
+  };
+
+}

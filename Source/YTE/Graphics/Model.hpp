@@ -17,6 +17,8 @@
 
 namespace YTE
 {
+  class Window;
+
   class Model : public Component
   {
   public:
@@ -56,8 +58,6 @@ namespace YTE
       Create();
     }
 
-
-
     std::shared_ptr<Mesh> GetMesh();
 
     bool GetReload()
@@ -70,14 +70,10 @@ namespace YTE
       return mMeshName;
     }
 
-
-
   private:
     void Create();  // tells renderer to create mesh
     void Destroy(); // tells renderer to remove this instantiation
     void CreateTransform();
-
-
 
     std::string mMeshName;
     Renderer *mRenderer;

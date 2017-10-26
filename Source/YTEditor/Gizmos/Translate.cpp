@@ -1,20 +1,20 @@
-#include "../../YTE/Core/Composition.hpp"
-#include "../../YTE/Physics/Transform.hpp"
+#include "YTE/Core/Composition.hpp"
+#include "YTE/Physics/Transform.hpp"
 
-#include "Axis.hpp"
-#include "Translate.hpp"
+#include "YTEditor/Gizmos/Axis.hpp"
+#include "YTEditor/Gizmos/Translate.hpp"
 
-namespace YTE
+namespace YTEditor
 {
 
   YTEDefineType(Translate)
   {
     YTERegisterType(Translate);
     YTEBindProperty(&Translate::GetDirection, &Translate::SetDirection, "Direction")
-      .AddAttribute<Serializable>();
+      .AddAttribute<YTE::Serializable>();
   }
 
-  Translate::Translate(Composition *aOwner, Space *aSpace, RSValue *aProperties) 
+  Translate::Translate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties) 
     : Component(aOwner, aSpace)
     , mDir(Axis::X)
   {
