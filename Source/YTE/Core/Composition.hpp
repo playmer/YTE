@@ -51,7 +51,7 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine *aEngine, Space *aSpace, String &aName);
+    Composition(Engine *aEngine, String &aName, Space *aSpace);
     Composition(Engine *aEngine, Space *aSpace);
 
     ~Composition();
@@ -71,15 +71,16 @@ namespace YTE
     Space* GetSpace() const { return mSpace; }
     Engine* GetEngine() const { return mEngine; }
 
-
-    template<typename tComposition>
-    Composition* AddComposition(String aObjectName)
+    // aObjectName is the name that the Composition gets mapped to. The arguments
+    // are passed to the tComposition constructor. We always pass engine.
+    template<typename tComposition, typename... Arguments>
+    tComposition* AddComposition(String aObjectName, Arguments &&...aArguments)
     {
-      AddCompositionInternal(std::make_unique<tComposition>(mEngine,
-        mSpace,
-        aObjectName),
-        nullptr,
-        aObjectName);
+      tComposition *result = static_cast<tComposition*>(AddCompositionInternal(std::make_unique<tComposition>(aArguments...),
+                                                                               nullptr,
+                                                                               aObjectName));
+
+      return result;
     }
 
     Composition* AddComposition(String aArchetype, String aObjectName);

@@ -87,7 +87,8 @@ YTEditorMainWindow::YTEditorMainWindow(YTE::Engine * aEngine, QApplication * aQA
     mApplication(aQApp), 
     mObjectBrowser(nullptr), 
     mComponentBrowser(nullptr), 
-    mOutputConsole(nullptr), 
+    mOutputConsole(nullptr),
+    mRunningSpaceName(""),
     mRunningLevelName(""),
     mUndoRedo(new UndoRedo()),
     mGizmo(nullptr)
@@ -220,6 +221,7 @@ void YTEditorMainWindow::LoadCurrentLevelInfo()
   // Get the space that represents the main session
   YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
 
+  mRunningSpaceName = it_lvl->first;
   mRunningLevelName = lvl->GetLevelName();
 
   //////////////////////////////////////////////////////////////////////////////
@@ -255,7 +257,17 @@ void YTEditorMainWindow::LoadCurrentLevelInfo()
 
 void YTEditorMainWindow::SaveCurrentLevel()
 {
-    mFileMenu->SaveLevel();
+  mFileMenu->SaveLevel();
+}
+
+void YTEditorMainWindow::SetRunningSpaceName(YTE::String &aName)
+{
+  mRunningSpaceName = aName;
+}
+
+YTE::String & YTEditorMainWindow::GetRunningSpaceName()
+{
+  return mRunningSpaceName;
 }
 
 void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
@@ -267,6 +279,8 @@ void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
 
   // iterator to the main session space
   auto it_mainSession = engineMap->begin();
+
+  mRunningSpaceName = it_mainSession->first;
 
   // Get the space that represents the main session
   YTE::Space *mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
@@ -304,6 +318,11 @@ void YTEditorMainWindow::keyPressEvent(QKeyEvent * aEvent)
   {
     QMainWindow::keyPressEvent(aEvent);
   }
+}
+
+FileMenu * YTEditorMainWindow::GetFileMenu()
+{
+  return mFileMenu;
 }
 
 void YTEditorMainWindow::SetWindowSettings()

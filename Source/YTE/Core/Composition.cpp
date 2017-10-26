@@ -15,7 +15,7 @@
 #include "rapidjson\document.h"
 
 
-  namespace YTE
+namespace YTE
 {
   YTEDefineEvent(CompositionAdded);
 
@@ -69,7 +69,7 @@
     YTEBindProperty(&Composition::GetSpace, YTENoSetter, "Space");
   }
 
-  Composition::Composition(Engine *aEngine, Space *aSpace, String &aName)
+  Composition::Composition(Engine *aEngine, String &aName, Space *aSpace)
     : mEngine(aEngine)
     , mSpace(aSpace)
     , mOwner(nullptr)
@@ -222,10 +222,10 @@
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
     Composition *comp = AddCompositionInternal(std::make_unique<Composition>(mEngine,
-      mSpace,
-      aObjectName),
-      mEngine->GetArchetype(aArchetype),
-      aObjectName);
+                                                                             aObjectName,
+                                                                             mSpace),
+                                               mEngine->GetArchetype(aArchetype),
+                                               aObjectName);
 
     comp->SetArchetypeName(aArchetype);
 
@@ -234,8 +234,7 @@
 
   Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
-    auto &composition = mCompositions.Emplace(aObjectName,
-      std::move(mComposition))->second;
+    auto &composition = mCompositions.Emplace(aObjectName, std::move(mComposition))->second;
     if (aSerialization)
     {
       RSValue *archetype = aSerialization;
@@ -271,10 +270,10 @@
   Composition* Composition::AddComposition(RSValue *aSerialization, String aObjectName)
   {
     auto composition = AddCompositionInternal(std::make_unique<Composition>(mEngine,
-      mSpace,
-      aObjectName),
-      aSerialization,
-      aObjectName);
+                                                                            aObjectName,
+                                                                            mSpace),
+                                              aSerialization, 
+                                              aObjectName);
 
     if (composition != nullptr)
     {
@@ -289,7 +288,14 @@
 
   Composition* Composition::AddComposition(String aArchetype, String aObjectName)
   {
-    auto composition = AddComposition(mEngine->GetArchetype(aArchetype), aObjectName);
+    auto composition = AddCompositionInternal(aArchetype, aObjectName);
+
+    if (composition != nullptr)
+    {
+      composition->NativeInitialize(); 
+      composition->PhysicsInitialize();
+      composition->Initialize();
+    }
 
     composition->SetArchetypeName(aArchetype);
 
@@ -328,37 +334,37 @@
 
     // Annoyingly warn on debug.
     DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't a composition.");
-    DebugObjection(false == aValue->HasMember("Compositions") ||
-      false == (*aValue)["Compositions"].IsObject(),
-      "We're trying to serialize something without Compositions: \n%s",
-      json.c_str());
+    DebugObjection(false == aValue->HasMember("Compositions") || 
+                false == (*aValue)["Compositions"].IsObject(), 
+                "We're trying to serialize something without Compositions: \n%s",
+                json.c_str());
     DebugObjection(false == aValue->HasMember("Components") ||
-      false == (*aValue)["Components"].IsObject(),
-      "We're trying to serialize something without Components: \n%s",
-      json.c_str());
+                false == (*aValue)["Components"].IsObject(), 
+                "We're trying to serialize something without Components: \n%s",
+                json.c_str());
 
     // On release just exit out on these errors.
     if (false == aValue->IsObject())
     {
       printf("We're trying to serialize something that isn't a composition: \n%s",
-        json.c_str());
+             json.c_str());
       return;
     }
 
     if (false == aValue->HasMember("Compositions") ||
-      false == (*aValue)["Compositions"].IsObject())
+        false == (*aValue)["Compositions"].IsObject())
     {
       printf("We're trying to serialize something without Compositions: \n%s",
-        json.c_str());
+             json.c_str());
       return;
     }
 
 
     if (false == aValue->HasMember("Components") ||
-      false == (*aValue)["Components"].IsObject())
+        false == (*aValue)["Components"].IsObject())
     {
       printf("We're trying to serialize something without Components: \n%s",
-        json.c_str());
+             json.c_str());
       return;
     }
 
@@ -379,9 +385,9 @@
       String compositionName = compositionIt->name.GetString();
 
       auto &composition = mCompositions.Emplace(compositionName,
-        std::make_unique<Composition>(mEngine,
-          mSpace,
-          compositionName))->second;
+                                                std::make_unique<Composition>(mEngine, 
+                                                                              compositionName, 
+                                                                              mSpace))->second;
 
       composition->SetOwner(this);
       composition->Deserialize(&compositionIt->value);
@@ -389,7 +395,7 @@
 
     if (aValue->HasMember("Archetype"))
     {
-      mArchetypeName = (*aValue)["Archetype"].GetString();
+        mArchetypeName = (*aValue)["Archetype"].GetString();
     }
 
   }
@@ -417,10 +423,10 @@
       auto compositionSerialized = composition.second->Serialize(aAllocator);
 
       RSValue compositionName;
-      compositionName.SetString(composition.first.c_str(),
-        static_cast<RSSizeType>(composition.first.Size()),
-        aAllocator);
-
+      compositionName.SetString(composition.first.c_str(), 
+                                static_cast<RSSizeType>(composition.first.Size()), 
+                                aAllocator);
+    
       compositions.AddMember(compositionName, compositionSerialized, aAllocator);
     }
 
@@ -431,15 +437,15 @@
     for (auto &component : mComponents)
     {
       auto componentSerialized = component.second->Serialize(aAllocator);
-
+      
       RSValue componentName;
       componentName.SetString(component.first->GetName().c_str(),
-        static_cast<RSSizeType>(component.first->GetName().size()),
-        aAllocator);
+                              static_cast<RSSizeType>(component.first->GetName().size()),
+                              aAllocator);
 
       components.AddMember(componentName, componentSerialized, aAllocator);
     }
-
+    
     toReturn.AddMember("Components", components, aAllocator);
 
     return toReturn;
@@ -523,9 +529,9 @@
       if (false == haveAllANDs)
       {
         toReturn += Format("Composition %s is attempting to add Component of "
-          "type %s, but is missing the following Components:\n",
-          mName.c_str(),
-          aType->GetName().c_str());
+                           "type %s, but is missing the following Components:\n",
+                           mName.c_str(),
+                           aType->GetName().c_str());
 
         for (auto notAcceptedOrs : notAcceptedAnds)
         {
@@ -626,8 +632,8 @@
   bool Composition::ParentBeingDeleted()
   {
     for (Composition *parent = GetParent();
-      nullptr != parent;
-      parent = GetParent())
+         nullptr != parent;
+         parent = GetParent())
     {
       if (true == parent->mBeingDeleted)
       {
@@ -642,17 +648,17 @@
   {
     mCompositions.Erase(aComposition);
   }
-
+  
   void Composition::RemoveComposition(Composition *aComposition)
-  {
+  { 
     auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
-    {
-      return aLhs.get() == aRhs;
-    };
+                    {
+                      return aLhs.get() == aRhs; 
+                    };
 
     auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
-      aComposition,
-      compare);
+                                                    aComposition, 
+                                                    compare);
 
     if (iter != mCompositions.end())
     {
@@ -728,26 +734,26 @@
 
   void Composition::SetArchetypeName(String &aArchName)
   {
-    mArchetypeName = aArchName;
+      mArchetypeName = aArchName;
   }
 
   String& Composition::GetArchetypeName()
   {
-    return mArchetypeName;
+      return mArchetypeName;
   }
 
   bool Composition::SameAsArchetype()
   {
-    RSAllocator allocator;
-    RSValue comp = Serialize(allocator);
+      RSAllocator allocator;
+      RSValue comp = Serialize(allocator);
 
-    RSValue *arch = mEngine->GetArchetype(mArchetypeName);
+      RSValue *arch = mEngine->GetArchetype(mArchetypeName);
 
-    if (comp == *arch)
-    {
-      return true;
-    }
-
-    return false;
+      if (comp == *arch)
+      {
+          return true;
+      }
+      
+      return false;
   }
 }

@@ -70,6 +70,9 @@ public:
 
   YTE::String& GetRunningLevelName() { return mRunningLevelName; }
 
+  void SetRunningSpaceName(YTE::String &aName);
+  YTE::String& GetRunningSpaceName();
+
   void LoadLevel(YTE::String aLevelName);
   void LoadCurrentLevelInfo();
 
@@ -81,10 +84,13 @@ public:
 
   void keyPressEvent(QKeyEvent *aEvent);
 
+  FileMenu* GetFileMenu();
+
 private:
 
   // YTE GAME ENGINE
   YTE::Engine *mRunningEngine;
+  YTE::String mRunningSpaceName;
   YTE::String mRunningLevelName;
 
   QApplication * mApplication;
