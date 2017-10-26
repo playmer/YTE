@@ -122,6 +122,7 @@ btVector3 getRayTo(UBOView& aView,
   glm::vec3 rayDirectionWorld(rayToWorld - rayFromWorld);
   rayDirectionWorld = glm::normalize(rayDirectionWorld);
 
+
   return aRayFrom + OurVec3ToBt(rayDirectionWorld) * aFar;
 }
 
@@ -147,7 +148,7 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
   
   btVector3 rayTo = getRayTo(
     uboView, 
-    rayFrom, aEvent->WorldCoordinates, 
+    rayFrom, aEvent->WorldCoordinates,
     mWindow->GetWidth(), 
     mWindow->GetHeight(), 
     camera->GetFarPlane());
@@ -178,6 +179,41 @@ void PhysicsHandler::OnMousePress(MouseButtonEvent *aEvent)
 
     mIsHittingObject = true;
   }
+
+
+
+  
+
+  // debug printing for gizmo axis transform values
+  {
+    auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
+
+    // x axis
+    YTE::String name = "X_Axis";
+    auto *axis = gizObj->FindFirstCompositionByName(name);
+    auto t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+    auto wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+    std::cout << "X Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+    std::cout << "X WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+    // y axis
+    name = "Y_Axis";
+    axis = gizObj->FindFirstCompositionByName(name);
+    t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+    wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+    std::cout << "Y Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+    std::cout << "Y WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+    // y axis
+    name = "Z_Axis";
+    axis = gizObj->FindFirstCompositionByName(name);
+    t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+    wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+    std::cout << "Z Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+    std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+  }
+
 }
 
 void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
@@ -209,6 +245,40 @@ void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
       auto gizmosFriendMouse = getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), dist);
 
       auto realDelta = BtToOurVec3(gizmosFriendMouse) - gizPos;
+
+      // print out mouse click world coordinates
+      auto mc = BtToOurVec3(gizmosFriendMouse);
+      std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
+
+      // debug printing for gizmo axis transform values
+      {
+        auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
+
+        // x axis
+        YTE::String name = "X_Axis";
+        auto *axis = gizObj->FindFirstCompositionByName(name);
+        auto t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+        auto wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+        std::cout << "X Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+        std::cout << "X WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+        // y axis
+        name = "Y_Axis";
+        axis = gizObj->FindFirstCompositionByName(name);
+        t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+        wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+        std::cout << "Y Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+        std::cout << "Y WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+        // y axis
+        name = "Z_Axis";
+        axis = gizObj->FindFirstCompositionByName(name);
+        t = axis->GetComponent<YTE::Transform>()->GetTranslation();
+        wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
+        std::cout << "Z Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
+        std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
+
+      }
 
       switch (giz->GetCurrentMode())
       {
