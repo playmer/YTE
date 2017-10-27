@@ -136,9 +136,9 @@ namespace YTEditor
     });
   }
 
-  GameWindow & MainWindow::GetGameWindow()
+  SubWindow & MainWindow::GetSubWindow()
   {
-    return *mGameWindow;
+    return *mSubWindow;
   }
 
   ObjectBrowser & MainWindow::GetObjectBrowser()

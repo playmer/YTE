@@ -111,7 +111,9 @@ namespace YTEditor
     // Get the space that represents the main session
     YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
 
-    mMainWindow->GetObjectBrowser().SelectNoItem();
+    auto objItem = mMainWindow->GetObjectBrowser().AddExistingComposition(it_lvl->first.c_str(), lvl);
+
+    mMainWindow->GetObjectBrowser().setCurrentItem(objItem);
 
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(lvl);
   }
@@ -132,7 +134,8 @@ namespace YTEditor
     // Get all the compositions on the engine
     YTE::Composition *engine = mMainWindow->GetRunningEngine();
 
-    mMainWindow->GetObjectBrowser().SelectNoItem();
+    auto &objBrowser = mMainWindow->GetObjectBrowser();
+    objBrowser.SelectNoItem();
 
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(engine);
   }

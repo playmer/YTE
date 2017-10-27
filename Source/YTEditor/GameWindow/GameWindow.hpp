@@ -28,6 +28,8 @@ namespace YTEditor
   public:
     SubWindow(YTE::Window *aWindow, MainWindow *aMainWindow);
 
+    ~SubWindow();
+
     void resizeEvent(QResizeEvent *aEvent);
     bool nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult) override;
 

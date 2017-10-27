@@ -12,12 +12,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+
 #include <filesystem>
 #include <fstream>
 
-#include <qapplication.h>
-#include <qfiledialog.h>
-#include <qdesktopservices.h>
+#include <qapplication>
+#include <qfiledialog>
+#include <qdesktopservices>
+#include <qmessagebox>
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -25,10 +27,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Utilities/String/String.h"
 
+#include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 #include "YTEditor/MenuBar/FileMenu.hpp"
+
 
 namespace YTEditor
 {
@@ -162,7 +166,26 @@ namespace YTEditor
 
   void FileMenu::ExitEditor()
   {
-    mMainWindow->GetApplication()->quit();
-  }
 
+    // ask the user if they want to save the level
+
+    QMessageBox::StandardButton reply;
+
+    reply = QMessageBox::question(this, "Test", "Quit?", QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+      delete &mMainWindow->GetSubWindow();
+
+      mMainWindow->GetRunningEngine()->EndExecution();
+      mMainWindow->GetRunningEngine()->Update();
+      mMainWindow->GetApplication()->quit();
+
+
+    }
+    else
+    {
+      // don't quit
+    }
+  }
 }

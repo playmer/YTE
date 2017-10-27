@@ -33,11 +33,11 @@ namespace YTE
 
 namespace YTEditor
 {
-  class GameWindow;
   class ObjectBrowser;
   class ComponentBrowser;
   class OutputConsole;
   class MaterialViewer;
+  class SubWindow;
   class FileMenu;
   class UndoRedo;
   class Gizmo;
@@ -49,7 +49,7 @@ namespace YTEditor
     MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
     ~MainWindow();
 
-    GameWindow& GetGameWindow();
+    SubWindow& GetSubWindow();
 
     ObjectBrowser& GetObjectBrowser();
     QDockWidget* GetObjectBrowserDock();
@@ -118,8 +118,8 @@ namespace YTEditor
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
 
     QTabWidget *mCentralTabs;
-    GameWindow *mGameWindow;
-    GameWindow *mLevelWindow;
+    SubWindow *mSubWindow;
+    SubWindow *mLevelWindow;
     QDockWidget *mObjectBrowser;
     QDockWidget *mComponentBrowser;
     QDockWidget *mOutputConsole;
