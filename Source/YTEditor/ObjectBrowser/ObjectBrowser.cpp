@@ -347,9 +347,19 @@ namespace YTEditor
     }
   }
 
-  YTE::Composition * ObjectBrowser::GetCurrentObject()
+  YTE::Composition* ObjectBrowser::GetCurrentObject()
   {
-    return dynamic_cast<ObjectItem*>(currentItem())->GetEngineObject();
+    auto objItem = dynamic_cast<ObjectItem*>(currentItem());
+
+    if (objItem)
+    {
+      return objItem->GetEngineObject();
+    }
+    else
+    {
+      return nullptr;
+    }
+
   }
 
   ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)

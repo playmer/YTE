@@ -35,6 +35,10 @@ namespace YTEditor
   {
   }
 
+  SubWindow::~SubWindow()
+  {
+  }
+
   void SubWindow::resizeEvent(QResizeEvent *aEvent)
   {
     auto size = aEvent->size();

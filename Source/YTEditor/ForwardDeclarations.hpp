@@ -22,7 +22,7 @@ namespace YTEditor
 
   class FileViewer;
   
-  class GameWindow;
+  class SubWindow;
 
   // Gizmos
   class Axis;

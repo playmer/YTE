@@ -18,7 +18,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-
   class MainWindow;
 
   class FileMenu : public QMenu
@@ -33,13 +32,11 @@ namespace YTEditor
 
   private:
 
-    MainWindow * mMainWindow;
+    MainWindow *mMainWindow;
 
     void OpenLevel();
     void OpenFile();
     void ExitEditor();
-
-
   };
 
 }

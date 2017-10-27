@@ -20,8 +20,10 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/Space.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
@@ -80,25 +82,26 @@ int main(int argc, char *argv[])
   YTE::FactoryMap *factoryMap = componentSystem->GetComponentFactories();
   YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
 
-
   // create an empty level
   YTE::String newLevelName{ "NewLevel" };
-
+  
   // add an empty composition to represent the new level
   YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
-
+  
   YTE::String camName{ "Camera" };
-
+  
   // add the camera object to the new level
   YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
-
+  
   // add the camera component to the camera object
   camera->AddComponent(YTE::Camera::GetStaticType());
+  
+  newLevel->AddComponent(YTE::PhysicsSystem::GetStaticType());
 
   // Construct the main window
   YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app);
 
-  mainWindow->SetRunningSpaceName(newLevelName);
+  //mainWindow->SetRunningSpaceName();
 
   // Change the theme/color palette to dark
   SetDarkTheme(app);
