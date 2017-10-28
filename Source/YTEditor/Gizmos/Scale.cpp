@@ -22,6 +22,11 @@ namespace YTEditor
 
   void Scale::ScaleObject(glm::vec3 aDelta)
   {
+    if (aDelta.x > 1 || aDelta.y > 1 || aDelta.z > 1)
+    {
+      return;
+    }
+
     glm::vec3 change = glm::vec3(0.0f, 0.0f, 0.0f);
 
     switch (mDir)
@@ -47,9 +52,9 @@ namespace YTEditor
 
     YTE::Transform *transform = mOwner->GetComponent<YTE::Transform>();
 
-    glm::vec3 scale = transform->GetWorldScale();
+    glm::vec3 scale = transform->GetScale();
 
-    transform->SetWorldScale(scale + change);
+    transform->SetScale(scale + change);
   }
 
 }

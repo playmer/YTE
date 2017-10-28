@@ -15,7 +15,7 @@
 namespace YTEditor
 {
 
-  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Translate)
+  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Scale)
   {
   }
 
@@ -83,6 +83,8 @@ namespace YTEditor
 
     auto realDelta = YTE::BtToOurVec3(mouseWorld) - mPrevMousePos;
 
+    YTE::Composition *axis = mGizmoObj->FindFirstCompositionByName(mActiveAxis->GetName());
+
     switch (GetCurrentMode())
     {
     case Gizmo::Select:
@@ -92,7 +94,6 @@ namespace YTEditor
 
     case Gizmo::Translate:
     {
-      YTE::Composition *axis = mGizmoObj->FindFirstCompositionByName(mActiveAxis->GetName());
       YTEditor::Translate *translate = axis->GetComponent<YTEditor::Translate>();
       
       translate->MoveObject(realDelta);
@@ -101,7 +102,7 @@ namespace YTEditor
 
     case Gizmo::Scale:
     {
-      YTEditor::Scale *scale = mGizmoObj->GetComponent<YTEditor::Scale>();
+      YTEditor::Scale *scale = axis->GetComponent<YTEditor::Scale>();
       
       scale->ScaleObject(realDelta);
       break;
@@ -110,7 +111,7 @@ namespace YTEditor
     case Gizmo::Rotate:
     {
       // need to change to send amount object should be rotated
-      YTEditor::Rotate *rotate = mGizmoObj->GetComponent<YTEditor::Rotate>();
+      YTEditor::Rotate *rotate = axis->GetComponent<YTEditor::Rotate>();
       
       rotate->RotateObject(realDelta);
       break;
