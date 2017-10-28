@@ -21,6 +21,7 @@ namespace YTEditor
 
   void Gizmo::SetMode(int aMode)
   {
+    YTE::CompositionMap *axes = this->mGizmoObj->GetCompositions();
 
     switch (aMode)
     {
@@ -28,7 +29,12 @@ namespace YTEditor
     {
       mMode = Gizmo::Select;
 
+      for (auto a = axes->begin(); a != axes->end(); ++a)
+      {
+        std::string mesh = "empty";
 
+        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+      }
 
       break;
     }
@@ -36,6 +42,37 @@ namespace YTEditor
     case Gizmo::Translate:
     {
       mMode = Gizmo::Translate;
+
+      for (auto a = axes->begin(); a != axes->end(); ++a)
+      {
+        int dir = a->second->GetComponent<YTEditor::Translate>()->GetDirection();
+
+        std::string mesh;
+
+        switch (dir)
+        {
+        case Axis::Dir::X:
+        {
+          mesh = "Move_X.fbx";
+          break;
+        }
+
+        case Axis::Dir::Y:
+        {
+          mesh = "Move_Y.fbx";
+          break;
+        }
+
+        case Axis::Dir::Z:
+        {
+          mesh = "Move_Z.fbx";
+          break;
+        }
+        }
+
+        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+      }
+
       break;
     }
 
@@ -43,13 +80,34 @@ namespace YTEditor
     {
       mMode = Gizmo::Scale;
 
-      // change the models for the axes to scale
-
-      YTE::CompositionMap *axes = this->mGizmoObj->GetCompositions();
-
       for (auto a = axes->begin(); a != axes->end(); ++a)
       {
-        a->second->GetComponent<YTE::Model>();
+        int dir = a->second->GetComponent<YTEditor::Scale>()->GetDirection();
+
+        std::string mesh;
+
+        switch (dir)
+        {
+        case Axis::Dir::X:
+        {
+          mesh = "Scale_X.fbx";
+          break;
+        }
+
+        case Axis::Dir::Y:
+        {
+          mesh = "Scale_Y.fbx";
+          break;
+        }
+
+        case Axis::Dir::Z:
+        {
+          mesh = "Scale_Z.fbx";
+          break;
+        }
+        }
+
+        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
       }
 
       break;
@@ -58,6 +116,36 @@ namespace YTEditor
     case Gizmo::Rotate:
     {
       mMode = Gizmo::Rotate;
+      for (auto a = axes->begin(); a != axes->end(); ++a)
+      {
+        int dir = a->second->GetComponent<YTEditor::Scale>()->GetDirection();
+
+        std::string mesh;
+
+        switch (dir)
+        {
+        case Axis::Dir::X:
+        {
+          mesh = "Rotate_X.fbx";
+          break;
+        }
+
+        case Axis::Dir::Y:
+        {
+          mesh = "Rotate_Y.fbx";
+          break;
+        }
+
+        case Axis::Dir::Z:
+        {
+          mesh = "Rotate_Z.fbx";
+          break;
+        }
+        }
+
+        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+      }
+      break;
     }
     }
   }

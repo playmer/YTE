@@ -28,19 +28,22 @@ namespace YTEditor
     {
     case Axis::X:
     {
-      change.x = aDelta.x;
+      change.y = aDelta.y;
+      change.z = aDelta.z;
       break;
     }
 
     case Axis::Y:
     {
-      change.y = aDelta.y;
+      change.x = aDelta.x;
+      change.z = aDelta.z;
       break;
     }
 
     case Axis::Z:
     {
-      change.z = aDelta.z;
+      change.x = aDelta.x;
+      change.y = aDelta.y;
       break;
     }
     }
