@@ -38,6 +38,8 @@ namespace YTEditor
     void Add(YTE::Composition *aComposition);
     void Remove(YTE::Composition *aComposition);
 
+    void Update();
+
     void OnMousePress(YTE::MouseButtonEvent *aEvent);
     void OnMousePersist(YTE::MouseButtonEvent *aEvent);
     void OnMouseRelease(YTE::MouseButtonEvent *aEvent);
@@ -63,7 +65,8 @@ namespace YTEditor
     glm::vec4 mPrevMousePos;
     YTE::Composition *mCurrentObj;
     YTE::Composition *mCurrentAxis;
-
+    YTE::Composition *mPickedObj;
+    float mPickedDistance;
   };
 
 }

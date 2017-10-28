@@ -25,6 +25,7 @@ namespace YTEditor
 
   void PickerObject::ChangedPositionAndRotation(YTE::TransformChanged *aEvent)
   {
+    auto pos = aEvent->WorldPosition;
     btTransform transform;
     transform.setOrigin(YTE::OurVec3ToBt(aEvent->WorldPosition));
     transform.setRotation(YTE::OurQuatToBt(aEvent->WorldRotation));
@@ -37,15 +38,6 @@ namespace YTEditor
 
     glm::vec3 omin = YTE::BtToOurVec3(min);
     glm::vec3 omax = YTE::BtToOurVec3(max);
-
-    std::cout << "---------------------" << std::endl;
-    std::cout << "Min: " << omin.x << ", " << omin.y << ", " << omin.z << std::endl;
-    std::cout << "Max: " << omax.x << ", " << omax.y << ", " << omax.z << std::endl;
-
-
-    std::cout << "---------------------" << std::endl;
-    std::cout << "Min: " << omin.x << ", " << omin.y << ", " << omin.z << std::endl;
-    std::cout << "Max: " << omax.x << ", " << omax.y << ", " << omax.z << std::endl;
 
   }
 
@@ -136,10 +128,6 @@ namespace YTEditor
     glm::vec3 rayDirectionWorld(rayToWorld - rayFromWorld);
     rayDirectionWorld = glm::normalize(rayDirectionWorld);
 
-    // print out mouse click world coordinates
-    //auto mc = BtToOurVec3(aRayFrom);
-    //std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
-
     return aRayFrom + YTE::OurVec3ToBt(rayDirectionWorld) * aFar;
   }
 
@@ -177,9 +165,8 @@ namespace YTEditor
 
     if (rayCallback.hasHit())
     {
-      std::cout << "OBJECT HIT" << std::endl;
-      auto obj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
-
+      auto obj = mPickedObj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
+      mPickedDistance = (YTE::OurVec3ToBt(mPickedObj->GetComponent<YTE::Transform>()->GetWorldTranslation()) - rayFrom).length();
       if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
       {
         mIsGizmoActive = true;
@@ -199,39 +186,6 @@ namespace YTEditor
 
       mIsHittingObject = true;
     }
-
-
-    /*
-    // debug printing for gizmo axis transform values
-    {
-      auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
-
-      // x axis
-      YTE::String name = "X_Axis";
-      auto *axis = gizObj->FindFirstCompositionByName(name);
-      auto t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-      auto wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-      std::cout << "X Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-      std::cout << "X WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
-      // y axis
-      name = "Y_Axis";
-      axis = gizObj->FindFirstCompositionByName(name);
-      t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-      wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-      std::cout << "Y Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-      std::cout << "Y WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
-      // y axis
-      name = "Z_Axis";
-      axis = gizObj->FindFirstCompositionByName(name);
-      t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-      wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-      std::cout << "Z Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-      std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
-    }
-    */
   }
 
   void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
@@ -256,48 +210,11 @@ namespace YTEditor
         // get distance between camera and object
         auto gizPos = giz->mGizmoObj->GetComponent<YTE::Transform>()->GetWorldTranslation();
 
-        auto dist = glm::length(camPos - gizPos);
-
         auto btCamPos = YTE::OurVec3ToBt(camPos);
 
-        auto gizmosFriendMouse = getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), dist);
+        auto gizmosFriendMouse = getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), mPickedDistance);
 
         auto realDelta = YTE::BtToOurVec3(gizmosFriendMouse) - gizPos;
-
-        // print out mouse click world coordinates
-        //auto mc = BtToOurVec3(gizmosFriendMouse);
-        //std::cout << "M Coords: (" << mc.x << "," << mc.y << "," << mc.z << ")" << std::endl;
-
-        // debug printing for gizmo axis transform values
-        {
-          auto gizObj = mMainWindow->GetGizmo()->mGizmoObj;
-
-          /*
-          // x axis
-          YTE::String name = "X_Axis";
-          auto *axis = gizObj->FindFirstCompositionByName(name);
-          auto t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-          auto wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-          std::cout << "X Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-          std::cout << "X WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
-          // y axis
-          name = "Y_Axis";
-          axis = gizObj->FindFirstCompositionByName(name);
-          t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-          wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-          std::cout << "Y Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-          std::cout << "Y WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-
-          // y axis
-          name = "Z_Axis";
-          axis = gizObj->FindFirstCompositionByName(name);
-          t = axis->GetComponent<YTE::Transform>()->GetTranslation();
-          wt = axis->GetComponent<YTE::Transform>()->GetWorldTranslation();
-          std::cout << "Z Trans: (" << t.x << "," << t.y << "," << t.z << ")" << std::endl;
-          std::cout << "Z WrldT: (" << wt.x << "," << wt.y << "," << wt.z << ")" << std::endl;
-          */
-        }
 
         switch (giz->GetCurrentMode())
         {
@@ -336,6 +253,13 @@ namespace YTEditor
   {
     mIsHittingObject = false;
     mIsGizmoActive = false;
+    auto it = mObjects.find(mPickedObj);
+
+    if (it != mObjects.end())
+    {
+      it->second->mGhostBody->setDeactivationTime(0.f);
+      mDynamicsWorld->updateAabbs();
+    }
   }
 
   void PhysicsHandler::Add(YTE::Composition *aComposition)
@@ -438,6 +362,11 @@ namespace YTEditor
 
       mObjects.erase(it);
     }
+  }
+
+  void PhysicsHandler::Update()
+  {
+    mDynamicsWorld->updateAabbs();
   }
 
 
