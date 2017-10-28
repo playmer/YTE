@@ -31,6 +31,8 @@ namespace YTEditor
 
     YTE::Composition *mActiveAxis;
 
+    MainWindow* GetMainWindow();
+
   protected:
 
     MainWindow *mMainWindow;

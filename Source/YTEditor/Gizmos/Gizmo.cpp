@@ -11,11 +11,12 @@
 #include "YTEditor/Gizmos/Rotate.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/Physics/PhysicsHandler.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
 namespace YTEditor
 {
 
-  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Scale)
+  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Select)
   {
   }
 
@@ -71,6 +72,9 @@ namespace YTEditor
         }
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+
+        // orient the translate gizmo with the world axes
+        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(glm::vec3());
       }
 
       break;
@@ -108,6 +112,12 @@ namespace YTEditor
         }
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+
+        // orient the translate gizmo with the current object
+        YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+        glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
+        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
+
       }
 
       break;
@@ -144,6 +154,9 @@ namespace YTEditor
         }
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+        
+        // orient the translate gizmo with the world axes
+        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(glm::vec3());
       }
       break;
     }
@@ -208,6 +221,8 @@ namespace YTEditor
 
     YTE::Composition *axis = mGizmoObj->FindFirstCompositionByName(mActiveAxis->GetName());
 
+    YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+
     switch (GetCurrentMode())
     {
     case Gizmo::Select:
@@ -219,7 +234,7 @@ namespace YTEditor
     {
       YTEditor::Translate *translate = axis->GetComponent<YTEditor::Translate>();
       
-      translate->MoveObject(realDelta);
+      translate->MoveObject(currObj, realDelta);
       break;
     }
 
@@ -227,7 +242,7 @@ namespace YTEditor
     {
       YTEditor::Scale *scale = axis->GetComponent<YTEditor::Scale>();
       
-      scale->ScaleObject(realDelta);
+      scale->ScaleObject(currObj, realDelta);
       break;
     }
 
@@ -248,6 +263,11 @@ namespace YTEditor
   void Gizmo::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
   {
     
+  }
+
+  MainWindow* Gizmo::GetMainWindow()
+  {
+    return mMainWindow;
   }
 
 }

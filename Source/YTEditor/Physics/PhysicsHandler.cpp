@@ -177,13 +177,25 @@ namespace YTEditor
       else
       {
         mCurrentObj = obj;
+
+        auto& browser = mMainWindow->GetObjectBrowser();
+        auto item = browser.FindItemByComposition(mCurrentObj);
+
+        // TODO(Evan/Nick): change to setSelectedItem for drag select in future
+        browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+
+        // get the transform of the currently selected object
+        YTE::Transform *transform = mCurrentObj->GetComponent<YTE::Transform>();
+
+        // set the gizmo to the same position as the current object
+        glm::vec3 pos = transform->GetWorldTranslation();
+        YTE::Transform *gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
+        gizmoTransform->SetWorldTranslation(pos);
+
+        //// orient the gizmo to the same axes as the current object
+        //glm::vec3 rot = transform->GetWorldRotationAsEuler();
+        //gizmoTransform->SetWorldRotation(rot);
       }
-
-      auto& browser = mMainWindow->GetObjectBrowser();
-      auto item = browser.FindItemByComposition(mCurrentObj);
-
-      // TODO(Evan/Nick): change to setSelectedItem for drag select in future
-      browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
 
       mIsHittingObject = true;
     }

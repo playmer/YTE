@@ -3,6 +3,7 @@
 
 #include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Translate.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 
 namespace YTEditor
 {
@@ -21,7 +22,7 @@ namespace YTEditor
     DeserializeByType<Translate*>(aProperties, this, Translate::GetStaticType());
   }
 
-  void Translate::MoveObject(glm::vec3 aDelta)
+  void Translate::MoveObject(YTE::Composition *aObj, glm::vec3 aDelta)
   {
     if (aDelta.x > 1 || aDelta.y > 1 || aDelta.z > 1)
     {
@@ -51,11 +52,15 @@ namespace YTEditor
     }
     }
 
-    YTE::Transform *transform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
+    // get the transform of the currently selected object
+    YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
 
     glm::vec3 pos = transform->GetWorldTranslation();
+    glm::vec3 newPos = pos + change;
 
-    transform->SetWorldTranslation(pos + change);
+    transform->SetWorldTranslation(newPos);
+
+    YTE::Transform *gizmoTransform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
+    gizmoTransform->SetWorldTranslation(newPos);
   }
-
 }

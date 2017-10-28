@@ -16,7 +16,7 @@ namespace YTEditor
 
     Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
 
-    void ScaleObject(glm::vec3 aDelta);
+    void ScaleObject(YTE::Composition *aObj, glm::vec3 aDelta);
 
     void SetDirection(int aDir) { mDir = aDir; }
     int GetDirection() { return mDir; }

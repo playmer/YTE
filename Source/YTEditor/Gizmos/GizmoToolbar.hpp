@@ -26,7 +26,6 @@ namespace YTEditor
     void RotateToggled(bool checked);
     void ScaleToggled(bool checked);
 
-
   };
 
 }

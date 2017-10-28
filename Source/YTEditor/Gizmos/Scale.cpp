@@ -14,13 +14,13 @@ namespace YTEditor
       .AddAttribute<YTE::Serializable>();
   }
 
-  Scale::Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties) 
+  Scale::Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
     : YTE::Component(aOwner, aSpace), mDir(Axis::X)
   {
     DeserializeByType<Scale*>(aProperties, this, Scale::GetStaticType());
   }
 
-  void Scale::ScaleObject(glm::vec3 aDelta)
+  void Scale::ScaleObject(YTE::Composition *aObj, glm::vec3 aDelta)
   {
     if (aDelta.x > 1 || aDelta.y > 1 || aDelta.z > 1)
     {
@@ -50,11 +50,19 @@ namespace YTEditor
     }
     }
 
-    YTE::Transform *transform = mOwner->GetComponent<YTE::Transform>();
+    // get the transform of the currently selected object
+    YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
 
-    glm::vec3 scale = transform->GetScale();
+    glm::vec3 size = transform->GetWorldScale();
+    glm::vec3 newSize = size + change;
 
-    transform->SetScale(scale + change);
+    std::cout << "------------------------------------------------------------------------------------\n";
+    std::cout << "Size:     " << size.x << ", " << size.y << ", " << size.z << std::endl;
+    std::cout << "Change:   " << change.x << ", " << change.y << ", " << change.z << std::endl;
+    std::cout << "New Size: " << newSize.x << ", " << newSize.y << ", " << newSize.z << std::endl;
+
+
+    transform->SetScale(newSize);
   }
 
 }

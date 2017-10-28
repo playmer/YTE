@@ -16,7 +16,7 @@ namespace YTEditor
 
     Translate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
 
-    void MoveObject(glm::vec3 aDelta);
+    void MoveObject(YTE::Composition *aObj, glm::vec3 aDelta);
 
     void SetDirection(int aDir) { mDir = aDir; }
     int GetDirection() { return mDir; }
