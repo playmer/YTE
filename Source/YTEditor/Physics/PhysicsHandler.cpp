@@ -30,6 +30,23 @@ namespace YTEditor
     transform.setRotation(YTE::OurQuatToBt(aEvent->WorldRotation));
 
     mGhostBody->setWorldTransform(transform);
+
+    btVector3 min, max;
+
+    mTriangleMeshShape->getAabb(transform, min, max);
+
+    glm::vec3 omin = YTE::BtToOurVec3(min);
+    glm::vec3 omax = YTE::BtToOurVec3(max);
+
+    std::cout << "---------------------" << std::endl;
+    std::cout << "Min: " << omin.x << ", " << omin.y << ", " << omin.z << std::endl;
+    std::cout << "Max: " << omax.x << ", " << omax.y << ", " << omax.z << std::endl;
+
+
+    std::cout << "---------------------" << std::endl;
+    std::cout << "Min: " << omin.x << ", " << omin.y << ", " << omin.z << std::endl;
+    std::cout << "Max: " << omax.x << ", " << omax.y << ", " << omax.z << std::endl;
+
   }
 
   void PickerObject::ChangedScale(YTE::TransformChanged *aEvent)
@@ -155,6 +172,8 @@ namespace YTEditor
 
     btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
     mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
+
+    
 
     if (rayCallback.hasHit())
     {
@@ -400,8 +419,8 @@ namespace YTEditor
     obj->mGhostBody = std::make_unique<btGhostObject>();
     obj->mGhostBody->setCollisionShape(obj->mShape);
 
-    //mGhostBody->activate(true);
-    //mGhostBody->setActivationState(DISABLE_DEACTIVATION);
+    obj->mGhostBody->activate(true);
+    obj->mGhostBody->setActivationState(DISABLE_DEACTIVATION);
     obj->mGhostBody->setUserPointer(aComposition);
 
     obj->mGhostBody->setWorldTransform(bTransform);
