@@ -12,8 +12,6 @@
 #include "YTE/Physics/Transform.hpp"
 
 
-
-
 /*
  *  Transform
  *                ^
@@ -244,6 +242,7 @@ namespace YTE
                                               mNearPlane,
                                               mFarPlane);
 
+    view.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
     view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
 
 
