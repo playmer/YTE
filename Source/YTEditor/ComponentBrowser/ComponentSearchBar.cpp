@@ -89,6 +89,12 @@ namespace YTEditor
     AddComponent(mCompleter->currentCompletion());
   }
 
+  void ComponentSearchBar::OnTabPressed()
+  {
+    QString tabComplete = mCompleter->currentCompletion();
+    mComponentTools->GetSearchBar().setText(tabComplete);
+  }
+
   void ComponentSearchBar::AddComponent(QString aCompName)
   {
     std::string stdName = aCompName.toStdString();
@@ -108,8 +114,7 @@ namespace YTEditor
 
     if (false == error.empty())
     {
-      mComponentTools->GetBrowser().GetMainWindow()->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-        error.c_str());
+      mComponentTools->GetBrowser().GetMainWindow()->GetOutputConsole().PrintLnC(OutputConsole::Color::Red, error.c_str());
       return;
     }
 

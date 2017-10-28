@@ -46,6 +46,12 @@ namespace YTEditor
         view->hide();
         return true;
       }
+      else if (keyEvent->key() == Qt::Key_Tab)
+      {
+        mSearchBar->OnTabPressed();
+        return true;
+      }
+      
     }
     else if (aEvent->type() == QEvent::MouseButtonPress)
     {

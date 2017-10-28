@@ -52,16 +52,16 @@ namespace YTEditor
     mLayout->addWidget(mLabel);
 
     // search bar for adding components
-    ComponentSearchBar * compSearch = new ComponentSearchBar(this, this);
+    mSearchBar = new ComponentSearchBar(this, this);
 
     // Get the component types
     MainWindow * mainWindow = mBrowser->GetMainWindow();
     YTE::Engine * engine = mainWindow->GetRunningEngine();
     YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
 
-    compSearch->SetComponentList(system->GetComponentTypes());
+    mSearchBar->SetComponentList(system->GetComponentTypes());
 
-    mLayout->addWidget(compSearch);
+    mLayout->addWidget(mSearchBar);
   }
 
   ComponentBrowser & ComponentTools::GetBrowser()

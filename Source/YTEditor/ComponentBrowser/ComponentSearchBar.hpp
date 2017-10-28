@@ -41,6 +41,8 @@ namespace YTEditor
 
     void OnReturnPressed();
 
+    void OnTabPressed();
+
   private:
 
     QCompleter * mCompleter;
