@@ -3,12 +3,11 @@
 #include <glm/vec3.hpp>
 
 #include "YTE/Core/Composition.hpp"
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-
   class MainWindow;
-
   class Axis;
 
   class Gizmo
@@ -20,12 +19,24 @@ namespace YTEditor
     void SetMode(int aMode);
     int GetCurrentMode();
 
+    void SetRenderingWindow(YTE::Window *aWindow);
+
+    void OnMousePressed(YTE::MouseButtonEvent *aEvent, YTE::Space *aSpace, YTE::Composition *aAxis, float aPickedDistance);
+
+    void OnMousePersist(YTE::MouseButtonEvent *aEvent, YTE::Space *aSpace, float aPickedDistance);
+    
+    void OnMouseRelease(YTE::MouseButtonEvent *aEvent);
+
     YTE::Composition *mGizmoObj;
+
+    YTE::Composition *mActiveAxis;
 
   protected:
 
     MainWindow *mMainWindow;
+    YTE::Window *mWindow;
 
+    glm::vec3 mPrevMousePos;
 
     int mMode;
 

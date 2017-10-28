@@ -4,6 +4,7 @@
 #include "YTE/Core/Space.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Physics/Orientation.hpp"
@@ -62,7 +63,6 @@ namespace YTEditor
     , mIsHittingObject(false)
     , mIsGizmoActive(false)
     , mCurrentObj(nullptr)
-    , mPrevMousePos(0, 0, 0, 1)
   {
     // collision configuration contains default setup for memory , collision setup .
     // Advanced users can create their own configuration .
@@ -170,11 +170,12 @@ namespace YTEditor
       if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
       {
         mIsGizmoActive = true;
-        mCurrentAxis = obj;
+        
+        // pass the mouse event to the gizmo
+        mMainWindow->GetGizmo()->OnMousePressed(aEvent, mSpace, obj, mPickedDistance);
       }
       else
       {
-        mCurrentAxis = nullptr;
         mCurrentObj = obj;
       }
 
@@ -194,57 +195,8 @@ namespace YTEditor
     {
       if (mIsGizmoActive)
       {
-        Gizmo *giz = mMainWindow->GetGizmo();
-
-        // get the change in position this frame for the mouse
-        glm::i32vec2 pos = aEvent->Mouse->GetCursorPosition();
-        glm::vec4 pos4 = glm::vec4(pos.x, pos.y, 0.0, 1.0);
-
-        // convert the two positions to world coordinates
-        auto view = mSpace->GetComponent<YTE::GraphicsView>();
-        auto camera = view->GetLastCamera();
-        YTE::UBOView uboView = camera->ConstructUBOView();
-
-        auto camPos = camera->GetOwner()->GetComponent<YTE::Transform>()->GetWorldTranslation();
-
-        // get distance between camera and object
-        auto gizPos = giz->mGizmoObj->GetComponent<YTE::Transform>()->GetWorldTranslation();
-
-        auto btCamPos = YTE::OurVec3ToBt(camPos);
-
-        auto gizmosFriendMouse = getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), mPickedDistance);
-
-        auto realDelta = YTE::BtToOurVec3(gizmosFriendMouse) - gizPos;
-
-        switch (giz->GetCurrentMode())
-        {
-        case Gizmo::Select:
-        {
-          break;
-        }
-
-        case Gizmo::Translate:
-        {
-          giz->mGizmoObj->FindFirstCompositionByName(mCurrentAxis->GetName())->GetComponent<Translate>()->MoveObject(realDelta);
-          break;
-        }
-
-        case Gizmo::Scale:
-        {
-          giz->mGizmoObj->GetComponent<Scale>()->ScaleObject(realDelta);
-          break;
-        }
-
-        case Gizmo::Rotate:
-        {
-          // need to change to send amount object should be rotated
-          giz->mGizmoObj->GetComponent<Rotate>()->RotateObject(realDelta);
-          break;
-        }
-
-        }
-
-        mPrevMousePos = pos4;
+        // pass the mouse event to the gizmo
+        mMainWindow->GetGizmo()->OnMousePersist(aEvent, mSpace, mPickedDistance);
       }
     }
   }

@@ -99,9 +99,12 @@ namespace YTEditor
     // iterator to the main session space
     auto it_lvl = engineMap->begin();
 
+    // get the window
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+
     // Get the space that represents the main session
     YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
-    mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, mRunningEngine->GetWindows().at("Yours Truly Engine").get(), this);
+    mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, yteWin, this);
 
     aEngine->Initialize();
     ConstructWWiseWidget();
@@ -115,6 +118,7 @@ namespace YTEditor
 
 
     mGizmo = new Gizmo(this);
+    mGizmo->SetRenderingWindow(yteWin);
     mGizmo->mGizmoObj = lvl->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
   }
 

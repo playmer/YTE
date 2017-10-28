@@ -6,6 +6,8 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Utilities.hpp"
 
+#include "YTE/Graphics/GraphicsView.hpp"
+
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/RigidBody.hpp"
 
@@ -62,11 +64,16 @@ namespace YTEditor
 
     bool mIsHittingObject;
     bool mIsGizmoActive;
-    glm::vec4 mPrevMousePos;
     YTE::Composition *mCurrentObj;
-    YTE::Composition *mCurrentAxis;
     YTE::Composition *mPickedObj;
     float mPickedDistance;
   };
+
+  btVector3 getRayTo(YTE::UBOView& aView,
+    btVector3& aRayFrom,
+    glm::i32vec2 aMouseCoordinates,
+    YTE::u32 aWidth,
+    YTE::u32 aHeight,
+    float aFar);
 
 }
