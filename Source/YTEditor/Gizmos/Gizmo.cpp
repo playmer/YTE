@@ -21,9 +21,44 @@ namespace YTEditor
 
   void Gizmo::SetMode(int aMode)
   {
-    if (Select <= aMode && aMode <= Rotate)
+
+    switch (aMode)
     {
-      mMode = aMode;
+    case Gizmo::Select:
+    {
+      mMode = Gizmo::Select;
+
+
+
+      break;
+    }
+
+    case Gizmo::Translate:
+    {
+      mMode = Gizmo::Translate;
+      break;
+    }
+
+    case Gizmo::Scale:
+    {
+      mMode = Gizmo::Scale;
+
+      // change the models for the axes to scale
+
+      YTE::CompositionMap *axes = this->mGizmoObj->GetCompositions();
+
+      for (auto a = axes->begin(); a != axes->end(); ++a)
+      {
+        a->second->GetComponent<YTE::Model>();
+      }
+
+      break;
+    }
+
+    case Gizmo::Rotate:
+    {
+      mMode = Gizmo::Rotate;
+    }
     }
   }
 

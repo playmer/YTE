@@ -52,6 +52,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
+#include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/FileViewer/FileViewer.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
@@ -89,6 +90,7 @@ namespace YTEditor
       "YTE::Engine *aEngine is nullptr.");
 
     SetWindowSettings();
+    ConstructToolbar();
     ConstructMenuBar();
     ConstructSubWidgets();
 
@@ -334,7 +336,6 @@ namespace YTEditor
   void MainWindow::ConstructSubWidgets()
   {
     ConstructGameWindows();
-    ConstructToolbar();
     ConstructObjectBrowser();
     ConstructComponentBrowser();
     ConstructOutputConsole();
@@ -367,6 +368,7 @@ namespace YTEditor
 
   void MainWindow::ConstructToolbar()
   {
+    /*
     QToolBar * toolbar = new QToolBar(this);
 
     QPushButton * select = new QPushButton(toolbar);
@@ -393,8 +395,13 @@ namespace YTEditor
     scale->setCheckable(true);
     toolbar->addWidget(scale);
     this->addToolBar(toolbar);
+    */
 
-    toolbar = new QToolBar(this);
+    GizmoToolbar *gizTool = new GizmoToolbar(this);
+    this->addToolBar(gizTool);
+
+
+    QToolBar *toolbar = new QToolBar(this);
 
     QPushButton * play = new QPushButton(toolbar);
     play->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/play.png"));
