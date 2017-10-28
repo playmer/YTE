@@ -129,6 +129,8 @@ namespace YTEditor
       mRunningEngine->Update();
     }
 
+    mPhysicsHandler->Update();
+
     auto self = this;
     QTimer::singleShot(0, [self]()
     {
