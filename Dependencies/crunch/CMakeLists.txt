@@ -3,6 +3,9 @@ Set(crunch_Source)
 Get_Filename_Component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 Include_Directories(${ParentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})
 
+# This doesn't define any symbols. y
+# src/crn_hash_map.cpp
+
 Set(crunch_Source 
       inc/crn_decomp.h
       inc/crnlib.h
@@ -63,7 +66,6 @@ Set(crunch_Source
       src/crn_freeimage_image_utils.h
       src/crn_hash.cpp
       src/crn_hash.h
-      src/crn_hash_map.cpp
       src/crn_hash_map.h
       src/crn_helpers.h
       src/crn_huffman_codes.cpp
@@ -133,10 +135,6 @@ Set(crunch_Source
       src/crn_threaded_resampler.h
       src/crn_threading.h
       src/crn_threading_null.h
-      src/crn_threading_pthreads.cpp
-      src/crn_threading_pthreads.h
-      src/crn_threading_win32.cpp
-      src/crn_threading_win32.h
       src/crn_timer.cpp
       src/crn_timer.h
       src/crn_traits.h
@@ -187,6 +185,16 @@ Set(crunch_Source
       src/lzma_Threads.cpp
       src/lzma_Threads.h
       src/lzma_Types.h)
+
+If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  Set(crunch_Source ${crunch_Source} 
+                    src/crn_threading_win32.cpp
+                    src/crn_threading_win32.h)
+Else()
+  Set(crunch_Source ${crunch_Source} 
+                    src/crn_threading_pthreads.cpp
+                    src/crn_threading_pthreads.h)
+EndIf()
 
 Add_Library(crunch ${crunch_Source})
 
