@@ -21,6 +21,7 @@ namespace YTE
     // a surface is needed for the physical device selection
     std::shared_ptr<vkhlf::Surface> InitializeVulkan(Engine *aEngine);
     void DeinitializeVulkan();
+    std::shared_ptr<vkhlf::Surface> CreateSurface(Window *aWindow);
 
     std::shared_ptr<vkhlf::Instance> GetInstance() const
     {

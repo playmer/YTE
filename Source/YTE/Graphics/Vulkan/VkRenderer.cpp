@@ -41,7 +41,7 @@ namespace YTE
         }
 
         // all other windows
-        auto surface = window.second->SetUpVulkanWindow(static_cast<void*>(instance.get()));
+        auto surface = mVulkanInternals->CreateSurface(window.second.get());
         mSurfaces.emplace(window.second.get(),
                           std::make_shared<VkRenderedSurface>(window.second.get(),
                                                               this,

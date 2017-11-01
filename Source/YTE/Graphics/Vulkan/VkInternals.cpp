@@ -157,6 +157,22 @@ namespace YTE
 
 
 
+  std::shared_ptr<vkhlf::Surface> VkInternals::CreateSurface(Window *aWindow)
+  {
+    auto surface = aWindow->SetUpVulkanWindow(static_cast<void*>(mInstance.get()));
+    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*surface);
+    auto indices = QueueFamilyIndices::FindQueueFamilies(*mMainDevice);
+
+    if (indices.IsDeviceSuitable(*mMainDevice, baseSurfaceKhr))
+    {
+      return surface;
+    }
+
+    return nullptr;
+  }
+
+
+
   void VkInternals::SelectDevice(std::shared_ptr<vkhlf::Surface> aSurface)
   {
     // Find a physical device with presentation support
