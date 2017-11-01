@@ -8,7 +8,7 @@
 #include "vkel/vkel.h"
 
 #if defined(MemoryBarrier)
-#undef MemoryBarrier
+  #undef MemoryBarrier
 #endif
 
 #undef NOMINMAX
@@ -19,7 +19,7 @@
 #include "vulkan/vulkan.hpp"
 
 #if defined(MemoryBarrier)
-#undef MemoryBarrier
+  #undef MemoryBarrier
 #endif
 
 #undef NOMINMAX
@@ -30,7 +30,7 @@
 #include "vkhlf/vkhlf.h"
 
 #if defined(MemoryBarrier)
-#undef MemoryBarrier
+  #undef MemoryBarrier
 #endif
 
 #undef NOMINMAX

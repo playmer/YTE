@@ -323,11 +323,11 @@ namespace YTE
     // TODO (Josh): According to vkhlf, you have to do this little dance,
     //              unsure why, should find out.
     mFrameBufferSwapChain.reset();
-    mFrameBufferSwapChain.reset(new vkhlf::FramebufferSwapchain(mDevice,
-                                                                mSurface,
-                                                                mColorFormat,
-                                                                mDepthFormat,
-                                                                mRenderPass));
+    mFrameBufferSwapChain = std::make_unique<vkhlf::FramebufferSwapchain>(mDevice,
+                                                                          mSurface,
+                                                                          mColorFormat,
+                                                                          mDepthFormat,
+                                                                          mRenderPass);
 
     DebugObjection(mFrameBufferSwapChain->getExtent() != extent,
                    "Swap chain extent did not update with resize");
@@ -429,7 +429,7 @@ namespace YTE
       {
         for (unsigned int i = 0; i < mesh.second->mSubmeshes.size(); ++i)
         {
-          std::shared_ptr<VkSubmesh> submesh = mesh.second->mSubmeshes[i];
+          std::shared_ptr<VkSubmesh> &submesh = mesh.second->mSubmeshes[i];
 
           if (submesh->mShader != shader.second)
           {
