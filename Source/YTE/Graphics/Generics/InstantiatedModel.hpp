@@ -22,9 +22,15 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedModel);
 
-    InstantiatedModel();
-    virtual ~InstantiatedModel();
-    virtual void UpdateUBOPerModel(UBOPerModel &aUBO);
+    virtual ~InstantiatedModel()
+    {
+      
+    }
+
+    virtual void UpdateUBOPerModel(UBOPerModel &aUBO)
+    {
+      YTEUnusedArgument(aUBO);
+    }
 
 
 

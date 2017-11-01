@@ -64,17 +64,17 @@ namespace YTE
       int texWidth, texHeight, texChannels;
 
       stbi_uc* loadedFile = stbi_load(textureFile.c_str(),
-        &texWidth,
-        &texHeight,
-        &texChannels,
-        STBI_rgb_alpha);
+                                      &texWidth,
+                                      &texHeight,
+                                      &texChannels,
+                                      STBI_rgb_alpha);
       DebugObjection(texWidth <= 0,
-        "Texture: %s, has negative width!",
-        aFile.c_str());
+                     "Texture: %s, has negative width!",
+                     aFile.c_str());
 
       DebugObjection(texHeight <= 0,
-        "Texture: %s, has negative height!",
-        aFile.c_str());
+                     "Texture: %s, has negative height!",
+                     aFile.c_str());
 
       mWidth = static_cast<u32>(texWidth);
       mHeight = static_cast<u32>(texHeight);
@@ -84,8 +84,8 @@ namespace YTE
       //            aFile.c_str(), 
       //            texChannels);
       DebugObjection(loadedFile == nullptr,
-        "Failed to load texture: %s",
-        aFile.c_str());
+                     "Failed to load texture: %s",
+                     aFile.c_str());
 
       size_t size = mWidth * mHeight * STBI_rgb_alpha;
       mData.resize(size);
@@ -93,7 +93,7 @@ namespace YTE
       memcpy(mData.data(), loadedFile, size);
       stbi_image_free(loadedFile),
 
-        mType = TextureType::RGBA;
+      mType = TextureType::RGBA;
     }
     else if (type == L".crn")
     {
