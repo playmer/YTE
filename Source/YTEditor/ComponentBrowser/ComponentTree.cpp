@@ -134,6 +134,11 @@ namespace YTEditor
 
     item->addChild(child);
 
+    YTE::String tip = aWidget->GetEngineComponent()->GetType()->Description();
+
+    item->setToolTip(0, tip.c_str());
+    child->setToolTip(0, tip.c_str());
+
     connect(this,
       &QTreeWidget::itemCollapsed,
       this,

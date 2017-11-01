@@ -40,6 +40,19 @@ namespace YTEditor
       : PropertyWidget<T>(aName, aMainWindow, aParent),
       mParentComponent(aParent)
     {
+      auto& propMap = aParent->GetEngineComponent()->GetType()->GetProperties();
+      auto it_prop = propMap.FindFirst(this->GetName());
+
+      YTE::String tip = it_prop->second->Description();
+
+      this->GetLabelWidget()->setToolTip(tip.c_str());
+
+      auto widgets = this->GetWidgets();
+
+      for (auto it : widgets)
+      {
+        it->setToolTip(tip.c_str());
+      }
     }
 
     void SetEvents()

@@ -32,16 +32,16 @@ namespace YTEditor
 {
 
   ComponentWidget::ComponentWidget(YTE::Type *type,
-    const char *name,
-    YTE::Component *engineComp,
-    MainWindow *aMainWindow,
-    QWidget *parent)
-    : QFrame(parent),
-    mEngineComponent(engineComp),
-    mType(type),
-    mProperties(new QVBoxLayout(this)),
-    mCompName(name),
-    mMainWindow(aMainWindow)
+                                   const char *name,
+                                   YTE::Component *engineComp,
+                                   MainWindow *aMainWindow,
+                                   QWidget *parent)
+    : QFrame(parent)
+    , mEngineComponent(engineComp)
+    , mType(type)
+    , mProperties(new QVBoxLayout(this))
+    , mCompName(name)
+    , mMainWindow(aMainWindow)
   {
     this->setLayout(mProperties);
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);

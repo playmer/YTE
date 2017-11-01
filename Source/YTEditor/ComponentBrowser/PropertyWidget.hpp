@@ -41,8 +41,8 @@ namespace YTEditor
       mMainWindow(aMainWindow)
     {
       this->setLayout(mValues);
-      QLabel * nameLabel = new QLabel(aName.c_str(), this);
-      mValues->addWidget(nameLabel);
+      mLabel = new QLabel(aName.c_str(), this);
+      mValues->addWidget(mLabel);
 
       // check for the type and add the appropriate widgets
       if (std::is_same<T, int>())
@@ -126,6 +126,11 @@ namespace YTEditor
       return mWidgets;
     }
 
+    QLabel* GetLabelWidget()
+    {
+      return mLabel;
+    }
+
   private:
 
     MainWindow *mMainWindow;
@@ -133,6 +138,8 @@ namespace YTEditor
     std::vector<QWidget*> mWidgets;
     QHBoxLayout *mValues;
     std::string mPropertyName;
+
+    QLabel *mLabel;
 
     void AddInteger(int aVal = 0);
     void AddFloat(float aVal = 0.0f);
