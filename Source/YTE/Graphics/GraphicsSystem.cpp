@@ -22,7 +22,6 @@
 namespace YTE
 {
   YTEDefineEvent(RendererResize);
-  YTEDefineEvent(GraphicsDataUpdate);
 
   YTEDefineType(GraphicsSystem)
   {

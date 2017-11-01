@@ -224,9 +224,6 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = dt;
 
-    GraphicsDataUpdate graphicsEvent;
-    graphicsEvent.Dt = dt;
-
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(dt);

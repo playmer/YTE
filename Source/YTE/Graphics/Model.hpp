@@ -47,6 +47,10 @@ namespace YTE
 
     void SetReload(bool aBool)
     {
+      if (mConstructing)
+      {
+        return;
+      }
       YTEUnusedArgument(aBool);
       Destroy();
       Create();

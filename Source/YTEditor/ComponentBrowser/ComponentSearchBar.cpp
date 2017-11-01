@@ -13,10 +13,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/Core/Composition.hpp"
-#include "YTE/Graphics/Model.hpp"
 #include "YTE/Core/Component.hpp"
-#include "YTE/Graphics/InstantiatedMesh.hpp"
-#include "YTE/Graphics/Mesh.hpp"
 
 #include "../MainWindow/YTEditorMainWindow.hpp"
 #include "../MaterialViewer/MaterialViewer.hpp"
@@ -31,7 +28,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
-#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include <qcompleter.h>
 

@@ -11,6 +11,9 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+
+#include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {

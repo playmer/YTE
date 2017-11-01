@@ -8,6 +8,7 @@
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/Model.hpp"

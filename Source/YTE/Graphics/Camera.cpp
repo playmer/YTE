@@ -206,7 +206,7 @@ namespace YTE
     mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
     mMouse->YTERegister(Events::MouseRelease, this, &Camera::MouseRelease);
     mMouse->YTERegister(Events::MousePersist, this, &Camera::MousePersist);
-    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &Camera::Update);
+    mSpace->YTERegister(Events::LogicUpdate, this, &Camera::Update);
     mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
@@ -529,7 +529,7 @@ namespace YTE
     mChanged = true;
   }
 
-  void Camera::Update(GraphicsDataUpdate* aEvent)
+  void Camera::Update(LogicUpdate* aEvent)
   {
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)

@@ -47,7 +47,7 @@ namespace YTE
     void MousePersist(MouseButtonEvent *aEvent);
     void MouseRelease(MouseButtonEvent *aEvent);
     void OrientationEvent(OrientationChanged *aEvent);
-    void Update(GraphicsDataUpdate* aEvent);
+    void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
 
 
