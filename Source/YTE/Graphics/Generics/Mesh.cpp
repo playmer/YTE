@@ -22,6 +22,8 @@ namespace YTE
 
   Submesh::Submesh(Window *aWindow, const aiScene *aScene, const aiMesh *aMesh)
   {
+    YTEUnusedArgument(aWindow);
+
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
       pColor);

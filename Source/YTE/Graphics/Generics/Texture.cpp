@@ -97,12 +97,12 @@ namespace YTE
     }
     else if (type == L".crn")
     {
-      std::ifstream file(textureFile, std::ios::binary | std::ios::ate);
-      std::streamsize streamSize = file.tellg();
-      file.seekg(0, std::ios::beg);
+      std::ifstream fileToRead(textureFile, std::ios::binary | std::ios::ate);
+      std::streamsize streamSize = fileToRead.tellg();
+      fileToRead.seekg(0, std::ios::beg);
       mData.resize(streamSize, 0);
 
-      if (file.read(reinterpret_cast<char*>(mData.data()), streamSize).bad())
+      if (fileToRead.read(reinterpret_cast<char*>(mData.data()), streamSize).bad())
       {
         return;
       }

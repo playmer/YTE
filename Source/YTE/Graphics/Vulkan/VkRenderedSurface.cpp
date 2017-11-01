@@ -142,7 +142,7 @@ namespace YTE
                                      vk::MemoryPropertyFlagBits::eDeviceLocal,
                                      uboAllocator);
 
-    // TODO: (CBO) Command Buffer is allocated here, this shouldnt be here
+    // TODO: (CBO) Command Buffer is allocated here, this shouldn't be here
     mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
 
     // create Framebuffer & Swapchain
