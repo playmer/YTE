@@ -17,6 +17,15 @@
 
 namespace YTE
 {
+  YTEDefineEvent(ModelChanged);
+
+  YTEDefineType(ModelChanged)
+  {
+    YTERegisterType(ModelChanged);
+    YTEBindField(&ModelChanged::Object, "Object", PropertyBinding::Get);
+  }
+
+
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
     YTEUnusedArgument(aComponent);
@@ -122,6 +131,11 @@ namespace YTE
     {
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 

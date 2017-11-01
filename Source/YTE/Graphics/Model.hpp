@@ -19,6 +19,17 @@ namespace YTE
 {
   class Window;
 
+  YTEDeclareEvent(ModelChanged);
+
+  class ModelChanged : public Event
+  {
+  public:
+    YTEDeclareType(ModelChanged);
+
+    Composition *Object;
+
+  };
+
   class Model : public Component
   {
   public:

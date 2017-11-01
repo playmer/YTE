@@ -53,13 +53,13 @@ namespace YTEditor
     // get the transform of the currently selected object
     YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
 
-    glm::vec3 size = transform->GetWorldScale();
+    glm::vec3 size = transform->GetScale();
     glm::vec3 newSize = size + change;
 
-    std::cout << "------------------------------------------------------------------------------------\n";
-    std::cout << "Size:     " << size.x << ", " << size.y << ", " << size.z << std::endl;
-    std::cout << "Change:   " << change.x << ", " << change.y << ", " << change.z << std::endl;
-    std::cout << "New Size: " << newSize.x << ", " << newSize.y << ", " << newSize.z << std::endl;
+    //std::cout << "------------------------------------------------------------------------------------\n";
+    //std::cout << "Size:     " << size.x << ", " << size.y << ", " << size.z << std::endl;
+    //std::cout << "Change:   " << change.x << ", " << change.y << ", " << change.z << std::endl;
+    //std::cout << "New Size: " << newSize.x << ", " << newSize.y << ", " << newSize.z << std::endl;
 
 
     transform->SetScale(newSize);

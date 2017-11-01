@@ -263,6 +263,7 @@ namespace YTEditor
     aComposition->YTERegister(YTE::Events::PositionChanged, obj, &PickerObject::ChangedPositionAndRotation);
     aComposition->YTERegister(YTE::Events::RotationChanged, obj, &PickerObject::ChangedPositionAndRotation);
     aComposition->YTERegister(YTE::Events::ScaleChanged, obj, &PickerObject::ChangedScale);
+    aComposition->YTERegister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
 
     if (nullptr != model)
     {
@@ -342,6 +343,12 @@ namespace YTEditor
   void PhysicsHandler::RemovedComposition(YTE::CompositionRemoved *aEvent)
   {
     Remove(aEvent->mComposition);
+  }
+
+  void PhysicsHandler::OnModelChanged(YTE::ModelChanged *aEvent)
+  {
+    Remove(aEvent->Object);
+    Add(aEvent->Object);
   }
 
 }

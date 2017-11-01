@@ -7,6 +7,7 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Model.hpp"
 
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/RigidBody.hpp"
@@ -48,6 +49,8 @@ namespace YTEditor
 
     void AddedComposition(YTE::CompositionAdded *aEvent);
     void RemovedComposition(YTE::CompositionRemoved *aEvent);
+
+    void OnModelChanged(YTE::ModelChanged *aEvent);
 
   private:
     YTE::UniquePointer<btDefaultCollisionConfiguration> mCollisionConfiguration;

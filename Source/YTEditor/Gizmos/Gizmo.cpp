@@ -3,6 +3,7 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 
+#include "YTE/Graphics/Model.hpp"
 
 #include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
