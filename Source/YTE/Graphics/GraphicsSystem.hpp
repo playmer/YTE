@@ -42,10 +42,6 @@ namespace YTE
 
     void Initialize() override;
 
-    void FrameUpdate(LogicUpdate *aUpdate);
-    void GraphicsDataUpdate(LogicUpdate *aUpdate);
-    void PresentFrame(LogicUpdate *aUpdate);
-
 
 
     // Gettors

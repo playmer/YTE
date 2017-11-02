@@ -16,6 +16,8 @@ namespace YTE
   class VkRenderer : public Renderer
   {
   public:
+    YTEDeclareType(VkRenderer);
+
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
 
@@ -24,9 +26,15 @@ namespace YTE
     
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
 
-    void GraphicsDataUpdate() override;
+
+
+    /////////////////////////////////
+    // Events
+    /////////////////////////////////
+    void GraphicsDataUpdate(LogicUpdate *aEvent) override;
     void FrameUpdate(LogicUpdate *aEvent) override;
-    void PresentFrame() override;
+    void PresentFrame(LogicUpdate *aEvent) override;
+
 
 
     /////////////////////////////////

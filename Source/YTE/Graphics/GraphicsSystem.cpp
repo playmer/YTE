@@ -56,10 +56,6 @@ namespace YTE
 
   void GraphicsSystem::Initialize()
   {
-    mEngine->YTERegister(Events::FrameUpdate, this, &GraphicsSystem::FrameUpdate);
-    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &GraphicsSystem::GraphicsDataUpdate);
-    mEngine->YTERegister(Events::PresentFrame, this, &GraphicsSystem::PresentFrame);
-
     auto vulkanSuccess = vkelInit();
 
     if (vulkanSuccess)
@@ -69,37 +65,5 @@ namespace YTE
     }
 
     mRenderer = std::make_unique<Renderer>();
-  }
-
-
-
-  void GraphicsSystem::FrameUpdate(LogicUpdate *aUpdate)
-  {
-    if (mRenderer)
-    {
-      mRenderer->FrameUpdate(aUpdate);
-    }
-  }
-
-
-
-  void GraphicsSystem::GraphicsDataUpdate(LogicUpdate* aUpdate)
-  {
-    YTEUnusedArgument(aUpdate);
-    if (mRenderer)
-    {
-      mRenderer->GraphicsDataUpdate();
-    }
-  }
-
-
-
-  void GraphicsSystem::PresentFrame(LogicUpdate *aUpdate)
-  {
-    YTEUnusedArgument(aUpdate);
-    if (mRenderer)
-    {
-      mRenderer->PresentFrame();
-    }
   }
 }

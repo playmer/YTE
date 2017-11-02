@@ -13,6 +13,13 @@
 
 namespace YTE
 {
+  YTEDefineType(VkRenderer)
+  {
+    YTERegisterType(VkRenderer);
+  }
+
+
+
   VkRenderer::VkRenderer(Engine *aEngine)
     : mVulkanInternals(std::make_unique<VkInternals>())
     , mEngine(aEngine)
@@ -48,6 +55,10 @@ namespace YTE
                                                               surface));
       }
     }
+
+    mEngine->YTERegister(Events::FrameUpdate, this, &VkRenderer::FrameUpdate);
+    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &VkRenderer::GraphicsDataUpdate);
+    mEngine->YTERegister(Events::PresentFrame, this, &VkRenderer::PresentFrame);
   }
 
 
@@ -103,8 +114,9 @@ namespace YTE
 
 
 
-  void VkRenderer::GraphicsDataUpdate()
+  void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     for (auto& surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
@@ -123,8 +135,9 @@ namespace YTE
 
 
 
-  void VkRenderer::PresentFrame()
+  void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     for (auto& surface : mSurfaces)
     {
       surface.second->PresentFrame();

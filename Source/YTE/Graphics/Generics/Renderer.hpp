@@ -8,6 +8,7 @@
 #ifndef YTE_Graphics_Generics_Renderer_hpp
 #define YTE_Graphics_Generics_Renderer_hpp
 
+#include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
@@ -17,9 +18,11 @@
 
 namespace YTE
 {
-  class Renderer
+  class Renderer : public EventHandler
   {
   public:
+    YTEDeclareType(Renderer);
+
     virtual ~Renderer()
     {
       
@@ -46,9 +49,9 @@ namespace YTE
       YTEUnusedArgument(aView);
     }
 
-    virtual void GraphicsDataUpdate()
+    virtual void GraphicsDataUpdate(LogicUpdate *aEvent)
     {
-      
+      YTEUnusedArgument(aEvent);
     }
 
     virtual void FrameUpdate(LogicUpdate *aEvent)
@@ -56,9 +59,9 @@ namespace YTE
       YTEUnusedArgument(aEvent);
     }
 
-    virtual void PresentFrame()
+    virtual void PresentFrame(LogicUpdate *aEvent)
     {
-      
+      YTEUnusedArgument(aEvent);
     }
 
     virtual glm::vec4 GetClearColor(Window *aWindow)
