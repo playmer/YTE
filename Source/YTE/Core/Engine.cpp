@@ -234,11 +234,10 @@ namespace YTE
     {
       space.second->Update(dt);
     }
-
-    SendEvent(Events::LogicUpdate, &updateEvent);
-    //TODO (Andrew): Figure order of these with the rest
-    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
+    
     SendEvent(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
 
     ++mFrame;
