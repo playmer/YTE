@@ -30,7 +30,7 @@ namespace YTE
     YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override; 
-    UBOView&& ConstructUBOView();
+    UBOView ConstructUBOView();
     void UpdateView();
  
     Window* GetWindow()

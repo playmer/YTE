@@ -233,7 +233,7 @@ namespace YTE
              glm::vec4{ aPosition.x, aPosition.y, aPosition.z, 1.0f } };
   }
 
-  UBOView && Camera::ConstructUBOView()
+  UBOView Camera::ConstructUBOView()
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
@@ -345,7 +345,7 @@ namespace YTE
         break;
       }
     }
-    return std::move(view);
+    return view;
   }
 
   void Camera::UpdateView()

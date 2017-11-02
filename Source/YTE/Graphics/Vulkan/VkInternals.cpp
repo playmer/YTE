@@ -11,6 +11,7 @@
 
 namespace YTE
 {
+#if !defined(NDEBUG)
   // debug report callback for vulkan
   static VKAPI_ATTR
     VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
@@ -67,6 +68,7 @@ namespace YTE
     assert(!aMessage);
     return VK_TRUE;
   }
+#endif
 
 
 

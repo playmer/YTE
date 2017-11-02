@@ -66,9 +66,7 @@ namespace YTE
     {
       for (auto &submesh : mesh->mParts)
       {
-        auto indexSize = submesh.mIndexBuffer.size();
-      
-        DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
+        DebugAssert((submesh.mIndexBuffer.size() % 3) == 0, "Index buffer must be divisible by 3.");
       
         for (size_t i = 0; i < submesh.mIndexBufferSize; i += 3)
         {

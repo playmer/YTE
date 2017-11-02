@@ -96,6 +96,7 @@ void Name::InitializeType()
     TypeId<DecomposePropertyType<decltype(aGetterFunction),                 \
                                  decltype(aSetterFunction)>::ObjectType>())
 
+
   class DocumentedObject : public Base
   {
   public:
