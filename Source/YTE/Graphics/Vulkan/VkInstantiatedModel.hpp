@@ -23,14 +23,14 @@ namespace YTE
     VkInstantiatedModel(std::string &aModelFile, std::shared_ptr<VkRenderedSurface> aSurface);
     ~VkInstantiatedModel() override;
 
-    void UpdateUBOPerModel(UBOPerModel &aUBO) override;
+    void UpdateUBOModel(UBOModel &aUBO) override;
 
     void CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
 
 
 
-    std::shared_ptr<vkhlf::Buffer> mUBOPerModel;
+    std::shared_ptr<vkhlf::Buffer> mUBOModel;
     std::shared_ptr<VkRenderedSurface> mSurface;
     std::unordered_map<std::shared_ptr<VkSubmesh>, 
                        std::shared_ptr<vkhlf::DescriptorSet>> mDescriptorSets;

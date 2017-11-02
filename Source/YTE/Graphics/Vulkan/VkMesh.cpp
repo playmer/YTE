@@ -5,7 +5,7 @@
 
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
-#include "YTE/Graphics/Vulkan/VkUtilities.hpp"
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
 
 namespace YTE

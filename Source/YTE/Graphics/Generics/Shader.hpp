@@ -21,10 +21,7 @@ namespace YTE
 
     Shader(std::string &aName);
 
-    virtual ~Shader()
-    {
-      
-    }
+    virtual ~Shader() = default;
 
 
 

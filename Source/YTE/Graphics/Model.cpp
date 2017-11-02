@@ -120,7 +120,7 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+      mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
 
@@ -134,7 +134,7 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+      mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
 
@@ -148,7 +148,7 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+      mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
 
@@ -169,21 +169,6 @@ namespace YTE
     }
     Destroy();
     Create();
-  }
-
-
-  // file scoped function to check for file path correctness
-  static bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile)
-  {
-    if (0 == aFile.size())
-    {
-      return false;
-    }
-
-    std::experimental::filesystem::path pathName{ aPath.String() };
-    pathName.append(aDirectory);
-    pathName.append(aFile);
-    return std::experimental::filesystem::exists(pathName);
   }
 
 
@@ -210,7 +195,7 @@ namespace YTE
     mInstantiatedModel = mRenderer->CreateModel(mWindow, mMeshName);
     if (mInstantiatedModel && mTransform)
     {
-      mInstantiatedModel->UpdateUBOPerModel(mUBOPerModel);
+      mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
 
@@ -231,10 +216,10 @@ namespace YTE
       return;
     }
 
-    mUBOPerModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
+    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
 
-    mUBOPerModel.mModelMatrix = mUBOPerModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
+    mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
 
-    mUBOPerModel.mModelMatrix = glm::scale(mUBOPerModel.mModelMatrix, mTransform->GetScale());
+    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
   }
 }

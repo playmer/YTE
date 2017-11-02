@@ -7,7 +7,7 @@
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
-#include "YTE/Graphics/Vulkan/VkUtilities.hpp"
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
 namespace YTE
 {
@@ -28,13 +28,13 @@ namespace YTE
     // create UBO Per Model buffer
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mUBOPerModel = mSurface->GetDevice()->createBuffer(sizeof(UBOPerModel),
-      vk::BufferUsageFlagBits::eTransferDst |
-      vk::BufferUsageFlagBits::eUniformBuffer,
-      vk::SharingMode::eExclusive,
-      nullptr,
-      vk::MemoryPropertyFlagBits::eDeviceLocal,
-      allocator);
+    mUBOModel = mSurface->GetDevice()->createBuffer(sizeof(UBOModel),
+                                                    vk::BufferUsageFlagBits::eTransferDst |
+                                                    vk::BufferUsageFlagBits::eUniformBuffer,
+                                                    vk::SharingMode::eExclusive,
+                                                    nullptr,
+                                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                                    allocator);
 
     // create descriptor sets
     for (auto& mesh : mLoadedMesh->mSubmeshes)
@@ -42,10 +42,7 @@ namespace YTE
       CreateDescriptorSet(mesh);
     }
 
-    UBOPerModel modelData;
-    modelData.mModelMatrix = glm::mat4(1.0f);
-
-    VkInstantiatedModel::UpdateUBOPerModel(modelData);
+    mUBOModelData.mModelMatrix = glm::mat4(1.0f);
   }
 
 
@@ -57,12 +54,12 @@ namespace YTE
 
 
 
-  void VkInstantiatedModel::UpdateUBOPerModel(UBOPerModel &aUBO)
+  void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this,
-      &VkInstantiatedModel::GraphicsDataUpdateVk);
+                          &VkInstantiatedModel::GraphicsDataUpdateVk);
 
-    mUBOPerModelData = aUBO;
+    mUBOModelData = aUBO;
   }
 
 
@@ -155,7 +152,7 @@ namespace YTE
 
     // Add Uniform Buffers
     vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(), 0, sizeof(UBOView) };
-    vkhlf::DescriptorBufferInfo uboModel{ mUBOPerModel, 0, sizeof(UBOPerModel) };
+    vkhlf::DescriptorBufferInfo uboModel{ mUBOModel, 0, sizeof(UBOModel) };
     vkhlf::DescriptorBufferInfo uboMaterial{ mesh->mUBOMaterial, 0, sizeof(UBOMaterial) };
 
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
@@ -197,7 +194,7 @@ namespace YTE
 
     auto update = aEvent->mCBO;
 
-    mUBOPerModel->update<UBOPerModel>(0, mUBOPerModelData, update);
+    mUBOModel->update<UBOModel>(0, mUBOModelData, update);
   }
 }
 

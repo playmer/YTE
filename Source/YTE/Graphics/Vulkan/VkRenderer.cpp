@@ -152,7 +152,7 @@ namespace YTE
 
     if (surface == mSurfaces.end())
     {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
+      DebugObjection(true, "Cannot find surface associated to provided window");
       return;
     }
 
@@ -167,7 +167,7 @@ namespace YTE
 
     if (surface == mSurfaces.end())
     {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
+      DebugObjection(true, "Cannot find surface associated to provided window");
       return glm::vec4(-1.0f, -1.0f, -1.0f, -1.0f);
     }
 
@@ -182,7 +182,7 @@ namespace YTE
 
     if (surface == mSurfaces.end())
     {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
+      DebugObjection(true, "Cannot find surface associated to provided window");
       return (--surface)->second;
     }
 

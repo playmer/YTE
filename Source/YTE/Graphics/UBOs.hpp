@@ -20,7 +20,7 @@ namespace YTE
 
 
 
-  struct UBOPerModel
+  struct UBOModel
   {
     glm::mat4 mModelMatrix;
   };

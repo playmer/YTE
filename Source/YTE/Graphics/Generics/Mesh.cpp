@@ -166,7 +166,6 @@ namespace YTE
   {
     Assimp::Importer Importer;
 
-    // TODO: Are meshes always in the game's asset path?
     auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
 
     auto pScene = Importer.ReadFile(meshFile.c_str(),

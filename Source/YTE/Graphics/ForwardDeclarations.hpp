@@ -16,7 +16,7 @@ namespace YTE
   class SimpleModel;
   class Model;
   struct UBOMaterial;
-  struct UBOPerModel;
+  struct UBOModel;
   struct UBOView;
   struct Vertex;
 }

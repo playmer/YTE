@@ -236,7 +236,7 @@ namespace YTE
     }
 
     SendEvent(Events::LogicUpdate, &updateEvent);
-    //TODO: Figure order of these with the rest
+    //TODO (Andrew): Figure order of these with the rest
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);

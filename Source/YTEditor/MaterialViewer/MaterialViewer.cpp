@@ -32,7 +32,7 @@ MaterialViewer::MaterialViewer(YTEditorMainWindow *aMainWindow,
     mComboBox(new QComboBox(this)), 
     mMaterialWindow(nullptr), 
     mContainer(new QWidget(this)), 
-    //mCurrentSubMeshes(nullptr),
+    mCurrentSubMeshes(nullptr),
     mMainWindow(aMainWindow)
 {
   (void)aWindow;

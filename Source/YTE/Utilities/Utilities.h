@@ -15,6 +15,8 @@
 #include <string>
 #include <filesystem>
 
+#include "YTE/Core/AssetLoader.hpp"
+
 #include "YTE/Utilities/String/String.h"
 
 namespace YTE
@@ -35,6 +37,7 @@ namespace YTE
   std::string GetConfigPath(const String &name);
   std::string GetConfigPath(const char *name);
   std::string GetConfigPath(const std::string &name);
+  bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile);
 
   std::string RemoveExtension(const std::string & filename);
 

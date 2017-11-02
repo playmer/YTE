@@ -12,7 +12,7 @@
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
-#include "YTE/Graphics/Vulkan/VkUtilities.hpp"
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 

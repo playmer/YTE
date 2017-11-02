@@ -83,7 +83,7 @@ namespace YTE
     Renderer *mRenderer;
     Window *mWindow;
     Transform *mTransform;
-    UBOPerModel mUBOPerModel;
+    UBOModel mUBOModel;
     std::shared_ptr<InstantiatedModel> mInstantiatedModel;
     bool mConstructing;
   };

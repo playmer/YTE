@@ -6,7 +6,7 @@
 #include "YTE/StandardLibrary/Utilities.hpp"
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
-#include "YTE/Graphics/Vulkan/VkUtilities.hpp"
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
 namespace YTE
 {

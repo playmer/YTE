@@ -27,7 +27,7 @@ namespace YTE
       
     }
 
-    virtual void UpdateUBOPerModel(UBOPerModel &aUBO)
+    virtual void UpdateUBOModel(UBOModel &aUBO)
     {
       YTEUnusedArgument(aUBO);
     }
@@ -46,7 +46,7 @@ namespace YTE
 
   protected:
     std::shared_ptr<Mesh> mMesh;
-    UBOPerModel mUBOPerModelData;
+    UBOModel mUBOModelData;
   };
 }
 
