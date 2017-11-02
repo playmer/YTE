@@ -4,3 +4,5 @@
 [submodule "Dependencies/VkHLF"]
 	path = Dependencies/VkHLF
 	url = https://github.com/playmer/VkHLF.git
+[submodule "Dependencies/kiss_fft"]
+	url = https://github.com/playmer/kiss_fft.git
