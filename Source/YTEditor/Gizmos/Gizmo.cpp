@@ -17,7 +17,8 @@
 namespace YTEditor
 {
 
-  Gizmo::Gizmo(MainWindow * aMainWindow) : mMainWindow(aMainWindow), mMode(Select)
+  Gizmo::Gizmo(MainWindow * aMainWindow)
+    : mMainWindow(aMainWindow), mMode(Select), mFirstClickMousePos(glm::vec3())
   {
   }
 
@@ -114,7 +115,7 @@ namespace YTEditor
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
 
-        // orient the translate gizmo with the current object
+        // orient the scale gizmo with the current object axes
         YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
         glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
         mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
@@ -156,8 +157,10 @@ namespace YTEditor
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
         
-        // orient the translate gizmo with the world axes
-        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(glm::vec3());
+        // orient the rotate gizmo with the current object axes
+        YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+        glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
+        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
       }
       break;
     }
@@ -193,7 +196,9 @@ namespace YTEditor
 
     auto mouseWorld = YTEditor::getRayTo(uboView, btCamPos, aEvent->WorldCoordinates, mWindow->GetWidth(), mWindow->GetHeight(), aPickedDistance);
 
-    mPrevMousePos = YTE::BtToOurVec3(mouseWorld);
+    mFirstClickMousePos = YTE::BtToOurVec3(mouseWorld);
+
+    mPrevMousePos = mFirstClickMousePos;
   }
 
   void Gizmo::OnMousePersist(YTE::MouseButtonEvent *aEvent, YTE::Space *aSpace, float aPickedDistance)
@@ -251,8 +256,9 @@ namespace YTEditor
     {
       // need to change to send amount object should be rotated
       YTEditor::Rotate *rotate = axis->GetComponent<YTEditor::Rotate>();
-      
-      rotate->RotateObject(realDelta);
+
+      rotate->RotateObject(currObj, mFirstClickMousePos, realDelta);
+
       break;
     }
     }
@@ -269,6 +275,11 @@ namespace YTEditor
   MainWindow* Gizmo::GetMainWindow()
   {
     return mMainWindow;
+  }
+
+  glm::vec3 Gizmo::GetFirstClickMousePos()
+  {
+    return mFirstClickMousePos;
   }
 
 }

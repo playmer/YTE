@@ -33,12 +33,16 @@ namespace YTEditor
 
     MainWindow* GetMainWindow();
 
+    glm::vec3 GetFirstClickMousePos();
+
   protected:
 
     MainWindow *mMainWindow;
     YTE::Window *mWindow;
 
     glm::vec3 mPrevMousePos;
+
+    glm::vec3 mFirstClickMousePos;
 
     int mMode;
 

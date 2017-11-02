@@ -24,11 +24,6 @@ namespace YTEditor
 
   void Translate::MoveObject(YTE::Composition *aObj, glm::vec3 aDelta)
   {
-    if (aDelta.x > 1 || aDelta.y > 1 || aDelta.z > 1)
-    {
-      return;
-    }
-
     glm::vec3 change = glm::vec3(0.0f, 0.0f, 0.0f);
 
     switch (mDir)
