@@ -8,5 +8,6 @@ cd /d %~dp0
 cd ..
 
 IF EXIST build rmdir /s /q build
+IF EXIST Output rmdir Output
 
 
