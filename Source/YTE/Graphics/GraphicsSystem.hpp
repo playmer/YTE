@@ -8,32 +8,18 @@
 
 #include <stddef.h>
 
-#include <functional>
-
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/PrivateImplementation.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-
-
-#include "YTE/Graphics/Renderer.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
 namespace YTE
 {
   YTEDeclareEvent(RendererResize);
-  YTEDeclareEvent(GraphicsDataUpdate);
-
-
-  class GraphicsDataUpdate : public Event
-  {
-  public:
-    YTEDeclareType(GraphicsDataUpdate);
-
-    float Dt;
-  };
 
   class RendererResize : public Event
   {
@@ -42,9 +28,11 @@ namespace YTE
     int height;
   };
 
+
+
   class GraphicsSystem : public Component
   {
-    public:
+  public:
     YTEDeclareType(GraphicsSystem);
 
     GraphicsSystem(Composition *aOwner, RSValue *aProperties);
@@ -52,27 +40,25 @@ namespace YTE
 
     void SetUpWindow(Window *aWindow);
 
-    void Initialize();
+    void Initialize() override;
 
-    void Update(LogicUpdate *aUpdate);
 
-    void SetupDrawing();
 
-    void SetupInstanceDataBuffer();
-
+    // Gettors
     inline Renderer* GetRenderer()
     {
       return mRenderer.get();
     }
 
 
+
     PrivateImplementationDynamic mPlatformSpecificData;
 
-    private:
+
+
+  private:
     Engine *mEngine;
     std::unique_ptr<Renderer> mRenderer;
-
-
 	  i32 mVulkanSuccess;
   };
 }

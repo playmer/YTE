@@ -7,7 +7,6 @@
 #define YTE_Vertex_hpp
 
 #include <vector>
-
 #include "glm/glm.hpp"
 
 namespace YTE
@@ -29,19 +28,24 @@ namespace YTE
            glm::vec3 &aTangent,
            glm::vec3 &aBinormal,
            glm::vec3 &aBitangent)
-      : mPosition(aPosition),
-        mTextureCoordinates(aTextureCoordinates),
-        mNormal(aNormal),
-        mColor(aColor),
-        mTangent(aTangent),
-        mBinormal(aBinormal),
-        mBitangent(aBitangent)
+      : mPosition(aPosition)
+      , mTextureCoordinates(aTextureCoordinates)
+      , mNormal(aNormal)
+      , mColor(aColor)
+      , mTangent(aTangent)
+      , mBinormal(aBinormal)
+      , mBitangent(aBitangent)
     {
-    
+
     }
 
-    Vertex() {}
-};
+
+
+    Vertex()
+    {
+      
+    }
+  };
 }
 
 #endif

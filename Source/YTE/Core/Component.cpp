@@ -51,6 +51,8 @@ namespace YTE
                         std::vector<std::vector<Type*>> aTypes)
   {
     auto typeAddingTo = dynamic_cast<Type*>(aObject);
+
+    YTEUnusedArgument(typeAddingTo);
     DebugObjection(nullptr == typeAddingTo,
                    "ComponentDependencies Attribute being added to unknown object type.");
 

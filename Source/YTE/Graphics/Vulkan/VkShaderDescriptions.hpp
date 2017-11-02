@@ -1,36 +1,37 @@
-//////////////////////////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////////////////////////
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics - Vulkan
+///////////////////
+
 #pragma once
 
-#ifndef YTE_ShaderAttributeDescription_hpp
-#define YTE_ShaderAttributeDescription_hpp
+#ifndef YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
+#define YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 
-#include <stddef.h>
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
-#include <vector>
-
-#include "YTE/Core/Utilities.hpp"
-
-#include "YTE/Graphics/Vulkan/VkPrimitives.hpp"
+#include "YTE/StandardLibrary/Utilities.hpp"
+#include "YTE/Graphics/Vertex.hpp"
 
 namespace YTE
 {
-  class ShaderDescriptions
+  class VkShaderDescriptions
   {
   public:
-    ShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
+    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
     {
       mBindings.reserve(aNumberOfBindings);
       mAttributes.reserve(aNumberOfAttributes);
     }
 
+
+
     template <typename T>
     void AddAttribute(vk::Format aFormat)
     {
-      runtime_assert(mBindings.size() != 0, 
-                     "Haven't added a Vertex binding yet, "
-                     "so we can't add attribute inputs.");
+      DebugObjection(mBindings.size() == 0,
+        "Haven't added a Vertex binding yet, "
+        "so we can't add attribute inputs.");
 
       vk::VertexInputAttributeDescription toAdd;
       toAdd.binding = mBinding - 1;
@@ -43,6 +44,8 @@ namespace YTE
       ++mLocation;
       mVertexOffset += sizeof(T);
     }
+
+
 
     template <typename T>
     void AddBinding(vk::VertexInputRate aDescription)
@@ -58,28 +61,32 @@ namespace YTE
       mVertexOffset = 0;
     }
 
-    
 
-    vk::VertexInputBindingDescription* BindingData() 
-    { 
-      return mBindings.data(); 
+    /////////////////////////////////
+    // Getter
+    /////////////////////////////////
+    vk::VertexInputBindingDescription* BindingData()
+    {
+      return mBindings.data();
     }
-    size_t BindingSize() 
-    { 
-      return mBindings.size(); 
+
+    size_t BindingSize()
+    {
+      return mBindings.size();
     }
 
     vk::VertexInputAttributeDescription* AttributeData()
-    { 
-      return mAttributes.data(); 
+    {
+      return mAttributes.data();
     }
-    size_t AttributeSize() 
-    { 
-      return mAttributes.size(); 
+
+    size_t AttributeSize()
+    {
+      return mAttributes.size();
     }
 
     std::vector<vk::VertexInputBindingDescription>& Bindings()
-    {     
+    {
       return mBindings;
     }
 
@@ -87,6 +94,8 @@ namespace YTE
     {
       return mAttributes;
     }
+
+
 
   private:
     std::vector<vk::VertexInputBindingDescription> mBindings;

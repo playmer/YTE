@@ -130,6 +130,8 @@ namespace YTE
                     namedProperty->GetName().c_str());
       
         auto enumValue = enumType->GetFirstProperty(value->GetString());
+
+        YTEUnusedArgument(enumValue);
           
         DebugObjection(enumValue == nullptr,
                     "Did not find value for enum property %s, on type %s", 

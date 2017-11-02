@@ -521,7 +521,7 @@ namespace YTE
     MONITORINFO monitorInformation = { sizeof(MONITORINFO) };
 
     auto result = GetMonitorInfo(monitorHandle, &monitorInformation);
-
+    YTEUnusedArgument(result);
     DebugObjection(!result, "Couldn't retrieve monitor information.");
 
     auto right = monitorInformation.rcMonitor.right;

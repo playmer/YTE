@@ -19,6 +19,8 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
+
+
   GraphicsView::GraphicsView(Composition *aOwner, 
                              Space *aSpace, 
                              RSValue *aProperties)
@@ -37,16 +39,21 @@ namespace YTE
     mWindow = it->second.get();
   }
 
+
+
   void GraphicsView::Initialize()
   {
     SetClearColor(mClearColor);
   }
 
+
+
   void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
   {
     mLastCamera = aCamera;
-    mRenderer->UpdateViewBuffer(mWindow, aView);
+    mRenderer->UpdateWindowViewBuffer(mWindow, aView);
   }
+
 
 
   glm::vec4 GraphicsView::GetClearColor()
@@ -58,6 +65,8 @@ namespace YTE
 
     return mRenderer->GetClearColor(mWindow);
   }
+
+
 
   void GraphicsView::SetClearColor(const glm::vec4 &aColor)
   {

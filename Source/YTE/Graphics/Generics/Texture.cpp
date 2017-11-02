@@ -1,3 +1,8 @@
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics - Generics
+///////////////////
+
 #include <filesystem>
 #include <fstream>
 
@@ -7,7 +12,7 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Graphics/Texture.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 
@@ -16,9 +21,40 @@ namespace fs = std::experimental::filesystem;
 
 namespace YTE
 {
+  YTEDefineType(Texture)
+  {
+    YTERegisterType(Texture);
+  }
+
+
+
   Texture::Texture(std::string &aFile)
   {
-    auto textureFile = Path::GetTexturePath(Path::GetGamePath(), aFile);
+    Load(aFile);
+  }
+
+  
+
+  Texture::Texture(const char *aFile)
+  {
+    std::string f(aFile);
+    Load(f);
+  }
+
+
+
+  void Texture::Load(std::string &aFile)
+  {
+    fs::path file{ aFile };
+
+    std::string textureName{ file.stem().string() };
+
+    //TODO (Josh): Make Crunch work.
+    //file = L"Crunch" / file.filename().concat(L".crn");
+    file = L"Originals" / file.filename();
+    std::string fileStr{ file.string() };
+
+    auto textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
 
     fs::path type{ textureFile };
     type = type.extension();
@@ -27,18 +63,18 @@ namespace YTE
     {
       int texWidth, texHeight, texChannels;
 
-      stbi_uc* loadedFile = stbi_load(textureFile.c_str(), 
-                                      &texWidth, 
-                                      &texHeight, 
-                                      &texChannels, 
-                                      STBI_rgb_alpha); 
-      DebugObjection(texWidth <= 0,  
-                  "Texture: %s, has negative width!",  
-                  aFile.c_str()); 
- 
-      DebugObjection(texHeight <= 0, 
-                  "Texture: %s, has negative height!",  
-                  aFile.c_str()); 
+      stbi_uc* loadedFile = stbi_load(textureFile.c_str(),
+                                      &texWidth,
+                                      &texHeight,
+                                      &texChannels,
+                                      STBI_rgb_alpha);
+      DebugObjection(texWidth <= 0,
+                     "Texture: %s, has negative width!",
+                     aFile.c_str());
+
+      DebugObjection(texHeight <= 0,
+                     "Texture: %s, has negative height!",
+                     aFile.c_str());
 
       mWidth = static_cast<u32>(texWidth);
       mHeight = static_cast<u32>(texHeight);
@@ -48,8 +84,8 @@ namespace YTE
       //            aFile.c_str(), 
       //            texChannels);
       DebugObjection(loadedFile == nullptr,
-                  "Failed to load texture: %s", 
-                  aFile.c_str());
+                     "Failed to load texture: %s",
+                     aFile.c_str());
 
       size_t size = mWidth * mHeight * STBI_rgb_alpha;
       mData.resize(size);
@@ -61,12 +97,12 @@ namespace YTE
     }
     else if (type == L".crn")
     {
-      std::ifstream file(textureFile, std::ios::binary | std::ios::ate);
-      std::streamsize streamSize = file.tellg();
-      file.seekg(0, std::ios::beg);
+      std::ifstream fileToRead(textureFile, std::ios::binary | std::ios::ate);
+      std::streamsize streamSize = fileToRead.tellg();
+      fileToRead.seekg(0, std::ios::beg);
       mData.resize(streamSize, 0);
 
-      if (file.read(reinterpret_cast<char*>(mData.data()), streamSize).bad())
+      if (fileToRead.read(reinterpret_cast<char*>(mData.data()), streamSize).bad())
       {
         return;
       }
@@ -106,6 +142,6 @@ namespace YTE
         }
       }
     }
-
   }
+
 }

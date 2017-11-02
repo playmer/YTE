@@ -37,6 +37,8 @@ namespace YTE
   YTEDeclareEvent(EndDebugDrawUpdate);
   YTEDeclareEvent(DeletionUpdate);
   YTEDeclareEvent(BoundTypeChanged);
+  YTEDeclareEvent(GraphicsDataUpdate);
+  YTEDeclareEvent(PresentFrame);
 
   class LogicUpdate : public Event
   {

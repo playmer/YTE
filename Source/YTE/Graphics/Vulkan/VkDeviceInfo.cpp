@@ -1,7 +1,19 @@
-#include "YTE/Graphics/Vulkan/VkPrimitives.hpp"
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics - Vulkan
+///////////////////
+
+#include "YTE/StandardLibrary/Utilities.hpp"
+
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
 namespace YTE
 {
+  std::vector<const char*> QueueFamilyIndices::sDeviceExtensions;
+
+
+
   QueueFamilyIndices QueueFamilyIndices::FindQueueFamilies(vk::PhysicalDevice aDevice)
   {
     QueueFamilyIndices indices;
@@ -27,6 +39,8 @@ namespace YTE
     return indices;
   }
 
+
+
   bool QueueFamilyIndices::IsDeviceSuitable(vk::PhysicalDevice aDevice, vk::SurfaceKHR aSurface)
   {
     auto indices = FindQueueFamilies(aDevice);
@@ -37,8 +51,10 @@ namespace YTE
 
     if (extensionsSupported)
     {
-      SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySwapChainSupport(aDevice, aSurface);
-      swapChainAdequate = !swapChainSupport.Formats().empty() && !swapChainSupport.PresentModes().empty();
+      SwapChainSupportDetails swapChainSupport = SwapChainSupportDetails::QuerySwapChainSupport(
+                                                   aDevice, aSurface);
+      swapChainAdequate = !swapChainSupport.Formats().empty() && 
+                          !swapChainSupport.PresentModes().empty();
     }
 
     auto supportsSurface = aDevice.getSurfaceSupportKHR(mGraphicsFamily, aSurface);
@@ -48,6 +64,8 @@ namespace YTE
            swapChainAdequate &&
            supportsSurface;
   }
+
+
 
   bool QueueFamilyIndices::CheckDeviceExtensionSupport(vk::PhysicalDevice aDevice)
   {
@@ -64,6 +82,8 @@ namespace YTE
     return requiredExtensions.empty();
   }
 
+
+
   void QueueFamilyIndices::AddRequiredExtension(const char * aExtension)
   {
     for (auto extension : sDeviceExtensions)
@@ -78,10 +98,14 @@ namespace YTE
     sDeviceExtensions.emplace_back(aExtension);
   }
 
+
+
   void QueueFamilyIndices::ClearRequiredExtensions()
   {
     sDeviceExtensions.clear();
   }
+
+
 
   bool QueueFamilyIndices::IsComplete()
   {
@@ -89,5 +113,11 @@ namespace YTE
   }
 
 
-  std::vector<const char*> QueueFamilyIndices::sDeviceExtensions;
+
+  namespace AllocatorTypes
+  {
+    const std::string Mesh{ "Mesh" };
+    const std::string Texture{ "Texture" };
+    const std::string UniformBufferObject{ "UniformBufferObject" };
+  }
 }
