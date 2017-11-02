@@ -27,9 +27,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Utilities/String/String.h"
 
-#include "YTE/Graphics/InstantiatedMesh.hpp"
-#include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 
 #include "../ComponentBrowser/ArchetypeTools.hpp"
 #include "../ComponentBrowser/ComponentBrowser.hpp"
@@ -195,8 +194,8 @@ void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
     if (YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>())
     {
       // get the list of materials from the submeshes
-      auto& submeshes = model->GetInstantiatedMesh()->mMesh->mParts;
-
+      auto& submeshes = model->GetMesh()->mParts;
+      
       mMainWindow->GetMaterialViewer().LoadMaterial(submeshes[0].mUBOMaterial);
       mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
     }
@@ -308,11 +307,11 @@ void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
 
     if (model)
     {
-      mMainWindow->GetMaterialViewer().LoadMaterial(model->GetInstantiatedMesh()->mMesh->mParts[0].mUBOMaterial);
-
+      mMainWindow->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+      
       // get the list of materials from the submeshes
-      auto& submeshes = model->GetInstantiatedMesh()->mMesh->mParts;
-
+      auto& submeshes = model->GetMesh()->mParts;
+      
       mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
     }
   }

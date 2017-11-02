@@ -210,6 +210,19 @@ namespace YTE
 
     return str;
   }
+
+  bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile)
+  {
+    if (0 == aFile.size())
+    {
+      return false;
+    }
+
+    std::experimental::filesystem::path pathName{ aPath.String() };
+    pathName.append(aDirectory);
+    pathName.append(aFile);
+    return std::experimental::filesystem::exists(pathName);
+  }
     
   /////////////////////////////////////////////////
   // Jeffery Uong

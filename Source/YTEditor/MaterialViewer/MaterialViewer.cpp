@@ -15,11 +15,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qcombobox.h>
 #include <qwindow.h>
 
-#include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Platform/Window.hpp"
 
 #include "../GameWindow/GameWindow.hpp"
 #include "../ComponentBrowser/PropertyWidget.hpp"
+
+#include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/UBOs.hpp"
 
 #include "MaterialViewer.hpp"
 
@@ -73,6 +75,7 @@ MaterialViewer::~MaterialViewer()
 {
 }
 
+
 void MaterialViewer::LoadMaterial(YTE::UBOMaterial const & aMaterial)
 {
   this->Clear();
@@ -94,7 +97,7 @@ void MaterialViewer::LoadMaterial(YTE::UBOMaterial const & aMaterial)
   AddFloatProperty("Bump Scaling", aMaterial.mBumpScaling);
 }
 
-void MaterialViewer::SetMaterialsList(std::vector<YTE::Mesh::SubMesh> * aSubMeshList)
+void MaterialViewer::SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList)
 {
   mCurrentSubMeshes = aSubMeshList;
 
@@ -115,7 +118,7 @@ void MaterialViewer::LoadNoMaterial()
   {
     mComboBox->clear();
   }
-
+  
   mCurrentSubMeshes = nullptr;
 
   this->Clear();

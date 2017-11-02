@@ -5,8 +5,8 @@
 
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
-#include "YTE/Graphics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
@@ -195,20 +195,18 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
 
   if (nullptr != model)
   {
-    auto inMesh = model->GetInstantiatedMesh();
-
-    Mesh *mesh = inMesh->mMesh;
-
+    auto mesh = model->GetMesh();
+    
     if (mesh != nullptr)
     {
       obj->mTriangles;
-
+    
       for (auto &submesh : mesh->mParts)
       {
         auto indexSize = submesh.mIndexBuffer.size();
-
+    
         DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
-
+    
         for (size_t i = 0; i < indexSize; i += 3)
         {
           auto i1 = submesh.mIndexBuffer.at(i + 0);
@@ -222,9 +220,9 @@ void PhysicsHandler::Add(YTE::Composition *aComposition)
       }
       
       obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&obj->mTriangles, true);
-
+    
       obj->mShape = obj->mTriangleMeshShape.get();
-
+    
       obj->mTriangleMeshShape->setLocalScaling(scale);
       //mTriangleMeshShape->buildOptimizedBvh();
     }

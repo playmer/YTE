@@ -1,15 +1,19 @@
+//////////////////////////
+// Author: Andrew Griffin
+//////////////////////////
+
 #pragma once
 
-#include <vector>
-
-#include "glm/glm.hpp"
+#ifndef YTE_Graphics_Model_hpp
+#define YTE_Graphcis_Model_hpp
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Physics/Transform.hpp"
+#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/UBOs.hpp"
 
-#include "YTE/Graphics/Renderer.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -17,71 +21,73 @@ namespace YTE
   {
   public:
     YTEDeclareType(Model);
-
     Model(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-
+    ~Model() override;
     void Initialize() override;
 
-    void Update(LogicUpdate *aEvent);
+    void Reload();
 
-    ~Model() override;
 
-    InstantiatedMesh* GetInstantiatedMesh()
+    /////////////////////////////////
+    // Events
+    /////////////////////////////////
+    void PositionUpdate(TransformChanged *aEvent);
+    void RotationUpdate(TransformChanged *aEvent);
+    void ScaleUpdate(TransformChanged *aEvent);
+
+    /////////////////////////////////
+    // Gettor / Settor
+    /////////////////////////////////
+    void SetMesh(std::string aName);
+
+    void SetMeshName(std::string aName)
     {
-      return mInstantiatedMesh.get();
+      SetMesh(aName);
     }
 
-    void SetReload(bool)
+    void SetReload(bool aBool)
     {
-      if (false == mConstructing)
+      if (mConstructing)
       {
-        Destroy();
-        Create();
+        return;
       }
+      YTEUnusedArgument(aBool);
+      Destroy();
+      Create();
     }
+
+
+
+    std::shared_ptr<Mesh> GetMesh();
 
     bool GetReload()
     {
       return false;
     }
 
-    void SetMesh(std::string &aMesh)
+    std::string GetMeshName()
     {
-      if (mMesh == aMesh)
-      {
-        return;
-      }
-
-      mMesh = aMesh;
-
-      if (false == mConstructing)
-      {
-        Destroy();
-        Create();
-      }
+      return mMeshName;
     }
 
-    std::string& GetMesh()
-    {
-      return mMesh;
-    }
+
 
   private:
-    // Create and destroy the internal mesh.
-    void Create();
-    void Destroy();
+    void Create();  // tells renderer to create mesh
+    void Destroy(); // tells renderer to remove this instantiation
+    void CreateTransform();
 
-    void SetUBO();
-    void OnPositionChange(const TransformChanged *aEvent);
-    void OnScaleChange(const TransformChanged *aEvent);
-    void OnRotationChange(const TransformChanged *aEvent);
 
-    std::string mMesh;
 
-    bool mConstructing;
-
+    std::string mMeshName;
     Renderer *mRenderer;
-    std::unique_ptr<InstantiatedMesh> mInstantiatedMesh;
-    bool mUpdating;
+    Window *mWindow;
+    Transform *mTransform;
+    UBOModel mUBOModel;
+    std::shared_ptr<InstantiatedModel> mInstantiatedModel;
+    bool mConstructing;
   };
 }
+
+
+#endif

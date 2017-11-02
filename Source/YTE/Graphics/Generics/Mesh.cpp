@@ -1,64 +1,32 @@
+///////////////////
+// Author: Andrew Griffin
+// YTE - Graphics - Generics
+///////////////////
+
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Graphics/Texture.hpp"
-#include "YTE/Graphics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE
 {
-  Mesh::Mesh(Renderer *aRenderer, Window *aWindow, std::string &aFile, CreateInfo *aCreateInfo)
+  YTEDefineType(Mesh)
   {
-    Assimp::Importer Importer;
-
-    // TODO: Are meshes always in the game's asset path?
-    auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
-
-    auto pScene = Importer.ReadFile(meshFile.c_str(),
-                                    aiProcess_Triangulate |
-                                    aiProcess_PreTransformVertices |
-                                    aiProcess_CalcTangentSpace |
-                                    aiProcess_GenSmoothNormals);
-
-    if (pScene)
-    {
-      mParts.clear();
-      mParts.reserve(pScene->mNumMeshes);
-
-      glm::vec3 scale(1.0f);
-      glm::vec2 uvscale(1.0f);
-      glm::vec3 center(0.0f);
-
-      if (aCreateInfo)
-      {
-        scale = aCreateInfo->mScale;
-        uvscale = aCreateInfo->mUVscale;
-        center = aCreateInfo->mCenter;
-      }
-
-      printf("Mesh FileName: %s\n", aFile.c_str());
-
-      // Load meshes
-      for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
-      {
-        mParts.emplace_back(aRenderer, aWindow, pScene, pScene->mMeshes[i]);
-      }
-    }
+    YTERegisterType(Mesh);
   }
+  
+  
 
-  Mesh::SubMesh::SubMesh(Renderer *aRenderer, 
-                         Window *aWindow,
-                         const aiScene *aScene, 
-                         const aiMesh *aMesh)
-    : mDiffuseMap(nullptr),
-      mNormalMap(nullptr),
-      mSpecularMap(nullptr)
+  Submesh::Submesh(Window *aWindow, const aiScene *aScene, const aiMesh *aMesh)
   {
+    YTEUnusedArgument(aWindow);
+
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
-                                                   pColor);
+      pColor);
 
     const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
@@ -111,44 +79,44 @@ namespace YTE
 
     if (0 != diffuse.length)
     {
-      mDiffuseMap = aRenderer->AddTexture(aWindow, diffuse.C_Str());
+      mDiffuseMap = diffuse.C_Str();
     }
 
     if (0 != specular.length)
     {
-      mSpecularMap = aRenderer->AddTexture(aWindow, specular.C_Str());
+      mSpecularMap = specular.C_Str();
     }
 
     if (0 != normals.length)
     {
-      mNormalMap = aRenderer->AddTexture(aWindow, normals.C_Str());
+      mNormalMap = normals.C_Str();
     }
 
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
     {
-      const aiVector3D* pPos = aMesh->mVertices + j; 
-      const aiVector3D* pNormal = aMesh->mNormals + j; 
-      const aiVector3D* pTexCoord = &Zero3D; 
-      const aiVector3D* pTangent = &Zero3D; 
-      const aiVector3D* pBiTangent = &Zero3D; 
-       
-      if (aMesh->HasTextureCoords(0)) 
-      { 
-        pTexCoord = aMesh->mTextureCoords[0] + j; 
-      } 
-       
-      if (aMesh->HasTangentsAndBitangents()) 
-      { 
-        pTangent = aMesh->mTangents + j; 
-        pBiTangent = aMesh->mBitangents + j; 
-      } 
+      const aiVector3D *pPos = aMesh->mVertices + j;
+      const aiVector3D *pNormal = aMesh->mNormals + j;
+      const aiVector3D *pTexCoord = &Zero3D;
+      const aiVector3D *pTangent = &Zero3D;
+      const aiVector3D *pBiTangent = &Zero3D;
+
+      if (aMesh->HasTextureCoords(0))
+      {
+        pTexCoord = aMesh->mTextureCoords[0] + j;
+      }
+
+      if (aMesh->HasTangentsAndBitangents())
+      {
+        pTangent = aMesh->mTangents + j;
+        pBiTangent = aMesh->mBitangents + j;
+      }
 
       auto position = AssimpToGLM(pPos);
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
-      auto textureCoordinates = glm::vec3{ pTexCoord->x, 
-                                            1.0f - pTexCoord->y,
-                                            pTexCoord->z };
+      auto textureCoordinates = glm::vec3{ pTexCoord->x,
+        1.0f - pTexCoord->y,
+        pTexCoord->z };
 
       auto normal = AssimpToGLM(pNormal);
       auto color = AssimpToGLM(&pColor);
@@ -157,12 +125,12 @@ namespace YTE
       auto bitangent = AssimpToGLM(pBiTangent);
 
       mVertexBuffer.emplace_back(position,
-                                 textureCoordinates,
-                                 normal,
-                                 color,
-                                 tangent,
-                                 binormal,
-                                 bitangent);
+        textureCoordinates,
+        normal,
+        color,
+        tangent,
+        binormal,
+        bitangent);
 
       mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
       mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
@@ -179,7 +147,7 @@ namespace YTE
 
     for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
     {
-      const aiFace& Face = aMesh->mFaces[j];
+      const aiFace &Face = aMesh->mFaces[j];
       if (Face.mNumIndices != 3)
         continue;
 
@@ -192,27 +160,52 @@ namespace YTE
     mIndexBufferSize = mIndexBuffer.size() * sizeof(u32);
   }
 
+
+
+  Mesh::Mesh(Window *aWindow, std::string &aFile, CreateInfo *aCreateInfo)
+  {
+    Assimp::Importer Importer;
+
+    auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
+
+    auto pScene = Importer.ReadFile(meshFile.c_str(),
+      aiProcess_Triangulate |
+      aiProcess_PreTransformVertices |
+      aiProcess_CalcTangentSpace |
+      aiProcess_GenSmoothNormals);
+
+    if (pScene)
+    {
+      mParts.clear();
+      mParts.reserve(pScene->mNumMeshes);
+
+      glm::vec3 scale(1.0f);
+      glm::vec2 uvscale(1.0f);
+      glm::vec3 center(0.0f);
+
+      if (aCreateInfo)
+      {
+        scale = aCreateInfo->mScale;
+        uvscale = aCreateInfo->mUVscale;
+        center = aCreateInfo->mCenter;
+      }
+
+      printf("Mesh FileName: %s\n", aFile.c_str());
+
+      // Load meshes
+      for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
+      {
+        mParts.emplace_back(aWindow, pScene, pScene->mMeshes[i]);
+      }
+
+      mName = aFile;
+    }
+  }
+
+
+
   Mesh::~Mesh()
   {
 
   }
-
-
-
-  Mesh::SubMesh::SubMesh(SubMesh &&aRight)
-    : mVertexBuffer(std::move(aRight.mVertexBuffer)),
-      mIndexBuffer(std::move(aRight.mIndexBuffer)),
-      mUBOMaterial(std::move(aRight.mUBOMaterial)),
-      mDiffuseMap(std::move(aRight.mDiffuseMap)),
-      mNormalMap(std::move(aRight.mNormalMap)),
-      mSpecularMap(std::move(aRight.mSpecularMap)),
-      mDimension(std::move(aRight.mDimension)),
-      mVertexBufferSize(std::move(aRight.mVertexBufferSize)),
-      mIndexBufferSize(std::move(aRight.mIndexBufferSize)),
-      mName(std::move(aRight.mName)),
-      mMaterialName(std::move(aRight.mMaterialName)), 
-      mRendererData(std::move(aRight.mRendererData))
-  {
-
-  }
-};
+}

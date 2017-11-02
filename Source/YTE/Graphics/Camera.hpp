@@ -30,7 +30,7 @@ namespace YTE
     YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override; 
-    UBOView&& ConstructUBOView();
+    UBOView ConstructUBOView();
     void UpdateView();
  
     Window* GetWindow()
@@ -47,8 +47,9 @@ namespace YTE
     void MousePersist(MouseButtonEvent *aEvent);
     void MouseRelease(MouseButtonEvent *aEvent);
     void OrientationEvent(OrientationChanged *aEvent);
-    void Update(GraphicsDataUpdate* aEvent);
+    void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
+    void RotationChanged(TransformChanged *aEvent);
 
 
     ///////////////////////////////////////

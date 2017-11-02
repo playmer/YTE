@@ -7,6 +7,7 @@
 #include "YTE/Graphics/Camera.hpp" 
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
+#include "YTE/Graphics/UBOs.hpp"
  
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -181,7 +182,7 @@ namespace YTE
     , mMoveSpeed(50.0f)
     , mScrollSpeed(200.0f)
     , mRotateSpeed(0.80f)
-    , mSpeedLimiter(0.0f)
+    , mSpeedLimiter(1.0f)
   { 
     DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
  
@@ -205,7 +206,7 @@ namespace YTE
     mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
     mMouse->YTERegister(Events::MouseRelease, this, &Camera::MouseRelease);
     mMouse->YTERegister(Events::MousePersist, this, &Camera::MousePersist);
-    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &Camera::Update);
+    mSpace->YTERegister(Events::LogicUpdate, this, &Camera::Update);
     mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
@@ -216,6 +217,8 @@ namespace YTE
     mYaw = rotFromFile.y;
     mRoll = rotFromFile.z;
     mConstructing = false;
+    RendererResize(nullptr);
+    UpdateView();
   }
 
   // generic view matrix creation
@@ -230,7 +233,7 @@ namespace YTE
              glm::vec4{ aPosition.x, aPosition.y, aPosition.z, 1.0f } };
   }
 
-  UBOView && Camera::ConstructUBOView()
+  UBOView Camera::ConstructUBOView()
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
@@ -342,7 +345,7 @@ namespace YTE
         break;
       }
     }
-    return std::move(view);
+    return view;
   }
 
   void Camera::UpdateView()
@@ -480,32 +483,32 @@ namespace YTE
 
     if (CameraType::Flyby == mType && Mouse_Buttons::Right == aEvent->Button)
     {
-      if (mKeyboard->IsKeyDown(Keys::W))              // forward movement
+      if (mKeyboard->IsKeyDown(Keys::W))                                      // forward movement
       {
         mZoom = -mMoveSpeed * mDt;
         mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::S))         // backward movement
+      else if (mKeyboard->IsKeyDown(Keys::S))                                 // backward movement
       {
         mZoom = mMoveSpeed * mDt;
         mChanged = true;
       }
-      if (mKeyboard->IsKeyDown(Keys::A))              // Left Movement
+      if (mKeyboard->IsKeyDown(Keys::A))                                      // Left Movement
       {
         mMoveRight = -mMoveSpeed * mDt;
         mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::D))         // Right Movement
+      else if (mKeyboard->IsKeyDown(Keys::D))                                 // Right Movement
       {
         mMoveRight = mMoveSpeed * mDt;
         mChanged = true;
       }
-      if (mKeyboard->IsKeyDown(Keys::Space))          // Up Movement
+      if (mKeyboard->IsKeyDown(Keys::Space) || mKeyboard->IsKeyDown(Keys::E)) // Up Movement
       {
         mMoveUp = mMoveSpeed * mDt;
         mChanged = true;
       }
-      else if (mKeyboard->IsKeyDown(Keys::Control))   // Down Movement
+      else if (mKeyboard->IsKeyDown(Keys::Control) || mKeyboard->IsKeyDown(Keys::Q)) // Down Movement
       {
         mMoveUp = -mMoveSpeed * mDt;
         mChanged = true;
@@ -527,7 +530,7 @@ namespace YTE
     mChanged = true;
   }
 
-  void Camera::Update(GraphicsDataUpdate* aEvent)
+  void Camera::Update(LogicUpdate* aEvent)
   {
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)
@@ -548,6 +551,19 @@ namespace YTE
 
     mChanged = true;
   }
+
+
+
+  void Camera::RotationChanged(TransformChanged* aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+    glm::vec3 rotFromFile = mCameraTransform->GetRotationAsEuler();
+    mPitch = rotFromFile.x;
+    mYaw = rotFromFile.y;
+    mRoll = rotFromFile.z;
+  }
+
+
 
   void Camera::SetCameraType(std::string &aCameraType)
   {
