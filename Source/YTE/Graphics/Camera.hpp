@@ -49,7 +49,6 @@ namespace YTE
     void OrientationEvent(OrientationChanged *aEvent);
     void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
-    void RotationChanged(TransformChanged *aEvent);
 
 
     ///////////////////////////////////////
