@@ -191,17 +191,13 @@ namespace YTEditor
         glm::vec3 pos = transform->GetWorldTranslation();
         YTE::Transform *gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
         gizmoTransform->SetWorldTranslation(pos);
-
-        //// orient the gizmo to the same axes as the current object
-        //glm::vec3 rot = transform->GetWorldRotationAsEuler();
-        //gizmoTransform->SetWorldRotation(rot);
       }
 
       mIsHittingObject = true;
     }
   }
 
-  void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent * aEvent)
+  void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent *aEvent)
   {
     if (mIsHittingObject)
     {
@@ -213,7 +209,7 @@ namespace YTEditor
     }
   }
 
-  void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
+  void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
     mIsHittingObject = false;
     mIsGizmoActive = false;

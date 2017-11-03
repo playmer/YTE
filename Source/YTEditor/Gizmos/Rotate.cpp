@@ -70,14 +70,14 @@ namespace YTEditor
 
     case Axis::Y:
     {
-      // get the local Y axis
-      glm::vec3 localY(0, 1, 0);
+      // get the local x axis
+      glm::vec3 localY(0, 0.5, 0);
 
       localY = glm::rotateX(localY, objRot.x);
       localY = glm::rotateY(localY, objRot.y);
       localY = glm::rotateZ(localY, objRot.z);
 
-      //// project vector onto the yz plane
+      // project vector onto the yz plane
       glm::vec3 proj = toMPos - glm::proj(toMPos, localY);
 
       proj = -proj;
@@ -102,7 +102,7 @@ namespace YTEditor
 
     case Axis::Z:
     {
-      // get the local Z axis
+      // get the local x axis
       glm::vec3 localZ(0, 0, 1);
 
       localZ = glm::rotateX(localZ, objRot.x);
@@ -128,7 +128,7 @@ namespace YTEditor
         projLength = -projLength;
       }
 
-      change.z = projLength;
+      change.z = 0.5f * projLength;
       break;
     }
     }
