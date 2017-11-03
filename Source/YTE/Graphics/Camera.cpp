@@ -144,15 +144,6 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the Rotate speed of the camera");
-
-
-    // TODO: Do these need to be here?
-    YTEBindField(&Camera::mZoom, "Zoom", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
-    YTEBindField(&Camera::mMoveUp, "MoveUp", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
-    YTEBindField(&Camera::mMoveRight, "MoveRight", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>();
   } 
   
   Camera::Camera(Composition *aOwner,
@@ -212,10 +203,6 @@ namespace YTE
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
 
-    glm::vec3 rotFromFile = mCameraTransform->GetRotationAsEuler();
-    mPitch = rotFromFile.x;
-    mYaw = rotFromFile.y;
-    mRoll = rotFromFile.z;
     mConstructing = false;
     RendererResize(nullptr);
     UpdateView();
@@ -284,8 +271,7 @@ namespace YTE
 
         // NOTE: No translation vector is allowed, our translation comes from the target object
 
-        glm::vec3 camTrans = mCameraTransform->GetTranslation();
-        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        glm::vec3 camTrans = mTargetPoint + glm::vec3(zoomVector);
         mCameraTransform->SetTranslation(camTrans);
 
         view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
@@ -305,8 +291,7 @@ namespace YTE
 
         mTargetPoint += glm::vec3(transVector);
 
-        glm::vec3 camTrans = mCameraTransform->GetTranslation();
-        camTrans = mTargetPoint + glm::vec3(zoomVector);
+        glm::vec3 camTrans = mTargetPoint + glm::vec3(zoomVector);
         mCameraTransform->SetTranslation(camTrans);
 
         view.mViewMatrix = glm::lookAt(camTrans, mTargetPoint, glm::vec3(up4));
@@ -445,7 +430,7 @@ namespace YTE
         // we change the camera type since we were following an object and we just
         // jumped off to walk on our own
         mMoveUp = dy * mPanSpeed * mDt;
-        mMoveRight = -dx * mPanSpeed * mDt;
+        mMoveRight = dx * mPanSpeed * mDt;
         mChanged = true;
       }
 
@@ -553,18 +538,7 @@ namespace YTE
   }
 
 
-
-  void Camera::RotationChanged(TransformChanged* aEvent)
-  {
-    YTEUnusedArgument(aEvent);
-    glm::vec3 rotFromFile = mCameraTransform->GetRotationAsEuler();
-    mPitch = rotFromFile.x;
-    mYaw = rotFromFile.y;
-    mRoll = rotFromFile.z;
-  }
-
-
-
+  
   void Camera::SetCameraType(std::string &aCameraType)
   {
     // make sure we use the correct types
@@ -646,7 +620,6 @@ namespace YTE
     mZoom += aZoom;
 
     // constrains zoom
-    // TODO: Useful for in game, not so much useful for editor
     if (mZoom >= mZoomMax)
     {
       mZoom = mZoomMax;
@@ -691,7 +664,7 @@ namespace YTE
       zoomFac = glm::rotate(rot, zoomFac);
 
       mZoom = mZoomMin;
-      mTargetPoint = mCameraTransform->GetTranslation() + glm::vec3(zoomFac);
+      mTargetPoint = mCameraTransform->GetTranslation() - glm::vec3(zoomFac);
     }
     mMoveRight = 0.0f;
     mMoveUp = 0.0f;
