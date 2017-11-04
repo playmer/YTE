@@ -89,7 +89,7 @@ namespace YTE
       DebugObjection(true, "Cannot find surface associated to corresponding provided window");
     }
 
-    surface->second->DestroyTexture(std::static_pointer_cast<VkTexture>(aTexture));
+    //surface->second->DestroyTexture(std::static_pointer_cast<VkTexture>(aTexture));
   }
 
 
