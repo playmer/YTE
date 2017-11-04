@@ -18,7 +18,7 @@ namespace YTE
 
 
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
-                                           std::shared_ptr<VkRenderedSurface> aSurface)
+                                           VkRenderedSurface *aSurface)
     : InstantiatedModel()
     , mSurface(aSurface)
   {

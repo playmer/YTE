@@ -50,7 +50,7 @@ namespace YTE
         // all other windows
         auto surface = mVulkanInternals->CreateSurface(window.second.get());
         mSurfaces.emplace(window.second.get(),
-                          std::make_shared<VkRenderedSurface>(window.second.get(),
+                          std::make_unique<VkRenderedSurface>(window.second.get(),
                                                               this,
                                                               surface));
       }
@@ -67,32 +67,7 @@ namespace YTE
   {
     mSurfaces.clear();
   }
-
-  std::shared_ptr<Texture> VkRenderer::CreateTexture(Window *aWindow, std::string &aFileName)
-  {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
-    }
-
-    return std::static_pointer_cast<Texture>(surface->second->CreateTexture(aFileName));
-  }
-
-  void VkRenderer::DestroyTexture(Window *aWindow, std::shared_ptr<Texture> aTexture)
-  {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
-    }
-
-    //surface->second->DestroyTexture(std::static_pointer_cast<VkTexture>(aTexture));
-  }
-
-
+  
   std::shared_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow,
                                                              std::string &aMeshFile)
   {
@@ -199,17 +174,17 @@ namespace YTE
 
 
 
-  std::shared_ptr<VkRenderedSurface>& VkRenderer::GetSurface(Window *aWindow)
+  VkRenderedSurface* VkRenderer::GetSurface(Window *aWindow)
   {
     auto surface = mSurfaces.find(aWindow);
 
     if (surface == mSurfaces.end())
     {
       DebugObjection(true, "Cannot find surface associated to provided window");
-      return (--surface)->second;
+      return nullptr;
     }
 
-    return surface->second;
+    return surface->second.get();
   }
 }
 

@@ -28,21 +28,6 @@ namespace YTE
       
     }
 
-    virtual std::shared_ptr<Texture> CreateTexture(Window *aWindow, std::string &aFileName)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aFileName);
-      return nullptr;
-    }
-
-
-    virtual void DestroyTexture(Window *aWindow, std::shared_ptr<Texture> aTexture)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aTexture);
-    }
-
-
     virtual std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow,
       std::string &aMeshFile)
     {

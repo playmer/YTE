@@ -27,7 +27,7 @@ namespace YTE
 
 
 
-  VkTexture::VkTexture(std::string &aFile, std::shared_ptr<VkRenderedSurface> aSurface)
+  VkTexture::VkTexture(std::string &aFile, VkRenderedSurface *aSurface)
     : Texture(aFile)
     , mSurface(aSurface)
   {

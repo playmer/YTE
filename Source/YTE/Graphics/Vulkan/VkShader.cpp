@@ -19,7 +19,7 @@ namespace YTE
 
 
   VkShader::VkShader(std::string &aName,
-                     std::shared_ptr<VkRenderedSurface> aSurface,
+                     VkRenderedSurface *aSurface,
                      std::shared_ptr<vkhlf::PipelineLayout> aLayout)
     : Shader(aName)
     , mSurface(aSurface)

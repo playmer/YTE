@@ -161,6 +161,10 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
+    mInstantiatedModels.clear();
+    mTextures.clear();
+    mMeshes.clear();
+    mShaders.clear();
     mFrameBufferSwapChain.reset();
   }
 
@@ -282,9 +286,9 @@ namespace YTE
 
     if (shader == mShaders.end())
     {
-      auto s = std::shared_ptr<VkShader>(new VkShader(aShaderSetName,
-                                                      mRenderer->GetSurface(mWindow),
-                                                      aPipelineLayout));
+      auto s = std::make_shared<VkShader>(aShaderSetName,
+                                          mRenderer->GetSurface(mWindow),
+                                          aPipelineLayout);
       mShaders[aShaderSetName] = s;
       mDataUpdateRequired = true;
       return s;

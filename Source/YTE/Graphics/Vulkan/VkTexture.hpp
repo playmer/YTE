@@ -20,7 +20,7 @@ namespace YTE
     YTEDeclareType(VkTexture);
 
     VkTexture(std::string &aFile,
-              std::shared_ptr<VkRenderedSurface> aSurface);
+              VkRenderedSurface *aSurface);
     ~VkTexture() override;
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -33,7 +33,7 @@ namespace YTE
     vk::ImageLayout mImageLayout;
     vk::DeviceMemory mDeviceMemory;
     vk::DescriptorImageInfo mDescriptor;
-    std::shared_ptr<VkRenderedSurface> mSurface;
+    VkRenderedSurface *mSurface;
   };
 }
 

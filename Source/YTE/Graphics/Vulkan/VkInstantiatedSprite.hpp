@@ -1,7 +1,7 @@
-///////////////////
-// Author: Andrew Griffin
+///////////////////////////////////////////////////////////
+// Author: Joshua T.Fisher
 // YTE - Graphics - Vulkan
-///////////////////
+///////////////////////////////////////////////////////////
 
 #pragma once
 
@@ -27,16 +27,6 @@ namespace YTE
 
     void CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
-
-
-
-    std::shared_ptr<vkhlf::Buffer> mUBOModel;
-    VkRenderedSurface *mSurface;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::DescriptorSet>> mDescriptorSets;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::PipelineLayout>> mPipelineLayouts;
-    std::shared_ptr<VkMesh> mLoadedMesh;
   };
 }
 

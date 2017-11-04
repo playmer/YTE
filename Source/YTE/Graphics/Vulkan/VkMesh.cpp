@@ -22,7 +22,7 @@ namespace YTE
 
 
 
-  VkSubmesh::VkSubmesh(Submesh *aSubmesh, std::shared_ptr<VkRenderedSurface> aSurface)
+  VkSubmesh::VkSubmesh(Submesh *aSubmesh, VkRenderedSurface *aSurface)
   {
     mSubmesh = aSubmesh;
 
@@ -155,7 +155,7 @@ namespace YTE
 
 
   VkMesh::VkMesh(Window *aWindow,
-                 std::shared_ptr<VkRenderedSurface> aSurface,
+                 VkRenderedSurface *aSurface,
                  std::string &aFile,
                  CreateInfo *aCreateInfo)
     : Mesh(aWindow, aFile, aCreateInfo)
@@ -176,7 +176,6 @@ namespace YTE
   VkMesh::~VkMesh()
   {
     mSurface->DestroyMesh(mParts[0].mName);
-
   }
 
 

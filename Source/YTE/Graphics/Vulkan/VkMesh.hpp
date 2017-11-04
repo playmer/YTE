@@ -20,7 +20,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(VkSubmesh);
-    VkSubmesh(Submesh *aSubmesh, std::shared_ptr<VkRenderedSurface> aSurface);
+    VkSubmesh(Submesh *aSubmesh, VkRenderedSurface *aSurface);
     ~VkSubmesh();
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -48,7 +48,7 @@ namespace YTE
     YTEDeclareType(VkMesh);
 
     VkMesh(Window *aWindow,
-           std::shared_ptr<VkRenderedSurface> aSurface,
+           VkRenderedSurface *aSurface,
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
     ~VkMesh();
@@ -56,7 +56,7 @@ namespace YTE
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
     std::vector<std::shared_ptr<VkSubmesh>> mSubmeshes;
-    std::shared_ptr<VkRenderedSurface> mSurface;
+    VkRenderedSurface *mSurface;
   };
 }
 
