@@ -48,7 +48,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/Utilities.h"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
@@ -142,6 +144,19 @@ namespace YTEditor
     {
       self->UpdateEngine();
     });
+
+
+    std::vector<ComponentWidget*> componentWidgets = GetComponentBrowser().GetComponentTree()->GetComponentWidgets();
+
+    for (ComponentWidget* w : componentWidgets)
+    {
+      std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
+
+      for (auto prop : properties)
+      {
+        prop->ReloadValueFromEngine();
+      }
+    }
   }
 
   SubWindow & MainWindow::GetSubWindow()

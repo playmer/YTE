@@ -88,6 +88,8 @@ namespace YTEditor
 
     void BaseSaveToEngine();
 
+    void ReloadValueFromEngine();
+
   private:
 
     ComponentWidget* mParentComponent;
@@ -101,7 +103,7 @@ namespace YTEditor
 
     auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
     auto it_prop = propMap.FindFirst(this->GetName());
-    YTE::Function * getter = it_prop->second.get()->GetGetter();
+    YTE::Function *getter = it_prop->second.get()->GetGetter();
     YTE::Any *oldVal = new YTE::Any(getter->Invoke(mParentComponent->GetEngineComponent()));
 
     T val = this->GetPropertyValues();
@@ -124,38 +126,38 @@ namespace YTEditor
   }
 
   template<class T>
-  inline void ComponentProperty<T>::BaseSaveToEngine()
+  void ComponentProperty<T>::BaseSaveToEngine()
   {
     auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
     T value = this->GetPropertyValues();
     auto it_prop = propMap.FindFirst(this->GetName());
-    YTE::Function * setter = it_prop->second.get()->GetSetter();
+    YTE::Function *setter = it_prop->second.get()->GetSetter();
     setter->Invoke(mParentComponent->GetEngineComponent(), value);
   }
 
 
   template <>
-  void ComponentProperty<QStringList>::BaseSaveToEngine()
-  {
-    YTE::Component * comp = this->mParentComponent->GetEngineComponent();
-
-    YTE::Type * type = comp->GetType();
-
-    YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& propMap = type->GetProperties();
-
-    auto it_prop = propMap.FindFirst(this->GetName());
-
-    QStringList value = this->GetPropertyValues();
-    YTE::Function * setter = it_prop->second.get()->GetSetter();
-    setter->Invoke(mParentComponent->GetEngineComponent(), value[0].toStdString());
-  }
+  void ComponentProperty<QStringList>::BaseSaveToEngine();
 
 
   template <>
-  void ComponentProperty<QStringList>::SaveToEngine()
-  {
-    // Add command to main window undo redo
-    BaseSaveToEngine();
-  }
+  void ComponentProperty<QStringList>::SaveToEngine();
 
+
+  template <class T>
+  void ComponentProperty<T>::ReloadValueFromEngine()
+  {
+    auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
+    T value = this->GetPropertyValues();
+    auto it_prop = propMap.FindFirst(this->GetName());
+    YTE::Function *getter = it_prop->second.get()->GetGetter();
+    
+    YTE::Any updatedValue = getter->Invoke(mParentComponent->GetEngineComponent());
+
+    this->SetValue(updatedValue.As<T>());
+  }
+  
+
+  template <>
+  void ComponentProperty<QStringList>::ReloadValueFromEngine();
 }

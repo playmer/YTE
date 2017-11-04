@@ -16,6 +16,7 @@ Set(YTEditorSource main.cpp
                    ComponentBrowser/ComponentBrowser.hpp
                    ComponentBrowser/ComponentBrowser.cpp
                    ComponentBrowser/ComponentProperty.hpp
+				   ComponentBrowser/ComponentProperty.cpp
                    ComponentBrowser/ComponentSearchBar.hpp
                    ComponentBrowser/ComponentSearchBar.cpp
                    ComponentBrowser/ComponentTools.hpp

@@ -32,6 +32,8 @@ namespace YTEditor
 
     virtual void SaveToEngine() {};
 
+    virtual void ReloadValueFromEngine() {};
+
     enum PropType
     {
       Int,

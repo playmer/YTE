@@ -118,7 +118,12 @@ namespace YTEditor
 
     virtual void SaveToEngine()
     {
-      throw std::exception("This function shouldn't be called. It is overridden by the ComponentProperty class, to be used there.");
+      throw "This function shouldn't be called. It is overridden by the ComponentProperty class, to be used there.";
+    }
+
+    virtual void ReloadValueFromEngine()
+    {
+      throw "This function shouldn't be called. It is overridden by the ComponentProperty class, to be used there.";
     }
 
     std::vector<QWidget*>& GetWidgets()

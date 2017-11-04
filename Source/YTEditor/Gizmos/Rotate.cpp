@@ -32,7 +32,7 @@ namespace YTEditor
     // get vector from object pos to mouse pos
     glm::vec3 toMPos = aFirstMousePos - objTrans->GetWorldTranslation();
 
-    glm::vec3 objRot = objTrans->GetWorldRotationAsEuler();
+    glm::vec3 objRot = objTrans->GetRotationAsEuler();
 
     switch (mDir)
     {
@@ -64,14 +64,16 @@ namespace YTEditor
         projLength = -projLength;
       }
 
-      change.x = projLength;
+      float rotChange = projLength / glm::length(proj);
+
+      change.x = rotChange;
       break;
     }
 
     case Axis::Y:
     {
       // get the local x axis
-      glm::vec3 localY(0, 0.5, 0);
+      glm::vec3 localY(0, 1, 0);
 
       localY = glm::rotateX(localY, objRot.x);
       localY = glm::rotateY(localY, objRot.y);
@@ -96,7 +98,9 @@ namespace YTEditor
         projLength = -projLength;
       }
 
-      change.y = projLength;
+      float rotChange = projLength / glm::length(proj);
+
+      change.y = rotChange;
       break;
     }
 
@@ -128,16 +132,19 @@ namespace YTEditor
         projLength = -projLength;
       }
 
-      change.z = 0.5f * projLength;
+      float rotChange = projLength / glm::length(proj);
+
+      change.z = rotChange;
       break;
     }
     }
 
     YTE::Transform *gizTrans = mOwner->GetOwner()->GetComponent<YTE::Transform>();
-    glm::vec3 gizRot = gizTrans->GetWorldRotationAsEuler();
-    gizTrans->SetWorldRotation(gizRot + change);
+    glm::vec3 gizRot = gizTrans->GetRotationAsEuler();
 
-    objTrans->SetWorldRotation(objRot + change);
+    gizTrans->SetRotation(gizRot + change);
+
+    objTrans->SetRotation(objRot + change);
   }
 
 }
