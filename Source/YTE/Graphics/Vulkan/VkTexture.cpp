@@ -27,10 +27,9 @@ namespace YTE
 
 
 
-  VkTexture::VkTexture(std::string &aFile,
-    std::shared_ptr<VkRenderedSurface> aSurface)
-    : Texture(aFile),
-    mSurface(aSurface)
+  VkTexture::VkTexture(std::string &aFile, std::shared_ptr<VkRenderedSurface> aSurface)
+    : Texture(aFile)
+    , mSurface(aSurface)
   {
     auto device = mSurface->GetDevice();
 

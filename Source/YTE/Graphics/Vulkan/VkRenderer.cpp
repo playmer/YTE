@@ -68,6 +68,29 @@ namespace YTE
     mSurfaces.clear();
   }
 
+  std::shared_ptr<Texture> VkRenderer::CreateTexture(Window *aWindow, std::string &aFileName)
+  {
+    auto surface = mSurfaces.find(aWindow);
+
+    if (surface == mSurfaces.end())
+    {
+      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
+    }
+
+    return std::static_pointer_cast<Texture>(surface->second->CreateTexture(aFileName));
+  }
+
+  void VkRenderer::DestroyTexture(Window *aWindow, std::shared_ptr<Texture> aTexture)
+  {
+    auto surface = mSurfaces.find(aWindow);
+
+    if (surface == mSurfaces.end())
+    {
+      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
+    }
+
+    surface->second->DestroyTexture(std::static_pointer_cast<VkTexture>(aTexture));
+  }
 
 
   std::shared_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow,
@@ -80,7 +103,7 @@ namespace YTE
       DebugObjection(true, "Cannot find surface associated to corresponding provided window");
     }
 
-    return std::dynamic_pointer_cast<InstantiatedModel>(surface->second->CreateModel(aMeshFile));
+    return std::static_pointer_cast<InstantiatedModel>(surface->second->CreateModel(aMeshFile));
   }
 
 
@@ -94,7 +117,7 @@ namespace YTE
       DebugObjection(true, "Cannot find surface associated to corresponding provided window");
     }
 
-    surface->second->DestroyModel(std::dynamic_pointer_cast<VkInstantiatedModel>(aModel));
+    surface->second->DestroyModel(std::static_pointer_cast<VkInstantiatedModel>(aModel));
   }
 
 

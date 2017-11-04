@@ -23,10 +23,11 @@ namespace YTE
 
     std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
     void DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel) override;
+
+    std::shared_ptr<Texture> CreateTexture(Window *aWindow, std::string &aFileName) override;
+    void DestroyTexture(Window *aWindow, std::shared_ptr<Texture> aTexture) override;
     
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
-
-
 
     /////////////////////////////////
     // Events
@@ -34,8 +35,6 @@ namespace YTE
     void GraphicsDataUpdate(LogicUpdate *aEvent) override;
     void FrameUpdate(LogicUpdate *aEvent) override;
     void PresentFrame(LogicUpdate *aEvent) override;
-
-
 
     /////////////////////////////////
     // Getter / Setter
