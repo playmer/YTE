@@ -21,10 +21,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtimer.h>
 #include <qprogressdialog.h>
-#include <qdockWidget.h>
-#include <qtextEdit.h>
-#include <qmenuBar.h>
-#include <qtoolBar.h>
+#include <qdockwidget.h>
+#include <qtextedit.h>
+#include <qmenubar.h>
+#include <qtoolbar.h>
 #include <qaction.h>
 #include <qfile.h>
 #include <qapplication.h>
@@ -34,6 +34,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qfiledialog.h>
 #include <qdesktopservices.h>
 #include <qevent.h>
+#include <qmessagebox.h>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -541,6 +542,34 @@ namespace YTEditor
     menuBar->addMenu(new ImportMenu(this));
 
     this->setMenuBar(menuBar);
+  }
+
+  void MainWindow::closeEvent(QCloseEvent * event)
+  {
+    // ask the user if they want to save the level
+
+    QMessageBox::StandardButton reply;
+
+    reply = QMessageBox::question(this, "Quit Confirmation", "Are you sure you want to quit?\nAny unsaved progress will be lost.", QMessageBox::Yes | QMessageBox::No);
+
+    if (reply == QMessageBox::Yes)
+    {
+      GetGameWindow().mWindow->mEngine = nullptr;
+      GetGameWindow().mWindow = nullptr;
+
+      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
+      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+
+      GetRunningEngine()->EndExecution();
+      GetRunningEngine()->Update();
+      
+      event->accept();
+    }
+    else
+    {
+      // don't quit
+      event->ignore();
+    }
   }
 
 }

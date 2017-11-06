@@ -14,6 +14,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include <qmainwindow.h>
+#include <qevent.h>
 #include <qapplication.h>
 
 #include "YTE/Utilities/String/String.h"
@@ -138,6 +139,8 @@ namespace YTEditor
     void ConstructMenuBar();
 
     FileMenu *mFileMenu;
+
+    void closeEvent(QCloseEvent *event);
   };
 
 }

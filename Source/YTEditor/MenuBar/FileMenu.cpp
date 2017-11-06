@@ -171,7 +171,7 @@ namespace YTEditor
 
     QMessageBox::StandardButton reply;
 
-    reply = QMessageBox::question(this, "Test", "Quit?", QMessageBox::Yes | QMessageBox::No);
+    reply = QMessageBox::question(this, "Quit Confirmation", "Are you sure you want to quit?\nAny unsaved progress will be lost.", QMessageBox::Yes | QMessageBox::No);
 
     if (reply == QMessageBox::Yes)
     {
