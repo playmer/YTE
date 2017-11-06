@@ -318,15 +318,22 @@ namespace YTEditor
 
   void MainWindow::keyPressEvent(QKeyEvent * aEvent)
   {
-    if (aEvent->modifiers() == Qt::Modifier::CTRL && aEvent->key() == Qt::Key_Z)
+    if (aEvent->modifiers() == Qt::Modifier::CTRL)
     {
-      //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Z");
-      mUndoRedo->ExecuteUndo();
-    }
-    else if (aEvent->modifiers() == Qt::Modifier::CTRL && aEvent->key() == Qt::Key_Y)
-    {
-      //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Y");
-      mUndoRedo->ExecuteRedo();
+      if (aEvent->key() == Qt::Key_Z)
+      {
+        //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Z");
+        mUndoRedo->ExecuteUndo();
+      }
+      else if (aEvent->key() == Qt::Key_Y)
+      {
+        //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Y");
+        mUndoRedo->ExecuteRedo();
+      }
+      else if (aEvent->key() == Qt::Key_S)
+      {
+        SaveCurrentLevel();
+      }
     }
     else
     {

@@ -147,6 +147,16 @@ namespace YTEditor
   template <class T>
   void ComponentProperty<T>::ReloadValueFromEngine()
   {
+    std::vector<QWidget*> widgs = this->GetWidgets();
+
+    for (QWidget *w : widgs)
+    {
+      if (w->hasFocus())
+      {
+        return;
+      }
+    }
+
     auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
     T value = this->GetPropertyValues();
     auto it_prop = propMap.FindFirst(this->GetName());
