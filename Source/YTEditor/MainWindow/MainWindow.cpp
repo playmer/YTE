@@ -159,9 +159,14 @@ namespace YTEditor
     }
   }
 
-  SubWindow & MainWindow::GetSubWindow()
+  SubWindow & MainWindow::GetGameWindow()
   {
-    return *mSubWindow;
+    return *mGameWindow;
+  }
+
+  std::vector<SubWindow*>& MainWindow::GetSubWindows()
+  {
+    return mSubWindows;
   }
 
   ObjectBrowser & MainWindow::GetObjectBrowser()
@@ -367,7 +372,7 @@ namespace YTEditor
 
   void MainWindow::ConstructGameWindows()
   {
-    mCentralTabs = new QTabWidget(this);
+    mCentralTabs = new QTabWidget();
     mCentralTabs->setMovable(true);
     mCentralTabs->setTabsClosable(true);
     mCentralTabs->setUsesScrollButtons(true);
@@ -376,16 +381,26 @@ namespace YTEditor
     //mGameWindow = new GameWindow(mCentralTabs);
     //mCentralTabs->addTab(mGameWindow, "Game");
 
-    for (auto &windowIt : mRunningEngine->GetWindows())
-    {
-      auto subWindow = new SubWindow(windowIt.second.get(), this);
-      auto widget = createWindowContainer(subWindow);
-      mCentralTabs->addTab(widget, "Level");
+    auto it = mRunningEngine->GetWindows().begin();
 
-      auto id = subWindow->winId();
+    mGameWindow = new SubWindow(it->second.get(), this);
+    auto widget = createWindowContainer(mGameWindow);
+    mCentralTabs->addTab(widget, "Level");
 
-      windowIt.second->SetWindowId(reinterpret_cast<void*>(id));
-    }
+    auto id = mGameWindow->winId();
+
+    it->second->SetWindowId(reinterpret_cast<void*>(id));
+
+    //for (auto &windowIt : mRunningEngine->GetWindows())
+    //{
+    //  mSubWindows.push_back(new SubWindow(windowIt.second.get(), this));
+    //  auto widget = createWindowContainer(mSubWindows[mSubWindows.size()-1]);
+    //  mCentralTabs->addTab(widget, "Level");
+    //
+    //  auto id = mSubWindows[mSubWindows.size() - 1]->winId();
+    //
+    //  windowIt.second->SetWindowId(reinterpret_cast<void*>(id));
+    //}
   }
 
   void MainWindow::ConstructToolbar()

@@ -49,7 +49,8 @@ namespace YTEditor
     MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
     ~MainWindow();
 
-    SubWindow& GetSubWindow();
+    SubWindow& GetGameWindow();
+    std::vector<SubWindow*>& GetSubWindows();
 
     ObjectBrowser& GetObjectBrowser();
     QDockWidget* GetObjectBrowserDock();
@@ -118,8 +119,11 @@ namespace YTEditor
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
 
     QTabWidget *mCentralTabs;
-    SubWindow *mSubWindow;
+    SubWindow *mGameWindow;
     SubWindow *mLevelWindow;
+
+    std::vector<SubWindow*> mSubWindows;
+
     QDockWidget *mObjectBrowser;
     QDockWidget *mComponentBrowser;
     QDockWidget *mOutputConsole;

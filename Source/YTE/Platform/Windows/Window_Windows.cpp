@@ -418,7 +418,7 @@ namespace YTE
       break;
     }
 
-    if ((nullptr != aWindow) && (false == aWindow->mEngine->IsEditor()))
+    if ((nullptr != aWindow) && (aWindow->mEngine) && (false == aWindow->mEngine->IsEditor()))
     {
       // Probably want to only do this sometimes not every time we pump.
       return DefWindowProc(aWindowHandle, aMessage, aWParam, aLParam);
@@ -571,6 +571,11 @@ namespace YTE
 
   void Window::PlatformUpdate()
   {
+    if (!mEngine)
+    {
+      return;
+    }
+
     if (false == mEngine->IsEditor())
     {
       MSG message;

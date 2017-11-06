@@ -125,6 +125,11 @@ namespace YTEditor
     this->Clear();
   }
 
+  SubWindow * MaterialViewer::GetSubWindow()
+  {
+    return mMaterialWindow;
+  }
+
   void MaterialViewer::OnCurrentMaterialChanged(int aIndex)
   {
     if (aIndex < mCurrentSubMeshes->size())

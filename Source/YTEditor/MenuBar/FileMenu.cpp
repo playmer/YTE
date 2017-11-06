@@ -29,6 +29,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 #include "YTEditor/MenuBar/FileMenu.hpp"
@@ -166,7 +167,6 @@ namespace YTEditor
 
   void FileMenu::ExitEditor()
   {
-
     // ask the user if they want to save the level
 
     QMessageBox::StandardButton reply;
@@ -175,13 +175,15 @@ namespace YTEditor
 
     if (reply == QMessageBox::Yes)
     {
-      delete &mMainWindow->GetSubWindow();
+      mMainWindow->GetGameWindow().mWindow->mEngine = nullptr;
+      mMainWindow->GetGameWindow().mWindow = nullptr;
+
+      mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
+      mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
 
       mMainWindow->GetRunningEngine()->EndExecution();
       mMainWindow->GetRunningEngine()->Update();
       mMainWindow->GetApplication()->quit();
-
-
     }
     else
     {

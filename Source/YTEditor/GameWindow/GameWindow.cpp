@@ -73,6 +73,7 @@ namespace YTEditor
       (WM_NCDESTROY != message.message) &&
       (0x90 /*WM_UAHDESTROYWINDOW*/ != message.message))
     {
+      // commented out because window was already destroyed on delete
       YTE::Window::MessageHandler(message.hwnd,
         message.message,
         message.wParam,

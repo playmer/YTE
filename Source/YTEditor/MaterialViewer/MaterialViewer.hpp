@@ -54,6 +54,8 @@ namespace YTEditor
 
     void LoadNoMaterial();
 
+    SubWindow* GetSubWindow();
+
   private:
 
     void OnCurrentMaterialChanged(int aIndex);

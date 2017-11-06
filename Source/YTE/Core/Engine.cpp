@@ -268,7 +268,7 @@ namespace YTE
 
   void Engine::EndExecution()
   {
-    mShouldRun = false; 
+    mShouldRun = false;
   };
 
   // Cleans up anything in the Space.

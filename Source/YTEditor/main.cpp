@@ -109,6 +109,5 @@ int main(int argc, char *argv[])
   // Tell the window and all its children to display
   mainWindow->show();
 
-
   return app.exec();
 }
