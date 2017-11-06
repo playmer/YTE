@@ -30,19 +30,13 @@ namespace YTE
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
   }
 
-
-
   VkShader::~VkShader()
   {
   }
 
 
-
-  void VkShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkShader::Load()
   {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
-    YTEUnusedArgument(aEvent);
-
     auto device = mSurface->GetDevice();
 
     auto vertex = mShaderSetName + ".vert";
@@ -156,5 +150,18 @@ namespace YTE
                                              dynamic,
                                              mPipelineLayout,
                                              mSurface->GetRenderPass());
+  }
+
+  void VkShader::Reload()
+  {
+    Load();
+  }
+
+  void VkShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  {
+    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
+    YTEUnusedArgument(aEvent);
+
+    Load();
   }
 }

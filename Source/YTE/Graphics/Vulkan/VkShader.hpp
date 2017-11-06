@@ -25,6 +25,10 @@ namespace YTE
              VkShaderDescriptions &aDescriptions);
     ~VkShader() override;
 
+    void Load();
+
+    void Reload() override;
+
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
     
     std::shared_ptr<vkhlf::Pipeline> mShader;

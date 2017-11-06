@@ -99,6 +99,9 @@ namespace YTE
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                            VkShaderDescriptions &aDescription);
 
+
+    void ReloadAllShaders();
+
     /////////////////////////////////
     // Events
     /////////////////////////////////

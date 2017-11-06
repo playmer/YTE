@@ -29,6 +29,7 @@ namespace YTE
         
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
 
+
     /////////////////////////////////
     // Events
     /////////////////////////////////

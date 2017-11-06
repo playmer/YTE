@@ -434,9 +434,22 @@ namespace YTE
   }
 
 
+  void VkRenderedSurface::ReloadAllShaders()
+  {
+    for (auto &shader : mShaders)
+    {
+      shader.second->Reload();
+    }
+  }
+
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
+    if (mWindow->mKeyboard.IsKeyDown(Keys::F2))
+    {
+      ReloadAllShaders();
+    }
+
     if (mDataUpdateRequired)
     {
       GraphicsDataUpdate();
