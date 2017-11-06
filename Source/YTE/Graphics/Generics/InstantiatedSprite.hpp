@@ -24,12 +24,14 @@ namespace YTE
 
     virtual ~InstantiatedSprite() = default;
 
-    virtual void UpdateUBOModel(UBOModel &aUBO)
+    virtual void UpdateTransformation(glm::mat4 &aTransformation)
     {
-      YTEUnusedArgument(aUBO);
+      YTEUnusedArgument(aTransformation);
     }
 
   protected:
+    glm::mat4 mTransformation;
+    u32 mTexture;
   };
 }
 

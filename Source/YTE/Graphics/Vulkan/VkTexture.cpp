@@ -123,7 +123,6 @@ namespace YTE
 
   VkTexture::~VkTexture()
   {
-    mSurface->DestroyTexture(mTextureFileName);
   }
 
 

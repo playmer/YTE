@@ -11,9 +11,11 @@ namespace YTE
   public:
     YTEDeclareType(Sprite);
     Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    ~Sprite();
 
   private:
     Texture *mTexture;
     std::string mTextureName;
+    std::unique_ptr<InstantiatedSprite> mInstantiatedModel;
   };
 }

@@ -9,6 +9,7 @@
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
@@ -178,11 +179,9 @@ namespace YTE
 
   }
 
-
-
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
   {
-    printf("Formats Availible: \n");
+    printf("Formats Available: \n");
 
     for (auto format : aFormats)
     {
@@ -192,19 +191,61 @@ namespace YTE
     }
   }
 
-  
-  
-  std::shared_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(std::string &aModelFile)
+  void VkRenderedSurface::CreateSpritePipeline()
   {
-    mDataUpdateRequired = true;
-    auto r = std::make_shared<VkInstantiatedModel>(aModelFile, mRenderer->GetSurface(mWindow));
-    mInstantiatedModels[r->mLoadedMesh].push_back(r);
-    return r;
+    VkShaderDescriptions descriptions;
+    descriptions.AddBinding<SpriteVertex>(vk::VertexInputRate::eVertex);
+
+    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+
+    //glm::vec2 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
+
+    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+
+    descriptions.AddBinding<SpriteInstance>(vk::VertexInputRate::eInstance);
+
+    //u32 mTextureId;
+    descriptions.AddAttribute<u32>(vk::Format::eR32Uint);
+
+    //glm::vec4 mMatrix1;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+
+    //glm::vec4 mMatrix2;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+
+    //glm::vec4 mMatrix3;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+
+    //glm::vec4 mMatrix4;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+
+
   }
 
+  // Sprites
+  std::unique_ptr<InstantiatedSprite> VkRenderedSurface::CreateSprite(std::string &aTextureFile)
+  {
+    return nullptr;
+  }
 
+  void VkRenderedSurface::DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite)
+  {
 
-  void VkRenderedSurface::DestroyModel(std::shared_ptr<VkInstantiatedModel> aModel)
+  }
+  
+  // Models
+  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(std::string &aModelFile)
+  {
+    mDataUpdateRequired = true;
+    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, mRenderer->GetSurface(mWindow));
+    mInstantiatedModels[model->mLoadedMesh].push_back(model.get());
+    return std::move(model);
+  }
+
+  void VkRenderedSurface::DestroyModel(std::unique_ptr<VkInstantiatedModel> aModel)
   {
     if (aModel == nullptr)
     {
@@ -213,97 +254,93 @@ namespace YTE
 
     auto mesh = mInstantiatedModels.find(aModel->mLoadedMesh);
 
-    auto model = std::find(mesh->second.begin(), mesh->second.end(), aModel);
-
-    if (model == mesh->second.end())
+    if (mesh != mInstantiatedModels.end())
     {
-      return;
+      // Remove this instance from the map.
+      mesh->second.erase(std::remove(mesh->second.begin(), 
+                                     mesh->second.end(), 
+                                     aModel.get()),
+                         mesh->second.end());
     }
-
-    mesh->second.erase(model);
   }
 
-
-
-  std::shared_ptr<VkMesh> VkRenderedSurface::CreateMesh(std::string &aFilename)
+  // Meshes
+  VkMesh* VkRenderedSurface::CreateMesh(std::string &aFilename)
   {
-    std::unordered_map<std::string,
-                       std::shared_ptr<VkMesh>>::iterator mesh = mMeshes.find(aFilename);
+    auto meshIt = mMeshes.find(aFilename);
 
-    if (mesh == mMeshes.end())
+    VkMesh *meshPtr{ nullptr };
+
+    if (meshIt == mMeshes.end())
     {
       // create mesh
-      auto s = std::shared_ptr<VkMesh>(new VkMesh(mWindow,
-                                                  mRenderer->GetSurface(mWindow),
-                                                  aFilename));
-      mMeshes[aFilename] = s;
+      auto mesh = std::make_unique<VkMesh>(mWindow,
+                                           mRenderer->GetSurface(mWindow),
+                                           aFilename);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aFilename] = std::move(mesh);
       mDataUpdateRequired = true;
-      return s;
     }
-
-    return mesh->second;
-  }
-
-
-
-  void VkRenderedSurface::DestroyMesh(std::string &aFilename)
-  {
-    mMeshes.erase(aFilename);
-  }
-
-
-
-  std::shared_ptr<VkTexture> VkRenderedSurface::CreateTexture(std::string &aFilename)
-  {
-    auto texture = mTextures.find(aFilename);
-
-    if (texture == mTextures.end())
+    else
     {
-      auto s = std::shared_ptr<VkTexture>(new VkTexture(aFilename,
-                                                        mRenderer->GetSurface(mWindow)));
-      mTextures[aFilename] = s;
-      mDataUpdateRequired = true;
-      return s;
+      meshPtr = meshIt->second.get();
     }
 
-    return texture->second;
+    return meshPtr;
   }
 
-
-
-  void VkRenderedSurface::DestroyTexture(std::string &aFilename)
+  // Textures
+  VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename)
   {
-    mTextures.erase(aFilename);
-  }
+    auto textureIt = mTextures.find(aFilename);
+    VkTexture *texturePtr{ nullptr };
 
-
-
-  std::shared_ptr<VkShader> VkRenderedSurface::CreateShader(std::string &aShaderSetName,
-                                                            std::shared_ptr<vkhlf::PipelineLayout>
-                                                              aPipelineLayout)
-  {
-    auto shader = mShaders.find(aShaderSetName);
-
-    if (shader == mShaders.end())
+    if (textureIt == mTextures.end())
     {
-      auto s = std::make_shared<VkShader>(aShaderSetName,
-                                          mRenderer->GetSurface(mWindow),
-                                          aPipelineLayout);
-      mShaders[aShaderSetName] = s;
+      auto texture = std::make_unique<VkTexture>(aFilename,
+                                                 mRenderer->GetSurface(mWindow));
+
+      texturePtr = texture.get();
+      mTextures[aFilename] = std::move(texture);
       mDataUpdateRequired = true;
-      return s;
+    }
+    else
+    {
+      texturePtr = textureIt->second.get();
     }
 
-    return shader->second;
+    return texturePtr;
   }
 
-
-
-  void VkRenderedSurface::DestroyShader(std::string &aShaderSetName)
+  // Shader
+  VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
+                                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+                                            VkShaderDescriptions &aDescription)
   {
-    mShaders.erase(aShaderSetName);
-  }
+    auto shaderIt = mShaders.find(aShaderSetName);
+    VkShader *shaderPtr{ nullptr };
 
+    if (shaderIt == mShaders.end())
+    {
+      auto shader = std::make_unique<VkShader>(aShaderSetName,
+                                               mRenderer->GetSurface(mWindow),
+                                               aPipelineLayout,
+                                               aDescription);
+
+      shaderPtr = shader.get();
+
+      mShaders[aShaderSetName] = std::move(shader);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      shaderPtr = shaderIt->second.get();
+    }
+
+    return shaderPtr;
+  }
 
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
@@ -445,27 +482,28 @@ namespace YTE
       {
         for (unsigned int i = 0; i < mesh.second->mSubmeshes.size(); ++i)
         {
-          std::shared_ptr<VkSubmesh> &submesh = mesh.second->mSubmeshes[i];
+          auto &submesh = mesh.second->mSubmeshes[i];
 
-          if (submesh->mShader != shader.second)
+          if (submesh->mShader != shader.second.get())
           {
             continue;
           }
 
           mRenderingCommandBuffer->bindVertexBuffer(0,
-              submesh->mVertexBuffer,
-              0);
+                                                    submesh->mVertexBuffer,
+                                                    0);
 
           mRenderingCommandBuffer->bindIndexBuffer(submesh->mIndexBuffer,
             0,
             vk::IndexType::eUint32);
 
-          for (auto &model : mInstantiatedModels[mesh.second])
+          for (auto &model : mInstantiatedModels[mesh.second.get()])
           {
+            auto data = model->mPipelineData[submesh.get()];
             mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-              model->mPipelineLayouts[submesh],
+              data.mPipelineLayout,
               0,
-              model->mDescriptorSets[submesh],
+              data.mDescriptorSet,
               nullptr);
 
             mRenderingCommandBuffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),

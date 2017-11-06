@@ -21,8 +21,11 @@ namespace YTE
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
 
-    std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
-    void DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel) override;
+    std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow, std::string &aTextureFile) override;
+    void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite) override;
+
+    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
+    void DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel) override;
         
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
 
@@ -36,7 +39,7 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    glm::vec4 GetClearColor(Window *aWindow) const;
+    glm::vec4 GetClearColor(Window *aWindow);
     VkRenderedSurface* GetSurface(Window *aWindow);
 
     Engine* GetEngine() const

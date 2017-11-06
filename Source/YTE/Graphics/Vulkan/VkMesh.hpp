@@ -29,11 +29,11 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
     std::shared_ptr<vkhlf::Buffer> mUBOMaterial;
 
-    std::shared_ptr<VkTexture> mDiffuseTexture;
-    std::shared_ptr<VkTexture> mSpecularTexture;
-    std::shared_ptr<VkTexture> mNormalTexture;
+    VkTexture *mDiffuseTexture;
+    VkTexture *mSpecularTexture;
+    VkTexture *mNormalTexture;
 
-    std::shared_ptr<VkShader> mShader;
+    VkShader *mShader;
 
     Submesh *mSubmesh;
 
@@ -52,10 +52,12 @@ namespace YTE
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
     ~VkMesh();
+    
+    VkMesh(const VkMesh &aMesh) = delete;
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
-    std::vector<std::shared_ptr<VkSubmesh>> mSubmeshes;
+    std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
     VkRenderedSurface *mSurface;
   };
 }

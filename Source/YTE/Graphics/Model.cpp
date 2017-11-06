@@ -187,12 +187,13 @@ namespace YTE
 
 
 
-  std::shared_ptr<Mesh> Model::GetMesh()
+  Mesh* Model::GetMesh()
   {
     if (mInstantiatedModel)
     {
       return mInstantiatedModel->GetMesh();
     }
+
     return nullptr;
   }
 
@@ -228,7 +229,7 @@ namespace YTE
 
   void Model::Destroy()
   {
-    mRenderer->DestroyModel(mWindow, mInstantiatedModel);
+    mRenderer->DestroyModel(mWindow, std::move(mInstantiatedModel));
     mInstantiatedModel.reset();
   }
 

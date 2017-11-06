@@ -5,6 +5,7 @@
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
 #include "YTE/Utilities/Utilities.h"
@@ -51,5 +52,11 @@ namespace YTE
     auto window = aSpace->GetComponent<GraphicsView>()->GetWindow();
 
     DeserializeByType<Sprite*>(aProperties, this, Sprite::GetStaticType());
+  }
+
+
+  Sprite::~Sprite()
+  {
+
   }
 }

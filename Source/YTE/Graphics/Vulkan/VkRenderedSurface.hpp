@@ -14,6 +14,7 @@
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 
 namespace YTE
 {
@@ -27,6 +28,14 @@ namespace YTE
   public:
     YTEDeclareType(GraphicsDataUpdateVk);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
+  };
+
+
+  class InstanceManager
+  {
+  public:
+
+  private:
   };
 
 
@@ -46,23 +55,49 @@ namespace YTE
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
 
+    //template<typename tType, typename tMap, typename ...tArguments>
+    //static tType* MakeThing(std::string &aName, tMap aContainer, tArguments aArguments...)
+    //{
+    //  auto it = aContainer.find(aName);
+    //  tType *ptr{ nullptr };
+    //
+    //  if (it == aContainer.end())
+    //  {
+    //    auto value = std::make_unique<tType>();
+    //
+    //    ptr = value.get();
+    //
+    //    aContainer[aName] = std::move(value);
+    //    mDataUpdateRequired = true;
+    //  }
+    //  else
+    //  {
+    //    ptr = shaderIt->second.get();
+    //  }
+    //
+    //  return ptr;
+    //
+    //}
+
+
     /////////////////////////////////
     // Creation / Destruction
     /////////////////////////////////
-    std::shared_ptr<VkInstantiatedModel> CreateModel(std::string &aModelFile);
-    void DestroyModel(std::shared_ptr<VkInstantiatedModel> aModel);
+    void CreateSpritePipeline();
 
-    std::shared_ptr<VkMesh> CreateMesh(std::string &aFilename);
-    void DestroyMesh(std::string &aFilename);
+    std::unique_ptr<InstantiatedSprite> CreateSprite(std::string &aTextureFile);
+    void DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite);
 
-    std::shared_ptr<VkTexture> CreateTexture(std::string &aFilename);
-    void DestroyTexture(std::string &aFilename);
+    std::unique_ptr<VkInstantiatedModel> CreateModel(std::string &aModelFile);
+    void DestroyModel(std::unique_ptr<VkInstantiatedModel> aModel);
 
-    std::shared_ptr<VkShader> CreateShader(std::string &aShaderSetName,
-                                           std::shared_ptr<vkhlf::PipelineLayout> aPipelineLayout);
-    void DestroyShader(std::string &aShaderSetName);
+    VkMesh* CreateMesh(std::string &aFilename);
 
+    VkTexture* CreateTexture(std::string &aFilename);
 
+    VkShader* CreateShader(std::string &aShaderSetName,
+                           std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+                           VkShaderDescriptions &aDescription);
 
     /////////////////////////////////
     // Events
@@ -87,7 +122,7 @@ namespace YTE
       return mRenderer;
     }
 
-    std::shared_ptr<vkhlf::Surface> GetSurface() const
+    std::shared_ptr<vkhlf::Surface>& GetSurface()
     {
       return mSurface;
     }
@@ -97,32 +132,32 @@ namespace YTE
       return mClearColor;
     }
 
-    std::shared_ptr<vkhlf::Device> GetDevice() const
+    std::shared_ptr<vkhlf::Device>& GetDevice()
     {
       return mDevice;
     }
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator> GetAllocator(const std::string aName)
+    std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName)
     {
       return mAllocators[aName];
     }
 
-    std::shared_ptr<vkhlf::RenderPass> GetRenderPass()
+    std::shared_ptr<vkhlf::RenderPass>& GetRenderPass()
     {
       return mRenderPass;
     }
 
-    std::shared_ptr<vkhlf::Buffer> GetUBOViewBuffer()
+    std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer()
     {
       return mViewUBO;
     }
 
-    std::shared_ptr<vkhlf::CommandPool> GetCommandPool()
+    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool()
     {
       return mCommandPool;
     }
 
-    std::shared_ptr<vkhlf::Queue> GetGraphicsQueue()
+    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue()
     {
       return mGraphicsQueue;
     }
@@ -171,11 +206,10 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mViewUBO;
 
     // loaded data
-    std::unordered_map<std::string, std::shared_ptr<VkTexture>> mTextures;
-    std::unordered_map<std::string, std::shared_ptr<VkMesh>> mMeshes;
-    std::unordered_map<std::string, std::shared_ptr<VkShader>> mShaders;
-    std::unordered_map<std::shared_ptr<VkMesh>,
-                       std::vector<std::shared_ptr<VkInstantiatedModel>>> mInstantiatedModels;
+    std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
+    std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+    std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
+    std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
 
     // Engine Data
     glm::vec4 mClearColor;

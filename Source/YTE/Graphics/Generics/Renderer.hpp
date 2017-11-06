@@ -23,58 +23,21 @@ namespace YTE
   public:
     YTEDeclareType(Renderer);
 
-    virtual ~Renderer()
-    {
-      
-    }
+    virtual ~Renderer();
+    virtual std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow,
+                                                             std::string &aTextureFile);
 
-    virtual std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow,
-      std::string &aMeshFile)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aMeshFile);
+    virtual void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite);
+    virtual std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow,
+                                                           std::string &aMeshFile);
 
-      return nullptr;
-    }
-
-    virtual void DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aModel);
-    }
-
-    virtual void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aView);
-    }
-
-    virtual void GraphicsDataUpdate(LogicUpdate *aEvent)
-    {
-      YTEUnusedArgument(aEvent);
-    }
-
-    virtual void FrameUpdate(LogicUpdate *aEvent)
-    {
-      YTEUnusedArgument(aEvent);
-    }
-
-    virtual void PresentFrame(LogicUpdate *aEvent)
-    {
-      YTEUnusedArgument(aEvent);
-    }
-
-    virtual glm::vec4 GetClearColor(Window *aWindow)
-    {
-      YTEUnusedArgument(aWindow);
-      return glm::vec4{};
-    }
-
-    virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor)
-    {
-      YTEUnusedArgument(aWindow);
-      YTEUnusedArgument(aColor);
-    }
+    virtual void DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel);
+    virtual void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView);
+    virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
+    virtual void FrameUpdate(LogicUpdate *aEvent);
+    virtual void PresentFrame(LogicUpdate *aEvent);
+    virtual glm::vec4 GetClearColor(Window *aWindow);
+    virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor);
   };
 }
 

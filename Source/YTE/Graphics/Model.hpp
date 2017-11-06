@@ -49,7 +49,7 @@ namespace YTE
     void ScaleUpdate(TransformChanged *aEvent);
 
     /////////////////////////////////
-    // Gettor / Settor
+    // Getter / Setter
     /////////////////////////////////
     void SetMesh(std::string aName);
 
@@ -69,7 +69,7 @@ namespace YTE
       Create();
     }
 
-    std::shared_ptr<Mesh> GetMesh();
+    Mesh* GetMesh();
 
     bool GetReload()
     {
@@ -91,7 +91,7 @@ namespace YTE
     Window *mWindow;
     Transform *mTransform;
     UBOModel mUBOModel;
-    std::shared_ptr<InstantiatedModel> mInstantiatedModel;
+    std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     bool mConstructing;
   };
 }

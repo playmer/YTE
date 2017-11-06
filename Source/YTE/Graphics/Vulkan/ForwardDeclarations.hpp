@@ -13,6 +13,7 @@ namespace YTE
   class GraphicsDataUpdateVk;
   class SwapChainSupportDetails;
   class VkInstantiatedModel;
+  class VkInstantiatedSprite;
   class VkInternals;
   class VkMesh;
   class VkRenderer;

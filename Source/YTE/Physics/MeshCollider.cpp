@@ -58,9 +58,8 @@ namespace YTE
     
     if (model != nullptr)
     {
-      auto inMesh = model->GetMesh();
+      mesh = model->GetMesh();
     }
-
     
     if (mesh != nullptr)
     {

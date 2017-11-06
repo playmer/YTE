@@ -25,18 +25,20 @@ namespace YTE
 
     void UpdateUBOModel(UBOModel &aUBO) override;
 
-    void CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh);
+    void CreateDescriptorSet(VkSubmesh *aMesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
 
-
+    struct SubMeshPipelineData
+    {
+      std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
+      std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
+    };
 
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::DescriptorSet>> mDescriptorSets;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::PipelineLayout>> mPipelineLayouts;
-    std::shared_ptr<VkMesh> mLoadedMesh;
+
+    std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
+    VkMesh *mLoadedMesh;
   };
 }
 

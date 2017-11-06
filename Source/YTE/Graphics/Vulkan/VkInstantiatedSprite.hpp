@@ -5,28 +5,27 @@
 
 #pragma once
 
-#ifndef YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
-#define YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
+#ifndef YTE_Graphics_Vulkan_VkInstantiatedSprite_hpp
+#define YTE_Graphics_Vulkan_VkInstantiatedSprite_hpp
 
-#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 namespace YTE
 {
-  class VkInstantiatedModel : public InstantiatedModel
+  class VkInstantiatedSprite : public InstantiatedSprite
   {
   public:
-    YTEDeclareType(VkInstantiatedModel);
+    YTEDeclareType(VkInstantiatedSprite);
 
-    VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface);
-    ~VkInstantiatedModel() override;
+    VkInstantiatedSprite(std::string &aModelFile, VkRenderedSurface *aSurface);
+    ~VkInstantiatedSprite() override;
 
-    void UpdateUBOModel(UBOModel &aUBO) override;
+    void UpdateTransformation(glm::mat4 &aTransformation) override;
 
-    void CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh);
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
+    void GraphicsDataUpdate(GraphicsDataUpdateVk *aEvent);
   };
 }
 

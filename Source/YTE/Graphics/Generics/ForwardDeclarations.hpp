@@ -11,6 +11,7 @@
 namespace YTE
 {
   class InstantiatedModel;
+  class InstantiatedSprite;
   class Mesh;
   class Renderer;
   class Shader;

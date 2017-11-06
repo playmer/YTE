@@ -6,7 +6,10 @@
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
+
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -18,6 +21,12 @@ namespace YTE
     YTERegisterType(VkRenderer);
   }
 
+  template<typename tTo, typename tFrom>
+  std::unique_ptr<tTo> static_unique_pointer_cast(std::unique_ptr<tFrom> &&aValue)
+  {
+    return std::unique_ptr<tTo>{static_cast<tTo*>(aValue.release())};
+    //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
+  }
 
 
   VkRenderer::VkRenderer(Engine *aEngine)
@@ -67,50 +76,37 @@ namespace YTE
   {
     mSurfaces.clear();
   }
+
+
+  std::unique_ptr<InstantiatedSprite> VkRenderer::CreateSprite(Window *aWindow, std::string &aTextureFile)
+  {
+    return static_unique_pointer_cast<InstantiatedSprite>(GetSurface(aWindow)->CreateSprite(aTextureFile));
+  }
+
+  void VkRenderer::DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite)
+  {
+    GetSurface(aWindow)->DestroySprite(static_unique_pointer_cast<VkInstantiatedSprite>(std::move(aSprite)));
+  }
   
-  std::shared_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow,
+  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow,
                                                              std::string &aMeshFile)
   {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
-    }
-
-    return std::static_pointer_cast<InstantiatedModel>(surface->second->CreateModel(aMeshFile));
+    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aWindow)->CreateModel(aMeshFile));
   }
 
 
 
-  void VkRenderer::DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel)
+  void VkRenderer::DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel)
   {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
-    }
-
-    surface->second->DestroyModel(std::static_pointer_cast<VkInstantiatedModel>(aModel));
+    GetSurface(aWindow)->DestroyModel(static_unique_pointer_cast<VkInstantiatedModel>(std::move(aModel)));
   }
 
 
 
   void VkRenderer::UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)
   {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to corresponding provided window");
-      return;
-    }
-
-    surface->second->UpdateSurfaceViewBuffer(aView);
+    GetSurface(aWindow)->UpdateSurfaceViewBuffer(aView);
   }
-
-
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
@@ -146,30 +142,14 @@ namespace YTE
 
   void VkRenderer::SetClearColor(Window *aWindow, const glm::vec4 &aColor)
   {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to provided window");
-      return;
-    }
-
-    surface->second->SetClearColor(aColor);
+    GetSurface(aWindow)->SetClearColor(aColor);
   }
 
 
 
-  glm::vec4 VkRenderer::GetClearColor(Window *aWindow) const
+  glm::vec4 VkRenderer::GetClearColor(Window *aWindow)
   {
-    auto surface = mSurfaces.find(aWindow);
-
-    if (surface == mSurfaces.end())
-    {
-      DebugObjection(true, "Cannot find surface associated to provided window");
-      return glm::vec4(-1.0f, -1.0f, -1.0f, -1.0f);
-    }
-
-    return surface->second->GetClearColor();
+    return GetSurface(aWindow)->GetClearColor();
   }
 
 

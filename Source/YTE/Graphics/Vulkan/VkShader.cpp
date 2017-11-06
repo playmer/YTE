@@ -20,10 +20,12 @@ namespace YTE
 
   VkShader::VkShader(std::string &aName,
                      VkRenderedSurface *aSurface,
-                     std::shared_ptr<vkhlf::PipelineLayout> aLayout)
+                     std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+                     VkShaderDescriptions &aDescriptions)
     : Shader(aName)
     , mSurface(aSurface)
     , mPipelineLayout(aLayout)
+    , mDescriptions(aDescriptions)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
   }
@@ -32,7 +34,6 @@ namespace YTE
 
   VkShader::~VkShader()
   {
-    mSurface->DestroyShader(mShaderSetName);
   }
 
 
@@ -64,32 +65,6 @@ namespace YTE
     auto vertexModule = device->createShaderModule(vertexData);
     auto fragmentModule = device->createShaderModule(fragmentData);
 
-
-    // TODO (Josh): We should be reflecting these.
-    VkShaderDescriptions descriptions;
-    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-
-    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
     // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
 
@@ -100,8 +75,8 @@ namespace YTE
                                                        fragmentModule,
                                                        "main");
 
-    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(descriptions.Bindings(),
-                                                          descriptions.Attributes());
+    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(mDescriptions.Bindings(),
+                                                          mDescriptions.Attributes());
     vk::PipelineInputAssemblyStateCreateInfo assembly({},
                                                       vk::PrimitiveTopology::eTriangleList,
                                                       VK_FALSE);
