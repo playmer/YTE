@@ -28,7 +28,7 @@ namespace YTE
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);
 
-  bool ReadFileToString(std::string &file, std::string &output);
+  bool ReadFileToString(std::string const &file, std::string &output);
   void StringToFloats(std::string &file, std::vector<float> &output);
 
   std::string Format(const char *aFormatString, ...);

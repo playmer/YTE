@@ -121,7 +121,7 @@ namespace YTE
   Success or failure.
   */
   /******************************************************************************/
-  bool ReadFileToString(std::string &file, std::string &output)
+  bool ReadFileToString(std::string const &file, std::string &output)
   {
     std::ifstream stream(file);
 

@@ -7,6 +7,7 @@
 
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
+#include "YTE/Graphics/Vulkan/VkShaderCompiler.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 
 namespace YTE
@@ -45,19 +46,22 @@ namespace YTE
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
     auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
-    std::string vertexText;
-    ReadFileToString(vertexFile, vertexText);
+    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile);
+    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile);
 
-    std::string fragmetText;
-    ReadFileToString(fragmentFile, fragmetText);
+    if (false == vertexData.mValid)
+    {
+      std::cout << vertexData.mReason << "\n";
+      return;
+    }
+    else if (false == fragmentData.mValid)
+    {
+      std::cout << fragmentData.mReason << "\n";
+      return;
+    }
 
-    auto vertexData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex,
-      vertexText);
-    auto fragmentData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment,
-      fragmetText);
-
-    auto vertexModule = device->createShaderModule(vertexData);
-    auto fragmentModule = device->createShaderModule(fragmentData);
+    auto vertexModule = device->createShaderModule(vertexData.mData);
+    auto fragmentModule = device->createShaderModule(fragmentData.mData);
 
     // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
