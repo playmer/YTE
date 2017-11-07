@@ -169,7 +169,7 @@ namespace YTE
 
     submesh.mIndexBuffer = std::move(mIndices);
 
-    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(glm::vec3);
+    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
     submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
     std::vector<Submesh> submeshes{ submesh };
