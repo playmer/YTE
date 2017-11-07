@@ -44,10 +44,20 @@ namespace YTE
     return nullptr;
   }
 
-  void Renderer::DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel)
+  std::unique_ptr<InstantiatedModel> Renderer::CreateModel(Window *aWindow, Mesh *aMesh)
   {
     YTEUnusedArgument(aWindow);
-    YTEUnusedArgument(aModel);
+    YTEUnusedArgument(aMesh);
+    return nullptr;
+  }
+
+  Mesh* Renderer::CreateSimpleMesh(Window *aWindow, std::string &aName, std::vector<Submesh> &aSubmeshes)
+  {
+    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aName);
+    YTEUnusedArgument(aSubmeshes);
+
+    return nullptr;
   }
 
   void Renderer::UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)

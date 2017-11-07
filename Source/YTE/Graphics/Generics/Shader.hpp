@@ -28,11 +28,7 @@ namespace YTE
 
 
   protected:
-    void Load();
-
     std::string mShaderSetName;
-    std::string mVertexShaderCode;
-    std::string mFragmentShaderCode;
   };
 }
 

@@ -21,7 +21,10 @@ namespace YTE
     YTEDeclareType(VkInstantiatedModel);
 
     VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface);
+    VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface);
     ~VkInstantiatedModel() override;
+
+    void Create();
 
     void UpdateUBOModel(UBOModel &aUBO) override;
 

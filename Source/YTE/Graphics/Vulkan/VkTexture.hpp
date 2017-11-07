@@ -20,12 +20,11 @@ namespace YTE
     YTEDeclareType(VkTexture);
 
     VkTexture(std::string &aFile,
-              VkRenderedSurface *aSurface);
+              VkRenderedSurface *aSurface,
+              vk::ImageViewType aType);
     ~VkTexture() override;
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
-
-
 
     std::shared_ptr<vkhlf::Sampler> mSampler;
     std::shared_ptr<vkhlf::ImageView> mImageView;

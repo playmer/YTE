@@ -20,6 +20,19 @@ namespace YTE
     YTERegisterType(VkMesh);
   }
 
+  vk::ImageViewType Convert(TextureViewType aType)
+  {
+    switch (aType)
+    {
+    case TextureViewType::e2D:
+      return vk::ImageViewType::e2D;
+      break;
+    case TextureViewType::eCube:
+      return vk::ImageViewType::eCube;
+    }
+
+    return vk::ImageViewType{};
+  }
 
 
   VkSubmesh::VkSubmesh(Submesh *aSubmesh, VkRenderedSurface *aSurface)
@@ -67,17 +80,18 @@ namespace YTE
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
-      mDiffuseTexture = aSurface->CreateTexture(mSubmesh->mDiffuseMap);
+
+      mDiffuseTexture = aSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
       ++samplers;
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
-      mSpecularTexture = aSurface->CreateTexture(mSubmesh->mSpecularMap);
+      mSpecularTexture = aSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
       ++samplers;
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
-      mNormalTexture = aSurface->CreateTexture(mSubmesh->mNormalMap);
+      mNormalTexture = aSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
       ++samplers;
     }
 
@@ -180,6 +194,22 @@ namespace YTE
                  std::string &aFile,
                  CreateInfo *aCreateInfo)
     : Mesh(aWindow, aFile, aCreateInfo)
+    , mSurface(aSurface)
+  {
+    for (unsigned i = 0; i < mParts.size(); ++i)
+    {
+      mSubmeshes.emplace_back(std::make_unique<VkSubmesh>(&mParts[i], aSurface));
+    }
+
+    aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+  }
+
+
+  VkMesh::VkMesh(Window *aWindow,
+                 VkRenderedSurface *aSurface,
+                 std::string &aFile,
+                 std::vector<Submesh> &aSubmeshes)
+    : Mesh(aWindow, aFile, aSubmeshes)
     , mSurface(aSurface)
   {
     for (unsigned i = 0; i < mParts.size(); ++i)

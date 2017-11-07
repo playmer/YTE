@@ -23,6 +23,24 @@ namespace YTE
     , mSurface(aSurface)
   {
     mLoadedMesh = mSurface->CreateMesh(aModelFile);
+    Create();
+  }
+
+  VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface)
+    : InstantiatedModel()
+    , mSurface(aSurface)
+  {
+    mLoadedMesh = static_cast<VkMesh*>(aMesh);
+    Create();
+  }
+
+  VkInstantiatedModel::~VkInstantiatedModel()
+  {
+    mSurface->DestroyModel(this);
+  }
+
+  void VkInstantiatedModel::Create()
+  {
     mMesh = static_cast<Mesh*>(mLoadedMesh);
 
     // create UBO Per Model buffer
@@ -43,11 +61,6 @@ namespace YTE
     }
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);
-  }
-
-  VkInstantiatedModel::~VkInstantiatedModel()
-  {
-
   }
 
   void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)

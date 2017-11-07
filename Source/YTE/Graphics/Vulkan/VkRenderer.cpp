@@ -94,14 +94,17 @@ namespace YTE
     return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aWindow)->CreateModel(aMeshFile));
   }
 
-
-
-  void VkRenderer::DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel)
+  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow, Mesh *aMesh)
   {
-    GetSurface(aWindow)->DestroyModel(static_unique_pointer_cast<VkInstantiatedModel>(std::move(aModel)));
+    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aWindow)->CreateModel(aMesh));
   }
-
-
+  
+  Mesh* VkRenderer::CreateSimpleMesh(Window *aWindow, 
+                                     std::string &aName,
+                                     std::vector<Submesh> &aSubmeshes)
+  {
+    return GetSurface(aWindow)->CreateSimpleMesh(aName, aSubmeshes);
+  }
 
   void VkRenderer::UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)
   {

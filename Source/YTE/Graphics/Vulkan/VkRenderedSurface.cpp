@@ -245,7 +245,16 @@ namespace YTE
     return std::move(model);
   }
 
-  void VkRenderedSurface::DestroyModel(std::unique_ptr<VkInstantiatedModel> aModel)
+
+  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(Mesh *aMesh)
+  {
+    mDataUpdateRequired = true;
+    auto model = std::make_unique<VkInstantiatedModel>(aMesh, mRenderer->GetSurface(mWindow));
+    mInstantiatedModels[model->mLoadedMesh].push_back(model.get());
+    return std::move(model);
+  }
+
+  void VkRenderedSurface::DestroyModel(VkInstantiatedModel *aModel)
   {
     if (aModel == nullptr)
     {
@@ -259,7 +268,7 @@ namespace YTE
       // Remove this instance from the map.
       mesh->second.erase(std::remove(mesh->second.begin(), 
                                      mesh->second.end(), 
-                                     aModel.get()),
+                                     aModel),
                          mesh->second.end());
     }
   }
@@ -291,8 +300,37 @@ namespace YTE
     return meshPtr;
   }
 
+  
+  Mesh* VkRenderedSurface::CreateSimpleMesh(std::string &aName,
+                                            std::vector<Submesh> &aSubmeshes)
+  {
+    auto meshIt = mMeshes.find(aName);
+
+    VkMesh *meshPtr{ nullptr };
+
+    if (meshIt == mMeshes.end())
+    {
+      // create mesh
+      auto mesh = std::make_unique<VkMesh>(mWindow,
+                                           mRenderer->GetSurface(mWindow),
+                                           aName,
+                                           aSubmeshes);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aName] = std::move(mesh);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      meshPtr = meshIt->second.get();
+    }
+
+    return meshPtr;
+  }
+
   // Textures
-  VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename)
+  VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
@@ -300,7 +338,8 @@ namespace YTE
     if (textureIt == mTextures.end())
     {
       auto texture = std::make_unique<VkTexture>(aFilename,
-                                                 mRenderer->GetSurface(mWindow));
+                                                 mRenderer->GetSurface(mWindow),
+                                                 aType);
 
       texturePtr = texture.get();
       mTextures[aFilename] = std::move(texture);
@@ -379,16 +418,12 @@ namespace YTE
     mWindow->SendEvent(Events::RendererResize, &event);
   }
 
-
-
   void VkRenderedSurface::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent)
   {
     mViewUBO->update<UBOView>(0, mViewUBOData, aEvent->mCBO);
     this->YTEDeregister(Events::GraphicsDataUpdateVk, this,
                         &VkRenderedSurface::GraphicsDataUpdateVkEvent);
   }
-
-
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
@@ -397,8 +432,6 @@ namespace YTE
     mFrameBufferSwapChain->acquireNextFrame();
     RenderFrameForSurface();
   }
-
-
 
   void VkRenderedSurface::PresentFrame()
   {
@@ -416,8 +449,6 @@ namespace YTE
       ResizeEvent(&event);
     }
   }
-
-
 
   void VkRenderedSurface::GraphicsDataUpdate()
   {

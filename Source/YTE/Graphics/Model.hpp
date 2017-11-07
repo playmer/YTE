@@ -44,9 +44,7 @@ namespace YTE
     /////////////////////////////////
     // Events
     /////////////////////////////////
-    void PositionUpdate(TransformChanged *aEvent);
-    void RotationUpdate(TransformChanged *aEvent);
-    void ScaleUpdate(TransformChanged *aEvent);
+    void TransformUpdate(TransformChanged *aEvent);
 
     /////////////////////////////////
     // Getter / Setter

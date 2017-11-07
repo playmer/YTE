@@ -38,8 +38,6 @@ namespace YTE
   private:
   };
 
-
-
   class VkRenderedSurface : public EventHandler
   {
   public:
@@ -89,11 +87,15 @@ namespace YTE
     void DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite);
 
     std::unique_ptr<VkInstantiatedModel> CreateModel(std::string &aModelFile);
-    void DestroyModel(std::unique_ptr<VkInstantiatedModel> aModel);
+    std::unique_ptr<VkInstantiatedModel> CreateModel(Mesh *aMesh);
+    void DestroyModel(VkInstantiatedModel *aModel);
 
     VkMesh* CreateMesh(std::string &aFilename);
 
-    VkTexture* CreateTexture(std::string &aFilename);
+    Mesh* CreateSimpleMesh(std::string &aName,
+                           std::vector<Submesh> &aSubmeshes);
+
+    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
 
     VkShader* CreateShader(std::string &aShaderSetName,
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,

@@ -25,9 +25,13 @@ namespace YTE
     void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite) override;
 
     std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
-    void DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel) override;
+    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, Mesh *aMesh) override;
         
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
+
+    Mesh* CreateSimpleMesh(Window *aWindow, 
+                           std::string &aName,
+                           std::vector<Submesh> &aSubmeshes) override;
 
 
     /////////////////////////////////

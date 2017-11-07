@@ -30,8 +30,12 @@ namespace YTE
     virtual void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite);
     virtual std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow,
                                                            std::string &aMeshFile);
+    virtual std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, Mesh *aMesh);
 
-    virtual void DestroyModel(Window *aWindow, std::unique_ptr<InstantiatedModel> aModel);
+    virtual Mesh* CreateSimpleMesh(Window *aWindow, 
+                                   std::string &aName,
+                                   std::vector<Submesh> &aSubmeshes);
+
     virtual void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView);
     virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
     virtual void FrameUpdate(LogicUpdate *aEvent);

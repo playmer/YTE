@@ -3,10 +3,12 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+// Vertex Data
 layout (location = 0) in vec4 inPosition;
 layout (location = 1) in vec2 inUVCoordinates;
 layout (location = 2) in vec3 inNormal;
 
+// Instance Data
 layout (location = 3) in uint inTextureId;
 layout (location = 4) in vec4 inMatrix1;
 layout (location = 5) in vec4 inMatrix2;

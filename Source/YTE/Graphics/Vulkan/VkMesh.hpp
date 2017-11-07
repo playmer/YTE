@@ -40,8 +40,6 @@ namespace YTE
     u64 mIndexCount;
   };
 
-
-
   class VkMesh : public Mesh
   {
   public:
@@ -51,6 +49,13 @@ namespace YTE
            VkRenderedSurface *aSurface,
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
+
+    
+    VkMesh(Window *aWindow,
+           VkRenderedSurface *aSurface,
+           std::string &aFile,
+           std::vector<Submesh> &aSubmeshes);
+
     ~VkMesh();
     
     VkMesh(const VkMesh &aMesh) = delete;

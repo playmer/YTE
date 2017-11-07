@@ -16,6 +16,7 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Skybox.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
@@ -68,6 +69,7 @@ namespace YTE
     DeclareComponent(Camera);
     DeclareComponent(GraphicsView);
     DeclareComponent(Model);
+    DeclareComponent(Skybox);
 
     //DeclareComponent(Collider)
     DeclareComponent(BoxCollider);

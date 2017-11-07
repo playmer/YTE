@@ -99,9 +99,9 @@ namespace YTE
 
   void Model::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &Model::PositionUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Model::RotationUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Model::ScaleUpdate);
+    mOwner->YTERegister(Events::PositionChanged, this, &Model::TransformUpdate);
+    mOwner->YTERegister(Events::RotationChanged, this, &Model::TransformUpdate);
+    mOwner->YTERegister(Events::ScaleChanged, this, &Model::TransformUpdate);
     mTransform = mOwner->GetComponent<Transform>();
     mConstructing = false;
     Create();
@@ -121,7 +121,7 @@ namespace YTE
 
 
   
-  void Model::PositionUpdate(TransformChanged *aEvent)
+  void Model::TransformUpdate(TransformChanged *aEvent)
   {
     YTEUnusedArgument(aEvent);
 
@@ -136,34 +136,6 @@ namespace YTE
     modChange.Object = mOwner;
 
     mOwner->SendEvent(Events::ModelChanged, &modChange);
-  }
-
-
-
-  void Model::RotationUpdate(TransformChanged *aEvent)
-  {
-    YTEUnusedArgument(aEvent);
-
-    CreateTransform();
-
-    if (mInstantiatedModel)
-    {
-      mInstantiatedModel->UpdateUBOModel(mUBOModel);
-    }
-  }
-
-
-
-  void Model::ScaleUpdate(TransformChanged *aEvent)
-  {
-    YTEUnusedArgument(aEvent);
-
-    CreateTransform();
-
-    if (mInstantiatedModel)
-    {
-      mInstantiatedModel->UpdateUBOModel(mUBOModel);
-    }
   }
 
 
@@ -229,7 +201,6 @@ namespace YTE
 
   void Model::Destroy()
   {
-    mRenderer->DestroyModel(mWindow, std::move(mInstantiatedModel));
     mInstantiatedModel.reset();
   }
 
