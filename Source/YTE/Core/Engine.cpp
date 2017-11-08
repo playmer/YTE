@@ -20,6 +20,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Lua/LuaSystem.hpp"
 
 #include "YTE/WWise//WWiseSystem.hpp"
 
@@ -80,6 +81,7 @@ namespace YTE
     mComponents.Emplace(WWiseSystem::GetStaticType(), std::make_unique<WWiseSystem>(this, nullptr));
     mComponents.Emplace(GraphicsSystem::GetStaticType(), std::make_unique<GraphicsSystem>(this, nullptr));
     mComponents.Emplace(JobSystem::GetStaticType(), std::make_unique<JobSystem>(this, nullptr));
+    mComponents.Emplace(LuaSystem::GetStaticType(), std::make_unique<LuaSystem>(this, nullptr));
 
     namespace fs = std::experimental::filesystem;
 
