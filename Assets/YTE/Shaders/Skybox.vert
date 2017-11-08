@@ -34,6 +34,12 @@ void main()
   outTextureCoordinates = inPosition;
 
   // Unsure if this needs to be vec3/mat3 here.
-  vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
-  gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
+  //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
+  //gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
+
+
+  gl_Position = View.mProjectionMatrix * 
+                View.mViewMatrix       *
+                Model.mModelMatrix     *
+                vec4(inPosition, 1.0f);
 }

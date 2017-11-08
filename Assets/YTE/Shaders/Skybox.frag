@@ -27,8 +27,10 @@ layout (location = 0) out vec4 outFragColor;
 
 void main()
 {
-  vec3 normal = normalize(inTextureCoordinates);
-  outFragColor = texture(environmentMap, normal);
+  //vec3 normal = normalize(inTextureCoordinates);
+  //outFragColor = texture(environmentMap, normal);
+  vec3 add = vec3(1.0f, 1.0f, 1.0f);
+  outFragColor = vec4(add + inTextureCoordinates, 1.0f);
 }
 
 
