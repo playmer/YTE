@@ -11,7 +11,8 @@ namespace YTE
     YTERegisterType(LuaComponent);
   }
 
-  LuaComponent::LuaComponent(Composition *aOwner, Space *aSpace, RSValue *) : Component(aOwner, aSpace)
+  LuaComponent::LuaComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+    : Component(aOwner, aSpace)
   {
   }
 
