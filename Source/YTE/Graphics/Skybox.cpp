@@ -197,5 +197,7 @@ namespace YTE
     auto mesh = mRenderer->CreateSimpleMesh(mWindow, meshName, submeshes);
 
     mInstantiatedSkybox = mRenderer->CreateModel(mWindow, mesh);
+    CreateTransform();
+    mInstantiatedSkybox->UpdateUBOModel(mUBOModel);
   }
 }
