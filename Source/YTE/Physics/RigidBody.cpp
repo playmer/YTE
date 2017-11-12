@@ -22,18 +22,18 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    auto &mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet);
-    mass.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    mass.AddAttribute<EditorProperty>()
-        .AddAttribute<Serializable>();
+    auto &mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet)
+    .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+    .AddAttribute<EditorProperty>()
+    .AddAttribute<Serializable>();
 
-    auto &isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet);
-    isStatic.Description() = "This is the mass of the object, but you should know that it is not dynamically changable";
-    isStatic.AddAttribute<EditorProperty>()
-            .AddAttribute<Serializable>();
+    auto &isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet)
+    .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+    .AddAttribute<EditorProperty>()
+    .AddAttribute<Serializable>();
 
     YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
-      .Description() = "Applys an impulse to the RigidBody.";
+      .Description() = "Applies an impulse to the RigidBody.";
 
     YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (const glm::vec3&)), "SetVelocity", YTEParameterNames("aVelocityVector"))
       .Description() = "Sets the object velocity from a Real3 of values";
