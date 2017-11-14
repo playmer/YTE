@@ -125,6 +125,7 @@ namespace YTEditor
     mGizmo = new Gizmo(this);
     mGizmo->SetRenderingWindow(yteWin);
     mGizmo->mGizmoObj = lvl->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
+    mGizmo->SetMode(Gizmo::Select);
   }
 
   MainWindow::~MainWindow()
