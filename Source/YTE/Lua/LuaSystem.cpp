@@ -1,8 +1,6 @@
 #include "YTE/Lua/LuaSystem.hpp"
 
-#include "LuaJIT/src/luajit.h"
-#include "LuaJIT/src/lauxlib.h"
-#include "LuaJIT/src/lualib.h"
+#include "YTE/Lua/LuaLibraryInclude.hpp"
 
 namespace YTE
 {
