@@ -21,10 +21,29 @@ namespace YTEditor
   EditMenu::EditMenu(MainWindow * aMainWindow)
     : QMenu("Edit"), mMainWindow(aMainWindow)
   {
-    addAction(new QAction("Placeholder"));
+    setToolTipsVisible(true);
+
+    QAction *undoAct = new QAction("Undo");
+    addAction(undoAct);
+    connect(undoAct, &QAction::triggered, this, &EditMenu::Undo);
+    undoAct->setToolTip("Ctrl+Z");
+
+    QAction *redoAct = new QAction("Redo");
+    addAction(redoAct);
+    connect(redoAct, &QAction::triggered, this, &EditMenu::Redo);
+    redoAct->setToolTip("Ctrl+Y");
+
   }
 
   EditMenu::~EditMenu()
+  {
+  }
+
+  void EditMenu::Undo()
+  {
+  }
+
+  void EditMenu::Redo()
   {
   }
 

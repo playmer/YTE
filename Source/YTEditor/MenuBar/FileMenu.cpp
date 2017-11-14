@@ -41,6 +41,8 @@ namespace YTEditor
   FileMenu::FileMenu(MainWindow * aMainWindow)
     : QMenu("File"), mMainWindow(aMainWindow)
   {
+    setToolTipsVisible(true);
+
     QAction * newLevelAct = new QAction("New Level");
     addAction(newLevelAct);
     connect(newLevelAct, &QAction::triggered, this, &FileMenu::NewLevel);
@@ -52,6 +54,7 @@ namespace YTEditor
     QAction * saveLevelAct = new QAction("Save Level");
     addAction(saveLevelAct);
     connect(saveLevelAct, &QAction::triggered, this, &FileMenu::SaveLevel);
+    saveLevelAct->setToolTip("Ctrl+S");
 
     addSeparator();
 

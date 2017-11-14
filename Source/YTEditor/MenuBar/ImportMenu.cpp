@@ -269,7 +269,6 @@ namespace YTEditor
       fs::copy_options::overwrite_existing,
       code);
 
-
     //mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
     //  code.message().c_str());
 

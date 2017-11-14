@@ -33,6 +33,9 @@ namespace YTEditor
 
     MainWindow * mMainWindow;
 
+    void Undo();
+    void Redo();
+
   };
 
 }
