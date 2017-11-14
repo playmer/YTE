@@ -41,6 +41,8 @@ Set(YTEditorSource main.cpp
                    Gizmos/Gizmo.cpp
 				   Gizmos/GizmoToolbar.hpp
                    Gizmos/GizmoToolbar.cpp
+                   Gizmos/GizmoButton.hpp
+                   Gizmos/GizmoButton.cpp
                    Gizmos/Translate.hpp
                    Gizmos/Translate.cpp
                    Gizmos/Scale.hpp

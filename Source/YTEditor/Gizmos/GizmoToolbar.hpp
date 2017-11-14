@@ -4,6 +4,7 @@
 namespace YTEditor
 {
   class MainWindow;
+  class GizmoButton;
 
   class GizmoToolbar : public QToolBar
   {
@@ -11,15 +12,18 @@ namespace YTEditor
 
     GizmoToolbar(MainWindow *aMainWindow);
 
+    std::vector<GizmoButton*>& GetButtons();
 
   private:
 
     MainWindow *mMainWindow;
 
-    QPushButton *mSelect;
-    QPushButton *mTranslate;
-    QPushButton *mRotate;
-    QPushButton *mScale;
+    std::vector<GizmoButton*> mButtons;
+
+    GizmoButton *mSelect;
+    GizmoButton *mTranslate;
+    GizmoButton *mRotate;
+    GizmoButton *mScale;
 
     void SelectToggled(bool checked);
     void TranslateToggled(bool checked);

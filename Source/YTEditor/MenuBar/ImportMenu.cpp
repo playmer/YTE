@@ -129,6 +129,7 @@ namespace YTEditor
       mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
         "Could not find a valid mesh in file %s",
         stdMeshDirectory.c_str());
+      return;
     }
 
     mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
