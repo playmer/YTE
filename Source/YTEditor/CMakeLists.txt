@@ -35,14 +35,14 @@ Set(YTEditorSource main.cpp
                    FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
                    GameWindow/GameWindow.cpp
+                   GameWindow/GameToolbar.hpp
+                   GameWindow/GameToolbar.cpp
                    Gizmos/Axis.hpp
                    Gizmos/Axis.cpp
                    Gizmos/Gizmo.hpp
                    Gizmos/Gizmo.cpp
 				   Gizmos/GizmoToolbar.hpp
                    Gizmos/GizmoToolbar.cpp
-                   Gizmos/GizmoButton.hpp
-                   Gizmos/GizmoButton.cpp
                    Gizmos/Translate.hpp
                    Gizmos/Translate.cpp
                    Gizmos/Scale.hpp
@@ -53,6 +53,10 @@ Set(YTEditorSource main.cpp
                    MainWindow/MainWindow.cpp
 				   MainWindow/ScriptBind.hpp
                    MainWindow/ScriptBind.cpp
+                   MainWindow/Toolbar.hpp
+                   MainWindow/Toolbar.cpp
+                   MainWindow/ToolbarButton.hpp
+                   MainWindow/ToolbarButton.cpp
 				   MainWindow/ComponentFactoryInit.hpp
                    MainWindow/ComponentFactoryInit.cpp
                    MaterialViewer/MaterialViewer.hpp

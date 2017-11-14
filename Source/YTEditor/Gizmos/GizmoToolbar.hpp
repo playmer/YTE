@@ -1,35 +1,31 @@
-#include <qtoolbar.h>
+#pragma once
 
+#include "YTEditor/MainWindow/Toolbar.hpp"
 
 namespace YTEditor
 {
   class MainWindow;
-  class GizmoButton;
+  class ToolbarButton;
 
-  class GizmoToolbar : public QToolBar
+  class GizmoToolbar : public Toolbar
   {
   public:
 
     GizmoToolbar(MainWindow *aMainWindow);
 
-    std::vector<GizmoButton*>& GetButtons();
-
   private:
 
-    MainWindow *mMainWindow;
-
-    std::vector<GizmoButton*> mButtons;
-
-    GizmoButton *mSelect;
-    GizmoButton *mTranslate;
-    GizmoButton *mRotate;
-    GizmoButton *mScale;
-
+    ToolbarButton *mSelect;
     void SelectToggled(bool checked);
-    void TranslateToggled(bool checked);
-    void RotateToggled(bool checked);
-    void ScaleToggled(bool checked);
 
+    ToolbarButton *mTranslate;
+    void TranslateToggled(bool checked);
+
+    ToolbarButton *mRotate;
+    void RotateToggled(bool checked);
+
+    ToolbarButton *mScale;
+    void ScaleToggled(bool checked);
   };
 
 }

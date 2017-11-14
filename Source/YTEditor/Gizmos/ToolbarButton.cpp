@@ -1,24 +1,24 @@
+#include "..\MainWindow\ToolbarButton.hpp"
 #include <qdir.h>
 #include <qevent.h>
 
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
-#include "YTEditor/Gizmos/GizmoButton.hpp"
+#include "YTEditor/MainWindow/ToolbarButton.hpp
 
 
 namespace YTEditor
 {
 
-  GizmoButton::GizmoButton(GizmoToolbar *aToolbar, QString aIconPath, void(GizmoToolbar::*onToggled)(bool))
+  ToolbarButton::ToolbarButton(Toolbar *aToolbar, QString aIconPath)
     : QPushButton(aToolbar)
     , mToolbar(aToolbar)
   {
     setCheckable(true);
     setIconSize(QSize(20, 20));
     setIcon(QIcon(QDir(aIconPath).path()));
-    connect(this, &QPushButton::toggled, aToolbar, onToggled);
   }
 
-  void GizmoButton::mousePressEvent(QMouseEvent *event)
+  void ToolbarButton::mousePressEvent(QMouseEvent *event)
   {
     if (this->isChecked())
     {
@@ -28,7 +28,7 @@ namespace YTEditor
 
     auto buttons = mToolbar->GetButtons();
 
-    for (GizmoButton *b : buttons)
+    for (ToolbarButton *b : buttons)
     {
       if (b != this)
       {

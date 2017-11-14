@@ -1,50 +1,42 @@
 #include <filesystem>
 
-#include <qpushbutton.h>
 #include <qdir.h>
 
 #include "YTE/Core/AssetLoader.hpp"
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MainWindow/ToolbarButton.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
-#include "YTEditor/Gizmos/GizmoButton.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 
 namespace YTEditor
 {
 
-  GizmoToolbar::GizmoToolbar(MainWindow * aMainWindow) : QToolBar(aMainWindow), mMainWindow(aMainWindow)
+  GizmoToolbar::GizmoToolbar(MainWindow * aMainWindow) : Toolbar(aMainWindow)
   {
-
     std::experimental::filesystem::path workingDir{ YTE::Path::GetEnginePath().String() };
     std::experimental::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/")};
 
     QString iconPath = (assetsDir.generic_string() + "select.png").c_str();
-    mSelect = new GizmoButton(this, iconPath, &GizmoToolbar::SelectToggled);
+    mSelect = new ToolbarButton(this, iconPath);
+    mSelect->connect(mSelect, &QPushButton::toggled, this, &GizmoToolbar::SelectToggled);
 
     iconPath = (assetsDir.generic_string() + "translate.png").c_str();
-    mTranslate = new GizmoButton(this, iconPath, &GizmoToolbar::TranslateToggled);
+    mTranslate = new ToolbarButton(this, iconPath);
+    mTranslate->connect(mTranslate, &QPushButton::toggled, this, &GizmoToolbar::TranslateToggled);
 
     iconPath = (assetsDir.generic_string() + "rotate.png").c_str();
-    mRotate = new GizmoButton(this, iconPath, &GizmoToolbar::RotateToggled);
+    mRotate = new ToolbarButton(this, iconPath);
+    mRotate->connect(mRotate, &QPushButton::toggled, this, &GizmoToolbar::RotateToggled);
 
     iconPath = (assetsDir.generic_string() + "scale.png").c_str();
-    mScale = new GizmoButton(this, iconPath, &GizmoToolbar::ScaleToggled);
-    
-    this->addWidget(mSelect);
-    this->addWidget(mTranslate);
-    this->addWidget(mRotate);
-    this->addWidget(mScale);
+    mScale = new ToolbarButton(this, iconPath);
+    mScale->connect(mScale, &QPushButton::toggled, this, &GizmoToolbar::ScaleToggled);
 
-    mButtons.push_back(mSelect);
-    mButtons.push_back(mTranslate);
-    mButtons.push_back(mRotate);
-    mButtons.push_back(mScale);
-  }
-
-  std::vector<GizmoButton*>& GizmoToolbar::GetButtons()
-  {
-    return mButtons;
+    AddButton(mSelect);
+    AddButton(mTranslate);
+    AddButton(mRotate);
+    AddButton(mScale);
   }
 
   void GizmoToolbar::SelectToggled(bool checked)

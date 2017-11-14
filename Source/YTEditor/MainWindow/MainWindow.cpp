@@ -54,6 +54,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/GameWindow/GameToolbar.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/FileViewer/FileViewer.hpp"
@@ -407,59 +408,11 @@ namespace YTEditor
 
   void MainWindow::ConstructToolbar()
   {
-    /*
-    QToolBar * toolbar = new QToolBar(this);
-
-    QPushButton * select = new QPushButton(toolbar);
-    select->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/select.png"));
-    select->setIconSize(QSize(20, 20));
-    select->setCheckable(true);
-    toolbar->addWidget(select);
-
-    QPushButton * translate = new QPushButton(toolbar);
-    translate->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/translate.png"));
-    translate->setIconSize(QSize(20, 20));
-    translate->setCheckable(true);
-    toolbar->addWidget(translate);
-
-    QPushButton * rotate = new QPushButton(toolbar);
-    rotate->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/rotate.png"));
-    rotate->setIconSize(QSize(20, 20));
-    rotate->setCheckable(true);
-    toolbar->addWidget(rotate);
-
-    QPushButton * scale = new QPushButton(toolbar);
-    scale->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/scale.png"));
-    scale->setIconSize(QSize(20, 20));
-    scale->setCheckable(true);
-    toolbar->addWidget(scale);
-    this->addToolBar(toolbar);
-    */
-
     GizmoToolbar *gizTool = new GizmoToolbar(this);
-    this->addToolBar(gizTool);
+    addToolBar(gizTool);
 
-
-    QToolBar *toolbar = new QToolBar(this);
-
-    QPushButton * play = new QPushButton(toolbar);
-    play->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/play.png"));
-    play->setIconSize(QSize(20, 20));
-    play->setCheckable(true);
-    toolbar->addWidget(play);
-
-    QPushButton * pause = new QPushButton(toolbar);
-    pause->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/pause.png"));
-    pause->setIconSize(QSize(20, 20));
-    pause->setCheckable(true);
-    toolbar->addWidget(pause);
-
-    QPushButton * stop = new QPushButton(toolbar);
-    stop->setIcon(QIcon(QDir::currentPath() + "/../CreativeCommons_Icons/stop.png"));
-    stop->setIconSize(QSize(20, 20));
-    stop->setCheckable(true);
-    toolbar->addWidget(stop);
-    this->addToolBar(toolbar);
+    GameToolbar *gameTool = new GameToolbar(this);
+    addToolBar(gameTool);
   }
 
   void MainWindow::ConstructObjectBrowser()
