@@ -185,10 +185,10 @@ namespace YTEditor
         browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
 
         // get the transform of the currently selected object
-        YTE::Transform *transform = mCurrentObj->GetComponent<YTE::Transform>();
+        YTE::Transform *clickedTransform = mCurrentObj->GetComponent<YTE::Transform>();
 
         // set the gizmo to the same position as the current object
-        glm::vec3 pos = transform->GetWorldTranslation();
+        glm::vec3 pos = clickedTransform->GetWorldTranslation();
         YTE::Transform *gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
         gizmoTransform->SetWorldTranslation(pos);
       }
@@ -319,6 +319,8 @@ namespace YTEditor
 
     if (it != mObjects.end())
     {
+      aComposition->YTEDeregister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
+
       mDynamicsWorld->removeCollisionObject(it->second->mGhostBody.get());
 
       mObjects.erase(it);
