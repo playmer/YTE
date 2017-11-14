@@ -19,6 +19,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -91,7 +92,7 @@ namespace YTE
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
     InitializeType<Animator>();
-    InitializeType<Animator::Animation>();
+    InitializeType<Animation>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();

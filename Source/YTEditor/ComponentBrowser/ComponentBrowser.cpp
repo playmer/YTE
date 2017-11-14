@@ -45,10 +45,6 @@ namespace YTEditor
     ConstructSubWidgets();
   }
 
-  ComponentBrowser::~ComponentBrowser()
-  {
-  }
-
   ComponentTree * ComponentBrowser::GetComponentTree()
   {
     return mComponentTree;

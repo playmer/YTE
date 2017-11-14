@@ -10,10 +10,14 @@
 
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Animation.hpp"
 
 #include "YTE/Utilities/Utilities.h"
+#include <AK/MusicEngine/Common/AkMusicEngine.h>
+
 
 namespace YTE
 {
@@ -88,6 +92,7 @@ namespace YTE
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
   {
+    mEngine = aSpace->GetEngine();
     mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = aSpace->GetComponent<GraphicsView>()->GetWindow();
 
@@ -126,7 +131,21 @@ namespace YTE
   }
 
 
-  
+
+  bool Model::CanAnimate()
+  {
+    if (mInstantiatedModel)
+    {
+      return mInstantiatedModel->GetMesh()->CanAnimate();
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+
+
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -143,19 +162,34 @@ namespace YTE
 
   void Model::SetMesh(std::string aName)
   {
-    if (aName == mMeshName || aName == "None")
+    if (aName.empty() || aName == mMeshName)
     {
       return;
     }
 
-    mMeshName = aName;
+    std::experimental::filesystem::path path(aName);
+    std::string exten = path.extension().generic_string();
 
-    if (mConstructing)
+    if (aName == "None")
+    {
+      mMeshName = aName;
+      Destroy();
+    }
+    else if (exten != ".fbx")
     {
       return;
     }
-    Destroy();
-    Create();
+    else
+    {
+      mMeshName = aName;
+
+      if (mConstructing)
+      {
+        return;
+      }
+      Destroy();
+      Create();
+    }
 
     ModelChanged modChange;
     modChange.Object = mOwner;
@@ -200,15 +234,18 @@ namespace YTE
     {
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
-  }
 
+    if (mInstantiatedModel->GetMesh()->CanAnimate())
+    {
+      mInstantiatedModel->SetDefaultAnimationOffset();
+    }
+  }
 
 
   void Model::Destroy()
   {
     mInstantiatedModel.reset();
   }
-
 
 
   void Model::CreateTransform()
@@ -223,66 +260,6 @@ namespace YTE
     mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetWorldRotation());
 
     mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetWorldScale());
-  }
-
-
-  YTEDefineType(Animator::Animation)
-  {
-    YTERegisterType(Animator::Animation);
-
-    YTEBindProperty(&Animator::Animation::GetSpeed, &Animator::Animation::SetSpeed, "Speed");
-  }
-
-  YTEDefineType(Animator)
-  {
-    YTERegisterType(Animator);
-
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Animator::Lister, "Animations");
-  }
-
-  Animator::Animation::Animation(std::string aName) : mName(aName), mSpeed(0.0f)
-  {
-  }
-
-  float Animator::Animation::GetSpeed()
-  {
-    return mSpeed;
-  }
-
-
-  void Animator::Animation::SetSpeed(float aSpeed)
-  {
-    mSpeed = aSpeed;
-  }
-
-
-  Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
-  {
-    DeserializeByType<Animator*>(aProperties, this, Animator::GetStaticType());
-  }
-
-  std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)
-  {
-    auto self = static_cast<Animator*>(aSelf);
-
-    std::vector<std::pair<YTE::Object*, std::string>> animations;
-
-    for (auto &animation : self->mAnimations)
-    {
-      animations.emplace_back(std::make_pair(animation.first, animation.second));
-    }
-
-    return animations;
-  }
-
-  Animator::Animation* Animator::AddAnimation(std::string aName)
-  {
-    Animation *anim = new Animation(aName);
-
-    mAnimations.emplace_back(std::make_pair(anim, aName));
-
-    return anim;
   }
 
 }

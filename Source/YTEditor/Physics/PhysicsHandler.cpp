@@ -270,9 +270,9 @@ namespace YTEditor
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
 
-          obj->mTriangles.addTriangle(YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i1).mPosition),
-            YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i2).mPosition),
-            YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i3).mPosition));
+          obj->mTriangles.addTriangle(YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i1)),
+            YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i2)),
+            YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i3)));
         }
       }
       

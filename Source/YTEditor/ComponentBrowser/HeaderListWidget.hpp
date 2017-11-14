@@ -50,6 +50,10 @@ namespace YTEditor
 
     MainWindow* GetMainWindow();
 
+    YTE::Component* GetEngineComponent();
+
+    YTE::Object* GetEngineObject();
+
     void RemoveSelf();
 
   private:
@@ -70,9 +74,9 @@ namespace YTEditor
     void LoadProperties(YTE::Object *aObject);
 
     template <typename tType>
-    HeaderListProperty<tType>* AddProperty(const std::string aName, YTE::Property *aProp)
+    HeaderListProperty<tType>* AddProperty(const std::string aName, YTE::Property *aProp, YTE::Object *aObject)
     {
-      HeaderListProperty<tType> *prop = new HeaderListProperty<tType>(aName, mMainWindow, this, aProp, mEngineComponent);
+      HeaderListProperty<tType> *prop = new HeaderListProperty<tType>(aName, mMainWindow, this, aProp, aObject);
       mProperties->addWidget(prop);
       return prop;
     }

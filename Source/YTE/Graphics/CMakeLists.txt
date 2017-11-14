@@ -1,5 +1,7 @@
 Set(Previous_YTE_Source ${YTE_Source})
 
+AddFile(YTE_Source Previous_YTE_Source Animation.cpp)
+AddFile(YTE_Source Previous_YTE_Source Animation.hpp)
 AddFile(YTE_Source Previous_YTE_Source Camera.cpp)
 AddFile(YTE_Source Previous_YTE_Source Camera.hpp)
 AddFile(YTE_Source Previous_YTE_Source ForwardDeclarations.hpp)

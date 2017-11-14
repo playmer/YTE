@@ -14,6 +14,7 @@
 #include "YTEditor/ComponentBrowser/HeaderListProperty.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "HeaderListWidget.hpp"
 
 namespace YTEditor
 {
@@ -67,8 +68,19 @@ namespace YTEditor
     return mMainWindow;
   }
 
+  YTE::Component * HeaderListWidget::GetEngineComponent()
+  {
+    return mEngineComponent;
+  }
+
+  YTE::Object * HeaderListWidget::GetEngineObject()
+  {
+    return mObject;
+  }
+
   void HeaderListWidget::RemoveSelf()
   {
+    delete mObject;
     mParentItem->treeWidget()->removeItemWidget(mParentItem, 0);
   }
 
@@ -85,21 +97,21 @@ namespace YTEditor
 
       if (value.IsType<int>())
       {
-        HeaderListProperty<int> *headProp = AddProperty<int>(prop.first, prop.second.get());
+        HeaderListProperty<int> *headProp = AddProperty<int>(prop.first, prop.second.get(), aObject);
         int propData = value.As<int>();
         headProp->SetValue(propData);
         headProp->SetEvents();
       }
       else if (value.IsType<float>())
       {
-        HeaderListProperty<float> *headProp = AddProperty<float>(prop.first, prop.second.get());
+        HeaderListProperty<float> *headProp = AddProperty<float>(prop.first, prop.second.get(), aObject);
         float propData = value.As<float>();
         headProp->SetValue(propData);
         headProp->SetEvents();
       }
       else if (value.IsType<YTE::String>())
       {
-        HeaderListProperty<YTE::String> *headProp = AddProperty<YTE::String>(prop.first, prop.second.get());
+        HeaderListProperty<YTE::String> *headProp = AddProperty<YTE::String>(prop.first, prop.second.get(), aObject);
         YTE::String propData = value.As<YTE::String>();
         headProp->SetValue(propData);
         headProp->SetEvents();
@@ -112,7 +124,7 @@ namespace YTEditor
         if (dropDownAttrib)
         {
           // get the property
-          HeaderListProperty<QStringList> * headProp = AddProperty<QStringList>(prop.first, prop.second.get());
+          HeaderListProperty<QStringList> * headProp = AddProperty<QStringList>(prop.first, prop.second.get(), aObject);
 
           // grab the list of strings from the attribute
           std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(mEngineComponent);
@@ -146,7 +158,7 @@ namespace YTEditor
         else
         {
           // otherwise it's just an editable text field
-          HeaderListProperty<std::string> * headProp = AddProperty<std::string>(prop.first, prop.second.get());
+          HeaderListProperty<std::string> * headProp = AddProperty<std::string>(prop.first, prop.second.get(), aObject);
           std::string propData = value.As<std::string>();
           headProp->SetValue(propData);
           headProp->SetEvents();
@@ -154,28 +166,28 @@ namespace YTEditor
       }
       else if (value.IsType<bool>())
       {
-        HeaderListProperty<bool> *headProp = AddProperty<bool>(prop.first, prop.second.get());
+        HeaderListProperty<bool> *headProp = AddProperty<bool>(prop.first, prop.second.get(), aObject);
         bool propData = value.As<bool>();
         headProp->SetValue(propData);
         headProp->SetEvents();
       }
       else if (value.IsType<glm::vec2>())
       {
-        HeaderListProperty<glm::vec2> *headProp = AddProperty<glm::vec2>(prop.first, prop.second.get());
+        HeaderListProperty<glm::vec2> *headProp = AddProperty<glm::vec2>(prop.first, prop.second.get(), aObject);
         glm::vec2 propData = value.As<glm::vec2>();
         headProp->SetValue(propData);
         headProp->SetEvents();
       }
       else if (value.IsType<glm::vec3>())
       {
-        HeaderListProperty<glm::vec3> *headProp = AddProperty<glm::vec3>(prop.first, prop.second.get());
+        HeaderListProperty<glm::vec3> *headProp = AddProperty<glm::vec3>(prop.first, prop.second.get(), aObject);
         glm::vec3 propData = value.As<glm::vec3>();
         headProp->SetValue(propData);
         headProp->SetEvents();
       }
       else if (value.IsType<glm::vec4>())
       {
-        HeaderListProperty<glm::vec4> *headProp = AddProperty<glm::vec4>(prop.first, prop.second.get());
+        HeaderListProperty<glm::vec4> *headProp = AddProperty<glm::vec4>(prop.first, prop.second.get(), aObject);
         glm::vec4 propData = value.As<glm::vec4>();
         headProp->SetValue(propData);
         headProp->SetEvents();

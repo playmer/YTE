@@ -30,6 +30,8 @@ namespace YTEditor
 
   private:
 
+    void ImportAnimation();
+
     void ImportModel();
 
     MainWindow * mMainWindow;

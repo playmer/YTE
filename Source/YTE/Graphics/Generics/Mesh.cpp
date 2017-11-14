@@ -19,9 +19,165 @@ namespace YTE
     YTERegisterType(Mesh);
   }
   
-  
 
-  Submesh::Submesh(Window *aWindow, const aiScene *aScene, const aiMesh *aMesh)
+
+  void Skeleton::Initialize(const aiScene* aScene)
+  {
+    // find number of vertices to initialize the skeleton
+    uint32_t numMeshes = aScene->mNumMeshes;
+    uint32_t vertCount = 0;
+    for (uint32_t i = 0; i < numMeshes; ++i)
+    {
+      vertCount += aScene->mMeshes[i]->mNumVertices;
+    }
+
+    mVertexSkeletonData.resize(vertCount);
+#ifdef _DEBUG
+    mVertexErrorAdds.resize(vertCount);
+#endif
+
+    mNumBones = 0;
+
+    mGlobalInverseTransform = aScene->mRootNode->mTransformation;
+    mGlobalInverseTransform.Inverse();
+
+    bool bonesFound = false;
+    uint32_t startingVertex = 0;
+    for (uint32_t i = 0; i < numMeshes; ++i)
+    {
+      aiMesh *m = aScene->mMeshes[i];
+      if (m->mNumBones > 0)
+      {
+        LoadBoneData(m, startingVertex);
+        bonesFound = true;
+      }
+      startingVertex += m->mNumVertices;
+    }
+
+    if (bonesFound)
+    {
+      PreTransform(aScene);
+    }
+  }
+
+
+
+  void Skeleton::LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex)
+  {
+    DebugObjection(aMesh->mNumBones >= BoneConstants::MaxBones,
+                   "Animated models cannot have more than %d bones, %s mesh has %d bones.",
+                   BoneConstants::MaxBones, aMesh->mName.C_Str(), aMesh->mNumBones);
+
+    for (uint32_t i = 0; i < aMesh->mNumBones; ++i)
+    {
+      uint32_t index = 0;
+
+      auto bone = aMesh->mBones[i];
+      std::string boneName(bone->mName.data);
+
+      // try to find bone by name
+      auto boneIt = mBones.find(boneName);
+      if (boneIt == mBones.end())
+      {
+        // insert new bone
+        index = mNumBones;
+        ++mNumBones;
+        mBones[boneName] = index;
+        mBoneData.emplace_back(bone->mOffsetMatrix);
+      }
+      else
+      {
+        // use existing bone
+        index = boneIt->second;
+      }
+
+      // get the weights and vertex IDs from the bone data
+      for (uint32_t b = 0; b < bone->mNumWeights; ++b)
+      {
+        auto weight = bone->mWeights[b];
+        uint32_t id = aVertexStartingIndex + weight.mVertexId;
+#ifdef _DEBUG
+        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
+        {
+          mVertexErrorAdds[id] += 1;
+        }
+#else
+        mVertexSkeletonData[id].AddBone(index, weight.mWeight);
+#endif
+      }
+    }
+
+    // loop errors
+#if defined(_DEBUG) && defined(BSTDULAF)
+    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
+    {
+      if (mVertexErrorAdds[i] != 0)
+      {
+        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
+        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
+                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
+                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
+                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
+                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
+                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
+                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
+                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
+                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
+                  << mVertexSkeletonData[i].mIDs[3] << "\t"
+                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
+
+      }
+    }
+#endif
+  }
+
+
+
+  void Skeleton::PreTransform(const aiScene* aScene)
+  {
+    // setup parent transforms
+    aiMatrix4x4 identity = aiMatrix4x4();
+
+    // recurrsive step
+    VisitNodes(aScene->mRootNode, identity);
+
+    mDefaultOffsets.mHasAnimation = 1.0f;
+    for (uint32_t i = 0; i < mNumBones; ++i)
+    {
+      mDefaultOffsets.mBones[i] = AssimpToGLM(mBoneData[i].mFinalTransformation);
+    }
+  }
+
+
+
+  void Skeleton::VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform)
+  {
+    std::string nodeName(aNode->mName.data);
+    aiMatrix4x4 globalTrans = aParentTransform * aNode->mTransformation;
+
+    auto index = mBones.find(nodeName);
+
+    if (index != mBones.end())
+    {
+      mBoneData[index->second].mFinalTransformation = mGlobalInverseTransform *
+                                                      globalTrans *
+                                                      mBoneData[index->second].mOffset;
+    }
+
+    for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
+    {
+      VisitNodes(aNode->mChildren[i], globalTrans);
+    }
+  }
+
+
+
+  Submesh::Submesh(Window *aWindow,
+                   const aiScene *aScene,
+                   const aiMesh *aColliderMesh,
+                   const aiMesh *aMesh,
+                   Skeleton* aSkeleton,
+                   uint32_t aBoneStartingVertexOffset)
   {
     YTEUnusedArgument(aWindow);
 
@@ -93,9 +249,12 @@ namespace YTE
       mNormalMap = normals.C_Str();
     }
 
+    
+    // get the vertex data with bones (if provided)
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
     {
       const aiVector3D *pPos = aMesh->mVertices + j;
+      const aiVector3D *pColPos = aColliderMesh->mVertices + j;
       const aiVector3D *pNormal = aMesh->mNormals + j;
       const aiVector3D *pTexCoord = &Zero3D;
       const aiVector3D *pTangent = &Zero3D;
@@ -113,6 +272,7 @@ namespace YTE
       }
 
       auto position = AssimpToGLM(pPos);
+      auto colPosition = AssimpToGLM(pColPos);
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
       auto textureCoordinates = glm::vec3{ pTexCoord->x,
@@ -125,21 +285,58 @@ namespace YTE
       auto binormal = glm::cross(tangent, normal);
       auto bitangent = AssimpToGLM(pBiTangent);
 
+      glm::vec3 boneWeights;
+      glm::vec2 boneWeights2;
+      glm::ivec3 boneIDs;
+      glm::ivec2 boneIDs2;
+
+      if (aSkeleton->HasBones())
+      {
+        auto vertexData = aSkeleton->GetVertexBoneData()[aBoneStartingVertexOffset + j];
+
+        // has bones, now we find the weights for this vertex
+        for (uint32_t i = 0; i < BoneConstants::MaxBonesPerVertex1; ++i)
+        {
+          boneWeights[i] = vertexData.mWeights[i];
+          boneIDs[i] = vertexData.mIDs[i];
+        }
+
+        for (uint32_t i = 0; i < BoneConstants::MaxBonesPerVertex2; ++i)
+        {
+          boneWeights2[i] = vertexData.mWeights[BoneConstants::MaxBonesPerVertex1 + i];
+          boneIDs2[i] = vertexData.mIDs[BoneConstants::MaxBonesPerVertex1 + i];
+        }
+      }
+      else
+      {
+        // no bones, so default weights
+        boneWeights = glm::vec3(0.0f, 0.0f, 0.0f);
+        boneWeights2 = glm::vec2(0.0f, 0.0f);
+        boneIDs = glm::ivec3(0, 0, 0);
+        boneIDs2 = glm::ivec2(0, 0);
+      }
+      
       mVertexBuffer.emplace_back(position,
         textureCoordinates,
         normal,
         color,
         tangent,
         binormal,
-        bitangent);
+        bitangent,
+        boneWeights,
+        boneWeights2,
+        boneIDs,
+        boneIDs2);
 
-      mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
-      mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
-      mDimension.mMax.z = fmax(pPos->z, mDimension.mMax.z);
+      mColliderVertexBuffer.emplace_back(colPosition);
 
-      mDimension.mMin.x = fmin(pPos->x, mDimension.mMin.x);
-      mDimension.mMin.y = fmin(pPos->y, mDimension.mMin.y);
-      mDimension.mMin.z = fmin(pPos->z, mDimension.mMin.z);
+      mDimension.mMax.x = fmax(pColPos->x, mDimension.mMax.x);
+      mDimension.mMax.y = fmax(pColPos->y, mDimension.mMax.y);
+      mDimension.mMax.z = fmax(pColPos->z, mDimension.mMax.z);
+                               
+      mDimension.mMin.x = fmin(pColPos->x, mDimension.mMin.x);
+      mDimension.mMin.y = fmin(pColPos->y, mDimension.mMin.y);
+      mDimension.mMin.z = fmin(pColPos->z, mDimension.mMin.z);
     }
 
     mDimension.mSize = mDimension.mMax - mDimension.mMin;
@@ -166,6 +363,7 @@ namespace YTE
   Mesh::Mesh(Window *aWindow, std::string &aFile, CreateInfo *aCreateInfo)
   {
     Assimp::Importer Importer;
+    Assimp::Importer ImporterCol;
 
     std::string meshFile;
 
@@ -196,6 +394,12 @@ namespace YTE
 
     auto pScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |
+      //aiProcess_PreTransformVertices |
+      aiProcess_CalcTangentSpace |
+      aiProcess_GenSmoothNormals);
+
+    auto pColliderScene = ImporterCol.ReadFile(meshFile.c_str(),
+      aiProcess_Triangulate |
       aiProcess_PreTransformVertices |
       aiProcess_CalcTangentSpace |
       aiProcess_GenSmoothNormals);
@@ -218,10 +422,17 @@ namespace YTE
 
       printf("Mesh FileName: %s\n", aFile.c_str());
 
+      uint32_t numMeshes = pScene->mNumMeshes;
+
+      // Load bone data
+      mSkeleton.Initialize(pScene);
+
       // Load meshes
-      for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
+      uint32_t startingVertex = 0;
+      for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(aWindow, pScene, pScene->mMeshes[i]);
+        mParts.emplace_back(aWindow, pScene, pColliderScene->mMeshes[i], pScene->mMeshes[i], &mSkeleton, startingVertex);
+        startingVertex += pScene->mMeshes[i]->mNumVertices;
       }
 
       mName = aFile;
@@ -243,5 +454,12 @@ namespace YTE
   Mesh::~Mesh()
   {
 
+  }
+
+
+
+  bool Mesh::CanAnimate()
+  {
+    return mSkeleton.HasBones();
   }
 }

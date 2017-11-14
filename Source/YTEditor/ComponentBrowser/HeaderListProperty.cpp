@@ -8,7 +8,7 @@ namespace YTEditor
   {
     QStringList value = this->GetPropertyValues();
     YTE::Function *setter = mEngineProp->GetSetter();
-    setter->Invoke(mComponent, value[0].toStdString());
+    setter->Invoke(mObject, value[0].toStdString());
   }
 
 
@@ -23,7 +23,7 @@ namespace YTEditor
   void HeaderListProperty<QStringList>::ReloadValueFromEngine()
   {
     YTE::Function *getter = mEngineProp->GetGetter();
-    YTE::Any currentString = getter->Invoke(mComponent);
+    YTE::Any currentString = getter->Invoke(mObject);
 
     //TODO: need to set the current string but how???
   }

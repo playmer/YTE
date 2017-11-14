@@ -112,6 +112,7 @@ namespace YTE
     {
       CompositionRemoved event;
       event.mComposition = this;
+      mBeingDeleted = true;
 
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }

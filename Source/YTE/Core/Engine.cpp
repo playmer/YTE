@@ -34,6 +34,7 @@ namespace YTE
   YTEDefineEvent(BoundTypeChanged);
   YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(PresentFrame);
+  YTEDefineEvent(AnimationUpdate);
 
   YTEDefineType(LogicUpdate)
   {
@@ -242,6 +243,7 @@ namespace YTE
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
 

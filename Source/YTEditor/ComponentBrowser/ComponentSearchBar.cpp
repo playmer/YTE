@@ -17,6 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/UBOs.hpp"
@@ -108,14 +109,14 @@ namespace YTEditor
     MainWindow *mainWin = browser.GetMainWindow();
 
     ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
-    YTE::Composition* currObj = objBrowser.GetCurrentObject();
+    YTE::Composition *currObj = objBrowser.GetCurrentObject();
 
     if (nullptr == currObj)
     {
       return;
     }
 
-    YTE::BoundType* type = FindBoundType(stdName);
+    YTE::BoundType *type = FindBoundType(stdName);
 
     auto error = currObj->CheckDependencies(type);
 
@@ -125,15 +126,7 @@ namespace YTEditor
       return;
     }
 
-    YTE::Component *addedComp = currObj->AddComponent(type);
-
-    if (type->IsA<YTE::Animator>())
-    {
-      YTE::Animator *animComp = static_cast<YTE::Animator*>(addedComp);
-      animComp->AddAnimation("Walk");
-      animComp->AddAnimation("Run");
-      animComp->AddAnimation("Jump");
-    }
+    currObj->AddComponent(type);
 
     ComponentTree *compTree = browser.GetComponentTree();
     compTree->ClearComponents();

@@ -11,6 +11,24 @@
 
 namespace YTE
 {
+  namespace BoneConstants
+  {
+    // NOTE: If a change in this value is made,
+    //       a change in the vertex structure must be made as well
+    const int MaxBonesPerVertex{ 5 };
+
+    // NOTE: These are for looping over the individual bone data elements
+    //       (BoneWeights and BoneWeights2)
+    const int MaxBonesPerVertex1{ 3 };
+    const int MaxBonesPerVertex2{ 2 };
+
+
+    // NOTE: If a change in this value is made,
+    //       a change in the shaders must be made as well
+    const int MaxBones{ 64 };
+  }
+
+
   struct Vertex
   {
     glm::vec3 mPosition;
@@ -20,6 +38,10 @@ namespace YTE
     glm::vec3 mTangent;
     glm::vec3 mBinormal;
     glm::vec3 mBitangent;
+    glm::vec3 mBoneWeights;
+    glm::vec2 mBoneWeights2;
+    glm::ivec3 mBoneIDs;
+    glm::ivec2 mBoneIDs2;
 
     Vertex(glm::vec3 &aPosition,
            glm::vec3 &aTextureCoordinates,
@@ -27,7 +49,11 @@ namespace YTE
            glm::vec3 &aColor,
            glm::vec3 &aTangent,
            glm::vec3 &aBinormal,
-           glm::vec3 &aBitangent)
+           glm::vec3 &aBitangent,
+           glm::vec3 &aBoneWeights,
+           glm::vec2 &aBoneWeights2,
+           glm::ivec3 &aBoneIDs,
+           glm::ivec2 &aBoneIDs2)
       : mPosition(aPosition)
       , mTextureCoordinates(aTextureCoordinates)
       , mNormal(aNormal)
@@ -35,6 +61,10 @@ namespace YTE
       , mTangent(aTangent)
       , mBinormal(aBinormal)
       , mBitangent(aBitangent)
+      , mBoneWeights(aBoneWeights)
+      , mBoneWeights2(aBoneWeights2)
+      , mBoneIDs(aBoneIDs)
+      , mBoneIDs2(aBoneIDs2)
     {
 
     }

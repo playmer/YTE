@@ -96,6 +96,15 @@ namespace YTE
     return path.string();
   }
 
+  std::string Path::GetAnimationPath(const Path& aPath, const std::string &aName)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("Animations");
+    path.append(aName);
+
+    return path.string();
+  }
+
   std::string Path::GetTexturePath(const Path& aPath, const std::string &aName)
   {
     fs::path path{ aPath.mPath };

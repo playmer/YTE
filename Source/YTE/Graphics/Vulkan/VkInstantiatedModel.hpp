@@ -27,6 +27,8 @@ namespace YTE
     void Create();
 
     void UpdateUBOModel(UBOModel &aUBO) override;
+    void UpdateUBOAnimation(UBOAnimation *aUBO) override;
+    void SetDefaultAnimationOffset() override;
 
     void CreateDescriptorSet(VkSubmesh *aMesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
@@ -40,8 +42,13 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
 
+    std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
     VkMesh *mLoadedMesh;
+    
+  private:
+    bool mLoadUBOModel;
+    bool mLoadUBOAnimation;
   };
 }
 

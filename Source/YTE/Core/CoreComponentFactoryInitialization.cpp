@@ -13,6 +13,7 @@
 #include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"

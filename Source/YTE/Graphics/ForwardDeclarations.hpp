@@ -8,6 +8,8 @@
 
 namespace YTE
 {
+  class Animator;
+  class Animation;
   class Camera;
   class GraphicsSystem;
   class GraphicsView;
