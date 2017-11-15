@@ -10,13 +10,13 @@ Include_Directories(${ParentDirectory}
 Set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
-				   ForwardDeclarations.hpp
+                   ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
                    ComponentBrowser/ComponentBrowser.hpp
                    ComponentBrowser/ComponentBrowser.cpp
                    ComponentBrowser/ComponentProperty.hpp
-				   ComponentBrowser/ComponentProperty.cpp
+                   ComponentBrowser/ComponentProperty.cpp
                    ComponentBrowser/ComponentSearchBar.hpp
                    ComponentBrowser/ComponentSearchBar.cpp
                    ComponentBrowser/ComponentTools.hpp
@@ -41,7 +41,7 @@ Set(YTEditorSource main.cpp
                    Gizmos/Axis.cpp
                    Gizmos/Gizmo.hpp
                    Gizmos/Gizmo.cpp
-				   Gizmos/GizmoToolbar.hpp
+                   Gizmos/GizmoToolbar.hpp
                    Gizmos/GizmoToolbar.cpp
                    Gizmos/Translate.hpp
                    Gizmos/Translate.cpp
@@ -51,13 +51,13 @@ Set(YTEditorSource main.cpp
                    Gizmos/Rotate.cpp
                    MainWindow/MainWindow.hpp
                    MainWindow/MainWindow.cpp
-				   MainWindow/ScriptBind.hpp
+                   MainWindow/ScriptBind.hpp
                    MainWindow/ScriptBind.cpp
                    MainWindow/Toolbar.hpp
                    MainWindow/Toolbar.cpp
                    MainWindow/ToolbarButton.hpp
                    MainWindow/ToolbarButton.cpp
-				   MainWindow/ComponentFactoryInit.hpp
+                   MainWindow/ComponentFactoryInit.hpp
                    MainWindow/ComponentFactoryInit.cpp
                    MaterialViewer/MaterialViewer.hpp
                    MaterialViewer/MaterialViewer.cpp
@@ -95,7 +95,7 @@ Set_Target_Properties(YTEditor
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
-	 
+     
 YTE_Source_Group(YTEditor_Root YTEditorSource) 
                           
 # Find the QtWidgets library

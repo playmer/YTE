@@ -338,6 +338,10 @@ namespace YTE
         std::cout << "Error in Level: " << aLevel << ", " << error <<std::endl;
       }
     }
+    else
+    {
+
+    }
 
     mLevels[aLevel] = std::move(document);
 
