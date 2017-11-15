@@ -32,14 +32,6 @@ namespace YTEditor
     transform.setRotation(YTE::OurQuatToBt(aEvent->WorldRotation));
 
     mGhostBody->setWorldTransform(transform);
-
-    btVector3 min, max;
-
-    mTriangleMeshShape->getAabb(transform, min, max);
-
-    glm::vec3 omin = YTE::BtToOurVec3(min);
-    glm::vec3 omax = YTE::BtToOurVec3(max);
-
   }
 
   void PickerObject::ChangedScale(YTE::TransformChanged *aEvent)

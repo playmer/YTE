@@ -162,24 +162,24 @@ namespace YTEditor
     }
 
 
-    YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
-    
-    if (currObj)
-    {
-      // get the transform of the currently selected object
-      YTE::Transform *transform = currObj->GetComponent<YTE::Transform>();
-
-      if (transform)
-      {
-        // set the gizmo to the same position as the current object
-        glm::vec3 pos = transform->GetWorldTranslation();
-        YTE::Transform *gizmoTransform = mGizmo->mGizmoObj->GetComponent<YTE::Transform>();
-        gizmoTransform->SetWorldTranslation(pos);
-      }
-    }
+    //YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
+    //
+    //if (currObj)
+    //{
+    //  // get the transform of the currently selected object
+    //  YTE::Transform *transform = currObj->GetComponent<YTE::Transform>();
+    //
+    //  if (transform)
+    //  {
+    //    // set the gizmo to the same position as the current object
+    //    glm::vec3 pos = transform->GetWorldTranslation();
+    //    YTE::Transform *gizmoTransform = mGizmo->mGizmoObj->GetComponent<YTE::Transform>();
+    //    gizmoTransform->SetWorldTranslation(pos);
+    //  }
+    //}
   }
 
-  SubWindow & MainWindow::GetGameWindow()
+  SubWindow& MainWindow::GetGameWindow()
   {
     return *mGameWindow;
   }
@@ -189,57 +189,57 @@ namespace YTEditor
     return mSubWindows;
   }
 
-  ObjectBrowser & MainWindow::GetObjectBrowser()
+  ObjectBrowser& MainWindow::GetObjectBrowser()
   {
     return *static_cast<ObjectBrowser*>(mObjectBrowser->widget());
   }
 
-  QDockWidget * MainWindow::GetObjectBrowserDock()
+  QDockWidget* MainWindow::GetObjectBrowserDock()
   {
     return mObjectBrowser;
   }
 
-  ComponentBrowser & MainWindow::GetComponentBrowser()
+  ComponentBrowser& MainWindow::GetComponentBrowser()
   {
     return *static_cast<ComponentBrowser*>(mComponentBrowser->widget());
   }
 
-  QDockWidget * MainWindow::GetComponentBrowserDock()
+  QDockWidget* MainWindow::GetComponentBrowserDock()
   {
     return mComponentBrowser;
   }
 
-  OutputConsole & MainWindow::GetOutputConsole()
+  OutputConsole& MainWindow::GetOutputConsole()
   {
     return *static_cast<OutputConsole*>(mOutputConsole->widget());
   }
 
-  QDockWidget * MainWindow::GetOutputConsoleDock()
+  QDockWidget* MainWindow::GetOutputConsoleDock()
   {
     return mOutputConsole;
   }
 
-  MaterialViewer & MainWindow::GetMaterialViewer()
+  MaterialViewer& MainWindow::GetMaterialViewer()
   {
     return *static_cast<MaterialViewer*>(mMaterialViewer->widget());
   }
 
-  QDockWidget * MainWindow::GetMaterialViewerDock()
+  QDockWidget* MainWindow::GetMaterialViewerDock()
   {
     return mMaterialViewer;
   }
 
-  QTreeView & MainWindow::GetFileViewer()
+  QTreeView& MainWindow::GetFileViewer()
   {
     return *dynamic_cast<QTreeView*>(mFileViewer->widget());
   }
 
-  QDockWidget * MainWindow::GetFileViewerDock()
+  QDockWidget* MainWindow::GetFileViewerDock()
   {
     return mFileViewer;
   }
 
-  UndoRedo * MainWindow::GetUndoRedo()
+  UndoRedo* MainWindow::GetUndoRedo()
   {
     return mUndoRedo;
   }
@@ -304,7 +304,7 @@ namespace YTEditor
     mRunningSpaceName = aName;
   }
 
-  YTE::String & MainWindow::GetRunningSpaceName()
+  YTE::String& MainWindow::GetRunningSpaceName()
   {
     return mRunningSpaceName;
   }
@@ -366,9 +366,14 @@ namespace YTEditor
     }
   }
 
-  FileMenu * MainWindow::GetFileMenu()
+  FileMenu* MainWindow::GetFileMenu()
   {
     return mFileMenu;
+  }
+
+  PhysicsHandler& MainWindow::GetPhysicsHandler()
+  {
+    return *mPhysicsHandler;
   }
 
   void MainWindow::SetWindowSettings()

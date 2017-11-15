@@ -92,6 +92,8 @@ namespace YTEditor
 
     FileMenu* GetFileMenu();
 
+    PhysicsHandler& GetPhysicsHandler();
+
   private:
 
     // YTE GAME ENGINE
@@ -99,9 +101,9 @@ namespace YTEditor
     YTE::String mRunningSpaceName;
     YTE::String mRunningLevelName;
 
-    QApplication * mApplication;
+    QApplication *mApplication;
 
-    UndoRedo * mUndoRedo;
+    UndoRedo *mUndoRedo;
 
     Gizmo *mGizmo;
 
