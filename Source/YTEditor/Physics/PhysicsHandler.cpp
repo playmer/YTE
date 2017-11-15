@@ -241,7 +241,6 @@ namespace YTEditor
     if (nullptr != transform)
     {
       scale = YTE::OurVec3ToBt(transform->GetWorldScale());
-
       origin = YTE::OurVec3ToBt(transform->GetWorldTranslation());
       rotation = YTE::OurQuatToBt(transform->GetWorldRotation());
     }

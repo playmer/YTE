@@ -34,7 +34,7 @@ namespace YTEditor
 
       for (auto a = axes->begin(); a != axes->end(); ++a)
       {
-        std::string mesh = "empty";
+        std::string mesh = "empty.fbx";
 
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
       }
