@@ -1,6 +1,10 @@
 #include "YTE/Lua/LuaComponent.hpp"
-#include "LuaJIT/src/luajit.h"
-#include "LuaJIT/src/lauxlib.h"
+
+#include "YTE/Core/Engine.hpp"
+#include "YTE/Core/Space.hpp"
+
+#include "YTE/Lua/LuaLibraryInclude.hpp"
+#include "YTE/Lua/LuaSystem.hpp"
 
 const std::string INITIALIZE_FUNCTION = "Initialize";
 
@@ -18,13 +22,18 @@ namespace YTE
 
   void LuaComponent::Initialize()
   {
-    int result = luaL_loadfile(mL, "");
+    LuaSystem *lua = mSpace->GetEngine()->GetComponent<LuaSystem>();
+    mL = lua->GetLuaState();
+    int result = lua->LoadLuaScript(mFile);
 
     switch (result)
     {
       case LUA_ERRFILE:
+        break;
       case LUA_ERRSYNTAX:
+        break;
       case LUA_ERRMEM:
+        break;
     }
 
     //Function environment

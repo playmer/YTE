@@ -18,6 +18,7 @@ namespace YTE
       void OnLogicUpdate(LogicUpdate *aLogicUpdate);
 
     private:
+      std::string mFile;
       lua_State *mL;
       int mScriptTable;
       std::string mFileName;

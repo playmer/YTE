@@ -17,6 +17,8 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
 
+#include "YTE/Lua/LuaComponent.hpp"
+
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/CapsuleCollider.hpp"
@@ -79,6 +81,8 @@ namespace YTE
     DeclareComponent(RigidBody);
     DeclareComponent(SphereCollider);
     DeclareComponent(Transform);
+
+    DeclareComponent(LuaComponent);
   }
 
   #undef DeclareComponent
