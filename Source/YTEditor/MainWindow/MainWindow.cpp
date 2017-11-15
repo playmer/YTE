@@ -160,6 +160,23 @@ namespace YTEditor
         prop->ReloadValueFromEngine();
       }
     }
+
+
+    YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
+    
+    if (currObj)
+    {
+      // get the transform of the currently selected object
+      YTE::Transform *transform = currObj->GetComponent<YTE::Transform>();
+
+      if (transform)
+      {
+        // set the gizmo to the same position as the current object
+        glm::vec3 pos = transform->GetWorldTranslation();
+        YTE::Transform *gizmoTransform = mGizmo->mGizmoObj->GetComponent<YTE::Transform>();
+        gizmoTransform->SetWorldTranslation(pos);
+      }
+    }
   }
 
   SubWindow & MainWindow::GetGameWindow()
