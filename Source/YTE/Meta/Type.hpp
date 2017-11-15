@@ -513,50 +513,6 @@ void Name::InitializeType()
   }
 }
 
-/*
-
-#define YTEDeclareExternalType(Name)                          \
-\
-template<>                                               \
-struct ::YTE::TypeIdentification<Name>                          \
-{                                                        \
-static inline ::YTE::Type* ::YTE::TypeId()                           \
-{                                                      \
-static ::YTE::Type type{ #Name,                             \
-static_cast<Name*>(nullptr) };     \
-return &type;                                        \
-}                                                      \
-\
-static inline void InitializeType()                    \
-{                                                      \
-::YTE::Type::AddGlobalType(::YTE::TypeId()->GetName(), ::YTE::TypeId());  \
-}                                                      \
-};                                                       \
-\
-template<>                                               \
-void ::YTE::InitializeType<Name>();                             \
-
-
-#define YTEDefineExternalType(Name) template<> void ::YTE::InitializeType<Name>()
-
-YTEDeclareExternalType(void)
-YTEDeclareExternalType(bool)
-YTEDeclareExternalType(YTE::s8)
-YTEDeclareExternalType(YTE::i8)
-YTEDeclareExternalType(YTE::i16)
-YTEDeclareExternalType(YTE::i32)
-YTEDeclareExternalType(YTE::i64)
-YTEDeclareExternalType(YTE::u8)
-YTEDeclareExternalType(YTE::u16)
-YTEDeclareExternalType(YTE::u32)
-YTEDeclareExternalType(YTE::u64)
-YTEDeclareExternalType(float)
-YTEDeclareExternalType(double)
-YTEDeclareExternalType(std::string)
-YTEDeclareExternalType(YTE::String)
-
-*/
-
 #define YTEDeclareExternalType(Name)                          \
 namespace YTE                                              \
 {                                                          \
