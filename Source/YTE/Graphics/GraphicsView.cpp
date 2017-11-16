@@ -33,6 +33,10 @@ namespace YTE
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
     DeserializeByType<GraphicsView*>(aProperties, this, GraphicsView::GetStaticType());
+
+    auto it = engine->GetWindows().find(mWindowName);
+
+    mWindow = it->second.get();
   }
 
 
@@ -60,6 +64,14 @@ namespace YTE
     }
 
     return mRenderer->GetClearColor(mWindow);
+  }
+
+  void GraphicsView::ChangeWindow(const std::string & aWindowName)
+  {
+    mWindowName = aWindowName;
+    auto it = mSpace->GetEngine()->GetWindows().find(mWindowName);
+
+    mWindow = it->second.get();
   }
 
 
