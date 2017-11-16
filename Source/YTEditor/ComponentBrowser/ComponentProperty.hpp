@@ -158,7 +158,6 @@ namespace YTEditor
     }
 
     auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
-    T value = this->GetPropertyValues();
     auto it_prop = propMap.FindFirst(this->GetName());
     YTE::Function *getter = it_prop->second.get()->GetGetter();
     

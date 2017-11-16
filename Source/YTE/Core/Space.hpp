@@ -30,7 +30,7 @@ namespace YTE
 
     void Initialize() override;
         
-    void CreateBlankLevel();
+    void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level);
     void SaveLevel(String &aLevelName);
   

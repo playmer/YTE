@@ -203,6 +203,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mIsHittingObject = false;
     mIsGizmoActive = false;
     auto it = mObjects.find(mPickedObj);

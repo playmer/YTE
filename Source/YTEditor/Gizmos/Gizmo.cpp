@@ -266,7 +266,7 @@ namespace YTEditor
 
   void Gizmo::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
   {
-    
+    YTEUnusedArgument(aEvent);
   }
 
   MainWindow* Gizmo::GetMainWindow()
