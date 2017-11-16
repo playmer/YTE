@@ -149,10 +149,7 @@ namespace YTE
     RSValue windowName;
     windowName["WindowName"] = "Yours Truly Engine";
     AddComponent(Type::GetGlobalType("GraphicsView"), &windowName);
-    auto& camera = mCompositions.Emplace("Camera", 
-                                         std::make_unique<Composition>(mEngine, 
-                                                                       "Camera", 
-                                                                       this))->second;
+    auto camera = AddCompositionInternal("", "Camera");
     camera->SetOwner(this);
     camera->AddComponent(Type::GetGlobalType("Transform"));
     camera->AddComponent(Type::GetGlobalType("Camera"));
