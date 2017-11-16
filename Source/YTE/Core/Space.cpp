@@ -146,7 +146,9 @@ namespace YTE
 
     mLevelName = aLevelName;
 
-    AddComponent(Type::GetGlobalType("GraphicsView"), nullptr);
+    RSValue windowName;
+    windowName["WindowName"] = "Yours Truly Engine";
+    AddComponent(Type::GetGlobalType("GraphicsView"), &windowName);
     auto& camera = mCompositions.Emplace("Camera", 
                                          std::make_unique<Composition>(mEngine, 
                                                                        "Camera", 
