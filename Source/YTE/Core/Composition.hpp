@@ -51,7 +51,7 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine *aEngine, String &aName, Space *aSpace);
+    Composition(Engine *aEngine, const String &aName, Space *aSpace);
     Composition(Engine *aEngine, Space *aSpace);
 
     ~Composition();
