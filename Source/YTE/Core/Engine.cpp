@@ -278,7 +278,7 @@ namespace YTE
   }
 
   void Engine::Recompile()
-  { 
+  {
   }
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
@@ -340,7 +340,28 @@ namespace YTE
     }
     else
     {
+      path = Path::GetLevelPath(Path::GetEnginePath(), aLevel.c_str());
 
+      fileText.clear();
+      success = ReadFileToString(path, fileText);
+
+      document = std::make_unique<RSDocument>();
+      toReturn = document.get();
+
+      if (success)
+      {
+        auto error = document->Parse(fileText.c_str()).GetParseError();
+
+        if (error)
+        {
+          std::cout << "Error in Level: " << aLevel << ", " << error << std::endl;
+        }
+      }
+      else
+      {
+        std::cout << "Could not find level " << aLevel << std::endl;
+        return nullptr;
+      }
     }
 
     mLevels[aLevel] = std::move(document);
