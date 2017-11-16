@@ -36,7 +36,10 @@ namespace YTE
 
     auto it = engine->GetWindows().find(mWindowName);
 
-    mWindow = it->second.get();
+    if (it != engine->GetWindows().end()) 
+    {
+      mWindow = it->second.get();
+    }
   }
 
 
