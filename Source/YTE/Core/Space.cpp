@@ -17,6 +17,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/AssetLoader.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
@@ -72,9 +73,7 @@ namespace YTE
   {
     if (mStartingLevel.Empty())
     {
-      String empty = "EmptyLevel";
-      Load(mEngine->GetLevel(empty));
-      mLevelName = empty;
+      CreateBlankLevel("NewLevel");
     }
     else
     {
@@ -150,14 +149,13 @@ namespace YTE
 
     mLevelName = aLevelName;
 
-    RSValue windowName;
-    windowName["WindowName"] = "Yours Truly Engine";
-    AddComponent(Type::GetGlobalType("GraphicsView"), &windowName);
+    auto graphicsView = AddComponent<GraphicsView>();
+    graphicsView->ChangeWindow("Yours Truly Engine");
     auto camera = AddCompositionInternal("", "Camera");
     camera->SetOwner(this);
-    camera->AddComponent(Transform::GetStaticType());
-    camera->AddComponent(Camera::GetStaticType());
-    camera->AddComponent(Orientation::GetStaticType());
+    camera->AddComponent<Camera>();
+    camera->AddComponent<Orientation>();
+    camera->AddComponent<Transform>();
 
     Initialize();
 
