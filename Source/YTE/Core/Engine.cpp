@@ -297,6 +297,13 @@ namespace YTE
     auto document = std::make_unique<RSDocument>();
     auto toReturn = document.get();
 
+    if (false == success)
+    {
+      path = Path::GetArchetypePath(Path::GetEnginePath(), aArchetype.c_str());
+      fileText.clear();
+      success = ReadFileToString(path, fileText);
+    }
+
     if (success && document->Parse(fileText.c_str()).HasParseError())
     {
       std::cout << "Error in Archetype: " << aArchetype << std::endl;

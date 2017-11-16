@@ -189,7 +189,11 @@ namespace YTE
 
   std::shared_ptr<Mesh> Model::GetMesh()
   {
-    return mInstantiatedModel->GetMesh();
+    if (mInstantiatedModel)
+    {
+      return mInstantiatedModel->GetMesh();
+    }
+    return nullptr;
   }
 
 

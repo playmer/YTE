@@ -127,12 +127,15 @@ namespace YTEditor
 
     if (model)
     {
-      mainWin->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
-    
-      // get the list of materials from the submeshes
-      auto& submeshes = model->GetMesh()->mParts;
-    
-      mainWin->GetMaterialViewer().SetMaterialsList(&submeshes);
+      if (model->GetMesh())
+      {
+        mainWin->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+
+        // get the list of materials from the submeshes
+        auto& submeshes = model->GetMesh()->mParts;
+
+        mainWin->GetMaterialViewer().SetMaterialsList(&submeshes);
+      }
     }
   }
 
