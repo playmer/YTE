@@ -16,8 +16,12 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 
+#include "YTE/Graphics/Camera.hpp"
+
+#include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 
@@ -151,9 +155,9 @@ namespace YTE
     AddComponent(Type::GetGlobalType("GraphicsView"), &windowName);
     auto camera = AddCompositionInternal("", "Camera");
     camera->SetOwner(this);
-    camera->AddComponent(Type::GetGlobalType("Transform"));
-    camera->AddComponent(Type::GetGlobalType("Camera"));
-    camera->AddComponent(Type::GetGlobalType("Orientation"));
+    camera->AddComponent(Transform::GetStaticType());
+    camera->AddComponent(Camera::GetStaticType());
+    camera->AddComponent(Orientation::GetStaticType());
 
     Initialize();
 
