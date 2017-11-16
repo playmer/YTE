@@ -194,7 +194,6 @@ namespace YTE
       }
     }
 
-
     auto pScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |
       aiProcess_PreTransformVertices |

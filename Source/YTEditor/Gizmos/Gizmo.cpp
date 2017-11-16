@@ -216,11 +216,11 @@ namespace YTEditor
     auto btCamPos = YTE::OurVec3ToBt(camPos);
 
     auto mouseWorld = YTEditor::getRayTo(uboView, 
-                                                btCamPos, 
-                                                aEvent->WorldCoordinates, 
-                                                mWindow->GetWidth(), 
-                                                mWindow->GetHeight(), 
-                                                aPickedDistance);
+                                         btCamPos, 
+                                         aEvent->WorldCoordinates, 
+                                         mWindow->GetWidth(), 
+                                         mWindow->GetHeight(), 
+                                         aPickedDistance);
 
     auto realDelta = YTE::BtToOurVec3(mouseWorld) - mPrevMousePos;
 
@@ -257,13 +257,11 @@ namespace YTEditor
       YTEditor::Rotate *rotate = axis->GetComponent<YTEditor::Rotate>();
 
       rotate->RotateObject(currObj, mFirstClickMousePos, realDelta);
-
       break;
     }
     }
 
     mPrevMousePos = YTE::BtToOurVec3(mouseWorld);
-
   }
 
   void Gizmo::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
