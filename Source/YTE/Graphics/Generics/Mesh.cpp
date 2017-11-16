@@ -8,6 +8,7 @@
 #include "assimp/scene.h"
 
 #include "YTE/Core/AssetLoader.hpp"
+#include "YTE/Utilities/Utilities.h"
 
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
@@ -166,7 +167,33 @@ namespace YTE
   {
     Assimp::Importer Importer;
 
-    auto meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
+    std::string meshFile;
+
+    // check that the mesh file exists in the game assets folder
+    bool success = FileCheck(Path::GetGamePath(), "Models", aFile);
+    
+    if (success)
+    {
+      // if so, get the model path
+      meshFile = Path::GetModelPath(Path::GetGamePath(), aFile);
+    }
+    else
+    {
+      // otherwise, it's not in the game assets, so check the engine assets folder
+      success = FileCheck(Path::GetEnginePath(), "Models", aFile);
+
+      if (success)
+      {
+        // if it's in the engine assets, get the path
+        meshFile = Path::GetModelPath(Path::GetEnginePath(), aFile);
+      }
+      else
+      {
+        // otherwise throw an error
+        throw "Mesh does not exist.";
+      }
+    }
+
 
     auto pScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |

@@ -199,7 +199,14 @@ namespace YTE
     std::string MeshName = RemoveExtension(mMeshName);
     std::string name = mOwner->GetName().c_str();
 
-    if (false == FileCheck(Path::GetGamePath(), "Models", mMeshName))
+    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+
+    if (false == success)
+    {
+      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+    }
+    
+    if (false == success)
     {
       printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
       return;

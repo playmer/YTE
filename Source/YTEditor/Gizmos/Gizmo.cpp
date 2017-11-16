@@ -119,7 +119,6 @@ namespace YTEditor
         YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
         glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
         mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
-
       }
 
       break;
