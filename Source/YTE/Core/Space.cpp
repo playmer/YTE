@@ -139,6 +139,26 @@ namespace YTE
   Space::~Space() {  mCompositions.Clear();  }
 
 
+  void Space::CreateBlankLevel()
+  {
+    mCompositions.Clear();
+    mComponents.Clear();
+
+    AddComponent(Type::GetGlobalType("GraphicsView"), nullptr);
+    auto& camera = mCompositions.Emplace("Camera", 
+                                         std::make_unique<Composition>(mEngine, 
+                                                                       this, 
+                                                                       "Camera"))->second;
+    camera->SetOwner(this);
+    camera->AddComponent(Type::GetGlobalType("Transform"));
+    camera->AddComponent(Type::GetGlobalType("Camera"));
+    camera->AddComponent(Type::GetGlobalType("Orientation"));
+
+    Initialize();
+
+    mLoading = false;
+  }
+
   void Space::LoadLevel(String &level)
   {
     mLoading = true;
