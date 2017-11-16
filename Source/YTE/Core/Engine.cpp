@@ -328,7 +328,14 @@ namespace YTE
     auto document = std::make_unique<RSDocument>();
     auto toReturn = document.get();
 
-    
+    if (false == success)
+    {
+      path = Path::GetLevelPath(Path::GetEnginePath(), aLevel.c_str());
+
+      fileText.clear();
+      success = ReadFileToString(path, fileText);
+    }
+
     if (success)
     {
       auto error = document->Parse(fileText.c_str()).GetParseError();
@@ -336,32 +343,13 @@ namespace YTE
       if (error)
       {
         std::cout << "Error in Level: " << aLevel << ", " << error <<std::endl;
+        return nullptr;
       }
     }
     else
     {
-      path = Path::GetLevelPath(Path::GetEnginePath(), aLevel.c_str());
-
-      fileText.clear();
-      success = ReadFileToString(path, fileText);
-
-      document = std::make_unique<RSDocument>();
-      toReturn = document.get();
-
-      if (success)
-      {
-        auto error = document->Parse(fileText.c_str()).GetParseError();
-
-        if (error)
-        {
-          std::cout << "Error in Level: " << aLevel << ", " << error << std::endl;
-        }
-      }
-      else
-      {
-        std::cout << "Could not find level " << aLevel << std::endl;
-        return nullptr;
-      }
+      std::cout << "Could not find level " << aLevel << std::endl;
+      return nullptr;
     }
 
     mLevels[aLevel] = std::move(document);

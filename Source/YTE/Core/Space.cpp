@@ -86,7 +86,14 @@ namespace YTE
     mCompositions.Clear();
     mComponents.Clear();
       
-    Deserialize(aLevel);
+    if (nullptr != aLevel)
+    {
+      Deserialize(aLevel);
+    }
+    else
+    {
+      printf("We could not deserialize the level provided.\n");
+    }
       
     Initialize();
       
