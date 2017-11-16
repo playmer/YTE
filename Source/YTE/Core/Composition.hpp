@@ -19,6 +19,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <memory>
 
+#include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
@@ -101,10 +102,76 @@ namespace YTE
     std::string CheckDependencies(BoundType *aComponent);
 
     // Gets all Components of the given type that are part of or childed to this composition.
-    template <typename ComponentType> std::vector<ComponentType*> GetComponents();
+    template <typename ComponentType>
+    std::vector<ComponentType*> GetComponents()
+    {
+      static_assert(std::is_base_of<Component, ComponentType>()
+                    && !std::is_same<Component, ComponentType>());
+      // This function traverses all compositions and retrieves
+      // all the components of the templated type.
+      std::vector<ComponentType*> components;
 
-    template <typename ComponentType> ComponentType* GetComponent();
+      for (auto &composition : mCompositions)
+      {
+        auto moreComponents = composition.second->GetComponents<ComponentType>();
+
+        components.insert(components.end(), moreComponents.begin(), moreComponents.end());
+      }
+
+      auto component = GetComponent<ComponentType>();
+
+      if (component != nullptr)
+      {
+        components.emplace_back(component);
+      }
+
+      return components;
+    }
+
+    template <typename ComponentType>
+    ComponentType* GetComponent()
+    {
+      static_assert(std::is_base_of<Component, ComponentType>()
+                    && !std::is_same<Component, ComponentType>());
+      auto iterator = mComponents.Find(ComponentType::GetStaticType());
+
+      if (iterator == mComponents.end())
+      {
+        return nullptr;
+      }
+
+      return static_cast<ComponentType*>(iterator->second.get());
+    }
+
     Component* GetComponent(BoundType *aType);
+
+    template <typename ComponentType> 
+    ComponentType* AddComponent(RSValue *aProperties = nullptr)
+    {
+      static_assert(std::is_base_of<Component, ComponentType>()
+                    && !std::is_same<Component, ComponentType>());
+      ComponentType *toReturn = nullptr;
+
+      auto type = ComponentType::GetStaticType();
+      auto iterator = mComponents.Find(type);
+
+      if (iterator == mComponents.end())
+      {
+        auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(type);
+
+        auto component = addFactory->MakeComponent(this, mSpace, aProperties);
+        toReturn = static_cast<ComponentType*>(component.get());
+
+        mComponents.Emplace(type, std::move(component));
+      }
+      else
+      {
+        toReturn = static_cast<ComponentType*>(iterator->second.get());
+        toReturn->Deserialize(aProperties);
+      }
+
+      return toReturn;
+    }
 
     Component* AddComponent(BoundType *aType);
     Component* AddComponent(BoundType *aType, RSValue *aProperties);
@@ -153,43 +220,6 @@ namespace YTE
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
   };
-
-  template <typename ComponentType>
-  ComponentType* Composition::GetComponent()
-  {
-    auto iterator = mComponents.Find(ComponentType::GetStaticType());
-
-    if (iterator == mComponents.end())
-    {
-      return nullptr;
-    }
-
-    return static_cast<ComponentType*>(iterator->second.get());
-  }
-
-  // This function traverses all compositions and retrieves
-  // all the components of the templated type.
-  template <typename ComponentType>
-  std::vector<ComponentType*> Composition::GetComponents()
-  {
-    std::vector<ComponentType*> components;
-
-    for (auto &composition : mCompositions)
-    {
-      auto moreComponents = composition.second->GetComponents<ComponentType>();
-
-      components.insert(components.end(), moreComponents.begin(), moreComponents.end());
-    }
-
-    auto component = GetComponent<ComponentType>();
-
-    if (component != nullptr)
-    {
-      components.emplace_back(component);
-    }
-
-    return components;
-  }
 }
 
 YTEDeclareExternalType(CompositionMap::range);
