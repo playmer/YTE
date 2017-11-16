@@ -16,22 +16,28 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qobject.h>
 
-class ComponentSearchBar;
 class QCompleter;
 
-class SearchBarEventFilter : public QObject
+namespace YTEditor
 {
-public:
 
-  SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent);
-  
-  virtual ~SearchBarEventFilter() { }
+  class ComponentSearchBar;
 
-  bool eventFilter(QObject *aWatched, QEvent * aEvent);
+  class SearchBarEventFilter : public QObject
+  {
+  public:
 
-private:
+    SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent);
 
-  ComponentSearchBar * mSearchBar;
-  QCompleter * mCompleter;
+    virtual ~SearchBarEventFilter() { }
 
-};
+    bool eventFilter(QObject *aWatched, QEvent * aEvent);
+
+  private:
+
+    ComponentSearchBar * mSearchBar;
+    QCompleter * mCompleter;
+
+  };
+
+}

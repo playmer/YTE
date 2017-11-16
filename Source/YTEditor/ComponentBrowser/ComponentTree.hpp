@@ -15,14 +15,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include <vector>
-#include <QtWidgets/qtreewidget.h>
-#include "../UndoRedo/UndoRedo.hpp"
 
-class ComponentWidget;
+#include <qtreewidget.h>
+
+#include "YTEditor/UndoRedo/UndoRedo.hpp"
+
 class QScrollArea;
 class QVBoxLayout;
 class QGridLayout;
-class ComponentBrowser;
 
 namespace YTE
 {
@@ -31,46 +31,54 @@ namespace YTE
   class Type;
 }
 
-class ComponentTree : public QTreeWidget
+
+namespace YTEditor
 {
-public:
 
-  ComponentTree(ComponentBrowser * parent);
-  ~ComponentTree();
+  class ComponentBrowser;
+  class ComponentWidget;
 
-  void LoadGameObject(YTE::Composition * aObj);
+  class ComponentTree : public QTreeWidget
+  {
+  public:
 
-  ComponentWidget * CreateComponent(YTE::Type * aType, const char * aName, YTE::Component * aEngineComp);
+    ComponentTree(ComponentBrowser * parent);
+    ~ComponentTree();
 
-  void SetItemToCollapsedColor(QTreeWidgetItem * aItem);
+    void LoadGameObject(YTE::Composition * aObj);
 
-  void SetItemToExpandedColor(QTreeWidgetItem * aItem);
+    ComponentWidget * CreateComponent(YTE::Type * aType, const char * aName, YTE::Component * aEngineComp);
 
-  void AddComponent(ComponentWidget *aWidget);
-  void RemoveComponent(QTreeWidgetItem * aWidget);
+    void SetItemToCollapsedColor(QTreeWidgetItem * aItem);
 
-  // for use by undo/redo system only
-  void BaseAddComponent(ComponentWidget * aWidget);
-  void BaseRemoveComponent(QTreeWidgetItem * aWidget);
+    void SetItemToExpandedColor(QTreeWidgetItem * aItem);
 
-  void ClearComponents();
+    void AddComponent(ComponentWidget *aWidget);
+    void RemoveComponent(QTreeWidgetItem * aWidget);
 
-  std::vector<ComponentWidget*> & GetComponentWidgets();
+    // for use by undo/redo system only
+    void BaseAddComponent(ComponentWidget * aWidget);
+    void BaseRemoveComponent(QTreeWidgetItem * aWidget);
 
-  void CreateContextMenu(const QPoint & pos);
+    void ClearComponents();
 
-  void RemoveCurrentComponent();
+    std::vector<ComponentWidget*> & GetComponentWidgets();
 
-  ComponentBrowser* GetBrowser();
+    void CreateContextMenu(const QPoint & pos);
 
-private:
-  ComponentBrowser * mComponentBrowser;
-  UndoRedo *mUndoRedo;
-  OutputConsole *mOutputConsole;
+    void RemoveCurrentComponent();
 
-  void SetWindowSettings();
+    ComponentBrowser* GetBrowser();
 
-  void keyPressEvent(QKeyEvent *aEvent);
+  private:
+    ComponentBrowser * mComponentBrowser;
+    UndoRedo *mUndoRedo;
+    OutputConsole *mOutputConsole;
 
-  std::vector<ComponentWidget*> mComponentWidgets;
-};
+    void SetWindowSettings();
+
+    void keyPressEvent(QKeyEvent *aEvent);
+
+    std::vector<ComponentWidget*> mComponentWidgets;
+  };
+}

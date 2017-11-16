@@ -17,6 +17,15 @@
 
 namespace YTE
 {
+  YTEDefineEvent(ModelChanged);
+
+  YTEDefineType(ModelChanged)
+  {
+    YTERegisterType(ModelChanged);
+    YTEBindField(&ModelChanged::Object, "Object", PropertyBinding::Get);
+  }
+
+
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
     YTEUnusedArgument(aComponent);
@@ -122,6 +131,11 @@ namespace YTE
     {
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 
@@ -175,7 +189,11 @@ namespace YTE
 
   std::shared_ptr<Mesh> Model::GetMesh()
   {
-    return mInstantiatedModel->GetMesh();
+    if (mInstantiatedModel)
+    {
+      return mInstantiatedModel->GetMesh();
+    }
+    return nullptr;
   }
 
 
@@ -185,7 +203,14 @@ namespace YTE
     std::string MeshName = RemoveExtension(mMeshName);
     std::string name = mOwner->GetName().c_str();
 
-    if (false == FileCheck(Path::GetGamePath(), "Models", mMeshName))
+    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+
+    if (false == success)
+    {
+      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+    }
+    
+    if (false == success)
     {
       printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
       return;
@@ -216,10 +241,10 @@ namespace YTE
       return;
     }
 
-    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
+    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetWorldTranslation());
 
-    mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
+    mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetWorldRotation());
 
-    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
+    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetWorldScale());
   }
 }

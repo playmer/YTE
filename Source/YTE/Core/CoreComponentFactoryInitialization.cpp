@@ -37,6 +37,10 @@
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
 
+#include "YTEditor/Gizmos/Translate.hpp"
+#include "YTEditor/Gizmos/Scale.hpp"
+#include "YTEditor/Gizmos/Rotate.hpp"
+
 namespace YTE
 {
   #define DeclareComponent(component)                                                          \

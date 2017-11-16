@@ -59,7 +59,7 @@ namespace YTE
   static String cEngineName{ "Engine" };
 
   Engine::Engine(const char *aFile, bool aEditorMode)
-    : Composition(this, nullptr, cEngineName)
+    : Composition(this, cEngineName, nullptr)
     , mShouldRun(true)
     , mEditorMode(aEditorMode)
     , mFrame(0)
@@ -148,13 +148,16 @@ namespace YTE
       }
     }
 
-    auto &spaces = (*aValue)["Spaces"];
-
-    for (auto spacesIt = spaces.MemberBegin(); spacesIt < spaces.MemberEnd(); ++spacesIt)
+    if (!mEditorMode)
     {
-      std::string spaceName = spacesIt->name.GetString();
+      auto &spaces = (*aValue)["Spaces"];
 
-      mCompositions.Emplace(spaceName, std::make_unique<Space>(this, &spacesIt->value));
+      for (auto spacesIt = spaces.MemberBegin(); spacesIt < spaces.MemberEnd(); ++spacesIt)
+      {
+        std::string spaceName = spacesIt->name.GetString();
+
+        mCompositions.Emplace(spaceName, std::make_unique<Space>(this, &spacesIt->value));
+      }
     }
   }
 
@@ -265,7 +268,7 @@ namespace YTE
 
   void Engine::EndExecution()
   {
-    mShouldRun = false; 
+    mShouldRun = false;
   };
 
   // Cleans up anything in the Space.
@@ -275,7 +278,7 @@ namespace YTE
   }
 
   void Engine::Recompile()
-  { 
+  {
   }
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
@@ -293,6 +296,13 @@ namespace YTE
 
     auto document = std::make_unique<RSDocument>();
     auto toReturn = document.get();
+
+    if (false == success)
+    {
+      path = Path::GetArchetypePath(Path::GetEnginePath(), aArchetype.c_str());
+      fileText.clear();
+      success = ReadFileToString(path, fileText);
+    }
 
     if (success && document->Parse(fileText.c_str()).HasParseError())
     {
@@ -325,7 +335,14 @@ namespace YTE
     auto document = std::make_unique<RSDocument>();
     auto toReturn = document.get();
 
-    
+    if (false == success)
+    {
+      path = Path::GetLevelPath(Path::GetEnginePath(), aLevel.c_str());
+
+      fileText.clear();
+      success = ReadFileToString(path, fileText);
+    }
+
     if (success)
     {
       auto error = document->Parse(fileText.c_str()).GetParseError();
@@ -333,7 +350,13 @@ namespace YTE
       if (error)
       {
         std::cout << "Error in Level: " << aLevel << ", " << error <<std::endl;
+        return nullptr;
       }
+    }
+    else
+    {
+      std::cout << "Could not find level " << aLevel << std::endl;
+      return nullptr;
     }
 
     mLevels[aLevel] = std::move(document);

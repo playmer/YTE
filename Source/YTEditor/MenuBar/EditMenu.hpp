@@ -17,17 +17,25 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
-class YTEditorMainWindow;
-
-class EditMenu : public QMenu
+namespace YTEditor
 {
-public:
 
-  EditMenu(YTEditorMainWindow *aMainWindow);
-  ~EditMenu();
+  class MainWindow;
 
-private:
+  class EditMenu : public QMenu
+  {
+  public:
 
-  YTEditorMainWindow * mMainWindow;
+    EditMenu(MainWindow *aMainWindow);
+    ~EditMenu();
 
-};
+  private:
+
+    MainWindow * mMainWindow;
+
+    void Undo();
+    void Redo();
+
+  };
+
+}

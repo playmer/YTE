@@ -19,32 +19,36 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 class QGridLayout;
 class QTextEdit;
 
-class OutputConsole : public QWidget
+namespace YTEditor
 {
-public:
 
-  struct Color
+  class OutputConsole : public QWidget
   {
-    static QColor Black;
-    static QColor Red;
-    static QColor Blue;
-    static QColor Green;
+  public:
+
+    struct Color
+    {
+      static QColor Black;
+      static QColor Red;
+      static QColor Blue;
+      static QColor Green;
+    };
+
+    OutputConsole(QWidget * aParent = nullptr);
+    ~OutputConsole();
+
+    void PrintToConsole(const char * aString);
+
+    void PrintLn(const char *aFormat, ...);
+    void PrintLnC(QColor aColor, const char *aFormat, ...);
+
+  private:
+
+    void SetWindowSettings();
+    void ConstructInnerWidget();
+
+    QGridLayout *mLayout;
+    QTextEdit *mConsole;
+
   };
-
-  OutputConsole(QWidget * aParent = nullptr);
-  ~OutputConsole();
-
-  void PrintToConsole(const char * aString);
-
-  void PrintLn(const char *aFormat, ...);
-  void PrintLnC(QColor aColor, const char *aFormat, ...);
-
-private:
-
-  void SetWindowSettings();
-  void ConstructInnerWidget();
-
-  QGridLayout *mLayout;
-  QTextEdit *mConsole;
-
-};
+}

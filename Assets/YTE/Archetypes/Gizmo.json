@@ -1,0 +1,245 @@
+{
+    "Archetype": "Gizmo",
+    "Compositions": {
+        "X_Axis": {
+            "Archetype": "X_Axis",
+            "Compositions": {},
+            "Components": {
+                "Model": {
+				"Mesh": "Move_X.fbx",
+				"Reload": false
+				},
+				"Transform": {
+					"Rotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"Scale": {
+						"Vector3": {
+							"x": 3.0,
+							"y": 3.0,
+							"z": 3.0
+						}
+					},
+					"Translation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldRotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldScale": {
+						"Vector3": {
+							"x": 1.0,
+							"y": 1.0,
+							"z": 1.0
+						}
+					},
+					"WorldTranslation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					}
+				},
+				"Translate": {
+					"Direction": 0
+				},
+				"Scale": {
+					"Direction": 0
+				},
+				"Rotate": {
+					"Direction": 0
+				}
+			}
+		},
+		"Y_Axis": {
+            "Archetype": "Y_Axis",
+            "Compositions": {},
+            "Components": {
+                "Model": {
+				"Mesh": "Move_Y.fbx",
+				"Reload": false
+				},
+				"Transform": {
+					"Rotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"Scale": {
+						"Vector3": {
+							"x": 3.0,
+							"y": 3.0,
+							"z": 3.0
+						}
+					},
+					"Translation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldRotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldScale": {
+						"Vector3": {
+							"x": 1.0,
+							"y": 1.0,
+							"z": 1.0
+						}
+					},
+					"WorldTranslation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					}
+				},
+				"Translate": {
+					"Direction": 1
+				},
+				"Scale": {
+					"Direction": 1
+				},
+				"Rotate": {
+					"Direction": 1
+				}
+			}
+		},
+		"Z_Axis": {
+            "Archetype": "Z_Axis",
+            "Compositions": {},
+            "Components": {
+                "Model": {
+				"Mesh": "Move_Z.fbx",
+				"Reload": false
+				},
+				"Transform": {
+					"Rotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"Scale": {
+						"Vector3": {
+							"x": 3.0,
+							"y": 3.0,
+							"z": 3.0
+						}
+					},
+					"Translation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldRotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldScale": {
+						"Vector3": {
+							"x": 1.0,
+							"y": 1.0,
+							"z": 1.0
+						}
+					},
+					"WorldTranslation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					}
+				},
+				"Translate": {
+					"Direction": 2
+				},
+				"Scale": {
+					"Direction": 2
+				},
+				"Rotate": {
+					"Direction": 2
+				}
+			}
+		}
+    },
+    "Components": {
+        "Transform": {
+					"Rotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"Scale": {
+						"Vector3": {
+							"x": 1.0,
+							"y": 1.0,
+							"z": 1.0
+						}
+					},
+					"Translation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldRotation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					},
+					"WorldScale": {
+						"Vector3": {
+							"x": 1.0,
+							"y": 1.0,
+							"z": 1.0
+						}
+					},
+					"WorldTranslation": {
+						"Vector3": {
+							"x": 0.0,
+							"y": 0.0,
+							"z": 0.0
+						}
+					}
+		},
+		"Model": {
+				"Mesh": "empty.fbx",
+				"Reload": false
+		}
+				
+    }
+}

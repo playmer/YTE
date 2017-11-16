@@ -136,11 +136,24 @@ namespace YTE
 
   void Mouse::UpdatePosition(glm::i32vec2 aPosition)
   {
+    
     if (mPosition != aPosition)
     {
+      mPrevPosition = mPosition;
       mPosition = aPosition;
       mPositionChanged = true;
     }
+
+  }
+
+  glm::i32vec2 Mouse::GetPositionDelta()
+  {
+    return mPosition - mPrevPosition;
+  }
+
+  glm::i32vec2 Mouse::GetPrevPosition()
+  {
+    return mPrevPosition;
   }
 
   void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)

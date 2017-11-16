@@ -87,6 +87,7 @@ namespace YTE
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Model>();
+    InitializeType<ModelChanged>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();

@@ -105,7 +105,6 @@ namespace YTE
 
     world->addRigidBody(mRigidBody.get());
 
-
     mIsInitialized = true;
   }
 
@@ -123,6 +122,11 @@ namespace YTE
       transform.setRotation(OurQuatToBt(aRotation));
 
       mRigidBody->setWorldTransform(transform);
+
+      // set the collider's translation
+      auto collider = GetColliderFromObject(mOwner);
+      collider->SetTranslation(aTranslation.x, aTranslation.y, aTranslation.z);
+
     }
   }
 

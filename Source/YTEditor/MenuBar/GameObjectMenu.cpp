@@ -14,183 +14,187 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 
-#include "../MainWindow/YTEditorMainWindow.hpp"
-#include "../ObjectBrowser/ObjectBrowser.hpp"
-
-#include "GameObjectMenu.hpp"
-
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MenuBar/GameObjectMenu.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
 
-GameObjectMenu::GameObjectMenu(YTEditorMainWindow * aMainWindow) 
-  : QMenu("Game Object"), mMainWindow(aMainWindow)
+
+namespace YTEditor
 {
-  addAction(MakeEmptyObjectAction());
-  addMenu(Make3DObjectMenu());
-  addMenu(Make2DObjectMenu());
-  addMenu(MakeLightMenu());
-  addMenu(MakeAudioMenu());
-  addMenu(MakeUIMenu());
-  addAction(MakeParticleSystemAction());
-  addAction(MakeCameraAction());
-}
 
-GameObjectMenu::~GameObjectMenu()
-{
-}
+  GameObjectMenu::GameObjectMenu(MainWindow * aMainWindow)
+    : QMenu("Game Object"), mMainWindow(aMainWindow)
+  {
+    addAction(MakeEmptyObjectAction());
+    addMenu(Make3DObjectMenu());
+    addMenu(Make2DObjectMenu());
+    addMenu(MakeLightMenu());
+    addMenu(MakeAudioMenu());
+    addMenu(MakeUIMenu());
+    addAction(MakeParticleSystemAction());
+    addAction(MakeCameraAction());
+  }
 
-QAction * GameObjectMenu::MakeEmptyObjectAction()
-{
-  QAction * emptyObjAct = new QAction("Empty Object");
-  connect(emptyObjAct, &QAction::triggered, this, &GameObjectMenu::CreateEmptyObject);
-  return emptyObjAct;
-}
+  GameObjectMenu::~GameObjectMenu()
+  {
+  }
 
-void GameObjectMenu::CreateEmptyObject()
-{
-  mMainWindow->GetObjectBrowser().AddObject("EmptyObject", "Empty");
-}
+  QAction * GameObjectMenu::MakeEmptyObjectAction()
+  {
+    QAction * emptyObjAct = new QAction("Empty Object");
+    connect(emptyObjAct, &QAction::triggered, this, &GameObjectMenu::CreateEmptyObject);
+    return emptyObjAct;
+  }
 
-QMenu * GameObjectMenu::Make3DObjectMenu()
-{
-  QMenu * menu = new QMenu("3D Object");
+  void GameObjectMenu::CreateEmptyObject()
+  {
+    mMainWindow->GetObjectBrowser().AddObject("EmptyObject", "Empty");
+  }
 
-  QAction * cubeAct = new QAction("Cube");
-  menu->addAction(cubeAct);
-  connect(cubeAct, &QAction::triggered, this, &GameObjectMenu::CreateCube);
+  QMenu * GameObjectMenu::Make3DObjectMenu()
+  {
+    QMenu * menu = new QMenu("3D Object");
 
-  QAction * sphereAct = new QAction("Sphere");
-  menu->addAction(sphereAct);
-  connect(sphereAct, &QAction::triggered, this, &GameObjectMenu::CreateSphere);
+    QAction * cubeAct = new QAction("Cube");
+    menu->addAction(cubeAct);
+    connect(cubeAct, &QAction::triggered, this, &GameObjectMenu::CreateCube);
 
-  QAction * planeAct = new QAction("Plane");
-  menu->addAction(planeAct);
-  connect(planeAct, &QAction::triggered, this, &GameObjectMenu::CreatePlane);
+    QAction * sphereAct = new QAction("Sphere");
+    menu->addAction(sphereAct);
+    connect(sphereAct, &QAction::triggered, this, &GameObjectMenu::CreateSphere);
 
-  return menu;
-}
+    QAction * planeAct = new QAction("Plane");
+    menu->addAction(planeAct);
+    connect(planeAct, &QAction::triggered, this, &GameObjectMenu::CreatePlane);
 
-void GameObjectMenu::CreateCube()
-{
-}
+    return menu;
+  }
 
-void GameObjectMenu::CreateSphere()
-{
-}
+  void GameObjectMenu::CreateCube()
+  {
+  }
 
-void GameObjectMenu::CreatePlane()
-{
-}
+  void GameObjectMenu::CreateSphere()
+  {
+  }
 
-QMenu * GameObjectMenu::Make2DObjectMenu()
-{
-  QMenu * menu = new QMenu("2D Object");
+  void GameObjectMenu::CreatePlane()
+  {
+  }
 
-  QAction * spriteAct = new QAction("Sprite");
-  menu->addAction(spriteAct);
-  connect(spriteAct, &QAction::triggered, this, &GameObjectMenu::CreateSprite);
+  QMenu * GameObjectMenu::Make2DObjectMenu()
+  {
+    QMenu * menu = new QMenu("2D Object");
 
-  return menu;
-}
+    QAction * spriteAct = new QAction("Sprite");
+    menu->addAction(spriteAct);
+    connect(spriteAct, &QAction::triggered, this, &GameObjectMenu::CreateSprite);
 
-void GameObjectMenu::CreateSprite()
-{
-}
+    return menu;
+  }
 
-QMenu * GameObjectMenu::MakeLightMenu()
-{
-  QMenu * menu = new QMenu("Light");
+  void GameObjectMenu::CreateSprite()
+  {
+  }
 
-  QAction * pointLightAct = new QAction("Point Light");
-  menu->addAction(pointLightAct);
-  connect(pointLightAct, &QAction::triggered, this, &GameObjectMenu::CreatePointLight);
+  QMenu * GameObjectMenu::MakeLightMenu()
+  {
+    QMenu * menu = new QMenu("Light");
 
-  QAction * directionalLightAct = new QAction("Directional Light");
-  menu->addAction(directionalLightAct);
-  connect(directionalLightAct, &QAction::triggered, this, &GameObjectMenu::CreateDirectionalLight);
+    QAction * pointLightAct = new QAction("Point Light");
+    menu->addAction(pointLightAct);
+    connect(pointLightAct, &QAction::triggered, this, &GameObjectMenu::CreatePointLight);
 
-  QAction * areaLightAct = new QAction("Area Light");
-  menu->addAction(areaLightAct);
-  connect(areaLightAct, &QAction::triggered, this, &GameObjectMenu::CreateAreaLight);
+    QAction * directionalLightAct = new QAction("Directional Light");
+    menu->addAction(directionalLightAct);
+    connect(directionalLightAct, &QAction::triggered, this, &GameObjectMenu::CreateDirectionalLight);
 
-  return menu;
-}
+    QAction * areaLightAct = new QAction("Area Light");
+    menu->addAction(areaLightAct);
+    connect(areaLightAct, &QAction::triggered, this, &GameObjectMenu::CreateAreaLight);
 
-void GameObjectMenu::CreatePointLight()
-{
-}
+    return menu;
+  }
 
-void GameObjectMenu::CreateDirectionalLight()
-{
-}
+  void GameObjectMenu::CreatePointLight()
+  {
+  }
 
-void GameObjectMenu::CreateAreaLight()
-{
-}
+  void GameObjectMenu::CreateDirectionalLight()
+  {
+  }
 
-QMenu * GameObjectMenu::MakeAudioMenu()
-{
-  QMenu * menu = new QMenu("Audio");
+  void GameObjectMenu::CreateAreaLight()
+  {
+  }
 
-  QAction * audioSourceAct = new QAction("Audio Source");
-  menu->addAction(audioSourceAct);
-  connect(audioSourceAct, &QAction::triggered, this, &GameObjectMenu::CreateAudioSource);
+  QMenu * GameObjectMenu::MakeAudioMenu()
+  {
+    QMenu * menu = new QMenu("Audio");
 
-  return menu;
-}
+    QAction * audioSourceAct = new QAction("Audio Source");
+    menu->addAction(audioSourceAct);
+    connect(audioSourceAct, &QAction::triggered, this, &GameObjectMenu::CreateAudioSource);
 
-void GameObjectMenu::CreateAudioSource()
-{
-}
+    return menu;
+  }
 
-QMenu * GameObjectMenu::MakeUIMenu()
-{
-  QMenu * menu = new QMenu("UI");
+  void GameObjectMenu::CreateAudioSource()
+  {
+  }
 
-  QAction * textAct = new QAction("Text");
-  menu->addAction(textAct);
-  connect(textAct, &QAction::triggered, this, &GameObjectMenu::CreateText);
+  QMenu * GameObjectMenu::MakeUIMenu()
+  {
+    QMenu * menu = new QMenu("UI");
 
-  QAction * imageAct = new QAction("Image");
-  menu->addAction(imageAct);
-  connect(imageAct, &QAction::triggered, this, &GameObjectMenu::CreateImage);
+    QAction * textAct = new QAction("Text");
+    menu->addAction(textAct);
+    connect(textAct, &QAction::triggered, this, &GameObjectMenu::CreateText);
 
-  QAction * buttonAct = new QAction("Button");
-  menu->addAction(buttonAct);
-  connect(buttonAct, &QAction::triggered, this, &GameObjectMenu::CreateButton);
+    QAction * imageAct = new QAction("Image");
+    menu->addAction(imageAct);
+    connect(imageAct, &QAction::triggered, this, &GameObjectMenu::CreateImage);
 
-  return menu;
-}
+    QAction * buttonAct = new QAction("Button");
+    menu->addAction(buttonAct);
+    connect(buttonAct, &QAction::triggered, this, &GameObjectMenu::CreateButton);
 
-void GameObjectMenu::CreateText()
-{
-}
+    return menu;
+  }
 
-void GameObjectMenu::CreateImage()
-{
-}
+  void GameObjectMenu::CreateText()
+  {
+  }
 
-void GameObjectMenu::CreateButton()
-{
-}
+  void GameObjectMenu::CreateImage()
+  {
+  }
 
-QAction * GameObjectMenu::MakeParticleSystemAction()
-{
-  QAction * particleAct = new QAction("Particle System");
-  connect(particleAct, &QAction::triggered, this, &GameObjectMenu::CreateParticleSystem);
-  return particleAct;
-}
+  void GameObjectMenu::CreateButton()
+  {
+  }
 
-void GameObjectMenu::CreateParticleSystem()
-{
-}
+  QAction * GameObjectMenu::MakeParticleSystemAction()
+  {
+    QAction * particleAct = new QAction("Particle System");
+    connect(particleAct, &QAction::triggered, this, &GameObjectMenu::CreateParticleSystem);
+    return particleAct;
+  }
 
-QAction * GameObjectMenu::MakeCameraAction()
-{
-  QAction * cameraAct = new QAction("Camera");
-  connect(cameraAct, &QAction::triggered, this, &GameObjectMenu::CreateCamera);
-  return cameraAct;
-}
+  void GameObjectMenu::CreateParticleSystem()
+  {
+  }
 
-void GameObjectMenu::CreateCamera()
-{
+  QAction * GameObjectMenu::MakeCameraAction()
+  {
+    QAction * cameraAct = new QAction("Camera");
+    connect(cameraAct, &QAction::triggered, this, &GameObjectMenu::CreateCamera);
+    return cameraAct;
+  }
+
+  void GameObjectMenu::CreateCamera()
+  {
+  }
+
 }

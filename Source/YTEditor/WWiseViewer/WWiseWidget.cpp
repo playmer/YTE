@@ -1,21 +1,21 @@
-#include <QLineEdit>
-#include <QComboBox>
-#include <QPushButton>
-#include <QGroupBox>
-#include <QLayout>
-#include <QHBoxLayout>
-#include <QLabel>
+#include <qcomboBox>
+#include <qpushButton>
+#include <qgroupBox>
+#include <qhboxLayout>
+#include <qlineEdit>
+#include <qlayout>
+#include <qlabel>
 
 #include "YTE/Core/Engine.hpp"
 
-#include "WWiseWidget.hpp"
+#include "YTEditor/WWiseViewer/WWiseWidget.hpp"
 
-namespace YTE
+namespace YTEditor
 {
   class SetWWiseSwitch : public QComboBox
   {
   public:
-    SetWWiseSwitch(QWidget *aOwner, u64 aGroupId, WWiseSystem *aSystem, WWiseWidget *aWidget, bool aSwitch)
+    SetWWiseSwitch(QWidget *aOwner, YTE::u64 aGroupId, YTE::WWiseSystem *aSystem, WWiseWidget *aWidget, bool aSwitch)
       : QComboBox(aOwner)
       , mGroupId(aGroupId)
       , mSystem(aSystem)
@@ -53,8 +53,8 @@ namespace YTE
     }
 
   private:
-    WWiseSystem *mSystem;
-    u64 mGroupId;
+    YTE::WWiseSystem *mSystem;
+    YTE::u64 mGroupId;
     WWiseWidget *mWidget;
     bool mSwitch;
   };
@@ -62,7 +62,7 @@ namespace YTE
   class SetWWiseRTPC : public QLineEdit
   {
   public:
-    SetWWiseRTPC(QWidget *aOwner, u64 aRTPCId, WWiseSystem *aSystem)
+    SetWWiseRTPC(QWidget *aOwner, YTE::u64 aRTPCId, YTE::WWiseSystem *aSystem)
       : QLineEdit(aOwner)
       , mRTPCId(aRTPCId)
       , mSystem(aSystem)
@@ -86,16 +86,16 @@ namespace YTE
     }
 
   private:
-    WWiseSystem *mSystem;
-    u64 mRTPCId;
+    YTE::WWiseSystem *mSystem;
+    YTE::u64 mRTPCId;
   };
 
   class SendWWiseEvent : public QPushButton
   {
   public:
-    SendWWiseEvent(WWiseSystem *aSystem, 
+    SendWWiseEvent(YTE::WWiseSystem *aSystem, 
                    const std::string &aEvent, 
-                   u64 aEventId, 
+                   YTE::u64 aEventId, 
                    WWiseWidget *aWidget)
       : QPushButton(aEvent.c_str())
       , mEventId(aEventId)
@@ -118,17 +118,17 @@ namespace YTE
     }
 
   private:
-    WWiseSystem *mSystem;
-    u64 mEventId;
+    YTE::WWiseSystem *mSystem;
+    YTE::u64 mEventId;
     WWiseWidget *mWidget;
   };
 
-  WWiseWidget::WWiseWidget(QWidget *aParent, Engine *aEngine)
+  WWiseWidget::WWiseWidget(QWidget *aParent, YTE::Engine *aEngine)
     : QWidget(aParent)
     , mEngine(aEngine)
   {
     std::string name{ "WWiseWidget" };
-    mSystem = mEngine->GetComponent<WWiseSystem>();
+    mSystem = mEngine->GetComponent<YTE::WWiseSystem>();
     mSystem->RegisterObject(OwnerId(), name);
 
     ConstructSubWidgets();

@@ -6,26 +6,34 @@
  * \copyright All content 2017 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
-#include "QtWidgets/QApplication.h"
 
-#include "QtWidgets/QMainWindow.h"
-#include "QtWidgets/QDockWidget.h"
-#include "QtWidgets/QTextEdit.h"
-#include "QtWidgets/QMenuBar.h"
-#include "QtWidgets/QToolBar.h"
-#include "QtWidgets/QAction.h"
-#include "QtWidgets/QTreeWidget.h"
+#include <qapplication.h>
+#include <qmainwindow.h>
+#include <qdockwidget.h>
+#include <qtextedit.h>
+#include <qmenubar.h>
+#include <qtoolbar.h>
+#include <qaction.h>
+#include <qtreewidget.h>
 #include <qstylefactory.h>
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
+#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/Space.hpp"
+#include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Physics/PhysicsSystem.hpp"
 
-#include "ComponentBrowser/ComponentBrowser.hpp"
-#include "ComponentBrowser/ComponentWidget.hpp"
-#include "GameWindow/GameWindow.hpp"
-#include "MainWindow/YTEditorMainWindow.hpp"
-#include "ObjectBrowser/ObjectBrowser.hpp"
-#include "OutputConsole/OutputConsole.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MainWindow/ScriptBind.hpp"
+#include "YTEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 
 // Helper function
@@ -65,16 +73,41 @@ int main(int argc, char *argv[])
   // RUNNING THE GAME
   YTE::InitializeYTETypes();
   YTE::Engine mainEngine{ "../../../../../Assets/Bin/Config", true };
+
+  // initialize types first
+  YTEditor::InitializeYTEditorTypes();
+
+  // then create factories for them
+  YTE::ComponentSystem *componentSystem = mainEngine.GetComponent<YTE::ComponentSystem>();
+  YTE::FactoryMap *factoryMap = componentSystem->GetComponentFactories();
+  YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
+
+  // create an empty level
+  YTE::String newLevelName{ "NewLevel" };
   
+  // add an empty composition to represent the new level
+  YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
+  
+  YTE::String camName{ "Camera" };
+  
+  // add the camera object to the new level
+  YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
+  
+  // add the camera component to the camera object
+  camera->AddComponent(YTE::Camera::GetStaticType());
+  
+  newLevel->AddComponent(YTE::PhysicsSystem::GetStaticType());
+
   // Construct the main window
-  YTEditorMainWindow *mainWindow = new YTEditorMainWindow(&mainEngine, &app);
+  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app);
+
+  //mainWindow->SetRunningSpaceName();
 
   // Change the theme/color palette to dark
   SetDarkTheme(app);
 
   // Tell the window and all its children to display
   mainWindow->show();
-
 
   return app.exec();
 }

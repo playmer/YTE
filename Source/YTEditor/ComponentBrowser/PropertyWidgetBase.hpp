@@ -16,33 +16,40 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qwidget.h>
 
-class PropertyWidgetBase : public QWidget
+namespace YTEditor
 {
-public:
 
-  PropertyWidgetBase(QWidget * parent = nullptr) : QWidget(parent), mType(PropType::Int) { }
-
-  int GetBaseType() const 
-  { 
-    return mType;
-  };
-
-  virtual void SaveToEngine() {};
-
-  enum PropType
+  class PropertyWidgetBase : public QWidget
   {
-    Int,
-    Float,
-    String,
-    StdString,
-    Bool,
-    Vec2,
-    Vec3,
-    Vec4,
-    Quaternion,
-    SelectableStrings
+  public:
+
+    PropertyWidgetBase(QWidget * parent = nullptr) : QWidget(parent), mType(PropType::Int) { }
+
+    int GetBaseType() const
+    {
+      return mType;
+    };
+
+    virtual void SaveToEngine() {};
+
+    virtual void ReloadValueFromEngine() {};
+
+    enum PropType
+    {
+      Int,
+      Float,
+      String,
+      StdString,
+      Bool,
+      Vec2,
+      Vec3,
+      Vec4,
+      Quaternion,
+      SelectableStrings
+    };
+
+  protected:
+    int mType;
   };
 
-protected:
-  int mType;
-};
+}

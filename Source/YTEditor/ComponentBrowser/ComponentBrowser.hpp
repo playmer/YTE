@@ -16,16 +16,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include <vector>
-#include <QtWidgets/qwidget.h>
 
-class ComponentWidget;
-class ComponentTree;
-class ComponentTools;
+#include <qwidget.h>
+
 class QScrollArea;
 class QVBoxLayout;
 class QGridLayout;
-class YTEditorMainWindow;
-class ArchetypeTools;
+
 
 namespace YTE
 {
@@ -33,30 +30,39 @@ namespace YTE
   class Component;
 }
 
-class ComponentBrowser : public QWidget
+namespace YTEditor
 {
-public:
+  class MainWindow;
+  class ArchetypeTools;
+  class ComponentWidget;
+  class ComponentTree;
+  class ComponentTools;
 
-  ComponentBrowser(YTEditorMainWindow * mainWindow, QWidget * parent = nullptr);
-  ~ComponentBrowser();
+  class ComponentBrowser : public QWidget
+  {
+  public:
 
-  ComponentTree* GetComponentTree();
-  
-  ArchetypeTools* GetArchetypeTools();
+    ComponentBrowser(MainWindow * mainWindow, QWidget * parent = nullptr);
+    ~ComponentBrowser();
 
-  YTEditorMainWindow * GetMainWindow();
+    ComponentTree* GetComponentTree();
 
-private:
+    ArchetypeTools* GetArchetypeTools();
 
-  void SetWindowSettings();
-  void ConstructSubWidgets();
+    MainWindow * GetMainWindow();
 
-  QVBoxLayout *mLayout;
+  private:
 
-  ArchetypeTools *mArchTools;
-  ComponentTools *mCompTools;
-  ComponentTree *mComponentTree;
+    void SetWindowSettings();
+    void ConstructSubWidgets();
 
-  YTEditorMainWindow * mMainWindow;
+    QVBoxLayout *mLayout;
 
-};
+    ArchetypeTools *mArchTools;
+    ComponentTools *mCompTools;
+    ComponentTree *mComponentTree;
+
+    MainWindow * mMainWindow;
+
+  };
+}

@@ -19,55 +19,66 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qlineedit.h>
 
-#include "SearchBarEventFilter.hpp"
-#include "ComponentSearchBar.hpp"
+#include "YTEditor/ComponentBrowser/SearchBarEventFilter.hpp"
+#include "YTEditor/ComponentBrowser/ComponentSearchBar.hpp"
 
-SearchBarEventFilter::SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent) 
-  : QObject(aParent), mSearchBar(aLineEdit), mCompleter(aParent)
+namespace YTEditor
 {
-}
 
-bool SearchBarEventFilter::eventFilter(QObject * aWatched, QEvent * aEvent)
-{
-  QAbstractItemView * view = qobject_cast<QAbstractItemView*>(aWatched);
-  
-  if (aEvent->type() == QEvent::KeyPress)
+  SearchBarEventFilter::SearchBarEventFilter(ComponentSearchBar *aLineEdit, QCompleter *aParent)
+    : QObject(aParent), mSearchBar(aLineEdit), mCompleter(aParent)
   {
-    QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(aEvent);
-  
-    if (keyEvent->key() == Qt::Key_Return ||
-      keyEvent->key() == Qt::Key_Enter)
-    {
-      mSearchBar->OnReturnPressed();
-      mSearchBar->clear();
-      view->hide();
-      return true;
-    }
   }
-  else if (aEvent->type() == QEvent::MouseButtonPress)
-  {
-    QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(aEvent);
-  
-    if (mouseEvent->button() == Qt::MouseButton::LeftButton)
-    {
-      QPoint mPos = mouseEvent->pos();
-      
-      //std::cout << "( " << mPos.x() << ", " << mPos.y() << " )" << std::endl;
-      //std::cout << "W: " << mCompleter->popup()->width() << std::endl;
-      //std::cout << "H: " << mCompleter->popup()->height() << std::endl << std::endl;
 
-      if (mPos.x() < 0 || mPos.x() > mCompleter->popup()->width() ||
-        mPos.y() < 0 || mPos.y() > mCompleter->popup()->height())
+  bool SearchBarEventFilter::eventFilter(QObject * aWatched, QEvent * aEvent)
+  {
+    QAbstractItemView * view = qobject_cast<QAbstractItemView*>(aWatched);
+
+    if (aEvent->type() == QEvent::KeyPress)
+    {
+      QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(aEvent);
+
+      if (keyEvent->key() == Qt::Key_Return ||
+        keyEvent->key() == Qt::Key_Enter)
       {
-        return false;
+        mSearchBar->OnReturnPressed();
+        mSearchBar->clear();
+        view->hide();
+        return true;
       }
-  
-      mSearchBar->clear();
-      view->hide();
-      return true;
+      else if (keyEvent->key() == Qt::Key_Tab)
+      {
+        mSearchBar->OnTabPressed();
+        return true;
+      }
+      
     }
+    else if (aEvent->type() == QEvent::MouseButtonPress)
+    {
+      QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(aEvent);
+
+      if (mouseEvent->button() == Qt::MouseButton::LeftButton)
+      {
+        QPoint mPos = mouseEvent->pos();
+
+        //std::cout << "( " << mPos.x() << ", " << mPos.y() << " )" << std::endl;
+        //std::cout << "W: " << mCompleter->popup()->width() << std::endl;
+        //std::cout << "H: " << mCompleter->popup()->height() << std::endl << std::endl;
+
+        if (mPos.x() < 0 || mPos.x() > mCompleter->popup()->width() ||
+          mPos.y() < 0 || mPos.y() > mCompleter->popup()->height())
+        {
+          return false;
+        }
+
+        mSearchBar->clear();
+        view->hide();
+        return true;
+      }
+    }
+
+
+    return false;
   }
 
-
-  return false;
 }

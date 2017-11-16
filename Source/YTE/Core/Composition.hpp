@@ -51,7 +51,7 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine *aEngine, Space *aSpace, String &aName);
+    Composition(Engine *aEngine, String &aName, Space *aSpace);
     Composition(Engine *aEngine, Space *aSpace);
 
     ~Composition();
@@ -67,10 +67,21 @@ namespace YTE
     bool ShouldSerialize() const { return mShouldSerialize; };
     void Deserialize(RSValue *aValue);
     RSValue Serialize(RSAllocator &aAllocator) override;
-    
+
     Space* GetSpace() const { return mSpace; }
     Engine* GetEngine() const { return mEngine; }
 
+    // aObjectName is the name that the Composition gets mapped to. The arguments
+    // are passed to the tComposition constructor. We always pass engine.
+    template<typename tComposition, typename... Arguments>
+    tComposition* AddComposition(String aObjectName, Arguments &&...aArguments)
+    {
+      tComposition *result = static_cast<tComposition*>(AddCompositionInternal(std::make_unique<tComposition>(aArguments...),
+                                                                               nullptr,
+                                                                               aObjectName));
+
+      return result;
+    }
 
     Composition* AddComposition(String aArchetype, String aObjectName);
     Composition* AddComposition(RSValue *aArchetype, String aObjectName);
@@ -120,7 +131,7 @@ namespace YTE
     void RemoveCompositionInternal(CompositionMap::iterator &aComposition);
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);
     Composition* AddCompositionInternal(String aArchetype, String aObjectName);
-    Composition* AddCompositionInternal(RSValue *aSerialization, String aObjectName);
+    Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName);
     bool ParentBeingDeleted();
 
     CompositionMap mCompositions;

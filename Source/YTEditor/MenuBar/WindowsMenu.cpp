@@ -14,150 +14,155 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qdockwidget.h>
 
-#include "../ComponentBrowser/ComponentBrowser.hpp"
-#include "../MainWindow/YTEditorMainWindow.hpp"
-#include "../MaterialViewer/MaterialViewer.hpp"
-#include "../ObjectBrowser/ObjectBrowser.hpp"
-#include "../OutputConsole/OutputConsole.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/MenuBar/WindowsMenu.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
-#include "WindowsMenu.hpp"
 
-WindowsMenu::WindowsMenu(YTEditorMainWindow * aMainWindow) 
-  : QMenu("Windows"), mMainWindow(aMainWindow)
+namespace YTEditor
 {
-  addMenu(MakeObjectBrowserMenu());
-  addMenu(MakeComponentBrowserMenu());
-  addMenu(MakeOutputConsoleMenu());
-  addMenu(MakeMaterialViewerMenu());
-  addMenu(MakeFileViewerMenu());
-}
 
-WindowsMenu::~WindowsMenu()
-{
-}
+  WindowsMenu::WindowsMenu(MainWindow * aMainWindow)
+    : QMenu("Windows"), mMainWindow(aMainWindow)
+  {
+    addMenu(MakeObjectBrowserMenu());
+    addMenu(MakeComponentBrowserMenu());
+    addMenu(MakeOutputConsoleMenu());
+    addMenu(MakeMaterialViewerMenu());
+    addMenu(MakeFileViewerMenu());
+  }
+
+  WindowsMenu::~WindowsMenu()
+  {
+  }
 
 
-QMenu * WindowsMenu::MakeObjectBrowserMenu()
-{
-  QMenu * menu = new QMenu("Object Browser");
+  QMenu * WindowsMenu::MakeObjectBrowserMenu()
+  {
+    QMenu * menu = new QMenu("Object Browser");
 
-  QAction * openAct = new QAction("Open");
-  menu->addAction(openAct);
-  connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenObjectBrowser);
+    QAction * openAct = new QAction("Open");
+    menu->addAction(openAct);
+    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenObjectBrowser);
 
-  QAction * closeAct = new QAction("Exit");
-  menu->addAction(closeAct);
-  connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseObjectBrowser);
+    QAction * closeAct = new QAction("Exit");
+    menu->addAction(closeAct);
+    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseObjectBrowser);
 
-  return menu;
-}
+    return menu;
+  }
 
-void WindowsMenu::OpenObjectBrowser()
-{
-  mMainWindow->GetObjectBrowserDock()->show();
-}
+  void WindowsMenu::OpenObjectBrowser()
+  {
+    mMainWindow->GetObjectBrowserDock()->show();
+  }
 
-void WindowsMenu::CloseObjectBrowser()
-{
-  mMainWindow->GetObjectBrowserDock()->hide();
-}
+  void WindowsMenu::CloseObjectBrowser()
+  {
+    mMainWindow->GetObjectBrowserDock()->hide();
+  }
 
-QMenu * WindowsMenu::MakeComponentBrowserMenu()
-{
-  QMenu * menu = new QMenu("Component Browser");
+  QMenu * WindowsMenu::MakeComponentBrowserMenu()
+  {
+    QMenu * menu = new QMenu("Component Browser");
 
-  QAction * openAct = new QAction("Open");
-  connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenComponentBrowser);
-  menu->addAction(openAct);
+    QAction * openAct = new QAction("Open");
+    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenComponentBrowser);
+    menu->addAction(openAct);
 
-  QAction * closeAct = new QAction("Exit");
-  connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseComponentBrowser);
-  menu->addAction(closeAct);
+    QAction * closeAct = new QAction("Exit");
+    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseComponentBrowser);
+    menu->addAction(closeAct);
 
-  return menu;
-}
+    return menu;
+  }
 
-void WindowsMenu::OpenComponentBrowser()
-{
-  mMainWindow->GetComponentBrowserDock()->show();
-}
+  void WindowsMenu::OpenComponentBrowser()
+  {
+    mMainWindow->GetComponentBrowserDock()->show();
+  }
 
-void WindowsMenu::CloseComponentBrowser()
-{
-  mMainWindow->GetComponentBrowserDock()->hide();
-}
+  void WindowsMenu::CloseComponentBrowser()
+  {
+    mMainWindow->GetComponentBrowserDock()->hide();
+  }
 
-QMenu * WindowsMenu::MakeOutputConsoleMenu()
-{
-  QMenu * menu = new QMenu("Output Console");
+  QMenu * WindowsMenu::MakeOutputConsoleMenu()
+  {
+    QMenu * menu = new QMenu("Output Console");
 
-  QAction * openAct = new QAction("Open");
-  connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenOutputConsole);
-  menu->addAction(openAct);
+    QAction * openAct = new QAction("Open");
+    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenOutputConsole);
+    menu->addAction(openAct);
 
-  QAction * closeAct = new QAction("Exit");
-  connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseOutputConsole);
-  menu->addAction(closeAct);
+    QAction * closeAct = new QAction("Exit");
+    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseOutputConsole);
+    menu->addAction(closeAct);
 
-  return menu;
-}
+    return menu;
+  }
 
-void WindowsMenu::OpenOutputConsole()
-{
-  mMainWindow->GetOutputConsoleDock()->show();
-}
+  void WindowsMenu::OpenOutputConsole()
+  {
+    mMainWindow->GetOutputConsoleDock()->show();
+  }
 
-void WindowsMenu::CloseOutputConsole()
-{
-  mMainWindow->GetOutputConsoleDock()->hide();
-}
+  void WindowsMenu::CloseOutputConsole()
+  {
+    mMainWindow->GetOutputConsoleDock()->hide();
+  }
 
-QMenu * WindowsMenu::MakeMaterialViewerMenu()
-{
-  QMenu * menu = new QMenu("Material Viewer");
+  QMenu * WindowsMenu::MakeMaterialViewerMenu()
+  {
+    QMenu * menu = new QMenu("Material Viewer");
 
-  QAction * openAct = new QAction("Open");
-  connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenMaterialViewer);
-  menu->addAction(openAct);
+    QAction * openAct = new QAction("Open");
+    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenMaterialViewer);
+    menu->addAction(openAct);
 
-  QAction * closeAct = new QAction("Exit");
-  connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseMaterialViewer);
-  menu->addAction(closeAct);
+    QAction * closeAct = new QAction("Exit");
+    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseMaterialViewer);
+    menu->addAction(closeAct);
 
-  return menu;
-}
+    return menu;
+  }
 
-void WindowsMenu::OpenMaterialViewer()
-{
-  mMainWindow->GetMaterialViewerDock()->show();
-}
+  void WindowsMenu::OpenMaterialViewer()
+  {
+    mMainWindow->GetMaterialViewerDock()->show();
+  }
 
-void WindowsMenu::CloseMaterialViewer()
-{
-  mMainWindow->GetMaterialViewerDock()->hide();
-}
+  void WindowsMenu::CloseMaterialViewer()
+  {
+    mMainWindow->GetMaterialViewerDock()->hide();
+  }
 
-QMenu * WindowsMenu::MakeFileViewerMenu()
-{
-  QMenu * menu = new QMenu("File Viewer");
+  QMenu * WindowsMenu::MakeFileViewerMenu()
+  {
+    QMenu * menu = new QMenu("File Viewer");
 
-  QAction * openAct = new QAction("Open");
-  connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenFileViewer);
-  menu->addAction(openAct);
+    QAction * openAct = new QAction("Open");
+    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenFileViewer);
+    menu->addAction(openAct);
 
-  QAction * closeAct = new QAction("Exit");
-  connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseFileViewer);
-  menu->addAction(closeAct);
+    QAction * closeAct = new QAction("Exit");
+    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseFileViewer);
+    menu->addAction(closeAct);
 
-  return menu;
-}
+    return menu;
+  }
 
-void WindowsMenu::OpenFileViewer()
-{
-  mMainWindow->GetFileViewerDock()->show();
-}
+  void WindowsMenu::OpenFileViewer()
+  {
+    mMainWindow->GetFileViewerDock()->show();
+  }
 
-void WindowsMenu::CloseFileViewer()
-{
-  mMainWindow->GetFileViewerDock()->hide();
+  void WindowsMenu::CloseFileViewer()
+  {
+    mMainWindow->GetFileViewerDock()->hide();
+  }
+
 }

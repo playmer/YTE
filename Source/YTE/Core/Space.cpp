@@ -44,6 +44,7 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
+
   // Sets up the Space, probably could just be the constructor.
   Space::Space(Engine *aEngine, RSValue *aProperties)
                 : Composition(aEngine, this), mLevelToLoad(nullptr)
@@ -54,7 +55,10 @@ namespace YTE
       mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
     }
 
-    DeserializeByType(aProperties, this, TypeId<Space>());
+    if (nullptr != aProperties)
+    {
+      DeserializeByType(aProperties, this, TypeId<Space>());
+    }
   }
 
 
@@ -62,8 +66,17 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load()
   {
-    mLevelName = mStartingLevel;
-    Load(mEngine->GetLevel(mStartingLevel));
+    if (mStartingLevel.Empty())
+    {
+      String empty = "EmptyLevel";
+      Load(mEngine->GetLevel(empty));
+      mLevelName = empty;
+    }
+    else
+    {
+      Load(mEngine->GetLevel(mStartingLevel));
+      mLevelName = mStartingLevel;
+    }
   }
 
   // Loads a level into the current Space. If already loaded, destroys 
@@ -73,7 +86,14 @@ namespace YTE
     mCompositions.Clear();
     mComponents.Clear();
       
-    Deserialize(aLevel);
+    if (nullptr != aLevel)
+    {
+      Deserialize(aLevel);
+    }
+    else
+    {
+      printf("We could not deserialize the level provided.\n");
+    }
       
     Initialize();
       

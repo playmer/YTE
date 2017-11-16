@@ -7,6 +7,8 @@
 */
 /******************************************************************************/
 
+#include <glm/gtx/transform.hpp>
+
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
@@ -202,6 +204,7 @@ namespace YTE
   void Transform::SetRotation(const glm::vec3& aEulerRot)
   {
     glm::quat localRotation{ aEulerRot };
+
     SetRotation(localRotation);
   }
 

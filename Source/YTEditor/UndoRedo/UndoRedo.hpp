@@ -17,34 +17,39 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <stack>
 
-#include "../OutputConsole/OutputConsole.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
-class Command
+
+namespace YTEditor
 {
-public:
-  Command(OutputConsole *aConsole) : mConsole(aConsole) {}
-  ~Command() {}
 
-  virtual void Execute() {};
-  virtual void UnExecute() {};
+  class Command
+  {
+  public:
+    Command(OutputConsole *aConsole) : mConsole(aConsole) {}
+    ~Command() {}
 
-  OutputConsole * mConsole;
-};
+    virtual void Execute() {};
+    virtual void UnExecute() {};
 
-class UndoRedo
-{
-public:
-  UndoRedo();
-  ~UndoRedo();
+    OutputConsole * mConsole;
+  };
 
-  void ExecuteUndo();
-  void ExecuteRedo();
+  class UndoRedo
+  {
+  public:
+    UndoRedo();
+    ~UndoRedo();
 
-  void InsertCommand(std::unique_ptr<Command> aUndo);
+    void ExecuteUndo();
+    void ExecuteRedo();
 
-private:
+    void InsertCommand(std::unique_ptr<Command> aUndo);
 
-  std::stack<std::unique_ptr<Command>> mUndoStack;
-  std::stack<std::unique_ptr<Command>> mRedoStack;
+  private:
 
-};
+    std::stack<std::unique_ptr<Command>> mUndoStack;
+    std::stack<std::unique_ptr<Command>> mRedoStack;
+
+  };
+}

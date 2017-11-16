@@ -21,53 +21,56 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ComponentSystem.h"
 
-#include "../MainWindow/YTEditorMainWindow.hpp"
-#include "../ObjectBrowser/ObjectBrowser.hpp"
-#include "ComponentTools.hpp"
-#include "ComponentSearchBar.hpp"
-#include "ComponentBrowser.hpp"
-#include "ComponentTree.hpp"
-#include "ComponentWidget.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTools.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/ComponentBrowser/ComponentSearchBar.hpp"
+#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
-
-ComponentTools::ComponentTools(ComponentBrowser * parent) : QWidget(parent)
+namespace YTEditor
 {
-  mBrowser = parent;
 
-  mLayout = new QHBoxLayout(this);
-  this->setLayout(mLayout);
+  ComponentTools::ComponentTools(ComponentBrowser * parent) : QWidget(parent)
+  {
+    mBrowser = parent;
 
-  CreateSubWidgets();
-}
+    mLayout = new QHBoxLayout(this);
+    this->setLayout(mLayout);
 
-ComponentTools::~ComponentTools()
-{
-}
+    CreateSubWidgets();
+  }
 
-void ComponentTools::CreateSubWidgets()
-{
-  mLabel = new QLabel("Add Component", this);
-  mLayout->addWidget(mLabel);
+  ComponentTools::~ComponentTools()
+  {
+  }
 
-  // search bar for adding components
-  ComponentSearchBar * compSearch = new ComponentSearchBar(this, this);
+  void ComponentTools::CreateSubWidgets()
+  {
+    mLabel = new QLabel("Add Component", this);
+    mLayout->addWidget(mLabel);
 
-  // Get the component types
-  YTEditorMainWindow * mainWindow = mBrowser->GetMainWindow();
-  YTE::Engine * engine = mainWindow->GetRunningEngine();
-  YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
+    // search bar for adding components
+    mSearchBar = new ComponentSearchBar(this, this);
 
-  compSearch->SetComponentList(system->GetComponentTypes());
+    // Get the component types
+    MainWindow * mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine * engine = mainWindow->GetRunningEngine();
+    YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
 
-  mLayout->addWidget(compSearch);
-}
+    mSearchBar->SetComponentList(system->GetComponentTypes());
 
-ComponentBrowser & ComponentTools::GetBrowser()
-{
-  return *mBrowser;
-}
+    mLayout->addWidget(mSearchBar);
+  }
 
-ComponentSearchBar& ComponentTools::GetSearchBar()
-{
-  return *mSearchBar;
+  ComponentBrowser & ComponentTools::GetBrowser()
+  {
+    return *mBrowser;
+  }
+
+  ComponentSearchBar& ComponentTools::GetSearchBar()
+  {
+    return *mSearchBar;
+  }
 }

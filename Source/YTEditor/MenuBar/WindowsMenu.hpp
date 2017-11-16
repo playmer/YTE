@@ -17,42 +17,47 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
-class YTEditorMainWindow;
-
-class WindowsMenu : public QMenu
+namespace YTEditor
 {
-public:
 
-  WindowsMenu(YTEditorMainWindow * aMainWindow);
-  ~WindowsMenu();
+  class MainWindow;
 
-private:
+  class WindowsMenu : public QMenu
+  {
+  public:
 
-  YTEditorMainWindow * mMainWindow;
+    WindowsMenu(MainWindow * aMainWindow);
+    ~WindowsMenu();
 
-  QMenu * mObjectBrowserMenu;
-  QMenu * MakeObjectBrowserMenu();
-  void OpenObjectBrowser();
-  void CloseObjectBrowser();
+  private:
 
-  QMenu * mComponentBrowserMenu;
-  QMenu * MakeComponentBrowserMenu();
-  void OpenComponentBrowser();
-  void CloseComponentBrowser();
+    MainWindow * mMainWindow;
 
-  QMenu * mOutputConsoleMenu;
-  QMenu * MakeOutputConsoleMenu();
-  void OpenOutputConsole();
-  void CloseOutputConsole();
+    QMenu * mObjectBrowserMenu;
+    QMenu * MakeObjectBrowserMenu();
+    void OpenObjectBrowser();
+    void CloseObjectBrowser();
 
-  QMenu * mMaterialViewerMenu;
-  QMenu * MakeMaterialViewerMenu();
-  void OpenMaterialViewer();
-  void CloseMaterialViewer();
+    QMenu * mComponentBrowserMenu;
+    QMenu * MakeComponentBrowserMenu();
+    void OpenComponentBrowser();
+    void CloseComponentBrowser();
 
-  QMenu * mFileViewerMenu;
-  QMenu * MakeFileViewerMenu();
-  void OpenFileViewer();
-  void CloseFileViewer();
+    QMenu * mOutputConsoleMenu;
+    QMenu * MakeOutputConsoleMenu();
+    void OpenOutputConsole();
+    void CloseOutputConsole();
 
-};
+    QMenu * mMaterialViewerMenu;
+    QMenu * MakeMaterialViewerMenu();
+    void OpenMaterialViewer();
+    void CloseMaterialViewer();
+
+    QMenu * mFileViewerMenu;
+    QMenu * MakeFileViewerMenu();
+    void OpenFileViewer();
+    void CloseFileViewer();
+
+  };
+
+}

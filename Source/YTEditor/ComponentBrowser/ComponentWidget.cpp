@@ -21,304 +21,308 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Meta/Type.hpp"
 #include "YTE/Meta/Attribute.hpp"
 
-#include "../MainWindow/YTEditorMainWindow.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 
-#include "ComponentBrowser.hpp"
-#include "ComponentProperty.hpp"
-#include "ComponentTree.hpp"
-#include "ComponentWidget.hpp"
 
-
-ComponentWidget::ComponentWidget(YTE::Type *type, 
-                                 const char *name, 
-                                 YTE::Component *engineComp, 
-                                 YTEditorMainWindow *aMainWindow, 
-                                 QWidget *parent)
-  : QFrame(parent),
-    mEngineComponent(engineComp),
-    mType(type),
-    mProperties(new QVBoxLayout(this)),
-    mCompName(name),
-    mMainWindow(aMainWindow)
+namespace YTEditor
 {
-  this->setLayout(mProperties);
-  this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-}
 
-ComponentWidget::~ComponentWidget()
-{
-}
-
-std::string const& ComponentWidget::GetName() const
-{
-  return mCompName;
-}
-
-void ComponentWidget::RemoveProperty(QWidget * aWidget)
-{
-  mProperties->removeWidget(aWidget);
-}
-
-
-void ComponentWidget::LoadPropertyMap(YTE::Component &aComponent, 
-                                      YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
-                                      bool aProperty)
-{
-  // load all properties
-  for (auto& prop : aProperties)
+  ComponentWidget::ComponentWidget(YTE::Type *type,
+                                   const char *name,
+                                   YTE::Component *engineComp,
+                                   MainWindow *aMainWindow,
+                                   QWidget *parent)
+    : QFrame(parent)
+    , mEngineComponent(engineComp)
+    , mType(type)
+    , mProperties(new QVBoxLayout(this))
+    , mCompName(name)
+    , mMainWindow(aMainWindow)
   {
-    auto editAttrib = prop.second.get()->GetAttribute<YTE::EditorProperty>();
+    this->setLayout(mProperties);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+  }
 
-    // check if this property contains the editor attribute
-    if (nullptr == editAttrib || false == editAttrib->mVisible)
-    {
-      continue;
-    }
+  ComponentWidget::~ComponentWidget()
+  {
+  }
 
-    auto getter = prop.second.get()->GetGetter();
+  std::string const& ComponentWidget::GetName() const
+  {
+    return mCompName;
+  }
 
-    YTE::Any value = getter->Invoke(&aComponent);
+  void ComponentWidget::RemoveProperty(QWidget * aWidget)
+  {
+    mProperties->removeWidget(aWidget);
+  }
 
-    if (value.IsType<int>())
-    {
-      ComponentProperty<int> *comProp = AddPropertyOrField<int>(prop.first, aProperty);
-      int propData = value.As<int>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<float>())
-    {
-      ComponentProperty<float> *comProp = AddPropertyOrField<float>(prop.first, aProperty);
-      float propData = value.As<float>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<YTE::String>())
-    {
-      ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(prop.first, aProperty);
-      YTE::String propData = value.As<YTE::String>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<std::string>())
-    {
-      // check if it's a drop down of strings
-      auto dropDownAttrib = prop.second.get()->GetAttribute<YTE::DropDownStrings>();
 
-      if (dropDownAttrib)
+  void ComponentWidget::LoadPropertyMap(YTE::Component &aComponent,
+    YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
+    bool aProperty)
+  {
+    // load all properties
+    for (auto& prop : aProperties)
+    {
+      auto editAttrib = prop.second.get()->GetAttribute<YTE::EditorProperty>();
+
+      // check if this property contains the editor attribute
+      if (nullptr == editAttrib || false == editAttrib->mVisible)
       {
-        // get the property
-        ComponentProperty<QStringList> * comProp = AddPropertyOrField<QStringList>(prop.first, aProperty);
+        continue;
+      }
 
-        // grab the list of strings from the attribute
-        std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(this->mEngineComponent);
+      auto getter = prop.second.get()->GetGetter();
 
-        // build a QStringList from the vector of strings
-        QStringList argStrs;
-        for (std::string str : strList)
-        {
-          argStrs.push_back(str.c_str());
-        }
+      YTE::Any value = getter->Invoke(&aComponent);
 
-        // set the list of strings on the property
-        comProp->SetValue(argStrs);
-
-        if (mPropertyWidgets[0])
-        {
-          // get the current string
-          std::string propData = value.As<std::string>();
-
-          if (!propData.empty())
-          {
-            int index = argStrs.indexOf(propData.c_str());
-
-            // set the current string of text for the drop down
-            dynamic_cast<QComboBox*>(comProp->GetWidgets()[0])->setCurrentIndex(index);
-          }
-        }
-
+      if (value.IsType<int>())
+      {
+        ComponentProperty<int> *comProp = AddPropertyOrField<int>(prop.first, aProperty);
+        int propData = value.As<int>();
+        comProp->SetValue(propData);
         comProp->SetEvents();
       }
-      else
+      else if (value.IsType<float>())
       {
-        // otherwise it's just an editable text field
-        ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(prop.first, aProperty);
-        std::string propData = value.As<std::string>();
+        ComponentProperty<float> *comProp = AddPropertyOrField<float>(prop.first, aProperty);
+        float propData = value.As<float>();
+        comProp->SetValue(propData);
+        comProp->SetEvents();
+      }
+      else if (value.IsType<YTE::String>())
+      {
+        ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(prop.first, aProperty);
+        YTE::String propData = value.As<YTE::String>();
+        comProp->SetValue(propData);
+        comProp->SetEvents();
+      }
+      else if (value.IsType<std::string>())
+      {
+        // check if it's a drop down of strings
+        auto dropDownAttrib = prop.second.get()->GetAttribute<YTE::DropDownStrings>();
+
+        if (dropDownAttrib)
+        {
+          // get the property
+          ComponentProperty<QStringList> * comProp = AddPropertyOrField<QStringList>(prop.first, aProperty);
+
+          // grab the list of strings from the attribute
+          std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(this->mEngineComponent);
+
+          // build a QStringList from the vector of strings
+          QStringList argStrs;
+          for (std::string str : strList)
+          {
+            argStrs.push_back(str.c_str());
+          }
+
+          // set the list of strings on the property
+          comProp->SetValue(argStrs);
+
+          if (mPropertyWidgets[0])
+          {
+            // get the current string
+            std::string propData = value.As<std::string>();
+
+            if (!propData.empty())
+            {
+              int index = argStrs.indexOf(propData.c_str());
+
+              // set the current string of text for the drop down
+              dynamic_cast<QComboBox*>(comProp->GetWidgets()[0])->setCurrentIndex(index);
+            }
+          }
+
+          comProp->SetEvents();
+        }
+        else
+        {
+          // otherwise it's just an editable text field
+          ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(prop.first, aProperty);
+          std::string propData = value.As<std::string>();
+          comProp->SetValue(propData);
+          comProp->SetEvents();
+        }
+      }
+      else if (value.IsType<bool>())
+      {
+        ComponentProperty<bool> *comProp = AddPropertyOrField<bool>(prop.first, aProperty);
+        bool propData = value.As<bool>();
+        comProp->SetValue(propData);
+        comProp->SetEvents();
+      }
+      else if (value.IsType<glm::vec2>())
+      {
+        ComponentProperty<glm::vec2> *comProp = AddPropertyOrField<glm::vec2>(prop.first, aProperty);
+        auto propData = value.As<glm::vec2>();
+        comProp->SetValue(propData);
+        comProp->SetEvents();
+      }
+      else if (value.IsType<glm::vec3>())
+      {
+        ComponentProperty<glm::vec3> *comProp = AddPropertyOrField<glm::vec3>(prop.first, aProperty);
+        auto propData = value.As<glm::vec3>();
+        comProp->SetValue(propData);
+        comProp->SetEvents();
+      }
+      else if (value.IsType<glm::vec4>())
+      {
+        ComponentProperty<glm::vec4> *comProp = AddPropertyOrField<glm::vec4>(prop.first, aProperty);
+        auto propData = value.As<glm::vec4>();
         comProp->SetValue(propData);
         comProp->SetEvents();
       }
     }
-    else if (value.IsType<bool>())
+  }
+
+  void ComponentWidget::LoadProperties(YTE::Component &aComponent)
+  {
+    auto& propertyMap = aComponent.GetType()->GetProperties();
+    auto& fieldMap = aComponent.GetType()->GetFields();
+
+    LoadPropertyMap(aComponent, propertyMap, true);
+    LoadPropertyMap(aComponent, fieldMap, false);
+  }
+
+  void ComponentWidget::SavePropertiesToEngine()
+  {
+    for (PropertyWidgetBase* c : mPropertyWidgets)
     {
-      ComponentProperty<bool> *comProp = AddPropertyOrField<bool>(prop.first, aProperty);
-      bool propData = value.As<bool>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<glm::vec2>())
-    {
-      ComponentProperty<glm::vec2> *comProp = AddPropertyOrField<glm::vec2>(prop.first, aProperty);
-      auto propData = value.As<glm::vec2>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<glm::vec3>())
-    {
-      ComponentProperty<glm::vec3> *comProp = AddPropertyOrField<glm::vec3>(prop.first, aProperty);
-      auto propData = value.As<glm::vec3>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-    else if (value.IsType<glm::vec4>())
-    {
-      ComponentProperty<glm::vec4> *comProp = AddPropertyOrField<glm::vec4>(prop.first, aProperty);
-      auto propData = value.As<glm::vec4>();
-      comProp->SetValue(propData);
-      comProp->SetEvents();
-    }
-  }
-}
-
-void ComponentWidget::LoadProperties(YTE::Component &aComponent)
-{
-  auto& propertyMap = aComponent.GetType()->GetProperties();
-  auto& fieldMap = aComponent.GetType()->GetFields();
-
-  LoadPropertyMap(aComponent, propertyMap, true);
-  LoadPropertyMap(aComponent, fieldMap, false);
-}
-
-void ComponentWidget::SavePropertiesToEngine()
-{
-  for (PropertyWidgetBase* c : mPropertyWidgets)
-  {
-    c->SaveToEngine();
-  }
-
-  for (PropertyWidgetBase* c : mFieldWidgets)
-  {
-    c->SaveToEngine();
-  }
-}
-
-void ComponentWidget::RemoveComponentFromEngine()
-{
-  if (!mEngineComponent)
-  {
-    return;
-  }
-
-  YTE::Composition * object = mEngineComponent->GetOwner();
-
-  if (!object)
-  {
-    return;
-  }
-
- object->RemoveComponent(mEngineComponent->GetType());
- mEngineComponent = nullptr;
-}
-
-std::vector<PropertyWidgetBase*> ComponentWidget::GetPropertyWidgets()
-{
-  return mPropertyWidgets;
-}
-
-std::vector<PropertyWidgetBase*> ComponentWidget::GetFieldWidgets()
-{
-  return mFieldWidgets;
-}
-
-void ComponentWidget::keyPressEvent(QKeyEvent * aEvent)
-{
-  if (aEvent->modifiers() == Qt::Modifier::CTRL && (aEvent->key() == Qt::Key_Z || aEvent->key() == Qt::Key_Y))
-  {
-    mMainWindow->keyPressEvent(aEvent);
-  }
-  else
-  {
-    this->QFrame::keyPressEvent(aEvent);
-  }
-}
-
-ComponentDelegate::ComponentDelegate(ComponentTree * aTree, QWidget * aParent)
-  : QStyledItemDelegate(aParent), mTree(aTree)
-{
-}
-
-void ComponentDelegate::paint(QPainter * painter, 
-                              const QStyleOptionViewItem & option, 
-                              const QModelIndex & index) const
-{
-  Q_UNUSED(index);
-
-  // paint the default QTreeWidgetItem
-  QStyledItemDelegate::paint(painter, option, index);
-
-  if (index.parent().isValid())
-  {
-    return;
-  }
-
-
-  QRect r = option.rect;
-
-  // get dimensions and top left corner of button
-  int x = r.right() - 30;
-  int y = r.top();
-  int w = 30;
-  int h = r.height();
-
-  // fill out button style (visual representation only)
-  QStyleOptionButton button;
-  button.rect = QRect(x, y, w, h);
-  button.text = "X";
-  button.state = QStyle::State_Enabled;
-
-  // draw the button
-  QApplication::style()->drawControl(QStyle::CE_PushButton,
-    &button, painter);
-}
-
-bool ComponentDelegate::editorEvent(QEvent * event, 
-                                    QAbstractItemModel * model, 
-                                    const QStyleOptionViewItem & option, 
-                                    const QModelIndex & index)
-{
-  Q_UNUSED(index);
-  Q_UNUSED(model);
-
-  if (event->type() == QEvent::MouseButtonRelease)
-  {
-    QMouseEvent * e = (QMouseEvent *)event;
-
-    QTreeWidgetItem *item = mTree->itemAt(e->pos());
-
-    if (!item || item->childCount() == 0)
-    {
-      return false;
+      c->SaveToEngine();
     }
 
-    int clickX = e->x();
-    int clickY = e->y();
+    for (PropertyWidgetBase* c : mFieldWidgets)
+    {
+      c->SaveToEngine();
+    }
+  }
 
-    QRect r = option.rect;//getting the rect of the cell
-    int x, y, w, h;
-    x = r.left() + r.width() - 30;//the X coordinate
-    y = r.top();//the Y coordinate
-    w = 30;//button width
-    h = 30;//button height
+  void ComponentWidget::RemoveComponentFromEngine()
+  {
+    if (!mEngineComponent)
+    {
+      return;
+    }
 
-    if (clickX > x && clickX < x + w)
-      if (clickY > y && clickY < y + h)
+    YTE::Composition * object = mEngineComponent->GetOwner();
+
+    if (!object)
+    {
+      return;
+    }
+
+    object->RemoveComponent(mEngineComponent->GetType());
+    mEngineComponent = nullptr;
+  }
+
+  std::vector<PropertyWidgetBase*> ComponentWidget::GetPropertyWidgets()
+  {
+    return mPropertyWidgets;
+  }
+
+  std::vector<PropertyWidgetBase*> ComponentWidget::GetFieldWidgets()
+  {
+    return mFieldWidgets;
+  }
+
+  void ComponentWidget::keyPressEvent(QKeyEvent * aEvent)
+  {
+    if (aEvent->modifiers() == Qt::Modifier::CTRL && (aEvent->key() == Qt::Key_Z || aEvent->key() == Qt::Key_Y))
+    {
+      mMainWindow->keyPressEvent(aEvent);
+    }
+    else
+    {
+      this->QFrame::keyPressEvent(aEvent);
+    }
+  }
+
+  ComponentDelegate::ComponentDelegate(ComponentTree * aTree, QWidget * aParent)
+    : QStyledItemDelegate(aParent), mTree(aTree)
+  {
+  }
+
+  void ComponentDelegate::paint(QPainter * painter,
+    const QStyleOptionViewItem & option,
+    const QModelIndex & index) const
+  {
+    Q_UNUSED(index);
+
+    // paint the default QTreeWidgetItem
+    QStyledItemDelegate::paint(painter, option, index);
+
+    if (index.parent().isValid())
+    {
+      return;
+    }
+
+
+    QRect r = option.rect;
+
+    // get dimensions and top left corner of button
+    int x = r.right() - 30;
+    int y = r.top();
+    int w = 30;
+    int h = r.height();
+
+    // fill out button style (visual representation only)
+    QStyleOptionButton button;
+    button.rect = QRect(x, y, w, h);
+    button.text = "X";
+    button.state = QStyle::State_Enabled;
+
+    // draw the button
+    QApplication::style()->drawControl(QStyle::CE_PushButton,
+      &button, painter);
+  }
+
+  bool ComponentDelegate::editorEvent(QEvent * event,
+    QAbstractItemModel * model,
+    const QStyleOptionViewItem & option,
+    const QModelIndex & index)
+  {
+    Q_UNUSED(index);
+    Q_UNUSED(model);
+
+    if (event->type() == QEvent::MouseButtonRelease)
+    {
+      QMouseEvent * e = (QMouseEvent *)event;
+
+      QTreeWidgetItem *item = mTree->itemAt(e->pos());
+
+      if (!item || item->childCount() == 0)
       {
-        
-
-        mTree->RemoveComponent(item);
-        
-        return true;
+        return false;
       }
+
+      int clickX = e->x();
+      int clickY = e->y();
+
+      QRect r = option.rect;//getting the rect of the cell
+      int x, y, w, h;
+      x = r.left() + r.width() - 30;//the X coordinate
+      y = r.top();//the Y coordinate
+      w = 30;//button width
+      h = 30;//button height
+
+      if (clickX > x && clickX < x + w)
+        if (clickY > y && clickY < y + h)
+        {
+
+
+          mTree->RemoveComponent(item);
+
+          return true;
+        }
+    }
+
+    return false;
   }
 
-  return false;
 }

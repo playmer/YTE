@@ -10,11 +10,13 @@ Include_Directories(${ParentDirectory}
 Set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
+                   ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
                    ComponentBrowser/ComponentBrowser.hpp
                    ComponentBrowser/ComponentBrowser.cpp
                    ComponentBrowser/ComponentProperty.hpp
+                   ComponentBrowser/ComponentProperty.cpp
                    ComponentBrowser/ComponentSearchBar.hpp
                    ComponentBrowser/ComponentSearchBar.cpp
                    ComponentBrowser/ComponentTools.hpp
@@ -27,14 +29,36 @@ Set(YTEditorSource main.cpp
                    ComponentBrowser/PropertyWidgetBase.hpp
                    ComponentBrowser/SearchBarEventFilter.hpp
                    ComponentBrowser/SearchBarEventFilter.cpp
-                   ComponentBrowser/YTECheckBox.hpp
-                   ComponentBrowser/YTELineEdit.hpp
+                   ComponentBrowser/CheckBox.hpp
+                   ComponentBrowser/LineEdit.hpp
                    FileViewer/FileViewer.hpp
                    FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
-                   GameWindow/GameWindow.cpp					
-                   MainWindow/YTEditorMainWindow.hpp
-                   MainWindow/YTEditorMainWindow.cpp
+                   GameWindow/GameWindow.cpp
+                   GameWindow/GameToolbar.hpp
+                   GameWindow/GameToolbar.cpp
+                   Gizmos/Axis.hpp
+                   Gizmos/Axis.cpp
+                   Gizmos/Gizmo.hpp
+                   Gizmos/Gizmo.cpp
+                   Gizmos/GizmoToolbar.hpp
+                   Gizmos/GizmoToolbar.cpp
+                   Gizmos/Translate.hpp
+                   Gizmos/Translate.cpp
+                   Gizmos/Scale.hpp
+                   Gizmos/Scale.cpp
+                   Gizmos/Rotate.hpp
+                   Gizmos/Rotate.cpp
+                   MainWindow/MainWindow.hpp
+                   MainWindow/MainWindow.cpp
+                   MainWindow/ScriptBind.hpp
+                   MainWindow/ScriptBind.cpp
+                   MainWindow/Toolbar.hpp
+                   MainWindow/Toolbar.cpp
+                   MainWindow/ToolbarButton.hpp
+                   MainWindow/ToolbarButton.cpp
+                   MainWindow/ComponentFactoryInit.hpp
+                   MainWindow/ComponentFactoryInit.cpp
                    MaterialViewer/MaterialViewer.hpp
                    MaterialViewer/MaterialViewer.cpp
                    MenuBar/EditMenu.hpp
@@ -71,7 +95,7 @@ Set_Target_Properties(YTEditor
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
-	 
+     
 YTE_Source_Group(YTEditor_Root YTEditorSource) 
                           
 # Find the QtWidgets library

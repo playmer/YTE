@@ -16,38 +16,45 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qlineedit.h>
 
+#include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Meta/Type.hpp"
 #include "YTE/Utilities/Utilities.h"
-#include "YTE/Core/ForwardDeclarations.hpp"
 
 class QCompleter;
-class ComponentTools;
 
-class ComponentSearchBar : public QLineEdit
+namespace YTEditor
 {
-public:
-  ComponentSearchBar(ComponentTools * compTools, QWidget * parent = nullptr);
-  ~ComponentSearchBar();
+  class ComponentTools;
 
-  // takes a vector of component types from the YTE::Engine
-  // this can be found by getting the ComponentSystem component from the engine
-  // then calling GetComponentTypes() on that component
-  void SetComponentList(const std::vector<YTE::Type*>& aTypeList);
+  class ComponentSearchBar : public QLineEdit
+  {
+  public:
+    ComponentSearchBar(ComponentTools * compTools, QWidget * parent = nullptr);
+    ~ComponentSearchBar();
 
-  void AddComponent(QString aCompName);
+    // takes a vector of component types from the YTE::Engine
+    // this can be found by getting the ComponentSystem component from the engine
+    // then calling GetComponentTypes() on that component
+    void SetComponentList(const std::vector<YTE::Type*>& aTypeList);
 
-  void OnReturnPressed();
+    void AddComponent(QString aCompName);
 
-private:
+    void OnReturnPressed();
 
-  QCompleter * mCompleter;
+    void OnTabPressed();
 
-  QStringList mComponentList;
+  private:
 
-  std::vector<YTE::Type*> mComponentTypes;
+    QCompleter * mCompleter;
 
-  YTE::Type* FindBoundType(std::string &aName);
+    QStringList mComponentList;
 
-  ComponentTools * mComponentTools;
+    std::vector<YTE::Type*> mComponentTypes;
 
-};
+    YTE::Type* FindBoundType(std::string &aName);
+
+    ComponentTools * mComponentTools;
+
+  };
+
+}

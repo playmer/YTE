@@ -69,7 +69,7 @@ namespace YTE
     YTEBindProperty(&Composition::GetSpace, YTENoSetter, "Space");
   }
 
-  Composition::Composition(Engine *aEngine, Space *aSpace, String &aName)
+  Composition::Composition(Engine *aEngine, String &aName, Space *aSpace)
     : mEngine(aEngine)
     , mSpace(aSpace)
     , mOwner(nullptr)
@@ -221,43 +221,47 @@ namespace YTE
 
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
-    Composition *comp =  AddCompositionInternal(mEngine->GetArchetype(aArchetype), aObjectName);
-    
+    Composition *comp = AddCompositionInternal(std::make_unique<Composition>(mEngine,
+                                                                             aObjectName,
+                                                                             mSpace),
+                                               mEngine->GetArchetype(aArchetype),
+                                               aObjectName);
+
     comp->SetArchetypeName(aArchetype);
 
     return comp;
   }
 
-  Composition* Composition::AddCompositionInternal(RSValue *aSerialization, String aObjectName)
+  Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
-    RSValue *archetype = aSerialization;
-
-    DebugObjection(false == archetype->IsObject(), 
-                "We're trying to serialize something that isn't a composition.");
-
-    // On release just exit out on these errors.
-    if (false == archetype->IsObject())
+    auto &composition = mCompositions.Emplace(aObjectName, std::move(mComposition))->second;
+    if (aSerialization)
     {
-      printf("We're trying to serialize something that isn't a composition.\n");
-      return nullptr;
-    }
+      RSValue *archetype = aSerialization;
 
-    DebugObjection(nullptr == archetype, 
-                "Archetype given is not an object for the object of the name: %s.\n",
-                aObjectName.c_str());
+      DebugObjection(false == archetype->IsObject(),
+        "We're trying to serialize something that isn't a composition.");
 
-    if (nullptr == archetype)
-    {
-      printf("No archetype provided for the object of the name %s.\n",
-             aObjectName.c_str());
-      return nullptr;
-    }
+      // On release just exit out on these errors.
+      if (false == archetype->IsObject())
+      {
+        printf("We're trying to serialize something that isn't a composition.\n");
+        return nullptr;
+      }
 
-    auto &composition = mCompositions.Emplace(aObjectName,
-                                              std::make_unique<Composition>(mEngine,
-                                                                            mSpace,
-                                                                            aObjectName))->second;
-    composition->Deserialize(archetype);
+      DebugObjection(nullptr == archetype,
+        "Archetype given is not an object for the object of the name: %s.\n",
+        aObjectName.c_str());
+
+      if (nullptr == archetype)
+      {
+        printf("No archetype provided for the object of the name %s.\n",
+          aObjectName.c_str());
+        return nullptr;
+      }
+
+      composition->Deserialize(archetype);
+    };
 
     return composition.get();
   }
@@ -265,7 +269,11 @@ namespace YTE
 
   Composition* Composition::AddComposition(RSValue *aSerialization, String aObjectName)
   {
-    auto composition = AddCompositionInternal(aSerialization, aObjectName);
+    auto composition = AddCompositionInternal(std::make_unique<Composition>(mEngine,
+                                                                            aObjectName,
+                                                                            mSpace),
+                                              aSerialization, 
+                                              aObjectName);
 
     if (composition != nullptr)
     {
@@ -378,8 +386,8 @@ namespace YTE
 
       auto &composition = mCompositions.Emplace(compositionName,
                                                 std::make_unique<Composition>(mEngine, 
-                                                                              mSpace, 
-                                                                              compositionName))->second;
+                                                                              compositionName, 
+                                                                              mSpace))->second;
 
       composition->SetOwner(this);
       composition->Deserialize(&compositionIt->value);
