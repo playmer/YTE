@@ -614,6 +614,25 @@ namespace YTE
     return parent;
   }
 
+  void Composition::ReParent(Composition * aNewParent)
+  {
+    auto parent = GetParent();
+    // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
+    // and default re-parenting of spaces
+    if (aNewParent == nullptr && (parent == mEngine || this == mSpace))
+    {
+      return;
+    }
+
+    if (aNewParent == nullptr)
+    {
+      aNewParent = mSpace;
+    }
+
+
+
+  }
+
   // Get the parent Space or Engine.
   Composition* Composition::GetUniverseOrSpaceOrEngine()
   {

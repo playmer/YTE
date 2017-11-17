@@ -183,6 +183,7 @@ namespace YTE
     Composition* GetOwner() { return mOwner; };
     void SetOwner(Composition *aOwner);
     Composition* GetParent();
+    void ReParent(Composition *aNewParent = nullptr);
     Composition* GetUniverseOrSpaceOrEngine();
 
     String& GetName() { return mName; };
