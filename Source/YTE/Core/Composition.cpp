@@ -629,8 +629,20 @@ namespace YTE
       aNewParent = mSpace;
     }
 
+    auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+    {
+      return aLhs.get() == aRhs;
+    };
 
+    auto& parentCompositions = parent->mCompositions;
+    auto iter = parentCompositions.FindIteratorByPointer(mName, this, compare);
 
+    if (iter != parentCompositions.end()) 
+    {
+      auto unique_this = std::move(iter->second);
+      parent->RemoveCompositionInternal(iter);
+      aNewParent->AddCompositionInternal(std::move(unique_this), nullptr, mName);
+    }
   }
 
   // Get the parent Space or Engine.
