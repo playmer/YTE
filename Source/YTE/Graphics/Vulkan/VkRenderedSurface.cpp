@@ -524,34 +524,34 @@ namespace YTE
       mRenderingCommandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
       for (auto &mesh : mMeshes)
       {
-        for (unsigned int i = 0; i < mesh.second->mSubmeshes.size(); ++i)
-        {
-          auto &submesh = mesh.second->mSubmeshes[i];
+        auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
-          if (submesh->mShader != shader.second.get())
-          {
-            continue;
-          }
+        for (auto it = range.first; it != range.second; ++it)
+        {
+          auto &submesh = it->second;
 
           mRenderingCommandBuffer->bindVertexBuffer(0,
                                                     submesh->mVertexBuffer,
                                                     0);
 
           mRenderingCommandBuffer->bindIndexBuffer(submesh->mIndexBuffer,
-            0,
-            vk::IndexType::eUint32);
+                                                   0,
+                                                   vk::IndexType::eUint32);
 
           for (auto &model : mInstantiatedModels[mesh.second.get()])
           {
             auto data = model->mPipelineData[submesh.get()];
             mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-              data.mPipelineLayout,
-              0,
-              data.mDescriptorSet,
-              nullptr);
+                                                        data.mPipelineLayout,
+                                                        0,
+                                                        data.mDescriptorSet,
+                                                        nullptr);
 
             mRenderingCommandBuffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                                 1, 0, 0, 0);
+                                                 1, 
+                                                 0, 
+                                                 0, 
+                                                 0);
           }
         }
       }

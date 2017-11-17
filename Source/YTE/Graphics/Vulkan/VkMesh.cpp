@@ -198,7 +198,8 @@ namespace YTE
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      mSubmeshes.emplace_back(std::make_unique<VkSubmesh>(&mParts[i], aSurface));
+      auto submesh = std::make_unique<VkSubmesh>(&mParts[i], aSurface);
+      mSubmeshes.emplace(submesh->mShader, std::move(submesh));
     }
 
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
@@ -214,7 +215,8 @@ namespace YTE
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      mSubmeshes.emplace_back(std::make_unique<VkSubmesh>(&mParts[i], aSurface));
+      auto submesh = std::make_unique<VkSubmesh>(&mParts[i], aSurface);
+      mSubmeshes.emplace(submesh->mShader, std::move(submesh));
     }
 
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
@@ -230,7 +232,7 @@ namespace YTE
 
     for (auto &submesh : mSubmeshes)
     {
-      submesh->LoadToVulkan(aEvent);
+      submesh.second->LoadToVulkan(aEvent);
     }
   }
 }

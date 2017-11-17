@@ -16,6 +16,6 @@ namespace YTE
   private:
     Texture *mTexture;
     std::string mTextureName;
-    std::unique_ptr<InstantiatedSprite> mInstantiatedModel;
+    std::unique_ptr<InstantiatedSprite> mInstantiatedSprite;
   };
 }

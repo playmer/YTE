@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Vulkan_VkMesh_hpp
 #define YTE_Graphics_Vulkan_VkMesh_hpp
 
+#include <unordered_map>
+
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -62,7 +64,8 @@ namespace YTE
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
-    std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
+    //std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
+    std::unordered_multimap<VkShader*, std::unique_ptr<VkSubmesh>> mSubmeshes;
     VkRenderedSurface *mSurface;
   };
 }

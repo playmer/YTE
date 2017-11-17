@@ -4,6 +4,7 @@ namespace YTE
 {
   VkInstantiatedSprite::VkInstantiatedSprite(std::string &aTextureFile, VkRenderedSurface *aSurface)
   {
+
   }
 
   VkInstantiatedSprite::~VkInstantiatedSprite()

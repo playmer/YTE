@@ -26,6 +26,8 @@ namespace YTE
     void UpdateTransformation(glm::mat4 &aTransformation) override;
 
     void GraphicsDataUpdate(GraphicsDataUpdateVk *aEvent);
+
+  private:
   };
 }
 

@@ -55,9 +55,9 @@ namespace YTE
                                                     allocator);
 
     // create descriptor sets
-    for (auto& mesh : mLoadedMesh->mSubmeshes)
+    for (auto& submesh : mLoadedMesh->mSubmeshes)
     {
-      CreateDescriptorSet(mesh.get());
+      CreateDescriptorSet(submesh.second.get());
     }
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);
