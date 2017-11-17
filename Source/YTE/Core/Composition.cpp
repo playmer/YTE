@@ -629,15 +629,14 @@ namespace YTE
       aNewParent = mSpace;
     }
 
-    auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+    auto range = parent->FindAllCompositionsByName(mName);
+    auto iter = range.begin();
+    while (iter != range.end && iter->second.get() != this)
     {
-      return aLhs.get() == aRhs;
-    };
+      ++iter;
+    }
 
-    auto& parentCompositions = parent->mCompositions;
-    auto iter = parentCompositions.FindIteratorByPointer(mName, this, compare);
-
-    if (iter != parentCompositions.end()) 
+    if (iter != range.end()) 
     {
       auto unique_this = std::move(iter->second);
       parent->RemoveCompositionInternal(iter);
