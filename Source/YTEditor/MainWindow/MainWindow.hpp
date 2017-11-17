@@ -76,9 +76,12 @@ namespace YTEditor
 
     YTE::String& GetRunningLevelName() { return mRunningLevelName; }
 
+    YTE::Space* GetMainSession();
+
     void SetRunningSpaceName(YTE::String &aName);
     YTE::String& GetRunningSpaceName();
 
+    void CreateBlankLevel(const YTE::String& aLevelName);
     void LoadLevel(YTE::String aLevelName);
     void LoadCurrentLevelInfo();
 

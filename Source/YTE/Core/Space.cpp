@@ -16,8 +16,13 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/AssetLoader.hpp"
 
+#include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
+
+#include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.h"
 
@@ -68,9 +73,7 @@ namespace YTE
   {
     if (mStartingLevel.Empty())
     {
-      String empty = "EmptyLevel";
-      Load(mEngine->GetLevel(empty));
-      mLevelName = empty;
+      CreateBlankLevel("NewLevel");
     }
     else
     {
@@ -138,6 +141,26 @@ namespace YTE
   // Cleans up anything in the Space.
   Space::~Space() {  mCompositions.Clear();  }
 
+
+  void Space::CreateBlankLevel(const String& aLevelName)
+{
+    mCompositions.Clear();
+    mComponents.Clear();
+
+    mLevelName = aLevelName;
+
+    auto graphicsView = AddComponent<GraphicsView>();
+    graphicsView->ChangeWindow("Yours Truly Engine");
+    auto camera = AddComposition<Composition>("Camera", mEngine, this);
+    camera->SetOwner(this);
+    camera->AddComponent<Camera>();
+    camera->AddComponent<Orientation>();
+    camera->AddComponent<Transform>();
+
+    Initialize();
+
+    mLoading = false;
+  }
 
   void Space::LoadLevel(String &level)
   {

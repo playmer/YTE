@@ -120,7 +120,7 @@ namespace YTEditor
     //mMainWindow->GetRunningEngine()->Update();
     //mMainWindow->LoadCurrentLevelInfo();
 
-    mMainWindow->LoadLevel("EmptyLevel");
+    mMainWindow->CreateBlankLevel("NewLevel");
 
   }
 

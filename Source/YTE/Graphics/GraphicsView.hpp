@@ -28,6 +28,8 @@ namespace YTE
       return mLastCamera;
     }
 
+    void ChangeWindow(const std::string& aWindowName);
+
     Window* GetWindow()
     {
       return mWindow;

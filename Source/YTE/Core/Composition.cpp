@@ -1,6 +1,5 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
-#include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
@@ -69,7 +68,7 @@ namespace YTE
     YTEBindProperty(&Composition::GetSpace, YTENoSetter, "Space");
   }
 
-  Composition::Composition(Engine *aEngine, String &aName, Space *aSpace)
+  Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace)
     : mEngine(aEngine)
     , mSpace(aSpace)
     , mOwner(nullptr)

@@ -298,6 +298,20 @@ namespace YTEditor
     mFileMenu->SaveLevel();
   }
 
+  YTE::Space * MainWindow::GetMainSession()
+  {
+    // Get all the compositions on the engine
+    YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
+
+    // iterator to the main session space
+    auto it_mainSession = engineMap->begin();
+
+    mRunningSpaceName = it_mainSession->first;
+
+    // Get the space that represents the main session
+    return static_cast<YTE::Space*>(it_mainSession->second.get());
+  }
+
   void MainWindow::SetRunningSpaceName(YTE::String &aName)
   {
     mRunningSpaceName = aName;
@@ -308,20 +322,22 @@ namespace YTEditor
     return mRunningSpaceName;
   }
 
+  void MainWindow::CreateBlankLevel(const YTE::String & aLevelName)
+  {
+    mRunningLevelName = aLevelName;
+
+    YTE::Space* mainSession = GetMainSession();
+
+    mainSession->CreateBlankLevel(aLevelName);
+
+    LoadCurrentLevelInfo();
+  }
+
   void MainWindow::LoadLevel(YTE::String aLevelName)
   {
     mRunningLevelName = aLevelName;
 
-    // Get all the compositions on the engine
-    YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
-
-    // iterator to the main session space
-    auto it_mainSession = engineMap->begin();
-
-    mRunningSpaceName = it_mainSession->first;
-
-    // Get the space that represents the main session
-    YTE::Space *mainSession = static_cast<YTE::Space*>(it_mainSession->second.get());
+    YTE::Space* mainSession = GetMainSession();
 
     mainSession->LoadLevel(aLevelName);
 
