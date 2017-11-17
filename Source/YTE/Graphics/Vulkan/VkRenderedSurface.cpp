@@ -524,6 +524,7 @@ namespace YTE
       mRenderingCommandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
       for (auto &mesh : mMeshes)
       {
+        // We get the submeshes that use the current shader, then draw them.
         auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
         for (auto it = range.first; it != range.second; ++it)
