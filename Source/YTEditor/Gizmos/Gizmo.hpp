@@ -2,6 +2,8 @@
 
 #include <glm/vec3.hpp>
 
+#include "YTE/Core/EventHandler.hpp"
+
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -10,7 +12,7 @@ namespace YTEditor
   class MainWindow;
   class Axis;
 
-  class Gizmo
+  class Gizmo : public YTE::EventHandler
   {
   public:
 
@@ -34,6 +36,8 @@ namespace YTEditor
     MainWindow* GetMainWindow();
 
     glm::vec3 GetFirstClickMousePos();
+
+    void SelectedObjectTransformChanged(YTE::TransformChanged *aEvent);
 
   protected:
 

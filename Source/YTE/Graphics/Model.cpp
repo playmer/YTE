@@ -38,6 +38,12 @@ namespace YTE
 
     std::vector<std::string> result;
 
+    result.push_back("None");
+    result.push_back("cube.fbx");
+    result.push_back("sphere.fbx");
+    result.push_back("cylinder.fbx");
+    result.push_back("plane.fbx");
+
     for (auto & p : filesystem::directory_iterator(finalPath))
     {
       std::string str = p.path().filename().generic_string();
@@ -131,18 +137,13 @@ namespace YTE
     {
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
-
-    ModelChanged modChange;
-    modChange.Object = mOwner;
-
-    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 
 
   void Model::SetMesh(std::string aName)
   {
-    if (aName == mMeshName)
+    if (aName == mMeshName || aName == "None")
     {
       return;
     }
@@ -155,6 +156,10 @@ namespace YTE
     }
     Destroy();
     Create();
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 
@@ -219,4 +224,66 @@ namespace YTE
 
     mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetWorldScale());
   }
+
+
+  YTEDefineType(Animator::Animation)
+  {
+    YTERegisterType(Animator::Animation);
+
+    YTEBindProperty(&Animator::Animation::GetSpeed, &Animator::Animation::SetSpeed, "Speed");
+  }
+
+  YTEDefineType(Animator)
+  {
+    YTERegisterType(Animator);
+
+    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Animator::Lister, "Animations");
+  }
+
+  Animator::Animation::Animation(std::string aName) : mName(aName), mSpeed(0.0f)
+  {
+  }
+
+  float Animator::Animation::GetSpeed()
+  {
+    return mSpeed;
+  }
+
+
+  void Animator::Animation::SetSpeed(float aSpeed)
+  {
+    mSpeed = aSpeed;
+  }
+
+
+  Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+    : Component(aOwner, aSpace)
+  {
+    DeserializeByType<Animator*>(aProperties, this, Animator::GetStaticType());
+  }
+
+  std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)
+  {
+    auto self = static_cast<Animator*>(aSelf);
+
+    std::vector<std::pair<YTE::Object*, std::string>> animations;
+
+    for (auto &animation : self->mAnimations)
+    {
+      animations.emplace_back(std::make_pair(animation.first, animation.second));
+    }
+
+    return animations;
+  }
+
+  Animator::Animation* Animator::AddAnimation(std::string aName)
+  {
+    Animation *anim = new Animation(aName);
+
+    mAnimations.emplace_back(std::make_pair(anim, aName));
+
+    return anim;
+  }
+
 }
+

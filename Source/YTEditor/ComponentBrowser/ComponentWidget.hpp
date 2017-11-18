@@ -18,6 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qframe.h>
 #include <qlayout.h>
 #include <qstyleditemdelegate.h>
+#include <qtreewidget.h>
 
 #include "YTE/Core/Utilities.hpp"
 
@@ -49,12 +50,13 @@ namespace YTEditor
   {
   public:
 
-    ComponentWidget(YTE::Type * type, const char * name,
-      YTE::Component * engineComp,
-      MainWindow *aMainWindow,
-      QWidget * parent = nullptr);
+    ComponentWidget(YTE::Type *type,
+                    const char *name,
+                    YTE::Component *engineComp,
+                    MainWindow *aMainWindow,
+                    QTreeWidgetItem *aTopItem,
+                    QWidget *parent = nullptr);
 
-    ~ComponentWidget();
 
     std::string const& GetName() const;
 
@@ -62,7 +64,7 @@ namespace YTEditor
     template <typename tType>
     ComponentProperty<tType>* AddPropertyOrField(const std::string &aName, bool aProperty)
     {
-      ComponentProperty<tType> * prop = new ComponentProperty<tType>(aName, mMainWindow, this);
+      ComponentProperty<tType> *prop = new ComponentProperty<tType>(aName, mMainWindow, this);
       mProperties->addWidget(prop);
 
       if (aProperty)
@@ -76,21 +78,23 @@ namespace YTEditor
       return prop;
     }
 
-    void RemoveProperty(QWidget * aWidget);
 
-    void LoadProperties(YTE::Component & aComponent);
-    void LoadPropertyMap(YTE::Component &aComponent,
-      YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
-      bool aProperty);
+
+    void RemoveProperty(QWidget *aWidget);
+
+    void LoadProperties(YTE::Component *aComponent);
+    void LoadPropertyMap(YTE::Component *aComponent,
+                         YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
+                         bool aProperty);
 
     void SavePropertiesToEngine();
 
-    YTE::Type * GetType()
+    YTE::Type* GetType()
     {
       return mType;
     }
 
-    YTE::Component * GetEngineComponent()
+    YTE::Component* GetEngineComponent()
     {
       return mEngineComponent;
     }
@@ -108,6 +112,8 @@ namespace YTEditor
 
     MainWindow *mMainWindow;
 
+    QTreeWidgetItem *mTopItem;
+
     std::string mCompName;
     QVBoxLayout * mProperties;
     YTE::Type * mType;
@@ -116,6 +122,13 @@ namespace YTEditor
 
     std::vector<PropertyWidgetBase*> mPropertyWidgets;
     std::vector<PropertyWidgetBase*> mFieldWidgets;
+
+    void LoadProperty(YTE::Component &aComponent, 
+                      bool aProperty, 
+                      std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp);
+
+
+    void LoadEditorHeader();
 
   };
 

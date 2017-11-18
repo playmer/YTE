@@ -69,11 +69,18 @@ namespace YTEditor
     for (auto& comp : components)
     {
       YTE::String name = comp.first->GetName();
-      ComponentWidget * widg = CreateComponent(comp.second.get()->GetType(),
-        name.c_str(),
-        comp.second.get());
-      widg->LoadProperties(*comp.second.get());
-      BaseAddComponent(widg);
+
+      QTreeWidgetItem *item = new QTreeWidgetItem(this);
+      item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+      item->setSizeHint(0, QSize(0, 27));
+
+      ComponentWidget *widg = CreateComponent(comp.second.get()->GetType(),
+                                              name.c_str(),
+                                              comp.second.get(),
+                                              item);
+
+      widg->LoadProperties(comp.second.get());
+      BaseAddComponent(widg, item);
     }
 
     QString archName = aObj->GetArchetypeName().c_str();
@@ -82,13 +89,16 @@ namespace YTEditor
   }
 
   ComponentWidget *ComponentTree::CreateComponent(YTE::Type *aType,
-    const char *aName,
-    YTE::Component *aEngineComp)
+                                                  const char *aName,
+                                                  YTE::Component *aEngineComp,
+                                                  QTreeWidgetItem *aTopItem)
   {
     ComponentWidget *comp = new ComponentWidget(aType,
-      aName,
-      aEngineComp,
-      mComponentBrowser->GetMainWindow());
+                                                aName,
+                                                aEngineComp,
+                                                mComponentBrowser->GetMainWindow(),
+                                                aTopItem);
+
     comp->setObjectName(aName);
     return comp;
   }
@@ -103,14 +113,14 @@ namespace YTEditor
     aItem->setBackgroundColor(0, "#383838");
   }
 
-  void ComponentTree::AddComponent(ComponentWidget *aWidget)
-  {
-    auto cmd = std::make_unique<AddComponentCmd>(aWidget->GetName().c_str(),
-      mOutputConsole);
-
-    mUndoRedo->InsertCommand(std::move(cmd));
-    BaseAddComponent(aWidget);
-  }
+  //void ComponentTree::AddComponent(ComponentWidget *aWidget)
+  //{
+  //  auto cmd = std::make_unique<AddComponentCmd>(aWidget->GetName().c_str(),
+  //    mOutputConsole);
+  //
+  //  mUndoRedo->InsertCommand(std::move(cmd));
+  //  BaseAddComponent(aWidget);
+  //}
 
   void ComponentTree::RemoveComponent(QTreeWidgetItem *aWidget)
   {
@@ -121,22 +131,19 @@ namespace YTEditor
     BaseRemoveComponent(aWidget);
   }
 
-  void ComponentTree::BaseAddComponent(ComponentWidget *aWidget)
+  void ComponentTree::BaseAddComponent(ComponentWidget *aWidget, QTreeWidgetItem *aTopItem)
   {
-    QTreeWidgetItem * item = new QTreeWidgetItem(this);
-    item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-    item->setSizeHint(0, QSize(0, 27));
-    item->setText(0, aWidget->GetName().c_str());
+    aTopItem->setText(0, aWidget->GetName().c_str());
 
-    QTreeWidgetItem * child = new QTreeWidgetItem(item);
+    QTreeWidgetItem * child = new QTreeWidgetItem(aTopItem);
     child->setFlags(Qt::NoItemFlags);
     this->setItemWidget(child, 0, aWidget);
 
-    item->addChild(child);
+    aTopItem->addChild(child);
 
     YTE::String tip = aWidget->GetEngineComponent()->GetType()->Description();
 
-    item->setToolTip(0, tip.c_str());
+    aTopItem->setToolTip(0, tip.c_str());
     child->setToolTip(0, tip.c_str());
 
     connect(this,
@@ -148,7 +155,7 @@ namespace YTEditor
       this,
       &ComponentTree::SetItemToExpandedColor);
 
-    this->insertTopLevelItem(this->topLevelItemCount(), item);
+    insertTopLevelItem(this->topLevelItemCount(), aTopItem);
 
     mComponentWidgets.push_back(aWidget);
   }

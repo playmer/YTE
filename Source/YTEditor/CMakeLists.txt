@@ -25,6 +25,10 @@ Set(YTEditorSource main.cpp
                    ComponentBrowser/ComponentTree.cpp
                    ComponentBrowser/ComponentWidget.hpp
                    ComponentBrowser/ComponentWidget.cpp
+                   ComponentBrowser/HeaderListProperty.hpp
+                   ComponentBrowser/HeaderListProperty.cpp
+                   ComponentBrowser/HeaderListWidget.hpp
+                   ComponentBrowser/HeaderListWidget.cpp
                    ComponentBrowser/PropertyWidget.hpp
                    ComponentBrowser/PropertyWidgetBase.hpp
                    ComponentBrowser/SearchBarEventFilter.hpp

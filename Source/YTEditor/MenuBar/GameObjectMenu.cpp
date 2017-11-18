@@ -13,10 +13,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Core/ComponentSystem.h"
+
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MenuBar/GameObjectMenu.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
 
 
 
@@ -64,6 +69,10 @@ namespace YTEditor
     menu->addAction(sphereAct);
     connect(sphereAct, &QAction::triggered, this, &GameObjectMenu::CreateSphere);
 
+    QAction * cylinderAct = new QAction("Cylinder");
+    menu->addAction(cylinderAct);
+    connect(cylinderAct, &QAction::triggered, this, &GameObjectMenu::CreateCylinder);
+
     QAction * planeAct = new QAction("Plane");
     menu->addAction(planeAct);
     connect(planeAct, &QAction::triggered, this, &GameObjectMenu::CreatePlane);
@@ -73,14 +82,62 @@ namespace YTEditor
 
   void GameObjectMenu::CreateCube()
   {
+    YTE::Composition *cubeObj = MakeObject("Cube");
+    cubeObj->GetComponent<YTE::Model>()->SetMesh("cube.fbx");
+
+    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    compTree->ClearComponents();
+    compTree->LoadGameObject(cubeObj);
+
+    // cause item changed event to be sent again now that object has all its components
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+    QTreeWidgetItem *currItem = objBrowser.currentItem();
+    objBrowser.OnCurrentItemChanged(currItem, currItem);
   }
 
   void GameObjectMenu::CreateSphere()
   {
+    YTE::Composition *sphereObj = MakeObject("Sphere");
+    sphereObj->GetComponent<YTE::Model>()->SetMesh("sphere.fbx");
+
+    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    compTree->ClearComponents();
+    compTree->LoadGameObject(sphereObj);
+
+    // cause item changed event to be sent again now that object has all its components
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+    QTreeWidgetItem *currItem = objBrowser.currentItem();
+    objBrowser.OnCurrentItemChanged(currItem, currItem);
+  }
+
+  void GameObjectMenu::CreateCylinder()
+  {
+    YTE::Composition *planeObj = MakeObject("Cylinder");
+    planeObj->GetComponent<YTE::Model>()->SetMesh("cylinder.fbx");
+
+    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    compTree->ClearComponents();
+    compTree->LoadGameObject(planeObj);
+
+    // cause item changed event to be sent again now that object has all its components
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+    QTreeWidgetItem *currItem = objBrowser.currentItem();
+    objBrowser.OnCurrentItemChanged(currItem, currItem);
   }
 
   void GameObjectMenu::CreatePlane()
   {
+    YTE::Composition *planeObj = MakeObject("Plane");
+    planeObj->GetComponent<YTE::Model>()->SetMesh("plane.fbx");
+
+    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    compTree->ClearComponents();
+    compTree->LoadGameObject(planeObj);
+
+    // cause item changed event to be sent again now that object has all its components
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+    QTreeWidgetItem *currItem = objBrowser.currentItem();
+    objBrowser.OnCurrentItemChanged(currItem, currItem);
   }
 
   QMenu * GameObjectMenu::Make2DObjectMenu()
@@ -195,6 +252,38 @@ namespace YTEditor
 
   void GameObjectMenu::CreateCamera()
   {
+  }
+
+  YTE::Type* GameObjectMenu::FindBoundType(std::string aName)
+  {
+    YTE::Engine *engine = mMainWindow->GetRunningEngine();
+    YTE::ComponentSystem *system = engine->GetComponent<YTE::ComponentSystem>();
+
+    for (auto cType : system->GetComponentTypes())
+    {
+      if (cType->GetName() == aName)
+      {
+        return cType;
+      }
+    }
+
+    return nullptr;
+  }
+
+  YTE::Composition * GameObjectMenu::MakeObject(std::string aName)
+  {
+    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(aName.c_str(), "Empty");
+    YTE::Composition *obj= item->GetEngineObject();
+
+    // add transform
+    YTE::BoundType* transform = FindBoundType("Transform");
+    obj->AddComponent(transform);
+
+    // add model
+    YTE::BoundType* model = FindBoundType("Model");
+    obj->AddComponent(model);
+
+    return obj;
   }
 
 }

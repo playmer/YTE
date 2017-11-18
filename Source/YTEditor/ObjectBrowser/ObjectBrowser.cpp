@@ -22,6 +22,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qmenu.h>
 #include <qevent.h>
 #include <qheaderview.h>
+#include <qmimedata.h>
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -35,6 +36,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
@@ -168,9 +170,8 @@ namespace YTEditor
   void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
     QTreeWidgetItem *aPrevious)
   {
-    (void)aPrevious;
-
-    ObjectItem *currObj = dynamic_cast<ObjectItem*>(aCurrent);
+    ObjectItem *prevObj = aPrevious ? dynamic_cast<ObjectItem*>(aPrevious) : nullptr;
+    ObjectItem *currObj = aCurrent ? dynamic_cast<ObjectItem*>(aCurrent) : nullptr;
 
     ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
@@ -195,7 +196,9 @@ namespace YTEditor
 
       mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(currObj->GetEngineObject());
 
-      if (YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>())
+      YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
+
+      if (model && model->GetMesh())
       {
         // get the list of materials from the submeshes
         auto& submeshes = model->GetMesh()->mParts;
@@ -207,14 +210,50 @@ namespace YTEditor
       {
         mMainWindow->GetMaterialViewer().LoadNoMaterial();
       }
+
+      // get the transform of the currently selected object
+      YTE::Transform *currTransform = currObj->GetEngineObject()->GetComponent<YTE::Transform>();
+
+      if (currTransform)
+      {
+        // set the gizmo to the same position as the current object
+        glm::vec3 pos = currTransform->GetWorldTranslation();
+
+        Gizmo *giz = mMainWindow->GetGizmo();
+
+        if (giz)
+        {
+          YTE::Transform *gizmoTransform = giz->mGizmoObj->GetComponent<YTE::Transform>();
+          gizmoTransform->SetWorldTranslation(pos);
+        }
+      }
+
+      Gizmo *giz = mMainWindow->GetGizmo();
+
+      if (giz)
+      {
+        if (prevObj)
+        {
+          // deregister the gizmo from listening to the previous object
+          //prevObj->GetEngineObject()->YTEDeregister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          //prevObj->GetEngineObject()->YTEDeregister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+        }
+
+        if (currObj)
+        {
+          // register the gizmo to listen to transform changes from newly selected object
+          //currObj->GetEngineObject()->YTERegister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          //currObj->GetEngineObject()->YTERegister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+        }
+      }
     }
   }
 
-  void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem * aItem, int aIndex)
+  void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
   {
     (void)aIndex;
 
-    ObjectItem * currItem = dynamic_cast<ObjectItem*>(aItem);
+    ObjectItem *currItem = dynamic_cast<ObjectItem*>(aItem);
 
     if (currItem->GetEngineObject() == nullptr)
     {
@@ -234,7 +273,20 @@ namespace YTEditor
     currItem->Rename(yteName);
   }
 
-  void ObjectBrowser::CreateContextMenu(const QPoint & pos)
+  void ObjectBrowser::dropEvent(QDropEvent *aEvent)
+  {
+    YTE::Composition *movedObj = GetCurrentObject();
+
+    ObjectItem *parentItem = dynamic_cast<ObjectItem*>(itemAt(aEvent->pos()));
+
+    YTE::Composition *parentObj = parentItem->GetEngineObject();
+
+    // call the reparent functions
+    
+    QTreeWidget::dropEvent(aEvent);
+  }
+
+  void ObjectBrowser::CreateContextMenu(const QPoint &pos)
   {
     QTreeWidgetItem *item = this->itemAt(pos);
 
@@ -243,9 +295,9 @@ namespace YTEditor
       return;
     }
 
-    QMenu * contextMenu = new QMenu(this);
+    QMenu *contextMenu = new QMenu(this);
 
-    QAction * removeAct = new QAction("Remove", contextMenu);
+    QAction *removeAct = new QAction("Remove", contextMenu);
     connect(removeAct, &QAction::triggered, this, &ObjectBrowser::RemoveCurrentObject);
 
     contextMenu->addAction(removeAct);
@@ -307,7 +359,7 @@ namespace YTEditor
 
     if (currItem && currItem->GetEngineObject())
     {
-      YTE::Model * model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
+      YTE::Model *model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
       if (model)
       {
         mMainWindow->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
@@ -320,7 +372,7 @@ namespace YTEditor
     }
   }
 
-  void ObjectBrowser::keyPressEvent(QKeyEvent * aEvent)
+  void ObjectBrowser::keyPressEvent(QKeyEvent *aEvent)
   {
     if (aEvent->key() == Qt::Key_Delete)
     {
@@ -332,7 +384,7 @@ namespace YTEditor
     }
   }
 
-  void ObjectBrowser::LoadAllChildObjects(YTE::Composition * aParentObj, ObjectItem * aParentItem)
+  void ObjectBrowser::LoadAllChildObjects(YTE::Composition *aParentObj, ObjectItem *aParentItem)
   {
     // if the parent object has no children
     if (aParentObj->GetCompositions()->size() == 0)
@@ -362,7 +414,7 @@ namespace YTEditor
 
   }
 
-  ObjectItem *ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
+  ObjectItem* ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
   {
     for (int i = 0; i < aItem->childCount(); ++i)
     {
@@ -386,7 +438,7 @@ namespace YTEditor
     return nullptr;
   }
 
-  void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String & aArchetypeName,
+  void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
     YTE::vector<ObjectItem*>* aResult,
     ObjectItem* aItem)
   {
@@ -432,14 +484,14 @@ namespace YTEditor
     return mMainWindow;
   }
 
-  YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String & aArchetypeName)
+  YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
   {
     YTE::vector<ObjectItem*> *result = new YTE::vector<ObjectItem*>();
 
     // loop through all items in the object browser
     for (int i = 0; i < topLevelItemCount(); ++i)
     {
-      ObjectItem* objItem = dynamic_cast<ObjectItem*>(topLevelItem(i));
+      ObjectItem *objItem = dynamic_cast<ObjectItem*>(topLevelItem(i));
 
       if (objItem->GetEngineObject()->GetArchetypeName() == aArchetypeName)
       {

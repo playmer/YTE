@@ -14,6 +14,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
+#include "YTE/Meta/ForwardDeclarations.hpp"
+
 #include <qmenu.h>
 
 namespace YTEditor
@@ -38,6 +40,7 @@ namespace YTEditor
     QMenu * Make3DObjectMenu();
     void CreateCube();
     void CreateSphere();
+    void CreateCylinder();
     void CreatePlane();
 
     QMenu * Make2DObjectMenu();
@@ -61,6 +64,10 @@ namespace YTEditor
 
     QAction * MakeCameraAction();
     void CreateCamera();
+
+    YTE::Type* FindBoundType(std::string aName);
+
+    YTE::Composition* MakeObject(std::string aName);
 
   };
 

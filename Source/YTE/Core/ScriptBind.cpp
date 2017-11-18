@@ -90,6 +90,8 @@ namespace YTE
     InitializeType<Model>();
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
+    InitializeType<Animator>();
+    InitializeType<Animator::Animation>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();

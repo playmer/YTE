@@ -97,6 +97,11 @@ namespace YTEditor
 
   void ComponentSearchBar::AddComponent(QString aCompName)
   {
+    if (aCompName.isEmpty())
+    {
+      return;
+    }
+
     std::string stdName = aCompName.toStdString();
 
     MainWindow *mainWin = mComponentTools->GetBrowser().GetMainWindow();
@@ -118,24 +123,34 @@ namespace YTEditor
       return;
     }
 
-    currObj->AddComponent(type);
+    YTE::Component *addedComp = currObj->AddComponent(type);
+
+    if (type->GetName() == "Animator")
+    {
+      dynamic_cast<YTE::Animator*>(addedComp)->AddAnimation("Walk");
+      dynamic_cast<YTE::Animator*>(addedComp)->AddAnimation("Run");
+      dynamic_cast<YTE::Animator*>(addedComp)->AddAnimation("Jump");
+    }
 
     this->mComponentTools->GetBrowser().GetComponentTree()->ClearComponents();
     this->mComponentTools->GetBrowser().GetComponentTree()->LoadGameObject(currObj);
 
-    YTE::Model * model = mainWin->GetObjectBrowser().GetCurrentObject()->GetComponent<YTE::Model>();
+    if (type->GetName() == "Model")
+    {
+      mainWin->GetPhysicsHandler().Remove(currObj);
+      mainWin->GetPhysicsHandler().Add(currObj);
+    }
+
+    YTE::Model *model = mainWin->GetObjectBrowser().GetCurrentObject()->GetComponent<YTE::Model>();
 
     if (model && model->GetMesh())
     {
-      if (model->GetMesh())
-      {
-        mainWin->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+      mainWin->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
 
-        // get the list of materials from the submeshes
-        auto& submeshes = model->GetMesh()->mParts;
+      // get the list of materials from the submeshes
+      auto& submeshes = model->GetMesh()->mParts;
 
-        mainWin->GetMaterialViewer().SetMaterialsList(&submeshes);
-      }
+      mainWin->GetMaterialViewer().SetMaterialsList(&submeshes);
     }
   }
 

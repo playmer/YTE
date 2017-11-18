@@ -50,7 +50,7 @@
                     }
                 },
                 "Camera": {
-                    "CameraType": "TargetPoint",
+                    "CameraType": "Flyby",
                     "FarPlane": 2000.0,
                     "FieldOfViewY": 45.0,
                     "NearPlane": 0.10000000149011612,
