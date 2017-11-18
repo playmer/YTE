@@ -361,7 +361,19 @@ namespace YTE
 
   void VkRenderedSurface::PresentFrame()
   {
-    mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
+    try
+    {
+      mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
+    }
+    catch (...)
+    {
+      // create Framebuffer & Swapchain
+      WindowResize event;
+      event.height = mWindow->GetHeight();
+      event.width = mWindow->GetWidth();
+
+      ResizeEvent(&event);
+    }
   }
 
 
