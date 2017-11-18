@@ -117,6 +117,7 @@ namespace YTE
     void ParentPositionChanged(TransformChanged *aEvent);
     void ParentScaleChanged(TransformChanged *aEvent);
     void ParentRotationChanged(TransformChanged *aEvent);
+    void ParentObjectChanged(ParentChanged *aEvent);
 
   private:
     glm::vec3 GetAccumulatedParentTranslation();

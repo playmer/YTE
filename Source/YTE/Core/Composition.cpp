@@ -34,6 +34,16 @@ namespace YTE
     YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
   }
 
+  YTEDefineEvent(ParentChanged);
+
+  YTEDefineType(ParentChanged)
+  {
+    YTERegisterType(ParentChanged);
+
+    YTEBindField(&ParentChanged::mOldParent, "Old Parent", PropertyBinding::Get);
+    YTEBindField(&ParentChanged::mNewParent, "New Parent", PropertyBinding::Get);
+  }
+
   YTEDefineExternalType(CompositionMap::range)
   {
     YTERegisterType(CompositionMap::range);
@@ -590,7 +600,7 @@ namespace YTE
     return toReturn;
   }
 
-  void Composition::SetOwner(Composition * aOwner)
+  void Composition::SetOwner(Composition *aOwner)
   {
     mOwner = aOwner;
   }
@@ -599,7 +609,7 @@ namespace YTE
   // Space or Engine.
   Composition* Composition::GetParent()
   {
-    Composition* parent = mOwner;
+    Composition *parent = mOwner;
 
     if (parent == nullptr)
     {
@@ -614,10 +624,45 @@ namespace YTE
     return parent;
   }
 
+  void Composition::ReParent(Composition *aNewParent /* = nullptr */)
+  {
+    auto parent = GetParent();
+    // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
+    // and default re-parenting of spaces
+    if (aNewParent == nullptr && (parent == mEngine || this == mSpace))
+    {
+      return;
+    }
+
+    if (aNewParent == nullptr)
+    {
+      aNewParent = mSpace;
+    }
+
+    auto range = parent->FindAllCompositionsByName(mName);
+    auto iter = range.begin();
+    while (iter != range.end() && iter->second.get() != this)
+    {
+      ++iter;
+    }
+
+    if (iter != range.end()) 
+    {
+      auto unique_this = std::move(iter->second);
+      parent->RemoveCompositionInternal(iter);
+      aNewParent->AddCompositionInternal(std::move(unique_this), nullptr, mName);
+
+      ParentChanged event;
+      event.mOldParent = parent;
+      event.mNewParent = aNewParent;
+      SendEvent(Events::ParentChanged, &event);
+    }
+  }
+
   // Get the parent Space or Engine.
   Composition* Composition::GetUniverseOrSpaceOrEngine()
   {
-    Composition* parent = mSpace;
+    Composition *parent = mSpace;
 
 
     if (this == parent || parent == nullptr)
