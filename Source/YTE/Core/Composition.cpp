@@ -34,6 +34,16 @@ namespace YTE
     YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
   }
 
+  YTEDefineEvent(ParentChanged);
+
+  YTEDefineType(ParentChanged)
+  {
+    YTERegisterType(ParentChanged);
+
+    YTEBindField(&ParentChanged::mOldParent, "Old Parent", PropertyBinding::Get);
+    YTEBindField(&ParentChanged::mNewParent, "New Parent", PropertyBinding::Get);
+  }
+
   YTEDefineExternalType(CompositionMap::range)
   {
     YTERegisterType(CompositionMap::range);
@@ -614,7 +624,7 @@ namespace YTE
     return parent;
   }
 
-  void Composition::ReParent(Composition* aNewParent /* = nullptr */)
+  void Composition::ReParent(Composition *aNewParent /* = nullptr */)
   {
     auto parent = GetParent();
     // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
@@ -641,6 +651,11 @@ namespace YTE
       auto unique_this = std::move(iter->second);
       parent->RemoveCompositionInternal(iter);
       aNewParent->AddCompositionInternal(std::move(unique_this), nullptr, mName);
+
+      ParentChanged event;
+      event.mOldParent = parent;
+      event.mNewParent = aNewParent;
+      SendEvent(Events::ParentChanged, &event);
     }
   }
 

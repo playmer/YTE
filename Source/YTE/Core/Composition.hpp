@@ -47,6 +47,17 @@ namespace YTE
     Composition *mComposition;
   };
 
+  YTEDeclareEvent(ParentChanged);
+
+  class ParentChanged : public Event
+  {
+  public:
+    YTEDeclareType(ParentChanged);
+
+    Composition* mOldParent;
+    Composition* mNewParent;
+  };
+
   class Composition : public EventHandler
   {
   public:
