@@ -600,7 +600,7 @@ namespace YTE
     return toReturn;
   }
 
-  void Composition::SetOwner(Composition * aOwner)
+  void Composition::SetOwner(Composition *aOwner)
   {
     mOwner = aOwner;
   }
@@ -609,7 +609,7 @@ namespace YTE
   // Space or Engine.
   Composition* Composition::GetParent()
   {
-    Composition* parent = mOwner;
+    Composition *parent = mOwner;
 
     if (parent == nullptr)
     {
@@ -662,7 +662,7 @@ namespace YTE
   // Get the parent Space or Engine.
   Composition* Composition::GetUniverseOrSpaceOrEngine()
   {
-    Composition* parent = mSpace;
+    Composition *parent = mSpace;
 
 
     if (this == parent || parent == nullptr)
