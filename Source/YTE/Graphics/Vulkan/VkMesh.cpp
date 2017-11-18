@@ -80,7 +80,6 @@ namespace YTE
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
-
       mDiffuseTexture = aSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
       ++samplers;
     }

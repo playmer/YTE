@@ -50,8 +50,8 @@ namespace YTE
   Skybox::Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    auto renderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    auto window = aSpace->GetComponent<GraphicsView>()->GetWindow();
+    //auto renderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    //auto window = aSpace->GetComponent<GraphicsView>()->GetWindow();
 
     mTextureName = "skybox_cubemap.png";
 

@@ -232,6 +232,8 @@ namespace YTE
              std::string &aFile,
              std::vector<Submesh> &aSubmeshes)
   {
+    YTEUnusedArgument(aWindow);
+
     mName = aFile;
     mParts = std::move(aSubmeshes);
   }

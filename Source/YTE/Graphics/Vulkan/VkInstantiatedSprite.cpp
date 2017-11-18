@@ -2,9 +2,11 @@
 
 namespace YTE
 {
-  VkInstantiatedSprite::VkInstantiatedSprite(std::string &aTextureFile, VkRenderedSurface *aSurface)
+  VkInstantiatedSprite::VkInstantiatedSprite(std::string &aTextureFile, 
+                                             VkRenderedSurface *aSurface)
   {
-
+    YTEUnusedArgument(aTextureFile);
+    YTEUnusedArgument(aSurface);
   }
 
   VkInstantiatedSprite::~VkInstantiatedSprite()
@@ -19,6 +21,6 @@ namespace YTE
 
   void VkInstantiatedSprite::GraphicsDataUpdate(GraphicsDataUpdateVk *aEvent)
   {
-
+    YTEUnusedArgument(aEvent);
   }
 }
