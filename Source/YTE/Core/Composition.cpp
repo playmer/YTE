@@ -641,7 +641,7 @@ namespace YTE
 
     auto range = parent->FindAllCompositionsByName(mName);
     auto iter = range.begin();
-    while (iter != range.end && iter->second.get() != this)
+    while (iter != range.end() && iter->second.get() != this)
     {
       ++iter;
     }
