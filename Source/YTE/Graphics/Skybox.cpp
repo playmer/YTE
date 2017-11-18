@@ -124,15 +124,15 @@ namespace YTE
     Vertex vert6;
     Vertex vert7;
 
-    vert0.mPosition = glm::vec3(-0.5, -0.5, 0.5);
-    vert1.mPosition = glm::vec3(0.5, -0.5, 0.5);
-    vert2.mPosition = glm::vec3(0.5, 0.5, 0.5);
-    vert3.mPosition = glm::vec3(-0.5, 0.5, 0.5);
+    vert0.mPosition = glm::vec3(-1.0, -1.0, 1.0);
+    vert1.mPosition = glm::vec3(1.0, -1.0, 1.0);
+    vert2.mPosition = glm::vec3(1.0, 1.0, 1.0);
+    vert3.mPosition = glm::vec3(-1.0, 1.0, 1.0);
 
-    vert4.mPosition = glm::vec3(-0.5, -0.5, -0.5);
-    vert5.mPosition = glm::vec3(0.5, -0.5, -0.5);
-    vert6.mPosition = glm::vec3(0.5, 0.5, -0.5);
-    vert7.mPosition = glm::vec3(-0.5, 0.5, -0.5);
+    vert4.mPosition = glm::vec3(-1.0, -1.0, -1.0);
+    vert5.mPosition = glm::vec3(1.0, -1.0, -1.0);
+    vert6.mPosition = glm::vec3(1.0, 1.0, -1.0);
+    vert7.mPosition = glm::vec3(-1.0, 1.0, -1.0);
 
     //std::vector<u32> mIndices{
     //  0, 1, 2,
