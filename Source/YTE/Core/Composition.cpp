@@ -614,7 +614,7 @@ namespace YTE
     return parent;
   }
 
-  void Composition::ReParent(Composition * aNewParent /* = nullptr */)
+  void Composition::ReParent(Composition* aNewParent /* = nullptr */)
   {
     auto parent = GetParent();
     // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
