@@ -94,6 +94,7 @@ namespace YTE
   {
     auto parent{ mOwner->GetOwner() };
 
+    mOwner->YTERegister(Events::ParentChanged, this, &Transform::ParentObjectChanged);
     if (parent)
     {
       parent->YTERegister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
@@ -118,6 +119,25 @@ namespace YTE
 
     SetInternalTranslation(aEvent->WorldPosition, localTranslation);
     SetInternalRotation(aEvent->WorldRotation, mRotation);
+  }
+
+  void Transform::ParentObjectChanged(ParentChanged * aEvent)
+  {
+    auto oldParent = aEvent->mOldParent;
+    auto newParent = aEvent->mNewParent;
+    if (oldParent)
+    {
+      oldParent->YTEDeregister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
+      oldParent->YTEDeregister(Events::ScaleChanged, this, &Transform::ParentScaleChanged);
+      oldParent->YTEDeregister(Events::RotationChanged, this, &Transform::ParentRotationChanged);
+    }
+
+    if (newParent)
+    {
+      newParent->YTERegister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
+      newParent->YTERegister(Events::ScaleChanged, this, &Transform::ParentScaleChanged);
+      newParent->YTERegister(Events::RotationChanged, this, &Transform::ParentRotationChanged);
+    }
   }
   
   ////////////////////////////////////////////////////////////////////////////
