@@ -32,5 +32,3 @@ void main()
   vec3 add = vec3(1.0f, 1.0f, 1.0f);
   outFragColor = vec4(add + inTextureCoordinates, 1.0f);
 }
-
-

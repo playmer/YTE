@@ -37,5 +37,3 @@ void main()
 
   //outFragColor = vec4(1,0,0, Material.mOpacity);
 }
-
-

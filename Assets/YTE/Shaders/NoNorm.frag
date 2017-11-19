@@ -33,5 +33,3 @@ void main()
   outFragColor = texture(specularSampler, inTextureCoordinates);
   outFragColor = texture(diffuseSampler, inTextureCoordinates);
 }
-
-

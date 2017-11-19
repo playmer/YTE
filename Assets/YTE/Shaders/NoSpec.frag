@@ -33,5 +33,3 @@ void main()
   outFragColor = texture(normalSampler, inTextureCoordinates);
   outFragColor = texture(diffuseSampler, inTextureCoordinates);
 }
-
-

@@ -161,7 +161,8 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
 
     // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](VkTexture * aData, vkhlf::DescriptorImageInfo &imageInfo)
+    auto addTS = [&wdss, &binding, &ds](VkTexture *aData, 
+                                        vkhlf::DescriptorImageInfo &aImageInfo)
     {
       constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
 
@@ -170,9 +171,9 @@ namespace YTE
         return;
       }
 
-      imageInfo.sampler = aData->mSampler;
-      imageInfo.imageView = aData->mImageView;
-      wdss.emplace_back(ds, binding++, 0, 1, imgsam, imageInfo, nullptr);
+      aImageInfo.sampler = aData->mSampler;
+      aImageInfo.imageView = aData->mImageView;
+      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
     };
 
     vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };

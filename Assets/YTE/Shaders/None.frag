@@ -29,5 +29,3 @@ void main()
 {
   outFragColor = vec4(Material.mDiffuse, Material.mOpacity);
 }
-
-
