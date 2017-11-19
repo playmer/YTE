@@ -60,6 +60,12 @@ namespace YTE
   };
 
 
+  enum class TextureViewType
+  {
+    e2D,
+    eCube
+  };
+
 
   // Submesh class contains all the data of the actual submesh
   class Submesh
@@ -74,6 +80,7 @@ namespace YTE
     };
 
 
+    Submesh() = default;
 
     Submesh(Window *aWindow,
             const aiScene *aScene,
@@ -84,16 +91,17 @@ namespace YTE
       
     }
 
-
-
     std::vector<Vertex> mVertexBuffer;
     std::vector<u32> mIndexBuffer;
 
     UBOMaterial mUBOMaterial;
 
     std::string mDiffuseMap;
+    TextureViewType mDiffuseType = TextureViewType::e2D;
     std::string mNormalMap;
+    TextureViewType mNormalType = TextureViewType::e2D;
     std::string mSpecularMap;
+    TextureViewType mSpecularType = TextureViewType::e2D;
 
     Dimension mDimension;
 
@@ -105,8 +113,6 @@ namespace YTE
     std::string mShaderSetName;
   };
 
-
-
   class Mesh : public EventHandler
   {
   public:
@@ -115,6 +121,10 @@ namespace YTE
     Mesh(Window *aWindow,
          std::string &aFile,
          CreateInfo *aCreateInfo = nullptr);
+
+    Mesh(Window *aWindow,
+         std::string &aFile,
+         std::vector<Submesh> &aSubmeshes);
 
     virtual ~Mesh();
 

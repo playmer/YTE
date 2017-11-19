@@ -22,9 +22,7 @@ layout (binding = 1) uniform UBOModel
   mat4 mModelMatrix;
 } Model;
 
-layout (location = 0) out vec3 outColor;
-layout (location = 1) out vec2 outTextureCoordinates;
-layout (location = 2) out vec3 outNormal;
+layout (location = 0) out vec3 outTextureCoordinates;
 
 out gl_PerVertex 
 {
@@ -33,10 +31,13 @@ out gl_PerVertex
 
 void main() 
 {
-  outColor = inColor;
-  outTextureCoordinates = inTextureCoordinates.xy;
-  outNormal = vec3(inverse(transpose(View.mViewMatrix * Model.mModelMatrix)) * vec4(inNormal, 1.0f));
-  
+  outTextureCoordinates = inPosition;
+
+  // Unsure if this needs to be vec3/mat3 here.
+  //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
+  //gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
+
+
   gl_Position = View.mProjectionMatrix * 
                 View.mViewMatrix       *
                 Model.mModelMatrix     *

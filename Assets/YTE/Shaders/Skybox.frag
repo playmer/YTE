@@ -3,6 +3,8 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+layout (location = 0) in vec3 inTextureCoordinates;
+
 layout (binding = 2) uniform UBOMaterial
 {
     vec3 mDiffuse;
@@ -19,13 +21,14 @@ layout (binding = 2) uniform UBOMaterial
     float mBumpScaling;
 } Material;
 
-layout (location = 0) in vec3 inColor;
-layout (location = 1) in vec2 inTextureCoordinates;
-layout (location = 2) in vec3 inNormal;
+layout (binding = 3) uniform samplerCube environmentMap;
 
 layout (location = 0) out vec4 outFragColor;
 
 void main()
 {
-  outFragColor = vec4(Material.mDiffuse, Material.mOpacity);
+  //vec3 normal = normalize(inTextureCoordinates);
+  //outFragColor = texture(environmentMap, normal);
+  vec3 add = vec3(1.0f, 1.0f, 1.0f);
+  outFragColor = vec4(add + inTextureCoordinates, 1.0f);
 }

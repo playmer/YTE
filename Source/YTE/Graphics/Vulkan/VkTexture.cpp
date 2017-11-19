@@ -25,12 +25,9 @@ namespace YTE
     YTERegisterType(VkTexture);
   }
 
-
-
-  VkTexture::VkTexture(std::string &aFile,
-    std::shared_ptr<VkRenderedSurface> aSurface)
-    : Texture(aFile),
-    mSurface(aSurface)
+  VkTexture::VkTexture(std::string &aFile, VkRenderedSurface *aSurface, vk::ImageViewType aType)
+    : Texture(aFile)
+    , mSurface(aSurface)
   {
     auto device = mSurface->GetDevice();
 
@@ -100,7 +97,19 @@ namespace YTE
 
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
 
-    mImageView = mImage->createImageView(vk::ImageViewType::e2D, format);
+
+    vk::ComponentMapping components = { vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA };
+
+    u32 layers = 1;
+
+    if (vk::ImageViewType::eCube == aType)
+    {
+      layers = 6;
+    }
+
+    vk::ImageSubresourceRange subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, layers };
+
+    mImageView = mImage->createImageView(aType, format, components, subresourceRange);
 
     // 2. init sampler
     mSampler = device->createSampler(vk::Filter::eNearest,
@@ -124,7 +133,6 @@ namespace YTE
 
   VkTexture::~VkTexture()
   {
-    mSurface->DestroyTexture(mTextureFileName);
   }
 
 

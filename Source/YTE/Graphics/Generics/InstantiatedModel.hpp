@@ -35,9 +35,9 @@ namespace YTE
 
 
     /////////////////////////////////
-    // Gettors / Settors
+    // Getters / Setters
     /////////////////////////////////
-    virtual std::shared_ptr<Mesh> GetMesh()
+    virtual Mesh* GetMesh()
     {
       return mMesh;
     }
@@ -45,7 +45,7 @@ namespace YTE
 
 
   protected:
-    std::shared_ptr<Mesh> mMesh;
+    Mesh *mMesh;
     UBOModel mUBOModelData;
   };
 }

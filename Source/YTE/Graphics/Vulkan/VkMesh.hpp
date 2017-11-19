@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Vulkan_VkMesh_hpp
 #define YTE_Graphics_Vulkan_VkMesh_hpp
 
+#include <unordered_map>
+
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -20,7 +22,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(VkSubmesh);
-    VkSubmesh(Submesh *aSubmesh, std::shared_ptr<VkRenderedSurface> aSurface);
+    VkSubmesh(Submesh *aSubmesh, VkRenderedSurface *aSurface);
     ~VkSubmesh();
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -29,18 +31,16 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
     std::shared_ptr<vkhlf::Buffer> mUBOMaterial;
 
-    std::shared_ptr<VkTexture> mDiffuseTexture;
-    std::shared_ptr<VkTexture> mSpecularTexture;
-    std::shared_ptr<VkTexture> mNormalTexture;
+    VkTexture *mDiffuseTexture;
+    VkTexture *mSpecularTexture;
+    VkTexture *mNormalTexture;
 
-    std::shared_ptr<VkShader> mShader;
+    VkShader *mShader;
 
     Submesh *mSubmesh;
 
     u64 mIndexCount;
   };
-
-
 
   class VkMesh : public Mesh
   {
@@ -48,15 +48,25 @@ namespace YTE
     YTEDeclareType(VkMesh);
 
     VkMesh(Window *aWindow,
-           std::shared_ptr<VkRenderedSurface> aSurface,
+           VkRenderedSurface *aSurface,
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
+
+    
+    VkMesh(Window *aWindow,
+           VkRenderedSurface *aSurface,
+           std::string &aFile,
+           std::vector<Submesh> &aSubmeshes);
+
     ~VkMesh();
+    
+    VkMesh(const VkMesh &aMesh) = delete;
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
-    std::vector<std::shared_ptr<VkSubmesh>> mSubmeshes;
-    std::shared_ptr<VkRenderedSurface> mSurface;
+    //std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
+    std::unordered_multimap<VkShader*, std::unique_ptr<VkSubmesh>> mSubmeshes;
+    VkRenderedSurface *mSurface;
   };
 }
 

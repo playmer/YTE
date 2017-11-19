@@ -32,7 +32,7 @@ namespace YTE
 
 
 
-    // Gettor
+    // Getter
     u32 GetGraphicsFamily()
     {
       return mGraphicsFamily;
@@ -95,6 +95,7 @@ namespace YTE
     extern const std::string Mesh;
     extern const std::string Texture;
     extern const std::string UniformBufferObject;
+    extern const std::string SpriteInstances;
   }
 }
 

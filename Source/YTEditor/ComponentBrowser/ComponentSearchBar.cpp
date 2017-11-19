@@ -125,7 +125,7 @@ namespace YTEditor
 
     YTE::Model * model = mainWin->GetObjectBrowser().GetCurrentObject()->GetComponent<YTE::Model>();
 
-    if (model)
+    if (model && model->GetMesh())
     {
       if (model->GetMesh())
       {

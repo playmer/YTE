@@ -7,6 +7,7 @@
 
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
+#include "YTE/Graphics/Vulkan/VkShaderCompiler.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 
 namespace YTE
@@ -19,29 +20,24 @@ namespace YTE
 
 
   VkShader::VkShader(std::string &aName,
-                     std::shared_ptr<VkRenderedSurface> aSurface,
-                     std::shared_ptr<vkhlf::PipelineLayout> aLayout)
+                     VkRenderedSurface *aSurface,
+                     std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+                     VkShaderDescriptions &aDescriptions)
     : Shader(aName)
     , mSurface(aSurface)
     , mPipelineLayout(aLayout)
+    , mDescriptions(aDescriptions)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
   }
 
-
-
   VkShader::~VkShader()
   {
-    mSurface->DestroyShader(mShaderSetName);
   }
 
 
-
-  void VkShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkShader::Load()
   {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
-    YTEUnusedArgument(aEvent);
-
     auto device = mSurface->GetDevice();
 
     auto vertex = mShaderSetName + ".vert";
@@ -50,45 +46,22 @@ namespace YTE
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
     auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
-    std::string vertexText;
-    ReadFileToString(vertexFile, vertexText);
+    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile);
+    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile);
 
-    std::string fragmetText;
-    ReadFileToString(fragmentFile, fragmetText);
+    if (false == vertexData.mValid)
+    {
+      std::cout << vertexData.mReason << "\n";
+      return;
+    }
+    else if (false == fragmentData.mValid)
+    {
+      std::cout << fragmentData.mReason << "\n";
+      return;
+    }
 
-    auto vertexData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex,
-      vertexText);
-    auto fragmentData = vkhlf::compileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment,
-      fragmetText);
-
-    auto vertexModule = device->createShaderModule(vertexData);
-    auto fragmentModule = device->createShaderModule(fragmentData);
-
-
-    // TODO (Josh): We should be reflecting these.
-    VkShaderDescriptions descriptions;
-    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-
-    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    auto vertexModule = device->createShaderModule(vertexData.mData);
+    auto fragmentModule = device->createShaderModule(fragmentData.mData);
 
     // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
@@ -100,8 +73,8 @@ namespace YTE
                                                        fragmentModule,
                                                        "main");
 
-    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(descriptions.Bindings(),
-                                                          descriptions.Attributes());
+    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(mDescriptions.Bindings(),
+                                                          mDescriptions.Attributes());
     vk::PipelineInputAssemblyStateCreateInfo assembly({},
                                                       vk::PrimitiveTopology::eTriangleList,
                                                       VK_FALSE);
@@ -181,5 +154,18 @@ namespace YTE
                                              dynamic,
                                              mPipelineLayout,
                                              mSurface->GetRenderPass());
+  }
+
+  void VkShader::Reload()
+  {
+    Load();
+  }
+
+  void VkShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  {
+    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
+    YTEUnusedArgument(aEvent);
+
+    Load();
   }
 }

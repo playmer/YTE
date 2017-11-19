@@ -18,12 +18,30 @@ namespace YTE
 
 
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
-                                           std::shared_ptr<VkRenderedSurface> aSurface)
+                                           VkRenderedSurface *aSurface)
     : InstantiatedModel()
     , mSurface(aSurface)
   {
     mLoadedMesh = mSurface->CreateMesh(aModelFile);
-    mMesh = std::dynamic_pointer_cast<Mesh>(mLoadedMesh);
+    Create();
+  }
+
+  VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface)
+    : InstantiatedModel()
+    , mSurface(aSurface)
+  {
+    mLoadedMesh = static_cast<VkMesh*>(aMesh);
+    Create();
+  }
+
+  VkInstantiatedModel::~VkInstantiatedModel()
+  {
+    mSurface->DestroyModel(this);
+  }
+
+  void VkInstantiatedModel::Create()
+  {
+    mMesh = static_cast<Mesh*>(mLoadedMesh);
 
     // create UBO Per Model buffer
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
@@ -37,22 +55,13 @@ namespace YTE
                                                     allocator);
 
     // create descriptor sets
-    for (auto& mesh : mLoadedMesh->mSubmeshes)
+    for (auto& submesh : mLoadedMesh->mSubmeshes)
     {
-      CreateDescriptorSet(mesh);
+      CreateDescriptorSet(submesh.second.get());
     }
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);
   }
-
-
-
-  VkInstantiatedModel::~VkInstantiatedModel()
-  {
-
-  }
-
-
 
   void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
   {
@@ -62,47 +71,40 @@ namespace YTE
     mUBOModelData = aUBO;
   }
 
-
-
-  void VkInstantiatedModel::CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh)
+  void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh)
   {
     auto device = mSurface->GetDevice();
-
-
 
     // load Textures
     u32 samplers = 0;
 
-    if (nullptr != mesh->mDiffuseTexture)
+    if (nullptr != aSubMesh->mDiffuseTexture)
     {
       ++samplers;
     }
-    if (nullptr != mesh->mSpecularTexture)
+    if (nullptr != aSubMesh->mSpecularTexture)
     {
       ++samplers;
     }
-    if (nullptr != mesh->mNormalTexture)
+    if (nullptr != aSubMesh->mNormalTexture)
     {
       ++samplers;
     }
-
-
-
 
     // init descriptor and pipeline layouts
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
     dslbs.emplace_back(0,
-      vk::DescriptorType::eUniformBuffer,
-      vk::ShaderStageFlagBits::eVertex,
-      nullptr);
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
     dslbs.emplace_back(1,
-      vk::DescriptorType::eUniformBuffer,
-      vk::ShaderStageFlagBits::eVertex,
-      nullptr);
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
     dslbs.emplace_back(2,
-      vk::DescriptorType::eUniformBuffer,
-      vk::ShaderStageFlagBits::eFragment,
-      nullptr);
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eFragment,
+                       nullptr);
 
     std::shared_ptr<vkhlf::DescriptorPool> descriptorPool;
 
@@ -116,9 +118,9 @@ namespace YTE
       for (u32 i = 0; i < samplers; ++i)
       {
         dslbs.emplace_back(i + 3,
-          vk::DescriptorType::eCombinedImageSampler,
-          vk::ShaderStageFlagBits::eFragment,
-          nullptr);
+                           vk::DescriptorType::eCombinedImageSampler,
+                           vk::ShaderStageFlagBits::eFragment,
+                           nullptr);
 
         descriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1);
       }
@@ -135,32 +137,32 @@ namespace YTE
 
     auto descriptorSetLayout = device->createDescriptorSetLayout(dslbs);
 
-    mPipelineLayouts.emplace(mesh, device->createPipelineLayout(descriptorSetLayout, nullptr));
+    SubMeshPipelineData pipelineData;
+    pipelineData.mPipelineLayout = device->createPipelineLayout(descriptorSetLayout, nullptr);
+    pipelineData.mDescriptorSet = device->allocateDescriptorSet(descriptorPool, descriptorSetLayout);
 
+    mPipelineData.emplace(aSubMesh, pipelineData);
 
-
-    // init descriptor set
-    mDescriptorSets.emplace(mesh, device->allocateDescriptorSet(descriptorPool,
-      descriptorSetLayout));
     std::vector<vkhlf::WriteDescriptorSet> wdss;
     wdss.reserve(6);
 
     // Helper constants and variables.
     constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
-    auto &ds = mDescriptorSets[mesh];
+    auto &ds = pipelineData.mDescriptorSet;
     u32 binding = 0;
 
     // Add Uniform Buffers
     vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(), 0, sizeof(UBOView) };
     vkhlf::DescriptorBufferInfo uboModel{ mUBOModel, 0, sizeof(UBOModel) };
-    vkhlf::DescriptorBufferInfo uboMaterial{ mesh->mUBOMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboMaterial{ aSubMesh->mUBOMaterial, 0, sizeof(UBOMaterial) };
 
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
 
     // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](std::shared_ptr<VkTexture> aData, vkhlf::DescriptorImageInfo &imageInfo)
+    auto addTS = [&wdss, &binding, &ds](VkTexture *aData, 
+                                        vkhlf::DescriptorImageInfo &aImageInfo)
     {
       constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
 
@@ -169,18 +171,18 @@ namespace YTE
         return;
       }
 
-      imageInfo.sampler = aData->mSampler;
-      imageInfo.imageView = aData->mImageView;
-      wdss.emplace_back(ds, binding++, 0, 1, imgsam, imageInfo, nullptr);
+      aImageInfo.sampler = aData->mSampler;
+      aImageInfo.imageView = aData->mImageView;
+      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
     };
 
     vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
     vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
     vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
 
-    addTS(mesh->mDiffuseTexture, dTexInfo);
-    addTS(mesh->mSpecularTexture, sTexInfo);
-    addTS(mesh->mNormalTexture, nTexInfo);
+    addTS(aSubMesh->mDiffuseTexture, dTexInfo);
+    addTS(aSubMesh->mSpecularTexture, sTexInfo);
+    addTS(aSubMesh->mNormalTexture, nTexInfo);
 
     device->updateDescriptorSets(wdss, nullptr);
   }

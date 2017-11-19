@@ -14,6 +14,7 @@
 #include "Bullet/LinearMath/btMotionState.h"
 
 #include "YTE/Core/Component.hpp"
+#include "YTE/Core/Composition.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
 

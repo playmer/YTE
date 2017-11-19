@@ -119,5 +119,6 @@ namespace YTE
     const std::string Mesh{ "Mesh" };
     const std::string Texture{ "Texture" };
     const std::string UniformBufferObject{ "UniformBufferObject" };
+    const std::string SpriteInstances{ "SpriteInstances" };
   }
 }

@@ -20,18 +20,22 @@ namespace YTE
     YTEDeclareType(VkShader);
 
     VkShader(std::string &aName,
-             std::shared_ptr<VkRenderedSurface> aSurface,
-             std::shared_ptr<vkhlf::PipelineLayout> aLayout);
+             VkRenderedSurface *aSurface,
+             std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+             VkShaderDescriptions &aDescriptions);
     ~VkShader() override;
+
+    void Load();
+
+    void Reload() override;
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
     
-    
-    
     std::shared_ptr<vkhlf::Pipeline> mShader;
-    std::shared_ptr<VkRenderedSurface> mSurface;
+    VkRenderedSurface *mSurface;
 
     std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
+    VkShaderDescriptions mDescriptions;
   };
 }
 

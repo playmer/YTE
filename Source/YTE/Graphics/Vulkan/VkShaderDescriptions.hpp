@@ -24,8 +24,6 @@ namespace YTE
       mAttributes.reserve(aNumberOfAttributes);
     }
 
-
-
     template <typename T>
     void AddAttribute(vk::Format aFormat)
     {
@@ -36,7 +34,7 @@ namespace YTE
       vk::VertexInputAttributeDescription toAdd;
       toAdd.binding = mBinding - 1;
       toAdd.location = mLocation;
-      toAdd.format = aFormat; // TODO: Do we need the alpha?
+      toAdd.format = aFormat;
       toAdd.offset = mVertexOffset;
 
       mAttributes.emplace_back(toAdd);
@@ -45,7 +43,16 @@ namespace YTE
       mVertexOffset += sizeof(T);
     }
 
+    template <typename T>
+    void AddSpecializationEntry(T &aValue)
+    {
+      vk::SpecializationMapEntry entry;
+      entry.constantID = mConstant;
+      entry.size = sizeof(T);
 
+      mEntries.emplace_back(entry);
+      ++mConstant;
+    }
 
     template <typename T>
     void AddBinding(vk::VertexInputRate aDescription)
@@ -63,7 +70,7 @@ namespace YTE
 
 
     /////////////////////////////////
-    // Getter
+    // Getter 
     /////////////////////////////////
     vk::VertexInputBindingDescription* BindingData()
     {
@@ -96,13 +103,33 @@ namespace YTE
     }
 
 
+    std::unique_ptr<vkhlf::SpecializationInfo> PipelineShaderStageCreateInfo()
+    {
+      return std::make_unique<vkhlf::SpecializationInfo>(mEntries, mData);
+    }
 
   private:
+
+    template <typename T>
+    void CopyEntryData(T &aValue)
+    {
+      auto current = mData.size();
+      
+      mData.resize(current + sizeof(T), 0);
+
+      std::memcpy(mData.data() + current, static_cast<void*>(&aValue), sizeof(T));
+    }
+
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
     u32 mBinding = 0;
     u32 mVertexOffset = 0;
     u32 mLocation = 0;
+    u32 mConstant = 0;
+
+
+    std::vector<vk::SpecializationMapEntry> mEntries;
+    std::vector<byte> mData;
   };
 }
 

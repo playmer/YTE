@@ -228,6 +228,16 @@ namespace YTE
     }
   }
 
+  Mesh::Mesh(Window *aWindow,
+             std::string &aFile,
+             std::vector<Submesh> &aSubmeshes)
+  {
+    YTEUnusedArgument(aWindow);
+
+    mName = aFile;
+    mParts = std::move(aSubmeshes);
+  }
+
 
 
   Mesh::~Mesh()

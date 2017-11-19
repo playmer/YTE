@@ -16,6 +16,120 @@ namespace YTE
 
   }
 
+  inline Type::~Type()
+  {
+
+  }
+
+  void Type::AddFunction(std::unique_ptr<Function> aFunction)
+  {
+    mFunctions.Emplace(aFunction->GetName(), std::move(aFunction));
+  }
+
+  void Type::AddProperty(std::unique_ptr<Property> aProperty)
+  {
+    mProperties.Emplace(aProperty->GetName(), std::move(aProperty));
+  }
+
+  void Type::AddField(std::unique_ptr<Field> aField)
+  {
+    mFields.Emplace(aField->GetName(), std::move(aField));
+  }
+
+
+  bool Type::IsA(Type *aType)
+  {
+    Type *base = this;
+
+    if (base == aType)
+    {
+      return true;
+    }
+
+    while (base->GetBaseType())
+    {
+      base = base->GetBaseType();
+
+      if (base == aType)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  Type* Type::GetMostBasicType()
+  {
+    Type *type = this;
+
+    while (type->GetPointerTo() ||
+      type->GetReferenceTo() ||
+      type->GetConstOf())
+    {
+      if (type->GetPointerTo())
+      {
+        type = type->GetPointerTo();
+      }
+      else if (type->GetReferenceTo())
+      {
+        type = type->GetReferenceTo();
+      }
+      else if (type->GetConstOf())
+      {
+        type = type->GetConstOf();
+      }
+    }
+
+    return type;
+  }
+
+  Property* Type::GetFirstField(const char *aName)
+  {
+    std::string name{ aName };
+
+    auto it = mFields.FindFirst(name);
+
+    if (it != mFields.end())
+    {
+      return it->second.get();
+    }
+
+    return nullptr;
+  }
+
+  void Type::AddGlobalType(const std::string &aName, Type *aType)
+  {
+    auto it = sGlobalTypes.find(aName);
+
+    if (it != sGlobalTypes.end())
+    {
+      std::cout << "Type of the name " << aName << " already exists, not adding." << std::endl;
+      return;
+    }
+
+    sGlobalTypes.emplace(aName, aType);
+  }
+
+  Type* Type::GetGlobalType(const std::string &aName)
+  {
+    auto it = sGlobalTypes.find(aName);
+
+    Type *toReturn{ nullptr };
+
+    if (it != sGlobalTypes.end())
+    {
+      toReturn = it->second;
+    }
+
+    if (toReturn == nullptr)
+    {
+      printf("Could not find a type named %s, did you rename/misspell it/forget to Define/InitializeType it?", aName.c_str());
+    }
+
+    return toReturn;
+  }
+
   YTEDefineType(Function)
   {
     YTERegisterType(Function);

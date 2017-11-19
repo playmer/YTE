@@ -46,6 +46,57 @@ namespace YTE
       
     }
   };
+
+  struct SpriteVertex
+  {
+    glm::vec3 mPosition;
+    glm::vec2 mTextureCoordinates;
+    glm::vec3 mNormal;
+
+    SpriteVertex(glm::vec3 &aPosition,
+                 glm::vec2 &aTextureCoordinates,
+                 glm::vec3 &aNormal)
+      : mPosition(aPosition)
+      , mTextureCoordinates(aTextureCoordinates)
+      , mNormal(aNormal)
+    {
+
+    }
+
+    SpriteVertex()
+    {
+
+    }
+  };
+
+  struct SpriteInstance
+  {
+    u32 mTextureId;
+    glm::vec4 mMatrix1;
+    glm::vec4 mMatrix2;
+    glm::vec4 mMatrix3;
+    glm::vec4 mMatrix4;
+
+    
+    SpriteInstance(u32 aTextureId,
+                   glm::vec4 aMatrix1,
+                   glm::vec4 aMatrix2,
+                   glm::vec4 aMatrix3,
+                   glm::vec4 aMatrix4)
+      : mTextureId(aTextureId)
+      , mMatrix1(aMatrix1)
+      , mMatrix2(aMatrix2)
+      , mMatrix3(aMatrix3)
+      , mMatrix4(aMatrix4)
+    {
+
+    }
+
+    SpriteInstance()
+    {
+
+    }
+  };
 }
 
 #endif

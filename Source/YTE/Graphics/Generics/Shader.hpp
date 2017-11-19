@@ -21,16 +21,14 @@ namespace YTE
 
     Shader(std::string &aName);
 
+    virtual void Reload() {}
+
     virtual ~Shader() = default;
 
 
 
   protected:
-    void Load();
-
     std::string mShaderSetName;
-    std::string mVertexShaderCode;
-    std::string mFragmentShaderCode;
   };
 }
 

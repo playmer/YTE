@@ -20,23 +20,28 @@ namespace YTE
   public:
     YTEDeclareType(VkInstantiatedModel);
 
-    VkInstantiatedModel(std::string &aModelFile, std::shared_ptr<VkRenderedSurface> aSurface);
+    VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface);
+    VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface);
     ~VkInstantiatedModel() override;
+
+    void Create();
 
     void UpdateUBOModel(UBOModel &aUBO) override;
 
-    void CreateDescriptorSet(std::shared_ptr<VkSubmesh> &mesh);
+    void CreateDescriptorSet(VkSubmesh *aMesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
 
-
+    struct SubMeshPipelineData
+    {
+      std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
+      std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
+    };
 
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
-    std::shared_ptr<VkRenderedSurface> mSurface;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::DescriptorSet>> mDescriptorSets;
-    std::unordered_map<std::shared_ptr<VkSubmesh>, 
-                       std::shared_ptr<vkhlf::PipelineLayout>> mPipelineLayouts;
-    std::shared_ptr<VkMesh> mLoadedMesh;
+    VkRenderedSurface *mSurface;
+
+    std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
+    VkMesh *mLoadedMesh;
   };
 }
 

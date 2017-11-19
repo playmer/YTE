@@ -23,6 +23,7 @@
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
+#include "YTE/Graphics/Skybox.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -88,6 +89,7 @@ namespace YTE
     InitializeType<GraphicsView>();
     InitializeType<Model>();
     InitializeType<ModelChanged>();
+    InitializeType<Skybox>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();

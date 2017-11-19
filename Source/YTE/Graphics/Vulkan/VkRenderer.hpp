@@ -21,11 +21,17 @@ namespace YTE
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
 
-    std::shared_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
-    void DestroyModel(Window *aWindow, std::shared_ptr<InstantiatedModel> aModel) override;
-    
+    std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow, std::string &aTextureFile) override;
+    void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite) override;
+
+    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
+    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, Mesh *aMesh) override;
+        
     void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
 
+    Mesh* CreateSimpleMesh(Window *aWindow, 
+                           std::string &aName,
+                           std::vector<Submesh> &aSubmeshes) override;
 
 
     /////////////////////////////////
@@ -35,20 +41,18 @@ namespace YTE
     void FrameUpdate(LogicUpdate *aEvent) override;
     void PresentFrame(LogicUpdate *aEvent) override;
 
-
-
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    glm::vec4 GetClearColor(Window *aWindow) const;
-    std::shared_ptr<VkRenderedSurface>& GetSurface(Window *aWindow);
+    glm::vec4 GetClearColor(Window *aWindow);
+    VkRenderedSurface* GetSurface(Window *aWindow);
 
     Engine* GetEngine() const
     {
       return mEngine;
     }
 
-    std::unordered_map<Window*, std::shared_ptr<VkRenderedSurface>>& GetSurfaces()
+    std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>>& GetSurfaces()
     {
       return mSurfaces;
     }
@@ -66,7 +70,7 @@ namespace YTE
 
   private:
     std::unique_ptr<VkInternals> mVulkanInternals;
-    std::unordered_map<Window*, std::shared_ptr<VkRenderedSurface>> mSurfaces;
+    std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;
   };
 }
