@@ -49,8 +49,8 @@ namespace YTEditor
 {
 
   ObjectBrowser::ObjectBrowser(MainWindow * aMainWindow, QWidget * parent)
-    : QTreeWidget(parent),
-    mMainWindow(aMainWindow)
+    : QTreeWidget(parent)
+    , mMainWindow(aMainWindow)
   {
     SetWidgetSettings();
 
@@ -77,8 +77,8 @@ namespace YTEditor
   }
 
   ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
-    const char *aArchetypeName,
-    int aIndex)
+                                       const char *aArchetypeName,
+                                       int aIndex)
   {
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
     auto space = spaces->begin()->second.get();
@@ -94,15 +94,15 @@ namespace YTEditor
   }
 
   ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
-    YTE::Composition *aComposition)
+                                                    YTE::Composition *aComposition)
   {
     return AddTreeItem(aCompositionName, aComposition);
   }
 
   ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
-    const char *aArchetypeName,
-    ObjectItem *aParentObj,
-    int aIndex)
+                                            const char *aArchetypeName,
+                                            ObjectItem *aParentObj,
+                                            int aIndex)
   {
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
     auto space = spaces->begin()->second.get();
@@ -119,8 +119,8 @@ namespace YTEditor
   }
 
   ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
-    YTE::Composition *aEngineObj,
-    int aIndex)
+                                         YTE::Composition *aEngineObj,
+                                         int aIndex)
   {
     YTE::String name{ aItemName };
 
@@ -139,9 +139,9 @@ namespace YTEditor
   }
 
   ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
-    ObjectItem *aParentObj,
-    YTE::Composition *aEngineObj,
-    int aIndex)
+                                         ObjectItem *aParentObj,
+                                         YTE::Composition *aEngineObj,
+                                         int aIndex)
   {
     YTE::String name{ aItemName };
 
@@ -168,13 +168,12 @@ namespace YTEditor
   }
 
   void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
-    QTreeWidgetItem *aPrevious)
+                                           QTreeWidgetItem *aPrevious)
   {
-    ObjectItem *prevObj = aPrevious ? dynamic_cast<ObjectItem*>(aPrevious) : nullptr;
-    ObjectItem *currObj = aCurrent ? dynamic_cast<ObjectItem*>(aCurrent) : nullptr;
+    ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
+    ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
     ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
-
 
     if (currObj && currObj->GetEngineObject())
     {
@@ -235,15 +234,15 @@ namespace YTEditor
         if (prevObj)
         {
           // deregister the gizmo from listening to the previous object
-          //prevObj->GetEngineObject()->YTEDeregister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-          //prevObj->GetEngineObject()->YTEDeregister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          prevObj->GetEngineObject()->YTEDeregister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          prevObj->GetEngineObject()->YTEDeregister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
         }
 
         if (currObj)
         {
           // register the gizmo to listen to transform changes from newly selected object
-          //currObj->GetEngineObject()->YTERegister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-          //currObj->GetEngineObject()->YTERegister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          currObj->GetEngineObject()->YTERegister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
+          currObj->GetEngineObject()->YTERegister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
         }
       }
     }
@@ -253,7 +252,7 @@ namespace YTEditor
   {
     (void)aIndex;
 
-    ObjectItem *currItem = dynamic_cast<ObjectItem*>(aItem);
+    ObjectItem *currItem = static_cast<ObjectItem*>(aItem);
 
     if (currItem->GetEngineObject() == nullptr)
     {

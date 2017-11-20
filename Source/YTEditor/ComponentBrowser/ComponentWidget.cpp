@@ -86,16 +86,16 @@ namespace YTEditor
 
     if (headerAttrib)
     {
-      YTE::Animator *anim = dynamic_cast<YTE::Animator*>(aComponent);
+      YTE::Animator *animComp = dynamic_cast<YTE::Animator*>(aComponent);
 
-      auto animations = anim->Lister(aComponent);
+      auto animations = animComp->Lister(aComponent);
 
-      for (auto &a : animations)
+      for (auto &anim : animations)
       {
         QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
-        header->setText(0, a.second.c_str());
+        header->setText(0, anim.second.c_str());
 
-        HeaderListWidget *widg = new HeaderListWidget(a.first, a.second, mMainWindow, mEngineComponent, header);
+        HeaderListWidget *widg = new HeaderListWidget(anim.first, anim.second, mMainWindow, mEngineComponent, header);
 
         QTreeWidgetItem *body = new QTreeWidgetItem(header);
         body->setFlags(Qt::NoItemFlags);
@@ -228,7 +228,7 @@ namespace YTEditor
             int index = argStrs.indexOf(propData.c_str());
 
             // set the current string of text for the drop down
-            dynamic_cast<QComboBox*>(comProp->GetWidgets()[0])->setCurrentIndex(index);
+            static_cast<QComboBox*>(comProp->GetWidgets()[0])->setCurrentIndex(index);
           }
         }
 

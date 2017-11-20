@@ -276,11 +276,11 @@ namespace YTEditor
     YTE::Composition *obj= item->GetEngineObject();
 
     // add transform
-    YTE::BoundType* transform = FindBoundType("Transform");
+    YTE::BoundType* transform = YTE::Type::GetGlobalType("Transform");
     obj->AddComponent(transform);
 
     // add model
-    YTE::BoundType* model = FindBoundType("Model");
+    YTE::BoundType* model = YTE::Type::GetGlobalType("Model");
     obj->AddComponent(model);
 
     return obj;

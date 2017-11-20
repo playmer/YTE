@@ -95,12 +95,11 @@ namespace YTEditor
   template <class T>
   void HeaderListProperty<T>::SaveToEngine()
   {
-    YTE::Function *getter = mEngineProp->GetGetter();
-    YTE::Any *oldVal = new YTE::Any(getter->Invoke(mComponent));
-
-    T val = this->GetPropertyValues();
-    YTE::Any *modVal = new YTE::Any(val);
-
+    //YTE::Function *getter = mEngineProp->GetGetter();
+    //YTE::Any *oldVal = new YTE::Any(getter->Invoke(mComponent));
+    //
+    //T val = this->GetPropertyValues();
+    //YTE::Any *modVal = new YTE::Any(val);
     BaseSaveToEngine();
   }
 
