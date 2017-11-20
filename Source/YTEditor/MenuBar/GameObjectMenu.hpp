@@ -65,8 +65,6 @@ namespace YTEditor
     QAction * MakeCameraAction();
     void CreateCamera();
 
-    YTE::Type* FindBoundType(std::string aName);
-
     YTE::Composition* MakeObject(std::string aName);
 
   };

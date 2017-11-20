@@ -254,22 +254,6 @@ namespace YTEditor
   {
   }
 
-  YTE::Type* GameObjectMenu::FindBoundType(std::string aName)
-  {
-    YTE::Engine *engine = mMainWindow->GetRunningEngine();
-    YTE::ComponentSystem *system = engine->GetComponent<YTE::ComponentSystem>();
-
-    for (auto cType : system->GetComponentTypes())
-    {
-      if (cType->GetName() == aName)
-      {
-        return cType;
-      }
-    }
-
-    return nullptr;
-  }
-
   YTE::Composition * GameObjectMenu::MakeObject(std::string aName)
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(aName.c_str(), "Empty");

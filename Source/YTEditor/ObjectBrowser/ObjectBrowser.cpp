@@ -276,11 +276,16 @@ namespace YTEditor
   {
     YTE::Composition *movedObj = GetCurrentObject();
 
-    ObjectItem *parentItem = dynamic_cast<ObjectItem*>(itemAt(aEvent->pos()));
+    ObjectItem *parentItem = static_cast<ObjectItem*>(itemAt(aEvent->pos()));
 
-    YTE::Composition *parentObj = parentItem->GetEngineObject();
+    YTE::Composition *parentObj = nullptr;
 
-    // call the reparent functions
+    if (parentItem)
+    {
+      parentObj = parentItem->GetEngineObject();
+    }
+
+    movedObj->ReParent(parentObj);
     
     QTreeWidget::dropEvent(aEvent);
   }
