@@ -178,14 +178,6 @@ namespace YTEditor
 
         // TODO(Evan/Nick): change to setSelectedItem for drag select in future
         browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
-
-        // get the transform of the currently selected object
-        //YTE::Transform *clickedTransform = mCurrentObj->GetComponent<YTE::Transform>();
-        //
-        //// set the gizmo to the same position as the current object
-        //glm::vec3 pos = clickedTransform->GetWorldTranslation();
-        //YTE::Transform *gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
-        //gizmoTransform->SetWorldTranslation(pos);
       }
 
       mIsHittingObject = true;
