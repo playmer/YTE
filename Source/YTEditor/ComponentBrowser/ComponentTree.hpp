@@ -42,36 +42,39 @@ namespace YTEditor
   {
   public:
 
-    ComponentTree(ComponentBrowser * parent);
+    ComponentTree(ComponentBrowser *parent);
     ~ComponentTree();
 
-    void LoadGameObject(YTE::Composition * aObj);
+    void LoadGameObject(YTE::Composition *aObj);
 
-    ComponentWidget * CreateComponent(YTE::Type * aType, const char * aName, YTE::Component * aEngineComp);
+    ComponentWidget* CreateComponent(YTE::Type *aType, 
+                                     const char *aName,
+                                     YTE::Component *aEngineComp,
+                                     QTreeWidgetItem *aTopItem);
 
-    void SetItemToCollapsedColor(QTreeWidgetItem * aItem);
+    void SetItemToCollapsedColor(QTreeWidgetItem *aItem);
 
-    void SetItemToExpandedColor(QTreeWidgetItem * aItem);
+    void SetItemToExpandedColor(QTreeWidgetItem *aItem);
 
-    void AddComponent(ComponentWidget *aWidget);
-    void RemoveComponent(QTreeWidgetItem * aWidget);
+    //void AddComponent(ComponentWidget *aWidget);
+    void RemoveComponent(QTreeWidgetItem *aWidget);
 
     // for use by undo/redo system only
-    void BaseAddComponent(ComponentWidget * aWidget);
-    void BaseRemoveComponent(QTreeWidgetItem * aWidget);
+    void BaseAddComponent(ComponentWidget *aWidget, QTreeWidgetItem *aTopItem);
+    void BaseRemoveComponent(QTreeWidgetItem *aWidget);
 
     void ClearComponents();
 
-    std::vector<ComponentWidget*> & GetComponentWidgets();
+    std::vector<ComponentWidget*>& GetComponentWidgets();
 
-    void CreateContextMenu(const QPoint & pos);
+    void CreateContextMenu(const QPoint &pos);
 
     void RemoveCurrentComponent();
 
     ComponentBrowser* GetBrowser();
 
   private:
-    ComponentBrowser * mComponentBrowser;
+    ComponentBrowser *mComponentBrowser;
     UndoRedo *mUndoRedo;
     OutputConsole *mOutputConsole;
 

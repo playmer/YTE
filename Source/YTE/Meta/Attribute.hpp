@@ -6,6 +6,7 @@
 namespace YTE
 {
   class Component;
+  class Object;
 
   class Attribute : public Base
   {
@@ -42,4 +43,42 @@ namespace YTE
   private:
     StrGettor mStringGettor;
   };
+
+
+  typedef std::vector<std::pair<Object*, std::string>>(*Lister)(Object*);
+
+  // Applied to Properties and Fields
+  class EditorHeader : public Attribute
+  {
+  public:
+    YTEDeclareType(EditorHeader);
+    EditorHeader(DocumentedObject *aObject, std::string aName);
+
+    std::string GetName();
+
+  private:
+    std::string mName;
+  };
+
+
+  // Applied to Types. (eg. YTE::Components, YTE::Objects)
+  class EditorHeaderList : public Attribute
+  {
+  public:
+    YTEDeclareType(EditorHeaderList);
+    EditorHeaderList(DocumentedObject *aObject, Lister aLister, std::string aName);
+
+    std::vector<std::pair<Object*, std::string>> GetList(Object *aObject);
+
+    std::string GetName();
+
+  private:
+    Lister mLister;
+
+    std::string mName;
+  };
+
 }
+
+
+

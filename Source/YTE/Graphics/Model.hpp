@@ -95,4 +95,43 @@ namespace YTE
 }
 
 
+namespace YTE
+{
+
+  class Animator : public Component
+  {
+  public:
+
+    class Animation : public Object
+    {
+    public:
+      YTEDeclareType(Animation);
+
+      Animation(std::string aName);
+
+      float GetSpeed();
+    
+      void SetSpeed(float aSpeed);
+    
+    private:
+
+      std::string mName;
+      float mSpeed;
+    };
+
+    YTEDeclareType(Animator);
+
+    Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    
+    static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
+    
+    Animation* AddAnimation(std::string aName);
+
+  private:
+
+    std::vector<std::pair<Animation*, std::string>> mAnimations;
+  };
+
+}
+
 #endif

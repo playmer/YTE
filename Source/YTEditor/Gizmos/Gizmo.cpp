@@ -279,4 +279,14 @@ namespace YTEditor
     return mFirstClickMousePos;
   }
 
+  void Gizmo::SelectedObjectTransformChanged(YTE::TransformChanged * aEvent)
+  {
+    auto transform = mGizmoObj->GetComponent<YTE::Transform>();
+    glm::vec3 objPos = aEvent->WorldPosition;
+    transform->SetWorldTranslation(objPos);
+    
+    glm::quat objRot = aEvent->WorldRotation;
+    transform->SetWorldRotation(objRot);
+  }
+
 }

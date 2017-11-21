@@ -153,12 +153,15 @@ namespace YTEditor
     btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
     mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
 
-    
 
     if (rayCallback.hasHit())
     {
       auto obj = mPickedObj = static_cast<YTE::Composition*>(rayCallback.m_collisionObject->getUserPointer());
-      mPickedDistance = (YTE::OurVec3ToBt(mPickedObj->GetComponent<YTE::Transform>()->GetWorldTranslation()) - rayFrom).length();
+
+      YTE::Transform *pickedTrans = mPickedObj->GetComponent<YTE::Transform>();
+
+      mPickedDistance = (YTE::OurVec3ToBt(pickedTrans->GetWorldTranslation()) - rayFrom).length();
+      
       if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
       {
         mIsGizmoActive = true;
@@ -175,14 +178,6 @@ namespace YTEditor
 
         // TODO(Evan/Nick): change to setSelectedItem for drag select in future
         browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
-
-        // get the transform of the currently selected object
-        YTE::Transform *clickedTransform = mCurrentObj->GetComponent<YTE::Transform>();
-
-        // set the gizmo to the same position as the current object
-        glm::vec3 pos = clickedTransform->GetWorldTranslation();
-        YTE::Transform *gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
-        gizmoTransform->SetWorldTranslation(pos);
       }
 
       mIsHittingObject = true;
@@ -207,7 +202,7 @@ namespace YTEditor
     mIsHittingObject = false;
     mIsGizmoActive = false;
     auto it = mObjects.find(mPickedObj);
-
+    
     if (it != mObjects.end())
     {
       it->second->mGhostBody->setDeactivationTime(0.f);
@@ -251,41 +246,42 @@ namespace YTEditor
     aComposition->YTERegister(YTE::Events::PositionChanged, obj, &PickerObject::ChangedPositionAndRotation);
     aComposition->YTERegister(YTE::Events::RotationChanged, obj, &PickerObject::ChangedPositionAndRotation);
     aComposition->YTERegister(YTE::Events::ScaleChanged, obj, &PickerObject::ChangedScale);
-    aComposition->YTERegister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
 
-    if (nullptr != model)
+    if (model)
+    {
+      aComposition->YTERegister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
+    }
+
+    if (nullptr != model && model->GetMesh())
     {
       auto mesh = model->GetMesh();
       
-      if (mesh != nullptr)
+      obj->mTriangles;
+      
+      for (auto &submesh : mesh->mParts)
       {
-        obj->mTriangles;
+        auto indexSize = submesh.mIndexBuffer.size();
       
-        for (auto &submesh : mesh->mParts)
+        DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
+      
+        for (size_t i = 0; i < indexSize; i += 3)
         {
-          auto indexSize = submesh.mIndexBuffer.size();
-      
-          DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
-      
-          for (size_t i = 0; i < indexSize; i += 3)
-          {
-            auto i1 = submesh.mIndexBuffer.at(i + 0);
-            auto i2 = submesh.mIndexBuffer.at(i + 1);
-            auto i3 = submesh.mIndexBuffer.at(i + 2);
+          auto i1 = submesh.mIndexBuffer.at(i + 0);
+          auto i2 = submesh.mIndexBuffer.at(i + 1);
+          auto i3 = submesh.mIndexBuffer.at(i + 2);
 
-            obj->mTriangles.addTriangle(YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i1).mPosition),
-              YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i2).mPosition),
-              YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i3).mPosition));
-          }
+          obj->mTriangles.addTriangle(YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i1).mPosition),
+            YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i2).mPosition),
+            YTE::OurVec3ToBt(submesh.mVertexBuffer.at(i3).mPosition));
         }
-        
-        obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&obj->mTriangles, true);
-      
-        obj->mShape = obj->mTriangleMeshShape.get();
-      
-        obj->mTriangleMeshShape->setLocalScaling(scale);
-        //mTriangleMeshShape->buildOptimizedBvh();
       }
+      
+      obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&obj->mTriangles, true);
+      
+      obj->mShape = obj->mTriangleMeshShape.get();
+      
+      obj->mTriangleMeshShape->setLocalScaling(scale);
+      //mTriangleMeshShape->buildOptimizedBvh();
     }
     else
     {
@@ -324,7 +320,6 @@ namespace YTEditor
     mDynamicsWorld->updateAabbs();
   }
 
-
   void PhysicsHandler::AddedComposition(YTE::CompositionAdded *aEvent)
   {
     Add(aEvent->mComposition);
@@ -340,5 +335,4 @@ namespace YTEditor
     Remove(aEvent->Object);
     Add(aEvent->Object);
   }
-
 }

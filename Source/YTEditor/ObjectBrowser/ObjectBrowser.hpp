@@ -78,14 +78,17 @@ namespace YTEditor
     YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
     void SelectNoItem();
+    
+    void OnCurrentItemChanged(QTreeWidgetItem *current,
+      QTreeWidgetItem *previous);
 
   private:
     MainWindow *mMainWindow;
     void SetWidgetSettings();
-    void OnCurrentItemChanged(QTreeWidgetItem *current,
-      QTreeWidgetItem *previous);
 
     void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
+
+    void dropEvent(QDropEvent *aEvent) override;
 
     void CreateContextMenu(const QPoint & pos);
 

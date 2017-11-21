@@ -445,7 +445,6 @@ namespace YTE
       WindowResize event;
       event.height = mWindow->GetHeight();
       event.width = mWindow->GetWidth();
-
       ResizeEvent(&event);
     }
   }

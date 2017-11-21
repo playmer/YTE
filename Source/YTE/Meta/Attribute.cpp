@@ -1,4 +1,5 @@
 #include "YTE/Meta/Attribute.hpp"
+#include "YTE/Core/Object.hpp"
 
 namespace YTE
 {
@@ -63,6 +64,17 @@ namespace YTE
     YTERegisterType(DropDownStrings);
   }
 
+  YTEDefineType(EditorHeader)
+  {
+    YTERegisterType(EditorHeader);
+  }
+
+  YTEDefineType(EditorHeaderList)
+  {
+    YTERegisterType(EditorHeaderList);
+  }
+  
+
   EditorProperty::EditorProperty(DocumentedObject *aObject, bool aVisible)
     : mVisible(aVisible)
   {
@@ -84,4 +96,35 @@ namespace YTE
   {
     return mStringGettor;
   }
+
+
+  EditorHeader::EditorHeader(YTE::DocumentedObject *aObject, std::string aName)
+    : mName(aName)
+  {
+    YTEUnusedArgument(aObject);
+  }
+
+  std::string EditorHeader::GetName()
+  {
+    return mName;
+  }
+
+
+  EditorHeaderList::EditorHeaderList(YTE::DocumentedObject *aObject, Lister aLister, std::string aName)
+    : mLister(aLister)
+    , mName(aName)
+  {
+    YTEUnusedArgument(aObject);
+  }
+
+  std::vector<std::pair<Object*, std::string>> EditorHeaderList::GetList(YTE::Object *aObject)
+  {
+    return mLister(aObject);
+  }
+
+  std::string EditorHeaderList::GetName()
+  {
+    return mName;
+  }
 }
+

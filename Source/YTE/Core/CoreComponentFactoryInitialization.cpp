@@ -70,6 +70,7 @@ namespace YTE
     DeclareComponent(GraphicsView);
     DeclareComponent(Model);
     DeclareComponent(Skybox);
+    DeclareComponent(Animator);
 
     //DeclareComponent(Collider)
     DeclareComponent(BoxCollider);

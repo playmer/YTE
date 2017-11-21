@@ -322,7 +322,7 @@ namespace YTEditor
     return mRunningSpaceName;
   }
 
-  void MainWindow::CreateBlankLevel(const YTE::String & aLevelName)
+  void MainWindow::CreateBlankLevel(const YTE::String &aLevelName)
   {
     mRunningLevelName = aLevelName;
 
