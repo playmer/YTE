@@ -59,7 +59,9 @@ namespace YTEditor
     YTE::Engine * engine = mainWindow->GetRunningEngine();
     YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
 
-    mSearchBar->SetComponentList(system->GetComponentTypes());
+    auto compTypes = system->GetComponentTypes();
+
+    mSearchBar->SetComponentList(compTypes);
 
     mLayout->addWidget(mSearchBar);
   }

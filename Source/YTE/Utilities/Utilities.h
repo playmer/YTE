@@ -34,6 +34,8 @@ namespace YTE
 
     std::string ToString();
 
+    bool operator==(GlobalUniqueIdentifier const& aGUID);
+
 
     //       u32           u16         u16        u16            u32         u16
     //(xx)(xx)(xx)(xx) - (xx)(xx) - (Mx)(xx) - (Nx)(xx) - (xx)(xx)(xx)(xx)(xx)(xx)

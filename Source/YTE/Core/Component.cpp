@@ -1,6 +1,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+
+#include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.h"
@@ -17,6 +19,19 @@ namespace YTE
   
     YTEBindProperty(&Component::GetOwner, YTENoSetter, "Owner");
   }
+
+  Component::Component(Composition *aOwner, Space *aSpace)
+    : mOwner(aOwner), mSpace(aSpace), mGUID()
+  {
+    Engine *engine = mOwner->GetEngine();
+    bool collision = engine->StoreComponentGUID(this);
+
+    while (collision)
+    {
+      mGUID = GlobalUniqueIdentifier();
+      collision = engine->StoreComponentGUID(this);
+    }
+  };
 
   RSValue Component::Serialize(RSAllocator &aAllocator)
   {
@@ -35,6 +50,23 @@ namespace YTE
   void Component::DebugBreak()
   {
     debugbreak();
+  }
+
+  GlobalUniqueIdentifier& Component::GetGUID()
+  {
+    return mGUID;
+  }
+
+  bool Component::SetGUID(GlobalUniqueIdentifier aGUID)
+  {
+    bool collision = mOwner->GetEngine()->CheckForComponentGUIDCollision(aGUID);
+
+    if (!collision)
+    {
+      mGUID = aGUID;
+    }
+
+    return collision;
   }
 
   void Component::Remove()

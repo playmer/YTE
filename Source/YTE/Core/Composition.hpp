@@ -25,6 +25,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/String/String.h"
 
+#include "YTE/Utilities/Utilities.h"
+
 namespace YTE
 {
   YTEDeclareEvent(CompositionAdded);
@@ -206,6 +208,9 @@ namespace YTE
     String& GetArchetypeName();
     bool SameAsArchetype();
 
+    GlobalUniqueIdentifier& GetGUID();
+    bool SetGUID(GlobalUniqueIdentifier aGUID);
+
   protected:
     void RemoveCompositionInternal(CompositionMap::iterator &aComposition);
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);
@@ -226,6 +231,8 @@ namespace YTE
     bool mBeingDeleted;
 
     String mArchetypeName;
+
+    GlobalUniqueIdentifier mGUID;
 
   private:
     Composition *mOwner;

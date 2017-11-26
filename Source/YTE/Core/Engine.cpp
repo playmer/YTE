@@ -63,6 +63,8 @@ namespace YTE
     , mShouldRun(true)
     , mEditorMode(aEditorMode)
     , mFrame(0)
+    , mCompositionsByGUID()
+    , mComponentsByGUID()
   {
     namespace fs = std::experimental::filesystem;
     
@@ -367,5 +369,59 @@ namespace YTE
   std::unordered_map<String, UniquePointer<RSDocument>>* Engine::GetLevels()
   {
     return &mLevels;
+  }
+
+  bool Engine::StoreCompositionGUID(Composition *aComposition)
+  {
+    GlobalUniqueIdentifier &guid = aComposition->GetGUID();
+    
+    bool collision = CheckForCompositionGUIDCollision(guid);
+
+    // GUID has NOT already been used for a composition
+    if (!collision)
+    {
+      mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
+    }
+
+    return collision;
+  }
+
+  bool Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  {
+    auto it = mCompositionsByGUID.find(aGUID.ToString());
+
+    if (it == mCompositionsByGUID.end())
+    {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool Engine::StoreComponentGUID(Component *aComponent)
+  {
+    GlobalUniqueIdentifier & guid = aComponent->GetGUID();
+
+    bool collision = CheckForComponentGUIDCollision(guid);
+
+    // GUID has NOT already been used for a composition
+    if (!collision)
+    {
+      mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
+    }
+
+    return collision;
+  }
+
+  bool Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  {
+    auto it = mComponentsByGUID.find(aGUID.ToString());
+
+    if (it == mComponentsByGUID.end())
+    {
+      return false;
+    }
+
+    return true;
   }
 }

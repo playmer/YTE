@@ -76,6 +76,21 @@ namespace YTE
     return total;
   }
 
+  bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID)
+  {
+    if (this->mPart1 == aGUID.mPart1 &&
+        this->mPart2 == aGUID.mPart2 &&
+        this->mVersion == aGUID.mVersion &&
+        this->mVariant == aGUID.mVariant &&
+        this->mPart3 == aGUID.mPart3 &&
+        this->mPart4 == aGUID.mPart4)
+    {
+      return true;
+    }
+
+    return false;
+  }
+
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty)
   {
