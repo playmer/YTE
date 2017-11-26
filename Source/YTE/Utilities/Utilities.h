@@ -15,6 +15,8 @@
 #include <string>
 #include <filesystem>
 
+#include <bitset>
+
 #include "YTE/Core/AssetLoader.hpp"
 
 #include "YTE/Utilities/String/String.h"
@@ -24,6 +26,24 @@ namespace YTE
   namespace filesystem = std::experimental::filesystem;
 
   extern std::wstring cWorkingDirectory;
+
+  // Version 4, Variant 1 GUID
+  struct GlobalUniqueIdentifier
+  {
+    GlobalUniqueIdentifier();
+
+    std::string ToString();
+
+
+    //       u32           u16         u16        u16            u32         u16
+    //(xx)(xx)(xx)(xx) - (xx)(xx) - (Mx)(xx) - (Nx)(xx) - (xx)(xx)(xx)(xx)(xx)(xx)
+    u32 mPart1;
+    u16 mPart2;
+    u16 mVersion;
+    u16 mVariant;
+    u32 mPart3;
+    u16 mPart4;
+  };
 
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);

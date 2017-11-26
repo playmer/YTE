@@ -12,7 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <filesystem>
 #include <stdarg.h> /* va_list, va_start, va_end*/
 #include <stdio.h>
-
+#include <random>
 
 #include "YTE/Platform/DialogBox.hpp"
 
@@ -22,6 +22,59 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   std::wstring cWorkingDirectory = std::experimental::filesystem::current_path();
+
+  template <typename tType>
+  tType randomInteger(std::default_random_engine &e)
+  {
+    std::uniform_int_distribution<tType> dist{ std::numeric_limits<tType>::min(), std::numeric_limits<tType>::max() };
+
+    return dist(e);
+  }
+
+  GlobalUniqueIdentifier::GlobalUniqueIdentifier()
+  {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+    mPart1 = randomInteger<decltype(mPart1)>(gen);
+    mPart2 = randomInteger<decltype(mPart2)>(gen);
+    mVersion = randomInteger<decltype(mVersion)>(gen);
+    mVariant = randomInteger<decltype(mVariant)>(gen);
+    mPart3 = randomInteger<decltype(mPart3)>(gen);
+    mPart4 = randomInteger<decltype(mPart4)>(gen);
+
+    // Version
+    u16 version4Flags = 0b0100000000000000;
+    u16 version4Mask = 0b0000111111111111;
+    u16 version4AffectedFlags = (version4Mask ^ -1LL);
+
+    mVersion = (mVersion & version4Mask) | (version4Flags & version4AffectedFlags);
+
+    // Variant
+    u16 variant1Flags = 0b1000000000000000;
+    u16 variant1Mask = 0b0011111111111111;
+    u16 variant1AffectedFlags = (variant1Mask ^ -1LL);
+
+    mVariant = (mVariant & variant1Mask) | (variant1Flags & variant1AffectedFlags);
+  }
+
+  std::string GlobalUniqueIdentifier::ToString()
+  {
+    std::string total{ '{' };
+    total += Format("%08X", mPart1);
+    total += '-';
+    total += Format("%04X", mPart2);
+    total += '-';
+    total += Format("%04X", mVersion);
+    total += '-';
+    total += Format("%04X", mVariant);
+    total += '-';
+    total += Format("%08X", mPart3);
+    total += Format("%04X", mPart4);
+    total += '}';
+
+    return total;
+  }
 
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty)
