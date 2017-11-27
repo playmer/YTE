@@ -421,7 +421,8 @@ namespace YTEditor
     //mGameWindow = new GameWindow(mCentralTabs);
     //mCentralTabs->addTab(mGameWindow, "Game");
 
-    auto it = mRunningEngine->GetWindows().begin();
+    auto &windows = mRunningEngine->GetWindows();
+    auto it = windows.begin();
 
     mGameWindow = new SubWindow(it->second.get(), this);
     auto widget = createWindowContainer(mGameWindow);

@@ -27,6 +27,8 @@
 
 #include "YTE/StandardLibrary/Vector.hpp"
 
+#include "YTE/Utilities/Utilities.h"
+
 
 namespace YTE
 {
@@ -117,6 +119,13 @@ namespace YTE
 
     size_t GetFrame() { return mFrame; }
 
+    bool StoreCompositionGUID(Composition *aComposition);
+    bool CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+
+    bool StoreComponentGUID(Component *aComponent);
+    bool CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+
+
   private:
     GamepadSystem mGamepadSystem;
 
@@ -132,6 +141,10 @@ namespace YTE
 
     bool mShouldRun;
     bool mEditorMode;
+
+    // all compositions and components mapped to GUIDs (represented as strings)
+    std::unordered_map<std::string, Composition*> mCompositionsByGUID;
+    std::unordered_map<std::string, Component*> mComponentsByGUID;
 
     float dt;
     size_t mFrame;

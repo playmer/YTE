@@ -87,6 +87,7 @@ namespace YTE
     , mShouldIntialize(true)
     , mIsInitialized(false)
     , mBeingDeleted(false)
+    , mGUID()
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
   };
@@ -100,6 +101,7 @@ namespace YTE
     , mShouldIntialize(true)
     , mIsInitialized(false)
     , mBeingDeleted(false)
+    , mGUID()
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
   };
@@ -172,6 +174,14 @@ namespace YTE
     if (mShouldIntialize == false)
     {
       return;
+    }
+
+    bool collision = mEngine->StoreCompositionGUID(this);
+
+    while (collision)
+    {
+      mGUID = GlobalUniqueIdentifier();
+      collision = mEngine->StoreCompositionGUID(this);
     }
 
     for (auto &component : mComponents)
@@ -799,5 +809,22 @@ namespace YTE
       }
       
       return false;
+  }
+
+  GlobalUniqueIdentifier& Composition::GetGUID()
+  {
+    return mGUID;
+  }
+
+  bool Composition::SetGUID(GlobalUniqueIdentifier aGUID)
+  {
+    bool collision = mEngine->CheckForCompositionGUIDCollision(aGUID);
+
+    if (!collision)
+    {
+      mGUID = aGUID;
+    }
+
+    return collision;
   }
 }

@@ -17,6 +17,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Meta/ForwardDeclarations.hpp"
 
+#include "YTE/Utilities/Utilities.h"
+
 namespace YTE
 {
   class Component : public EventHandler
@@ -24,8 +26,7 @@ namespace YTE
   public:
     YTEDeclareType(Component);
 
-    Component(Composition *aOwner, Space *aSpace)
-      : mOwner(aOwner), mSpace(aSpace) { };
+    Component(Composition *aOwner, Space *aSpace);
 
     virtual ~Component() {};
 
@@ -43,9 +44,14 @@ namespace YTE
 
     void DebugBreak();
 
+    GlobalUniqueIdentifier& GetGUID();
+    bool SetGUID(GlobalUniqueIdentifier aGUID);
+
   protected:
     Composition *mOwner;
     Space *mSpace;
+
+    GlobalUniqueIdentifier mGUID;
   };
 
   class ComponentDependencies : public Attribute
