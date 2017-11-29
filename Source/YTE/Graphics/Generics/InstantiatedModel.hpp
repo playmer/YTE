@@ -27,7 +27,17 @@ namespace YTE
       
     }
 
+    virtual void SetDefaultAnimationOffset()
+    {
+      
+    }
+
     virtual void UpdateUBOModel(UBOModel &aUBO)
+    {
+      YTEUnusedArgument(aUBO);
+    }
+
+    virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
     {
       YTEUnusedArgument(aUBO);
     }
@@ -47,6 +57,7 @@ namespace YTE
   protected:
     Mesh *mMesh;
     UBOModel mUBOModelData;
+    UBOAnimation *mUBOAnimationData;
   };
 }
 

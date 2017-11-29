@@ -3,7 +3,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-layout (binding = 2) uniform UBOMaterial
+layout (binding = 3) uniform UBOMaterial
 {
     vec3 mDiffuse;
     vec3 mAmbient;

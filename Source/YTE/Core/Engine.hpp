@@ -41,6 +41,7 @@ namespace YTE
   YTEDeclareEvent(BoundTypeChanged);
   YTEDeclareEvent(GraphicsDataUpdate);
   YTEDeclareEvent(PresentFrame);
+  YTEDeclareEvent(AnimationUpdate);
 
   class LogicUpdate : public Event
   {

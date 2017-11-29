@@ -42,6 +42,7 @@ namespace YTE
     virtual void PresentFrame(LogicUpdate *aEvent);
     virtual glm::vec4 GetClearColor(Window *aWindow);
     virtual void SetClearColor(Window *aWindow, const glm::vec4 &aColor);
+    virtual void AnimationUpdate(LogicUpdate *aEvent);
   };
 }
 

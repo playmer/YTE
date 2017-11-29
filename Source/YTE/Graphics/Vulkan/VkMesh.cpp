@@ -106,6 +106,10 @@ namespace YTE
                        nullptr);
     dslbs.emplace_back(2,
                        vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
+    dslbs.emplace_back(3,
+                       vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
 
@@ -117,10 +121,11 @@ namespace YTE
       descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
       descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
       descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
+      descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
 
       for (u32 i = 0; i < samplers; ++i)
       {
-        dslbs.emplace_back(i + 3,
+        dslbs.emplace_back(i + 4,
                            vk::DescriptorType::eCombinedImageSampler,
                            vk::ShaderStageFlagBits::eFragment,
                            nullptr);
@@ -134,7 +139,7 @@ namespace YTE
     {
       descriptorPool = device->createDescriptorPool({},
                                                     1,
-                                                    { { vk::DescriptorType::eUniformBuffer, 3 },
+                                                    { { vk::DescriptorType::eUniformBuffer, 4 },
                                                     });
     }
 
@@ -167,6 +172,18 @@ namespace YTE
 
     //glm::vec3 mBitangent;
     descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+
+    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+
+    //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
+
+    //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Uint);
+
+    //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Uint);
 
     // load shader passing our created pipeline layout
     mShader = aSurface->CreateShader(mSubmesh->mShaderSetName, pipelineLayout, descriptions);

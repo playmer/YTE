@@ -29,11 +29,11 @@ namespace YTEditor
                        MainWindow *aMainWindow, 
                        HeaderListWidget *aParent, 
                        YTE::Property *aProp,
-                       YTE::Component *aComp)
+                       YTE::Object *aObject)
       : PropertyWidget<T>(aName, aMainWindow, aParent)
       , mHeaderWidget(aParent)
       , mEngineProp(aProp)
-      , mComponent(aComp)
+      , mObject(aObject)
     {
       YTE::String tip = aProp->Description();
 
@@ -54,13 +54,13 @@ namespace YTEditor
         this->connect(dynamic_cast<QCheckBox*>(this->GetWidgets()[0]),
           &QCheckBox::stateChanged,
           this,
-          &HeaderListProperty::SaveToEngine);
+          &HeaderListProperty<T>::SaveToEngine);
       }
       else if (std::is_same<QStringList, T>())
       {
         this->connect(dynamic_cast<QComboBox*>(this->GetWidgets()[0]),
           static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-          this, &HeaderListProperty::SaveToEngine);
+          this, &HeaderListProperty<T>::SaveToEngine);
       }
       else
       {
@@ -69,7 +69,7 @@ namespace YTEditor
           this->connect(dynamic_cast<QLineEdit*>(this->GetWidgets()[i]),
             &QLineEdit::editingFinished,
             this,
-            &HeaderListProperty::SaveToEngine);
+            &HeaderListProperty<T>::SaveToEngine);
         }
       }
     }
@@ -88,7 +88,7 @@ namespace YTEditor
 
     YTE::Property *mEngineProp;
 
-    YTE::Component *mComponent;
+    YTE::Object *mObject;
 
   };
 
@@ -108,7 +108,7 @@ namespace YTEditor
   {
     T value = this->GetPropertyValues();
     YTE::Function *setter = mEngineProp->GetSetter();
-    setter->Invoke(mComponent, value);
+    setter->Invoke(mObject, value);
   }
 
 
@@ -135,7 +135,7 @@ namespace YTEditor
 
     YTE::Function *getter = mEngineProp->GetGetter();
 
-    YTE::Any updatedValue = getter->Invoke(mComponent);
+    YTE::Any updatedValue = getter->Invoke(mObject);
 
     this->SetValue(updatedValue.As<T>());
   }

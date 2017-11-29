@@ -69,7 +69,11 @@ namespace YTEditor
 
     void CreateContextMenu(const QPoint &pos);
 
+    void RemoveCurrentTreeItem();
+
     void RemoveCurrentComponent();
+
+    void RemoveCurrentHeaderListWidget();
 
     ComponentBrowser* GetBrowser();
 
@@ -78,9 +82,17 @@ namespace YTEditor
     UndoRedo *mUndoRedo;
     OutputConsole *mOutputConsole;
 
+    //Qt::ItemFlags flags(const QModelIndex &index) const override;
+
     void SetWindowSettings();
 
-    void keyPressEvent(QKeyEvent *aEvent);
+    void keyPressEvent(QKeyEvent *aEvent) override;
+
+    void dropEvent(QDropEvent *aEvent) override;
+
+    void dragEnterEvent(QDragEnterEvent *aEvent) override;
+
+    void dragMoveEvent(QDragMoveEvent *aEvent) override;
 
     std::vector<ComponentWidget*> mComponentWidgets;
   };

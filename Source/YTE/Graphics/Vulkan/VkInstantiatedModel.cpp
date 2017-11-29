@@ -21,6 +21,8 @@ namespace YTE
                                            VkRenderedSurface *aSurface)
     : InstantiatedModel()
     , mSurface(aSurface)
+    , mLoadUBOAnimation(false)
+    , mLoadUBOModel(false)
   {
     mLoadedMesh = mSurface->CreateMesh(aModelFile);
     Create();
@@ -54,6 +56,14 @@ namespace YTE
                                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
                                                     allocator);
 
+    mUBOAnimation = mSurface->GetDevice()->createBuffer(sizeof(UBOAnimation),
+                                                        vk::BufferUsageFlagBits::eTransferDst |
+                                                        vk::BufferUsageFlagBits::eUniformBuffer,
+                                                        vk::SharingMode::eExclusive,
+                                                        nullptr,
+                                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                                        allocator);
+
     // create descriptor sets
     for (auto& submesh : mLoadedMesh->mSubmeshes)
     {
@@ -65,11 +75,57 @@ namespace YTE
 
   void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this,
-                          &VkInstantiatedModel::GraphicsDataUpdateVk);
-
     mUBOModelData = aUBO;
+   
+    if (!mLoadUBOModel)
+    {
+      if (!mLoadUBOAnimation)
+      {
+        mSurface->YTERegister(Events::GraphicsDataUpdateVk, this,
+                              &VkInstantiatedModel::GraphicsDataUpdateVk);
+      }
+
+      mLoadUBOModel = true;
+    }
   }
+
+
+  
+  void VkInstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
+  {
+    mUBOAnimationData = aUBO;
+   
+    if (!mLoadUBOAnimation)
+    {
+      if (!mLoadUBOModel)
+      {
+        mSurface->YTERegister(Events::GraphicsDataUpdateVk, this,
+                              &VkInstantiatedModel::GraphicsDataUpdateVk);
+      }
+
+      mLoadUBOAnimation = true;
+    }
+  }
+
+
+
+  void VkInstantiatedModel::SetDefaultAnimationOffset()
+  {
+    mUBOAnimationData = mMesh->mSkeleton.GetDefaultOffsets();
+
+    if (!mLoadUBOAnimation)
+    {
+      if (!mLoadUBOModel)
+      {
+        mSurface->YTERegister(Events::AnimationUpdateVk, this,
+                              &VkInstantiatedModel::GraphicsDataUpdateVk);
+      }
+
+      mLoadUBOAnimation = true;
+    }
+  }
+
+
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh)
   {
@@ -103,6 +159,10 @@ namespace YTE
                        nullptr);
     dslbs.emplace_back(2,
                        vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
+    dslbs.emplace_back(3,
+                       vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
 
@@ -117,7 +177,7 @@ namespace YTE
 
       for (u32 i = 0; i < samplers; ++i)
       {
-        dslbs.emplace_back(i + 3,
+        dslbs.emplace_back(i + 4,
                            vk::DescriptorType::eCombinedImageSampler,
                            vk::ShaderStageFlagBits::eFragment,
                            nullptr);
@@ -131,7 +191,7 @@ namespace YTE
     {
       descriptorPool = device->createDescriptorPool({},
         1,
-        { { vk::DescriptorType::eUniformBuffer, 3 },
+        { { vk::DescriptorType::eUniformBuffer, 4 },
         });
     }
 
@@ -144,7 +204,7 @@ namespace YTE
     mPipelineData.emplace(aSubMesh, pipelineData);
 
     std::vector<vkhlf::WriteDescriptorSet> wdss;
-    wdss.reserve(6);
+    wdss.reserve(7);
 
     // Helper constants and variables.
     constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
@@ -154,10 +214,12 @@ namespace YTE
     // Add Uniform Buffers
     vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(), 0, sizeof(UBOView) };
     vkhlf::DescriptorBufferInfo uboModel{ mUBOModel, 0, sizeof(UBOModel) };
+    vkhlf::DescriptorBufferInfo uboAnimation{ mUBOAnimation, 0, sizeof(UBOAnimation) };
     vkhlf::DescriptorBufferInfo uboMaterial{ aSubMesh->mUBOMaterial, 0, sizeof(UBOMaterial) };
 
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
 
     // Add Texture Samplers
@@ -196,7 +258,17 @@ namespace YTE
 
     auto update = aEvent->mCBO;
 
-    mUBOModel->update<UBOModel>(0, mUBOModelData, update);
+    if (mLoadUBOModel)
+    {
+      mUBOModel->update<UBOModel>(0, mUBOModelData, update);
+      mLoadUBOModel = false;
+    }
+
+    if (mLoadUBOAnimation)
+    {
+      mUBOAnimation->update<UBOAnimation>(0, *mUBOAnimationData, update);
+      mLoadUBOAnimation = false;
+    }
   }
 }
 

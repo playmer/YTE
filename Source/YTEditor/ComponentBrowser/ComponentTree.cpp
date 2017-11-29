@@ -19,7 +19,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qaction.h>
 #include <qmenu.h>
 #include <qevent.h>
+#include <qmimedata.h>
 
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ScriptBind.hpp"
@@ -31,11 +33,20 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/ComponentBrowser/HeaderListWidget.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
+
+#include "YTEditor/FileViewer/FileViewer.hpp"
+
 #include "YTEditor/MainWindow/MainWindow.hpp"
+
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
+
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+
 #include "YTEditor/UndoRedo/UndoRedo.hpp"
 #include "YTEditor/UndoRedo/Commands.hpp"
+
 
 namespace YTEditor
 {
@@ -53,6 +64,14 @@ namespace YTEditor
       &ComponentTree::CreateContextMenu);
 
     setItemDelegate(new ComponentDelegate(this));
+
+    setDropIndicatorShown(true);
+
+    viewport()->setAcceptDrops(true);
+
+    this->setAcceptDrops(true);
+
+    setDragDropOverwriteMode(true);
   }
 
   ComponentTree::~ComponentTree()
@@ -125,8 +144,7 @@ namespace YTEditor
   void ComponentTree::RemoveComponent(QTreeWidgetItem *aWidget)
   {
     auto name = aWidget->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveComponentCmd>(name.c_str(),
-      mOutputConsole);
+    auto cmd = std::make_unique<RemoveComponentCmd>(name.c_str(), mOutputConsole);
     mUndoRedo->InsertCommand(std::move(cmd));
     BaseRemoveComponent(aWidget);
   }
@@ -135,53 +153,82 @@ namespace YTEditor
   {
     aTopItem->setText(0, aWidget->GetName().c_str());
 
-    QTreeWidgetItem * child = new QTreeWidgetItem(aTopItem);
+    QTreeWidgetItem *child = new QTreeWidgetItem(aTopItem);
     child->setFlags(Qt::NoItemFlags);
     this->setItemWidget(child, 0, aWidget);
 
     aTopItem->addChild(child);
 
-    YTE::String tip = aWidget->GetEngineComponent()->GetType()->Description();
+    YTE::Type *componentType = aWidget->GetEngineComponent()->GetType();
+
+    YTE::String tip = componentType->Description();
 
     aTopItem->setToolTip(0, tip.c_str());
     child->setToolTip(0, tip.c_str());
 
     connect(this,
-      &QTreeWidget::itemCollapsed,
-      this,
-      &ComponentTree::SetItemToCollapsedColor);
+            &QTreeWidget::itemCollapsed,
+            this,
+            &ComponentTree::SetItemToCollapsedColor);
+    
     connect(this,
-      &QTreeWidget::itemExpanded,
-      this,
-      &ComponentTree::SetItemToExpandedColor);
+            &QTreeWidget::itemExpanded,
+            this,
+            &ComponentTree::SetItemToExpandedColor);
 
     insertTopLevelItem(this->topLevelItemCount(), aTopItem);
 
     mComponentWidgets.push_back(aWidget);
   }
 
-  void ComponentTree::BaseRemoveComponent(QTreeWidgetItem * aWidget)
+  void ComponentTree::BaseRemoveComponent(QTreeWidgetItem *aWidget)
   {
-    QWidget * itemWidg = this->itemWidget(aWidget->child(0), 0);
-    ComponentWidget * compWidg = dynamic_cast<ComponentWidget*>(itemWidg);
-
-    if (!compWidg)
+    // loop through all the children
+    for (int i = 0; i < aWidget->childCount(); ++i)
     {
-      return;
+      QWidget *itemWidg = this->itemWidget(aWidget->child(i), 0);
+
+      if (itemWidg)
+      {
+        ComponentWidget *compWidg = dynamic_cast<ComponentWidget*>(itemWidg);
+
+        if (!compWidg)
+        {
+          continue;
+        }
+
+        if (compWidg->GetName() == "Model")
+        {
+          mComponentBrowser->GetMainWindow()->GetMaterialViewer().LoadNoMaterial();
+        }
+
+        compWidg->RemoveComponentFromEngine();
+
+        mComponentWidgets.erase(std::remove(mComponentWidgets.begin(),
+          mComponentWidgets.end(),
+          compWidg),
+          mComponentWidgets.end());
+      }
+      else
+      {
+        QTreeWidgetItem *childItem = aWidget->child(i);
+
+        QWidget *headerWidgBase = this->itemWidget(childItem->child(0), 0);
+
+        if (headerWidgBase)
+        {
+          HeaderListWidget *headerWidg = dynamic_cast<HeaderListWidget*>(headerWidgBase);
+
+          if (!headerWidg)
+          {
+            continue;
+          }
+
+          headerWidg->RemoveSelf();
+        }
+      }
     }
-
-    if (compWidg->GetName() == "Model")
-    {
-      mComponentBrowser->GetMainWindow()->GetMaterialViewer().LoadNoMaterial();
-    }
-
-    compWidg->RemoveComponentFromEngine();
-
-    mComponentWidgets.erase(std::remove(mComponentWidgets.begin(),
-      mComponentWidgets.end(),
-      compWidg),
-      mComponentWidgets.end());
-
+    
     aWidget->setHidden(true);
     this->removeItemWidget(aWidget, 0);
 
@@ -208,16 +255,44 @@ namespace YTEditor
       return;
     }
 
-    QMenu * contextMenu = new QMenu(this);
+    QMenu *contextMenu = new QMenu(this);
 
-    QAction * removeAct = new QAction("Remove", contextMenu);
+    QAction *removeAct = new QAction("Remove", contextMenu);
+    
     connect(removeAct,
-      &QAction::triggered,
-      this,
-      &ComponentTree::RemoveCurrentComponent);
+            &QAction::triggered,
+            this,
+            &ComponentTree::RemoveCurrentTreeItem);
 
     contextMenu->addAction(removeAct);
     contextMenu->exec(this->mapToGlobal(pos));
+  }
+
+  void ComponentTree::RemoveCurrentTreeItem()
+  {
+    QTreeWidgetItem *item = currentItem();
+
+    QString currName = item->text(0);
+
+    std::cout << "Current Item: " << currName.toStdString() << std::endl;
+
+    QWidget *itemWidg = this->itemWidget(item->child(item->childCount() - 1), 0);
+
+    ComponentWidget *componentWidget = dynamic_cast<ComponentWidget*>(itemWidg);
+
+    if (componentWidget)
+    {
+      RemoveCurrentComponent();
+      return;
+    }
+
+    HeaderListWidget *headerWidg = dynamic_cast<HeaderListWidget*>(itemWidg);
+
+    if (headerWidg)
+    {
+      RemoveCurrentHeaderListWidget();
+      return;
+    }
   }
 
   void ComponentTree::RemoveCurrentComponent()
@@ -227,28 +302,35 @@ namespace YTEditor
       return;
     }
 
-    QTreeWidgetItem * currItem = this->currentItem();
+    QTreeWidgetItem *currItem = this->currentItem();
 
     if (!currItem)
     {
       return;
     }
 
-    QTreeWidgetItem * childItem = currItem->child(0);
+    QTreeWidgetItem *childItem = currItem->child(currItem->childCount() - 1);
 
     if (!childItem)
     {
       return;
     }
 
-    QWidget * itemWidg = this->itemWidget(childItem, 0);
+    QWidget *itemWidg = this->itemWidget(childItem, 0);
 
-    ComponentWidget * compWidg = dynamic_cast<ComponentWidget*>(itemWidg);
+    ComponentWidget *compWidg = dynamic_cast<ComponentWidget*>(itemWidg);
 
     if (!compWidg)
     {
       return;
     }
+
+    //HeaderListWidget *headerWidg = dynamic_cast<HeaderListWidget*>(itemWidg);
+    //
+    //if (headerWidg)
+    //{
+    //  this->itemWidget(currItem->parent(), 0);
+    //}
 
     if (compWidg->GetName() == "Model")
     {
@@ -268,7 +350,35 @@ namespace YTEditor
     setCurrentItem(topLevelItem(0));
   }
 
-  ComponentBrowser * ComponentTree::GetBrowser()
+  void ComponentTree::RemoveCurrentHeaderListWidget()
+  {
+    QTreeWidgetItem *item = currentItem();
+
+    QWidget *itemWidg = this->itemWidget(item->child(0), 0);
+
+    HeaderListWidget *headerWidg = dynamic_cast<HeaderListWidget*>(itemWidg);
+
+    if (headerWidg)
+    {
+      YTE::Component *component = headerWidg->GetEngineComponent();
+
+      YTE::Type *type = component->GetType();
+
+      if (type->IsA<YTE::Animator>())
+      {
+        YTE::Animator *animator = static_cast<YTE::Animator*>(component);
+
+        YTE::Object *object = headerWidg->GetEngineObject();
+
+        animator->RemoveAnimation(static_cast<YTE::Animation*>(object));
+
+        item->setHidden(true);
+        this->removeItemWidget(item->child(0), 0);
+      }
+    }
+  }
+
+  ComponentBrowser* ComponentTree::GetBrowser()
   {
     return mComponentBrowser;
   }
@@ -287,7 +397,7 @@ namespace YTEditor
   {
     if (aEvent->key() == Qt::Key_Delete)
     {
-      RemoveCurrentComponent();
+      RemoveCurrentTreeItem();
     }
     else
     {
@@ -295,4 +405,124 @@ namespace YTEditor
     }
   }
 
+  void ComponentTree::dropEvent(QDropEvent *aEvent)
+  {
+    QObject *sourceObj = aEvent->source();
+
+    ObjectBrowser *objBrowser = dynamic_cast<ObjectBrowser*>(sourceObj);
+
+    if (objBrowser)
+    {
+      aEvent->ignore();
+    }
+
+    FileViewer *fileViewer = dynamic_cast<FileViewer*>(sourceObj);
+
+    if (fileViewer)
+    {
+      const QMimeData *rawData = aEvent->mimeData();
+
+      QByteArray encodedData = rawData->data("application/vnd.text.list");
+      QDataStream stream(&encodedData, QIODevice::ReadOnly);
+      QStringList newItems;
+
+      int rows = 0;
+
+      while (!stream.atEnd())
+      {
+        QString text;
+        stream >> text;
+        newItems << text;
+        ++rows;
+      }
+
+      std::string filename = newItems[0].toStdString();
+
+      QTreeWidgetItem *item = this->itemAt(aEvent->pos());
+      QWidget *widget = this->itemWidget(item->child(item->childCount() - 1), 0);
+
+      ComponentWidget *componentWidget = static_cast<ComponentWidget*>(widget);
+      
+      YTE::Component *component = componentWidget->GetEngineComponent();
+      YTE::Animator *animator = static_cast<YTE::Animator*>(component);
+      YTE::Animation *animation = animator->AddAnimation(filename);
+
+      if (animation == nullptr)
+      {
+        aEvent->ignore();
+        return;
+      }
+
+      LoadGameObject(animator->GetOwner());
+    }
+
+    aEvent->ignore();
+  }
+
+  void ComponentTree::dragEnterEvent(QDragEnterEvent *aEvent)
+  {
+    aEvent->acceptProposedAction();
+  }
+
+  void ComponentTree::dragMoveEvent(QDragMoveEvent *aEvent)
+  {
+    QTreeWidgetItem *item = this->itemAt(aEvent->pos());
+    
+    // check if the cursor is hovering over an item
+    if (item)
+    {
+      QWidget *widget = this->itemWidget(item, 0);
+
+      // check if the cursor is hovering over the body of the component
+      if (widget)
+      {
+        //HeaderListWidget *headerWidg = dynamic_cast<HeaderListWidget*>(widget);
+        //
+        //// check if the body is a header list widget
+        //if (headerWidg)
+        //{
+        //  YTE::Component *component = headerWidg->GetEngineComponent();
+        //
+        //  YTE::Animator *animator = dynamic_cast<YTE::Animator*>(component);
+        //
+        //  // check if it's an animator component
+        //  if (animator)
+        //  {
+        //    aEvent->acceptProposedAction();
+        //    return;
+        //  }
+        //}
+        //else
+        //{
+        //  ComponentWidget *componentWidget = dynamic_cast<ComponentWidget*>(widget);
+        //
+        //  if (componentWidget)
+        //  {
+        //    YTE::Component *component = componentWidget->GetEngineComponent();
+        //
+        //    YTE::Animator *animator = dynamic_cast<YTE::Animator*>(component);
+        //
+        //    // check if it's an animator component
+        //    if (animator)
+        //    {
+        //      aEvent->acceptProposedAction();
+        //      return;
+        //    }
+        //  }
+        //}
+      }
+      else
+      {
+        QString itemText = item->text(0);
+
+        if (item->text(0) == "Animator")
+        {
+          aEvent->acceptProposedAction();
+          return;
+        }
+      }
+    }
+
+    aEvent->setAccepted(false);
+  }
 }

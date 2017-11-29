@@ -92,4 +92,9 @@ namespace YTE
     YTEUnusedArgument(aWindow);
     YTEUnusedArgument(aColor);
   }
+
+  void Renderer::AnimationUpdate(LogicUpdate* aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+  }
 }

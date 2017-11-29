@@ -237,7 +237,7 @@
 					}
 		},
 		"Model": {
-				"Mesh": "empty.fbx",
+				"Mesh": "None",
 				"Reload": false
 		}
 				

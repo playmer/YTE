@@ -10,6 +10,7 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
@@ -40,6 +41,8 @@ namespace YTE
 
     void Reload();
 
+    bool CanAnimate();
+    
 
     /////////////////////////////////
     // Events
@@ -79,6 +82,13 @@ namespace YTE
       return mMeshName;
     }
 
+    InstantiatedModel* GetInstantiatedModel()
+    {
+      return mInstantiatedModel.get();
+    }
+
+
+
   private:
     void Create();  // tells renderer to create mesh
     void Destroy(); // tells renderer to remove this instantiation
@@ -91,47 +101,10 @@ namespace YTE
     UBOModel mUBOModel;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     bool mConstructing;
+    Animation *mAnimation;
+    Engine *mEngine;
   };
-}
-
-
-namespace YTE
-{
-
-  class Animator : public Component
-  {
-  public:
-
-    class Animation : public Object
-    {
-    public:
-      YTEDeclareType(Animation);
-
-      Animation(std::string aName);
-
-      float GetSpeed();
-    
-      void SetSpeed(float aSpeed);
-    
-    private:
-
-      std::string mName;
-      float mSpeed;
-    };
-
-    YTEDeclareType(Animator);
-
-    Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    
-    static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
-    
-    Animation* AddAnimation(std::string aName);
-
-  private:
-
-    std::vector<std::pair<Animation*, std::string>> mAnimations;
-  };
-
+  
 }
 
 #endif

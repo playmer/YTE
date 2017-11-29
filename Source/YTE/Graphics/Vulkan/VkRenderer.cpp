@@ -67,6 +67,7 @@ namespace YTE
 
     mEngine->YTERegister(Events::FrameUpdate, this, &VkRenderer::FrameUpdate);
     mEngine->YTERegister(Events::GraphicsDataUpdate, this, &VkRenderer::GraphicsDataUpdate);
+    mEngine->YTERegister(Events::AnimationUpdate, this, &VkRenderer::AnimationUpdate);
     mEngine->YTERegister(Events::PresentFrame, this, &VkRenderer::PresentFrame);
   }
 
@@ -138,6 +139,17 @@ namespace YTE
     for (auto& surface : mSurfaces)
     {
       surface.second->PresentFrame();
+    }
+  }
+
+
+
+  void VkRenderer::AnimationUpdate(LogicUpdate* aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+    for (auto& surface : mSurfaces)
+    {
+      surface.second->AnimationUpdate();
     }
   }
 

@@ -44,10 +44,13 @@ namespace YTEditor
   ImportMenu::ImportMenu(MainWindow * aMainWindow)
     : QMenu("Import"), mMainWindow(aMainWindow)
   {
+    QAction *importAnimationAct = new QAction("Animation");
+    addAction(importAnimationAct);
+    connect(importAnimationAct, &QAction::triggered, this, &ImportMenu::ImportAnimation);
+
     QAction * importModelAct = new QAction("Model");
     addAction(importModelAct);
     connect(importModelAct, &QAction::triggered, this, &ImportMenu::ImportModel);
-
   }
 
   ImportMenu::~ImportMenu()
@@ -55,6 +58,7 @@ namespace YTEditor
   }
 
   // CRN/DDS compression callback function.
+  /* Crunch not currently in use
   static crn_bool progress_callback_func(crn_uint32 phase_index,
     crn_uint32 total_phases,
     crn_uint32 subphase_index,
@@ -82,15 +86,87 @@ namespace YTEditor
 
     return true;
   }
+  */
+
+  void ImportMenu::ImportAnimation()
+  {
+    // Construct a file dialog for selecting the correct file
+    QString fileName = QFileDialog::getOpenFileName(this,
+      tr("Import Animation"),
+      QDir::homePath(),
+      tr("Animations (*.fbx)"));
+
+    if (fileName == "")
+    {
+      return;
+    }
+
+    namespace fs = std::experimental::filesystem;
+    auto stdFileName = fileName.toStdString();
+    fs::path animationFile{ stdFileName };
+    animationFile = fs::canonical(animationFile);
+    fs::path animationDirectory = animationFile.parent_path();
+    std::string stdAnimationDirectory = animationDirectory.string();
 
 
+    Assimp::Importer Importer;
+
+    auto pScene = Importer.ReadFile(stdFileName,
+      aiProcess_FlipWindingOrder |
+      aiProcess_Triangulate |
+      aiProcess_CalcTangentSpace |
+      aiProcess_GenSmoothNormals);
+
+    if (nullptr == pScene)
+    {
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+        "Could not find a valid fbx named %s",
+        stdAnimationDirectory.c_str());
+      return;
+    }
+
+    if (pScene->mNumAnimations == 0)
+    {
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+        "No animations are found in file %s",
+        stdAnimationDirectory.c_str());
+      return;
+    }
+
+    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+      "Importing Animation: %s",
+      stdAnimationDirectory.c_str());
+
+    for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
+    {
+      auto animation = pScene->mAnimations[i];
+      std::string animationName = animation->mName.data;
+
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+        "Animation Name (%s), Animation Index (%i):",
+        animationName.c_str(),
+        i);
+    }
+
+    fs::path workingDir{ YTE::Path::GetGamePath().String() };
+    fs::path assetsDir{ workingDir.parent_path() };
+    fs::path animationDir{ assetsDir / L"Animations" };
+
+    std::error_code code;
+
+    fs::copy(animationFile,
+      animationDir / animationFile.filename(),
+      fs::copy_options::recursive |
+      fs::copy_options::overwrite_existing,
+      code);
+  }
 
   void ImportMenu::ImportModel()
   {
     // Construct a file dialog for selecting the correct file
     QString fileName = QFileDialog::getOpenFileName(this,
       tr("Import Model"),
-      QDir::currentPath() + "/../Models/",
+      QDir::homePath(),
       tr("Models (*.fbx)"));
 
     if (fileName == "")
@@ -127,7 +203,15 @@ namespace YTEditor
     if (nullptr == pScene)
     {
       mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-        "Could not find a valid mesh in file %s",
+        "Could not find a valid fbx named %s",
+        stdMeshDirectory.c_str());
+      return;
+    }
+
+    if (pScene->mNumMeshes == 0)
+    {
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+        "No meshes are found in file %s",
         stdMeshDirectory.c_str());
       return;
     }
@@ -287,7 +371,8 @@ namespace YTEditor
       int width, height, channels;
 
       auto pixels = stbi_load(textureFilePath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-      crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(pixels);
+      // crunch not in use currently
+      //crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(pixels);
 
       if (nullptr == pixels)
       {
@@ -312,50 +397,52 @@ namespace YTEditor
         return;
       }
 
-      bool hasAlpha = (channels == 3) ? false : true;
+      // crunch not in use currently
+      //bool hasAlpha = (channels == 3) ? false : true;
 
       std::string message{ "Compressing " };
       message += textureFilePath;
 
-      QProgressDialog compressProgress(message.c_str(), "cancel", 0, 100, this);
-      compressProgress.setWindowModality(Qt::WindowModal);
-
-      crn_comp_params comp_params;
-      comp_params.m_width = width;
-      comp_params.m_height = height;
-      comp_params.set_flag(cCRNCompFlagPerceptual, true);
-      comp_params.set_flag(cCRNCompFlagDXT1AForTransparency, false);
-      comp_params.set_flag(cCRNCompFlagHierarchical, false);
-      comp_params.m_file_type = cCRNFileTypeCRN;
-      comp_params.m_format = (hasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
-      comp_params.m_pImages[0][0] = pixelSource;
-      comp_params.m_pProgress_func = progress_callback_func;
-      comp_params.m_pProgress_func_data = &compressProgress;
-      comp_params.m_num_helper_threads = std::thread::hardware_concurrency();
-
-      YTE::u32 filesize;
-      auto crnFileVoid = crn_compress(comp_params, filesize);
-
-      if (nullptr == crnFileVoid)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-          "Failed to compress Texture file: %s",
-          textureFilePath.c_str());
-
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-          "Aborting model load!");
-
-        return;
-      }
-
-      const char *crnFile = static_cast<const char*>(crnFileVoid);
-      std::ofstream ostrm(crunchFilePath, std::ios::binary);
-      ostrm.write(crnFile, filesize);
-
-      crn_free_block(crnFileVoid);
-      stbi_image_free(pixels);
-
-      compressProgress.setValue(100);
+    // Commented out this because its not even being used and takes way too long for development
+    //  QProgressDialog compressProgress(message.c_str(), "cancel", 0, 100, this);
+    //  compressProgress.setWindowModality(Qt::WindowModal);
+    //
+    //  crn_comp_params comp_params;
+    //  comp_params.m_width = width;
+    //  comp_params.m_height = height;
+    //  comp_params.set_flag(cCRNCompFlagPerceptual, true);
+    //  comp_params.set_flag(cCRNCompFlagDXT1AForTransparency, false);
+    //  comp_params.set_flag(cCRNCompFlagHierarchical, false);
+    //  comp_params.m_file_type = cCRNFileTypeCRN;
+    //  comp_params.m_format = (hasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
+    //  comp_params.m_pImages[0][0] = pixelSource;
+    //  comp_params.m_pProgress_func = progress_callback_func;
+    //  comp_params.m_pProgress_func_data = &compressProgress;
+    //  comp_params.m_num_helper_threads = std::thread::hardware_concurrency();
+    //
+    //  YTE::u32 filesize;
+    //  auto crnFileVoid = crn_compress(comp_params, filesize);
+    //
+    //  if (nullptr == crnFileVoid)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //      "Failed to compress Texture file: %s",
+    //      textureFilePath.c_str());
+    //
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //      "Aborting model load!");
+    //
+    //    return;
+    //  }
+    //
+    //  const char *crnFile = static_cast<const char*>(crnFileVoid);
+    //  std::ofstream ostrm(crunchFilePath, std::ios::binary);
+    //  ostrm.write(crnFile, filesize);
+    //
+    //  crn_free_block(crnFileVoid);
+    //  stbi_image_free(pixels);
+    //
+    //  compressProgress.setValue(100);
     }
   }
 

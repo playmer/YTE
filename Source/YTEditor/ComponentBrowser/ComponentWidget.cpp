@@ -18,6 +18,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
+
+#include "YTE/Graphics/Animation.hpp"
+
 #include "YTE/Meta/Type.hpp"
 #include "YTE/Meta/Attribute.hpp"
 
@@ -66,7 +69,6 @@ namespace YTEditor
     YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
     bool aProperty)
   {
-
     // load all properties
     for (auto& prop : aProperties)
     {
@@ -86,25 +88,28 @@ namespace YTEditor
 
     if (headerAttrib)
     {
-      YTE::Animator *animComp = dynamic_cast<YTE::Animator*>(aComponent);
-
-      auto animations = animComp->Lister(aComponent);
-
-      for (auto &anim : animations)
+      if (aComponent->GetType()->IsA<YTE::Animator>())
       {
-        QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
-        header->setText(0, anim.second.c_str());
+        YTE::Animator *animComp = static_cast<YTE::Animator*>(aComponent);
 
-        HeaderListWidget *widg = new HeaderListWidget(anim.first, anim.second, mMainWindow, mEngineComponent, header);
+        auto animations = animComp->Lister(aComponent);
 
-        QTreeWidgetItem *body = new QTreeWidgetItem(header);
-        body->setFlags(Qt::NoItemFlags);
-        
-        mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
+        for (auto &anim : animations)
+        {
+          QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
+          header->setText(0, anim.second.c_str());
 
-        header->addChild(body);
-        
-        mTopItem->addChild(header);
+          HeaderListWidget *widg = new HeaderListWidget(anim.first, anim.second, mMainWindow, mEngineComponent, header);
+
+          QTreeWidgetItem *body = new QTreeWidgetItem(header);
+          body->setFlags(Qt::NoItemFlags);
+
+          mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
+
+          header->addChild(body);
+
+          mTopItem->addChild(header);
+        }
       }
     }
 
@@ -273,14 +278,14 @@ namespace YTEditor
     }
   }
 
-  ComponentDelegate::ComponentDelegate(ComponentTree * aTree, QWidget * aParent)
+  ComponentDelegate::ComponentDelegate(ComponentTree *aTree, QWidget *aParent)
     : QStyledItemDelegate(aParent), mTree(aTree)
   {
   }
 
-  void ComponentDelegate::paint(QPainter * painter,
-    const QStyleOptionViewItem & option,
-    const QModelIndex & index) const
+  void ComponentDelegate::paint(QPainter *painter,
+    const QStyleOptionViewItem &option,
+    const QModelIndex &index) const
   {
     Q_UNUSED(index);
 
@@ -312,10 +317,10 @@ namespace YTEditor
       &button, painter);
   }
 
-  bool ComponentDelegate::editorEvent(QEvent * event,
-    QAbstractItemModel * model,
-    const QStyleOptionViewItem & option,
-    const QModelIndex & index)
+  bool ComponentDelegate::editorEvent(QEvent *event,
+                                      QAbstractItemModel *model,
+                                      const QStyleOptionViewItem &option,
+                                      const QModelIndex &index)
   {
     Q_UNUSED(index);
     Q_UNUSED(model);
@@ -344,9 +349,7 @@ namespace YTEditor
       if (clickX > x && clickX < x + w)
         if (clickY > y && clickY < y + h)
         {
-
-
-          mTree->RemoveComponent(item);
+          mTree->RemoveCurrentComponent();
 
           return true;
         }

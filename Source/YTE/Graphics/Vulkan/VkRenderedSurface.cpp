@@ -21,6 +21,7 @@
 
 namespace YTE
 {
+  YTEDefineEvent(AnimationUpdateVk);
   YTEDefineEvent(GraphicsDataUpdateVk);
   YTEDefineType(GraphicsDataUpdateVk)
   {
@@ -31,7 +32,6 @@ namespace YTE
   {
     YTERegisterType(VkRenderedSurface);
   }
-
 
 
   VkRenderedSurface::VkRenderedSurface(Window *aWindow,
@@ -228,12 +228,13 @@ namespace YTE
   // Sprites
   std::unique_ptr<InstantiatedSprite> VkRenderedSurface::CreateSprite(std::string &aTextureFile)
   {
+    YTEUnusedArgument(aTextureFile);
     return nullptr;
   }
 
   void VkRenderedSurface::DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite)
   {
-
+    YTEUnusedArgument(aSprite);
   }
   
   // Models
@@ -471,6 +472,18 @@ namespace YTE
       shader.second->Reload();
     }
   }
+
+
+  void VkRenderedSurface::AnimationUpdate()
+  {
+    GraphicsDataUpdateVk update;
+    update.mCBO = mCommandPool->allocateCommandBuffer();
+    update.mCBO->begin();
+    SendEvent(Events::AnimationUpdateVk, &update);
+    update.mCBO->end();
+    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+  }
+
 
 
   void VkRenderedSurface::RenderFrameForSurface()

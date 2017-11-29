@@ -19,6 +19,7 @@
 namespace YTE
 {
   YTEDeclareEvent(GraphicsDataUpdateVk);
+  YTEDeclareEvent(AnimationUpdateVk);
 
 
 
@@ -112,6 +113,7 @@ namespace YTE
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
+    void AnimationUpdate();
 
 
     /////////////////////////////////

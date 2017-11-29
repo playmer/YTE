@@ -21,6 +21,7 @@
 // forward declarations for assimp
 struct aiScene;
 struct aiMesh;
+struct aiNode;
 
 
 
@@ -36,6 +37,32 @@ namespace YTE
   {
     return { aVector->r, aVector->g ,aVector->b };
   }
+
+  inline glm::quat AssimpToGLM(const aiQuaternion *aQuat) 
+  { 
+    glm::quat quaternion; 
+ 
+    quaternion.x = aQuat->x; 
+    quaternion.y = aQuat->y; 
+    quaternion.z = aQuat->z; 
+    quaternion.w = aQuat->w; 
+ 
+    return quaternion; 
+  } 
+ 
+  inline glm::mat4 AssimpToGLM(const aiMatrix4x4 aMatrix) 
+  { 
+    glm::mat4 result; 
+    for (int i = 0; i < 4; ++i) 
+    { 
+      for (int j = 0; j < 4; ++j) 
+      { 
+        result[i][j] = aMatrix[i][j]; 
+      } 
+    } 
+ 
+    return result; 
+  } 
 
 
   // vertices have the following components in them
@@ -67,6 +94,115 @@ namespace YTE
   };
 
 
+  struct BoneData
+  {
+    BoneData()
+    {
+      mOffset = aiMatrix4x4();
+      mFinalTransformation = aiMatrix4x4();
+    }
+
+    BoneData(aiMatrix4x4 aOffset) : mOffset(aOffset)
+    {
+      mFinalTransformation = aiMatrix4x4();
+    }
+
+    aiMatrix4x4 mOffset;
+    aiMatrix4x4 mFinalTransformation;
+  };
+
+
+
+  // contains bones
+  class Skeleton
+  {
+  public:
+    // holds how a vertex and a skeleton match up
+    struct VertexSkeletonData
+    {
+      std::array<uint32_t, BoneConstants::MaxBonesPerVertex> mIDs;
+      std::array<float, BoneConstants::MaxBonesPerVertex> mWeights;
+
+      VertexSkeletonData()
+      {
+        for (size_t i = 0; i < BoneConstants::MaxBonesPerVertex; ++i)
+        {
+          mIDs[i] = 0;
+          mWeights[i] = 0.0f;
+        }
+      }
+
+      bool AddBone(uint32_t aID, float aWeight)
+      {
+        for (uint32_t i = 0; i < BoneConstants::MaxBonesPerVertex; ++i)
+        {
+          if (mWeights[i] == 0.0f)
+          {
+            mIDs[i] = aID;
+            mWeights[i] = aWeight;
+            return true;  // bone added
+          }
+        }
+
+        return false; // bone not added, too many bones on vertex
+      }
+    };
+    
+
+
+
+    void Initialize(const aiScene* aScene);
+
+    void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
+
+    bool HasBones()
+    {
+      return !mBones.empty();
+    }
+
+    std::vector<BoneData>& GetBoneData()
+    {
+      return mBoneData;
+    }
+
+    std::vector<VertexSkeletonData> const& GetVertexBoneData()
+    {
+      return mVertexSkeletonData;
+    }
+
+    UBOAnimation* GetDefaultOffsets()
+    {
+      return &mDefaultOffsets;
+    }
+
+    aiMatrix4x4& GetGlobalInverseTransform()
+    {
+      return mGlobalInverseTransform;
+    }
+
+    std::unordered_map<std::string, uint32_t>* GetBones()
+    {
+      return &mBones;
+    }
+
+
+  private:
+    void PreTransform(const aiScene* aScene);
+    void VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform);
+
+    std::unordered_map<std::string, uint32_t> mBones;
+    std::vector<BoneData> mBoneData;
+    uint32_t mNumBones;
+    aiMatrix4x4 mGlobalInverseTransform;
+    std::vector<VertexSkeletonData> mVertexSkeletonData;
+    UBOAnimation mDefaultOffsets;
+#ifdef _DEBUG
+    std::vector<unsigned int> mVertexErrorAdds;
+#endif
+  };
+
+
+
   // Submesh class contains all the data of the actual submesh
   class Submesh
   {
@@ -84,7 +220,10 @@ namespace YTE
 
     Submesh(Window *aWindow,
             const aiScene *aScene,
-            const aiMesh *aMesh);
+            const aiMesh *aColliderMesh,
+            const aiMesh *aMesh,
+            Skeleton *aSkeleton,
+            uint32_t aBoneStartingVertexOffset);
 
     virtual ~Submesh()
     {
@@ -92,6 +231,7 @@ namespace YTE
     }
 
     std::vector<Vertex> mVertexBuffer;
+    std::vector<glm::vec3> mColliderVertexBuffer;
     std::vector<u32> mIndexBuffer;
 
     UBOMaterial mUBOMaterial;
@@ -128,8 +268,11 @@ namespace YTE
 
     virtual ~Mesh();
 
+    bool CanAnimate();
+
     std::string mName;
     std::vector<Submesh> mParts;
+    Skeleton mSkeleton;
   };
 }
 

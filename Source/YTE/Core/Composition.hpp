@@ -211,6 +211,8 @@ namespace YTE
     GlobalUniqueIdentifier& GetGUID();
     bool SetGUID(GlobalUniqueIdentifier aGUID);
 
+    bool GetIsBeingDeleted() const { return mBeingDeleted; }
+
   protected:
     void RemoveCompositionInternal(CompositionMap::iterator &aComposition);
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);

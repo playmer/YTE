@@ -43,7 +43,6 @@ namespace YTEditor
   public:
 
     ComponentBrowser(MainWindow * mainWindow, QWidget * parent = nullptr);
-    ~ComponentBrowser();
 
     ComponentTree* GetComponentTree();
 

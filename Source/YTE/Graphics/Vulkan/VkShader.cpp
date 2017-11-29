@@ -63,6 +63,7 @@ namespace YTE
     auto vertexModule = device->createShaderModule(vertexData.mData);
     auto fragmentModule = device->createShaderModule(fragmentData.mData);
 
+
     // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
 
