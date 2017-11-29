@@ -24,10 +24,11 @@ namespace YTE
 
     Animation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed") 
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>()
-      .SetDocumentation("The speed at which the animation will be played at.");
+    YTEBindProperty(&Animation::GetSpeed,
+                    &Animation::SetSpeed, "Speed") 
+                    .AddAttribute<EditorProperty>()
+                    .AddAttribute<Serializable>()
+                    .SetDocumentation("The speed at which the animation will be played at.");
   }
 
   Animation::Animation(std::string &aFile, Model *aModel, Engine *aEngine, uint32_t aAnimationIndex)
@@ -38,18 +39,20 @@ namespace YTE
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
     auto scene = importer.ReadFile(aniFile.c_str(),
-      aiProcess_Triangulate |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
+                                   aiProcess_Triangulate |
+                                   aiProcess_CalcTangentSpace |
+                                   aiProcess_GenSmoothNormals);
 
     DebugObjection(scene == nullptr,
-                   "Failed to load animation file %s from assimp", aniFile.c_str()); 
+                   "Failed to load animation file %s from assimp",
+                   aniFile.c_str()); 
 
     //TODO (Andrew): Dont keep the scene loaded
     mScene = importer.GetOrphanedScene();
 
     DebugObjection(mScene->HasAnimations() == false,
-                   "Failed to find animations in scene loaded from %s", aniFile.c_str());
+                   "Failed to find animations in scene loaded from %s",
+                   aniFile.c_str());
     
     mAnimationIndex = aAnimationIndex;
 
@@ -101,32 +104,32 @@ namespace YTE
 
   void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
   {
-		aiMatrix4x4 NodeTransformation(aNode->mTransformation);
+    aiMatrix4x4 NodeTransformation(aNode->mTransformation);
     
-		const aiNodeAnim* pNodeAnim = FindNodeAnimation(aNode->mName.data);
+    const aiNodeAnim* pNodeAnim = FindNodeAnimation(aNode->mName.data);
     
-		if (pNodeAnim)
-		{
-			// Get interpolated matrices between current and next frame
-			aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
-			aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);	
-			aiMatrix4x4 matTranslation = TranslationInterpolation(pNodeAnim);
+    if (pNodeAnim)
+    {
+      // Get interpolated matrices between current and next frame
+      aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
+      aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);	
+      aiMatrix4x4 matTranslation = TranslationInterpolation(pNodeAnim);
     
-			NodeTransformation = matTranslation * matRotation * matScale;
-		}
+      NodeTransformation = matTranslation * matRotation * matScale;
+    }
     
-		aiMatrix4x4 GlobalTransformation = aParentTransform * NodeTransformation;
+    aiMatrix4x4 GlobalTransformation = aParentTransform * NodeTransformation;
 
     auto* bones = mMeshSkeleton->GetBones();
     auto bone = bones->find(aNode->mName.data);
-		if (bone != bones->end())
-		{
-			uint32_t BoneIndex = bone->second;
-			mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation =
+    if (bone != bones->end())
+    {
+      uint32_t BoneIndex = bone->second;
+      mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation =
                                               mMeshSkeleton->GetGlobalInverseTransform() *
                                               GlobalTransformation *
                                               mMeshSkeleton->GetBoneData()[BoneIndex].mOffset;
-		}
+    }
     
     // visit the rest of the bone children
     for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
