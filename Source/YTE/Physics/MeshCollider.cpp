@@ -63,11 +63,13 @@ namespace YTE
     
     if (mesh != nullptr)
     {
-      for (auto &submesh : mesh->mParts)
+      for (auto &submesh : mesh->mColliderParts)
       {
         DebugAssert((submesh.mIndexBuffer.size() % 3) == 0, "Index buffer must be divisible by 3.");
+
+        auto indexSize = submesh.mIndexBuffer.size();
       
-        for (size_t i = 0; i < submesh.mIndexBufferSize; i += 3)
+        for (size_t i = 0; i < indexSize; i += 3)
         {
           auto i1 = submesh.mIndexBuffer.at(i + 0);
           auto i2 = submesh.mIndexBuffer.at(i + 1);
