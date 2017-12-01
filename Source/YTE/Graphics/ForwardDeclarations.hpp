@@ -14,9 +14,9 @@ namespace YTE
   class GraphicsSystem;
   class GraphicsView;
   class GraphicsDataUpdate;
-  class Instance;
   class SimpleModel;
   class Model;
+  struct Instance;
   struct UBOMaterial;
   struct UBOModel;
   struct UBOView;

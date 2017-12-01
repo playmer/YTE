@@ -20,5 +20,7 @@ namespace YTE
     bool mValid;
   };
 
-  SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits stage, std::string const &aFile);
+  SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits stage, 
+                           std::string const &aFile, 
+                           std::string &aDefines);
 }

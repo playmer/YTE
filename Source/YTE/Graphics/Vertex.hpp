@@ -7,28 +7,13 @@
 #define YTE_Vertex_hpp
 
 #include <vector>
+
 #include "glm/glm.hpp"
+
+#include "YTE/Graphics/UBOs.hpp"
 
 namespace YTE
 {
-  namespace BoneConstants
-  {
-    // NOTE: If a change in this value is made,
-    //       a change in the vertex structure must be made as well
-    const int MaxBonesPerVertex{ 5 };
-
-    // NOTE: These are for looping over the individual bone data elements
-    //       (BoneWeights and BoneWeights2)
-    const int MaxBonesPerVertex1{ 3 };
-    const int MaxBonesPerVertex2{ 2 };
-
-
-    // NOTE: If a change in this value is made,
-    //       a change in the shaders must be made as well
-    const int MaxBones{ 64 };
-  }
-
-
   struct Vertex
   {
     glm::vec3 mPosition;
@@ -69,60 +54,41 @@ namespace YTE
 
     }
 
-
-
     Vertex()
     {
       
     }
   };
 
-  struct SpriteVertex
-  {
-    glm::vec3 mPosition;
-    glm::vec2 mTextureCoordinates;
-    glm::vec3 mNormal;
-
-    SpriteVertex(glm::vec3 &aPosition,
-                 glm::vec2 &aTextureCoordinates,
-                 glm::vec3 &aNormal)
-      : mPosition(aPosition)
-      , mTextureCoordinates(aTextureCoordinates)
-      , mNormal(aNormal)
-    {
-
-    }
-
-    SpriteVertex()
-    {
-
-    }
-  };
-
-  struct SpriteInstance
-  {
-    u32 mTextureId;
+  struct Instance
+  { 
+    glm::vec4 mMatrix0;
     glm::vec4 mMatrix1;
     glm::vec4 mMatrix2;
     glm::vec4 mMatrix3;
-    glm::vec4 mMatrix4;
 
+    Instance(UBOModel aModel)
+      : mMatrix0(aModel.mModelMatrix[0])
+      , mMatrix1(aModel.mModelMatrix[1])
+      , mMatrix2(aModel.mModelMatrix[2])
+      , mMatrix3(aModel.mModelMatrix[3])
+    {
+
+    }
     
-    SpriteInstance(u32 aTextureId,
-                   glm::vec4 aMatrix1,
-                   glm::vec4 aMatrix2,
-                   glm::vec4 aMatrix3,
-                   glm::vec4 aMatrix4)
-      : mTextureId(aTextureId)
+    Instance(glm::vec4 aMatrix0,
+             glm::vec4 aMatrix1,
+             glm::vec4 aMatrix2,
+             glm::vec4 aMatrix3)
+      : mMatrix0(aMatrix0)
       , mMatrix1(aMatrix1)
       , mMatrix2(aMatrix2)
       , mMatrix3(aMatrix3)
-      , mMatrix4(aMatrix4)
     {
 
     }
 
-    SpriteInstance()
+    Instance()
     {
 
     }

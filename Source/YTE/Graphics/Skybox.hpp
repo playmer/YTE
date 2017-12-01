@@ -6,6 +6,8 @@
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
 
+#include "YTE/Platform/ForwardDeclarations.hpp"
+
 namespace YTE
 {
   class Skybox : public Component

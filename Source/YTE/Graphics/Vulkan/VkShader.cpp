@@ -17,16 +17,18 @@ namespace YTE
     YTERegisterType(VkShader);
   }
 
-
-
   VkShader::VkShader(std::string &aName,
                      VkRenderedSurface *aSurface,
                      std::shared_ptr<vkhlf::PipelineLayout> aLayout,
-                     VkShaderDescriptions &aDescriptions)
+                     VkShaderDescriptions &aDescriptions,
+                     bool aCullBackfaces,
+                     std::string &aDefines)
     : Shader(aName)
     , mSurface(aSurface)
     , mPipelineLayout(aLayout)
     , mDescriptions(aDescriptions)
+    , mDefines(aDefines)
+    , mCullBackFaces(aCullBackfaces)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
   }
@@ -46,8 +48,8 @@ namespace YTE
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
     auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
-    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile);
-    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile);
+    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, mDefines);
+    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, mDefines);
 
     if (false == vertexData.mValid)
     {
@@ -86,8 +88,9 @@ namespace YTE
                                                            false,
                                                            false,
                                                            vk::PolygonMode::eFill,
-                                                           //vk::CullModeFlagBits::eNone,
-                                                           vk::CullModeFlagBits::eBack,
+                                                           mCullBackFaces ? 
+                                                             vk::CullModeFlagBits::eBack : 
+                                                             vk::CullModeFlagBits::eNone,
                                                            vk::FrontFace::eCounterClockwise,
                                                            false,
                                                            0.0f,

@@ -249,6 +249,7 @@ namespace YTE
     std::string mName;
     std::string mMaterialName;
     std::string mShaderSetName;
+    bool mCullBackFaces = true;
   };
 
 
@@ -284,6 +285,9 @@ namespace YTE
 
   private:
     void CreateCollider(const aiScene* aScene);
+
+  protected:
+    bool mInstanced;
   };
 }
 

@@ -30,15 +30,7 @@ namespace YTE
     YTEDeclareType(GraphicsDataUpdateVk);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
   };
-
-
-  class InstanceManager
-  {
-  public:
-
-  private:
-  };
-
+  
   class VkRenderedSurface : public EventHandler
   {
   public:
@@ -100,7 +92,9 @@ namespace YTE
 
     VkShader* CreateShader(std::string &aShaderSetName,
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                           VkShaderDescriptions &aDescription);
+                           VkShaderDescriptions &aDescription,
+                           bool aCullBackFaces,
+                           std::string &aDefines);
 
 
     void ReloadAllShaders();
@@ -169,8 +163,6 @@ namespace YTE
       return mGraphicsQueue;
     }
 
-
-
     void SetWindow(Window *aWindow)
     {
       mWindow = aWindow;
@@ -186,12 +178,13 @@ namespace YTE
       mClearColor = aColor;
     }
 
-
+    std::vector<VkInstantiatedModel*>& GetInstantiatedModels(VkMesh *aMesh)
+    {
+      return mInstantiatedModels[aMesh];
+    }
 
   private:
     void RenderFrameForSurface();
-
-
     
     Window *mWindow;
     VkRenderer *mRenderer;

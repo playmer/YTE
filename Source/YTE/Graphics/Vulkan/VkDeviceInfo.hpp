@@ -8,6 +8,10 @@
 #ifndef YTE_Graphics_Vulkan_VkUtils_hpp
 #define YTE_Graphics_Vulkan_VkUtils_hpp
 
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+
+#include "YTE/StandardLibrary/Utilities.hpp"
+
 namespace YTE
 {
   class QueueFamilyIndices
@@ -17,8 +21,6 @@ namespace YTE
     static QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice aDevice);
     static void AddRequiredExtension(const char *aExtension);
     static void ClearRequiredExtensions();
-
-
 
     QueueFamilyIndices()
       : mGraphicsFamily(std::numeric_limits<u32>::max())
@@ -30,15 +32,11 @@ namespace YTE
     bool IsDeviceSuitable(vk::PhysicalDevice aDevice, vk::SurfaceKHR aSurface);
     bool CheckDeviceExtensionSupport(vk::PhysicalDevice aDevice);
 
-
-
     // Getter
     u32 GetGraphicsFamily()
     {
       return mGraphicsFamily;
     }
-
-
 
   private:
     static std::vector<const char*> sDeviceExtensions;

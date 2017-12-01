@@ -8,10 +8,13 @@
 #ifndef YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
 #define YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
 
-#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkMesh.hpp"
 
 namespace YTE
 {
@@ -26,6 +29,7 @@ namespace YTE
 
     void Create();
 
+    void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;
     void UpdateUBOAnimation(UBOAnimation *aUBO) override;
     void SetDefaultAnimationOffset() override;
@@ -33,18 +37,16 @@ namespace YTE
     void CreateDescriptorSet(VkSubmesh *aMesh);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
 
-    struct SubMeshPipelineData
-    {
-      std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
-      std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
-    };
+    void SetInstanced(bool aInstanced) override;
+    bool GetInstanced() override;
 
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
 
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
+
+    // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
-    VkMesh *mLoadedMesh;
     
   private:
     bool mLoadUBOModel;
