@@ -340,6 +340,19 @@ namespace YTEditor
       YTE::RSAllocator allocator;
       auto mainSession = GetMainSession();
       auto value = mainSession->Serialize(allocator);
+
+      /* For debugging but can also be used with commented out code below
+      YTE::RSStringBuffer sb;
+      YTE::RSPrettyWriter writer(sb);
+      value.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
+      std::string levelInJson = sb.GetString();
+      */
+
+      /* tried this in hopes that it might work (combined with above and replace &value below with &document. didn't work
+      YTE::RSDocument document;
+      document.Parse(levelInJson.c_str());
+      */
+
       mRunningEngine->AddWindow("YTEditor Play Window");
       mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, &value);
       auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
@@ -347,10 +360,7 @@ namespace YTEditor
       {
         graphicsView = mRunningSpace->AddComponent<YTE::GraphicsView>();
       }
-      else 
-      {
-        graphicsView->ChangeWindow("YTEditor Play Window");
-      }
+      graphicsView->ChangeWindow("YTEditor Play Window");
       auto window = graphicsView->GetWindow();
 
       mRunningWindow = new SubWindow(window, this);
