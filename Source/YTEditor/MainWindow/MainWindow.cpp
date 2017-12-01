@@ -87,8 +87,10 @@ namespace YTEditor
     mOutputConsole(nullptr),
     mRunningSpaceName(""),
     mRunningLevelName(""),
+    mRunningSpace(nullptr),
     mUndoRedo(new UndoRedo()),
-    mGizmo(nullptr)
+    mGizmo(nullptr),
+    mRunningWindow(nullptr)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -329,6 +331,44 @@ namespace YTEditor
   YTE::String& MainWindow::GetRunningSpaceName()
   {
     return mRunningSpaceName;
+  }
+
+  void MainWindow::PlayLevel()
+  {
+    if (!mRunningSpace) 
+    {
+      YTE::RSAllocator allocator;
+      auto mainSession = GetMainSession();
+      auto value = mainSession->Serialize(allocator);
+      mRunningEngine->AddWindow("YTEditor Play Window");
+      mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, &value);
+      auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
+      if (!graphicsView) 
+      {
+        graphicsView = mRunningSpace->AddComponent<YTE::GraphicsView>();
+      }
+      else 
+      {
+        graphicsView->ChangeWindow("YTEditor Play Window");
+      }
+      auto window = graphicsView->GetWindow();
+
+      mRunningWindow = new SubWindow(window, this);
+      auto widget = createWindowContainer(mRunningWindow);
+      mCentralTabs->addTab(widget, "Game");
+
+      auto id = mRunningWindow->winId();
+
+      window->SetWindowId(reinterpret_cast<void*>(id));
+    }
+  }
+
+  void MainWindow::PauseLevel(bool pauseState)
+  {
+  }
+
+  void MainWindow::StopLevel()
+  {
   }
 
   void MainWindow::CreateBlankLevel(const YTE::String &aLevelName)

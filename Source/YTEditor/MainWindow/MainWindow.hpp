@@ -81,6 +81,10 @@ namespace YTEditor
     void SetRunningSpaceName(YTE::String &aName);
     YTE::String& GetRunningSpaceName();
 
+    void PlayLevel();
+    void PauseLevel(bool pauseState);
+    void StopLevel();
+
     void CreateBlankLevel(const YTE::String& aLevelName);
     void LoadLevel(YTE::String aLevelName);
     void LoadCurrentLevelInfo();
@@ -108,6 +112,8 @@ namespace YTEditor
     YTE::String mRunningSpaceName;
     YTE::String mRunningLevelName;
 
+    YTE::Space* mRunningSpace;
+
     QApplication *mApplication;
 
     UndoRedo *mUndoRedo;
@@ -130,7 +136,8 @@ namespace YTEditor
 
     QTabWidget *mCentralTabs;
     SubWindow *mGameWindow;
-    SubWindow *mRunningLevelWindow;
+    SubWindow *mLevelWindow;
+    SubWindow *mRunningWindow;
 
     std::vector<SubWindow*> mSubWindows;
 
