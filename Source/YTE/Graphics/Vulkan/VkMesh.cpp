@@ -180,10 +180,10 @@ namespace YTE
     descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
 
     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Uint);
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);
 
     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Uint);
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);
 
     // load shader passing our created pipeline layout
     mShader = aSurface->CreateShader(mSubmesh->mShaderSetName, pipelineLayout, descriptions);
