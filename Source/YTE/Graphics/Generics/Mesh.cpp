@@ -174,7 +174,6 @@ namespace YTE
 
   Submesh::Submesh(Window *aWindow,
                    const aiScene *aScene,
-                   const aiMesh *aColliderMesh,
                    const aiMesh *aMesh,
                    Skeleton* aSkeleton,
                    uint32_t aBoneStartingVertexOffset)
@@ -254,7 +253,6 @@ namespace YTE
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
     {
       const aiVector3D *pPos = aMesh->mVertices + j;
-      const aiVector3D *pColPos = aColliderMesh->mVertices + j;
       const aiVector3D *pNormal = aMesh->mNormals + j;
       const aiVector3D *pTexCoord = &Zero3D;
       const aiVector3D *pTangent = &Zero3D;
@@ -272,7 +270,6 @@ namespace YTE
       }
 
       auto position = AssimpToGLM(pPos);
-      auto colPosition = AssimpToGLM(pColPos);
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
       auto textureCoordinates = glm::vec3{ pTexCoord->x,
@@ -328,15 +325,14 @@ namespace YTE
         boneIDs,
         boneIDs2);
 
-      mColliderVertexBuffer.emplace_back(colPosition);
 
-      mDimension.mMax.x = fmax(pColPos->x, mDimension.mMax.x);
-      mDimension.mMax.y = fmax(pColPos->y, mDimension.mMax.y);
-      mDimension.mMax.z = fmax(pColPos->z, mDimension.mMax.z);
+      mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
+      mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
+      mDimension.mMax.z = fmax(pPos->z, mDimension.mMax.z);
                                
-      mDimension.mMin.x = fmin(pColPos->x, mDimension.mMin.x);
-      mDimension.mMin.y = fmin(pColPos->y, mDimension.mMin.y);
-      mDimension.mMin.z = fmin(pColPos->z, mDimension.mMin.z);
+      mDimension.mMin.x = fmin(pPos->x, mDimension.mMin.x);
+      mDimension.mMin.y = fmin(pPos->y, mDimension.mMin.y);
+      mDimension.mMin.z = fmin(pPos->z, mDimension.mMin.z);
     }
 
     mDimension.mSize = mDimension.mMax - mDimension.mMin;
@@ -356,6 +352,32 @@ namespace YTE
 
     mVertexBufferSize = mVertexBuffer.size() * sizeof(Vertex);
     mIndexBufferSize = mIndexBuffer.size() * sizeof(u32);
+  }
+
+
+
+  ColliderMesh::ColliderMesh(const aiMesh* aMesh)
+  {
+    // get the vertex data with bones (if provided)
+    for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
+    {
+      const aiVector3D *pColPos = aMesh->mVertices + j;
+      auto colPosition = AssimpToGLM(pColPos);
+      mColliderVertexBuffer.emplace_back(colPosition);
+    }
+
+    uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
+
+    for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
+    {
+      const aiFace &Face = aMesh->mFaces[j];
+      if (Face.mNumIndices != 3)
+        continue;
+
+      mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
+      mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
+      mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
+    }
   }
 
 
@@ -427,11 +449,13 @@ namespace YTE
       // Load bone data
       mSkeleton.Initialize(pScene);
 
+      CreateCollider(pColliderScene);
+
       // Load meshes
       uint32_t startingVertex = 0;
       for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(aWindow, pScene, pColliderScene->mMeshes[i], pScene->mMeshes[i], &mSkeleton, startingVertex);
+        mParts.emplace_back(aWindow, pScene, pScene->mMeshes[i], &mSkeleton, startingVertex);
         startingVertex += pScene->mMeshes[i]->mNumVertices;
       }
 
@@ -461,5 +485,16 @@ namespace YTE
   bool Mesh::CanAnimate()
   {
     return mSkeleton.HasBones();
+  }
+
+
+
+  void Mesh::CreateCollider(const aiScene* aScene)
+  {
+    uint32_t numMeshes = aScene->mNumMeshes;
+    for (unsigned int i = 0; i < numMeshes; ++i)
+    {
+      mColliderParts.emplace_back(aScene->mMeshes[i]);
+    }
   }
 }

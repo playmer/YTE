@@ -220,7 +220,6 @@ namespace YTE
 
     Submesh(Window *aWindow,
             const aiScene *aScene,
-            const aiMesh *aColliderMesh,
             const aiMesh *aMesh,
             Skeleton *aSkeleton,
             uint32_t aBoneStartingVertexOffset);
@@ -231,7 +230,6 @@ namespace YTE
     }
 
     std::vector<Vertex> mVertexBuffer;
-    std::vector<glm::vec3> mColliderVertexBuffer;
     std::vector<u32> mIndexBuffer;
 
     UBOMaterial mUBOMaterial;
@@ -253,6 +251,15 @@ namespace YTE
     std::string mShaderSetName;
   };
 
+
+  struct ColliderMesh
+  {
+    ColliderMesh(const aiMesh* aMesh);
+    std::vector<glm::vec3> mColliderVertexBuffer;
+    std::vector<u32> mIndexBuffer;
+  };
+
+
   class Mesh : public EventHandler
   {
   public:
@@ -273,6 +280,10 @@ namespace YTE
     std::string mName;
     std::vector<Submesh> mParts;
     Skeleton mSkeleton;
+    std::vector<ColliderMesh> mColliderParts;
+
+  private:
+    void CreateCollider(const aiScene* aScene);
   };
 }
 

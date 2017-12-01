@@ -258,7 +258,7 @@ namespace YTEditor
       
       obj->mTriangles;
       
-      for (auto &submesh : mesh->mParts)
+      for (auto &submesh : mesh->mColliderParts)
       {
         auto indexSize = submesh.mIndexBuffer.size();
       
