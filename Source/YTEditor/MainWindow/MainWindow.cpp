@@ -355,6 +355,9 @@ namespace YTEditor
 
       mRunningEngine->AddWindow("YTEditor Play Window");
       mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, &value);
+      mRunningSpace->Load(&value);
+      mRunningSpace->Update(0.0f);
+
       auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
       if (!graphicsView) 
       {

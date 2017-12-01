@@ -28,17 +28,15 @@ namespace YTEditor
 {
 
   MaterialViewer::MaterialViewer(MainWindow *aMainWindow,
-    QWidget *aParent,
-    YTE::Window *aWindow)
-    : QWidget(aParent),
-    mComboBox(new QComboBox(this)),
-    mMaterialWindow(nullptr),
-    mContainer(new QWidget(this)),
-    mCurrentSubMeshes(nullptr),
-    mMainWindow(aMainWindow)
+                                 QWidget *aParent,
+                                 YTE::Window *aWindow)
+    : QWidget(aParent)
+    , mComboBox(new QComboBox(this))
+    , mMaterialWindow(nullptr)
+    , mContainer(new QWidget(this))
+    , mCurrentSubMeshes(nullptr)
+    , mMainWindow(aMainWindow)
   {
-    (void)aWindow;
-    (void)aMainWindow;
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
     mBaseLayout = new QGridLayout();
