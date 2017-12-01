@@ -291,6 +291,7 @@ namespace YTE
       mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
                                        pipelineLayout,
                                        descriptions,
+                                       mSubmesh->mCullBackFaces,
                                        defines);
     }
   }

@@ -138,6 +138,8 @@ namespace YTE
     submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = "Sprite";
 
+    submesh.mCullBackFaces = false;
+
     submesh.mVertexBuffer.emplace_back(vert0);
     submesh.mVertexBuffer.emplace_back(vert1);
     submesh.mVertexBuffer.emplace_back(vert2);

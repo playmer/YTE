@@ -61,7 +61,7 @@ out gl_PerVertex
 
 void main() 
 {
-  outTextureCoordinates = inTextureCoordinates.xy;
+  outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
 
   // Unsure if this needs to be vec3/mat3 here.
   //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);

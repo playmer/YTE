@@ -23,6 +23,7 @@ namespace YTE
              VkRenderedSurface *aSurface,
              std::shared_ptr<vkhlf::PipelineLayout> aLayout,
              VkShaderDescriptions &aDescriptions,
+             bool aCullBackfaces,
              std::string &aDefines);
     ~VkShader() override;
 
@@ -38,6 +39,7 @@ namespace YTE
     std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
     VkShaderDescriptions mDescriptions;
     std::string mDefines;
+    bool mCullBackFaces;
   };
 }
 

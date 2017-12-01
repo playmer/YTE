@@ -21,12 +21,14 @@ namespace YTE
                      VkRenderedSurface *aSurface,
                      std::shared_ptr<vkhlf::PipelineLayout> aLayout,
                      VkShaderDescriptions &aDescriptions,
+                     bool aCullBackfaces,
                      std::string &aDefines)
     : Shader(aName)
     , mSurface(aSurface)
     , mPipelineLayout(aLayout)
     , mDescriptions(aDescriptions)
     , mDefines(aDefines)
+    , mCullBackFaces(aCullBackfaces)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
   }
@@ -86,8 +88,9 @@ namespace YTE
                                                            false,
                                                            false,
                                                            vk::PolygonMode::eFill,
-                                                           //vk::CullModeFlagBits::eNone,
-                                                           vk::CullModeFlagBits::eBack,
+                                                           mCullBackFaces ? 
+                                                             vk::CullModeFlagBits::eBack : 
+                                                             vk::CullModeFlagBits::eNone,
                                                            vk::FrontFace::eCounterClockwise,
                                                            false,
                                                            0.0f,

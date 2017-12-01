@@ -249,6 +249,7 @@ namespace YTE
     std::string mName;
     std::string mMaterialName;
     std::string mShaderSetName;
+    bool mCullBackFaces = true;
   };
 
 
