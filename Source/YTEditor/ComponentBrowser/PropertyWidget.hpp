@@ -109,7 +109,7 @@ namespace YTEditor
 
     T GetPropertyValues();
 
-    std::string & GetName()
+    std::string GetName()
     {
       return mPropertyName;
     }

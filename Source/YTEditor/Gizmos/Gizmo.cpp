@@ -24,6 +24,13 @@ namespace YTEditor
 
   void Gizmo::SetMode(int aMode)
   {
+    YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+
+    if (!currObj)
+    {
+      aMode = Gizmo::Select;
+    }
+
     YTE::CompositionMap *axes = this->mGizmoObj->GetCompositions();
 
     switch (aMode)
@@ -116,7 +123,6 @@ namespace YTEditor
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
 
         // orient the scale gizmo with the current object axes
-        YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
         glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
         mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
       }
@@ -157,7 +163,6 @@ namespace YTEditor
         a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
         
         // orient the rotate gizmo with the current object axes
-        YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
         glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
         mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
       }

@@ -26,6 +26,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Utilities/String/String.h"
 
 #include "YTE/Graphics/Model.hpp"
@@ -80,6 +81,11 @@ namespace YTEditor
                                        const char *aArchetypeName,
                                        int aIndex)
   {
+    if (std::string(aArchetypeName) == "Gizmo")
+    {
+      return nullptr;
+    }
+
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
     auto space = spaces->begin()->second.get();
 
@@ -123,6 +129,16 @@ namespace YTEditor
                                          int aIndex)
   {
     YTE::String name{ aItemName };
+
+    if (std::string(aItemName) == "Gizmo")
+    {
+      return nullptr;
+    }
+
+    if (aEngineObj->GetComponent<YTE::Camera>())
+    {
+      return nullptr;
+    }
 
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
     YTE::Composition *space = spaces->begin()->second.get();
@@ -399,7 +415,11 @@ namespace YTEditor
     for (auto& cmp : *(aParentObj->GetCompositions()))
     {
       ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get());
-      LoadAllChildObjects(cmp.second.get(), item);
+
+      if (item)
+      {
+        LoadAllChildObjects(cmp.second.get(), item);
+      }
     }
   }
 

@@ -46,6 +46,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Utilities/Utilities.h"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -109,7 +110,7 @@ namespace YTEditor
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
     // Get the space that represents the main session
-    YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
+    YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
     mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, yteWin, this);
 
     aEngine->Initialize();
@@ -278,6 +279,14 @@ namespace YTEditor
     {
       // Get the name of the object
       YTE::String objName = cmp.second.get()->GetName();
+
+      YTE::Composition *engineObj = cmp.second.get();
+
+      // temp hardcode to not add Gizmo or engineObj to object browser
+      if (objName == "Gizmo" || engineObj->GetComponent<YTE::Camera>())
+      {
+        continue;
+      }
 
       // Store the name and composition pointer in the object browser
       ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp.second.get());

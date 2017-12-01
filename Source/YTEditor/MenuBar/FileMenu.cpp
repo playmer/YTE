@@ -28,6 +28,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.h"
 
 #include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
@@ -50,11 +51,17 @@ namespace YTEditor
     QAction * openLevelAct = new QAction("Open Level");
     addAction(openLevelAct);
     connect(openLevelAct, &QAction::triggered, this, &FileMenu::OpenLevel);
+    //openLevelAct->setToolTip("Ctrl+O");
 
     QAction * saveLevelAct = new QAction("Save Level");
     addAction(saveLevelAct);
     connect(saveLevelAct, &QAction::triggered, this, &FileMenu::SaveLevel);
     saveLevelAct->setToolTip("Ctrl+S");
+
+    QAction * saveLevelAsAct = new QAction("Save Level As");
+    addAction(saveLevelAsAct);
+    connect(saveLevelAsAct, &QAction::triggered, this, &FileMenu::SaveLevelAs);
+    saveLevelAsAct->setToolTip("Ctrl+Alt+S");
 
     addSeparator();
 
@@ -121,7 +128,6 @@ namespace YTEditor
     //mMainWindow->LoadCurrentLevelInfo();
 
     mMainWindow->CreateBlankLevel("NewLevel");
-
   }
 
   void FileMenu::OpenLevel()
@@ -156,7 +162,57 @@ namespace YTEditor
   void FileMenu::SaveLevel()
   {
     auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+
+    Gizmo *giz = mMainWindow->GetGizmo();
+
+    spaceComp->RemoveComposition(giz->mGizmoObj);
+
     static_cast<YTE::Space*>(spaceComp)->SaveLevel(mMainWindow->GetRunningLevelName());
+
+    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
+    giz->SetMode(Gizmo::Select);
+  }
+
+  void FileMenu::SaveLevelAs()
+  {
+    std::string gamePath = YTE::Path::GetGamePath().String();
+
+    // Construct a file dialog for selecting the correct file
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Open Level"),
+                                                    QString(gamePath.c_str()) + "Levels/",
+                                                    tr("Level Files (*.json)"));
+    
+    if (fileName == "")
+    {
+      return;
+    }
+
+    // Make QString not crash the program
+    QString str1 = fileName;
+    QByteArray ba = str1.toLatin1();
+    const char *c_str2 = ba.data();
+
+    // Extracting the filename (without extension) from the path
+    std::string path(c_str2);
+    std::string base_filename = path.substr(path.find_last_of("/\\") + 1);
+    size_t p = base_filename.find_last_of('.');
+    std::string file_without_extension = base_filename.substr(0, p);
+    YTE::String yteFile = YTE::String();
+    yteFile = file_without_extension;
+
+    auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+
+    spaceComp->GetName() = yteFile;
+
+    Gizmo *giz = mMainWindow->GetGizmo();
+
+    spaceComp->RemoveComposition(giz->mGizmoObj);
+
+    static_cast<YTE::Space*>(spaceComp)->SaveLevel(yteFile);
+
+    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
+    giz->SetMode(Gizmo::Select);
   }
 
   void FileMenu::OpenFile()

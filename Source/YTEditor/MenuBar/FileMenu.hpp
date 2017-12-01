@@ -29,6 +29,7 @@ namespace YTEditor
 
     void NewLevel();
     void SaveLevel();
+    void SaveLevelAs();
     void ExitEditor();
 
   private:

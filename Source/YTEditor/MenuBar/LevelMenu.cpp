@@ -85,7 +85,11 @@ namespace YTEditor
       ObjectItem *topItem = mMainWindow->GetObjectBrowser().AddExistingComposition(objName.c_str(),
         component);
 
-      mMainWindow->GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
+      if (topItem)
+      {
+        mMainWindow->GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
+      }
+
     }
   }
 

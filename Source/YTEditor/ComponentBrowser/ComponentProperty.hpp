@@ -37,11 +37,19 @@ namespace YTEditor
   {
   public:
     ComponentProperty(const std::string &aName, MainWindow *aMainWindow, ComponentWidget* aParent)
-      : PropertyWidget<T>(aName, aMainWindow, aParent),
-      mParentComponent(aParent)
+      : PropertyWidget<T>(aName, aMainWindow, aParent)
+      , mParentComponent(aParent)
     {
       auto& propMap = aParent->GetEngineComponent()->GetType()->GetProperties();
-      auto it_prop = propMap.FindFirst(this->GetName());
+
+      std::string name = this->GetName();
+
+      auto it_prop = propMap.FindFirst(name);
+
+      if (it_prop == propMap.end())
+      {
+        return;
+      }
 
       YTE::String tip = it_prop->second->Description();
 
@@ -102,7 +110,10 @@ namespace YTEditor
     YTE::Type *cmpType = mParentComponent->GetEngineComponent()->GetStaticType();
 
     auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
-    auto it_prop = propMap.FindFirst(this->GetName());
+
+    std::string name = this->GetName();
+
+    auto it_prop = propMap.FindFirst(name);
     YTE::Function *getter = it_prop->second.get()->GetGetter();
     YTE::Any *oldVal = new YTE::Any(getter->Invoke(mParentComponent->GetEngineComponent()));
 
