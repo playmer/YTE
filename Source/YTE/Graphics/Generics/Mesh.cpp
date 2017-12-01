@@ -467,6 +467,7 @@ namespace YTE
   Mesh::Mesh(Window *aWindow,
              std::string &aFile,
              std::vector<Submesh> &aSubmeshes)
+    : mInstanced(false)
   {
     YTEUnusedArgument(aWindow);
 

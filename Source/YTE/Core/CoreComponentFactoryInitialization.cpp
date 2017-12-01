@@ -18,6 +18,7 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
+#include "YTE/Graphics/Sprite.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
@@ -86,6 +87,7 @@ namespace YTE
     DeclareComponent(Reactive);
     DeclareComponent(RigidBody);
     DeclareComponent(SphereCollider);
+    DeclareComponent(Sprite);
     DeclareComponent(Transform);
   }
 

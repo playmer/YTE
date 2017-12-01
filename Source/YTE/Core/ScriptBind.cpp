@@ -25,6 +25,7 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
+#include "YTE/Graphics/Sprite.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -85,14 +86,15 @@ namespace YTE
     InitializeType<MouseEnter>();
     InitializeType<MouseExit>();
 
+    InitializeType<Animator>();
+    InitializeType<Animation>();
     InitializeType<Camera>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Model>();
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
-    InitializeType<Animator>();
-    InitializeType<Animation>();
+    InitializeType<Sprite>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();
