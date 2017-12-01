@@ -27,7 +27,8 @@ namespace YTE
 
     void SetTexture(std::string &aTexture)
     {
-      if (aTexture != mTextureName)
+      if (aTexture != mTextureName &&
+          0 != aTexture.size())
       {
         mTextureName = aTexture;
         CreateSprite();
