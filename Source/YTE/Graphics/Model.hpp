@@ -87,6 +87,9 @@ namespace YTE
       return mInstantiatedModel.get();
     }
 
+    void SetInstanced(bool mInstanced);
+    bool GetInstanced();
+
 
 
   private:
@@ -103,8 +106,8 @@ namespace YTE
     bool mConstructing;
     Animation *mAnimation;
     Engine *mEngine;
+    bool mInstanced;
   };
-  
 }
 
 #endif

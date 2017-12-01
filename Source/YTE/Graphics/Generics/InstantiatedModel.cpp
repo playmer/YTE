@@ -11,4 +11,12 @@ namespace YTE
   {
     YTERegisterType(InstantiatedModel);
   }
+
+
+  InstantiatedModel::InstantiatedModel()
+    : mMesh(nullptr)
+  {
+
+  }
+
 }

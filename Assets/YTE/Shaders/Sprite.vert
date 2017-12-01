@@ -10,10 +10,10 @@ layout (location = 2) in vec3 inNormal;
 
 // Instance Data
 layout (location = 3) in uint inTextureId;
-layout (location = 4) in vec4 inMatrix1;
-layout (location = 5) in vec4 inMatrix2;
-layout (location = 6) in vec4 inMatrix3;
-layout (location = 7) in vec4 inMatrix4;
+layout (location = 4) in vec4 inMatrix0;
+layout (location = 5) in vec4 inMatrix1;
+layout (location = 6) in vec4 inMatrix2;
+layout (location = 7) in vec4 inMatrix3;
 
 
 layout (binding = 0) uniform UBOView

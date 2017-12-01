@@ -131,6 +131,15 @@ namespace YTE
     std::vector<vk::SpecializationMapEntry> mEntries;
     std::vector<byte> mData;
   };
+
+
+  class VkDescriptorSet
+  {
+
+  private:
+    std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
+    std::vector<vk::DescriptorPoolSize> descriptorTypes;
+  };
 }
 
 #endif

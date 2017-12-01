@@ -284,6 +284,9 @@ namespace YTE
 
   private:
     void CreateCollider(const aiScene* aScene);
+
+  protected:
+    bool mInstanced;
   };
 }
 

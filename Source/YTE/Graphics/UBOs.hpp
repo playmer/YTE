@@ -9,25 +9,37 @@
 #define YTE_Graphics_UBOs_hpp
 
 #include "YTE/Core/Utilities.hpp"
-#include "YTE/Graphics/Vertex.hpp"
 
 namespace YTE
 {
+  namespace BoneConstants
+  {
+    // NOTE: If a change in this value is made,
+    //       a change in the vertex structure must be made as well
+    const int MaxBonesPerVertex{ 5 };
+
+    // NOTE: These are for looping over the individual bone data elements
+    //       (BoneWeights and BoneWeights2)
+    const int MaxBonesPerVertex1{ 3 };
+    const int MaxBonesPerVertex2{ 2 };
+
+
+    // NOTE: If a change in this value is made,
+    //       a change in the shaders must be made as well
+    const int MaxBones{ 64 };
+  }
+
   struct UBOView
   {
     glm::mat4 mProjectionMatrix;
     glm::mat4 mViewMatrix;
   };
 
-
-
   struct UBOModel
   {
     glm::mat4 mModelMatrix;
   };
 
-
-  
   struct UBOMaterial
   {
     glm::vec3 mDiffuse;

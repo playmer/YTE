@@ -42,8 +42,9 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    auto baseDevice = static_cast<vk::PhysicalDevice>
-                                 (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
+    auto internals = mRenderer->GetVkInternals();
+
+    auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
 
     auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
@@ -64,55 +65,55 @@ namespace YTE
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
 
-    auto family = mRenderer->GetVkInternals()->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{ family,
-                                               0.0f };
+    auto family = internals->GetQueueFamilies().GetGraphicsFamily();
+    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
+                                              0.0f};
 
-    mDevice = mRenderer->GetVkInternals()->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                               nullptr,
-                                                               { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                               enabledFeatures);
+    mDevice = internals->GetPhysicalDevice()->createDevice(deviceCreate,
+                                                           nullptr,
+                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                                           enabledFeatures);
 
     mGraphicsQueue = mDevice->getQueue(family , 0);
 
     // Attachment Descriptions
-    vk::AttachmentDescription colorAttachment{ {},
-                                               mColorFormat,
-                                               vk::SampleCountFlagBits::e1,
-                                               vk::AttachmentLoadOp::eClear,
-                                               vk::AttachmentStoreOp::eStore, // color
-                                               vk::AttachmentLoadOp::eDontCare,
-                                               vk::AttachmentStoreOp::eDontCare, // stencil
-                                               vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::ePresentSrcKHR };
+    vk::AttachmentDescription colorAttachment{{},
+                                              mColorFormat,
+                                              vk::SampleCountFlagBits::e1,
+                                              vk::AttachmentLoadOp::eClear,
+                                              vk::AttachmentStoreOp::eStore, // color
+                                              vk::AttachmentLoadOp::eDontCare,
+                                              vk::AttachmentStoreOp::eDontCare, // stencil
+                                              vk::ImageLayout::eUndefined,
+                                              vk::ImageLayout::ePresentSrcKHR };
 
-    vk::AttachmentDescription depthAttachment{ {},
-                                               mDepthFormat,
-                                               vk::SampleCountFlagBits::e1,
-                                               vk::AttachmentLoadOp::eClear,
-                                               vk::AttachmentStoreOp::eStore, // depth
-                                               vk::AttachmentLoadOp::eDontCare,
-                                               vk::AttachmentStoreOp::eDontCare, // stencil
-                                               vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::eDepthStencilAttachmentOptimal };
+    vk::AttachmentDescription depthAttachment{{},
+                                              mDepthFormat,
+                                              vk::SampleCountFlagBits::e1,
+                                              vk::AttachmentLoadOp::eClear,
+                                              vk::AttachmentStoreOp::eStore, // depth
+                                              vk::AttachmentLoadOp::eDontCare,
+                                              vk::AttachmentStoreOp::eDontCare, // stencil
+                                              vk::ImageLayout::eUndefined,
+                                              vk::ImageLayout::eDepthStencilAttachmentOptimal };
 
-    std::array<vk::AttachmentDescription, 2> attachmentDescriptions{ colorAttachment ,
-                                                                     depthAttachment };
+    std::array<vk::AttachmentDescription, 2> attachmentDescriptions{colorAttachment,
+                                                                    depthAttachment};
 
     // Subpass Description
     vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
     vk::AttachmentReference depthReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
     vk::SubpassDescription subpass{ {},
-                                    vk::PipelineBindPoint::eGraphics,
-                                    0,
-                                    nullptr,
-                                    1,
-                                    &colorReference,
-                                    nullptr,
-                                    &depthReference,
-                                    0,
-                                    nullptr };
+                                   vk::PipelineBindPoint::eGraphics,
+                                   0,
+                                   nullptr,
+                                   1,
+                                   &colorReference,
+                                   nullptr,
+                                   &depthReference,
+                                   0,
+                                   nullptr };
 
     mRenderPass = mDevice->createRenderPass(attachmentDescriptions, subpass, nullptr);
 
@@ -120,8 +121,7 @@ namespace YTE
 
     // create a command pool for command buffer allocation
     mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              mRenderer->GetVkInternals()->GetQueueFamilies()
-                                                .GetGraphicsFamily());
+                                              family);
 
 
     mAllocators[AllocatorTypes::Mesh] =
@@ -193,36 +193,36 @@ namespace YTE
 
   void VkRenderedSurface::CreateSpritePipeline()
   {
-    VkShaderDescriptions descriptions;
-    descriptions.AddBinding<SpriteVertex>(vk::VertexInputRate::eVertex);
-
-    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    //glm::vec2 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
-
-    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-
-    descriptions.AddBinding<SpriteInstance>(vk::VertexInputRate::eInstance);
-
-    //u32 mTextureId;
-    descriptions.AddAttribute<u32>(vk::Format::eR32Uint);
-
-    //glm::vec4 mMatrix1;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-
-    //glm::vec4 mMatrix2;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-
-    //glm::vec4 mMatrix3;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-
-    //glm::vec4 mMatrix4;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-
-
+    //VkShaderDescriptions descriptions;
+    //descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
+    //
+    ////glm::vec3 mPosition;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    //
+    ////glm::vec2 mTextureCoordinates;
+    //descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
+    //
+    ////glm::vec3 mNormal;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    //
+    //descriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
+    //
+    ////u32 mTextureId;
+    //descriptions.AddAttribute<u32>(vk::Format::eR32Uint);
+    //
+    ////glm::vec4 mMatrix1;
+    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+    //
+    ////glm::vec4 mMatrix2;
+    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+    //
+    ////glm::vec4 mMatrix3;
+    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+    //
+    ////glm::vec4 mMatrix4;
+    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
+    //
+    //
   }
 
   // Sprites
@@ -241,8 +241,8 @@ namespace YTE
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(std::string &aModelFile)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, mRenderer->GetSurface(mWindow));
-    mInstantiatedModels[model->mLoadedMesh].push_back(model.get());
+    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this);
+    mInstantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
 
@@ -250,8 +250,8 @@ namespace YTE
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(Mesh *aMesh)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aMesh, mRenderer->GetSurface(mWindow));
-    mInstantiatedModels[model->mLoadedMesh].push_back(model.get());
+    auto model = std::make_unique<VkInstantiatedModel>(aMesh, this);
+    mInstantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
 
@@ -262,7 +262,7 @@ namespace YTE
       return;
     }
 
-    auto mesh = mInstantiatedModels.find(aModel->mLoadedMesh);
+    auto mesh = mInstantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
 
     if (mesh != mInstantiatedModels.end())
     {
@@ -357,7 +357,8 @@ namespace YTE
   // Shader
   VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
                                             std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                                            VkShaderDescriptions &aDescription)
+                                            VkShaderDescriptions &aDescription,
+                                            std::string &aDefines)
   {
     auto shaderIt = mShaders.find(aShaderSetName);
     VkShader *shaderPtr{ nullptr };
@@ -367,7 +368,8 @@ namespace YTE
       auto shader = std::make_unique<VkShader>(aShaderSetName,
                                                mRenderer->GetSurface(mWindow),
                                                aPipelineLayout,
-                                               aDescription);
+                                               aDescription,
+                                               aDefines);
 
       shaderPtr = shader.get();
 
@@ -381,7 +383,6 @@ namespace YTE
 
     return shaderPtr;
   }
-
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
@@ -539,6 +540,13 @@ namespace YTE
         // We get the submeshes that use the current shader, then draw them.
         auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
+        if (mesh.second->GetInstanced())
+        {
+          mRenderingCommandBuffer->bindVertexBuffer(1,
+                                                    mesh.second->mInstanceManager.InstanceBuffer(),
+                                                    0);
+        }
+
         for (auto it = range.first; it != range.second; ++it)
         {
           auto &submesh = it->second;
@@ -551,9 +559,11 @@ namespace YTE
                                                    0,
                                                    vk::IndexType::eUint32);
 
-          for (auto &model : mInstantiatedModels[mesh.second.get()])
+
+
+          if (mesh.second->GetInstanced())
           {
-            auto data = model->mPipelineData[submesh.get()];
+            auto data = submesh->mPipelineData;
             mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                                         data.mPipelineLayout,
                                                         0,
@@ -565,6 +575,24 @@ namespace YTE
                                                  0, 
                                                  0, 
                                                  0);
+          }
+          else
+          {
+            for (auto &model : mInstantiatedModels[mesh.second.get()])
+            {
+              auto &data = model->mPipelineData[submesh.get()];
+              mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                                          data.mPipelineLayout,
+                                                          0,
+                                                          data.mDescriptorSet,
+                                                          nullptr);
+
+              mRenderingCommandBuffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
+                                                   1, 
+                                                   0, 
+                                                   0, 
+                                                   0);
+            }
           }
         }
       }

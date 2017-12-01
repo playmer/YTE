@@ -3,23 +3,15 @@
 // YTE - Graphics - Vulkan
 ///////////////////
 
+#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
-#include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
-
+#include "YTE/Graphics/Vulkan/VkShader.hpp"
+#include "YTE/Graphics/Vulkan/VkTexture.hpp"
 
 namespace YTE
 {
-  YTEDefineType(VkSubmesh)
-  {
-    YTERegisterType(VkSubmesh);
-  }
-
-  YTEDefineType(VkMesh)
-  {
-    YTERegisterType(VkMesh);
-  }
-
   vk::ImageViewType Convert(TextureViewType aType)
   {
     switch (aType)
@@ -35,20 +27,118 @@ namespace YTE
   }
 
 
-  VkSubmesh::VkSubmesh(Submesh *aSubmesh, VkRenderedSurface *aSurface)
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Instance Manager
+  ///////////////////////////////////////////////////////////////////////////
+
+  void InstanceManager::AddModel(VkInstantiatedModel *aModel)
+  {
+    auto index = FreeIndex();
+
+    // Where to place the model.
+    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
+    mModels.emplace(it, aModel);
+
+    // Where to place the index
+    auto indexOfIndex = it - mModels.begin();
+    auto indexOfIndexIt = mIndexes.begin() + indexOfIndex;
+
+    mIndexes.emplace(indexOfIndexIt, index);
+  }
+
+  void InstanceManager::RemoveModel(VkInstantiatedModel *aModel)
+  {
+    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
+    auto indexOfIndex = it - mModels.begin();
+
+    auto indexBeingFreed = mIndexes[indexOfIndex];
+
+    mModels.erase(it);
+    mIndexes.erase(mIndexes.begin() + indexOfIndex);
+
+    for (auto &index : mIndexes)
+    {
+      if (index > indexBeingFreed)
+      {
+        --index;
+      }
+    }
+  }
+
+  u32 InstanceManager::GetIndex(VkInstantiatedModel *aModel)
+  {
+    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
+    auto indexOfIndex = it - mModels.begin();
+
+    return mIndexes[indexOfIndex];
+  }
+
+  void InstanceManager::Clear()
+  {
+    mIndexes.clear();
+    mModels.clear();
+    mInstanceBuffer.reset();
+    mInstances = 0;
+  }
+
+  std::shared_ptr<vkhlf::Buffer>& InstanceManager::InstanceBuffer()
+  {
+    return mInstanceBuffer;
+  }
+
+  u32 InstanceManager::Instances()
+  {
+    return static_cast<u32>(mIndexes.size());
+  }
+
+  void InstanceManager::GrowBuffer()
+  {
+    u32 growTo = 2 * mInstances;
+    auto device = mSurface->GetDevice();
+
+    auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
+
+    auto buffer = device->createBuffer(sizeof(Instance),
+      vk::BufferUsageFlagBits::eTransferDst |
+      vk::BufferUsageFlagBits::eVertexBuffer,
+      vk::SharingMode::eExclusive,
+      nullptr,
+      vk::MemoryPropertyFlagBits::eDeviceLocal,
+      allocator);
+
+    mInstances = growTo;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // Submesh
+  ///////////////////////////////////////////////////////////////////////////
+  YTEDefineType(VkSubmesh)
+  {
+    YTERegisterType(VkSubmesh);
+  }
+
+  VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface)
     : mDiffuseTexture(nullptr)
     , mSpecularTexture(nullptr)
     , mNormalTexture(nullptr)
     , mShader(nullptr)
-    , mSubmesh(nullptr)
+    , mSurface(aSurface)
+    , mMesh(aMesh)
+    , mSubmesh(aSubmesh)
     , mIndexCount(0)
   {
-    mSubmesh = aSubmesh;
+    Create();
+  }
 
-    auto device = aSurface->GetDevice();
 
-    auto allocator = aSurface->GetAllocator(AllocatorTypes::Mesh);
+  void VkSubmesh::Create()
+  {
+    auto device = mSurface->GetDevice();
 
+    auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
+
+    // Create Vertex, Index, and Material buffers.
     mVertexBuffer = device->createBuffer(mSubmesh->mVertexBufferSize,
                                          vk::BufferUsageFlagBits::eTransferDst |
                                          vk::BufferUsageFlagBits::eVertexBuffer,
@@ -75,118 +165,219 @@ namespace YTE
 
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
-    // load Textures
-    u32 samplers = 0;
+    // Load Textures
+    u32 samplers{ 0 };
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
-      mDiffuseTexture = aSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
+      mDiffuseTexture = mSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
       ++samplers;
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
-      mSpecularTexture = aSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
+      mSpecularTexture = mSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
       ++samplers;
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
-      mNormalTexture = aSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
+      mNormalTexture = mSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
       ++samplers;
     }
 
-    // init descriptor and pipeline layouts (needed to load shaders)
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
-    dslbs.emplace_back(0,
+    u32 binding{ 0 };
+    u32 uniformBuffers{ 0 };
+
+    // View Buffer for Vertex shader.
+    dslbs.emplace_back(binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
                        nullptr);
-    dslbs.emplace_back(1,
+    ++uniformBuffers;
+
+    // Animation (Bone Array) Buffer for Vertex shader.
+    dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
                        nullptr);
-    dslbs.emplace_back(2,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    dslbs.emplace_back(3,
+    ++uniformBuffers;
+
+    // Material Buffer for Fragment shader.
+    dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
+    ++uniformBuffers;
 
-    std::shared_ptr<vkhlf::DescriptorPool> descriptorPool;
-
-    if (0 != samplers)
+    // Descriptions for the textures we support based on which maps we found above:
+    //   Diffuse
+    //   Specular
+    //   Normal
+    for (u32 i = 0; i < samplers; ++i)
     {
-      std::vector<vk::DescriptorPoolSize> descriptorTypes;
-      descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
-      descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
-      descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
-      descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, 1);
-
-      for (u32 i = 0; i < samplers; ++i)
-      {
-        dslbs.emplace_back(i + 4,
-                           vk::DescriptorType::eCombinedImageSampler,
-                           vk::ShaderStageFlagBits::eFragment,
-                           nullptr);
-
-        descriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, 1);
-      }
-
-      descriptorPool = device->createDescriptorPool({}, 1, descriptorTypes);
-    }
-    else
-    {
-      descriptorPool = device->createDescriptorPool({},
-                                                    1,
-                                                    { { vk::DescriptorType::eUniformBuffer, 4 },
-                                                    });
+      dslbs.emplace_back(++binding,
+                         vk::DescriptorType::eCombinedImageSampler,
+                         vk::ShaderStageFlagBits::eFragment,
+                         nullptr);
     }
 
-    auto descriptorSetLayout = device->createDescriptorSetLayout(dslbs);
-
-    auto pipelineLayout = device->createPipelineLayout(descriptorSetLayout, nullptr);
-
-
+    // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
     VkShaderDescriptions descriptions;
     descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
 
-    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    // Defines needed for shader compilation.
+    std::string defines;
 
-    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    if (mMesh->GetInstanced())
+    {
+      // Adding the Instance Vertex information
+      descriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
+      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
+      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
+      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
+      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
 
-    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+      // If we're instanced, we must tell the shaders.
+      defines = "#define INSTANCING\n";
+    }
+    else
+    {
+      // Model Buffer for Vertex shader. (Non-instanced Meshes)
+      // We do this one last so as to make the binding numbers easier
+      // to set via #defines for the shader.
+      dslbs.emplace_back(++binding,
+                         vk::DescriptorType::eUniformBuffer,
+                         vk::ShaderStageFlagBits::eVertex,
+                         nullptr);
+      ++uniformBuffers;
 
-    //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+      // We need to tell the shaders where to find the UBOModel.
+      defines = "#define UBO_MODEL_BINDING ";
+      defines += std::to_string(binding);
+      defines += "\n";
+    }
 
-    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    // Create the descriptor set and pipeline layouts.
+    mDescriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
+    mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, samplers);
 
-    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
 
-    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
 
-    //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
+    if (nullptr != mShader)
+    {
+      // Update relevant members, then load.
+      mShader->mDescriptions = descriptions;
+      mShader->mPipelineLayout = pipelineLayout;
+      mShader->mDefines = defines;
+      mShader->Load();
+    }
+    else
+    {
+      // load shader passing our created pipeline layout
+      mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
+                                       pipelineLayout,
+                                       descriptions,
+                                       defines);
+    }
+  }
 
-    //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
 
-    //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);
+  std::shared_ptr<vkhlf::DescriptorPool> VkSubmesh::MakePool()
+  {
+    auto device = mSurface->GetDevice();
 
-    //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);
+    return device->createDescriptorPool({}, 1, mDescriptorTypes);
+  }
 
-    // load shader passing our created pipeline layout
-    mShader = aSurface->CreateShader(mSubmesh->mShaderSetName, pipelineLayout, descriptions);
+  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> aUBOModel,
+                                                    std::shared_ptr<vkhlf::Buffer> aUBOAnimation)
+  {
+    auto mesh = static_cast<VkMesh*>(mMesh);
+
+    auto device = mSurface->GetDevice();
+
+    SubMeshPipelineData pipelineData;
+    pipelineData.mPipelineLayout = device->createPipelineLayout(mDescriptorSetLayout,
+                                                                nullptr);
+    pipelineData.mDescriptorSet = device->allocateDescriptorSet(MakePool(),
+                                                                mDescriptorSetLayout);
+
+    std::vector<vkhlf::WriteDescriptorSet> wdss;
+    wdss.reserve(6);
+
+    // Helper constants and variables.
+    constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
+    auto &ds = pipelineData.mDescriptorSet;
+    u32 binding = 0;
+
+    // Add Uniform Buffers
+
+    // View Buffer for Vertex shader.
+    vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(), 0, sizeof(UBOView) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
+
+    // Animation (Bone Array) Buffer for Vertex shader.
+    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOAnimation) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
+
+    // Material Buffer for Fragment shader.
+    vkhlf::DescriptorBufferInfo uboMaterial{ mUBOMaterial, 0, sizeof(UBOMaterial) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
+
+    // Add Texture Samplers
+    auto addTS = [&wdss, &binding, &ds](VkTexture *aData,
+                                        vkhlf::DescriptorImageInfo &aImageInfo)
+    {
+      constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
+
+      if (nullptr == aData)
+      {
+        return;
+      }
+
+      aImageInfo.sampler = aData->mSampler;
+      aImageInfo.imageView = aData->mImageView;
+      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
+    };
+
+    vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
+    vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
+    vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
+
+    addTS(mDiffuseTexture, dTexInfo);
+    addTS(mSpecularTexture, sTexInfo);
+    addTS(mNormalTexture, nTexInfo);
+
+    // TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.
+    // We do the model last for easier binding.
+    if (false == mesh->GetInstanced())
+    {
+      vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
+      wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
+    }
+
+    device->updateDescriptorSets(wdss, nullptr);
+
+    return pipelineData;
+  }
+
+  void VkSubmesh::Destroy()
+  {
+
   }
 
   VkSubmesh::~VkSubmesh()
@@ -204,6 +395,13 @@ namespace YTE
   }
 
 
+  ///////////////////////////////////////////////////////////////////////////
+  // Mesh
+  ///////////////////////////////////////////////////////////////////////////
+  YTEDefineType(VkMesh)
+  {
+    YTERegisterType(VkMesh);
+  }
 
   VkMesh::VkMesh(Window *aWindow,
                  VkRenderedSurface *aSurface,
@@ -214,7 +412,7 @@ namespace YTE
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(&mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
       mSubmeshes.emplace(submesh->mShader, std::move(submesh));
     }
 
@@ -231,13 +429,13 @@ namespace YTE
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(&mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
       mSubmeshes.emplace(submesh->mShader, std::move(submesh));
     }
 
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
-  
+
   VkMesh::~VkMesh()
   {
   }
@@ -249,6 +447,61 @@ namespace YTE
     for (auto &submesh : mSubmeshes)
     {
       submesh.second->LoadToVulkan(aEvent);
+    }
+  }
+
+
+  void RemoveOffset(VkInstantiatedModel *aModel)
+  {
+
+  }
+
+  void RequestOffset(VkInstantiatedModel *aModel)
+  {
+
+  }
+
+  void VkMesh::SetInstanced(bool aInstanced)
+  {
+    if (aInstanced == mInstanced)
+    {
+      return;
+    }
+
+    // We can clear our offsets if we're turning instancing off.
+    if (false == mInstanced)
+    {
+      mInstanceManager.Clear();
+    }
+
+    mInstanced = aInstanced;
+
+    // Switching between instancing or not forces us to recompile shaders and changes some
+    // our descriptors.
+    for (auto &submesh : mSubmeshes)
+    {
+      submesh.second->Destroy();
+      submesh.second->Create();
+    }
+
+    auto models = mSurface->GetInstantiatedModels(this);
+
+    u32 offset{ 0 };
+
+    // Switching also forces us to recreate our DescriptorSets on every model.
+    for (auto model : models)
+    {
+      // If we're switching to instancing we need to generate offsets into the instance buffer
+      // for each model.
+      if (mInstanced)
+      {
+        mInstanceManager.AddModel(model);
+      }
+
+      for (auto &submesh : mSubmeshes)
+      {
+        model->CreateDescriptorSet(submesh.second.get());
+      }
     }
   }
 }

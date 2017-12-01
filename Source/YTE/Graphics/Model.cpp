@@ -76,6 +76,11 @@ namespace YTE
     YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>()
+    //  .SetDocumentation("Will use/not use instancing for this mesh. (Will apply to all Models using this mesh.)");
   }
 
 
@@ -91,6 +96,7 @@ namespace YTE
     , mTransform(nullptr)
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
+    , mInstanced(false)
   {
     mEngine = aSpace->GetEngine();
     mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -247,6 +253,25 @@ namespace YTE
     mInstantiatedModel.reset();
   }
 
+  void Model::SetInstanced(bool mInstanced)
+  {
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->SetInstanced(mInstanced);
+    }
+  }
+
+  bool Model::GetInstanced()
+  {
+    if (mInstantiatedModel)
+    {
+      return mInstantiatedModel->GetInstanced();
+    }
+    else
+    {
+      return false;
+    }
+  }
 
   void Model::CreateTransform()
   {

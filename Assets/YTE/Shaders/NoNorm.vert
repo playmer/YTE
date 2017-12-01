@@ -18,18 +18,36 @@ layout (location = 8) in vec2 inBoneWeights2;
 layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
+
+#ifdef INSTANCING
+  layout (location = 11) in vec4 inMatrix0;
+  layout (location = 12) in vec4 inMatrix1;
+  layout (location = 13) in vec4 inMatrix2;
+  layout (location = 14) in vec4 inMatrix3;
+
+  struct 
+  {
+    mat4 mModelMatrix;
+  } Model;
+
+  Model.mModelMatrix[0] = inMatrix1;
+  Model.mModelMatrix[1] = inMatrix2;
+  Model.mModelMatrix[2] = inMatrix3;
+  Model.mModelMatrix[3] = inMatrix4;
+#else
+  layout (binding = UBO_MODEL_BINDING) uniform UBOModel
+  {
+    mat4 mModelMatrix;
+  } Model;
+#endif
+
 layout (binding = 0) uniform UBOView
 {
   mat4 mProjectionMatrix;
   mat4 mViewMatrix;
 } View;
 
-layout (binding = 1) uniform UBOModel
-{
-  mat4 mModelMatrix;
-} Model;
-
-layout (binding = 2) uniform UBOAnimation
+layout (binding = 1) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
   bool mHasAnimations;

@@ -3,7 +3,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
-layout (binding = 3) uniform UBOMaterial
+layout (binding = 2) uniform UBOMaterial
 {
     vec3 mDiffuse;
     vec3 mAmbient;
@@ -19,8 +19,8 @@ layout (binding = 3) uniform UBOMaterial
     float mBumpScaling;
 } Material;
 
-layout (binding = 4) uniform sampler2D diffuseSampler;
-layout (binding = 5) uniform sampler2D normalSampler;
+layout (binding = 3) uniform sampler2D diffuseSampler;
+layout (binding = 4) uniform sampler2D normalSampler;
 
 layout (location = 0) in vec3 inColor;
 layout (location = 1) in vec2 inTextureCoordinates;

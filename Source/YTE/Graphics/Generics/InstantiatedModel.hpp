@@ -22,6 +22,8 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedModel);
 
+    InstantiatedModel();
+
     virtual ~InstantiatedModel()
     {
       
@@ -32,9 +34,9 @@ namespace YTE
       
     }
 
-    virtual void UpdateUBOModel(UBOModel &aUBO)
+    virtual bool GetInstanced()
     {
-      YTEUnusedArgument(aUBO);
+      return false;
     }
 
     virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
@@ -43,16 +45,29 @@ namespace YTE
     }
 
 
+    virtual void SetInstanced(bool aInstanced)
+    {
+      YTEUnusedArgument(aInstanced);
+    }
+
+    // Used to update with the previous data. This is useful for switching
+    // between instancing or no instancing.
+    virtual void UpdateUBOModel()
+    {
+    }
+
+    virtual void UpdateUBOModel(UBOModel &aUBO)
+    {
+      YTEUnusedArgument(aUBO);
+    }
 
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
-    virtual Mesh* GetMesh()
+    Mesh* GetMesh()
     {
       return mMesh;
     }
-
-
 
   protected:
     Mesh *mMesh;

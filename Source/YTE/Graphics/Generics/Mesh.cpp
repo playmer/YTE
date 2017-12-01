@@ -383,6 +383,7 @@ namespace YTE
 
 
   Mesh::Mesh(Window *aWindow, std::string &aFile, CreateInfo *aCreateInfo)
+    : mInstanced(false)
   {
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
