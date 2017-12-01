@@ -156,7 +156,15 @@ namespace YTEditor
     YTE::String yteFile = YTE::String();
     yteFile = file_without_extension;
 
+    mMainWindow->DeleteGizmo();
+
     mMainWindow->LoadLevel(file_without_extension);
+
+    auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+
+    Gizmo *giz = mMainWindow->RemakeGizmo();
+    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
+    giz->SetMode(Gizmo::Select);
   }
 
   void FileMenu::SaveLevel()

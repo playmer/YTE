@@ -97,6 +97,10 @@ namespace YTEditor
 
     PhysicsHandler& GetPhysicsHandler();
 
+    Gizmo* RemakeGizmo();
+
+    void DeleteGizmo();
+
   private:
 
     // YTE GAME ENGINE
@@ -126,7 +130,7 @@ namespace YTEditor
 
     QTabWidget *mCentralTabs;
     SubWindow *mGameWindow;
-    SubWindow *mLevelWindow;
+    SubWindow *mRunningLevelWindow;
 
     std::vector<SubWindow*> mSubWindows;
 
