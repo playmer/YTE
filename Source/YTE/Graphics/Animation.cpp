@@ -290,15 +290,15 @@ namespace YTE
       if (mModel->GetInstantiatedModel())
       {
         mModel->GetInstantiatedModel()->SetDefaultAnimationOffset();
-
-        for (auto it : mAnimations)
-        {
-          delete it.first;
-        }
-
-        mAnimations.clear();
       }
     }
+
+    for (auto it : mAnimations)
+    {
+      delete it.first;
+    }
+
+    mAnimations.clear();
   }
 
   void Animator::Initialize()

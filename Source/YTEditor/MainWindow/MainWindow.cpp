@@ -247,7 +247,7 @@ namespace YTEditor
   void MainWindow::LoadCurrentLevelInfo()
   {
     // Get all the compositions on the engine
-    YTE::CompositionMap * engineMap = mRunningEngine->GetCompositions();
+    YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
 
     mRunningEngine->Update();
 
@@ -398,6 +398,23 @@ namespace YTEditor
   PhysicsHandler& MainWindow::GetPhysicsHandler()
   {
     return *mPhysicsHandler;
+  }
+
+  Gizmo* MainWindow::RemakeGizmo()
+  {
+    // get the window
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+
+    mGizmo = new Gizmo(this);
+    mGizmo->SetRenderingWindow(yteWin);
+
+    return mGizmo;
+  }
+
+  void MainWindow::DeleteGizmo()
+  {
+    delete mGizmo;
+    mGizmo = nullptr;
   }
 
   void MainWindow::SetWindowSettings()
