@@ -504,6 +504,8 @@ namespace YTE
     auto buffer = mCommandPool->allocateCommandBuffer();
     buffer->begin();
 
+    //bool check = false;
+
     for (auto &viewData : mViewData)
     {
       std::array<float, 4> colorValues;
@@ -512,15 +514,27 @@ namespace YTE
       colorValues[2] = viewData.second.mClearColor.b;
       colorValues[3] = viewData.second.mClearColor.a;
 
-      vk::ClearValue color{ colorValues };
+      vk::ClearValue color{colorValues};
+      vk::ClearDepthStencilValue depthStensil{1.0f, 0};
+
+      //if (false == check)
+      //{
+      //  depthStensil = vk::ClearDepthStencilValue(1.0f, 0);
+      //  check = true;
+      //}
+      //else
+      //{
+      //  depthStensil = vk::ClearDepthStencilValue(-107374176.f, 3435973836);
+      //}
+
+      auto &extent = mFrameBufferSwapChain->getExtent();
 
       buffer->beginRenderPass(mRenderPass,
                               mFrameBufferSwapChain->getFramebuffer(),
-                              vk::Rect2D({ 0, 0 }, mFrameBufferSwapChain->getExtent()),
-                              {color, vk::ClearDepthStencilValue(1.0f, 0)},
+                              vk::Rect2D({ 0, 0 }, extent),
+                              {color, depthStensil},
                               vk::SubpassContents::eInline);
 
-      auto &extent = mFrameBufferSwapChain->getExtent();
 
       auto width = static_cast<float>(extent.width);
       auto height = static_cast<float>(extent.height);
@@ -540,6 +554,14 @@ namespace YTE
         buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
         for (auto &mesh : mMeshes)
         {
+          auto &models = instantiatedModels[mesh.second.get()];
+
+          // We can early out on this mesh if there are no models that use it.
+          if (models.empty())
+          {
+            continue;
+          }
+
           // We get the submeshes that use the current shader, then draw them.
           auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
@@ -581,7 +603,7 @@ namespace YTE
             }
             else
             {
-              for (auto &model : instantiatedModels[mesh.second.get()])
+              for (auto &model : models)
               {
                 auto &data = model->mPipelineData[submesh.get()];
                 buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,

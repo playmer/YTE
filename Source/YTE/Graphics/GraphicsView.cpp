@@ -22,10 +22,8 @@ namespace YTE
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
-      .SetDocumentation("The color the screen will be painted before rendering, defaults to grey.");
+      .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
   }
-
-
 
   GraphicsView::GraphicsView(Composition *aOwner, 
                              Space *aSpace, 
