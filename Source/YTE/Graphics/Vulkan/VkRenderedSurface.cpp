@@ -408,6 +408,7 @@ namespace YTE
     if (it != mViewData.end())
     {
       mViewData.emplace(std::make_pair(aNewOrder, aView), std::move(it->second));
+      mViewData.erase(it);
     }
     else
     {

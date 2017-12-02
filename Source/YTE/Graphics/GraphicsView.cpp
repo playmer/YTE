@@ -49,6 +49,7 @@ namespace YTE
     }
 
     mConstructing = false;
+    mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
   }
 
   GraphicsView::~GraphicsView()
@@ -60,15 +61,14 @@ namespace YTE
   {
     mRenderer->RegisterView(this);
     SetClearColor(mClearColor);
-    mSpace->YTERegister(Events::LogicUpdate, this, &GraphicsView::Update);
   }
 
 
-  void GraphicsView::Update(LogicUpdate *aUpdate)
+  void GraphicsView::KeyPressed(KeyboardEvent *aUpdate)
   {
-    if (mWindow->mKeyboard.IsKeyDown(Keys::F2))
+    if (aUpdate->Key == Keys::F1)
     {
-      mOrder = -mOrder;
+      SetOrder(-mOrder);
     }
   }
 
@@ -110,11 +110,11 @@ namespace YTE
 
   void GraphicsView::SetOrder(float aOrder)
   {
-    mOrder = aOrder;
-
     if (false == mConstructing)
     {
       mRenderer->ViewOrderChanged(this, mOrder, aOrder);
     }
+
+    mOrder = aOrder;
   }
 }

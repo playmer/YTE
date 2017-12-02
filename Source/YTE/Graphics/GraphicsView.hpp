@@ -44,7 +44,7 @@ namespace YTE
 
     void SetOrder(float aOrder);
 
-    void Update(LogicUpdate *aUpdate);
+    void KeyPressed(KeyboardEvent *aUpdate);
 
   private:
     Camera *mLastCamera;

@@ -37,8 +37,24 @@ namespace YTE
     struct ViewData
     {
       ViewData() = default;
-      ViewData(ViewData &&aViewData) = default;
-      ViewData& operator= (ViewData &&aViewData) = default;
+      //ViewData(ViewData &&aViewData) = default;
+      //ViewData& operator= (ViewData &&aViewData) = default;
+
+      //ViewData(ViewData &&aViewData)
+      //  : mViewUBO(std::move(aViewData.mViewUBO))
+      //  , mClearColor(std::move(aViewData.mClearColor))
+      //  , mViewUBOData(std::move(aViewData.mViewUBOData))
+      //  , mInstantiatedModels(std::move(aViewData.mInstantiatedModels))
+      //{
+      //}
+      //
+      //ViewData& operator= (ViewData &&aViewData)
+      //{
+      //  mViewUBO = std::move(aViewData.mViewUBO);
+      //  mClearColor = std::move(aViewData.mClearColor);
+      //  mViewUBOData = std::move(aViewData.mViewUBOData);
+      //  mInstantiatedModels = std::move(aViewData.mInstantiatedModels);
+      //}
 
       // Buffers
       std::shared_ptr<vkhlf::Buffer> mViewUBO;
