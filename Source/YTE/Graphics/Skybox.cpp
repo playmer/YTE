@@ -175,9 +175,11 @@ namespace YTE
 
     std::vector<Submesh> submeshes{ submesh };
 
-    auto mesh = mRenderer->CreateSimpleMesh(mWindow, meshName, submeshes);
+    auto view = mSpace->GetComponent<GraphicsView>();
 
-    mInstantiatedSkybox = mRenderer->CreateModel(mWindow, mesh);
+    auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
+
+    mInstantiatedSkybox = mRenderer->CreateModel(view, mesh);
     CreateTransform();
     mInstantiatedSkybox->UpdateUBOModel(mUBOModel);
   }

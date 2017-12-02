@@ -31,7 +31,11 @@ namespace YTE
           0 != aTexture.size())
       {
         mTextureName = aTexture;
-        CreateSprite();
+
+        if (mConstructing == false)
+        {
+          CreateSprite();
+        }
       }
     }
 
@@ -47,5 +51,6 @@ namespace YTE
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
+    bool mConstructing;
   };
 }

@@ -49,8 +49,11 @@ namespace YTE
 
   Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mConstructing(true)
   {
     DeserializeByType<Sprite*>(aProperties, this, Sprite::GetStaticType());
+
+    mConstructing = false;
   }
 
   Sprite::~Sprite()
@@ -152,9 +155,11 @@ namespace YTE
 
     std::vector<Submesh> submeshes{ submesh };
 
-    auto mesh = mRenderer->CreateSimpleMesh(mWindow, meshName, submeshes);
+    auto view = mSpace->GetComponent<GraphicsView>();
 
-    mInstantiatedSprite = mRenderer->CreateModel(mWindow, mesh);
+    auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
+
+    mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
     CreateTransform();
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
   }

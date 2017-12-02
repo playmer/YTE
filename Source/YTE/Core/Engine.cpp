@@ -255,6 +255,14 @@ namespace YTE
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
+
+    // If we're told to shut down then our windows might be invalidated
+    // so we shouldn't try to run the Graphics updates.
+    if (false == mShouldRun)
+    {
+      return;
+    }
+
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);

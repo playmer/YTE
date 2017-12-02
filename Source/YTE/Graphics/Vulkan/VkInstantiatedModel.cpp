@@ -17,9 +17,11 @@ namespace YTE
   }
 
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
-                                           VkRenderedSurface *aSurface)
+                                           VkRenderedSurface *aSurface,
+                                           GraphicsView *aView)
     : InstantiatedModel()
     , mSurface(aSurface)
+    , mView(aView)
     , mLoadUBOAnimation(false)
     , mLoadUBOModel(false)
   {
@@ -27,9 +29,12 @@ namespace YTE
     Create();
   }
 
-  VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface)
+  VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, 
+                                           VkRenderedSurface *aSurface,
+                                           GraphicsView *aView)
     : InstantiatedModel()
     , mSurface(aSurface)
+    , mView(aView)
     , mLoadUBOAnimation(false)
     , mLoadUBOModel(false)
   {
@@ -39,7 +44,7 @@ namespace YTE
 
   VkInstantiatedModel::~VkInstantiatedModel()
   {
-    mSurface->DestroyModel(this);
+    mSurface->DestroyModel(mView, this);
   }
 
   void VkInstantiatedModel::Create()
@@ -137,7 +142,7 @@ namespace YTE
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh)
   {
-    mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(mUBOModel, mUBOAnimation));
+    mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(mUBOModel, mUBOAnimation, mView));
   }
 
   bool VkInstantiatedModel::GetInstanced()
@@ -172,8 +177,8 @@ namespace YTE
     auto mesh = static_cast<VkMesh*>(mMesh);
 
     mSurface->YTEDeregister(Events::GraphicsDataUpdateVk,
-      this,
-      &VkInstantiatedModel::GraphicsDataUpdateVk);
+                            this,
+                            &VkInstantiatedModel::GraphicsDataUpdateVk);
 
     auto update = aEvent->mCBO;
 

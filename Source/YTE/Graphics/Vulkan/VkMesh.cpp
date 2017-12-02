@@ -305,7 +305,8 @@ namespace YTE
   }
 
   SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> aUBOModel,
-                                                    std::shared_ptr<vkhlf::Buffer> aUBOAnimation)
+                                                    std::shared_ptr<vkhlf::Buffer> aUBOAnimation,
+                                                    GraphicsView *aView)
   {
     auto mesh = static_cast<VkMesh*>(mMesh);
 
@@ -328,7 +329,7 @@ namespace YTE
     // Add Uniform Buffers
 
     // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(), 0, sizeof(UBOView) };
+    vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
     // Animation (Bone Array) Buffer for Vertex shader.
@@ -485,24 +486,25 @@ namespace YTE
       submesh.second->Create();
     }
 
-    auto models = mSurface->GetInstantiatedModels(this);
-
-    u32 offset{ 0 };
-
-    // Switching also forces us to recreate our DescriptorSets on every model.
-    for (auto model : models)
+    for (auto &viewIt : mSurface->GetViews())
     {
-      // If we're switching to instancing we need to generate offsets into the instance buffer
-      // for each model.
-      if (mInstanced)
-      {
-        mInstanceManager.AddModel(model);
-      }
+      u32 offset{0};
 
-      for (auto &submesh : mSubmeshes)
+      // Switching also forces us to recreate our DescriptorSets on every model.
+      for (auto model : viewIt.second.mInstantiatedModels[this])
       {
-        model->CreateDescriptorSet(submesh.second.get());
-      }
+        // If we're switching to instancing we need to generate offsets into the instance buffer
+        // for each model.
+        if (mInstanced)
+        {
+          mInstanceManager.AddModel(model);
+        }
+
+        for (auto &submesh : mSubmeshes)
+        {
+          model->CreateDescriptorSet(submesh.second.get());
+        }
+      } 
     }
   }
 }

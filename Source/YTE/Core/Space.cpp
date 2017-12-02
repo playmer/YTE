@@ -50,9 +50,9 @@ namespace YTE
   }
 
 
-  // Sets up the Space, probably could just be the constructor.
   Space::Space(Engine *aEngine, RSValue *aProperties)
-                : Composition(aEngine, this), mLevelToLoad(nullptr)
+    : Composition(aEngine, this)
+    , mLevelToLoad(nullptr)
   {
     if (false == mEngine->IsEditor())
     {

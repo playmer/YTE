@@ -134,18 +134,6 @@ namespace YTE
     mAllocators[AllocatorTypes::UniformBufferObject] =
       std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
 
-    auto uboAllocator = mAllocators[AllocatorTypes::UniformBufferObject];
-    mViewUBO = mDevice->createBuffer(sizeof(UBOView),
-                                     vk::BufferUsageFlagBits::eTransferDst |
-                                     vk::BufferUsageFlagBits::eUniformBuffer,
-                                     vk::SharingMode::eExclusive,
-                                     nullptr,
-                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                     uboAllocator);
-
-    // TODO: (CBO) Command Buffer is allocated here, this shouldn't be here
-    mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
-
     // create Framebuffer & Swapchain
     WindowResize event;
     event.height = mWindow->GetHeight();
@@ -162,19 +150,18 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
-    mInstantiatedModels.clear();
+    mViewData.clear();
     mTextures.clear();
     mMeshes.clear();
     mShaders.clear();
     mFrameBufferSwapChain.reset();
   }
-
-
-
-  void VkRenderedSurface::UpdateSurfaceViewBuffer(UBOView &aView)
+  
+  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
-    mViewUBOData = aView;
-    this->YTERegister(Events::GraphicsDataUpdateVk, this,
+    GetViewData(aView).mViewUBOData = aUBOView;
+    this->YTERegister(Events::GraphicsDataUpdateVk,
+                      this,
                       &VkRenderedSurface::GraphicsDataUpdateVkEvent);
 
   }
@@ -190,81 +177,39 @@ namespace YTE
       printf("  Format/Color Space: %s/%s\n", formatString.c_str(), colorSpace.c_str());
     }
   }
-
-  void VkRenderedSurface::CreateSpritePipeline()
-  {
-    //VkShaderDescriptions descriptions;
-    //descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    //
-    ////glm::vec3 mPosition;
-    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-    //
-    ////glm::vec2 mTextureCoordinates;
-    //descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);
-    //
-    ////glm::vec3 mNormal;
-    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);
-    //
-    //descriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
-    //
-    ////u32 mTextureId;
-    //descriptions.AddAttribute<u32>(vk::Format::eR32Uint);
-    //
-    ////glm::vec4 mMatrix1;
-    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-    //
-    ////glm::vec4 mMatrix2;
-    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-    //
-    ////glm::vec4 mMatrix3;
-    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-    //
-    ////glm::vec4 mMatrix4;
-    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat);
-    //
-    //
-  }
-
-  // Sprites
-  std::unique_ptr<InstantiatedSprite> VkRenderedSurface::CreateSprite(std::string &aTextureFile)
-  {
-    YTEUnusedArgument(aTextureFile);
-    return nullptr;
-  }
-
-  void VkRenderedSurface::DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite)
-  {
-    YTEUnusedArgument(aSprite);
-  }
   
   // Models
-  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(std::string &aModelFile)
+  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this);
-    mInstantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
+    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
+    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
 
 
-  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(Mesh *aMesh)
+  std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aMesh, this);
-    mInstantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
+    auto model = std::make_unique<VkInstantiatedModel>(aMesh, this, aView);
+    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
 
-  void VkRenderedSurface::DestroyModel(VkInstantiatedModel *aModel)
+  void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
   {
     if (aModel == nullptr)
     {
       return;
     }
 
-    auto mesh = mInstantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
+    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
 
-    if (mesh != mInstantiatedModels.end())
+    auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
+
+    if (mesh != instantiatedModels.end())
     {
       // Remove this instance from the map.
       mesh->second.erase(std::remove(mesh->second.begin(), 
@@ -422,11 +367,64 @@ namespace YTE
     mWindow->SendEvent(Events::RendererResize, &event);
   }
 
+  void VkRenderedSurface::RegisterView(GraphicsView *aView)
+  {
+    auto key = std::make_pair(aView->GetOrder(), aView);
+    auto it = mViewData.find(key);
+
+    if (it == mViewData.end())
+    {
+      auto emplaced = mViewData.emplace(key, ViewData());
+
+      auto uboAllocator = mAllocators[AllocatorTypes::UniformBufferObject];
+      auto buffer = mDevice->createBuffer(sizeof(UBOView),
+                                          vk::BufferUsageFlagBits::eTransferDst |
+                                          vk::BufferUsageFlagBits::eUniformBuffer,
+                                          vk::SharingMode::eExclusive,
+                                          nullptr,
+                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                          uboAllocator);
+
+      emplaced.first->second.mViewUBO = buffer;
+
+    }
+  }
+
+  void VkRenderedSurface::DeregisterView(GraphicsView *aView)
+  {
+    auto key = std::make_pair(aView->GetOrder(), aView);
+    auto it = mViewData.find(key);
+
+    if (it != mViewData.end())
+    {
+      mViewData.erase(it);
+    }
+  }
+
+  void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  {
+    auto it = mViewData.find(std::make_pair(aOldOrder, aView));
+
+    if (it != mViewData.end())
+    {
+      mViewData.emplace(std::make_pair(aNewOrder, aView), std::move(it->second));
+    }
+    else
+    {
+      mViewData.emplace(std::make_pair(aNewOrder, aView), ViewData());
+    }
+  }
+
   void VkRenderedSurface::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent)
   {
-    mViewUBO->update<UBOView>(0, mViewUBOData, aEvent->mCBO);
-    this->YTEDeregister(Events::GraphicsDataUpdateVk, this,
-                        &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+    for (auto &viewDataIt : mViewData)
+    {
+      auto &viewData = viewDataIt.second;
+      viewData.mViewUBO->update<UBOView>(0, viewData.mViewUBOData, aEvent->mCBO);
+      this->YTEDeregister(Events::GraphicsDataUpdateVk, 
+                          this,
+                          &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+    }
   }
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
@@ -502,113 +500,117 @@ namespace YTE
     }
 
     // TODO: (CBO) A cbo is created here, stop this
-    mRenderingCommandBuffer = mCommandPool->allocateCommandBuffer();
+    auto buffer = mCommandPool->allocateCommandBuffer();
+    buffer->begin();
 
-    std::array<float, 4> colorValues;
-    colorValues[0] = mClearColor.r;
-    colorValues[1] = mClearColor.g;
-    colorValues[2] = mClearColor.b;
-    colorValues[3] = mClearColor.a;
-
-    vk::ClearValue color{ colorValues };
-    mRenderingCommandBuffer->begin();
-
-    mRenderingCommandBuffer->beginRenderPass(mRenderPass,
-                                             mFrameBufferSwapChain->getFramebuffer(),
-                                             vk::Rect2D({ 0, 0 },
-                                                        mFrameBufferSwapChain->getExtent()),
-                                             { color,
-                                             vk::ClearValue(vk::ClearDepthStencilValue(1.0f, 0)) },
-                                             vk::SubpassContents::eInline);
-
-    auto &extent = mFrameBufferSwapChain->getExtent();
-
-    auto width = static_cast<float>(extent.width);
-    auto height = static_cast<float>(extent.height);
-
-    vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
-
-    mRenderingCommandBuffer->setViewport(0, viewport);
-    vk::Rect2D scissor{ { 0, 0 }, extent };
-    mRenderingCommandBuffer->setScissor(0, scissor);
-
-    for (auto &shader : mShaders)
+    for (auto &viewData : mViewData)
     {
-      auto &pipeline = shader.second->mShader;
+      std::array<float, 4> colorValues;
+      colorValues[0] = viewData.second.mClearColor.r;
+      colorValues[1] = viewData.second.mClearColor.g;
+      colorValues[2] = viewData.second.mClearColor.b;
+      colorValues[3] = viewData.second.mClearColor.a;
 
-      mRenderingCommandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-      for (auto &mesh : mMeshes)
+      vk::ClearValue color{ colorValues };
+
+      buffer->beginRenderPass(mRenderPass,
+                              mFrameBufferSwapChain->getFramebuffer(),
+                              vk::Rect2D({ 0, 0 }, mFrameBufferSwapChain->getExtent()),
+                              {color, vk::ClearDepthStencilValue(1.0f, 0)},
+                              vk::SubpassContents::eInline);
+
+      auto &extent = mFrameBufferSwapChain->getExtent();
+
+      auto width = static_cast<float>(extent.width);
+      auto height = static_cast<float>(extent.height);
+
+      vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
+      buffer->setViewport(0, viewport);
+
+      vk::Rect2D scissor{ { 0, 0 }, extent };
+      buffer->setScissor(0, scissor);
+
+      auto &instantiatedModels = viewData.second.mInstantiatedModels;
+
+      for (auto &shader : mShaders)
       {
-        // We get the submeshes that use the current shader, then draw them.
-        auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
+        auto &pipeline = shader.second->mShader;
 
-        if (mesh.second->GetInstanced())
+        buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+        for (auto &mesh : mMeshes)
         {
-          mRenderingCommandBuffer->bindVertexBuffer(1,
-                                                    mesh.second->mInstanceManager.InstanceBuffer(),
-                                                    0);
-        }
-
-        for (auto it = range.first; it != range.second; ++it)
-        {
-          auto &submesh = it->second;
-
-          mRenderingCommandBuffer->bindVertexBuffer(0,
-                                                    submesh->mVertexBuffer,
-                                                    0);
-
-          mRenderingCommandBuffer->bindIndexBuffer(submesh->mIndexBuffer,
-                                                   0,
-                                                   vk::IndexType::eUint32);
-
-
+          // We get the submeshes that use the current shader, then draw them.
+          auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
           if (mesh.second->GetInstanced())
           {
-            auto data = submesh->mPipelineData;
-            mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                        data.mPipelineLayout,
-                                                        0,
-                                                        data.mDescriptorSet,
-                                                        nullptr);
-
-            mRenderingCommandBuffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                                 1, 
-                                                 0, 
-                                                 0, 
-                                                 0);
+            buffer->bindVertexBuffer(1,
+                                     mesh.second->mInstanceManager.InstanceBuffer(),
+                                     0);
           }
-          else
-          {
-            for (auto &model : mInstantiatedModels[mesh.second.get()])
-            {
-              auto &data = model->mPipelineData[submesh.get()];
-              mRenderingCommandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                                          data.mPipelineLayout,
-                                                          0,
-                                                          data.mDescriptorSet,
-                                                          nullptr);
 
-              mRenderingCommandBuffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                                   1, 
-                                                   0, 
-                                                   0, 
-                                                   0);
+          for (auto it = range.first; it != range.second; ++it)
+          {
+            auto &submesh = it->second;
+
+            buffer->bindVertexBuffer(0,
+                                     submesh->mVertexBuffer,
+                                     0);
+
+            buffer->bindIndexBuffer(submesh->mIndexBuffer,
+                                    0,
+                                    vk::IndexType::eUint32);
+
+
+
+            if (mesh.second->GetInstanced())
+            {
+              auto data = submesh->mPipelineData;
+              buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                         data.mPipelineLayout,
+                                         0,
+                                         data.mDescriptorSet,
+                                         nullptr);
+
+              buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
+                                  1, 
+                                  0, 
+                                  0, 
+                                  0);
+            }
+            else
+            {
+              for (auto &model : instantiatedModels[mesh.second.get()])
+              {
+                auto &data = model->mPipelineData[submesh.get()];
+                buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                           data.mPipelineLayout,
+                                           0,
+                                           data.mDescriptorSet,
+                                           nullptr);
+
+                buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
+                                    1, 
+                                    0, 
+                                    0, 
+                                    0);
+              }
             }
           }
         }
       }
+
+      buffer->endRenderPass();
     }
 
-    mRenderingCommandBuffer->endRenderPass();
-    mRenderingCommandBuffer->end();
-
-    vkhlf::SubmitInfo submit{ { mFrameBufferSwapChain->getPresentSemaphore() },
-                              { vk::PipelineStageFlagBits::eColorAttachmentOutput },
-                              mRenderingCommandBuffer,
-                              mRenderCompleteSemaphore };
+    buffer->end();
+    vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
+                             {vk::PipelineStageFlagBits::eColorAttachmentOutput},
+                             buffer,
+                             mRenderCompleteSemaphore};
 
     mGraphicsQueue->submit(submit);
+
 
     mGraphicsQueue->waitIdle();
   }

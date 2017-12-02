@@ -26,6 +26,11 @@ namespace YTE
 
   void TestComponent::Initialize()
   {
+    String hud{"test"};
+    auto engine = mSpace->GetEngine();
+    auto hudSpace = engine->AddComposition<Space>("HudLevel", engine, nullptr);
+    hudSpace->Load(engine->GetLevel(hud));
+
     auto transform = mOwner->GetComponent<Transform>();
 
     mCurrentPosition = transform->GetTranslation();

@@ -8,6 +8,7 @@
 #ifndef YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
 #define YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
@@ -23,8 +24,8 @@ namespace YTE
   public:
     YTEDeclareType(VkInstantiatedModel);
 
-    VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface);
-    VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface);
+    VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface, GraphicsView *aView);
+    VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
     ~VkInstantiatedModel() override;
 
     void Create();
@@ -42,6 +43,7 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
+    GraphicsView *mView;
 
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
 

@@ -45,35 +45,35 @@ namespace YTE
     YTEUnusedArgument(aSprite);
   }
 
-  std::unique_ptr<InstantiatedModel> Renderer::CreateModel(Window *aWindow,
+  std::unique_ptr<InstantiatedModel> Renderer::CreateModel(GraphicsView *aView,
                                                            std::string &aMeshFile)
   {
-    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aView);
     YTEUnusedArgument(aMeshFile);
 
     return nullptr;
   }
 
-  std::unique_ptr<InstantiatedModel> Renderer::CreateModel(Window *aWindow, Mesh *aMesh)
+  std::unique_ptr<InstantiatedModel> Renderer::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
-    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aView);
     YTEUnusedArgument(aMesh);
     return nullptr;
   }
 
-  Mesh* Renderer::CreateSimpleMesh(Window *aWindow, std::string &aName, std::vector<Submesh> &aSubmeshes)
+  Mesh* Renderer::CreateSimpleMesh(GraphicsView *aView, std::string &aName, std::vector<Submesh> &aSubmeshes)
   {
-    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aView);
     YTEUnusedArgument(aName);
     YTEUnusedArgument(aSubmeshes);
 
     return nullptr;
   }
 
-  void Renderer::UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)
+  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
-    YTEUnusedArgument(aWindow);
     YTEUnusedArgument(aView);
+    YTEUnusedArgument(aUBOView);
   }
 
   void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
@@ -91,20 +91,37 @@ namespace YTE
     YTEUnusedArgument(aEvent);
   }
 
-  glm::vec4 Renderer::GetClearColor(Window *aWindow)
+  glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
   {
-    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aView);
     return glm::vec4{};
   }
 
-  void Renderer::SetClearColor(Window *aWindow, const glm::vec4 &aColor)
+  void Renderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
   {
-    YTEUnusedArgument(aWindow);
+    YTEUnusedArgument(aView);
     YTEUnusedArgument(aColor);
   }
 
   void Renderer::AnimationUpdate(LogicUpdate* aEvent)
   {
     YTEUnusedArgument(aEvent);
+  }
+
+  void Renderer::RegisterView(GraphicsView *aView)
+  {
+    YTEUnusedArgument(aView);
+  }
+
+  void Renderer::DeregisterView(GraphicsView *aView)
+  {
+    YTEUnusedArgument(aView);
+  }
+
+  void Renderer::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aOldOrder);
+    YTEUnusedArgument(aNewOrder);
   }
 }

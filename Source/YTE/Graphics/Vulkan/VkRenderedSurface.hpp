@@ -33,6 +33,23 @@ namespace YTE
   
   class VkRenderedSurface : public EventHandler
   {
+  private:
+    struct ViewData
+    {
+      ViewData() = default;
+      ViewData(ViewData &&aViewData) = default;
+      ViewData& operator= (ViewData &&aViewData) = default;
+
+      // Buffers
+      std::shared_ptr<vkhlf::Buffer> mViewUBO;
+
+      // Engine Side Data
+      glm::vec4 mClearColor;
+      UBOView mViewUBOData;
+      std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
+    };
+
+
   public:
     YTEDeclareType(VkRenderedSurface);
 
@@ -42,7 +59,7 @@ namespace YTE
 
     ~VkRenderedSurface();
 
-    void UpdateSurfaceViewBuffer(UBOView &aView);
+    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
 
@@ -74,14 +91,9 @@ namespace YTE
     /////////////////////////////////
     // Creation / Destruction
     /////////////////////////////////
-    void CreateSpritePipeline();
-
-    std::unique_ptr<InstantiatedSprite> CreateSprite(std::string &aTextureFile);
-    void DestroySprite(std::unique_ptr<VkInstantiatedSprite> aSprite);
-
-    std::unique_ptr<VkInstantiatedModel> CreateModel(std::string &aModelFile);
-    std::unique_ptr<VkInstantiatedModel> CreateModel(Mesh *aMesh);
-    void DestroyModel(VkInstantiatedModel *aModel);
+    std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, std::string &aModelFile);
+    std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
+    void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
 
     VkMesh* CreateMesh(std::string &aFilename);
 
@@ -109,6 +121,9 @@ namespace YTE
     void GraphicsDataUpdate();
     void AnimationUpdate();
 
+    void RegisterView(GraphicsView *aView);
+    void DeregisterView(GraphicsView *aView);
+    void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder);
 
     /////////////////////////////////
     // Getters / Setters
@@ -128,11 +143,6 @@ namespace YTE
       return mSurface;
     }
 
-    glm::vec4 GetClearColor() const
-    {
-      return mClearColor;
-    }
-
     std::shared_ptr<vkhlf::Device>& GetDevice()
     {
       return mDevice;
@@ -148,9 +158,9 @@ namespace YTE
       return mRenderPass;
     }
 
-    std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer()
+    std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer(GraphicsView *aView)
     {
-      return mViewUBO;
+      return GetViewData(aView).mViewUBO;
     }
 
     std::shared_ptr<vkhlf::CommandPool>& GetCommandPool()
@@ -173,14 +183,29 @@ namespace YTE
       mRenderer = aRenderer;
     }
 
-    void SetClearColor(glm::vec4 aColor)
+    glm::vec4 GetClearColor(GraphicsView *aView)
     {
-      mClearColor = aColor;
+      return GetViewData(aView).mClearColor;
     }
 
-    std::vector<VkInstantiatedModel*>& GetInstantiatedModels(VkMesh *aMesh)
+    void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
     {
-      return mInstantiatedModels[aMesh];
+      GetViewData(aView).mClearColor = aColor;
+    }
+
+    std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)
+    {
+      return GetViewData(aView).mInstantiatedModels[aMesh];
+    }
+
+    std::map<std::pair<float, GraphicsView*>, ViewData>& GetViews()
+    {
+      return mViewData;
+    }
+
+    ViewData& GetViewData(GraphicsView *aView)
+    {
+      return mViewData[std::make_pair(aView->GetOrder(), aView)];
     }
 
   private:
@@ -197,23 +222,18 @@ namespace YTE
     std::shared_ptr<vkhlf::RenderPass> mRenderPass;
     std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
     std::shared_ptr<vkhlf::CommandPool> mCommandPool;
-    std::shared_ptr<vkhlf::CommandBuffer> mRenderingCommandBuffer;
+    //std::shared_ptr<vkhlf::CommandBuffer> mRenderingCommandBuffer;
     std::shared_ptr<vkhlf::Device> mDevice;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
-
-    // Buffers
-    std::shared_ptr<vkhlf::Buffer> mViewUBO;
 
     // loaded data
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
-    std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
+    std::map<std::pair<float, GraphicsView*>, ViewData> mViewData;
 
     // Engine Data
-    glm::vec4 mClearColor;
-    UBOView mViewUBOData;
     bool mDataUpdateRequired;
   };
 }

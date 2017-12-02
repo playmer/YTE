@@ -235,7 +235,10 @@ namespace YTE
     }
 
     CreateTransform();
-    mInstantiatedModel = mRenderer->CreateModel(mWindow, mMeshName);
+    auto view = mSpace->GetComponent<GraphicsView>();
+
+    mInstantiatedModel = mRenderer->CreateModel(view, mMeshName);
+
     if (mInstantiatedModel && mTransform)
     {
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
@@ -253,11 +256,11 @@ namespace YTE
     mInstantiatedModel.reset();
   }
 
-  void Model::SetInstanced(bool mInstanced)
+  void Model::SetInstanced(bool aInstanced)
   {
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->SetInstanced(mInstanced);
+      mInstantiatedModel->SetInstanced(aInstanced);
     }
   }
 

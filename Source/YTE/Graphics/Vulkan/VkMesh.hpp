@@ -38,7 +38,8 @@ namespace YTE
 
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
     SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> aUBOModel,
-                                           std::shared_ptr<vkhlf::Buffer> aUBOAnimation);
+                                           std::shared_ptr<vkhlf::Buffer> aUBOAnimation,
+                                           GraphicsView *aView);
 
     std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
     std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
