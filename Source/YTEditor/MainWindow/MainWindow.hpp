@@ -101,8 +101,8 @@ namespace YTEditor
 
     PhysicsHandler& GetPhysicsHandler();
 
+    Gizmo* CreateGizmo(YTE::Space *aSpace);
     Gizmo* RemakeGizmo();
-
     void DeleteGizmo();
 
   private:

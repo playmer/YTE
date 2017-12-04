@@ -41,13 +41,10 @@ namespace YTE
 
     auto it = engine->GetWindows().find(mWindowName);
 
-    if (it != engine->GetWindows().end()) 
+    if (it != engine->GetWindows().end())
     {
       mWindow = it->second.get();
     }
-
-    mConstructing = false;
-    mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
   }
 
   GraphicsView::~GraphicsView()
@@ -57,6 +54,19 @@ namespace YTE
 
   void GraphicsView::Initialize()
   {
+    auto engine = mSpace->GetEngine();
+    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    auto it = engine->GetWindows().find(mWindowName);
+
+    if (it != engine->GetWindows().end())
+    {
+      mWindow = it->second.get();
+    }
+
+    mConstructing = false;
+    mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
+
     mRenderer->RegisterView(this);
     SetClearColor(mClearColor);
   }

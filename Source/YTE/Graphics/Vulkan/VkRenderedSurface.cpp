@@ -461,18 +461,18 @@ namespace YTE
 
   void VkRenderedSurface::PresentFrame()
   {
-    try
-    {
-      mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
-    }
-    catch (...)
-    {
-      // create Framebuffer & Swapchain
-      WindowResize event;
-      event.height = mWindow->GetHeight();
-      event.width = mWindow->GetWidth();
-      ResizeEvent(&event);
-    }
+    //try
+    //{
+    //  mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
+    //}
+    //catch (...)
+    //{
+    //  // create Framebuffer & Swapchain
+    //  WindowResize event;
+    //  event.height = mWindow->GetHeight();
+    //  event.width = mWindow->GetWidth();
+    //  ResizeEvent(&event);
+    //}
   }
 
   void VkRenderedSurface::GraphicsDataUpdate()
@@ -648,14 +648,37 @@ namespace YTE
 
       buffer->endRenderPass();
       buffer->end();
+
+      
+
+      vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
+                                {vk::PipelineStageFlagBits::eColorAttachmentOutput},
+                                buffer,
+                                mRenderCompleteSemaphore};
+
+      mGraphicsQueue->submit(submit);
     }
 
-    vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
-                              {vk::PipelineStageFlagBits::eColorAttachmentOutput},
-                              buffer,
-                              mRenderCompleteSemaphore};
 
-    mGraphicsQueue->submit(submit);
+
+
+
+
+
+
+
+    try
+    {
+      mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
+    }
+    catch (...)
+    {
+      // create Framebuffer & Swapchain
+      WindowResize event;
+      event.height = mWindow->GetHeight();
+      event.width = mWindow->GetWidth();
+      ResizeEvent(&event);
+    }
 
     mGraphicsQueue->waitIdle();
   }
