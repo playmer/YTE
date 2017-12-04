@@ -47,6 +47,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Utilities/Utilities.h"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -359,12 +360,13 @@ namespace YTEditor
       mRunningSpace->Update(0.0f);
 
       auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
-      if (!graphicsView) 
-      {
-        graphicsView = mRunningSpace->AddComponent<YTE::GraphicsView>();
-      }
       graphicsView->ChangeWindow("YTEditor Play Window");
+
       auto window = graphicsView->GetWindow();
+      window->mShouldBeRenderedTo = true;
+
+      auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+      renderer->RegisterWindowForDraw(window);
 
       mRunningWindow = new SubWindow(window, this);
       auto widget = createWindowContainer(mRunningWindow);

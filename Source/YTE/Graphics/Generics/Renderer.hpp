@@ -24,6 +24,7 @@ namespace YTE
     YTEDeclareType(Renderer);
 
     virtual ~Renderer();
+    virtual void RegisterWindowForDraw(Window *aWindow);
     virtual std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow,
                                                              std::string &aTextureFile);
 

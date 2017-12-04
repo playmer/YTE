@@ -21,6 +21,8 @@ namespace YTE
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
 
+    void RegisterWindowForDraw(Window *aWindow) override;
+
     std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow, std::string &aTextureFile) override;
     void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite) override;
 

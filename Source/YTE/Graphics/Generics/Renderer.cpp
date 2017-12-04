@@ -20,6 +20,11 @@ namespace YTE
 
   }
 
+  void Renderer::RegisterWindowForDraw(Window *aWindow)
+  {
+    YTEUnusedArgument(aWindow);
+  }
+
   std::unique_ptr<InstantiatedSprite> Renderer::CreateSprite(Window *aWindow,
                                                              std::string &aTextureFile)
   {
