@@ -87,6 +87,7 @@ int main(int argc, char *argv[])
   
   // add an empty composition to represent the new level
   YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
+  newLevel->SetPaused(true);
   
   YTE::String camName{ "Camera" };
   

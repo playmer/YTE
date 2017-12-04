@@ -56,6 +56,7 @@ namespace YTE
     mTextureName = "skybox_cubemap.png";
 
     DeserializeByType<Skybox*>(aProperties, this, Skybox::GetStaticType());
+    mConstructing = true;
   }
 
   Skybox::~Skybox()

@@ -84,7 +84,7 @@ namespace YTE
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.
-  void Space::Load(RSValue *aLevel)
+  void Space::Load(RSValue *aLevel, bool aInitialize)
   {
     mCompositions.Clear();
     mComponents.Clear();
@@ -98,7 +98,10 @@ namespace YTE
       printf("We could not deserialize the level provided.\n");
     }
       
-    Initialize();
+    if (aInitialize)
+    {
+      Initialize();
+    }
       
     mLoading = false;
   }

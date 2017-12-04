@@ -355,18 +355,17 @@ namespace YTEditor
       */
 
       mRunningEngine->AddWindow("YTEditor Play Window");
-      mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, &value);
-      mRunningSpace->Load(&value);
-      mRunningSpace->Update(0.0f);
+      mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
+      mRunningSpace->Load(&value, false);
 
       auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
       graphicsView->ChangeWindow("YTEditor Play Window");
+
 
       auto window = graphicsView->GetWindow();
       window->mShouldBeRenderedTo = true;
 
       auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-      renderer->RegisterWindowForDraw(window);
 
       mRunningWindow = new SubWindow(window, this);
       auto widget = createWindowContainer(mRunningWindow);
@@ -375,6 +374,10 @@ namespace YTEditor
       auto id = mRunningWindow->winId();
 
       window->SetWindowId(reinterpret_cast<void*>(id));
+      renderer->RegisterWindowForDraw(window);
+
+      mRunningSpace->Initialize();
+      mRunningSpace->Update(0.0f);
     }
   }
 

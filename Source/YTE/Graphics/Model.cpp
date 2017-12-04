@@ -98,10 +98,6 @@ namespace YTE
     , mConstructing(true)
     , mInstanced(false)
   {
-    mEngine = aSpace->GetEngine();
-    mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    mWindow = aSpace->GetComponent<GraphicsView>()->GetWindow();
-
     DeserializeByType<Model*>(aProperties, this, Model::GetStaticType());
   }
 
@@ -116,6 +112,10 @@ namespace YTE
 
   void Model::Initialize()
   {
+    mEngine = mSpace->GetEngine();
+    mRenderer = mSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
+
     mOwner->YTERegister(Events::PositionChanged, this, &Model::TransformUpdate);
     mOwner->YTERegister(Events::RotationChanged, this, &Model::TransformUpdate);
     mOwner->YTERegister(Events::ScaleChanged, this, &Model::TransformUpdate);

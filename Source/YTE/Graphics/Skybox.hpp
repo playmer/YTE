@@ -30,7 +30,11 @@ namespace YTE
       if (aTexture != mTextureName)
       {
         mTextureName = aTexture;
-        CreateSkybox();
+
+        if (false == mConstructing)
+        {
+          CreateSkybox();
+        }
       }
     }
 
@@ -46,5 +50,6 @@ namespace YTE
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSkybox;
+    bool mConstructing = true;
   };
 }
