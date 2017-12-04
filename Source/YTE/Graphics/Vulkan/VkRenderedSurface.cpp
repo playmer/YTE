@@ -80,7 +80,8 @@ namespace YTE
     vk::AttachmentDescription colorAttachment{{},
                                               mColorFormat,
                                               vk::SampleCountFlagBits::e1,
-                                              vk::AttachmentLoadOp::eClear,
+                                              vk::AttachmentLoadOp::eLoad,
+                                              //vk::AttachmentLoadOp::eClear,
                                               vk::AttachmentStoreOp::eStore, // color
                                               vk::AttachmentLoadOp::eDontCare,
                                               vk::AttachmentStoreOp::eDontCare, // stencil
@@ -115,7 +116,29 @@ namespace YTE
                                    0,
                                    nullptr };
 
-    mRenderPass = mDevice->createRenderPass(attachmentDescriptions, subpass, nullptr);
+    std::array<vk::SubpassDependency, 2> subpassDependencies;
+
+    // Transition from final to initial (VK_SUBPASS_EXTERNAL refers to all commmands executed outside of the actual renderpass)
+    subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependencies[0].dstSubpass = 0;
+    subpassDependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+    subpassDependencies[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    subpassDependencies[0].srcAccessMask = vk::AccessFlagBits::eMemoryRead;
+    subpassDependencies[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
+                                           vk::AccessFlagBits::eColorAttachmentWrite;
+    subpassDependencies[0].dependencyFlags = vk::DependencyFlagBits::eByRegion;
+
+    // Transition from initial to final
+    subpassDependencies[1].srcSubpass = 0;
+    subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+    subpassDependencies[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    subpassDependencies[1].dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+    subpassDependencies[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
+                                           vk::AccessFlagBits::eColorAttachmentWrite;
+    subpassDependencies[1].dstAccessMask = vk::AccessFlagBits::eMemoryRead;
+    subpassDependencies[1].dependencyFlags = vk::DependencyFlagBits::eByRegion;
+
+    mRenderPass = mDevice->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
 
     mRenderCompleteSemaphore = mDevice->createSemaphore();
 
@@ -502,12 +525,13 @@ namespace YTE
 
     // TODO: (CBO) A cbo is created here, stop this
     auto buffer = mCommandPool->allocateCommandBuffer();
-    buffer->begin();
 
-    //bool check = false;
-
+    bool check = true;
+    
     for (auto &viewData : mViewData)
     {
+      buffer->begin();
+
       std::array<float, 4> colorValues;
       colorValues[0] = viewData.second.mClearColor.r;
       colorValues[1] = viewData.second.mClearColor.g;
@@ -516,16 +540,6 @@ namespace YTE
 
       vk::ClearValue color{colorValues};
       vk::ClearDepthStencilValue depthStensil{1.0f, 0};
-
-      //if (false == check)
-      //{
-      //  depthStensil = vk::ClearDepthStencilValue(1.0f, 0);
-      //  check = true;
-      //}
-      //else
-      //{
-      //  depthStensil = vk::ClearDepthStencilValue(-107374176.f, 3435973836);
-      //}
 
       auto &extent = mFrameBufferSwapChain->getExtent();
 
@@ -544,6 +558,15 @@ namespace YTE
 
       vk::Rect2D scissor{ { 0, 0 }, extent };
       buffer->setScissor(0, scissor);
+
+      if (check)
+      {
+        buffer->clearColorImage(mFrameBufferSwapChain->getColorImage(), 
+                                vk::ImageLayout::eColorAttachmentOptimal, 
+                                vk::ClearColorValue(colorValues));
+
+        check = false;
+      }
 
       auto &instantiatedModels = viewData.second.mInstantiatedModels;
 
@@ -624,16 +647,15 @@ namespace YTE
       }
 
       buffer->endRenderPass();
+      buffer->end();
     }
 
-    buffer->end();
     vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
-                             {vk::PipelineStageFlagBits::eColorAttachmentOutput},
-                             buffer,
-                             mRenderCompleteSemaphore};
+                              {vk::PipelineStageFlagBits::eColorAttachmentOutput},
+                              buffer,
+                              mRenderCompleteSemaphore};
 
     mGraphicsQueue->submit(submit);
-
 
     mGraphicsQueue->waitIdle();
   }
