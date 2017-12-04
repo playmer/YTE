@@ -155,7 +155,6 @@ namespace YTE
     auto graphicsView = AddComponent<GraphicsView>();
     graphicsView->ChangeWindow("Yours Truly Engine");
     auto camera = AddComposition<Composition>("Camera", mEngine, this);
-    camera->GetName() = "Camera";
     camera->SetOwner(this);
     camera->AddComponent<Camera>();
     camera->AddComponent<Orientation>();

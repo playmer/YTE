@@ -485,7 +485,7 @@ namespace YTE
   }
 
 
-  Composition* Composition::FindFirstCompositionByName(String &aName)
+  Composition* Composition::FindFirstCompositionByName(String const &aName)
   {
     auto iterator = mCompositions.FindFirst(aName);
 
@@ -497,7 +497,7 @@ namespace YTE
     return nullptr;
   }
 
-  Composition* Composition::FindLastCompositionByName(String &aName)
+  Composition* Composition::FindLastCompositionByName(String const &aName)
   {
     auto iterator = mCompositions.FindLast(aName);
 
@@ -509,7 +509,7 @@ namespace YTE
     return nullptr;
   }
 
-  CompositionMap::range Composition::FindAllCompositionsByName(String &aName)
+  CompositionMap::range Composition::FindAllCompositionsByName(String const &aName)
   {
     auto compositions = mCompositions.FindAll(aName);
     return compositions;
@@ -767,25 +767,21 @@ namespace YTE
   {
     CompositionMap *compositionMap = GetParent()->GetCompositions();
 
-    auto firstOfName = compositionMap->FindFirst(mName);
-
-    if (mName == "")
+    auto range = compositionMap->FindAll(mName);
+    
+    for (auto it = range.begin(); it < range.end(); ++it)
     {
-      firstOfName = compositionMap->begin();
-    }
-
-    while (true)
-    {
-      if (firstOfName->second.get() == this)
+      if (this == it->second.get())
       {
-        compositionMap->ChangeKey(firstOfName, aName);
-        break;
+        compositionMap->ChangeKey(it, aName);
+        mName = aName;
+        return;
       }
-
-      ++firstOfName;
     }
 
-    mName = aName;
+    printf("Had an issue changing a composition named %s to be named %s\n", 
+           mName.c_str(), 
+           aName.c_str());
   }
 
   void Composition::SetArchetypeName(String &aArchName)

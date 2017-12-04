@@ -189,9 +189,9 @@ namespace YTE
     Component* AddComponent(BoundType *aType);
     Component* AddComponent(BoundType *aType, RSValue *aProperties);
 
-    Composition* FindFirstCompositionByName(String &aName);
-    Composition* FindLastCompositionByName(String &aName);
-    CompositionMap::range FindAllCompositionsByName(String &aName);
+    Composition* FindFirstCompositionByName(String const &aName);
+    Composition* FindLastCompositionByName(String const &aName);
+    CompositionMap::range FindAllCompositionsByName(String const &aName);
 
     Composition* GetOwner() { return mOwner; };
     void SetOwner(Composition *aOwner);
@@ -199,7 +199,7 @@ namespace YTE
     void ReParent(Composition *aNewParent = nullptr);
     Composition* GetUniverseOrSpaceOrEngine();
 
-    String& GetName() { return mName; };
+    String const& GetName() const { return mName; };
     void SetName(String &aName);
 
     ComponentMap* GetComponents() { return &mComponents; };
@@ -225,7 +225,6 @@ namespace YTE
 
     Engine *mEngine;
     Space *mSpace;
-    String mName;
 
     bool mShouldSerialize;
     bool mShouldIntialize;
@@ -237,6 +236,8 @@ namespace YTE
     GlobalUniqueIdentifier mGUID;
 
   private:
+    String mName;
+
     Composition *mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;

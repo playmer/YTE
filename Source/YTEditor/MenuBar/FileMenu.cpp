@@ -204,7 +204,7 @@ namespace YTEditor
 
     auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
 
-    spaceComp->GetName() = yteFile;
+    spaceComp->SetName(yteFile);
 
     static_cast<YTE::Space*>(spaceComp)->SaveLevel(yteFile);
   }

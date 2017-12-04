@@ -80,8 +80,8 @@ namespace YTE
     vk::AttachmentDescription colorAttachment{{},
                                               mColorFormat,
                                               vk::SampleCountFlagBits::e1,
-                                              vk::AttachmentLoadOp::eLoad,
-                                              //vk::AttachmentLoadOp::eClear,
+                                              //vk::AttachmentLoadOp::eLoad,
+                                              vk::AttachmentLoadOp::eClear,
                                               vk::AttachmentStoreOp::eStore, // color
                                               vk::AttachmentLoadOp::eDontCare,
                                               vk::AttachmentStoreOp::eDontCare, // stencil
@@ -649,8 +649,6 @@ namespace YTE
       buffer->endRenderPass();
       buffer->end();
 
-      
-
       vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
                                 {vk::PipelineStageFlagBits::eColorAttachmentOutput},
                                 buffer,
@@ -658,14 +656,6 @@ namespace YTE
 
       mGraphicsQueue->submit(submit);
     }
-
-
-
-
-
-
-
-
 
     try
     {
