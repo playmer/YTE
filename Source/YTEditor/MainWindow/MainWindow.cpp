@@ -126,11 +126,7 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-
-    mGizmo = new Gizmo(this);
-    mGizmo->SetRenderingWindow(yteWin);
-    mGizmo->mGizmoObj = lvl->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
-    mGizmo->SetMode(Gizmo::Select);
+    CreateGizmo(lvl);
   }
 
   MainWindow::~MainWindow()
@@ -480,6 +476,10 @@ namespace YTEditor
   Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
   {
     auto gizmo = RemakeGizmo();
+
+    // get the window
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    gizmo->SetRenderingWindow(yteWin);
 
     gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo", 
                                                         "Gizmo", 
