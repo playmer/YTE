@@ -373,7 +373,10 @@ namespace YTEditor
 
   void MainWindow::PauseLevel(bool pauseState)
   {
-    mRunningSpace->SetPaused(pauseState);
+    if (mRunningSpace)
+    {
+      mRunningSpace->SetPaused(pauseState);
+    }
   }
 
   void MainWindow::StopLevel()
