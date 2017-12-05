@@ -527,11 +527,11 @@ namespace YTE
     auto buffer = mCommandPool->allocateCommandBuffer();
 
     bool check = true;
+    buffer->begin();
+
     
     for (auto &viewData : mViewData)
     {
-      buffer->begin();
-
       std::array<float, 4> colorValues;
       colorValues[0] = viewData.second.mClearColor.r;
       colorValues[1] = viewData.second.mClearColor.g;
@@ -647,15 +647,15 @@ namespace YTE
       }
 
       buffer->endRenderPass();
-      buffer->end();
-
-      vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
-                                {vk::PipelineStageFlagBits::eColorAttachmentOutput},
-                                buffer,
-                                mRenderCompleteSemaphore};
-
-      mGraphicsQueue->submit(submit);
     }
+    buffer->end();
+
+    vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
+                              {vk::PipelineStageFlagBits::eColorAttachmentOutput},
+                              buffer,
+                              mRenderCompleteSemaphore};
+
+    mGraphicsQueue->submit(submit);
 
     try
     {
