@@ -254,6 +254,7 @@ namespace YTE
 
   Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
+    mComposition->mName = aObjectName;
     auto &composition = mCompositions.Emplace(aObjectName, std::move(mComposition))->second;
     if (aSerialization)
     {

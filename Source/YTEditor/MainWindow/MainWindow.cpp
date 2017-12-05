@@ -383,7 +383,7 @@ namespace YTEditor
     }
     auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
     auto window = mRunningSpace->GetComponent<YTE::GraphicsView>()->GetWindow();
-    
+    window->mShouldBeRenderedTo = false;
     renderer->DeregisterWindowFromDraw(window);
     mCentralTabs->removeTab(runningWindowWidgetId);
     // deleteWindowContainer(mRunningWindow) ???
