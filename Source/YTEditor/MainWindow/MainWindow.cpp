@@ -336,57 +336,65 @@ namespace YTEditor
 
   void MainWindow::PlayLevel()
   {
-    if (!mRunningSpace) 
+    if (mRunningSpace)
     {
-      YTE::RSAllocator allocator;
-      auto mainSession = GetMainSession();
-      auto value = mainSession->Serialize(allocator);
-
-      /* For debugging but can also be used with commented out code below
-      YTE::RSStringBuffer sb;
-      YTE::RSPrettyWriter writer(sb);
-      value.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
-      std::string levelInJson = sb.GetString();
-      */
-
-      /* tried this in hopes that it might work (combined with above and replace &value below with &document. didn't work
-      YTE::RSDocument document;
-      document.Parse(levelInJson.c_str());
-      */
-
-      mRunningEngine->AddWindow("YTEditor Play Window");
-      mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
-      mRunningSpace->Load(&value, false);
-
-      auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
-      graphicsView->ChangeWindow("YTEditor Play Window");
-
-
-      auto window = graphicsView->GetWindow();
-      window->mShouldBeRenderedTo = true;
-
-      auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-
-      mRunningWindow = new SubWindow(window, this);
-      auto widget = createWindowContainer(mRunningWindow);
-      mCentralTabs->addTab(widget, "Game");
-
-      auto id = mRunningWindow->winId();
-
-      window->SetWindowId(reinterpret_cast<void*>(id));
-      renderer->RegisterWindowForDraw(window);
-
-      mRunningSpace->Initialize();
-      mRunningSpace->Update(0.0f);
+      return;
     }
+
+    YTE::RSAllocator allocator;
+    auto mainSession = GetMainSession();
+    auto value = mainSession->Serialize(allocator);
+
+    mRunningEngine->AddWindow("YTEditor Play Window");
+    mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
+    mRunningSpace->Load(&value, false);
+
+    auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
+    graphicsView->ChangeWindow("YTEditor Play Window");
+
+
+    auto window = graphicsView->GetWindow();
+    window->mShouldBeRenderedTo = true;
+
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+
+    mRunningWindow = new SubWindow(window, this);
+    auto widget = createWindowContainer(mRunningWindow);
+    runningWindowWidgetId = mCentralTabs->addTab(widget, "Game");
+
+    auto id = mRunningWindow->winId();
+
+    window->SetWindowId(reinterpret_cast<void*>(id));
+    renderer->RegisterWindowForDraw(window);
+
+    mRunningSpace->Initialize();
+    mRunningSpace->Update(0.0f);
   }
 
   void MainWindow::PauseLevel(bool pauseState)
   {
+    mRunningSpace->SetPaused(pauseState);
   }
 
   void MainWindow::StopLevel()
   {
+    if (!mRunningSpace) {
+      return;
+    }
+    auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    
+    renderer->DeregisterWindowFromDraw(graphicsView->GetWindow());
+    mCentralTabs->removeTab(runningWindowWidgetId);
+    // deleteWindowContainer(mRunningWindow) ???
+    if (mRunningWindow) {
+      delete mRunningWindow;
+    }
+
+    // mEngine->RemoveWindow("Y.asdfa");
+
+    mRunningSpace->Remove();
+    mRunningSpace = nullptr;
   }
 
   void MainWindow::CreateBlankLevel(const YTE::String &aLevelName)

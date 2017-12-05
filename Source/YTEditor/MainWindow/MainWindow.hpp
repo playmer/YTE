@@ -138,6 +138,7 @@ namespace YTEditor
     SubWindow *mGameWindow;
     SubWindow *mLevelWindow;
     SubWindow *mRunningWindow;
+    int runningWindowWidgetId;
 
     std::vector<SubWindow*> mSubWindows;
 
