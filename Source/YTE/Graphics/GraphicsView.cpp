@@ -45,6 +45,8 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
+
+    mRenderer->RegisterView(this);
   }
 
   GraphicsView::~GraphicsView()
@@ -67,7 +69,6 @@ namespace YTE
     mConstructing = false;
     mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
 
-    mRenderer->RegisterView(this);
     SetClearColor(mClearColor);
   }
 

@@ -80,8 +80,8 @@ namespace YTE
     vk::AttachmentDescription colorAttachment{{},
                                               mColorFormat,
                                               vk::SampleCountFlagBits::e1,
-                                              //vk::AttachmentLoadOp::eLoad,
-                                              vk::AttachmentLoadOp::eClear,
+                                              vk::AttachmentLoadOp::eLoad,
+                                              //vk::AttachmentLoadOp::eClear,
                                               vk::AttachmentStoreOp::eStore, // color
                                               vk::AttachmentLoadOp::eDontCare,
                                               vk::AttachmentStoreOp::eDontCare, // stencil
@@ -526,7 +526,7 @@ namespace YTE
     // TODO: (CBO) A cbo is created here, stop this
     auto buffer = mCommandPool->allocateCommandBuffer();
 
-    bool check = true;
+    bool first = true;
     buffer->begin();
 
     
@@ -559,13 +559,19 @@ namespace YTE
       vk::Rect2D scissor{ { 0, 0 }, extent };
       buffer->setScissor(0, scissor);
 
-      if (check)
+      buffer->clearDepthStencilImage(mFrameBufferSwapChain->getDepthImage(),
+                                     vk::ImageLayout::eDepthStencilAttachmentOptimal,
+                                     1.0f,
+                                     0,
+                                     {{vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1}});
+
+      if (first)
       {
         buffer->clearColorImage(mFrameBufferSwapChain->getColorImage(), 
                                 vk::ImageLayout::eColorAttachmentOptimal, 
                                 vk::ClearColorValue(colorValues));
 
-        check = false;
+        first = false;
       }
 
       auto &instantiatedModels = viewData.second.mInstantiatedModels;
