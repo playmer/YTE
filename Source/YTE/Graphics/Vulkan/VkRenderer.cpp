@@ -91,6 +91,11 @@ namespace YTE
     }
   }
 
+  void VkRenderer::DeregisterWindowFromDraw(Window * aWindow)
+  {
+    mSurfaces.erase(aWindow);
+  }
+
 
   std::unique_ptr<InstantiatedSprite> VkRenderer::CreateSprite(Window *aWindow, std::string &aTextureFile)
   {

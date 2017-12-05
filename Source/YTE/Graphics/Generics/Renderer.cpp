@@ -25,6 +25,11 @@ namespace YTE
     YTEUnusedArgument(aWindow);
   }
 
+  void Renderer::DeregisterWindowFromDraw(Window * aWindow)
+  {
+    YTEUnusedArgument(aWindow);
+  }
+
   std::unique_ptr<InstantiatedSprite> Renderer::CreateSprite(Window *aWindow,
                                                              std::string &aTextureFile)
   {
