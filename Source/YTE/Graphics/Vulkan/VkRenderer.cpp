@@ -78,6 +78,24 @@ namespace YTE
     mSurfaces.clear();
   }
 
+  void VkRenderer::RegisterWindowForDraw(Window *aWindow)
+  {
+    DebugAssert(aWindow, "Cannot create a vk rendered surface for a null window");
+    if (aWindow && aWindow->mShouldBeRenderedTo)
+    {
+      auto surface = mVulkanInternals->CreateSurface(aWindow);
+      mSurfaces.emplace(aWindow,
+        std::make_unique<VkRenderedSurface>(aWindow,
+          this,
+          surface));
+    }
+  }
+
+  void VkRenderer::DeregisterWindowFromDraw(Window * aWindow)
+  {
+    mSurfaces.erase(aWindow);
+  }
+
 
   std::unique_ptr<InstantiatedSprite> VkRenderer::CreateSprite(Window *aWindow, std::string &aTextureFile)
   {

@@ -47,6 +47,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Utilities/Utilities.h"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -87,8 +88,10 @@ namespace YTEditor
     mOutputConsole(nullptr),
     mRunningSpaceName(""),
     mRunningLevelName(""),
+    mRunningSpace(nullptr),
     mUndoRedo(new UndoRedo()),
-    mGizmo(nullptr)
+    mGizmo(nullptr),
+    mRunningWindow(nullptr)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -329,6 +332,69 @@ namespace YTEditor
   YTE::String& MainWindow::GetRunningSpaceName()
   {
     return mRunningSpaceName;
+  }
+
+  void MainWindow::PlayLevel()
+  {
+    if (mRunningSpace)
+    {
+      return;
+    }
+
+    YTE::RSAllocator allocator;
+    auto mainSession = GetMainSession();
+    auto value = mainSession->Serialize(allocator);
+
+    mRunningEngine->AddWindow("YTEditor Play Window");
+    mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
+    mRunningSpace->Load(&value, false);
+
+    auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
+    graphicsView->ChangeWindow("YTEditor Play Window");
+
+
+    auto window = graphicsView->GetWindow();
+    window->mShouldBeRenderedTo = true;
+
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+
+    mRunningWindow = new SubWindow(window, this);
+    auto widget = createWindowContainer(mRunningWindow);
+    runningWindowWidgetId = mCentralTabs->addTab(widget, "Game");
+
+    auto id = mRunningWindow->winId();
+
+    window->SetWindowId(reinterpret_cast<void*>(id));
+    renderer->RegisterWindowForDraw(window);
+
+    mRunningSpace->Initialize();
+    mRunningSpace->Update(0.0f);
+  }
+
+  void MainWindow::PauseLevel(bool pauseState)
+  {
+    mRunningSpace->SetPaused(pauseState);
+  }
+
+  void MainWindow::StopLevel()
+  {
+    if (!mRunningSpace) {
+      return;
+    }
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    auto window = mRunningSpace->GetComponent<YTE::GraphicsView>()->GetWindow();
+    window->mShouldBeRenderedTo = false;
+    renderer->DeregisterWindowFromDraw(window);
+    mCentralTabs->removeTab(runningWindowWidgetId);
+    // deleteWindowContainer(mRunningWindow) ???
+    if (mRunningWindow) {
+      delete mRunningWindow;
+    }
+
+    mRunningEngine->RemoveWindow(window);
+
+    mRunningEngine->RemoveComposition(mRunningSpace);
+    mRunningSpace = nullptr;
   }
 
   void MainWindow::CreateBlankLevel(const YTE::String &aLevelName)

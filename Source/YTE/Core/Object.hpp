@@ -34,7 +34,7 @@ namespace YTE
         return nullptr;
       }
 
-      Property *toReturn = aType->GetFirstProperty(aName);;
+      Property *toReturn = aType->GetFirstProperty(aName);
 
       if (toReturn == nullptr)
       {

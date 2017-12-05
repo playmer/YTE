@@ -181,6 +181,18 @@ namespace YTE
     }
   }
 
+  void Engine::RemoveWindow(Window * aWindow)
+  {
+    for (auto it = mWindows.begin(); it != mWindows.end(); ++it) 
+    {
+      if (it->second.get() == aWindow)
+      {
+        mWindows.erase(it);
+        return;
+      }
+    }
+  }
+
   void Engine::Initialize()
   {
     if (mShouldIntialize == false)

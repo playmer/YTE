@@ -73,6 +73,7 @@ namespace YTE
     void Deserialize(RSValue *aValue);
 
     Window* AddWindow(const char *aName);
+    void RemoveWindow(Window *aWindow);
 
     bool KeepRunning() const { return mShouldRun; };
 

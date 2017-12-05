@@ -5,6 +5,7 @@
 #include "YTE/Core/AssetLoader.hpp"
 
 #include "YTEditor/GameWindow/GameToolbar.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/ToolbarButton.hpp"
 
 YTEditor::GameToolbar::GameToolbar(MainWindow * aMainWindow) : Toolbar(aMainWindow)
@@ -36,22 +37,16 @@ void YTEditor::GameToolbar::PlayToggled(bool checked)
 {
   if (checked)
   {
-
+    mMainWindow->PlayLevel();
   }
 }
 
 void YTEditor::GameToolbar::PauseToggled(bool checked)
 {
-  if (checked)
-  {
-
-  }
-  else
-  {
-
-  }
+  mMainWindow->PauseLevel(checked);
 }
 
 void YTEditor::GameToolbar::StopPressed()
 {
+  mMainWindow->StopLevel();
 }
