@@ -137,8 +137,9 @@ namespace YTEditor
     QTabWidget *mCentralTabs;
     SubWindow *mGameWindow;
     SubWindow *mLevelWindow;
+
+    QWidget *mRunningWindowTab;
     SubWindow *mRunningWindow;
-    int runningWindowWidgetId;
 
     std::vector<SubWindow*> mSubWindows;
 

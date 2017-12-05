@@ -359,8 +359,8 @@ namespace YTEditor
     auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
 
     mRunningWindow = new SubWindow(window, this);
-    auto widget = createWindowContainer(mRunningWindow);
-    runningWindowWidgetId = mCentralTabs->addTab(widget, "Game");
+    mRunningWindowTab = createWindowContainer(mRunningWindow);
+    mCentralTabs->addTab(mRunningWindowTab, "Game");
 
     auto id = mRunningWindow->winId();
 
@@ -373,7 +373,10 @@ namespace YTEditor
 
   void MainWindow::PauseLevel(bool pauseState)
   {
-    mRunningSpace->SetPaused(pauseState);
+    if (mRunningSpace)
+    {
+      mRunningSpace->SetPaused(pauseState);
+    }
   }
 
   void MainWindow::StopLevel()
@@ -383,17 +386,21 @@ namespace YTEditor
     }
     auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
     auto window = mRunningSpace->GetComponent<YTE::GraphicsView>()->GetWindow();
+
+    mRunningEngine->RemoveComposition(mRunningSpace);
+    mRunningEngine->Update();
+
     window->mShouldBeRenderedTo = false;
     renderer->DeregisterWindowFromDraw(window);
-    mCentralTabs->removeTab(runningWindowWidgetId);
-    // deleteWindowContainer(mRunningWindow) ???
-    if (mRunningWindow) {
-      delete mRunningWindow;
-    }
+
+    int runningIndex = mCentralTabs->indexOf(mRunningWindowTab);
+    mCentralTabs->removeTab(runningIndex);
+
+    delete mRunningWindowTab;
+    mRunningWindowTab = nullptr;
 
     mRunningEngine->RemoveWindow(window);
 
-    mRunningEngine->RemoveComposition(mRunningSpace);
     mRunningSpace = nullptr;
   }
 

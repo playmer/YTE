@@ -120,18 +120,19 @@ namespace YTE
     else
     {
       cFullScreenWindows->insert(std::make_pair(mHandle, (int)1));
+
       // NOTE: Be careful not to activate any windows here (for example, calling
       // ShowWindow(SW_HIDE) will automatically activate another window).  This
       // code can be called while a window is being deactivated, and activating
       // another window will screw up the activation that is already in progress.
       SetWindowPos(mHandle,
-        NULL,
-        0,
-        0,
-        0,
-        0,
-        SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
-        SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
+                   NULL,
+                   0,
+                   0,
+                   0,
+                   0,
+                   SWP_HIDEWINDOW | SWP_NOACTIVATE | SWP_NOMOVE |
+                   SWP_NOREPOSITION | SWP_NOSIZE | SWP_NOZORDER);
     }
   }
 
@@ -139,9 +140,8 @@ namespace YTE
   {
     std::map<HWND, int>::iterator it = cFullScreenWindows->find(mHandle);
 
-
     DebugObjection((it == cFullScreenWindows->end()),
-      "Destructing window doesn't exist!");
+                   "Destructing window doesn't exist!");
 
     if (--it->second == 0)
     {
