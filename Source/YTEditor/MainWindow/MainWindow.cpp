@@ -359,8 +359,8 @@ namespace YTEditor
     auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
 
     mRunningWindow = new SubWindow(window, this);
-    auto widget = createWindowContainer(mRunningWindow);
-    runningWindowWidgetId = mCentralTabs->addTab(widget, "Game");
+    mRunningWindowTab = createWindowContainer(mRunningWindow);
+    mCentralTabs->addTab(mRunningWindowTab, "Game");
 
     auto id = mRunningWindow->winId();
 
@@ -392,13 +392,12 @@ namespace YTEditor
 
     window->mShouldBeRenderedTo = false;
     renderer->DeregisterWindowFromDraw(window);
-    mCentralTabs->removeTab(runningWindowWidgetId);
-    // deleteWindowContainer(mRunningWindow) ???
 
-    if (mRunningWindow)
-    {
-      delete mRunningWindow;
-    }
+    int runningIndex = mCentralTabs->indexOf(mRunningWindowTab);
+    mCentralTabs->removeTab(runningIndex);
+
+    delete mRunningWindowTab;
+    mRunningWindowTab = nullptr;
 
     mRunningEngine->RemoveWindow(window);
 
