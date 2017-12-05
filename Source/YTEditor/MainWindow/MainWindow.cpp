@@ -381,19 +381,19 @@ namespace YTEditor
     if (!mRunningSpace) {
       return;
     }
-    auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();
     auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    auto window = mRunningSpace->GetComponent<YTE::GraphicsView>()->GetWindow();
     
-    renderer->DeregisterWindowFromDraw(graphicsView->GetWindow());
+    renderer->DeregisterWindowFromDraw(window);
     mCentralTabs->removeTab(runningWindowWidgetId);
     // deleteWindowContainer(mRunningWindow) ???
     if (mRunningWindow) {
       delete mRunningWindow;
     }
 
-    // mEngine->RemoveWindow("Y.asdfa");
+    mRunningEngine->RemoveWindow(window);
 
-    mRunningSpace->Remove();
+    mRunningEngine->RemoveComposition(mRunningSpace);
     mRunningSpace = nullptr;
   }
 
