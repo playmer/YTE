@@ -217,6 +217,11 @@ namespace YTEditor
     //}
   }
 
+  YTE::Space* MainWindow::GetEditingLevel()
+  {
+    return mEditingLevel;
+  }
+
   SubWindow& MainWindow::GetLevelWindow()
   {
     return *mLevelWindow;
@@ -483,16 +488,19 @@ namespace YTEditor
 
     if (aEvent->modifiers() == Qt::Modifier::CTRL)
     {
+      // undo
       if (aEvent->key() == Qt::Key_Z)
       {
         //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Z");
         mUndoRedo->ExecuteUndo();
       }
+      // redo
       else if (aEvent->key() == Qt::Key_Y)
       {
         //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Y");
         mUndoRedo->ExecuteRedo();
       }
+      // save level
       else if (aEvent->key() == Qt::Key_S)
       {
         SaveCurrentLevel();
@@ -500,13 +508,20 @@ namespace YTEditor
 
       if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
       {
-        if (aEvent->key() == Qt::Key_D)
+        // increase gizmo scale factor
+        if (aEvent->key() == Qt::Key_E)
         {
           mGizmoScaleFactor += 0.02f;
         }
-        else if (aEvent->key() == Qt::Key_A)
+        // decrease gizmo scale factor
+        else if (aEvent->key() == Qt::Key_Q)
         {
           mGizmoScaleFactor -= 0.02f;
+        }
+        // duplicate current object
+        else if (aEvent->key() == Qt::Key_D)
+        {
+          //GetObjectBrowser();
         }
       }
     }
@@ -514,18 +529,22 @@ namespace YTEditor
     {
       if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
       {
+        // change to select gizmo
         if (aEvent->key() == Qt::Key_Q)
         {
           mGizmoToolbar->SetMode(GizmoToolbar::Mode::Select);
         }
+        // change to translate gizmo
         else if (aEvent->key() == Qt::Key_W)
         {
           mGizmoToolbar->SetMode(GizmoToolbar::Mode::Translate);
         }
+        // change to rotate gizmo
         else if (aEvent->key() == Qt::Key_E)
         {
           mGizmoToolbar->SetMode(GizmoToolbar::Mode::Rotate);
         }
+        // change to scale gizmo
         else if (aEvent->key() == Qt::Key_R)
         {
           mGizmoToolbar->SetMode(GizmoToolbar::Mode::Scale);

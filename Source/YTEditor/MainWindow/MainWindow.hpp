@@ -75,6 +75,8 @@ namespace YTEditor
 
     void UpdateEngine();
 
+    YTE::Space* GetEditingLevel();
+
     YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
     YTE::String& GetRunningLevelName() { return mRunningLevelName; }

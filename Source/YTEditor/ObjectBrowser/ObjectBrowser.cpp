@@ -264,6 +264,19 @@ namespace YTEditor
     }
   }
 
+  void ObjectBrowser::DuplicateCurrentlySelected()
+  {
+    YTE::Composition *currentObj = GetCurrentObject();
+    
+    YTE::RSAllocator allocator;
+    YTE::RSValue serialized = currentObj->Serialize(allocator);
+
+    std::string currentName = currentObj->GetName().c_str();
+    currentName += " Copy";
+
+    mMainWindow->GetEditingLevel()->AddComposition(&serialized, currentName);
+  }
+
   void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
   {
     (void)aIndex;
