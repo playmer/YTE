@@ -96,7 +96,6 @@ namespace YTE
     , mTransform(nullptr)
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
-    , mInstanced(false)
   {
     DeserializeByType<Model*>(aProperties, this, Model::GetStaticType());
   }

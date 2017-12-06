@@ -20,6 +20,16 @@
 
 namespace YTE
 {
+  inline glm::quat AroundAxis(glm::vec3 aAxis, float aAngle)
+  {
+    float x = aAxis.x * glm::sin(aAngle / 2.0f);
+    float y = aAxis.y * glm::sin(aAngle / 2.0f);
+    float z = aAxis.z * glm::sin(aAngle / 2.0f);
+    float w = glm::cos(aAngle / 2.0f);
+
+    return glm::quat(w, x, y, z);
+  }
+
   YTEDeclareEvent(PositionChanged);
   YTEDeclareEvent(RotationChanged);
   YTEDeclareEvent(ScaleChanged);

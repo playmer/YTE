@@ -106,7 +106,6 @@ namespace YTE
     bool mConstructing;
     Animation *mAnimation;
     Engine *mEngine;
-    bool mInstanced;
   };
 }
 
