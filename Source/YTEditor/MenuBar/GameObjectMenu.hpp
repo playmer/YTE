@@ -65,7 +65,7 @@ namespace YTEditor
     QAction * MakeCameraAction();
     void CreateCamera();
 
-    YTE::Composition* MakeObject(std::string aName);
+    YTE::Composition* MakeObject(std::string aName, std::string meshName);
 
   };
 

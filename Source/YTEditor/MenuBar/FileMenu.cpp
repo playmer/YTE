@@ -228,8 +228,8 @@ namespace YTEditor
 
     if (reply == QMessageBox::Yes)
     {
-      mMainWindow->GetGameWindow().mWindow->mEngine = nullptr;
-      mMainWindow->GetGameWindow().mWindow = nullptr;
+      mMainWindow->GetLevelWindow().mWindow->mEngine = nullptr;
+      mMainWindow->GetLevelWindow().mWindow = nullptr;
 
       mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
       mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow = nullptr;

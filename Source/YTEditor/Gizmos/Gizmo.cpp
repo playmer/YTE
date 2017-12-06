@@ -290,8 +290,11 @@ namespace YTEditor
     glm::vec3 objPos = aEvent->WorldPosition;
     transform->SetWorldTranslation(objPos);
     
-    glm::quat objRot = aEvent->WorldRotation;
-    transform->SetWorldRotation(objRot);
+    if (mMode != Translate)
+    {
+      glm::quat objRot = aEvent->WorldRotation;
+      transform->SetWorldRotation(objRot);
+    }
   }
 
 }

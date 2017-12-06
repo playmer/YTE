@@ -42,6 +42,8 @@ namespace YTEditor
   class FileMenu;
   class UndoRedo;
   class Gizmo;
+  class GizmoToolbar;
+  class GameToolbar;
 
 
   class MainWindow : public QMainWindow
@@ -50,7 +52,7 @@ namespace YTEditor
     MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
     ~MainWindow();
 
-    SubWindow& GetGameWindow();
+    SubWindow& GetLevelWindow();
     std::vector<SubWindow*>& GetSubWindows();
 
     ObjectBrowser& GetObjectBrowser();
@@ -135,7 +137,6 @@ namespace YTEditor
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
 
     QTabWidget *mCentralTabs;
-    SubWindow *mGameWindow;
     SubWindow *mLevelWindow;
 
     QWidget *mRunningWindowTab;
@@ -159,6 +160,11 @@ namespace YTEditor
     FileMenu *mFileMenu;
 
     void closeEvent(QCloseEvent *event);
+    ////
+
+
+    GizmoToolbar *mGizmoToolbar;
+    GameToolbar *mGameToolbar;
   };
 
 }

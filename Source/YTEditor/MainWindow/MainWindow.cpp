@@ -178,9 +178,9 @@ namespace YTEditor
     //}
   }
 
-  SubWindow& MainWindow::GetGameWindow()
+  SubWindow& MainWindow::GetLevelWindow()
   {
-    return *mGameWindow;
+    return *mLevelWindow;
   }
 
   std::vector<SubWindow*>& MainWindow::GetSubWindows()
@@ -457,6 +457,30 @@ namespace YTEditor
         SaveCurrentLevel();
       }
     }
+    else if (aEvent->modifiers() != Qt::Modifier::ALT)
+    {
+      auto mouse = mLevelWindow->mWindow->mMouse;
+      
+      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      {
+        if (aEvent->key() == Qt::Key_Q)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Select);
+        }
+        else if (aEvent->key() == Qt::Key_W)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Translate);
+        }
+        else if (aEvent->key() == Qt::Key_E)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Rotate);
+        }
+        else if (aEvent->key() == Qt::Key_R)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Scale);
+        }
+      }
+    }
     else
     {
       QMainWindow::keyPressEvent(aEvent);
@@ -537,18 +561,15 @@ namespace YTEditor
     mCentralTabs->setTabsClosable(true);
     mCentralTabs->setUsesScrollButtons(true);
     this->setCentralWidget(mCentralTabs);
-
-    //mGameWindow = new GameWindow(mCentralTabs);
-    //mCentralTabs->addTab(mGameWindow, "Game");
-
+    
     auto &windows = mRunningEngine->GetWindows();
     auto it = windows.begin();
 
-    mGameWindow = new SubWindow(it->second.get(), this);
-    auto widget = createWindowContainer(mGameWindow);
+    mLevelWindow = new SubWindow(it->second.get(), this);
+    auto widget = createWindowContainer(mLevelWindow);
     mCentralTabs->addTab(widget, "Level");
 
-    auto id = mGameWindow->winId();
+    auto id = mLevelWindow->winId();
 
     it->second->SetWindowId(reinterpret_cast<void*>(id));
 
@@ -566,11 +587,11 @@ namespace YTEditor
 
   void MainWindow::ConstructToolbar()
   {
-    GizmoToolbar *gizTool = new GizmoToolbar(this);
-    addToolBar(gizTool);
+    mGizmoToolbar = new GizmoToolbar(this);
+    addToolBar(mGizmoToolbar);
 
-    GameToolbar *gameTool = new GameToolbar(this);
-    addToolBar(gameTool);
+    mGameToolbar = new GameToolbar(this);
+    addToolBar(mGameToolbar);
   }
 
   void MainWindow::ConstructObjectBrowser()
@@ -666,8 +687,8 @@ namespace YTEditor
 
     if (reply == QMessageBox::Yes)
     {
-      GetGameWindow().mWindow->mEngine = nullptr;
-      GetGameWindow().mWindow = nullptr;
+      GetLevelWindow().mWindow->mEngine = nullptr;
+      GetLevelWindow().mWindow = nullptr;
 
       GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
       GetMaterialViewer().GetSubWindow()->mWindow = nullptr;

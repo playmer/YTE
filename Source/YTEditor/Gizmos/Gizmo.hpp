@@ -55,8 +55,8 @@ namespace YTEditor
     {
       Select,
       Translate,
-      Scale,
-      Rotate
+      Rotate,
+      Scale
     };
 
   };
