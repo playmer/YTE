@@ -744,11 +744,32 @@ namespace YTEditor
   {
     // ask the user if they want to save the level
 
-    QMessageBox::StandardButton reply;
+    QMessageBox quitConfirm;
+    //quitConfirm.setSizePolicy();
+    quitConfirm.setMinimumSize(QSize(500, 200));
+    quitConfirm.setWindowTitle("Quit Confirmation");
+    quitConfirm.setInformativeText("You may have unsaved changes to the current level.\nWould you like to save your changes before exiting?");
+    quitConfirm.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    quitConfirm.setDefaultButton(QMessageBox::Save);
 
-    reply = QMessageBox::question(this, "Quit Confirmation", "Are you sure you want to quit?\nAny unsaved progress will be lost.", QMessageBox::Yes | QMessageBox::No);
+    int reply = quitConfirm.exec();
 
-    if (reply == QMessageBox::Yes)
+    if (reply == QMessageBox::Save)
+    {
+      SaveCurrentLevel();
+
+      GetLevelWindow().mWindow->mEngine = nullptr;
+      GetLevelWindow().mWindow = nullptr;
+
+      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
+      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+
+      GetRunningEngine()->EndExecution();
+      GetRunningEngine()->Update();
+
+      event->accept();
+    }
+    else if (reply == QMessageBox::Discard)
     {
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
@@ -758,10 +779,10 @@ namespace YTEditor
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
-      
+
       event->accept();
     }
-    else
+    else if (reply == QMessageBox::Cancel)
     {
       // don't quit
       event->ignore();
