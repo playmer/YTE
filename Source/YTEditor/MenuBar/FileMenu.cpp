@@ -127,7 +127,9 @@ namespace YTEditor
     //mMainWindow->GetRunningEngine()->Update();
     //mMainWindow->LoadCurrentLevelInfo();
 
+    mMainWindow->DeleteGizmo();
     mMainWindow->CreateBlankLevel("NewLevel");
+    mMainWindow->CreateGizmo(mMainWindow->GetMainSession());
   }
 
   void FileMenu::OpenLevel()
@@ -160,25 +162,16 @@ namespace YTEditor
 
     mMainWindow->LoadLevel(file_without_extension);
 
-    auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+    auto space = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
 
-    Gizmo *giz = mMainWindow->RemakeGizmo();
-    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
-    giz->SetMode(Gizmo::Select);
+    mMainWindow->CreateGizmo(static_cast<YTE::Space*>(space));
   }
 
   void FileMenu::SaveLevel()
   {
     auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
 
-    Gizmo *giz = mMainWindow->GetGizmo();
-
-    spaceComp->RemoveComposition(giz->mGizmoObj);
-
     static_cast<YTE::Space*>(spaceComp)->SaveLevel(mMainWindow->GetRunningLevelName());
-
-    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
-    giz->SetMode(Gizmo::Select);
   }
 
   void FileMenu::SaveLevelAs()
@@ -211,16 +204,9 @@ namespace YTEditor
 
     auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
 
-    spaceComp->GetName() = yteFile;
-
-    Gizmo *giz = mMainWindow->GetGizmo();
-
-    spaceComp->RemoveComposition(giz->mGizmoObj);
+    spaceComp->SetName(yteFile);
 
     static_cast<YTE::Space*>(spaceComp)->SaveLevel(yteFile);
-
-    giz->mGizmoObj = spaceComp->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
-    giz->SetMode(Gizmo::Select);
   }
 
   void FileMenu::OpenFile()

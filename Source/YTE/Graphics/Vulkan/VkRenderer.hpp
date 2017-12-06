@@ -21,18 +21,15 @@ namespace YTE
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
 
-    void RegisterWindowForDraw(Window *aWindow) override;
     void DeregisterWindowFromDraw(Window *aWindow) override;
+    void RegisterWindowForDraw(Window *aWindow) override;
 
-    std::unique_ptr<InstantiatedSprite> CreateSprite(Window *aWindow, std::string &aTextureFile) override;
-    void DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite) override;
-
-    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, std::string &aMeshFile) override;
-    std::unique_ptr<InstantiatedModel> CreateModel(Window *aWindow, Mesh *aMesh) override;
+    std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aMeshFile) override;
+    std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
         
-    void UpdateWindowViewBuffer(Window *aWindow, UBOView &aView) override;
+    void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
 
-    Mesh* CreateSimpleMesh(Window *aWindow, 
+    Mesh* CreateSimpleMesh(GraphicsView *aView,
                            std::string &aName,
                            std::vector<Submesh> &aSubmeshes) override;
 
@@ -45,10 +42,16 @@ namespace YTE
     void PresentFrame(LogicUpdate *aEvent) override;
     void AnimationUpdate(LogicUpdate *aEvent) override;
 
+
+    void RegisterView(GraphicsView *aView) override;
+    void DeregisterView(GraphicsView *aView) override;
+    void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder) override;
+
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    glm::vec4 GetClearColor(Window *aWindow);
+    glm::vec4 GetClearColor(GraphicsView *aView);
+    void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     VkRenderedSurface* GetSurface(Window *aWindow);
 
     Engine* GetEngine() const
@@ -65,12 +68,6 @@ namespace YTE
     {
       return mVulkanInternals.get();
     }
-
-
-
-    void SetClearColor(Window *aWindow, const glm::vec4 &aColor) override;
-
-
 
   private:
     std::unique_ptr<VkInternals> mVulkanInternals;

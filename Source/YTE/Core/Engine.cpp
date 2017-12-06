@@ -252,9 +252,23 @@ namespace YTE
     {
       space.second->Update(dt);
     }
+
+    // If we're told to shut down then our windows might be invalidated
+    // so we shouldn't try to run the Graphics updates.
+    if (false == mShouldRun)
+    {
+      return;
+    }
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
+
+    // We may also have been told to shut down here.
+    if (false == mShouldRun)
+    {
+      return;
+    }
+
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);

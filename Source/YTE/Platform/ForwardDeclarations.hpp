@@ -15,6 +15,7 @@ namespace YTE
 {
   class Keyboard;
   class Mouse;
+  class KeyboardEvent;
   class MouseButtonEvent;
   class MouseWheelEvent;
   class MouseMoveEvent;

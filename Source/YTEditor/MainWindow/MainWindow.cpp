@@ -126,11 +126,7 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-
-    mGizmo = new Gizmo(this);
-    mGizmo->SetRenderingWindow(yteWin);
-    mGizmo->mGizmoObj = lvl->AddCompositionAtPosition("Gizmo", "Gizmo", glm::vec3(0.0f, 0.0f, 0.0f));
-    mGizmo->SetMode(Gizmo::Select);
+    CreateGizmo(lvl);
   }
 
   MainWindow::~MainWindow()
@@ -272,6 +268,8 @@ namespace YTEditor
 
     // Set the name to the new level
     GetObjectBrowser().setHeaderLabel(lvl->GetName().c_str());
+
+    GetComponentBrowser().GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
     // Get all compositions on the main session (should be levels)
@@ -412,6 +410,8 @@ namespace YTEditor
 
     mainSession->CreateBlankLevel(aLevelName);
 
+    mRunningEngine->Update();
+
     LoadCurrentLevelInfo();
   }
 
@@ -471,6 +471,27 @@ namespace YTEditor
   PhysicsHandler& MainWindow::GetPhysicsHandler()
   {
     return *mPhysicsHandler;
+  }
+
+  Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
+  {
+    auto gizmo = RemakeGizmo();
+
+    // get the window
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    gizmo->SetRenderingWindow(yteWin);
+
+    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo", 
+                                                        "Gizmo", 
+                                                        glm::vec3(0.0f, 0.0f, 0.0f));
+    gizmo->SetMode(Gizmo::Select);
+
+    if (gizmo->mGizmoObj->ShouldSerialize())
+    {
+      gizmo->mGizmoObj->ToggleSerialize();
+    }
+
+    return gizmo;
   }
 
   Gizmo* MainWindow::RemakeGizmo()

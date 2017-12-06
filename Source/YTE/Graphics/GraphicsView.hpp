@@ -16,12 +16,14 @@ namespace YTE
   public:
     YTEDeclareType(GraphicsView);
     GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    ~GraphicsView();
 
-    void Initialize() override;
+    void NativeInitialize() override;
     void UpdateView(Camera *aCamera, UBOView &aView);
 
-    // Gettors / Settors
+    // Getters / Setters
     glm::vec4 GetClearColor();
+    void SetClearColor(const glm::vec4 &aColor);
 
     Camera* GetLastCamera()
     {
@@ -35,18 +37,23 @@ namespace YTE
       return mWindow;
     }
 
+    float GetOrder()
+    {
+      return mOrder;
+    }
 
+    void SetOrder(float aOrder);
 
-    void SetClearColor(const glm::vec4 &aColor);
-
-
+    void KeyPressed(KeyboardEvent *aUpdate);
 
   private:
     Camera *mLastCamera;
     Window *mWindow;
     Renderer *mRenderer;
-    glm::vec4 mClearColor;
     std::string mWindowName;
+    glm::vec4 mClearColor;
+    float mOrder;
+    bool mConstructing;
   };
 }
 #endif

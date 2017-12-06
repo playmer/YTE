@@ -71,8 +71,6 @@ namespace YTE
     mEngine->YTERegister(Events::PresentFrame, this, &VkRenderer::PresentFrame);
   }
 
-
-
   VkRenderer::~VkRenderer()
   {
     mSurfaces.clear();
@@ -95,39 +93,28 @@ namespace YTE
   {
     mSurfaces.erase(aWindow);
   }
-
-
-  std::unique_ptr<InstantiatedSprite> VkRenderer::CreateSprite(Window *aWindow, std::string &aTextureFile)
-  {
-    return static_unique_pointer_cast<InstantiatedSprite>(GetSurface(aWindow)->CreateSprite(aTextureFile));
-  }
-
-  void VkRenderer::DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite)
-  {
-    GetSurface(aWindow)->DestroySprite(static_unique_pointer_cast<VkInstantiatedSprite>(std::move(aSprite)));
-  }
   
-  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow,
+  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(GraphicsView *aView,
                                                              std::string &aMeshFile)
   {
-    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aWindow)->CreateModel(aMeshFile));
+    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aView->GetWindow())->CreateModel(aView, aMeshFile));
   }
 
-  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(Window *aWindow, Mesh *aMesh)
+  std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
-    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aWindow)->CreateModel(aMesh));
+    return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aView->GetWindow())->CreateModel(aView, aMesh));
   }
   
-  Mesh* VkRenderer::CreateSimpleMesh(Window *aWindow, 
+  Mesh* VkRenderer::CreateSimpleMesh(GraphicsView *aView,
                                      std::string &aName,
                                      std::vector<Submesh> &aSubmeshes)
   {
-    return GetSurface(aWindow)->CreateSimpleMesh(aName, aSubmeshes);
+    return GetSurface(aView->GetWindow())->CreateSimpleMesh(aName, aSubmeshes);
   }
 
-  void VkRenderer::UpdateWindowViewBuffer(Window *aWindow, UBOView &aView)
+  void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
-    GetSurface(aWindow)->UpdateSurfaceViewBuffer(aView);
+    GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
   }
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
@@ -139,8 +126,6 @@ namespace YTE
     }
   }
 
-
-
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
     for (auto& surface : mSurfaces)
@@ -148,8 +133,6 @@ namespace YTE
       surface.second->FrameUpdate(aEvent);
     }
   }
-
-
 
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
@@ -160,8 +143,6 @@ namespace YTE
     }
   }
 
-
-
   void VkRenderer::AnimationUpdate(LogicUpdate* aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -171,21 +152,30 @@ namespace YTE
     }
   }
 
-
-
-  void VkRenderer::SetClearColor(Window *aWindow, const glm::vec4 &aColor)
+  void VkRenderer::RegisterView(GraphicsView *aView)
   {
-    GetSurface(aWindow)->SetClearColor(aColor);
+    GetSurface(aView->GetWindow())->RegisterView(aView);
   }
 
-
-
-  glm::vec4 VkRenderer::GetClearColor(Window *aWindow)
+  void VkRenderer::DeregisterView(GraphicsView *aView)
   {
-    return GetSurface(aWindow)->GetClearColor();
+    GetSurface(aView->GetWindow())->DeregisterView(aView);
   }
 
+  void VkRenderer::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  {
+    GetSurface(aView->GetWindow())->ViewOrderChanged(aView, aOldOrder, aNewOrder);
+  }
 
+  void VkRenderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
+  {
+    GetSurface(aView->GetWindow())->SetClearColor(aView, aColor);
+  }
+
+  glm::vec4 VkRenderer::GetClearColor(GraphicsView *aView)
+  {
+    return GetSurface(aView->GetWindow())->GetClearColor(aView);
+  }
 
   VkRenderedSurface* VkRenderer::GetSurface(Window *aWindow)
   {

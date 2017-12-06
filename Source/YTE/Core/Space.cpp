@@ -50,9 +50,9 @@ namespace YTE
   }
 
 
-  // Sets up the Space, probably could just be the constructor.
   Space::Space(Engine *aEngine, RSValue *aProperties)
-                : Composition(aEngine, this), mLevelToLoad(nullptr)
+    : Composition(aEngine, this)
+    , mLevelToLoad(nullptr)
   {
     if (false == mEngine->IsEditor())
     {
@@ -154,8 +154,8 @@ namespace YTE
 
     auto graphicsView = AddComponent<GraphicsView>();
     graphicsView->ChangeWindow("Yours Truly Engine");
+    graphicsView->NativeInitialize();
     auto camera = AddComposition<Composition>("Camera", mEngine, this);
-    camera->GetName() = "Camera";
     camera->SetOwner(this);
     camera->AddComponent<Camera>();
     camera->AddComponent<Orientation>();
