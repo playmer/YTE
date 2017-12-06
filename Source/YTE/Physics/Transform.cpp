@@ -60,8 +60,9 @@ namespace YTE
     YTEBindProperty(&Transform::GetScale, &Transform::SetScaleProperty, "Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+    YTEBindProperty(&Transform::GetRotation, &Transform::SetRotationPropertyQuat, "Rotation")
+      .AddAttribute<Serializable>();
     YTEBindProperty(&Transform::GetRotationAsEuler, &Transform::SetRotationProperty, "Rotation")
-      .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&Transform::SetRotation, (void (Transform::*) (const glm::vec3&)), "SetRotation", YTEParameterNames("eulerAngles"))

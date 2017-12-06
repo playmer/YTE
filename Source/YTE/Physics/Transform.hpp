@@ -119,6 +119,7 @@ namespace YTE
 
     inline void SetTranslationProperty(const glm::vec3& aTrans) { SetTranslation(aTrans); };
     inline void SetScaleProperty(const glm::vec3& aScale) { SetScale(aScale); };
+    inline void SetRotationPropertyQuat(const glm::quat& aRot) { SetRotation(aRot); };
     inline void SetRotationProperty(const glm::vec3& aEulerRot) { SetRotation(aEulerRot); };
 
     inline void SetWorldTranslationProperty(const glm::vec3& aTrans) { SetWorldTranslation(aTrans); };
