@@ -25,6 +25,11 @@ namespace YTEditor
 
   void Rotate::RotateObject(YTE::Composition *aObj, glm::vec3 aFirstMousePos, glm::vec3 aDelta)
   {
+    if (!aObj)
+    {
+      return;
+    }
+
     YTE::Transform *objTrans = aObj->GetComponent<YTE::Transform>();
     
     // get vector from object pos to mouse pos
@@ -82,26 +87,6 @@ namespace YTEditor
     //}
     //
     //float delta = projLength / glm::length(proj);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     float delta{0.0f};
@@ -209,46 +194,6 @@ namespace YTEditor
         break;
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

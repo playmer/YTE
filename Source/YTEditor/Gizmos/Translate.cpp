@@ -24,6 +24,11 @@ namespace YTEditor
 
   void Translate::MoveObject(YTE::Composition *aObj, glm::vec3 aDelta)
   {
+    if (!aObj)
+    {
+      return;
+    }
+
     glm::vec3 change = glm::vec3(0.0f, 0.0f, 0.0f);
 
     switch (mDir)
@@ -48,17 +53,14 @@ namespace YTEditor
     }
 
     // get the transform of the currently selected object
-    if (aObj)
-    {
-      YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
+    YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
 
-      glm::vec3 pos = transform->GetWorldTranslation();
-      glm::vec3 newPos = pos + change;
+    glm::vec3 pos = transform->GetWorldTranslation();
+    glm::vec3 newPos = pos + change;
 
-      transform->SetWorldTranslation(newPos);
+    transform->SetWorldTranslation(newPos);
 
-      YTE::Transform *gizmoTransform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
-      gizmoTransform->SetWorldTranslation(newPos);
-    }
+    YTE::Transform *gizmoTransform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
+    gizmoTransform->SetWorldTranslation(newPos);
   }
 }
