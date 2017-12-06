@@ -740,15 +740,12 @@ namespace YTEditor
     this->setMenuBar(menuBar);
   }
 
-  void MainWindow::closeEvent(QCloseEvent * event)
+  void MainWindow::closeEvent(QCloseEvent *event)
   {
     // ask the user if they want to save the level
-
     QMessageBox quitConfirm;
-    //quitConfirm.setSizePolicy();
-    quitConfirm.setMinimumSize(QSize(500, 200));
     quitConfirm.setWindowTitle("Quit Confirmation");
-    quitConfirm.setInformativeText("You may have unsaved changes to the current level.\nWould you like to save your changes before exiting?");
+    quitConfirm.setText("You may have unsaved changes.\nSave your changes before exiting?");
     quitConfirm.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     quitConfirm.setDefaultButton(QMessageBox::Save);
 
@@ -782,9 +779,8 @@ namespace YTEditor
 
       event->accept();
     }
-    else if (reply == QMessageBox::Cancel)
+    else
     {
-      // don't quit
       event->ignore();
     }
   }
