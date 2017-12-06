@@ -35,6 +35,7 @@ namespace YTEditor
 
     void keyPressEvent(QKeyEvent *aEvent);
 
+
     YTE::Window *mWindow;
 
     MainWindow *mMainWindow;

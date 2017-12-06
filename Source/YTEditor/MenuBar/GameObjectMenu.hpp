@@ -18,6 +18,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qmenu.h>
 
+namespace YTE
+{
+  class Composition;
+}
+
 namespace YTEditor
 {
 
@@ -29,6 +34,8 @@ namespace YTEditor
 
     GameObjectMenu(MainWindow *aMainWindow);
     ~GameObjectMenu();
+
+    YTE::Composition* MakeObject(std::string aName, std::string meshName);
 
   private:
 
@@ -65,7 +72,6 @@ namespace YTEditor
     QAction * MakeCameraAction();
     void CreateCamera();
 
-    YTE::Composition* MakeObject(std::string aName, std::string meshName);
 
   };
 

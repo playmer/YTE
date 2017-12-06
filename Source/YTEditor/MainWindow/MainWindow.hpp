@@ -44,6 +44,7 @@ namespace YTEditor
   class Gizmo;
   class GizmoToolbar;
   class GameToolbar;
+  class GameObjectMenu;
 
 
   class MainWindow : public QMainWindow
@@ -100,6 +101,8 @@ namespace YTEditor
     void keyPressEvent(QKeyEvent *aEvent);
 
     FileMenu* GetFileMenu();
+
+    GameObjectMenu* GetGameObjectMenu();
 
     PhysicsHandler& GetPhysicsHandler();
 
@@ -158,6 +161,7 @@ namespace YTEditor
     void ConstructMenuBar();
 
     FileMenu *mFileMenu;
+    GameObjectMenu *mGameObjectMenu;
 
     void closeEvent(QCloseEvent *event);
     ////

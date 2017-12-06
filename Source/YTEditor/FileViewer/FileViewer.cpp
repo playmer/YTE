@@ -40,6 +40,13 @@ namespace YTEditor
       {
         QString text = data(index, Qt::DisplayRole).toString();
         stream << text;
+
+        // encode the parent's data as well
+        if (index.parent().isValid())
+        {
+          QString parentData = data(index.parent(), Qt::DisplayRole).toString();
+          stream << parentData;
+        }
       }
     }
 

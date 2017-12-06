@@ -56,6 +56,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/GameWindow/GameToolbar.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
@@ -91,7 +92,9 @@ namespace YTEditor
     mRunningSpace(nullptr),
     mUndoRedo(new UndoRedo()),
     mGizmo(nullptr),
-    mRunningWindow(nullptr)
+    mRunningWindow(nullptr),
+    mFileMenu(nullptr),
+    mGameObjectMenu(nullptr)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -492,6 +495,11 @@ namespace YTEditor
     return mFileMenu;
   }
 
+  GameObjectMenu * MainWindow::GetGameObjectMenu()
+  {
+    return mGameObjectMenu;
+  }
+
   PhysicsHandler& MainWindow::GetPhysicsHandler()
   {
     return *mPhysicsHandler;
@@ -566,6 +574,10 @@ namespace YTEditor
     auto it = windows.begin();
 
     mLevelWindow = new SubWindow(it->second.get(), this);
+
+    GameWindowEventFilter *filter = new GameWindowEventFilter(mLevelWindow, this);
+    mLevelWindow->installEventFilter(filter);
+
     auto widget = createWindowContainer(mLevelWindow);
     mCentralTabs->addTab(widget, "Level");
 
@@ -670,7 +682,10 @@ namespace YTEditor
 
     menuBar->addMenu(new EditMenu(this));
     menuBar->addMenu(new WindowsMenu(this));
-    menuBar->addMenu(new GameObjectMenu(this));
+
+    mGameObjectMenu = new GameObjectMenu(this);
+    menuBar->addMenu(mGameObjectMenu);
+    
     menuBar->addMenu(new LevelMenu(this));
     menuBar->addMenu(new ImportMenu(this));
 

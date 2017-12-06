@@ -36,7 +36,7 @@ namespace YTEditor
 
     if (aEvent->type() == QEvent::KeyPress)
     {
-      QKeyEvent * keyEvent = dynamic_cast<QKeyEvent*>(aEvent);
+      QKeyEvent * keyEvent = static_cast<QKeyEvent*>(aEvent);
 
       if (keyEvent->key() == Qt::Key_Return ||
         keyEvent->key() == Qt::Key_Enter)
@@ -55,15 +55,11 @@ namespace YTEditor
     }
     else if (aEvent->type() == QEvent::MouseButtonPress)
     {
-      QMouseEvent * mouseEvent = dynamic_cast<QMouseEvent*>(aEvent);
+      QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(aEvent);
 
       if (mouseEvent->button() == Qt::MouseButton::LeftButton)
       {
         QPoint mPos = mouseEvent->pos();
-
-        //std::cout << "( " << mPos.x() << ", " << mPos.y() << " )" << std::endl;
-        //std::cout << "W: " << mCompleter->popup()->width() << std::endl;
-        //std::cout << "H: " << mCompleter->popup()->height() << std::endl << std::endl;
 
         if (mPos.x() < 0 || mPos.x() > mCompleter->popup()->width() ||
           mPos.y() < 0 || mPos.y() > mCompleter->popup()->height())
