@@ -224,30 +224,19 @@ namespace YTE
 
   void Transform::SetRotation(const glm::vec3& aEulerRot)
   {
-    auto previous = GetRotationAsEuler();
+    const glm::vec3 localXAxis{1.0f, 0.0f, 0.0f};
+    const glm::vec3 localYAxis{0.0f, 1.0f, 0.0f};
+    const glm::vec3 localZAxis{0.0f, 0.0f, 1.0f};
 
-    auto current = aEulerRot - previous;
+    auto localX = glm::rotate(aEulerRot.x, localXAxis);
+    auto localY = glm::rotate(aEulerRot.y, localYAxis);
+    auto localZ = glm::rotate(aEulerRot.z, localZAxis);
 
-    auto accumulated = mRotation;
+    auto localRotation = localZ * localY * localX;
 
-    const float fakeEpsilon{0.1f};
+    glm::quat local{localRotation};
 
-    if (current.x > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({1, 0, 0}, current.x);
-    }
-
-    if (current.y > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({0, 1, 0}, current.y);
-    }
-
-    if (current.z > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({0, 0, 1}, current.z);
-    }
-
-    SetRotation(accumulated);
+    SetRotation(local);
   }
 
   void Transform::SetRotation(const glm::quat& aLocalRotation)
