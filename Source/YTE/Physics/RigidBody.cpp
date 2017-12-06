@@ -22,15 +22,15 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    auto &mass = YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet)
-    .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
-    .AddAttribute<EditorProperty>()
-    .AddAttribute<Serializable>();
+    YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet)
+      .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
-    auto &isStatic = YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet)
-    .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
-    .AddAttribute<EditorProperty>()
-    .AddAttribute<Serializable>();
+    YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet)
+      .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
     YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
       .Description() = "Applies an impulse to the RigidBody.";

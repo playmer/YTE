@@ -54,7 +54,7 @@ namespace YTE
 
   bool Job::IsDeletable() const
   {
-    return mAbandoned.unique() && (HasCompleted() || *mAbandoned);
+    return (1 == mAbandoned.use_count()) && (HasCompleted() || *mAbandoned);
   }
 
   Any Job::GetReturn()

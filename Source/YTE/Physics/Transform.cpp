@@ -223,9 +223,30 @@ namespace YTE
 
   void Transform::SetRotation(const glm::vec3& aEulerRot)
   {
-    glm::quat localRotation{ aEulerRot };
+    auto previous = GetRotationAsEuler();
 
-    SetRotation(localRotation);
+    auto current = aEulerRot - previous;
+
+    auto accumulated = mRotation;
+
+    const float fakeEpsilon{0.1f};
+
+    if (current.x > fakeEpsilon || current.z < -fakeEpsilon)
+    {
+      accumulated = accumulated * YTE::AroundAxis({1, 0, 0}, current.x);
+    }
+
+    if (current.y > fakeEpsilon || current.z < -fakeEpsilon)
+    {
+      accumulated = accumulated * YTE::AroundAxis({0, 1, 0}, current.y);
+    }
+
+    if (current.z > fakeEpsilon || current.z < -fakeEpsilon)
+    {
+      accumulated = accumulated * YTE::AroundAxis({0, 0, 1}, current.z);
+    }
+
+    SetRotation(accumulated);
   }
 
   void Transform::SetRotation(const glm::quat& aLocalRotation)
@@ -305,10 +326,13 @@ namespace YTE
 
   void Transform::SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation)
   {
-    auto difference{ glm::inverse(mRotation) * (aLocalRotation) };
+    auto parent = glm::normalize(aParentRotation);
+    auto local = glm::normalize(aLocalRotation);
 
-    mWorldRotation = aParentRotation * aLocalRotation;
-    mRotation = aLocalRotation;
+    auto difference{ glm::normalize(glm::inverse(mRotation) * local) };
+
+    mWorldRotation = glm::normalize(parent * local);
+    mRotation = local;
 
     InformPhysicsOfChange(Events::RotationChanged, difference);
   }

@@ -455,12 +455,12 @@ namespace YTE
 
   void RemoveOffset(VkInstantiatedModel *aModel)
   {
-
+    YTEUnusedArgument(aModel);
   }
 
   void RequestOffset(VkInstantiatedModel *aModel)
   {
-
+    YTEUnusedArgument(aModel);
   }
 
   void VkMesh::SetInstanced(bool aInstanced)
@@ -488,8 +488,6 @@ namespace YTE
 
     for (auto &viewIt : mSurface->GetViews())
     {
-      u32 offset{0};
-
       // Switching also forces us to recreate our DescriptorSets on every model.
       for (auto model : viewIt.second.mInstantiatedModels[this])
       {
