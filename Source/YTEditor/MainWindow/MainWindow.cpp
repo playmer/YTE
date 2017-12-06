@@ -94,7 +94,8 @@ namespace YTEditor
     mGizmo(nullptr),
     mRunningWindow(nullptr),
     mFileMenu(nullptr),
-    mGameObjectMenu(nullptr)
+    mGameObjectMenu(nullptr),
+    mGizmoScaleFactor(1.0f)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -116,8 +117,8 @@ namespace YTEditor
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
     // Get the space that represents the main session
-    YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
-    mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, yteWin, this);
+    mEditingLevel = static_cast<YTE::Space*>(it_lvl->second.get());
+    mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
 
     aEngine->Initialize();
     ConstructWWiseWidget();
@@ -129,7 +130,7 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-    CreateGizmo(lvl);
+    CreateGizmo(mEditingLevel);
   }
 
   MainWindow::~MainWindow()
@@ -163,6 +164,41 @@ namespace YTEditor
         prop->ReloadValueFromEngine();
       }
     }
+
+    // scale gizmo w.r.t camera's distance from object
+    if (mGizmo)
+    {
+      auto currentObj = GetObjectBrowser().GetCurrentObject();
+      
+      if (currentObj)
+      {
+        auto objTransform = currentObj->GetComponent<YTE::Transform>();
+        
+        if (objTransform)
+        {
+          glm::vec3 objPos = objTransform->GetWorldTranslation();
+
+          auto view = mEditingLevel->GetComponent<YTE::GraphicsView>();
+          auto cameraComponent = view->GetLastCamera();
+          auto cameraObject = cameraComponent->GetOwner();
+          auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
+          glm::vec3 camPos = cameraTransform->GetWorldTranslation();
+
+          glm::vec3 dirVec = camPos - objPos;
+          float dist = length(dirVec) / 12.0f;
+
+          if (dist < 1.0f)
+          {
+            dist = 1.0f;
+          }
+
+          glm::vec3 gizmoScale = mGizmoScaleFactor * glm::vec3(dist, dist, dist);
+
+          mGizmo->mGizmoObj->GetComponent<YTE::Transform>()->SetScale(gizmoScale);
+        }
+      }
+    }
+
 
     //YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
     //
@@ -443,6 +479,8 @@ namespace YTEditor
 
   void MainWindow::keyPressEvent(QKeyEvent * aEvent)
   {
+    auto mouse = mLevelWindow->mWindow->mMouse;
+
     if (aEvent->modifiers() == Qt::Modifier::CTRL)
     {
       if (aEvent->key() == Qt::Key_Z)
@@ -459,11 +497,21 @@ namespace YTEditor
       {
         SaveCurrentLevel();
       }
+
+      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      {
+        if (aEvent->key() == Qt::Key_D)
+        {
+          mGizmoScaleFactor += 0.02f;
+        }
+        else if (aEvent->key() == Qt::Key_A)
+        {
+          mGizmoScaleFactor -= 0.02f;
+        }
+      }
     }
     else if (aEvent->modifiers() != Qt::Modifier::ALT)
     {
-      auto mouse = mLevelWindow->mWindow->mMouse;
-      
       if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
       {
         if (aEvent->key() == Qt::Key_Q)

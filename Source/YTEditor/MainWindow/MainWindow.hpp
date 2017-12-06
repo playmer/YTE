@@ -117,13 +117,15 @@ namespace YTEditor
     YTE::String mRunningSpaceName;
     YTE::String mRunningLevelName;
 
-    YTE::Space* mRunningSpace;
+    YTE::Space *mEditingLevel;
+    YTE::Space *mRunningSpace;
 
     QApplication *mApplication;
 
     UndoRedo *mUndoRedo;
 
     Gizmo *mGizmo;
+    float mGizmoScaleFactor;
 
     // Cstor helper functions and main subwindow vars //
     void SetWindowSettings();
