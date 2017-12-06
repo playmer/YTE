@@ -35,8 +35,8 @@ namespace YTEditor
     YTE::Transform *gizTrans = mOwner->GetOwner()->GetComponent<YTE::Transform>();
     auto gizRot = gizTrans->GetRotationAsEuler();
 
-    glm::vec3 local;
-    
+    //glm::vec3 local;
+    //
     //switch (mDir)
     //{
     //  case Axis::X:
@@ -111,100 +111,100 @@ namespace YTEditor
       {
         // get the local x axis
         glm::vec3 localX(1, 0, 0);
-
+    
         localX = glm::rotateX(localX, objRot.x);
         localX = glm::rotateY(localX, objRot.y);
         localX = glm::rotateZ(localX, objRot.z);
-
+    
         // project vector onto the yz plane
         glm::vec3 proj = toMPos - glm::proj(toMPos, localX);
-
+    
         proj = -proj;
-
+    
         // rotate it 90 degrees so it's tangential to the point on the circle where the user clicked
         glm::vec3 rotated = glm::rotate(proj, glm::radians(90.0f), localX);
-
+    
         // project the delta on to the rotated vector
         glm::vec3 projected = glm::proj(aDelta, rotated);
-
+    
         // apply the length of the projected vector
         float projLength = glm::length(projected);
-
+    
         if (glm::dot(aDelta, rotated) < 0)
         {
           projLength = -projLength;
         }
-
+    
         float rotChange = projLength / glm::length(proj);
-
+    
         delta = rotChange;
         break;
       }
-
+    
       case Axis::Y:
       {
         // get the local y axis
         glm::vec3 localY(0, 1, 0);
-
+    
         localY = glm::rotateX(localY, objRot.x);
         localY = glm::rotateY(localY, objRot.y);
         localY = glm::rotateZ(localY, objRot.z);
-
+    
         // project vector onto the yz plane
         glm::vec3 proj = toMPos - glm::proj(toMPos, localY);
-
+    
         proj = -proj;
-
+    
         // rotate it 90 degrees so it's tangential to the point on the circle where the user clicked
         glm::vec3 rotated = glm::rotate(proj, glm::radians(90.0f), localY);
-
+    
         // project the delta on to the rotated vector
         glm::vec3 projected = glm::proj(aDelta, rotated);
-
+    
         // apply the length of the projected vector
         float projLength = glm::length(projected);
-
+    
         if (glm::dot(aDelta, rotated) < 0)
         {
           projLength = -projLength;
         }
-
+    
         float rotChange = projLength / glm::length(proj);
-
+    
         delta = rotChange;
         break;
       }
-
+    
       case Axis::Z:
       {
         // get the local z axis
         glm::vec3 localZ(0, 0, 1);
-
+    
         localZ = glm::rotateX(localZ, objRot.x);
         localZ = glm::rotateY(localZ, objRot.y);
         localZ = glm::rotateZ(localZ, objRot.z);
-
+    
         // project vector onto the yz plane
         glm::vec3 proj = toMPos - glm::proj(toMPos, localZ);
-
+    
         proj = -proj;
-
+    
         // rotate it 90 degrees so it's tangential to the point on the circle where the user clicked
         glm::vec3 rotated = glm::rotate(proj, glm::radians(90.0f), localZ);
-
+    
         // project the delta on to the rotated vector
         glm::vec3 projected = glm::proj(aDelta, rotated);
-
+    
         // apply the length of the projected vector
         float projLength = glm::length(projected);
-
+    
         if (glm::dot(aDelta, rotated) < 0)
         {
           projLength = -projLength;
         }
-
+    
         float rotChange = projLength / glm::length(proj);
-
+    
         delta = rotChange;
         break;
       }

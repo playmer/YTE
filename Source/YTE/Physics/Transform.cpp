@@ -326,10 +326,13 @@ namespace YTE
 
   void Transform::SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation)
   {
-    auto difference{ glm::inverse(mRotation) * (aLocalRotation) };
+    auto parent = glm::normalize(aParentRotation);
+    auto local = glm::normalize(aLocalRotation);
 
-    mWorldRotation = aParentRotation * aLocalRotation;
-    mRotation = aLocalRotation;
+    auto difference{ glm::normalize(glm::inverse(mRotation) * local) };
+
+    mWorldRotation = glm::normalize(parent * local);
+    mRotation = local;
 
     InformPhysicsOfChange(Events::RotationChanged, difference);
   }
