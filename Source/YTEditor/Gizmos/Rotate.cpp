@@ -122,7 +122,7 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     
@@ -156,7 +156,7 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     
@@ -190,7 +190,7 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     }
