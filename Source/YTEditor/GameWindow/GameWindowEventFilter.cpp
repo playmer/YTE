@@ -7,6 +7,7 @@
 #include "YTEditor/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 
 namespace YTEditor
@@ -66,32 +67,41 @@ namespace YTEditor
 
       namespace fs = std::experimental::filesystem;
       fs::path droppedFile{ filename };
+      std::string stem = droppedFile.stem().generic_string();
       std::string extension = droppedFile.extension().generic_string();
+
+      OutputConsole &console = mMainWindow->GetOutputConsole();
 
       // we can assume this is coming from model or animation folder
       if (extension == ".fbx")
       {
         if (parent == "Models")
         {
-          std::cout << "Model dropped : " << filename << std::endl;
-          
-          mMainWindow->GetGameObjectMenu()->MakeObject(filename.c_str(), filename.c_str());
+          mMainWindow->GetGameObjectMenu()->MakeObject(stem.c_str(), filename.c_str());
         }
         else if (parent == "Animations")
         {
-          std::cout << "Animation dropped : " << filename << std::endl;
+          console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for animations.");
         }
       }
       else if (extension == ".json")
       {
         if (parent == "Archetypes")
         {
-          std::cout << "Archetype dropped : " << filename << std::endl;
-
-          std::string trueName = droppedFile.
-
-          mMainWindow->GetObjectBrowser().AddObject(trueName.c_str(), trueName.c_str());
+          mMainWindow->GetObjectBrowser().AddObject(stem.c_str(), stem.c_str());
         }
+        else if (parent == "Levels")
+        {
+          console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for levels.");
+        }
+      }
+      else if (parent == "Originals")
+      {
+        console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for textures.");
+      }
+      else if (parent == "Crunch")
+      {
+        console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for compressed textures.");
       }
 
       return true;
