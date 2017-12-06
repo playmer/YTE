@@ -93,17 +93,6 @@ namespace YTE
   {
     mSurfaces.erase(aWindow);
   }
-
-
-  std::unique_ptr<InstantiatedSprite> VkRenderer::CreateSprite(Window *aWindow, std::string &aTextureFile)
-  {
-    return static_unique_pointer_cast<InstantiatedSprite>(GetSurface(aWindow)->CreateSprite(aTextureFile));
-  }
-
-  void VkRenderer::DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite)
-  {
-    GetSurface(aWindow)->DestroySprite(static_unique_pointer_cast<VkInstantiatedSprite>(std::move(aSprite)));
-  }
   
   std::unique_ptr<InstantiatedModel> VkRenderer::CreateModel(GraphicsView *aView,
                                                              std::string &aMeshFile)

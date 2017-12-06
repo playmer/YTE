@@ -33,6 +33,7 @@ namespace YTE
     , mWindow(nullptr)
     , mClearColor(0.44f, 0.44f, 0.44f, 1.0f)
     , mConstructing(true)
+    , mOrder(0.0f)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -45,8 +46,6 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
-
-    mRenderer->RegisterView(this);
   }
 
   GraphicsView::~GraphicsView()
@@ -54,8 +53,15 @@ namespace YTE
     mRenderer->DeregisterView(this);
   }
 
-  void GraphicsView::Initialize()
+  void GraphicsView::NativeInitialize()
   {
+    if (mWindow == nullptr)
+    {
+      return;
+    }
+
+    mRenderer->RegisterView(this);
+
     auto engine = mSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
@@ -97,7 +103,7 @@ namespace YTE
     return mRenderer->GetClearColor(this);
   }
 
-  void GraphicsView::ChangeWindow(const std::string & aWindowName)
+  void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
     mWindowName = aWindowName;
     auto it = mSpace->GetEngine()->GetWindows().find(mWindowName);

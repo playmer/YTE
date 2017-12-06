@@ -18,7 +18,7 @@ namespace YTE
     GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~GraphicsView();
 
-    void Initialize() override;
+    void NativeInitialize() override;
     void UpdateView(Camera *aCamera, UBOView &aView);
 
     // Getters / Setters

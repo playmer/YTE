@@ -30,21 +30,6 @@ namespace YTE
     YTEUnusedArgument(aWindow);
   }
 
-  std::unique_ptr<InstantiatedSprite> Renderer::CreateSprite(Window *aWindow,
-                                                             std::string &aTextureFile)
-  {
-    YTEUnusedArgument(aWindow);
-    YTEUnusedArgument(aTextureFile);
-
-    return nullptr;
-  }
-
-  void Renderer::DestroySprite(Window *aWindow, std::unique_ptr<InstantiatedSprite> aSprite)
-  {
-    YTEUnusedArgument(aWindow);
-    YTEUnusedArgument(aSprite);
-  }
-
   std::unique_ptr<InstantiatedModel> Renderer::CreateModel(GraphicsView *aView,
                                                            std::string &aMeshFile)
   {
