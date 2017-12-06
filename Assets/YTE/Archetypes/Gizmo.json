@@ -11,10 +11,11 @@
 				},
 				"Transform": {
 					"Rotation": {
-						"Vector3": {
+						"Vector4": {
 							"x": 0.0,
 							"y": 0.0,
-							"z": 0.0
+							"z": 0.0,
+							"w": 0.0
 						}
 					},
 					"Scale": {
@@ -53,10 +54,11 @@
 				},
 				"Transform": {
 					"Rotation": {
-						"Vector3": {
+						"Vector4": {
 							"x": 0.0,
 							"y": 0.0,
-							"z": 0.0
+							"z": 0.0,
+							"w": 0.0
 						}
 					},
 					"Scale": {
@@ -95,10 +97,11 @@
 				},
 				"Transform": {
 					"Rotation": {
-						"Vector3": {
+						"Vector4": {
 							"x": 0.0,
 							"y": 0.0,
-							"z": 0.0
+							"z": 0.0,
+							"w": 0.0
 						}
 					},
 					"Scale": {
@@ -131,10 +134,11 @@
     "Components": {
         "Transform": {
 					"Rotation": {
-						"Vector3": {
+						"Vector4": {
 							"x": 0.0,
 							"y": 0.0,
-							"z": 0.0
+							"z": 0.0,
+							"w": 0.0
 						}
 					},
 					"Scale": {
