@@ -835,9 +835,8 @@ Section "Uninstall"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
 
   ;Remove VulkanRT
-  ReadRegStr $VULKAN_UNINSTALL HKLM \
-  "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
-  ExecWait "$VULKAN_UNINSTALL"
+  ReadRegStr $VULKAN_UNINSTALL HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
+  ExecWait '"$VULKAN_UNINSTALL" /S'
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
