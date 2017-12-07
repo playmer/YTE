@@ -38,6 +38,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
+#include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
@@ -264,6 +265,19 @@ namespace YTEditor
     }
   }
 
+  void ObjectBrowser::DuplicateCurrentlySelected()
+  {
+    YTE::Composition *currentObj = GetCurrentObject();
+    
+    YTE::RSAllocator allocator;
+    YTE::RSValue serialized = currentObj->Serialize(allocator);
+
+    std::string currentName = currentObj->GetName().c_str();
+    currentName += " Copy";
+
+    mMainWindow->GetEditingLevel()->AddComposition(&serialized, currentName);
+  }
+
   void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
   {
     (void)aIndex;
@@ -389,6 +403,11 @@ namespace YTEditor
 
         mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
       }
+    }
+
+    if (topLevelItemCount() == 0)
+    {
+      mMainWindow->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
     }
   }
 

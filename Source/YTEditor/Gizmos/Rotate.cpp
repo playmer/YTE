@@ -25,12 +25,17 @@ namespace YTEditor
 
   void Rotate::RotateObject(YTE::Composition *aObj, glm::vec3 aFirstMousePos, glm::vec3 aDelta)
   {
+    if (!aObj)
+    {
+      return;
+    }
+
     YTE::Transform *objTrans = aObj->GetComponent<YTE::Transform>();
     
     // get vector from object pos to mouse pos
     glm::vec3 toMPos = aFirstMousePos - objTrans->GetWorldTranslation();
 
-    glm::vec3 objRot = objTrans->GetRotationAsEuler();
+    glm::vec3 objRot = glm::radians(objTrans->GetRotationAsEuler());
 
     YTE::Transform *gizTrans = mOwner->GetOwner()->GetComponent<YTE::Transform>();
     auto gizRot = gizTrans->GetRotationAsEuler();
@@ -84,26 +89,6 @@ namespace YTEditor
     //float delta = projLength / glm::length(proj);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     float delta{0.0f};
     switch (mDir)
     {
@@ -137,7 +122,7 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     
@@ -171,7 +156,7 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     
@@ -205,50 +190,10 @@ namespace YTEditor
     
         float rotChange = projLength / glm::length(proj);
     
-        delta = rotChange;
+        delta = -rotChange;
         break;
       }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

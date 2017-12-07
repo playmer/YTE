@@ -220,27 +220,6 @@ namespace YTEditor
 
   void FileMenu::ExitEditor()
   {
-    // ask the user if they want to save the level
-
-    QMessageBox::StandardButton reply;
-
-    reply = QMessageBox::question(this, "Quit Confirmation", "Are you sure you want to quit?\nAny unsaved progress will be lost.", QMessageBox::Yes | QMessageBox::No);
-
-    if (reply == QMessageBox::Yes)
-    {
-      mMainWindow->GetGameWindow().mWindow->mEngine = nullptr;
-      mMainWindow->GetGameWindow().mWindow = nullptr;
-
-      mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
-      mMainWindow->GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
-
-      mMainWindow->GetRunningEngine()->EndExecution();
-      mMainWindow->GetRunningEngine()->Update();
-      mMainWindow->GetApplication()->quit();
-    }
-    else
-    {
-      // don't quit
-    }
+    mMainWindow->close();
   }
 }

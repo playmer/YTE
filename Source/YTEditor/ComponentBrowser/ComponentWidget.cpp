@@ -181,21 +181,21 @@ namespace YTEditor
 
     if (value.IsType<int>())
     {
-      ComponentProperty<int> *comProp = AddPropertyOrField<int>(aProp.first, aProperty);
+      ComponentProperty<int> *comProp = AddPropertyOrField<int>(aProp, aProperty);
       int propData = value.As<int>();
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
     else if (value.IsType<float>())
     {
-      ComponentProperty<float> *comProp = AddPropertyOrField<float>(aProp.first, aProperty);
+      ComponentProperty<float> *comProp = AddPropertyOrField<float>(aProp, aProperty);
       float propData = value.As<float>();
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
     else if (value.IsType<YTE::String>())
     {
-      ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(aProp.first, aProperty);
+      ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(aProp, aProperty);
       YTE::String propData = value.As<YTE::String>();
       comProp->SetValue(propData);
       comProp->SetEvents();
@@ -208,7 +208,7 @@ namespace YTEditor
       if (dropDownAttrib)
       {
         // get the property
-        ComponentProperty<QStringList> * comProp = AddPropertyOrField<QStringList>(aProp.first, aProperty);
+        ComponentProperty<QStringList> * comProp = AddPropertyOrField<QStringList>(aProp, aProperty);
 
         // grab the list of strings from the attribute
         std::vector<std::string> strList = (*dropDownAttrib->GetStringGettor())(this->mEngineComponent);
@@ -242,7 +242,7 @@ namespace YTEditor
       else
       {
         // otherwise it's just an editable text field
-        ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(aProp.first, aProperty);
+        ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(aProp, aProperty);
         std::string propData = value.As<std::string>();
         comProp->SetValue(propData);
         comProp->SetEvents();
@@ -250,28 +250,28 @@ namespace YTEditor
     }
     else if (value.IsType<bool>())
     {
-      ComponentProperty<bool> *comProp = AddPropertyOrField<bool>(aProp.first, aProperty);
+      ComponentProperty<bool> *comProp = AddPropertyOrField<bool>(aProp, aProperty);
       bool propData = value.As<bool>();
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
     else if (value.IsType<glm::vec2>())
     {
-      ComponentProperty<glm::vec2> *comProp = AddPropertyOrField<glm::vec2>(aProp.first, aProperty);
+      ComponentProperty<glm::vec2> *comProp = AddPropertyOrField<glm::vec2>(aProp, aProperty);
       auto propData = value.As<glm::vec2>();
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
     else if (value.IsType<glm::vec3>())
     {
-      ComponentProperty<glm::vec3> *comProp = AddPropertyOrField<glm::vec3>(aProp.first, aProperty);
+      ComponentProperty<glm::vec3> *comProp = AddPropertyOrField<glm::vec3>(aProp, aProperty);
       auto propData = value.As<glm::vec3>();
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
     else if (value.IsType<glm::vec4>())
     {
-      ComponentProperty<glm::vec4> *comProp = AddPropertyOrField<glm::vec4>(aProp.first, aProperty);
+      ComponentProperty<glm::vec4> *comProp = AddPropertyOrField<glm::vec4>(aProp, aProperty);
       auto propData = value.As<glm::vec4>();
       comProp->SetValue(propData);
       comProp->SetEvents();

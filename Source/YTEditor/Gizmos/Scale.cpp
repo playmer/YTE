@@ -25,6 +25,11 @@ namespace YTEditor
 
   void Scale::ScaleObject(YTE::Composition *aObj, glm::vec3 aDelta)
   {
+    if (!aObj)
+    {
+      return;
+    }
+
     glm::vec3 change = glm::vec3(0.0f, 0.0f, 0.0f);
 
     // get the transform of the currently selected object

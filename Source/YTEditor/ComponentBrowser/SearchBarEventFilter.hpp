@@ -31,7 +31,7 @@ namespace YTEditor
 
     virtual ~SearchBarEventFilter() { }
 
-    bool eventFilter(QObject *aWatched, QEvent * aEvent);
+    bool eventFilter(QObject *aWatched, QEvent *aEvent) override;
 
   private:
 

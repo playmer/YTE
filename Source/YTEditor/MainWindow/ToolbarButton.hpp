@@ -9,6 +9,8 @@ namespace YTEditor
   public:
     ToolbarButton(Toolbar *aToolbar, QString aIconPath);
 
+    void ResetOtherButtons();
+
     void SetResetterMode(bool isResetter);
 
     void SetIsUncheckable(bool isUncheckable);

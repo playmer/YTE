@@ -39,6 +39,8 @@ Set(YTEditorSource main.cpp
                    FileViewer/FileViewer.cpp
                    GameWindow/GameWindow.hpp
                    GameWindow/GameWindow.cpp
+                   GameWindow/GameWindowEventFilter.hpp
+                   GameWindow/GameWindowEventFilter.cpp
                    GameWindow/GameToolbar.hpp
                    GameWindow/GameToolbar.cpp
                    Gizmos/Axis.hpp

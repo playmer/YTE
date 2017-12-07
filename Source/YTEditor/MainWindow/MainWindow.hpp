@@ -42,6 +42,9 @@ namespace YTEditor
   class FileMenu;
   class UndoRedo;
   class Gizmo;
+  class GizmoToolbar;
+  class GameToolbar;
+  class GameObjectMenu;
 
 
   class MainWindow : public QMainWindow
@@ -50,7 +53,7 @@ namespace YTEditor
     MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
     ~MainWindow();
 
-    SubWindow& GetGameWindow();
+    SubWindow& GetLevelWindow();
     std::vector<SubWindow*>& GetSubWindows();
 
     ObjectBrowser& GetObjectBrowser();
@@ -71,6 +74,8 @@ namespace YTEditor
     UndoRedo* GetUndoRedo();
 
     void UpdateEngine();
+
+    YTE::Space* GetEditingLevel();
 
     YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
@@ -99,11 +104,15 @@ namespace YTEditor
 
     FileMenu* GetFileMenu();
 
+    GameObjectMenu* GetGameObjectMenu();
+
     PhysicsHandler& GetPhysicsHandler();
 
     Gizmo* CreateGizmo(YTE::Space *aSpace);
     Gizmo* RemakeGizmo();
     void DeleteGizmo();
+
+    GizmoToolbar* GetGizmoToolbar();
 
   private:
 
@@ -112,13 +121,15 @@ namespace YTEditor
     YTE::String mRunningSpaceName;
     YTE::String mRunningLevelName;
 
-    YTE::Space* mRunningSpace;
+    YTE::Space *mEditingLevel;
+    YTE::Space *mRunningSpace;
 
     QApplication *mApplication;
 
     UndoRedo *mUndoRedo;
 
     Gizmo *mGizmo;
+    float mGizmoScaleFactor;
 
     // Cstor helper functions and main subwindow vars //
     void SetWindowSettings();
@@ -135,7 +146,6 @@ namespace YTEditor
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
 
     QTabWidget *mCentralTabs;
-    SubWindow *mGameWindow;
     SubWindow *mLevelWindow;
 
     QWidget *mRunningWindowTab;
@@ -157,8 +167,14 @@ namespace YTEditor
     void ConstructMenuBar();
 
     FileMenu *mFileMenu;
+    GameObjectMenu *mGameObjectMenu;
 
     void closeEvent(QCloseEvent *event);
+    ////
+
+
+    GizmoToolbar *mGizmoToolbar;
+    GameToolbar *mGameToolbar;
   };
 
 }

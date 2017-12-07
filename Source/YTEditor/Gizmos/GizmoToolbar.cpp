@@ -39,6 +39,44 @@ namespace YTEditor
     AddButton(mScale);
   }
 
+  void GizmoToolbar::SetMode(int aMode)
+  {
+    switch (aMode)
+    {
+    case Mode::Select:
+    {
+      mSelect->setChecked(true);
+      mSelect->ResetOtherButtons();
+      SelectToggled(true);
+      break;
+    }
+
+    case Mode::Translate:
+    {
+      mTranslate->setChecked(true);
+      mTranslate->ResetOtherButtons();
+      TranslateToggled(true);
+      break;
+    }
+
+    case Mode::Rotate:
+    {
+      mRotate->setChecked(true);
+      mRotate->ResetOtherButtons();
+      RotateToggled(true);
+      break;
+    }
+
+    case Mode::Scale:
+    {
+      mScale->setChecked(true);
+      mScale->ResetOtherButtons();
+      ScaleToggled(true);
+      break;
+    }
+    }
+  }
+
   void GizmoToolbar::SelectToggled(bool checked)
   {
     // if this button is now selected

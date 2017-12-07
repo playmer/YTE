@@ -19,6 +19,22 @@ namespace YTEditor
     setIcon(QIcon(QDir(aIconPath).path()));
   }
 
+  void ToolbarButton::ResetOtherButtons()
+  {
+    if (mIsResetter)
+    {
+      auto buttons = mToolbar->GetButtons();
+
+      for (ToolbarButton *b : buttons)
+      {
+        if (b != this)
+        {
+          b->setChecked(false);
+        }
+      }
+    }
+  }
+
   void ToolbarButton::SetResetterMode(bool isResetter)
   {
     mIsResetter = isResetter;

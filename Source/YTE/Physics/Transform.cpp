@@ -60,8 +60,9 @@ namespace YTE
     YTEBindProperty(&Transform::GetScale, &Transform::SetScaleProperty, "Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+    YTEBindProperty(&Transform::GetRotation, &Transform::SetRotationPropertyQuat, "Rotation")
+      .AddAttribute<Serializable>();
     YTEBindProperty(&Transform::GetRotationAsEuler, &Transform::SetRotationProperty, "Rotation")
-      .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&Transform::SetRotation, (void (Transform::*) (const glm::vec3&)), "SetRotation", YTEParameterNames("eulerAngles"))
@@ -160,7 +161,7 @@ namespace YTE
 
   glm::vec3 Transform::GetRotationAsEuler() const
   {
-    return glm::eulerAngles(mRotation);
+    return glm::degrees(glm::eulerAngles(mRotation));
   }
   
   ////////////////////////////////////////////////////////////////////////////
@@ -183,7 +184,7 @@ namespace YTE
 
   glm::vec3 Transform::GetWorldRotationAsEuler() const
   {
-    return glm::eulerAngles(mWorldRotation);
+    return glm::degrees(glm::eulerAngles(mWorldRotation));
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -221,32 +222,23 @@ namespace YTE
     SetRotation(localRotation);
   }
 
-  void Transform::SetRotation(const glm::vec3& aEulerRot)
+  void Transform::SetRotation(const glm::vec3& aEulerRotation)
   {
-    auto previous = GetRotationAsEuler();
+    glm::vec3 eulerAngles = glm::radians(aEulerRotation);
 
-    auto current = aEulerRot - previous;
+    const glm::vec3 localXAxis{1.0f, 0.0f, 0.0f};
+    const glm::vec3 localYAxis{0.0f, 1.0f, 0.0f};
+    const glm::vec3 localZAxis{0.0f, 0.0f, 1.0f};
 
-    auto accumulated = mRotation;
+    auto localX = glm::rotate(eulerAngles.x, localXAxis);
+    auto localY = glm::rotate(eulerAngles.y, localYAxis);
+    auto localZ = glm::rotate(eulerAngles.z, localZAxis);
 
-    const float fakeEpsilon{0.1f};
+    auto localRotation = localZ * localY * localX;
 
-    if (current.x > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({1, 0, 0}, current.x);
-    }
+    glm::quat local{localRotation};
 
-    if (current.y > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({0, 1, 0}, current.y);
-    }
-
-    if (current.z > fakeEpsilon || current.z < -fakeEpsilon)
-    {
-      accumulated = accumulated * YTE::AroundAxis({0, 0, 1}, current.z);
-    }
-
-    SetRotation(accumulated);
+    SetRotation(local);
   }
 
   void Transform::SetRotation(const glm::quat& aLocalRotation)
@@ -293,8 +285,21 @@ namespace YTE
 
   void Transform::SetWorldRotation(const glm::vec3& aWorldEulerRotation)
   {
-    glm::quat world{ aWorldEulerRotation };
-    SetWorldRotation(world);
+    glm::vec3 eulerAngles = glm::radians(aWorldEulerRotation);
+
+    const glm::vec3 worldXAxis{1.0f, 0.0f, 0.0f};
+    const glm::vec3 worldYAxis{0.0f, 1.0f, 0.0f};
+    const glm::vec3 worldZAxis{0.0f, 0.0f, 1.0f};
+    
+    auto worldX = glm::rotate(eulerAngles.x, worldXAxis);
+    auto worldY = glm::rotate(eulerAngles.y, worldYAxis);
+    auto worldZ = glm::rotate(eulerAngles.z, worldZAxis);
+    
+    auto localRotation = worldZ * worldY * worldX;
+    
+    glm::quat world{localRotation};
+    
+    SetRotation(world);
   }
 
   void Transform::SetWorldRotation(const glm::quat& aWorldRotation)

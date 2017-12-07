@@ -82,6 +82,8 @@ namespace YTEditor
     void OnCurrentItemChanged(QTreeWidgetItem *current,
       QTreeWidgetItem *previous);
 
+    void DuplicateCurrentlySelected();
+
   private:
     MainWindow *mMainWindow;
     void SetWidgetSettings();

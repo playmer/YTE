@@ -285,7 +285,8 @@ namespace YTEditor
     }
     else
     {
-      obj->mBoxShape = std::make_unique<btBoxShape>(scale / 2.0f);
+      //obj->mBoxShape = std::make_unique<btBoxShape>(scale / 2.0f);
+      obj->mBoxShape = std::make_unique<btBoxShape>(btVector3(0.000001f, 0.000001f, 0.000001f));
       obj->mShape = obj->mBoxShape.get();
     }
 

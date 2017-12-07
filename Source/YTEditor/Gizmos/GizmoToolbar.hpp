@@ -13,6 +13,16 @@ namespace YTEditor
 
     GizmoToolbar(MainWindow *aMainWindow);
 
+    void SetMode(int aMode);
+
+    enum Mode
+    {
+      Select,
+      Translate,
+      Rotate,
+      Scale
+    };
+
   private:
 
     ToolbarButton *mSelect;

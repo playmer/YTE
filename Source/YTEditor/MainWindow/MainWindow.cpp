@@ -56,6 +56,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
+#include "YTEditor/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/GameWindow/GameToolbar.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
@@ -91,7 +92,10 @@ namespace YTEditor
     mRunningSpace(nullptr),
     mUndoRedo(new UndoRedo()),
     mGizmo(nullptr),
-    mRunningWindow(nullptr)
+    mRunningWindow(nullptr),
+    mFileMenu(nullptr),
+    mGameObjectMenu(nullptr),
+    mGizmoScaleFactor(1.0f)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -113,8 +117,8 @@ namespace YTEditor
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
     // Get the space that represents the main session
-    YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
-    mPhysicsHandler = std::make_unique<PhysicsHandler>(lvl, yteWin, this);
+    mEditingLevel = static_cast<YTE::Space*>(it_lvl->second.get());
+    mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
 
     aEngine->Initialize();
     ConstructWWiseWidget();
@@ -126,7 +130,7 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-    CreateGizmo(lvl);
+    CreateGizmo(mEditingLevel);
   }
 
   MainWindow::~MainWindow()
@@ -161,6 +165,41 @@ namespace YTEditor
       }
     }
 
+    // scale gizmo w.r.t camera's distance from object
+    if (mGizmo)
+    {
+      auto currentObj = GetObjectBrowser().GetCurrentObject();
+      
+      if (currentObj)
+      {
+        auto objTransform = currentObj->GetComponent<YTE::Transform>();
+        
+        if (objTransform)
+        {
+          glm::vec3 objPos = objTransform->GetWorldTranslation();
+
+          auto view = mEditingLevel->GetComponent<YTE::GraphicsView>();
+          auto cameraComponent = view->GetLastCamera();
+          auto cameraObject = cameraComponent->GetOwner();
+          auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
+          glm::vec3 camPos = cameraTransform->GetWorldTranslation();
+
+          glm::vec3 dirVec = camPos - objPos;
+          float dist = length(dirVec) / 12.0f;
+
+          if (dist < 1.0f)
+          {
+            dist = 1.0f;
+          }
+
+          glm::vec3 gizmoScale = mGizmoScaleFactor * glm::vec3(dist, dist, dist);
+
+          mGizmo->mGizmoObj->GetComponent<YTE::Transform>()->SetScale(gizmoScale);
+        }
+      }
+    }
+
+
     //YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
     //
     //if (currObj)
@@ -178,9 +217,14 @@ namespace YTEditor
     //}
   }
 
-  SubWindow& MainWindow::GetGameWindow()
+  YTE::Space* MainWindow::GetEditingLevel()
   {
-    return *mGameWindow;
+    return mEditingLevel;
+  }
+
+  SubWindow& MainWindow::GetLevelWindow()
+  {
+    return *mLevelWindow;
   }
 
   std::vector<SubWindow*>& MainWindow::GetSubWindows()
@@ -440,21 +484,71 @@ namespace YTEditor
 
   void MainWindow::keyPressEvent(QKeyEvent * aEvent)
   {
+    auto mouse = mLevelWindow->mWindow->mMouse;
+
     if (aEvent->modifiers() == Qt::Modifier::CTRL)
     {
+      // undo
       if (aEvent->key() == Qt::Key_Z)
       {
         //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Z");
         mUndoRedo->ExecuteUndo();
       }
+      // redo
       else if (aEvent->key() == Qt::Key_Y)
       {
         //GetOutputConsole().PrintLnC(OutputConsole::Color::Green, "Main Window CTRL+Y");
         mUndoRedo->ExecuteRedo();
       }
+      // save level
       else if (aEvent->key() == Qt::Key_S)
       {
         SaveCurrentLevel();
+      }
+
+      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      {
+        // increase gizmo scale factor
+        if (aEvent->key() == Qt::Key_E)
+        {
+          mGizmoScaleFactor += 0.02f;
+        }
+        // decrease gizmo scale factor
+        else if (aEvent->key() == Qt::Key_Q)
+        {
+          mGizmoScaleFactor -= 0.02f;
+        }
+        // duplicate current object
+        else if (aEvent->key() == Qt::Key_D)
+        {
+          //GetObjectBrowser();
+        }
+      }
+    }
+    else if (aEvent->modifiers() != Qt::Modifier::ALT)
+    {
+      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      {
+        // change to select gizmo
+        if (aEvent->key() == Qt::Key_Q)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Select);
+        }
+        // change to translate gizmo
+        else if (aEvent->key() == Qt::Key_W)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Translate);
+        }
+        // change to rotate gizmo
+        else if (aEvent->key() == Qt::Key_E)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Rotate);
+        }
+        // change to scale gizmo
+        else if (aEvent->key() == Qt::Key_R)
+        {
+          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Scale);
+        }
       }
     }
     else
@@ -466,6 +560,11 @@ namespace YTEditor
   FileMenu* MainWindow::GetFileMenu()
   {
     return mFileMenu;
+  }
+
+  GameObjectMenu * MainWindow::GetGameObjectMenu()
+  {
+    return mGameObjectMenu;
   }
 
   PhysicsHandler& MainWindow::GetPhysicsHandler()
@@ -511,6 +610,11 @@ namespace YTEditor
     mGizmo = nullptr;
   }
 
+  GizmoToolbar* MainWindow::GetGizmoToolbar()
+  {
+    return mGizmoToolbar;
+  }
+
   void MainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
@@ -537,18 +641,19 @@ namespace YTEditor
     mCentralTabs->setTabsClosable(true);
     mCentralTabs->setUsesScrollButtons(true);
     this->setCentralWidget(mCentralTabs);
-
-    //mGameWindow = new GameWindow(mCentralTabs);
-    //mCentralTabs->addTab(mGameWindow, "Game");
-
+    
     auto &windows = mRunningEngine->GetWindows();
     auto it = windows.begin();
 
-    mGameWindow = new SubWindow(it->second.get(), this);
-    auto widget = createWindowContainer(mGameWindow);
+    mLevelWindow = new SubWindow(it->second.get(), this);
+
+    GameWindowEventFilter *filter = new GameWindowEventFilter(mLevelWindow, this);
+    mLevelWindow->installEventFilter(filter);
+
+    auto widget = createWindowContainer(mLevelWindow);
     mCentralTabs->addTab(widget, "Level");
 
-    auto id = mGameWindow->winId();
+    auto id = mLevelWindow->winId();
 
     it->second->SetWindowId(reinterpret_cast<void*>(id));
 
@@ -566,11 +671,11 @@ namespace YTEditor
 
   void MainWindow::ConstructToolbar()
   {
-    GizmoToolbar *gizTool = new GizmoToolbar(this);
-    addToolBar(gizTool);
+    mGizmoToolbar = new GizmoToolbar(this);
+    addToolBar(mGizmoToolbar);
 
-    GameToolbar *gameTool = new GameToolbar(this);
-    addToolBar(gameTool);
+    mGameToolbar = new GameToolbar(this);
+    addToolBar(mGameToolbar);
   }
 
   void MainWindow::ConstructObjectBrowser()
@@ -649,37 +754,57 @@ namespace YTEditor
 
     menuBar->addMenu(new EditMenu(this));
     menuBar->addMenu(new WindowsMenu(this));
-    menuBar->addMenu(new GameObjectMenu(this));
+
+    mGameObjectMenu = new GameObjectMenu(this);
+    menuBar->addMenu(mGameObjectMenu);
+    
     menuBar->addMenu(new LevelMenu(this));
     menuBar->addMenu(new ImportMenu(this));
 
     this->setMenuBar(menuBar);
   }
 
-  void MainWindow::closeEvent(QCloseEvent * event)
+  void MainWindow::closeEvent(QCloseEvent *event)
   {
     // ask the user if they want to save the level
+    QMessageBox quitConfirm;
+    quitConfirm.setWindowTitle("Quit Confirmation");
+    quitConfirm.setText("You may have unsaved changes.\nSave your changes before exiting?");
+    quitConfirm.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    quitConfirm.setDefaultButton(QMessageBox::Save);
 
-    QMessageBox::StandardButton reply;
+    int reply = quitConfirm.exec();
 
-    reply = QMessageBox::question(this, "Quit Confirmation", "Are you sure you want to quit?\nAny unsaved progress will be lost.", QMessageBox::Yes | QMessageBox::No);
-
-    if (reply == QMessageBox::Yes)
+    if (reply == QMessageBox::Save)
     {
-      GetGameWindow().mWindow->mEngine = nullptr;
-      GetGameWindow().mWindow = nullptr;
+      SaveCurrentLevel();
+
+      GetLevelWindow().mWindow->mEngine = nullptr;
+      GetLevelWindow().mWindow = nullptr;
 
       GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
       GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
-      
+
+      event->accept();
+    }
+    else if (reply == QMessageBox::Discard)
+    {
+      GetLevelWindow().mWindow->mEngine = nullptr;
+      GetLevelWindow().mWindow = nullptr;
+
+      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
+      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+
+      GetRunningEngine()->EndExecution();
+      GetRunningEngine()->Update();
+
       event->accept();
     }
     else
     {
-      // don't quit
       event->ignore();
     }
   }

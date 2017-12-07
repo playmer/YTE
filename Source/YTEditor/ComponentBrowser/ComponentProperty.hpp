@@ -36,22 +36,14 @@ namespace YTEditor
   class ComponentProperty : public PropertyWidget<T>
   {
   public:
-    ComponentProperty(const std::string &aName, MainWindow *aMainWindow, ComponentWidget* aParent)
-      : PropertyWidget<T>(aName, aMainWindow, aParent)
+    ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, MainWindow *aMainWindow, ComponentWidget* aParent)
+      : PropertyWidget<T>(aProp.first, aMainWindow, aParent)
       , mParentComponent(aParent)
     {
-      auto& propMap = aParent->GetEngineComponent()->GetType()->GetProperties();
+      YTE::String tip = aProp.second->Description();
 
-      std::string name = this->GetName();
-
-      auto it_prop = propMap.FindFirst(name);
-
-      if (it_prop == propMap.end())
-      {
-        return;
-      }
-
-      YTE::String tip = it_prop->second->Description();
+      mGetter = aProp.second->GetGetter();
+      mSetter = aProp.second->GetSetter();
 
       this->GetLabelWidget()->setToolTip(tip.c_str());
 
@@ -102,6 +94,9 @@ namespace YTEditor
 
     ComponentWidget* mParentComponent;
 
+    YTE::Function *mGetter;
+    YTE::Function *mSetter;
+
   };
 
   template <class T>
@@ -109,25 +104,19 @@ namespace YTEditor
   {
     YTE::Type *cmpType = mParentComponent->GetEngineComponent()->GetStaticType();
 
-    auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
-
-    std::string name = this->GetName();
-
-    auto it_prop = propMap.FindFirst(name);
-    YTE::Function *getter = it_prop->second.get()->GetGetter();
-    YTE::Any *oldVal = new YTE::Any(getter->Invoke(mParentComponent->GetEngineComponent()));
+    YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
     T val = this->GetPropertyValues();
-    YTE::Any *modVal = new YTE::Any(val);
+    YTE::Any modVal = YTE::Any(val);
 
     ArchetypeTools *archTools = mParentComponent->GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
     // Add command to main window undo redo
     auto cmd = std::make_unique<ChangePropValCmd>(cmpType,
-      oldVal,
-      modVal,
-      &mParentComponent->GetMainWindow()->GetOutputConsole(),
-      archTools);
+                                                  oldVal,
+                                                  modVal,
+                                                  &mParentComponent->GetMainWindow()->GetOutputConsole(),
+                                                  archTools);
 
     mParentComponent->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
 
@@ -139,11 +128,8 @@ namespace YTEditor
   template<class T>
   void ComponentProperty<T>::BaseSaveToEngine()
   {
-    auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
     T value = this->GetPropertyValues();
-    auto it_prop = propMap.FindFirst(this->GetName());
-    YTE::Function *setter = it_prop->second.get()->GetSetter();
-    setter->Invoke(mParentComponent->GetEngineComponent(), value);
+    mSetter->Invoke(mParentComponent->GetEngineComponent(), value);
   }
 
 
@@ -168,11 +154,7 @@ namespace YTEditor
       }
     }
 
-    auto& propMap = mParentComponent->GetEngineComponent()->GetType()->GetProperties();
-    auto it_prop = propMap.FindFirst(this->GetName());
-    YTE::Function *getter = it_prop->second.get()->GetGetter();
-    
-    YTE::Any updatedValue = getter->Invoke(mParentComponent->GetEngineComponent());
+    YTE::Any updatedValue = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
     this->SetValue(updatedValue.As<T>());
   }
