@@ -19,6 +19,7 @@
   Var ADD_TO_PATH_CURRENT_USER
   Var INSTALL_DESKTOP
   Var IS_DEFAULT_INSTALLDIR
+  Var VULKAN_UNINSTALL
 ;--------------------------------
 ;Include Modern UI
 
@@ -643,6 +644,9 @@ Section "-Core installation"
   @CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS@
   @CPACK_NSIS_FULL_INSTALL@
 
+  ExecWait "$INSTDIR\Redists\VC_redist.x64.exe /install /quiet /norestart"
+  ExecWait '"$INSTDIR\Redists\VulkanRT-1.0.46.0-Installer.exe" /S'
+
   ;Store installation folder
   WriteRegStr SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "" $INSTDIR
 
@@ -692,21 +696,24 @@ Section "-Core installation"
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 
   ;Create shortcuts
-  CreateDirectory "$SMPROGRAMS\DigiPen"
-  CreateDirectory "$SMPROGRAMS\DigiPen\$STARTMENU_FOLDER"
+  CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
 
   ; Start Menu shortcuts should be made like this, it's a macro made by CPack. 
   ; But it doesn't allow me to set a vendor directory.
-  ;@CPACK_NSIS_CREATE_ICONS@
+  ; @CPACK_NSIS_CREATE_ICONS@
 
-  SetOutPath "$INSTDIR\bin"
-  CreateShortCut "$SMPROGRAMS\Digipen\$STARTMENU_FOLDER\Synesthesia.lnk" "$INSTDIR\bin/\Synesthesia.exe"
+  SetOutPath "$INSTDIR\Bin"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\Bin\@CPACK_NSIS_PACKAGE_NAME@.exe"
   StrCmp "$INSTALL_DESKTOP" "1" 0 +2
-    CreateShortCut "$DESKTOP\Synesthesia.lnk" "$INSTDIR\bin/\Synesthesia.exe"
+    CreateShortCut "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\Bin/\@CPACK_NSIS_PACKAGE_NAME@.exe"
 
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk" "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.exe"
 
-  CreateShortCut "$SMPROGRAMS\Digipen\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk" "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.exe"
+  ;Read a value from an InstallOptions INI file
+  !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
+  !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -731,13 +738,13 @@ Section "-Core installation"
 
 SectionEnd
 
-Section "-Add to path"
+;Section "-Add to path"
 ;  Push $INSTDIR\bin
 ;  StrCmp "@CPACK_NSIS_MODIFY_PATH@" "ON" 0 doNotAddToPath
 ;  StrCmp $DO_NOT_ADD_TO_PATH "1" doNotAddToPath 0
 ;    Call AddToPath
 ;  doNotAddToPath:
-SectionEnd
+;SectionEnd
 
 ;--------------------------------
 ; Create custom pages
@@ -827,6 +834,14 @@ Section "Uninstall"
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "InstallToDesktop"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
 
+  ;Remove VulkanRT
+  ReadRegStr $VULKAN_UNINSTALL HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
+  ${If} $VULKAN_UNINSTALL == ""
+    ExecWait '"C:\Program Files (x86)\VulkanRT\1.0.46.0\UninstallVulkanRT.exe" /S'
+  ${Else}
+    ExecWait '"$VULKAN_UNINSTALL" /S'
+  ${EndIf}
+
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
   ;Remove files we installed.
@@ -846,7 +861,7 @@ Section "Uninstall"
   ;Remove the installation directory if it is empty.
   RMDir "$INSTDIR"
   RMDir "$PROGRAMFILES64\Digipen"
-  RMDir "$SMPROGRAMS\Digipen"
+  RMDir "$SMPROGRAMS\$STARTMENU_FOLDER";
 
   ; Remove the registry entries.
   DeleteRegKey SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@"
@@ -859,16 +874,16 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\$MUI_TEMP\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk"
 
   ; SHould be deleting icons like this. But I'm not.
-  ;@CPACK_NSIS_DELETE_ICONS@
+  @CPACK_NSIS_DELETE_ICONS@
 
-  Delete "$SMPROGRAMS\Digipen\Synesthesia\Synesthesia Uninstall.lnk"
-  Delete "$SMPROGRAMS\Digipen\Synesthesia\Synesthesia.lnk"
-  StrCmp "$INSTALL_DESKTOP" "1" 0 +2
-    Delete "$DESKTOP\Synesthesia.lnk"
+  Delete "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk"
+  Delete "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk"
+  ;StrCmp "$INSTALL_DESKTOP" "1" 0 +2
+  ;  Delete "$DESKTOP\LambPlanet.lnk"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
   ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\Synesthesia"
+  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
 
   startMenuDeleteLoop:
     ClearErrors
@@ -887,7 +902,7 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
   ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\Synesthesia"
+  StrCpy $MUI_TEMP "$SMPROGRAMS\$MUI_TEMP"
 
   secondStartMenuDeleteLoop:
     ClearErrors
