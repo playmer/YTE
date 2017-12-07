@@ -171,8 +171,8 @@ namespace YTEditor
 
 
   ChangePropValCmd::ChangePropValCmd(YTE::Type *aCmpType,
-    YTE::Any *aOldVal,
-    YTE::Any *aNewVal,
+    YTE::Any aOldVal,
+    YTE::Any aNewVal,
     OutputConsole *aConsole,
     ArchetypeTools *aTools)
     : Command(aConsole),

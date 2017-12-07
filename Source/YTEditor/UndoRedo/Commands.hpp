@@ -96,8 +96,8 @@ namespace YTEditor
   {
   public:
     ChangePropValCmd(YTE::Type *aCmpType,
-      YTE::Any *aOldVal,
-      YTE::Any *aNewVal,
+      YTE::Any aOldVal,
+      YTE::Any aNewVal,
       OutputConsole *aConsole,
       ArchetypeTools *aTools);
 
@@ -107,8 +107,8 @@ namespace YTEditor
     void UnExecute() override;
 
   private:
-    YTE::Any *mPreviousValue;
-    YTE::Any *mModifiedValue;
+    YTE::Any mPreviousValue;
+    YTE::Any mModifiedValue;
     YTE::Type *mCmpType;
 
     OutputConsole *mConsole;

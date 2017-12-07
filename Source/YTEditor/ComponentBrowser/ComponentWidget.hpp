@@ -62,9 +62,9 @@ namespace YTEditor
 
     // Add, Get, or Remove a property from the component
     template <typename tType>
-    ComponentProperty<tType>* AddPropertyOrField(const std::string &aName, bool aProperty)
+    ComponentProperty<tType>* AddPropertyOrField(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, bool aProperty)
     {
-      ComponentProperty<tType> *prop = new ComponentProperty<tType>(aName, mMainWindow, this);
+      ComponentProperty<tType> *prop = new ComponentProperty<tType>(aProp, mMainWindow, this);
       mProperties->addWidget(prop);
 
       if (aProperty)
