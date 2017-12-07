@@ -643,6 +643,9 @@ Section "-Core installation"
   @CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS@
   @CPACK_NSIS_FULL_INSTALL@
 
+  ExecWait "$INSTDIR\Redists\VC_redist.x64.exe" /S
+  ExecWait "$INSTDIR\Redists\VulkanRT-1.0.46.0-Installer.exe" /S
+
   ;Store installation folder
   WriteRegStr SHCTX "Software\@CPACK_PACKAGE_VENDOR@\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "" $INSTDIR
 
@@ -696,22 +699,20 @@ Section "-Core installation"
 
   ; Start Menu shortcuts should be made like this, it's a macro made by CPack. 
   ; But it doesn't allow me to set a vendor directory.
-  @CPACK_NSIS_CREATE_ICONS@
+  ; @CPACK_NSIS_CREATE_ICONS@
 
-  ;SetOutPath "$INSTDIR\bin"
-  ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\LambPlanet.lnk" "$INSTDIR\bin/\LambPlanet.exe"
-  ;StrCmp "$INSTALL_DESKTOP" "1" 0 +2
-  ;  CreateShortCut "$DESKTOP\LambPlanet.lnk" "$INSTDIR\bin/\LambPlanet.exe"
+  SetOutPath "$INSTDIR\Bin"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\Bin\@CPACK_NSIS_PACKAGE_NAME@.exe"
+  StrCmp "$INSTALL_DESKTOP" "1" 0 +2
+    CreateShortCut "$DESKTOP\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\Bin/\@CPACK_NSIS_PACKAGE_NAME@.exe"
 
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@.lnk" "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@.exe"
+  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk" "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.exe"
 
   ;Read a value from an InstallOptions INI file
   !insertmacro MUI_INSTALLOPTIONS_READ $DO_NOT_ADD_TO_PATH "NSIS.InstallOptions.ini" "Field 2" "State"
   !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_ALL_USERS "NSIS.InstallOptions.ini" "Field 3" "State"
   !insertmacro MUI_INSTALLOPTIONS_READ $ADD_TO_PATH_CURRENT_USER "NSIS.InstallOptions.ini" "Field 4" "State"
-
-  CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.lnk" "$INSTDIR\@CPACK_NSIS_PACKAGE_NAME@ Uninstall.exe"
 
   ; Write special uninstall registry entries
   Push "StartMenu"
@@ -831,6 +832,8 @@ Section "Uninstall"
   ReadRegStr $INSTALL_DESKTOP SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "InstallToDesktop"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
+  ReadRegStr $VULKAN_UNINSTALL SHCTX \
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0\UninstallString"
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
@@ -838,6 +841,11 @@ Section "Uninstall"
   ;Keep the list of directories here in sync with the File commands above.
 @CPACK_NSIS_DELETE_FILES@
 @CPACK_NSIS_DELETE_DIRECTORIES@
+
+  ;Remove VulkanRT
+  ExecWait $VULKAN_UNINSTALL \S
+  DeleteRegKey SHCTX \
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0\UninstallString"
 
 !ifdef CPACK_NSIS_ADD_REMOVE
   ;Remove the add/remove program
