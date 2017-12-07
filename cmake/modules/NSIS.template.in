@@ -700,9 +700,9 @@ Section "-Core installation"
   ;@CPACK_NSIS_CREATE_ICONS@
 
   SetOutPath "$INSTDIR\bin"
-  CreateShortCut "$SMPROGRAMS\Digipen\$STARTMENU_FOLDER\Synesthesia.lnk" "$INSTDIR\bin/\Synesthesia.exe"
+  CreateShortCut "$SMPROGRAMS\Digipen\$STARTMENU_FOLDER\LambPlanet.lnk" "$INSTDIR\bin/\LambPlanet.exe"
   StrCmp "$INSTALL_DESKTOP" "1" 0 +2
-    CreateShortCut "$DESKTOP\Synesthesia.lnk" "$INSTDIR\bin/\Synesthesia.exe"
+    CreateShortCut "$DESKTOP\LambPlanet.lnk" "$INSTDIR\bin/\LambPlanet.exe"
 
 @CPACK_NSIS_CREATE_ICONS_EXTRA@
 
@@ -861,14 +861,14 @@ Section "Uninstall"
   ; SHould be deleting icons like this. But I'm not.
   ;@CPACK_NSIS_DELETE_ICONS@
 
-  Delete "$SMPROGRAMS\Digipen\Synesthesia\Synesthesia Uninstall.lnk"
-  Delete "$SMPROGRAMS\Digipen\Synesthesia\Synesthesia.lnk"
+  Delete "$SMPROGRAMS\Digipen\LambPlanet\LambPlanet Uninstall.lnk"
+  Delete "$SMPROGRAMS\Digipen\LambPlanet\LambPlanet.lnk"
   StrCmp "$INSTALL_DESKTOP" "1" 0 +2
-    Delete "$DESKTOP\Synesthesia.lnk"
+    Delete "$DESKTOP\LambPlanet.lnk"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
   ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\Synesthesia"
+  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\LambPlanet"
 
   startMenuDeleteLoop:
     ClearErrors
@@ -887,7 +887,7 @@ Section "Uninstall"
 @CPACK_NSIS_DELETE_ICONS_EXTRA@
 
   ;Delete empty start menu parent diretories
-  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\Synesthesia"
+  StrCpy $MUI_TEMP "$SMPROGRAMS\DigiPen\LambPlanet"
 
   secondStartMenuDeleteLoop:
     ClearErrors
