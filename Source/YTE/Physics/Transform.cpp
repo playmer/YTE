@@ -161,7 +161,7 @@ namespace YTE
 
   glm::vec3 Transform::GetRotationAsEuler() const
   {
-    return glm::eulerAngles(mRotation);
+    return glm::degrees(glm::eulerAngles(mRotation));
   }
   
   ////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ namespace YTE
 
   glm::vec3 Transform::GetWorldRotationAsEuler() const
   {
-    return glm::eulerAngles(mWorldRotation);
+    return glm::degrees(glm::eulerAngles(mWorldRotation));
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -224,13 +224,15 @@ namespace YTE
 
   void Transform::SetRotation(const glm::vec3& aEulerRot)
   {
+    glm::vec3 eulerAngles = glm::radians(aEulerRot);
+
     const glm::vec3 localXAxis{1.0f, 0.0f, 0.0f};
     const glm::vec3 localYAxis{0.0f, 1.0f, 0.0f};
     const glm::vec3 localZAxis{0.0f, 0.0f, 1.0f};
 
-    auto localX = glm::rotate(aEulerRot.x, localXAxis);
-    auto localY = glm::rotate(aEulerRot.y, localYAxis);
-    auto localZ = glm::rotate(aEulerRot.z, localZAxis);
+    auto localX = glm::rotate(eulerAngles.x, localXAxis);
+    auto localY = glm::rotate(eulerAngles.y, localYAxis);
+    auto localZ = glm::rotate(eulerAngles.z, localZAxis);
 
     auto localRotation = localZ * localY * localX;
 
@@ -283,7 +285,20 @@ namespace YTE
 
   void Transform::SetWorldRotation(const glm::vec3& aWorldEulerRotation)
   {
-    glm::quat world{ aWorldEulerRotation };
+    glm::vec3 eulerAngles = glm::radians(aWorldEulerRotation);
+
+    //const glm::vec3 worldXAxis{ 1.0f, 0.0f, 0.0f };
+    //const glm::vec3 worldYAxis{ 0.0f, 1.0f, 0.0f };
+    //const glm::vec3 worldZAxis{ 0.0f, 0.0f, 1.0f };
+    //
+    //auto worldX = glm::rotate(eulerAngles.x, worldXAxis);
+    //auto worldY = glm::rotate(eulerAngles.y, worldYAxis);
+    //auto worldZ = glm::rotate(eulerAngles.z, worldZAxis);
+    //
+    //auto worldRotation = worldX * worldY * worldZ;
+    //
+    glm::quat world{ eulerAngles };
+
     SetWorldRotation(world);
   }
 
