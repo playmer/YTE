@@ -35,7 +35,7 @@ namespace YTEditor
     // get vector from object pos to mouse pos
     glm::vec3 toMPos = aFirstMousePos - objTrans->GetWorldTranslation();
 
-    glm::vec3 objRot = objTrans->GetRotationAsEuler();
+    glm::vec3 objRot = glm::radians(objTrans->GetRotationAsEuler());
 
     YTE::Transform *gizTrans = mOwner->GetOwner()->GetComponent<YTE::Transform>();
     auto gizRot = gizTrans->GetRotationAsEuler();
