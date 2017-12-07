@@ -818,6 +818,8 @@ FunctionEnd
 ;--------------------------------
 ;Uninstaller Section
 
+  Var VULKAN_UNINSTALL
+
 Section "Uninstall"
   ReadRegStr $START_MENU SHCTX \
    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "StartMenu"
@@ -833,7 +835,7 @@ Section "Uninstall"
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "InstallToDesktop"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
   ReadRegStr $VULKAN_UNINSTALL HKLM \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0\UninstallString" "Vulkan"
+    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
