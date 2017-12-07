@@ -128,7 +128,7 @@ namespace YTEditor
   template<class T>
   void ComponentProperty<T>::BaseSaveToEngine()
   {
-    YTE::Any value = mGetter->Invoke(mParentComponent->GetEngineComponent());
+    T value = this->GetPropertyValues();
     mSetter->Invoke(mParentComponent->GetEngineComponent(), value);
   }
 
