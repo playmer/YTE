@@ -5,6 +5,7 @@
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
+#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
 namespace YTE
@@ -55,11 +56,26 @@ namespace YTE
     return nullptr;
   }
 
+  std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
+  {
+    YTEUnusedArgument(aView);
+    return nullptr;
+  }
+
+
+
   void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aUBOView);
   }
+
+  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aIllumination);
+  }
+
 
   void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {

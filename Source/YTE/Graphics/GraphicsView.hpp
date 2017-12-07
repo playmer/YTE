@@ -20,6 +20,7 @@ namespace YTE
 
     void NativeInitialize() override;
     void UpdateView(Camera *aCamera, UBOView &aView);
+    void UpdateIllumination(UBOIllumination &aIllumination);
 
     // Getters / Setters
     glm::vec4 GetClearColor();

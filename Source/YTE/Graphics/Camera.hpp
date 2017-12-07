@@ -6,7 +6,8 @@
 #include "YTE/Core/Component.hpp" 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Graphics/ForwardDeclarations.hpp" 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/UBOs.hpp"
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
  
@@ -109,6 +110,26 @@ namespace YTE
       return mScrollSpeed;
     }
 
+    glm::vec3 GetGlobalIlluminaton() const
+    {
+      return glm::vec3(mIllumination.mGlobalIllumination);
+    }
+
+    glm::vec3 GetFogCoeffs() const
+    {
+      return glm::vec3(mIllumination.mFogCoefficients);
+    }
+
+    glm::vec3 GetFogColor() const
+    {
+      return glm::vec3(mIllumination.mFogColor);
+    }
+
+    glm::vec2 GetFogPlanes() const
+    {
+      return mIllumination.mFogPlanes;
+    }
+
     ///////////////////////////////////////
     // Setters
     ///////////////////////////////////////
@@ -195,6 +216,26 @@ namespace YTE
       mScrollSpeed = aScrollSpeed;
     }
 
+    void SetGlobalIlluminaton(glm::vec3 aGlobalIllum)
+    {
+      mIllumination.mGlobalIllumination = glm::vec4(aGlobalIllum, 1.0f);
+    }
+
+    void SetFogCoeffs(glm::vec3 aFogCoeffs)
+    {
+      mIllumination.mFogCoefficients = glm::vec4(aFogCoeffs, 0.0f);
+    }
+
+    void SetFogColor(glm::vec3 aColor)
+    {
+      mIllumination.mFogColor = glm::vec4(aColor, 1.0f);
+    }
+
+    void SetFogPlanes(glm::vec2 aFogPlanes)
+    {
+      mIllumination.mFogPlanes = aFogPlanes;
+    }
+
     void SetCameraType(std::string &aCameraType);
 
 
@@ -249,6 +290,8 @@ namespace YTE
     float mScrollSpeed;
     float mRotateSpeed;
     float mSpeedLimiter;
+
+    UBOIllumination mIllumination;
   }; 
 } 
  

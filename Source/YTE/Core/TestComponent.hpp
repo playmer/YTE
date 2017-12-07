@@ -28,6 +28,7 @@ namespace YTE
     float mCurrentScale;
     glm::vec3 mCurrentRotation;
     float mTime;
+    Engine* mEngine;
   };
 }
 

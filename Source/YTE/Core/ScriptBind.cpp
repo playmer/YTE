@@ -23,6 +23,7 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Light.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
@@ -92,6 +93,7 @@ namespace YTE
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Model>();
+    InitializeType<Light>();
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
     InitializeType<Sprite>();

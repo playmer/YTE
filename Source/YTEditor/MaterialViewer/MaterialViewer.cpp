@@ -79,12 +79,12 @@ namespace YTEditor
     this->Clear();
 
     // glm::vec3
-    AddVec3Property("Diffuse", aMaterial.mDiffuse);
-    AddVec3Property("Ambient", aMaterial.mAmbient);
-    AddVec3Property("Specular", aMaterial.mSpecular);
-    AddVec3Property("Emissive", aMaterial.mEmissive);
-    AddVec3Property("Transparent", aMaterial.mTransparent);
-    AddVec3Property("Reflective", aMaterial.mReflective);
+    AddVec3Property("Diffuse", glm::vec3(aMaterial.mDiffuse));
+    AddVec3Property("Ambient", glm::vec3(aMaterial.mAmbient));
+    AddVec3Property("Specular", glm::vec3(aMaterial.mSpecular));
+    AddVec3Property("Emissive", glm::vec3(aMaterial.mEmissive));
+    AddVec3Property("Transparent", glm::vec3(aMaterial.mTransparent));
+    AddVec3Property("Reflective", glm::vec3(aMaterial.mReflective));
 
     //float
     AddFloatProperty("Opacity", aMaterial.mOpacity);

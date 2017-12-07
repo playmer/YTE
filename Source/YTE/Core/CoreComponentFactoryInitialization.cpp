@@ -16,6 +16,7 @@
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Light.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
@@ -70,6 +71,7 @@ namespace YTE
 
     DeclareComponent(Camera);
     DeclareComponent(GraphicsView);
+    DeclareComponent(Light);
     DeclareComponent(Model);
     DeclareComponent(Skybox);
     DeclareComponent(Animator);

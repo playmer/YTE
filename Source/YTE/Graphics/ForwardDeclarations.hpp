@@ -11,15 +11,18 @@ namespace YTE
   class Animator;
   class Animation;
   class Camera;
+  class GraphicsDataUpdate;
   class GraphicsSystem;
   class GraphicsView;
-  class GraphicsDataUpdate;
+  class Light;
   class SimpleModel;
   class Model;
   struct Instance;
   struct UBOMaterial;
   struct UBOModel;
+  struct UBOLight;
   struct UBOView;
+  struct UBOIllumination;
   struct Vertex;
 }
 #endif

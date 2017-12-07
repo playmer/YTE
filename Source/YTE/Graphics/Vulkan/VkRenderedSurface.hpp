@@ -15,6 +15,7 @@
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
+#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 
 namespace YTE
 {
@@ -58,10 +59,13 @@ namespace YTE
 
       // Buffers
       std::shared_ptr<vkhlf::Buffer> mViewUBO;
+      std::shared_ptr<vkhlf::Buffer> mIlluminationUBO;
 
       // Engine Side Data
       glm::vec4 mClearColor;
       UBOView mViewUBOData;
+      UBOIllumination mIlluminationUBOData;
+      VkLightManager mLightManager;
       std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     };
 
@@ -75,6 +79,7 @@ namespace YTE
 
     ~VkRenderedSurface();
 
+    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOIllumination &aIllumination);
     void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
@@ -123,6 +128,8 @@ namespace YTE
                            VkShaderDescriptions &aDescription,
                            bool aCullBackFaces,
                            std::string &aDefines);
+
+    std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
 
 
     void ReloadAllShaders();
@@ -179,6 +186,11 @@ namespace YTE
       return GetViewData(aView).mViewUBO;
     }
 
+    std::shared_ptr<vkhlf::Buffer>& GetUBOIlluminationBuffer(GraphicsView *aView)
+    {
+      return GetViewData(aView).mIlluminationUBO;
+    }
+
     std::shared_ptr<vkhlf::CommandPool>& GetCommandPool()
     {
       return mCommandPool;
@@ -207,6 +219,11 @@ namespace YTE
     void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
     {
       GetViewData(aView).mClearColor = aColor;
+    }
+
+    VkLightManager* GetLightManager(GraphicsView *aView)
+    {
+      return &GetViewData(aView).mLightManager;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)

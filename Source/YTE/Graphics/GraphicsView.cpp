@@ -92,6 +92,11 @@ namespace YTE
     mLastCamera = aCamera;
     mRenderer->UpdateWindowViewBuffer(this, aView);
   }
+  
+  void GraphicsView::UpdateIllumination(UBOIllumination& aIllumination)
+  {
+    mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
+  }
 
   glm::vec4 GraphicsView::GetClearColor()
   {

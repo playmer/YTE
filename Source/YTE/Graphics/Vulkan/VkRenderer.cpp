@@ -10,6 +10,7 @@
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -104,7 +105,16 @@ namespace YTE
   {
     return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aView->GetWindow())->CreateModel(aView, aMesh));
   }
-  
+
+
+
+  std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
+  {
+    return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
+  }
+
+
+
   Mesh* VkRenderer::CreateSimpleMesh(GraphicsView *aView,
                                      std::string &aName,
                                      std::vector<Submesh> &aSubmeshes)
@@ -116,6 +126,15 @@ namespace YTE
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
   }
+
+
+
+  void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOIllumination& aIllumination)
+  {
+    GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
+  }
+
+
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {

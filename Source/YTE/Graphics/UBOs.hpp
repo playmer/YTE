@@ -10,6 +10,8 @@
 
 #include "YTE/Core/Utilities.hpp"
 
+#define YTE_Graphics_LightCount 64
+
 namespace YTE
 {
   namespace BoneConstants
@@ -42,18 +44,19 @@ namespace YTE
 
   struct UBOMaterial
   {
-    glm::vec3 mDiffuse;
-    glm::vec3 mAmbient;
-    glm::vec3 mSpecular;
-    glm::vec3 mEmissive;
-    glm::vec3 mTransparent;
-    glm::vec3 mReflective;
+    glm::vec4 mDiffuse;
+    glm::vec4 mAmbient;
+    glm::vec4 mSpecular;
+    glm::vec4 mEmissive;
+    glm::vec4 mTransparent;
+    glm::vec4 mReflective;
     float mOpacity = 1.0f;
     float mShininess = 1.0f;
     float mShininessStrength = 1.0f;
     float mReflectivity = 1.0f;
     float mReflectiveIndex = 1.0f;
     float mBumpScaling = 1.0f;
+    glm::vec2 mPadding = glm::vec2(0.0f, 0.0f);
   };
 
 
@@ -61,6 +64,28 @@ namespace YTE
   {
     glm::mat4 mBones[BoneConstants::MaxBones];
     bool mHasAnimation;    // 0 is false, 1 is true
+  };
+
+
+  struct UBOLight
+  {
+    glm::vec4 mPosition;
+    glm::vec4 mDirection;
+    glm::vec4 mAmbient;
+    glm::vec4 mDiffuse;
+    glm::vec4 mSpecular;
+    glm::vec2 mSpotLightConeAngles; // (inner, outer)
+    unsigned int mLightType;
+    float mSpotLightFalloff;
+  };
+
+  struct UBOIllumination
+  {
+    glm::vec4 mCameraPosition;
+    glm::vec4 mGlobalIllumination;
+    glm::vec4 mFogColor;
+    glm::vec4 mFogCoefficients;
+    glm::vec2 mFogPlanes;
   };
 }
 
