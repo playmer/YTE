@@ -112,6 +112,8 @@ namespace YTEditor
     Gizmo* RemakeGizmo();
     void DeleteGizmo();
 
+    GizmoToolbar* GetGizmoToolbar();
+
   private:
 
     // YTE GAME ENGINE

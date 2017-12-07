@@ -610,6 +610,11 @@ namespace YTEditor
     mGizmo = nullptr;
   }
 
+  GizmoToolbar* MainWindow::GetGizmoToolbar()
+  {
+    return mGizmoToolbar;
+  }
+
   void MainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
