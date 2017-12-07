@@ -836,7 +836,11 @@ Section "Uninstall"
 
   ;Remove VulkanRT
   ReadRegStr $VULKAN_UNINSTALL HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
-  ExecWait '"$VULKAN_UNINSTALL" /S'
+  ${If} $VULKAN_UNINSTALL == ""
+    ExecWait '"C:\Program Files (x86)\VulkanRT\1.0.46.0\UninstallVulkanRT.exe" /S'
+  ${Else}
+    ExecWait '"$VULKAN_UNINSTALL" /S'
+  ${EndIf}
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
