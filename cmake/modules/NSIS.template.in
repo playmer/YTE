@@ -19,6 +19,7 @@
   Var ADD_TO_PATH_CURRENT_USER
   Var INSTALL_DESKTOP
   Var IS_DEFAULT_INSTALLDIR
+  Var VULKAN_UNINSTALL
 ;--------------------------------
 ;Include Modern UI
 
@@ -643,7 +644,7 @@ Section "-Core installation"
   @CPACK_NSIS_EXTRA_PREINSTALL_COMMANDS@
   @CPACK_NSIS_FULL_INSTALL@
 
-  ExecWait "$INSTDIR\Redists\VC_redist.x64.exe"
+  ExecWait "$INSTDIR\Redists\VC_redist.x64.exe /install /quiet /norestart"
   ExecWait '"$INSTDIR\Redists\VulkanRT-1.0.46.0-Installer.exe" /S'
 
   ;Store installation folder
@@ -818,8 +819,6 @@ FunctionEnd
 ;--------------------------------
 ;Uninstaller Section
 
-  Var VULKAN_UNINSTALL
-
 Section "Uninstall"
   ReadRegStr $START_MENU SHCTX \
    "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "StartMenu"
@@ -834,8 +833,11 @@ Section "Uninstall"
   ReadRegStr $INSTALL_DESKTOP SHCTX \
     "Software\Microsoft\Windows\CurrentVersion\Uninstall\@CPACK_PACKAGE_INSTALL_REGISTRY_KEY@" "InstallToDesktop"
   ;MessageBox MB_OK "Install to desktop: $INSTALL_DESKTOP "
+
+  ;Remove VulkanRT
   ReadRegStr $VULKAN_UNINSTALL HKLM \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0" "UninstallString"
+  ExecWait "$VULKAN_UNINSTALL"
 
 @CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS@
 
@@ -843,11 +845,6 @@ Section "Uninstall"
   ;Keep the list of directories here in sync with the File commands above.
 @CPACK_NSIS_DELETE_FILES@
 @CPACK_NSIS_DELETE_DIRECTORIES@
-
-  ;Remove VulkanRT
-  ExecWait $VULKAN_UNINSTALL \S
-  DeleteRegKey HKLM \
-    "Software\Microsoft\Windows\CurrentVersion\Uninstall\VulkanRT1.0.46.0\UninstallString"
 
 !ifdef CPACK_NSIS_ADD_REMOVE
   ;Remove the add/remove program
