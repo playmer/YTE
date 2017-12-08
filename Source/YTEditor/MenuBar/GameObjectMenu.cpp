@@ -95,13 +95,6 @@ namespace YTEditor
   void GameObjectMenu::CreateSphere()
   {
     YTE::Composition *sphereObj = MakeObject("Sphere", "sphere.fbx");
-<<<<<<< HEAD
-    
-    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
-    compTree->ClearComponents();
-    compTree->LoadGameObject(sphereObj);
-=======
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 
     // cause item changed event to be sent again now that object has all its components
     ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
@@ -112,13 +105,6 @@ namespace YTEditor
   void GameObjectMenu::CreateCylinder()
   {
     YTE::Composition *planeObj = MakeObject("Cylinder", "cylinder.fbx");
-<<<<<<< HEAD
-
-    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
-    compTree->ClearComponents();
-    compTree->LoadGameObject(planeObj);
-=======
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 
     // cause item changed event to be sent again now that object has all its components
     ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
@@ -129,13 +115,6 @@ namespace YTEditor
   void GameObjectMenu::CreatePlane()
   {
     YTE::Composition *planeObj = MakeObject("Plane", "plane.fbx");
-<<<<<<< HEAD
-
-    auto compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
-    compTree->ClearComponents();
-    compTree->LoadGameObject(planeObj);
-=======
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 
     // cause item changed event to be sent again now that object has all its components
     ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
@@ -270,14 +249,10 @@ namespace YTEditor
 
     // add model
     YTE::BoundType* modelType = YTE::Type::GetGlobalType("Model");
-<<<<<<< HEAD
-    YTE::Model *modelComponent = static_cast<YTE::Model*>(obj->AddComponent(modelType));
-=======
     ComponentWidget *compWidget = compTree->AddComponent(modelType);
 
     YTE::Model *modelComponent = static_cast<YTE::Model*>(compWidget->GetEngineComponent());
 
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
     modelComponent->SetMesh(meshName);
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);

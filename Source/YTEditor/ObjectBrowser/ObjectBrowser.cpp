@@ -268,24 +268,14 @@ namespace YTEditor
   void ObjectBrowser::DuplicateCurrentlySelected()
   {
     YTE::Composition *currentObj = GetCurrentObject();
-<<<<<<< HEAD
-=======
-
     if (currentObj == nullptr)
     {
       return;
     }
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
     
     YTE::RSAllocator allocator;
     YTE::RSValue serialized = currentObj->Serialize(allocator);
 
-<<<<<<< HEAD
-    std::string currentName = currentObj->GetName().c_str();
-    currentName += " Copy";
-
-    mMainWindow->GetEditingLevel()->AddComposition(&serialized, currentName);
-=======
     YTE::RSStringBuffer sb;
     YTE::RSPrettyWriter writer(sb);
     serialized.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
@@ -297,7 +287,6 @@ namespace YTEditor
     duplicate->SetName(guid);
 
     AddExistingComposition(guid.c_str(), duplicate);
->>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
   }
 
   void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
