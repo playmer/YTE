@@ -79,7 +79,6 @@ namespace YTEditor
     }
 
 
-
     void RemoveProperty(QWidget *aWidget);
 
     void LoadProperties(YTE::Component *aComponent);
@@ -107,6 +106,8 @@ namespace YTEditor
     void keyPressEvent(QKeyEvent *aEvent);
 
     MainWindow* GetMainWindow() { return mMainWindow; }
+
+    QTreeWidgetItem* GetParentItem();
 
   private:
 

@@ -14,6 +14,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
+#include "YTE/Utilities/Utilities.h"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Meta/Type.hpp"
 
@@ -38,8 +39,8 @@ namespace YTEditor
   {
   public:
     AddObjectCmd(YTE::Composition *aObject,
-      OutputConsole *aConsole,
-      ObjectBrowser *aBrowser);
+                 OutputConsole *aConsole,
+                 ObjectBrowser *aBrowser);
     ~AddObjectCmd();
 
     void Execute() override;
@@ -47,9 +48,9 @@ namespace YTEditor
 
   private:
     YTE::Composition *mComposition;
-    YTE::Composition *mParent;
+    YTE::GlobalUniqueIdentifier mParentGuid;
     ObjectBrowser *mBrowser;
-    YTE::RSValue mSerialization;
+    YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
   };
@@ -57,38 +58,64 @@ namespace YTEditor
   class RemoveObjectCmd : public Command
   {
   public:
-    RemoveObjectCmd(const char *aObjName, OutputConsole *aConsole);
+    RemoveObjectCmd(YTE::Composition *aComposition,
+                    OutputConsole *aConsole,
+                    ObjectBrowser *aBrowser);
     ~RemoveObjectCmd();
 
     void Execute() override;
     void UnExecute() override;
 
   private:
-    std::string mObjectName;
+    YTE::Composition *mComposition;
+    YTE::GlobalUniqueIdentifier mParentGuid;
+    ObjectBrowser *mBrowser;
+    YTE::RSValue mSerializedComposition;
+    YTE::RSAllocator mAllocator;
+    YTE::String mName;
   };
 
   class AddComponentCmd : public Command
   {
   public:
-    AddComponentCmd(const char *aCompName, OutputConsole *aConsole);
+    AddComponentCmd(YTE::Component *aComponent,
+                    ComponentBrowser *aBrowser,
+                    OutputConsole *aConsole);
     ~AddComponentCmd();
 
     void Execute() override;
     void UnExecute() override;
 
   private:
+    YTE::GlobalUniqueIdentifier mParentGuid;
+    YTE::Component *mComponent;
+    YTE::Type *mComponentType;
+    YTE::RSValue mSerializedComponent;
+    YTE::RSAllocator mAllocator;
+
+    ComponentBrowser *mBrowser;
   };
 
   class RemoveComponentCmd : public Command
   {
   public:
-    RemoveComponentCmd(const char *aCompName, OutputConsole *aConsole);
+    RemoveComponentCmd(YTE::Component *aComponent,
+                       ComponentBrowser *aBrowser,
+                       OutputConsole *aConsole);
     ~RemoveComponentCmd();
 
     void Execute() override;
     void UnExecute() override;
 
   private:
+    YTE::GlobalUniqueIdentifier mParentGuid;
+    YTE::Component *mComponent;
+    YTE::Type *mComponentType;
+    YTE::RSValue mSerializedComponent;
+    YTE::RSAllocator mAllocator;
+
+    ComponentBrowser *mBrowser;
+
   };
 
 

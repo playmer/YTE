@@ -24,7 +24,7 @@ namespace YTE
 
     CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
 
   private:
     UniquePointer<btCylinderShape> mCylinderShape;

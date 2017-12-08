@@ -72,6 +72,11 @@ namespace YTE
       mKinematic = flag;
     }
 
+    bool IsKinematic() const
+    {
+      return mKinematic;
+    }
+
   private:
     Transform *mTransform;
     bool mKinematic;

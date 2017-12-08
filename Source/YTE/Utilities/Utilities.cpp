@@ -58,7 +58,7 @@ namespace YTE
     mVariant = (mVariant & variant1Mask) | (variant1Flags & variant1AffectedFlags);
   }
 
-  std::string GlobalUniqueIdentifier::ToString()
+  std::string GlobalUniqueIdentifier::ToString() const
   {
     std::string total{ '{' };
     total += Format("%08X", mPart1);

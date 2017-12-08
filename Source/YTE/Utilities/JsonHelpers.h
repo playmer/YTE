@@ -95,12 +95,12 @@ namespace YTE
   ///////////////////////////////
   inline glm::quat ValueAsQuaternion(RSValue *aValue)
   {
-    auto real4 = aValue->FindMember("Vector4");
+    auto real4 = aValue->FindMember("Quaternion");
+    auto w = static_cast<float>(real4->value.FindMember("w")->value.GetDouble());
     auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
     auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
     auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());
-    auto w = static_cast<float>(real4->value.FindMember("w")->value.GetDouble());
-    return glm::quat{ x, y, z, w };
+    return glm::quat{ w, x, y, z};
   }
 
   inline void QuaternionAsValue(RSValue &aValue, glm::quat aVector, RSAllocator &aAllocator)

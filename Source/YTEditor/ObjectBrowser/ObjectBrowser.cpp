@@ -268,14 +268,36 @@ namespace YTEditor
   void ObjectBrowser::DuplicateCurrentlySelected()
   {
     YTE::Composition *currentObj = GetCurrentObject();
+<<<<<<< HEAD
+=======
+
+    if (currentObj == nullptr)
+    {
+      return;
+    }
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
     
     YTE::RSAllocator allocator;
     YTE::RSValue serialized = currentObj->Serialize(allocator);
 
+<<<<<<< HEAD
     std::string currentName = currentObj->GetName().c_str();
     currentName += " Copy";
 
     mMainWindow->GetEditingLevel()->AddComposition(&serialized, currentName);
+=======
+    YTE::RSStringBuffer sb;
+    YTE::RSPrettyWriter writer(sb);
+    serialized.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
+    std::string levelInJson = sb.GetString();
+
+    YTE::Composition *duplicate = mMainWindow->GetEditingLevel()->AddComposition(&serialized, "Copy");
+
+    YTE::String guid = duplicate->GetGUID().ToString();
+    duplicate->SetName(guid);
+
+    AddExistingComposition(guid.c_str(), duplicate);
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
   }
 
   void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
@@ -352,9 +374,10 @@ namespace YTEditor
       return;
     }
 
+    YTE::Composition *engineObj = currItem->GetEngineObject();
+
     auto name = currItem->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveObjectCmd>(name.c_str(),
-      &mMainWindow->GetOutputConsole());
+    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, &mMainWindow->GetOutputConsole(), &mMainWindow->GetObjectBrowser());
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
 

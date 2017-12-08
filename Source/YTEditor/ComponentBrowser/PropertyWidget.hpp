@@ -245,7 +245,7 @@ namespace YTEditor
   template<>
   inline std::string PropertyWidget<std::string>::GetPropertyValues()
   {
-    LineEdit * deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
+    LineEdit *deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
     std::string value = deriv->text().toStdString();
     return value;
   }
@@ -253,8 +253,8 @@ namespace YTEditor
   template<>
   inline bool PropertyWidget<bool>::GetPropertyValues()
   {
-    CheckBox * deriv = dynamic_cast<CheckBox*>(mWidgets[0]);
-    bool value = deriv->text().toInt();
+    CheckBox *deriv = dynamic_cast<CheckBox*>(mWidgets[0]);
+    bool value = deriv->isChecked();
     return value;
   }
 

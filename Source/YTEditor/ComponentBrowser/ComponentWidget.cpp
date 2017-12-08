@@ -173,6 +173,11 @@ namespace YTEditor
     }
   }
 
+  QTreeWidgetItem * ComponentWidget::GetParentItem()
+  {
+    return mTopItem;
+  }
+
   void ComponentWidget::LoadProperty(YTE::Component &aComponent, bool aProperty, std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp)
   {
     auto getter = aProp.second.get()->GetGetter();

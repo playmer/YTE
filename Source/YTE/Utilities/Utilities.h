@@ -32,7 +32,7 @@ namespace YTE
   {
     GlobalUniqueIdentifier();
 
-    std::string ToString();
+    std::string ToString() const;
 
     bool operator==(GlobalUniqueIdentifier const& aGUID);
 

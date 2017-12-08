@@ -162,9 +162,12 @@ namespace YTEditor
             return false;
           }
 
+          YTE::Composition *engineObj = item->GetEngineObject();
+
+          OutputConsole &console = mBrowser->GetMainWindow()->GetOutputConsole();
+
           auto name = item->text(0).toStdString();
-          auto cmd = std::make_unique<RemoveObjectCmd>(name.c_str(),
-            &mBrowser->GetMainWindow()->GetOutputConsole());
+          auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, &console, mBrowser);
 
           mBrowser->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
 

@@ -11,7 +11,11 @@
 				},
 				"Transform": {
 					"Rotation": {
+<<<<<<< HEAD
 						"Vector4": {
+=======
+						"Quaternion": {
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 							"x": 0.0,
 							"y": 0.0,
 							"z": 0.0,
@@ -54,7 +58,11 @@
 				},
 				"Transform": {
 					"Rotation": {
+<<<<<<< HEAD
 						"Vector4": {
+=======
+						"Quaternion": {
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 							"x": 0.0,
 							"y": 0.0,
 							"z": 0.0,
@@ -97,7 +105,11 @@
 				},
 				"Transform": {
 					"Rotation": {
+<<<<<<< HEAD
 						"Vector4": {
+=======
+						"Quaternion": {
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 							"x": 0.0,
 							"y": 0.0,
 							"z": 0.0,
@@ -134,7 +146,11 @@
     "Components": {
         "Transform": {
 					"Rotation": {
+<<<<<<< HEAD
 						"Vector4": {
+=======
+						"Quaternion": {
+>>>>>>> e0516e0... lots of commits for pregrading, lots of fixes. things were squashed.
 							"x": 0.0,
 							"y": 0.0,
 							"z": 0.0,

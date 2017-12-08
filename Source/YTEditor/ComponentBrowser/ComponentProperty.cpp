@@ -24,6 +24,7 @@ namespace YTEditor
     YTE::Any currentString = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
     //TODO: need to set the current string but how???
+    mSetter->Invoke(mParentComponent->GetEngineComponent(), currentString);
   }
 
 

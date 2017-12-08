@@ -123,9 +123,11 @@ namespace YTE
 
     bool StoreCompositionGUID(Composition *aComposition);
     bool CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
 
     bool StoreComponentGUID(Component *aComponent);
     bool CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
 
 
   private:

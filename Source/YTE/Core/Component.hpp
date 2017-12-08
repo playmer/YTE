@@ -33,6 +33,8 @@ namespace YTE
     virtual void NativeInitialize() { };
     virtual void Initialize() { };
 
+    virtual void PhysicsInitialize() { };
+
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }
 

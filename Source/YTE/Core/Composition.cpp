@@ -584,6 +584,7 @@ namespace YTE
 
     Component *component = AddComponent(aType, nullptr);
     component->NativeInitialize();
+    component->PhysicsInitialize();
     component->Initialize();
     return component;
   }

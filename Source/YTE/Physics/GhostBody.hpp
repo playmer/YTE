@@ -29,7 +29,7 @@ namespace YTE
 
     ~GhostBody() override;
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
 
     btGhostObject* GetBody() { return mGhostBody.get(); };
 

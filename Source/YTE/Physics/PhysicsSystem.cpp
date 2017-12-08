@@ -72,9 +72,9 @@ namespace YTE
     mSolver = std::make_unique<btSequentialImpulseConstraintSolver>();
       
     mDynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(mDispatcher.get(),
-                                                                mOverlappingPairCache.get(),
-                                                                mSolver.get(),
-                                                                mCollisionConfiguration.get());
+                                                               mOverlappingPairCache.get(),
+                                                               mSolver.get(),
+                                                               mCollisionConfiguration.get());
       
     mDynamicsWorld->setGravity(btVector3(0, -10, 0));
   }

@@ -51,10 +51,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ComponentTree::ComponentTree(ComponentBrowser * parent)
-    : QTreeWidget(parent),
-    mComponentBrowser(parent),
-    mUndoRedo(mComponentBrowser->GetMainWindow()->GetUndoRedo())
+  ComponentTree::ComponentTree(ComponentBrowser *parent)
+    : QTreeWidget(parent)
+    , mComponentBrowser(parent)
+    , mUndoRedo(mComponentBrowser->GetMainWindow()->GetUndoRedo())
+    , mOutputConsole(&(mComponentBrowser->GetMainWindow()->GetOutputConsole()))
   {
     SetWindowSettings();
 
@@ -78,12 +79,12 @@ namespace YTEditor
   {
   }
 
-  void ComponentTree::LoadGameObject(YTE::Composition * aObj)
+  void ComponentTree::LoadGameObject(YTE::Composition *aObj)
   {
     this->ClearComponents();
 
     // Load all of the components on the object into the browser
-    YTE::ComponentMap & components = *(aObj->GetComponents());
+    YTE::ComponentMap &components = *(aObj->GetComponents());
 
     for (auto& comp : components)
     {
@@ -132,21 +133,98 @@ namespace YTEditor
     aItem->setBackgroundColor(0, "#383838");
   }
 
-  //void ComponentTree::AddComponent(ComponentWidget *aWidget)
-  //{
-  //  auto cmd = std::make_unique<AddComponentCmd>(aWidget->GetName().c_str(),
-  //    mOutputConsole);
-  //
-  //  mUndoRedo->InsertCommand(std::move(cmd));
-  //  BaseAddComponent(aWidget);
-  //}
+  QTreeWidgetItem* ComponentTree::FindComponentItem(YTE::Type *aComponentType)
+  {
+    for (auto &widget : mComponentWidgets)
+    {
+      YTE::Type *type = widget->GetEngineComponent()->GetType();
+
+      if (aComponentType == type)
+      {
+        return widget->GetParentItem();
+      }
+    }
+
+    return nullptr;
+  }
+
+  ComponentWidget* ComponentTree::AddComponent(YTE::Type *aComponentType)
+  {
+    ComponentWidget *widg = InternalAddComponent(aComponentType);
+    auto cmd = std::make_unique<AddComponentCmd>(widg->GetEngineComponent(), mComponentBrowser, mOutputConsole);
+    mUndoRedo->InsertCommand(std::move(cmd));
+
+    return widg;
+  }
 
   void ComponentTree::RemoveComponent(QTreeWidgetItem *aWidget)
   {
+    ComponentWidget *compWidg = dynamic_cast<ComponentWidget*>(aWidget);
+
+    if (!compWidg)
+    {
+      mOutputConsole->PrintLnC(OutputConsole::Color::Red, 
+        "Trying to remove a tree item from ComponentTree that isn't a component widget.");
+      
+      return;
+    }
+
     auto name = aWidget->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveComponentCmd>(name.c_str(), mOutputConsole);
+    auto cmd = std::make_unique<RemoveComponentCmd>(compWidg->GetEngineComponent(), mComponentBrowser, mOutputConsole);
     mUndoRedo->InsertCommand(std::move(cmd));
     BaseRemoveComponent(aWidget);
+  }
+
+  ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType)
+  {
+    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
+    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+
+    YTE::Composition *currentObj = objBrowser.GetCurrentObject();
+
+    YTE::Component *component = currentObj->AddComponent(aComponentType);
+
+    YTE::String name = component->GetType()->GetName();
+
+    QTreeWidgetItem *item = new QTreeWidgetItem(this);
+    item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+    item->setSizeHint(0, QSize(0, 27));
+
+    ComponentWidget *widg = CreateComponent(component->GetType(),
+      name.c_str(),
+      component,
+      item);
+
+    widg->LoadProperties(component);
+    BaseAddComponent(widg, item);
+
+    return widg;
+  }
+
+  ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType, YTE::RSValue *aSerializedComponent)
+  {
+    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
+    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+
+    YTE::Composition *currentObj = objBrowser.GetCurrentObject();
+
+    YTE::Component *component = currentObj->AddComponent(aComponentType, aSerializedComponent);
+
+    YTE::String name = component->GetType()->GetName();
+
+    QTreeWidgetItem *item = new QTreeWidgetItem(this);
+    item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+    item->setSizeHint(0, QSize(0, 27));
+
+    ComponentWidget *widg = CreateComponent(component->GetType(),
+                                            name.c_str(),
+                                            component,
+                                            item);
+
+    widg->LoadProperties(component);
+    BaseAddComponent(widg, item);
+
+    return widg;
   }
 
   void ComponentTree::BaseAddComponent(ComponentWidget *aWidget, QTreeWidgetItem *aTopItem)
@@ -205,9 +283,9 @@ namespace YTEditor
         compWidg->RemoveComponentFromEngine();
 
         mComponentWidgets.erase(std::remove(mComponentWidgets.begin(),
-          mComponentWidgets.end(),
-          compWidg),
-          mComponentWidgets.end());
+                                            mComponentWidgets.end(),
+                                            compWidg),
+                                mComponentWidgets.end());
       }
       else
       {
@@ -340,9 +418,9 @@ namespace YTEditor
     compWidg->RemoveComponentFromEngine();
 
     mComponentWidgets.erase(std::remove(mComponentWidgets.begin(),
-      mComponentWidgets.end(),
-      compWidg),
-      mComponentWidgets.end());
+                                        mComponentWidgets.end(),
+                                        compWidg),
+                            mComponentWidgets.end());
 
     currItem->setHidden(true);
     this->removeItemWidget(currItem, 0);

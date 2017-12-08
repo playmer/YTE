@@ -27,27 +27,7 @@ namespace YTE
     inline void DeserializeByType(RSValue *aProperties, MetaBoundType aSelf, BoundType *aType);
 
     // Search type and it's basetype for a property by the given name.
-    static inline Property* GetProperty(const std::string &aName, BoundType *aType)
-    {
-      if (aType == nullptr)
-      {
-        return nullptr;
-      }
-
-      Property *toReturn = aType->GetFirstProperty(aName);
-
-      if (toReturn == nullptr)
-      {
-        toReturn = aType->GetFirstField(aName);
-      }
-
-      if (toReturn == nullptr)
-      {
-        GetProperty(aName, aType->GetBaseType());
-      }
-
-      return toReturn;
-    }
+    static Property* GetProperty(const std::string &aName, BoundType *aType);
 
     // If you've asserted here, this isn't implemented, but Serialize has been called.
     virtual RSValue Serialize(RSAllocator &)
@@ -92,13 +72,6 @@ namespace YTE
         std::cout << "You have likely removed " << propertyName.c_str()
                   << " from " << aType->GetName().c_str()
                   << " but are still attempting to deserialize it." << std::endl;
-        continue;
-      }
-    
-      if (!namedProperty->GetAttribute<Serializable>())
-      {
-        std::cout << namedProperty->GetName() << " of Type " << aType->GetName()  
-                  << " does not appear to be a serializable property." << std::endl;
         continue;
       }
     
