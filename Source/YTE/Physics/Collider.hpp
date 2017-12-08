@@ -67,7 +67,7 @@ namespace YTE
 
     Collider(Composition *aOwner, Space *aSpace);
 
-    virtual void PhysicsInitialize() {};
+    virtual void PhysicsInitialize() override { };
 
     glm::vec3 GetTranslation() const;
       

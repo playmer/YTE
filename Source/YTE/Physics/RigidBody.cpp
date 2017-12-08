@@ -13,6 +13,13 @@
 #include "YTE/Physics/RigidBody.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CapsuleCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
+#include "YTE/Physics/MenuCollider.hpp"
+#include "YTE/Physics/MeshCollider.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+
 namespace YTE
 {
   YTEDefineType(RigidBody)
@@ -22,13 +29,23 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindField(&RigidBody::mMass, "Mass", PropertyBinding::GetSet)
-      .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType()},
+                                             { BoxCollider::GetStaticType(),
+                                               CapsuleCollider::GetStaticType(),
+                                               CylinderCollider::GetStaticType(),
+                                               MenuCollider::GetStaticType(),
+                                               MeshCollider::GetStaticType(),
+                                               SphereCollider::GetStaticType() }};
+    
+    RigidBody::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
+    YTEBindProperty(&RigidBody::GetMass, &RigidBody::SetMassProperty, "Mass")
+      .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindField(&RigidBody::mStatic, "Static", PropertyBinding::GetSet)
-      .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable")
+    YTEBindProperty(&RigidBody::IsKinematic, &RigidBody::SetKinematic, "Kinematic")
+      .SetDocumentation("If the object is kinematic, it can move. Non-kinematic objects are static.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
@@ -176,6 +193,38 @@ namespace YTE
 
   void RigidBody::SetKinematic(bool flag)
   {
-    mMotionState->SetKinematic(flag);
+    if (mMotionState)
+    {
+      mMotionState->SetKinematic(flag);
+    }
+  }
+
+  bool RigidBody::IsKinematic() const
+  {
+    if (mMotionState)
+    {
+      return mMotionState->IsKinematic();
+    }
+
+    return false;
+  }
+
+  void RigidBody::SetMass(float aMass)
+  {
+    if (aMass == 0.0)
+    {
+      mStatic = true;
+    }
+    else
+    {
+      mStatic = false;
+    }
+
+    mMass = aMass;
+  }
+
+  float RigidBody::GetMass() const
+  {
+    return mMass;
   }
 }

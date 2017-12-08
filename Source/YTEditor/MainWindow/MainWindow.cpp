@@ -122,6 +122,8 @@ namespace YTEditor
 
     aEngine->Initialize();
     ConstructWWiseWidget();
+
+    tabifyDockWidget(mMaterialViewer, mWWiseWidget);
     LoadCurrentLevelInfo();
 
     auto self = this;
@@ -274,12 +276,22 @@ namespace YTEditor
 
   QTreeView& MainWindow::GetFileViewer()
   {
-    return *dynamic_cast<QTreeView*>(mFileViewer->widget());
+    return *static_cast<QTreeView*>(mFileViewer->widget());
   }
 
   QDockWidget* MainWindow::GetFileViewerDock()
   {
     return mFileViewer;
+  }
+
+  WWiseWidget& MainWindow::GetWWiseWidget()
+  {
+    return *static_cast<WWiseWidget*>(mWWiseWidget->widget());
+  }
+
+  QDockWidget* MainWindow::GetWWiseWidgetDock()
+  {
+    return mWWiseWidget;
   }
 
   UndoRedo* MainWindow::GetUndoRedo()
@@ -394,7 +406,6 @@ namespace YTEditor
     auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
     graphicsView->ChangeWindow("YTEditor Play Window");
 
-
     auto window = graphicsView->GetWindow();
     window->mShouldBeRenderedTo = true;
 
@@ -402,7 +413,8 @@ namespace YTEditor
 
     mRunningWindow = new SubWindow(window, this);
     mRunningWindowTab = createWindowContainer(mRunningWindow);
-    mCentralTabs->addTab(mRunningWindowTab, "Game");
+    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
+    mCentralTabs->setCurrentIndex(index);
 
     auto id = mRunningWindow->winId();
 
@@ -521,7 +533,7 @@ namespace YTEditor
         // duplicate current object
         else if (aEvent->key() == Qt::Key_D)
         {
-          //GetObjectBrowser();
+          GetObjectBrowser().DuplicateCurrentlySelected();
         }
       }
     }
@@ -626,12 +638,15 @@ namespace YTEditor
 
   void MainWindow::ConstructSubWidgets()
   {
+    ConstructOutputConsole();
     ConstructGameWindows();
     ConstructObjectBrowser();
     ConstructComponentBrowser();
-    ConstructOutputConsole();
     ConstructMaterialViewer();
     ConstructFileViewer();
+
+    tabifyDockWidget(mMaterialViewer, mFileViewer);
+    tabifyDockWidget(mFileViewer, mComponentBrowser);
   }
 
   void MainWindow::ConstructGameWindows()
@@ -697,6 +712,8 @@ namespace YTEditor
     WWiseWidget *wwiseWidget = new WWiseWidget(mWWiseWidget, mRunningEngine);
     mWWiseWidget->setWidget(wwiseWidget);
     this->addDockWidget(Qt::RightDockWidgetArea, mWWiseWidget);
+
+    mWWiseWidget->hide();
   }
 
   void MainWindow::ConstructComponentBrowser()
@@ -717,7 +734,6 @@ namespace YTEditor
     mConsole = new OutputConsole(mOutputConsole);
     mOutputConsole->setWidget(mConsole);
     this->addDockWidget(Qt::BottomDockWidgetArea, mOutputConsole);
-
   }
 
   void MainWindow::ConstructMaterialViewer()
@@ -725,11 +741,12 @@ namespace YTEditor
     mMaterialViewer = new QDockWidget("Material Viewer", this);
     mObjectBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-
     auto window = mRunningEngine->AddWindow("MaterialViewer");
     MaterialViewer * matViewer = new MaterialViewer(this, mMaterialViewer, window);
     mMaterialViewer->setWidget(matViewer);
     this->addDockWidget(Qt::RightDockWidgetArea, mMaterialViewer);
+
+    mMaterialViewer->hide();
   }
 
   void MainWindow::ConstructFileViewer()
@@ -739,10 +756,9 @@ namespace YTEditor
     mFileViewer->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
     FileViewer *fileTree = new FileViewer(mFileViewer);
-    
     mFileViewer->setWidget(fileTree);
 
-    this->addDockWidget(Qt::BottomDockWidgetArea, mFileViewer);
+    this->addDockWidget(Qt::RightDockWidgetArea, mFileViewer);
   }
 
   void MainWindow::ConstructMenuBar()

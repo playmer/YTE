@@ -6,6 +6,9 @@
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/ToolbarButton.hpp"
+
+#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 
@@ -41,6 +44,11 @@ namespace YTEditor
 
   void GizmoToolbar::SetMode(int aMode)
   {
+    if (mMainWindow->GetObjectBrowser().GetCurrentObject() == nullptr)
+    {
+      aMode = Mode::Select;
+    }
+
     switch (aMode)
     {
     case Mode::Select:

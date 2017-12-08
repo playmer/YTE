@@ -29,7 +29,7 @@ namespace YTE
 
     ~CollisionBody() override;
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
 
     btCollisionObject* GetBody() { return mCollisionBody.get(); };
 

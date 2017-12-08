@@ -426,6 +426,19 @@ namespace YTE
     return true;
   }
 
+  Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
+  {
+    std::string guid = aGUID.ToString();
+    auto it = mCompositionsByGUID.find(guid);
+
+    if (it == mCompositionsByGUID.end())
+    {
+      return nullptr;
+    }
+
+    return it->second;
+  }
+
   bool Engine::StoreComponentGUID(Component *aComponent)
   {
     GlobalUniqueIdentifier & guid = aComponent->GetGUID();
@@ -451,5 +464,17 @@ namespace YTE
     }
 
     return true;
+  }
+  Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
+  {
+    std::string guid = aGUID.ToString();
+    auto it = mComponentsByGUID.find(guid);
+
+    if (it == mComponentsByGUID.end())
+    {
+      return nullptr;
+    }
+
+    return it->second;
   }
 }

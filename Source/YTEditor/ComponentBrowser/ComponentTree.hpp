@@ -56,10 +56,14 @@ namespace YTEditor
 
     void SetItemToExpandedColor(QTreeWidgetItem *aItem);
 
-    //void AddComponent(ComponentWidget *aWidget);
+    QTreeWidgetItem* FindComponentItem(YTE::Type *aComponentType);
+
+    ComponentWidget* AddComponent(YTE::Type *aComponentType);
     void RemoveComponent(QTreeWidgetItem *aWidget);
 
     // for use by undo/redo system only
+    ComponentWidget* InternalAddComponent(YTE::Type *aComponentType);
+    ComponentWidget* InternalAddComponent(YTE::Type *aComponentType, YTE::RSValue *aSerializedComponent);
     void BaseAddComponent(ComponentWidget *aWidget, QTreeWidgetItem *aTopItem);
     void BaseRemoveComponent(QTreeWidgetItem *aWidget);
 

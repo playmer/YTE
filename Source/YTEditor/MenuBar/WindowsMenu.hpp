@@ -33,30 +33,35 @@ namespace YTEditor
 
     MainWindow * mMainWindow;
 
-    QMenu * mObjectBrowserMenu;
-    QMenu * MakeObjectBrowserMenu();
+    QMenu *mObjectBrowserMenu;
+    QMenu* MakeObjectBrowserMenu();
     void OpenObjectBrowser();
     void CloseObjectBrowser();
 
-    QMenu * mComponentBrowserMenu;
-    QMenu * MakeComponentBrowserMenu();
+    QMenu *mComponentBrowserMenu;
+    QMenu* MakeComponentBrowserMenu();
     void OpenComponentBrowser();
     void CloseComponentBrowser();
 
-    QMenu * mOutputConsoleMenu;
-    QMenu * MakeOutputConsoleMenu();
+    QMenu *mOutputConsoleMenu;
+    QMenu* MakeOutputConsoleMenu();
     void OpenOutputConsole();
     void CloseOutputConsole();
 
-    QMenu * mMaterialViewerMenu;
-    QMenu * MakeMaterialViewerMenu();
+    QMenu *mMaterialViewerMenu;
+    QMenu* MakeMaterialViewerMenu();
     void OpenMaterialViewer();
     void CloseMaterialViewer();
 
-    QMenu * mFileViewerMenu;
-    QMenu * MakeFileViewerMenu();
+    QMenu *mFileViewerMenu;
+    QMenu* MakeFileViewerMenu();
     void OpenFileViewer();
     void CloseFileViewer();
+
+    QMenu *mWWiseViewerMenu;
+    QMenu* MakeWWiseViewerMenu();
+    void OpenWWiseViewer();
+    void CloseWWiseViewer();
 
   };
 

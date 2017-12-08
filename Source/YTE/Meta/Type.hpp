@@ -367,6 +367,11 @@ void Name::InitializeType()
       return mProperties.FindAll(name);
     }
 
+    OrderedMultiMap<std::string, std::unique_ptr<Property>>::range GetPropertyRange(const std::string &aName)
+    {
+      return mProperties.FindAll(aName);
+    }
+
     Property* GetFirstProperty(const std::string &aName)
     {
       auto it = mProperties.FindFirst(aName);

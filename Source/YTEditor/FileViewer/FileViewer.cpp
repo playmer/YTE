@@ -11,7 +11,7 @@ namespace YTEditor
 
   FileViewerModel::FileViewerModel(QWidget *aParent) : QFileSystemModel(aParent)
   {
-
+    
   }
 
   Qt::DropActions FileViewerModel::supportedDragActions() const
@@ -152,6 +152,10 @@ namespace YTEditor
     
     this->setModel(fileModel);
     this->setRootIndex(fileModel->index(gamePath.c_str()));
+
+    this->hideColumn(1);
+    this->hideColumn(2);
+    this->hideColumn(3);
 
     setDragEnabled(true);
     setDropIndicatorShown(true);

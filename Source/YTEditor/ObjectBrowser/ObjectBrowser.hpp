@@ -84,6 +84,8 @@ namespace YTEditor
 
     void DuplicateCurrentlySelected();
 
+    void RemoveCurrentObject();
+
   private:
     MainWindow *mMainWindow;
     void SetWidgetSettings();
@@ -94,7 +96,6 @@ namespace YTEditor
 
     void CreateContextMenu(const QPoint & pos);
 
-    void RemoveCurrentObject();
 
     void keyPressEvent(QKeyEvent *aEvent);
 

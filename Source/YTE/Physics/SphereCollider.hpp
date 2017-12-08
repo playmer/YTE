@@ -24,7 +24,7 @@ namespace YTE
 
     SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
 
     float GetRadius() const { return mRadius; }
     const glm::vec3& GetOffset() const { return mOffset; }

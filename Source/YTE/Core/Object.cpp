@@ -17,4 +17,34 @@ namespace YTE
   {
     YTERegisterType(Object);
   }
+
+  Property* Object::GetProperty(const std::string &aName, BoundType *aType)
+  {
+    if (aType == nullptr)
+    {
+      return nullptr;
+    }
+
+    auto propertyRange = aType->GetPropertyRange(aName);
+
+    for (auto &property : propertyRange)
+    {
+      if (property.second->GetAttribute<Serializable>())
+      {
+        return property.second.get();
+      }
+    }
+
+    auto fieldRange = aType->GetFieldRange(aName);
+
+    for (auto &field : fieldRange)
+    {
+      if (field.second->GetAttribute<Serializable>())
+      {
+        return field.second.get();
+      }
+    }
+
+    return GetProperty(aName, aType->GetBaseType());;
+  }
 }

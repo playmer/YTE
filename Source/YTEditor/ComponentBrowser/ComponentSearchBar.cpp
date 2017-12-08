@@ -126,11 +126,8 @@ namespace YTEditor
       return;
     }
 
-    currObj->AddComponent(type);
-
     ComponentTree *compTree = browser.GetComponentTree();
-    compTree->ClearComponents();
-    compTree->LoadGameObject(currObj);
+    compTree->AddComponent(type);
 
     if (type->GetName() == "Model")
     {

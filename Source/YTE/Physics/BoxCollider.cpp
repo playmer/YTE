@@ -48,10 +48,10 @@ namespace YTE
 
   void BoxCollider::PhysicsInitialize()
   {
-    DebugObjection(mOwner->GetComponent<RigidBody>()     == nullptr && 
-                mOwner->GetComponent<CollisionBody>() == nullptr && 
-                mOwner->GetComponent<GhostBody>()     == nullptr,
-                "Colliders require a Body component of some sort, sorry!\n ObjectName: %s", mOwner->GetName().c_str());
+    //DebugObjection(mOwner->GetComponent<RigidBody>()     == nullptr && 
+    //            mOwner->GetComponent<CollisionBody>() == nullptr && 
+    //            mOwner->GetComponent<GhostBody>()     == nullptr,
+    //            "Colliders require a Body component of some sort, sorry!\n ObjectName: %s", mOwner->GetName().c_str());
 
       // Get info from transform and feed that ish to the Bullet collider
     auto transform = mOwner->GetComponent<Transform>();

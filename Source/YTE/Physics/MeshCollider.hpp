@@ -24,7 +24,8 @@ namespace YTE
 
     MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
+
   private:
     UniquePointer<btBvhTriangleMeshShape> mTriangleMeshShape;
     btTriangleMesh mTriangles;

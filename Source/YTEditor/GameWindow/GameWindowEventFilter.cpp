@@ -20,7 +20,7 @@ namespace YTEditor
   {
   }
 
-  bool GameWindowEventFilter::eventFilter(QObject *aWatched, 
+  bool GameWindowEventFilter::eventFilter(QObject *aWatched,
                                           QEvent *aEvent)
   {
     QEvent::Type eventType = aEvent->type();
@@ -111,6 +111,15 @@ namespace YTEditor
       QDragEnterEvent *enterEvent = static_cast<QDragEnterEvent*>(aEvent);
       enterEvent->acceptProposedAction();
       return true;
+    }
+    else if (eventType == QEvent::KeyPress)
+    {
+      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(aEvent);
+
+      if (keyEvent->key() == Qt::Key_Delete)
+      {
+        mMainWindow->GetObjectBrowser().RemoveCurrentObject();
+      }
     }
     
     return false;

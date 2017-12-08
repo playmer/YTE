@@ -45,6 +45,7 @@ namespace YTEditor
   class GizmoToolbar;
   class GameToolbar;
   class GameObjectMenu;
+  class WWiseWidget;
 
 
   class MainWindow : public QMainWindow
@@ -70,6 +71,9 @@ namespace YTEditor
 
     QTreeView& GetFileViewer();
     QDockWidget* GetFileViewerDock();
+
+    WWiseWidget& GetWWiseWidget();
+    QDockWidget* GetWWiseWidgetDock();
 
     UndoRedo* GetUndoRedo();
 

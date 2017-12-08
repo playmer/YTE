@@ -29,7 +29,7 @@ namespace YTE
 
     ~RigidBody();
 
-    void PhysicsInitialize();
+    void PhysicsInitialize() override;
 
     void ApplyImpulse(const glm::vec3& aImpulse, const glm::vec3& aRelativePosition);
     void SetPhysicsTransform(const glm::vec3& aTranslation, const glm::quat& aRotation);
@@ -41,6 +41,10 @@ namespace YTE
     btRigidBody* GetBody() { return mRigidBody.get(); };
 
     void SetKinematic(bool flag);
+    bool IsKinematic() const;
+
+    void SetMass(float aMass);
+    float GetMass() const;
 
   private:
     UniquePointer<btRigidBody> mRigidBody;
@@ -52,6 +56,9 @@ namespace YTE
     bool mIsInitialized;
 
     inline void SetVelocityProperty(const glm::vec3& aVelocity) { SetVelocity(aVelocity); };
+    inline void SetMassProperty(float aMass) { SetMass(aMass); };
+
+
   };
 }
 #endif

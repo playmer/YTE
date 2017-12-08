@@ -13,9 +13,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/Core/Composition.hpp"
+#include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+
 #include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/UndoRedo/Commands.hpp"
@@ -25,13 +30,15 @@ namespace YTEditor
 {
 
   AddObjectCmd::AddObjectCmd(YTE::Composition *aComposition,
-    OutputConsole *aConsole,
-    ObjectBrowser *aBrowser)
-    : Command(aConsole),
-    mComposition(aComposition),
-    mParent(mComposition->GetParent()),
-    mBrowser(aBrowser)
+                             OutputConsole *aConsole,
+                             ObjectBrowser *aBrowser)
+    : Command(aConsole)
+    , mComposition(aComposition)
+    , mBrowser(aBrowser)
+    , mName(aComposition->GetName())
   {
+    mParentGuid = aComposition->GetParent()->GetGUID();
+    mSerializedComposition = aComposition->Serialize(mAllocator);
   }
 
   AddObjectCmd::~AddObjectCmd()
@@ -40,23 +47,25 @@ namespace YTEditor
 
   void AddObjectCmd::Execute()
   {
-    // this function should add the object to the current level
-    // it is associated with Redoing the action of adding an object
-    mComposition = mParent->AddComposition(&mSerialization, mName);
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    mConsole->PrintLnC(OutputConsole::Color::Blue,
-      "AddObjectCmd::Execute() - Add %s",
-      mComposition->GetName().c_str());
-
+    mComposition = parentObj->AddComposition(&mSerializedComposition, mName);
+    
+    mConsole->PrintLnC(OutputConsole::Color::Green,
+                       "AddObjectCmd::Execute() - Add %s",
+                       mComposition->GetName().c_str());
+    
     auto &name = mComposition->GetName();
-
-    if (mParent->GetType()->IsA<YTE::Space>())
+    
+    if (parentObj->GetType()->IsA<YTE::Space>())
     {
       mBrowser->AddTreeItem(name.c_str(), mComposition);
     }
     else
     {
-      auto parent = mBrowser->FindItemByComposition(mParent);
+      auto parent = mBrowser->FindItemByComposition(parentObj);
       mBrowser->AddTreeItem(name.c_str(), parent, mComposition);
     }
   }
@@ -66,22 +75,30 @@ namespace YTEditor
     // this function should remove the object from the current level
     // it is associated with Undoing the action of adding an object
     mConsole->PrintLnC(OutputConsole::Color::Blue,
-      "AddObjectCmd::UnExecute() - Remove %s",
-      mComposition->GetName().c_str());
+                       "AddObjectCmd::UnExecute() - Remove %s",
+                       mComposition->GetName().c_str());
 
-    mName = mComposition->GetName();
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+
     auto item = mBrowser->FindItemByComposition(mComposition);
-
-    mParent = mComposition->GetParent();
+    
+    parentObj->RemoveComposition(mComposition);
+    
     mBrowser->RemoveObjectFromViewer(item);
-
-    mSerialization = mComposition->RemoveSerialized(mAllocator);
   }
 
-  RemoveObjectCmd::RemoveObjectCmd(const char *aObjName, OutputConsole *aConsole)
-    : Command(aConsole),
-    mObjectName(aObjName)
+  RemoveObjectCmd::RemoveObjectCmd(YTE::Composition *aComposition,
+                                   OutputConsole *aConsole,
+                                   ObjectBrowser *aBrowser)
+    : Command(aConsole)
+    , mComposition(aComposition)
+    , mBrowser(aBrowser)
+    , mName(aComposition->GetName())
   {
+    mParentGuid = aComposition->GetParent()->GetGUID();
+    mSerializedComposition = aComposition->Serialize(mAllocator);
   }
 
   RemoveObjectCmd::~RemoveObjectCmd()
@@ -90,32 +107,55 @@ namespace YTEditor
 
   void RemoveObjectCmd::Execute()
   {
-    // this function should remove the object from the current level
-    // it is associated with Redoing the action of removing an object
-
     mConsole->PrintLnC(OutputConsole::Color::Blue,
-      "RemoveObjectCmd::Execute() - Remove %s",
-      mObjectName.c_str());
+                       "RemoveObjectCmd::Execute() - Remove %s",
+                       mComposition->GetName().c_str());
+
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+
+    auto item = mBrowser->FindItemByComposition(mComposition);
+
+    parentObj->RemoveComposition(mComposition);
+
+    mBrowser->RemoveObjectFromViewer(item);
   }
 
   void RemoveObjectCmd::UnExecute()
   {
-    // this function should add the object to the current level
-    // it is associated with Undoing the action of removing an object
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
+    mComposition = parentObj->AddComposition(&mSerializedComposition, mName);
 
-    mConsole->PrintLnC(OutputConsole::Color::Blue,
-      "RemoveObjectCmd::UnExecute() - Add %s",
-      mObjectName.c_str());
+    mConsole->PrintLnC(OutputConsole::Color::Green,
+                       "AddObjectCmd::Execute() - Add %s",
+                       mComposition->GetName().c_str());
+
+    auto &name = mComposition->GetName();
+
+    if (parentObj->GetType()->IsA<YTE::Space>())
+    {
+      mBrowser->AddTreeItem(name.c_str(), mComposition);
+    }
+    else
+    {
+      auto parent = mBrowser->FindItemByComposition(parentObj);
+      mBrowser->AddTreeItem(name.c_str(), parent, mComposition);
+    }
   }
 
-  AddComponentCmd::AddComponentCmd(const char *aCompName, OutputConsole *aConsole)
+  AddComponentCmd::AddComponentCmd(YTE::Component *aComponent,
+    ComponentBrowser *aBrowser,
+    OutputConsole *aConsole)
     : Command(aConsole)
+    , mBrowser(aBrowser)
   {
-    (void)aCompName;
-    (void)aConsole;
-    mConsole->PrintLnC(OutputConsole::Color::Blue,
-      "Add Component Command : Constructed");
+    mComponentType = aComponent->GetType();
+    mParentGuid = aComponent->GetOwner()->GetGUID();
+    mSerializedComponent = aComponent->Serialize(mAllocator);
   }
 
   AddComponentCmd::~AddComponentCmd()
@@ -129,6 +169,16 @@ namespace YTEditor
 
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Add Component Command : Execute");
+
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+
+    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+    ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
+    objBrowser.setCurrentItem(parentItem);
+
+    mainWindow->GetComponentBrowser().GetComponentTree()->InternalAddComponent(mComponentType, &mSerializedComponent);
   }
 
   void AddComponentCmd::UnExecute()
@@ -138,13 +188,22 @@ namespace YTEditor
 
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Add Component Command : UnExecute");
+
+    ComponentTree *compTree = mBrowser->GetComponentTree();
+    QTreeWidgetItem *componentItem = compTree->FindComponentItem(mComponentType);
+    
+    compTree->BaseRemoveComponent(componentItem);
   }
 
-  RemoveComponentCmd::RemoveComponentCmd(const char *aCompName, OutputConsole *aConsole)
+  RemoveComponentCmd::RemoveComponentCmd(YTE::Component *aComponent,
+                                         ComponentBrowser *aBrowser,
+                                         OutputConsole *aConsole)
     : Command(aConsole)
+    , mBrowser(aBrowser)
   {
-    (void)aCompName;
-    (void)aConsole;
+    mComponentType = aComponent->GetType();
+    mParentGuid = aComponent->GetOwner()->GetGUID();
+    mSerializedComponent = aComponent->Serialize(mAllocator);
   }
 
   RemoveComponentCmd::~RemoveComponentCmd()
@@ -158,6 +217,15 @@ namespace YTEditor
 
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Remove Component Command : Execute");
+
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+
+    parentObj->RemoveComponent(mComponentType);
+
+    mBrowser->GetComponentTree()->ClearComponents();
+    mBrowser->GetComponentTree()->LoadGameObject(parentObj);
   }
 
   void RemoveComponentCmd::UnExecute()
@@ -167,6 +235,20 @@ namespace YTEditor
 
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Remove Component Command : UnExecute");
+
+    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWindow->GetRunningEngine();
+    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+
+    mComponent = parentObj->AddComponent(mComponentType, &mSerializedComponent);
+
+    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+    ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
+    objBrowser.setCurrentItem(parentItem);
+
+    // reload all components on the object
+    mBrowser->GetComponentTree()->ClearComponents();
+    mBrowser->GetComponentTree()->LoadGameObject(parentObj);
   }
 
 
