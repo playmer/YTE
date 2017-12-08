@@ -108,6 +108,8 @@ namespace YTE
 
   Composition::~Composition()
   {
+    mEngine->RemoveCompositionGUID(mGUID);
+
     if (nullptr != mSpace)
     {
       CompositionRemoved event;
@@ -819,10 +821,14 @@ namespace YTE
   {
     bool collision = mEngine->CheckForCompositionGUIDCollision(aGUID);
 
-    if (!collision)
+    if (collision)
     {
-      mGUID = aGUID;
+      mEngine->RemoveCompositionGUID(mGUID);
     }
+    
+    mGUID = aGUID;
+
+    mEngine->StoreCompositionGUID(this);
 
     return collision;
   }

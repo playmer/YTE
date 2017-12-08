@@ -84,42 +84,26 @@ namespace YTEditor
 
   void GameObjectMenu::CreateCube()
   {
-    YTE::Composition *cubeObj = MakeObject("Cube", "cube.fbx");
-
-    // cause item changed event to be sent again now that object has all its components
-    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
-    QTreeWidgetItem *currItem = objBrowser.currentItem();
-    objBrowser.OnCurrentItemChanged(currItem, currItem);
+    YTE::Composition *cube = MakeObject("Cube", "cube.fbx");
+    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cube);
   }
 
   void GameObjectMenu::CreateSphere()
   {
-    YTE::Composition *sphereObj = MakeObject("Sphere", "sphere.fbx");
-
-    // cause item changed event to be sent again now that object has all its components
-    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
-    QTreeWidgetItem *currItem = objBrowser.currentItem();
-    objBrowser.OnCurrentItemChanged(currItem, currItem);
+    YTE::Composition *sphere = MakeObject("Sphere", "sphere.fbx");
+    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(sphere);
   }
 
   void GameObjectMenu::CreateCylinder()
   {
-    YTE::Composition *planeObj = MakeObject("Cylinder", "cylinder.fbx");
-
-    // cause item changed event to be sent again now that object has all its components
-    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
-    QTreeWidgetItem *currItem = objBrowser.currentItem();
-    objBrowser.OnCurrentItemChanged(currItem, currItem);
+    YTE::Composition *cylinder = MakeObject("Cylinder", "cylinder.fbx");
+    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cylinder);
   }
 
   void GameObjectMenu::CreatePlane()
   {
-    YTE::Composition *planeObj = MakeObject("Plane", "plane.fbx");
-
-    // cause item changed event to be sent again now that object has all its components
-    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
-    QTreeWidgetItem *currItem = objBrowser.currentItem();
-    objBrowser.OnCurrentItemChanged(currItem, currItem);
+    YTE::Composition *plane = MakeObject("Plane", "plane.fbx");
+    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(plane);
   }
 
   QMenu* GameObjectMenu::Make2DObjectMenu()

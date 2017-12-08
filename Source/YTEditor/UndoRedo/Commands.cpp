@@ -20,6 +20,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
@@ -36,6 +37,7 @@ namespace YTEditor
     , mComposition(aComposition)
     , mBrowser(aBrowser)
     , mName(aComposition->GetName())
+    , mGUID(aComposition->GetGUID())
   {
     mParentGuid = aComposition->GetParent()->GetGUID();
     mSerializedComposition = aComposition->Serialize(mAllocator);
@@ -52,6 +54,7 @@ namespace YTEditor
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
     mComposition = parentObj->AddComposition(&mSerializedComposition, mName);
+    mComposition->SetGUID(mGUID);
     
     mConsole->PrintLnC(OutputConsole::Color::Green,
                        "AddObjectCmd::Execute() - Add %s",
@@ -96,6 +99,7 @@ namespace YTEditor
     , mComposition(aComposition)
     , mBrowser(aBrowser)
     , mName(aComposition->GetName())
+    , mGUID(aComposition->GetGUID())
   {
     mParentGuid = aComposition->GetParent()->GetGUID();
     mSerializedComposition = aComposition->Serialize(mAllocator);
@@ -114,6 +118,7 @@ namespace YTEditor
     MainWindow *mainWindow = mBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+    mComposition->SetGUID(mGUID);
 
     auto item = mBrowser->FindItemByComposition(mComposition);
 
@@ -152,6 +157,7 @@ namespace YTEditor
     OutputConsole *aConsole)
     : Command(aConsole)
     , mBrowser(aBrowser)
+    , mGUID(aComponent->GetGUID())
   {
     mComponentType = aComponent->GetType();
     mParentGuid = aComponent->GetOwner()->GetGUID();
@@ -178,7 +184,11 @@ namespace YTEditor
     ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
     objBrowser.setCurrentItem(parentItem);
 
-    mainWindow->GetComponentBrowser().GetComponentTree()->InternalAddComponent(mComponentType, &mSerializedComponent);
+    ComponentTree *compTree = mainWindow->GetComponentBrowser().GetComponentTree();
+    ComponentWidget *compWidg = compTree->InternalAddComponent(mComponentType, &mSerializedComponent);
+    YTE::Component *component = compWidg->GetEngineComponent();
+
+    component->SetGUID(mGUID);
   }
 
   void AddComponentCmd::UnExecute()
@@ -200,6 +210,7 @@ namespace YTEditor
                                          OutputConsole *aConsole)
     : Command(aConsole)
     , mBrowser(aBrowser)
+    , mGUID(aComponent->GetGUID())
   {
     mComponentType = aComponent->GetType();
     mParentGuid = aComponent->GetOwner()->GetGUID();
@@ -218,14 +229,10 @@ namespace YTEditor
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Remove Component Command : Execute");
 
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
-    YTE::Engine *engine = mainWindow->GetRunningEngine();
-    YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
+    ComponentTree *compTree = mBrowser->GetComponentTree();
+    QTreeWidgetItem *componentItem = compTree->FindComponentItem(mComponentType);
 
-    parentObj->RemoveComponent(mComponentType);
-
-    mBrowser->GetComponentTree()->ClearComponents();
-    mBrowser->GetComponentTree()->LoadGameObject(parentObj);
+    compTree->BaseRemoveComponent(componentItem);
   }
 
   void RemoveComponentCmd::UnExecute()
@@ -240,15 +247,17 @@ namespace YTEditor
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    mComponent = parentObj->AddComponent(mComponentType, &mSerializedComponent);
-
     ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
     ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
     objBrowser.setCurrentItem(parentItem);
 
-    // reload all components on the object
-    mBrowser->GetComponentTree()->ClearComponents();
-    mBrowser->GetComponentTree()->LoadGameObject(parentObj);
+    ComponentTree *compTree = mainWindow->GetComponentBrowser().GetComponentTree();
+
+    ComponentWidget *compWidg = compTree->InternalAddComponent(mComponentType, &mSerializedComponent);
+
+    YTE::Component *component = compWidg->GetEngineComponent();
+
+    component->SetGUID(mGUID);
   }
 
 

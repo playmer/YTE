@@ -2,11 +2,16 @@
 
 #include <qmimedata.h>
 
+#include "YTE/Core/Space.hpp"
+#include "YTE/Graphics/Camera.hpp"
+#include "YTE/Physics/Orientation.hpp"
+
 #include "YTEditor/FileViewer/FileViewer.hpp"
 #include "YTEditor/MenuBar/GameObjectMenu.hpp"
 #include "YTEditor/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 
@@ -88,7 +93,22 @@ namespace YTEditor
       {
         if (parent == "Archetypes")
         {
-          mMainWindow->GetObjectBrowser().AddObject(stem.c_str(), stem.c_str());
+          ObjectItem *objItem = mMainWindow->GetObjectBrowser().AddObject(stem.c_str(), stem.c_str());
+
+          YTE::Transform *transform = objItem->GetEngineObject()->GetComponent<YTE::Transform>();
+
+          if (transform)
+          {
+            auto view = mMainWindow->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
+            auto cameraComponent = view->GetLastCamera();
+            auto cameraObject = cameraComponent->GetOwner();
+            auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
+            glm::vec3 camPos = cameraTransform->GetWorldTranslation();
+            YTE::Orientation *orientation = cameraObject->GetComponent<YTE::Orientation>();
+            glm::vec3 forwardVec = orientation->GetForwardVector();
+
+            transform->SetWorldTranslation(camPos + 10.0f * forwardVec);
+          }
         }
         else if (parent == "Levels")
         {

@@ -406,14 +406,20 @@ namespace YTEditor
     if (currItem && currItem->GetEngineObject())
     {
       YTE::Model *model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
+
       if (model)
       {
-        mMainWindow->GetMaterialViewer().LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+        YTE::Mesh *mesh = model->GetMesh();
+        
+        if (mesh)
+        {
+          mMainWindow->GetMaterialViewer().LoadMaterial(mesh->mParts[0].mUBOMaterial);
 
-        // get the list of materials from the submeshes
-        auto& submeshes = model->GetMesh()->mParts;
+          // get the list of materials from the submeshes
+          auto& submeshes = mesh->mParts;
 
-        mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
+          mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
+        }
       }
     }
 

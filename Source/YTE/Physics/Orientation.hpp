@@ -1,9 +1,9 @@
 /******************************************************************************/
 /*!
- * \author Isaac Dayton
- * \date   2015-10-28
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+* \author Isaac Dayton
+* \date   2015-10-28
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 #pragma once
@@ -25,9 +25,13 @@ namespace YTE
   public:
     YTEDeclareType(OrientationChanged);
 
-    glm::vec3 Forward;
-    glm::vec3 Right;
-    glm::vec3 Up;
+    Orientation *Orientation;
+    glm::vec3 ForwardVector;
+    glm::vec3 RightVector;
+    glm::vec3 UpVector;
+    glm::quat Forward;
+    glm::quat Right;
+    glm::quat Up;
   };
 
   class Orientation : public Component
@@ -40,19 +44,18 @@ namespace YTE
     void Initialize() override;
     void OnRotationChanged(TransformChanged *aEvent);
 
-    const glm::vec3& GetForwardVector() const;
-    const glm::vec3& GetRightVector() const;
-    const glm::vec3& GetUpVector() const;
+    glm::vec3 GetForwardVector() const;
+    glm::vec3 GetRightVector() const;
+    glm::vec3 GetUpVector() const;
 
-    void LookAtPoint(glm::vec3 &aPoint);
-    void LookAtPointWithUp(glm::vec3 &aPoint, glm::vec3 &aUp);
-    void LookAtDirection(glm::vec3 &aDirection);
-    void LookAtDirectionWithUp(glm::vec3 &aDirection, glm::vec3 &aUp);
+    glm::quat GetForward() const;
+    glm::quat GetRight() const;
+    glm::quat GetUp() const;
 
   private:
-    glm::vec3 mForwardVector;
-    glm::vec3 mRightVector;
-    glm::vec3 mUpVector;
+    glm::quat mForward;
+    glm::quat mRight;
+    glm::quat mUp;
   };
 }
 

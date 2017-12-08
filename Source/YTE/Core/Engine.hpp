@@ -124,21 +124,20 @@ namespace YTE
     bool StoreCompositionGUID(Composition *aComposition);
     bool CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
     Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
+    bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 
     bool StoreComponentGUID(Component *aComponent);
     bool CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
     Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
-
+    bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
 
   private:
     GamepadSystem mGamepadSystem;
 
     std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
 
-
     std::unordered_map<String, UniquePointer<RSDocument>> mArchetypes;
     std::unordered_map<String, UniquePointer<RSDocument>> mLevels;
-
 
     std::chrono::time_point<std::chrono::high_resolution_clock> mBegin;
     std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrame;
