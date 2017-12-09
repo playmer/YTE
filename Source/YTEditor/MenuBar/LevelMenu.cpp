@@ -15,6 +15,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Camera.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
@@ -34,6 +36,7 @@ namespace YTEditor
     addMenu(MakeCurrentLevelMenu());
     addMenu(MakeSpaceMenu());
     addMenu(MakeEngineMenu());
+    addAction(MakeSelectCameraAct());
   }
 
   LevelMenu::~LevelMenu()
@@ -115,11 +118,23 @@ namespace YTEditor
     // Get the space that represents the main session
     YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
 
-    auto objItem = mMainWindow->GetObjectBrowser().AddExistingComposition(it_lvl->first.c_str(), lvl);
-
-    mMainWindow->GetObjectBrowser().setCurrentItem(objItem);
-
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(lvl);
+  }
+
+  QAction* LevelMenu::MakeSelectCameraAct()
+  {
+    QAction *action = new QAction("Select Camera");
+    connect(action, &QAction::triggered, this, &LevelMenu::SelectCamera);
+    return action;
+  }
+
+  void LevelMenu::SelectCamera()
+  {
+    auto view = mMainWindow->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
+    auto cameraComponent = view->GetLastCamera();
+    auto cameraObject = cameraComponent->GetOwner();
+
+    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cameraObject);
   }
 
   QMenu* LevelMenu::MakeEngineMenu()

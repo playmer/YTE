@@ -36,6 +36,9 @@ namespace YTEditor
     QMenu* MakeSpaceMenu();
     void SelectSpace();
 
+    QAction* MakeSelectCameraAct();
+    void SelectCamera();
+
     QMenu* MakeEngineMenu();
     void SelectEngine();
 
