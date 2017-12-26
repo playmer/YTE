@@ -87,12 +87,14 @@ int main(int argc, char *argv[])
   
   // add an empty composition to represent the new level
   YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
+  //newLevel->Initialize();
   newLevel->SetPaused(true);
   
   YTE::String camName{ "Camera" };
   
   // add the camera object to the new level
   YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
+  //camera->Initialize();
   
   // add the camera component to the camera object
   camera->AddComponent(YTE::Camera::GetStaticType());

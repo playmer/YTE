@@ -121,8 +121,8 @@ namespace YTE
 
     size_t GetFrame() { return mFrame; }
 
-    bool StoreCompositionGUID(Composition *aComposition);
-    bool CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    Composition* StoreCompositionGUID(Composition *aComposition);
+    Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
     Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
     bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 

@@ -179,12 +179,19 @@ namespace YTE
       return;
     }
 
-    bool collision = mEngine->StoreCompositionGUID(this);
+    Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
     {
-      mGUID = GlobalUniqueIdentifier();
-      collision = mEngine->StoreCompositionGUID(this);
+      if (collision == this)
+      {
+        break;
+      }
+      else
+      {
+        mGUID = GlobalUniqueIdentifier();
+        collision = mEngine->StoreCompositionGUID(this);
+      }
     }
 
     for (auto &component : mComponents)
