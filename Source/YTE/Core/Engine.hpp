@@ -126,8 +126,8 @@ namespace YTE
     Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
     bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 
-    bool StoreComponentGUID(Component *aComponent);
-    bool CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    Component* StoreComponentGUID(Component *aComponent);
+    Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
     Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
     bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
 

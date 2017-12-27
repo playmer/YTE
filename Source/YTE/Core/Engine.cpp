@@ -457,11 +457,11 @@ namespace YTE
     return true;
   }
 
-  bool Engine::StoreComponentGUID(Component *aComponent)
+  Component* Engine::StoreComponentGUID(Component *aComponent)
   {
     GlobalUniqueIdentifier &guid = aComponent->GetGUID();
 
-    bool collision = CheckForComponentGUIDCollision(guid);
+    Component* collision = CheckForComponentGUIDCollision(guid);
 
     // GUID has NOT already been used for a composition
     if (!collision)
@@ -472,16 +472,16 @@ namespace YTE
     return collision;
   }
 
-  bool Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
   {
     auto it = mComponentsByGUID.find(aGUID.ToString());
 
     if (it == mComponentsByGUID.end())
     {
-      return false;
+      return nullptr;
     }
 
-    return true;
+    return it->second;
   }
 
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
