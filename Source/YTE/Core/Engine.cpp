@@ -499,6 +499,11 @@ namespace YTE
 
   bool Engine::RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID)
   {
+    if (mComponentsByGUID.size() == 0)
+    {
+      return false;
+    }
+
     auto it = mComponentsByGUID.find(aGUID.ToString());
 
     if (it == mComponentsByGUID.end())
