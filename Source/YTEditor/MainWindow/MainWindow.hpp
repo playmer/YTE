@@ -48,10 +48,24 @@ namespace YTEditor
   class WWiseWidget;
 
 
+  class Preferences
+  {
+  public:
+    Preferences(bool aLevelWindowOnly = false);
+
+    void WriteToFile();
+    YTE::RSValue Serialize(YTE::RSAllocator &aAllocator);
+
+    void Deserialize(YTE::RSValue *aPrefFile);
+
+    bool mLevelWindowOnly;
+  };
+
+
   class MainWindow : public QMainWindow
   {
   public:
-    MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
+    MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile = nullptr);
     ~MainWindow();
 
     SubWindow& GetLevelWindow();
@@ -120,6 +134,8 @@ namespace YTEditor
 
   private:
 
+    Preferences mPreferences;
+
     // YTE GAME ENGINE
     YTE::Engine *mRunningEngine;
     YTE::String mRunningSpaceName;
@@ -136,6 +152,7 @@ namespace YTEditor
     float mGizmoScaleFactor;
 
     // Cstor helper functions and main subwindow vars //
+    void LoadPreferences(YTE::RSValue *aPrefFile);
     void SetWindowSettings();
     void ConstructSubWidgets();
     void ConstructGameWindows();

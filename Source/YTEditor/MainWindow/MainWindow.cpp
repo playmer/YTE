@@ -80,7 +80,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  MainWindow::MainWindow(YTE::Engine * aEngine, QApplication * aQApp)
+  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile = nullptr)
     : QMainWindow(),
     mRunningEngine(aEngine),
     mApplication(aQApp),
@@ -101,6 +101,7 @@ namespace YTEditor
       "Critical Error in YTEditorMainWindow constructor.\n "
       "YTE::Engine *aEngine is nullptr.");
 
+    LoadPreferences(aPrefFile);
     SetWindowSettings();
     ConstructToolbar();
     ConstructMenuBar();
@@ -627,6 +628,23 @@ namespace YTEditor
     return mGizmoToolbar;
   }
 
+  // process serialized preferences file
+  void MainWindow::LoadPreferences(YTE::RSValue *aPrefFile)
+  {
+    // create a default preferences file
+    mPreferences = Preferences();
+    
+    if (aPrefFile)
+    {
+      mPreferences.Deserialize(aPrefFile);
+    }
+    else
+    {
+      // write out default file
+      mPreferences.WriteToFile();
+    }
+  }
+
   void MainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
@@ -823,6 +841,55 @@ namespace YTEditor
     {
       event->ignore();
     }
+  }
+
+  Preferences::Preferences(bool aLevelWindowOnly)
+    : mLevelWindowOnly(aLevelWindowOnly)
+  {
+  }
+
+  void Preferences::WriteToFile()
+  {
+    YTE::RSAllocator allocator;
+
+    auto value = Serialize(allocator);
+
+    std::string prefName{ "Preferences" };
+    std::wstring pref{ prefName.begin(), prefName.end() };
+
+    std::string path = YTE::Path::GetGamePath().String();
+    std::wstring pathWStr{ path.begin(), path.end() };
+
+    pref = pathWStr + pref + L".json";
+
+    pref = std::experimental::filesystem::canonical(pref, std::experimental::filesystem::current_path());
+
+    YTE::RSStringBuffer sb;
+    YTE::RSPrettyWriter writer(sb);
+    value.Accept(writer);
+    std::string prefInJson = sb.GetString();
+
+    std::ofstream prefToSave;
+    prefToSave.open(pref);
+    prefToSave << prefInJson;
+    prefToSave.close();
+  }
+
+  YTE::RSValue Preferences::Serialize(YTE::RSAllocator &aAllocator)
+  {
+    YTE::RSValue toReturn;
+    toReturn.SetObject();
+
+    YTE::RSValue lvlWinOnly;
+    lvlWinOnly.SetBool(mLevelWindowOnly);
+
+    toReturn.AddMember("LevelWindowOnly", mLevelWindowOnly, aAllocator);
+
+    return toReturn;
+  }
+
+  void Preferences::Deserialize(YTE::RSValue *aPrefFile)
+  {
   }
 
 }
