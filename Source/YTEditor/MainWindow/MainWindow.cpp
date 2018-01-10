@@ -80,7 +80,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile = nullptr)
+  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile)
     : QMainWindow(),
     mRunningEngine(aEngine),
     mApplication(aQApp),
@@ -851,7 +851,6 @@ namespace YTEditor
   void Preferences::WriteToFile()
   {
     YTE::RSAllocator allocator;
-
     auto value = Serialize(allocator);
 
     std::string prefName{ "Preferences" };
@@ -890,6 +889,10 @@ namespace YTEditor
 
   void Preferences::Deserialize(YTE::RSValue *aPrefFile)
   {
+    if (aPrefFile->HasMember("LevelWindowOnly"))
+    {
+      mLevelWindowOnly = (*aPrefFile)["LevelWindowOnly"].GetBool();
+    }
   }
 
 }
