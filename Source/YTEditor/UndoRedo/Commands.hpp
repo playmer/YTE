@@ -53,6 +53,7 @@ namespace YTEditor
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
+    YTE::GlobalUniqueIdentifier mGUID;
   };
 
   class RemoveObjectCmd : public Command
@@ -73,6 +74,7 @@ namespace YTEditor
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
+    YTE::GlobalUniqueIdentifier mGUID;
   };
 
   class AddComponentCmd : public Command
@@ -92,6 +94,7 @@ namespace YTEditor
     YTE::Type *mComponentType;
     YTE::RSValue mSerializedComponent;
     YTE::RSAllocator mAllocator;
+    YTE::GlobalUniqueIdentifier mGUID;
 
     ComponentBrowser *mBrowser;
   };
@@ -113,6 +116,7 @@ namespace YTEditor
     YTE::Type *mComponentType;
     YTE::RSValue mSerializedComponent;
     YTE::RSAllocator mAllocator;
+    YTE::GlobalUniqueIdentifier mGUID;
 
     ComponentBrowser *mBrowser;
 

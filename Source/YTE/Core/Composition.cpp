@@ -108,6 +108,8 @@ namespace YTE
 
   Composition::~Composition()
   {
+    mEngine->RemoveCompositionGUID(mGUID);
+
     if (nullptr != mSpace)
     {
       CompositionRemoved event;
@@ -177,12 +179,19 @@ namespace YTE
       return;
     }
 
-    bool collision = mEngine->StoreCompositionGUID(this);
+    Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
     {
-      mGUID = GlobalUniqueIdentifier();
-      collision = mEngine->StoreCompositionGUID(this);
+      if (collision == this)
+      {
+        break;
+      }
+      else
+      {
+        mGUID = GlobalUniqueIdentifier();
+        collision = mEngine->StoreCompositionGUID(this);
+      }
     }
 
     for (auto &component : mComponents)
@@ -819,10 +828,14 @@ namespace YTE
   {
     bool collision = mEngine->CheckForCompositionGUIDCollision(aGUID);
 
-    if (!collision)
+    if (collision)
     {
-      mGUID = aGUID;
+      mEngine->RemoveCompositionGUID(mGUID);
     }
+    
+    mGUID = aGUID;
+
+    mEngine->StoreCompositionGUID(this);
 
     return collision;
   }

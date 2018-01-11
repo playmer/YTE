@@ -80,7 +80,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  MainWindow::MainWindow(YTE::Engine * aEngine, QApplication * aQApp)
+  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
     : QMainWindow(),
     mRunningEngine(aEngine),
     mApplication(aQApp),
@@ -101,6 +101,7 @@ namespace YTEditor
       "Critical Error in YTEditorMainWindow constructor.\n "
       "YTE::Engine *aEngine is nullptr.");
 
+    LoadPreferences(std::move(aPrefFile));
     SetWindowSettings();
     ConstructToolbar();
     ConstructMenuBar();
@@ -264,9 +265,16 @@ namespace YTEditor
     return mOutputConsole;
   }
 
-  MaterialViewer& MainWindow::GetMaterialViewer()
+  MaterialViewer* MainWindow::GetMaterialViewer()
   {
-    return *static_cast<MaterialViewer*>(mMaterialViewer->widget());
+    QWidget *widget = mMaterialViewer->widget();
+
+    if (widget == nullptr)
+    {
+      return nullptr;
+    }
+
+    return static_cast<MaterialViewer*>(widget);
   }
 
   QDockWidget* MainWindow::GetMaterialViewerDock()
@@ -627,6 +635,28 @@ namespace YTEditor
     return mGizmoToolbar;
   }
 
+  Preferences* MainWindow::GetPreferences()
+  {
+    return &mPreferences;
+  }
+
+  // process serialized preferences file
+  void MainWindow::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
+  {
+    // create a default preferences file
+    mPreferences = Preferences();
+    
+    if (aPrefFile)
+    {
+      mPreferences.Deserialize(std::move(aPrefFile));
+    }
+    else
+    {
+      // write out default file
+      mPreferences.WriteToFile();
+    }
+  }
+
   void MainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
@@ -689,8 +719,11 @@ namespace YTEditor
     mGizmoToolbar = new GizmoToolbar(this);
     addToolBar(mGizmoToolbar);
 
-    mGameToolbar = new GameToolbar(this);
-    addToolBar(mGameToolbar);
+    if (!mPreferences.mNoGameToolbar)
+    {
+      mGameToolbar = new GameToolbar(this);
+      addToolBar(mGameToolbar);
+    }
   }
 
   void MainWindow::ConstructObjectBrowser()
@@ -741,9 +774,13 @@ namespace YTEditor
     mMaterialViewer = new QDockWidget("Material Viewer", this);
     mObjectBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    auto window = mRunningEngine->AddWindow("MaterialViewer");
-    MaterialViewer * matViewer = new MaterialViewer(this, mMaterialViewer, window);
-    mMaterialViewer->setWidget(matViewer);
+    if (!mPreferences.mNoMaterialViewer)
+    {
+      auto window = mRunningEngine->AddWindow("MaterialViewer");
+      MaterialViewer *matViewer = new MaterialViewer(this, mMaterialViewer, window);
+      mMaterialViewer->setWidget(matViewer);
+    }
+
     this->addDockWidget(Qt::RightDockWidgetArea, mMaterialViewer);
 
     mMaterialViewer->hide();
@@ -798,8 +835,13 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
-      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+      auto materialViewer = GetMaterialViewer();
+
+      if (materialViewer)
+      {
+        materialViewer->GetSubWindow()->mWindow->mEngine = nullptr;
+        materialViewer->GetSubWindow()->mWindow = nullptr;
+      }
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
@@ -811,8 +853,13 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
-      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+      auto materialViewer = GetMaterialViewer();
+
+      if (materialViewer)
+      {
+        materialViewer->GetSubWindow()->mWindow->mEngine = nullptr;
+        materialViewer->GetSubWindow()->mWindow = nullptr;
+      }
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
@@ -822,6 +869,67 @@ namespace YTEditor
     else
     {
       event->ignore();
+    }
+  }
+
+  Preferences::Preferences()
+    : mNoMaterialViewer(false)
+    , mNoGameToolbar(false)
+  {
+  }
+
+  void Preferences::WriteToFile()
+  {
+    YTE::RSAllocator allocator;
+    auto value = Serialize(allocator);
+
+    std::string prefName{ "Preferences" };
+    std::wstring pref{ prefName.begin(), prefName.end() };
+
+    std::string path = YTE::Path::GetGamePath().String();
+    std::wstring pathWStr{ path.begin(), path.end() };
+
+    pref = pathWStr + pref + L".json";
+
+    pref = std::experimental::filesystem::canonical(pref, std::experimental::filesystem::current_path());
+
+    YTE::RSStringBuffer sb;
+    YTE::RSPrettyWriter writer(sb);
+    value.Accept(writer);
+    std::string prefInJson = sb.GetString();
+
+    std::ofstream prefToSave;
+    prefToSave.open(pref);
+    prefToSave << prefInJson;
+    prefToSave.close();
+  }
+
+  YTE::RSValue Preferences::Serialize(YTE::RSAllocator &aAllocator)
+  {
+    YTE::RSValue toReturn;
+    toReturn.SetObject();
+
+    YTE::RSValue noMatViewer;
+    noMatViewer.SetBool(mNoMaterialViewer);
+    toReturn.AddMember("NoMaterialViewer", mNoMaterialViewer, aAllocator);
+
+    YTE::RSValue noGameToolbar;
+    noGameToolbar.SetBool(mNoGameToolbar);
+    toReturn.AddMember("NoGameToolbar", mNoGameToolbar, aAllocator);
+
+    return toReturn;
+  }
+
+  void Preferences::Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile)
+  {
+    if (aPrefFile->HasMember("NoMaterialViewer"))
+    {
+      mNoMaterialViewer = (*aPrefFile)["NoMaterialViewer"].GetBool();
+    }
+
+    if (aPrefFile->HasMember("NoGameToolbar"))
+    {
+      mNoGameToolbar = (*aPrefFile)["NoGameToolbar"].GetBool();
     }
   }
 

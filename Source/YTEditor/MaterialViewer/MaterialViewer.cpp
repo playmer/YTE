@@ -123,7 +123,7 @@ namespace YTEditor
     this->Clear();
   }
 
-  SubWindow * MaterialViewer::GetSubWindow()
+  SubWindow* MaterialViewer::GetSubWindow()
   {
     return mMaterialWindow;
   }

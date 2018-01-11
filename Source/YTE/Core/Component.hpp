@@ -28,7 +28,7 @@ namespace YTE
 
     Component(Composition *aOwner, Space *aSpace);
 
-    virtual ~Component() {};
+    virtual ~Component();
 
     virtual void NativeInitialize() { };
     virtual void Initialize() { };

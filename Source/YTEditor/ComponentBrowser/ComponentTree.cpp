@@ -277,7 +277,7 @@ namespace YTEditor
 
         if (compWidg->GetName() == "Model")
         {
-          mComponentBrowser->GetMainWindow()->GetMaterialViewer().LoadNoMaterial();
+          mComponentBrowser->GetMainWindow()->GetMaterialViewer()->LoadNoMaterial();
         }
 
         compWidg->RemoveComponentFromEngine();
@@ -412,7 +412,13 @@ namespace YTEditor
 
     if (compWidg->GetName() == "Model")
     {
-      mComponentBrowser->GetMainWindow()->GetMaterialViewer().LoadNoMaterial();
+      auto mainWin = mComponentBrowser->GetMainWindow();
+      auto matViewer = mainWin->GetMaterialViewer();
+
+      if (matViewer)
+      {
+        matViewer->LoadNoMaterial();
+      }
     }
 
     compWidg->RemoveComponentFromEngine();

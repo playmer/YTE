@@ -1,9 +1,9 @@
 /******************************************************************************/
 /*!
- * \author Isaac Dayton
- * \date   2015-10-28
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+* \author Isaac Dayton
+* \date   2015-10-28
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 #include "YTE/Core/Composition.hpp"
@@ -12,7 +12,6 @@
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
-#include "YTE/Physics/Orientation.hpp"
 
 namespace YTE
 {
@@ -21,6 +20,10 @@ namespace YTE
   YTEDefineType(OrientationChanged)
   {
     YTERegisterType(OrientationChanged);
+    YTEBindField(&OrientationChanged::Orientation, "Orientation", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::ForwardVector, "ForwardVector", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::RightVector, "RightVector", PropertyBinding::Get);
+    YTEBindField(&OrientationChanged::UpVector, "UpVector", PropertyBinding::Get);
     YTEBindField(&OrientationChanged::Forward, "Forward", PropertyBinding::Get);
     YTEBindField(&OrientationChanged::Right, "Right", PropertyBinding::Get);
     YTEBindField(&OrientationChanged::Up, "Up", PropertyBinding::Get);
@@ -29,24 +32,31 @@ namespace YTE
   YTEDefineType(Orientation)
   {
     YTERegisterType(Orientation);
+
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindProperty(&Orientation::GetForwardVector, nullptr, "ForwardVector");
     YTEBindProperty(&Orientation::GetRightVector, nullptr, "RightVector");
     YTEBindProperty(&Orientation::GetUpVector, nullptr, "UpVector");
-
-    YTEBindFunction(&Orientation::LookAtDirection, YTENoOverload, "LookAtDirection", YTEParameterNames("aDirection"));
-    YTEBindFunction(&Orientation::LookAtDirectionWithUp, YTENoOverload, "LookAtDirectionWithUp", YTEParameterNames("aDirection", "aUp"));
-    YTEBindFunction(&Orientation::LookAtPoint, YTENoOverload, "LookAtPoint", YTEParameterNames("aPoint"));
-    YTEBindFunction(&Orientation::LookAtPointWithUp, YTENoOverload, "LookAtPointWithUp", YTEParameterNames("aPoint", "aUp"));
+    YTEBindProperty(&Orientation::GetForward, nullptr, "Forward");
+    YTEBindProperty(&Orientation::GetRight, nullptr, "Right");
+    YTEBindProperty(&Orientation::GetUp, nullptr, "Up");
   }
 
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
     DeserializeByType<Orientation*>(aProperties, this, Orientation::GetStaticType());
-      
-    mForwardVector = { 0.0f, 0.0f, 1.0f };
-    mRightVector = { 1.0f, 0.0f, 0.0f };
-    mUpVector = { 0.0f, 1.0f, 0.0f};
+
+    const glm::vec3 forwardReset(0, 0, -1);
+    const glm::vec3 rightReset(1, 0, 0);
+    const glm::vec3 upReset(0, 1, 0);
+
+    mForward = AroundAxis(forwardReset, 0.0f);
+    mRight = AroundAxis(rightReset, 0.0f);
+    mUp = AroundAxis(upReset, 0.0f);
   };
 
   void Orientation::Initialize()
@@ -56,96 +66,60 @@ namespace YTE
 
   void Orientation::OnRotationChanged(TransformChanged *aEvent)
   {
+    std::cout << "Orientation Rotation Change\n";
+
     const glm::vec3 forwardReset(0, 0, -1);
     const glm::vec3 rightReset(1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
 
+    auto mForwardVector = AroundAxis(forwardReset, 0.0f);
+    auto mRightVector = AroundAxis(rightReset, 0.0f);
+    auto mUpVector = AroundAxis(upReset, 0.0f);
+
     glm::quat rotation = aEvent->WorldRotation;
-    
-    mForwardVector = glm::rotate(rotation, forwardReset);
-    mRightVector = glm::rotate(rotation, rightReset);
-    mUpVector = glm::rotate(rotation, upReset);
+
+    mForward = rotation * mForward;
+    mRight = rotation * mRight;
+    mUp = rotation * mUp;
 
     OrientationChanged newOrientation;
-    newOrientation.Forward = mForwardVector;
-    newOrientation.Right = mRightVector;
-    newOrientation.Up = mUpVector;
+    newOrientation.Orientation = this;
+    newOrientation.ForwardVector = GetForwardVector();
+    newOrientation.RightVector = GetRightVector();
+    newOrientation.UpVector = GetUpVector();
+    newOrientation.Forward = mForward;
+    newOrientation.Right = mRight;
+    newOrientation.Up = mUp;
     mOwner->SendEvent(Events::OrientationChanged, &newOrientation);
   }
 
-  const glm::vec3& Orientation::GetForwardVector() const
+  glm::quat Orientation::GetForward() const
   {
-    return mForwardVector;
+    return mForward;
   }
 
-  const glm::vec3& Orientation::GetRightVector() const
+  glm::quat Orientation::GetRight() const
   {
-    return mRightVector;
+    return mRight;
   }
 
-  const glm::vec3& Orientation::GetUpVector() const
+  glm::quat Orientation::GetUp() const
   {
-    return mUpVector;
+    return mUp;
   }
 
-  void Orientation::LookAtPoint(glm::vec3 &aPoint)
+  glm::vec3 Orientation::GetForwardVector() const
   {
-    auto direction = aPoint - mOwner->GetComponent<Transform>()->GetTranslation();
-    LookAtDirectionWithUp(direction, mUpVector);
+    return glm::eulerAngles(mForward);
   }
 
-  void Orientation::LookAtPointWithUp(glm::vec3 &aPoint, glm::vec3 &aUp)
+  glm::vec3 Orientation::GetRightVector() const
   {
-    auto direction = aPoint - mOwner->GetComponent<Transform>()->GetTranslation();
-    LookAtDirectionWithUp(direction, aUp);
+    return glm::eulerAngles(mRight);
   }
 
-  void Orientation::LookAtDirection(glm::vec3 &aDirection)
+  glm::vec3 Orientation::GetUpVector() const
   {
-    LookAtDirectionWithUp(aDirection, mUpVector);
-  }
-
-  void Orientation::LookAtDirectionWithUp(glm::vec3 &aDirection, glm::vec3 &aUp)
-  {
-    YTEUnusedArgument(aUp);
-
-    ///Derived from pseudo code found here:
-    ///http://stackoverflow.com/questions/13014973/quaternion-rotate-to
-    /// and actual code from :
-    ///http://stackoverflow.com/questions/14337441/looking-at-an-object-with-a-quaternion
-      
-    auto transform = mOwner->GetComponent<Transform>();
-    auto position = transform->GetTranslation();
-      
-    //Normalize VectorTo
-    auto direction = glm::normalize(aDirection);
-      
-    //Get the dot product to find the angle
-    float forwardAngle = std::atan2(mForwardVector.z, mForwardVector.x);
-    float directionAngle = std::atan2(direction.z, direction.x);
-      
-    // create [0, 2pi] ranges instead of [-pi, pi]
-    if (forwardAngle < 0.0f)
-    {
-      forwardAngle = 2.0f * glm::pi<float>() + forwardAngle;
-    }
-    if (directionAngle < 0.0f)
-    {
-      directionAngle = 2.0f * glm::pi<float>() + directionAngle;
-    }
-
-    glm::vec3 eulers = transform->GetRotationAsEuler();
-    eulers.x = glm::radians(eulers.x);
-    eulers.y = glm::radians(eulers.y);
-    eulers.z = glm::radians(eulers.z);
-      
-    float yRotation = directionAngle - forwardAngle;
-    eulers.y += yRotation;
-      
-    //Finally, create a quaternion
-    glm::quat axisAngle(eulers);
-      
-    //And multiply it into the current orientation
-    transform->SetRotation(axisAngle);
+    return glm::eulerAngles(mUp);
   }
 }

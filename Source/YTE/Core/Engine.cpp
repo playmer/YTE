@@ -238,7 +238,7 @@ namespace YTE
       SetFrameRate(*window.second, dt);
       window.second->Update();
     }
-
+    
     LogicUpdate updateEvent;
     updateEvent.Dt = dt;
 
@@ -399,11 +399,11 @@ namespace YTE
     return &mLevels;
   }
 
-  bool Engine::StoreCompositionGUID(Composition *aComposition)
+  Composition* Engine::StoreCompositionGUID(Composition *aComposition)
   {
     GlobalUniqueIdentifier &guid = aComposition->GetGUID();
     
-    bool collision = CheckForCompositionGUIDCollision(guid);
+    Composition *collision = CheckForCompositionGUIDCollision(guid);
 
     // GUID has NOT already been used for a composition
     if (!collision)
@@ -414,16 +414,16 @@ namespace YTE
     return collision;
   }
 
-  bool Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
   {
     auto it = mCompositionsByGUID.find(aGUID.ToString());
 
     if (it == mCompositionsByGUID.end())
     {
-      return false;
+      return nullptr;
     }
 
-    return true;
+    return it->second;
   }
 
   Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
@@ -439,11 +439,29 @@ namespace YTE
     return it->second;
   }
 
-  bool Engine::StoreComponentGUID(Component *aComponent)
+  bool Engine::RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    GlobalUniqueIdentifier & guid = aComponent->GetGUID();
+    if (mCompositionsByGUID.size() == 0)
+    {
+      return false;
+    }
 
-    bool collision = CheckForComponentGUIDCollision(guid);
+    auto it = mCompositionsByGUID.find(aGUID.ToString());
+
+    if (it == mCompositionsByGUID.end())
+    {
+      return false;
+    }
+
+    mCompositionsByGUID.erase(aGUID.ToString());
+    return true;
+  }
+
+  Component* Engine::StoreComponentGUID(Component *aComponent)
+  {
+    GlobalUniqueIdentifier &guid = aComponent->GetGUID();
+
+    Component* collision = CheckForComponentGUIDCollision(guid);
 
     // GUID has NOT already been used for a composition
     if (!collision)
@@ -454,17 +472,18 @@ namespace YTE
     return collision;
   }
 
-  bool Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
   {
     auto it = mComponentsByGUID.find(aGUID.ToString());
 
     if (it == mComponentsByGUID.end())
     {
-      return false;
+      return nullptr;
     }
 
-    return true;
+    return it->second;
   }
+
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
   {
     std::string guid = aGUID.ToString();
@@ -476,5 +495,23 @@ namespace YTE
     }
 
     return it->second;
+  }
+
+  bool Engine::RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID)
+  {
+    if (mComponentsByGUID.size() == 0)
+    {
+      return false;
+    }
+
+    auto it = mComponentsByGUID.find(aGUID.ToString());
+
+    if (it == mComponentsByGUID.end())
+    {
+      return false;
+    }
+
+    mComponentsByGUID.erase(aGUID.ToString());
+    return true;
   }
 }

@@ -86,8 +86,8 @@ namespace YTE
 
   void WWiseEmitter::OnOrientationChange(const OrientationChanged *aEvent)
   {
-    mEmitterPosition.SetOrientation(MakeAkVec(aEvent->Forward),
-                                    MakeAkVec(aEvent->Up));
+    mEmitterPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
+                                    MakeAkVec(aEvent->UpVector));
 
     SetEmitterPosition();
   }

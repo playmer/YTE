@@ -24,14 +24,28 @@ namespace YTE
     : mOwner(aOwner), mSpace(aSpace), mGUID()
   {
     Engine *engine = mOwner->GetEngine();
-    bool collision = engine->StoreComponentGUID(this);
+
+    Component *collision = engine->StoreComponentGUID(this);
 
     while (collision)
     {
-      mGUID = GlobalUniqueIdentifier();
-      collision = engine->StoreComponentGUID(this);
+      if (collision == this)
+      {
+        break;
+      }
+      else
+      {
+        mGUID = GlobalUniqueIdentifier();
+        collision = engine->StoreComponentGUID(this);
+      }
     }
-  };
+  }
+
+  Component::~Component()
+  {
+    mOwner->GetEngine()->RemoveComponentGUID(mGUID);
+  }
+
 
   RSValue Component::Serialize(RSAllocator &aAllocator)
   {
@@ -59,12 +73,18 @@ namespace YTE
 
   bool Component::SetGUID(GlobalUniqueIdentifier aGUID)
   {
-    bool collision = mOwner->GetEngine()->CheckForComponentGUIDCollision(aGUID);
+    YTE::Engine *engine = mOwner->GetEngine();
 
-    if (!collision)
+    bool collision = engine->CheckForComponentGUIDCollision(aGUID);
+
+    if (collision)
     {
-      mGUID = aGUID;
+      engine->RemoveComponentGUID(mGUID);
     }
+
+    mGUID = aGUID;
+
+    engine->StoreComponentGUID(this);
 
     return collision;
   }

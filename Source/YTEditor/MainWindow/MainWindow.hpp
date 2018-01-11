@@ -48,10 +48,25 @@ namespace YTEditor
   class WWiseWidget;
 
 
+  class Preferences
+  {
+  public:
+    Preferences();
+
+    void WriteToFile();
+    YTE::RSValue Serialize(YTE::RSAllocator &aAllocator);
+
+    void Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile);
+
+    bool mNoMaterialViewer;
+    bool mNoGameToolbar;
+  };
+
+
   class MainWindow : public QMainWindow
   {
   public:
-    MainWindow(YTE::Engine * aEngine, QApplication * aQApp);
+    MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
     ~MainWindow();
 
     SubWindow& GetLevelWindow();
@@ -66,7 +81,7 @@ namespace YTEditor
     OutputConsole& GetOutputConsole();
     QDockWidget* GetOutputConsoleDock();
 
-    MaterialViewer& GetMaterialViewer();
+    MaterialViewer* GetMaterialViewer();
     QDockWidget* GetMaterialViewerDock();
 
     QTreeView& GetFileViewer();
@@ -118,7 +133,11 @@ namespace YTEditor
 
     GizmoToolbar* GetGizmoToolbar();
 
+    Preferences* GetPreferences();
+
   private:
+
+    Preferences mPreferences;
 
     // YTE GAME ENGINE
     YTE::Engine *mRunningEngine;
@@ -135,7 +154,8 @@ namespace YTEditor
     Gizmo *mGizmo;
     float mGizmoScaleFactor;
 
-    // Cstor helper functions and main subwindow vars //
+    // Cstor helper functions and main subwindow vars
+    void LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile);
     void SetWindowSettings();
     void ConstructSubWidgets();
     void ConstructGameWindows();

@@ -21,9 +21,11 @@
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/ComponentSystem.h"
 #include "YTE/Core/Space.hpp"
+#include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Utilities/Utilities.h"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
@@ -87,20 +89,45 @@ int main(int argc, char *argv[])
   
   // add an empty composition to represent the new level
   YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
+  //newLevel->Initialize();
   newLevel->SetPaused(true);
   
   YTE::String camName{ "Camera" };
   
   // add the camera object to the new level
   YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
+  //camera->Initialize();
   
   // add the camera component to the camera object
   camera->AddComponent(YTE::Camera::GetStaticType());
   
   newLevel->AddComponent(YTE::PhysicsSystem::GetStaticType());
 
+
+  // load the preferences file
+  std::string path = YTE::Path::GetGamePath().String();
+  path += "Preferences.json";
+
+  std::unique_ptr<YTE::RSDocument> prefsValue = nullptr;
+
+  std::string buffer;
+  bool success = YTE::ReadFileToString(path, buffer);
+
+  if (success)
+  {
+    prefsValue = std::make_unique<YTE::RSDocument>();
+
+    bool error = prefsValue->Parse(buffer.c_str()).HasParseError();
+
+    if (error)
+    {
+      prefsValue.release();
+      prefsValue = nullptr;
+    }
+  }
+
   // Construct the main window
-  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app);
+  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app, std::move(prefsValue));
 
   //mainWindow->SetRunningSpaceName();
 
