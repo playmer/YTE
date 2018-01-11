@@ -56,7 +56,7 @@ namespace YTEditor
     void WriteToFile();
     YTE::RSValue Serialize(YTE::RSAllocator &aAllocator);
 
-    void Deserialize(YTE::RSValue *aPrefFile);
+    void Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile);
 
     bool mLevelWindowOnly;
   };
@@ -65,7 +65,7 @@ namespace YTEditor
   class MainWindow : public QMainWindow
   {
   public:
-    MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile = nullptr);
+    MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
     ~MainWindow();
 
     SubWindow& GetLevelWindow();
@@ -151,8 +151,8 @@ namespace YTEditor
     Gizmo *mGizmo;
     float mGizmoScaleFactor;
 
-    // Cstor helper functions and main subwindow vars //
-    void LoadPreferences(YTE::RSValue *aPrefFile);
+    // Cstor helper functions and main subwindow vars
+    void LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile);
     void SetWindowSettings();
     void ConstructSubWidgets();
     void ConstructGameWindows();

@@ -80,7 +80,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, YTE::RSValue *aPrefFile)
+  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
     : QMainWindow(),
     mRunningEngine(aEngine),
     mApplication(aQApp),
@@ -101,7 +101,7 @@ namespace YTEditor
       "Critical Error in YTEditorMainWindow constructor.\n "
       "YTE::Engine *aEngine is nullptr.");
 
-    LoadPreferences(aPrefFile);
+    LoadPreferences(std::move(aPrefFile));
     SetWindowSettings();
     ConstructToolbar();
     ConstructMenuBar();
@@ -629,14 +629,14 @@ namespace YTEditor
   }
 
   // process serialized preferences file
-  void MainWindow::LoadPreferences(YTE::RSValue *aPrefFile)
+  void MainWindow::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
   {
     // create a default preferences file
     mPreferences = Preferences();
     
     if (aPrefFile)
     {
-      mPreferences.Deserialize(aPrefFile);
+      mPreferences.Deserialize(std::move(aPrefFile));
     }
     else
     {
@@ -887,7 +887,7 @@ namespace YTEditor
     return toReturn;
   }
 
-  void Preferences::Deserialize(YTE::RSValue *aPrefFile)
+  void Preferences::Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile)
   {
     if (aPrefFile->HasMember("LevelWindowOnly"))
     {
