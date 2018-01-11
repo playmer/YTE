@@ -51,14 +51,15 @@ namespace YTEditor
   class Preferences
   {
   public:
-    Preferences(bool aLevelWindowOnly = false);
+    Preferences();
 
     void WriteToFile();
     YTE::RSValue Serialize(YTE::RSAllocator &aAllocator);
 
     void Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile);
 
-    bool mLevelWindowOnly;
+    bool mNoMaterialViewer;
+    bool mNoGameToolbar;
   };
 
 
@@ -80,7 +81,7 @@ namespace YTEditor
     OutputConsole& GetOutputConsole();
     QDockWidget* GetOutputConsoleDock();
 
-    MaterialViewer& GetMaterialViewer();
+    MaterialViewer* GetMaterialViewer();
     QDockWidget* GetMaterialViewerDock();
 
     QTreeView& GetFileViewer();
@@ -131,6 +132,8 @@ namespace YTEditor
     void DeleteGizmo();
 
     GizmoToolbar* GetGizmoToolbar();
+
+    Preferences* GetPreferences();
 
   private:
 

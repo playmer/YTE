@@ -265,9 +265,16 @@ namespace YTEditor
     return mOutputConsole;
   }
 
-  MaterialViewer& MainWindow::GetMaterialViewer()
+  MaterialViewer* MainWindow::GetMaterialViewer()
   {
-    return *static_cast<MaterialViewer*>(mMaterialViewer->widget());
+    QWidget *widget = mMaterialViewer->widget();
+
+    if (widget == nullptr)
+    {
+      return nullptr;
+    }
+
+    return static_cast<MaterialViewer*>(widget);
   }
 
   QDockWidget* MainWindow::GetMaterialViewerDock()
@@ -628,6 +635,11 @@ namespace YTEditor
     return mGizmoToolbar;
   }
 
+  Preferences* MainWindow::GetPreferences()
+  {
+    return &mPreferences;
+  }
+
   // process serialized preferences file
   void MainWindow::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
   {
@@ -707,8 +719,11 @@ namespace YTEditor
     mGizmoToolbar = new GizmoToolbar(this);
     addToolBar(mGizmoToolbar);
 
-    mGameToolbar = new GameToolbar(this);
-    addToolBar(mGameToolbar);
+    if (!mPreferences.mNoGameToolbar)
+    {
+      mGameToolbar = new GameToolbar(this);
+      addToolBar(mGameToolbar);
+    }
   }
 
   void MainWindow::ConstructObjectBrowser()
@@ -759,9 +774,13 @@ namespace YTEditor
     mMaterialViewer = new QDockWidget("Material Viewer", this);
     mObjectBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    auto window = mRunningEngine->AddWindow("MaterialViewer");
-    MaterialViewer * matViewer = new MaterialViewer(this, mMaterialViewer, window);
-    mMaterialViewer->setWidget(matViewer);
+    if (!mPreferences.mNoMaterialViewer)
+    {
+      auto window = mRunningEngine->AddWindow("MaterialViewer");
+      MaterialViewer *matViewer = new MaterialViewer(this, mMaterialViewer, window);
+      mMaterialViewer->setWidget(matViewer);
+    }
+
     this->addDockWidget(Qt::RightDockWidgetArea, mMaterialViewer);
 
     mMaterialViewer->hide();
@@ -816,8 +835,13 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
-      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+      auto materialViewer = GetMaterialViewer();
+
+      if (materialViewer)
+      {
+        materialViewer->GetSubWindow()->mWindow->mEngine = nullptr;
+        materialViewer->GetSubWindow()->mWindow = nullptr;
+      }
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
@@ -829,8 +853,13 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      GetMaterialViewer().GetSubWindow()->mWindow->mEngine = nullptr;
-      GetMaterialViewer().GetSubWindow()->mWindow = nullptr;
+      auto materialViewer = GetMaterialViewer();
+
+      if (materialViewer)
+      {
+        materialViewer->GetSubWindow()->mWindow->mEngine = nullptr;
+        materialViewer->GetSubWindow()->mWindow = nullptr;
+      }
 
       GetRunningEngine()->EndExecution();
       GetRunningEngine()->Update();
@@ -843,8 +872,9 @@ namespace YTEditor
     }
   }
 
-  Preferences::Preferences(bool aLevelWindowOnly)
-    : mLevelWindowOnly(aLevelWindowOnly)
+  Preferences::Preferences()
+    : mNoMaterialViewer(false)
+    , mNoGameToolbar(false)
   {
   }
 
@@ -879,19 +909,27 @@ namespace YTEditor
     YTE::RSValue toReturn;
     toReturn.SetObject();
 
-    YTE::RSValue lvlWinOnly;
-    lvlWinOnly.SetBool(mLevelWindowOnly);
+    YTE::RSValue noMatViewer;
+    noMatViewer.SetBool(mNoMaterialViewer);
+    toReturn.AddMember("NoMaterialViewer", mNoMaterialViewer, aAllocator);
 
-    toReturn.AddMember("LevelWindowOnly", mLevelWindowOnly, aAllocator);
+    YTE::RSValue noGameToolbar;
+    noGameToolbar.SetBool(mNoGameToolbar);
+    toReturn.AddMember("NoGameToolbar", mNoGameToolbar, aAllocator);
 
     return toReturn;
   }
 
   void Preferences::Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile)
   {
-    if (aPrefFile->HasMember("LevelWindowOnly"))
+    if (aPrefFile->HasMember("NoMaterialViewer"))
     {
-      mLevelWindowOnly = (*aPrefFile)["LevelWindowOnly"].GetBool();
+      mNoMaterialViewer = (*aPrefFile)["NoMaterialViewer"].GetBool();
+    }
+
+    if (aPrefFile->HasMember("NoGameToolbar"))
+    {
+      mNoGameToolbar = (*aPrefFile)["NoGameToolbar"].GetBool();
     }
   }
 

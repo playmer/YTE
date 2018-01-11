@@ -214,17 +214,20 @@ namespace YTEditor
 
       YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
 
-      if (model && model->GetMesh())
+      auto matViewer = mMainWindow->GetMaterialViewer();
+
+      if (matViewer && model && model->GetMesh())
       {
         // get the list of materials from the submeshes
         auto& submeshes = model->GetMesh()->mParts;
 
-        mMainWindow->GetMaterialViewer().LoadMaterial(submeshes[0].mUBOMaterial);
-        mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
+        matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
+        matViewer->SetMaterialsList(&submeshes);
+        
       }
       else
       {
-        mMainWindow->GetMaterialViewer().LoadNoMaterial();
+        matViewer->LoadNoMaterial();
       }
 
       // get the transform of the currently selected object
@@ -403,7 +406,9 @@ namespace YTEditor
 
     ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
-    if (currItem && currItem->GetEngineObject())
+    auto matViewer = mMainWindow->GetMaterialViewer();
+
+    if (matViewer && currItem && currItem->GetEngineObject())
     {
       YTE::Model *model = currItem->GetEngineObject()->GetComponent<YTE::Model>();
 
@@ -413,12 +418,12 @@ namespace YTEditor
         
         if (mesh)
         {
-          mMainWindow->GetMaterialViewer().LoadMaterial(mesh->mParts[0].mUBOMaterial);
+          matViewer->LoadMaterial(mesh->mParts[0].mUBOMaterial);
 
           // get the list of materials from the submeshes
           auto& submeshes = mesh->mParts;
 
-          mMainWindow->GetMaterialViewer().SetMaterialsList(&submeshes);
+          matViewer->SetMaterialsList(&submeshes);
         }
       }
     }
