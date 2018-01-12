@@ -547,7 +547,7 @@ namespace YTE
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    if (mWindow->mKeyboard.IsKeyDown(Keys::F2))
+    if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
       ReloadAllShaders();
     }
