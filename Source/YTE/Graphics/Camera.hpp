@@ -137,7 +137,9 @@ namespace YTE
     { 
       mNearPlane = aNearPlane; 
  
-      if (false == mConstructing) 
+      mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
+
+      if (false == mConstructing)
       { 
         UpdateView(); 
       } 
@@ -147,7 +149,9 @@ namespace YTE
     { 
       mFarPlane = aFarPlane; 
  
-      if (false == mConstructing) 
+      mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
+
+      if (false == mConstructing)
       { 
         UpdateView(); 
       } 
