@@ -514,16 +514,4 @@ namespace YTE
     mComponentsByGUID.erase(aGUID.ToString());
     return true;
   }
-  Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
-  {
-    std::string guid = aGUID.ToString();
-    auto it = mComponentsByGUID.find(guid);
-
-    if (it == mComponentsByGUID.end())
-    {
-      return nullptr;
-    }
-
-    return it->second;
-  }
 }
