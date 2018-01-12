@@ -25,6 +25,7 @@ layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Instancing Issues
 #ifdef INSTANCING
@@ -34,7 +35,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (location = 12) in vec4 inMatrix1;
   layout (location = 13) in vec4 inMatrix2;
   layout (location = 14) in vec4 inMatrix3;
-  
+
   struct 
   {
     mat4 mModelMatrix;
@@ -58,7 +59,6 @@ layout (location = 10) in ivec2 inBoneIDs2;
 
 
 #endif
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,8 +88,8 @@ layout (binding = 1) uniform UBOAnimation
 layout (location = 0) out vec3 outColor;
 layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
-layout (location = 3) out vec3 outPositionWorld;
-layout (location = 4) out vec4 outPosition;
+layout (location = 3) out vec4 outPosition;
+layout (location = 4) out vec3 outPositionWorld;
 
 // ========================
 // Positional Output of Vertex
@@ -97,9 +97,6 @@ out gl_PerVertex
 {
     vec4 gl_Position;
 };
-
-
-
 
 
 
@@ -146,15 +143,11 @@ mat4 Animate()
 // ======================
 // CalculatePosition:
 // Position the vertex for the fragment shader and GPU
-// takes the projection matrix, view matrix, model matrix, animation matrix, and
-//   the position value to calculate with
-void CalculatePosition(mat4 aProjMat, mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aPos)
+// takes the projection matrix, and the view position value to calculate with
+void CalculatePosition(mat4 aProjMat, vec4 aPos)
 {
   // Initial Position Update
   gl_Position = aProjMat        * 
-                aViewMat        *
-                aModelMat       *
-                aAnimateMat     *
                 aPos;
 
   // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
@@ -167,7 +160,8 @@ void CalculatePosition(mat4 aProjMat, mat4 aViewMat, mat4 aModelMat, mat4 aAnima
 // takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
 vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNormal)
 {
-  return normalize(vec3(inverse(transpose(aModelMat *
+  return normalize(vec3(inverse(transpose(aViewMat *
+                                          aModelMat *
                                           aAnimateMat)) *
                         aNormal));
 }
@@ -175,12 +169,20 @@ vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNorm
 // ======================
 // CalculateWorldPosition:
 // Calculates the position used for this vertex in world space
-// takes the model matrix, animation matrix, and the position value to calculate with
+// takes the model matrix, animation matrix, and the local position value to calculate with
 vec3 CalculateWorldPosition(mat4 aModelMat, mat4 aAnimateMat, vec4 aPosition)
 {
   return vec3(aModelMat * aAnimateMat * aPosition);
 }
 
+// ======================
+// CalculateViewPosition:
+// Calculates the position used for this vertex in view space
+// takes the view matrix and the world position value to calculate with
+vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
+{
+  return aViewMat * aPosition;
+}
 
 
 // ======================
@@ -197,16 +199,13 @@ void main()
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 
+  outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
+
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,
                               boneTransform, 
                               vec4(inNormal, 1.0f));
 
   CalculatePosition(View.mProjectionMatrix,
-                    View.mViewMatrix,
-                    Model.mModelMatrix,
-                    boneTransform,
-                    vec4(inPosition, 1.0f));
-
-  outPosition = gl_Position;
+                    outPosition);
 }

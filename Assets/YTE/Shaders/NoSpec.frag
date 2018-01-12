@@ -29,7 +29,7 @@ struct LightingData
 {
   vec4 mDiffuseTexture;
   vec4 mNormalTexture;
-  float mSpecularTexture;
+  vec4 mSpecularTexture;
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
@@ -49,6 +49,14 @@ const uint LightType_Spot = 3;
 
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
+
+// ========================
+// View matrix
+layout (binding = 0) uniform UBOView
+{
+  mat4 mProjectionMatrix;
+  mat4 mViewMatrix;
+} View;
 
 // ========================
 // Material Values
@@ -101,8 +109,8 @@ layout (binding = 6) uniform sampler2D normalSampler;
 layout (location = 0) in vec3 inColor;
 layout (location = 1) in vec2 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec4 inPositionWorld;
-layout (location = 4) in vec4 inPosition;
+layout (location = 3) in vec4 inPosition;
+layout (location = 4) in vec3 inPositionWorld;
 
 // ========================
 // Output of Fragment
@@ -121,9 +129,24 @@ layout (location = 0) out vec4 outFragColor;
 ///////////////////////////////////////////////////////////////////////////////
 // Functions
 
-vec4 saturate(vec4 aColor)
+// ======================
+// Saturate:
+// Clamps a given value to the interval [0-1]
+vec4 saturate(vec4 aValue)
 {
-  return clamp(aColor, 0.0f, 1.0f);
+  return clamp(aValue, 0.0f, 1.0f);
+}
+vec3 saturate(vec3 aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+vec2 saturate(vec2 aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+float saturate(float aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
 }
 
 // ======================
@@ -131,25 +154,16 @@ vec4 saturate(vec4 aColor)
 // Calculates as a directional light with the given light
 vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 {
-  vec4 lightVec = -aLight.mDirection;
+  vec4 lightVec = normalize(-aLight.mDirection);
 
   // diffuse
-  float diffContribution = dot(lightVec, aLightData.mNormalTexture);
-
-  // used later
-  vec4 specularColor = vec4(0.0f);
-  vec4 diffuseColor = vec4(0.0f);
-
-  // actually saves computation to have this conditional
-  if (diffContribution > 0.0f)
-  {
-    diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
-
-    // specular
-    vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
-    float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
-    specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
-  }
+  float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+  
+  // specular
+  vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
 
   // ambient
   vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
@@ -209,7 +223,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 {
   LightingData lightData;
   lightData.mDiffuseTexture  = texture(diffuseSampler, aUV);
-  lightData.mSpecularTexture = Material.mShininessStrength;
+  lightData.mSpecularTexture = Material.mSpecular;
   lightData.mNormalTexture   = texture(normalSampler, aUV);
   return lightData;
 }
@@ -219,27 +233,28 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 // ======================
 // Phong:
 // Calculates the phong illumination for fragment
-vec4 Phong(vec4 aNormal, vec4 aPosition, vec2 aUV)
+vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 {
   // Emissive and Global Illumination
   vec4 ITotal = Material.mEmissive +
                 (Illumination.mGlobalIllumination * Material.mAmbient);
 
-  // view vector
-  vec4 viewVec = (Illumination.mCameraPosition - aPosition);
+  // view vector in view space for attenuation
+  vec4 viewVec = ((View.mViewMatrix * Illumination.mCameraPosition) - aPosition);
 
   // atmo attenuation scalar
   float scalar = (Illumination.mFogPlanes.y - length(viewVec)) /
                  (Illumination.mFogPlanes.y - Illumination.mFogPlanes.x);
+  scalar = saturate(scalar);
 
-  // length no longer needed, normalized vector needed for light calculations
-  viewVec = normalize(viewVec);
+  // view vector in world space for lighting calculations
+  viewVec = normalize(Illumination.mCameraPosition - aPositionWorld);
 
   // Sample all textures at our position and fill out lighting data
   LightingData lightData = SampleTextures(aUV, aNormal);
   lightData.mViewVec = viewVec;
   lightData.mNormal = aNormal;
-  lightData.mPosition = aPosition;
+  lightData.mPosition = aPositionWorld;
 
   // Light Calculations
   for (int i = 0; i < Lights.mNumberOfLights; ++i)
@@ -263,6 +278,6 @@ void main()
   }
   else
   {
-    outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPositionWorld, inTextureCoordinates.xy);
+    outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), inTextureCoordinates.xy);
   }
 }
