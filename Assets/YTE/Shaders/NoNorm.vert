@@ -88,6 +88,8 @@ layout (binding = 1) uniform UBOAnimation
 layout (location = 0) out vec3 outColor;
 layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
+layout (location = 3) out vec3 outPositionWorld;
+layout (location = 4) out vec4 outPosition;
 
 // ========================
 // Positional Output of Vertex
@@ -162,10 +164,18 @@ void CalculatePosition(mat4 aProjMat, mat4 aViewMat, mat4 aModelMat, mat4 aAnima
 // takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
 vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNormal)
 {
-  return normalize(vec3(inverse(transpose(aViewMat  *
-                                aModelMat *
-                                aAnimateMat)) *
-                   aNormal));
+  return normalize(vec3(inverse(transpose(aModelMat *
+                                          aAnimateMat)) *
+                        aNormal));
+}
+
+// ======================
+// CalculateWorldPosition:
+// Calculates the position used for this vertex in world space
+// takes the model matrix, animation matrix, and the position value to calculate with
+vec3 CalculateWorldPosition(mat4 aModelMat, mat4 aAnimateMat, vec4 aPosition)
+{
+  return vec3(aModelMat * aAnimateMat * aPosition);
 }
 
 
@@ -182,6 +192,8 @@ void main()
   // remaining output for fragment shader
   outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
+
+  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,

@@ -29,7 +29,7 @@ struct LightingData
 {
   vec4 mDiffuseTexture;
   vec4 mNormalTexture;
-  float mSpecularTexture;
+  vec4 mSpecularTexture;
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
@@ -99,7 +99,8 @@ layout (binding = 5) uniform sampler2D diffuseSampler;
 layout (location = 0) in vec3 inColor;
 layout (location = 1) in vec2 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec4 inPosition;
+layout (location = 3) in vec4 inPositionWorld;
+layout (location = 4) in vec4 inPosition;
 
 // ========================
 // Output of Fragment
@@ -125,24 +126,31 @@ vec4 saturate(vec4 aColor)
 // Calculates as a directional light with the given light
 vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 {
-  vec4 lightVec = normalize(-aLight.mDirection);
-  
-  // diffuse
-  float diffContribution = max(dot(aLightData.mNormal, lightVec), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+  vec4 lightVec = -aLight.mDirection;
 
-  // specular
-  //vec4 reflectVec = reflect(-lightVec, aLightData.mNormal);
-  //float specContribution = pow(max(dot(aLightData.mViewVec, reflectVec), 0.0f), Material.mShininess);
-  //vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture *
-  //                     specContribution *
-  //                     Material.mShininessStrength;
+  // diffuse
+  float diffContribution = dot(lightVec, aLightData.mNormalTexture);
+
+  // used later
+  vec4 specularColor = vec4(0.0f);
+  vec4 diffuseColor = vec4(0.0f);
+
+  // actually saves computation to have this conditional
+  if (diffContribution > 0.0f)
+  {
+    diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+
+    // specular
+    vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
+    float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
+    specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+  }
 
   // ambient
   vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
 
   // combine
-  return vec4(0.0f, 1.0f, 0.0f, 1.0f);//saturate(ambientColor + diffuseColor);// + specularColor);
+  return saturate(diffuseColor + ambientColor + specularColor);
 }
 
 
@@ -196,7 +204,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 {
   LightingData lightData;
   lightData.mDiffuseTexture  = texture(diffuseSampler, aUV);
-  lightData.mSpecularTexture = Material.mShininess;
+  lightData.mSpecularTexture = Material.mSpecular;
   lightData.mNormalTexture   = aNormal;
   return lightData;
 }
@@ -223,10 +231,9 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec2 aUV)
   viewVec = normalize(viewVec);
 
   // Sample all textures at our position and fill out lighting data
-  vec4 newNormal = aNormal;
-  LightingData lightData = SampleTextures(aUV, newNormal);
+  LightingData lightData = SampleTextures(aUV, aNormal);
   lightData.mViewVec = viewVec;
-  lightData.mNormal = newNormal;
+  lightData.mNormal = aNormal;
   lightData.mPosition = aPosition;
 
   // Light Calculations
@@ -236,7 +243,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec2 aUV)
   }
 
   // final color
-  return saturate((scalar * ITotal) - ((1.0f - scalar) * Illumination.mFogColor));
+  return (scalar * ITotal) + ((1.0f - scalar) * Illumination.mFogColor);
 }
 
 
@@ -245,5 +252,12 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPosition, inTextureCoordinates.xy);
+  if (Lights.mNumberOfLights == 0)
+  {
+    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
+  }
+  else
+  {
+    outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPositionWorld, inTextureCoordinates.xy);
+  }
 }
