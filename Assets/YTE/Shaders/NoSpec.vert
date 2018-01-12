@@ -160,7 +160,7 @@ void CalculatePosition(mat4 aProjMat, vec4 aPos)
 // takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
 vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNormal)
 {
-  return normalize(vec3(inverse(transpose(aViewMat *
+  return normalize(vec3(inverse(transpose(//aViewMat *
                                           aModelMat *
                                           aAnimateMat)) *
                         aNormal));
