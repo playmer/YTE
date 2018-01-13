@@ -202,7 +202,7 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 // Calculates as a spot light with the given light
 vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
 {
-  vec4 lightVec = (aLight.mPosition - aLightData.mPosition);
+  vec4 lightVec = (inViewMatrix * aLight.mPosition) - (inViewMatrix * aLightData.mPosition);
   float lightVecDistance = length(lightVec);
   lightVec = normalize(lightVec);
 
@@ -210,59 +210,40 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
   vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
 
   // diffuse
-  float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+  float diffContribution = max(dot(aLightData.mNormalTexture, lightVec), 0.0f);
+  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffuseTexture;
 
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
   vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
 
+  // attenuation
+  float att = min(1.0f / (Illumination.mFogCoefficients.x +
+                          Illumination.mFogCoefficients.y * lightVecDistance +
+                          Illumination.mFogCoefficients.z * (lightVecDistance * lightVecDistance)), 1.0f);
+  
   // spotlight effect
-  //float theta = dot(lightVec, normalize(-aLight.mDirection));
-  //float epsilon = aLight.mSpotLightConeAngles.x - aLight.mSpotLightConeAngles.y;
-  //float intensity = clamp((theta - aLight.mSpotLightConeAngles.y) / epsilon, 0.0f, 1.0f);
-  //diffuseColor = diffuseColor * intensity;
-  //specularColor = specularColor * intensity;
-
-  // lots of calculations ahead, lets save some time if we can
-  if (diffContribution == 0.0f)
-  {
-    return vec4(0,0,0,0);
-  }
-
-  // cone and theta angles needed for the spotlight effect
-  float theta = dot(lightVec, normalize(-aLight.mDirection));
-  float outerCone = cos(aLight.mSpotLightConeAngles.x);
-  float innerCone = cos(aLight.mSpotLightConeAngles.y);
+  vec4 spotlightDirection = normalize(inViewMatrix * -aLight.mDirection);
+  float alpha = dot(spotlightDirection, lightVec);
+  float phi = cos(aLight.mSpotLightConeAngles.y);
+  float theta = cos(aLight.mSpotLightConeAngles.x);
   float spotEffect = 0.0f;
 
-  // if the spot effect can be seen at all
-  if (outerCone > innerCone)
+  if (alpha < phi)
   {
-    // if the spot effect is inside the inner cone
-    if (theta > innerCone)
-    {
-      spotEffect = 1.0f;
-    }
-    // or if the spot light is a mix of the cones
-    else if (theta < outerCone && theta > innerCone)
-    {
-      // do some calculations to find the mix
-      spotEffect = pow(max((theta - innerCone) / (outerCone - innerCone), 0.0f), aLight.mSpotLightFalloff);
-    }
+    spotEffect = 0.0f;
+  }
+  else if (alpha > theta)
+  {
+    spotEffect = 1.0f;
+  }
+  else
+  {
+    spotEffect = pow((alpha - phi) / (theta - phi), aLight.mSpotLightFalloff);
   }
 
-  // apply the spotlight effect to the diffuse and specular terms
-  diffuseColor = diffuseColor * spotEffect;
-  specularColor = specularColor * spotEffect;
-
-  // attenuation
-  float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
-                       (Illumination.mFogCoefficients.y * lightVecDistance) +
-                       (Illumination.mFogCoefficients.z * (lightVecDistance * lightVecDistance)) );
-  
-  return saturate((diffuseColor + specularColor + ambientColor) * att);
+  return saturate(att * ambientColor + att * spotEffect * (diffuseColor + specularColor));
 }
 
 
