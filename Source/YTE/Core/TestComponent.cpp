@@ -17,7 +17,6 @@ namespace YTE
   TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    mEngine = aSpace->GetEngine();
     DeserializeByType<TestComponent*>(aProperties, this, TestComponent::GetStaticType());
   }
 
@@ -27,7 +26,7 @@ namespace YTE
 
   void TestComponent::Initialize()
   {
-    String hud{"test"};
+    String hud{ "test" };
     auto engine = mSpace->GetEngine();
     auto hudSpace = engine->AddComposition<Space>("HudLevel", engine, nullptr);
     hudSpace->Load(engine->GetLevel(hud));
@@ -46,7 +45,7 @@ namespace YTE
 
     mTime = mCurrentPosition.z < 0.0f ? glm::pi<float>() : 0.0f;
 
-    mEngine->YTERegister(Events::LogicUpdate, this, &TestComponent::Update);
+    mSpace->YTERegister(Events::LogicUpdate, this, &TestComponent::Update);
   }
 
   void TestComponent::Update(LogicUpdate *aEvent)
@@ -64,9 +63,7 @@ namespace YTE
     //
     //glm::vec3 scale{ mCurrentScale, mCurrentScale, mCurrentScale };
 
-    mCurrentRotation = transform->GetRotationAsEuler();
-
-    mCurrentRotation.y += mTime * 10.0f;
+    mCurrentRotation.y = mTime;
 
     //printf("%s: %f\n", mOwner->GetName().c_str(), mCurrentRotation.y);
 
