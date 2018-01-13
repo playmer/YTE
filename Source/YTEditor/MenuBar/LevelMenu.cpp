@@ -15,6 +15,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Camera.hpp"
 
@@ -36,6 +37,7 @@ namespace YTEditor
     addMenu(MakeCurrentLevelMenu());
     addMenu(MakeSpaceMenu());
     addMenu(MakeEngineMenu());
+    addMenu(MakeSetLightingMenu());
     addAction(MakeSelectCameraAct());
   }
 
@@ -157,6 +159,43 @@ namespace YTEditor
     objBrowser.SelectNoItem();
 
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(engine);
+  }
+
+  QMenu* LevelMenu::MakeSetLightingMenu()
+  {
+    QMenu *menu = new QMenu("Lighting");
+
+    QAction *lightsOn = new QAction("All Lights On");
+    menu->addAction(lightsOn);
+    connect(lightsOn, &QAction::triggered, this, &LevelMenu::TurnLightsOn);
+
+    QAction *lightsOff = new QAction("All Lights Off");
+    menu->addAction(lightsOff);
+    connect(lightsOff, &QAction::triggered, this, &LevelMenu::TurnLightsOff);
+
+    return menu;
+  }
+
+  void LevelMenu::TurnLightsOn()
+  {
+    auto engine = mMainWindow->GetRunningEngine();
+
+    auto graphics = engine->GetComponent<YTE::GraphicsSystem>();
+
+    auto renderer = graphics->GetRenderer();
+
+    renderer->SetLights(true);
+  }
+
+  void LevelMenu::TurnLightsOff()
+  {
+    auto engine = mMainWindow->GetRunningEngine();
+
+    auto graphics = engine->GetComponent<YTE::GraphicsSystem>();
+
+    auto renderer = graphics->GetRenderer();
+
+    renderer->SetLights(false);
   }
 
 }

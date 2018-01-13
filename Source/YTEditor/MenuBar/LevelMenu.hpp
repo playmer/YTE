@@ -42,6 +42,10 @@ namespace YTEditor
     QMenu* MakeEngineMenu();
     void SelectEngine();
 
+    QMenu* MakeSetLightingMenu();
+    void TurnLightsOn();
+    void TurnLightsOff();
+
     MainWindow *mMainWindow;
 
   };
