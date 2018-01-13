@@ -8,9 +8,11 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
+#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -189,6 +191,17 @@ namespace YTE
 
   }
 
+
+
+  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
+  {
+    GetViewData(aView).mIlluminationUBOData = aIllumination;
+    this->YTERegister(Events::GraphicsDataUpdateVk, this,
+                      &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+  }
+
+
+
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
   {
     printf("Formats Available: \n");
@@ -354,6 +367,17 @@ namespace YTE
     return shaderPtr;
   }
 
+
+
+  std::unique_ptr<VkInstantiatedLight> VkRenderedSurface::CreateLight(GraphicsView* aView)
+  {
+    mDataUpdateRequired = true;
+    auto light = GetViewData(aView).mLightManager.CreateLight();
+    return std::move(light);
+  }
+
+
+
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -407,9 +431,18 @@ namespace YTE
                                           nullptr,
                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
                                           uboAllocator);
+      auto buffer2 = mDevice->createBuffer(sizeof(UBOIllumination),
+                                           vk::BufferUsageFlagBits::eTransferDst |
+                                           vk::BufferUsageFlagBits::eUniformBuffer,
+                                           vk::SharingMode::eExclusive,
+                                           nullptr,
+                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                           uboAllocator);
 
-      emplaced.first->second.mViewUBO = buffer;
-
+      auto &view = emplaced.first->second;
+      view.mViewUBO = buffer;
+      view.mIlluminationUBO = buffer2;
+      view.mLightManager.SetSurfaceAndView(this, aView);
     }
   }
 
@@ -445,6 +478,7 @@ namespace YTE
     {
       auto &viewData = viewDataIt.second;
       viewData.mViewUBO->update<UBOView>(0, viewData.mViewUBOData, aEvent->mCBO);
+      viewData.mIlluminationUBO->update<UBOIllumination>(0, viewData.mIlluminationUBOData, aEvent->mCBO);
       this->YTEDeregister(Events::GraphicsDataUpdateVk, 
                           this,
                           &VkRenderedSurface::GraphicsDataUpdateVkEvent);
@@ -511,9 +545,19 @@ namespace YTE
 
 
 
+  void VkRenderedSurface::SetLights(bool aOnOrOff)
+  {
+    for (auto& view : mViewData)
+    {
+      view.second.mLightManager.SetLights(aOnOrOff);
+    }
+  }
+
+
+
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    if (mWindow->mKeyboard.IsKeyDown(Keys::F2))
+    if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
       ReloadAllShaders();
     }

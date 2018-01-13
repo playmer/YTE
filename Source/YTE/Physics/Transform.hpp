@@ -103,6 +103,7 @@ namespace YTE
 
     const glm::quat& GetRotation() const;
     glm::vec3 GetRotationAsEuler() const;
+    glm::vec3 GetRotationAsEulerRadians() const;
     void SetRotation(const glm::quat& aRotation);
     void SetRotation(const glm::vec3& aEulerRot);
     void SetRotation(float aThetaX, float aThetaY, float ThetaZ);

@@ -26,8 +26,10 @@ namespace YTE
 
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aMeshFile) override;
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
+    std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
+    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
 
     Mesh* CreateSimpleMesh(GraphicsView *aView,
                            std::string &aName,
@@ -42,7 +44,7 @@ namespace YTE
     void PresentFrame(LogicUpdate *aEvent) override;
     void AnimationUpdate(LogicUpdate *aEvent) override;
 
-
+    void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
     void DeregisterView(GraphicsView *aView) override;
     void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder) override;

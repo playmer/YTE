@@ -142,6 +142,26 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the Rotate speed of the camera");
+
+    YTEBindProperty(&Camera::GetGlobalIlluminaton, &Camera::SetGlobalIlluminaton, "Global Illumination")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the illumination of the world");
+
+    YTEBindProperty(&Camera::GetFogColor, &Camera::SetFogColor, "Fog Color")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the color of the fog");
+
+    YTEBindProperty(&Camera::GetFogPlanes, &Camera::SetFogPlanes, "Fog Near/Far")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts Fog near and far planes (start of fog, full fog)");
+
+    YTEBindProperty(&Camera::GetFogCoeffs, &Camera::SetFogCoeffs, "Fog Coefficients")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Adjusts the fog coefficients of the world");
   } 
   
   Camera::Camera(Composition *aOwner,
@@ -200,6 +220,12 @@ namespace YTE
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
+
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mIllumination.mFogCoefficients = glm::vec4(1.0f, 0.1f, 0.0f, 0.0f);
+    mIllumination.mFogColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+    mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
+    mIllumination.mGlobalIllumination = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
 
     mConstructing = false;
     RendererResize(nullptr);
@@ -343,6 +369,8 @@ namespace YTE
 
     mChanged = false;
     mGraphicsView->UpdateView(this, view);
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mGraphicsView->UpdateIllumination(mIllumination);
   }
 
   // Handle the moment a mouse button is pressed

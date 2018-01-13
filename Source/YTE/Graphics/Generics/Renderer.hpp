@@ -33,8 +33,10 @@ namespace YTE
     virtual Mesh* CreateSimpleMesh(GraphicsView *aView,
                                    std::string &aName,
                                    std::vector<Submesh> &aSubmeshes);
+    virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);
+    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination);
     virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
     virtual void FrameUpdate(LogicUpdate *aEvent);
     virtual void PresentFrame(LogicUpdate *aEvent);
@@ -42,6 +44,7 @@ namespace YTE
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
     virtual void AnimationUpdate(LogicUpdate *aEvent);
 
+    virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);
     virtual void DeregisterView(GraphicsView *aView);
     virtual void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder);

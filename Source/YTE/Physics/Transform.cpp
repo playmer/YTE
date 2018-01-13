@@ -163,6 +163,11 @@ namespace YTE
   {
     return glm::degrees(glm::eulerAngles(mRotation));
   }
+
+  glm::vec3 Transform::GetRotationAsEulerRadians() const
+  {
+    return glm::radians(glm::eulerAngles(mRotation));
+  }
   
   ////////////////////////////////////////////////////////////////////////////
   // World Getters

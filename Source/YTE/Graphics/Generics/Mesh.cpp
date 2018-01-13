@@ -206,12 +206,12 @@ namespace YTE
     material->Get(AI_MATKEY_COLOR_TRANSPARENT, Transparent);
     material->Get(AI_MATKEY_COLOR_REFLECTIVE, Reflective);
 
-    mUBOMaterial.mDiffuse = AssimpToGLM(&Diffuse);
-    mUBOMaterial.mAmbient = AssimpToGLM(&Ambient);
-    mUBOMaterial.mSpecular = AssimpToGLM(&Specular);
-    mUBOMaterial.mEmissive = AssimpToGLM(&Emissive);
-    mUBOMaterial.mTransparent = AssimpToGLM(&Transparent);
-    mUBOMaterial.mReflective = AssimpToGLM(&Reflective);
+    mUBOMaterial.mDiffuse = glm::vec4(AssimpToGLM(&Diffuse), 1.0f);
+    mUBOMaterial.mAmbient = glm::vec4(AssimpToGLM(&Ambient), 1.0f);
+    mUBOMaterial.mSpecular = glm::vec4(AssimpToGLM(&Specular), 1.0f);
+    mUBOMaterial.mEmissive = glm::vec4(AssimpToGLM(&Emissive), 1.0f);
+    mUBOMaterial.mTransparent = glm::vec4(AssimpToGLM(&Transparent), 1.0f);
+    mUBOMaterial.mReflective = glm::vec4(AssimpToGLM(&Reflective), 1.0f);
 
     material->Get(AI_MATKEY_NAME, name);
     material->Get(AI_MATKEY_OPACITY, mUBOMaterial.mOpacity);

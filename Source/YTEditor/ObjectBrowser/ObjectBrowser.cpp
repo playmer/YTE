@@ -227,7 +227,10 @@ namespace YTEditor
       }
       else
       {
-        matViewer->LoadNoMaterial();
+        if (matViewer)
+        {
+          matViewer->LoadNoMaterial();
+        }
       }
 
       // get the transform of the currently selected object

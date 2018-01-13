@@ -9,6 +9,7 @@
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
+#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 
 namespace YTE
 {
@@ -209,6 +210,21 @@ namespace YTE
                        nullptr);
     ++uniformBuffers;
 
+    // Lights Buffer for Fragment shader.
+    dslbs.emplace_back(++binding,
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eFragment,
+                       nullptr);
+    ++uniformBuffers;
+
+    // Illumination Buffer for Fragment shader.
+    dslbs.emplace_back(++binding,
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eFragment,
+                       nullptr);
+    ++uniformBuffers;
+
+
     // Descriptions for the textures we support based on which maps we found above:
     //   Diffuse
     //   Specular
@@ -339,6 +355,14 @@ namespace YTE
     // Material Buffer for Fragment shader.
     vkhlf::DescriptorBufferInfo uboMaterial{ mUBOMaterial, 0, sizeof(UBOMaterial) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
+
+    // Light manager Buffer for Fragment Shader
+    vkhlf::DescriptorBufferInfo uboLights { mSurface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
+
+    // Illumination Buffer for the Fragment Shader
+    vkhlf::DescriptorBufferInfo uboIllumination { mSurface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Add Texture Samplers
     auto addTS = [&wdss, &binding, &ds](VkTexture *aData,
