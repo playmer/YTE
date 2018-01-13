@@ -50,6 +50,7 @@ namespace YTE
     void SetSpotLightCones(glm::vec2& aCones);  // inner, outer
     void SetLightType(std::string aLightType);
     void SetSpotLightFalloff(float& aFalloff);
+    void SetActive(bool aValue);
 
     glm::vec3 GetPosition() const;
     glm::vec3 GetDirection() const;
@@ -59,6 +60,7 @@ namespace YTE
     glm::vec2 GetSpotLightCones() const;
     std::string GetLightType() const;
     float GetSpotLightFalloff() const;
+    bool GetActive() const;
 
 
 

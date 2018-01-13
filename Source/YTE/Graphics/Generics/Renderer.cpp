@@ -109,6 +109,11 @@ namespace YTE
     YTEUnusedArgument(aEvent);
   }
 
+  void Renderer::SetLights(bool aOnOrOff)
+  {
+    YTEUnusedArgument(aOnOrOff);
+  }
+
   void Renderer::RegisterView(GraphicsView *aView)
   {
     YTEUnusedArgument(aView);

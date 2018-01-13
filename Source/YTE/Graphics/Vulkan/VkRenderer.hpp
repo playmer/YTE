@@ -44,7 +44,7 @@ namespace YTE
     void PresentFrame(LogicUpdate *aEvent) override;
     void AnimationUpdate(LogicUpdate *aEvent) override;
 
-
+    void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
     void DeregisterView(GraphicsView *aView) override;
     void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder) override;

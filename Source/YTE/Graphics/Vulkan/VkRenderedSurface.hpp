@@ -144,6 +144,7 @@ namespace YTE
     void GraphicsDataUpdate();
     void AnimationUpdate();
 
+    void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);
     void DeregisterView(GraphicsView *aView);
     void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder);

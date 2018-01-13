@@ -51,6 +51,10 @@ namespace YTE
     YTEBindProperty(&Light::GetSpotLightFalloff, &Light::SetSpotLightFalloff, "Spot Light Falloff")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Light::GetActive, &Light::SetActive, "Is Active")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
 
@@ -108,7 +112,7 @@ namespace YTE
     }
     else
     {
-      mLightTemp.mPosition = glm::vec4(mTransform->GetTranslation(), 1.0f);
+      mLightTemp.mPosition = mTransform->GetTranslation();
       mLightTemp.mDirection = glm::vec4(mTransform->GetRotationAsEulerRadians(), 0.0f);
       mUseTemp = true;
     }
@@ -130,7 +134,7 @@ namespace YTE
       }
       else
       {
-        mLightTemp.mPosition = glm::vec4(mTransform->GetTranslation(), 1.0f);
+        mLightTemp.mPosition = mTransform->GetTranslation();
         mLightTemp.mDirection = glm::vec4(mTransform->GetRotationAsEulerRadians(), 0.0f);
         mUseTemp = true;
       }
@@ -162,7 +166,7 @@ namespace YTE
     }
     else
     {
-      mLightTemp.mPosition = glm::vec4(aPosition, 1.0f);
+      mLightTemp.mPosition = aPosition;
       mUseTemp = true;
     }
   }
@@ -297,6 +301,19 @@ namespace YTE
 
 
 
+  void Light::SetActive(bool aValue)
+  {
+    if (mInstantiatedLight)
+    {
+      mInstantiatedLight->SetActive(aValue);
+    }
+    else
+    {
+      mLightTemp.mActive = aValue;
+      mUseTemp = true;
+    }
+  }
+
   glm::vec3 Light::GetPosition() const
   {
     if (mInstantiatedLight)
@@ -407,6 +424,17 @@ namespace YTE
     }
 
     return 0.0f;
+  }
+
+
+
+  bool Light::GetActive() const
+  {
+    if (mInstantiatedLight)
+    {
+      return mInstantiatedLight->GetActive();
+    }
+    return false;
   }
 
 

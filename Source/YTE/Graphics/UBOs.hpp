@@ -69,7 +69,8 @@ namespace YTE
 
   struct UBOLight
   {
-    glm::vec4 mPosition;
+    glm::vec3 mPosition;
+    float mActive; // bool
     glm::vec4 mDirection;
     glm::vec4 mAmbient;
     glm::vec4 mDiffuse;
@@ -86,6 +87,13 @@ namespace YTE
     glm::vec4 mFogColor;
     glm::vec4 mFogCoefficients;
     glm::vec2 mFogPlanes;
+  };
+
+  struct UBOLightMan
+  {
+    UBOLight mLights[YTE_Graphics_LightCount];
+    unsigned int mNumOfLights;
+    float mActive;  // bool
   };
 }
 

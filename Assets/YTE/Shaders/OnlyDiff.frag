@@ -13,7 +13,8 @@
 // Structures
 struct Light
 {
-  vec4 mPosition;
+  vec3 mPosition;
+  float mActive;
   vec4 mDirection;
   vec4 mAmbient;
   vec4 mDiffuse;
@@ -75,6 +76,7 @@ layout (binding = 3) uniform UBOLights
 {
   Light mLights[MAX_LIGHTS];
   uint mNumberOfLights;
+  float mActive;
 } Lights;
 
 // ========================
@@ -166,7 +168,7 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 // Calculates as a point light with the given light
 vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 {
-  vec4 lightVec = aLight.mPosition - aLightData.mPosition;
+  vec4 lightVec = vec4(aLight.mPosition, 1.0f) - aLightData.mPosition;
   float lightVecDistance = length(lightVec);
   
   lightVec = normalize(lightVec);
@@ -197,7 +199,7 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 // Calculates as a spot light with the given light
 vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
 {
-  vec4 lightVec = (inViewMatrix * aLight.mPosition) - (inViewMatrix * aLightData.mPosition);
+  vec4 lightVec = (inViewMatrix * vec4(aLight.mPosition, 1.0f)) - (inViewMatrix * aLightData.mPosition);
   float lightVecDistance = length(lightVec);
   lightVec = normalize(lightVec);
 
@@ -248,6 +250,11 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
 vec4 CalculateLight(int i, inout LightingData aLightData)
 {
   Light light = Lights.mLights[i];
+
+  if (light.mActive < 0.5f)
+  {
+    return vec4(0,0,0,0);
+  }
   
   // find type of light and call corresponding function
   if (light.mLightType == LightType_Directional)
@@ -323,7 +330,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if (Lights.mNumberOfLights == 0)
+  if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
   }

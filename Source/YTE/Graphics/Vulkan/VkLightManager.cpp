@@ -14,7 +14,8 @@ namespace YTE
 {
   VkLightManager::VkLightManager()
   {
-
+    mLightData.mActive = 0.0f; // false
+    mLightData.mNumOfLights = 0;
   }
 
 
@@ -25,13 +26,15 @@ namespace YTE
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(LightMan),
+    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
                                                   vk::BufferUsageFlagBits::eTransferDst |
                                                   vk::BufferUsageFlagBits::eUniformBuffer,
                                                   vk::SharingMode::eExclusive,
                                                   nullptr,
                                                   vk::MemoryPropertyFlagBits::eDeviceLocal,
                                                   allocator);
+
+    mLightData.mActive = 0.0f; // false
 
     mLights.reserve(YTE_Graphics_LightCount);
 
@@ -42,7 +45,6 @@ namespace YTE
 
     mUpdateRequired = true;
     mLightData.mNumOfLights = 0;
-    std::cout << sizeof(LightMan) << ", " << sizeof(mLightData) << std::endl;
   }
 
 
@@ -55,7 +57,7 @@ namespace YTE
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(LightMan),
+    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
                                                   vk::BufferUsageFlagBits::eTransferDst |
                                                   vk::BufferUsageFlagBits::eUniformBuffer,
                                                   vk::SharingMode::eExclusive,
@@ -72,7 +74,7 @@ namespace YTE
 
     mUpdateRequired = true;
     mLightData.mNumOfLights = 0;
-    std::cout << sizeof(LightMan) << ", " << sizeof(mLightData) << std::endl;
+    mLightData.mActive = 0.0f; // false
   }
 
 
@@ -84,7 +86,7 @@ namespace YTE
     if (mUpdateRequired)
     {
       auto update = aEvent->mCBO;
-      mBuffer->update<LightMan>(0, mLightData, update);
+      mBuffer->update<UBOLightMan>(0, mLightData, update);
       mUpdateRequired = false;
     }
   }
@@ -97,6 +99,11 @@ namespace YTE
     {
       DebugObjection(true , "Light Manager is full, no new lights can be added, you may safely continue, no light was added");
       return nullptr;
+    }
+
+    if (mLightData.mNumOfLights == 0)
+    {
+      mLightData.mActive = 10.0f; // true
     }
 
     auto light = std::make_unique<VkInstantiatedLight>(mSurface, this, mGraphicsView);
@@ -137,4 +144,11 @@ namespace YTE
     mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;
   }
+
+  void VkLightManager::SetLights(bool aOnOrOff)
+  {
+    mLightData.mActive = aOnOrOff ? 10.0f : 0.0f;
+    mUpdateRequired = true;
+  }
+
 }

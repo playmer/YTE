@@ -18,13 +18,6 @@
 
 namespace YTE
 {
-  struct LightMan
-  {
-    UBOLight mLights[YTE_Graphics_LightCount];
-    unsigned int mNumOfLights;
-  };
-
-
   class VkLightManager : public EventHandler
   {
   public:
@@ -46,6 +39,8 @@ namespace YTE
 
     void UpdateLightValue(unsigned int aIndex, UBOLight &aLightValue);
 
+    void SetLights(bool aOnOrOff);
+
     std::shared_ptr<vkhlf::Buffer> GetUBOLightBuffer()
     {
       return mBuffer;
@@ -53,7 +48,7 @@ namespace YTE
 
   private:
     std::vector<VkInstantiatedLight*> mLights;
-    LightMan mLightData;
+    UBOLightMan mLightData;
     std::shared_ptr<vkhlf::Buffer> mBuffer;
     VkRenderedSurface* mSurface;
     GraphicsView* mGraphicsView;

@@ -357,7 +357,7 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
 
     // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { mSurface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(LightMan) };
+    vkhlf::DescriptorBufferInfo uboLights { mSurface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
 
     // Illumination Buffer for the Fragment Shader

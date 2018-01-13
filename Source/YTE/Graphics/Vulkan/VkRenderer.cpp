@@ -171,6 +171,14 @@ namespace YTE
     }
   }
 
+  void VkRenderer::SetLights(bool aOnOrOff)
+  {
+    for (auto& surface : mSurfaces)
+    {
+      surface.second->SetLights(aOnOrOff);
+    }
+  }
+
   void VkRenderer::RegisterView(GraphicsView *aView)
   {
     GetSurface(aView->GetWindow())->RegisterView(aView);

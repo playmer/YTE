@@ -545,6 +545,16 @@ namespace YTE
 
 
 
+  void VkRenderedSurface::SetLights(bool aOnOrOff)
+  {
+    for (auto& view : mViewData)
+    {
+      view.second.mLightManager.SetLights(aOnOrOff);
+    }
+  }
+
+
+
   void VkRenderedSurface::RenderFrameForSurface()
   {
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))

@@ -40,7 +40,7 @@ namespace YTE
 
     void SetPosition(const glm::vec3 aPosition)
     {
-      mLightUBOData.mPosition = glm::vec4(aPosition, 1.0f);
+      mLightUBOData.mPosition = aPosition;
       mDataChanged = true;
     }
 
@@ -86,6 +86,11 @@ namespace YTE
       mDataChanged = true;
     }
 
+    void SetActive(const bool aValue)
+    {
+      mLightUBOData.mActive = aValue ? 10.0f : 0.0f;
+      mDataChanged = true;
+    }
 
 
     float GetSpotLightFalloff()
@@ -131,6 +136,11 @@ namespace YTE
     UBOLight* GetLightData()
     {
       return &mLightUBOData;
+    }
+
+    bool GetActive()
+    {
+      return mLightUBOData.mActive;
     }
 
 

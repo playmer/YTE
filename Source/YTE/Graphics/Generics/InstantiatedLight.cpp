@@ -17,13 +17,15 @@ namespace YTE
   InstantiatedLight::InstantiatedLight()
   {
     mDataChanged = true;
-    mLightUBOData.mPosition = glm::vec4(0, 0, 0, 0);
-    mLightUBOData.mDirection = glm::vec4(0, 0, 0, 0);
-    mLightUBOData.mDiffuse = glm::vec4(0, 0, 0, 0);
-    mLightUBOData.mAmbient = glm::vec4(0, 0, 0, 0);
-    mLightUBOData.mSpecular = glm::vec4(0, 0, 0, 0);
-    mLightUBOData.mSpotLightConeAngles = glm::vec2(0, 0);
-    mLightUBOData.mLightType = static_cast<unsigned int>(LightType::None);
+    mLightUBOData.mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    mLightUBOData.mActive = 10.0f;
+    mLightUBOData.mDirection = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    mLightUBOData.mDiffuse = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    mLightUBOData.mAmbient = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    mLightUBOData.mSpecular = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+    mLightUBOData.mSpotLightConeAngles = glm::vec2(glm::radians(10.0f), glm::radians(20.0f));
+    mLightUBOData.mSpotLightFalloff = 10.0f;
+    mLightUBOData.mLightType = static_cast<unsigned int>(LightType::Point);
   }
 }
 

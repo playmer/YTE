@@ -44,6 +44,7 @@ namespace YTE
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
     virtual void AnimationUpdate(LogicUpdate *aEvent);
 
+    virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);
     virtual void DeregisterView(GraphicsView *aView);
     virtual void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder);
