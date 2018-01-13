@@ -90,6 +90,7 @@ layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec4 outPosition;
 layout (location = 4) out vec3 outPositionWorld;
+layout (location = 5) out mat4 outViewMatrix;
 
 // ========================
 // Positional Output of Vertex
@@ -196,6 +197,7 @@ void main()
   // remaining output for fragment shader
   outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
+  outViewMatrix = View.mViewMatrix;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 

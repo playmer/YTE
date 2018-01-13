@@ -70,7 +70,7 @@ namespace YTE
 
     void SetSpotLightCones(const glm::vec2& aCones) // inner, outer
     {
-      mLightUBOData.mSpotLightConeAngles = aCones;
+      mLightUBOData.mSpotLightConeAngles = glm::vec2(glm::radians(aCones.x), glm::radians(aCones.y));
       mDataChanged = true;
     }
 
@@ -120,7 +120,7 @@ namespace YTE
 
     glm::vec2 GetSpotLightCones() const
     {
-      return mLightUBOData.mSpotLightConeAngles;
+      return glm::vec2(glm::degrees(mLightUBOData.mSpotLightConeAngles.x), glm::degrees(mLightUBOData.mSpotLightConeAngles.y));
     }
 
     LightType GetLightType() const

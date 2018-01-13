@@ -403,7 +403,7 @@ namespace YTE
   {
     if (mInstantiatedLight)
     {
-      mInstantiatedLight->GetSpotLightFalloff();
+      return mInstantiatedLight->GetSpotLightFalloff();
     }
 
     return 0.0f;

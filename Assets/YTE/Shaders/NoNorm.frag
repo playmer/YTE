@@ -4,7 +4,6 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
@@ -43,8 +42,6 @@ const uint LightType_Directional = 1;
 const uint LightType_Point = 2;
 const uint LightType_Spot = 3;
 //const uint LightType_Area = 4; // area not in use
-
-
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,7 +94,6 @@ layout (binding = 4) uniform UBOIllumination
 } Illumination;
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
 layout (binding = 5) uniform sampler2D diffuseSampler;
@@ -111,6 +107,7 @@ layout (location = 1) in vec2 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
 layout (location = 3) in vec4 inPosition;
 layout (location = 4) in vec3 inPositionWorld;
+layout (location = 5) in mat4 inViewMatrix;
 
 // ========================
 // Output of Fragment
@@ -148,6 +145,7 @@ float saturate(float aValue)
   return clamp(aValue, 0.0f, 1.0f);
 }
 
+
 // ======================
 // Calc_DirectionalLight:
 // Calculates as a directional light with the given light
@@ -179,8 +177,27 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 {
   vec4 lightVec = aLight.mPosition - aLightData.mPosition;
   float lightVecDistance = length(lightVec);
-  return vec4(0,0,0,0);
+  
+  lightVec = normalize(lightVec);
+  
+  // ambient
+  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+  
   // diffuse
+  float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+
+  // specular
+  vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+
+  // attenuation
+  float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
+                       (Illumination.mFogCoefficients.y * lightVecDistance) +
+                       (Illumination.mFogCoefficients.z * (lightVecDistance * lightVecDistance)) );
+  
+  return saturate((diffuseColor + specularColor + ambientColor) * att);
 }
 
 
@@ -189,7 +206,122 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 // Calculates as a spot light with the given light
 vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
 {
-  return vec4(0, 0, 0, 0);
+  vec4 lightVec = (inViewMatrix * aLight.mPosition) - (inViewMatrix * aLightData.mPosition);
+  float lightVecDistance = length(lightVec);
+  lightVec = normalize(lightVec);
+
+  // ambient
+  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+
+  // diffuse
+  float diffContribution = max(dot(aLightData.mNormalTexture, lightVec), 0.0f);
+  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffuseTexture;
+
+  // specular
+  vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+
+  // attenuation
+  float att = min(1.0f / (Illumination.mFogCoefficients.x +
+                          Illumination.mFogCoefficients.y * lightVecDistance +
+                          Illumination.mFogCoefficients.z * (lightVecDistance * lightVecDistance)), 1.0f);
+  
+  // spotlight effect
+  vec4 spotlightDirection = normalize(inViewMatrix * -aLight.mDirection);
+  float alpha = dot(spotlightDirection, lightVec);
+  float phi = cos(aLight.mSpotLightConeAngles.y);
+  float theta = cos(aLight.mSpotLightConeAngles.x);
+  float spotEffect = 0.0f;
+
+  if (alpha < phi)
+  {
+    spotEffect = 0.0f;
+  }
+  else if (alpha > theta)
+  {
+    spotEffect = 1.0f;
+  }
+  else
+  {
+    spotEffect = pow((alpha - phi) / (theta - phi), aLight.mSpotLightFalloff);
+  }
+
+  return saturate(att * ambientColor + att * spotEffect * (diffuseColor + specularColor));
+
+
+  /*
+  vec4 lightVec = (aLight.mPosition - aLightData.mPosition);
+  float lightVecDistance = length(lightVec);
+  lightVec = normalize(lightVec);
+
+  // ambient
+  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+
+  // diffuse
+  float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+
+  // specular
+  vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+
+  // spotlight effect
+  //float theta = dot(lightVec, normalize(-aLight.mDirection));
+  //float epsilon = aLight.mSpotLightConeAngles.x - aLight.mSpotLightConeAngles.y;
+  //float intensity = clamp((theta - aLight.mSpotLightConeAngles.y) / epsilon, 0.0f, 1.0f);
+  //diffuseColor = diffuseColor * intensity;
+  //specularColor = specularColor * intensity;
+
+  // lots of calculations ahead, lets save some time if we can
+  if (diffContribution == 0.0f)
+  {
+    return vec4(0,0,0,0);
+  }
+
+  //// cone and theta angles needed for the spotlight effect
+  float theta = dot(lightVec, normalize(-aLight.mDirection));
+  float innerCone = aLight.mSpotLightConeAngles.x;
+  float outerCone = aLight.mSpotLightConeAngles.y;
+  float spotEffect = 0.0f;
+  
+  // if the spot effect can be seen at all
+  if (aLight.mSpotLightConeAngles.x < aLight.mSpotLightConeAngles.y)
+  {
+    // if the spot effect is inside the inner cone
+    if (theta < innerCone)
+    {
+      spotEffect = 0.0f;
+    }
+    // or if the spot light is a mix of the cones
+    else if (theta < outerCone && theta > innerCone)
+    {
+      // do some calculations to find the mix
+      spotEffect = pow(max((theta - innerCone) / (outerCone - innerCone), 0.0f), aLight.mSpotLightFalloff);
+    }
+    else 
+    {
+      spotEffect = 1.0f;
+    }
+  }
+  diffuseColor = diffuseColor * spotEffect;
+  specularColor = specularColor * spotEffect;
+
+  //// spotlight effect
+  //float alpha = pow(max(dot(-lightVec, aLight.mDirection), 0.0f), aLight.mSpotLightFalloff);
+  //float alpha = max(dot(-lightVec, aLight.mDirection), 0.0f);
+  //float ratio = ((aLight.mSpotLightConeAngles.y - alpha) / (aLight.mSpotLightConeAngles.y - aLight.mSpotLightConeAngles.x));
+  //float spotEffect = ratio;
+  //float spotEffect = pow(ratio, aLight.mSpotLightFalloff);
+
+  // attenuation
+  float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
+                             (Illumination.mFogCoefficients.y * lightVecDistance) +
+                             (Illumination.mFogCoefficients.z * (lightVecDistance * lightVecDistance)) );
+  
+  return saturate((diffuseColor + specularColor + ambientColor) * att);
+  */
 }
 
 
@@ -231,7 +363,6 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 }
 
 
-
 // ======================
 // Phong:
 // Calculates the phong illumination for fragment
@@ -242,7 +373,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
                 (Illumination.mGlobalIllumination * Material.mAmbient);
 
   // view vector in view space for attenuation
-  vec4 viewVec = ((View.mViewMatrix * Illumination.mCameraPosition) - aPosition);
+  vec4 viewVec = ((inViewMatrix * Illumination.mCameraPosition) - aPosition);
 
   // atmo attenuation scalar
   float scalar = (Illumination.mFogPlanes.y - length(viewVec)) /
