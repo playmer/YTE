@@ -8,7 +8,6 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
