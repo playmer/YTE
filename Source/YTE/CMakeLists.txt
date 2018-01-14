@@ -1,46 +1,66 @@
-Set(YTE_Source)
+set(YTE_Source)
 
-Get_Filename_Component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-Add_Subdirectory(Core)
-Add_Subdirectory(Graphics)
-Add_Subdirectory(Physics)
-Add_Subdirectory(Meta)
-Add_Subdirectory(Platform)
-Add_Subdirectory(StandardLibrary)
-Add_Subdirectory(Utilities)
-Add_Subdirectory(WWise)
+add_library(YTE "")
 
-Include_Directories(${ParentDirectory}
-                    ${Dependencies_Root}/assimp/include)
+get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
-Add_Library(YTE ${YTE_Source})
+include(Core/CMakeLists.txt)
+include(Graphics/CMakeLists.txt)
+include(Physics/CMakeLists.txt)
+include(Meta/CMakeLists.txt)
+include(Platform/CMakeLists.txt)
+include(StandardLibrary/CMakeLists.txt)
+include(Utilities/CMakeLists.txt)
+include(WWise/CMakeLists.txt)
 
-YTE_Source_Group(YTE_Root YTE_Source)
+target_include_directories(YTE 
+  PUBLIC
+    ${Dependencies_Root}
+    ${Dependencies_Root}/assimp/include
+    ${Dependencies_Root}/assimp/contrib/rapidjson/include
+    ${Dependencies_Root}/Bullet
+    ${Source_Root}
+    ${ParentDirectory}
+)
 
-Target_Link_Libraries(YTE assimp) 
-Target_Link_Libraries(YTE Bullet) 
-Target_Link_Libraries(YTE crunch)
-Target_Link_Libraries(YTE glslang) 
-Target_Link_Libraries(YTE LuaJIT)
-Target_Link_Libraries(YTE STB_Image)
-Target_Link_Libraries(YTE vkel)
-Target_Link_Libraries(YTE VkHLF) 
-Target_Link_Libraries(YTE "$ENV{VK_SDK_PATH}/Lib/vulkan-1.lib" ) 
 
-Set_Target_Properties(YTE
+target_link_libraries(YTE
+  PUBLIC
+    assimp 
+    Bullet 
+    crunch
+    glslang
+    fmt    
+    LuaJIT
+    STB_Image
+    VkHLF
+) 
+
+set_target_properties(YTE
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
 
-ForEach(library ${StaticLibrariesRelease})
-  Target_Link_Libraries(YTE optimized ${library})
-EndForEach()
+YTE_Target_Precompiled_Headers(YTE
+                               PUBLIC 
+                                 <unordered_map>
+                                 <vector>
+                               PRIVATE
+                                 YTE/Meta/Type.hpp)
 
-ForEach(library ${StaticLibrariesDebug})
-  Target_Link_Libraries(YTE debug ${library})
-EndForEach()
+YTE_Source_Group(YTE_Root YTE)
 
-Target_Link_Libraries(YTE ${StaticLibraries})
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  target_compile_options(YTE PRIVATE 
+    PUBLIC
+      -permissive- -std:c++17 -MP
+    PRIVATE
+      -WX- -W4
+  )
+endif()
 
-Target_Compile_Options(YTE PRIVATE -permissive- -std:c++17 -WX- -W4)
+target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14)
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
+

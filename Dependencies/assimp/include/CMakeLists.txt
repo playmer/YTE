@@ -1,50 +1,48 @@
-Set(Previous_assimp_Source ${assimp_Source})
-
-AddFile(assimp_Source Previous_assimp_Source assimp/.editorconfig)
-AddFile(assimp_Source Previous_assimp_Source assimp/ai_assert.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/anim.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/camera.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/cexport.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/cfileio.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/cimport.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/color4.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/color4.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/config.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/config.h.in)
-AddFile(assimp_Source Previous_assimp_Source assimp/DefaultLogger.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/defs.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/Exporter.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/Importer.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/importerdesc.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/IOStream.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/IOSystem.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/light.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/Logger.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/LogStream.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/material.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/material.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/matrix3x3.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/matrix3x3.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/matrix4x4.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/matrix4x4.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/mesh.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/metadata.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/NullLogger.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/postprocess.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/ProgressHandler.hpp)
-AddFile(assimp_Source Previous_assimp_Source assimp/quaternion.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/quaternion.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/scene.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/texture.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/types.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/vector2.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/vector2.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/vector3.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/vector3.inl)
-AddFile(assimp_Source Previous_assimp_Source assimp/version.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/Compiler/poppack1.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/Compiler/pstdint.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/Compiler/pushpack1.h)
-AddFile(assimp_Source Previous_assimp_Source assimp/port/AndroidJNI/AndroidJNIIOSystem.h)
-
-Set(assimp_Source ${Previous_assimp_Source} PARENT_SCOPE)
+target_sources(assimp
+  PRIVATE
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/ai_assert.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/anim.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/camera.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/cexport.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/cfileio.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/cimport.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/color4.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/color4.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/config.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/DefaultLogger.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/defs.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Exporter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Importer.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/importerdesc.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/IOStream.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/IOSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/light.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Logger.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/LogStream.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/material.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/material.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/matrix3x3.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/matrix3x3.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/matrix4x4.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/matrix4x4.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/mesh.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/metadata.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/NullLogger.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/postprocess.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/ProgressHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/quaternion.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/quaternion.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/scene.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/texture.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/types.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/vector2.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/vector2.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/vector3.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/vector3.inl
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/version.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Compiler/poppack1.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Compiler/pstdint.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/Compiler/pushpack1.h
+    ${CMAKE_CURRENT_LIST_DIR}/assimp/port/AndroidJNI/AndroidJNIIOSystem.h
+)

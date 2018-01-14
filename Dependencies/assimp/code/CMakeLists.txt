@@ -1,383 +1,383 @@
-Set(Previous_assimp_Source ${assimp_Source})
-
-AddFile(assimp_Source Previous_assimp_Source 3DSConverter.cpp)
-AddFile(assimp_Source Previous_assimp_Source 3DSExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source 3DSExporter.h)
-AddFile(assimp_Source Previous_assimp_Source 3DSHelper.h)
-AddFile(assimp_Source Previous_assimp_Source 3DSLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source 3DSLoader.h)
-AddFile(assimp_Source Previous_assimp_Source ACLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source ACLoader.h)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter.hpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter_Geometry.cpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter_Macro.hpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter_Material.cpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter_Node.hpp)
-AddFile(assimp_Source Previous_assimp_Source AMFImporter_Postprocess.cpp)
-AddFile(assimp_Source Previous_assimp_Source ASELoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source ASELoader.h)
-AddFile(assimp_Source Previous_assimp_Source ASEParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source ASEParser.h)
-AddFile(assimp_Source Previous_assimp_Source AssbinExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source AssbinExporter.h)
-AddFile(assimp_Source Previous_assimp_Source AssbinLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source AssbinLoader.h)
-AddFile(assimp_Source Previous_assimp_Source assbin_chunks.h)
-AddFile(assimp_Source Previous_assimp_Source Assimp.cpp)
-AddFile(assimp_Source Previous_assimp_Source AssimpCExport.cpp)
-AddFile(assimp_Source Previous_assimp_Source AssxmlExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source AssxmlExporter.h)
-AddFile(assimp_Source Previous_assimp_Source B3DImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source B3DImporter.h)
-AddFile(assimp_Source Previous_assimp_Source BaseImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source BaseImporter.h)
-AddFile(assimp_Source Previous_assimp_Source BaseProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source BaseProcess.h)
-AddFile(assimp_Source Previous_assimp_Source Bitmap.cpp)
-AddFile(assimp_Source Previous_assimp_Source Bitmap.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderBMesh.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderBMesh.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderDNA.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderDNA.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderDNA.inl)
-AddFile(assimp_Source Previous_assimp_Source BlenderIntermediate.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderLoader.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderModifier.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderModifier.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderScene.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderScene.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderSceneGen.h)
-AddFile(assimp_Source Previous_assimp_Source BlenderTessellator.cpp)
-AddFile(assimp_Source Previous_assimp_Source BlenderTessellator.h)
-AddFile(assimp_Source Previous_assimp_Source BlobIOSystem.h)
-AddFile(assimp_Source Previous_assimp_Source BVHLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source BVHLoader.h)
-AddFile(assimp_Source Previous_assimp_Source ByteSwapper.h)
-AddFile(assimp_Source Previous_assimp_Source C4DImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source C4DImporter.h)
-AddFile(assimp_Source Previous_assimp_Source CalcTangentsProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source CalcTangentsProcess.h)
-AddFile(assimp_Source Previous_assimp_Source CInterfaceIOWrapper.cpp)
-AddFile(assimp_Source Previous_assimp_Source CInterfaceIOWrapper.h)
-AddFile(assimp_Source Previous_assimp_Source COBLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source COBLoader.h)
-AddFile(assimp_Source Previous_assimp_Source COBScene.h)
-AddFile(assimp_Source Previous_assimp_Source ColladaExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source ColladaExporter.h)
-AddFile(assimp_Source Previous_assimp_Source ColladaHelper.h)
-AddFile(assimp_Source Previous_assimp_Source ColladaLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source ColladaLoader.h)
-AddFile(assimp_Source Previous_assimp_Source ColladaParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source ColladaParser.h)
-AddFile(assimp_Source Previous_assimp_Source ComputeUVMappingProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source ComputeUVMappingProcess.h)
-AddFile(assimp_Source Previous_assimp_Source ConvertToLHProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source ConvertToLHProcess.h)
-AddFile(assimp_Source Previous_assimp_Source CreateAnimMesh.cpp)
-AddFile(assimp_Source Previous_assimp_Source CreateAnimMesh.h)
-AddFile(assimp_Source Previous_assimp_Source CSMLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source CSMLoader.h)
-AddFile(assimp_Source Previous_assimp_Source D3MFImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source D3MFImporter.h)
-AddFile(assimp_Source Previous_assimp_Source D3MFOpcPackage.cpp)
-AddFile(assimp_Source Previous_assimp_Source D3MFOpcPackage.h)
-AddFile(assimp_Source Previous_assimp_Source DeboneProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source DeboneProcess.h)
-AddFile(assimp_Source Previous_assimp_Source DefaultIOStream.cpp)
-AddFile(assimp_Source Previous_assimp_Source DefaultIOStream.h)
-AddFile(assimp_Source Previous_assimp_Source DefaultIOSystem.cpp)
-AddFile(assimp_Source Previous_assimp_Source DefaultIOSystem.h)
-AddFile(assimp_Source Previous_assimp_Source DefaultLogger.cpp)
-AddFile(assimp_Source Previous_assimp_Source DefaultProgressHandler.h)
-AddFile(assimp_Source Previous_assimp_Source Defines.h)
-AddFile(assimp_Source Previous_assimp_Source DXFHelper.h)
-AddFile(assimp_Source Previous_assimp_Source DXFLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source DXFLoader.h)
-AddFile(assimp_Source Previous_assimp_Source Exceptional.h)
-AddFile(assimp_Source Previous_assimp_Source Exporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source fast_atof.h)
-AddFile(assimp_Source Previous_assimp_Source FBXAnimation.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXBinaryTokenizer.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXCompileConfig.h)
-AddFile(assimp_Source Previous_assimp_Source FBXConverter.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXConverter.h)
-AddFile(assimp_Source Previous_assimp_Source FBXDeformer.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXDocument.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXDocument.h)
-AddFile(assimp_Source Previous_assimp_Source FBXDocumentUtil.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXDocumentUtil.h)
-AddFile(assimp_Source Previous_assimp_Source FBXImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXImporter.h)
-AddFile(assimp_Source Previous_assimp_Source FBXImportSettings.h)
-AddFile(assimp_Source Previous_assimp_Source FBXMaterial.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXMeshGeometry.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXMeshGeometry.h)
-AddFile(assimp_Source Previous_assimp_Source FBXModel.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXNodeAttribute.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXParser.h)
-AddFile(assimp_Source Previous_assimp_Source FBXProperties.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXProperties.h)
-AddFile(assimp_Source Previous_assimp_Source FBXTokenizer.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXTokenizer.h)
-AddFile(assimp_Source Previous_assimp_Source FBXUtil.cpp)
-AddFile(assimp_Source Previous_assimp_Source FBXUtil.h)
-AddFile(assimp_Source Previous_assimp_Source FileLogStream.h)
-AddFile(assimp_Source Previous_assimp_Source FileSystemFilter.h)
-AddFile(assimp_Source Previous_assimp_Source FindDegenerates.cpp)
-AddFile(assimp_Source Previous_assimp_Source FindDegenerates.h)
-AddFile(assimp_Source Previous_assimp_Source FindInstancesProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source FindInstancesProcess.h)
-AddFile(assimp_Source Previous_assimp_Source FindInvalidDataProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source FindInvalidDataProcess.h)
-AddFile(assimp_Source Previous_assimp_Source FixNormalsStep.cpp)
-AddFile(assimp_Source Previous_assimp_Source FixNormalsStep.h)
-AddFile(assimp_Source Previous_assimp_Source GenericProperty.h)
-AddFile(assimp_Source Previous_assimp_Source GenFaceNormalsProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source GenFaceNormalsProcess.h)
-AddFile(assimp_Source Previous_assimp_Source GenVertexNormalsProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source GenVertexNormalsProcess.h)
-AddFile(assimp_Source Previous_assimp_Source glTFAsset.h)
-AddFile(assimp_Source Previous_assimp_Source glTFAsset.inl)
-AddFile(assimp_Source Previous_assimp_Source glTFAssetWriter.h)
-AddFile(assimp_Source Previous_assimp_Source glTFAssetWriter.inl)
-AddFile(assimp_Source Previous_assimp_Source glTFExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source glTFExporter.h)
-AddFile(assimp_Source Previous_assimp_Source glTFImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source glTFImporter.h)
-AddFile(assimp_Source Previous_assimp_Source HalfLifeFileData.h)
-AddFile(assimp_Source Previous_assimp_Source Hash.h)
-AddFile(assimp_Source Previous_assimp_Source HMPFileData.h)
-AddFile(assimp_Source Previous_assimp_Source HMPLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source HMPLoader.h)
-AddFile(assimp_Source Previous_assimp_Source IFCBoolean.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCCurve.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCGeometry.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCLoader.h)
-AddFile(assimp_Source Previous_assimp_Source IFCMaterial.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCOpenings.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCProfile.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCReaderGen.h)
-AddFile(assimp_Source Previous_assimp_Source IFCReaderGen1.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCReaderGen2.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCUtil.cpp)
-AddFile(assimp_Source Previous_assimp_Source IFCUtil.h)
-AddFile(assimp_Source Previous_assimp_Source IFF.h)
-AddFile(assimp_Source Previous_assimp_Source Importer.cpp)
-AddFile(assimp_Source Previous_assimp_Source Importer.h)
-AddFile(assimp_Source Previous_assimp_Source ImporterRegistry.cpp)
-AddFile(assimp_Source Previous_assimp_Source ImproveCacheLocality.cpp)
-AddFile(assimp_Source Previous_assimp_Source ImproveCacheLocality.h)
-AddFile(assimp_Source Previous_assimp_Source IOStreamBuffer.h)
-AddFile(assimp_Source Previous_assimp_Source IRRLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source IRRLoader.h)
-AddFile(assimp_Source Previous_assimp_Source IRRMeshLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source IRRMeshLoader.h)
-AddFile(assimp_Source Previous_assimp_Source IRRShared.cpp)
-AddFile(assimp_Source Previous_assimp_Source IRRShared.h)
-AddFile(assimp_Source Previous_assimp_Source irrXMLWrapper.h)
-AddFile(assimp_Source Previous_assimp_Source JoinVerticesProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source JoinVerticesProcess.h)
-AddFile(assimp_Source Previous_assimp_Source LimitBoneWeightsProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source LimitBoneWeightsProcess.h)
-AddFile(assimp_Source Previous_assimp_Source LineSplitter.h)
-AddFile(assimp_Source Previous_assimp_Source LogAux.h)
-AddFile(assimp_Source Previous_assimp_Source LWOAnimation.cpp)
-AddFile(assimp_Source Previous_assimp_Source LWOAnimation.h)
-AddFile(assimp_Source Previous_assimp_Source LWOBLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source LWOFileData.h)
-AddFile(assimp_Source Previous_assimp_Source LWOLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source LWOLoader.h)
-AddFile(assimp_Source Previous_assimp_Source LWOMaterial.cpp)
-AddFile(assimp_Source Previous_assimp_Source LWSLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source LWSLoader.h)
-AddFile(assimp_Source Previous_assimp_Source Macros.h)
-AddFile(assimp_Source Previous_assimp_Source MakeVerboseFormat.cpp)
-AddFile(assimp_Source Previous_assimp_Source MakeVerboseFormat.h)
-AddFile(assimp_Source Previous_assimp_Source MaterialSystem.cpp)
-AddFile(assimp_Source Previous_assimp_Source MaterialSystem.h)
-AddFile(assimp_Source Previous_assimp_Source MathFunctions.h)
-AddFile(assimp_Source Previous_assimp_Source MD2FileData.h)
-AddFile(assimp_Source Previous_assimp_Source MD2Loader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MD2Loader.h)
-AddFile(assimp_Source Previous_assimp_Source MD2NormalTable.h)
-AddFile(assimp_Source Previous_assimp_Source MD3FileData.h)
-AddFile(assimp_Source Previous_assimp_Source MD3Loader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MD3Loader.h)
-AddFile(assimp_Source Previous_assimp_Source MD4FileData.h)
-AddFile(assimp_Source Previous_assimp_Source MD5Loader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MD5Loader.h)
-AddFile(assimp_Source Previous_assimp_Source MD5Parser.cpp)
-AddFile(assimp_Source Previous_assimp_Source MD5Parser.h)
-AddFile(assimp_Source Previous_assimp_Source MDCFileData.h)
-AddFile(assimp_Source Previous_assimp_Source MDCLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MDCLoader.h)
-AddFile(assimp_Source Previous_assimp_Source MDCNormalTable.h)
-AddFile(assimp_Source Previous_assimp_Source MDLDefaultColorMap.h)
-AddFile(assimp_Source Previous_assimp_Source MDLFileData.h)
-AddFile(assimp_Source Previous_assimp_Source MDLLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MDLLoader.h)
-AddFile(assimp_Source Previous_assimp_Source MDLMaterialLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MemoryIOWrapper.h)
-AddFile(assimp_Source Previous_assimp_Source MS3DLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source MS3DLoader.h)
-AddFile(assimp_Source Previous_assimp_Source NDOLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source NDOLoader.h)
-AddFile(assimp_Source Previous_assimp_Source NFFLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source NFFLoader.h)
-AddFile(assimp_Source Previous_assimp_Source ObjExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source ObjExporter.h)
-AddFile(assimp_Source Previous_assimp_Source ObjFileData.h)
-AddFile(assimp_Source Previous_assimp_Source ObjFileImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source ObjFileImporter.h)
-AddFile(assimp_Source Previous_assimp_Source ObjFileMtlImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source ObjFileMtlImporter.h)
-AddFile(assimp_Source Previous_assimp_Source ObjFileParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source ObjFileParser.h)
-AddFile(assimp_Source Previous_assimp_Source ObjTools.h)
-AddFile(assimp_Source Previous_assimp_Source OFFLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source OFFLoader.h)
-AddFile(assimp_Source Previous_assimp_Source OgreBinarySerializer.cpp)
-AddFile(assimp_Source Previous_assimp_Source OgreBinarySerializer.h)
-AddFile(assimp_Source Previous_assimp_Source OgreImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source OgreImporter.h)
-AddFile(assimp_Source Previous_assimp_Source OgreMaterial.cpp)
-AddFile(assimp_Source Previous_assimp_Source OgreParsingUtils.h)
-AddFile(assimp_Source Previous_assimp_Source OgreStructs.cpp)
-AddFile(assimp_Source Previous_assimp_Source OgreStructs.h)
-AddFile(assimp_Source Previous_assimp_Source OgreXmlSerializer.cpp)
-AddFile(assimp_Source Previous_assimp_Source OgreXmlSerializer.h)
-AddFile(assimp_Source Previous_assimp_Source OpenGEXExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source OpenGEXExporter.h)
-AddFile(assimp_Source Previous_assimp_Source OpenGEXImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source OpenGEXImporter.h)
-AddFile(assimp_Source Previous_assimp_Source OpenGEXStructs.h)
-AddFile(assimp_Source Previous_assimp_Source OptimizeGraph.cpp)
-AddFile(assimp_Source Previous_assimp_Source OptimizeGraph.h)
-AddFile(assimp_Source Previous_assimp_Source OptimizeMeshes.cpp)
-AddFile(assimp_Source Previous_assimp_Source OptimizeMeshes.h)
-AddFile(assimp_Source Previous_assimp_Source ParsingUtils.h)
-AddFile(assimp_Source Previous_assimp_Source PlyExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source PlyExporter.h)
-AddFile(assimp_Source Previous_assimp_Source PlyLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source PlyLoader.h)
-AddFile(assimp_Source Previous_assimp_Source PlyParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source PlyParser.h)
-AddFile(assimp_Source Previous_assimp_Source PolyTools.h)
-AddFile(assimp_Source Previous_assimp_Source PostStepRegistry.cpp)
-AddFile(assimp_Source Previous_assimp_Source PretransformVertices.cpp)
-AddFile(assimp_Source Previous_assimp_Source PretransformVertices.h)
-AddFile(assimp_Source Previous_assimp_Source ProcessHelper.cpp)
-AddFile(assimp_Source Previous_assimp_Source ProcessHelper.h)
-AddFile(assimp_Source Previous_assimp_Source Profiler.h)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPFileData.h)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPFileImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPFileImporter.h)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPFileParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPFileParser.h)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPZipArchive.cpp)
-AddFile(assimp_Source Previous_assimp_Source Q3BSPZipArchive.h)
-AddFile(assimp_Source Previous_assimp_Source Q3DLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source Q3DLoader.h)
-AddFile(assimp_Source Previous_assimp_Source qnan.h)
-AddFile(assimp_Source Previous_assimp_Source RawLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source RawLoader.h)
-AddFile(assimp_Source Previous_assimp_Source RemoveComments.cpp)
-AddFile(assimp_Source Previous_assimp_Source RemoveComments.h)
-AddFile(assimp_Source Previous_assimp_Source RemoveRedundantMaterials.cpp)
-AddFile(assimp_Source Previous_assimp_Source RemoveRedundantMaterials.h)
-AddFile(assimp_Source Previous_assimp_Source RemoveVCProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source RemoveVCProcess.h)
-AddFile(assimp_Source Previous_assimp_Source scene.cpp)
-AddFile(assimp_Source Previous_assimp_Source SceneCombiner.cpp)
-AddFile(assimp_Source Previous_assimp_Source SceneCombiner.h)
-AddFile(assimp_Source Previous_assimp_Source ScenePreprocessor.cpp)
-AddFile(assimp_Source Previous_assimp_Source ScenePreprocessor.h)
-AddFile(assimp_Source Previous_assimp_Source ScenePrivate.h)
-AddFile(assimp_Source Previous_assimp_Source SGSpatialSort.cpp)
-AddFile(assimp_Source Previous_assimp_Source SGSpatialSort.h)
-AddFile(assimp_Source Previous_assimp_Source SIBImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source SIBImporter.h)
-AddFile(assimp_Source Previous_assimp_Source SkeletonMeshBuilder.cpp)
-AddFile(assimp_Source Previous_assimp_Source SkeletonMeshBuilder.h)
-AddFile(assimp_Source Previous_assimp_Source SMDLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source SMDLoader.h)
-AddFile(assimp_Source Previous_assimp_Source SmoothingGroups.h)
-AddFile(assimp_Source Previous_assimp_Source SmoothingGroups.inl)
-AddFile(assimp_Source Previous_assimp_Source SortByPTypeProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source SortByPTypeProcess.h)
-AddFile(assimp_Source Previous_assimp_Source SpatialSort.cpp)
-AddFile(assimp_Source Previous_assimp_Source SpatialSort.h)
-AddFile(assimp_Source Previous_assimp_Source SplitByBoneCountProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source SplitByBoneCountProcess.h)
-AddFile(assimp_Source Previous_assimp_Source SplitLargeMeshes.cpp)
-AddFile(assimp_Source Previous_assimp_Source SplitLargeMeshes.h)
-AddFile(assimp_Source Previous_assimp_Source StandardShapes.cpp)
-AddFile(assimp_Source Previous_assimp_Source StandardShapes.h)
-AddFile(assimp_Source Previous_assimp_Source StdOStreamLogStream.h)
-AddFile(assimp_Source Previous_assimp_Source StepExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source StepExporter.h)
-AddFile(assimp_Source Previous_assimp_Source STEPFile.h)
-AddFile(assimp_Source Previous_assimp_Source STEPFileEncoding.cpp)
-AddFile(assimp_Source Previous_assimp_Source STEPFileEncoding.h)
-AddFile(assimp_Source Previous_assimp_Source STEPFileReader.cpp)
-AddFile(assimp_Source Previous_assimp_Source STEPFileReader.h)
-AddFile(assimp_Source Previous_assimp_Source STLExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source STLExporter.h)
-AddFile(assimp_Source Previous_assimp_Source STLLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source STLLoader.h)
-AddFile(assimp_Source Previous_assimp_Source StreamReader.h)
-AddFile(assimp_Source Previous_assimp_Source StreamWriter.h)
-AddFile(assimp_Source Previous_assimp_Source StringComparison.h)
-AddFile(assimp_Source Previous_assimp_Source StringUtils.h)
-AddFile(assimp_Source Previous_assimp_Source Subdivision.cpp)
-AddFile(assimp_Source Previous_assimp_Source Subdivision.h)
-AddFile(assimp_Source Previous_assimp_Source TargetAnimation.cpp)
-AddFile(assimp_Source Previous_assimp_Source TargetAnimation.h)
-AddFile(assimp_Source Previous_assimp_Source TerragenLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source TerragenLoader.h)
-AddFile(assimp_Source Previous_assimp_Source TextureTransform.cpp)
-AddFile(assimp_Source Previous_assimp_Source TextureTransform.h)
-AddFile(assimp_Source Previous_assimp_Source TinyFormatter.h)
-AddFile(assimp_Source Previous_assimp_Source TriangulateProcess.cpp)
-AddFile(assimp_Source Previous_assimp_Source TriangulateProcess.h)
-AddFile(assimp_Source Previous_assimp_Source UnrealLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source UnrealLoader.h)
-AddFile(assimp_Source Previous_assimp_Source ValidateDataStructure.cpp)
-AddFile(assimp_Source Previous_assimp_Source ValidateDataStructure.h)
-AddFile(assimp_Source Previous_assimp_Source Version.cpp)
-AddFile(assimp_Source Previous_assimp_Source Vertex.h)
-AddFile(assimp_Source Previous_assimp_Source VertexTriangleAdjacency.cpp)
-AddFile(assimp_Source Previous_assimp_Source VertexTriangleAdjacency.h)
-AddFile(assimp_Source Previous_assimp_Source Win32DebugLogStream.h)
-AddFile(assimp_Source Previous_assimp_Source X3DExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DExporter.hpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter.hpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Geometry2D.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Geometry3D.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Group.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Light.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Macro.hpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Metadata.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Networking.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Node.hpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Postprocess.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Rendering.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Shape.cpp)
-AddFile(assimp_Source Previous_assimp_Source X3DImporter_Texturing.cpp)
-AddFile(assimp_Source Previous_assimp_Source XFileExporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source XFileExporter.h)
-AddFile(assimp_Source Previous_assimp_Source XFileHelper.h)
-AddFile(assimp_Source Previous_assimp_Source XFileImporter.cpp)
-AddFile(assimp_Source Previous_assimp_Source XFileImporter.h)
-AddFile(assimp_Source Previous_assimp_Source XFileParser.cpp)
-AddFile(assimp_Source Previous_assimp_Source XFileParser.h)
-AddFile(assimp_Source Previous_assimp_Source XGLLoader.cpp)
-AddFile(assimp_Source Previous_assimp_Source XGLLoader.h)
-AddFile(assimp_Source Previous_assimp_Source XMLTools.h)
-
-Set(assimp_Source ${Previous_assimp_Source} PARENT_SCOPE)
+target_sources(assimp
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/3DSConverter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3DSExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/3DSLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ACLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter_Geometry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter_Material.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter_Postprocess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ASELoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ASEParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssbinExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssbinLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Assimp.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssimpCExport.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssxmlExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/B3DImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BaseImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BaseProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Bitmap.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderBMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderDNA.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderModifier.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderScene.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderTessellator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BVHLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/C4DImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CalcTangentsProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CInterfaceIOWrapper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/COBLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ComputeUVMappingProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConvertToLHProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CreateAnimMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CSMLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/D3MFImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/D3MFOpcPackage.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DeboneProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultIOStream.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultIOSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultLogger.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DXFLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Exporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXAnimation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXBinaryTokenizer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXConverter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXDeformer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXDocument.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXDocumentUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXMeshGeometry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXModel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXNodeAttribute.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXProperties.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXTokenizer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FBXUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FindDegenerates.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FindInstancesProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FindInvalidDataProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FixNormalsStep.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GenFaceNormalsProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GenVertexNormalsProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/glTFExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/glTFImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/HMPLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCBoolean.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCCurve.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCGeometry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCOpenings.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCProfile.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCReaderGen1.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCReaderGen2.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IFCUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Importer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ImporterRegistry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ImproveCacheLocality.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IRRLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IRRMeshLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/IRRShared.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/JoinVerticesProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LimitBoneWeightsProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LWOAnimation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LWOBLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LWOLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LWOMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/LWSLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MakeVerboseFormat.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MaterialSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MD2Loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MD3Loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MD5Loader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MD5Parser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MDCLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MDLLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MDLMaterialLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MS3DLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NDOLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NFFLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ObjExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileMtlImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OFFLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OgreBinarySerializer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OgreImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OgreMaterial.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OgreStructs.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OgreXmlSerializer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OpenGEXExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OpenGEXImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OptimizeGraph.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/OptimizeMeshes.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PlyExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PlyLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PlyParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PostStepRegistry.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PretransformVertices.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ProcessHelper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPFileImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPFileParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPZipArchive.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Q3DLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RawLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveComments.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveRedundantMaterials.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveVCProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/scene.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SceneCombiner.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ScenePreprocessor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SGSpatialSort.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SIBImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SkeletonMeshBuilder.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SMDLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SortByPTypeProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SpatialSort.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SplitByBoneCountProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SplitLargeMeshes.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/StandardShapes.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/StepExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/STEPFileEncoding.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/STEPFileReader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/STLExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/STLLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Subdivision.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/TargetAnimation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/TerragenLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/TextureTransform.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/TriangulateProcess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/UnrealLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ValidateDataStructure.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Version.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/VertexTriangleAdjacency.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Geometry2D.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Geometry3D.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Group.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Light.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Metadata.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Networking.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Postprocess.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Rendering.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Shape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Texturing.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/XFileExporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/XFileImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/XFileParser.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/XGLLoader.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/3DSExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/3DSHelper.h
+    ${CMAKE_CURRENT_LIST_DIR}/3DSLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ACLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter_Macro.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/AMFImporter_Node.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ASELoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ASEParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/AssbinExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/AssbinLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/assbin_chunks.h
+    ${CMAKE_CURRENT_LIST_DIR}/AssxmlExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/B3DImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/BaseImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/BaseProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/Bitmap.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderBMesh.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderDNA.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderDNA.inl
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderIntermediate.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderModifier.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderScene.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderSceneGen.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlenderTessellator.h
+    ${CMAKE_CURRENT_LIST_DIR}/BlobIOSystem.h
+    ${CMAKE_CURRENT_LIST_DIR}/BVHLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ByteSwapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/C4DImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/CalcTangentsProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/CInterfaceIOWrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/COBLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/COBScene.h
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaHelper.h
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ColladaParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/ComputeUVMappingProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConvertToLHProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/CreateAnimMesh.h
+    ${CMAKE_CURRENT_LIST_DIR}/CSMLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/D3MFImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/D3MFOpcPackage.h
+    ${CMAKE_CURRENT_LIST_DIR}/DeboneProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultIOStream.h
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultIOSystem.h
+    ${CMAKE_CURRENT_LIST_DIR}/DefaultProgressHandler.h
+    ${CMAKE_CURRENT_LIST_DIR}/Defines.h
+    ${CMAKE_CURRENT_LIST_DIR}/DXFHelper.h
+    ${CMAKE_CURRENT_LIST_DIR}/DXFLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/Exceptional.h
+    ${CMAKE_CURRENT_LIST_DIR}/fast_atof.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXCompileConfig.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXConverter.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXDocument.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXDocumentUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXImportSettings.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXMeshGeometry.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXProperties.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXTokenizer.h
+    ${CMAKE_CURRENT_LIST_DIR}/FBXUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/FileLogStream.h
+    ${CMAKE_CURRENT_LIST_DIR}/FileSystemFilter.h
+    ${CMAKE_CURRENT_LIST_DIR}/FindDegenerates.h
+    ${CMAKE_CURRENT_LIST_DIR}/FindInstancesProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/FindInvalidDataProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/FixNormalsStep.h
+    ${CMAKE_CURRENT_LIST_DIR}/GenericProperty.h
+    ${CMAKE_CURRENT_LIST_DIR}/GenFaceNormalsProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/GenVertexNormalsProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/glTFAsset.h
+    ${CMAKE_CURRENT_LIST_DIR}/glTFAsset.inl
+    ${CMAKE_CURRENT_LIST_DIR}/glTFAssetWriter.h
+    ${CMAKE_CURRENT_LIST_DIR}/glTFAssetWriter.inl
+    ${CMAKE_CURRENT_LIST_DIR}/glTFExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/glTFImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/HalfLifeFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/Hash.h
+    ${CMAKE_CURRENT_LIST_DIR}/HMPFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/HMPLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/IFCLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/IFCReaderGen.h
+    ${CMAKE_CURRENT_LIST_DIR}/IFCUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/IFF.h
+    ${CMAKE_CURRENT_LIST_DIR}/Importer.h
+    ${CMAKE_CURRENT_LIST_DIR}/ImproveCacheLocality.h
+    ${CMAKE_CURRENT_LIST_DIR}/IOStreamBuffer.h
+    ${CMAKE_CURRENT_LIST_DIR}/IRRLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/IRRMeshLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/IRRShared.h
+    ${CMAKE_CURRENT_LIST_DIR}/irrXMLWrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/JoinVerticesProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/LimitBoneWeightsProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/LineSplitter.h
+    ${CMAKE_CURRENT_LIST_DIR}/LogAux.h
+    ${CMAKE_CURRENT_LIST_DIR}/LWOAnimation.h
+    ${CMAKE_CURRENT_LIST_DIR}/LWOFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/LWOLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/LWSLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/Macros.h
+    ${CMAKE_CURRENT_LIST_DIR}/MakeVerboseFormat.h
+    ${CMAKE_CURRENT_LIST_DIR}/MaterialSystem.h
+    ${CMAKE_CURRENT_LIST_DIR}/MathFunctions.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD2FileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD2Loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD2NormalTable.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD3FileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD3Loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD4FileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD5Loader.h
+    ${CMAKE_CURRENT_LIST_DIR}/MD5Parser.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDCFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDCLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDCNormalTable.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDLDefaultColorMap.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDLFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/MDLLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/MemoryIOWrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/MS3DLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/NDOLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/NFFLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileMtlImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjFileParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/ObjTools.h
+    ${CMAKE_CURRENT_LIST_DIR}/OFFLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/OgreBinarySerializer.h
+    ${CMAKE_CURRENT_LIST_DIR}/OgreImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/OgreParsingUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/OgreStructs.h
+    ${CMAKE_CURRENT_LIST_DIR}/OgreXmlSerializer.h
+    ${CMAKE_CURRENT_LIST_DIR}/OpenGEXExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/OpenGEXImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/OpenGEXStructs.h
+    ${CMAKE_CURRENT_LIST_DIR}/OptimizeGraph.h
+    ${CMAKE_CURRENT_LIST_DIR}/OptimizeMeshes.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParsingUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlyExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlyLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/PlyParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/PolyTools.h
+    ${CMAKE_CURRENT_LIST_DIR}/PretransformVertices.h
+    ${CMAKE_CURRENT_LIST_DIR}/ProcessHelper.h
+    ${CMAKE_CURRENT_LIST_DIR}/Profiler.h
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPFileData.h
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPFileImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPFileParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/Q3BSPZipArchive.h
+    ${CMAKE_CURRENT_LIST_DIR}/Q3DLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/qnan.h
+    ${CMAKE_CURRENT_LIST_DIR}/RawLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveComments.h
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveRedundantMaterials.h
+    ${CMAKE_CURRENT_LIST_DIR}/RemoveVCProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/SceneCombiner.h
+    ${CMAKE_CURRENT_LIST_DIR}/ScenePreprocessor.h
+    ${CMAKE_CURRENT_LIST_DIR}/ScenePrivate.h
+    ${CMAKE_CURRENT_LIST_DIR}/SGSpatialSort.h
+    ${CMAKE_CURRENT_LIST_DIR}/SIBImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/SkeletonMeshBuilder.h
+    ${CMAKE_CURRENT_LIST_DIR}/SMDLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/SmoothingGroups.h
+    ${CMAKE_CURRENT_LIST_DIR}/SmoothingGroups.inl
+    ${CMAKE_CURRENT_LIST_DIR}/SortByPTypeProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/SpatialSort.h
+    ${CMAKE_CURRENT_LIST_DIR}/SplitByBoneCountProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/SplitLargeMeshes.h
+    ${CMAKE_CURRENT_LIST_DIR}/StandardShapes.h
+    ${CMAKE_CURRENT_LIST_DIR}/StdOStreamLogStream.h
+    ${CMAKE_CURRENT_LIST_DIR}/StepExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/STEPFile.h
+    ${CMAKE_CURRENT_LIST_DIR}/STEPFileEncoding.h
+    ${CMAKE_CURRENT_LIST_DIR}/STEPFileReader.h
+    ${CMAKE_CURRENT_LIST_DIR}/STLExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/STLLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/StreamReader.h
+    ${CMAKE_CURRENT_LIST_DIR}/StreamWriter.h
+    ${CMAKE_CURRENT_LIST_DIR}/StringComparison.h
+    ${CMAKE_CURRENT_LIST_DIR}/StringUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/Subdivision.h
+    ${CMAKE_CURRENT_LIST_DIR}/TargetAnimation.h
+    ${CMAKE_CURRENT_LIST_DIR}/TerragenLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/TextureTransform.h
+    ${CMAKE_CURRENT_LIST_DIR}/TinyFormatter.h
+    ${CMAKE_CURRENT_LIST_DIR}/TriangulateProcess.h
+    ${CMAKE_CURRENT_LIST_DIR}/UnrealLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/ValidateDataStructure.h
+    ${CMAKE_CURRENT_LIST_DIR}/Vertex.h
+    ${CMAKE_CURRENT_LIST_DIR}/VertexTriangleAdjacency.h
+    ${CMAKE_CURRENT_LIST_DIR}/Win32DebugLogStream.h
+    ${CMAKE_CURRENT_LIST_DIR}/X3DExporter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Macro.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/X3DImporter_Node.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/XFileExporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/XFileHelper.h
+    ${CMAKE_CURRENT_LIST_DIR}/XFileImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/XFileParser.h
+    ${CMAKE_CURRENT_LIST_DIR}/XGLLoader.h
+    ${CMAKE_CURRENT_LIST_DIR}/XMLTools.h
+)

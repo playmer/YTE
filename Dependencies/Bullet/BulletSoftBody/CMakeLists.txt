@@ -1,28 +1,27 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source btDefaultSoftBodySolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btDefaultSoftBodySolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBody.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyConcaveCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyConcaveCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyData.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyHelpers.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyHelpers.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyInternals.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyRigidBodyCollisionConfiguration.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodyRigidBodyCollisionConfiguration.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodySolvers.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftBodySolverVertexBuffer.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftMultiBodyDynamicsWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftMultiBodyDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftRigidCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftRigidCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftRigidDynamicsWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftRigidDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftSoftCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSoftSoftCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSparseSDF.h)
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/btDefaultSoftBodySolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyConcaveCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyHelpers.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyRigidBodyCollisionConfiguration.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftMultiBodyDynamicsWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftRigidCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftRigidDynamicsWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftSoftCollisionAlgorithm.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/btDefaultSoftBodySolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyConcaveCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyData.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyHelpers.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyInternals.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodyRigidBodyCollisionConfiguration.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodySolvers.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftBodySolverVertexBuffer.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftMultiBodyDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftRigidCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftRigidDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSoftSoftCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSparseSDF.h
+)

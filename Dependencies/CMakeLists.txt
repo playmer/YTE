@@ -1,46 +1,61 @@
-Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W0")
+add_subdirectory(assimp)
+add_subdirectory(Bullet)
+add_subdirectory(crunch)
+add_subdirectory(fmt)
+add_subdirectory(LuaJIT)
+add_subdirectory(stb)
 
-Add_Subdirectory(assimp)
-Add_Subdirectory(Bullet)
-Add_Subdirectory(crunch)
-Add_Subdirectory(LuaJIT)
-Add_Subdirectory(stb)
-Add_Subdirectory(vkel)
-
-Set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
+# Turn off/configure various parts of VkHLF.
+set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
 option(BUILD_VKCPP_GLFW "Build GLFW" OFF)
+option(ENABLE_TESTING "Allow building of tests and looking for gmock" OFF)
 
-Set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
+set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 
-Set(LLVM_USE_CRT_DEBUG "MDd")
-Set(LLVM_USE_CRT_MINSIZEREL "MD")
-Set(LLVM_USE_CRT_RELEASE "MD")
-Set(LLVM_USE_CRT_RELWITHDEBINFO "MD")
+set(LLVM_USE_CRT_DEBUG "MDd")
+set(LLVM_USE_CRT_MINSIZEREL "MD")
+set(LLVM_USE_CRT_RELEASE "MD")
+set(LLVM_USE_CRT_RELWITHDEBINFO "MD")
 
-Include_Directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
-Add_Subdirectory(VkHLF) 
+add_subdirectory(VkHLF) 
 
-Set_Target_Properties(assimp      PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(Bullet      PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(crunch      PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(STB_Image   PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(LuaJIT      PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(vkel        PROPERTIES FOLDER "Dependencies") 
-Set_Target_Properties(VkHLF       PROPERTIES FOLDER "Dependencies/VkHLF") 
-Set_Target_Properties(glslang     PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-Set_Target_Properties(OGLCompiler PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-Set_Target_Properties(OSDependent PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-Set_Target_Properties(SPIRV       PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-Set_Target_Properties(SPVRemapper PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-Set_Target_Properties(HLSL        PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
+set_target_properties(assimp      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(Bullet      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(crunch      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(fmt         PROPERTIES FOLDER "Dependencies") 
+set_target_properties(LuaJIT      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(STB_Image   PROPERTIES FOLDER "Dependencies") 
+set_target_properties(VkHLF       PROPERTIES FOLDER "Dependencies/VkHLF") 
+set_target_properties(glslang     PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(OGLCompiler PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(OSDependent PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(SPIRV       PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(SPVRemapper PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(HLSL        PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
 
-Set_Target_Properties(assimp
+# Turn the warnings off on our dependencies.
+target_compile_options(assimp      PRIVATE /W0)
+target_compile_options(Bullet      PRIVATE /W0)
+target_compile_options(crunch      PRIVATE /W0)
+target_compile_options(fmt         PRIVATE /W0)
+target_compile_options(LuaJIT      PRIVATE /W0)
+target_compile_options(STB_Image   PRIVATE /W0)
+target_compile_options(VkHLF       PRIVATE /W0)
+target_compile_options(glslang     PRIVATE /W0)
+target_compile_options(OGLCompiler PRIVATE /W0)
+target_compile_options(OSDependent PRIVATE /W0)
+target_compile_options(SPIRV       PRIVATE /W0)
+target_compile_options(SPVRemapper PRIVATE /W0)
+target_compile_options(HLSL        PRIVATE /W0)
+
+set_target_properties(assimp
                       Bullet
                       crunch
+                      fmt
                       LuaJIT
                       STB_Image
-                      vkel
                       VkHLF
                       glslang
                       OGLCompiler

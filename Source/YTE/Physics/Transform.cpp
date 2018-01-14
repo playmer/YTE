@@ -16,7 +16,7 @@
 #include "YTE/Physics/RigidBody.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {

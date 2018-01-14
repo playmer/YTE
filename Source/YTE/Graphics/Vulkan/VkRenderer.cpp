@@ -6,7 +6,6 @@
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"

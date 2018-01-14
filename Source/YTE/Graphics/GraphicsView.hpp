@@ -55,6 +55,7 @@ namespace YTE
     glm::vec4 mClearColor;
     float mOrder;
     bool mConstructing;
+    bool mInitialized;
   };
 }
 #endif

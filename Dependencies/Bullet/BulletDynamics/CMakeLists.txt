@@ -1,95 +1,94 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source Character/btCharacterControllerInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source Character/btKinematicCharacterController.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Character/btKinematicCharacterController.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btConeTwistConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btConeTwistConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btConstraintSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btContactConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btContactConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btContactSolverInfo.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btFixedConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btFixedConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGearConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGearConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofSpring2Constraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofSpring2Constraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofSpringConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btGeneric6DofSpringConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btHinge2Constraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btHinge2Constraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btHingeConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btHingeConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btJacobianEntry.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btNNCGConstraintSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btNNCGConstraintSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btPoint2PointConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btPoint2PointConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSequentialImpulseConstraintSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSequentialImpulseConstraintSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSliderConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSliderConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSolve2LinearConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSolve2LinearConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSolverBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btSolverConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btTypedConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btTypedConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btUniversalConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/btUniversalConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btActionInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btDiscreteDynamicsWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btDiscreteDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btDiscreteDynamicsWorldMt.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btDiscreteDynamicsWorldMt.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btRigidBody.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btRigidBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btSimpleDynamicsWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btSimpleDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btSimulationIslandManagerMt.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Dynamics/btSimulationIslandManagerMt.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBody.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyConstraintSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyConstraintSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyDynamicsWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyDynamicsWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyFixedConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyFixedConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyJointFeedback.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyJointLimitConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyJointLimitConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyJointMotor.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyJointMotor.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyLink.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyLinkCollider.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyPoint2Point.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodyPoint2Point.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodySliderConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodySliderConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source Featherstone/btMultiBodySolverConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btDantzigLCP.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btDantzigLCP.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btDantzigSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btLemkeAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btLemkeAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btLemkeSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btMLCPSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btMLCPSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btMLCPSolverInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btPATHSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source MLCPSolvers/btSolveProjectedGaussSeidel.h)
-AddFile(Bullet_Source Previous_Bullet_Source Vehicle/btRaycastVehicle.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Vehicle/btRaycastVehicle.h)
-AddFile(Bullet_Source Previous_Bullet_Source Vehicle/btVehicleRaycaster.h)
-AddFile(Bullet_Source Previous_Bullet_Source Vehicle/btWheelInfo.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Vehicle/btWheelInfo.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/Character/btKinematicCharacterController.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btConeTwistConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btContactConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btFixedConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGearConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofSpring2Constraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofSpringConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btHinge2Constraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btHingeConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btNNCGConstraintSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btPoint2PointConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSequentialImpulseConstraintSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSliderConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSolve2LinearConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btTypedConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btUniversalConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btDiscreteDynamicsWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btDiscreteDynamicsWorldMt.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btRigidBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btSimpleDynamicsWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btSimulationIslandManagerMt.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyConstraintSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyDynamicsWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyFixedConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyJointLimitConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyJointMotor.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyPoint2Point.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodySliderConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btDantzigLCP.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btLemkeAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btMLCPSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vehicle/btRaycastVehicle.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vehicle/btWheelInfo.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/Character/btCharacterControllerInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/Character/btKinematicCharacterController.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btConeTwistConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btConstraintSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btContactConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btContactSolverInfo.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btFixedConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGearConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofSpring2Constraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btGeneric6DofSpringConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btHinge2Constraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btHingeConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btJacobianEntry.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btNNCGConstraintSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btPoint2PointConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSequentialImpulseConstraintSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSliderConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSolve2LinearConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSolverBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btSolverConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btTypedConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/btUniversalConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btActionInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btDiscreteDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btDiscreteDynamicsWorldMt.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btRigidBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btSimpleDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/Dynamics/btSimulationIslandManagerMt.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyConstraintSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyDynamicsWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyFixedConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyJointFeedback.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyJointLimitConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyJointMotor.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyLink.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyLinkCollider.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodyPoint2Point.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodySliderConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/Featherstone/btMultiBodySolverConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btDantzigLCP.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btDantzigSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btLemkeAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btLemkeSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btMLCPSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btMLCPSolverInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btPATHSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/MLCPSolvers/btSolveProjectedGaussSeidel.h
+    ${CMAKE_CURRENT_LIST_DIR}/Vehicle/btRaycastVehicle.h
+    ${CMAKE_CURRENT_LIST_DIR}/Vehicle/btVehicleRaycaster.h
+    ${CMAKE_CURRENT_LIST_DIR}/Vehicle/btWheelInfo.h
+)

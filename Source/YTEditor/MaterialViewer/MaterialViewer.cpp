@@ -15,9 +15,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qcombobox.h>
 #include <qwindow.h>
 
-#include "YTE/Platform/Window.hpp"
+#include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Platform/Window.hpp"
 
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/GameWindow/GameWindow.hpp"
@@ -68,6 +70,27 @@ namespace YTEditor
 
     connect(mComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
       [=](int index) { this->OnCurrentMaterialChanged(index); });
+
+
+    auto engine = aMainWindow->GetRunningEngine();
+
+    
+    auto renderer = engine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    renderer->RegisterWindowForDraw(aWindow);
+
+    YTE::String spaceName{ "MaterialViewer" };
+    YTE::Space *space = engine->AddComposition<YTE::Space>(spaceName,
+                                                           engine, 
+                                                           nullptr);
+
+    space->CreateBlankLevel(spaceName);
+
+    auto view = space->GetComponent<YTE::GraphicsView>();
+
+    std::string windowName{ "MaterialViewer" };
+    view->ChangeWindow(windowName);
+
+    space->Initialize();
   }
 
   MaterialViewer::~MaterialViewer()

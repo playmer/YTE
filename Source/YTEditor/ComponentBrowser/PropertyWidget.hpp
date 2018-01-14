@@ -367,7 +367,7 @@ namespace YTEditor
   template<>
   inline void PropertyWidget<glm::vec2>::SetValue(glm::vec2 aVal)
   {
-    for (int i = 0; i < mWidgets.size(); ++i)
+    for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
       char buff[20] = { '\0' };
@@ -379,7 +379,7 @@ namespace YTEditor
   template<>
   inline void PropertyWidget<glm::vec3>::SetValue(glm::vec3 aVal)
   {
-    for (int i = 0; i < mWidgets.size(); ++i)
+    for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
       char buff[20] = { '\0' };
@@ -391,7 +391,7 @@ namespace YTEditor
   template<>
   inline void PropertyWidget<glm::vec4>::SetValue(glm::vec4 aVal)
   {
-    for (int i = 0; i < mWidgets.size(); ++i)
+    for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
       char buff[20] = { '\0' };

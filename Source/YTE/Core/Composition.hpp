@@ -19,13 +19,13 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <memory>
 
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {

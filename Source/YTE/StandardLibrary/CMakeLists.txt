@@ -1,30 +1,31 @@
-Set(Previous_YTE_Source ${YTE_Source})
-
-AddFile(YTE_Source Previous_YTE_Source Any.hpp)
-AddFile(YTE_Source Previous_YTE_Source Array.hpp)
-AddFile(YTE_Source Previous_YTE_Source BlockAllocator.hpp)
-AddFile(YTE_Source Previous_YTE_Source ConstexprString.hpp)
-AddFile(YTE_Source Previous_YTE_Source Delegate.hpp)
-AddFile(YTE_Source Previous_YTE_Source Deque.hpp)
-AddFile(YTE_Source Previous_YTE_Source DoublyLinkedList.hpp)
-AddFile(YTE_Source Previous_YTE_Source FunctionDelegate.hpp)
-AddFile(YTE_Source Previous_YTE_Source IntrusiveList.hpp)
-AddFile(YTE_Source Previous_YTE_Source Iterator.hpp)
-AddFile(YTE_Source Previous_YTE_Source Multiset.hpp)
-AddFile(YTE_Source Previous_YTE_Source OrderedMap.hpp)
-AddFile(YTE_Source Previous_YTE_Source OrderedMultiMap.hpp)
-AddFile(YTE_Source Previous_YTE_Source PriorityQueue.hpp)
-AddFile(YTE_Source Previous_YTE_Source Queue.hpp)
-AddFile(YTE_Source Previous_YTE_Source Range.hpp)
-AddFile(YTE_Source Previous_YTE_Source Set.hpp)
-AddFile(YTE_Source Previous_YTE_Source SinglyLinkedList.hpp)
-AddFile(YTE_Source Previous_YTE_Source Stack.hpp)
-AddFile(YTE_Source Previous_YTE_Source TypeTraits.hpp)
-AddFile(YTE_Source Previous_YTE_Source UnorderedMap.hpp)
-AddFile(YTE_Source Previous_YTE_Source UnorderedMultimap.hpp)
-AddFile(YTE_Source Previous_YTE_Source UnorderedMultiset.hpp)
-AddFile(YTE_Source Previous_YTE_Source UnorderedSet.hpp)
-AddFile(YTE_Source Previous_YTE_Source Utilities.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vector.hpp)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_sources(YTE
+  PRIVATE
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/Unicode/UTF8.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Any.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Array.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/BlockAllocator.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstexprString.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Delegate.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Deque.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DoublyLinkedList.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/FunctionDelegate.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/IntrusiveList.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Iterator.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Multiset.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/OrderedMap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/OrderedMultiMap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PriorityQueue.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Queue.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Range.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Set.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/SinglyLinkedList.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Stack.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/TypeTraits.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMultimap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMultiset.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UnorderedSet.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vector.hpp
+)

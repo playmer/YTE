@@ -1,37 +1,37 @@
-Set(Previous_YTE_Source ${YTE_Source})
-
-AddFile(YTE_Source Previous_YTE_Source Body.cpp)
-AddFile(YTE_Source Previous_YTE_Source Body.hpp)
-AddFile(YTE_Source Previous_YTE_Source BoxCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source BoxCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source CapsuleCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source CapsuleCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source Collider.cpp)
-AddFile(YTE_Source Previous_YTE_Source Collider.hpp)
-AddFile(YTE_Source Previous_YTE_Source CollisionBody.cpp)
-AddFile(YTE_Source Previous_YTE_Source CollisionBody.hpp)
-AddFile(YTE_Source Previous_YTE_Source CylinderCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source CylinderCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source DebugDraw.cpp)
-AddFile(YTE_Source Previous_YTE_Source DebugDraw.hpp)
-AddFile(YTE_Source Previous_YTE_Source ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source GhostBody.cpp)
-AddFile(YTE_Source Previous_YTE_Source GhostBody.hpp)
-AddFile(YTE_Source Previous_YTE_Source MenuCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source MenuCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source MeshCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source MeshCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source Orientation.cpp)
-AddFile(YTE_Source Previous_YTE_Source Orientation.hpp)
-AddFile(YTE_Source Previous_YTE_Source PhysicsSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source PhysicsSystem.hpp)
-AddFile(YTE_Source Previous_YTE_Source Reactive.cpp)
-AddFile(YTE_Source Previous_YTE_Source Reactive.hpp)
-AddFile(YTE_Source Previous_YTE_Source RigidBody.cpp)
-AddFile(YTE_Source Previous_YTE_Source RigidBody.hpp)
-AddFile(YTE_Source Previous_YTE_Source SphereCollider.cpp)
-AddFile(YTE_Source Previous_YTE_Source SphereCollider.hpp)
-AddFile(YTE_Source Previous_YTE_Source Transform.cpp)
-AddFile(YTE_Source Previous_YTE_Source Transform.hpp)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_sources(YTE
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/Body.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BoxCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CapsuleCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Collider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CylinderCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/DebugDraw.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/GhostBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MenuCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MeshCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Orientation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/PhysicsSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Reactive.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Body.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SphereCollider.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Transform.cpp
+#  PUBLIC    
+    ${CMAKE_CURRENT_LIST_DIR}/BoxCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/CapsuleCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Collider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionBody.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/CylinderCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DebugDraw.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/GhostBody.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/MenuCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/MeshCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Orientation.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PhysicsSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Reactive.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/SphereCollider.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Transform.hpp
+)

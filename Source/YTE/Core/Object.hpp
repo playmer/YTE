@@ -14,7 +14,7 @@
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Utilities/JsonHelpers.h"
+#include "YTE/Utilities/JsonHelpers.hpp"
 
 namespace YTE
 {

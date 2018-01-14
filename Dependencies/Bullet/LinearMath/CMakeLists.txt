@@ -1,45 +1,44 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source btAabbUtil2.h)
-AddFile(Bullet_Source Previous_Bullet_Source btAlignedAllocator.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btAlignedAllocator.h)
-AddFile(Bullet_Source Previous_Bullet_Source btAlignedObjectArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source btConvexHull.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btConvexHull.h)
-AddFile(Bullet_Source Previous_Bullet_Source btConvexHullComputer.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btConvexHullComputer.h)
-AddFile(Bullet_Source Previous_Bullet_Source btCpuFeatureUtility.h)
-AddFile(Bullet_Source Previous_Bullet_Source btDefaultMotionState.h)
-AddFile(Bullet_Source Previous_Bullet_Source btGeometryUtil.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btGeometryUtil.h)
-AddFile(Bullet_Source Previous_Bullet_Source btGrahamScan2dConvexHull.h)
-AddFile(Bullet_Source Previous_Bullet_Source btHashMap.h)
-AddFile(Bullet_Source Previous_Bullet_Source btIDebugDraw.h)
-AddFile(Bullet_Source Previous_Bullet_Source btList.h)
-AddFile(Bullet_Source Previous_Bullet_Source btMatrix3x3.h)
-AddFile(Bullet_Source Previous_Bullet_Source btMatrixX.h)
-AddFile(Bullet_Source Previous_Bullet_Source btMinMax.h)
-AddFile(Bullet_Source Previous_Bullet_Source btMotionState.h)
-AddFile(Bullet_Source Previous_Bullet_Source btPolarDecomposition.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btPolarDecomposition.h)
-AddFile(Bullet_Source Previous_Bullet_Source btPoolAllocator.h)
-AddFile(Bullet_Source Previous_Bullet_Source btQuadWord.h)
-AddFile(Bullet_Source Previous_Bullet_Source btQuaternion.h)
-AddFile(Bullet_Source Previous_Bullet_Source btQuickprof.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btQuickprof.h)
-AddFile(Bullet_Source Previous_Bullet_Source btRandom.h)
-AddFile(Bullet_Source Previous_Bullet_Source btScalar.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSerializer.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSerializer.h)
-AddFile(Bullet_Source Previous_Bullet_Source btSerializer64.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btSpatialAlgebra.h)
-AddFile(Bullet_Source Previous_Bullet_Source btStackAlloc.h)
-AddFile(Bullet_Source Previous_Bullet_Source btThreads.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btThreads.h)
-AddFile(Bullet_Source Previous_Bullet_Source btTransform.h)
-AddFile(Bullet_Source Previous_Bullet_Source btTransformUtil.h)
-AddFile(Bullet_Source Previous_Bullet_Source btVector3.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source btVector3.h)
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/btAlignedAllocator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btConvexHull.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btConvexHullComputer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btGeometryUtil.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btPolarDecomposition.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btQuickprof.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSerializer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btSerializer64.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btThreads.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/btVector3.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/btAabbUtil2.h
+    ${CMAKE_CURRENT_LIST_DIR}/btAlignedAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/btAlignedObjectArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/btConvexHull.h
+    ${CMAKE_CURRENT_LIST_DIR}/btConvexHullComputer.h
+    ${CMAKE_CURRENT_LIST_DIR}/btCpuFeatureUtility.h
+    ${CMAKE_CURRENT_LIST_DIR}/btDefaultMotionState.h
+    ${CMAKE_CURRENT_LIST_DIR}/btGeometryUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/btGrahamScan2dConvexHull.h
+    ${CMAKE_CURRENT_LIST_DIR}/btHashMap.h
+    ${CMAKE_CURRENT_LIST_DIR}/btIDebugDraw.h
+    ${CMAKE_CURRENT_LIST_DIR}/btList.h
+    ${CMAKE_CURRENT_LIST_DIR}/btMatrix3x3.h
+    ${CMAKE_CURRENT_LIST_DIR}/btMatrixX.h
+    ${CMAKE_CURRENT_LIST_DIR}/btMinMax.h
+    ${CMAKE_CURRENT_LIST_DIR}/btMotionState.h
+    ${CMAKE_CURRENT_LIST_DIR}/btPolarDecomposition.h
+    ${CMAKE_CURRENT_LIST_DIR}/btPoolAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/btQuadWord.h
+    ${CMAKE_CURRENT_LIST_DIR}/btQuaternion.h
+    ${CMAKE_CURRENT_LIST_DIR}/btQuickprof.h
+    ${CMAKE_CURRENT_LIST_DIR}/btRandom.h
+    ${CMAKE_CURRENT_LIST_DIR}/btScalar.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSerializer.h
+    ${CMAKE_CURRENT_LIST_DIR}/btSpatialAlgebra.h
+    ${CMAKE_CURRENT_LIST_DIR}/btStackAlloc.h
+    ${CMAKE_CURRENT_LIST_DIR}/btThreads.h
+    ${CMAKE_CURRENT_LIST_DIR}/btTransform.h
+    ${CMAKE_CURRENT_LIST_DIR}/btTransformUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/btVector3.h
+)

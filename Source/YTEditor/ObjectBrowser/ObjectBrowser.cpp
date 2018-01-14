@@ -27,12 +27,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -87,14 +87,13 @@ namespace YTEditor
       return nullptr;
     }
 
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    auto space = spaces->begin()->second.get();
+    auto space = mMainWindow->GetEditingLevel();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
-      &mMainWindow->GetOutputConsole(),
-      this);
+                                              &mMainWindow->GetOutputConsole(),
+                                              this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, composition, aIndex);
@@ -141,12 +140,11 @@ namespace YTEditor
       return nullptr;
     }
 
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    YTE::Composition *space = spaces->begin()->second.get();
+    YTE::Composition *space = mMainWindow->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, this, aEngineObj, space);
 
-    // Add new item as a top level member in the tree heirarchy
+    // Add new item as a top level member in the tree hierarchy
     // (object should have no parent objects)
     this->insertTopLevelItem(aIndex, item);
 
@@ -162,8 +160,7 @@ namespace YTEditor
   {
     YTE::String name{ aItemName };
 
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    YTE::Composition *space = spaces->begin()->second.get();
+    auto space = mMainWindow->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, aParentObj, aEngineObj, space);
 

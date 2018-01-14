@@ -348,7 +348,5 @@ namespace YTE
         return;
       }
     }
-
-    std::cout << "Animation Removed\n";
   }
 }

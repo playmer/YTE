@@ -10,10 +10,10 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <filesystem>
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Threading/JobHandle.hpp"
 #include "YTE/Core/Threading/JobSystem.hpp"
@@ -35,6 +35,7 @@ namespace YTE
   YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(PresentFrame);
   YTEDefineEvent(AnimationUpdate);
+  YTEDefineEvent(LogEvent);
 
   YTEDefineType(LogicUpdate)
   {
@@ -513,5 +514,15 @@ namespace YTE
 
     mComponentsByGUID.erase(aGUID.ToString());
     return true;
+  }
+
+  void Engine::Log(LogType aType, std::string_view aLog)
+  {
+    printf("%*s", static_cast<int>(aLog.size()), &(*aLog.begin()));
+    
+    LogEvent event;
+    event.Log = aLog;
+    event.Type = aType;
+    SendEvent(Events::LogEvent, &event);
   }
 }

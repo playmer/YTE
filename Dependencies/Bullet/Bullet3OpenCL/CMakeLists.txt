@@ -1,129 +1,102 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuBroadphaseInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuGridBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuGridBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuParallelLinearBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuParallelLinearBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuParallelLinearBvhBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuParallelLinearBvhBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuSapBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3GpuSapBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/b3SapAabb.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/gridBroadphase.cl)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/gridBroadphaseKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/parallelLinearBvh.cl)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/parallelLinearBvhKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/sap.cl)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/kernels/sapKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source Initialize/b3OpenCLInclude.h)
-AddFile(Bullet_Source Previous_Bullet_Source Initialize/b3OpenCLUtils.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Initialize/b3OpenCLUtils.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3BvhInfo.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3ContactCache.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3ContactCache.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3ConvexHullContact.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3ConvexHullContact.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3ConvexPolyhedronCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3GjkEpa.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3GjkEpa.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3GjkPairDetector.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3GjkPairDetector.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3OptimizedBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3OptimizedBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3QuantizedBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3QuantizedBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3StridingMeshInterface.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3StridingMeshInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3SupportMappings.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3TriangleCallback.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3TriangleCallback.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3TriangleIndexVertexArray.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3TriangleIndexVertexArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3VectorFloat4.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3VoronoiSimplexSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/b3VoronoiSimplexSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/bvhTraversal.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/bvhTraversal.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/mpr.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/mprKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/primitiveContacts.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/primitiveContacts.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/sat.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/satClipHullContacts.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/satClipHullContacts.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/satConcave.cl)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/satConcaveKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowphaseCollision/kernels/satKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3BoundSearchCL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3BoundSearchCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3BufferInfoCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3FillCL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3FillCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3LauncherCL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3LauncherCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3OpenCLArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3PrefixScanCL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3PrefixScanCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3PrefixScanFloat4CL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3PrefixScanFloat4CL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3RadixSort32CL.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/b3RadixSort32CL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/BoundSearchKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/BoundSearchKernelsCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/CopyKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/CopyKernelsCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/FillKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/FillKernelsCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/PrefixScanFloat4Kernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/PrefixScanKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/PrefixScanKernelsCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/PrefixScanKernelsFloat4CL.h)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/RadixSort32Kernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source ParallelPrimitives/kernels/RadixSort32KernelsCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source Raycast/b3GpuRaycast.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Raycast/b3GpuRaycast.h)
-AddFile(Bullet_Source Previous_Bullet_Source Raycast/kernels/rayCastKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source Raycast/kernels/rayCastKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuConstraint4.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuGenericConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuGenericConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuJacobiContactSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuJacobiContactSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuNarrowPhase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuNarrowPhase.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuNarrowPhaseInternalData.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuPgsConstraintSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuPgsConstraintSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuPgsContactSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuPgsContactSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuRigidBodyPipeline.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuRigidBodyPipeline.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuRigidBodyPipelineInternalData.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuSolverBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3GpuSolverConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3Solver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/b3Solver.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/batchingKernels.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/batchingKernels.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/batchingKernelsNew.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/batchingKernelsNew.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/integrateKernel.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/integrateKernel.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/jointSolver.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/jointSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solveContact.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solveContact.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solveFriction.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solveFriction.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverSetup.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverSetup.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverSetup2.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverSetup2.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverUtils.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/solverUtils.h)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/updateAabbsKernel.cl)
-AddFile(Bullet_Source Previous_Bullet_Source RigidBody/kernels/updateAabbsKernel.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuGridBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuParallelLinearBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuParallelLinearBvhBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuSapBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Initialize/b3OpenCLUtils.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3ContactCache.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3ConvexHullContact.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3GjkEpa.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3GjkPairDetector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3OptimizedBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3QuantizedBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3StridingMeshInterface.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3TriangleCallback.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3TriangleIndexVertexArray.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3VoronoiSimplexSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3BoundSearchCL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3FillCL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3LauncherCL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3PrefixScanCL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3PrefixScanFloat4CL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3RadixSort32CL.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Raycast/b3GpuRaycast.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuGenericConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuJacobiContactSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuNarrowPhase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuPgsConstraintSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuPgsContactSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuRigidBodyPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3Solver.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuBroadphaseInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuGridBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuParallelLinearBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuParallelLinearBvhBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3GpuSapBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/b3SapAabb.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/kernels/gridBroadphaseKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/kernels/parallelLinearBvhKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/kernels/sapKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/Initialize/b3OpenCLInclude.h
+    ${CMAKE_CURRENT_LIST_DIR}/Initialize/b3OpenCLUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3BvhInfo.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3ContactCache.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3ConvexHullContact.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3ConvexPolyhedronCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3GjkEpa.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3GjkPairDetector.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3OptimizedBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3QuantizedBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3StridingMeshInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3SupportMappings.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3TriangleCallback.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3TriangleIndexVertexArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3VectorFloat4.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/b3VoronoiSimplexSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/bvhTraversal.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/mprKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/primitiveContacts.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/satClipHullContacts.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/satConcaveKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowphaseCollision/kernels/satKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3BoundSearchCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3BufferInfoCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3FillCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3LauncherCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3OpenCLArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3PrefixScanCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3PrefixScanFloat4CL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/b3RadixSort32CL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/BoundSearchKernelsCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/CopyKernelsCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/FillKernelsCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/PrefixScanKernelsCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/PrefixScanKernelsFloat4CL.h
+    ${CMAKE_CURRENT_LIST_DIR}/ParallelPrimitives/kernels/RadixSort32KernelsCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/Raycast/b3GpuRaycast.h
+    ${CMAKE_CURRENT_LIST_DIR}/Raycast/kernels/rayCastKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuConstraint4.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuGenericConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuJacobiContactSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuNarrowPhase.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuNarrowPhaseInternalData.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuPgsConstraintSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuPgsContactSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuRigidBodyPipeline.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuRigidBodyPipelineInternalData.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuSolverBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3GpuSolverConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/b3Solver.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/batchingKernels.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/batchingKernelsNew.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/integrateKernel.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/jointSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/solveContact.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/solveFriction.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/solverSetup.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/solverSetup2.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/solverUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/RigidBody/kernels/updateAabbsKernel.h
+)

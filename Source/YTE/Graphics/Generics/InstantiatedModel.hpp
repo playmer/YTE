@@ -13,7 +13,7 @@
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {

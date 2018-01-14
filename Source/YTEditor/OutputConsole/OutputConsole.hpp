@@ -16,11 +16,28 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qwidget.h>
 
+#include "YTE/Core/Engine.hpp"
+#include "YTE/Core/EventHandler.hpp"
+
 class QGridLayout;
 class QTextEdit;
 
 namespace YTEditor
 {
+  class MainWindow;
+  class OutputConsole; 
+
+  class LogHandler : public YTE::EventHandler
+  {
+  public:
+    YTEDeclareType(LogHandler);
+    LogHandler(OutputConsole *aConsole);
+
+    void HandleLog(YTE::LogEvent *aEvent);
+
+  private:
+    OutputConsole *mConsole;
+  };
 
   class OutputConsole : public QWidget
   {
@@ -28,27 +45,33 @@ namespace YTEditor
 
     struct Color
     {
+      static QColor White;
       static QColor Black;
-      static QColor Red;
       static QColor Blue;
       static QColor Green;
+      static QColor Yellow;
+      static QColor Orange;
+      static QColor Red;
     };
 
-    OutputConsole(QWidget * aParent = nullptr);
+    OutputConsole(MainWindow *aMainWindow, QWidget *aParent = nullptr);
     ~OutputConsole();
 
-    void PrintToConsole(const char * aString);
+    void PrintToConsole(const char *aString);
 
     void PrintLn(const char *aFormat, ...);
     void PrintLnC(QColor aColor, const char *aFormat, ...);
 
-  private:
+    QTextEdit* GetTextEdit() { return mConsole; }
 
+    MainWindow* GetMainWindow() { return mMainWindow; }
+  private:
     void SetWindowSettings();
     void ConstructInnerWidget();
 
     QGridLayout *mLayout;
     QTextEdit *mConsole;
-
+    MainWindow *mMainWindow;
+    LogHandler mHandler;
   };
 }

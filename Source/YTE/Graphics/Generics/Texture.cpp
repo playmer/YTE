@@ -14,7 +14,7 @@
 
 #include "YTE/Graphics/Generics/Texture.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 
 namespace fs = std::experimental::filesystem;

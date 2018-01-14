@@ -7,6 +7,7 @@
 #define PrivateImplementation_hpp
 
 #include <memory>
+#include <new>
 
 #include "YTE/Core/Utilities.hpp"
 
@@ -35,28 +36,28 @@ namespace YTE
       mDestructor = GenericDoNothing;
     }
 
-    template <typename T, typename... Arguments>
-    T* ConstructAndGet(Arguments &&...aArguments)
+    template <typename tType, typename... tArguments>
+    tType* ConstructAndGet(tArguments &&...aArguments)
     {
-      static_assert(sizeof(T) < SizeInBytes, 
+      static_assert(sizeof(tType) < SizeInBytes,
                     "Constructed Type must be smaller than our size.");
 
       // Destruct any undestructed object.
       mDestructor(mMemory);
 
       // Capture the destructor of the new type.
-      mDestructor = GenericDestruct<T>;
+      mDestructor = GenericDestruct<tType>;
 
       // Create a T in our local memory by forwarding any provided arguments.
-      new (mMemory) T(std::forward<Arguments &&>(aArguments)...);
+      new (mMemory) tType(std::forward<tArguments &&>(aArguments)...);
       
-      return reinterpret_cast<T*>(mMemory);
+      return Get<tType>();
     }
 
-    template <typename T>
-    T* Get()
+    template <typename tType>
+    tType* Get()
     {
-      return reinterpret_cast<T*>(mMemory);
+      return std::launder<tType>(reinterpret_cast<tType*>(mMemory));
     }
 
   private:
@@ -72,16 +73,19 @@ namespace YTE
     using Destructor = void(*)(byte*);
     using Storage = std::unique_ptr<byte[], Destructor>;
 
-    PrivateImplementationDynamic() : mMemory(nullptr, GenericDoNothing) {}
-
-    ~PrivateImplementationDynamic()
+    PrivateImplementationDynamic()
+      : mMemory(nullptr, GenericDoNothing)
     {
     }
 
     PrivateImplementationDynamic(PrivateImplementationDynamic &&aRight)
-    : mMemory(std::move(aRight.mMemory))
+      : mMemory(std::move(aRight.mMemory))
     {
-      
+
+    }
+
+    ~PrivateImplementationDynamic()
+    {
     }
 
     void Release()
@@ -90,25 +94,25 @@ namespace YTE
       mMemory = Storage(nullptr, GenericDoNothing);
     }
 
-    template <typename T, typename... Arguments>
-    T* ConstructAndGet(Arguments &&...aArguments)
+    template <typename tType, typename... tArguments>
+    tType* ConstructAndGet(tArguments &&...aArguments)
     {
       // Destruct our data if it's already been constructed.
       mMemory.release();
 
       // Create a new T by forwarding any provided constructor arguments and
       // store the destructor.
-      T *tPtr = new T(std::forward<Arguments &&>(aArguments)...);
+      tType *tPtr = new tType(std::forward<tArguments &&>(aArguments)...);
 
-      mMemory = Storage(reinterpret_cast<byte*>(tPtr), GenericDestructByte<T>);
+      mMemory = Storage(reinterpret_cast<byte*>(tPtr), GenericDestructByte<tType>);
 
-      return reinterpret_cast<T*>(mMemory.get());
+      return reinterpret_cast<tType*>(mMemory.get());
     }
 
-    template <typename T>
-    T* Get()
+    template <typename tType>
+    tType* Get()
     {
-      return reinterpret_cast<T*>(mMemory.get());
+      return reinterpret_cast<tType*>(mMemory.get());
     }
 
   private:

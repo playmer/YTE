@@ -58,14 +58,8 @@ namespace YTEditor
 
   void LevelMenu::ReloadCurrentLevel()
   {
-    // Get all the compositions on the engine
-    YTE::CompositionMap *engineMap = mMainWindow->GetRunningEngine()->GetCompositions();
-
-    // iterator to the main session space
-    auto it_lvl = engineMap->begin();
-
     // Get the space that represents the main session
-    YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
+    YTE::Space *lvl = mMainWindow->GetEditingLevel();
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
@@ -86,13 +80,15 @@ namespace YTEditor
       // Get the name of the object
       auto objName = component->GetName();
 
+      auto &objectBrowser = mMainWindow->GetObjectBrowser();
+
       // Store the name and composition pointer in the object browser
-      ObjectItem *topItem = mMainWindow->GetObjectBrowser().AddExistingComposition(objName.c_str(),
-        component);
+      ObjectItem *topItem = objectBrowser.AddExistingComposition(objName.c_str(),
+                                                                 component);
 
       if (topItem)
       {
-        mMainWindow->GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
+        objectBrowser.LoadAllChildObjects(cmp.second.get(), topItem);
       }
 
     }
@@ -111,14 +107,13 @@ namespace YTEditor
 
   void LevelMenu::SelectSpace()
   {
-    // Get all the compositions on the engine
-    YTE::CompositionMap *engineMap = mMainWindow->GetRunningEngine()->GetCompositions();
-
-    // iterator to the main session space
-    auto it_lvl = engineMap->begin();
-
     // Get the space that represents the main session
-    YTE::Space *lvl = static_cast<YTE::Space*>(it_lvl->second.get());
+    YTE::Space *lvl = mMainWindow->GetEditingLevel();
+
+    auto &objectBrowser = mMainWindow->GetObjectBrowser();
+    auto objItem = objectBrowser.AddExistingComposition(mMainWindow->GetRunningLevelName().c_str(), lvl);
+
+    objectBrowser.setCurrentItem(objItem);
 
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(lvl);
   }

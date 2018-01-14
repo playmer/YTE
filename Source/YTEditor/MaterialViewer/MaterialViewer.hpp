@@ -20,7 +20,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "glm/glm.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 

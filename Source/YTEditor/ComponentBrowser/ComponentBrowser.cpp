@@ -23,7 +23,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/Utilities.hpp"
-#include "YTE/Utilities/JsonHelpers.h"
+#include "YTE/Utilities/JsonHelpers.hpp"
 
 #include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"

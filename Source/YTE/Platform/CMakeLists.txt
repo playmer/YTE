@@ -1,30 +1,41 @@
-Set(Previous_YTE_Source ${YTE_Source})
+target_sources(YTE
+  PRIVATE  
+    ${CMAKE_CURRENT_LIST_DIR}/DeviceEnums.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gamepad.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GamepadSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Keyboard.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Mouse.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Window.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/DialogBox_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/Gamepad_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/GamepadSystem_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/Keyboard_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/Mouse_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/Window_Windows.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/DeviceEnums.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DialogBox.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gamepad.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/GamepadSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Keyboard.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Mouse.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/TargetDefinitions.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Window.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/OsKeys_Windows.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/OsMouseButtons_Windows.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/OsXboxButtons_Windows.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/WindowData_Windows.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/WindowsInclude_Windows.hpp
+)
 
-AddFile(YTE_Source Previous_YTE_Source DeviceEnums.cpp)
-AddFile(YTE_Source Previous_YTE_Source DeviceEnums.hpp)
-AddFile(YTE_Source Previous_YTE_Source DialogBox.hpp)
-AddFile(YTE_Source Previous_YTE_Source ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source Gamepad.cpp)
-AddFile(YTE_Source Previous_YTE_Source Gamepad.hpp)
-AddFile(YTE_Source Previous_YTE_Source GamepadSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source GamepadSystem.hpp)
-AddFile(YTE_Source Previous_YTE_Source Keyboard.cpp)
-AddFile(YTE_Source Previous_YTE_Source Keyboard.hpp)
-AddFile(YTE_Source Previous_YTE_Source Mouse.cpp)
-AddFile(YTE_Source Previous_YTE_Source Mouse.hpp)
-AddFile(YTE_Source Previous_YTE_Source TargetDefinitions.hpp)
-AddFile(YTE_Source Previous_YTE_Source Window.cpp)
-AddFile(YTE_Source Previous_YTE_Source Window.hpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/DialogBox_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/Gamepad_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/GamepadSystem_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/Keyboard_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/Mouse_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/OsKeys_Windows.hpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/OsMouseButtons_Windows.hpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/OsXboxButtons_Windows.hpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/Window_Windows.cpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/WindowData_Windows.hpp)
-AddFile(YTE_Source Previous_YTE_Source Windows/WindowsInclude_Windows.hpp)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  target_link_libraries(YTE PUBLIC wsock32.lib)
+  target_link_libraries(YTE PUBLIC ws2_32.lib)
+  target_link_libraries(YTE PUBLIC IPHLPAPI.lib)
+  target_link_libraries(YTE PUBLIC Winmm.lib)
+  target_link_libraries(YTE PUBLIC Shlwapi.lib)
+  target_link_libraries(YTE PUBLIC Psapi.lib)
+  target_link_libraries(YTE PUBLIC dxguid.lib)
+  target_link_libraries(YTE PUBLIC XInput9_1_0.lib)
+endif()

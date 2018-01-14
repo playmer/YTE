@@ -1,20 +1,19 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source IDConfig.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source IDConfigBuiltin.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source IDConfigEigen.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source IDErrorMessages.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source IDMath.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source IDMath.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source MultiBodyTree.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source MultiBodyTree.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source details/IDEigenInterface.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/IDLinearMathInterface.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/IDMatVec.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/MultiBodyTreeImpl.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/MultiBodyTreeImpl.hpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/MultiBodyTreeInitCache.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source details/MultiBodyTreeInitCache.hpp)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/IDMath.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MultiBodyTree.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/MultiBodyTreeImpl.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/MultiBodyTreeInitCache.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/IDConfig.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/IDConfigBuiltin.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/IDConfigEigen.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/IDErrorMessages.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/IDMath.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/MultiBodyTree.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/IDEigenInterface.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/IDLinearMathInterface.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/IDMatVec.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/MultiBodyTreeImpl.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/details/MultiBodyTreeInitCache.hpp
+)

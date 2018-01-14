@@ -19,7 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Engine.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTools.hpp"

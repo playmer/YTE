@@ -17,7 +17,7 @@
 
 #include "YTE/Platform/Window.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {
@@ -56,14 +56,8 @@ namespace YTE
 
   void GraphicsSystem::Initialize()
   {
-    auto vulkanSuccess = vkelInit();
-
-    if (vulkanSuccess)
-    {
-      mRenderer = static_cast<std::unique_ptr<Renderer>>(std::make_unique<VkRenderer>(mEngine));
-      return;
-    }
-
-    mRenderer = std::make_unique<Renderer>();
+    // TODO (Andrew): Figure out a way to choose the dummy renderer. Perhaps if an exception is thrown?
+    mRenderer = static_cast<std::unique_ptr<Renderer>>(std::make_unique<VkRenderer>(mEngine));
+    return;
   }
 }

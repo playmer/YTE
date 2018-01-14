@@ -5,7 +5,7 @@
 #include <qdockwidget.h>
 #include <qfilesystemmodel.h>
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 namespace YTEditor
 {

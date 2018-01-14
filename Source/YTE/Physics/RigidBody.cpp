@@ -176,9 +176,6 @@ namespace YTE
 
   void RigidBody::SetVelocity(float aVelX, float aVelY, float aVelZ)
   {
-
-    //std::cout << "Setting Velocity (Probably don't do this.) " << std::endl;
-
     if (mIsInitialized)
     {
       mRigidBody->setLinearVelocity(btVector3(aVelX, aVelY, aVelZ));

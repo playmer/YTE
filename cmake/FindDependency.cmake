@@ -43,20 +43,20 @@ Function(FindWWise aTarget)
   Target_Include_Directories(${aTarget} PUBLIC ${WWisePath}/samples)
 
   File(GLOB_RECURSE 
-       StaticLibraryRelease
+       staticLibraryRelease
        "${WWisePath}/x64_vc150/Release/lib"
        "${WWisePath}/x64_vc150/Release/lib/*.lib")
         
   File(GLOB_RECURSE 
-       StaticLibraryDebug
+       staticLibraryDebug
        "${WWisePath}/x64_vc150/Debug/lib"
        "${WWisePath}/x64_vc150/Debug/lib/*.lib")
 
-  ForEach(library ${StaticLibraryRelease})
+  ForEach(library ${staticLibraryRelease})
     Target_Link_Libraries(${aTarget} optimized ${library})
   EndForEach()
     
-  ForEach(library ${StaticLibraryDebug})
+  ForEach(library ${staticLibraryDebug})
     Target_Link_Libraries(${aTarget} debug ${library})
   EndForEach()
 EndFunction()

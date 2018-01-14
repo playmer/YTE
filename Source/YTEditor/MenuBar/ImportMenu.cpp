@@ -30,7 +30,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Utilities.hpp"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MenuBar/ImportMenu.hpp"

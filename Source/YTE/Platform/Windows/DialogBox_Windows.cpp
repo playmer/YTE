@@ -7,21 +7,19 @@
 */
 /******************************************************************************/
 
-#include <stdarg.h> /* va_list, va_start, va_end*/
+#include <stdarg.h>
 #include <stdio.h>
 
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 
-#include "YTE/Utilities/String/String.h"
-
 #include "YTE/Platform/DialogBox.hpp"
 #include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {
-  HWND GetRootWindow()
+  static HWND GetRootWindow()
   {
     HWND window = GetActiveWindow();
     HWND parent = NULL;
@@ -143,34 +141,54 @@ namespace YTE
     char *stringBuffer;
     vasprintf(&stringBuffer, aFormatString, variadicArguments);
 
-
     DebugDialog dialog;
 
-    HWND mainDebugWindow = CreateWindow(windowsData.lpszClassName, windowsData.lpszMenuName,
+    HWND mainDebugWindow = CreateWindow(windowsData.lpszClassName, 
+                                        windowsData.lpszMenuName,
                                         WS_POPUP | WS_VISIBLE || WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-                                        CW_USEDEFAULT, CW_USEDEFAULT, 600, 210,
-                                        GetRootWindow(), NULL, windowsData.hInstance, &dialog);
+                                        CW_USEDEFAULT, 
+                                        CW_USEDEFAULT, 
+                                        600, 
+                                        210,
+                                        GetRootWindow(), 
+                                        NULL, 
+                                        windowsData.hInstance, 
+                                        &dialog);
 
 
-    CreateWindow("BUTTON", "Continue",
+    CreateWindow("BUTTON", 
+                 "Continue",
                  WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
                  4, 140, 150, 24,
-                 mainDebugWindow, (HMENU)DebugErrorDialog::Continue, windowsData.hInstance, 0);
+                 mainDebugWindow, 
+                 (HMENU)DebugErrorDialog::Continue,
+                 windowsData.hInstance, 
+                 nullptr);
 
-    CreateWindow("BUTTON", "Debug Break",
+    CreateWindow("BUTTON", 
+                 "Debug Break",
                  WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
                  225, 140, 150, 24,
-                 mainDebugWindow, (HMENU)DebugErrorDialog::DebugBreak, windowsData.hInstance, 0);
+                 mainDebugWindow, 
+                 (HMENU)DebugErrorDialog::DebugBreak, 
+                 windowsData.hInstance, 
+                 nullptr);
 
     CreateWindow("BUTTON", "Abort",
                  WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
                  430, 140, 150, 24,
-                 mainDebugWindow, (HMENU)DebugErrorDialog::Abort, windowsData.hInstance, 0);
+                 mainDebugWindow, 
+                 (HMENU)DebugErrorDialog::Abort, 
+                 windowsData.hInstance, 
+                 nullptr);
 
     HWND hEdit = CreateWindow("EDIT", "",
                               WS_CHILD | WS_VISIBLE | ES_MULTILINE | ES_READONLY,
                               4, 4, 576, 120,
-                              mainDebugWindow, (HMENU)IDC_MAIN_EDIT, windowsData.hInstance, 0);
+                              mainDebugWindow, 
+                              (HMENU)IDC_MAIN_EDIT, 
+                              windowsData.hInstance,
+                              0);
 
     SendMessage(hEdit, WM_SETTEXT, NULL, (LPARAM)stringBuffer);
 
@@ -182,7 +200,6 @@ namespace YTE
     scroll.nMax = 500;
     scroll.nPos = 0;
     SetScrollInfo(hEdit, SB_VERT, &scroll, TRUE);
-
 
     ShowWindow(mainDebugWindow, SW_SHOWNORMAL);
     UpdateWindow(mainDebugWindow);
