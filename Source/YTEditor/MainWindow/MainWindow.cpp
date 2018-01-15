@@ -48,7 +48,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
@@ -79,23 +79,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-
   MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
-    : QMainWindow(),
-    mRunningEngine(aEngine),
-    mApplication(aQApp),
-    mObjectBrowser(nullptr),
-    mComponentBrowser(nullptr),
-    mOutputConsole(nullptr),
-    mRunningSpaceName(""),
-    mRunningLevelName(""),
-    mRunningSpace(nullptr),
-    mUndoRedo(new UndoRedo()),
-    mGizmo(nullptr),
-    mRunningWindow(nullptr),
-    mFileMenu(nullptr),
-    mGameObjectMenu(nullptr),
-    mGizmoScaleFactor(1.0f)
+    : QMainWindow()
+    , mRunningEngine(aEngine)
+    , mApplication(aQApp)
+    , mObjectBrowser(nullptr)
+    , mComponentBrowser(nullptr)
+    , mOutputConsole(nullptr)
+    , mRunningSpaceName("")
+    , mRunningLevelName("")
+    , mRunningSpace(nullptr)
+    , mUndoRedo(new UndoRedo())
+    , mGizmo(nullptr)
+    , mRunningWindow(nullptr)
+    , mFileMenu(nullptr)
+    , mGameObjectMenu(nullptr)
+    , mGizmoScaleFactor(1.0f)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -106,7 +105,6 @@ namespace YTEditor
     ConstructToolbar();
     ConstructMenuBar();
     ConstructSubWidgets();
-
 
     // Get all the compositions on the engine
     auto engineMap = mRunningEngine->GetCompositions();
@@ -122,18 +120,24 @@ namespace YTEditor
     mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
 
     aEngine->Initialize();
+
+    //// This needs to happen after the engine has been initialized.
+    ConstructMaterialViewer();
     ConstructWWiseWidget();
 
+    tabifyDockWidget(mMaterialViewer, mFileViewer);
+    tabifyDockWidget(mFileViewer, mComponentBrowser);
     tabifyDockWidget(mMaterialViewer, mWWiseWidget);
+
     LoadCurrentLevelInfo();
+
+    CreateGizmo(mEditingLevel);
 
     auto self = this;
     QTimer::singleShot(0, [self]()
     {
       self->UpdateEngine();
     });
-
-    CreateGizmo(mEditingLevel);
   }
 
   MainWindow::~MainWindow()
@@ -309,21 +313,9 @@ namespace YTEditor
 
   void MainWindow::LoadCurrentLevelInfo()
   {
-    // Get all the compositions on the engine
-    YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
+    YTE::Space *lvl = GetEditingLevel();
 
-    mRunningEngine->Update();
-
-    // Get all the compositions on the engine
-    engineMap = mRunningEngine->GetCompositions();
-
-    // iterator to the main session space
-    auto it_lvl = engineMap->begin();
-
-    // Get the space that represents the main session
-    YTE::Space * lvl = static_cast<YTE::Space*>(it_lvl->second.get());
-
-    mRunningSpaceName = it_lvl->first;
+    mRunningSpaceName = lvl->GetName();
     mRunningLevelName = lvl->GetLevelName();
 
     //////////////////////////////////////////////////////////////////////////////
@@ -372,20 +364,6 @@ namespace YTEditor
     mFileMenu->SaveLevel();
   }
 
-  YTE::Space * MainWindow::GetMainSession()
-  {
-    // Get all the compositions on the engine
-    YTE::CompositionMap *engineMap = mRunningEngine->GetCompositions();
-
-    // iterator to the main session space
-    auto it_mainSession = engineMap->begin();
-
-    mRunningSpaceName = it_mainSession->first;
-
-    // Get the space that represents the main session
-    return static_cast<YTE::Space*>(it_mainSession->second.get());
-  }
-
   void MainWindow::SetRunningSpaceName(YTE::String &aName)
   {
     mRunningSpaceName = aName;
@@ -404,7 +382,7 @@ namespace YTEditor
     }
 
     YTE::RSAllocator allocator;
-    auto mainSession = GetMainSession();
+    auto mainSession = GetEditingLevel();
     auto value = mainSession->Serialize(allocator);
 
     mRunningEngine->AddWindow("YTEditor Play Window");
@@ -470,7 +448,7 @@ namespace YTEditor
   {
     mRunningLevelName = aLevelName;
 
-    YTE::Space* mainSession = GetMainSession();
+    YTE::Space *mainSession = GetEditingLevel();
 
     mainSession->CreateBlankLevel(aLevelName);
 
@@ -483,7 +461,7 @@ namespace YTEditor
   {
     mRunningLevelName = aLevelName;
 
-    YTE::Space* mainSession = GetMainSession();
+    YTE::Space* mainSession = GetEditingLevel();
 
     mainSession->LoadLevel(aLevelName);
 
@@ -672,11 +650,7 @@ namespace YTEditor
     ConstructGameWindows();
     ConstructObjectBrowser();
     ConstructComponentBrowser();
-    ConstructMaterialViewer();
     ConstructFileViewer();
-
-    tabifyDockWidget(mMaterialViewer, mFileViewer);
-    tabifyDockWidget(mFileViewer, mComponentBrowser);
   }
 
   void MainWindow::ConstructGameWindows()
@@ -764,7 +738,7 @@ namespace YTEditor
     // dockable output console window
     mOutputConsole = new QDockWidget("Output Console", this);
     mOutputConsole->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    mConsole = new OutputConsole(mOutputConsole);
+    mConsole = new OutputConsole(this, mOutputConsole);
     mOutputConsole->setWidget(mConsole);
     this->addDockWidget(Qt::BottomDockWidgetArea, mOutputConsole);
   }

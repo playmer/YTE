@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qapplication.h>
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/Physics/PhysicsHandler.hpp"
 
@@ -99,8 +99,6 @@ namespace YTEditor
     YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
     YTE::String& GetRunningLevelName() { return mRunningLevelName; }
-
-    YTE::Space* GetMainSession();
 
     void SetRunningSpaceName(YTE::String &aName);
     YTE::String& GetRunningSpaceName();

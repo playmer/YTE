@@ -1,65 +1,61 @@
-Set(Previous_YTE_Source ${YTE_Source})
-
-AddFile(YTE_Source Previous_YTE_Source Animation.cpp)
-AddFile(YTE_Source Previous_YTE_Source Animation.hpp)
-AddFile(YTE_Source Previous_YTE_Source Camera.cpp)
-AddFile(YTE_Source Previous_YTE_Source Camera.hpp)
-AddFile(YTE_Source Previous_YTE_Source ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source GraphicsSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source GraphicsSystem.hpp)
-AddFile(YTE_Source Previous_YTE_Source GraphicsView.cpp)
-AddFile(YTE_Source Previous_YTE_Source GraphicsView.hpp)
-AddFile(YTE_Source Previous_YTE_Source Light.cpp)
-AddFile(YTE_Source Previous_YTE_Source Light.hpp)
-AddFile(YTE_Source Previous_YTE_Source Model.cpp)
-AddFile(YTE_Source Previous_YTE_Source Model.hpp)
-AddFile(YTE_Source Previous_YTE_Source Sprite.cpp)
-AddFile(YTE_Source Previous_YTE_Source Sprite.hpp)
-AddFile(YTE_Source Previous_YTE_Source Skybox.cpp)
-AddFile(YTE_Source Previous_YTE_Source Skybox.hpp)
-AddFile(YTE_Source Previous_YTE_Source UBOs.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vertex.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedModel.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedModel.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedSprite.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedSprite.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedLight.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/InstantiatedLight.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Mesh.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Mesh.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Renderer.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Renderer.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Shader.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Shader.hpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Texture.cpp)
-AddFile(YTE_Source Previous_YTE_Source Generics/Texture.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkFunctionLoader.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedModel.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedModel.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedLight.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedLight.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedSprite.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInstantiatedSprite.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInternals.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkInternals.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkLightManager.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkLightManager.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkMesh.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkMesh.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkRenderedSurface.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkRenderedSurface.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkRenderer.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkRenderer.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkShader.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkShader.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkShaderDescriptions.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkShaderCompiler.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkShaderCompiler.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkTexture.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkTexture.hpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkDeviceInfo.cpp)
-AddFile(YTE_Source Previous_YTE_Source Vulkan/VkDeviceInfo.hpp)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_sources(YTE
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/Animation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Camera.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Light.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Sprite.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Skybox.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderCompiler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkTexture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkDeviceInfo.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/Animation.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Camera.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Light.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Model.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Sprite.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Skybox.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UBOs.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vertex.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkFunctionLoader.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShader.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderDescriptions.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderCompiler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkTexture.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkDeviceInfo.hpp
+)

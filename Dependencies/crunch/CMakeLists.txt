@@ -1,12 +1,7 @@
-Set(crunch_Source)
-
-Get_Filename_Component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-Include_Directories(${ParentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})
-
 # This doesn't define any symbols. y
 # src/crn_hash_map.cpp
 
-Set(crunch_Source 
+set(crunch_Source 
       inc/crn_decomp.h
       inc/crnlib.h
       inc/dds_defs.h
@@ -186,18 +181,17 @@ Set(crunch_Source
       src/lzma_Threads.h
       src/lzma_Types.h)
 
-If (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-  Set(crunch_Source ${crunch_Source} 
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  set(crunch_Source ${crunch_Source} 
                     src/crn_threading_win32.cpp
                     src/crn_threading_win32.h)
-Else()
-  Set(crunch_Source ${crunch_Source} 
+else()
+  set(crunch_Source ${crunch_Source} 
                     src/crn_threading_pthreads.cpp
                     src/crn_threading_pthreads.h)
-EndIf()
+endif()
 
-Add_Library(crunch ${crunch_Source})
+add_library(crunch ${crunch_Source})
 
-
-
-
+get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+target_include_directories(crunch PUBLIC ${ParentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})

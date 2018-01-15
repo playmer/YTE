@@ -15,7 +15,7 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Animation.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 #include <AK/MusicEngine/Common/AkMusicEngine.h>
 
 

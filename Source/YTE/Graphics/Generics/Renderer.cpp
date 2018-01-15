@@ -4,8 +4,9 @@
 ///////////////////
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedSprite.hpp"
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
+
+
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
 namespace YTE

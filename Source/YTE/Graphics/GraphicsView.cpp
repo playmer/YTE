@@ -34,6 +34,7 @@ namespace YTE
     , mClearColor(0.44f, 0.44f, 0.44f, 1.0f)
     , mConstructing(true)
     , mOrder(0.0f)
+    , mInitialized(false)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -110,10 +111,20 @@ namespace YTE
 
   void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
+    if (false == mConstructing)
+    {
+      mRenderer->DeregisterView(this);
+    }
+
     mWindowName = aWindowName;
     auto it = mSpace->GetEngine()->GetWindows().find(mWindowName);
 
     mWindow = it->second.get();
+
+    if (false == mConstructing)
+    {
+      mRenderer->RegisterView(this);
+    }
   }
 
   void GraphicsView::SetClearColor(const glm::vec4 &aColor)

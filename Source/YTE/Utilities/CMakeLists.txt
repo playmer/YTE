@@ -1,12 +1,10 @@
-Set(Previous_YTE_Source ${YTE_Source})
-
-AddFile(YTE_Source Previous_YTE_Source JsonHelpers.h)
-AddFile(YTE_Source Previous_YTE_Source Utilities.cpp)
-AddFile(YTE_Source Previous_YTE_Source Utilities.h)
-AddFile(YTE_Source Previous_YTE_Source DebugChecking/Assert.h)
-AddFile(YTE_Source Previous_YTE_Source String/String.cpp)
-AddFile(YTE_Source Previous_YTE_Source String/String.h)
-AddFile(YTE_Source Previous_YTE_Source String/StringRange.cpp)
-AddFile(YTE_Source Previous_YTE_Source String/StringRange.h)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_sources(YTE
+  PRIVATE  
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/String/String.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/JsonHelpers.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/DebugChecking/Assert.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/String/String.hpp
+)

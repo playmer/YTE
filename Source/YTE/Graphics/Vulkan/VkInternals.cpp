@@ -65,7 +65,7 @@ namespace YTE
       }
     }
     printf("%s\n", aMessage);
-    assert(!aMessage);
+    assert(aFlags != VK_DEBUG_REPORT_ERROR_BIT_EXT);
     return VK_TRUE;
   }
 #endif
@@ -118,8 +118,6 @@ namespace YTE
         &debugReportCallback);
 #endif
 
-    vkelInstanceInit(static_cast<vk::Instance>(*mInstance));
-
     auto &windows = aEngine->GetWindows();
 
     // get the surface to the first window
@@ -154,7 +152,6 @@ namespace YTE
 
   void VkInternals::DeinitializeVulkan()
   {
-    vkelUninit();
   }
 
 

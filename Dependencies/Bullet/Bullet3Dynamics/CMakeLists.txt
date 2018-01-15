@@ -1,25 +1,24 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source b3CpuRigidBodyPipeline.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source b3CpuRigidBodyPipeline.h)
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3ContactSolverInfo.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3FixedConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3FixedConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3Generic6DofConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3Generic6DofConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3JacobianEntry.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3PgsJacobiSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3PgsJacobiSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3Point2PointConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3Point2PointConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3SolverBody.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3SolverConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3TypedConstraint.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source ConstraintSolver/b3TypedConstraint.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3ContactConstraint4.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3ConvertConstraint4.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Inertia.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3IntegrateTransforms.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/b3CpuRigidBodyPipeline.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3FixedConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3Generic6DofConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3PgsJacobiSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3Point2PointConstraint.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3TypedConstraint.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/b3CpuRigidBodyPipeline.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3ContactSolverInfo.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3FixedConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3Generic6DofConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3JacobianEntry.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3PgsJacobiSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3Point2PointConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3SolverBody.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3SolverConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/ConstraintSolver/b3TypedConstraint.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3ContactConstraint4.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3ConvertConstraint4.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Inertia.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3IntegrateTransforms.h
+)

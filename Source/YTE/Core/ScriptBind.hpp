@@ -10,11 +10,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #ifndef YTE_Core_ScriptBind_h
 #define YTE_Core_ScriptBind_h
 
-
-#include <string>
-
-#include "YTE/Utilities/String/String.h"
-
 #include "YTE/Core/Utilities.hpp"
 
 namespace YTE

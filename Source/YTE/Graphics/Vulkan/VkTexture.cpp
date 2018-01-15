@@ -14,7 +14,7 @@
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace fs = std::experimental::filesystem;
 

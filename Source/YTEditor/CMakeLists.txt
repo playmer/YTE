@@ -3,11 +3,7 @@
 ## Legal  : All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 ## Author : Joshua T. Fisher
 ################################################################################
-Include_Directories(${Source_Root})
-Include_Directories(${ParentDirectory}
-                    ${Dependencies_Root}/assimp/include)
-
-Set(YTEditorSource main.cpp
+set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
                    ForwardDeclarations.hpp
@@ -93,20 +89,44 @@ Set(YTEditorSource main.cpp
                    UndoRedo/UndoRedo.cpp
                    WWiseViewer/WWiseWidget.hpp
                    WWiseViewer/WWiseWidget.cpp)
+                   
+add_executable(YTEditor ${YTEditorSource})
 
-Add_Executable(YTEditor ${YTEditorSource})
+target_include_directories(YTEditor 
+  PRIVATE
+    ${Source_Root}
+    ${ParentDirectory}
+    ${Dependencies_Root}/assimp/include
+)
 
-Set_Target_Properties(YTEditor
+set_target_properties(YTEditor
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
      
-YTE_Source_Group(YTEditor_Root YTEditorSource) 
                           
 # Find the QtWidgets library
-Find_Package(Qt5Widgets)
+set(QtPath $ENV{Qt})
+if(NOT QtPath) 
+  message(FATAL_ERROR "Please define the environment variable `Qt` with the path to Qt 5.9.0 - i.e. export Qt = C:/Qt/5.9")
+endif()
 
-Target_Link_Libraries(YTEditor YTE ${StaticLibraries} Qt5::Widgets)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  set(CMAKE_PREFIX_PATH ${QtPath}/msvc2017_64/)
+endif()
 
-Target_Compile_Options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W4)
+find_package(Qt5Widgets)
+
+target_link_libraries(YTEditor YTE Qt5::Widgets)
+
+target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
+
+YTE_Target_Precompiled_Headers(YTEditor
+                               PUBLIC 
+                                 <unordered_map>
+                                 <vector>
+                               PRIVATE
+                                 YTE/Meta/Type.hpp)
+
+YTE_Source_Group(YTEditor_Root YTEditor) 

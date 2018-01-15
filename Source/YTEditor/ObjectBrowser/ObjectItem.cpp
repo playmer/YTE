@@ -21,7 +21,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qpushbutton.h>
 
 #include "YTE/Core/Composition.hpp"
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"

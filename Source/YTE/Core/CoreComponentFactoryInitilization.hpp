@@ -19,6 +19,32 @@
 
 namespace YTE
 {
+  struct ComponentFactoryHelper
+  {
+    ComponentFactoryHelper(YTE::Engine *aEngine, YTE::FactoryMap *aComponentFactories)
+      : mEngine(aEngine)
+      , mComponentFactories(aComponentFactories)
+    {
+
+    }
+
+    template <typename tComponent>
+    void CreateComponentFactory()
+    {
+      YTE::Type *type = tComponent::GetStaticType();
+
+      auto it = mComponentFactories->Find(type);
+
+      if (it == mComponentFactories->end())
+      {
+        mComponentFactories->Emplace(type, std::make_unique<YTE::ComponentFactory<tComponent>>(mEngine));
+      }
+    }
+
+    Engine *mEngine;
+    FactoryMap *mComponentFactories;
+  };
+
   void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories);
 }
 

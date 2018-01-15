@@ -16,8 +16,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Platform/DialogBox.hpp"
 
-#include "YTE/Utilities/String/String.h"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/String/String.hpp"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {

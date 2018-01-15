@@ -183,7 +183,7 @@ namespace YTE
     }
 
     Type* mType;
-    byte mData[16];
+    byte mData[32];
 
 
   private:

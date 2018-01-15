@@ -6,7 +6,7 @@
 * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
 #include "YTE/Core/Engine.hpp"

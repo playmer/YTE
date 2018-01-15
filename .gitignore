@@ -314,3 +314,8 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+*_Public_Precompiled.hpp
+*_Private_Precompiled.hpp
+*_Source_Precompiled.cpp

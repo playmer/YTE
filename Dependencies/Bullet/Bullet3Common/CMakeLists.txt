@@ -1,31 +1,30 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source b3AlignedAllocator.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source b3AlignedAllocator.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3AlignedObjectArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3CommandLineArgs.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3FileUtils.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3HashMap.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Logging.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source b3Logging.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Matrix3x3.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3MinMax.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3PoolAllocator.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3QuadWord.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Quaternion.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Random.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Scalar.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3StackAlloc.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Transform.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3TransformUtil.h)
-AddFile(Bullet_Source Previous_Bullet_Source b3Vector3.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source b3Vector3.h)
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Float4.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Int2.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Int4.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Mat3x3.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3PlatformDefinitions.h)
-AddFile(Bullet_Source Previous_Bullet_Source shared/b3Quat.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/b3AlignedAllocator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/b3Logging.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/b3Vector3.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/b3AlignedAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3AlignedObjectArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3CommandLineArgs.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3FileUtils.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3HashMap.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Logging.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Matrix3x3.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3MinMax.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3PoolAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3QuadWord.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Quaternion.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Random.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Scalar.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3StackAlloc.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Transform.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3TransformUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/b3Vector3.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Float4.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Int2.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Int4.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Mat3x3.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3PlatformDefinitions.h
+    ${CMAKE_CURRENT_LIST_DIR}/shared/b3Quat.h
+)

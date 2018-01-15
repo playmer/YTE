@@ -13,7 +13,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/Core/Engine.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Composition.hpp"
 
 

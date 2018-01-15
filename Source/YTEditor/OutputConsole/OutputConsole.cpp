@@ -18,17 +18,60 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qgridlayout.h>
 #include <qtextedit.h>
 
+#include "YTE/Core/Engine.hpp"
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
+#include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
 {
+  YTEDefineType(LogHandler)
+  {
+    YTERegisterType(LogHandler);
+  }
 
-  OutputConsole::OutputConsole(QWidget *aParent)
-    : QWidget(aParent), mLayout(nullptr), mConsole(nullptr)
+  LogHandler::LogHandler(OutputConsole *aConsole)
+    : mConsole(aConsole)
+  {
+    auto engine = mConsole->GetMainWindow()->GetRunningEngine();
+
+    engine->YTERegister(YTE::Events::LogEvent, this, &LogHandler::HandleLog);
+  }
+
+  static QColor LogTypeToColor(YTE::LogType aType)
+  {
+    switch (aType)
+    {
+      case YTE::LogType::Success: return OutputConsole::Color::Green;
+      case YTE::LogType::Information: return OutputConsole::Color::Blue;
+      case YTE::LogType::Warning: return OutputConsole::Color::Yellow;
+      case YTE::LogType::PerformanceWarning: return OutputConsole::Color::Orange;
+      case YTE::LogType::Error: return OutputConsole::Color::Red;
+      default: return OutputConsole::Color::White;
+    }
+  }
+
+  void LogHandler::HandleLog(YTE::LogEvent *aEvent)
+  {
+    auto color = LogTypeToColor(aEvent->Type);
+    auto textEdit = mConsole->GetTextEdit();
+    textEdit->setTextColor(color);
+
+    QString str = QString::fromUtf8(aEvent->Log.data(), static_cast<int>(aEvent->Log.size()));
+    textEdit->append(str);
+    
+    textEdit->setTextColor(OutputConsole::Color::Black);
+  }
+
+  OutputConsole::OutputConsole(MainWindow *aMainWindow, QWidget *aParent)
+    : QWidget(aParent)
+    , mLayout(nullptr)
+    , mConsole(nullptr)
+    , mMainWindow(aMainWindow)
+    , mHandler(this)
   {
     SetWindowSettings();
     ConstructInnerWidget();
@@ -53,10 +96,22 @@ namespace YTEditor
     PrintToConsole(formatted.c_str());
   }
 
-  QColor OutputConsole::Color::Black{ 0,0,0 };
-  QColor OutputConsole::Color::Red{ 255,0,0 };
-  QColor OutputConsole::Color::Blue{ 0,0,255 };
-  QColor OutputConsole::Color::Green{ 0,255,0 };
+
+  static QColor White;
+  static QColor Black;
+  static QColor Blue;
+  static QColor Green;
+  static QColor Yellow;
+  static QColor Orange;
+  static QColor Red;
+
+  QColor OutputConsole::Color::White{ 255, 255, 255 };
+  QColor OutputConsole::Color::Black{ 0, 0, 0 };
+  QColor OutputConsole::Color::Blue{ 0, 0, 255 };
+  QColor OutputConsole::Color::Green{ 0, 255, 0 };
+  QColor OutputConsole::Color::Yellow{ 255, 255, 0 };
+  QColor OutputConsole::Color::Orange{ 255, 128, 0 };
+  QColor OutputConsole::Color::Red{ 255, 0, 0 };
 
   void OutputConsole::PrintLnC(QColor aColor, const char *aFormatString, ...)
   {

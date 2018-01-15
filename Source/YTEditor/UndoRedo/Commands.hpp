@@ -14,7 +14,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Meta/Type.hpp"
 

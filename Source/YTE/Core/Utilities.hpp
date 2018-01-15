@@ -34,7 +34,7 @@
 #include "YTE/StandardLibrary/OrderedMap.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/Core/StaticIntents.hpp"
 

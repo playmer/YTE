@@ -41,7 +41,6 @@ namespace YTE
       }
     }
 
-    // Will return default constructed Any if the arguments fail.
     Any Invoke(std::vector<Any> &aArguments) const
     {
       if (mParameters.size() != aArguments.size())
@@ -440,7 +439,7 @@ namespace YTE
   static Function& BindFunction(const char *name, Type *aType, std::initializer_list<const char *> aParameterNames)
   {
     static_assert(aSize == CountFunctionArguments<FunctionSignature>::template Size() || aSize == 0,
-                  "If passing names of function parameters you must pass either the exactly as many names as there are arguments, or 0.");
+                  "If passing names of function parameters you must pass either exactly as many names as there are arguments, or 0.");
 
     auto function = Binding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
     function->SetParameterNames(aParameterNames);

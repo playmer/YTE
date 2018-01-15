@@ -10,7 +10,7 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {

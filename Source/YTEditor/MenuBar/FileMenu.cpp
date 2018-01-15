@@ -25,7 +25,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
@@ -129,7 +129,7 @@ namespace YTEditor
 
     mMainWindow->DeleteGizmo();
     mMainWindow->CreateBlankLevel("NewLevel");
-    mMainWindow->CreateGizmo(mMainWindow->GetMainSession());
+    mMainWindow->CreateGizmo(mMainWindow->GetEditingLevel());
   }
 
   void FileMenu::OpenLevel()
@@ -162,14 +162,14 @@ namespace YTEditor
 
     mMainWindow->LoadLevel(file_without_extension);
 
-    auto space = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+    auto space = mMainWindow->GetEditingLevel();
 
     mMainWindow->CreateGizmo(static_cast<YTE::Space*>(space));
   }
 
   void FileMenu::SaveLevel()
   {
-    auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+    auto spaceComp = mMainWindow->GetEditingLevel();
 
     static_cast<YTE::Space*>(spaceComp)->SaveLevel(mMainWindow->GetRunningLevelName());
   }
@@ -202,7 +202,7 @@ namespace YTEditor
     YTE::String yteFile = YTE::String();
     yteFile = file_without_extension;
 
-    auto spaceComp = mMainWindow->GetRunningEngine()->GetCompositions()->begin()->second.get();
+    auto spaceComp = mMainWindow->GetEditingLevel();
 
     spaceComp->SetName(yteFile);
 

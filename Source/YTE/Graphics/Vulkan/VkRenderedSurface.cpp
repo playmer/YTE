@@ -10,7 +10,6 @@
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedSprite.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
@@ -19,7 +18,9 @@
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/StandardLibrary/Range.hpp"
+
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {
@@ -82,8 +83,8 @@ namespace YTE
     vk::AttachmentDescription colorAttachment{{},
                                               mColorFormat,
                                               vk::SampleCountFlagBits::e1,
-                                              vk::AttachmentLoadOp::eLoad,
-                                              //vk::AttachmentLoadOp::eClear,
+                                              //vk::AttachmentLoadOp::eLoad,
+                                              vk::AttachmentLoadOp::eClear,
                                               vk::AttachmentStoreOp::eStore, // color
                                               vk::AttachmentLoadOp::eDontCare,
                                               vk::AttachmentStoreOp::eDontCare, // stencil
@@ -567,58 +568,54 @@ namespace YTE
       GraphicsDataUpdate();
     }
 
+    
     // TODO: (CBO) A cbo is created here, stop this
     auto buffer = mCommandPool->allocateCommandBuffer();
 
     bool first = true;
     buffer->begin();
 
-    
-    for (auto &viewData : mViewData)
+    std::array<float, 4> colorValues;
+
+    if (0 < mViewData.size())
     {
-      std::array<float, 4> colorValues;
-      colorValues[0] = viewData.second.mClearColor.r;
-      colorValues[1] = viewData.second.mClearColor.g;
-      colorValues[2] = viewData.second.mClearColor.b;
-      colorValues[3] = viewData.second.mClearColor.a;
+      auto &view = mViewData.begin()->second;
+      colorValues[0] = view.mClearColor.r;
+      colorValues[1] = view.mClearColor.g;
+      colorValues[2] = view.mClearColor.b;
+      colorValues[3] = view.mClearColor.a;
+    }
+    else
+    {
+      colorValues[0] = 0.44f;
+      colorValues[1] = 0.44f;
+      colorValues[2] = 0.44f;
+      colorValues[3] = 0.44f;
+    }
 
-      vk::ClearValue color{colorValues};
-      vk::ClearDepthStencilValue depthStensil{1.0f, 0};
+    vk::ClearValue color{colorValues};
+    vk::ClearDepthStencilValue depthStensil{1.0f, 0};
 
-      auto &extent = mFrameBufferSwapChain->getExtent();
+    auto &extent = mFrameBufferSwapChain->getExtent();
 
-      buffer->beginRenderPass(mRenderPass,
-                              mFrameBufferSwapChain->getFramebuffer(),
-                              vk::Rect2D({ 0, 0 }, extent),
-                              {color, depthStensil},
-                              vk::SubpassContents::eInline);
+    buffer->beginRenderPass(mRenderPass,
+                            mFrameBufferSwapChain->getFramebuffer(),
+                            vk::Rect2D({ 0, 0 }, extent),
+                            {color, depthStensil},
+                            vk::SubpassContents::eInline);
 
+    auto width = static_cast<float>(extent.width);
+    auto height = static_cast<float>(extent.height);
 
-      auto width = static_cast<float>(extent.width);
-      auto height = static_cast<float>(extent.height);
-
+    for (auto [viewData, i] : enumerate(mViewData))
+    {
       vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
       buffer->setViewport(0, viewport);
 
       vk::Rect2D scissor{ { 0, 0 }, extent };
       buffer->setScissor(0, scissor);
 
-      buffer->clearDepthStencilImage(mFrameBufferSwapChain->getDepthImage(),
-                                     vk::ImageLayout::eDepthStencilAttachmentOptimal,
-                                     1.0f,
-                                     0,
-                                     {{vk::ImageAspectFlagBits::eDepth, 0, 1, 0, 1}});
-
-      if (first)
-      {
-        buffer->clearColorImage(mFrameBufferSwapChain->getColorImage(), 
-                                vk::ImageLayout::eColorAttachmentOptimal, 
-                                vk::ClearColorValue(colorValues));
-
-        first = false;
-      }
-
-      auto &instantiatedModels = viewData.second.mInstantiatedModels;
+      auto &instantiatedModels = viewData->second.mInstantiatedModels;
 
       for (auto &shader : mShaders)
       {
@@ -635,7 +632,7 @@ namespace YTE
             continue;
           }
 
-          // We get the submeshes that use the current shader, then draw them.
+          // We get the sub meshes that use the current shader, then draw them.
           auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
 
           if (mesh.second->GetInstanced())
@@ -696,16 +693,22 @@ namespace YTE
         }
       }
 
-      buffer->endRenderPass();
+      if (i + 1 < mViewData.size())
+      {
+        buffer->nextSubpass(vk::SubpassContents::eInline);
+      }
     }
+
+    buffer->endRenderPass();
     buffer->end();
 
     vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
-                              {vk::PipelineStageFlagBits::eColorAttachmentOutput},
-                              buffer,
-                              mRenderCompleteSemaphore};
+                             {vk::PipelineStageFlagBits::eColorAttachmentOutput},
+                             buffer,
+                             mRenderCompleteSemaphore};
 
     mGraphicsQueue->submit(submit);
+    mGraphicsQueue->waitIdle();
 
     try
     {

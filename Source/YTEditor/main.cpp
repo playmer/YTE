@@ -19,13 +19,13 @@
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ScriptBind.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 
   // RUNNING THE GAME
   YTE::InitializeYTETypes();
-  YTE::Engine mainEngine{ "../../../../../Assets/Bin/Config", true };
+  YTE::Engine mainEngine{ YTE_ENGINE_CONFIG, true };
 
   // initialize types first
   YTEditor::InitializeYTEditorTypes();

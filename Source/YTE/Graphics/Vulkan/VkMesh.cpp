@@ -287,7 +287,11 @@ namespace YTE
 
     // Create the descriptor set and pipeline layouts.
     mDescriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
-    mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, samplers);
+
+    if (0 != samplers)
+    {
+      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, samplers);
+    }
 
     mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
 

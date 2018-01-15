@@ -13,7 +13,6 @@ namespace YTE
   YTEDefineType(Type)
   {
     YTERegisterType(Type);
-
   }
 
   inline Type::~Type()
@@ -143,21 +142,16 @@ namespace YTE
 
   }
 
-
   YTEDefineType(Field)
   {
     YTERegisterType(Field);
   }
 
-  YTEDefineExternalType(void)
+  YTEDefineExternalType(YTE::String)
   {
-    YTERegisterType(void);
+    YTERegisterType(YTE::String);
   }
 
-  YTEDefineExternalType(bool)
-  {
-    YTERegisterType(bool);
-  }
 
   YTEDefineExternalType(s8)
   {
@@ -203,25 +197,30 @@ namespace YTE
   {
     YTERegisterType(u64);
   }
+}
 
-  YTEDefineExternalType(float)
-  {
-    YTERegisterType(float);
-  }
 
-  YTEDefineExternalType(double)
-  {
-    YTERegisterType(double);
-  }
+YTEDefineExternalType(void)
+{
+  YTERegisterType(void);
+}
 
-  YTEDefineExternalType(std::string)
-  {
-    YTERegisterType(std::string);
-  }
+YTEDefineExternalType(bool)
+{
+  YTERegisterType(bool);
+}
 
-  YTEDefineExternalType(YTE::String)
-  {
-    YTERegisterType(YTE::String);
-  }
+YTEDefineExternalType(float)
+{
+  YTERegisterType(float);
+}
 
+YTEDefineExternalType(double)
+{
+  YTERegisterType(double);
+}
+
+YTEDefineExternalType(std::string)
+{
+  YTERegisterType(std::string);
 }

@@ -10,7 +10,7 @@
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
@@ -36,7 +36,7 @@
 #include "YTE/Physics/SphereCollider.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
@@ -47,51 +47,38 @@
 
 namespace YTE
 {
-  #define DeclareComponent(component)                                                          \
-  do                                                                                           \
-  {                                                                                            \
-                                                                                               \
-    auto it = currComponentFactories.Find(##component::GetStaticType());                       \
-                                                                                               \
-    if (it == currComponentFactories.end())                                                    \
-    {                                                                                          \
-      currComponentFactories.Emplace(##component::GetStaticType(),                             \
-                                     std::make_unique<ComponentFactory<##component>>(aEngine));\
-    }                                                                                          \
-  } while(false)
-
   using namespace std;
 
   void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories)
   {
-    DeclareComponent(WWiseEmitter);
-    DeclareComponent(WWiseListener);
+    YTE::ComponentFactoryHelper helper{aEngine, &currComponentFactories};
 
-    DeclareComponent(TestComponent);
+    helper.CreateComponentFactory<WWiseEmitter>();
+    helper.CreateComponentFactory<WWiseListener>();
 
-    DeclareComponent(Camera);
-    DeclareComponent(GraphicsView);
-    DeclareComponent(Light);
-    DeclareComponent(Model);
-    DeclareComponent(Skybox);
-    DeclareComponent(Animator);
+    helper.CreateComponentFactory<TestComponent>();
 
-    //DeclareComponent(Collider)
-    DeclareComponent(BoxCollider);
-    DeclareComponent(CapsuleCollider);
-    DeclareComponent(CollisionBody);
-    DeclareComponent(CylinderCollider);
-    DeclareComponent(GhostBody);
-    DeclareComponent(MenuCollider);
-    DeclareComponent(MeshCollider);
-    DeclareComponent(Orientation);
-    DeclareComponent(PhysicsSystem);
-    DeclareComponent(Reactive);
-    DeclareComponent(RigidBody);
-    DeclareComponent(SphereCollider);
-    DeclareComponent(Sprite);
-    DeclareComponent(Transform);
+    helper.CreateComponentFactory<Camera>();
+    helper.CreateComponentFactory<GraphicsView>();
+    helper.CreateComponentFactory<Light>();
+    helper.CreateComponentFactory<Model>();
+    helper.CreateComponentFactory<Skybox>();
+    helper.CreateComponentFactory<Animator>();
+
+    //helper.CreateComponentFactory<Collider>();
+    helper.CreateComponentFactory<BoxCollider>();
+    helper.CreateComponentFactory<CapsuleCollider>();
+    helper.CreateComponentFactory<CollisionBody>();
+    helper.CreateComponentFactory<CylinderCollider>();
+    helper.CreateComponentFactory<GhostBody>();
+    helper.CreateComponentFactory<MenuCollider>();
+    helper.CreateComponentFactory<MeshCollider>();
+    helper.CreateComponentFactory<Orientation>();
+    helper.CreateComponentFactory<PhysicsSystem>();
+    helper.CreateComponentFactory<Reactive>();
+    helper.CreateComponentFactory<RigidBody>();
+    helper.CreateComponentFactory<SphereCollider>();
+    helper.CreateComponentFactory<Sprite>();
+    helper.CreateComponentFactory<Transform>();
   }
-
-  #undef DeclareComponent
 }

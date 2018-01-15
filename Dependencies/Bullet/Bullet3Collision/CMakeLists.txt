@@ -1,38 +1,37 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3BroadphaseCallback.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3DynamicBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3DynamicBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3DynamicBvhBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3DynamicBvhBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3OverlappingPair.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3OverlappingPairCache.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/b3OverlappingPairCache.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadPhaseCollision/shared/b3Aabb.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3Config.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3Contact4.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3ConvexUtility.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3ConvexUtility.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3CpuNarrowPhase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3CpuNarrowPhase.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3RaycastInfo.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/b3RigidBodyCL.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3BvhSubtreeInfoData.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3BvhTraversal.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3ClipFaces.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3Collidable.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3Contact4Data.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3ContactConvexConvexSAT.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3ContactSphereSphere.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3ConvexPolyhedronData.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3FindConcaveSatAxis.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3FindSeparatingAxis.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3MprPenetration.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3NewContactReduction.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3QuantizedBvhNodeData.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3ReduceContacts.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3RigidBodyData.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/shared/b3UpdateAabbs.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3DynamicBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3DynamicBvhBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3OverlappingPairCache.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3ConvexUtility.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3CpuNarrowPhase.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3BroadphaseCallback.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3DynamicBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3DynamicBvhBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3OverlappingPair.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/b3OverlappingPairCache.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadPhaseCollision/shared/b3Aabb.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3Config.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3Contact4.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3ConvexUtility.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3CpuNarrowPhase.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3RaycastInfo.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/b3RigidBodyCL.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3BvhSubtreeInfoData.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3BvhTraversal.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3ClipFaces.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3Collidable.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3Contact4Data.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3ContactConvexConvexSAT.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3ContactSphereSphere.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3ConvexPolyhedronData.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3FindConcaveSatAxis.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3FindSeparatingAxis.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3MprPenetration.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3NewContactReduction.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3QuantizedBvhNodeData.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3ReduceContacts.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3RigidBodyData.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/shared/b3UpdateAabbs.h
+)

@@ -5,7 +5,7 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 
 
 namespace YTE

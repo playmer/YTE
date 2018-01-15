@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/ScriptBind.hpp"
 
-#include "YTE/Core/ComponentSystem.h"
+#include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"

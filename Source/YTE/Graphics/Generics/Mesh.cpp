@@ -8,7 +8,7 @@
 #include "assimp/scene.h"
 
 #include "YTE/Core/AssetLoader.hpp"
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/Mesh.hpp"
 

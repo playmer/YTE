@@ -1,12 +1,16 @@
-Set(Previous_YTE_Source ${YTE_Source})
+target_sources(YTE
+  PRIVATE  
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/MemoryImplementation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseEmitter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseListener.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseEmitter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseListener.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
+)
 
-AddFile(YTE_Source Previous_YTE_Source WWiseSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source WWiseSystem.hpp)
-AddFile(YTE_Source Previous_YTE_Source MemoryImplementation.cpp)
-AddFile(YTE_Source Previous_YTE_Source WWiseEmitter.cpp)
-AddFile(YTE_Source Previous_YTE_Source WWiseEmitter.hpp)
-AddFile(YTE_Source Previous_YTE_Source WWiseListener.cpp)
-AddFile(YTE_Source Previous_YTE_Source WWiseListener.hpp)
-AddFile(YTE_Source Previous_YTE_Source Utilities.hpp)
+FindWWise(WWise_SoundEngine)
 
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_link_libraries(YTE PUBLIC WWise_SoundEngine)

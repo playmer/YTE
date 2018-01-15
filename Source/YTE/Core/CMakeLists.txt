@@ -1,46 +1,44 @@
-Set(Previous_YTE_Source ${YTE_Source})
-
-AddFile(YTE_Source Previous_YTE_Source Asset.cpp)
-AddFile(YTE_Source Previous_YTE_Source Asset.hpp)
-AddFile(YTE_Source Previous_YTE_Source AssetLoader.cpp)
-AddFile(YTE_Source Previous_YTE_Source AssetLoader.hpp)
-AddFile(YTE_Source Previous_YTE_Source Component.cpp)
-AddFile(YTE_Source Previous_YTE_Source Component.hpp)
-AddFile(YTE_Source Previous_YTE_Source ComponentFactory.hpp)
-AddFile(YTE_Source Previous_YTE_Source ComponentSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source ComponentSystem.h)
-AddFile(YTE_Source Previous_YTE_Source Composition.cpp)
-AddFile(YTE_Source Previous_YTE_Source Composition.hpp)
-AddFile(YTE_Source Previous_YTE_Source ContentLoader.h)
-AddFile(YTE_Source Previous_YTE_Source ContentSystem.h)
-AddFile(YTE_Source Previous_YTE_Source CoreComponentFactoryInitialization.cpp)
-AddFile(YTE_Source Previous_YTE_Source CoreComponentFactoryInitilization.hpp)
-AddFile(YTE_Source Previous_YTE_Source Engine.cpp)
-AddFile(YTE_Source Previous_YTE_Source Engine.hpp)
-AddFile(YTE_Source Previous_YTE_Source EventHandler.cpp)
-AddFile(YTE_Source Previous_YTE_Source EventHandler.hpp)
-AddFile(YTE_Source Previous_YTE_Source ForwardDeclarations.hpp)
-AddFile(YTE_Source Previous_YTE_Source Object.cpp)
-AddFile(YTE_Source Previous_YTE_Source Object.hpp)
-AddFile(YTE_Source Previous_YTE_Source PrivateImplementation.hpp)
-AddFile(YTE_Source Previous_YTE_Source ScriptBind.cpp)
-AddFile(YTE_Source Previous_YTE_Source ScriptBind.hpp)
-AddFile(YTE_Source Previous_YTE_Source StaticIntents.hpp)
-AddFile(YTE_Source Previous_YTE_Source Space.cpp)
-AddFile(YTE_Source Previous_YTE_Source Space.hpp)
-AddFile(YTE_Source Previous_YTE_Source TestComponent.hpp)
-AddFile(YTE_Source Previous_YTE_Source TestComponent.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/Job.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/Job.hpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobHandle.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobHandle.hpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobQueue.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobQueue.hpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobSystem.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/JobSystem.hpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/Worker.cpp)
-AddFile(YTE_Source Previous_YTE_Source Threading/Worker.hpp)
-AddFile(YTE_Source Previous_YTE_Source Utilities.cpp)
-AddFile(YTE_Source Previous_YTE_Source Utilities.hpp)
-
-Set(YTE_Source ${Previous_YTE_Source} PARENT_SCOPE)
+target_sources(YTE
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/Asset.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssetLoader.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Component.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ComponentSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Composition.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CoreComponentFactoryInitialization.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Engine.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/EventHandler.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Object.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Space.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/TestComponent.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/Job.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobHandle.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobQueue.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobSystem.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/Worker.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/Asset.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Composition.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Component.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/AssetLoader.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ComponentFactory.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ComponentSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/CoreComponentFactoryInitilization.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Engine.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/EventHandler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Object.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PrivateImplementation.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/StaticIntents.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Space.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/TestComponent.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/Job.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobHandle.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobQueue.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/JobSystem.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Threading/Worker.hpp
+)

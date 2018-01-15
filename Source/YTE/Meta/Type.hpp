@@ -10,7 +10,7 @@
 #include "YTE/Meta/ForwardDeclarations.hpp"
 #include "YTE/Meta/Reflection.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 
 namespace YTE
@@ -37,11 +37,11 @@ namespace YTE
   // Used to declare a static type within a class
   // Requires YTEDefineType be used at some point in a
   // translation unit.
-#define YTEDeclareType(Name)                                   \
-void Dummy() {}                                                \
+#define YTEDeclareType(Name)                                          \
+void Dummy() {}                                                       \
 typedef decltype(::YTE::GetDummy(&Name::Dummy)) TempSelfType;         \
 typedef decltype(::YTE::GetSelfType<TempSelfType>(nullptr)) BaseType; \
-typedef TempSelfType SelfType;                                 \
+typedef TempSelfType SelfType;                                        \
 static ::YTE::Type sType;                                             \
 static ::YTE::Type* GetStaticType() { return &sType; };               \
 ::YTE::Type* GetType() { return &sType; };                            \

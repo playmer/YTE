@@ -1,27 +1,24 @@
-Set(Bullet_Source)
+get_filename_component(parentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
-Get_Filename_Component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
-Add_Subdirectory(Bullet3Collision)
-Add_Subdirectory(Bullet3Common)
-Add_Subdirectory(Bullet3Dynamics)
-Add_Subdirectory(Bullet3Geometry)
-Add_Subdirectory(Bullet3OpenCL)
-Add_Subdirectory(Bullet3Serialize)
-Add_Subdirectory(BulletCollision)
-Add_Subdirectory(BulletDynamics)
-Add_Subdirectory(BulletInverseDynamics)
-Add_Subdirectory(BulletSoftBody)
-Add_Subdirectory(clew)
-Add_Subdirectory(LinearMath)
-Include_Directories(${ParentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(Bullet 
+  btBulletCollisionCommon.h
+  btBulletDynamicsCommon.h
+) 
 
-Set(Bullet_Source ${Bullet_Source} 
-        btBulletCollisionCommon.h
-        btBulletDynamicsCommon.h)
+target_include_directories(Bullet PUBLIC ${parentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_definitions(Bullet PUBLIC B3_USE_CLEW)
 
+include(Bullet3Collision/CMakeLists.txt)
+include(Bullet3Common/CMakeLists.txt)
+include(Bullet3Dynamics/CMakeLists.txt)
+include(Bullet3Geometry/CMakeLists.txt)
+include(Bullet3OpenCL/CMakeLists.txt)
+include(Bullet3Serialize/CMakeLists.txt)
+include(BulletCollision/CMakeLists.txt)
+include(BulletDynamics/CMakeLists.txt)
+include(BulletInverseDynamics/CMakeLists.txt)
+include(BulletSoftBody/CMakeLists.txt)
+include(clew/CMakeLists.txt)
+include(LinearMath/CMakeLists.txt)
 
-Set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DB3_USE_CLEW")
-
-Add_Library(Bullet ${Bullet_Source}) 
-
-YTE_Source_Group(CMAKE_CURRENT_SOURCE_DIR Bullet_Source) 
+YTE_Source_Group(CMAKE_CURRENT_SOURCE_DIR Bullet) 

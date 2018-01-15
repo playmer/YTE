@@ -1,232 +1,231 @@
-Set(Previous_Bullet_Source ${Bullet_Source})
-
-AddFile(Bullet_Source Previous_Bullet_Source premake4.lua)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btAxisSweep3.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btAxisSweep3.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btAxisSweep3Internal.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btBroadphaseInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btBroadphaseProxy.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btBroadphaseProxy.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDbvt.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDbvt.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDbvtBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDbvtBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDispatcher.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btDispatcher.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btOverlappingPairCache.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btOverlappingPairCache.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btOverlappingPairCallback.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btQuantizedBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btQuantizedBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btSimpleBroadphase.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source BroadphaseCollision/btSimpleBroadphase.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btActivatingCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btActivatingCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBox2dBox2dCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBox2dBox2dCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBoxBoxCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBoxBoxCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBoxBoxDetector.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btBoxBoxDetector.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionConfiguration.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionCreateFunc.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionDispatcher.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionDispatcher.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionObject.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionObject.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionObjectWrapper.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionWorld.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionWorld.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionWorldImporter.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCollisionWorldImporter.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCompoundCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCompoundCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCompoundCompoundCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btCompoundCompoundCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvex2dConvex2dAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvex2dConvex2dAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexConcaveCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexConcaveCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexConvexAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexConvexAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexPlaneCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btConvexPlaneCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btDefaultCollisionConfiguration.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btDefaultCollisionConfiguration.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btEmptyCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btEmptyCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btGhostObject.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btGhostObject.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btHashedSimplePairCache.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btHashedSimplePairCache.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btInternalEdgeUtility.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btInternalEdgeUtility.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btManifoldResult.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btManifoldResult.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSimulationIslandManager.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSimulationIslandManager.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereBoxCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereBoxCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereSphereCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereSphereCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereTriangleCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btSphereTriangleCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btUnionFind.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/btUnionFind.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/SphereTriangleDetector.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionDispatch/SphereTriangleDetector.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBox2dShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBox2dShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBoxShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBoxShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBvhTriangleMeshShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btBvhTriangleMeshShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCapsuleShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCapsuleShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCollisionMargin.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCollisionShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCollisionShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCompoundShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCompoundShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConcaveShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConcaveShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConeShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConeShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvex2dShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvex2dShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexHullShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexHullShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexInternalShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexInternalShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexPointCloudShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexPointCloudShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexPolyhedron.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexPolyhedron.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexTriangleMeshShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btConvexTriangleMeshShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCylinderShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btCylinderShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btEmptyShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btEmptyShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btHeightfieldTerrainShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btHeightfieldTerrainShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMaterial.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMinkowskiSumShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMinkowskiSumShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMultimaterialTriangleMeshShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMultimaterialTriangleMeshShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMultiSphereShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btMultiSphereShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btOptimizedBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btOptimizedBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btPolyhedralConvexShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btPolyhedralConvexShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btScaledBvhTriangleMeshShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btScaledBvhTriangleMeshShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btShapeHull.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btShapeHull.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btSphereShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btSphereShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btStaticPlaneShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btStaticPlaneShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btStridingMeshInterface.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btStridingMeshInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTetrahedronShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTetrahedronShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleBuffer.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleBuffer.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleCallback.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleCallback.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleIndexVertexArray.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleIndexVertexArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleIndexVertexMaterialArray.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleIndexVertexMaterialArray.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleInfoMap.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleMesh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleMesh.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleMeshShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleMeshShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btTriangleShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btUniformScalingShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source CollisionShapes/btUniformScalingShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btBoxCollision.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btClipPolygon.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btCompoundFromGimpact.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btContactProcessing.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btContactProcessing.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btContactProcessingStructs.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGenericPoolAllocator.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGenericPoolAllocator.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGeometryOperations.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactBvhStructs.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactCollisionAlgorithm.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactCollisionAlgorithm.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactMassUtil.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactQuantizedBvh.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactQuantizedBvh.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactQuantizedBvhStructs.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactShape.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btGImpactShape.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btQuantization.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btTriangleShapeEx.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/btTriangleShapeEx.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_array.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_basic_geometry_operations.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_bitset.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_box_collision.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_box_set.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_box_set.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_clip_polygon.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_contact.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_contact.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_geometry.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_geom_types.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_hash_table.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_linear_math.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_math.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_memory.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_memory.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_radixsort.h)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_tri_collision.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source Gimpact/gim_tri_collision.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btComputeGjkEpaPenetration.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btContinuousConvexCollision.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btContinuousConvexCollision.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btConvexCast.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btConvexCast.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btConvexPenetrationDepthSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btDiscreteCollisionDetectorInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkCollisionDescription.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkConvexCast.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkConvexCast.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkEpa2.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkEpa2.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkEpa3.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkEpaPenetrationDepthSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkEpaPenetrationDepthSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkPairDetector.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btGjkPairDetector.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btManifoldPoint.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btMinkowskiPenetrationDepthSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btMinkowskiPenetrationDepthSolver.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btMprPenetration.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btPersistentManifold.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btPersistentManifold.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btPointCollector.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btPolyhedralContactClipping.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btPolyhedralContactClipping.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btRaycastCallback.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btRaycastCallback.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btSimplexSolverInterface.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btSubSimplexConvexCast.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btSubSimplexConvexCast.h)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btVoronoiSimplexSolver.cpp)
-AddFile(Bullet_Source Previous_Bullet_Source NarrowPhaseCollision/btVoronoiSimplexSolver.h)
-
-Set(Bullet_Source ${Previous_Bullet_Source} PARENT_SCOPE)
+target_sources(Bullet
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btAxisSweep3.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btBroadphaseProxy.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDbvt.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDbvtBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDispatcher.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btOverlappingPairCache.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btQuantizedBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btSimpleBroadphase.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btActivatingCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBox2dBox2dCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBoxBoxCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBoxBoxDetector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionDispatcher.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionObject.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionWorld.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionWorldImporter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCompoundCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCompoundCompoundCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvex2dConvex2dAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexConcaveCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexConvexAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexPlaneCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btDefaultCollisionConfiguration.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btEmptyCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btGhostObject.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btHashedSimplePairCache.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btInternalEdgeUtility.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btManifoldResult.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSimulationIslandManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereBoxCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereSphereCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereTriangleCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btUnionFind.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/SphereTriangleDetector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBox2dShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBoxShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBvhTriangleMeshShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCapsuleShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCollisionShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCompoundShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConcaveShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConeShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvex2dShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexHullShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexInternalShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexPointCloudShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexPolyhedron.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexTriangleMeshShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCylinderShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btEmptyShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btHeightfieldTerrainShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMinkowskiSumShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMultimaterialTriangleMeshShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMultiSphereShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btOptimizedBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btPolyhedralConvexShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btScaledBvhTriangleMeshShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btShapeHull.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btSphereShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btStaticPlaneShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btStridingMeshInterface.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTetrahedronShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleBuffer.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleCallback.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleIndexVertexArray.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleIndexVertexMaterialArray.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleMesh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleMeshShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btUniformScalingShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btContactProcessing.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGenericPoolAllocator.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactCollisionAlgorithm.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactQuantizedBvh.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactShape.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btTriangleShapeEx.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_box_set.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_contact.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_memory.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_tri_collision.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btContinuousConvexCollision.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btConvexCast.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkConvexCast.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkEpa2.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkEpaPenetrationDepthSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkPairDetector.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btMinkowskiPenetrationDepthSolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btPersistentManifold.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btPolyhedralContactClipping.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btRaycastCallback.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btSubSimplexConvexCast.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btVoronoiSimplexSolver.cpp
+#  PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btAxisSweep3.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btAxisSweep3Internal.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btBroadphaseInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btBroadphaseProxy.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDbvt.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDbvtBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btDispatcher.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btOverlappingPairCache.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btOverlappingPairCallback.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btQuantizedBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/BroadphaseCollision/btSimpleBroadphase.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btActivatingCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBox2dBox2dCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBoxBoxCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btBoxBoxDetector.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionConfiguration.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionCreateFunc.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionDispatcher.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionObject.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionObjectWrapper.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionWorld.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCollisionWorldImporter.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCompoundCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btCompoundCompoundCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvex2dConvex2dAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexConcaveCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexConvexAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btConvexPlaneCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btDefaultCollisionConfiguration.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btEmptyCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btGhostObject.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btHashedSimplePairCache.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btInternalEdgeUtility.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btManifoldResult.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSimulationIslandManager.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereBoxCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereSphereCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btSphereTriangleCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/btUnionFind.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionDispatch/SphereTriangleDetector.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBox2dShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBoxShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btBvhTriangleMeshShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCapsuleShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCollisionMargin.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCollisionShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCompoundShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConcaveShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConeShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvex2dShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexHullShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexInternalShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexPointCloudShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexPolyhedron.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btConvexTriangleMeshShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btCylinderShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btEmptyShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btHeightfieldTerrainShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMaterial.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMinkowskiSumShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMultimaterialTriangleMeshShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btMultiSphereShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btOptimizedBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btPolyhedralConvexShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btScaledBvhTriangleMeshShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btShapeHull.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btSphereShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btStaticPlaneShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btStridingMeshInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTetrahedronShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleBuffer.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleCallback.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleIndexVertexArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleIndexVertexMaterialArray.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleInfoMap.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleMesh.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleMeshShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btTriangleShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/CollisionShapes/btUniformScalingShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btBoxCollision.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btClipPolygon.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btCompoundFromGimpact.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btContactProcessing.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btContactProcessingStructs.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGenericPoolAllocator.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGeometryOperations.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactBvhStructs.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactCollisionAlgorithm.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactMassUtil.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactQuantizedBvh.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactQuantizedBvhStructs.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btGImpactShape.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btQuantization.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/btTriangleShapeEx.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_array.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_basic_geometry_operations.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_bitset.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_box_collision.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_box_set.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_clip_polygon.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_contact.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_geometry.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_geom_types.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_hash_table.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_linear_math.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_math.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_memory.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_radixsort.h
+    ${CMAKE_CURRENT_LIST_DIR}/Gimpact/gim_tri_collision.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btComputeGjkEpaPenetration.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btContinuousConvexCollision.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btConvexCast.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btConvexPenetrationDepthSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btDiscreteCollisionDetectorInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkCollisionDescription.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkConvexCast.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkEpa2.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkEpa3.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkEpaPenetrationDepthSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btGjkPairDetector.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btManifoldPoint.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btMinkowskiPenetrationDepthSolver.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btMprPenetration.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btPersistentManifold.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btPointCollector.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btPolyhedralContactClipping.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btRaycastCallback.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btSimplexSolverInterface.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btSubSimplexConvexCast.h
+    ${CMAKE_CURRENT_LIST_DIR}/NarrowPhaseCollision/btVoronoiSimplexSolver.h
+)

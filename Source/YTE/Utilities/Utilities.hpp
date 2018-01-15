@@ -19,7 +19,7 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Utilities/String/String.h"
+#include "YTE/Utilities/String/String.hpp"
 
 namespace YTE
 {

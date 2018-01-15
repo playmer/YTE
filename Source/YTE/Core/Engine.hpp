@@ -27,7 +27,7 @@
 
 #include "YTE/StandardLibrary/Vector.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 
 namespace YTE
@@ -59,6 +59,24 @@ namespace YTE
     BoundType *aOldType;
     BoundType *aNewType;
   };
+
+  enum class LogType
+  {
+    Success,
+    Information,
+	  Warning,
+	  PerformanceWarning,
+	  Error
+  };
+
+  class LogEvent : public Event
+  {
+  public:
+    std::string_view Log;
+    LogType Type;
+  };
+
+  YTEDeclareEvent(LogEvent);
 
   class Engine : public Composition
   {
@@ -130,6 +148,9 @@ namespace YTE
     Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
     Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
     bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
+
+    void Log(LogType aType, std::string_view aLog);
+
 
   private:
     GamepadSystem mGamepadSystem;

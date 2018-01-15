@@ -29,7 +29,7 @@
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Utilities/Utilities.h"
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTE/WWise//WWiseSystem.hpp"
 
