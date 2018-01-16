@@ -12,6 +12,8 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
+#include "fmt/format.h"
+
 namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
@@ -25,6 +27,8 @@ namespace YTE
     filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
 
     std::vector<std::string> result;
+
+    result.push_back("None");
 
     for (auto & p : filesystem::directory_iterator(finalPath))
     {
@@ -49,13 +53,9 @@ namespace YTE
 
   Skybox::Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mTextureName("None")
     , mConstructing(true)
   {
-    //auto renderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    //auto window = aSpace->GetComponent<GraphicsView>()->GetWindow();
-
-    mTextureName = "skybox_cubemap.png";
-
     DeserializeByType<Skybox*>(aProperties, this, Skybox::GetStaticType());
   }
 
@@ -159,6 +159,40 @@ namespace YTE
     return sphere;
   }
 
+
+  void Skybox::SetTexture(std::string &aTexture)
+  {
+    if (aTexture.empty() || aTexture == mTextureName)
+    {
+      return;
+    }
+
+    std::experimental::filesystem::path path(aTexture);
+    std::string extension = path.extension().u8string();
+
+    if (aTexture == "None")
+    {
+      mTextureName = aTexture;
+      mInstantiatedSkybox.reset();
+    }
+    else if (extension != ".png")
+    {
+      return;
+    }
+    else
+    {
+      mTextureName = aTexture;
+
+      if (mConstructing)
+      {
+        return;
+      }
+
+      mInstantiatedSkybox.reset();
+      CreateSkybox();
+    }
+  }
+
   void Skybox::CreateSkybox()
   {
     if (nullptr != mInstantiatedSkybox)
@@ -166,67 +200,30 @@ namespace YTE
       mInstantiatedSkybox.reset();
     }
 
+    if (mTextureName.empty() || "None" == mTextureName)
+    {
+      return;
+    }
+
+    bool success = FileCheck(Path::GetGamePath(), "Textures/Originals", mTextureName);
+
+    if (false == success)
+    {
+      success = FileCheck(Path::GetEnginePath(), "Textures/Originals", mTextureName);
+    }
+
+    if (false == success)
+    {
+      auto log = fmt::format("Skybox ({}): Texture of name {} is not found.", 
+                             mOwner->GetName().c_str(), 
+                             mTextureName);
+
+      mOwner->GetEngine()->Log(LogType::Warning, log);
+      return;
+    }
+
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
-
-    //Submesh submesh;
-    //
-    //Vertex vert0;
-    //Vertex vert1;
-    //Vertex vert2;
-    //Vertex vert3;
-    //Vertex vert4;
-    //Vertex vert5;
-    //Vertex vert6;
-    //Vertex vert7;
-    //
-    //vert0.mPosition = glm::vec3(-1.0, -1.0, 1.0);
-    //vert1.mPosition = glm::vec3(1.0, -1.0, 1.0);
-    //vert2.mPosition = glm::vec3(1.0, 1.0, 1.0);
-    //vert3.mPosition = glm::vec3(-1.0, 1.0, 1.0);
-    //
-    //vert4.mPosition = glm::vec3(-1.0, -1.0, -1.0);
-    //vert5.mPosition = glm::vec3(1.0, -1.0, -1.0);
-    //vert6.mPosition = glm::vec3(1.0, 1.0, -1.0);
-    //vert7.mPosition = glm::vec3(-1.0, 1.0, -1.0);
-    //
-    //std::vector<u32> mIndices{
-    //  2, 1, 0,
-    //  0, 3, 2,
-    //
-    //  6, 5, 1,
-    //  1, 2, 6,
-    //  
-    //  3, 0, 4,
-    //  4, 7, 3,
-    //  
-    //  7, 4, 5,
-    //  5, 6, 7,
-    //  
-    //  6, 2, 3,
-    //  3, 7, 6,
-    //  
-    //  1, 5, 4,
-    //  4, 0, 1
-    //};
-    //
-    //submesh.mDiffuseMap = mTextureName;
-    //submesh.mDiffuseType = TextureViewType::eCube;
-    //submesh.mShaderSetName = "Skybox";
-    //
-    //submesh.mVertexBuffer.emplace_back(vert0);
-    //submesh.mVertexBuffer.emplace_back(vert1);
-    //submesh.mVertexBuffer.emplace_back(vert2);
-    //submesh.mVertexBuffer.emplace_back(vert3);
-    //submesh.mVertexBuffer.emplace_back(vert4);
-    //submesh.mVertexBuffer.emplace_back(vert5);
-    //submesh.mVertexBuffer.emplace_back(vert6);
-    //submesh.mVertexBuffer.emplace_back(vert7);
-    //
-    //submesh.mIndexBuffer = std::move(mIndices);
-    //
-    //submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-    //submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
     auto submesh = CreateSphere(128, mTextureName);
 

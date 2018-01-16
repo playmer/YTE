@@ -7,6 +7,43 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define M_PI 3.1415926535897932384626433832795
+#define MAX_LIGHTS 64
+
+///////////////////////////////////////////////////////////////////////////////
+// Structures
+struct Light
+{
+  vec3 mPosition;
+  float mActive;
+  vec4 mDirection;
+  vec4 mAmbient;
+  vec4 mDiffuse;
+  vec4 mSpecular;
+  vec2 mSpotLightConeAngles;    // (inner, outer)
+  uint mLightType;  // 0 = none, 1 = directional, 2 = point, 3 = spot, 4 = area
+  // area not in use right now
+  float mSpotLightFalloff;
+};
+
+// used to pass data to lighting functions
+struct LightingData
+{
+  vec4 mDiffuseTexture;
+  vec4 mNormalTexture;
+  vec4 mSpecularTexture;
+  vec4 mViewVec;
+  vec4 mNormal;
+  vec4 mPosition;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Constants
+const uint LightType_None = 0;
+const uint LightType_Directional = 1;
+const uint LightType_Point = 2;
+const uint LightType_Spot = 3;
+//const uint LightType_Area = 4; // area not in use
 
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
@@ -31,9 +68,30 @@ layout (binding = 2) uniform UBOMaterial
 } Material;
 
 
+// ========================
+// Light Values
+layout (binding = 3) uniform UBOLights
+{
+  Light mLights[MAX_LIGHTS];
+  uint mNumberOfLights;
+  float mActive;
+} Lights;
+
+// ========================
+// Illumination Buffer
+layout (binding = 4) uniform UBOIllumination
+{
+  vec4 mCameraPosition;
+  vec4 mGlobalIllumination;
+  vec4 mFogColor;
+  vec4 mFogCoefficients;
+  vec2 mFogPlanes;
+} Illumination;
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
-layout (binding = 3) uniform sampler2D environmentMap;
+layout (binding = 5) uniform sampler2D environmentMap;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,7 +102,6 @@ layout (location = 1) in vec3 inEyeVector;
 
 // ========================
 // Output of Fragment
-layout (location = 0) out vec4 outFragColor;
 layout (location = 0) out vec4 outFragColor;
 
 
@@ -61,4 +118,6 @@ void main()
   vec2 skyUv = vec2(u, v);
 
   outFragColor = texture(environmentMap, skyUv);
+
+  //outFragColor = vec4(V, 1.0f);
 }

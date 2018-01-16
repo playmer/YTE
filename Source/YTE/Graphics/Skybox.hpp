@@ -25,18 +25,7 @@ namespace YTE
       return mTextureName;
     }
 
-    void SetTexture(std::string &aTexture)
-    {
-      if (aTexture != mTextureName)
-      {
-        mTextureName = aTexture;
-
-        if (false == mConstructing)
-        {
-          CreateSkybox();
-        }
-      }
-    }
+    void SetTexture(std::string &aTexture);
 
     void CreateTransform();
 
@@ -48,8 +37,9 @@ namespace YTE
     Transform *mTransform;
     UBOModel mUBOModel;
 
-    std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSkybox;
+    std::string mTextureName;
+    u32 mSubdivisions;
     bool mConstructing = true;
   };
 }

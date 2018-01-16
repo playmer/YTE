@@ -100,7 +100,12 @@ out gl_PerVertex
 // Entry point of shader
 void main() 
 {
-  vec3 worldPosition = (Model.mModelMatrix * vec4(inPosition, 1.0f)).xyz;
+  mat4 modelMatrix = Model.mModelMatrix;
+  modelMatrix[3].x = 0.0f;
+  modelMatrix[3].y = 0.0f;
+  modelMatrix[3].z = 0.0f;
+
+  vec3 worldPosition = (modelMatrix * vec4(inPosition, 1.0f)).xyz;
 
   mat4 viewMatrix = transpose(View.mViewMatrix);
   vec3 eyePosition = viewMatrix[3].xyz;
@@ -111,14 +116,6 @@ void main()
   viewMatrix[3].z = 0.0f;
 
   viewMatrix = transpose(viewMatrix);
-
-  mat4 modelMatrix = transpose(Model.mModelMatrix);
-
-  modelMatrix[3].x = 0.0f;
-  modelMatrix[3].y = 0.0f;
-  modelMatrix[3].z = 0.0f;
-
-  modelMatrix = transpose(modelMatrix);
 
   outEyeVector = eyePosition - worldPosition;
 
