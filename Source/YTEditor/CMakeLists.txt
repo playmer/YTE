@@ -131,7 +131,7 @@ YTE_Target_Precompiled_Headers(YTEditor
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
 
-if (${INSTALL_YTEDITOR} EQUAL 1)
+if ("${INSTALL_YTEDITOR}" STREQUAL "1")
   message(STATUS "YTEditor Install Target Enabled")
   Install(TARGETS YTEditor
   RUNTIME DESTINATION BIN
