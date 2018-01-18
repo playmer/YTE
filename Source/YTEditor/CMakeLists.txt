@@ -130,3 +130,21 @@ YTE_Target_Precompiled_Headers(YTEditor
                                  YTE/Meta/Type.hpp)
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
+
+if (${INSTALL_YTEDITOR} EQUAL 1)
+  message(STATUS "YTEditor Install Target Enabled")
+  Install(TARGETS YTEditor
+  RUNTIME DESTINATION BIN
+  LIBRARY DESTINATION BIN
+  ARCHIVE DESTINATION BIN
+  COMPONENT applications)
+
+  add_custom_command(
+      TARGET YTEditor POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          $<TARGET_FILE:Qt5::Widgets>
+          $<TARGET_FILE_DIR:YTEditor>)
+
+  Install(PROGRAMS "$<TARGET_FILE_DIR:YTEditor>/Qt5Widgets.dll" 
+  DESTINATION BIN)
+endif()
