@@ -16,7 +16,6 @@
 #include "YTE/Graphics/Animation.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
-#include <AK/MusicEngine/Common/AkMusicEngine.h>
 
 
 namespace YTE
