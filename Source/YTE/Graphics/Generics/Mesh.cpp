@@ -223,7 +223,9 @@ namespace YTE
 
     mName = aMesh->mName.C_Str();
     mMaterialName = name.C_Str();
-    mShaderSetName = mMaterialName.substr(0, mMaterialName.find_first_of('_'));
+
+    // TODO (Andrew): Add ability to provide a shader if wanted
+    //mShaderSetName = mMaterialName.substr(0, mMaterialName.find_first_of('_'));
 
     aiString diffuse;
     aiString specular;
