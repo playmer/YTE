@@ -57,6 +57,12 @@ namespace YTE
     return result;
   }
 
+  static std::vector<std::string> PopulateShadingDropDown(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
+    return { "Standard", "Alpha Blending", "Additive Blending" };
+  }
+
 
 
   YTEDefineType(Model)
@@ -71,6 +77,11 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+    YTEBindProperty(&Model::GetShading, &Model::SetShading, "Shading")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateShadingDropDown);
 
     YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
       .AddAttribute<EditorProperty>()
@@ -199,6 +210,36 @@ namespace YTE
     modChange.Object = mOwner;
     mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
+
+  
+
+  void Model::SetShading(std::string aName)
+  {
+    if (aName.empty() || aName == mShadingName)
+    {
+      return;
+    }
+
+    if (aName == "Standard")
+    {
+      mShadingName = "Standard";
+      mInstantiatedModel->mUseAlphaBlending = false;
+      mInstantiatedModel->mUseAdditiveBlending = false;
+    }
+    else if (aName == "Alpha Blending")
+    {
+      mShadingName = "Alpha Blending";
+      mInstantiatedModel->mUseAlphaBlending = true;
+      mInstantiatedModel->mUseAdditiveBlending = false;
+    }
+    else if (aName == "Additive Blending")
+    {
+      mShadingName = "Additive Blending";
+      mInstantiatedModel->mUseAlphaBlending = false;
+      mInstantiatedModel->mUseAdditiveBlending = true;
+    }
+  }
+
 
 
 

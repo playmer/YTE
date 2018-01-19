@@ -283,33 +283,73 @@ namespace YTE
                                       0,
                                       0);
 
-    vk::PipelineDepthStencilStateCreateInfo depthStencil({},
-                                                         true,
-                                                         true,
-                                                         vk::CompareOp::eLessOrEqual,
-                                                         false,
-                                                         false,
-                                                         stencilOpState,
-                                                         stencilOpState,
-                                                         0.0f,
-                                                         0.0f);
+    vk::PipelineDepthStencilStateCreateInfo enableDepthStencil({},
+                                                               true,
+                                                               true,
+                                                               vk::CompareOp::eLessOrEqual,
+                                                               false,
+                                                               false,
+                                                               stencilOpState,
+                                                               stencilOpState,
+                                                               0.0f,
+                                                               0.0f);
+    vk::PipelineDepthStencilStateCreateInfo disableDepthStencil({},
+                                                                true,
+                                                                true,
+                                                                vk::CompareOp::eLessOrEqual,
+                                                                false,
+                                                                false,
+                                                                stencilOpState,
+                                                                stencilOpState,
+                                                                0.0f,
+                                                                0.0f);
 
-    vk::PipelineColorBlendAttachmentState colorBlendAttachment(false,
-                                                               vk::BlendFactor::eDstAlpha,
-                                                               vk::BlendFactor::eOne,
-                                                               vk::BlendOp::eAdd,
-                                                               vk::BlendFactor::eZero,
-                                                               vk::BlendFactor::eOneMinusSrcAlpha,
-                                                               vk::BlendOp::eAdd,
-                                                               vk::ColorComponentFlagBits::eR |
-                                                               vk::ColorComponentFlagBits::eG |
-                                                               vk::ColorComponentFlagBits::eB |
-                                                               vk::ColorComponentFlagBits::eA);
+    vk::PipelineColorBlendAttachmentState noColorBlendAttachment(false,                                 // enable
+                                                                 vk::BlendFactor::eSrcColor,            // SrcColorBlendFactor
+                                                                 vk::BlendFactor::eOne,                 // DstColorBlendFactor
+                                                                 vk::BlendOp::eAdd,                     // ColorBlendOp
+                                                                 vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
+                                                                 vk::BlendFactor::eOneMinusSrcAlpha,    // DstAlphaBlendFactor
+                                                                 vk::BlendOp::eAdd,                     // AlphaBlendOp
+                                                                 vk::ColorComponentFlagBits::eR |       // ColorWriteMask
+                                                                 vk::ColorComponentFlagBits::eG |
+                                                                 vk::ColorComponentFlagBits::eB |
+                                                                 vk::ColorComponentFlagBits::eA);
+    vk::PipelineColorBlendAttachmentState additiveColorBlendAttachment(true,                                  // enable
+                                                                       vk::BlendFactor::eOne,                 // SrcColorBlendFactor
+                                                                       vk::BlendFactor::eOne,                 // DstColorBlendFactor
+                                                                       vk::BlendOp::eAdd,                     // ColorBlendOp
+                                                                       vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
+                                                                       vk::BlendFactor::eOne,                 // DstAlphaBlendFactor
+                                                                       vk::BlendOp::eAdd,                     // AlphaBlendOp
+                                                                       vk::ColorComponentFlagBits::eR |       // ColorWriteMask
+                                                                       vk::ColorComponentFlagBits::eG |       
+                                                                       vk::ColorComponentFlagBits::eB |       
+                                                                       vk::ColorComponentFlagBits::eA);       
+    vk::PipelineColorBlendAttachmentState alphaColorBlendAttachment(true,                                  // enable
+                                                                    vk::BlendFactor::eSrcAlpha,            // SrcColorBlendFactor
+                                                                    vk::BlendFactor::eOneMinusSrcAlpha,    // DstColorBlendFactor
+                                                                    vk::BlendOp::eAdd,                     // ColorBlendOp
+                                                                    vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
+                                                                    vk::BlendFactor::eZero,                // DstAlphaBlendFactor
+                                                                    vk::BlendOp::eAdd,                     // AlphaBlendOp
+                                                                    vk::ColorComponentFlagBits::eR |       // ColorWriteMask
+                                                                    vk::ColorComponentFlagBits::eG |
+                                                                    vk::ColorComponentFlagBits::eB |
+                                                                    vk::ColorComponentFlagBits::eA);
 
-    vkhlf::PipelineColorBlendStateCreateInfo colorBlend(false,
-                                                        vk::LogicOp::eNoOp,
-                                                        colorBlendAttachment,
-                                                        { 1.0f, 1.0f, 1.0f, 1.0f });
+    vkhlf::PipelineColorBlendStateCreateInfo noColorBlend(false,
+                                                          vk::LogicOp::eNoOp,
+                                                          noColorBlendAttachment,
+                                                          { 1.0f, 1.0f, 1.0f, 1.0f });
+    vkhlf::PipelineColorBlendStateCreateInfo additiveColorBlend(false,
+                                                                vk::LogicOp::eNoOp,
+                                                                additiveColorBlendAttachment,
+                                                                { 1.0f, 1.0f, 1.0f, 1.0f });
+    vkhlf::PipelineColorBlendStateCreateInfo alphaColorBlend(false,
+                                                             vk::LogicOp::eNoOp,
+                                                             alphaColorBlendAttachment,
+                                                             { 1.0f, 1.0f, 1.0f, 1.0f });
 
     vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
                                                     vk::DynamicState::eScissor });
@@ -323,11 +363,39 @@ namespace YTE
                                              viewport,
                                              rasterization,
                                              multisample,
-                                             depthStencil,
-                                             colorBlend,
+                                             enableDepthStencil,
+                                             noColorBlend,
                                              dynamic,
                                              mPipelineLayout,
                                              mSurface->GetRenderPass());
+    mAdditiveBlendShader = device->createGraphicsPipeline(pipelineCache,
+                                                          {},
+                                                          { vertexStage, fragmentStage },
+                                                          vertexInput,
+                                                          assembly,
+                                                          nullptr,
+                                                          viewport,
+                                                          rasterization,
+                                                          multisample,
+                                                          disableDepthStencil,
+                                                          additiveColorBlend,
+                                                          dynamic,
+                                                          mPipelineLayout,
+                                                          mSurface->GetRenderPass());
+    mAlphaBlendShader = device->createGraphicsPipeline(pipelineCache,
+                                                       {},
+                                                       { vertexStage, fragmentStage },
+                                                       vertexInput,
+                                                       assembly,
+                                                       nullptr,
+                                                       viewport,
+                                                       rasterization,
+                                                       multisample,
+                                                       disableDepthStencil,
+                                                       alphaColorBlend,
+                                                       dynamic,
+                                                       mPipelineLayout,
+                                                       mSurface->GetRenderPass());
   }
 
   void VkShader::Reload()

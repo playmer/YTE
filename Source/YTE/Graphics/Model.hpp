@@ -70,6 +70,8 @@ namespace YTE
       Create();
     }
 
+    void SetShading(std::string aName);
+
     Mesh* GetMesh();
 
     bool GetReload()
@@ -87,6 +89,11 @@ namespace YTE
       return mInstantiatedModel.get();
     }
 
+    std::string GetShading()
+    {
+      return mShadingName;
+    }
+
     void SetInstanced(bool mInstanced);
     bool GetInstanced();
 
@@ -98,6 +105,7 @@ namespace YTE
     void CreateTransform();
 
     std::string mMeshName;
+    std::string mShadingName;
     Renderer *mRenderer;
     Window *mWindow;
     Transform *mTransform;
