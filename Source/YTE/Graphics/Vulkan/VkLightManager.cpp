@@ -120,10 +120,18 @@ namespace YTE
 
   void VkLightManager::DestroyLight(VkInstantiatedLight* aLight)
   {
-    for (size_t i = aLight->mIndex; i < mLightData.mNumOfLights - 1; ++i)
+    int index = aLight->mIndex;
+
+    for (size_t i = index; i < mLightData.mNumOfLights - 1; ++i)
     {
       mLightData.mLights[i] = mLightData.mLights[i + 1];
+      mLights[i + 1]->mIndex -= 1;
+      VkInstantiatedLight* temp = mLights[i];
+      mLights[i] = mLights[i + 1];
+      mLights[i + 1] = temp;
     }
+
+    mLights.pop_back();
     mLightData.mNumOfLights -= 1;
 
     mUpdateRequired = true;
