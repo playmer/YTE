@@ -176,7 +176,7 @@ namespace YTE
     , mNearPlane(0.1f)
     , mFarPlane(256.0f)
     , mZoom(5.0f)
-    , mZoomMin(10.0f)
+    , mZoomMin(5.0f)
     , mZoomMax(75.0f)
     , mMoveUp(0.0f)
     , mMoveRight(0.0f)
@@ -457,7 +457,7 @@ namespace YTE
         // we change the camera type since we were following an object and we just
         // jumped off to walk on our own
         mMoveUp = dy * mPanSpeed * mDt;
-        mMoveRight = dx * mPanSpeed * mDt;
+        mMoveRight = -dx * mPanSpeed * mDt;
         mChanged = true;
       }
 
