@@ -151,7 +151,7 @@ namespace YTE
 
 
 
-    void Initialize(const aiScene* aScene);
+    bool Initialize(const aiScene* aScene);
 
     void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
 

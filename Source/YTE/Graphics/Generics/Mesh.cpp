@@ -21,7 +21,7 @@ namespace YTE
   
 
 
-  void Skeleton::Initialize(const aiScene* aScene)
+  bool Skeleton::Initialize(const aiScene* aScene)
   {
     // find number of vertices to initialize the skeleton
     uint32_t numMeshes = aScene->mNumMeshes;
@@ -58,6 +58,8 @@ namespace YTE
     {
       PreTransform(aScene);
     }
+
+    return bonesFound;
   }
 
 
@@ -467,9 +469,13 @@ namespace YTE
 
     if (pScene)
     {
-      mParts.clear();
-      mParts.reserve(pScene->mNumMeshes);
+      // Load bone data
+      bool hasBones = mSkeleton.Initialize(pScene);
 
+      // create the collider
+      CreateCollider(pColliderScene);
+
+      // extra setup
       glm::vec3 scale(1.0f);
       glm::vec2 uvscale(1.0f);
       glm::vec3 center(0.0f);
@@ -481,21 +487,26 @@ namespace YTE
         center = aCreateInfo->mCenter;
       }
 
+
+      auto pMeshScene = pScene;
+      if (!hasBones)
+      {
+        pMeshScene = pColliderScene;
+      }
+
+      mParts.clear();
+      mParts.reserve(pMeshScene->mNumMeshes);
+
       printf("Mesh FileName: %s\n", aFile.c_str());
 
-      uint32_t numMeshes = pScene->mNumMeshes;
+      uint32_t numMeshes = pMeshScene->mNumMeshes;
 
-      // Load bone data
-      mSkeleton.Initialize(pScene);
-
-      CreateCollider(pColliderScene);
-
-      // Load meshes
+      // Load Mesh
       uint32_t startingVertex = 0;
       for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(aWindow, pScene, pScene->mMeshes[i], &mSkeleton, startingVertex);
-        startingVertex += pScene->mMeshes[i]->mNumVertices;
+        mParts.emplace_back(aWindow, pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex);
+        startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
       }
 
       mName = aFile;
