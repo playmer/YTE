@@ -69,6 +69,12 @@ namespace YTE
       return mMesh;
     }
 
+    
+
+
+    bool mUseAdditiveBlending = false;
+    bool mUseAlphaBlending = false;
+
   protected:
     Mesh *mMesh;
     UBOModel mUBOModelData;

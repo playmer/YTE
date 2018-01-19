@@ -675,6 +675,10 @@ namespace YTE
             {
               for (auto &model : models)
               {
+                if (model->mUseAlphaBlending || model->mUseAdditiveBlending)
+                {
+                  continue;
+                }
                 auto &data = model->mPipelineData[submesh.get()];
                 buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                            data.mPipelineLayout,
@@ -687,6 +691,98 @@ namespace YTE
                                     0, 
                                     0, 
                                     0);
+              }
+            }
+          }
+        }
+      }
+
+      // pass for additive and alpha
+      for (auto &shader : mShaders)
+      {
+        for (auto &mesh : mMeshes)
+        {
+          auto &models = instantiatedModels[mesh.second.get()];
+
+          // We can early out on this mesh if there are no models that use it.
+          if (models.empty())
+          {
+            continue;
+          }
+
+          // We get the sub meshes that use the current shader, then draw them.
+          auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
+
+          if (mesh.second->GetInstanced())
+          {
+            buffer->bindVertexBuffer(1,
+              mesh.second->mInstanceManager.InstanceBuffer(),
+              0);
+          }
+
+          for (auto it = range.first; it != range.second; ++it)
+          {
+            auto &submesh = it->second;
+
+            buffer->bindVertexBuffer(0,
+              submesh->mVertexBuffer,
+              0);
+
+            buffer->bindIndexBuffer(submesh->mIndexBuffer,
+              0,
+              vk::IndexType::eUint32);
+
+
+
+            if (mesh.second->GetInstanced())
+            {
+              auto data = submesh->mPipelineData;
+              buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                data.mPipelineLayout,
+                0,
+                data.mDescriptorSet,
+                nullptr);
+
+              buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
+                1,
+                0,
+                0,
+                0);
+            }
+            else
+            {
+              for (auto &model : models)
+              {
+                if (model->mUseAlphaBlending == false && model->mUseAdditiveBlending == false)
+                {
+                  continue;
+                }
+
+                if (model->mUseAlphaBlending)
+                {
+                  auto &pipeline = shader.second->mAlphaBlendShader;
+
+                  buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+                }
+                else if (model->mUseAdditiveBlending)
+                {
+                  auto &pipeline = shader.second->mAdditiveBlendShader;
+
+                  buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
+                }
+                
+                auto &data = model->mPipelineData[submesh.get()];
+                buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                  data.mPipelineLayout,
+                  0,
+                  data.mDescriptorSet,
+                  nullptr);
+
+                buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
+                  1,
+                  0,
+                  0,
+                  0);
               }
             }
           }

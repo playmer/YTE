@@ -34,6 +34,8 @@ namespace YTE
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
     
     std::shared_ptr<vkhlf::Pipeline> mShader;
+    std::shared_ptr<vkhlf::Pipeline> mAlphaBlendShader;
+    std::shared_ptr<vkhlf::Pipeline> mAdditiveBlendShader;
     VkRenderedSurface *mSurface;
 
     std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;

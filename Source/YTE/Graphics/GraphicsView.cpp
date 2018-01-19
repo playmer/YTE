@@ -31,7 +31,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mLastCamera(nullptr)
     , mWindow(nullptr)
-    , mClearColor(0.44f, 0.44f, 0.44f, 1.0f)
+    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
     , mConstructing(true)
     , mOrder(0.0f)
     , mInitialized(false)
