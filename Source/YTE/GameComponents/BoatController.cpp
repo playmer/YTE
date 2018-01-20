@@ -28,8 +28,8 @@ namespace YTE
         mOwner->YTERegister(Events::ToggleSailEvent, this, &BoatController::ChangeSailState);
     }
 
-    void BoatController::ChangeSailState()
+    void BoatController::ChangeSailState(ToggleSailEvent *aEvent)
     {
-        //
+        YTEUnusedArgument(aEvent);
     }
 }//end yte namespace

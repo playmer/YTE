@@ -34,12 +34,13 @@ namespace YTE
     void InputInterpreter::Initialize()
     {
         //this doesnt seem right?
-        mGamepadSystem = new GamepadSystem;
-        mGamepad = mGamepadSystem->GetXboxController(YTE::Controller_Id::Xbox_P1);
+        mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
     }
-
-    void InputInterpreter::LogicUpdate()
+    
+    void InputInterpreter::Update(LogicUpdate *aEvent)
     {
+        YTEUnusedArgument(aEvent);
+
         ToggleSailEvent sailChanged;
         if (mGamepad->IsButtonDown(YTE::Xbox_Buttons::DPAD_Down))
         {
@@ -51,4 +52,5 @@ namespace YTE
         }
         mOwner->SendEvent(Events::ToggleSailEvent, &sailChanged);
     }
+    
 } // End yte namespace

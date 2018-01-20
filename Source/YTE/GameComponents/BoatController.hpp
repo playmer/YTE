@@ -34,7 +34,7 @@ namespace YTE
         YTEDeclareType(BoatController);
         //BoatController(Composition *aOwner, Space *aSpace);
         void Initialize() override;
-        void ChangeSailState();
+        void ChangeSailState(ToggleSailEvent *aEvent);
         //i think this bad boy just listens to input events and has callbacks to update rotation or apply a force
 
     private:

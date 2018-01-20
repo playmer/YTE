@@ -22,6 +22,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Engine.hpp"
 
 #include "YTE/Platform/Gamepad.hpp"
 #include "YTE/Platform/GamepadSystem.hpp"
@@ -47,12 +48,11 @@ namespace YTE
         void Initialize() override;
 
         //definitely wrong
-        void LogicUpdate();
+        void Update(LogicUpdate *aEvent);
 
         //maybe the input focus is here (ie what state are we in, gameplay, ui, etc)
     private:
         XboxController *mGamepad;
-        GamepadSystem *mGamepadSystem;
         //
     };
 } // End YTE namespace
