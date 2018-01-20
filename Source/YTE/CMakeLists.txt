@@ -5,6 +5,7 @@ add_library(YTE "")
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
 include(Core/CMakeLists.txt)
+include(GameComponents/CMakeLists.txt)
 include(Graphics/CMakeLists.txt)
 include(Physics/CMakeLists.txt)
 include(Meta/CMakeLists.txt)
