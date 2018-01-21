@@ -5,9 +5,9 @@
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-19
 \brief
-    An interface for gameplay logic components. This component will listen
-    to input events and translate them to a format gameplay components can use 
-    and then the interface will dispatch that info in gameplay events
+    An interface on the engine for gameplay logic components. This component 
+    will listen to input events and translate them to a format gameplay components 
+    can use and then the interface will dispatch that info in gameplay events
     (controllers that care about input listen to these events). The benefit
     of this interface is a control scheme agnostic controller.
 
@@ -49,9 +49,12 @@ namespace YTE
         void CheckSticks(LogicUpdate *aEvent);
         void CheckButtons(XboxButtonEvent *aEvent);
 
-        //maybe the input focus is here (ie what state are we in, gameplay, ui, etc)
+        enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
     private:
         XboxController *mGamepad;
+        // starts at menu for main menu controls?
+        InputContext mContext = InputContext::Menu;
+
     };
 } // End YTE namespace
 

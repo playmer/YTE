@@ -17,17 +17,19 @@ namespace YTE
     {
         YTERegisterType(BoatController);
     }
-    /*
+    
     BoatController::BoatController(Composition *aOwner, Space *aSpace)
         : Component(aOwner, aSpace)
     {
     }
-    */
+    
     void BoatController::Initialize()
     {
         // Event Registration
         mOwner->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
         mOwner->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+        // Member Init
+        mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
     }
 /******************************************************************************/
 /*
@@ -42,35 +44,40 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
-        //float ForceMultiplier;
-        if (mIsSailUp)
-        {
-            //ForceMultiplier = 10;?
-        }
-        else
-        {
-            //ForceMultiplier = 1;?
-        }
-        //CalculateForce(ForceMultiplier);
-        //ApplyForce()
+        CalculateMovementVector(aEvent->Dt);
+        ApplyMovementVector();
     }
 /******************************************************************************/
 /*
     Helper Functions
 */
 /******************************************************************************/
-    /*
-    void CalculateForce(float aForce)
+    
+    void BoatController::CalculateMovementVector(float dt)
     {
-        // Takes the ForwardDir * aForce
-        // if mIsSailUp
-            // Adds in WindDir * WindForce (wherever these come from)
+        //@@@ ask josh about setting a dependency for orientation, transform, etc
+        if (mIsSailUp)
+        {
+            if (mCurSpeed < mMaxSailSpeed)
+            {
+                //mMoveVec += mForwardVec * mSailUpScalar * dt;
+                //Adds in WindDir * WindForce (wherever these come from)
+                //Adds in OceanCurrent * OceanForce (wherever those come from)
+            }
+        }
+        else
+        {
+            if (mCurSpeed < mMaxCruiseSpeed)
+            {
+                //mMoveVec += mForwardVec * mSailDownScalar;
+            }
+        }
         // mMoveVec = result
     }
 
-    void ApplyForce()
+    void BoatController::ApplyMovementVector()
     {
-        // Boat.ApplyForce(mMoveVec)
+        // mRigidBody->ApplyImpulse()
     }
-    */
+    
 }//end yte namespace

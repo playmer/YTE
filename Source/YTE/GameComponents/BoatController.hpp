@@ -22,6 +22,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/Orientation.hpp"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
@@ -32,12 +33,14 @@ namespace YTE
     public:
         //void LowerSail(); callback to lower the sail when we hear a lowersail event or smth
         YTEDeclareType(BoatController);
-        //BoatController(Composition *aOwner, Space *aSpace);
+        BoatController(Composition *aOwner, Space *aSpace);
         void Initialize() override;
         void ChangeSail(SailStateChanged *aEvent);
         void Update(LogicUpdate *aEvent);
 
     private:
+        void CalculateMovementVector(float dt);
+        void ApplyMovementVector();
         //void ApplyForceToBoat();
         //void RollBoat();
 
@@ -49,8 +52,16 @@ namespace YTE
 
         // Flag that represents the state of the boat's sail
         bool mIsSailUp;
+
+        float mSailUpScalar = 10.0f; // @@@ make sure these get set in editor not here
+        float mSailDownScalar = 5.0f;
+        float mCurSpeed = 0.0f;
+        float mMaxSailSpeed = 10.0f;
+        float mMaxCruiseSpeed = 5.0f;
+
         // Vector that represents the direction of the force to apply to the boat (move elsewhere?)
-        //glm::vec3 mMoveDir;
+        glm::vec3 mMoveVec = { 0, 0, 0 };
+        glm::vec3 mForwardVec;
         //float mSailMaxSpeed;
         //float mCurBoatRoll; i think this is going to change to a max roll
     };

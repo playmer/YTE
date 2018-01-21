@@ -53,15 +53,16 @@ namespace YTE
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)
     {
-        switch (aEvent->Button)
-        {
-            case Xbox_Buttons::DPAD_Down:
+        switch (mContext) {
+        case InputContext::Sailing:
+            switch (aEvent->Button) {
+            case Xbox_Buttons::DPAD_Down: 
             {
                 SailStateChanged sailEvent(true);
                 mOwner->SendEvent(Events::SailStateChanged, &sailEvent);
                 break;
             }
-            case Xbox_Buttons::DPAD_Up:
+            case Xbox_Buttons::DPAD_Up: 
             {
                 SailStateChanged sailEvent(false);
                 mOwner->SendEvent(Events::SailStateChanged, &sailEvent);
@@ -89,6 +90,7 @@ namespace YTE
                 break;
             case Xbox_Buttons::RightStick:
                 break;
+            }
         }
     }
     
