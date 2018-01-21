@@ -34,8 +34,8 @@ namespace YTE
         YTEDeclareType(BoatController);
         //BoatController(Composition *aOwner, Space *aSpace);
         void Initialize() override;
-        void ChangeSailState(ToggleSailEvent *aEvent);
-        //i think this bad boy just listens to input events and has callbacks to update rotation or apply a force
+        void ChangeSail(SailStateChanged *aEvent);
+        void Update(LogicUpdate *aEvent);
 
     private:
         //void ApplyForceToBoat();
@@ -46,7 +46,11 @@ namespace YTE
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
         //Orientation *mOrientation;
-        //bool mIsSailUp;
+
+        // Flag that represents the state of the boat's sail
+        bool mIsSailUp;
+        // Vector that represents the direction of the force to apply to the boat (move elsewhere?)
+        //glm::vec3 mMoveDir;
         //float mSailMaxSpeed;
         //float mCurBoatRoll; i think this is going to change to a max roll
     };

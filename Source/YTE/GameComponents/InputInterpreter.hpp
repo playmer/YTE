@@ -30,14 +30,14 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-    YTEDeclareEvent(ToggleSailEvent);
+    YTEDeclareEvent(SailStateChanged);
 
-    class ToggleSailEvent : public Event
+    class SailStateChanged : public Event
     {
     public:
-        YTEDeclareType(ToggleSailEvent);
-        enum class States { sail_down, sail_up, num_states };
-        States SailState;
+        YTEDeclareType(SailStateChanged);
+        SailStateChanged(bool state) { SailUp = state; };
+        bool SailUp;
     };
 
     class InputInterpreter : public Component
@@ -46,14 +46,12 @@ namespace YTE
         YTEDeclareType(InputInterpreter);
         InputInterpreter(Composition *aOwner, Space *aSpace);
         void Initialize() override;
-
-        //definitely wrong
-        void Update(LogicUpdate *aEvent);
+        void CheckSticks(LogicUpdate *aEvent);
+        void CheckButtons(XboxButtonEvent *aEvent);
 
         //maybe the input focus is here (ie what state are we in, gameplay, ui, etc)
     private:
         XboxController *mGamepad;
-        //
     };
 } // End YTE namespace
 

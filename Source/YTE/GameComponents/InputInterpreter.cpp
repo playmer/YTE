@@ -13,12 +13,11 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-    YTEDefineEvent(ToggleSailEvent);
+    YTEDefineEvent(SailStateChanged);
 
-    YTEDefineType(ToggleSailEvent)
+    YTEDefineType(SailStateChanged)
     {
-        YTERegisterType(ToggleSailEvent);
-        //YTEBindField(&ToggleSailEvent::SailState, "SailState", PropertyBinding::Get);
+        YTERegisterType(SailStateChanged);
     }
 
     YTEDefineType(InputInterpreter)
@@ -33,24 +32,64 @@ namespace YTE
 
     void InputInterpreter::Initialize()
     {
-        //this doesnt seem right?
+        mOwner->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
+        mOwner->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::CheckButtons);
+
         mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
     }
-    
-    void InputInterpreter::Update(LogicUpdate *aEvent)
+/******************************************************************************/
+/*
+    Event Callbacks
+*/
+/******************************************************************************/
+    void InputInterpreter::CheckSticks(LogicUpdate *aEvent)
     {
         YTEUnusedArgument(aEvent);
 
-        ToggleSailEvent sailChanged;
-        if (mGamepad->IsButtonDown(YTE::Xbox_Buttons::DPAD_Down))
+        glm::vec2 LS = mGamepad->GetLeftStick();
+        glm::vec2 RS = mGamepad->GetRightStick();
+        // do some math here
+    }
+    
+    void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)
+    {
+        switch (aEvent->Button)
         {
-            sailChanged.SailState = ToggleSailEvent::States::sail_down;
+            case Xbox_Buttons::DPAD_Down:
+            {
+                SailStateChanged sailEvent(true);
+                mOwner->SendEvent(Events::SailStateChanged, &sailEvent);
+                break;
+            }
+            case Xbox_Buttons::DPAD_Up:
+            {
+                SailStateChanged sailEvent(false);
+                mOwner->SendEvent(Events::SailStateChanged, &sailEvent);
+                break;
+            }
+            case Xbox_Buttons::DPAD_Left:
+                break;
+            case Xbox_Buttons::DPAD_Right:
+                break;
+            case Xbox_Buttons::A:
+                break;
+            case Xbox_Buttons::B:
+                break;
+            case Xbox_Buttons::X:
+                break;
+            case Xbox_Buttons::Y:
+                break;
+            case Xbox_Buttons::Start:
+                break;
+            case Xbox_Buttons::LeftShoulder:
+                break;
+            case Xbox_Buttons::RightShoulder:
+                break;
+            case Xbox_Buttons::LeftStick:
+                break;
+            case Xbox_Buttons::RightStick:
+                break;
         }
-        else if (mGamepad->IsButtonDown(YTE::Xbox_Buttons::DPAD_Up))
-        {
-            sailChanged.SailState = ToggleSailEvent::States::sail_up;
-        }
-        mOwner->SendEvent(Events::ToggleSailEvent, &sailChanged);
     }
     
 } // End yte namespace

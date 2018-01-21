@@ -25,11 +25,52 @@ namespace YTE
     */
     void BoatController::Initialize()
     {
-        mOwner->YTERegister(Events::ToggleSailEvent, this, &BoatController::ChangeSailState);
+        // Event Registration
+        mOwner->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mOwner->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+    }
+/******************************************************************************/
+/*
+    Event Callbacks
+*/
+/******************************************************************************/
+    void BoatController::ChangeSail(SailStateChanged *aEvent)
+    {
+        mIsSailUp = aEvent->SailUp;
+        std::cout << mIsSailUp;
     }
 
-    void BoatController::ChangeSailState(ToggleSailEvent *aEvent)
+    void BoatController::Update(LogicUpdate *aEvent)
     {
-        YTEUnusedArgument(aEvent);
+        //float ForceMultiplier;
+        if (mIsSailUp)
+        {
+            //ForceMultiplier = 10;?
+        }
+        else
+        {
+            //ForceMultiplier = 1;?
+        }
+        //CalculateForce(ForceMultiplier);
+        //ApplyForce()
     }
+/******************************************************************************/
+/*
+    Helper Functions
+*/
+/******************************************************************************/
+    /*
+    void CalculateForce(float aForce)
+    {
+        // Takes the ForwardDir * aForce
+        // if mIsSailUp
+            // Adds in WindDir * WindForce (wherever these come from)
+        // mMoveVec = result
+    }
+
+    void ApplyForce()
+    {
+        // Boat.ApplyForce(mMoveVec)
+    }
+    */
 }//end yte namespace
