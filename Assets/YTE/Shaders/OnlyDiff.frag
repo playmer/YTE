@@ -67,7 +67,8 @@ layout (binding = 2) uniform UBOMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    vec2 mPadding;    // not used
+    int mIsEditorObject;
+    float mPadding; // unused
 } Material;
 
 // ========================
@@ -331,7 +332,11 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if (Lights.mActive < 0.5f)
+  if (Material.mIsEditorObject > 0)
+  {
+    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
+  }
+  else if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * inDiffuse;
   }

@@ -17,6 +17,8 @@ layout (binding = 2) uniform UBOMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
+    int mIsEditorObject;
+    float mPadding; // unused
 } Material;
 
 layout (binding = 3) uniform sampler2D diffuseSampler;
@@ -28,6 +30,13 @@ layout (location = 0) out vec4 outFragColor;
 
 void main()
 {
-  outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+  if (Material.mIsEditorObject > 0)
+  {
+    outFragColor = texture(diffuseSampler, inTextureCoordinates);
+  }
+  else
+  {
+    outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+  }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }

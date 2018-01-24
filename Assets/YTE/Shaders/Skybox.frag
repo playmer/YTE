@@ -64,7 +64,8 @@ layout (binding = 2) uniform UBOMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    vec2 mPadding;    // not used
+    int mIsEditorObject;
+    float mPadding; // unused
 } Material;
 
 
@@ -118,7 +119,14 @@ void main()
 
   vec2 skyUv = vec2(u, v);
 
-  outFragColor = texture(environmentMap, skyUv) * inDiffuse;
+  if (Material.mIsEditorObject > 0)
+  {
+    outFragColor = texture(environmentMap, skyUv);
+  }
+  else
+  {
+    outFragColor = texture(environmentMap, skyUv) * inDiffuse;
+  }
 
   //outFragColor = vec4(V, 1.0f);
 }

@@ -57,7 +57,8 @@ namespace YTE
     float mReflectivity = 1.0f;
     float mReflectiveIndex = 1.0f;
     float mBumpScaling = 1.0f;
-    glm::vec2 mPadding = glm::vec2(0.0f, 0.0f);
+    int mIsEditorObject = 0;
+    float mPadding = 0.0f;
   };
 
 
