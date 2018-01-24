@@ -87,6 +87,7 @@ namespace YTE
 
     if (mInstantiatedSkybox)
     {
+      mUBOModel.mDiffuseColor = mInstantiatedSkybox->GetUBOModelData().mDiffuseColor;
       mInstantiatedSkybox->UpdateUBOModel(mUBOModel);
     }
   }
@@ -235,6 +236,7 @@ namespace YTE
 
     mInstantiatedSkybox = mRenderer->CreateModel(view, mesh);
     CreateTransform();
+    mUBOModel.mDiffuseColor = mInstantiatedSkybox->GetUBOModelData().mDiffuseColor;
     mInstantiatedSkybox->UpdateUBOModel(mUBOModel);
   }
 }

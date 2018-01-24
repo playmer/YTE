@@ -24,6 +24,7 @@ namespace YTE
       TargetPoint, 
       CameraOrientation, 
       Flyby,
+      Gameplay,
       Unknown 
     };
 

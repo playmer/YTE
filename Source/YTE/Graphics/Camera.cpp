@@ -73,7 +73,7 @@ namespace YTE
   static std::vector<std::string> PopulateDropDownList(Component *aComponent) 
   { 
     YTEUnusedArgument(aComponent);
-    return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby" }; 
+    return { "TargetObject", "TargetPoint", "CameraOrientation", "Flyby", "Gameplay" }; 
   }
 
   YTEDefineType(Camera) 
@@ -544,6 +544,11 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
+    if (mType == CameraType::Gameplay && mEngine->IsEditor() == true)
+    {
+      return;
+    }
+
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)
     {
@@ -572,7 +577,8 @@ namespace YTE
     if ((false == (aCameraType != "TargetObject")) &&
       (false == (aCameraType != "TargetPoint")) &&
       (false == (aCameraType != "CameraOrientation")) &&
-      (false == (aCameraType != "Flyby")))
+      (false == (aCameraType != "Flyby")) &&
+      (false == (aCameraType != "Gameplay")))
     {
       return;
     }
@@ -582,7 +588,12 @@ namespace YTE
     std::string oldCameraType = mCameraType;
     mCameraType = aCameraType;
 
-    if (aCameraType == "TargetObject")
+
+    if (aCameraType == "Gameplay")
+    {
+      mType = CameraType::Gameplay;
+    }
+    else if (aCameraType == "TargetObject")
     {
       // validate we can be a target object
       if (nullptr == mTargetObject)

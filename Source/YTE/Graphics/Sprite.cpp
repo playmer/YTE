@@ -83,6 +83,7 @@ namespace YTE
 
     if (mInstantiatedSprite)
     {
+      mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
       mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     }
   }
@@ -161,6 +162,7 @@ namespace YTE
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
     CreateTransform();
+    mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
   }
 }

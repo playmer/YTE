@@ -55,6 +55,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
+    vec4 mDiffuseColor;
   } Model;
 
 
@@ -90,7 +91,8 @@ layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec4 outPosition;
 layout (location = 4) out vec3 outPositionWorld;
-layout (location = 5) out mat4 outViewMatrix;
+layout (location = 5) out mat4 outViewMatrix; // 5 - 8
+layout (location = 9) out vec4 outDiffuse;
 
 // ========================
 // Positional Output of Vertex
@@ -198,6 +200,7 @@ void main()
   outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
   outViewMatrix = View.mViewMatrix;
+  outDiffuse = Model.mDiffuseColor;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 

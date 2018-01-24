@@ -55,6 +55,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
+    vec4 mDiffuseColor;
   } Model;
 
 
@@ -87,6 +88,7 @@ layout (binding = 1) uniform UBOAnimation
 // Vertex Shader Outputs | Fragment Shader Inputs
 layout (location = 0) out vec3 outTextureCoordinates;
 layout (location = 1) out vec3 outEyeVector;
+layout (location = 2) out vec4 outDiffuse;
 
 // ========================
 // Positional Output of Vertex
@@ -118,6 +120,7 @@ void main()
   viewMatrix = transpose(viewMatrix);
 
   outEyeVector = eyePosition - worldPosition;
+  outDiffuse = Model.mDiffuseColor;
 
   outTextureCoordinates = inTextureCoordinates;
 
