@@ -37,6 +37,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
+    vec4 mDiffuseColor;
   } Model;
 #endif
 
@@ -53,6 +54,7 @@ layout (binding = 1) uniform UBOAnimation
 } Animation;
 
 layout (location = 0) out vec2 outTextureCoordinates;
+layout (location = 1) out vec4 outDiffuse;
 
 out gl_PerVertex 
 {
@@ -62,6 +64,7 @@ out gl_PerVertex
 void main() 
 {
   outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
+  outDiffuse = Model.mDiffuseColor;
 
   // Unsure if this needs to be vec3/mat3 here.
   //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);

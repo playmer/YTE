@@ -103,7 +103,8 @@ layout (location = 1) in vec2 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
 layout (location = 3) in vec4 inPosition;
 layout (location = 4) in vec3 inPositionWorld;
-layout (location = 5) in mat4 inViewMatrix;
+layout (location = 5) in mat4 inViewMatrix; // 5 - 8
+layout (location = 9) in vec4 inDiffuse;
 
 // ========================
 // Output of Fragment
@@ -148,7 +149,7 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 
   // diffuse
   float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture * inDiffuse;
   
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
@@ -178,7 +179,7 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
   
   // diffuse
   float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture;
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture * inDiffuse;
 
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
@@ -208,7 +209,7 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
 
   // diffuse
   float diffContribution = max(dot(aLightData.mNormalTexture, lightVec), 0.0f);
-  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffuseTexture;
+  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffuseTexture * inDiffuse;
 
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
@@ -332,7 +333,7 @@ void main()
 {
   if (Lights.mActive < 0.5f)
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
+    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * inDiffuse;
   }
   else
   {

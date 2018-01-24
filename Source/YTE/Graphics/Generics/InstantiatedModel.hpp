@@ -61,6 +61,11 @@ namespace YTE
       YTEUnusedArgument(aUBO);
     }
 
+    virtual UBOModel GetUBOModelData()
+    {
+      return mUBOModelData;
+    }
+
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////

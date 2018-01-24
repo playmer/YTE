@@ -27,6 +27,7 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -97,6 +98,7 @@ namespace YTE
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
     InitializeType<Sprite>();
+    InitializeType<TempDiffuseColoringComponent>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();

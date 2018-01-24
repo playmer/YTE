@@ -20,6 +20,7 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
@@ -64,6 +65,7 @@ namespace YTE
     helper.CreateComponentFactory<Model>();
     helper.CreateComponentFactory<Skybox>();
     helper.CreateComponentFactory<Animator>();
+    helper.CreateComponentFactory<TempDiffuseColoringComponent>();
 
     //helper.CreateComponentFactory<Collider>();
     helper.CreateComponentFactory<BoxCollider>();

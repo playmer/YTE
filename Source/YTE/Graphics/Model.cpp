@@ -169,6 +169,7 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
+      mUBOModel.mDiffuseColor = mInstantiatedModel->GetUBOModelData().mDiffuseColor;
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
@@ -280,6 +281,7 @@ namespace YTE
 
     if (mInstantiatedModel && mTransform)
     {
+      mUBOModel.mDiffuseColor = mInstantiatedModel->GetUBOModelData().mDiffuseColor;
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
 
