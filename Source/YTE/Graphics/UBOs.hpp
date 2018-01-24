@@ -40,7 +40,7 @@ namespace YTE
   struct UBOModel
   {
     glm::mat4 mModelMatrix;
-    glm::vec4 mDiffuseColor; // tempDiffuseColorComponent
+    glm::vec4 mDiffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); // tempDiffuseColorComponent
   };
 
   struct UBOMaterial

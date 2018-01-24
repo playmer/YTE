@@ -29,6 +29,18 @@ namespace YTE
     mDiffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
   }
 
+  TempDiffuseColoringComponent::~TempDiffuseColoringComponent()
+  {
+    if (mModel)
+    {
+      auto m = static_cast<VkInstantiatedModel*>(mModel->GetInstantiatedModel());
+      auto buff = m->GetUBOModelData();
+      buff.mDiffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+      m->UpdateUBOModel(buff);
+    }
+  }
+
+
   void TempDiffuseColoringComponent::Initialize()
   {
     mModel = mOwner->GetComponent<Model>();

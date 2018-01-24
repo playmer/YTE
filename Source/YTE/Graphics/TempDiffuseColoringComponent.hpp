@@ -16,6 +16,7 @@ namespace YTE
   public:
     YTEDeclareType(TempDiffuseColoringComponent);
     TempDiffuseColoringComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    ~TempDiffuseColoringComponent();
     void Initialize() override;
     void SetDiffuseColor(glm::vec3 aColor);
 
