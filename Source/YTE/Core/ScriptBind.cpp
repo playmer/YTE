@@ -18,6 +18,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/GameComponents/AudioTest.hpp"
+
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -70,6 +72,8 @@ namespace YTE
     InitializeType<Object>();
     InitializeType<Space>();
     InitializeType<TestComponent>();
+
+    InitializeType<AudioTest>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

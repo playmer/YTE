@@ -13,6 +13,8 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/GameComponents/AudioTest.hpp"
+
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -60,6 +62,8 @@ namespace YTE
     helper.CreateComponentFactory<WWiseListener>();
 
     helper.CreateComponentFactory<TestComponent>();
+
+    helper.CreateComponentFactory<AudioTest>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();

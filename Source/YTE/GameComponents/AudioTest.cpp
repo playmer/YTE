@@ -34,15 +34,15 @@ namespace YTE
 
         AudioTest::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-        YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "Sound")
+        YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")
             .AddAttribute<EditorProperty>()
-            .AddAttribute<Serializable>()
             .AddAttribute<DropDownStrings>(PopulateDropDownList);
     }
 
-    AudioTest::AudioTest(Composition *aOwner, Space *aSpace)
+    AudioTest::AudioTest(Composition *aOwner, Space *aSpace, RSValue *aProperties)
         : Component(aOwner, aSpace)
     {
+        YTEUnusedArgument(aProperties);
     }
 
     void AudioTest::Initialize()

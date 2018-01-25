@@ -27,19 +27,21 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/Utilities/Utilities.hpp"
+
 namespace YTE
 {
     class AudioTest : public Component
     {
     public:
         YTEDeclareType(AudioTest);
-        AudioTest(Composition *aOwner, Space *aSpace);
+        AudioTest(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
         void Play(KeyboardEvent *aEvent);
             // Getter for binding
         std::string GetSoundName() { return mSound; }
             // full disclosure i have no idea, bind property requires a setter for serializing
-        void SetSoundName() { return; }
+        void SetSoundName(std::string aName) { mSound = aName; }
     private:
         Keyboard *mKeyboard;
         std::string mSound;
