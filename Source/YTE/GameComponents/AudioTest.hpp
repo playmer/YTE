@@ -23,9 +23,8 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"
 
-#include "YTE/WWise/WWiseSystem.hpp"
-
 #include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/Orientation.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -45,6 +44,7 @@ namespace YTE
     private:
         Keyboard *mKeyboard;
         std::string mSound;
+        Component *mEmitter;
     };
 
 } // end yte namespace

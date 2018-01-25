@@ -9,7 +9,15 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+// TODO: find out why this breaks
+// keep this order of includes or it will break
 #include "AudioTest.hpp"
+
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
+
+
 
 namespace YTE
 {
@@ -20,8 +28,12 @@ namespace YTE
         
         for (auto i : banks)
         {
-            std::string str = i.first;
-            result.push_back(str);
+            //std::string str = i.second.mName;
+            auto events = i.second.mEvents;
+            for (auto j : events)
+            {
+                result.push_back(j.mName);
+            }
         }
         return result;
     }
@@ -30,9 +42,14 @@ namespace YTE
     {
         YTERegisterType(AudioTest);
 
-        std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+        std::vector<std::vector<Type*>> deps = 
+        { 
+            { Transform::GetStaticType() }, 
+            { WWiseEmitter::GetStaticType() }
+        };
 
         AudioTest::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
 
         YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")
             .AddAttribute<EditorProperty>()
@@ -47,15 +64,23 @@ namespace YTE
 
     void AudioTest::Initialize()
     {
-        mOwner->YTERegister(Events::KeyPress, this, &AudioTest::Play);
         mKeyboard = &mOwner->GetEngine()->GetWindow()->mKeyboard;
+        mEmitter = mOwner->GetComponent<WWiseEmitter>();
+        
+        Space *space = mOwner->GetSpace();
+        GraphicsView *view = space->GetComponent<GraphicsView>();
+        Window *window = view->GetWindow();
+
+        window->mKeyboard.YTERegister(Events::KeyPress, this, &AudioTest::Play);
     }
 
     void AudioTest::Play(KeyboardEvent *aEvent)
     {
         if (aEvent->Key == Keys::Space)
         {
-            //play the specified sound
+            std::cout << "SPACEW\n";
+            WWiseEmitter *emitter = (WWiseEmitter*)mEmitter;
+            emitter->PlayEvent(mSound);
         }
     }
 
