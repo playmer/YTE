@@ -329,15 +329,15 @@ namespace YTEditor
     /////////////////////////////////////////////////////////////////////////////
 
     // Get all compositions on the main session (should be levels)
-    YTE::CompositionMap * objMap = lvl->GetCompositions();
+    YTE::CompositionMap *objMap = lvl->GetCompositions();
 
     // Iterate through all the objects in the map / on the level
-    for (auto& cmp : *objMap)
+    for (auto cmp = objMap->begin(); cmp != objMap->end(); cmp++)
     {
       // Get the name of the object
-      YTE::String objName = cmp.second.get()->GetName();
+      YTE::String objName = cmp->second.get()->GetName();
 
-      YTE::Composition *engineObj = cmp.second.get();
+      YTE::Composition *engineObj = cmp->second.get();
 
       // temp hardcode to not add Gizmo or engineObj to object browser
       if (objName == "Gizmo" || engineObj->GetComponent<YTE::Camera>())
@@ -346,9 +346,9 @@ namespace YTEditor
       }
 
       // Store the name and composition pointer in the object browser
-      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp.second.get());
+      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get());
 
-      GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
+      GetObjectBrowser().LoadAllChildObjects(cmp->second.get(), topItem);
     }
 
     // if there are objects in the level
