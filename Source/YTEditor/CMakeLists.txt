@@ -39,8 +39,6 @@ set(YTEditorSource main.cpp
                    GameWindow/GameWindowEventFilter.cpp
                    GameWindow/GameToolbar.hpp
                    GameWindow/GameToolbar.cpp
-                   Gizmos/Axis.hpp
-                   Gizmos/Axis.cpp
                    Gizmos/Gizmo.hpp
                    Gizmos/Gizmo.cpp
                    Gizmos/GizmoToolbar.hpp

@@ -329,15 +329,15 @@ namespace YTEditor
     /////////////////////////////////////////////////////////////////////////////
 
     // Get all compositions on the main session (should be levels)
-    YTE::CompositionMap * objMap = lvl->GetCompositions();
+    YTE::CompositionMap *objMap = lvl->GetCompositions();
 
     // Iterate through all the objects in the map / on the level
-    for (auto& cmp : *objMap)
+    for (auto cmp = objMap->begin(); cmp != objMap->end(); cmp++)
     {
       // Get the name of the object
-      YTE::String objName = cmp.second.get()->GetName();
+      YTE::String objName = cmp->second.get()->GetName();
 
-      YTE::Composition *engineObj = cmp.second.get();
+      YTE::Composition *engineObj = cmp->second.get();
 
       // temp hardcode to not add Gizmo or engineObj to object browser
       if (objName == "Gizmo" || engineObj->GetComponent<YTE::Camera>())
@@ -346,9 +346,9 @@ namespace YTEditor
       }
 
       // Store the name and composition pointer in the object browser
-      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp.second.get());
+      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get());
 
-      GetObjectBrowser().LoadAllChildObjects(cmp.second.get(), topItem);
+      GetObjectBrowser().LoadAllChildObjects(cmp->second.get(), topItem);
     }
 
     // if there are objects in the level
@@ -477,7 +477,7 @@ namespace YTEditor
 
   Gizmo* MainWindow::GetGizmo()
   {
-    return mGizmo;
+    return mGizmo.get();
   }
 
   void MainWindow::keyPressEvent(QKeyEvent * aEvent)
@@ -502,6 +502,10 @@ namespace YTEditor
       else if (aEvent->key() == Qt::Key_S)
       {
         SaveCurrentLevel();
+      }
+      else if (aEvent->key() == Qt::Key_G)
+      {
+        GetGizmo()->RefreshAxesInPhysicsHandler();
       }
 
       if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
@@ -578,9 +582,9 @@ namespace YTEditor
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
     gizmo->SetRenderingWindow(yteWin);
 
-    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo", 
-                                                        "Gizmo", 
-                                                        glm::vec3(0.0f, 0.0f, 0.0f));
+    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo",
+      "Gizmo",
+      glm::vec3(0.0f, 0.0f, 0.0f));
     gizmo->SetMode(Gizmo::Select);
 
     if (gizmo->mGizmoObj->ShouldSerialize())
@@ -596,16 +600,15 @@ namespace YTEditor
     // get the window
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
-    mGizmo = new Gizmo(this);
+    mGizmo = std::make_unique<Gizmo>(this);
     mGizmo->SetRenderingWindow(yteWin);
 
-    return mGizmo;
+    return mGizmo.get();
   }
 
   void MainWindow::DeleteGizmo()
   {
-    delete mGizmo;
-    mGizmo = nullptr;
+    mGizmo.reset();
   }
 
   GizmoToolbar* MainWindow::GetGizmoToolbar()

@@ -5,7 +5,6 @@
 
 #include "YTE/Graphics/Model.hpp"
 
-#include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
@@ -18,7 +17,11 @@ namespace YTEditor
 {
 
   Gizmo::Gizmo(MainWindow * aMainWindow)
-    : mMainWindow(aMainWindow), mMode(Select), mFirstClickMousePos(glm::vec3())
+    : mMainWindow(aMainWindow)
+    , mMode(Select)
+    , mFirstClickMousePos(glm::vec3())
+    , mGizmoObj{ nullptr }
+    , mActiveAxis{ nullptr }
   {
   }
 
@@ -61,19 +64,19 @@ namespace YTEditor
 
         switch (dir)
         {
-        case Axis::Dir::X:
+        case Gizmo::Dir::X:
         {
           mesh = "Move_X.fbx";
           break;
         }
 
-        case Axis::Dir::Y:
+        case Gizmo::Dir::Y:
         {
           mesh = "Move_Y.fbx";
           break;
         }
 
-        case Axis::Dir::Z:
+        case Gizmo::Dir::Z:
         {
           mesh = "Move_Z.fbx";
           break;
@@ -101,19 +104,19 @@ namespace YTEditor
 
         switch (dir)
         {
-        case Axis::Dir::X:
+        case Gizmo::Dir::X:
         {
           mesh = "Scale_X.fbx";
           break;
         }
 
-        case Axis::Dir::Y:
+        case Gizmo::Dir::Y:
         {
           mesh = "Scale_Y.fbx";
           break;
         }
 
-        case Axis::Dir::Z:
+        case Gizmo::Dir::Z:
         {
           mesh = "Scale_Z.fbx";
           break;
@@ -141,19 +144,19 @@ namespace YTEditor
 
         switch (dir)
         {
-        case Axis::Dir::X:
+        case Gizmo::Dir::X:
         {
           mesh = "Rotate_X.fbx";
           break;
         }
 
-        case Axis::Dir::Y:
+        case Gizmo::Dir::Y:
         {
           mesh = "Rotate_Y.fbx";
           break;
         }
 
-        case Axis::Dir::Z:
+        case Gizmo::Dir::Z:
         {
           mesh = "Rotate_Z.fbx";
           break;
@@ -294,6 +297,37 @@ namespace YTEditor
     {
       glm::quat objRot = aEvent->WorldRotation;
       transform->SetWorldRotation(objRot);
+    }
+  }
+
+  void Gizmo::SnapToCurrentObject()
+  {
+    YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+    YTE::Transform *objTransform = currObj->GetComponent<YTE::Transform>();
+    YTE::Transform *gizTransform = mGizmoObj->GetComponent<YTE::Transform>();
+
+    if (mMode == Gizmo::Scale || mMode == Gizmo::Rotate)
+    {
+      glm::vec3 rot = objTransform->GetWorldRotationAsEuler();
+      gizTransform->SetWorldRotation(rot);
+    }
+
+    glm::vec3 pos = objTransform->GetWorldTranslation();
+    gizTransform->SetWorldTranslation(pos);
+
+
+  }
+
+  void Gizmo::RefreshAxesInPhysicsHandler()
+  {
+    YTE::CompositionMap *axes = mGizmoObj->GetCompositions();
+
+    for (auto a = axes->begin(); a != axes->end(); a++)
+    {
+      YTE::Composition *axis = a->second.get();
+
+      mMainWindow->GetPhysicsHandler().Remove(axis);
+      mMainWindow->GetPhysicsHandler().Add(axis);
     }
   }
 

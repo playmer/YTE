@@ -41,6 +41,7 @@ namespace YTEditor
     mEngineObject(aEngineObj),
     mEngineLevel(aEngineLevel)
   {
+    QSignalBlocker blocker(mObjectBrowser);
     setText(0, aItemName.c_str());
     setFlags(flags() | Qt::ItemIsEditable);
   }
@@ -54,6 +55,7 @@ namespace YTEditor
     mEngineObject(aEngineObj),
     mEngineLevel(aEngineLevel)
   {
+    QSignalBlocker blocker(mObjectBrowser);
     setText(0, aItemName.c_str());
     setFlags(flags() | Qt::ItemIsEditable);
   }

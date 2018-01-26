@@ -16,15 +16,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Composition.hpp"
 
-
 #include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/MenuBar/GameObjectMenu.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
-
 
 
 namespace YTEditor
@@ -240,6 +239,8 @@ namespace YTEditor
     modelComponent->SetMesh(meshName);
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
+
+    mMainWindow->GetGizmo()->SnapToCurrentObject();
 
     return obj;
   }

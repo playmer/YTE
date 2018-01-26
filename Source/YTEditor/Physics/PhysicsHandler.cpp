@@ -12,7 +12,6 @@
 #include "YTE/Physics/Transform.hpp"
 
 #include "YTEditor/Gizmos/Gizmo.hpp"
-#include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
 #include "YTEditor/Gizmos/Rotate.hpp"

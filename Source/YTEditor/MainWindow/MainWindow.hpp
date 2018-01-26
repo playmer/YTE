@@ -149,7 +149,7 @@ namespace YTEditor
 
     UndoRedo *mUndoRedo;
 
-    Gizmo *mGizmo;
+    std::unique_ptr<Gizmo> mGizmo;
     float mGizmoScaleFactor;
 
     // Cstor helper functions and main subwindow vars
