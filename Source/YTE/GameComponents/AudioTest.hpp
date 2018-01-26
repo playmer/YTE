@@ -39,11 +39,11 @@ namespace YTE
         void Play(KeyboardEvent *aEvent);
             // Getter for binding
         std::string GetSoundName() { return mSound; }
-            // full disclosure i have no idea, bind property requires a setter for serializing
-        void SetSoundName(std::string aName) { mSound = aName; }
+        void SetSoundName(std::string aName);
     private:
         Keyboard *mKeyboard;
         std::string mSound;
+        u64 mSoundId;
         Component *mEmitter;
     };
 

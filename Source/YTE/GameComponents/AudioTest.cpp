@@ -84,4 +84,24 @@ namespace YTE
         }
     }
 
+
+    void AudioTest::SetSoundName(std::string aName)
+    { 
+      auto banks = GetOwner()->GetEngine()->GetComponent<WWiseSystem>()->GetBanks();
+
+
+      for (auto &bank : banks)
+      {
+        for (auto &event : bank.second.mEvents)
+        {
+          if (event.mName == aName)
+          {
+            mSound = aName;
+            mSoundId = event.mId;
+            return;
+          }
+        }
+      }
+    }
+
 } // end yte namespace
