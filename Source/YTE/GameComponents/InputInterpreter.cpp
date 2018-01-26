@@ -25,9 +25,10 @@ namespace YTE
         YTERegisterType(InputInterpreter);
     }
 
-    InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace)
+    InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
         : Component(aOwner, aSpace)
     {
+        YTEUnusedArgument(aProperties);
     }
 
     void InputInterpreter::Initialize()

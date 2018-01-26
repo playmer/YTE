@@ -18,9 +18,10 @@ namespace YTE
         YTERegisterType(BoatController);
     }
     
-    BoatController::BoatController(Composition *aOwner, Space *aSpace)
+    BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
         : Component(aOwner, aSpace)
     {
+        YTEUnusedArgument(aProperties);
     }
     
     void BoatController::Initialize()

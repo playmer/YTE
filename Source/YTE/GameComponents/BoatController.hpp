@@ -33,7 +33,7 @@ namespace YTE
     public:
         //void LowerSail(); callback to lower the sail when we hear a lowersail event or smth
         YTEDeclareType(BoatController);
-        BoatController(Composition *aOwner, Space *aSpace);
+        BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
         void ChangeSail(SailStateChanged *aEvent);
         void Update(LogicUpdate *aEvent);

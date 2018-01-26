@@ -44,7 +44,7 @@ namespace YTE
     {
     public:
         YTEDeclareType(InputInterpreter);
-        InputInterpreter(Composition *aOwner, Space *aSpace);
+        InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
         void CheckSticks(LogicUpdate *aEvent);
         void CheckButtons(XboxButtonEvent *aEvent);
