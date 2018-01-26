@@ -15,6 +15,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MenuBar/EditMenu.hpp"
 
+#include "YTEditor/Gizmos/GizmoToolbar.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
+
 namespace YTEditor
 {
 
@@ -33,10 +36,19 @@ namespace YTEditor
     connect(redoAct, &QAction::triggered, this, &EditMenu::Redo);
     redoAct->setToolTip("Ctrl+Y");
 
+    QAction *refreshGizmoAct = new QAction("Refresh Gizmo");
+    addAction(refreshGizmoAct);
+    connect(refreshGizmoAct, &QAction::triggered, this, &EditMenu::RefreshGizmo);
+    refreshGizmoAct->setToolTip("Ctrl+R");
   }
 
   EditMenu::~EditMenu()
   {
+  }
+
+  void EditMenu::RefreshGizmo()
+  {
+    mMainWindow->GetGizmo()->RefreshAxesInPhysicsHandler();
   }
 
   void EditMenu::Undo()

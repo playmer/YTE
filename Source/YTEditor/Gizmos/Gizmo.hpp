@@ -39,6 +39,9 @@ namespace YTEditor
 
     void SelectedObjectTransformChanged(YTE::TransformChanged *aEvent);
 
+    // hack fix for bug
+    void RefreshAxesInPhysicsHandler();
+
   protected:
 
     MainWindow *mMainWindow;
@@ -57,6 +60,13 @@ namespace YTEditor
       Translate,
       Rotate,
       Scale
+    };
+
+    enum Dir
+    {
+      X,
+      Y,
+      Z
     };
 
   };

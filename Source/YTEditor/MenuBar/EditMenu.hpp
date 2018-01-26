@@ -33,6 +33,8 @@ namespace YTEditor
 
     MainWindow * mMainWindow;
 
+    void RefreshGizmo();
+
     void Undo();
     void Redo();
 

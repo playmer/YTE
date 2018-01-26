@@ -4,8 +4,8 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Rotate.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 
 namespace YTEditor
 {
@@ -18,7 +18,7 @@ namespace YTEditor
   }
 
   Rotate::Rotate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
-    : YTE::Component(aOwner, aSpace), mDir(Axis::X)
+    : YTE::Component(aOwner, aSpace), mDir(Gizmo::Dir::X)
   {
     DeserializeByType<Rotate*>(aProperties, this, Rotate::GetStaticType());
   }
@@ -92,7 +92,7 @@ namespace YTEditor
     float delta{0.0f};
     switch (mDir)
     {
-      case Axis::X:
+      case Gizmo::Dir::X:
       {
         // get the local x axis
         glm::vec3 localX(1, 0, 0);
@@ -126,7 +126,7 @@ namespace YTEditor
         break;
       }
     
-      case Axis::Y:
+      case Gizmo::Dir::Y:
       {
         // get the local y axis
         glm::vec3 localY(0, 1, 0);
@@ -160,7 +160,7 @@ namespace YTEditor
         break;
       }
     
-      case Axis::Z:
+      case Gizmo::Dir::Z:
       {
         // get the local z axis
         glm::vec3 localZ(0, 0, 1);
@@ -201,19 +201,19 @@ namespace YTEditor
 
     switch (mDir)
     {
-      case Axis::X:
+    case Gizmo::Dir::X:
       {
         localQ = YTE::AroundAxis({1, 0, 0}, delta);
         break;
       }
 
-      case Axis::Y:
+      case Gizmo::Dir::Y:
       {
         localQ = YTE::AroundAxis({0, 1, 0}, delta);
         break;
       }
 
-      case Axis::Z:
+      case Gizmo::Dir::Z:
       {
         localQ = YTE::AroundAxis({0, 0, 1}, delta);
         break;

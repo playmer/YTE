@@ -503,6 +503,10 @@ namespace YTEditor
       {
         SaveCurrentLevel();
       }
+      else if (aEvent->key() == Qt::Key_R)
+      {
+        GetGizmo()->RefreshAxesInPhysicsHandler();
+      }
 
       if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
       {

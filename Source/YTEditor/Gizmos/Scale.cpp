@@ -4,8 +4,8 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTEditor/Gizmos/Axis.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 
 namespace YTEditor
 {
@@ -18,7 +18,7 @@ namespace YTEditor
   }
 
   Scale::Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
-    : YTE::Component(aOwner, aSpace), mDir(Axis::X)
+    : YTE::Component(aOwner, aSpace), mDir(Gizmo::Dir::X)
   {
     DeserializeByType<Scale*>(aProperties, this, Scale::GetStaticType());
   }
@@ -38,7 +38,7 @@ namespace YTEditor
 
     switch (mDir)
     {
-    case Axis::X:
+    case Gizmo::Dir::X:
     {
       // get the local x axis
       glm::vec3 localX(1, 0, 0);
@@ -61,7 +61,7 @@ namespace YTEditor
       break;
     }
 
-    case Axis::Y:
+    case Gizmo::Dir::Y:
     {
       // get the local Y axis
       glm::vec3 localY(0, 1, 0);
@@ -84,7 +84,7 @@ namespace YTEditor
       break;
     }
 
-    case Axis::Z:
+    case Gizmo::Dir::Z:
     {
       // get the local Z axis
       glm::vec3 localZ(0, 0, 1);
