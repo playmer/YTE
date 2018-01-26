@@ -71,6 +71,7 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 {
   mat4 mProjectionMatrix;
   mat4 mViewMatrix;
+  vec4 mCameraPosition;
 } View;
 
 
@@ -108,25 +109,15 @@ void main()
   modelMatrix[3].y = 0.0f;
   modelMatrix[3].z = 0.0f;
 
-  vec3 worldPosition = (modelMatrix * vec4(inPosition, 1.0f)).xyz;
+  vec4 worldPosition = (modelMatrix * vec4(inPosition, 1.0f));
 
-  mat4 viewMatrix = transpose(View.mViewMatrix);
-  vec3 eyePosition = viewMatrix[3].xyz;
-  
-
-  viewMatrix[3].x = 0.0f;
-  viewMatrix[3].y = 0.0f;
-  viewMatrix[3].z = 0.0f;
-
-  viewMatrix = transpose(viewMatrix);
-
-  outEyeVector = eyePosition - worldPosition;
+  outEyeVector = (View.mCameraPosition - worldPosition).xyz;
   outDiffuse = Model.mDiffuseColor;
 
   outTextureCoordinates = inTextureCoordinates;
 
   gl_Position = View.mProjectionMatrix * 
-                viewMatrix             *
+                View.mViewMatrix       *
                 modelMatrix            *
                 vec4(inPosition, 1.0f);
 }

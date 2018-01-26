@@ -355,6 +355,9 @@ namespace YTE
         break;
       }
     }
+
+    view.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+
     return view;
   }
 

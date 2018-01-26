@@ -71,6 +71,7 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 {
   mat4 mProjectionMatrix;
   mat4 mViewMatrix;
+  vec4 mCameraPosition;
 } View;
 
 

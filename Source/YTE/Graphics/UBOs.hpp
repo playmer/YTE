@@ -35,6 +35,7 @@ namespace YTE
   {
     glm::mat4 mProjectionMatrix;
     glm::mat4 mViewMatrix;
+    glm::vec4 mCameraPosition;
   };
 
   struct UBOModel
