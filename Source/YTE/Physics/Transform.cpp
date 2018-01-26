@@ -166,7 +166,7 @@ namespace YTE
 
   glm::vec3 Transform::GetRotationAsEulerRadians() const
   {
-    return glm::radians(glm::eulerAngles(mRotation));
+    return glm::eulerAngles(mRotation);
   }
   
   ////////////////////////////////////////////////////////////////////////////

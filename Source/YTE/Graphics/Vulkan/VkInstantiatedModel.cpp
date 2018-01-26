@@ -64,6 +64,15 @@ namespace YTE
                                        nullptr,
                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
                                        allocator);
+      
+      //// create UBO Per Model buffer
+      //mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+      //                                         vk::BufferUsageFlagBits::eTransferDst |
+      //                                         vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                         vk::SharingMode::eExclusive,
+      //                                         nullptr,
+      //                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                         allocator);
     }
 
     // Create UBO Animation Buffer.
@@ -79,6 +88,14 @@ namespace YTE
     for (auto& submesh : mesh->mSubmeshes)
     {
       CreateDescriptorSet(submesh.second.get());
+
+      //mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+      //                                         vk::BufferUsageFlagBits::eTransferDst |
+      //                                         vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                         vk::SharingMode::eExclusive,
+      //                                         nullptr,
+      //                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                         allocator);
     }
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);

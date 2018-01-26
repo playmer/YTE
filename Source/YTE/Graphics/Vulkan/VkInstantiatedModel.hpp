@@ -47,6 +47,9 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
 
+    std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
+    std::vector<std::shared_ptr<vkhlf::Buffer>> mUBOSubmeshMaterials;
+
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
     

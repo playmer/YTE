@@ -56,6 +56,9 @@ namespace YTE
     glm::quat mForward;
     glm::quat mRight;
     glm::quat mUp;
+    glm::vec3 mForwardVector;
+    glm::vec3 mRightVector;
+    glm::vec3 mUpVector;
   };
 }
 

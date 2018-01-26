@@ -140,7 +140,7 @@ namespace YTE
     // setup parent transforms
     aiMatrix4x4 identity = aiMatrix4x4();
 
-    // recurrsive step
+    // recursive step
     VisitNodes(aScene->mRootNode, identity);
 
     mDefaultOffsets.mHasAnimation = 1.0f;
@@ -188,8 +188,6 @@ namespace YTE
       pColor);
 
     const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-    mName = aMesh->mName.C_Str();
 
     auto material = aScene->mMaterials[aMesh->mMaterialIndex];
 

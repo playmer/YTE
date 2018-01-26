@@ -126,8 +126,7 @@ namespace YTE
     VkShader* CreateShader(std::string &aShaderSetName,
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                            VkShaderDescriptions &aDescription,
-                           bool aCullBackFaces,
-                           std::string &aDefines);
+                           bool aCullBackFaces);
 
     std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
 

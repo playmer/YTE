@@ -72,15 +72,20 @@ namespace YTE
     const glm::vec3 rightReset(1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
 
-    auto mForwardVector = AroundAxis(forwardReset, 0.0f);
-    auto mRightVector = AroundAxis(rightReset, 0.0f);
-    auto mUpVector = AroundAxis(upReset, 0.0f);
+
+    auto forwardVector = AroundAxis(forwardReset, 0.0f);
+    auto rightVector = AroundAxis(rightReset, 0.0f);
+    auto upVector = AroundAxis(upReset, 0.0f);
 
     glm::quat rotation = aEvent->WorldRotation;
 
-    mForward = rotation * mForward;
-    mRight = rotation * mRight;
-    mUp = rotation * mUp;
+    mForwardVector = glm::rotate(rotation, forwardReset);
+    mRightVector = glm::rotate(rotation, rightReset);
+    mUpVector = glm::rotate(rotation, upReset);
+
+    mForward = rotation * forwardVector;
+    mRight = rotation * rightVector;
+    mUp = rotation * upVector;
 
     OrientationChanged newOrientation;
     newOrientation.Orientation = this;
@@ -110,16 +115,16 @@ namespace YTE
 
   glm::vec3 Orientation::GetForwardVector() const
   {
-    return glm::eulerAngles(mForward);
+    return mForwardVector;
   }
 
   glm::vec3 Orientation::GetRightVector() const
   {
-    return glm::eulerAngles(mRight);
+    return mRightVector;
   }
 
   glm::vec3 Orientation::GetUpVector() const
   {
-    return glm::eulerAngles(mUp);
+    return mUpVector;
   }
 }

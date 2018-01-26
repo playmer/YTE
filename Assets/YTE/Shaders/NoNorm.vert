@@ -67,7 +67,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
 
 // ========================
 // View Buffer
-layout (binding = 0) uniform UBOView
+layout (binding = UBO_VIEW_BINDING) uniform UBOView
 {
   mat4 mProjectionMatrix;
   mat4 mViewMatrix;
@@ -76,7 +76,7 @@ layout (binding = 0) uniform UBOView
 
 // ========================
 // Animation Buffer
-layout (binding = 1) uniform UBOAnimation
+layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
   bool mHasAnimations;
@@ -100,8 +100,6 @@ out gl_PerVertex
 {
     vec4 gl_Position;
 };
-
-
 
 
 

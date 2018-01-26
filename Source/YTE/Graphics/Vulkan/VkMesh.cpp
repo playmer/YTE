@@ -2,6 +2,7 @@
 // Author: Andrew Griffin
 // YTE - Graphics - Vulkan
 ///////////////////
+#include "fmt/format.h"
 
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
@@ -135,6 +136,11 @@ namespace YTE
 
   void VkSubmesh::Create()
   {
+    // Shader Descriptions
+    // TODO (Josh): We should be reflecting these.
+    VkShaderDescriptions descriptions;
+
+
     auto device = mSurface->GetDevice();
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
@@ -167,22 +173,23 @@ namespace YTE
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
     // Load Textures
-    u32 samplers{ 0 };
+    size_t samplers{ 0 };
+    std::array<const char *, 3> samplerTypes;
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
       mDiffuseTexture = mSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
-      ++samplers;
+      samplerTypes[samplers++] = "DIFFUSE";
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
       mSpecularTexture = mSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
-      ++samplers;
+      samplerTypes[samplers++] = "SPECULAR";
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
       mNormalTexture = mSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
-      ++samplers;
+      samplerTypes[samplers++] = "NORMAL";
     }
 
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
@@ -193,28 +200,48 @@ namespace YTE
     dslbs.emplace_back(binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
+      nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
     ++uniformBuffers;
 
     // Animation (Bone Array) Buffer for Vertex shader.
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
+      nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
     ++uniformBuffers;
 
     // Material Buffer for Fragment shader.
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
+      nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_MATERIAL_BINDING {}", binding));
     ++uniformBuffers;
+
+    //// Model Material Buffer for Fragment shader.
+    //dslbs.emplace_back(++binding,
+    //                   vk::DescriptorType::eUniformBuffer,
+    //                   vk::ShaderStageFlagBits::eFragment,
+    //                   nullptr);
+    //descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
+    //++uniformBuffers;
+    //
+    //// Submesh Material Buffer for Fragment shader.
+    //dslbs.emplace_back(++binding,
+    //                   vk::DescriptorType::eUniformBuffer,
+    //                   vk::ShaderStageFlagBits::eFragment,
+    //                   nullptr);
+    //descriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
+    //++uniformBuffers;
 
     // Lights Buffer for Fragment shader.
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
+      nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
     ++uniformBuffers;
 
     // Illumination Buffer for Fragment shader.
@@ -222,6 +249,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
     ++uniformBuffers;
 
 
@@ -229,17 +257,14 @@ namespace YTE
     //   Diffuse
     //   Specular
     //   Normal
-    for (u32 i = 0; i < samplers; ++i)
+    for (size_t i = 0; i < samplers; ++i)
     {
       dslbs.emplace_back(++binding,
                          vk::DescriptorType::eCombinedImageSampler,
                          vk::ShaderStageFlagBits::eFragment,
                          nullptr);
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
     }
-
-    // Shader Descriptions
-    // TODO (Josh): We should be reflecting these.
-    VkShaderDescriptions descriptions;
     descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
     descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
     descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
@@ -253,9 +278,6 @@ namespace YTE
     descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
     descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
 
-    // Defines needed for shader compilation.
-    std::string defines;
-
     if (mMesh->GetInstanced())
     {
       // Adding the Instance Vertex information
@@ -266,7 +288,7 @@ namespace YTE
       descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
 
       // If we're instanced, we must tell the shaders.
-      defines = "#define INSTANCING\n";
+      descriptions.AddPreludeLine("#define INSTANCING");
     }
     else
     {
@@ -280,9 +302,7 @@ namespace YTE
       ++uniformBuffers;
 
       // We need to tell the shaders where to find the UBOModel.
-      defines = "#define UBO_MODEL_BINDING ";
-      defines += std::to_string(binding);
-      defines += "\n";
+      descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
     }
 
     // Create the descriptor set and pipeline layouts.
@@ -290,7 +310,7 @@ namespace YTE
 
     if (0 != samplers)
     {
-      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, samplers);
+      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(samplers));
     }
 
     mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
@@ -302,7 +322,6 @@ namespace YTE
       // Update relevant members, then load.
       mShader->mDescriptions = descriptions;
       mShader->mPipelineLayout = pipelineLayout;
-      mShader->mDefines = defines;
       mShader->Load();
     }
     else
@@ -311,8 +330,7 @@ namespace YTE
       mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
                                        pipelineLayout,
                                        descriptions,
-                                       mSubmesh->mCullBackFaces,
-                                       defines);
+                                       mSubmesh->mCullBackFaces);
     }
   }
 
