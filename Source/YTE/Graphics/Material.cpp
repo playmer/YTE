@@ -1,5 +1,6 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Material.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE
 {
@@ -43,10 +44,14 @@ namespace YTE
 
     std::vector<std::pair<YTE::Object*, std::string>> materials;
 
-    //for (auto &materialIt : self->mSubmeshMaterials)
-    //{
-    //  materials.emplace_back(std::make_pair(materialIt.second.get(), materialIt.first));
-    //}
+    for (auto &materialIt : self->mSubmeshMaterials)
+    {
+      std::string name = materialIt->GetSubmesh() ? 
+                          materialIt->GetSubmesh()->mMaterialName :
+                          "";
+
+      materials.emplace_back(std::make_pair(materialIt.get(), name));
+    }
 
     return materials;
   }

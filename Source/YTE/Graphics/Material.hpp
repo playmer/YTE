@@ -126,11 +126,15 @@ namespace YTE
     int       GetIsEditorObject() { return mMaterial.mIsEditorObject; }
     float     GetPadding() { return mMaterial.mPadding; }
 
-    private:
+
+    Submesh* GetSubmesh() { return mSubMesh; }
+  private:
     UBOMaterial mMaterial;
     std::string mDiffuseTexture;
     std::string mSpecularTexture;
     std::string mNormalTexture;
+
+    Submesh *mSubMesh;
   };
 
 
@@ -138,6 +142,8 @@ namespace YTE
   {
   public:
     YTEDeclareType(Material);
+    Material(Material&) = delete;
+
     Material(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~Material() override;
 
@@ -150,7 +156,7 @@ namespace YTE
     Model *mModel;
 
     MaterialRepresentation mModelMaterial;
-    //std::vector<std::unique_ptr<MaterialRepresentation>> mSubmeshMaterials;
+    std::vector<std::unique_ptr<MaterialRepresentation>> mSubmeshMaterials;
   };
 }
 
