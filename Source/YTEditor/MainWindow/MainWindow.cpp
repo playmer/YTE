@@ -503,7 +503,7 @@ namespace YTEditor
       {
         SaveCurrentLevel();
       }
-      else if (aEvent->key() == Qt::Key_R)
+      else if (aEvent->key() == Qt::Key_G)
       {
         GetGizmo()->RefreshAxesInPhysicsHandler();
       }
