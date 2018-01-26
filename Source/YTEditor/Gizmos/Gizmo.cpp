@@ -300,6 +300,24 @@ namespace YTEditor
     }
   }
 
+  void Gizmo::SnapToCurrentObject()
+  {
+    YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
+    YTE::Transform *objTransform = currObj->GetComponent<YTE::Transform>();
+    YTE::Transform *gizTransform = mGizmoObj->GetComponent<YTE::Transform>();
+
+    if (mMode == Gizmo::Scale || mMode == Gizmo::Rotate)
+    {
+      glm::vec3 rot = objTransform->GetWorldRotationAsEuler();
+      gizTransform->SetWorldRotation(rot);
+    }
+
+    glm::vec3 pos = objTransform->GetWorldTranslation();
+    gizTransform->SetWorldTranslation(pos);
+
+
+  }
+
   void Gizmo::RefreshAxesInPhysicsHandler()
   {
     YTE::CompositionMap *axes = mGizmoObj->GetCompositions();

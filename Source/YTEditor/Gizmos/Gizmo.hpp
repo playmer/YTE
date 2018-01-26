@@ -39,6 +39,8 @@ namespace YTEditor
 
     void SelectedObjectTransformChanged(YTE::TransformChanged *aEvent);
 
+    void SnapToCurrentObject();
+
     // hack fix for bug
     void RefreshAxesInPhysicsHandler();
 

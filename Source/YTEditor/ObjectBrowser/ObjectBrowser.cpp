@@ -220,7 +220,6 @@ namespace YTEditor
 
         matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
         matViewer->SetMaterialsList(&submeshes);
-        
       }
       else
       {
@@ -235,15 +234,11 @@ namespace YTEditor
 
       if (currTransform)
       {
-        // set the gizmo to the same position as the current object
-        glm::vec3 pos = currTransform->GetWorldTranslation();
-
         Gizmo *giz = mMainWindow->GetGizmo();
 
         if (giz)
         {
-          YTE::Transform *gizmoTransform = giz->mGizmoObj->GetComponent<YTE::Transform>();
-          gizmoTransform->SetWorldTranslation(pos);
+          giz->SnapToCurrentObject();
         }
       }
 
