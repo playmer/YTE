@@ -99,6 +99,15 @@ namespace YTE
     Create();
   }
 
+  static glm::vec3 GetDirectionFromTransform(Transform *aTransform)
+  {
+    glm::quat rotation = aTransform->GetWorldRotation();
+
+    glm::vec3 forward{ 0.0, -1.0, 0.0f };
+
+    return rotation * forward;
+  }
+
 
 
   void Light::TransformUpdate(TransformChanged* aEvent)
@@ -108,12 +117,12 @@ namespace YTE
     if (mInstantiatedLight)
     {
       mInstantiatedLight->SetPosition(mTransform->GetTranslation());
-      mInstantiatedLight->SetDirection(mTransform->GetRotationAsEulerRadians());
+      mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));
     }
     else
     {
       mLightTemp.mPosition = mTransform->GetTranslation();
-      mLightTemp.mDirection = glm::vec4(mTransform->GetRotationAsEulerRadians(), 0.0f);
+      mLightTemp.mDirection = glm::vec4(GetDirectionFromTransform(mTransform), 0.0f);
       mUseTemp = true;
     }
   }
@@ -129,13 +138,13 @@ namespace YTE
       mEngine->YTEDeregister(Events::LogicUpdate, this, &Light::Update);
       if (mInstantiatedLight)
       {
-        mInstantiatedLight->SetDirection(mTransform->GetRotationAsEulerRadians());
+        mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));
         mInstantiatedLight->SetPosition(mTransform->GetTranslation());
       }
       else
       {
         mLightTemp.mPosition = mTransform->GetTranslation();
-        mLightTemp.mDirection = glm::vec4(mTransform->GetRotationAsEulerRadians(), 0.0f);
+        mLightTemp.mDirection = glm::vec4(GetDirectionFromTransform(mTransform), 0.0f);
         mUseTemp = true;
       }
       mSetTransform = true;
