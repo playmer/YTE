@@ -17,7 +17,11 @@ namespace YTEditor
 {
 
   Gizmo::Gizmo(MainWindow * aMainWindow)
-    : mMainWindow(aMainWindow), mMode(Select), mFirstClickMousePos(glm::vec3())
+    : mMainWindow(aMainWindow)
+    , mMode(Select)
+    , mFirstClickMousePos(glm::vec3())
+    , mGizmoObj{ nullptr }
+    , mActiveAxis{ nullptr }
   {
   }
 

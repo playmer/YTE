@@ -477,7 +477,7 @@ namespace YTEditor
 
   Gizmo* MainWindow::GetGizmo()
   {
-    return mGizmo;
+    return mGizmo.get();
   }
 
   void MainWindow::keyPressEvent(QKeyEvent * aEvent)
@@ -582,9 +582,9 @@ namespace YTEditor
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
     gizmo->SetRenderingWindow(yteWin);
 
-    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo", 
-                                                        "Gizmo", 
-                                                        glm::vec3(0.0f, 0.0f, 0.0f));
+    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo",
+      "Gizmo",
+      glm::vec3(0.0f, 0.0f, 0.0f));
     gizmo->SetMode(Gizmo::Select);
 
     if (gizmo->mGizmoObj->ShouldSerialize())
@@ -600,16 +600,15 @@ namespace YTEditor
     // get the window
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
-    mGizmo = new Gizmo(this);
+    mGizmo = std::make_unique<Gizmo>(this);
     mGizmo->SetRenderingWindow(yteWin);
 
-    return mGizmo;
+    return mGizmo.get();
   }
 
   void MainWindow::DeleteGizmo()
   {
-    delete mGizmo;
-    mGizmo = nullptr;
+    mGizmo.reset();
   }
 
   GizmoToolbar* MainWindow::GetGizmoToolbar()
