@@ -29,6 +29,7 @@ namespace YTE
   private:
     Model * mModel;
     glm::vec3 mDiffuseColor;
+    bool update;
   };
 
 }

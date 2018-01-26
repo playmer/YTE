@@ -217,6 +217,11 @@ namespace YTE
       return;
     }
 
+    if (!mInstantiatedModel)
+    {
+      return;
+    }
+
     if (aName == "Standard")
     {
       mShadingName = "Standard";
