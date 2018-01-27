@@ -1,4 +1,3 @@
-add_subdirectory(Bullet)
 add_subdirectory(crunch)
 add_subdirectory(fmt)
 add_subdirectory(LuaJIT)
@@ -19,6 +18,21 @@ target_include_directories(assimp PUBLIC
 
 target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_options(assimp PRIVATE /bigobj)
+
+
+# Turn off/configure various parts of bullet3.
+OPTION(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
+OPTION(BUILD_UNIT_TESTS "Build Unit Tests"	OFF)
+OPTION(USE_GRAPHICAL_BENCHMARK "Use Graphical Benchmark" OFF)
+OPTION(BUILD_BULLET2_DEMOS "Set when you want to build the Bullet 2 demos" OFF)
+OPTION(BUILD_EXTRAS "Set when you want to build the extras" OFF)
+OPTION(INSTALL_LIBS "Set when you want to install libraries" OFF)
+OPTION(BUILD_CPU_DEMOS "Build original Bullet CPU examples" OFF)
+OPTION(BUILD_ENET "Set when you want to build apps with enet UDP networking support" OFF)
+OPTION(BUILD_CLSOCKET "Set when you want to build apps with enet TCP networking support" OFF)
+OPTION(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC Runtime Library DLL (/MD or /MDd)" ON)
+
+add_subdirectory(bullet3)
 
 # Turn off/configure various parts of VkHLF.
 set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
@@ -42,7 +56,17 @@ set_target_properties(uninstall   PROPERTIES FOLDER "Dependencies/assimp")
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "Dependencies/assimp") 
 set_target_properties(zlibstatic  PROPERTIES FOLDER "Dependencies/assimp") 
 set_target_properties(zlib        PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(Bullet      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(Bullet2FileLoader     PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Collision      PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Common         PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Dynamics       PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Geometry       PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3OpenCL_clew    PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletCollision       PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletDynamics        PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletInverseDynamics PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletSoftBody        PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(LinearMath            PROPERTIES FOLDER "Dependencies/bullet3") 
 set_target_properties(crunch      PROPERTIES FOLDER "Dependencies") 
 set_target_properties(fmt         PROPERTIES FOLDER "Dependencies") 
 set_target_properties(LuaJIT      PROPERTIES FOLDER "Dependencies") 
@@ -57,7 +81,17 @@ set_target_properties(HLSL        PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
 
 # Turn the warnings off on our dependencies.
 target_compile_options(assimp      PRIVATE /W0)
-target_compile_options(Bullet      PRIVATE /W0)
+target_compile_options(Bullet2FileLoader     PRIVATE /W0) 
+target_compile_options(Bullet3Collision      PRIVATE /W0) 
+target_compile_options(Bullet3Common         PRIVATE /W0) 
+target_compile_options(Bullet3Dynamics       PRIVATE /W0) 
+target_compile_options(Bullet3Geometry       PRIVATE /W0) 
+target_compile_options(Bullet3OpenCL_clew    PRIVATE /W0) 
+target_compile_options(BulletCollision       PRIVATE /W0) 
+target_compile_options(BulletDynamics        PRIVATE /W0) 
+target_compile_options(BulletInverseDynamics PRIVATE /W0) 
+target_compile_options(BulletSoftBody        PRIVATE /W0) 
+target_compile_options(LinearMath            PRIVATE /W0) 
 target_compile_options(crunch      PRIVATE /W0)
 target_compile_options(fmt         PRIVATE /W0)
 target_compile_options(LuaJIT      PRIVATE /W0)
@@ -71,7 +105,7 @@ target_compile_options(SPVRemapper PRIVATE /W0)
 target_compile_options(HLSL        PRIVATE /W0)
 
 set_target_properties(assimp
-                      Bullet
+                      #bullet3
                       crunch
                       fmt
                       LuaJIT

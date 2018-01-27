@@ -9,8 +9,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "Bullet/btBulletCollisionCommon.h"
-#include "Bullet/BulletCollision/CollisionDispatch/btCollisionObject.h"
+#include "btBulletCollisionCommon.h"
+#include "BulletCollision/CollisionDispatch/btCollisionObject.h"
 
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/CollisionBody.hpp"

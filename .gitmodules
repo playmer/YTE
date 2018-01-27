@@ -13,3 +13,6 @@
 [submodule "Dependencies/assimp"]
 	path = Dependencies/assimp
 	url = https://github.com/playmer/assimp.git
+[submodule "Dependencies/bullet3"]
+	path = Dependencies/bullet3
+	url = https://github.com/playmer/bullet3.git

@@ -1,5 +1,5 @@
-#include "Bullet/btBulletCollisionCommon.h"
-#include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "btBulletCollisionCommon.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "YTE/Core/Space.hpp"
 #include "YTE/Graphics/Camera.hpp"

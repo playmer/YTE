@@ -11,7 +11,7 @@
 #ifndef YTE_Physics_DebugDraw_hpp
 #define YTE_Physics_DebugDraw_hpp
 
-#include "Bullet/LinearMath/btIDebugDraw.h"
+#include "LinearMath/btIDebugDraw.h"
 
 #include "YTE/Meta/Type.hpp"
 
