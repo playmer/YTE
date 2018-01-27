@@ -58,6 +58,7 @@ namespace YTE
     float mMass;
     bool mStatic;
     bool mIsInitialized;
+    bool mKinematic;
 
     inline void SetVelocityProperty(const glm::vec3& aVelocity) { SetVelocity(aVelocity); };
     inline void SetMassProperty(float aMass) { SetMass(aMass); };

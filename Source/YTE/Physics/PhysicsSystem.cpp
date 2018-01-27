@@ -79,7 +79,7 @@ namespace YTE
                                                                mSolver.get(),
                                                                mCollisionConfiguration.get());
       
-    mDynamicsWorld->setGravity(btVector3(0, -10, 0));
+    mDynamicsWorld->setGravity(OurVec3ToBt(mGravityAcceleration));
   }
 
 
