@@ -45,6 +45,8 @@ namespace YTE
     YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
     YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
     YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
+    YTEBindProperty(&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity, "Gravity")
+      .AddAttribute<EditorProperty>();
   }
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -220,4 +222,17 @@ namespace YTE
 
     return info;
   }
+
+  glm::vec3 PhysicsSystem::GetGravity()
+  {
+    return mGravity;
+  }
+
+  void PhysicsSystem::SetGravity(glm::vec3 aVector)
+  {
+    mGravity = aVector;
+    auto newVec = OurVec3ToBt(aVector);
+    mDynamicsWorld->setGravity(newVec);
+  };
+
 } // namespace YTE

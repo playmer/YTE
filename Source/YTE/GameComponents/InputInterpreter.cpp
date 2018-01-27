@@ -35,7 +35,7 @@ namespace YTE
     {
         mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
         mContext = InputContext::Sailing;
-        mGamepad->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
+        mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
         mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::CheckButtons);
     }
 /******************************************************************************/
@@ -49,13 +49,11 @@ namespace YTE
 
         glm::vec2 LS = mGamepad->GetLeftStick();
         glm::vec2 RS = mGamepad->GetRightStick();
-        std::cout << LS.g << "  " << LS.r << "  " << LS.s << "  " << LS.t << "  " << LS.x << "  " << LS.y << std::endl;
         // do some math here
     }
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)
     {
-        std::cout << "XBOX EVENT";
         switch (mContext) {
         case InputContext::Sailing:
             switch (aEvent->Button) {
