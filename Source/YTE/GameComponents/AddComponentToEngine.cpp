@@ -23,7 +23,8 @@ namespace YTE
     : Component(aOwner, aSpace)
   {
     YTEUnusedArgument(aProperties);
-    mOwner->GetEngine()->AddComponent<InputInterpreter>();
+    auto inputInterpreter = mOwner->GetEngine()->AddComponent<InputInterpreter>();
+    inputInterpreter->Initialize();
   }
   /*
   void AddComponentToEngine::Initialize()

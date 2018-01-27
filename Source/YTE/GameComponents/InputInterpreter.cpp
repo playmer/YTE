@@ -35,7 +35,8 @@ namespace YTE
     {
         mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
         mContext = InputContext::Sailing;
-        mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
+        //mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
+        //auto space = mOwner->GetEngine()->GetSpace();
         mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::CheckButtons);
     }
 /******************************************************************************/
