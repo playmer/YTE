@@ -37,8 +37,8 @@ namespace YTE
     void BoatController::Initialize()
     {
         // Event Registration
-        mOwner->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-        mOwner->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+        mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
         // Member Init
         mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
     }

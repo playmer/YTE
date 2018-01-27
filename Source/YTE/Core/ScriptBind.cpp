@@ -21,6 +21,7 @@
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/GameComponents/AddComponentToEngine.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -78,6 +79,7 @@ namespace YTE
     InitializeType<AudioTest>();
     InitializeType<BoatController>();
     InitializeType<InputInterpreter>();
+    InitializeType<AddComponentToEngine>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();
