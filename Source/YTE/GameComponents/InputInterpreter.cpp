@@ -52,6 +52,7 @@ namespace YTE
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)
     {
+        std::cout << "XBOX EVENT";
         switch (mContext) {
         case InputContext::Sailing:
             switch (aEvent->Button) {
