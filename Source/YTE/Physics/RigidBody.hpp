@@ -46,10 +46,14 @@ namespace YTE
     void SetMass(float aMass);
     float GetMass() const;
 
+    void SetGravity(glm::vec3 aAcceleration);
+    glm::vec3 GetGravity();
+
   private:
     UniquePointer<btRigidBody> mRigidBody;
     UniquePointer<MotionState> mMotionState;
 
+    glm::vec3 mGravityAcceleration;
     glm::vec3 mVelocity;
     float mMass;
     bool mStatic;

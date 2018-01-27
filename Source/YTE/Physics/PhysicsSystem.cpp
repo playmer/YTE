@@ -46,7 +46,8 @@ namespace YTE
     YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
     YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
     YTEBindProperty(&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity, "Gravity")
-      .AddAttribute<EditorProperty>();
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -155,6 +156,7 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
     // TODO(if collision is fucked): mDynamicsWorld->updateAABBs 
+    mDynamicsWorld->updateAabbs();
     mDynamicsWorld->stepSimulation(aEvent->Dt, 10);
 
     DispatchCollisionEvents();
@@ -225,14 +227,14 @@ namespace YTE
 
   glm::vec3 PhysicsSystem::GetGravity()
   {
-    return mGravity;
+    return mGravityAcceleration;
   }
 
-  void PhysicsSystem::SetGravity(glm::vec3 aVector)
+  void PhysicsSystem::SetGravity(glm::vec3 aAcceleration)
   {
-    mGravity = aVector;
-    auto newVec = OurVec3ToBt(aVector);
-    mDynamicsWorld->setGravity(newVec);
+    mGravityAcceleration = aAcceleration;
+    btVector3 accel = OurVec3ToBt(aAcceleration);
+    mDynamicsWorld->setGravity(accel);
   };
 
 } // namespace YTE

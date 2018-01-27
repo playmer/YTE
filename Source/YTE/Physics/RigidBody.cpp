@@ -49,6 +49,11 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
+    YTEBindProperty(&RigidBody::GetGravity, &RigidBody::SetGravity, "Gravity")
+      .SetDocumentation("This is the acceleration due to gravity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
     YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
       .Description() = "Applies an impulse to the RigidBody.";
 
@@ -223,5 +228,20 @@ namespace YTE
   float RigidBody::GetMass() const
   {
     return mMass;
+  }
+
+  void RigidBody::SetGravity(glm::vec3 aAcceleration)
+  {
+    mGravityAcceleration = aAcceleration;
+    btVector3 accel = OurVec3ToBt(aAcceleration);
+    if (mRigidBody)
+    {
+      mRigidBody->setGravity(accel);
+    }
+  }
+
+  glm::vec3 RigidBody::GetGravity()
+  {
+    return mGravityAcceleration;
   }
 }
