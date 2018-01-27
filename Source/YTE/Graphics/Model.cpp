@@ -176,7 +176,7 @@ namespace YTE
 
 
 
-  void Model::SetMesh(std::string aName)
+  void Model::SetMesh(std::string &aName)
   {
     if (aName.empty() || aName == mMeshName)
     {

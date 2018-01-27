@@ -52,7 +52,7 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    void SetMesh(std::string aName);
+    void SetMesh(std::string &aName);
 
     void SetMeshName(std::string aName)
     {

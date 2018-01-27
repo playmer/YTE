@@ -25,6 +25,84 @@ namespace YTEditor
   {
   }
 
+  static std::string cNone = "None";
+
+  static std::string cTranslateX{ "Move_X.fbx" };
+  static std::string cTranslateY{ "Move_Y.fbx" };
+  static std::string cTranslateZ{ "Move_Z.fbx" };
+
+  static std::string cScaleX{ "Scale_X.fbx" };
+  static std::string cScaleY{ "Scale_Y.fbx" };
+  static std::string cScaleZ{ "Scale_Z.fbx" };
+
+  static std::string cRotateX{ "Rotate_X.fbx" };
+  static std::string cRotateY{ "Rotate_Y.fbx" };
+  static std::string cRotateZ{ "Rotate_Z.fbx" };
+
+  static std::string& TranslateMesh(Gizmo::Dir aDirection)
+  {
+    switch (aDirection)
+    {
+      case Gizmo::Dir::X:
+      {
+        return cTranslateX;
+      }
+      case Gizmo::Dir::Y:
+      {
+        return cTranslateY;
+      }
+      case Gizmo::Dir::Z:
+      {
+        return cTranslateZ;
+      }
+    }
+
+    return cNone;
+  }
+
+  
+  static std::string& ScaleMesh(Gizmo::Dir aDirection)
+  {
+    switch (aDirection)
+    {
+      case Gizmo::Dir::X:
+      {
+        return cScaleX;
+      }
+      case Gizmo::Dir::Y:
+      {
+        return cScaleY;
+      }
+      case Gizmo::Dir::Z:
+      {
+        return cScaleZ;
+      }
+    }
+
+    return cNone;
+  }
+  
+  static std::string& RotateMesh(Gizmo::Dir aDirection)
+  {
+    switch (aDirection)
+    {
+      case Gizmo::Dir::X:
+      {
+        return cRotateX;
+      }
+      case Gizmo::Dir::Y:
+      {
+        return cRotateY;
+      }
+      case Gizmo::Dir::Z:
+      {
+        return cRotateZ;
+      }
+    }
+
+    return cNone;
+  }
+
   void Gizmo::SetMode(int aMode)
   {
     YTE::Composition *currObj = mMainWindow->GetObjectBrowser().GetCurrentObject();
@@ -34,143 +112,60 @@ namespace YTEditor
       aMode = Gizmo::Select;
     }
 
-    YTE::CompositionMap *axes = this->mGizmoObj->GetCompositions();
+    YTE::CompositionMap &axes = *this->mGizmoObj->GetCompositions();
 
-    switch (aMode)
-    {
-    case Gizmo::Select:
-    {
-      mMode = Gizmo::Select;
+    auto gizmoTransform = mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>();
 
-      for (auto a = axes->begin(); a != axes->end(); ++a)
+    for (auto &axis : axes)
+    {
+      auto model = axis.second->GetComponent<YTE::Model>();
+
+      switch (aMode)
       {
-        std::string mesh = "None";
+        case Gizmo::Select:
+        {
+          mMode = Gizmo::Select;
+          axis.second->GetComponent<YTE::Model>()->SetMesh(cNone);
+          break;
+        }
+        case Gizmo::Translate:
+        {
+          mMode = Gizmo::Translate;
+          auto dir = axis.second->GetComponent<YTEditor::Translate>()->GetDirection();
 
-        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
+          model->SetMesh(TranslateMesh(dir));
+
+          // orient the translate gizmo with the world axes
+          mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(glm::vec3());
+          break;
+        }
+        case Gizmo::Scale:
+        {
+          mMode = Gizmo::Scale;
+
+          // orient the scale gizmo with the current object axes
+          glm::vec3 objRotation = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
+          auto dir = axis.second->GetComponent<YTEditor::Scale>()->GetDirection();
+
+          model->SetMesh(ScaleMesh(dir));
+
+          gizmoTransform->SetWorldRotation(objRotation);
+          break;
+        }
+        case Gizmo::Rotate:
+        {
+          mMode = Gizmo::Rotate;
+
+          // orient the rotate gizmo with the current object axes
+          glm::vec3 objRotation = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
+          auto dir = axis.second->GetComponent<YTEditor::Rotate>()->GetDirection();
+
+          model->SetMesh(RotateMesh(dir));
+
+          gizmoTransform->SetWorldRotation(objRotation);
+          break;
+        }
       }
-
-      break;
-    }
-
-    case Gizmo::Translate:
-    {
-      mMode = Gizmo::Translate;
-
-      for (auto a = axes->begin(); a != axes->end(); ++a)
-      {
-        int dir = a->second->GetComponent<YTEditor::Translate>()->GetDirection();
-
-        std::string mesh;
-
-        switch (dir)
-        {
-        case Gizmo::Dir::X:
-        {
-          mesh = "Move_X.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Y:
-        {
-          mesh = "Move_Y.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Z:
-        {
-          mesh = "Move_Z.fbx";
-          break;
-        }
-        }
-
-        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
-
-        // orient the translate gizmo with the world axes
-        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(glm::vec3());
-      }
-
-      break;
-    }
-
-    case Gizmo::Scale:
-    {
-      mMode = Gizmo::Scale;
-
-      for (auto a = axes->begin(); a != axes->end(); ++a)
-      {
-        int dir = a->second->GetComponent<YTEditor::Scale>()->GetDirection();
-
-        std::string mesh;
-
-        switch (dir)
-        {
-        case Gizmo::Dir::X:
-        {
-          mesh = "Scale_X.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Y:
-        {
-          mesh = "Scale_Y.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Z:
-        {
-          mesh = "Scale_Z.fbx";
-          break;
-        }
-        }
-
-        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
-
-        // orient the scale gizmo with the current object axes
-        glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
-        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
-      }
-
-      break;
-    }
-
-    case Gizmo::Rotate:
-    {
-      mMode = Gizmo::Rotate;
-      for (auto a = axes->begin(); a != axes->end(); ++a)
-      {
-        int dir = a->second->GetComponent<YTEditor::Scale>()->GetDirection();
-
-        std::string mesh;
-
-        switch (dir)
-        {
-        case Gizmo::Dir::X:
-        {
-          mesh = "Rotate_X.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Y:
-        {
-          mesh = "Rotate_Y.fbx";
-          break;
-        }
-
-        case Gizmo::Dir::Z:
-        {
-          mesh = "Rotate_Z.fbx";
-          break;
-        }
-        }
-
-        a->second->GetComponent<YTE::Model>()->SetMesh(mesh);
-        
-        // orient the rotate gizmo with the current object axes
-        glm::vec3 rot = currObj->GetComponent<YTE::Transform>()->GetWorldRotationAsEuler();
-        mMainWindow->GetGizmo()->mGizmoObj->GetComponent<YTE::Transform>()->SetWorldRotation(rot);
-      }
-      break;
-    }
     }
   }
 

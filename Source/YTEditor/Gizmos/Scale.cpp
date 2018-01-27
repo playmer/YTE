@@ -13,7 +13,7 @@ namespace YTEditor
   YTEDefineType(Scale)
   {
     YTERegisterType(Scale);
-    YTEBindProperty(&Scale::GetDirection, &Scale::SetDirection, "Direction")
+    YTEBindField(&Scale::mDir, "Direction", YTE::PropertyBinding::GetSet)
       .AddAttribute<YTE::Serializable>();
   }
 

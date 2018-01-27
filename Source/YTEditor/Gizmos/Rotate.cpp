@@ -13,7 +13,7 @@ namespace YTEditor
   YTEDefineType(Rotate)
   {
     YTERegisterType(Rotate);
-    YTEBindProperty(&Rotate::GetDirection, &Rotate::SetDirection, "Direction")
+    YTEBindField(&Rotate::mDir, "Direction", YTE::PropertyBinding::GetSet)
       .AddAttribute<YTE::Serializable>();
   }
 

@@ -576,7 +576,7 @@ namespace YTE
 
   void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
   {
-    AK::SoundEngine::SetSwitch(static_cast<AkSwitchGroupID>(aSwitchGroupId), aSwitchId, aId);
+    AK::SoundEngine::SetSwitch(static_cast<AkSwitchGroupID>(aSwitchGroupId), static_cast<AkSwitchStateID>(aSwitchId), aId);
   }
 
   void WWiseSystem::SetState(const std::string &aStateGroup, const std::string &aState)
@@ -586,6 +586,6 @@ namespace YTE
   
   void WWiseSystem::SetState(u64 aStateGroupId, u64 aStateId)
   {
-    AK::SoundEngine::SetState(static_cast<AkStateGroupID>(aStateGroupId), aStateId);
+    AK::SoundEngine::SetState(static_cast<AkStateGroupID>(aStateGroupId), static_cast<AkStateID>(aStateId));
   }
 }

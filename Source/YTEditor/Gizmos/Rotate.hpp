@@ -4,6 +4,8 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTEditor/Gizmos/Gizmo.hpp"
+
 
 namespace YTEditor
 {
@@ -20,8 +22,15 @@ namespace YTEditor
 
     void RotateObject(YTE::Composition *aObj, glm::vec3 aFirstMousePos, glm::vec3 aDelta);
 
-    void SetDirection(int aDir) { mDir = aDir; }
-    int GetDirection() { return mDir; }
+    void SetDirection(Gizmo::Dir aDir)
+    {
+      mDir = aDir;
+    }
+
+    Gizmo::Dir GetDirection()
+    {
+      return static_cast<Gizmo::Dir>(mDir);
+    }
 
   private:
     int mDir;

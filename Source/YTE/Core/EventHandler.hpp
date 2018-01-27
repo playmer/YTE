@@ -13,7 +13,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <functional>
 #include <iostream>
 #include <memory>
-#include <unordered_map>
+#include <set>
+#include <map>
 #include <vector>
 
 #include "YTE/Core/Object.hpp"
@@ -129,13 +130,12 @@ namespace YTE
       static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
       Invoker callerFunction = EventDelegate::Caller<tFunctionType, aFunction, tObjectType, EventType>;
 
-      // TODO: Don't do this this way.
-      auto &allocator = mDelegateAllocators[aName];
-      auto it = mDelegateAllocators.find(aName);
+      auto &allocator = cDelegateAllocators[aName];
+      auto it = cDelegateAllocators.find(aName);
 
       auto ptr = allocator.allocate();
 
-      new(ptr) EventDelegate(aObject, callerFunction, it->first);
+      ptr = new(ptr) EventDelegate(aObject, callerFunction, it->first);
       mHooks.emplace_back(std::move(UniqueEvent(ptr, allocator.GetDeleter())));
       return mHooks.back().get();
     }
@@ -213,7 +213,7 @@ namespace YTE
                        std::hash<std::string>, 
                        StdStringRefWrapperEquality> mEventLists;
 
-    static std::unordered_map<std::string, BlockAllocator<EventDelegate>> mDelegateAllocators;
+    static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
   };
 }
 
