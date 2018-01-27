@@ -10,12 +10,22 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/Physics/RigidBody.hpp"
+#include "YTE/Physics/Collider.hpp"
 
 namespace YTE
 {
     YTEDefineType(BoatController)
     {
         YTERegisterType(BoatController);
+
+        std::vector<std::vector<Type*>> deps =
+        {
+            { Transform::GetStaticType() },
+            { Orientation::GetStaticType() },
+            { RigidBody::GetStaticType() }
+        };
+        BoatController::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     }
     
     BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -40,7 +50,7 @@ namespace YTE
     void BoatController::ChangeSail(SailStateChanged *aEvent)
     {
         mIsSailUp = aEvent->SailUp;
-        std::cout << mIsSailUp;
+        std::cout << "SAIL UP: " + mIsSailUp;
     }
 
     void BoatController::Update(LogicUpdate *aEvent)
@@ -56,7 +66,7 @@ namespace YTE
     
     void BoatController::CalculateMovementVector(float dt)
     {
-        //@@@ ask josh about setting a dependency for orientation, transform, etc
+        
         if (mIsSailUp)
         {
             if (mCurSpeed < mMaxSailSpeed)

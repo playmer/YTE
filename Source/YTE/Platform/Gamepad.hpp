@@ -74,6 +74,8 @@ namespace YTE
 
     uint8_t mGamepadIndex;
   private:
+    void ProcessButton(void *aState, size_t aOsButton, Xbox_Buttons aOurKey);
+    
     XboxController& operator=(XboxController&);
 
     bool mButtonArrayOne[static_cast<size_t>(Xbox_Buttons::Xbox_Buttons_Number)];

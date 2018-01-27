@@ -52,8 +52,7 @@ namespace YTE
         enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
     private:
         XboxController *mGamepad;
-        // starts at menu for main menu controls?
-        InputContext mContext = InputContext::Menu;
+        InputContext mContext;
 
     };
 } // End YTE namespace

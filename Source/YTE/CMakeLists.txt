@@ -43,6 +43,7 @@ target_link_libraries(YTE
     LuaJIT
     STB_Image
     VkHLF
+    XInput9_1_0.lib
 ) 
 
 set_target_properties(YTE
