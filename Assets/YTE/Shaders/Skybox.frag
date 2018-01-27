@@ -121,6 +121,7 @@ void main()
   float v = 1.0 - acos(V.y) / M_PI;
 
   vec2 skyUv = vec2(u, v);
+  skyUv.y = 1.0 - skyUv.y;
 
   if (Material.mIsEditorObject > 0)
   {

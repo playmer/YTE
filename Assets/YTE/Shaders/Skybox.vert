@@ -111,7 +111,11 @@ void main()
 
   vec4 worldPosition = (modelMatrix * vec4(inPosition, 1.0f));
 
-  outEyeVector = (View.mCameraPosition - worldPosition).xyz;
+  modelMatrix[3].x = View.mCameraPosition.x;
+  modelMatrix[3].y = View.mCameraPosition.y;
+  modelMatrix[3].z = View.mCameraPosition.z;
+
+  outEyeVector = worldPosition.xyz;
   outDiffuse = Model.mDiffuseColor;
 
   outTextureCoordinates = inTextureCoordinates;
