@@ -86,7 +86,8 @@ namespace YTE
   void Animation::Update(LogicUpdate* aEvent)
   {
     mElapsedTime += aEvent->Dt * mSpeed;
-    mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond, mAnimation->mDuration);
+    mCurrentAnimationTime = fmodf(static_cast<float>(mElapsedTime * mAnimation->mTicksPerSecond),
+                                  static_cast<float>(mAnimation->mDuration));
 
     aiMatrix4x4 identity = aiMatrix4x4();
     ReadAnimation(mScene->mRootNode, identity);

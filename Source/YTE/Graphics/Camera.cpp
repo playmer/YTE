@@ -425,8 +425,8 @@ namespace YTE
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
     // finds the delta of mouse movement from the last frame
-    float dx = aEvent->WorldCoordinates.x - mMouseInitialPosition.x;
-    float dy = aEvent->WorldCoordinates.y - mMouseInitialPosition.y;
+    float dx = static_cast<float>(aEvent->WorldCoordinates.x - mMouseInitialPosition.x);
+    float dy = static_cast<float>(aEvent->WorldCoordinates.y - mMouseInitialPosition.y);
 
     switch (mType)
     {
@@ -621,8 +621,8 @@ namespace YTE
 
       if (nullptr == mCameraOrientation)
       {
+        //mCameraType = oldCameraType;
         return;
-        mCameraType = oldCameraType;
       }
 
       mType = CameraType::CameraOrientation;

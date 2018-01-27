@@ -1,9 +1,24 @@
-add_subdirectory(assimp)
 add_subdirectory(Bullet)
 add_subdirectory(crunch)
 add_subdirectory(fmt)
 add_subdirectory(LuaJIT)
 add_subdirectory(stb)
+
+# Turn off/configure various parts of assimp.
+option(BUILD_SHARED_LIBS "Build package with shared libraries." OFF)
+option(ASSIMP_BUILD_ASSIMP_TOOLS "If the supplementary tools for Assimp are built in addition to the library." OFF)
+option(ASSIMP_BUILD_TESTS "If the test suite for Assimp is built in addition to the library." OFF)
+
+add_subdirectory(assimp)
+
+get_target_property(assimpBinaryDir assimp BINARY_DIR)
+
+target_include_directories(assimp PUBLIC 
+                            ${assimpBinaryDir}/../include 
+                            ${assimpBinaryDir}../)
+
+target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
+target_compile_options(assimp PRIVATE /bigobj)
 
 # Turn off/configure various parts of VkHLF.
 set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
@@ -21,7 +36,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
 add_subdirectory(VkHLF) 
 
-set_target_properties(assimp      PROPERTIES FOLDER "Dependencies") 
+set_target_properties(assimp      PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(IrrXML      PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(uninstall   PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(zlibstatic  PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(zlib        PROPERTIES FOLDER "Dependencies/assimp") 
 set_target_properties(Bullet      PROPERTIES FOLDER "Dependencies") 
 set_target_properties(crunch      PROPERTIES FOLDER "Dependencies") 
 set_target_properties(fmt         PROPERTIES FOLDER "Dependencies") 

@@ -10,3 +10,6 @@
 [submodule "Dependencies/fmt"]
 	path = Dependencies/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "Dependencies/assimp"]
+	path = Dependencies/assimp
+	url = https://github.com/playmer/assimp.git
