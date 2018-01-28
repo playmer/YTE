@@ -17,6 +17,7 @@
 namespace YTE
 {
   YTEDeclareEvent(XboxStickFlicked);
+  YTEDeclareEvent(XboxStickEvent);
   YTEDeclareEvent(XboxButtonPress);
   YTEDeclareEvent(XboxButtonRelease);
   YTEDeclareEvent(XboxButtonPersist);
@@ -29,6 +30,16 @@ namespace YTE
 
     glm::vec2 FlickDirection;
     Xbox_Buttons FlickedStick;
+    XboxController *Controller;
+  };
+
+  class XboxStickEvent : public Event
+  {
+  public:
+    YTEDeclareType(XboxStickEvent);
+
+    glm::vec2 StickDirection;
+    Xbox_Buttons Stick;
     XboxController *Controller;
   };
 
@@ -89,6 +100,8 @@ namespace YTE
 
     glm::vec2 mLeftStick;
     glm::vec2 mRightStick;
+    glm::vec2 mPreviousLeftStick;
+    glm::vec2 mPreviousRightStick;
 
     float mLeftTrigger;
     float mRightTrigger;

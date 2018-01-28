@@ -37,6 +37,7 @@ namespace YTE
         mContext = InputContext::Sailing;
         //mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
         //auto space = mOwner->GetEngine()->GetSpace();
+        mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::CheckSticks);
         mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::CheckButtons);
     }
 /******************************************************************************/
@@ -44,13 +45,9 @@ namespace YTE
     Event Callbacks
 */
 /******************************************************************************/
-    void InputInterpreter::CheckSticks(LogicUpdate *aEvent)
+    void InputInterpreter::CheckSticks(XboxStickEvent *aEvent)
     {
-        YTEUnusedArgument(aEvent);
-
-        glm::vec2 LS = mGamepad->GetLeftStick();
-        glm::vec2 RS = mGamepad->GetRightStick();
-        // do some math here
+      std::cout << "Stick (" << aEvent->StickDirection.x << ", " << aEvent->StickDirection.y << ")\n";
     }
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)

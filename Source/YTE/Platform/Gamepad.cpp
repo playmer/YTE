@@ -11,6 +11,7 @@
 namespace YTE
 {
   YTEDefineEvent(XboxStickFlicked);
+  YTEDefineEvent(XboxStickEvent);
   YTEDefineEvent(XboxButtonPress);
   YTEDefineEvent(XboxButtonRelease);
   YTEDefineEvent(XboxButtonPersist);
@@ -21,6 +22,14 @@ namespace YTE
     YTEBindField(&XboxFlickEvent::FlickDirection, "FlickDirection", PropertyBinding::Get);
     YTEBindField(&XboxFlickEvent::FlickedStick, "FlickedStick", PropertyBinding::Get);
     YTEBindField(&XboxFlickEvent::Controller, "Controller", PropertyBinding::Get);
+  }
+  
+  YTEDefineType(XboxStickEvent)
+  {
+    YTERegisterType(XboxStickEvent);
+    YTEBindField(&XboxStickEvent::StickDirection, "StickDirection", PropertyBinding::Get);
+    YTEBindField(&XboxStickEvent::Stick, "Stick", PropertyBinding::Get);
+    YTEBindField(&XboxStickEvent::Controller, "Controller", PropertyBinding::Get);
   }
 
   YTEDefineType(XboxButtonEvent)

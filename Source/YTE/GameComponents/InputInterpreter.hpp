@@ -46,7 +46,7 @@ namespace YTE
         YTEDeclareType(InputInterpreter);
         InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
-        void CheckSticks(LogicUpdate *aEvent);
+        void CheckSticks(XboxStickEvent *aEvent);
         void CheckButtons(XboxButtonEvent *aEvent);
 
         enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };

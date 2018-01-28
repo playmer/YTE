@@ -114,8 +114,47 @@ namespace YTE
     #include "YTE/Platform/Windows/OsXboxButtons_Windows.hpp"
     #undef ProcessButtonMacro
 
+    mPreviousLeftStick = mLeftStick;
+    mPreviousRightStick = mRightStick;
     mLeftStick = GetStickState(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY, true);
     mRightStick = GetStickState(state->Gamepad.sThumbRX, state->Gamepad.sThumbRY, false);
+
+    // Left Stick Changed
+    if (mLeftStick.x != 0.0f || mLeftStick.y != 0.0f)
+    {
+      XboxStickEvent stickEvent;
+      stickEvent.StickDirection = mLeftStick;
+      stickEvent.Stick = Xbox_Buttons::LeftStick;
+      stickEvent.Controller = this;
+      SendEvent(Events::XboxStickEvent, &stickEvent);
+    }
+    // Right Stick Changed
+    if (mRightStick.x != 0.0f || mRightStick.y != 0.0f)
+    {
+      XboxStickEvent stickEvent;
+      stickEvent.StickDirection = mRightStick;
+      stickEvent.Stick = Xbox_Buttons::RightStick;
+      stickEvent.Controller = this;
+      SendEvent(Events::XboxStickEvent, &stickEvent);
+    }
+    // Left Stick recentered, this allows gameplay to depend on a stick returning to zero
+    if (mLeftStick.x == 0.0f && mLeftStick.y == 0.0f && mPreviousLeftStick.x != 0.0f && mPreviousLeftStick.y != 0.0f)
+    {
+      XboxStickEvent stickEvent;
+      stickEvent.StickDirection = mLeftStick;
+      stickEvent.Stick = Xbox_Buttons::LeftStick;
+      stickEvent.Controller = this;
+      SendEvent(Events::XboxStickEvent, &stickEvent);
+    }
+    // Right Stick recentered, this allows gameplay to depend on a stick returning to zero
+    if (mRightStick.x == 0.0f && mRightStick.y == 0.0f && mPreviousRightStick.x != 0.0f && mPreviousRightStick.y != 0.0f)
+    {
+      XboxStickEvent stickEvent;
+      stickEvent.StickDirection = mRightStick;
+      stickEvent.Stick = Xbox_Buttons::RightStick;
+      stickEvent.Controller = this;
+      SendEvent(Events::XboxStickEvent, &stickEvent);
+    }
 
     //Stick flicking
     bool leftStickFlicked = (glm::length(mLeftStick) >= cFlickMagnitude);
