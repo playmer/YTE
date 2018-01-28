@@ -32,7 +32,7 @@ namespace YTE
     class Deleter
     {
     public:
-      Deleter(BlockAllocator<value_type> *aAllocator) : allocator_(aAllocator)
+      Deleter(BlockAllocator<value_type> *aAllocator) : mAllocator(aAllocator)
       {
 
       }
@@ -40,11 +40,11 @@ namespace YTE
       void operator()(value_type *aToDelete)
       {
         GenericDestruct<value_type>(aToDelete);
-        allocator_->deallocate(aToDelete);
+        mAllocator->deallocate(aToDelete);
       }
 
     private:
-      BlockAllocator<value_type> *allocator_;
+      BlockAllocator<value_type> *mAllocator;
     };
 
     Deleter GetDeleter()
@@ -56,12 +56,12 @@ namespace YTE
     {
       AllocateIfNeeded();
 
-      return freeList_.pop_front();
+      return mFreeList.pop_front();
     }
 
     void deallocate(pointer aPointer)
     {
-      freeList_.push_front(aPointer);
+      mFreeList.push_front(aPointer);
     }
 
   private:
@@ -69,7 +69,7 @@ namespace YTE
     {
       struct Node
       {
-        Node *next_;
+        Node *mNext;
       };
     public:
 
@@ -80,53 +80,53 @@ namespace YTE
 
         auto front = reinterpret_cast<Node*>(aPointer);
 
-        front->next_ = head_;
-        head_ = front;
+        front->mNext = mHead;
+        mHead = front;
 
-        ++size_;
+        ++mSize;
       }
 
       pointer pop_front()
       {
-        auto front = head_;
-        head_ = head_->next_;
+        auto front = mHead;
+        mHead = mHead->mNext;
 
-        --size_;
+        --mSize;
         return reinterpret_cast<pointer>(front);
       }
 
       bool IsEmpty()
       {
-        return head_ == nullptr;
+        return mHead == nullptr;
       }
 
       size_type size()
       {
-        return size_;
+        return mSize;
       }
 
     private:
-      size_type size_;
-      Node *head_;
+      size_type mSize;
+      Node *mHead;
     };
 
     void AllocateIfNeeded()
     {
-      if (freeList_.size() == 0)
+      if (mFreeList.size() == 0)
       {
-        data_.emplace_front(array_type());
+        mData.emplace_front(array_type());
 
-        for (auto&i : data_.front())
+        for (auto&i : mData.front())
         {
           pointer j = reinterpret_cast<pointer>(&i);
-          freeList_.push_front(j);
+          mFreeList.push_front(j);
         }
       }
     }
 
-    std::list<array_type> data_;
-    FreeList freeList_;
-    size_type size_;
+    std::list<array_type> mData;
+    FreeList mFreeList;
+    size_type mSize;
 
   };
 }

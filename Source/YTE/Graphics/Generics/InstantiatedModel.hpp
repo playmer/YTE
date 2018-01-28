@@ -61,6 +61,18 @@ namespace YTE
       YTEUnusedArgument(aUBO);
     }
 
+
+    virtual void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+    {
+      YTEUnusedArgument(aUBO);
+      YTEUnusedArgument(aIndex);
+    }
+
+    virtual void UpdateUBOMaterial(UBOMaterial *aUBO)
+    {
+      YTEUnusedArgument(aUBO);
+    }
+
     virtual UBOModel GetUBOModelData()
     {
       return mUBOModelData;
@@ -84,6 +96,7 @@ namespace YTE
     Mesh *mMesh;
     UBOModel mUBOModelData;
     UBOAnimation *mUBOAnimationData;
+    UBOMaterial mUBOModelMaterialData;
   };
 }
 

@@ -18,12 +18,12 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
-
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Light.hpp"
+#include "YTE/Graphics/Material.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
@@ -93,6 +93,7 @@ namespace YTE
     InitializeType<Camera>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
+    InitializeType<Material>();
     InitializeType<Model>();
     InitializeType<Light>();
     InitializeType<ModelChanged>();

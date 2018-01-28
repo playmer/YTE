@@ -33,6 +33,9 @@ namespace YTE
     void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;
     void UpdateUBOAnimation(UBOAnimation *aUBO) override;
+    void UpdateUBOMaterial(UBOMaterial *aUBO) override;
+    void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
+
     void SetDefaultAnimationOffset() override;
 
     // Takes the submesh, as well as the index of the submesh.
@@ -57,6 +60,7 @@ namespace YTE
   private:
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;
+    bool mLoadUBOMaterial;
   };
 }
 

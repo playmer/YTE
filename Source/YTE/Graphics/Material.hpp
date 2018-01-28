@@ -20,10 +20,30 @@
 
 namespace YTE
 {
+  class Material;
+
   class MaterialRepresentation : public EventHandler
   {
   public:
     YTEDeclareType(MaterialRepresentation);
+    
+    MaterialRepresentation(Material *aMaterialComponent)
+      : mMaterialComponent(aMaterialComponent)
+    {
+
+    }
+
+    MaterialRepresentation(UBOMaterial aMaterial, 
+                           Material *aMaterialComponent, 
+                           size_t aIndex, 
+                           Submesh *aSubmesh)
+      : mMaterialComponent(aMaterialComponent)
+      , mMaterial(aMaterial)
+      , mIndex(aIndex)
+      , mSubmesh(aSubmesh)
+    {
+
+    }
 
     void UpdateUBO();
 
@@ -127,14 +147,16 @@ namespace YTE
     float     GetPadding() { return mMaterial.mPadding; }
 
 
-    Submesh* GetSubmesh() { return mSubMesh; }
+    Submesh* GetSubmesh() { return mSubmesh; }
   private:
+    Material *mMaterialComponent;
     UBOMaterial mMaterial;
+    size_t mIndex;
     std::string mDiffuseTexture;
     std::string mSpecularTexture;
     std::string mNormalTexture;
 
-    Submesh *mSubMesh;
+    Submesh *mSubmesh;
   };
 
 
@@ -148,6 +170,7 @@ namespace YTE
     ~Material() override;
 
     void Initialize() override;
+    void Create(ModelChanged *aEvent);
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
 
   private:

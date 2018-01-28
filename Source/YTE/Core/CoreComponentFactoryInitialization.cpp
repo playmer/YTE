@@ -17,6 +17,7 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Light.hpp"
+#include "YTE/Graphics/Material.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
@@ -62,6 +63,7 @@ namespace YTE
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();
     helper.CreateComponentFactory<Light>();
+    helper.CreateComponentFactory<Material>();
     helper.CreateComponentFactory<Model>();
     helper.CreateComponentFactory<Skybox>();
     helper.CreateComponentFactory<Animator>();

@@ -17,6 +17,7 @@ namespace YTE
   class Light;
   class SimpleModel;
   class Model;
+  class ModelChanged;
   struct Instance;
   struct UBOMaterial;
   struct UBOModel;

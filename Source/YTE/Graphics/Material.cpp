@@ -1,5 +1,6 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Material.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE
@@ -12,7 +13,26 @@ namespace YTE
 
   void MaterialRepresentation::UpdateUBO()
   {
+    auto model = mMaterialComponent->GetOwner()->GetComponent<Model>();
 
+    if (nullptr != model)
+    {
+      auto instantiatedModel = model->GetInstantiatedModel();
+
+      if (nullptr != instantiatedModel)
+      {
+        // If we have submesh pointer, we're a submesh material, otherwise we're a 
+        // Model, or "Universal" material.
+        if (nullptr != mSubmesh)
+        {
+          instantiatedModel->UpdateUBOSubmeshMaterial(&mMaterial, mIndex);
+        }
+        else
+        {
+          instantiatedModel->UpdateUBOMaterial(&mMaterial);
+        }
+      }
+    }
   }
 
 
@@ -29,8 +49,43 @@ namespace YTE
 
   Material::Material(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mModelMaterial(this)
   {
     DeserializeByType<Material*>(aProperties, this, GetStaticType());
+  }
+
+  void Material::Create(ModelChanged *aEvent)
+  {
+    auto model = aEvent->Object->GetComponent<Model>();
+
+    if (nullptr != model)
+    {
+      auto instantiatedModel = model->GetInstantiatedModel();
+
+      if (nullptr != instantiatedModel)
+      {
+        for (auto [submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+        {
+          auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial, 
+                                                                      this, 
+                                                                      i,
+                                                                      &(*submesh));
+          mSubmeshMaterials.emplace_back(std::move(materialRep));
+        }
+      }
+    }
+  }
+
+  void Material::Initialize()
+  {
+    mModel = mOwner->GetComponent<Model>();
+
+    mModel->YTERegister(Events::ModelChanged, this, &Material::Create);
+
+    ModelChanged event;
+    event.Object = mOwner;
+
+    Create(&event);
   }
 
   Material::~Material()

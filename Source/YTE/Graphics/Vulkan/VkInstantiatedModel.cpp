@@ -24,6 +24,7 @@ namespace YTE
     , mView(aView)
     , mLoadUBOAnimation(false)
     , mLoadUBOModel(false)
+    , mLoadUBOMaterial(false)
   {
     mMesh = mSurface->CreateMesh(aModelFile);
     Create();
@@ -107,40 +108,50 @@ namespace YTE
   //              just telling the object to register to be updated)
   void VkInstantiatedModel::UpdateUBOModel()
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk,
-                          this,
-                          &VkInstantiatedModel::GraphicsDataUpdateVk);
-
+    if (!mLoadUBOAnimation && 
+        !mLoadUBOModel && 
+        !mLoadUBOMaterial)
+    {
+      mSurface->YTERegister(Events::GraphicsDataUpdateVk,
+                            this,
+                            &VkInstantiatedModel::GraphicsDataUpdateVk);
+    }
   }
 
   void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
   {
     mUBOModelData = aUBO;
 
-    if (!mLoadUBOModel)
-    {
-      if (!mLoadUBOAnimation)
-      {
-        UpdateUBOModel();
-      }
+    UpdateUBOModel();
 
-      mLoadUBOModel = true;
-    }
+    mLoadUBOModel = true;
   }
 
   void VkInstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
   {
     mUBOAnimationData = aUBO;
 
-    if (!mLoadUBOAnimation)
-    {
-      if (!mLoadUBOModel)
-      {
-        UpdateUBOModel();
-      }
+    UpdateUBOModel();
 
-      mLoadUBOAnimation = true;
-    }
+    mLoadUBOAnimation = true;
+  }
+
+  void VkInstantiatedModel::UpdateUBOMaterial(UBOMaterial *aUBO)
+  {
+    mUBOModelMaterialData = *aUBO;
+
+    UpdateUBOModel();
+
+    mLoadUBOMaterial = true;
+  }
+
+  void VkInstantiatedModel::UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+  {
+    mUBOSubmeshMaterials[aIndex].second = *aUBO;
+
+    UpdateUBOModel();
+
+    mLoadUBOMaterial = true;
   }
 
 
@@ -148,15 +159,9 @@ namespace YTE
   {
     mUBOAnimationData = mMesh->mSkeleton.GetDefaultOffsets();
 
-    if (!mLoadUBOAnimation)
-    {
-      if (!mLoadUBOModel)
-      {
-        UpdateUBOModel();
-      }
+    UpdateUBOModel();
 
-      mLoadUBOAnimation = true;
-    }
+    mLoadUBOAnimation = true;
   }
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
@@ -205,10 +210,13 @@ namespace YTE
 
     auto update = aEvent->mCBO;
 
-
-    for (auto material : mUBOSubmeshMaterials)
+    if (mLoadUBOAnimation)
     {
-      material.first->update<UBOMaterial>(0, material.second, update);
+      // TODO: We're updating all materials here, which is unfortunate. Maybe update at the submesh level?
+      for (auto material : mUBOSubmeshMaterials)
+      {
+        material.first->update<UBOMaterial>(0, material.second, update);
+      }
     }
 
     if (mLoadUBOAnimation)

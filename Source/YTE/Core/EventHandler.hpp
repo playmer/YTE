@@ -106,7 +106,7 @@ namespace YTE
     using UniqueEvent = std::unique_ptr<EventDelegate, Deleter>;
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    void RegisterEvent(const std::string &aName, tObjectType* aObject)
+    void RegisterEvent(const std::string &aName, tObjectType *aObject)
     {
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
@@ -120,7 +120,7 @@ namespace YTE
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    EventDelegate* MakeEventDelegate(const std::string& aName, tObjectType* aObject)
+    EventDelegate* MakeEventDelegate(const std::string &aName, tObjectType *aObject)
     {
       using EventType = typename Binding<tFunctionType>::EventType;
       using ObjectType = typename Binding<tFunctionType>::ObjectType;
@@ -143,7 +143,7 @@ namespace YTE
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    void DeregisterEvent(const std::string& aName, tObjectType* aObject)
+    void DeregisterEvent(const std::string &aName, tObjectType *aObject)
     {
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
@@ -156,7 +156,7 @@ namespace YTE
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    void RemoveEventDelegate(const std::string& aName, tObjectType* aObject)
+    void RemoveEventDelegate(const std::string &aName, tObjectType *aObject)
     {
       using EventType = typename Binding<tFunctionType>::EventType;
 
