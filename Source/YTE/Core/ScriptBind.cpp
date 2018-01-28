@@ -22,6 +22,7 @@
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
+#include "YTE/GameComponents/CameraController.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -80,6 +81,7 @@ namespace YTE
     InitializeType<BoatController>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
+    InitializeType<CameraController>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

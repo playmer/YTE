@@ -17,6 +17,7 @@
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
+#include "YTE/GameComponents/CameraController.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -70,6 +71,7 @@ namespace YTE
     helper.CreateComponentFactory<BoatController>();
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
+    helper.CreateComponentFactory<CameraController>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();
