@@ -60,7 +60,7 @@ namespace YTE
     struct Binding<tReturn(tObject::*)(tEvent*)>
     {
       using ReturnType = tReturn;
-      using tObjectType = tObject;
+      using ObjectType = tObject;
       using EventType = tEvent;
     };
 
@@ -108,26 +108,28 @@ namespace YTE
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
     void RegisterEvent(const std::string &aName, tObjectType* aObject)
     {
+      static_assert(std::is_member_function_pointer_v<tFunctionType>,
+                    "tFunctionType must be a member function pointer from the type of tObjectType.");
+      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+                    "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
-                    "tObjectType Must be derived from YTE::EventHandler");
+                    "tObjectType must be derived from YTE::EventHandler");
+
       auto delegate = aObject->template MakeEventDelegate<tFunctionType, aFunction, typename tObjectType>(aName, aObject);
       mEventLists[delegate->mName].mList.InsertFront(delegate->mHook);
-    }
-
-    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    void DeregisterEvent(const std::string& aName, tObjectType* aObject)
-    {
-      static_assert(std::is_base_of<EventHandler, tObjectType>::value, 
-                    "tObjectType Must be derived from YTE::EventHandler");
-      aObject->template RemoveEventDelegate<tFunctionType, aFunction, tObjectType>(aName, aObject);
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
     EventDelegate* MakeEventDelegate(const std::string& aName, tObjectType* aObject)
     {
       using EventType = typename Binding<tFunctionType>::EventType;
+      using ObjectType = typename Binding<tFunctionType>::ObjectType;
 
-      static_assert(std::is_base_of<Event, EventType>::value, "EventType must be derived from Event");
+      static_assert(std::is_same<ObjectType, tObjectType>::value, 
+                    "The member function must be a member of the same type as the instance passed (tObjectType *aObject), "
+                    "you may need to downcast aObject to the appropriate base type if this member function was defined in a base class.");
+      static_assert(std::is_base_of<Event, EventType>::value, 
+                    "EventType must be derived from Event");
       Invoker callerFunction = EventDelegate::Caller<tFunctionType, aFunction, tObjectType, EventType>;
 
       auto &allocator = cDelegateAllocators[aName];
@@ -138,6 +140,19 @@ namespace YTE
       ptr = new(ptr) EventDelegate(aObject, callerFunction, it->first);
       mHooks.emplace_back(std::move(UniqueEvent(ptr, allocator.GetDeleter())));
       return mHooks.back().get();
+    }
+
+    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    void DeregisterEvent(const std::string& aName, tObjectType* aObject)
+    {
+      static_assert(std::is_member_function_pointer_v<tFunctionType>,
+                    "tFunctionType must be a member function pointer from the type of tObjectType.");
+      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+                    "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
+      static_assert(std::is_base_of<EventHandler, tObjectType>::value,
+                    "tObjectType must be derived from YTE::EventHandler");
+
+      aObject->template RemoveEventDelegate<tFunctionType, aFunction, tObjectType>(aName, aObject);
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
