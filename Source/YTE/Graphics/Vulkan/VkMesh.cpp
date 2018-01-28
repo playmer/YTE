@@ -161,14 +161,6 @@ namespace YTE
                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
                                         allocator);
 
-    //mUBOMaterial = device->createBuffer(sizeof(UBOMaterial),
-    //                                    vk::BufferUsageFlagBits::eTransferDst |
-    //                                    vk::BufferUsageFlagBits::eUniformBuffer,
-    //                                    vk::SharingMode::eExclusive,
-    //                                    nullptr,
-    //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
-    //                                    allocator);
-
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
     // Load Textures

@@ -38,6 +38,7 @@ namespace YTE
     , mView(aView)
     , mLoadUBOAnimation(false)
     , mLoadUBOModel(false)
+    , mLoadUBOMaterial(false)
   {
     mMesh = static_cast<VkMesh*>(aMesh);
     Create();
