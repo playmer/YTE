@@ -8,6 +8,46 @@ namespace YTE
   YTEDefineType(MaterialRepresentation)
   {
     YTERegisterType(MaterialRepresentation);
+
+    YTEBindProperty(&GetDiffuse, &SetDiffuse, "Diffuse")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetAmbient, &SetAmbient, "Ambient")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetSpecular, &SetSpecular, "Specular")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetEmissive, &SetEmissive, "Emissive")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetTransparent, &SetTransparent, "Transparent")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetReflective, &SetReflective, "Reflective")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetOpacity, &SetOpacity, "Opacity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetShininess, &SetShininess, "Shininess")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetShininessStrength, &SetShininessStrength, "ShininessStrength")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetReflectivity, &SetReflectivity, "Reflectivity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetReflectiveIndex, &SetReflectiveIndex, "ReflectiveIndex")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetBumpScaling, &SetBumpScaling, "BumpScaling")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+    YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
 
@@ -40,7 +80,7 @@ namespace YTE
   {
     YTERegisterType(Material);
 
-    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Lister, "Animations");
+    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Lister, "Materials");
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
 

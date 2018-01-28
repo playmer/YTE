@@ -94,6 +94,7 @@ namespace YTE
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Material>();
+    InitializeType<MaterialRepresentation>();
     InitializeType<Model>();
     InitializeType<Light>();
     InitializeType<ModelChanged>();

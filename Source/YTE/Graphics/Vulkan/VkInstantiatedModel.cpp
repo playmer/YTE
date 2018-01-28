@@ -88,15 +88,19 @@ namespace YTE
     // create descriptor sets
     for (auto [submesh, i] : enumerate(mesh->mSubmeshes))
     {
-      auto material = device->createBuffer(sizeof(UBOMaterial),
-                                           vk::BufferUsageFlagBits::eTransferDst |
-                                           vk::BufferUsageFlagBits::eUniformBuffer,
-                                           vk::SharingMode::eExclusive,
-                                           nullptr,
-                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                           allocator);
+      auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
+                                              vk::BufferUsageFlagBits::eTransferDst |
+                                              vk::BufferUsageFlagBits::eUniformBuffer,
+                                              vk::SharingMode::eExclusive,
+                                              nullptr,
+                                              vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                              allocator);
 
-      mUBOSubmeshMaterials.emplace_back(material, submesh->second->mSubmesh->mUBOMaterial);
+      auto &material = submesh->second->mSubmesh->mUBOMaterial;
+
+      mUBOSubmeshMaterials.emplace_back(materialUBO, material);
+
+      UpdateUBOSubmeshMaterial(&material, i);
 
       CreateDescriptorSet(submesh->second.get(), i);
     }
@@ -210,13 +214,15 @@ namespace YTE
 
     auto update = aEvent->mCBO;
 
-    if (mLoadUBOAnimation)
+    if (mLoadUBOMaterial)
     {
       // TODO: We're updating all materials here, which is unfortunate. Maybe update at the submesh level?
       for (auto material : mUBOSubmeshMaterials)
       {
         material.first->update<UBOMaterial>(0, material.second, update);
       }
+
+      mLoadUBOMaterial = false;
     }
 
     if (mLoadUBOAnimation)

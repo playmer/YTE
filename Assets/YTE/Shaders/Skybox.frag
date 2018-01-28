@@ -131,4 +131,6 @@ void main()
   {
     outFragColor = texture(diffuseSampler, skyUv) * inDiffuse;
   }
+
+  //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
