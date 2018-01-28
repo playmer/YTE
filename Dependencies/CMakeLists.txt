@@ -50,37 +50,41 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
 add_subdirectory(VkHLF) 
 
-set_target_properties(assimp      PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(IrrXML      PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(uninstall   PROPERTIES FOLDER "Dependencies/assimp") 
+# Get WWise
+FindWWise(WWise_SoundEngine)
+
+set_target_properties(assimp                              PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(IrrXML                              PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(uninstall                           PROPERTIES FOLDER "Dependencies/assimp") 
 set_target_properties(UpdateAssimpLibsDebugSymbolsAndDLLs PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(zlibstatic  PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(zlib        PROPERTIES FOLDER "Dependencies/assimp") 
-set_target_properties(Bullet2FileLoader     PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(Bullet3Collision      PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(Bullet3Common         PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(Bullet3Dynamics       PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(Bullet3Geometry       PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(Bullet3OpenCL_clew    PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(BulletCollision       PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(BulletDynamics        PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(BulletInverseDynamics PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(BulletSoftBody        PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(LinearMath            PROPERTIES FOLDER "Dependencies/bullet3") 
-set_target_properties(crunch      PROPERTIES FOLDER "Dependencies") 
-set_target_properties(fmt         PROPERTIES FOLDER "Dependencies") 
-set_target_properties(LuaJIT      PROPERTIES FOLDER "Dependencies") 
-set_target_properties(STB_Image   PROPERTIES FOLDER "Dependencies") 
-set_target_properties(VkHLF       PROPERTIES FOLDER "Dependencies/VkHLF") 
-set_target_properties(glslang     PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(OGLCompiler PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(OSDependent PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(SPIRV       PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(SPVRemapper PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(HLSL        PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
+set_target_properties(zlibstatic                          PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(zlib                                PROPERTIES FOLDER "Dependencies/assimp") 
+set_target_properties(Bullet2FileLoader                   PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Collision                    PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Common                       PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Dynamics                     PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3Geometry                     PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(Bullet3OpenCL_clew                  PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletCollision                     PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletDynamics                      PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletInverseDynamics               PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(BulletSoftBody                      PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(LinearMath                          PROPERTIES FOLDER "Dependencies/bullet3") 
+set_target_properties(crunch                              PROPERTIES FOLDER "Dependencies") 
+set_target_properties(fmt                                 PROPERTIES FOLDER "Dependencies") 
+set_target_properties(LuaJIT                              PROPERTIES FOLDER "Dependencies") 
+set_target_properties(STB_Image                           PROPERTIES FOLDER "Dependencies") 
+set_target_properties(VkHLF                               PROPERTIES FOLDER "Dependencies/VkHLF") 
+set_target_properties(glslang                             PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(OGLCompiler                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(OSDependent                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(SPIRV                               PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(SPVRemapper                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
+set_target_properties(HLSL                                PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
+set_target_properties(WWise_SoundEngine                   PROPERTIES FOLDER "Dependencies/YTE/Dependencies")
 
 # Turn the warnings off on our dependencies.
-target_compile_options(assimp      PRIVATE /W0)
+target_compile_options(assimp                PRIVATE /W0)
 target_compile_options(Bullet2FileLoader     PRIVATE /W0) 
 target_compile_options(Bullet3Collision      PRIVATE /W0) 
 target_compile_options(Bullet3Common         PRIVATE /W0) 
@@ -92,20 +96,30 @@ target_compile_options(BulletDynamics        PRIVATE /W0)
 target_compile_options(BulletInverseDynamics PRIVATE /W0) 
 target_compile_options(BulletSoftBody        PRIVATE /W0) 
 target_compile_options(LinearMath            PRIVATE /W0) 
-target_compile_options(crunch      PRIVATE /W0)
-target_compile_options(fmt         PRIVATE /W0)
-target_compile_options(LuaJIT      PRIVATE /W0)
-target_compile_options(STB_Image   PRIVATE /W0)
-target_compile_options(VkHLF       PRIVATE /W0)
-target_compile_options(glslang     PRIVATE /W0)
-target_compile_options(OGLCompiler PRIVATE /W0)
-target_compile_options(OSDependent PRIVATE /W0)
-target_compile_options(SPIRV       PRIVATE /W0)
-target_compile_options(SPVRemapper PRIVATE /W0)
-target_compile_options(HLSL        PRIVATE /W0)
+target_compile_options(crunch                PRIVATE /W0)
+target_compile_options(fmt                   PRIVATE /W0)
+target_compile_options(LuaJIT                PRIVATE /W0)
+target_compile_options(STB_Image             PRIVATE /W0)
+target_compile_options(VkHLF                 PRIVATE /W0)
+target_compile_options(glslang               PRIVATE /W0)
+target_compile_options(OGLCompiler           PRIVATE /W0)
+target_compile_options(OSDependent           PRIVATE /W0)
+target_compile_options(SPIRV                 PRIVATE /W0)
+target_compile_options(SPVRemapper           PRIVATE /W0)
+target_compile_options(HLSL                  PRIVATE /W0)
 
 set_target_properties(assimp
-                      #bullet3
+                      Bullet2FileLoader
+                      Bullet3Collision
+                      Bullet3Common
+                      Bullet3Dynamics
+                      Bullet3Geometry
+                      Bullet3OpenCL_clew
+                      BulletCollision
+                      BulletDynamics
+                      BulletInverseDynamics
+                      BulletSoftBody
+                      LinearMath
                       crunch
                       fmt
                       LuaJIT
