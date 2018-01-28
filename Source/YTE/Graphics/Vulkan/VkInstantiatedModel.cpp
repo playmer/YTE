@@ -85,17 +85,19 @@ namespace YTE
                                          allocator);
 
     // create descriptor sets
-    for (auto& submesh : mesh->mSubmeshes)
+    for (auto [submesh, i] : enumerate(mesh->mSubmeshes))
     {
-      CreateDescriptorSet(submesh.second.get());
+      auto material = device->createBuffer(sizeof(UBOMaterial),
+                                           vk::BufferUsageFlagBits::eTransferDst |
+                                           vk::BufferUsageFlagBits::eUniformBuffer,
+                                           vk::SharingMode::eExclusive,
+                                           nullptr,
+                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                           allocator);
 
-      //mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
-      //                                         vk::BufferUsageFlagBits::eTransferDst |
-      //                                         vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                         vk::SharingMode::eExclusive,
-      //                                         nullptr,
-      //                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                         allocator);
+      mUBOSubmeshMaterials.emplace_back(material, submesh->second->mSubmesh->mUBOMaterial);
+
+      CreateDescriptorSet(submesh->second.get(), i);
     }
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);
@@ -157,9 +159,13 @@ namespace YTE
     }
   }
 
-  void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh)
+  void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
-    mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(mUBOModel, mUBOAnimation, mView));
+    mPipelineData.emplace(aSubMesh, 
+                          aSubMesh->CreatePipelineData(mUBOModel, 
+                                                       mUBOAnimation,
+                                                       mUBOSubmeshMaterials[aIndex].first,
+                                                       mView));
   }
 
   bool VkInstantiatedModel::GetInstanced()
@@ -198,6 +204,12 @@ namespace YTE
                             &VkInstantiatedModel::GraphicsDataUpdateVk);
 
     auto update = aEvent->mCBO;
+
+
+    for (auto material : mUBOSubmeshMaterials)
+    {
+      material.first->update<UBOMaterial>(0, material.second, update);
+    }
 
     if (mLoadUBOAnimation)
     {

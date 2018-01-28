@@ -37,13 +37,13 @@ namespace YTE
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
-    SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> aUBOModel,
-                                           std::shared_ptr<vkhlf::Buffer> aUBOAnimation,
+    SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
+                                           std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
+                                           std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                            GraphicsView *aView);
 
     std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
     std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
-    std::shared_ptr<vkhlf::Buffer> mUBOMaterial;
 
     std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
     std::vector<vk::DescriptorPoolSize> mDescriptorTypes;

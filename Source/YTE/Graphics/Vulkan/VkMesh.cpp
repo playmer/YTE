@@ -140,7 +140,6 @@ namespace YTE
     // TODO (Josh): We should be reflecting these.
     VkShaderDescriptions descriptions;
 
-
     auto device = mSurface->GetDevice();
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
@@ -162,13 +161,13 @@ namespace YTE
                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
                                         allocator);
 
-    mUBOMaterial = device->createBuffer(sizeof(UBOMaterial),
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eUniformBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
+    //mUBOMaterial = device->createBuffer(sizeof(UBOMaterial),
+    //                                    vk::BufferUsageFlagBits::eTransferDst |
+    //                                    vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                    vk::SharingMode::eExclusive,
+    //                                    nullptr,
+    //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                    allocator);
 
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
@@ -200,7 +199,7 @@ namespace YTE
     dslbs.emplace_back(binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
-      nullptr);
+                       nullptr);
     descriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
     ++uniformBuffers;
 
@@ -208,7 +207,7 @@ namespace YTE
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
-      nullptr);
+                       nullptr);
     descriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
     ++uniformBuffers;
 
@@ -216,7 +215,7 @@ namespace YTE
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
-      nullptr);
+                       nullptr);
     descriptions.AddPreludeLine(fmt::format("#define UBO_MATERIAL_BINDING {}", binding));
     ++uniformBuffers;
 
@@ -240,7 +239,7 @@ namespace YTE
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
-      nullptr);
+                       nullptr);
     descriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
     ++uniformBuffers;
 
@@ -342,8 +341,9 @@ namespace YTE
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
 
-  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> aUBOModel,
-                                                    std::shared_ptr<vkhlf::Buffer> aUBOAnimation,
+  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
+                                                    std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
+                                                    std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                                     GraphicsView *aView)
   {
     auto mesh = static_cast<VkMesh*>(mMesh);
@@ -375,7 +375,7 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
 
     // Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboMaterial{ mUBOMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
 
     // Light manager Buffer for Fragment Shader
@@ -439,7 +439,6 @@ namespace YTE
 
     mVertexBuffer->update<Vertex>(0, mSubmesh->mVertexBuffer, update);
     mIndexBuffer->update<u32>(0, mSubmesh->mIndexBuffer, update);
-    mUBOMaterial->update<UBOMaterial>(0, mSubmesh->mUBOMaterial, update);
   }
 
 
@@ -544,9 +543,9 @@ namespace YTE
           mInstanceManager.AddModel(model);
         }
 
-        for (auto &submesh : mSubmeshes)
+        for (auto [submesh, i] : enumerate(mSubmeshes))
         {
-          model->CreateDescriptorSet(submesh.second.get());
+          model->CreateDescriptorSet(submesh->second.get(), i );
         }
       } 
     }
