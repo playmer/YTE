@@ -44,11 +44,11 @@ namespace YTE
         //void ApplyForceToBoat();
         //void RollBoat();
 
-        //Transform *mTransform;
-        //RigidBody *mRigidBody;
+        Transform *mTransform;
+        Orientation *mOrientation;
+        RigidBody *mRigidBody;
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
-        //Orientation *mOrientation;
 
         // Flag that represents the state of the boat's sail
         bool mIsSailUp;

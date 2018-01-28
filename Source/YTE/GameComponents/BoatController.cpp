@@ -40,7 +40,11 @@ namespace YTE
         mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
         mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
         // Member Init
-        mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
+        //mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
+        mRigidBody = mOwner->GetComponent<RigidBody>();
+        mOrientation = mOwner->GetComponent<Orientation>();
+        mTransform = mOwner->GetComponent<Transform>();
+        mIsSailUp = false;
     }
 /******************************************************************************/
 /*
@@ -50,7 +54,6 @@ namespace YTE
     void BoatController::ChangeSail(SailStateChanged *aEvent)
     {
         mIsSailUp = aEvent->SailUp;
-        std::cout << "SAIL UP: " + mIsSailUp;
     }
 
     void BoatController::Update(LogicUpdate *aEvent)
@@ -67,23 +70,25 @@ namespace YTE
     void BoatController::CalculateMovementVector(float dt)
     {
         
-        if (mIsSailUp)
+      if (mIsSailUp)
+      {
+        mRigidBody->ApplyImpulse(mOrientation->GetForwardVector() * dt * 10.0f, glm::vec3(0,0,0));
+        std::cout << mTransform->GetTranslation().x << ", " << mTransform->GetTranslation().y << ", " << mTransform->GetTranslation().z << std::endl;
+        if (mCurSpeed < mMaxSailSpeed)
         {
-            if (mCurSpeed < mMaxSailSpeed)
-            {
-                //mMoveVec += mForwardVec * mSailUpScalar * dt;
-                //Adds in WindDir * WindForce (wherever these come from)
-                //Adds in OceanCurrent * OceanForce (wherever those come from)
-            }
+            //mMoveVec += mForwardVec * mSailUpScalar * dt;
+            //Adds in WindDir * WindForce (wherever these come from)
+            //Adds in OceanCurrent * OceanForce (wherever those come from)
         }
-        else
+      }
+      else
+      {
+        if (mCurSpeed < mMaxCruiseSpeed)
         {
-            if (mCurSpeed < mMaxCruiseSpeed)
-            {
-                //mMoveVec += mForwardVec * mSailDownScalar;
-            }
+            //mMoveVec += mForwardVec * mSailDownScalar;
         }
-        // mMoveVec = result
+      }
+      // mMoveVec = result
     }
 
     void BoatController::ApplyMovementVector()
