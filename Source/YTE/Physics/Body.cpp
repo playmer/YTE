@@ -23,7 +23,7 @@ namespace YTE
   Body::Body(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType<Body*>(aProperties, this, Body::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
     mSpace->YTERegister(Events::LogicUpdate, this, &Body::OnLogicUpdate);
   };
 

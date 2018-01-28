@@ -193,7 +193,7 @@ namespace YTE
     , mRotateSpeed(0.80f)
     , mSpeedLimiter(1.0f)
   { 
-    DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
+    DeserializeByType(aProperties, this, GetStaticType()); 
  
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
  

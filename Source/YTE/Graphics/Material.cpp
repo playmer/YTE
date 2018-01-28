@@ -91,7 +91,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mModelMaterial(this)
   {
-    DeserializeByType<Material*>(aProperties, this, GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Material::Create(ModelChanged *aEvent)

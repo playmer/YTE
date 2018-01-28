@@ -49,7 +49,7 @@ namespace YTE
 
   RSValue Component::Serialize(RSAllocator &aAllocator)
   {
-    return SerializeByType<Component*>(aAllocator, this, GetType());
+    return SerializeByType(aAllocator, this, GetType());
   }
 
   RSValue Component::RemoveSerialized()

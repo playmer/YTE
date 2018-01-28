@@ -41,8 +41,7 @@ namespace YTE
   SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Collider(aOwner, aSpace), mRadius(1.f)
   {
-    DeserializeByType<SphereCollider*>(aProperties, 
-      this, SphereCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void SphereCollider::PhysicsInitialize()

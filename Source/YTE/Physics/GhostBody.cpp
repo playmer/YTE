@@ -26,7 +26,7 @@ namespace YTE
   GhostBody::GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
   {
-    DeserializeByType<GhostBody*>(aProperties, this, GhostBody::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   GhostBody::~GhostBody()

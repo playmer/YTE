@@ -19,7 +19,7 @@ namespace YTEditor
     : Component(aOwner, aSpace)
     , mDir(Gizmo::Dir::X)
   {
-    DeserializeByType<Translate*>(aProperties, this, Translate::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Translate::MoveObject(YTE::Composition *aObj, glm::vec3 aDelta)

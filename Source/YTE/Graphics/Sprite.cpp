@@ -51,7 +51,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mConstructing(true)
   {
-    DeserializeByType<Sprite*>(aProperties, this, Sprite::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
 
     mConstructing = false;
   }

@@ -43,7 +43,7 @@ namespace YTE
   BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Collider(aOwner, aSpace), mSize(1.f, 1.f, 1.f)
   {
-    DeserializeByType<BoxCollider*>(aProperties, this, BoxCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void BoxCollider::PhysicsInitialize()

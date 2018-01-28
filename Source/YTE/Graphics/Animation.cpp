@@ -280,7 +280,7 @@ namespace YTE
   Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType<Animator*>(aProperties, this, Animator::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
   }
 

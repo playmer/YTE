@@ -26,7 +26,7 @@ namespace YTE
   CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
   {
-    DeserializeByType<CollisionBody*>(aProperties, this, CollisionBody::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   CollisionBody::~CollisionBody()

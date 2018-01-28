@@ -74,7 +74,7 @@ namespace YTE
     mGraphicsView = aSpace->GetComponent<GraphicsView>();
     mEngine = aSpace->GetEngine();
 
-    DeserializeByType<Light*>(aProperties, this, Light::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 

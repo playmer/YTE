@@ -39,7 +39,7 @@ namespace YTE
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-    DeserializeByType<GraphicsView*>(aProperties, this, GraphicsView::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
 
     auto it = engine->GetWindows().find(mWindowName);
 

@@ -42,7 +42,7 @@ namespace YTE
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType<Orientation*>(aProperties, this, Orientation::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
 
     const glm::vec3 forwardReset(0, 0, -1);
     const glm::vec3 rightReset(1, 0, 0);

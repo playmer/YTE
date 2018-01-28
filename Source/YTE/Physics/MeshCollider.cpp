@@ -38,7 +38,7 @@ namespace YTE
   MeshCollider::MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType<MeshCollider*>(aProperties, this, MeshCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   // TODO (Josh): Reimplement Mesh collider.

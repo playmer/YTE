@@ -107,7 +107,7 @@ namespace YTE
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
   {
-    DeserializeByType<Model*>(aProperties, this, Model::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 
