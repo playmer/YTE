@@ -47,15 +47,15 @@ namespace YTE
 
     void UpdateUBO();
 
-    void SetDiffuse(glm::vec4 aDiffuse)
+    void SetDiffuse(glm::vec3 aDiffuse)
     {
-      mMaterial.mDiffuse = aDiffuse;
+      mMaterial.mDiffuse = glm::vec4{ aDiffuse, 1.0f };
       UpdateUBO();
     }
 
-    void SetAmbient(glm::vec4 aAmbient)
+    void SetAmbient(glm::vec3 aAmbient)
     {
-      mMaterial.mAmbient = aAmbient;
+      mMaterial.mAmbient = glm::vec4{ aAmbient, 1.0f };
       UpdateUBO();
     }
 
@@ -65,9 +65,9 @@ namespace YTE
       UpdateUBO();
     }
 
-    void SetEmissive(glm::vec4 aEmissive)
+    void SetEmissive(glm::vec3 aEmissive)
     {
-      mMaterial.mEmissive = aEmissive;
+      mMaterial.mEmissive = glm::vec4{ aEmissive, 1.0f };
       UpdateUBO();
     }
 
@@ -119,7 +119,7 @@ namespace YTE
       UpdateUBO();
     }
 
-    void SetIsEditorObject(int aIsEditorObject)
+    void SetIsEditorObject(bool aIsEditorObject)
     {
       mMaterial.mIsEditorObject = aIsEditorObject;
       UpdateUBO();
@@ -131,10 +131,10 @@ namespace YTE
       UpdateUBO();
     }
 
-    glm::vec4 GetDiffuse() { return mMaterial.mDiffuse; }
-    glm::vec4 GetAmbient() { return mMaterial.mAmbient; }
+    glm::vec3 GetDiffuse()  { return glm::vec3{mMaterial.mDiffuse.x,  mMaterial.mDiffuse.y,  mMaterial.mDiffuse.z  }; }
+    glm::vec3 GetAmbient()  { return glm::vec3{mMaterial.mAmbient.x,  mMaterial.mAmbient.y,  mMaterial.mAmbient.z  }; }
     glm::vec4 GetSpecular() { return mMaterial.mSpecular; }
-    glm::vec4 GetEmissive() { return mMaterial.mEmissive; }
+    glm::vec3 GetEmissive() { return glm::vec3{ mMaterial.mEmissive.x, mMaterial.mEmissive.y, mMaterial.mEmissive.z }; }
     glm::vec4 GetTransparent() { return mMaterial.mTransparent; }
     glm::vec4 GetReflective() { return mMaterial.mReflective; }
     float     GetOpacity() { return mMaterial.mOpacity; }
@@ -143,7 +143,7 @@ namespace YTE
     float     GetReflectivity() { return mMaterial.mReflectivity; }
     float     GetReflectiveIndex() { return mMaterial.mReflectiveIndex; }
     float     GetBumpScaling() { return mMaterial.mBumpScaling; }
-    int       GetIsEditorObject() { return mMaterial.mIsEditorObject; }
+    bool      GetIsEditorObject() { return mMaterial.mIsEditorObject; }
     float     GetPadding() { return mMaterial.mPadding; }
 
 
