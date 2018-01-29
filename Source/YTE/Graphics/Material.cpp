@@ -80,7 +80,9 @@ namespace YTE
   {
     YTERegisterType(Material);
 
-    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Lister, "Materials");
+    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Serializer,
+                                                    &Material::Lister, 
+                                                    "Materials");
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
 
@@ -146,6 +148,34 @@ namespace YTE
                           "";
 
       materials.emplace_back(std::make_pair(materialIt.get(), name));
+    }
+
+    return materials;
+  }
+
+
+  RSValue Material::Serializer(RSAllocator &aAllocator, 
+                               Object *aOwner)
+  {
+    auto owner = static_cast<Material*>(aOwner);
+
+    RSValue materials;
+    materials.SetObject();
+    for (auto &submeshMaterial : owner->mSubmeshMaterials)
+    {
+
+      auto materialSerialized  = SerializeByType(aAllocator, 
+                                                 submeshMaterial.get(), 
+                                                 TypeId<MaterialRepresentation>());
+
+      RSValue materialName;
+
+      auto &name = submeshMaterial->GetSubmesh()->mMaterialName;
+      materialName.SetString(name.c_str(),
+                             static_cast<RSSizeType>(name.size()),
+                             aAllocator);
+
+      materials.AddMember(materialName, materialSerialized, aAllocator);
     }
 
     return materials;

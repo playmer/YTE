@@ -45,7 +45,8 @@ namespace YTE
   };
 
 
-  typedef std::vector<std::pair<Object*, std::string>>(*Lister)(Object*);
+  using Lister = std::vector<std::pair<Object*, std::string>>(*)(Object*);
+  using Serializer = RSValue(*)(RSAllocator &aAllocator, Object *aOwner);
 
   // Applied to Properties and Fields
   class EditorHeader : public Attribute
@@ -66,14 +67,16 @@ namespace YTE
   {
   public:
     YTEDeclareType(EditorHeaderList);
-    EditorHeaderList(DocumentedObject *aObject, Lister aLister, std::string aName);
+    EditorHeaderList(DocumentedObject *aObject, Serializer aSerializer, Lister aLister, std::string aName);
 
     std::vector<std::pair<Object*, std::string>> GetList(Object *aObject);
+    RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
 
     std::string GetName();
 
   private:
     Lister mLister;
+    Serializer mSerializer;
 
     std::string mName;
   };

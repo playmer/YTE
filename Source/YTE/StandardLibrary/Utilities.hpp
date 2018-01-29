@@ -12,11 +12,23 @@
 #include <string>
 #include <unordered_map>
 
+#include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/prettywriter.h"
+
 #define enum_cast(aEnum) static_cast<size_t>(aEnum)
 #define YTEUnusedArgument(aArgument) (void)aArgument
 
 namespace YTE
 {
+  using RSValue = rapidjson::Value;
+  using RSDocument = rapidjson::Document;
+  using RSStringBuffer = rapidjson::StringBuffer;
+  using RSPrettyWriter = rapidjson::PrettyWriter<RSStringBuffer>;
+  using RSAllocator = rapidjson::Document::AllocatorType;
+  using RSSizeType = rapidjson::SizeType;
+
   using byte = std::uint8_t;
 
   using s8 = signed char;

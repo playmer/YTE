@@ -8,8 +8,8 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Core_Object_h
-#define YTE_Core_Object_h
+#ifndef YTE_Core_Object_hpp
+#define YTE_Core_Object_hpp
 
 #include "YTE/Core/ScriptBind.hpp"
 #include "YTE/Core/Utilities.hpp"
@@ -23,10 +23,10 @@ namespace YTE
   public:
     YTEDeclareType(Object);
 
-    void DeserializeByType(RSValue *aProperties, Object *aSelf, BoundType *aType);
+    static void DeserializeByType(RSValue *aProperties, Object *aSelf, Type *aType);
 
     // Search type and it's basetype for a property by the given name.
-    static Property* GetProperty(const std::string &aName, BoundType *aType);
+    static Property* GetProperty(const std::string &aName, Type *aType);
 
     // If you've asserted here, this isn't implemented, but Serialize has been called.
     virtual RSValue Serialize(RSAllocator &)
@@ -39,13 +39,13 @@ namespace YTE
     virtual void Deserialize(RSValue*) {};
 
   protected:
-    RSValue SerializeByType(RSAllocator &aAllocator, Object *aSelf, BoundType *aType);
+    static RSValue SerializeByType(RSAllocator &aAllocator, Object *aSelf, Type *aType);
 
-    void SerializeByFieldOrProperties(OrderedMultiMap<std::string, std::unique_ptr<Property>> &aMap,
-                                      RSValue &aValue,
-                                      RSAllocator &aAllocator, 
-                                      Object *aSelf, 
-                                      BoundType *aType);
+    static void SerializeByFieldOrProperties(OrderedMultiMap<std::string, std::unique_ptr<Property>> &aMap,
+                                             RSValue &aValue,
+                                             RSAllocator &aAllocator, 
+                                             Object *aSelf, 
+                                             Type *aType);
   };
 }
 #endif

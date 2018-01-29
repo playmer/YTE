@@ -24,11 +24,10 @@ namespace YTE
 
     Animation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Animation::GetSpeed,
-                    &Animation::SetSpeed, "Speed") 
-                    .AddAttribute<EditorProperty>()
-                    .AddAttribute<Serializable>()
-                    .SetDocumentation("The speed at which the animation will be played at.");
+    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed") 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("The speed at which the animation will be played at.");
   }
 
   Animation::Animation(std::string &aFile, Model *aModel, Engine *aEngine, uint32_t aAnimationIndex)
@@ -71,8 +70,6 @@ namespace YTE
     mSpeed = 1.0f;
   }
 
-
-
   Animation::~Animation()
   {
     if (mScene)
@@ -80,8 +77,6 @@ namespace YTE
       delete mScene;
     }
   }
-
-
 
   void Animation::Update(LogicUpdate* aEvent)
   {
@@ -270,7 +265,7 @@ namespace YTE
   {
     YTERegisterType(Animator);
 
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Animator::Lister, "Animations");
+    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Serializer, &Lister, "Animations");
 
     std::vector<std::vector<Type*>> deps = { { Model::GetStaticType() } };
 
@@ -349,5 +344,30 @@ namespace YTE
         return;
       }
     }
+  }
+
+  RSValue Animator::Serializer(RSAllocator &aAllocator, Object *aOwner)
+  {
+    auto owner = static_cast<Animator*>(aOwner);
+
+    RSValue animations;
+    animations.SetObject();
+    for (auto &animationIt : owner->mAnimations)
+    {
+      auto materialSerialized = SerializeByType(aAllocator, 
+                                                animationIt.first, 
+                                                TypeId<Animation>());
+
+      RSValue materialName;
+
+      auto &name = animationIt.second;
+      materialName.SetString(name.c_str(),
+                             static_cast<RSSizeType>(name.size()),
+                             aAllocator);
+
+      animations.AddMember(materialName, materialSerialized, aAllocator);
+    }
+
+    return animations;
   }
 }

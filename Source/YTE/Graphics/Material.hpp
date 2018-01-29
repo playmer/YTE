@@ -26,11 +26,11 @@ namespace YTE
   {
   public:
     YTEDeclareType(MaterialRepresentation);
-    
-    MaterialRepresentation(Material *aMaterialComponent)
+
+    MaterialRepresentation(Material *aMaterialComponent, RSValue *aProperties = nullptr)
       : mMaterialComponent(aMaterialComponent)
     {
-
+      DeserializeByType(aProperties, this, GetStaticType());
     }
 
     MaterialRepresentation(UBOMaterial aMaterial, 
@@ -172,6 +172,7 @@ namespace YTE
     void Initialize() override;
     void Create(ModelChanged *aEvent);
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
+    static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
 
   private:
     Renderer *mRenderer;

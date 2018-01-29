@@ -18,7 +18,7 @@ namespace YTE
     YTERegisterType(Object);
   }
 
-  Property* Object::GetProperty(const std::string &aName, BoundType *aType)
+  Property* Object::GetProperty(const std::string &aName, Type *aType)
   {
     if (aType == nullptr)
     {
@@ -49,7 +49,7 @@ namespace YTE
   }
 
 
-  void Object::DeserializeByType(RSValue *aProperties, Object *aSelf, BoundType *aType)
+  void Object::DeserializeByType(RSValue *aProperties, Object *aSelf, Type *aType)
   {
     // Nothing to serialize
     if (aProperties == nullptr)
@@ -66,10 +66,27 @@ namespace YTE
 
       if (namedProperty == nullptr)
       {
-        std::cout << "You have likely removed " << propertyName.c_str()
-          << " from " << aType->GetName().c_str()
-          << " but are still attempting to deserialize it." << std::endl;
-        continue;
+        auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
+        if (nullptr != listerAttribute)
+        {
+          auto list = listerAttribute->GetList(aSelf);
+
+          for (auto &objectIt : list)
+          {
+            DeserializeByType(value, objectIt.first, objectIt.first->GetType());
+          }
+
+          continue;
+        }
+        else
+        {
+          //fmt::format("You have likely removed {}, from {}, but are still attempting to deserialize it.",)
+
+          std::cout << "You have likely removed " << propertyName.c_str()
+                    << " from " << aType->GetName().c_str()
+                    << " but are still attempting to deserialize it." << std::endl;
+          continue;
+        }
       }
 
       // If the bound field/property does not have the Property Attribute, do nothing.
@@ -83,7 +100,7 @@ namespace YTE
       }
       else if (setterType->GetEnumOf())
       {
-        BoundType *enumType = setterType;
+        Type *enumType = setterType;
 
         // TODO (Josh): Would prefer to give an error like this, but we cannot find the name of just a Type.
         //DebugObjection(enumType == nullptr, 
@@ -174,7 +191,7 @@ namespace YTE
                                             RSValue &aValue,
                                             RSAllocator &aAllocator,
                                             Object *aSelf,
-                                            BoundType *aType)
+                                            Type *aType)
   {
     // TODO (Josh): Why is this being passed?.
     YTEUnusedArgument(aType);
@@ -280,7 +297,7 @@ namespace YTE
     }
   }
 
-  RSValue Object::SerializeByType(RSAllocator &aAllocator, Object *aSelf, BoundType *aType)
+  RSValue Object::SerializeByType(RSAllocator &aAllocator, Object *aSelf, Type *aType)
   {
     RSValue toReturn;
     toReturn.SetObject();
@@ -290,6 +307,19 @@ namespace YTE
 
     SerializeByFieldOrProperties(fields, toReturn, aAllocator, aSelf, aType);
     SerializeByFieldOrProperties(properties, toReturn, aAllocator, aSelf, aType);
+
+    auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
+    if (nullptr != listerAttribute)
+    {
+      auto array = listerAttribute->Serialize(aAllocator, aSelf);
+
+      RSValue arrayName;
+      arrayName.SetString(listerAttribute->GetName().c_str(),
+                          static_cast<RSSizeType>(listerAttribute->GetName().size()),
+                          aAllocator);
+
+      toReturn.AddMember(arrayName, array, aAllocator);
+    }
 
     return toReturn;;
   }
