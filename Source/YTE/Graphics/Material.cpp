@@ -24,27 +24,27 @@ namespace YTE
     YTEBindProperty(&GetTransparent, &SetTransparent, "Transparent")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindProperty(&GetReflective, &SetReflective, "Reflective")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
-    YTEBindProperty(&GetOpacity, &SetOpacity, "Opacity")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetReflective, &SetReflective, "Reflective")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetOpacity, &SetOpacity, "Opacity")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
     YTEBindProperty(&GetShininess, &SetShininess, "Shininess")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
     YTEBindProperty(&GetShininessStrength, &SetShininessStrength, "ShininessStrength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindProperty(&GetReflectivity, &SetReflectivity, "Reflectivity")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
-    YTEBindProperty(&GetReflectiveIndex, &SetReflectiveIndex, "ReflectiveIndex")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
-    YTEBindProperty(&GetBumpScaling, &SetBumpScaling, "BumpScaling")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetReflectivity, &SetReflectivity, "Reflectivity")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetReflectiveIndex, &SetReflectiveIndex, "ReflectiveIndex")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetBumpScaling, &SetBumpScaling, "BumpScaling")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
     YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
