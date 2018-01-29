@@ -38,6 +38,8 @@ add_subdirectory(bullet3)
 set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
 option(BUILD_VKCPP_GLFW "Build GLFW" OFF)
 option(ENABLE_TESTING "Allow building of tests and looking for gmock" OFF)
+option(ENABLE_HLSL "Enables HLSL input support" OFF)
+option(BUILD_TESTING "Enables testing" OFF)
 
 set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
 
@@ -80,8 +82,9 @@ set_target_properties(OGLCompiler                         PROPERTIES FOLDER "Dep
 set_target_properties(OSDependent                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
 set_target_properties(SPIRV                               PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
 set_target_properties(SPVRemapper                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
-set_target_properties(HLSL                                PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
+#set_target_properties(HLSL                                PROPERTIES FOLDER "Dependencies/VkHLF/hlsl")
 set_target_properties(WWise_SoundEngine                   PROPERTIES FOLDER "Dependencies/YTE/Dependencies")
+
 
 # Turn the warnings off on our dependencies.
 target_compile_options(assimp                PRIVATE /W0)
@@ -106,7 +109,7 @@ target_compile_options(OGLCompiler           PRIVATE /W0)
 target_compile_options(OSDependent           PRIVATE /W0)
 target_compile_options(SPIRV                 PRIVATE /W0)
 target_compile_options(SPVRemapper           PRIVATE /W0)
-target_compile_options(HLSL                  PRIVATE /W0)
+#target_compile_options(HLSL                  PRIVATE /W0)
 
 set_target_properties(assimp
                       Bullet2FileLoader
@@ -130,7 +133,7 @@ set_target_properties(assimp
                       OSDependent
                       SPIRV
                       SPVRemapper
-                      HLSL
+                      #HLSL
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}

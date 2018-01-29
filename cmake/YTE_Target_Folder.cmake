@@ -1,0 +1,11 @@
+function(YTE_Target_Folder aTarget aFolder)
+  get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+  foreach(linkLibrary ${targetLinkLibraries})
+    if (TARGET ${linkLibrary})
+      get_target_property(targetFolder ${aTarget} FOLDER) 
+      get_property(targetFolder TARGET ${aTarget} PROPERTY FOLDER)
+
+      message(STATUS ${aFolder}/${targetFolder})
+    endif()
+  endforeach()
+endfunction(YTE_Target_Folder)
