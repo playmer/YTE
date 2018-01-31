@@ -81,6 +81,13 @@ namespace YTE
     GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
   }
 
+  bool RemovePred(const std::pair<Particle, std::unique_ptr<InstantiatedModel>> &boi)
+  {
+    if (boi.first.mLife <= 0.0f) return true;
+
+    return false;
+  }
+
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
     float dt = GetSpace()->GetEngine()->GetDt();;
@@ -89,12 +96,7 @@ namespace YTE
     mParticles.erase(
       std::remove_if(mParticles.begin(),
                      mParticles.end(),
-                     [](std::pair<Particle, std::unique_ptr<InstantiatedModel> > boi)
-                     {
-                       if (boi.first.mLife <= 0.0f) return true;
-
-                       return false;
-                     }
+                     RemovePred
       ),
       mParticles.end()
     );

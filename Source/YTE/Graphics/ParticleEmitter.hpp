@@ -73,7 +73,7 @@ namespace YTE
 
   private:
 
-    std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel> > > mParticles;
+    std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
 
     std::string mTextureName; //
 
