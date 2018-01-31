@@ -89,7 +89,7 @@ namespace YTE
     mParticles.erase(
       std::remove_if(mParticles.begin(),
                      mParticles.end(),
-                     [](std::pair<Particle, InstantiatedModel*> boi)
+                     [](std::pair<Particle, std::unique_ptr<InstantiatedModel> > boi)
                      {
                        if (boi.first.mLife <= 0.0f) return true;
 
@@ -298,7 +298,7 @@ namespace YTE
     particle.mVelocity = mInitVelocity;
     particle.mLife = mLifetime;
 
-    particle.mUBO = std::make_unique<UBOModel>();
+    particle.mUBO = new UBOModel();
     particle.mUBO->mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
     particle.mUBO->mModelMatrix = particle.mUBO->mModelMatrix * glm::toMat4(particle.mRotation);
     particle.mUBO->mModelMatrix = glm::scale(particle.mUBO->mModelMatrix, mParticleScale);
