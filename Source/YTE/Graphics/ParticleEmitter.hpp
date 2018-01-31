@@ -68,6 +68,9 @@ namespace YTE
     glm::vec3 GetParticleScale();
     void SetParticleScale(glm::vec3 aScale);
 
+    glm::vec3 GetParticleScaleVariance();
+    void SetParticleScaleVariance(glm::vec3 aVariance);
+
     glm::vec3 GetEmitterScale();
     void SetEmitterScale(glm::vec3 aScale);
 
@@ -96,6 +99,7 @@ namespace YTE
 
     glm::vec4 mColor;
     glm::vec3 mParticleScale;
+    glm::vec3 mParticleScaleVariance;
 
     glm::vec3 mEmitterScale;
 
@@ -105,5 +109,9 @@ namespace YTE
     void CreateParticle();
 
     void OnTransformChanged(TransformChanged *aEvent);
+
+    int RandomInt(int aMin, int aMax);
+    float Variance();
+    
   };
 }

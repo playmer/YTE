@@ -51,6 +51,10 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
+    YTEBindProperty(&ParticleEmitter::GetParticleScaleVariance, &ParticleEmitter::SetParticleScaleVariance, "Scale Variance")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
     YTEBindProperty(&ParticleEmitter::GetEmitterScale, &ParticleEmitter::SetEmitterScale, "Emitter Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
@@ -75,7 +79,8 @@ namespace YTE
     , mLifetime(3.0f)
     , mLifetimeVariance(0.0f)
     , mColor(1.0f, 1.0f, 1.0f, 1.0f)
-    , mParticleScale(0.2f, 0.2f, 0.2f)
+    , mParticleScale(0.1f, 0.1f, 0.1f)
+    , mParticleScaleVariance()
     , mEmitterScale()
     , mEmitRate(0.0f)
     , mEmitCount(0.0f)
@@ -233,6 +238,16 @@ namespace YTE
     mParticleScale = aScale;
   }
 
+  glm::vec3 ParticleEmitter::GetParticleScaleVariance()
+  {
+    return mParticleScaleVariance;
+  }
+
+  void ParticleEmitter::SetParticleScaleVariance(glm::vec3 aVariance)
+  {
+    mParticleScaleVariance = aVariance;
+  }
+
   glm::vec3 ParticleEmitter::GetEmitterScale()
   {
     return mEmitterScale;
@@ -321,16 +336,21 @@ namespace YTE
 
     // calculate the random bullshit
     glm::vec3 velVar;
-    velVar.x = (rand() % 10) * mVelocityVariance.x;
-    velVar.y = (rand() % 10) * mVelocityVariance.y;
-    velVar.z = (rand() % 10) * mVelocityVariance.z;
+    velVar.x = Variance() * mVelocityVariance.x;
+    velVar.y = Variance() * mVelocityVariance.y;
+    velVar.z = Variance() * mVelocityVariance.z;
+
+    glm::vec3 scaleVar;
+    scaleVar.x = Variance() * mParticleScaleVariance.x;
+    scaleVar.y = Variance() * mParticleScaleVariance.y;
+    scaleVar.z = Variance() * mParticleScaleVariance.z;
 
     Particle particle;
     particle.mPosition = mPosition + mPositionOffset;
-    particle.mScale = mParticleScale;
+    particle.mScale = mParticleScale + scaleVar;
     particle.mColor = mColor;
     particle.mVelocity = mInitVelocity + velVar;
-    particle.mLife = mLifetime;
+    particle.mLife = mLifetime + Variance() * mLifetimeVariance;
 
     particle.mUBO.mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
     particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
@@ -342,6 +362,18 @@ namespace YTE
   void ParticleEmitter::OnTransformChanged(TransformChanged *aEvent)
   {
     mPosition = aEvent->WorldPosition;
+  }
+
+  int ParticleEmitter::RandomInt(int aMin, int aMax)
+  {
+    int range = aMax - aMin;
+
+    return rand() % range + aMin;
+  }
+
+  float ParticleEmitter::Variance()
+  {
+    return (static_cast<float>(rand() % 200) / 100.0f) - 1.0f;
   }
 
 }
