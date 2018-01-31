@@ -9,6 +9,10 @@
 
 #include "YTE/Graphics/Generics/Texture.hpp"
 
+#include "YTE/Graphics/UBOs.hpp"
+
+#include "YTE/Graphics/Generics/Renderer.hpp"
+
 namespace YTE
 {
   struct Particle
@@ -23,7 +27,7 @@ namespace YTE
 
     glm::quat mRotation;
 
-    UBOModel *mUBO;
+    UBOModel mUBO;
   };
 
   class ParticleEmitter : public Component
@@ -32,6 +36,8 @@ namespace YTE
     YTEDeclareType(ParticleEmitter);
     ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~ParticleEmitter();
+
+    ParticleEmitter(ParticleEmitter&&) = default;
 
     void Initialize() override;
 
@@ -72,8 +78,10 @@ namespace YTE
     void SetEmitCount(float aEmitCount);
 
   private:
-
+    
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
+
+    YTE::Renderer *mRenderer;
 
     std::string mTextureName; //
 
@@ -95,5 +103,7 @@ namespace YTE
     float mEmitCount;
 
     void CreateParticle();
+
+    void OnTransformChanged(TransformChanged *aEvent);
   };
 }
