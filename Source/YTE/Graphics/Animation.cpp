@@ -265,7 +265,10 @@ namespace YTE
   {
     YTERegisterType(Animator);
 
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Serializer, &Lister, "Animations");
+    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer, 
+                                                              &Serializer, 
+                                                              &Lister, 
+                                                              "Animations");
 
     std::vector<std::vector<Type*>> deps = { { Model::GetStaticType() } };
 
@@ -369,5 +372,10 @@ namespace YTE
     }
 
     return animations;
+  }
+
+  void Animator::Deserializer(RSValue &aValue, Object *aOwner)
+  {
+    auto owner = static_cast<Animator*>(aOwner);
   }
 }

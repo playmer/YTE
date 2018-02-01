@@ -69,12 +69,7 @@ namespace YTE
         auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
         if (nullptr != listerAttribute)
         {
-          auto list = listerAttribute->GetList(aSelf);
-
-          for (auto &objectIt : list)
-          {
-            DeserializeByType(value, objectIt.first, objectIt.first->GetType());
-          }
+          listerAttribute->Deserialize(*value, aSelf);
 
           continue;
         }

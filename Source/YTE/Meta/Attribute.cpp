@@ -110,12 +110,14 @@ namespace YTE
   }
 
 
-  EditorHeaderList::EditorHeaderList(YTE::DocumentedObject *aObject, 
+  EditorHeaderList::EditorHeaderList(YTE::DocumentedObject *aObject,
+                                     Deserializer aDeserializer,
                                      Serializer aSerializer, 
                                      Lister aLister, 
                                      std::string aName)
     : mLister(aLister)
     , mSerializer(aSerializer)
+    , mDeserializer(aDeserializer)
     , mName(aName)
   {
     YTEUnusedArgument(aObject);
@@ -129,6 +131,12 @@ namespace YTE
   RSValue EditorHeaderList::Serialize(RSAllocator &aAllocator, Object *aOwner)
   {
     return mSerializer(aAllocator, aOwner);
+  }
+
+
+  void EditorHeaderList::Deserialize(RSValue &aValue, Object *aOwner)
+  {
+    return mDeserializer(aValue, aOwner);
   }
 
   std::string EditorHeaderList::GetName()

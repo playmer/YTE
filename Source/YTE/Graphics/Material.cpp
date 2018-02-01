@@ -80,13 +80,17 @@ namespace YTE
   {
     YTERegisterType(Material);
 
-    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Serializer,
+    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Deserializer,
+                                                    &Material::Serializer,
                                                     &Material::Lister, 
                                                     "Materials");
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
+    YTEBindField(&Material::mName, "Name", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
   }
 
   Material::Material(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -106,14 +110,28 @@ namespace YTE
 
       if (nullptr != instantiatedModel)
       {
-        for (auto [submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+        if (instantiatedModel->GetMesh()->mName != mName)
         {
-          auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial, 
-                                                                      this, 
-                                                                      i,
-                                                                      &(*submesh));
-          mSubmeshMaterials.emplace_back(std::move(materialRep));
+          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          {
+            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
+                                                                        this,
+                                                                        i,
+                                                                        &(*submesh));
+            mSubmeshMaterials.emplace_back(std::move(materialRep));
+          }
         }
+        else
+        {
+          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          {
+            mSubmeshMaterials[i]->SetSubmesh(&(*submesh));
+            mSubmeshMaterials[i]->SetIndex(i);
+            mSubmeshMaterials[i]->UpdateUBO();
+          }
+        }
+
+        mName = instantiatedModel->GetMesh()->mName;
       }
     }
   }
@@ -151,6 +169,18 @@ namespace YTE
     }
 
     return materials;
+  }
+
+  void Material::Deserializer(RSValue &aValue, 
+                              Object *aOwner)
+  {
+    auto owner = static_cast<Material*>(aOwner);
+    owner->mSubmeshMaterials.clear();
+
+    for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)
+    {
+      owner->mSubmeshMaterials.emplace_back(std::make_unique<MaterialRepresentation>(owner, &(valueIt->value)));
+    }
   }
 
 

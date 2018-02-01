@@ -206,10 +206,6 @@ namespace YTE
       Destroy();
       Create();
     }
-
-    ModelChanged modChange;
-    modChange.Object = mOwner;
-    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
   
@@ -289,6 +285,10 @@ namespace YTE
     {
       mInstantiatedModel->SetDefaultAnimationOffset();
     }
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 

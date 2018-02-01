@@ -148,6 +148,10 @@ namespace YTE
 
 
     Submesh* GetSubmesh() { return mSubmesh; }
+    void SetSubmesh(Submesh *aSubmesh) { mSubmesh = aSubmesh; }
+
+    size_t GetIndex() { return mIndex; }
+    void SetIndex(size_t aIndex) { mIndex = aIndex; }
   private:
     Material *mMaterialComponent;
     UBOMaterial mMaterial;
@@ -173,11 +177,13 @@ namespace YTE
     void Create(ModelChanged *aEvent);
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
     static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
+    static void Deserializer(RSValue &aValue, Object *aOwner);
 
   private:
-    Renderer *mRenderer;
-    Window *mWindow;
+    //Renderer *mRenderer;
+    //Window *mWindow;
     Model *mModel;
+    std::string mName;
 
     MaterialRepresentation mModelMaterial;
     std::vector<std::unique_ptr<MaterialRepresentation>> mSubmeshMaterials;
