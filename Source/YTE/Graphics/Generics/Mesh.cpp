@@ -237,56 +237,28 @@ namespace YTE
     material->GetTexture(aiTextureType_SPECULAR, 0, &specular);
     material->GetTexture(aiTextureType_NORMALS, 0, &normals);
 
-    bool noDiffuse = true, noSpecular = true, noNormal = true;
+    std::string defaultTexture{ "white.png" };
+
+    mDiffuseMap = defaultTexture;
+    mSpecularMap = defaultTexture;
+    mNormalMap = defaultTexture;
 
     if (0 != diffuse.length)
     {
       mDiffuseMap = diffuse.C_Str();
-      noDiffuse = false;
     }
 
     if (0 != specular.length)
     {
       mSpecularMap = specular.C_Str();
-      noSpecular = false;
     }
 
     if (0 != normals.length)
     {
       mNormalMap = normals.C_Str();
-      noNormal = false;
     }
 
-    // decide shader based on maps chosen
-    if (noDiffuse)
-    {
-      mShaderSetName = "None";
-    }
-    else
-    {
-      if (noSpecular)
-      {
-        if (noNormal)
-        {
-          mShaderSetName = "OnlyDiff";
-        }
-        else
-        {
-          mShaderSetName = "NoSpec";
-        }
-      }
-      else
-      {
-        if (noNormal)
-        {
-          mShaderSetName = "NoNorm";
-        }
-        else
-        {
-          mShaderSetName = "All";
-        }
-      }
-    }
+    mShaderSetName = "Phong";
 
 
     // get the vertex data with bones (if provided)

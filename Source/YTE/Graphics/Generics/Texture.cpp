@@ -51,10 +51,17 @@ namespace YTE
 
     //TODO (Josh): Make Crunch work.
     //file = L"Crunch" / file.filename().concat(L".crn");
-    file = L"Originals" / file.filename();
-    std::string fileStr{ file.string() };
+    auto textureFile = Path::GetTexturePath(Path::GetEnginePath(), aFile);
 
-    auto textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
+    if (false == fs::exists(textureFile))
+    {
+      file = L"Originals" / file.filename();
+      std::string fileStr{ file.string() };
+
+      textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
+    }
+
+
 
     fs::path type{ textureFile };
     type = type.extension();

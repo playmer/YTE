@@ -203,29 +203,21 @@ namespace YTE
     descriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
     ++uniformBuffers;
 
-    // Material Buffer for Fragment shader.
+    // Model Material Buffer for Fragment shader.
     dslbs.emplace_back(++binding,
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_MATERIAL_BINDING {}", binding));
+    descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
     ++uniformBuffers;
-
-    //// Model Material Buffer for Fragment shader.
-    //dslbs.emplace_back(++binding,
-    //                   vk::DescriptorType::eUniformBuffer,
-    //                   vk::ShaderStageFlagBits::eFragment,
-    //                   nullptr);
-    //descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
-    //++uniformBuffers;
-    //
-    //// Submesh Material Buffer for Fragment shader.
-    //dslbs.emplace_back(++binding,
-    //                   vk::DescriptorType::eUniformBuffer,
-    //                   vk::ShaderStageFlagBits::eFragment,
-    //                   nullptr);
-    //descriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
-    //++uniformBuffers;
+    
+    // Submesh Material Buffer for Fragment shader.
+    dslbs.emplace_back(++binding,
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eFragment,
+                       nullptr);
+    descriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
+    ++uniformBuffers;
 
     // Lights Buffer for Fragment shader.
     dslbs.emplace_back(++binding,
@@ -335,6 +327,7 @@ namespace YTE
 
   SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
                                                     std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
+                                                    std::shared_ptr<vkhlf::Buffer> &aUBOModelMaterial,
                                                     std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                                     GraphicsView *aView)
   {
@@ -366,9 +359,13 @@ namespace YTE
     vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOAnimation) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
 
-    // Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboMaterial);
+    // Model Material Buffer for Fragment shader.
+    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOMaterial) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModelMaterial);
+
+    // Submesh Material Buffer for Fragment shader.
+    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
 
     // Light manager Buffer for Fragment Shader
     vkhlf::DescriptorBufferInfo uboLights { mSurface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };

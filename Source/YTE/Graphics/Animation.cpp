@@ -376,6 +376,13 @@ namespace YTE
 
   void Animator::Deserializer(RSValue &aValue, Object *aOwner)
   {
-    auto owner = static_cast<Animator*>(aOwner);
+    //auto owner = static_cast<Animator*>(aOwner);
+    //
+    //for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)
+    //{
+    //  auto animation = owner->AddAnimation(valueIt->name.GetString());
+    //
+    //  DeserializeByType(&(valueIt->value), animation, animation->GetType());
+    //}
   }
 }
