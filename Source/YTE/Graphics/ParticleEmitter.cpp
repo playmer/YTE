@@ -345,8 +345,14 @@ namespace YTE
     scaleVar.y = Variance() * mParticleScaleVariance.y;
     scaleVar.z = Variance() * mParticleScaleVariance.z;
 
+    // position randomness to cover whole emitter area
+    glm::vec3 posDist;
+    posDist.x = Variance() * mEmitterScale.x;
+    posDist.y = Variance() * mEmitterScale.y;
+    posDist.z = Variance() * mEmitterScale.z;
+
     Particle particle;
-    particle.mPosition = mPosition + mPositionOffset;
+    particle.mPosition = mPosition + mPositionOffset + posDist;
     particle.mScale = mParticleScale + scaleVar;
     particle.mColor = mColor;
     particle.mVelocity = mInitVelocity + velVar;
