@@ -85,11 +85,7 @@ namespace YTE
     , mEmitRate(0.0f)
     , mEmitCount(0.0f)
   {
-  }
-
-  ParticleEmitter::~ParticleEmitter()
-  {
-    mParticles.clear();
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void ParticleEmitter::Initialize()
