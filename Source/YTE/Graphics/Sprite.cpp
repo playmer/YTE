@@ -161,6 +161,10 @@ namespace YTE
     auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
+
+    mInstantiatedSprite->mUseAlphaBlending = true;
+    mInstantiatedSprite->mUseAdditiveBlending = true;
+
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);

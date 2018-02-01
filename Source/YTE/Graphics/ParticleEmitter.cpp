@@ -330,6 +330,9 @@ namespace YTE
 
     std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mesh);
 
+    model->mUseAlphaBlending = true;
+    model->mUseAdditiveBlending = true;
+
     // calculate the random bullshit
     glm::vec3 velVar;
     velVar.x = Variance() * mVelocityVariance.x;
