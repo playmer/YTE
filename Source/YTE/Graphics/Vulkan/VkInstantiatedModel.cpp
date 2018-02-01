@@ -68,13 +68,13 @@ namespace YTE
                                        allocator);
       
       //// create UBO Per Model buffer
-      //mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
-      //                                         vk::BufferUsageFlagBits::eTransferDst |
-      //                                         vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                         vk::SharingMode::eExclusive,
-      //                                         nullptr,
-      //                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                         allocator);
+      mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+                                               vk::BufferUsageFlagBits::eTransferDst |
+                                               vk::BufferUsageFlagBits::eUniformBuffer,
+                                               vk::SharingMode::eExclusive,
+                                               nullptr,
+                                               vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                               allocator);
     }
 
     // Create UBO Animation Buffer.
@@ -105,6 +105,16 @@ namespace YTE
 
       CreateDescriptorSet(submesh->second.get(), i);
     }
+
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
+    modelMaterial.mShininess = 1.0f;
+    modelMaterial.mIsEditorObject = 0;
+
+    UpdateUBOMaterial(&modelMaterial);
 
     mUBOModelData.mModelMatrix = glm::mat4(1.0f);
   }
@@ -174,6 +184,7 @@ namespace YTE
     mPipelineData.emplace(aSubMesh, 
                           aSubMesh->CreatePipelineData(mUBOModel, 
                                                        mUBOAnimation,
+                                                       mUBOModelMaterial,
                                                        mUBOSubmeshMaterials[aIndex].first,
                                                        mView));
   }
@@ -222,6 +233,8 @@ namespace YTE
       {
         material.first->update<UBOMaterial>(0, material.second, update);
       }
+
+      mUBOModelMaterial->update<UBOMaterial>(0, mUBOModelMaterialData, update);
 
       mLoadUBOMaterial = false;
     }

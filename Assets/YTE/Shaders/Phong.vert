@@ -55,7 +55,7 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
-    vec4 mDiffuseColor
+    vec4 mDiffuseColor;
   } Model;
 
 

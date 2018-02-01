@@ -430,8 +430,13 @@ namespace YTE
 
   }
 
+
+  std::vector<Type*> GetDependencyOrder(Composition *aComposition);
+
   RSValue Composition::Serialize(RSAllocator &aAllocator)
   {
+    auto order = GetDependencyOrder(this);
+
     RSValue toReturn;
     toReturn.SetObject();
 
@@ -523,6 +528,159 @@ namespace YTE
     auto compositions = mCompositions.FindAll(aName);
     return compositions;
   }
+
+
+  struct TypeNode
+  {
+    TypeNode(Type *aType)
+      : mType(aType)
+    {
+
+    }
+
+    Type *mType;
+
+    std::map<Type*, std::weak_ptr<TypeNode>> mParents;
+    std::map<Type*, std::weak_ptr<TypeNode>> mChildren;
+    bool mVisitedParents{ false };
+    bool mOrdered{ false };
+  };
+
+
+  void resolveType(std::map<Type*, std::shared_ptr<TypeNode>> &aTypesPlaced, 
+                   std::vector<TypeNode*> &aOrdering, 
+                   TypeNode *aType)
+  {
+    if (aType->mOrdered)
+    {
+      return;
+    }
+
+    if (false == aType->mVisitedParents)
+    {
+      aType->mVisitedParents = true;
+
+      for (auto &parent : aType->mParents)
+      {
+        auto parentNode = parent.second.lock();
+        resolveType(aTypesPlaced, aOrdering, parentNode.get());
+      }
+
+      aOrdering.emplace_back(aType);
+    }
+
+    for (auto &child : aType->mChildren)
+    {
+      auto childNode = child.second.lock();
+      resolveType(aTypesPlaced, aOrdering, childNode.get());
+    }
+  };
+
+  
+  std::vector<Type*> GetDependencyOrder(Composition *aComposition)
+  {
+    std::map<Type*, std::shared_ptr<TypeNode>> typesPlaced;
+    std::set<Type*> typesOnComposition;
+
+    auto getType = [&typesPlaced](Type *aType)
+    {
+      auto it = typesPlaced.find(aType);
+
+      if (it != typesPlaced.end())
+      {
+        return it->second;
+      }
+
+      auto it2 = typesPlaced.emplace(aType, std::make_shared<TypeNode>(aType));
+
+      return it2.first->second;
+    };
+
+    auto components = aComposition->GetComponents();
+
+    // Preemptively make a set with the components that exist.
+    for (auto &component : *components)
+    {
+      typesOnComposition.emplace(component.first);
+    }
+
+    for (auto &component : *components)
+    {
+      auto typeNode = getType(component.first);
+
+      auto dependencies = typeNode->mType->GetAttribute<ComponentDependencies>();
+
+      if (nullptr != dependencies)
+      {
+        auto &types = dependencies->mTypes;
+
+        for (auto &orTypes : dependencies->mTypes)
+        {
+          for (auto orType : orTypes)
+          {
+            if (0 != typesOnComposition.count(orType))
+            {
+              auto dependentTypeNode = getType(orType);
+              typeNode->mParents.emplace(dependentTypeNode->mType, dependentTypeNode);
+              dependentTypeNode->mChildren.emplace(typeNode->mType, typeNode);
+            }
+          }
+        }
+      }
+    }
+
+    std::vector<TypeNode*> ordering;
+
+    for (auto &type : typesPlaced)
+    {
+      if (0 == type.second->mParents.size())
+      {
+        ordering.emplace_back(type.second.get());
+        type.second->mVisitedParents = true;
+        type.second->mOrdered = true;
+      }
+    }
+
+    if (0 == ordering.size())
+    {
+      std::cout << "Type Cycle detected!\n";
+      return {};
+    }
+
+    std::vector<TypeNode*> nonDependentTypes{ ordering };
+
+    for (auto &type : nonDependentTypes)
+    {
+      for (auto &child : type->mChildren)
+      {
+        auto childNode = child.second.lock();
+        resolveType(typesPlaced, ordering, childNode.get());
+      }
+    }
+
+
+    std::vector<Type*> toReturn;
+    toReturn.reserve(ordering.size());
+
+
+    for (auto &type : ordering)
+    {
+      toReturn.emplace_back(type->mType);
+    }
+
+    return toReturn;
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   std::string Composition::CheckDependencies(BoundType *aType)
   {
