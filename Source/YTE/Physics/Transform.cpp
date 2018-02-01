@@ -88,7 +88,7 @@ namespace YTE
     , mScale(1.f, 1.f, 1.f)
     , mWorldScale(1.f, 1.f, 1.f)
   {
-    DeserializeByType<Transform*>(aProperties, this, Transform::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   void Transform::Initialize()
@@ -166,7 +166,7 @@ namespace YTE
 
   glm::vec3 Transform::GetRotationAsEulerRadians() const
   {
-    return glm::radians(glm::eulerAngles(mRotation));
+    return glm::eulerAngles(mRotation);
   }
   
   ////////////////////////////////////////////////////////////////////////////

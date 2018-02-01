@@ -257,7 +257,7 @@ namespace YTE
 
   void WWiseSystem::SetRTPC(u64 aRTPC, float aValue)
   {
-    AK::SoundEngine::SetRTPCValue(aRTPC, aValue);
+    AK::SoundEngine::SetRTPCValue(static_cast<AkRtpcID>(aRTPC), aValue);
   }
 
   void WWiseSystem::Update(float)
@@ -566,7 +566,7 @@ namespace YTE
 
   void WWiseSystem::SendEvent(u64 aEvent, AkGameObjectID aObject)
   {
-    AK::SoundEngine::PostEvent(aEvent, aObject);
+    AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
   }
 
   void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)
@@ -576,7 +576,7 @@ namespace YTE
 
   void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
   {
-    AK::SoundEngine::SetSwitch(aSwitchGroupId, aSwitchId, aId);
+    AK::SoundEngine::SetSwitch(static_cast<AkSwitchGroupID>(aSwitchGroupId), static_cast<AkSwitchStateID>(aSwitchId), aId);
   }
 
   void WWiseSystem::SetState(const std::string &aStateGroup, const std::string &aState)
@@ -586,6 +586,6 @@ namespace YTE
   
   void WWiseSystem::SetState(u64 aStateGroupId, u64 aStateId)
   {
-    AK::SoundEngine::SetState(aStateGroupId, aStateId);
+    AK::SoundEngine::SetState(static_cast<AkStateGroupID>(aStateGroupId), static_cast<AkStateID>(aStateId));
   }
 }

@@ -193,7 +193,7 @@ namespace YTE
     , mRotateSpeed(0.80f)
     , mSpeedLimiter(1.0f)
   { 
-    DeserializeByType<Camera*>(aProperties, this, Camera::GetStaticType()); 
+    DeserializeByType(aProperties, this, GetStaticType()); 
  
     mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
  
@@ -355,6 +355,9 @@ namespace YTE
         break;
       }
     }
+
+    view.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+
     return view;
   }
 
@@ -422,8 +425,8 @@ namespace YTE
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
     // finds the delta of mouse movement from the last frame
-    float dx = aEvent->WorldCoordinates.x - mMouseInitialPosition.x;
-    float dy = aEvent->WorldCoordinates.y - mMouseInitialPosition.y;
+    float dx = static_cast<float>(aEvent->WorldCoordinates.x - mMouseInitialPosition.x);
+    float dy = static_cast<float>(aEvent->WorldCoordinates.y - mMouseInitialPosition.y);
 
     switch (mType)
     {
@@ -618,8 +621,8 @@ namespace YTE
 
       if (nullptr == mCameraOrientation)
       {
+        //mCameraType = oldCameraType;
         return;
-        mCameraType = oldCameraType;
       }
 
       mType = CameraType::CameraOrientation;

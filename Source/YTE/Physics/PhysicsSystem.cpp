@@ -212,7 +212,10 @@ namespace YTE
     if (info.mCollided)
     {
       info.mObject = static_cast<Composition*>(rayCallback.m_collisionObject->getUserPointer());
-      info.mDistance = (BtToOurVec3(rayCallback.m_hitPointWorld) - aPosition).length();
+
+
+      
+      info.mDistance = glm::length(BtToOurVec3(rayCallback.m_hitPointWorld) - aPosition);
     }
 
     return info;

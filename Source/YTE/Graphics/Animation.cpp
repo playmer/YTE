@@ -24,11 +24,10 @@ namespace YTE
 
     Animation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
-    YTEBindProperty(&Animation::GetSpeed,
-                    &Animation::SetSpeed, "Speed") 
-                    .AddAttribute<EditorProperty>()
-                    .AddAttribute<Serializable>()
-                    .SetDocumentation("The speed at which the animation will be played at.");
+    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed") 
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("The speed at which the animation will be played at.");
   }
 
   Animation::Animation(std::string &aFile, Model *aModel, Engine *aEngine, uint32_t aAnimationIndex)
@@ -71,8 +70,6 @@ namespace YTE
     mSpeed = 1.0f;
   }
 
-
-
   Animation::~Animation()
   {
     if (mScene)
@@ -81,12 +78,11 @@ namespace YTE
     }
   }
 
-
-
   void Animation::Update(LogicUpdate* aEvent)
   {
     mElapsedTime += aEvent->Dt * mSpeed;
-    mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond, mAnimation->mDuration);
+    mCurrentAnimationTime = fmodf(static_cast<float>(mElapsedTime * mAnimation->mTicksPerSecond),
+                                  static_cast<float>(mAnimation->mDuration));
 
     aiMatrix4x4 identity = aiMatrix4x4();
     ReadAnimation(mScene->mRootNode, identity);
@@ -269,7 +265,10 @@ namespace YTE
   {
     YTERegisterType(Animator);
 
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Animator::Lister, "Animations");
+    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer, 
+                                                              &Serializer, 
+                                                              &Lister, 
+                                                              "Animations");
 
     std::vector<std::vector<Type*>> deps = { { Model::GetStaticType() } };
 
@@ -279,7 +278,7 @@ namespace YTE
   Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType<Animator*>(aProperties, this, Animator::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
   }
 
@@ -348,5 +347,35 @@ namespace YTE
         return;
       }
     }
+  }
+
+  RSValue Animator::Serializer(RSAllocator &aAllocator, Object *aOwner)
+  {
+    auto owner = static_cast<Animator*>(aOwner);
+
+    RSValue animations;
+    animations.SetObject();
+    for (auto &animationIt : owner->mAnimations)
+    {
+      auto materialSerialized = SerializeByType(aAllocator, 
+                                                animationIt.first, 
+                                                TypeId<Animation>());
+
+      RSValue materialName;
+
+      auto &name = animationIt.second;
+      materialName.SetString(name.c_str(),
+                             static_cast<RSSizeType>(name.size()),
+                             aAllocator);
+
+      animations.AddMember(materialName, materialSerialized, aAllocator);
+    }
+
+    return animations;
+  }
+
+  void Animator::Deserializer(RSValue &aValue, Object *aOwner)
+  {
+    auto owner = static_cast<Animator*>(aOwner);
   }
 }

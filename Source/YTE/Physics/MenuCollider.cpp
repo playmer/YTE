@@ -47,7 +47,7 @@ namespace YTE
     mSize = glm::vec3(1, 1, 1);
     mOffset = glm::vec3(0, 0, 0);
 
-    DeserializeByType<MenuCollider*>(aProperties, this, MenuCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void MenuCollider::Initialize()

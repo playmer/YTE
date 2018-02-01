@@ -1,5 +1,3 @@
-set(YTE_Source)
-
 add_library(YTE "")
 
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
@@ -19,7 +17,7 @@ target_include_directories(YTE
     ${Dependencies_Root}
     ${Dependencies_Root}/assimp/include
     ${Dependencies_Root}/assimp/contrib/rapidjson/include
-    ${Dependencies_Root}/Bullet
+    ${Dependencies_Root}/bullet3/src
     ${Source_Root}
     ${ParentDirectory}
 )
@@ -27,8 +25,18 @@ target_include_directories(YTE
 
 target_link_libraries(YTE
   PUBLIC
-    assimp 
-    Bullet 
+    assimp
+    Bullet2FileLoader
+    Bullet3Collision
+    Bullet3Common
+    Bullet3Dynamics
+    Bullet3Geometry
+    Bullet3OpenCL_clew
+    BulletCollision
+    BulletDynamics
+    BulletInverseDynamics
+    BulletSoftBody
+    LinearMath
     crunch
     glslang
     fmt    
@@ -61,7 +69,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   )
 endif()
 
-target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH)
+target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GLM_FORCE_DEPTH_ZERO_TO_ONE)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
 

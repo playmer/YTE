@@ -15,11 +15,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "rapidjson/document.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/prettywriter.h"
-
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -40,13 +35,6 @@
 
 namespace YTE
 {
-  using RSValue = rapidjson::Value;
-  using RSDocument = rapidjson::Document;
-  using RSStringBuffer = rapidjson::StringBuffer;
-  using RSPrettyWriter = rapidjson::PrettyWriter<RSStringBuffer>;
-  using RSAllocator = rapidjson::Document::AllocatorType;
-  using RSSizeType = rapidjson::SizeType;
-
   template <typename Type> using SharedPointer = std::shared_ptr<Type>;
 
   template <typename Type, typename Deleter = std::default_delete<Type>> using UniquePointer = std::unique_ptr<Type, Deleter>;

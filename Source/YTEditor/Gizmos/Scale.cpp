@@ -13,14 +13,14 @@ namespace YTEditor
   YTEDefineType(Scale)
   {
     YTERegisterType(Scale);
-    YTEBindProperty(&Scale::GetDirection, &Scale::SetDirection, "Direction")
+    YTEBindField(&Scale::mDir, "Direction", YTE::PropertyBinding::GetSet)
       .AddAttribute<YTE::Serializable>();
   }
 
   Scale::Scale(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
     : YTE::Component(aOwner, aSpace), mDir(Gizmo::Dir::X)
   {
-    DeserializeByType<Scale*>(aProperties, this, Scale::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Scale::ScaleObject(YTE::Composition *aObj, glm::vec3 aDelta)

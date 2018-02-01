@@ -24,7 +24,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mModel(nullptr)
   {
-    DeserializeByType<TempDiffuseColoringComponent*>(aProperties, this, TempDiffuseColoringComponent::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
 
     mDiffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
   }

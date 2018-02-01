@@ -10,7 +10,7 @@
 #ifndef YTE_Physics_PhysicsSystem_H
 #define YTE_Physics_PhysicsSystem_H
 
-#include "Bullet/btBulletDynamicsCommon.h"
+#include "btBulletDynamicsCommon.h"
 
 #include "YTE/Core/Component.hpp"
 

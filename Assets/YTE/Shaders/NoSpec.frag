@@ -9,6 +9,7 @@
 // Defines
 #define MAX_LIGHTS 64
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Structures
 struct Light
@@ -51,9 +52,9 @@ const uint LightType_Spot = 3;
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
 
-// ========================
+//====================
 // Material Values
-layout (binding = 2) uniform UBOMaterial
+layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -73,7 +74,7 @@ layout (binding = 2) uniform UBOMaterial
 
 // ========================
 // Light Values
-layout (binding = 3) uniform UBOLights
+layout (binding = UBO_LIGHTS_BINDING) uniform UBOLights
 {
   Light mLights[MAX_LIGHTS];
   uint mNumberOfLights;
@@ -82,7 +83,7 @@ layout (binding = 3) uniform UBOLights
 
 // ========================
 // Illumination Buffer
-layout (binding = 4) uniform UBOIllumination
+layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 {
   vec4 mCameraPosition;
   vec4 mGlobalIllumination;
@@ -95,8 +96,8 @@ layout (binding = 4) uniform UBOIllumination
 
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
-layout (binding = 5) uniform sampler2D diffuseSampler;
-layout (binding = 6) uniform sampler2D normalSampler;
+layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
+layout (binding = UBO_NORMAL_BINDING) uniform sampler2D normalSampler;
 
 
 ///////////////////////////////////////////////////////////////////////////////

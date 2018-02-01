@@ -11,6 +11,4 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
 )
 
-FindWWise(WWise_SoundEngine)
-
 target_link_libraries(YTE PUBLIC WWise_SoundEngine)

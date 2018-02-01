@@ -56,5 +56,5 @@ namespace YTE {
     list.mIterating = false;
   }
 
-  std::unordered_map<std::string, BlockAllocator<EventHandler::EventDelegate>> EventHandler::mDelegateAllocators;
+  std::map<std::string, BlockAllocator<EventHandler::EventDelegate>> EventHandler::cDelegateAllocators;
 }

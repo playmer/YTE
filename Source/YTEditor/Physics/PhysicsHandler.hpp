@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Bullet/btBulletDynamicsCommon.h"
+#include "btBulletDynamicsCommon.h"
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Composition.hpp"

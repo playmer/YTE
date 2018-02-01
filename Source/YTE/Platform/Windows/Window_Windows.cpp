@@ -202,7 +202,7 @@ namespace YTE
 
     ::ScreenToClient(aWindowHandle, &point);
 
-    glm::vec2 localPosition;
+    glm::i32vec2 localPosition;
 
 
     localPosition.x = point.x;
@@ -437,7 +437,11 @@ namespace YTE
 
   i64 Window::MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow)
   {
-    return WindowsMessageHandler(static_cast<HWND>(aWindowHandle), aMessage, aWParam, aLParam, aWindow);
+    return WindowsMessageHandler(static_cast<HWND>(aWindowHandle), 
+                                 static_cast<UINT>(aMessage), 
+                                 aWParam, 
+                                 aLParam, 
+                                 aWindow);
   }
 
   HMONITOR GetPrimaryMonitor()

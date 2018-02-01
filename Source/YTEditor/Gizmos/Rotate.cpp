@@ -13,14 +13,14 @@ namespace YTEditor
   YTEDefineType(Rotate)
   {
     YTERegisterType(Rotate);
-    YTEBindProperty(&Rotate::GetDirection, &Rotate::SetDirection, "Direction")
+    YTEBindField(&Rotate::mDir, "Direction", YTE::PropertyBinding::GetSet)
       .AddAttribute<YTE::Serializable>();
   }
 
   Rotate::Rotate(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties)
     : YTE::Component(aOwner, aSpace), mDir(Gizmo::Dir::X)
   {
-    DeserializeByType<Rotate*>(aProperties, this, Rotate::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Rotate::RotateObject(YTE::Composition *aObj, glm::vec3 aFirstMousePos, glm::vec3 aDelta)

@@ -37,7 +37,7 @@ namespace YTE
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Collider(aOwner, aSpace), mRadius(0.0f), mHeight(0.0f)
   {
-    DeserializeByType<CapsuleCollider*>(aProperties, this, CapsuleCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CapsuleCollider::PhysicsInitialize()

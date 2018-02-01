@@ -88,28 +88,23 @@ namespace YTEditor
 
     if (headerAttrib)
     {
-      if (aComponent->GetType()->IsA<YTE::Animator>())
+      auto objects = headerAttrib->GetList(aComponent);
+
+      for (auto &object : objects)
       {
-        YTE::Animator *animComp = static_cast<YTE::Animator*>(aComponent);
+        QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
+        header->setText(0, object.second.c_str());
 
-        auto animations = animComp->Lister(aComponent);
+        HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mMainWindow, mEngineComponent, header);
 
-        for (auto &anim : animations)
-        {
-          QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
-          header->setText(0, anim.second.c_str());
+        QTreeWidgetItem *body = new QTreeWidgetItem(header);
+        body->setFlags(Qt::NoItemFlags);
 
-          HeaderListWidget *widg = new HeaderListWidget(anim.first, anim.second, mMainWindow, mEngineComponent, header);
+        mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
 
-          QTreeWidgetItem *body = new QTreeWidgetItem(header);
-          body->setFlags(Qt::NoItemFlags);
+        header->addChild(body);
 
-          mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
-
-          header->addChild(body);
-
-          mTopItem->addChild(header);
-        }
+        mTopItem->addChild(header);
       }
     }
 

@@ -81,6 +81,8 @@ namespace YTE
     void Initialize() override;
 
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
+    static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
+    static void Deserializer(RSValue &aValue, Object *aOwner);
 
     Animation* AddAnimation(std::string aName);
     void RemoveAnimation(Animation *aAnimation);

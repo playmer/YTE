@@ -61,7 +61,7 @@ namespace YTE
   RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mMass(1.0f), mStatic(false), mIsInitialized(false)
   {
-    DeserializeByType<RigidBody*>(aProperties,  this, RigidBody::GetStaticType());
+    DeserializeByType(aProperties,  this, GetStaticType());
   };
 
   RigidBody::~RigidBody() 

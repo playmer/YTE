@@ -107,7 +107,7 @@ namespace YTE
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
   {
-    DeserializeByType<Model*>(aProperties, this, Model::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 
@@ -176,7 +176,7 @@ namespace YTE
 
 
 
-  void Model::SetMesh(std::string aName)
+  void Model::SetMesh(std::string &aName)
   {
     if (aName.empty() || aName == mMeshName)
     {
@@ -206,10 +206,6 @@ namespace YTE
       Destroy();
       Create();
     }
-
-    ModelChanged modChange;
-    modChange.Object = mOwner;
-    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
   
@@ -289,6 +285,10 @@ namespace YTE
     {
       mInstantiatedModel->SetDefaultAnimationOffset();
     }
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
   }
 
 

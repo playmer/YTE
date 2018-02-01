@@ -30,7 +30,7 @@ namespace YTE
   {
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
 
-    DeserializeByType<WWiseListener*>(aProperties, this, WWiseListener::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   WWiseListener::~WWiseListener()

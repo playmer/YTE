@@ -340,8 +340,7 @@ namespace YTE
   VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
                                             std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                                             VkShaderDescriptions &aDescription,
-                                            bool aCullBackFaces,
-                                            std::string &aDefines)
+                                            bool aCullBackFaces)
   {
     auto shaderIt = mShaders.find(aShaderSetName);
     VkShader *shaderPtr{ nullptr };
@@ -352,8 +351,7 @@ namespace YTE
                                                mRenderer->GetSurface(mWindow),
                                                aPipelineLayout,
                                                aDescription,
-                                               aCullBackFaces,
-                                               aDefines);
+                                               aCullBackFaces);
 
       shaderPtr = shader.get();
 

@@ -6,7 +6,9 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Material.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
+	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Sprite.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.cpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.cpp
@@ -35,7 +37,9 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Material.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.hpp
+	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Sprite.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.hpp

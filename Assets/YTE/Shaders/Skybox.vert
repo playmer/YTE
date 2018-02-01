@@ -67,20 +67,22 @@ layout (location = 10) in ivec2 inBoneIDs2;
 
 // ========================
 // View Buffer
-layout (binding = 0) uniform UBOView
+layout (binding = UBO_VIEW_BINDING) uniform UBOView
 {
   mat4 mProjectionMatrix;
   mat4 mViewMatrix;
+  vec4 mCameraPosition;
 } View;
 
 
 // ========================
 // Animation Buffer
-layout (binding = 1) uniform UBOAnimation
+layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
   bool mHasAnimations;
 } Animation;
+
 
 
 
@@ -107,25 +109,22 @@ void main()
   modelMatrix[3].y = 0.0f;
   modelMatrix[3].z = 0.0f;
 
-  vec3 worldPosition = (modelMatrix * vec4(inPosition, 1.0f)).xyz;
+  vec4 worldPosition = (modelMatrix * vec4(inPosition, 1.0f));
 
-  mat4 viewMatrix = transpose(View.mViewMatrix);
-  vec3 eyePosition = viewMatrix[3].xyz;
-  
+  modelMatrix[3].x = View.mCameraPosition.x;
+  modelMatrix[3].y = View.mCameraPosition.y;
+  modelMatrix[3].z = View.mCameraPosition.z;
 
-  viewMatrix[3].x = 0.0f;
-  viewMatrix[3].y = 0.0f;
-  viewMatrix[3].z = 0.0f;
-
-  viewMatrix = transpose(viewMatrix);
-
-  outEyeVector = eyePosition - worldPosition;
+  outEyeVector = worldPosition.xyz;
   outDiffuse = Model.mDiffuseColor;
 
   outTextureCoordinates = inTextureCoordinates;
 
   gl_Position = View.mProjectionMatrix * 
-                viewMatrix             *
+                View.mViewMatrix       *
                 modelMatrix            *
                 vec4(inPosition, 1.0f);
+
+  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
+  gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
 }

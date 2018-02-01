@@ -11,7 +11,8 @@
 #ifndef YTE_Physics_Transform_h
 #define YTE_Physics_Transform_h
 
-#include "Bullet/LinearMath/btMotionState.h"
+
+#include "LinearMath/btMotionState.h"
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"

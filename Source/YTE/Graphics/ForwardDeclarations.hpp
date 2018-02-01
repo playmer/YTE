@@ -14,9 +14,13 @@ namespace YTE
   class GraphicsDataUpdate;
   class GraphicsSystem;
   class GraphicsView;
+  class InstantiatedModel;
   class Light;
-  class SimpleModel;
   class Model;
+  class ModelChanged;
+  class ParticleEmitter;
+  class SimpleModel;
+  class Sprite;
   struct Instance;
   struct UBOMaterial;
   struct UBOModel;

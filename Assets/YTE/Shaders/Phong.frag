@@ -29,9 +29,27 @@ struct Light
 // used to pass data to lighting functions
 struct LightingData
 {
-  vec4 mDiffuseTexture;
+  // diffuse
+  vec4 mDiffTexture;
+  vec4 mDiffMat;
+
+  // normal
   vec4 mNormalTexture;
-  vec4 mSpecularTexture;
+
+  // specular
+  vec4 mSpecTexture;
+  vec4 mSpecMat;
+
+  // emissive
+  vec4 mEmisMat;
+
+  // ambient
+  vec4 mAmbMat;
+
+  // shinniness
+  float mShinninessMat;
+
+  // misc calculating values
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
@@ -53,8 +71,8 @@ const uint LightType_Spot = 3;
 // UBO Buffers
 
 //====================
-// Material Values
-layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
+// Submesh Material Values
+layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -70,7 +88,27 @@ layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
     float mBumpScaling;
     int mIsEditorObject;
     float mPadding; // unused
-} Material;
+} SubmeshMaterial;
+
+//====================
+// Model Material Values
+layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
+{
+    vec4 mDiffuse;
+    vec4 mAmbient;
+    vec4 mSpecular;
+    vec4 mEmissive;
+    vec4 mTransparent;
+    vec4 mReflective;
+    float mOpacity;
+    float mShininess;
+    float mShininessStrength;
+    float mReflectivity;
+    float mReflectiveIndex;
+    float mBumpScaling;
+    int mIsEditorObject;
+    float mPadding; // unused
+} ModelMaterial;
 
 // ========================
 // Light Values
@@ -98,6 +136,7 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 // Samplers
 layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
 layout (binding = UBO_SPECULAR_BINDING) uniform sampler2D specularSampler;
+layout (binding = UBO_NORMAL_BINDING) uniform sampler2D normalSampler;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -108,15 +147,10 @@ layout (location = 2) in vec3 inNormal;
 layout (location = 3) in vec4 inPosition;
 layout (location = 4) in vec3 inPositionWorld;
 layout (location = 5) in mat4 inViewMatrix; // 5 - 8
-layout (location = 9) in vec4 inDiffuse;
 
 // ========================
 // Output of Fragment
 layout (location = 0) out vec4 outFragColor;
-
-
-
-
 
 
 
@@ -146,7 +180,6 @@ float saturate(float aValue)
   return clamp(aValue, 0.0f, 1.0f);
 }
 
-
 // ======================
 // Calc_DirectionalLight:
 // Calculates as a directional light with the given light
@@ -156,15 +189,15 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 
   // diffuse
   float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture * inDiffuse;
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffTexture;
   
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
-  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
 
   // ambient
-  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+  vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat;
 
   // combine
   return saturate(diffuseColor + ambientColor + specularColor);
@@ -182,16 +215,16 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
   lightVec = normalize(lightVec);
   
   // ambient
-  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+  vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat;
   
   // diffuse
   float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
-  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffuseTexture * inDiffuse;
+  vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffTexture;
 
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
-  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
 
   // attenuation
   float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
@@ -212,16 +245,16 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
   lightVec = normalize(lightVec);
 
   // ambient
-  vec4 ambientColor = aLight.mAmbient * Material.mAmbient;
+  vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat;
 
   // diffuse
   float diffContribution = max(dot(aLightData.mNormalTexture, lightVec), 0.0f);
-  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffuseTexture * inDiffuse;
+  vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffTexture;
 
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormalTexture);
-  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), Material.mShininess);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecularTexture * specContribution;
+  float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
+  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
 
   // attenuation
   float att = min(1.0f / (Illumination.mFogCoefficients.x +
@@ -283,16 +316,35 @@ vec4 CalculateLight(int i, inout LightingData aLightData)
 
 
 // ======================
-// SampleTextures:
+// SampleMaterialsAndTextures:
 // Calculates the phong illumination for fragment
-LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
+LightingData SampleMaterialsAndTextures(vec2 aUV, inout vec4 aNormal)
 {
   LightingData lightData;
+
+  // diffuse
+  lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
   lightData.mDiffuseTexture  = texture(diffuseSampler, aUV);
+
+  // specular
+  lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
   lightData.mSpecularTexture = texture(specularSampler, aUV);
-  lightData.mNormalTexture   = aNormal;
+
+  // normal
+  lightData.mNormalTexture   = texture(normalSampler, aUV);
+
+  // emissive
+  lightData.mEmisMat = SubmeshMaterial.mEmissive * ModelMaterial.mEmissive;
+
+  // ambient
+  lightData.mAmbMat = SubmeshMaterial.mAmbient * ModelMaterial.mAmbient;
+
+  // shinniness
+  lightData.mShinninessMat = SubmeshMaterial.mShininess * ModelMaterial.mShininess;
+
   return lightData;
 }
+
 
 
 // ======================
@@ -300,9 +352,15 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 // Calculates the phong illumination for fragment
 vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 {
+  // Sample all textures at our position and fill out lighting data
+  LightingData lightData = SampleMaterialsAndTextures(aUV, aNormal);
+  lightData.mViewVec = viewVec;
+  lightData.mNormal = aNormal;
+  lightData.mPosition = aPositionWorld;
+
   // Emissive and Global Illumination
-  vec4 ITotal = Material.mEmissive +
-                (Illumination.mGlobalIllumination * Material.mAmbient);
+  vec4 ITotal = lightData.mEmisMat +
+                (Illumination.mGlobalIllumination * lightData.mAmbMat);
 
   // view vector in view space for attenuation
   vec4 viewVec = ((inViewMatrix * Illumination.mCameraPosition) - aPosition);
@@ -314,12 +372,6 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 
   // view vector in world space for lighting calculations
   viewVec = normalize(Illumination.mCameraPosition - aPositionWorld);
-
-  // Sample all textures at our position and fill out lighting data
-  LightingData lightData = SampleTextures(aUV, aNormal);
-  lightData.mViewVec = viewVec;
-  lightData.mNormal = aNormal;
-  lightData.mPosition = aPositionWorld;
 
   // Light Calculations
   for (int i = 0; i < Lights.mNumberOfLights; ++i)
@@ -337,13 +389,13 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if (Material.mIsEditorObject > 0)
+  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
   }
   else if (Lights.mActive < 0.5f)
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * inDiffuse;
+    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy);
   }
   else
   {

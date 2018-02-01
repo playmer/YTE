@@ -9,10 +9,9 @@
 // Defines
 #define MAX_LIGHTS 64
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Structures
-
-// Structure of a Light from YTE
 struct Light
 {
   vec3 mPosition;
@@ -49,12 +48,13 @@ const uint LightType_Spot = 3;
 
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
 
-// ========================
+//====================
 // Material Values
-layout (binding = 2) uniform UBOMaterial
+layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -63,8 +63,8 @@ layout (binding = 2) uniform UBOMaterial
     vec4 mTransparent;
     vec4 mReflective;
     float mOpacity;
-    float mShininess;         // shininess factor
-    float mShininessStrength; // specular scalar (increases/decreases power of specular color)
+    float mShininess;
+    float mShininessStrength;
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
@@ -74,7 +74,7 @@ layout (binding = 2) uniform UBOMaterial
 
 // ========================
 // Light Values
-layout (binding = 3) uniform UBOLights
+layout (binding = UBO_LIGHTS_BINDING) uniform UBOLights
 {
   Light mLights[MAX_LIGHTS];
   uint mNumberOfLights;
@@ -83,7 +83,7 @@ layout (binding = 3) uniform UBOLights
 
 // ========================
 // Illumination Buffer
-layout (binding = 4) uniform UBOIllumination
+layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 {
   vec4 mCameraPosition;
   vec4 mGlobalIllumination;
@@ -91,7 +91,6 @@ layout (binding = 4) uniform UBOIllumination
   vec4 mFogCoefficients;
   vec2 mFogPlanes;
 } Illumination;
-
 
 
 ///////////////////////////////////////////////////////////////////////////////

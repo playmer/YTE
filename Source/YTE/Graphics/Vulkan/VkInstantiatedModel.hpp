@@ -33,9 +33,13 @@ namespace YTE
     void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;
     void UpdateUBOAnimation(UBOAnimation *aUBO) override;
+    void UpdateUBOMaterial(UBOMaterial *aUBO) override;
+    void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
+
     void SetDefaultAnimationOffset() override;
 
-    void CreateDescriptorSet(VkSubmesh *aMesh);
+    // Takes the submesh, as well as the index of the submesh.
+    void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
 
     void SetInstanced(bool aInstanced) override;
@@ -47,12 +51,16 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
 
+    std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
+    std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOMaterial>> mUBOSubmeshMaterials;
+
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
     
   private:
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;
+    bool mLoadUBOMaterial;
   };
 }
 

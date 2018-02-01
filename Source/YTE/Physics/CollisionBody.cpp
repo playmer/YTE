@@ -9,8 +9,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "Bullet/btBulletCollisionCommon.h"
-#include "Bullet/BulletCollision/CollisionDispatch/btCollisionObject.h"
+#include "btBulletCollisionCommon.h"
+#include "BulletCollision/CollisionDispatch/btCollisionObject.h"
 
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/CollisionBody.hpp"
@@ -26,7 +26,7 @@ namespace YTE
   CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
   {
-    DeserializeByType<CollisionBody*>(aProperties, this, CollisionBody::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   CollisionBody::~CollisionBody()

@@ -11,11 +11,9 @@
 #ifndef YTE_Physics_Collider_h
 #define YTE_Physics_Collider_h
 
-
-
 #include "YTE/Core/Component.hpp"
 
-#include "Bullet/btBulletDynamicsCommon.h"
+#include "btBulletDynamicsCommon.h"
 
 namespace YTE
 {

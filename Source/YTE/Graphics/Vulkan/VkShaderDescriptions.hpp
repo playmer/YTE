@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 #define YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 
+#include "fmt/format.h"
+
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 #include "YTE/StandardLibrary/Utilities.hpp"
@@ -108,6 +110,24 @@ namespace YTE
       return std::make_unique<vkhlf::SpecializationInfo>(mEntries, mData);
     }
 
+    void AddPreludeLine(std::string_view aLine)
+    {
+      mLines.emplace_back(aLine.begin(), aLine.end());
+    }
+
+    std::string GetLines()
+    {
+      fmt::MemoryWriter w;
+
+      for (auto &line : mLines)
+      {
+        w.write(line);
+        w.write("\n");
+      }
+
+      return w.str();
+    }
+
   private:
 
     template <typename T>
@@ -122,6 +142,7 @@ namespace YTE
 
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
+    std::vector<std::string> mLines;
     u32 mBinding = 0;
     u32 mVertexOffset = 0;
     u32 mLocation = 0;

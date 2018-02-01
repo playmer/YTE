@@ -29,9 +29,6 @@ namespace YTE
     glm::vec3 ForwardVector;
     glm::vec3 RightVector;
     glm::vec3 UpVector;
-    glm::quat Forward;
-    glm::quat Right;
-    glm::quat Up;
   };
 
   class Orientation : public Component
@@ -48,14 +45,10 @@ namespace YTE
     glm::vec3 GetRightVector() const;
     glm::vec3 GetUpVector() const;
 
-    glm::quat GetForward() const;
-    glm::quat GetRight() const;
-    glm::quat GetUp() const;
-
   private:
-    glm::quat mForward;
-    glm::quat mRight;
-    glm::quat mUp;
+    glm::vec3 mForwardVector;
+    glm::vec3 mRightVector;
+    glm::vec3 mUpVector;
   };
 }
 

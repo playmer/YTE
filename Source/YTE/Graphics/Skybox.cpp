@@ -56,7 +56,7 @@ namespace YTE
     , mTextureName("None")
     , mConstructing(true)
   {
-    DeserializeByType<Skybox*>(aProperties, this, Skybox::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   Skybox::~Skybox()

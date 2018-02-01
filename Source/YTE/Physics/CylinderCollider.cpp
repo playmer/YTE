@@ -27,7 +27,7 @@ namespace YTE
   CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType<CylinderCollider*>(aProperties, this, CylinderCollider::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CylinderCollider::PhysicsInitialize()

@@ -9,8 +9,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "Bullet/btBulletCollisionCommon.h"
-#include "Bullet/BulletCollision/CollisionDispatch/btGhostObject.h"
+#include "btBulletCollisionCommon.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/GhostBody.hpp"
@@ -26,7 +26,7 @@ namespace YTE
   GhostBody::GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
   {
-    DeserializeByType<GhostBody*>(aProperties, this, GhostBody::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   GhostBody::~GhostBody()

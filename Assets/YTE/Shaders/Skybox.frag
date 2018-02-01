@@ -3,11 +3,12 @@
 #extension GL_ARB_separate_shader_objects : enable
 #extension GL_ARB_shading_language_420pack : enable
 
+#define M_PI 3.1415926535897932384626433832795
 
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
-#define M_PI 3.1415926535897932384626433832795
 #define MAX_LIGHTS 64
+
 
 ///////////////////////////////////////////////////////////////////////////////
 // Structures
@@ -45,12 +46,15 @@ const uint LightType_Point = 2;
 const uint LightType_Spot = 3;
 //const uint LightType_Area = 4; // area not in use
 
+
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
 
-// ========================
+//====================
 // Material Values
-layout (binding = 2) uniform UBOMaterial
+layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -68,10 +72,9 @@ layout (binding = 2) uniform UBOMaterial
     float mPadding; // unused
 } Material;
 
-
 // ========================
 // Light Values
-layout (binding = 3) uniform UBOLights
+layout (binding = UBO_LIGHTS_BINDING) uniform UBOLights
 {
   Light mLights[MAX_LIGHTS];
   uint mNumberOfLights;
@@ -80,7 +83,7 @@ layout (binding = 3) uniform UBOLights
 
 // ========================
 // Illumination Buffer
-layout (binding = 4) uniform UBOIllumination
+layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 {
   vec4 mCameraPosition;
   vec4 mGlobalIllumination;
@@ -90,10 +93,10 @@ layout (binding = 4) uniform UBOIllumination
 } Illumination;
 
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
-layout (binding = 5) uniform sampler2D environmentMap;
-
+layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Fragment Shader Inputs | Vertex Shader Outputs
@@ -118,15 +121,16 @@ void main()
   float v = 1.0 - acos(V.y) / M_PI;
 
   vec2 skyUv = vec2(u, v);
+  skyUv.y = 1.0 - skyUv.y;
 
   if (Material.mIsEditorObject > 0)
   {
-    outFragColor = texture(environmentMap, skyUv);
+    outFragColor = texture(diffuseSampler, skyUv);
   }
   else
   {
-    outFragColor = texture(environmentMap, skyUv) * inDiffuse;
+    outFragColor = texture(diffuseSampler, skyUv) * inDiffuse;
   }
 
-  //outFragColor = vec4(V, 1.0f);
+  //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
