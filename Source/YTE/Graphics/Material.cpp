@@ -80,9 +80,9 @@ namespace YTE
   {
     YTERegisterType(Material);
 
-    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::Deserializer,
-                                                    &Material::Serializer,
-                                                    &Material::Lister, 
+    GetStaticType()->AddAttribute<EditorHeaderList>(&Material::SubmeshMaterialDeserializer,
+                                                    &Material::SubmeshMaterialSerializer,
+                                                    &Material::SubmeshMaterialLister, 
                                                     "Materials");
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
@@ -91,6 +91,14 @@ namespace YTE
 
     YTEBindField(&Material::mName, "Name", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
+
+    YTEBindField(&Material::mModelMaterial, "ModelMaterial", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<RedirectObject>(&Material::ModelMaterialDeserializer,
+                                    &Material::ModelMaterialSerializer,
+                                    &Material::ModelMaterialGetObject,
+                                    "ModelMaterial");
   }
 
   Material::Material(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -120,6 +128,11 @@ namespace YTE
                                                                         &(*submesh));
             mSubmeshMaterials.emplace_back(std::move(materialRep));
           }
+
+          mModelMaterial = MaterialRepresentation{instantiatedModel->GetUBOMaterialData(),
+                                                  this,
+                                                  0,
+                                                  nullptr};
         }
         else
         {
@@ -129,6 +142,8 @@ namespace YTE
             mSubmeshMaterials[i]->SetIndex(i);
             mSubmeshMaterials[i]->UpdateUBO();
           }
+
+          mModelMaterial.UpdateUBO();
         }
 
         mName = instantiatedModel->GetMesh()->mName;
@@ -153,7 +168,7 @@ namespace YTE
 
   }
 
-  std::vector<std::pair<YTE::Object*, std::string>> Material::Lister(YTE::Object *aSelf)
+  std::vector<std::pair<YTE::Object*, std::string>> Material::SubmeshMaterialLister(YTE::Object *aSelf)
   {
     auto self = static_cast<Material*>(aSelf);
 
@@ -171,8 +186,8 @@ namespace YTE
     return materials;
   }
 
-  void Material::Deserializer(RSValue &aValue, 
-                              Object *aOwner)
+  void Material::SubmeshMaterialDeserializer(RSValue &aValue,
+                                             Object *aOwner)
   {
     auto owner = static_cast<Material*>(aOwner);
     owner->mSubmeshMaterials.clear();
@@ -184,8 +199,8 @@ namespace YTE
   }
 
 
-  RSValue Material::Serializer(RSAllocator &aAllocator, 
-                               Object *aOwner)
+  RSValue Material::SubmeshMaterialSerializer(RSAllocator &aAllocator,
+                                              Object *aOwner)
   {
     auto owner = static_cast<Material*>(aOwner);
 
@@ -193,7 +208,6 @@ namespace YTE
     materials.SetObject();
     for (auto &submeshMaterial : owner->mSubmeshMaterials)
     {
-
       auto materialSerialized  = SerializeByType(aAllocator, 
                                                  submeshMaterial.get(), 
                                                  TypeId<MaterialRepresentation>());
@@ -209,5 +223,33 @@ namespace YTE
     }
 
     return materials;
+  }
+
+  std::pair<YTE::Object*, std::string> Material::ModelMaterialGetObject(YTE::Object *aSelf)
+  {
+    auto self = static_cast<Material*>(aSelf);
+
+    return {&(self->mModelMaterial), "ModelMaterial"};
+  }
+
+  void Material::ModelMaterialDeserializer(RSValue &aValue,
+                                           Object *aOwner)
+  {
+    auto owner = static_cast<Material*>(aOwner);
+    
+    owner->mModelMaterial = MaterialRepresentation{ owner, &aValue };
+  }
+
+
+  RSValue Material::ModelMaterialSerializer(RSAllocator &aAllocator,
+                                            Object *aOwner)
+  {
+    auto owner = static_cast<Material*>(aOwner);
+
+    RSValue materials;
+    materials.SetObject();
+    return SerializeByType(aAllocator, 
+                           &owner->mModelMaterial,
+                           TypeId<MaterialRepresentation>());
   }
 }

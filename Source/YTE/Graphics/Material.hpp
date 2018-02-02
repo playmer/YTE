@@ -153,14 +153,14 @@ namespace YTE
     size_t GetIndex() { return mIndex; }
     void SetIndex(size_t aIndex) { mIndex = aIndex; }
   private:
-    Material *mMaterialComponent;
+    Material *mMaterialComponent{ nullptr };
     UBOMaterial mMaterial;
-    size_t mIndex;
+    size_t mIndex{ 0 };
     std::string mDiffuseTexture;
     std::string mSpecularTexture;
     std::string mNormalTexture;
 
-    Submesh *mSubmesh;
+    Submesh *mSubmesh{ nullptr };
   };
 
 
@@ -175,9 +175,15 @@ namespace YTE
 
     void Initialize() override;
     void Create(ModelChanged *aEvent);
-    static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
-    static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
-    static void Deserializer(RSValue &aValue, Object *aOwner);
+    static std::vector<std::pair<YTE::Object*, std::string>> SubmeshMaterialLister(YTE::Object *aSelf);
+    static RSValue SubmeshMaterialSerializer(RSAllocator &aAllocator, Object *aOwner);
+    static void SubmeshMaterialDeserializer(RSValue &aValue, Object *aOwner);
+
+
+
+    static std::pair<YTE::Object*, std::string> ModelMaterialGetObject(YTE::Object *aSelf);
+    static RSValue ModelMaterialSerializer(RSAllocator &aAllocator, Object *aOwner);
+    static void ModelMaterialDeserializer(RSValue &aValue, Object *aOwner);
 
   private:
     //Renderer *mRenderer;

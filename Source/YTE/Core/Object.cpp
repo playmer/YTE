@@ -57,6 +57,8 @@ namespace YTE
       return;
     }
 
+    bool deserializedEditorHeader{ false };
+
     for (auto propertiesIt = aProperties->MemberBegin(); propertiesIt < aProperties->MemberEnd(); ++propertiesIt)
     {
       std::string propertyName = propertiesIt->name.GetString();
@@ -66,22 +68,29 @@ namespace YTE
 
       if (namedProperty == nullptr)
       {
-        auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
-        if (nullptr != listerAttribute)
+        if (auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
+            nullptr != listerAttribute && 
+            false == deserializedEditorHeader &&
+            listerAttribute->GetName() == propertiesIt->name.GetString())
         {
           listerAttribute->Deserialize(*value, aSelf);
-
+          deserializedEditorHeader = true;
           continue;
         }
-        else
-        {
-          //fmt::format("You have likely removed {}, from {}, but are still attempting to deserialize it.",)
 
-          std::cout << "You have likely removed " << propertyName.c_str()
-                    << " from " << aType->GetName().c_str()
-                    << " but are still attempting to deserialize it." << std::endl;
-          continue;
-        }
+        //fmt::format("You have likely removed {}, from {}, but are still attempting to deserialize it.",)
+
+        std::cout << "You have likely removed " << propertyName.c_str()
+                  << " from " << aType->GetName().c_str()
+                  << " but are still attempting to deserialize it." << std::endl;
+        continue;
+      }
+
+      if (auto redirectAttribute = namedProperty->GetAttribute<RedirectObject>();
+          nullptr != redirectAttribute)
+      {
+        redirectAttribute->Deserialize(*value, aSelf);
+        continue;
       }
 
       // If the bound field/property does not have the Property Attribute, do nothing.
@@ -201,7 +210,21 @@ namespace YTE
         continue;
       }
 
-      // Set up the get so we can serialize it's value.
+      if (auto redirectAttribute = property.second->GetAttribute<RedirectObject>();
+          nullptr != redirectAttribute)
+      {
+        auto object = redirectAttribute->Serialize(aAllocator, aSelf);
+
+        RSValue propertyName;
+        propertyName.SetString(redirectAttribute->GetName().c_str(),
+                            static_cast<RSSizeType>(redirectAttribute->GetName().size()),
+                            aAllocator);
+
+        aValue.AddMember(propertyName, object, aAllocator);
+        continue;
+      }
+
+      // Set up the get so we can serialize its value.
       auto getter = property.second->GetGetter();
       auto any = getter->Invoke(aSelf);
       auto propertyType = getter->GetReturnType()->GetMostBasicType();
@@ -303,8 +326,9 @@ namespace YTE
     SerializeByFieldOrProperties(fields, toReturn, aAllocator, aSelf, aType);
     SerializeByFieldOrProperties(properties, toReturn, aAllocator, aSelf, aType);
 
-    auto listerAttribute = aType->GetAttribute<EditorHeaderList>();
-    if (nullptr != listerAttribute)
+    
+    if (auto listerAttribute = aType->GetAttribute<EditorHeaderList>(); 
+        nullptr != listerAttribute)
     {
       auto array = listerAttribute->Serialize(aAllocator, aSelf);
 
@@ -316,6 +340,6 @@ namespace YTE
       toReturn.AddMember(arrayName, array, aAllocator);
     }
 
-    return toReturn;;
+    return toReturn;
   }
 }

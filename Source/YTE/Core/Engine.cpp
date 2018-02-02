@@ -314,10 +314,13 @@ namespace YTE
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
   {
-    auto iter = mArchetypes.find(aArchetype);
-    if (iter != mArchetypes.end() && iter->second.get() != nullptr)
+    if (false == mEditorMode)
     {
-      return iter->second.get();
+      if (auto iter = mArchetypes.find(aArchetype); 
+          iter != mArchetypes.end() && iter->second.get() != nullptr)
+      {
+        return iter->second.get();
+      }
     }
 
     auto path = Path::GetArchetypePath(Path::GetGamePath(), aArchetype.c_str());
@@ -352,10 +355,13 @@ namespace YTE
   
   RSDocument* Engine::GetLevel(String &aLevel)
   {
-    auto iter = mLevels.find(aLevel);
-    if (iter != mLevels.end() && iter->second.get() != nullptr)
+    if (false == mEditorMode)
     {
-      return iter->second.get();
+      if (auto iter = mLevels.find(aLevel);
+          iter != mLevels.end() && iter->second.get() != nullptr)
+      {
+        return iter->second.get();
+      }
     }
 
     auto path = Path::GetLevelPath(Path::GetGamePath(), aLevel.c_str());

@@ -20,9 +20,18 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "glm/glm.hpp"
 
-#include "YTE/Utilities/String/String.hpp"
+#include "YTE/Core/Component.hpp"
+
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
+
+#include "YTE/Physics/ForwardDeclarations.hpp"
+
+#include "YTE/Platform/ForwardDeclarations.hpp"
+
+#include "YTE/Utilities/String/String.hpp"
+
 
 class QVBoxLayout;
 class QWidget;
@@ -38,6 +47,33 @@ namespace YTEditor
   template <class T>
   class PropertyWidget;
   class PropertyWidgetBase;
+
+
+  //class MaterialView : public YTE::Component
+  //{
+  //public:
+  //  YTEDeclareType(MaterialView);
+  //  MaterialView(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
+  //  ~MaterialView();
+  //
+  //  void Initialize() override;
+  //  void CreateMaterial();
+  //
+  //  void CreateTransform();
+  //
+  //  void TransformUpdate(YTE::TransformChanged *aEvent);
+  //
+  //private:
+  //  YTE::Renderer *mRenderer;
+  //  YTE::Window *mWindow;
+  //  YTE::Transform *mTransform;
+  //  YTE::UBOModel mUBOModel;
+  //
+  //  std::unique_ptr<YTE::InstantiatedModel> mInstantiatedSkybox;
+  //  std::string mTextureName;
+  //  YTE::u32 mSubdivisions;
+  //  bool mConstructing = true;
+  //};
 
 
   class MaterialViewer : public QWidget
