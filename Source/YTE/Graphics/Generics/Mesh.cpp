@@ -256,6 +256,7 @@ namespace YTE
     if (0 != normals.length)
     {
       mNormalMap = normals.C_Str();
+      mUBOMaterial.mUsesNormalTexture = 1; // true
     }
 
     mShaderSetName = "Phong";

@@ -59,7 +59,7 @@ namespace YTE
     float mReflectiveIndex = 1.0f;
     float mBumpScaling = 1.0f;
     int mIsEditorObject = 0;
-    float mPadding = 0.0f;
+    int mUsesNormalTexture = 0;
   };
 
 
