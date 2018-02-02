@@ -120,6 +120,8 @@ namespace YTE
       {
         if (instantiatedModel->GetMesh()->mName != mName)
         {
+          mSubmeshMaterials.clear();
+
           for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
           {
             auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
@@ -155,7 +157,7 @@ namespace YTE
   {
     mModel = mOwner->GetComponent<Model>();
 
-    mModel->YTERegister(Events::ModelChanged, this, &Material::Create);
+    mOwner->YTERegister(Events::ModelChanged, this, &Material::Create);
 
     ModelChanged event;
     event.Object = mOwner;
