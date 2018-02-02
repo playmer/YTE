@@ -30,11 +30,8 @@ namespace YTE
       .SetDocumentation("The speed at which the animation will be played at.");
   }
 
-  Animation::Animation(std::string &aFile, Model *aModel, Engine *aEngine, uint32_t aAnimationIndex)
+  Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
   {
-    mModel = aModel;
-    mEngine = aEngine;
-
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
     auto scene = importer.ReadFile(aniFile.c_str(),
@@ -60,14 +57,19 @@ namespace YTE
     mName = mAnimation->mName.data;
     mCurrentAnimationTime = 0.0f;
 
-    mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
 
     mUBOAnimationData.mHasAnimation = true;
     mElapsedTime = 0.0f;
 
-    mEngine->YTERegister(Events::AnimationUpdate, this, &Animation::Update);
-
     mSpeed = 1.0f;
+  }
+
+  void Animation::Initialize(Model *aModel, Engine *aEngine)
+  {
+    mEngine = aEngine;
+    mModel = aModel;
+    mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
+    mEngine->YTERegister(Events::AnimationUpdate, this, &Animation::Update);
   }
 
   Animation::~Animation()
@@ -303,6 +305,11 @@ namespace YTE
   void Animator::Initialize()
   {
     mModel = mOwner->GetComponent<Model>();
+
+    for (auto it : mAnimations)
+    {
+      it.first->Initialize(mModel, mEngine);
+    }
   }
 
   std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)
@@ -329,7 +336,7 @@ namespace YTE
       return nullptr;
     }
 
-    Animation *anim = new Animation(aName, mModel, mEngine);
+    Animation *anim = new Animation(aName);
 
     mAnimations.emplace_back(std::make_pair(anim, aName));
 
@@ -376,13 +383,13 @@ namespace YTE
 
   void Animator::Deserializer(RSValue &aValue, Object *aOwner)
   {
-    //auto owner = static_cast<Animator*>(aOwner);
-    //
-    //for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)
-    //{
-    //  auto animation = owner->AddAnimation(valueIt->name.GetString());
-    //
-    //  DeserializeByType(&(valueIt->value), animation, animation->GetType());
-    //}
+    auto owner = static_cast<Animator*>(aOwner);
+    
+    for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)
+    {
+      auto animation = owner->AddAnimation(valueIt->name.GetString());
+    
+      DeserializeByType(&(valueIt->value), animation, animation->GetType());
+    }
   }
 }
