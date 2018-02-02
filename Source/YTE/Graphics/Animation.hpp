@@ -31,7 +31,8 @@ namespace YTE
   public:
     YTEDeclareType(Animation);
   
-    Animation(std::string &aFile, Model *aModel, Engine *aEngine, uint32_t aAnimationIndex = 0);
+    Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
+    void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
     void Update(LogicUpdate* aEvent);
   
