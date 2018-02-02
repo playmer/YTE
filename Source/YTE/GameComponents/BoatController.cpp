@@ -11,6 +11,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/BoatController.hpp"
 
+#include "YTE/Graphics/ParticleEmitter.hpp"
+
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/RigidBody.hpp"
 #include "YTE/Physics/Collider.hpp"
@@ -50,6 +52,12 @@ namespace YTE
         mTransform = mOwner->GetComponent<Transform>();
         mIsSailUp = false;
         mRotationAngle = 0.0f;
+        //mForwardVec = mOrientation->GetForwardVector();
+
+
+        //temp
+        auto composition = mOwner->FindFirstCompositionByName("particles");
+        mEmitter = composition->GetComponent<ParticleEmitter>();
     }
 /******************************************************************************/
 /*
@@ -79,12 +87,14 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
+      mEmitter->SetInitVelocity(glm::vec3(mOrientation->GetForwardVector().x, -0.5f, mOrientation->GetForwardVector().z) * -2.0f);
       //glm::vec3 moveVec = CalculateMovementVector(aEvent->Dt);
       //ApplyMovementVector(moveVec);
       mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
       if (mIsSailUp)
       {
         mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * aEvent->Dt);
+
         /*
         if (mCurSpeed < mMaxSailSpeed)
         {

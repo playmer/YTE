@@ -47,7 +47,7 @@ namespace YTE
 /******************************************************************************/
     void InputInterpreter::CheckSticks(XboxStickEvent *aEvent)
     {
-      std::cout << "Stick (" << aEvent->StickDirection.x << ", " << aEvent->StickDirection.y << ")\n";
+      //std::cout << "Stick (" << aEvent->StickDirection.x << ", " << aEvent->StickDirection.y << ")\n";
       BoatTurnEvent turnEvent;
       turnEvent.Stick = aEvent->Stick;
       turnEvent.StickDirection = aEvent->StickDirection;

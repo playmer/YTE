@@ -48,6 +48,7 @@ namespace YTE
         Transform *mTransform;
         Orientation *mOrientation;
         RigidBody *mRigidBody;
+        ParticleEmitter *mEmitter;
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
 
