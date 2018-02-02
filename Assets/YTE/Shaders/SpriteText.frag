@@ -29,9 +29,27 @@ struct Light
 // used to pass data to lighting functions
 struct LightingData
 {
-  vec4 mDiffuseTexture;
+  // diffuse
+  vec4 mDiffTexture;
+  vec4 mDiffMat;
+
+  // normal
   vec4 mNormalTexture;
-  vec4 mSpecularTexture;
+
+  // specular
+  vec4 mSpecTexture;
+  vec4 mSpecMat;
+
+  // emissive
+  vec4 mEmisMat;
+
+  // ambient
+  vec4 mAmbMat;
+
+  // shinniness
+  float mShininessMat;
+
+  // misc calculating values
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
@@ -53,8 +71,8 @@ const uint LightType_Spot = 3;
 // UBO Buffers
 
 //====================
-// Material Values
-layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
+// Submesh Material Values
+layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -69,8 +87,28 @@ layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
     float mReflectiveIndex;
     float mBumpScaling;
     int mIsEditorObject;
-    float mPadding; // unused
-} Material;
+    int mUsesNormalTexture;
+} SubmeshMaterial;
+
+//====================
+// Model Material Values
+layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
+{
+    vec4 mDiffuse;
+    vec4 mAmbient;
+    vec4 mSpecular;
+    vec4 mEmissive;
+    vec4 mTransparent;
+    vec4 mReflective;
+    float mOpacity;
+    float mShininess;
+    float mShininessStrength;
+    float mReflectivity;
+    float mReflectiveIndex;
+    float mBumpScaling;
+    int mIsEditorObject;
+    int mUsesNormalTexture;
+} ModelMaterial;
 
 // ========================
 // Light Values
@@ -115,7 +153,7 @@ void main()
 
   if (texColor != vec4(0.0f, 0.0f, 0.0f, 1.0f))
   {
-    if (Material.mIsEditorObject > 0)
+    if (SubmeshMaterial.mIsEditorObject > 0)
     {
       outFragColor = texColor;
     }
