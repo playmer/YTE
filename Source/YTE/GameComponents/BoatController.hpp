@@ -39,8 +39,8 @@ namespace YTE
         void Update(LogicUpdate *aEvent);
 
     private:
-        void CalculateMovementVector(float dt);
-        void ApplyMovementVector();
+        glm::vec3 CalculateMovementVector(float dt);
+        void ApplyMovementVector(glm::vec3 aImpulse);
         //void ApplyForceToBoat();
         //void RollBoat();
 
