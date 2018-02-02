@@ -125,9 +125,9 @@ namespace YTE
       UpdateUBO();
     }
 
-    void SetPadding(float aPadding)
+    void SetUseNormalTexture(bool aUseNormalTexture)
     {
-      mMaterial.mPadding = aPadding;
+      mMaterial.mUsesNormalTexture = aUseNormalTexture ? 1 : 0;
       UpdateUBO();
     }
 
@@ -144,7 +144,7 @@ namespace YTE
     float     GetReflectiveIndex() { return mMaterial.mReflectiveIndex; }
     float     GetBumpScaling() { return mMaterial.mBumpScaling; }
     bool      GetIsEditorObject() { return mMaterial.mIsEditorObject; }
-    float     GetPadding() { return mMaterial.mPadding; }
+    bool      GetUseNormalTexture() { return mMaterial.mUsesNormalTexture ? true : false; }
 
 
     Submesh* GetSubmesh() { return mSubmesh; }
