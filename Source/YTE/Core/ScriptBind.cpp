@@ -34,6 +34,7 @@
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
@@ -115,6 +116,7 @@ namespace YTE
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
     InitializeType<Sprite>();
+    InitializeType<SpriteText>();
     InitializeType<TempDiffuseColoringComponent>();
 
     InitializeType<Body>();

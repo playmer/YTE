@@ -41,7 +41,7 @@ target_link_libraries(YTE
     glslang
     fmt    
     LuaJIT
-    STB_Image
+    STB
     VkHLF
     XInput9_1_0.lib
 ) 

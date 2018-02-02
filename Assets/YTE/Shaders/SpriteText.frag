@@ -26,31 +26,12 @@ struct Light
   float mSpotLightFalloff;
 };
 
-
 // used to pass data to lighting functions
 struct LightingData
 {
-  // diffuse
-  vec4 mDiffTexture;
-  vec4 mDiffMat;
-
-  // normal
+  vec4 mDiffuseTexture;
   vec4 mNormalTexture;
-
-  // specular
-  vec4 mSpecTexture;
-  vec4 mSpecMat;
-
-  // emissive
-  vec4 mEmisMat;
-
-  // ambient
-  vec4 mAmbMat;
-
-  // shinniness
-  float mShinninessMat;
-
-  // misc calculating values
+  vec4 mSpecularTexture;
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
@@ -72,8 +53,8 @@ const uint LightType_Spot = 3;
 // UBO Buffers
 
 //====================
-// Submesh Material Values
-layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
+// Material Values
+layout (binding = UBO_MATERIAL_BINDING) uniform UBOMaterial
 {
     vec4 mDiffuse;
     vec4 mAmbient;
@@ -89,28 +70,7 @@ layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
     float mBumpScaling;
     int mIsEditorObject;
     float mPadding; // unused
-} SubmeshMaterial;
-
-//====================
-// Model Material Values
-layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
-{
-    vec4 mDiffuse;
-    vec4 mAmbient;
-    vec4 mSpecular;
-    vec4 mEmissive;
-    vec4 mTransparent;
-    vec4 mReflective;
-    float mOpacity;
-    float mShininess;
-    float mShininessStrength;
-    float mReflectivity;
-    float mReflectiveIndex;
-    float mBumpScaling;
-    int mIsEditorObject;
-    float mPadding; // unused
-} ModelMaterial;
-
+} Material;
 
 // ========================
 // Light Values
@@ -151,13 +111,23 @@ layout (location = 0) out vec4 outFragColor;
 // Entry Point of Shader
 void main()
 {
-  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
+  vec4 texColor = texture(diffuseSampler, inTextureCoordinates);
+
+  if (texColor != vec4(0.0f, 0.0f, 0.0f, 1.0f))
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates);
+    if (Material.mIsEditorObject > 0)
+    {
+      outFragColor = texColor;
+    }
+    else
+    {
+      outFragColor = texColor * inDiffuse;
+    }
   }
+
   else
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+    outFragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
   }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }

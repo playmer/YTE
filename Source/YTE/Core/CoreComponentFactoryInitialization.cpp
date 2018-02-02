@@ -28,6 +28,7 @@
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
@@ -97,6 +98,7 @@ namespace YTE
     helper.CreateComponentFactory<RigidBody>();
     helper.CreateComponentFactory<SphereCollider>();
     helper.CreateComponentFactory<Sprite>();
+    helper.CreateComponentFactory<SpriteText>();
     helper.CreateComponentFactory<Transform>();
   }
 }
