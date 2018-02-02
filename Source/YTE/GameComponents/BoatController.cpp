@@ -40,6 +40,8 @@ namespace YTE
     {
         // Event Registration
         mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
+
         mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
         // Member Init
         //mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
@@ -47,12 +49,29 @@ namespace YTE
         mOrientation = mOwner->GetComponent<Orientation>();
         mTransform = mOwner->GetComponent<Transform>();
         mIsSailUp = false;
+        mRotationAngle = 0.0f;
     }
 /******************************************************************************/
 /*
     Event Callbacks
 */
 /******************************************************************************/
+    void BoatController::TurnBoat(BoatTurnEvent *aEvent)
+    {
+      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      {
+        mRotationAngle -= aEvent->StickDirection.x / 2.0f;
+        if (mRotationAngle > 360.0f)
+        {
+          mRotationAngle = 0.0f;
+        }
+        if (mRotationAngle < 0.0f)
+        {
+          mRotationAngle = 360.0f;
+        }
+      }
+    }
+
     void BoatController::ChangeSail(SailStateChanged *aEvent)
     {
         mIsSailUp = aEvent->SailUp;
@@ -62,6 +81,7 @@ namespace YTE
     {
       //glm::vec3 moveVec = CalculateMovementVector(aEvent->Dt);
       //ApplyMovementVector(moveVec);
+      mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
       if (mIsSailUp)
       {
         mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * aEvent->Dt);

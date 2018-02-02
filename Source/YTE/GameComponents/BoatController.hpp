@@ -36,6 +36,7 @@ namespace YTE
         BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
         void ChangeSail(SailStateChanged *aEvent);
+        void TurnBoat(BoatTurnEvent *aEvent);
         void Update(LogicUpdate *aEvent);
 
     private:
@@ -62,6 +63,7 @@ namespace YTE
         // Vector that represents the direction of the force to apply to the boat (move elsewhere?)
         glm::vec3 mMoveVec = { 0, 0, 0 };
         glm::vec3 mForwardVec;
+        float mRotationAngle; // @@@TODO: take this out and add a Rotate() on the Transform later
         //float mSailMaxSpeed;
         //float mCurBoatRoll; i think this is going to change to a max roll
     };

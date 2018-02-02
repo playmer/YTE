@@ -14,11 +14,11 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
     YTEDefineEvent(SailStateChanged);
+    YTEDefineEvent(BoatTurnEvent);
 
-    YTEDefineType(SailStateChanged)
-    {
-        YTERegisterType(SailStateChanged);
-    }
+    YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
+    YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
+
 
     YTEDefineType(InputInterpreter)
     {
@@ -48,6 +48,10 @@ namespace YTE
     void InputInterpreter::CheckSticks(XboxStickEvent *aEvent)
     {
       std::cout << "Stick (" << aEvent->StickDirection.x << ", " << aEvent->StickDirection.y << ")\n";
+      BoatTurnEvent turnEvent;
+      turnEvent.Stick = aEvent->Stick;
+      turnEvent.StickDirection = aEvent->StickDirection;
+      mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
     }
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)

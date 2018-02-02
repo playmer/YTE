@@ -30,15 +30,31 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+/////////////////////////////////////////////////////////////////////////////////////
+// Events
+/////////////////////////////////////////////////////////////////////////////////////
     YTEDeclareEvent(SailStateChanged);
+    YTEDeclareEvent(BoatTurnEvent);
 
     class SailStateChanged : public Event
     {
     public:
-        YTEDeclareType(SailStateChanged);
-        SailStateChanged(bool state) { SailUp = state; };
-        bool SailUp;
+      YTEDeclareType(SailStateChanged);
+      SailStateChanged(bool state) { SailUp = state; };
+      bool SailUp;
     };
+
+    class BoatTurnEvent : public Event
+    {
+    public:
+      YTEDeclareType(BoatTurnEvent);
+      glm::vec2 StickDirection;
+      Xbox_Buttons Stick;
+    };
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Class
+/////////////////////////////////////////////////////////////////////////////////////
 
     class InputInterpreter : public Component
     {
