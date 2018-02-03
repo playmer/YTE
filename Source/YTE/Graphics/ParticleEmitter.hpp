@@ -79,6 +79,9 @@ namespace YTE
     float GetEmitCount();
     void SetEmitCount(float aEmitCount);
 
+    bool GetUseGravity();
+    void SetUseGravity(bool aUseGravity);
+
   private:
     
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
@@ -101,6 +104,8 @@ namespace YTE
     glm::vec3 mParticleScaleVariance;
 
     glm::vec3 mEmitterScale;
+
+    bool mUseGravity;
 
     float mEmitRate;
     float mEmitCount;

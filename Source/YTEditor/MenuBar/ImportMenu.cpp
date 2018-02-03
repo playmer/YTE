@@ -111,11 +111,7 @@ namespace YTEditor
 
     Assimp::Importer Importer;
 
-    auto pScene = Importer.ReadFile(stdFileName,
-      aiProcess_FlipWindingOrder |
-      aiProcess_Triangulate |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
+    auto pScene = Importer.ReadFile(stdFileName, 0);
 
     if (nullptr == pScene)
     {
