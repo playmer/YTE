@@ -119,7 +119,11 @@ namespace YTE
     mLeftStick = GetStickState(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY, true);
     mRightStick = GetStickState(state->Gamepad.sThumbRX, state->Gamepad.sThumbRY, false);
 
-    // Left Stick Changed
+    /* Evan, the geniuse gave the great point that comparing these to the prev stick value would 
+       function as a true stick change (and could save some event constructions in the case
+       of a stick being held in the same position that is not zero) */
+
+    // Left Stick not zero
     if (mLeftStick.x != 0.0f || mLeftStick.y != 0.0f)
     {
       XboxStickEvent stickEvent;
@@ -128,7 +132,7 @@ namespace YTE
       stickEvent.Controller = this;
       SendEvent(Events::XboxStickEvent, &stickEvent);
     }
-    // Right Stick Changed
+    // Right Stick not zero
     if (mRightStick.x != 0.0f || mRightStick.y != 0.0f)
     {
       XboxStickEvent stickEvent;
