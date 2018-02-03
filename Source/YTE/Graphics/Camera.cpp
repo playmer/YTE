@@ -604,8 +604,6 @@ namespace YTE
       return;
     }
 
-    std::cout << mEngine->IsEditor() << std::endl;
-
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)
     {
