@@ -389,6 +389,20 @@ namespace YTEditor
     mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
     mRunningSpace->Load(&value, false);
 
+    auto comps = mRunningSpace->GetCompositions();
+    for (auto it = comps->begin(); it != comps->end(); ++it)
+    {
+      auto cam = it->second->GetComponent<YTE::Camera>();
+      if (cam)
+      {
+        if (cam->GetCameraType() == "Gameplay")
+        {
+          cam->SetCameraAsActive();
+          break;
+        }
+      }
+    }
+
     auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
     graphicsView->ChangeWindow("YTEditor Play Window");
 

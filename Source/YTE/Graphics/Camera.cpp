@@ -121,7 +121,8 @@ namespace YTE
                         " - TargetObject: The camera will always face the chosen target object.\n" 
                         " - TargetPoint: The camera will always face the chosen target point.\n" 
                         " - CameraOrientation: The camera will always face in the direction the orientation component suggests.\n"
-                        " - Flyby: The camera behaves like an FPS, where it uses WASD."); 
+                        " - Flyby: The camera behaves like an FPS, where it uses WASD.\n"
+                        " - Gameplay: The camera for the game.\n");
     
     YTEBindProperty(&Camera::GetPanSpeed, &Camera::SetPanSpeed, "Pan Speed")
       .AddAttribute<EditorProperty>()
@@ -326,6 +327,21 @@ namespace YTE
 
         break;
       }
+      case CameraType::Gameplay:
+      {
+        glm::vec3 right{ 1.0f, 0.0f, 0.0f };
+        glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+        glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
+
+        mCameraTransform = mOwner->GetComponent<Transform>();
+        //mCameraOrientation = mOwner->GetComponent<Orientation>();
+        //right = mCameraOrientation->GetRightVector();
+        //up = mCameraOrientation->GetUpVector();
+        //forward = mCameraOrientation->GetForwardVector();
+
+        view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
+        break;
+      }
       case CameraType::Flyby:
       {
         glm::quat rot = mCameraTransform->GetRotation();
@@ -370,6 +386,15 @@ namespace YTE
 
     UBOView view = ConstructUBOView();
 
+    mChanged = false;
+    mGraphicsView->UpdateView(this, view);
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mGraphicsView->UpdateIllumination(mIllumination);
+  }
+
+  void Camera::SetCameraAsActive()
+  {
+    UBOView view = ConstructUBOView();
     mChanged = false;
     mGraphicsView->UpdateView(this, view);
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);

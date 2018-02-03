@@ -243,6 +243,8 @@ namespace YTE
 
     void SetCameraType(std::string &aCameraType);
 
+    void SetCameraAsActive();
+
 
   private:
     void UpdateCameraRotation(float aPitch, float aYaw, float aRoll);
