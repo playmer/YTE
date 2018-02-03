@@ -52,6 +52,7 @@ namespace YTE
 
 
         YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")
+            .AddAttribute<Serializable>()
             .AddAttribute<EditorProperty>()
             .AddAttribute<DropDownStrings>(PopulateDropDownList);
     }
@@ -60,6 +61,7 @@ namespace YTE
         : Component(aOwner, aSpace)
     {
         YTEUnusedArgument(aProperties);
+        DeserializeByType(aProperties, this, GetStaticType());
     }
 
     void AudioTest::Initialize()

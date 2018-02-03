@@ -111,8 +111,8 @@ namespace YTE
 
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     float dt = GetSpace()->GetEngine()->GetDt();
-
 
     // erase the dead bois
     mParticles.erase(
@@ -346,8 +346,6 @@ namespace YTE
     std::vector<Submesh> submeshes{ submesh };
 
     auto view = mSpace->GetComponent<GraphicsView>();
-
-    auto graphics = mSpace->GetComponent<GraphicsView>();
 
     auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
 

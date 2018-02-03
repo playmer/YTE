@@ -23,6 +23,11 @@ namespace YTE
   YTEDefineType(WWiseListener)
   {
     YTERegisterType(WWiseListener);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
+                                             { TypeId<Orientation>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties)
