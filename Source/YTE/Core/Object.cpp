@@ -215,12 +215,12 @@ namespace YTE
       {
         auto object = redirectAttribute->Serialize(aAllocator, aSelf);
 
-        RSValue propertyName;
-        propertyName.SetString(redirectAttribute->GetName().c_str(),
-                            static_cast<RSSizeType>(redirectAttribute->GetName().size()),
-                            aAllocator);
+        RSValue propName;
+        propName.SetString(redirectAttribute->GetName().c_str(),
+                           static_cast<RSSizeType>(redirectAttribute->GetName().size()),
+                           aAllocator);
 
-        aValue.AddMember(propertyName, object, aAllocator);
+        aValue.AddMember(propName, object, aAllocator);
         continue;
       }
 
