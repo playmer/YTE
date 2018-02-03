@@ -280,7 +280,7 @@ vec4 CalculateLight(int i, inout LightingData aLightData)
 LightingData SampleTextures(vec2 aUV, inout vec4 aNormal)
 {
   LightingData lightData;
-  lightData.mDiffuseTexture  = Material.mDiffuse;
+  lightData.mDiffuseTexture  = /*Material.mDiffuse*/ inDiffuse;
   lightData.mSpecularTexture = Material.mSpecular;
   lightData.mNormalTexture   = aNormal;
   return lightData;
@@ -336,7 +336,7 @@ void main()
   }
   else if (Lights.mActive < 0.5f)
   {
-    outFragColor = Material.mDiffuse * inDiffuse;
+    outFragColor = /*Material.mDiffuse **/ inDiffuse;
   }
   else
   {

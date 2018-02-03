@@ -69,7 +69,7 @@ namespace YTE
 
   void Orientation::OnRotationChanged(TransformChanged *aEvent)
   {
-    std::cout << "Orientation Rotation Change\n";
+    //std::cout << "Orientation Rotation Change\n";
 
     const glm::vec3 forwardReset{ 0, 0, -1 };
     const glm::vec3 rightReset{1, 0, 0};

@@ -52,6 +52,10 @@ namespace YTE
     RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
 
     btDiscreteDynamicsWorld *GetWorld() { return mDynamicsWorld.get(); };
+
+    glm::vec3 GetGravity();
+    void SetGravity(glm::vec3 aAcceleration);
+
   private:
     void DispatchCollisionEvents(void);
 
@@ -67,6 +71,7 @@ namespace YTE
     UniquePointer<YTE::DebugDrawer> mDebugDrawer;
 
     bool mDebugDraw;
+    glm::vec3 mGravityAcceleration;
   };
 
 

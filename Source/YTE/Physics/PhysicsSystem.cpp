@@ -45,6 +45,9 @@ namespace YTE
     YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
     YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
     YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
+    YTEBindProperty(&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity, "Gravity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -76,7 +79,7 @@ namespace YTE
                                                                mSolver.get(),
                                                                mCollisionConfiguration.get());
       
-    mDynamicsWorld->setGravity(btVector3(0, -10, 0));
+    mDynamicsWorld->setGravity(OurVec3ToBt(mGravityAcceleration));
   }
 
 
@@ -153,6 +156,7 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
     // TODO(if collision is fucked): mDynamicsWorld->updateAABBs 
+    mDynamicsWorld->updateAabbs();
     mDynamicsWorld->stepSimulation(aEvent->Dt, 10);
 
     DispatchCollisionEvents();
@@ -220,4 +224,17 @@ namespace YTE
 
     return info;
   }
+
+  glm::vec3 PhysicsSystem::GetGravity()
+  {
+    return mGravityAcceleration;
+  }
+
+  void PhysicsSystem::SetGravity(glm::vec3 aAcceleration)
+  {
+    mGravityAcceleration = aAcceleration;
+    btVector3 accel = OurVec3ToBt(aAcceleration);
+    mDynamicsWorld->setGravity(accel);
+  };
+
 } // namespace YTE

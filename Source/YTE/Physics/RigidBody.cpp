@@ -49,6 +49,11 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
+    YTEBindProperty(&RigidBody::GetGravity, &RigidBody::SetGravity, "Gravity")
+      .SetDocumentation("This is the acceleration due to gravity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
     YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
       .Description() = "Applies an impulse to the RigidBody.";
 
@@ -59,7 +64,12 @@ namespace YTE
   }
 
   RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mMass(1.0f), mStatic(false), mIsInitialized(false)
+    : Body(aOwner, aSpace, aProperties)
+    , mVelocity(0.f, 0.f, 0.f)
+    , mMass(1.0f)
+    , mStatic(false)
+    , mIsInitialized(false)
+    , mKinematic(true)
   {
     DeserializeByType(aProperties,  this, GetStaticType());
   };
@@ -120,6 +130,8 @@ namespace YTE
       mRigidBody->updateInertiaTensor();
     }
 
+    mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
+
     world->addRigidBody(mRigidBody.get());
 
     mIsInitialized = true;
@@ -162,13 +174,11 @@ namespace YTE
 
   void RigidBody::SetVelocity(const glm::vec3& aVelocity)
   {
+    mVelocity = aVelocity;
+
     if (mIsInitialized)
     {
       mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
-    }
-    else
-    {
-      mVelocity = aVelocity;
     }
 
     // TODO@@@(Isaac): SEND UPDATED VELOCITY EVENT
@@ -190,9 +200,10 @@ namespace YTE
 
   void RigidBody::SetKinematic(bool flag)
   {
+    mKinematic = flag;
     if (mMotionState)
     {
-      mMotionState->SetKinematic(flag);
+      mMotionState->SetKinematic(mKinematic);
     }
   }
 
@@ -218,10 +229,30 @@ namespace YTE
     }
 
     mMass = aMass;
+
+    if (mRigidBody)
+    {
+      mRigidBody->setMassProps(mMass, btVector3{0.0f, 0.0f, 0.0f});
+    }
   }
 
   float RigidBody::GetMass() const
   {
     return mMass;
+  }
+
+  void RigidBody::SetGravity(glm::vec3 aAcceleration)
+  {
+    mGravityAcceleration = aAcceleration;
+    btVector3 accel = OurVec3ToBt(aAcceleration);
+    if (mRigidBody)
+    {
+      mRigidBody->setGravity(accel);
+    }
+  }
+
+  glm::vec3 RigidBody::GetGravity()
+  {
+    return mGravityAcceleration;
   }
 }

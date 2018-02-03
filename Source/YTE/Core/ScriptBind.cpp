@@ -18,6 +18,12 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/GameComponents/AudioTest.hpp"
+#include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/GameComponents/AddComponentToEngine.hpp"
+#include "YTE/GameComponents/CameraController.hpp"
+
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -71,6 +77,12 @@ namespace YTE
     InitializeType<Space>();
     InitializeType<TestComponent>();
 
+    InitializeType<AudioTest>();
+    InitializeType<BoatController>();
+    InitializeType<InputInterpreter>();
+    InitializeType<AddComponentToEngine>();
+    InitializeType<CameraController>();
+
     InitializeType<Event>();
     InitializeType<EventHandler>();
     InitializeType<LogicUpdate>();
@@ -80,6 +92,7 @@ namespace YTE
     InitializeType<KeyboardEvent>();
     InitializeType<XboxButtonEvent>();
     InitializeType<XboxFlickEvent>();
+    InitializeType<XboxStickEvent>();
     InitializeType<TransformChanged>();
     InitializeType<OrientationChanged>();
     InitializeType<CollisionEvent>();
