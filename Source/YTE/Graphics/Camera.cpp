@@ -333,11 +333,11 @@ namespace YTE
         glm::vec3 up{ 0.0f, 1.0f, 0.0f };
         glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
 
-        mCameraTransform = mOwner->GetComponent<Transform>();
+        //mCameraTransform = mOwner->GetComponent<Transform>();
         //mCameraOrientation = mOwner->GetComponent<Orientation>();
-        //right = mCameraOrientation->GetRightVector();
-        //up = mCameraOrientation->GetUpVector();
-        //forward = mCameraOrientation->GetForwardVector();
+        right = mCameraOrientation->GetRightVector();
+        up = mCameraOrientation->GetUpVector();
+        forward = mCameraOrientation->GetForwardVector();
 
         view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
         break;
@@ -572,10 +572,39 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
+    if (mEngine->IsEditor())
+    {
+      if (mType == CameraType::Gameplay)
+      {
+        if (mSpace->GetName() != "YTEditor Play Space")
+        {
+          return;
+        }
+      }
+      else if (mType != CameraType::Gameplay)
+      {
+        if (mSpace->GetName() == "YTEditor Play Space")
+        {
+          return;
+        }
+      }
+    }
+    else if (mType != CameraType::Gameplay)
+    {
+      return;
+    }
+
+
     if (mType == CameraType::Gameplay && mEngine->IsEditor() == true)
     {
       return;
     }
+    else if (mType != CameraType::Gameplay && mEngine->IsEditor() == false)
+    {
+      return;
+    }
+
+    std::cout << mEngine->IsEditor() << std::endl;
 
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)
