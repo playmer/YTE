@@ -63,6 +63,7 @@
 #include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
+#include "YTE/WWise/WWiseView.hpp"
 
 namespace YTE
 {
@@ -143,6 +144,7 @@ namespace YTE
     InitializeType<WWiseSystem>();
     InitializeType<WWiseEmitter>();
     InitializeType<WWiseListener>();
+    InitializeType<WWiseView>();
     
     InitializeType<void>();
     InitializeType<bool>();

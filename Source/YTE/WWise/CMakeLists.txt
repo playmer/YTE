@@ -4,10 +4,12 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/MemoryImplementation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WWiseEmitter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WWiseListener.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseView.cpp
 #  PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/WWiseSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/WWiseEmitter.hpp
     ${CMAKE_CURRENT_LIST_DIR}/WWiseListener.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/WWiseView.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
 )
 

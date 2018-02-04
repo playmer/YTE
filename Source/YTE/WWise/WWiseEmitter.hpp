@@ -15,7 +15,7 @@
 
 #include "YTE/Core/Component.hpp"
 
-
+#include "YTE/WWise/WWiseView.hpp"
 
 namespace YTE
 {
@@ -30,6 +30,8 @@ namespace YTE
 
     void Play();
     void PlayEvent(const std::string & aEvent);
+
+    void ListenerChanged(WWiseListenerChanged *aListenerChange);
 
     void Initialize() override;
 

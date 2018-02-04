@@ -6,6 +6,8 @@
 #include <qlayout>
 #include <qlabel>
 
+#include "AK/SoundEngine/Common/AkSoundEngine.h"
+
 #include "YTE/Core/Engine.hpp"
 
 #include "YTEditor/WWiseViewer/WWiseWidget.hpp"
@@ -130,6 +132,8 @@ namespace YTEditor
     std::string name{ "WWiseWidget" };
     mSystem = mEngine->GetComponent<YTE::WWiseSystem>();
     mSystem->RegisterObject(OwnerId(), name);
+    auto listener = OwnerId();
+    AK::SoundEngine::SetListeners(OwnerId(), &listener, 1);
 
     ConstructSubWidgets();
 

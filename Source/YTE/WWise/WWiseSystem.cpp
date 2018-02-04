@@ -55,6 +55,7 @@ namespace YTE
   WWiseSystem::WWiseSystem(Composition *aOwner, RSValue *aProperties)
     : Component(aOwner, nullptr)
     , mMuted(false)
+    , mAvailableListeners{0,1,2,3,4,5,6,7}
   {
     YTEUnusedArgument(aProperties);
   }
@@ -134,21 +135,37 @@ namespace YTE
 
     LoadAllBanks();
 
-    AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
     
 
-    // Register the main listener.
-    auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
-    YTEUnusedArgument(check);
-    assert(check == AK_Success);
+    //// Register the main listener.
+    // AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
+    //auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
+    //YTEUnusedArgument(check);
+    //assert(check == AK_Success);
+    //
+    //// Set one listener as the default.
+    //AK::SoundEngine::SetDefaultListeners(&MY_DEFAULT_LISTENER, 1);
+  }
 
-    // Set one listener as the default.
-    AK::SoundEngine::SetDefaultListeners(&MY_DEFAULT_LISTENER, 1);
 
-    //mOwner->YTERegister(Events::WindowFocusLostOrGained, this, &WWiseSystem::WindowLostOrGainedFocusHandler);
-    //mOwner->YTERegister(Events::WindowMinimizedOrRestored, this, &WWiseSystem::WindowMinimizedOrRestoredHandler);
+  u8 WWiseSystem::RegisterListener(AkGameObjectID aId, std::string &aName)
+  {
+    if (0 != mAvailableListeners.size())
+    {
+      auto listener = mAvailableListeners.back();
+      mAvailableListeners.pop_back();
+      RegisterObject(aId, aName);
 
-    //Events::WindowFocusLostOrGained, &focusEvent);
+      return listener;
+    }
+
+    return 9;
+  }
+
+  void WWiseSystem::DeregisterListener(AkGameObjectID aId, u8 aListener)
+  {
+    DeregisterObject(aId);
+    mAvailableListeners.emplace_back(aListener);
   }
 
   void WWiseSystem::RegisterObject(AkGameObjectID aId, std::string &aName)

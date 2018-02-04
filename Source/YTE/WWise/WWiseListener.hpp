@@ -11,8 +11,11 @@
 #ifndef YTE_WWise_WWiseListener_h
 #define YTE_WWise_WWiseListener_h
 
-#include "YTE/Core/Component.hpp"
 #include "AK/SoundEngine/Common/AkTypes.h"
+
+#include "YTE/Core/Component.hpp"
+
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -22,6 +25,7 @@ namespace YTE
     YTEDeclareType(WWiseListener);
 
     WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
 
     void Initialize() override;
