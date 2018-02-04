@@ -50,6 +50,7 @@
 
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
+#include "YTE/WWise/WWiseView.hpp"
 
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
@@ -65,6 +66,7 @@ namespace YTE
 
     helper.CreateComponentFactory<WWiseEmitter>();
     helper.CreateComponentFactory<WWiseListener>();
+    helper.CreateComponentFactory<WWiseView>();
 
     helper.CreateComponentFactory<TestComponent>();
 
