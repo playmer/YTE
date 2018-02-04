@@ -259,10 +259,6 @@ namespace YTE
                                               mNearPlane,
                                               mFarPlane);
 
-    //view.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-
-
     switch (mType)
     {
       case CameraType::CameraOrientation:
@@ -333,13 +329,19 @@ namespace YTE
         glm::vec3 up{ 0.0f, 1.0f, 0.0f };
         glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
 
-        //mCameraTransform = mOwner->GetComponent<Transform>();
-        //mCameraOrientation = mOwner->GetComponent<Orientation>();
         right = mCameraOrientation->GetRightVector();
         up = mCameraOrientation->GetUpVector();
         forward = mCameraOrientation->GetForwardVector();
 
-        view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
+
+        glm::vec4 offsetVector(0.0f, 0.0f, 1.0f, 1.0f);
+        offsetVector = glm::rotate(rot, offsetVector);
+
+        view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mCameraTransform->GetTranslation() + glm::vec3(offsetVector), glm::vec3(up4));
+        //view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
         break;
       }
       case CameraType::Flyby:
