@@ -121,7 +121,8 @@ namespace YTE
                         " - TargetObject: The camera will always face the chosen target object.\n" 
                         " - TargetPoint: The camera will always face the chosen target point.\n" 
                         " - CameraOrientation: The camera will always face in the direction the orientation component suggests.\n"
-                        " - Flyby: The camera behaves like an FPS, where it uses WASD."); 
+                        " - Flyby: The camera behaves like an FPS, where it uses WASD.\n"
+                        " - Gameplay: The camera for the game.\n");
     
     YTEBindProperty(&Camera::GetPanSpeed, &Camera::SetPanSpeed, "Pan Speed")
       .AddAttribute<EditorProperty>()
@@ -258,10 +259,6 @@ namespace YTE
                                               mNearPlane,
                                               mFarPlane);
 
-    //view.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-
-
     switch (mType)
     {
       case CameraType::CameraOrientation:
@@ -326,6 +323,27 @@ namespace YTE
 
         break;
       }
+      case CameraType::Gameplay:
+      {
+        glm::vec3 right{ 1.0f, 0.0f, 0.0f };
+        glm::vec3 up{ 0.0f, 1.0f, 0.0f };
+        glm::vec3 forward{ 0.0f, 0.0f, 1.0f };
+
+        right = mCameraOrientation->GetRightVector();
+        up = mCameraOrientation->GetUpVector();
+        forward = mCameraOrientation->GetForwardVector();
+
+        glm::quat rot = mCameraTransform->GetRotation();
+        glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+        up4 = glm::rotate(rot, up4);
+
+        glm::vec4 offsetVector(0.0f, 0.0f, 1.0f, 1.0f);
+        offsetVector = glm::rotate(rot, offsetVector);
+
+        view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mCameraTransform->GetTranslation() + glm::vec3(offsetVector), glm::vec3(up4));
+        //view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
+        break;
+      }
       case CameraType::Flyby:
       {
         glm::quat rot = mCameraTransform->GetRotation();
@@ -370,6 +388,15 @@ namespace YTE
 
     UBOView view = ConstructUBOView();
 
+    mChanged = false;
+    mGraphicsView->UpdateView(this, view);
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mGraphicsView->UpdateIllumination(mIllumination);
+  }
+
+  void Camera::SetCameraAsActive()
+  {
+    UBOView view = ConstructUBOView();
     mChanged = false;
     mGraphicsView->UpdateView(this, view);
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
@@ -547,7 +574,34 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
+    if (mEngine->IsEditor())
+    {
+      if (mType == CameraType::Gameplay)
+      {
+        if (mSpace->GetName() != "YTEditor Play Space")
+        {
+          return;
+        }
+      }
+      else if (mType != CameraType::Gameplay)
+      {
+        if (mSpace->GetName() == "YTEditor Play Space")
+        {
+          return;
+        }
+      }
+    }
+    else if (mType != CameraType::Gameplay)
+    {
+      return;
+    }
+
+
     if (mType == CameraType::Gameplay && mEngine->IsEditor() == true)
+    {
+      return;
+    }
+    else if (mType != CameraType::Gameplay && mEngine->IsEditor() == false)
     {
       return;
     }

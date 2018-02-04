@@ -66,6 +66,10 @@ namespace YTE
     YTEBindProperty(&ParticleEmitter::GetEmitCount, &ParticleEmitter::SetEmitCount, "Emit Count")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity, "Use Gravity")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
 
@@ -84,6 +88,7 @@ namespace YTE
     , mEmitterScale()
     , mEmitRate(0.0f)
     , mEmitCount(0.0f)
+    , mUseGravity(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -125,6 +130,11 @@ namespace YTE
     
       particle.mLife -= dt;
       particle.mPosition += particle.mVelocity * dt;
+
+      if (mUseGravity)
+      {
+        particle.mPosition.y -= (mLifetime - particle.mLife) * dt;
+      }
 
       particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
       particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
@@ -272,6 +282,16 @@ namespace YTE
   void ParticleEmitter::SetEmitCount(float aEmitCount)
   {
     mEmitCount = aEmitCount;
+  }
+
+  bool ParticleEmitter::GetUseGravity()
+  {
+    return mUseGravity;
+  }
+
+  void ParticleEmitter::SetUseGravity(bool aUseGravity)
+  {
+    mUseGravity = aUseGravity;
   }
 
   void ParticleEmitter::CreateParticle()
