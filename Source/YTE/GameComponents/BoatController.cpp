@@ -95,7 +95,7 @@ namespace YTE
       // @@@ have input interpreter send a docking event and be sure to create the event there and register here
 
       /*
-      if (mEmitter != NULL)
+      if (mEmitter != NULL)GIT REBASE 
       {
         mEmitter->SetInitVelocity(glm::vec3(mOrientation->GetForwardVector().x, -0.5f, mOrientation->GetForwardVector().z) * -2.0f);
       }
