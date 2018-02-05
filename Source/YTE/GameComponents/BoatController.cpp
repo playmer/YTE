@@ -23,6 +23,23 @@ namespace YTE
     {
         YTERegisterType(BoatController);
 
+
+        YTEBindProperty(&BoatController::GetSailUpScalar, &BoatController::SetSailUpScalar, "Sail Up Scalar")
+          .AddAttribute<Serializable>()
+          .AddAttribute<EditorProperty>();
+
+        YTEBindProperty(&BoatController::GetSailDownScalar, &BoatController::SetSailDownScalar, "Sail Down Scalar")
+          .AddAttribute<Serializable>()
+          .AddAttribute<EditorProperty>();
+
+        YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "Max Sail Speed")
+          .AddAttribute<Serializable>()
+          .AddAttribute<EditorProperty>();
+
+        YTEBindProperty(&BoatController::GetMaxCruiseSpeed, &BoatController::SetMaxCruiseSpeed, "Max Cruise Speed")
+          .AddAttribute<Serializable>()
+          .AddAttribute<EditorProperty>();
+
         std::vector<std::vector<Type*>> deps =
         {
             { Transform::GetStaticType() },
@@ -105,7 +122,7 @@ namespace YTE
       mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
       if (mIsSailUp)
       {
-        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * aEvent->Dt);
+        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * mMaxSailSpeed * aEvent->Dt);
 
         /*
         if (mCurSpeed < mMaxSailSpeed)
@@ -130,6 +147,46 @@ namespace YTE
       }
       //auto temp = mRigidBody->GetVelocity().length;
       //mCurSpeed;
+    }
+
+    float BoatController::GetSailUpScalar()
+    {
+      return mSailUpScalar;
+    }
+
+    void BoatController::SetSailUpScalar(float aSpeed)
+    {
+      mSailUpScalar = aSpeed;
+    }
+
+    float BoatController::GetSailDownScalar()
+    {
+      return mSailDownScalar;
+    }
+
+    void BoatController::SetSailDownScalar(float aSpeed)
+    {
+      mSailDownScalar = aSpeed;
+    }
+
+    float BoatController::GetMaxSailSpeed()
+    {
+      return mMaxSailSpeed;
+    }
+    
+    void BoatController::SetMaxSailSpeed(float aSpeed)
+    {
+      mMaxSailSpeed = aSpeed;
+    }
+
+    float BoatController::GetMaxCruiseSpeed()
+    {
+      return mMaxCruiseSpeed;
+    }
+
+    void BoatController::SetMaxCruiseSpeed(float aSpeed)
+    {
+      mMaxCruiseSpeed = aSpeed;
     }
 /******************************************************************************/
 /*

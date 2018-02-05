@@ -39,6 +39,19 @@ namespace YTE
         void TurnBoat(BoatTurnEvent *aEvent);
         void Update(LogicUpdate *aEvent);
 
+        float GetSailUpScalar();
+        void SetSailUpScalar(float aSpeed);
+
+        float GetSailDownScalar();
+        void SetSailDownScalar(float aSpeed);
+
+        float GetMaxSailSpeed();
+        void SetMaxSailSpeed(float aSpeed);
+
+        float GetMaxCruiseSpeed();
+        void SetMaxCruiseSpeed(float aSpeed);
+
+
     private:
         glm::vec3 CalculateMovementVector(float dt);
         void ApplyMovementVector(glm::vec3 aImpulse);
