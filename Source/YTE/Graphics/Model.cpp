@@ -335,7 +335,11 @@ namespace YTE
   void Model::SetBackfaceCulling(bool aCulling)
   {
     mBackfaceCulling = aCulling;
-    mInstantiatedModel->SetBackfaceCulling(aCulling);
+
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->SetBackfaceCulling(aCulling);
+    }
   }
 
   void Model::CreateTransform()
