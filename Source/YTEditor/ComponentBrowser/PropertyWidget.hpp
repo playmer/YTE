@@ -370,7 +370,7 @@ namespace YTEditor
     for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
-      char buff[20] = { '\0' };
+      char buff[100] = { '\0' };
       sprintf_s(buff, "%.3f", aVal[i]);
       widg->setText(buff);
     }
@@ -382,7 +382,7 @@ namespace YTEditor
     for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
-      char buff[20] = { '\0' };
+      char buff[100] = { '\0' };
       sprintf_s(buff, "%.3f", aVal[i]);
       widg->setText(buff);
     }
@@ -394,7 +394,7 @@ namespace YTEditor
     for (size_t i = 0; i < mWidgets.size(); ++i)
     {
       LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
-      char buff[20] = { '\0' };
+      char buff[100] = { '\0' };
       sprintf_s(buff, "%.3f", aVal[i]);
       widg->setText(buff);
     }
