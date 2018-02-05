@@ -3,7 +3,9 @@
 // YTE - Graphics - Generics
 ///////////////////
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+
 
 namespace YTE
 {
@@ -17,6 +19,12 @@ namespace YTE
     : mMesh(nullptr)
   {
 
+  }
+
+  void InstantiatedModel::SetBackfaceCulling(bool aCulling)
+  {
+    mMesh->SetBackfaceCulling(aCulling);
+    mMesh->RecreateShader();
   }
 
 }

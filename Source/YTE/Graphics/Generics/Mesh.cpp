@@ -548,6 +548,14 @@ namespace YTE
     return mSkeleton.HasBones();
   }
 
+  void Mesh::SetBackfaceCulling(bool aCulling)
+  {
+    for (auto &sub : mParts)
+    {
+      sub.mCullBackFaces = aCulling;
+    }
+  }
+
 
 
   void Mesh::CreateCollider(const aiScene* aScene)

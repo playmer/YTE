@@ -279,6 +279,9 @@ namespace YTE
 
     bool CanAnimate();
 
+    void SetBackfaceCulling(bool aCulling);
+    virtual void RecreateShader() {}
+
     std::string mName;
     std::vector<Submesh> mParts;
     Skeleton mSkeleton;

@@ -141,6 +141,8 @@ namespace YTE
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
+    void RecreateShader() override;
+
     std::unordered_multimap<VkShader*, std::unique_ptr<VkSubmesh>> mSubmeshes;
     InstanceManager mInstanceManager;
     VkRenderedSurface *mSurface;

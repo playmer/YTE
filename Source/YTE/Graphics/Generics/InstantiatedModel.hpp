@@ -78,6 +78,8 @@ namespace YTE
       return mUBOModelData;
     }
 
+    void SetBackfaceCulling(bool aCulling);
+
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
@@ -85,8 +87,6 @@ namespace YTE
     {
       return mMesh;
     }
-
-    
 
 
     bool mUseAdditiveBlending = false;
