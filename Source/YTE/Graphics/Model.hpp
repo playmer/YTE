@@ -98,6 +98,8 @@ namespace YTE
     bool GetInstanced();
 
 
+    bool GetBackfaceCulling();
+    void SetBackfaceCulling(bool aCulling);
 
   private:
     void Create();  // tells renderer to create mesh
@@ -114,6 +116,8 @@ namespace YTE
     bool mConstructing;
     Animation *mAnimation;
     Engine *mEngine;
+
+    bool mBackfaceCulling;
   };
 }
 

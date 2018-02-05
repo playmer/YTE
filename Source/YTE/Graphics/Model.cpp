@@ -87,6 +87,10 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
+    YTEBindProperty(&Model::GetBackfaceCulling, &Model::SetBackfaceCulling, "Backface Culling")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
     //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
@@ -106,6 +110,7 @@ namespace YTE
     , mTransform(nullptr)
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
+    , mBackfaceCulling(true)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -319,6 +324,21 @@ namespace YTE
     else
     {
       return false;
+    }
+  }
+
+  bool Model::GetBackfaceCulling()
+  {
+    return mBackfaceCulling;
+  }
+
+  void Model::SetBackfaceCulling(bool aCulling)
+  {
+    mBackfaceCulling = aCulling;
+
+    if (mInstantiatedModel)
+    {
+      mInstantiatedModel->SetBackfaceCulling(aCulling);
     }
   }
 

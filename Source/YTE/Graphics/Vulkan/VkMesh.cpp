@@ -489,6 +489,17 @@ namespace YTE
     }
   }
 
+  void VkMesh::RecreateShader()
+  {
+    for (auto &it : mSubmeshes)
+    {
+      auto &submesh = it.second;
+
+      it.first->mCullBackFaces = submesh->mSubmesh->mCullBackFaces;
+      it.first->Reload();
+    }
+  }
+
 
   void RemoveOffset(VkInstantiatedModel *aModel)
   {
