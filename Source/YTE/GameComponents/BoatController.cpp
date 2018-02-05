@@ -57,20 +57,21 @@ namespace YTE
     
     void BoatController::Initialize()
     {
-        // Event Registration
-        mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-        mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
-
-        mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-        // Member Init
-        //mForwardVec = mOwner->GetComponent<Orientation>()->GetForwardVector();
+        /* Member Init */
         mRigidBody = mOwner->GetComponent<RigidBody>();
         mOrientation = mOwner->GetComponent<Orientation>();
         mTransform = mOwner->GetComponent<Transform>();
+        mCollider = mOwner->GetComponent<Collider>();
         mIsSailUp = false;
         mRotationAngle = 0.0f;
-        //mForwardVec = mOrientation->GetForwardVector();
 
+        /* Event Registration */
+        mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
+        mOwner->GetEngine()->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
+        mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+        mCollider->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
+        mCollider->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
         /*
         //temp
         auto composition = mOwner->FindFirstCompositionByName("particles");
@@ -85,6 +86,17 @@ namespace YTE
     Event Callbacks
 */
 /******************************************************************************/
+    void BoatController::DockBoat(BoatDockEvent *aEvent)
+    {
+      if (mCanDock)
+      {
+        // change input context
+        mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+        // send the request dialogue event
+        // play the docking sound
+      }
+    }
+
     void BoatController::TurnBoat(BoatTurnEvent *aEvent)
     {
       if (aEvent->Stick == Xbox_Buttons::LeftStick)
@@ -108,9 +120,6 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
-
-      // @@@ have input interpreter send a docking event and be sure to create the event there and register here
-
       /*
       if (mEmitter != NULL)GIT REBASE 
       {
@@ -188,6 +197,26 @@ namespace YTE
     {
       mMaxCruiseSpeed = aSpeed;
     }
+    
+    void BoatController::OnCollisionStart(CollisionStarted *aEvent)
+    {
+      /*
+      if (aEvent->OtherObject.GetComponent<Island>() != nullptr)
+      {
+        mCanDock = true;
+      }
+      */
+    }
+    void BoatController::OnCollisionEnd(CollisionEnded *aEvent)
+    {
+      /*
+      if (aEvent->OtherObject.GetComponent<Island>() != nullptr)
+      {
+        mCanDock = false;
+      }
+      */
+    }
+
 /******************************************************************************/
 /*
     Helper Functions

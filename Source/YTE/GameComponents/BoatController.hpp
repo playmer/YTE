@@ -23,8 +23,10 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/Orientation.hpp"
+#include "YTE/Physics/Collider.hpp"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
 
 namespace YTE
 {
@@ -37,7 +39,10 @@ namespace YTE
         void Initialize() override;
         void ChangeSail(SailStateChanged *aEvent);
         void TurnBoat(BoatTurnEvent *aEvent);
+        void DockBoat(BoatDockEvent *aEvent);
         void Update(LogicUpdate *aEvent);
+        void OnCollisionStart(CollisionStarted *aEvent);
+        void OnCollisionEnd(CollisionEnded *aEvent);
 
         float GetSailUpScalar();
         void SetSailUpScalar(float aSpeed);
@@ -61,12 +66,16 @@ namespace YTE
         Transform *mTransform;
         Orientation *mOrientation;
         RigidBody *mRigidBody;
-        ParticleEmitter *mEmitter;
+        Collider *mCollider;
+        ParticleEmitter *mParticleEmitter;
+        WWiseEmitter *mSoundEmitter;
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
 
         // Flag that represents the state of the boat's sail
         bool mIsSailUp;
+        // flag for docking
+        bool mCanDock;
 
         float mSailUpScalar = 10.0f; // @@@ make sure these get set in editor not here
         float mSailDownScalar = 5.0f;
