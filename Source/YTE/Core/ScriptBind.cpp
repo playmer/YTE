@@ -24,6 +24,7 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
@@ -87,6 +88,7 @@ namespace YTE
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();
 		InitializeType<MenuController>();
+    InitializeType<demo_InsideZone>();
 		InitializeType<Button>();
 
     InitializeType<Event>();

@@ -91,6 +91,9 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
+
+      // @@@ have input interpreter send a docking event and be sure to create the event there and register here
+
       /*
       if (mEmitter != NULL)
       {

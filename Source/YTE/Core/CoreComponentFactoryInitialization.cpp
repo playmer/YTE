@@ -19,6 +19,7 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
@@ -78,6 +79,7 @@ namespace YTE
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
 		helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<demo_InsideZone>();
 		helper.CreateComponentFactory<Button>();
 
     helper.CreateComponentFactory<Camera>();
