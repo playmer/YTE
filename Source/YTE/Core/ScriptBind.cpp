@@ -8,6 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/ScriptBind.hpp"
 
+#include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -77,6 +78,7 @@ namespace YTE
 {
   void InitializeYTETypes()
   {
+    InitializeType<ActionManager>();
     InitializeType<Component>();
     InitializeType<ComponentSystem>();
     InitializeType<Composition>();
