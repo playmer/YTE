@@ -259,6 +259,8 @@ namespace YTE
                                               mNearPlane,
                                               mFarPlane);
 
+    view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
+
     switch (mType)
     {
       case CameraType::CameraOrientation:

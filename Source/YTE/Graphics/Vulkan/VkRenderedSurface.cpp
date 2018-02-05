@@ -186,8 +186,8 @@ namespace YTE
   void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
     GetViewData(aView).mViewUBOData = aUBOView;
-    //GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
+    ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
+    //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
     this->YTERegister(Events::GraphicsDataUpdateVk,
                       this,
                       &VkRenderedSurface::GraphicsDataUpdateVkEvent);

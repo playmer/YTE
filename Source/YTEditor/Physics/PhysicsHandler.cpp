@@ -280,7 +280,7 @@ namespace YTEditor
       obj->mShape = obj->mTriangleMeshShape.get();
       
       obj->mTriangleMeshShape->setLocalScaling(scale);
-      //mTriangleMeshShape->buildOptimizedBvh();
+      obj->mTriangleMeshShape->buildOptimizedBvh();
     }
     else
     {
