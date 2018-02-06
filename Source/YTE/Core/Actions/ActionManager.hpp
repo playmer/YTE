@@ -19,15 +19,38 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-#define YTENewAction(name)
+  /*
+  #define YTENewAction(name) \
+  class name : public Action_CRTP<name> \
+  { \ 
+  public: \
+    name(float& aValue, float aFinal, float aDur) \
+      : Action(aDur), value(aValue), b(aValue), c(aFinal - b) { } \
+    float& value; \
+    float b; \
+    float c; \
+    void Init() override; \
+    { \
+      if (b != value) { \
+        float f = b + c;  \
+        b = value; \
+        c = f - b;
+      } \
+    } \
+    void operator()(); \
+  }; \
+  inline void name::operator()();
+*/
 
-  struct Action
+  class Action
   {
-    friend struct Group;
+  public:
+    friend class Group;
     explicit Action(float aDur);
     float Increment(float dt);
     bool IsDone() const;
     virtual void Init();
+    virtual Action * Clone();
     virtual void operator() ();
     virtual ~Action();
   protected:
@@ -37,39 +60,53 @@ namespace YTE
   };
 
   template <typename T>
-  struct Action_RTP : public Action
+  class Action_CRTP : public Action
   {
+  public:
+    Action_CRTP(float aDur) : Action(aDur)
+    {
+      static_assert(std::is_base_of<Action_CRTP, T>::value,
+        "Action_RTP is for recurring template pattern use only");
+    }
     Action * Clone() { return new T(*reinterpret_cast<T*>(this)); }
   };
 
-  struct Action_Callback : Action_RTP<Action_Callback>
+  class Action_Callback : public Action_CRTP<Action_Callback>
   {
+  public:
     Action_Callback(std::function<void(void)> aCallback);
-    ~Action_Callback();
-
+    void operator() () override;
   private:
     bool mHasCalled;
     std::function<void(void)> mCallback;
   };
 
-  struct Group
+  class Group
   {
+  public:
     friend class ActionSequence;
     Group();
-    Group(const Group& group);
+    Group(const Group& aGroup);
+    ~Group();
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
     {
-
+      static_assert(std::is_base_of<Action, T>::value, 
+        "Actions must derive from the Action class");
+      mActions.push_back(new T(aValue, aFinal, aDuration));
     }
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
-    bool IsDone() const;
   private:
+    void Init();
+    float Increment(float dt);
+    void operator() ();
+    bool IsDone() const;
+
     std::vector<Action*> mActions;
   };
 
-  struct ActionSequence
+  class ActionSequence
   {
     friend class ActionManager;
     ActionSequence();
@@ -78,6 +115,8 @@ namespace YTE
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
     {
+      static_assert(std::is_base_of<Action, T>::value,
+        "Actions must derive from the Action class");
       Group group;
       group.Add<T>(aValue, aFinal, aDuration);
       mGroups.push(group);
@@ -85,10 +124,10 @@ namespace YTE
 
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
-    bool IsDone() const;
   private:
     float Increment(float dt);
     void operator() ();
+    bool IsDone() const;
     std::queue<Group> mGroups;
   };
 
