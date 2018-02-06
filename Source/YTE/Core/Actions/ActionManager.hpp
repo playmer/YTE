@@ -10,7 +10,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #ifndef YTE_Actions_ActionManager_hpp
 #define YTE_Actions_ActionManager_hpp
 
+#include <functional>
 #include <queue>
+#include <unordered_map>
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
@@ -22,11 +24,32 @@ namespace YTE
   struct Action
   {
     friend struct Group;
+    explicit Action(float aDur);
+    float Increment(float dt);
+    bool IsDone() const;
+    virtual void Init();
+    virtual void operator() ();
+    virtual ~Action();
+  protected:
+    float d;
+    float t;
+    float Time;
   };
 
-  struct Action_Callback : Action
+  template <typename T>
+  struct Action_RTP : public Action
   {
+    Action * Clone() { return new T(*reinterpret_cast<T*>(this)); }
+  };
 
+  struct Action_Callback : Action_RTP<Action_Callback>
+  {
+    Action_Callback(std::function<void(void)> aCallback);
+    ~Action_Callback();
+
+  private:
+    bool mHasCalled;
+    std::function<void(void)> mCallback;
   };
 
   struct Group
@@ -41,6 +64,7 @@ namespace YTE
     }
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
+    bool IsDone() const;
   private:
     std::vector<Action*> mActions;
   };
@@ -54,7 +78,9 @@ namespace YTE
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
     {
-
+      Group group;
+      group.Add<T>(aValue, aFinal, aDuration);
+      mGroups.push(group);
     }
 
     void Call(std::function<void(void)> aCallback);
@@ -74,7 +100,7 @@ namespace YTE
     void AddSequence(Composition *aComposition, const ActionSequence &sequence);
     void Initialize();
     void Update(LogicUpdate *aUpdate);
-    void DeletionUpdate(DeletionUpdate *aDeletion);
+    //void DeletionUpdate(DeletionUpdate *aDeletion);
   private:
     std::unordered_map<Composition*, ActionSequence> mSequences;
   };
