@@ -18,7 +18,7 @@ namespace YTE
 
   struct Action
   {
-
+    friend struct Group;
   };
 
   struct Action_Callback : Action
@@ -28,6 +28,7 @@ namespace YTE
 
   struct Group
   {
+    friend class ActionSequence;
     Group();
     Group(const Group& group);
     template <typename T>
@@ -43,6 +44,7 @@ namespace YTE
 
   struct ActionSequence
   {
+    friend class ActionManager;
     ActionSequence();
     void AddGroup(const Group &group);
 
@@ -54,7 +56,10 @@ namespace YTE
 
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
+    bool IsDone() const;
   private:
+    float Increment(float dt);
+    void operator() ();
     std::queue<Group> mGroups;
   };
 
@@ -66,6 +71,7 @@ namespace YTE
     void AddSequence(Composition *aComposition, const ActionSequence &sequence);
     void Initialize();
     void Update(LogicUpdate *aUpdate);
+    void DeletionUpdate(DeletionUpdate *aDeletion);
   private:
     std::unordered_map<Composition* aOwner, ActionSequence> mSequences;
   };
