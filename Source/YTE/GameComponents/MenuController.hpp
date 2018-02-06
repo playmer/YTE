@@ -17,8 +17,22 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"
 
+#include "fmt/format.h"
+
 namespace YTE
 {
+	class MenuElementHover : public Event
+	{
+	public:
+		YTEDeclareType(MenuElementHover);
+	};
+
+	class MenuElementTrigger : public Event
+	{
+	public:
+		YTEDeclareType(MenuElementTrigger);
+	};
+
   class MenuController : public Component
   {
 	public:
@@ -28,24 +42,54 @@ namespace YTE
 		void Initialize() override;
 
 		// PROPERTIES /////////////////////////////////////////
-		u8 GetNumMenuElements()
-		{
-			return mNumMenuElements;
-		}
+		int GetNumMenuElements() { return mNumMenuElements; }
 
-		void SetNumMenuElements(u8& aNumElements)
+		void SetNumMenuElements(int& aNumElements)
 		{
 			mNumMenuElements = aNumElements;
 		}
+
+		std::string GetFirstMenuElement() 
+		{ 
+			if (mMenuElements[0] != nullptr)
+				return mMenuElements[0]->GetName().c_str();
+
+			else
+				return "";
+		}
+
+		std::string GetSecondMenuElement() 
+		{ 
+			if (mMenuElements[1] != nullptr)
+				return mMenuElements[1]->GetName().c_str();
+
+			else
+				return "";
+		}
+
+		void SetFirstMenuElement(std::string& aElementName)
+		{
+			mMenuElements[0] = mSpace->FindFirstCompositionByName(aElementName);
+		}
+
+		void SetSecondMenuElement(std::string& aElementName)
+		{
+			mMenuElements[1] = mSpace->FindFirstCompositionByName(aElementName);
+		}
+
 		////////////////////////////////////////////////////////
 
-    //void CheckSticks(XboxStickEvent *aEvent);
-    //void CheckButtons(XboxButtonEvent *aEvent);
+    void OnXboxStickEvent(XboxStickEvent* aEvent);
+    void OnXboxButtonPress(XboxButtonEvent* aEvent);
 
 	private:
 		XboxController* mGamePad;
 
-		u8 mNumMenuElements;
+		int mNumMenuElements;
+		Composition* mMenuElements[2];
+		int mCurrMenuElement;
+
+		bool mIsDisplayed;
 
 		bool mConstructing;
   };

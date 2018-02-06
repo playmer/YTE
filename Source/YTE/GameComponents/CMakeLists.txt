@@ -6,6 +6,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.cpp
     ${CMAKE_CURRENT_LIST_DIR}/CameraController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Button.cpp
 #  PUBLIC    
     ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -13,4 +14,5 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
     ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Button.hpp
 )
