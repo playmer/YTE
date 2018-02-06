@@ -36,6 +36,9 @@ namespace YTE
     YTEDeclareEvent(SailStateChanged);
     YTEDeclareEvent(BoatTurnEvent);
     YTEDeclareEvent(BoatDockEvent);
+    YTEDeclareEvent(DialogueStart);
+    YTEDeclareEvent(DialogueConfirm);
+    YTEDeclareEvent(DialogueExit);
 
     class SailStateChanged : public Event
     {
@@ -57,6 +60,24 @@ namespace YTE
     {
     public:
       YTEDeclareType(BoatDockEvent);
+    };
+
+    class DialogueStart : public Event
+    {
+    public:
+      YTEDeclareType(DialogueStart);
+    };
+
+    class DialogueConfirm : public Event
+    {
+    public:
+      YTEDeclareType(DialogueConfirm);
+    };
+
+    class DialogueExit : public Event
+    {
+    public:
+      YTEDeclareType(DialogueExit);
     };
 
 /////////////////////////////////////////////////////////////////////////////////////

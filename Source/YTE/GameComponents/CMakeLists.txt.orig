@@ -9,10 +9,11 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
 <<<<<<< HEAD
     ${CMAKE_CURRENT_LIST_DIR}/Button.cpp
-=======
     ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
->>>>>>> removed useless includes, added to cmakelists
+=======
+	${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
+>>>>>>> working on dialogue component
 #  PUBLIC    
     ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -23,8 +24,9 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
 <<<<<<< HEAD
     ${CMAKE_CURRENT_LIST_DIR}/Button.hpp
-=======
     ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
->>>>>>> removed useless includes, added to cmakelists
+=======
+	${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
+>>>>>>> working on dialogue component
 )

@@ -13,10 +13,17 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+
+    YTEDefineEvent(DialogueStart);
+    YTEDefineEvent(DialogueConfirm);
+    YTEDefineEvent(DialogueExit);
     YTEDefineEvent(SailStateChanged);
     YTEDefineEvent(BoatTurnEvent);
     YTEDefineEvent(BoatDockEvent);
 
+    YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
+    YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
+    YTEDefineType(DialogueExit) { YTERegisterType(DialogueExit); }
     YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
     YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
     YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
@@ -72,12 +79,25 @@ namespace YTE
         case InputContext::Dialogue:
           switch (aEvent->Button) 
           {
+          case Xbox_Buttons::Y:
+          {
+            DialogueStart diagStart;
+            mOwner->SendEvent(Events::DialogueStart, &diagStart);
+            break;
+          }
+
           case Xbox_Buttons::A:
-            // dialogue confirm event
+          {
+            DialogueConfirm diagConfirm;
+            mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
             break;
+          }
           case Xbox_Buttons::B:
-            // dialogue quit event
+          {
+            DialogueExit diagExit;
+            mOwner->SendEvent(Events::DialogueExit, &diagExit);
             break;
+          }
           }
         case InputContext::Sailing:
           switch (aEvent->Button) {

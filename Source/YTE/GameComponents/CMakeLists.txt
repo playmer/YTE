@@ -8,6 +8,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Button.cpp
+	${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
 #  PUBLIC    
@@ -19,6 +20,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Button.hpp
+	${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
 )

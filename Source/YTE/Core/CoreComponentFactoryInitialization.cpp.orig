@@ -15,15 +15,18 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
-<<<<<<< HEAD
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/demo_InsideZone.hpp"
+<<<<<<< HEAD
 #include "YTE/GameComponents/Button.hpp"
 =======
-#include "YTE/GameComponents/demo_InsideZone.hpp"
->>>>>>> starting demo zone component
+#include "YTE/GameComponents/Zone.hpp"
+#include "YTE/GameComponents/Island.hpp"
+>>>>>>> adding Zone and Island components
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -81,12 +84,18 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
-<<<<<<< HEAD
 		helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<demo_InsideZone>();
+<<<<<<< HEAD
+<<<<<<< HEAD
 		helper.CreateComponentFactory<Button>();
 =======
-    helper.CreateComponentFactory<demo_InsideZone>();
->>>>>>> starting demo zone component
+    helper.CreateComponentFactory<Zone>();
+    helper.CreateComponentFactory<Island>();
+>>>>>>> adding Zone and Island components
+=======
+    helper.CreateComponentFactory<Dialogue>();
+>>>>>>> working on dialogue component
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();
