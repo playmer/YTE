@@ -49,31 +49,25 @@ namespace YTE
 			mNumMenuElements = aNumElements;
 		}
 
-		std::string GetFirstMenuElement() 
+		std::string GetFirstMenuElementName() 
 		{ 
-			if (mMenuElements[0] != nullptr)
-				return mMenuElements[0]->GetName().c_str();
-
-			else
-				return "";
+      return mElementOneName;
 		}
 
-		std::string GetSecondMenuElement() 
+		std::string GetSecondMenuElementName() 
 		{ 
-			if (mMenuElements[1] != nullptr)
-				return mMenuElements[1]->GetName().c_str();
-
-			else
-				return "";
+      return mElementTwoName;
 		}
 
-		void SetFirstMenuElement(std::string& aElementName)
+		void SetFirstMenuElementName(std::string& aElementName)
 		{
+      mElementOneName = aElementName;
 			mMenuElements[0] = mSpace->FindFirstCompositionByName(aElementName);
 		}
 
-		void SetSecondMenuElement(std::string& aElementName)
+		void SetSecondMenuElementName(std::string& aElementName)
 		{
+      mElementTwoName = aElementName;
 			mMenuElements[1] = mSpace->FindFirstCompositionByName(aElementName);
 		}
 
@@ -88,6 +82,9 @@ namespace YTE
 		int mNumMenuElements;
 		Composition* mMenuElements[2];
 		int mCurrMenuElement;
+
+    std::string mElementOneName;
+    std::string mElementTwoName;
 
 		bool mIsDisplayed;
 

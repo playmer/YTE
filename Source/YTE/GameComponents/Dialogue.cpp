@@ -93,6 +93,9 @@ namespace YTE
     }
 
     mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+
+    auto transform = mSprite->GetComponent<Transform>();
+    transform->SetScale(glm::vec3());
   }
 
 }
