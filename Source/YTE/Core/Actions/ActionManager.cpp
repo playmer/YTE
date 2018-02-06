@@ -1,24 +1,5 @@
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
-#include "ActionManager.hpp"
 #include "YTE/Core/Actions/ActionManager.hpp"
+#include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 
 namespace YTE
@@ -230,12 +211,22 @@ namespace YTE
 
   void ActionManager::AddSequence(Composition *aComposition, const ActionSequence &sequence)
   {
-    //TODO: Register for delete callback
     mSequences.emplace(aComposition, sequence);
   }
 
   void ActionManager::Initialize()
   {
+    mOwner->YTERegister(Events::LogicUpdate, this, &ActionManager::Update);
+    GetSpace()->YTERegister(Events::CompositionRemoved, this, &ActionManager::OnCompositionRemoved);
+  }
+
+  void ActionManager::OnCompositionRemoved(CompositionRemoved * aDeletion)
+  {
+    auto it = mSequences.find(aDeletion->mComposition);
+    if (it != mSequences.end())
+    {
+      mSequences.erase(it);
+    }
   }
 
   void ActionManager::Update(LogicUpdate *aUpdate)

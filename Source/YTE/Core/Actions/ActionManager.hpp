@@ -66,7 +66,7 @@ namespace YTE
     Action_CRTP(float aDur) : Action(aDur)
     {
       static_assert(std::is_base_of<Action_CRTP, T>::value,
-        "Action_RTP is for recurring template pattern use only");
+        "Action_CRTP is for curiously recurring template pattern use only");
     }
     Action * Clone() { return new T(*reinterpret_cast<T*>(this)); }
   };
@@ -139,7 +139,7 @@ namespace YTE
     void AddSequence(Composition *aComposition, const ActionSequence &sequence);
     void Initialize();
     void Update(LogicUpdate *aUpdate);
-    //void DeletionUpdate(DeletionUpdate *aDeletion);
+    void OnCompositionRemoved(CompositionRemoved *aDeletion);
   private:
     std::unordered_map<Composition*, ActionSequence> mSequences;
   };
