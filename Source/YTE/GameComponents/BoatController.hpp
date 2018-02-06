@@ -30,6 +30,22 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+/////////////////////////////////////////////////////////////////////////////////////
+// Events
+/////////////////////////////////////////////////////////////////////////////////////
+    YTEDeclareEvent(RequestDialogueStart);
+
+    class RequestDialogueStart : public Event
+    {
+    public:
+      YTEDeclareType(RequestDialogueStart);
+      RequestDialogueStart() {  };
+    };
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Class
+/////////////////////////////////////////////////////////////////////////////////////
+
     class BoatController : public Component
     {
     public:
@@ -66,9 +82,11 @@ namespace YTE
         Transform *mTransform;
         Orientation *mOrientation;
         RigidBody *mRigidBody;
-        Collider *mCollider;
+        BoxCollider *mCollider;
         ParticleEmitter *mParticleEmitter;
         WWiseEmitter *mSoundEmitter;
+        Composition *mNearbyDock; // be careful with this lambs
+
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
 

@@ -16,10 +16,17 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/RigidBody.hpp"
-#include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/BoxCollider.hpp"
+
+#include "YTE/GameComponents/Island.hpp"
+#include "YTE/GameComponents/Zone.hpp"
 
 namespace YTE
 {
+    YTEDefineEvent(RequestDialogueStart);
+
+    YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
+
     YTEDefineType(BoatController)
     {
         YTERegisterType(BoatController);
@@ -97,9 +104,10 @@ namespace YTE
         // change input context
         mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
         // send the request dialogue event
-
+        RequestDialogueStart dStart;
+        mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
         // play the docking sound
-        mSoundEmitter->PlayEvent("");
+        mSoundEmitter->PlayEvent("UI_Dia_Start");
       }
     }
 
@@ -230,21 +238,19 @@ namespace YTE
     
     void BoatController::OnCollisionStart(CollisionStarted *aEvent)
     {
-      /*
-      if (aEvent->OtherObject.GetComponent<Island>() != nullptr)
+      if (aEvent->OtherObject->GetComponent<Island>() != nullptr)
       {
         mCanDock = true;
+        mNearbyDock = aEvent->OtherObject;
       }
-      */
     }
     void BoatController::OnCollisionEnd(CollisionEnded *aEvent)
     {
-      /*
-      if (aEvent->OtherObject.GetComponent<Island>() != nullptr)
+      if (aEvent->OtherObject->GetComponent<Island>() != nullptr)
       {
         mCanDock = false;
+        mNearbyDock = nullptr;
       }
-      */
     }
 
 /******************************************************************************/

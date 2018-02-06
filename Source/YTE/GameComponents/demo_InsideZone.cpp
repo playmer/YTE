@@ -62,14 +62,15 @@ namespace YTE
     }
   }
 
-  // Assumes there is enough space between the two zones
   void demo_InsideZone::OnCollisionEnd(CollisionEnded *aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles ||
-        aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
+    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles)
     {
-      // play ocean sound
-      //mSoundEmitter->PlayEvent("");
+      mSoundEmitter->PlayEvent("TD01_Leave");
+    }
+    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
+    {
+      mSoundEmitter->PlayEvent("TD03_Leave");
     }
   }
 
