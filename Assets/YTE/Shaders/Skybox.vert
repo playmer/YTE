@@ -126,5 +126,5 @@ void main()
                 vec4(inPosition, 1.0f);
 
   // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
+  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
 }

@@ -189,6 +189,7 @@ namespace YTE
     //Renderer *mRenderer;
     //Window *mWindow;
     Model *mModel;
+    FFT_WaterSimulation *mFFTWater;
     std::string mName;
 
     MaterialRepresentation mModelMaterial;

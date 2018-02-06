@@ -41,6 +41,7 @@ target_link_libraries(YTE
     crunch
     glslang
     fmt    
+    KissFFT
     LuaJIT
     STB
     VkHLF

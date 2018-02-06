@@ -258,6 +258,29 @@ namespace YTE
     }
   }
 
+  void VkRenderedSurface::DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel)
+  {
+    if (aModel == nullptr)
+    {
+      return;
+    }
+
+    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+
+    auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
+
+    if (mesh != instantiatedModels.end())
+    {
+      // Remove this instance from the map.
+      mesh->second.erase(std::remove(mesh->second.begin(),
+        mesh->second.end(),
+        aModel),
+        mesh->second.end());
+
+      instantiatedModels.erase(mesh);
+    }
+  }
+
   // Meshes
   VkMesh* VkRenderedSurface::CreateMesh(std::string &aFilename)
   {

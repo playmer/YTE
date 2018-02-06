@@ -1,4 +1,5 @@
 add_subdirectory(crunch)
+add_subdirectory(kiss_fft)
 add_subdirectory(fmt)
 add_subdirectory(LuaJIT)
 add_subdirectory(stb)
@@ -74,6 +75,7 @@ set_target_properties(BulletSoftBody                      PROPERTIES FOLDER "Dep
 set_target_properties(LinearMath                          PROPERTIES FOLDER "Dependencies/bullet3") 
 set_target_properties(crunch                              PROPERTIES FOLDER "Dependencies") 
 set_target_properties(fmt                                 PROPERTIES FOLDER "Dependencies") 
+set_target_properties(KissFFT                             PROPERTIES FOLDER "Dependencies") 
 set_target_properties(LuaJIT                              PROPERTIES FOLDER "Dependencies") 
 set_target_properties(STB                                 PROPERTIES FOLDER "Dependencies")
 set_target_properties(VkHLF                               PROPERTIES FOLDER "Dependencies/VkHLF") 
@@ -110,6 +112,7 @@ target_compile_options(OSDependent           PRIVATE /W0)
 target_compile_options(SPIRV                 PRIVATE /W0)
 target_compile_options(SPVRemapper           PRIVATE /W0)
 #target_compile_options(HLSL                  PRIVATE /W0)
+target_compile_options(KissFFT               PRIVATE /W0)
 
 set_target_properties(assimp
                       Bullet2FileLoader
@@ -125,6 +128,7 @@ set_target_properties(assimp
                       LinearMath
                       crunch
                       fmt
+                      KissFFT
                       LuaJIT
                       STB
                       VkHLF

@@ -509,6 +509,20 @@ namespace YTE
 
 
 
+  void Mesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
+  {
+    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
+    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
+  }
+
+  void Mesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  {
+    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
+    DebugObjection(aIndices.size() != mParts[aSubmeshIndex].mIndexBuffer.size(), "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", mParts[aSubmeshIndex].mIndexBuffer.size(), aIndices.size());
+    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
+    mParts[aSubmeshIndex].mIndexBuffer = aIndices;
+  }
+
   Mesh::~Mesh()
   {
 

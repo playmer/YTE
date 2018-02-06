@@ -275,6 +275,9 @@ namespace YTE
          std::string &aFile,
          std::vector<Submesh> &aSubmeshes);
 
+    virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices);
+    virtual void UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+
     virtual ~Mesh();
 
     bool CanAnimate();

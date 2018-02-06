@@ -42,6 +42,7 @@
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
+#include "YTE/Graphics/FFT_WaterSimulation.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -131,6 +132,7 @@ namespace YTE
     InitializeType<Sprite>();
     InitializeType<SpriteText>();
     InitializeType<TempDiffuseColoringComponent>();
+    InitializeType<FFT_WaterSimulation>();
 
     InitializeType<Body>();
     InitializeType<BoxCollider>();
