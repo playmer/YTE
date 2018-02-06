@@ -107,7 +107,7 @@ namespace YTE
         RequestDialogueStart dStart;
         mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
         // play the docking sound
-        mSoundEmitter->PlayEvent("UI_Dia_Start");
+        mSoundEmitter->PlayEvent("SFX_Boat_Bump");
       }
     }
 
