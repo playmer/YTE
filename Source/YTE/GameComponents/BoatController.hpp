@@ -76,6 +76,8 @@ namespace YTE
         bool mIsSailUp;
         // flag for docking
         bool mCanDock;
+        // flag for turning
+        bool mStartedTurning;
 
         float mSailUpScalar = 10.0f; // @@@ make sure these get set in editor not here
         float mSailDownScalar = 5.0f;

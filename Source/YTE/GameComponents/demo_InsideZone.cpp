@@ -20,6 +20,7 @@ namespace YTE
     mBoatPosition = mOwner->GetComponent<Transform>()->GetTranslation();
     mBoatCollider = mOwner->GetComponent<Collider>();
     mBoatBody = mOwner->GetComponent<GhostBody>();
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mOwner->YTERegister(Events::CollisionPersisted, this, &demo_InsideZone::OnCollisionPersist);
     mOwner->YTERegister(Events::CollisionStarted, this, &demo_InsideZone::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &demo_InsideZone::OnCollisionEnd);
@@ -49,6 +50,7 @@ namespace YTE
         }
       }
       // change the volume of the island sound using the minDist
+      
       /*if (minDist < characterCalloutRange)
         {
           closestIsland->GetComponent<Island>().mCharacterCalloutString;
@@ -62,7 +64,8 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetName() == "PicanteIslesZone" || "RainyRuinsZone")
     {
-      // play the ocean sound
+      // play ocean sound
+      mSoundEmitter->PlayEvent("");
     }
   }
 
@@ -71,10 +74,12 @@ namespace YTE
     if (aEvent->OtherObject->GetName() == "PicanteIslesZone")
     {
       // play picanteisles music event
+      mSoundEmitter->PlayEvent("");
     }
     else if (aEvent->OtherObject->GetName() == "RainyRuinsZone")
     {
       // play rainyruins music event
+      mSoundEmitter->PlayEvent("");
     }
   }
 

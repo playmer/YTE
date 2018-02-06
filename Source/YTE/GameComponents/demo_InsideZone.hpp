@@ -6,6 +6,7 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/Collider.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
 
 namespace YTE
 {
@@ -20,6 +21,7 @@ namespace YTE
     void OnCollisionStart(CollisionStarted *aEvent);
     void OnCollisionEnd(CollisionEnded *aEvent);
   private:
+    WWiseEmitter *mSoundEmitter;
     Collider *mBoatCollider;
     GhostBody *mBoatBody;
     glm::vec3 mBoatPosition;

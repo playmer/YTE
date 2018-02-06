@@ -63,7 +63,9 @@ namespace YTE
         mTransform = mOwner->GetComponent<Transform>();
         mCollider = mOwner->GetComponent<Collider>();
         mIsSailUp = false;
+        mStartedTurning = false;
         mRotationAngle = 0.0f;
+        mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
         /* Event Registration */
         mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
@@ -93,7 +95,9 @@ namespace YTE
         // change input context
         mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
         // send the request dialogue event
+
         // play the docking sound
+        mSoundEmitter->PlayEvent("");
       }
     }
 
@@ -101,6 +105,17 @@ namespace YTE
     {
       if (aEvent->Stick == Xbox_Buttons::LeftStick)
       {
+        if (aEvent->StickDirection == glm::vec2(0,0))
+        {
+          mStartedTurning = false;
+        }
+
+        if (!mStartedTurning)
+        {
+          mSoundEmitter->PlayEvent("");
+          mStartedTurning = true;
+        }
+
         mRotationAngle -= aEvent->StickDirection.x / 2.0f;
         if (mRotationAngle > 360.0f)
         {
@@ -110,25 +125,37 @@ namespace YTE
         {
           mRotationAngle = 360.0f;
         }
+
+        mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
       }
     }
 
     void BoatController::ChangeSail(SailStateChanged *aEvent)
     {
-        mIsSailUp = aEvent->SailUp;
+      std::string sound;
+      if (aEvent->SailUp)
+      {
+        sound = "";
+      }
+      else
+      {
+        sound = "";
+      }
+      mSoundEmitter->PlayEvent(sound);
+      mIsSailUp = aEvent->SailUp;
     }
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
       /*
-      if (mEmitter != NULL)GIT REBASE 
+      if (mParticleEmitter != NULL)
       {
         mEmitter->SetInitVelocity(glm::vec3(mOrientation->GetForwardVector().x, -0.5f, mOrientation->GetForwardVector().z) * -2.0f);
       }
       */
       //glm::vec3 moveVec = CalculateMovementVector(aEvent->Dt);
       //ApplyMovementVector(moveVec);
-      mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
+
       if (mIsSailUp)
       {
         mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * mMaxSailSpeed * aEvent->Dt);
