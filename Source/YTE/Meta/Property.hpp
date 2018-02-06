@@ -28,6 +28,23 @@ namespace YTE
     const std::string& GetName() const { return mName; }
     Function* GetGetter() { return mGetter.get(); }
     Function* GetSetter() { return mSetter.get(); }
+
+    Type* GetPropertyType()
+    {
+      if (mGetter)
+      {
+        return mGetter->GetReturnType()->GetMostBasicType();
+      }
+
+      if (mSetter)
+      {
+        auto parameters = mSetter->GetParameters();
+        return (*parameters)[1].mType->GetMostBasicType();
+      }
+
+      return nullptr;
+    }
+
   protected:
     std::string mName;
     std::unique_ptr<Function> mGetter;

@@ -15,8 +15,9 @@
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseListener.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/WWise/Utilities.hpp"
 
 namespace YTE
@@ -24,6 +25,12 @@ namespace YTE
   YTEDefineType(WWiseEmitter)
   {
     YTERegisterType(WWiseEmitter);
+    
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
+                                             { TypeId<Orientation>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
@@ -37,6 +44,17 @@ namespace YTE
     : Component(aOwner, aSpace)
   {
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
+
+    auto view = mSpace->GetComponent<WWiseView>();
+
+    if (view)
+    {
+      view->YTERegister(Events::WWiseListenerChanged, this, &WWiseEmitter::ListenerChanged);
+    }
+    else
+    {
+      std::cout << "No WWiseView on the current space, playing will fail!\n";
+    }
 
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -58,6 +76,18 @@ namespace YTE
 
   void WWiseEmitter::Initialize()
   {
+    auto view = mSpace->GetComponent<WWiseView>();
+
+    if (view)
+    {
+      auto listener = view->GetActiveListener()->OwnerId();
+      AK::SoundEngine::SetListeners(OwnerId(), &listener, 1);
+    }
+    else
+    {
+      std::cout << "No WWiseView on the current space, playing will fail!\n";
+    }
+
     auto transform = mOwner->GetComponent<Transform>();
 
     if (transform != nullptr)
@@ -68,24 +98,29 @@ namespace YTE
 
       auto orientation = mOwner->GetComponent<Orientation>();
 
-      if (orientation != nullptr)
-      {
-        mEmitterPosition.SetOrientation(MakeAkVec(orientation->GetForwardVector()),
-                                        MakeAkVec(orientation->GetUpVector()));
-      }
+      mEmitterPosition.SetOrientation(MakeAkVec(orientation->GetForwardVector()),
+                                      MakeAkVec(orientation->GetUpVector()));
     }
 
     SetEmitterPosition();
   }
 
+  void WWiseEmitter::ListenerChanged(WWiseListenerChanged *aListenerChange)
+  {
+    auto listener = aListenerChange->NewListener->OwnerId();
+    AK::SoundEngine::SetListeners(OwnerId(), &listener, 1);
+  }
+
   void WWiseEmitter::OnPositionChange(const TransformChanged *aEvent)
   {
+    std::cout << "Emitter Orientation changed\n";
     mEmitterPosition.SetPosition(MakeAkVec(aEvent->Position));
     SetEmitterPosition();
   }
 
   void WWiseEmitter::OnOrientationChange(const OrientationChanged *aEvent)
   {
+    std::cout << "Emitter Orientation changed\n";
     mEmitterPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
                                     MakeAkVec(aEvent->UpVector));
 

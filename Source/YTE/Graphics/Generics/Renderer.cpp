@@ -48,11 +48,12 @@ namespace YTE
     return nullptr;
   }
 
-  Mesh* Renderer::CreateSimpleMesh(GraphicsView *aView, std::string &aName, std::vector<Submesh> &aSubmeshes)
+  Mesh* Renderer::CreateSimpleMesh(GraphicsView *aView, std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
   {
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aName);
     YTEUnusedArgument(aSubmeshes);
+		YTEUnusedArgument(aForceUpdate);
 
     return nullptr;
   }

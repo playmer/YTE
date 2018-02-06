@@ -76,6 +76,9 @@ namespace YTE
     void RegisterObject(AkGameObjectID aId, std::string &aName);
     void DeregisterObject(AkGameObjectID aId);
 
+    u8 RegisterListener(AkGameObjectID aId, std::string &aName);
+    void DeregisterListener(AkGameObjectID aId, u8 aListener);
+
     void LoadAllBanks();
     AudioBank& LoadBank(const std::string &aFilename);
 
@@ -105,6 +108,7 @@ namespace YTE
 
     void ReadTxtFile(std::string &aFile, AudioBank &bank);
 
+    std::vector<u8> mAvailableListeners;
     std::unordered_map<std::string, AudioBank> mBanks;
 
     bool mPaused = false;

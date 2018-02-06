@@ -119,7 +119,8 @@ namespace YTE
     VkMesh* CreateMesh(std::string &aFilename);
 
     Mesh* CreateSimpleMesh(std::string &aName,
-                           std::vector<Submesh> &aSubmeshes);
+                           std::vector<Submesh> &aSubmeshes,
+			                     bool aForceUpdate);
 
     VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
 

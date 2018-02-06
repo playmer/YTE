@@ -111,7 +111,8 @@ namespace YTE
 
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
-    float dt = GetSpace()->GetEngine()->GetDt();;
+    YTEUnusedArgument(aEvent);
+    float dt = GetSpace()->GetEngine()->GetDt();
 
     // erase the dead bois
     mParticles.erase(
@@ -122,27 +123,6 @@ namespace YTE
       mParticles.end()
     );
 
-    // update all the bois ;)
-
-    for (auto it = mParticles.begin(); it != mParticles.end(); ++it)
-    {
-      Particle &particle = it->first;
-    
-      particle.mLife -= dt;
-      particle.mPosition += particle.mVelocity * dt;
-
-      if (mUseGravity)
-      {
-        particle.mPosition.y -= (mLifetime - particle.mLife) * dt;
-      }
-
-      particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
-      particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
-      particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
-
-      it->second->UpdateUBOModel(particle.mUBO);
-    }
-    
     static float timer = mEmitRate;
 
     // time to make some new particle bois
@@ -161,6 +141,29 @@ namespace YTE
     {
       // decrement the timer
       timer -= dt;
+    }
+
+    // update all the bois ;)
+
+    for (auto &particleIt : mParticles)
+    {
+      Particle &particle = particleIt.first;
+
+      //std::cout << fmt::format("{}\n", particle.mPosition.x);
+    
+      particle.mLife -= dt;
+      particle.mPosition += particle.mVelocity * dt;
+
+      if (mUseGravity)
+      {
+        particle.mPosition.y -= (mLifetime - particle.mLife) * dt;
+      }
+
+      particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
+      particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
+      particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
+
+      particleIt.second->UpdateUBOModel(particle.mUBO);
     }
   }
 
@@ -343,8 +346,6 @@ namespace YTE
     std::vector<Submesh> submeshes{ submesh };
 
     auto view = mSpace->GetComponent<GraphicsView>();
-
-    auto graphics = mSpace->GetComponent<GraphicsView>();
 
     auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
 

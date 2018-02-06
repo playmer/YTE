@@ -26,7 +26,6 @@ struct Light
   float mSpotLightFalloff;
 };
 
-
 // used to pass data to lighting functions
 struct LightingData
 {
@@ -48,7 +47,7 @@ struct LightingData
   vec4 mAmbMat;
 
   // shinniness
-  float mShinninessMat;
+  float mShininessMat;
 
   // misc calculating values
   vec4 mViewVec;
@@ -88,7 +87,7 @@ layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
     float mReflectiveIndex;
     float mBumpScaling;
     int mIsEditorObject;
-    float mPadding; // unused
+    int mUsesNormalTexture;
 } SubmeshMaterial;
 
 //====================
@@ -108,9 +107,8 @@ layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
     float mReflectiveIndex;
     float mBumpScaling;
     int mIsEditorObject;
-    float mPadding; // unused
+    int mUsesNormalTexture;
 } ModelMaterial;
-
 
 // ========================
 // Light Values
@@ -151,13 +149,23 @@ layout (location = 0) out vec4 outFragColor;
 // Entry Point of Shader
 void main()
 {
-  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
+  vec4 texColor = texture(diffuseSampler, inTextureCoordinates);
+
+  if (texColor != vec4(0.0f, 0.0f, 0.0f, 1.0f))
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates);
+    if (SubmeshMaterial.mIsEditorObject > 0)
+    {
+      outFragColor = texColor;
+    }
+    else
+    {
+      outFragColor = texColor * inDiffuse;
+    }
   }
+
   else
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+    outFragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
   }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }

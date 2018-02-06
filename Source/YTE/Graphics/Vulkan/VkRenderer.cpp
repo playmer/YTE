@@ -115,9 +115,10 @@ namespace YTE
 
   Mesh* VkRenderer::CreateSimpleMesh(GraphicsView *aView,
                                      std::string &aName,
-                                     std::vector<Submesh> &aSubmeshes)
+                                     std::vector<Submesh> &aSubmeshes,
+		                                 bool aForceUpdate)
   {
-    return GetSurface(aView->GetWindow())->CreateSimpleMesh(aName, aSubmeshes);
+    return GetSurface(aView->GetWindow())->CreateSimpleMesh(aName, aSubmeshes, aForceUpdate);
   }
 
   void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)

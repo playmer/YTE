@@ -32,7 +32,8 @@ namespace YTE
 
     virtual Mesh* CreateSimpleMesh(GraphicsView *aView,
                                    std::string &aName,
-                                   std::vector<Submesh> &aSubmeshes);
+                                   std::vector<Submesh> &aSubmeshes,
+			                             bool aForceUpdate = false);
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);

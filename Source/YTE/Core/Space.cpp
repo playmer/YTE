@@ -26,6 +26,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/Utilities.hpp"
 
+#include "YTE/WWise/WWiseView.hpp"
+
 namespace YTE
 {
   YTEDefineType(Space)
@@ -152,6 +154,7 @@ namespace YTE
 
     mLevelName = aLevelName;
 
+    AddComponent<WWiseView>();
     auto graphicsView = AddComponent<GraphicsView>();
     graphicsView->ChangeWindow("Yours Truly Engine");
     graphicsView->NativeInitialize();

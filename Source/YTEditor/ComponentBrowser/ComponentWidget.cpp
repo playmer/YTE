@@ -84,9 +84,9 @@ namespace YTEditor
   void ComponentWidget::LoadProperties(YTE::Component *aComponent)
   {
     // check if this property contains the EditorHeader attribute
-    auto headerAttrib = aComponent->GetType()->GetAttribute<YTE::EditorHeaderList>();
 
-    if (headerAttrib)
+    if (auto headerAttrib = aComponent->GetType()->GetAttribute<YTE::EditorHeaderList>();
+        nullptr != headerAttrib)
     {
       auto objects = headerAttrib->GetList(aComponent);
 
@@ -178,6 +178,25 @@ namespace YTEditor
     auto getter = aProp.second.get()->GetGetter();
 
     YTE::Any value = getter->Invoke(&aComponent);
+
+    if (auto redirectAttrib = aProp.second->GetAttribute<YTE::RedirectObject>();
+        nullptr != redirectAttrib)
+    {
+      auto object = redirectAttrib->GetObjectPtr(&aComponent);
+      QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
+      header->setText(0, object.second.c_str());
+
+      HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mMainWindow, mEngineComponent, header);
+
+      QTreeWidgetItem *body = new QTreeWidgetItem(header);
+      body->setFlags(Qt::NoItemFlags);
+
+      mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
+
+      header->addChild(body);
+
+      mTopItem->addChild(header);
+    }
 
     if (value.IsType<int>())
     {

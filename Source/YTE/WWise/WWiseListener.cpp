@@ -15,6 +15,7 @@
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/WWise//WWiseView.hpp"
 #include "YTE/WWise//WWiseListener.hpp"
 #include "YTE/WWise//Utilities.hpp"
 
@@ -23,12 +24,29 @@ namespace YTE
   YTEDefineType(WWiseListener)
   {
     YTERegisterType(WWiseListener);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
+                                             { TypeId<Orientation>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
+    AK::SoundEngine::SetListenerSpatialization(OwnerId(), true, AkChannelConfig{});
+
+    auto view = mSpace->GetComponent<WWiseView>();
+
+    if (view)
+    {
+      view->SetActiveListener(this);
+    }
+    else
+    {
+      std::cout << "No WWiseView on the current space, playing will fail!\n";
+    }
 
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -55,6 +73,7 @@ namespace YTE
 
   void WWiseListener::OnPositionChange(const TransformChanged *aEvent)
   {
+    std::cout << "Listener Position changed\n";
     mListenerPosition.SetPosition(MakeAkVec(aEvent->Position));
 
     SetListenerPosition();
@@ -62,6 +81,7 @@ namespace YTE
 
   void WWiseListener::OnOrientationChange(const OrientationChanged *aEvent)
   {
+    std::cout << "Listener Orientation changed\n";
     mListenerPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
                                      MakeAkVec(aEvent->UpVector));
 

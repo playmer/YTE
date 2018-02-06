@@ -28,6 +28,7 @@
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
@@ -49,6 +50,7 @@
 
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
+#include "YTE/WWise/WWiseView.hpp"
 
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"
@@ -64,6 +66,7 @@ namespace YTE
 
     helper.CreateComponentFactory<WWiseEmitter>();
     helper.CreateComponentFactory<WWiseListener>();
+    helper.CreateComponentFactory<WWiseView>();
 
     helper.CreateComponentFactory<TestComponent>();
 
@@ -97,6 +100,7 @@ namespace YTE
     helper.CreateComponentFactory<RigidBody>();
     helper.CreateComponentFactory<SphereCollider>();
     helper.CreateComponentFactory<Sprite>();
+    helper.CreateComponentFactory<SpriteText>();
     helper.CreateComponentFactory<Transform>();
   }
 }

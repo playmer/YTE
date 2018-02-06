@@ -73,7 +73,11 @@ namespace YTE
   {
     YTERegisterType(EditorHeaderList);
   }
-  
+
+  YTEDefineType(RedirectObject)
+  {
+    YTERegisterType(RedirectObject);
+  }
 
   EditorProperty::EditorProperty(DocumentedObject *aObject, bool aVisible)
     : mVisible(aVisible)
@@ -140,6 +144,42 @@ namespace YTE
   }
 
   std::string EditorHeaderList::GetName()
+  {
+    return mName;
+  }
+
+  
+
+  RedirectObject::RedirectObject(YTE::DocumentedObject *aObject,
+                                 Deserializer aDeserializer,
+                                 Serializer aSerializer, 
+                                 Getter aGetter, 
+                                 std::string aName)
+    : mGetter(aGetter)
+    , mSerializer(aSerializer)
+    , mDeserializer(aDeserializer)
+    , mName(aName)
+  {
+    YTEUnusedArgument(aObject);
+  }
+
+  std::pair<Object*, std::string> RedirectObject::GetObjectPtr(YTE::Object *aObject)
+  {
+    return mGetter(aObject);
+  }
+
+  RSValue RedirectObject::Serialize(RSAllocator &aAllocator, Object *aOwner)
+  {
+    return mSerializer(aAllocator, aOwner);
+  }
+
+
+  void RedirectObject::Deserialize(RSValue &aValue, Object *aOwner)
+  {
+    return mDeserializer(aValue, aOwner);
+  }
+
+  std::string RedirectObject::GetName()
   {
     return mName;
   }

@@ -2,6 +2,7 @@
 // Author: Andrew Griffin
 // YTE - Graphics - Vulkan
 ///////////////////
+#include "fmt/format.h"
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -52,14 +53,15 @@ namespace YTE
     auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines);
     auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines);
 
-    if (false == vertexData.mValid)
+    if (false == vertexData.mValid || false == fragmentData.mValid)
     {
-      std::cout << vertexData.mReason << "\n";
-      return;
-    }
-    else if (false == fragmentData.mValid)
-    {
-      std::cout << fragmentData.mReason << "\n";
+      auto str = fmt::format("Vertex Shader {}:\n {}\nFragment Shader {}:\n {}\n", 
+                             vertexFile, 
+                             vertexData.mReason,
+                             fragmentFile, 
+                             fragmentData.mReason);
+
+      std::cout << str;
       return;
     }
 

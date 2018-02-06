@@ -75,7 +75,7 @@ set_target_properties(LinearMath                          PROPERTIES FOLDER "Dep
 set_target_properties(crunch                              PROPERTIES FOLDER "Dependencies") 
 set_target_properties(fmt                                 PROPERTIES FOLDER "Dependencies") 
 set_target_properties(LuaJIT                              PROPERTIES FOLDER "Dependencies") 
-set_target_properties(STB_Image                           PROPERTIES FOLDER "Dependencies") 
+set_target_properties(STB                                 PROPERTIES FOLDER "Dependencies")
 set_target_properties(VkHLF                               PROPERTIES FOLDER "Dependencies/VkHLF") 
 set_target_properties(glslang                             PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
 set_target_properties(OGLCompiler                         PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
@@ -102,7 +102,7 @@ target_compile_options(LinearMath            PRIVATE /W0)
 target_compile_options(crunch                PRIVATE /W0)
 target_compile_options(fmt                   PRIVATE /W0)
 target_compile_options(LuaJIT                PRIVATE /W0)
-target_compile_options(STB_Image             PRIVATE /W0)
+target_compile_options(STB                   PRIVATE /W0)
 target_compile_options(VkHLF                 PRIVATE /W0)
 target_compile_options(glslang               PRIVATE /W0)
 target_compile_options(OGLCompiler           PRIVATE /W0)
@@ -126,7 +126,7 @@ set_target_properties(assimp
                       crunch
                       fmt
                       LuaJIT
-                      STB_Image
+                      STB
                       VkHLF
                       glslang
                       OGLCompiler

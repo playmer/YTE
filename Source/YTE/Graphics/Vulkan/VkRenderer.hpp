@@ -33,7 +33,8 @@ namespace YTE
 
     Mesh* CreateSimpleMesh(GraphicsView *aView,
                            std::string &aName,
-                           std::vector<Submesh> &aSubmeshes) override;
+                           std::vector<Submesh> &aSubmeshes,
+		                       bool aForceUpdate = false) override;
 
 
     /////////////////////////////////

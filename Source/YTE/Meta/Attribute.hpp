@@ -46,6 +46,7 @@ namespace YTE
 
 
   using Lister = std::vector<std::pair<Object*, std::string>>(*)(Object*);
+  using Getter = std::pair<Object*, std::string>(*)(Object*);
   using Serializer = RSValue(*)(RSAllocator &aAllocator, Object *aOwner);
   using Deserializer = void(*)(RSValue &aValue, Object *aOwner);
 
@@ -88,6 +89,31 @@ namespace YTE
     std::string mName;
   };
 
+
+  // Applied to Properties and Fields
+  class RedirectObject : public Attribute
+  {
+  public:
+    YTEDeclareType(RedirectObject);
+    RedirectObject(DocumentedObject *aObject,
+                   Deserializer aDeserializer, 
+                   Serializer aSerializer, 
+                   Getter aLister, 
+                   std::string aName);
+
+    std::pair<Object*, std::string> GetObjectPtr(Object *aObject);
+    RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
+    void Deserialize(RSValue &aValue, Object *aOwner);
+
+    std::string GetName();
+
+  private:
+    Getter mGetter;
+    Serializer mSerializer;
+    Deserializer mDeserializer;
+
+    std::string mName;
+  };
 }
 
 

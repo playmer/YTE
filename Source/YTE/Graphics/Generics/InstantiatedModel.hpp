@@ -73,21 +73,26 @@ namespace YTE
       YTEUnusedArgument(aUBO);
     }
 
-    virtual UBOModel GetUBOModelData()
+    void SetBackfaceCulling(bool aCulling);
+    
+    /////////////////////////////////
+    // Getters / Setters
+    /////////////////////////////////
+    UBOModel GetUBOModelData()
     {
       return mUBOModelData;
     }
 
-    void SetBackfaceCulling(bool aCulling);
+    
+    UBOMaterial GetUBOMaterialData()
+    {
+      return mUBOModelMaterialData;
+    }
 
-    /////////////////////////////////
-    // Getters / Setters
-    /////////////////////////////////
     Mesh* GetMesh()
     {
       return mMesh;
     }
-
 
     bool mUseAdditiveBlending = false;
     bool mUseAlphaBlending = false;

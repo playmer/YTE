@@ -287,13 +287,14 @@ namespace YTE
 
   
   Mesh* VkRenderedSurface::CreateSimpleMesh(std::string &aName,
-                                            std::vector<Submesh> &aSubmeshes)
+                                            std::vector<Submesh> &aSubmeshes,
+		                                        bool aForceUpdate)
   {
     auto meshIt = mMeshes.find(aName);
 
     VkMesh *meshPtr{ nullptr };
 
-    if (meshIt == mMeshes.end())
+    if (aForceUpdate || meshIt == mMeshes.end())
     {
       // create mesh
       auto mesh = std::make_unique<VkMesh>(mWindow,

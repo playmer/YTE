@@ -34,6 +34,7 @@
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
+#include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
@@ -63,6 +64,7 @@
 #include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
+#include "YTE/WWise/WWiseView.hpp"
 
 namespace YTE
 {
@@ -115,6 +117,7 @@ namespace YTE
     InitializeType<ModelChanged>();
     InitializeType<Skybox>();
     InitializeType<Sprite>();
+    InitializeType<SpriteText>();
     InitializeType<TempDiffuseColoringComponent>();
 
     InitializeType<Body>();
@@ -143,6 +146,7 @@ namespace YTE
     InitializeType<WWiseSystem>();
     InitializeType<WWiseEmitter>();
     InitializeType<WWiseListener>();
+    InitializeType<WWiseView>();
     
     InitializeType<void>();
     InitializeType<bool>();
