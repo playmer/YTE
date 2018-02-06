@@ -10,7 +10,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #ifndef YTE_Actions_ActionManager_hpp
 #define YTE_Actions_ActionManager_hpp
 
+#include <queue>
+
 #include "YTE/Core/Component.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -73,7 +76,7 @@ namespace YTE
     void Update(LogicUpdate *aUpdate);
     void DeletionUpdate(DeletionUpdate *aDeletion);
   private:
-    std::unordered_map<Composition* aOwner, ActionSequence> mSequences;
+    std::unordered_map<Composition*, ActionSequence> mSequences;
   };
 
 }

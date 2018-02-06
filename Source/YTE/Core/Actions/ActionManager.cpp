@@ -7,6 +7,11 @@ namespace YTE
     YTERegisterType(ActionManager);
   }
 
+  void ActionManager::AddSequence(Composition *aComposition, const ActionSequence &sequence)
+  {
+
+  }
+
   void ActionManager::Update(LogicUpdate *aUpdate)
   {
     std::vector<std::unordered_map::iterator> finishedSequences;
