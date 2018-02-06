@@ -1,5 +1,6 @@
 target_sources(YTE
   PRIVATE
+	${CMAKE_CURRENT_LIST_DIR}/Actions/ActionManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Asset.cpp
     ${CMAKE_CURRENT_LIST_DIR}/AssetLoader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Component.cpp
@@ -19,6 +20,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Threading/JobSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Threading/Worker.cpp
 #  PUBLIC
+	${CMAKE_CURRENT_LIST_DIR}/Actions/ActionManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Asset.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Composition.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Component.hpp
