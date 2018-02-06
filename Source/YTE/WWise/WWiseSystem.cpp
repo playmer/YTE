@@ -14,7 +14,7 @@
 #include "AK/SoundEngine/Common/IAkStreamMgr.h"
 #include "AK/MusicEngine/Common/AkMusicEngine.h"  // Music Engine
 #include "SoundEngine/Win32/AkFilePackageLowLevelIOBlocking.h"   // Sample low-level I/O implementation
-
+#include "AK/Plugin/AllPluginsFactories.h"  // Plugins
 // Include for communication between WWise and the game -- Not needed in the release version
 #ifndef AK_OPTIMIZED
   #include <AK/Comm/AkCommunication.h>

@@ -12,19 +12,18 @@ namespace YTE
   class Zone : public Component
   {
   public:
-    enum class ZoneName { PicanteIsles, RainyRuins, none };
     YTEDeclareType(Zone);
     Zone(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-    ZoneName GetZoneName() { return mZoneName; };
-    void SetZoneName(ZoneName aName) { mZoneName = aName; };
+    std::string GetZoneName() { return mZoneName; };
+    void SetZoneName(std::string aName) { mZoneName = aName; };
     //void OnCollisionPersist(CollisionPersisted *aEvent);
     //void OnCollisionStart(CollisionStarted *aEvent);
     //void OnCollisionEnd(CollisionEnded *aEvent);
   private:
     BoxCollider *mZoneCollider;
     GhostBody *mZoneBody;
-    ZoneName mZoneName;
+    std::string mZoneName;
   };
 }
 #endif
