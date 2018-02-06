@@ -6,7 +6,6 @@
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
 
 namespace YTE
 {
