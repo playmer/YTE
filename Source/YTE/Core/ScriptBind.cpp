@@ -23,6 +23,7 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
+#include "YTE/GameComponents/MenuController.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
