@@ -26,12 +26,9 @@
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
-<<<<<<< HEAD
 #include "YTE/GameComponents/Button.hpp"
-=======
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
->>>>>>> adding Zone and Island components
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -96,12 +93,9 @@ namespace YTE
     InitializeType<CameraController>();
 		InitializeType<MenuController>();
     InitializeType<demo_InsideZone>();
-<<<<<<< HEAD
 		InitializeType<Button>();
-=======
     InitializeType<Zone>();
     InitializeType<Island>();
->>>>>>> adding Zone and Island components
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

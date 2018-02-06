@@ -21,12 +21,9 @@
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
-<<<<<<< HEAD
 #include "YTE/GameComponents/Button.hpp"
-=======
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
->>>>>>> adding Zone and Island components
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -87,12 +84,9 @@ namespace YTE
 		helper.CreateComponentFactory<MenuController>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
-<<<<<<< HEAD
 		helper.CreateComponentFactory<Button>();
-=======
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();
->>>>>>> adding Zone and Island components
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();
