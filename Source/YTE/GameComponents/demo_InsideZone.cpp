@@ -1,5 +1,6 @@
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/Physics/Transform.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -50,7 +51,7 @@ namespace YTE
         }
       }
       // change the volume of the island sound using the minDist
-      
+      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Island_Distance", minDist);
       /*if (minDist < characterCalloutRange)
         {
           closestIsland->GetComponent<Island>().mCharacterCalloutString;
@@ -65,7 +66,7 @@ namespace YTE
     if (aEvent->OtherObject->GetName() == "PicanteIslesZone" || "RainyRuinsZone")
     {
       // play ocean sound
-      mSoundEmitter->PlayEvent("");
+      //mSoundEmitter->PlayEvent("");
     }
   }
 
@@ -74,12 +75,12 @@ namespace YTE
     if (aEvent->OtherObject->GetName() == "PicanteIslesZone")
     {
       // play picanteisles music event
-      mSoundEmitter->PlayEvent("");
+      mSoundEmitter->PlayEvent("TD01_Enter");
     }
     else if (aEvent->OtherObject->GetName() == "RainyRuinsZone")
     {
       // play rainyruins music event
-      mSoundEmitter->PlayEvent("");
+      mSoundEmitter->PlayEvent("TD03_Enter");
     }
   }
 

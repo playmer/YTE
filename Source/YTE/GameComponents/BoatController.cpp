@@ -112,9 +112,9 @@ namespace YTE
           mStartedTurning = false;
         }
 
-        if (!mStartedTurning)
+        if (!mStartedTurning && aEvent->StickDirection.x != 0.0f)
         {
-          mSoundEmitter->PlayEvent("");
+          mSoundEmitter->PlayEvent("SFX_Boat_Turn");
           mStartedTurning = true;
         }
 
@@ -129,6 +129,7 @@ namespace YTE
         }
 
         mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
+        std::cout << mRotationAngle << std::endl;
       }
     }
 
@@ -137,11 +138,11 @@ namespace YTE
       std::string sound;
       if (aEvent->SailUp)
       {
-        sound = "Splash";
+        sound = "SFX_Sail_Up";
       }
       else
       {
-        sound = "";
+        sound = "SFX_Sail_Down";
       }
       mSoundEmitter->PlayEvent(sound);
       mIsSailUp = aEvent->SailUp;

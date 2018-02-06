@@ -113,14 +113,14 @@ namespace YTE
 
   void WWiseEmitter::OnPositionChange(const TransformChanged *aEvent)
   {
-    std::cout << "Emitter Orientation changed\n";
+    //std::cout << "Emitter Orientation changed\n";
     mEmitterPosition.SetPosition(MakeAkVec(aEvent->Position));
     SetEmitterPosition();
   }
 
   void WWiseEmitter::OnOrientationChange(const OrientationChanged *aEvent)
   {
-    std::cout << "Emitter Orientation changed\n";
+    //std::cout << "Emitter Orientation changed\n";
     mEmitterPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
                                     MakeAkVec(aEvent->UpVector));
 
