@@ -1,6 +1,7 @@
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
+#include "YTE/GameComponents/Zone.hpp"
 
 namespace YTE
 {
@@ -61,9 +62,11 @@ namespace YTE
     }
   }
 
+  // Assumes there is enough space between the two zones
   void demo_InsideZone::OnCollisionEnd(CollisionEnded *aEvent)
   {
-    if (aEvent->OtherObject->GetName() == "PicanteIslesZone" || "RainyRuinsZone")
+    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles ||
+        aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
     {
       // play ocean sound
       //mSoundEmitter->PlayEvent("");
@@ -72,12 +75,12 @@ namespace YTE
 
   void demo_InsideZone::OnCollisionStart(CollisionStarted *aEvent)
   {
-    if (aEvent->OtherObject->GetName() == "PicanteIslesZone")
+    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles)
     {
       // play picanteisles music event
       mSoundEmitter->PlayEvent("TD01_Enter");
     }
-    else if (aEvent->OtherObject->GetName() == "RainyRuinsZone")
+    else if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
     {
       // play rainyruins music event
       mSoundEmitter->PlayEvent("TD03_Enter");
