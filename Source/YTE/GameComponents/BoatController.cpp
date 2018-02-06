@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BoatController.hpp"
 
 #include "YTE/Graphics/ParticleEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/RigidBody.hpp"
@@ -61,7 +62,7 @@ namespace YTE
         mRigidBody = mOwner->GetComponent<RigidBody>();
         mOrientation = mOwner->GetComponent<Orientation>();
         mTransform = mOwner->GetComponent<Transform>();
-        mCollider = mOwner->GetComponent<Collider>();
+        mCollider = mOwner->GetComponent<BoxCollider>();
         mIsSailUp = false;
         mStartedTurning = false;
         mRotationAngle = 0.0f;
@@ -72,8 +73,9 @@ namespace YTE
         mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
         mOwner->GetEngine()->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
         mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-        mCollider->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
-        mCollider->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+        //mCollider->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
+        //mCollider->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+        
         /*
         //temp
         auto composition = mOwner->FindFirstCompositionByName("particles");
@@ -135,7 +137,7 @@ namespace YTE
       std::string sound;
       if (aEvent->SailUp)
       {
-        sound = "";
+        sound = "Splash";
       }
       else
       {
