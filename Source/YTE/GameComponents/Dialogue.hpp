@@ -5,6 +5,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/GameComponents/BoatController.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
 
@@ -22,10 +23,11 @@ namespace YTE
 
   private:
 
-    void OnStart(DialogueStart *aEvent);
+    void OnDialogueStart(RequestDialogueStart *aEvent);
     void OnConfirm(DialogueConfirm *aEvent);
     void OnExit(DialogueExit *aEvent);
 
+    Composition *mSprite;
 
   };
 } // End YTE namespace

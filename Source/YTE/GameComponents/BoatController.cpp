@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BoatController.hpp"
 
 #include "YTE/Graphics/ParticleEmitter.hpp"
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
 #include "YTE/Physics/PhysicsSystem.hpp"
@@ -58,7 +59,9 @@ namespace YTE
     }
     
     BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-        : Component(aOwner, aSpace)
+      : Component(aOwner, aSpace)
+      , mCanDock(false)
+      , mNearbyDock(nullptr)
     {
         YTEUnusedArgument(aProperties);
     }
@@ -80,8 +83,8 @@ namespace YTE
         mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
         mOwner->GetEngine()->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
         mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-        //mCollider->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
-        //mCollider->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+        mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
+        mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
         
         /*
         //temp
@@ -91,6 +94,11 @@ namespace YTE
           mEmitter = composition->GetComponent<ParticleEmitter>();
         }
         */
+
+        if (mSoundEmitter)
+        {
+          mSoundEmitter->PlayEvent("Sailing_Start");
+        }
     }
 /******************************************************************************/
 /*
@@ -105,9 +113,29 @@ namespace YTE
         mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
         // send the request dialogue event
         RequestDialogueStart dStart;
-        mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
+        dStart.camera = nullptr;
+
+        auto children = mOwner->GetCompositions();
+
+        for (auto &it : *children)
+        {
+          if (it.second->GetComponent<Camera>())
+          {
+            dStart.camera = it.second.get();
+            break;
+          }
+        }
+
+        if (mNearbyDock)
+        {
+          mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
+        }
+
         // play the docking sound
-        mSoundEmitter->PlayEvent("SFX_Boat_Bump");
+        if (mSoundEmitter)
+        {
+          mSoundEmitter->PlayEvent("SFX_Boat_Bump");
+        }
       }
     }
 
@@ -122,7 +150,11 @@ namespace YTE
 
         if (!mStartedTurning && aEvent->StickDirection.x != 0.0f)
         {
-          mSoundEmitter->PlayEvent("SFX_Boat_Turn");
+          if (mSoundEmitter)
+          {
+            mSoundEmitter->PlayEvent("SFX_Boat_Turn");
+          }
+
           mStartedTurning = true;
         }
 
@@ -152,7 +184,12 @@ namespace YTE
       {
         sound = "SFX_Sail_Down";
       }
-      mSoundEmitter->PlayEvent(sound);
+
+      if (mSoundEmitter)
+      {
+        mSoundEmitter->PlayEvent(sound);
+      }
+
       mIsSailUp = aEvent->SailUp;
     }
 
@@ -166,6 +203,10 @@ namespace YTE
       */
       //glm::vec3 moveVec = CalculateMovementVector(aEvent->Dt);
       //ApplyMovementVector(moveVec);
+
+      glm::vec3 vel = mRigidBody->GetVelocity();
+
+      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Sailing_Volume", vel.length());
 
       if (mIsSailUp)
       {

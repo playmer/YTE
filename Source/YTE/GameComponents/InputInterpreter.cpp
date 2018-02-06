@@ -77,7 +77,8 @@ namespace YTE
         switch (mContext) 
         {
         case InputContext::Dialogue:
-          switch (aEvent->Button) 
+        {
+          switch (aEvent->Button)
           {
           case Xbox_Buttons::Y:
           {
@@ -99,15 +100,19 @@ namespace YTE
             break;
           }
           }
+          break;
+        }
         case InputContext::Sailing:
-          switch (aEvent->Button) {
-          case Xbox_Buttons::DPAD_Down: 
+        {
+          switch (aEvent->Button) 
+          {
+          case Xbox_Buttons::DPAD_Down:
           {
             SailStateChanged setSailUp(false);
             mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
             break;
           }
-          case Xbox_Buttons::DPAD_Up: 
+          case Xbox_Buttons::DPAD_Up:
           {
             SailStateChanged setSailUp(true);
             mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
@@ -126,20 +131,24 @@ namespace YTE
           case Xbox_Buttons::B:
             break;
           case Xbox_Buttons::X:
-              break;
+            break;
           case Xbox_Buttons::Y:
-              break;
+            break;
           case Xbox_Buttons::Start:
-              break;
+            break;
           case Xbox_Buttons::LeftShoulder:
-              break;
+            break;
           case Xbox_Buttons::RightShoulder:
-              break;
+            break;
           case Xbox_Buttons::LeftStick:
-              break;
+            break;
           case Xbox_Buttons::RightStick:
-              break;
-            }
+            break;
+          }
+          break;
+        }
+          
+          
         }
     }
     

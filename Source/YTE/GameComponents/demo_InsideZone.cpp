@@ -2,6 +2,8 @@
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/GameComponents/Zone.hpp"
+#include "YTE/GameComponents/Island.hpp"
+
 
 namespace YTE
 {
@@ -13,6 +15,7 @@ namespace YTE
 
   demo_InsideZone::demo_InsideZone(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mFlag(true)
   {
     YTEUnusedArgument(aProperties);
   }
@@ -53,38 +56,56 @@ namespace YTE
       }
       // change the volume of the island sound using the minDist
       mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Island_Distance", minDist);
-      /*if (minDist < characterCalloutRange)
-        {
-          closestIsland->GetComponent<Island>().mCharacterCalloutString;
-          play the sound for the character calling out
-        }
-      */
+
+      if (minDist < 100.0f && mFlag)
+      {
+        //closestIsland->GetComponent<Island>().mCharacterCalloutString;
+        mSoundEmitter->PlayEvent("Dia_All_CallOut");
+
+        mFlag = false;
+      }
     }
   }
 
   void demo_InsideZone::OnCollisionEnd(CollisionEnded *aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles)
+    Zone *zone = aEvent->OtherObject->GetComponent<Zone>();
+
+    if (zone)
     {
-      mSoundEmitter->PlayEvent("TD01_Leave");
-    }
-    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
-    {
-      mSoundEmitter->PlayEvent("TD03_Leave");
+      if (zone->GetOwner()->GetName() == "PicanteIsles")
+      {
+        mSoundEmitter->PlayEvent("TD01_Leave");
+      }
+      else if (zone->GetOwner()->GetName() == "RainyRuins")
+      {
+        mSoundEmitter->PlayEvent("TD03_Leave");
+        mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Rain", 0.0f);
+        mSoundEmitter->PlayEvent("A_Rain_Stop");
+      }
+
+      // play ocean sound
     }
   }
 
   void demo_InsideZone::OnCollisionStart(CollisionStarted *aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::PicanteIsles)
+    Zone *zone = aEvent->OtherObject->GetComponent<Zone>();
+
+    if (zone)
     {
-      // play picanteisles music event
-      mSoundEmitter->PlayEvent("TD01_Enter");
-    }
-    else if (aEvent->OtherObject->GetComponent<Zone>()->GetZoneName() == Zone::ZoneName::RainyRuins)
-    {
-      // play rainyruins music event
-      mSoundEmitter->PlayEvent("TD03_Enter");
+      if (zone->GetOwner()->GetName() == "PicanteIsles")
+      {
+        // play picanteisles music event
+        mSoundEmitter->PlayEvent("TD01_Enter");
+      }
+      else if (zone->GetOwner()->GetName() == "RainyRuins")
+      {
+        // play rainyruins music event
+        mSoundEmitter->PlayEvent("TD03_Enter");
+        mSoundEmitter->PlayEvent("A_Rain_Start");
+        mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Rain", 30.0f);
+      }
     }
   }
 

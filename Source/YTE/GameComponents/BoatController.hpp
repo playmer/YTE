@@ -24,7 +24,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
-#include "YTE/Core/EventHandler.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
 
@@ -40,6 +39,8 @@ namespace YTE
     public:
       YTEDeclareType(RequestDialogueStart);
       RequestDialogueStart() {  };
+
+      Composition *camera;
     };
 
 /////////////////////////////////////////////////////////////////////////////////////

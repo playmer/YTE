@@ -25,6 +25,9 @@ namespace YTE
     Collider *mBoatCollider;
     GhostBody *mBoatBody;
     glm::vec3 mBoatPosition;
+
+    bool mFlag;
+
   };
 }
 #endif
