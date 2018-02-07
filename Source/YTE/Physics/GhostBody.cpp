@@ -55,6 +55,7 @@ namespace YTE
     mGhostBody->setCollisionShape(collisionShape);
     //mGhostBody->activate(true);
     //mGhostBody->setActivationState(DISABLE_DEACTIVATION);
+    mGhostBody->setCollisionFlags(mGhostBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
     mGhostBody->setUserPointer(mOwner);
 
     btTransform translationAndRotation;

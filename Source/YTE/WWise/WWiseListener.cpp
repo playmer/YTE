@@ -73,7 +73,7 @@ namespace YTE
 
   void WWiseListener::OnPositionChange(const TransformChanged *aEvent)
   {
-    std::cout << "Listener Position changed\n";
+    //std::cout << "Listener Position changed\n";
     mListenerPosition.SetPosition(MakeAkVec(aEvent->Position));
 
     SetListenerPosition();
@@ -81,7 +81,7 @@ namespace YTE
 
   void WWiseListener::OnOrientationChange(const OrientationChanged *aEvent)
   {
-    std::cout << "Listener Orientation changed\n";
+    //std::cout << "Listener Orientation changed\n";
     mListenerPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
                                      MakeAkVec(aEvent->UpVector));
 

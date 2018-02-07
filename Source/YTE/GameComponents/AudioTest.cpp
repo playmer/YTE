@@ -14,7 +14,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "AudioTest.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
 
@@ -81,8 +80,7 @@ namespace YTE
         if (aEvent->Key == Keys::Space)
         {
             std::cout << "SPACEW\n";
-            WWiseEmitter *emitter = (WWiseEmitter*)mEmitter;
-            emitter->PlayEvent(mSound);
+            mEmitter->PlayEvent(mSound);
         }
     }
 

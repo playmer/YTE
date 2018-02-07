@@ -20,9 +20,15 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
+#include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/demo_InsideZone.hpp"
+#include "YTE/GameComponents/Button.hpp"
+#include "YTE/GameComponents/Zone.hpp"
+#include "YTE/GameComponents/Island.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -81,9 +87,15 @@ namespace YTE
 
     InitializeType<AudioTest>();
     InitializeType<BoatController>();
+    InitializeType<Dialogue>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();
+		InitializeType<MenuController>();
+    InitializeType<demo_InsideZone>();
+		InitializeType<Button>();
+    InitializeType<Zone>();
+    InitializeType<Island>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

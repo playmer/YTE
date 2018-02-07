@@ -35,6 +35,10 @@ namespace YTE
 /////////////////////////////////////////////////////////////////////////////////////
     YTEDeclareEvent(SailStateChanged);
     YTEDeclareEvent(BoatTurnEvent);
+    YTEDeclareEvent(BoatDockEvent);
+    YTEDeclareEvent(DialogueStart);
+    YTEDeclareEvent(DialogueConfirm);
+    YTEDeclareEvent(DialogueExit);
 
     class SailStateChanged : public Event
     {
@@ -52,6 +56,30 @@ namespace YTE
       Xbox_Buttons Stick;
     };
 
+    class BoatDockEvent : public Event
+    {
+    public:
+      YTEDeclareType(BoatDockEvent);
+    };
+
+    class DialogueStart : public Event
+    {
+    public:
+      YTEDeclareType(DialogueStart);
+    };
+
+    class DialogueConfirm : public Event
+    {
+    public:
+      YTEDeclareType(DialogueConfirm);
+    };
+
+    class DialogueExit : public Event
+    {
+    public:
+      YTEDeclareType(DialogueExit);
+    };
+
 /////////////////////////////////////////////////////////////////////////////////////
 // Class
 /////////////////////////////////////////////////////////////////////////////////////
@@ -59,13 +87,16 @@ namespace YTE
     class InputInterpreter : public Component
     {
     public:
+        enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
+
         YTEDeclareType(InputInterpreter);
         InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
         void Initialize() override;
         void CheckSticks(XboxStickEvent *aEvent);
         void CheckButtons(XboxButtonEvent *aEvent);
 
-        enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
+        void SetInputContext(InputContext aContext);
+        InputContext GetInputContext();
     private:
         XboxController *mGamepad;
         InputContext mContext;

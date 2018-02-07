@@ -335,14 +335,14 @@ namespace YTE
         up = mCameraOrientation->GetUpVector();
         forward = mCameraOrientation->GetForwardVector();
 
-        glm::quat rot = mCameraTransform->GetRotation();
+        glm::quat rot = mCameraTransform->GetWorldRotation();
         glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
         up4 = glm::rotate(rot, up4);
 
         glm::vec4 offsetVector(0.0f, 0.0f, 1.0f, 1.0f);
         offsetVector = glm::rotate(rot, offsetVector);
 
-        view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mCameraTransform->GetTranslation() + glm::vec3(offsetVector), glm::vec3(up4));
+        view.mViewMatrix = glm::lookAt(mCameraTransform->GetWorldTranslation(), mCameraTransform->GetWorldTranslation() + glm::vec3(offsetVector), glm::vec3(up4));
         //view.mViewMatrix = CreateViewMatrix(right, up, forward, mCameraTransform->GetTranslation());
         break;
       }
@@ -599,14 +599,14 @@ namespace YTE
     }
 
 
-    if (mType == CameraType::Gameplay && mEngine->IsEditor() == true)
-    {
-      return;
-    }
-    else if (mType != CameraType::Gameplay && mEngine->IsEditor() == false)
-    {
-      return;
-    }
+    //if (mType == CameraType::Gameplay && mEngine->IsEditor() == true)
+    //{
+    //  return;
+    //}
+    //else if (mType != CameraType::Gameplay && mEngine->IsEditor() == false)
+    //{
+    //  return;
+    //}
 
     mDt = aEvent->Dt * mSpeedLimiter;
     if (mChanged)

@@ -16,6 +16,7 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 #ifndef YTE_Gameplay_AudioTest_hpp
 #define YTE_Gameplay_AudioTest_hpp
 
+
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -27,6 +28,7 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/Orientation.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
 
 namespace YTE
 {
@@ -44,7 +46,7 @@ namespace YTE
         Keyboard *mKeyboard;
         std::string mSound;
         u64 mSoundId;
-        Component *mEmitter;
+        WWiseEmitter *mEmitter;
     };
 
 } // end yte namespace

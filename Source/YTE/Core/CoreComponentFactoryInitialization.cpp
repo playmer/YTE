@@ -15,9 +15,15 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
+#include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/demo_InsideZone.hpp"
+#include "YTE/GameComponents/Button.hpp"
+#include "YTE/GameComponents/Zone.hpp"
+#include "YTE/GameComponents/Island.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -75,6 +81,12 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
+		helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<demo_InsideZone>();
+    helper.CreateComponentFactory<Dialogue>();
+		helper.CreateComponentFactory<Button>();
+    helper.CreateComponentFactory<Zone>();
+    helper.CreateComponentFactory<Island>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<GraphicsView>();
