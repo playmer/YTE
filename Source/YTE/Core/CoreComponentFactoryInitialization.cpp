@@ -8,6 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
 
+#include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
@@ -76,6 +77,7 @@ namespace YTE
     helper.CreateComponentFactory<WWiseListener>();
     helper.CreateComponentFactory<WWiseView>();
 
+    helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
 
     helper.CreateComponentFactory<AudioTest>();
