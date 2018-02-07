@@ -19,7 +19,7 @@ namespace YTE
   { \
   public: \
   name(float& aValue, float aFinal, float aDur) \
-  : Action_CRTP(aDur), value(aValue), b(aValue), c(aFinal - b) { } \
+  : Action_CRTP(aDur, this), value(aValue), b(aValue), c(aFinal - b) { } \
   float& value; \
   float b; \
   float c; \
@@ -56,12 +56,20 @@ namespace YTE
   class Action_CRTP : public Action
   {
   public:
-    Action_CRTP(float aDur) : Action(aDur)
+    Action_CRTP(float aDur, T * aDerivedAction) 
+      : Action(aDur)
+      , mDerivedAction(aDerivedAction)
     {
       static_assert(std::is_base_of<Action_CRTP, T>::value,
         "Action_CRTP is for curiously recurring template pattern use only");
     }
-    Action * Clone() const { return new T(*reinterpret_cast<T*>(this)); }
+
+    Action * Clone() const override
+    { 
+      return new T(*reinterpret_cast<T*>(mDerivedAction));
+    }
+  private:
+    T * mDerivedAction;
   };
 
   class Action_Callback : public Action_CRTP<Action_Callback>

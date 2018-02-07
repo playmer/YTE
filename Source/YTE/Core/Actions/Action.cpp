@@ -30,7 +30,7 @@ namespace YTE
     // NOP
   }
 
-  Action * Action::Clone()
+  Action * Action::Clone() const
   {
     return new Action(*this);
   }
@@ -46,7 +46,7 @@ namespace YTE
   }
 
   Action_Callback::Action_Callback(std::function<void(void)> aCallback)
-    : Action_CRTP(0.1f)
+    : Action_CRTP(0.1f, this)
     , mHasCalled(false)
     , mCallback(aCallback)
   {
