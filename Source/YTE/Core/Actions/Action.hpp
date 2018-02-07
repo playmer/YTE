@@ -20,6 +20,8 @@ namespace YTE
   public: \
   name(float& aValue, float aFinal, float aDur) \
   : Action_CRTP(aDur, this), value(aValue), b(aValue), c(aFinal - b) { } \
+  name(const name& aAction) \
+  : Action_CRTP(aAction.d, this), value(aAction.value), b(aAction.b), c(aAction.c) {} \
   float& value; \
   float b; \
   float c; \
