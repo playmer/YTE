@@ -9,6 +9,7 @@
 #define YTE_Graphics_UBOs_hpp
 
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Math/Constants.hpp"
 
 #define YTE_Graphics_LightCount 64
 
@@ -33,25 +34,25 @@ namespace YTE
 
   struct UBOView
   {
-    glm::mat4 mProjectionMatrix;
-    glm::mat4 mViewMatrix;
-    glm::vec4 mCameraPosition;
+    glm::mat4 mProjectionMatrix = mat4Identity;
+    glm::mat4 mViewMatrix = mat4Identity;
+    glm::vec4 mCameraPosition = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
   };
 
   struct UBOModel
   {
-    glm::mat4 mModelMatrix;
+    glm::mat4 mModelMatrix = mat4Identity;
     glm::vec4 mDiffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); // tempDiffuseColorComponent
   };
 
   struct UBOMaterial
   {
-    glm::vec4 mDiffuse;
-    glm::vec4 mAmbient;
-    glm::vec4 mSpecular;
-    glm::vec4 mEmissive;
-    glm::vec4 mTransparent;
-    glm::vec4 mReflective;
+    glm::vec4 mDiffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mSpecular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mEmissive = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mTransparent = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mReflective = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     float mOpacity = 1.0f;
     float mShininess = 1.0f;
     float mShininessStrength = 1.0f;
@@ -72,31 +73,31 @@ namespace YTE
 
   struct UBOLight
   {
-    glm::vec3 mPosition;
-    float mActive; // bool
-    glm::vec4 mDirection;
-    glm::vec4 mAmbient;
-    glm::vec4 mDiffuse;
-    glm::vec4 mSpecular;
-    glm::vec2 mSpotLightConeAngles; // (inner, outer)
-    unsigned int mLightType;
-    float mSpotLightFalloff;
+    glm::vec3 mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+    float mActive = 0.0f; // bool
+    glm::vec4 mDirection = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mDiffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mSpecular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec2 mSpotLightConeAngles = glm::vec2(0.0f, 0.0f); // (inner, outer)
+    unsigned int mLightType = 0;
+    float mSpotLightFalloff = 0.0f;
   };
 
   struct UBOIllumination
   {
-    glm::vec4 mCameraPosition;
-    glm::vec4 mGlobalIllumination;
-    glm::vec4 mFogColor;
-    glm::vec4 mFogCoefficients;
-    glm::vec2 mFogPlanes;
+    glm::vec4 mCameraPosition = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mGlobalIllumination = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mFogColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec4 mFogCoefficients = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec2 mFogPlanes = glm::vec2(0.0f, 0.0f);
   };
 
   struct UBOLightMan
   {
     UBOLight mLights[YTE_Graphics_LightCount];
-    unsigned int mNumOfLights;
-    float mActive;  // bool
+    unsigned int mNumOfLights = 0;
+    float mActive = 0.0f;  // bool
   };
 }
 
