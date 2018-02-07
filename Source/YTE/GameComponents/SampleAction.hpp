@@ -13,8 +13,8 @@ namespace YTE
     void Initialize() override;
     void Update(LogicUpdate* aLogicUpdate);
   private:
+    float mSimultaneousVal1;
+    float mSimultaneousVal2;
     float mValue;
-    float mDuration;
-    float mEndValue;
   };
 }

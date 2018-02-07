@@ -78,6 +78,7 @@ namespace YTE
   {
   public:
     Action_Callback(std::function<void(void)> aCallback);
+    Action_Callback(const Action_Callback& aAction);
     void operator() () override;
   private:
     bool mHasCalled;

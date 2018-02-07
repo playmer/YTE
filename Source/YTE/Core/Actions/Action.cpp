@@ -52,6 +52,14 @@ namespace YTE
   {
   }
 
+  Action_Callback::Action_Callback(const Action_Callback& aAction)
+    : Action_CRTP(0.1f, this)
+    , mHasCalled(aAction.mHasCalled)
+    , mCallback(aAction.mCallback)
+  {
+
+  }
+
   void Action_Callback::operator()()
   {
     if (mHasCalled)
