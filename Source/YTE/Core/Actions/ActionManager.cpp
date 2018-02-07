@@ -26,15 +26,6 @@ namespace YTE
     GetSpace()->YTERegister(Events::CompositionRemoved, this, &ActionManager::OnCompositionRemoved);
   }
 
-  void ActionManager::OnCompositionRemoved(CompositionRemoved * aDeletion)
-  {
-    auto it = mSequences.find(aDeletion->mComposition);
-    if (it != mSequences.end())
-    {
-      mSequences.erase(it);
-    }
-  }
-
   void ActionManager::Update(LogicUpdate *aUpdate)
   {
     std::vector<std::unordered_map<Composition*, ActionSequence>::iterator> finishedSequences;
@@ -52,6 +43,15 @@ namespace YTE
     for (auto& finished : finishedSequences)
     {
       mSequences.erase(finished);
+    }
+  }
+
+  void ActionManager::OnCompositionRemoved(CompositionRemoved * aDeletion)
+  {
+    auto it = mSequences.find(aDeletion->mComposition);
+    if (it != mSequences.end())
+    {
+      mSequences.erase(it);
     }
   }
 }
