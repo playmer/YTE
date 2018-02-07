@@ -59,22 +59,28 @@ namespace YTEditor
     {
       if (std::is_same<bool, T>())
       {
-        this->connect(dynamic_cast<QCheckBox*>(this->GetWidgets()[0]),
+        this->connect(static_cast<QCheckBox*>(this->GetWidgets()[0]),
           &QCheckBox::stateChanged,
           this,
           &ComponentProperty::SaveToEngine);
       }
       else if (std::is_same<QStringList, T>())
       {
-        this->connect(dynamic_cast<QComboBox*>(this->GetWidgets()[0]),
-          static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-          this, &ComponentProperty::SaveToEngine);
+        QComboBox *combo = static_cast<QComboBox*>(this->GetWidgets()[0]);
+
+        combo->setStyleSheet("combobox-popup: 0;");
+        combo->setMaxVisibleItems(25);
+
+        this->connect(combo,
+                      static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+                      this, &ComponentProperty::SaveToEngine);
+
       }
       else
       {
         for (int i = 0; i < this->GetWidgets().size(); ++i)
         {
-          this->connect(dynamic_cast<QLineEdit*>(this->GetWidgets()[i]),
+          this->connect(static_cast<QLineEdit*>(this->GetWidgets()[i]),
             &QLineEdit::editingFinished,
             this,
             &ComponentProperty::SaveToEngine);

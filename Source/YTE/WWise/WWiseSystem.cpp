@@ -551,7 +551,7 @@ namespace YTE
                                                  AK_DEFAULT_POOL_ID, 
                                                  bank.mBankID);
     YTEUnusedArgument(eResult);
-    assert(eResult == AK_Success);
+    //assert(eResult == AK_Success);
     return bank;
   }
     
