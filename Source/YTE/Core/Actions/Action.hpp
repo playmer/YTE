@@ -10,6 +10,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #define YTE_Actions_Action_hpp
 #include <functional>
 
+#include "YTE/Utilities/Utilities.hpp"
+
 namespace YTE
 {
 #define YTENewAction(name) \
@@ -17,11 +19,11 @@ namespace YTE
   { \
   public: \
   name(float& aValue, float aFinal, float aDur) \
-  : Action(aDur), value(aValue), b(aValue), c(aFinal - b) { } \
+  : Action_CRTP(aDur), value(aValue), b(aValue), c(aFinal - b) { } \
   float& value; \
   float b; \
   float c; \
-  void Init() override; \
+  void Init() override \
   { \
     if (b != value) { \
       float f = b + c;  \
@@ -31,7 +33,7 @@ namespace YTE
   } \
   void operator()(); \
   }; \
-  inline void name::operator()();
+  inline void name::operator()()
 
   class Action
   {
@@ -213,7 +215,7 @@ namespace YTE
         float a = c;
         float s = p / 4;
         float postFix = static_cast<float>(a*pow(2, 10 * (t -= 1))); // this is a fix, again, with post-increment operators
-        value = -(postFix * sinf((t*d - s)*(2 * PI) / p)) + b;
+        value = -(postFix * sinf((t*d - s)*(2 * glm::pi<float>()) / p)) + b;
       }
     }
 
@@ -232,7 +234,7 @@ namespace YTE
         float p = d * .3f;
         float a = c;
         float s = p / 4;
-        value = static_cast<float>(a*pow(2, -10 * t) * sin((t*d - s)*(2 * PI) / p) + c + b);
+        value = static_cast<float>(a*pow(2, -10 * t) * sin((t*d - s)*(2 * glm::pi<float>()) / p) + c + b);
       }
     }
 
@@ -255,12 +257,12 @@ namespace YTE
         if (t < 1)
         {
           float postFix = static_cast<float>(a*pow(2, 10 * (t -= 1)));
-          value = -.5f*(postFix* sinf((t*d - s)*(2 * PI) / p)) + b;
+          value = -.5f*(postFix* sinf((t*d - s)*(2 * glm::pi<float>()) / p)) + b;
         }
         else
         {
           float postFix = static_cast<float>(a*pow(2, -10 * (t -= 1)));
-          value = postFix * sinf((t*d - s)*(2 * PI) / p)*.5f + c + b;
+          value = postFix * sinf((t*d - s)*(2 * glm::pi<float>()) / p)*.5f + c + b;
         }
       }
 
@@ -400,16 +402,16 @@ namespace YTE
   {
     YTENewAction(easeIn)
     {
-      value = -c * cosf(t / d * (PI / 2)) + c + b;
+      value = -c * cosf(t / d * (glm::pi<float>() / 2)) + c + b;
     }
     YTENewAction(easeOut)
     {
-      value = c * sinf(t / d * (PI / 2)) + b;
+      value = c * sinf(t / d * (glm::pi<float>() / 2)) + b;
     }
 
     YTENewAction(easeInOut)
     {
-      value = -c / 2 * (cosf(PI*t / d) - 1) + b;
+      value = -c / 2 * (cosf(glm::pi<float>()*t / d) - 1) + b;
     }
   }
 

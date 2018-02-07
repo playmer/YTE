@@ -18,6 +18,7 @@ namespace YTE
 {
   class ActionSequence
   {
+  public:
     friend class ActionManager;
     ActionSequence();
     void AddGroup(const ActionGroup &group);

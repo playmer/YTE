@@ -1,7 +1,12 @@
+#include "ActionSequence.hpp"
 #include "YTE/Core/Actions/ActionSequence.hpp"
 
 namespace YTE
 {
+  ActionSequence::ActionSequence()
+  {
+  }
+
   void ActionSequence::AddGroup(const ActionGroup & group)
   {
     mGroups.push(group);

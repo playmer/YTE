@@ -27,7 +27,9 @@ namespace YTE
     if (mValue != mEndValue)
     {
       auto manager = mSpace->GetComponent<ActionManager>();
-      
+      ActionSequence s;
+      s.Add<Sine::easeIn>(mValue, mEndValue, mDuration);
+      manager->AddSequence(mOwner, s);
     }
   }
 }
