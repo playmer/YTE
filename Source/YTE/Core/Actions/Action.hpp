@@ -43,7 +43,7 @@ namespace YTE
     float Increment(float dt);
     bool IsDone() const;
     virtual void Init();
-    virtual Action * Clone();
+    virtual Action * Clone() const;
     virtual void operator() ();
     virtual ~Action();
   protected:
@@ -61,7 +61,7 @@ namespace YTE
       static_assert(std::is_base_of<Action_CRTP, T>::value,
         "Action_CRTP is for curiously recurring template pattern use only");
     }
-    Action * Clone() { return new T(*reinterpret_cast<T*>(this)); }
+    Action * Clone() const { return new T(*reinterpret_cast<T*>(this)); }
   };
 
   class Action_Callback : public Action_CRTP<Action_Callback>

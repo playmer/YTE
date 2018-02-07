@@ -30,6 +30,13 @@ namespace YTE
         "Actions must derive from the Action class");
       mActions.push_back(new T(aValue, aFinal, aDuration));
     }
+    template <typename T>
+    void Add(const T& aAction)
+    {
+      static_assert(std::is_base_of<Action, T>::value,
+        "Actions must derive from the Action class");
+      mActions.push_back(aAction->Clone());
+    }
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
   private:

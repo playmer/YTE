@@ -33,6 +33,16 @@ namespace YTE
       mGroups.push(group);
     }
 
+    template <typename T>
+    void Add(const T& aAction)
+    {
+      static_assert(std::is_base_of<Action, T>::value,
+        "Actions must derive from the Action class");
+      ActionGroup group;
+      group.Add<T>(aAction);
+      mGroups.push(group);
+    }
+
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
   private:
