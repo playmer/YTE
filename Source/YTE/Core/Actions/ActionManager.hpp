@@ -22,7 +22,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(ActionManager);
-    ActionManager(Composition *aOwner, RSValue *aProperties = nullptr);
+    ActionManager(Composition *aOwner, Space * aSpace, RSValue *aProperties = nullptr);
     void AddSequence(Composition *aComposition, const ActionSequence &sequence);
     void Initialize();
     void Update(LogicUpdate *aUpdate);

@@ -9,8 +9,8 @@ namespace YTE
     YTERegisterType(ActionManager);
   }
 
-  ActionManager::ActionManager(Composition * aOwner, RSValue * aProperties)
-    : Component(aOwner, nullptr)
+  ActionManager::ActionManager(Composition * aOwner, Space * aSpace, RSValue * aProperties)
+    : Component(aOwner, aSpace)
   {
     YTEUnusedArgument(aProperties);
   }
