@@ -17,15 +17,16 @@ namespace YTE
   void SampleAction::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &SampleAction::Update);
-    mValue = 0.0f;
+    mValue = 10.0f;
     mEndValue = 10.0f;
     mDuration = 1.0f;
   }
 
   void SampleAction::Update(LogicUpdate* aLogicUpdate)
   {
-    if (mValue != mEndValue)
+    if (mValue == mEndValue)
     {
+      mValue = 0.0f;
       auto manager = mSpace->GetComponent<ActionManager>();
       ActionSequence s;
       s.Add<Sine::easeIn>(mValue, mEndValue, mDuration);
