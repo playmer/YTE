@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <fstream>
 
+#include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -160,6 +161,7 @@ namespace YTE
     graphicsView->NativeInitialize();
     
     AddComponent<PhysicsSystem>();
+    AddComponent<ActionManager>();
 
     auto camera = AddComposition<Composition>("Camera", mEngine, this);
     camera->SetOwner(this);

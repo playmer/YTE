@@ -7,38 +7,38 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Actions_ActionSequence_hpp
-#define YTE_Actions_ActionSequence_hpp
+#ifndef YTE_Actions_Group_hpp
+#define YTE_Actions_Group_hpp
 
-#include <queue>
+#include <vector>
 
-#include "YTE/Core/Actions/ActionGroup.hpp"
+#include "YTE/Core/Actions/Action.hpp"
 
 namespace YTE
 {
-  class ActionSequence
+  class ActionGroup
   {
-    friend class ActionManager;
-    ActionSequence();
-    void AddGroup(const ActionGroup &group);
-
+  public:
+    friend class ActionSequence;
+    ActionGroup();
+    ActionGroup(const ActionGroup& aGroup);
+    ~ActionGroup();
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
     {
       static_assert(std::is_base_of<Action, T>::value,
         "Actions must derive from the Action class");
-      ActionGroup group;
-      group.Add<T>(aValue, aFinal, aDuration);
-      mGroups.push(group);
+      mActions.push_back(new T(aValue, aFinal, aDuration));
     }
-
     void Call(std::function<void(void)> aCallback);
     void Delay(float aDuration);
   private:
+    void Init();
     float Increment(float dt);
     void operator() ();
     bool IsDone() const;
-    std::queue<ActionGroup> mGroups;
+
+    std::vector<Action*> mActions;
   };
 }
 
