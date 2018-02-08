@@ -35,5 +35,6 @@ namespace YTE
     float mRotationAngle;
     Transform *mTransform;
     Orientation *mOrientation;
+    Camera *mCameraComponent;
   };
 }//end yte namespace
