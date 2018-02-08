@@ -16,7 +16,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include "YTE/Core/Component.hpp"
-#include "YTE/Core/Engine.hpp"
+#include "YTE/Physics/Transform.hpp"
+#include "YTE/Physics/Orientation.hpp"
+#include "YTE/GameComponents/InputInterpreter.hpp"
 
 namespace YTE
 {
@@ -26,7 +28,12 @@ namespace YTE
     YTEDeclareType(CameraController);
     CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void RotateCamera(CameraRotateEvent *aEvent);
   private:
-
+    Transform *mBoatTransform;
+    Orientation *mBoatOrientation;
+    float mRotationAngle;
+    Transform *mTransform;
+    Orientation *mOrientation;
   };
 }//end yte namespace

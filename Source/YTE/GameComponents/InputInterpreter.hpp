@@ -39,6 +39,14 @@ namespace YTE
     YTEDeclareEvent(DialogueStart);
     YTEDeclareEvent(DialogueConfirm);
     YTEDeclareEvent(DialogueExit);
+    YTEDeclareEvent(CameraRotateEvent);
+
+    class CameraRotateEvent : public Event
+    {
+    public:
+      YTEDeclareType(CameraRotateEvent);
+      glm::vec2 StickDirection;
+    };
 
     class SailStateChanged : public Event
     {
@@ -53,7 +61,6 @@ namespace YTE
     public:
       YTEDeclareType(BoatTurnEvent);
       glm::vec2 StickDirection;
-      Xbox_Buttons Stick;
     };
 
     class BoatDockEvent : public Event
