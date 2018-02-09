@@ -108,12 +108,6 @@ namespace YTE
 
   void Transform::ParentPositionChanged(TransformChanged *aEvent)
   {
-    if (mOwner->GetOwner() && mOwner->GetOwner()->GetName() != "Gizmo")
-    {
-      std::cout << fmt::format("World: ({},{},{}) "  , aEvent->WorldPosition.x, aEvent->WorldPosition.y, aEvent->WorldPosition.z);
-      std::cout << fmt::format("Local: ({},{},{})\n", mTranslation.x, mTranslation.y, mTranslation.z);
-    }
-
     SetInternalTranslation(aEvent->WorldPosition, mTranslation);
   }
 
@@ -124,7 +118,7 @@ namespace YTE
 
   void Transform::ParentRotationChanged(TransformChanged *aEvent)
   {
-    auto localTranslation{ aEvent->RotationDifference * mTranslation };
+    auto localTranslation{ aEvent->WorldRotationDifference * mTranslation };
 
     SetInternalTranslation(aEvent->WorldPosition, localTranslation);
     SetInternalRotation(aEvent->WorldRotation, mRotation);
@@ -356,12 +350,15 @@ namespace YTE
     auto parent = glm::normalize(aParentRotation);
     auto local = glm::normalize(aLocalRotation);
 
-    auto difference{ glm::normalize(glm::inverse(mRotation) * local) };
+    auto newWorldRotation = glm::normalize(parent * local);
 
-    mWorldRotation = glm::normalize(parent * local);
+    auto worldDifference{ glm::normalize(newWorldRotation) * glm::inverse(mWorldRotation) };
+    auto localDifference{ local * glm::normalize(glm::inverse(mRotation)) };
+
+    mWorldRotation = newWorldRotation;
     mRotation = local;
 
-    InformPhysicsOfChange(Events::RotationChanged, difference);
+    InformPhysicsOfChange(Events::RotationChanged, localDifference, worldDifference);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -428,7 +425,9 @@ namespace YTE
     return rotation;
   }
 
-  void Transform::InformPhysicsOfChange(const std::string &aEvent, glm::quat aRotationDifference)
+  void Transform::InformPhysicsOfChange(const std::string &aEvent,
+                                        glm::quat aLocalRotationDifference,
+                                        glm::quat aWorldRotationDifference)
   {
     // TODO: Inform physics of scale change.
     auto rigidBody = mOwner->GetComponent<RigidBody>();
@@ -444,7 +443,8 @@ namespace YTE
     newTransform.WorldPosition = mWorldTranslation;
     newTransform.WorldScale = mWorldScale;
     newTransform.WorldRotation = mWorldRotation;
-    newTransform.RotationDifference = aRotationDifference;
+    newTransform.LocalRotationDifference = aLocalRotationDifference;
+    newTransform.WorldRotationDifference = aWorldRotationDifference;
 
     mOwner->SendEvent(aEvent, &newTransform);
   }
