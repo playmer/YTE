@@ -53,13 +53,6 @@ set_target_properties(YTE
                       LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
                       RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
 
-YTE_Target_Precompiled_Headers(YTE
-                               PUBLIC 
-                                 <unordered_map>
-                                 <vector>
-                               PRIVATE
-                                 YTE/Meta/Type.hpp)
-
 YTE_Source_Group(YTE_Root YTE)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)

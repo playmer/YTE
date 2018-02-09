@@ -120,13 +120,6 @@ target_link_libraries(YTEditor YTE Qt5::Widgets)
 
 target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
 
-YTE_Target_Precompiled_Headers(YTEditor
-                               PUBLIC 
-                                 <unordered_map>
-                                 <vector>
-                               PRIVATE
-                                 YTE/Meta/Type.hpp)
-
 YTE_Source_Group(YTEditor_Root YTEditor) 
 
 if ("${INSTALL_YTEDITOR}" STREQUAL "1")
