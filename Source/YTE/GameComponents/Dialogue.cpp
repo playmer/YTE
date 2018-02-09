@@ -34,7 +34,7 @@ namespace YTE
     mOwner->GetEngine()->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
     mOwner->GetEngine()->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
 
-    mSprite = mOwner->AddComposition("DialogueSprite", "DialogueBoi");
+    mSprite = mOwner->FindFirstCompositionByName("DialogueBoi");
     auto transform = mSprite->GetComponent<Transform>();
     transform->SetScale(glm::vec3());
   }

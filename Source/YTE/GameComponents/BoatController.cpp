@@ -204,9 +204,10 @@ namespace YTE
 
       mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Sailing_Volume", vel.length());
 
+
       if (mIsSailUp)
       {
-        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 1000.0f * mMaxSailSpeed * aEvent->Dt);
+        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * -400.0f * mMaxSailSpeed * aEvent->Dt);
 
         /*
         if (mCurSpeed < mMaxSailSpeed)
