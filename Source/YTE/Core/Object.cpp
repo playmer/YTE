@@ -100,7 +100,7 @@ namespace YTE
       // Type is a float
       if (setterType == TypeId<float>())
       {
-        setter->Invoke(aSelf, static_cast<float>(value->GetDouble()));
+        setter->Invoke(aSelf, ValueAsFloat(value));
       }
       else if (setterType->GetEnumOf())
       {
@@ -234,7 +234,8 @@ namespace YTE
       // Type is a float
       if (propertyType == TypeId<float>())
       {
-        propertyValue.SetDouble(any.As<float>());
+        auto value = any.As<float>(); 
+        FloatAsValue(propertyValue, value, aAllocator);
       }
       else if (propertyType->GetEnumOf())
       {

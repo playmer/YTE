@@ -11,9 +11,53 @@
 #ifndef YTE_Utilities_JsonHelpers_h
 #define YTE_Utilities_JsonHelpers_h
 
+#include <sstream>
+
 namespace YTE
 {
   // TODO (Josh): Fix the serialization.
+
+  ///////////////////////////////
+  // Float
+  ///////////////////////////////
+  inline float ValueAsFloat(RSValue *aValue)
+  {
+    if (aValue->IsDouble())
+    {
+      return static_cast<float>(aValue->GetDouble());
+    }
+    else if (aValue->IsString())
+    {
+      std::string hex = aValue->GetString();
+
+      unsigned int x = std::stoul(hex, nullptr, 16);
+      return *reinterpret_cast<float*>(&x);
+    }
+
+    return 0.0f;
+  }
+
+  inline std::string FloatToString(float aFloat)
+  {
+    std::ostringstream stm;
+    stm << std::hex << std::uppercase << *reinterpret_cast<unsigned int*>(&aFloat);;
+
+    return stm.str();
+  }
+
+  inline void FloatAsValue(RSValue &aValue, float aFloat, RSAllocator &aAllocator)
+  {
+    auto str = FloatToString(aFloat);
+    aValue.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
+  }
+
+  inline RSValue FloatAsValue(float aFloat, RSAllocator &aAllocator)
+  {
+    RSValue value;
+    auto str = FloatToString(aFloat);
+    value.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
+    return value;
+  }
 
   ///////////////////////////////
   // Real2
@@ -21,8 +65,8 @@ namespace YTE
   inline glm::vec2 ValueAsReal2(RSValue *aValue)
   {
     auto real4 = aValue->FindMember("Vector2");
-    auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
-    auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
+    auto x = ValueAsFloat(&real4->value.FindMember("x")->value);
+    auto y = ValueAsFloat(&real4->value.FindMember("y")->value);
     return glm::vec2{ x, y };
   }
 
@@ -32,8 +76,8 @@ namespace YTE
 
     RSValue subObject;
     subObject.SetObject();
-    subObject.AddMember("x", aVector.x, aAllocator);
-    subObject.AddMember("y", aVector.y, aAllocator);
+    subObject.AddMember("x", FloatAsValue(aVector.x, aAllocator), aAllocator);
+    subObject.AddMember("y", FloatAsValue(aVector.y, aAllocator), aAllocator);
 
     aValue.AddMember("Vector2", subObject, aAllocator);
   }
@@ -44,9 +88,9 @@ namespace YTE
   inline glm::vec3 ValueAsReal3(RSValue *aValue)
   {
     auto real4 = aValue->FindMember("Vector3");
-    auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
-    auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
-    auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());
+    auto x = ValueAsFloat(&real4->value.FindMember("x")->value);
+    auto y = ValueAsFloat(&real4->value.FindMember("y")->value);
+    auto z = ValueAsFloat(&real4->value.FindMember("z")->value);
     return glm::vec3{ x, y, z };
   }
 
@@ -56,9 +100,9 @@ namespace YTE
 
     RSValue subObject;
     subObject.SetObject();
-    subObject.AddMember("x", aVector.x, aAllocator);
-    subObject.AddMember("y", aVector.y, aAllocator);
-    subObject.AddMember("z", aVector.z, aAllocator);
+    subObject.AddMember("x", FloatAsValue(aVector.x, aAllocator), aAllocator);
+    subObject.AddMember("y", FloatAsValue(aVector.y, aAllocator), aAllocator);
+    subObject.AddMember("z", FloatAsValue(aVector.z, aAllocator), aAllocator);
 
     aValue.AddMember("Vector3", subObject, aAllocator);
   }
@@ -69,10 +113,10 @@ namespace YTE
   inline glm::vec4 ValueAsReal4(RSValue *aValue)
   {
     auto real4 = aValue->FindMember("Vector4");
-    auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
-    auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
-    auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());
-    auto w = static_cast<float>(real4->value.FindMember("w")->value.GetDouble());
+    auto x = ValueAsFloat(&real4->value.FindMember("x")->value);
+    auto y = ValueAsFloat(&real4->value.FindMember("y")->value);
+    auto z = ValueAsFloat(&real4->value.FindMember("z")->value);
+    auto w = ValueAsFloat(&real4->value.FindMember("w")->value);
     return glm::vec4{ x, y, z, w };
   }
 
@@ -82,10 +126,10 @@ namespace YTE
 
     RSValue subObject;
     subObject.SetObject();
-    subObject.AddMember("x", aVector.x, aAllocator);
-    subObject.AddMember("y", aVector.y, aAllocator);
-    subObject.AddMember("z", aVector.z, aAllocator);
-    subObject.AddMember("w", aVector.w, aAllocator);
+    subObject.AddMember("x", FloatAsValue(aVector.x, aAllocator), aAllocator);
+    subObject.AddMember("y", FloatAsValue(aVector.y, aAllocator), aAllocator);
+    subObject.AddMember("z", FloatAsValue(aVector.z, aAllocator), aAllocator);
+    subObject.AddMember("w", FloatAsValue(aVector.w, aAllocator), aAllocator);
 
     aValue.AddMember("Vector4", subObject, aAllocator);
   }
@@ -96,10 +140,10 @@ namespace YTE
   inline glm::quat ValueAsQuaternion(RSValue *aValue)
   {
     auto real4 = aValue->FindMember("Quaternion");
-    auto w = static_cast<float>(real4->value.FindMember("w")->value.GetDouble());
-    auto x = static_cast<float>(real4->value.FindMember("x")->value.GetDouble());
-    auto y = static_cast<float>(real4->value.FindMember("y")->value.GetDouble());
-    auto z = static_cast<float>(real4->value.FindMember("z")->value.GetDouble());
+    auto x = ValueAsFloat(&real4->value.FindMember("x")->value);
+    auto y = ValueAsFloat(&real4->value.FindMember("y")->value);
+    auto z = ValueAsFloat(&real4->value.FindMember("z")->value);
+    auto w = ValueAsFloat(&real4->value.FindMember("w")->value);
     return glm::quat{ w, x, y, z};
   }
 
@@ -109,10 +153,10 @@ namespace YTE
 
     RSValue subObject;
     subObject.SetObject();
-    subObject.AddMember("x", aVector.x, aAllocator);
-    subObject.AddMember("y", aVector.y, aAllocator);
-    subObject.AddMember("z", aVector.z, aAllocator);
-    subObject.AddMember("w", aVector.w, aAllocator);
+    subObject.AddMember("x", FloatAsValue(aVector.x, aAllocator), aAllocator);
+    subObject.AddMember("y", FloatAsValue(aVector.y, aAllocator), aAllocator);
+    subObject.AddMember("z", FloatAsValue(aVector.z, aAllocator), aAllocator);
+    subObject.AddMember("w", FloatAsValue(aVector.w, aAllocator), aAllocator);
 
     aValue.AddMember("Quaternion", subObject, aAllocator);
   }
