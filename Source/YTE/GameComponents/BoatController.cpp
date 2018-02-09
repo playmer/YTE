@@ -210,7 +210,20 @@ namespace YTE
 
       if (mIsSailUp)
       {
-        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * -400.0f * mMaxSailSpeed * aEvent->Dt);
+        auto gamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(Controller_Id::Xbox_P1);
+
+        if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Left))
+        {
+          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+        }
+        else if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Right))
+        {
+          mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+        }
+        else
+        {
+          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+        }
         
         //if (mCurSpeed < 50.0f)
         //{
