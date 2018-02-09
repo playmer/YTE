@@ -66,7 +66,7 @@ namespace YTE
     fs::path type{ textureFile };
     type = type.extension();
 
-    if (type == L".png")
+    if (type == L".png" || type == L".jpg")
     {
       int texWidth, texHeight, texChannels;
 
