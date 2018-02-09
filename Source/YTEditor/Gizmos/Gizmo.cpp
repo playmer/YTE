@@ -307,7 +307,7 @@ namespace YTEditor
       gizTransform->SetWorldRotation(rot);
     }
 
-    glm::vec3 pos = objTransform->GetTranslation();
+    glm::vec3 pos = objTransform->GetWorldTranslation();
     gizTransform->SetWorldTranslation(pos);
 
   }

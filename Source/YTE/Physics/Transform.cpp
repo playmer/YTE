@@ -7,6 +7,8 @@
 */
 /******************************************************************************/
 
+#include "fmt/format.h"
+
 #include <glm/gtx/transform.hpp>
 
 #include "YTE/Core/Engine.hpp"
@@ -106,6 +108,12 @@ namespace YTE
 
   void Transform::ParentPositionChanged(TransformChanged *aEvent)
   {
+    if (mOwner->GetOwner() && mOwner->GetOwner()->GetName() != "Gizmo")
+    {
+      std::cout << fmt::format("World: ({},{},{}) "  , aEvent->WorldPosition.x, aEvent->WorldPosition.y, aEvent->WorldPosition.z);
+      std::cout << fmt::format("Local: ({},{},{})\n", mTranslation.x, mTranslation.y, mTranslation.z);
+    }
+
     SetInternalTranslation(aEvent->WorldPosition, mTranslation);
   }
 

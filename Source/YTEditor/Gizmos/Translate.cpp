@@ -61,6 +61,6 @@ namespace YTEditor
     transform->SetTranslation(newPos);
 
     YTE::Transform *gizmoTransform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
-    gizmoTransform->SetWorldTranslation(transform->GetTranslation());
+    gizmoTransform->SetWorldTranslation(transform->GetWorldTranslation());
   }
 }
