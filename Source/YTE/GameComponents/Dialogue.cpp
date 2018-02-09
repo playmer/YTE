@@ -42,7 +42,9 @@ namespace YTE
 
     mSprite = mOwner->FindFirstCompositionByName("DialogueBoi");
     auto transform = mSprite->GetComponent<Transform>();
-    transform->SetScale(glm::vec3());
+    
+    transform->SetWorldScale(glm::vec3(1.0f, 1.0f, 1.0f));
+
   }
 
   void Dialogue::Update(LogicUpdate *aEvent)
@@ -81,11 +83,10 @@ namespace YTE
     
     glm::vec3 pos = camTransform->GetWorldTranslation();
     
-    glm::vec3 spritePos = pos - 5.0f * forward;
+    glm::vec3 spritePos = pos - 3.0f * forward;
 
     auto spriteTransform = mSprite->GetComponent<Transform>();
-    spriteTransform->SetTranslation(spritePos);
-    spriteTransform->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
+    spriteTransform->SetWorldTranslation(spritePos);
     spriteTransform->SetWorldRotation(camTransform->GetWorldRotation());
 
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
@@ -130,7 +131,7 @@ namespace YTE
     mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
 
     auto transform = mSprite->GetComponent<Transform>();
-    transform->SetScale(glm::vec3(0.0f, 0.0f, 0.0f));
+    transform->SetTranslation(glm::vec3(0.0f, -100.0f, 0.0f));
   }
 
 }

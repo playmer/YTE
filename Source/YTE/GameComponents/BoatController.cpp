@@ -95,6 +95,8 @@ namespace YTE
         }
         */
 
+        mSoundSystem = mOwner->GetSpace()->GetComponent<WWiseSystem>();
+
         if (mSoundEmitter)
         {
           mSoundEmitter->PlayEvent("Sailing_Start");
@@ -202,19 +204,19 @@ namespace YTE
 
       glm::vec3 vel = mRigidBody->GetVelocity();
 
-      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Sailing_Volume", vel.length());
+      mSoundSystem->SetRTPC("Sailing_Volume", vel.length());
 
+      mCurSpeed = vel.length();
 
       if (mIsSailUp)
       {
         mRigidBody->SetVelocity(mOrientation->GetForwardVector() * -400.0f * mMaxSailSpeed * aEvent->Dt);
-
-        /*
-        if (mCurSpeed < mMaxSailSpeed)
-        {
-          mRigidBody->ApplyImpulse(mOrientation->GetForwardVector() * aEvent->Dt * 10.0f, glm::vec3(0, 0, 0));
-        }
-        */
+        
+        //if (mCurSpeed < 50.0f)
+        //{
+        //  mRigidBody->ApplyImpulse(-1.0f * mOrientation->GetForwardVector() * aEvent->Dt * 5.0f, glm::vec3(0, 0, 0));
+        //}
+        
       }
       else
       {

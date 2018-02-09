@@ -26,6 +26,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -87,6 +88,8 @@ namespace YTE
         ParticleEmitter *mParticleEmitter;
         WWiseEmitter *mSoundEmitter;
         Composition *mNearbyDock; // be careful with this lambs
+
+        WWiseSystem *mSoundSystem;
 
         //Model *mSailModel; wherever i play anims for sail
         //Transform *mSailOrient; sail might have a different transform to rotate around
