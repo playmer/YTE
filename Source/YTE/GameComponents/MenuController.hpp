@@ -57,6 +57,9 @@ namespace YTE
 	private:
 		XboxController* mGamePad;
 
+		Transform* mMyTransform;
+		glm::vec3 mViewScale;
+
 		int mCurrMenuElement;
 		int mNumElements;
 		YTE::CompositionMap* mMenuElements;

@@ -48,6 +48,10 @@ namespace YTE
 	
 		mMenuElements = mOwner->GetCompositions();
 		mNumElements = mMenuElements->size();
+
+		mMyTransform = mOwner->GetComponent<Transform>();
+		//mViewScale = mMyTransform->GetScale();
+		mMyTransform->SetScale(0.f, 0.f, 0.f);
 	}
 
 	void MenuController::OnXboxFlickEvent(XboxFlickEvent* aEvent)
@@ -87,6 +91,7 @@ namespace YTE
 
       if (mIsDisplayed)
       {
+				mMyTransform->SetScale(-16.5, 9.5f, 1.f);
         emitter->PlayEvent("UI_Menu_Pause");
 
 				mCurrMenuElement = 0;
@@ -98,6 +103,7 @@ namespace YTE
       }
       else
       {
+				mMyTransform->SetScale(0.f, 0.f, 0.f);
         emitter->PlayEvent("UI_Menu_Unpause");
 
 				MenuElementDeHover deHoverEvent;

@@ -154,10 +154,19 @@ void main()
   if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates);
+
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
   else
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }
