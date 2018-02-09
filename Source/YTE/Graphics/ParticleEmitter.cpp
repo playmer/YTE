@@ -19,6 +19,10 @@ namespace YTE
   {
     YTERegisterType(ParticleEmitter);
 
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindProperty(&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName, "Texture Name")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
@@ -97,6 +101,7 @@ namespace YTE
   {
     GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
 
+    mPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
     mOwner->YTERegister(Events::PositionChanged, this, &ParticleEmitter::OnTransformChanged);
 
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
