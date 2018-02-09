@@ -58,7 +58,7 @@ namespace YTE
 		XboxController* mGamePad;
 
 		int mCurrMenuElement;
-		size_t mNumElements;
+		int mNumElements;
 		YTE::CompositionMap* mMenuElements;
 
 		bool mIsDisplayed;

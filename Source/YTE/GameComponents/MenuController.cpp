@@ -65,6 +65,9 @@ namespace YTE
 			else if (aEvent->FlickDirection.x > 0.01f)
 				mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
 
+			auto emitter = mOwner->GetComponent<WWiseEmitter>();
+			emitter->PlayEvent("UI_Menu_Hover");
+
 			MenuElementHover hoverEvent;
 
 			currElement = mMenuElements->begin() + mCurrMenuElement;
@@ -74,21 +77,34 @@ namespace YTE
 
 	void MenuController::OnXboxButtonPress(XboxButtonEvent* aEvent)
 	{
+		auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
 		switch (aEvent->Button)
 		{
 		case (Xbox_Buttons::Start):
 		{
 			mIsDisplayed = !mIsDisplayed;
 
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
       if (mIsDisplayed)
       {
         emitter->PlayEvent("UI_Menu_Pause");
+
+				mCurrMenuElement = 0;
+
+				MenuElementHover hoverEvent;
+
+				auto currElement = mMenuElements->begin() + mCurrMenuElement;
+				currElement->second->SendEvent("MenuElementHover", &hoverEvent);
       }
       else
       {
         emitter->PlayEvent("UI_Menu_Unpause");
+
+				MenuElementDeHover deHoverEvent;
+
+				auto currElement = mMenuElements->begin() + mCurrMenuElement;
+				currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+				mCurrMenuElement = 0;
       }
 
 			break;
@@ -98,6 +114,8 @@ namespace YTE
 		{
 			if (mIsDisplayed)
 			{
+				emitter->PlayEvent("UI_Menu_Select");
+
 				MenuElementTrigger triggerEvent;
         
 				auto currElement = mMenuElements->begin() + mCurrMenuElement;
@@ -116,10 +134,10 @@ namespace YTE
 			{
 			case (Xbox_Buttons::A):
 			{
-				MenuElementDeHover deHoverEvent;
+				MenuElementHover hoverEvent;
 
 				auto currElement = mMenuElements->begin() + mCurrMenuElement;
-				currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+				currElement->second->SendEvent("MenuElementHover", &hoverEvent);
 
 				break;
 			}

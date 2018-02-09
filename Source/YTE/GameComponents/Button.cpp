@@ -78,8 +78,6 @@ namespace YTE
 		{
 			mCurrentSprite->SetTexture(mHoverSpriteName);
 		}
-
-		std::cout << "Hovering over button: " << mOwner->GetName() << std::endl;
 	}
 
 	void Button::OnButtonTrigger(MenuElementTrigger* aEvent)
@@ -88,8 +86,6 @@ namespace YTE
 		{
 			mCurrentSprite->SetTexture(mActivatedSpriteName);
 		}
-
-		std::cout << "Activating button: " << mOwner->GetName() << std::endl;
 	}
 
 	void Button::OnButtonDeHover(MenuElementDeHover* aEvent)
