@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   BoatController.hpp
+\file   BoatController.cpp
 \author Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-19
@@ -141,36 +141,32 @@ namespace YTE
 
     void BoatController::TurnBoat(BoatTurnEvent *aEvent)
     {
-      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      if (aEvent->StickDirection == glm::vec2(0,0))
       {
-        if (aEvent->StickDirection == glm::vec2(0,0))
-        {
-          mStartedTurning = false;
-        }
-
-        if (!mStartedTurning && aEvent->StickDirection.x != 0.0f)
-        {
-          if (mSoundEmitter)
-          {
-            mSoundEmitter->PlayEvent("SFX_Boat_Turn");
-          }
-
-          mStartedTurning = true;
-        }
-
-        mRotationAngle -= aEvent->StickDirection.x / 2.0f;
-        if (mRotationAngle > 360.0f)
-        {
-          mRotationAngle = 0.0f;
-        }
-        if (mRotationAngle < 0.0f)
-        {
-          mRotationAngle = 360.0f;
-        }
-
-        mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
-        std::cout << mRotationAngle << std::endl;
+        mStartedTurning = false;
       }
+
+      if (!mStartedTurning && aEvent->StickDirection.x != 0.0f)
+      {
+        if (mSoundEmitter)
+        {
+          mSoundEmitter->PlayEvent("SFX_Boat_Turn");
+        }
+
+        mStartedTurning = true;
+      }
+
+      mRotationAngle -= aEvent->StickDirection.x / 2.0f;
+      if (mRotationAngle > 360.0f)
+      {
+        mRotationAngle = 0.0f;
+      }
+      if (mRotationAngle < 0.0f)
+      {
+        mRotationAngle = 360.0f;
+      }
+
+      mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
     }
 
     void BoatController::ChangeSail(SailStateChanged *aEvent)

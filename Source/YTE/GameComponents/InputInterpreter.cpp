@@ -20,6 +20,7 @@ namespace YTE
     YTEDefineEvent(SailStateChanged);
     YTEDefineEvent(BoatTurnEvent);
     YTEDefineEvent(BoatDockEvent);
+    YTEDefineEvent(CameraRotateEvent);
 
     YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
     YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
@@ -27,6 +28,7 @@ namespace YTE
     YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
     YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
     YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
+    YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
 
 
     YTEDefineType(InputInterpreter)
@@ -65,11 +67,21 @@ namespace YTE
 /******************************************************************************/
     void InputInterpreter::CheckSticks(XboxStickEvent *aEvent)
     {
-      //std::cout << "Stick (" << aEvent->StickDirection.x << ", " << aEvent->StickDirection.y << ")\n";
-      BoatTurnEvent turnEvent;
-      turnEvent.Stick = aEvent->Stick;
-      turnEvent.StickDirection = aEvent->StickDirection;
-      mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+      if (mContext == InputContext::Sailing)
+      {
+        if (aEvent->Stick == Xbox_Buttons::LeftStick)
+        {
+          BoatTurnEvent turnEvent;
+          turnEvent.StickDirection = aEvent->StickDirection;
+          mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+        }
+        else if (aEvent->Stick == Xbox_Buttons::RightStick)
+        {
+          CameraRotateEvent camRot;
+          camRot.StickDirection = aEvent->StickDirection;
+          mOwner->SendEvent(Events::CameraRotateEvent, &camRot);
+        }
+      }
     }
     
     void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)

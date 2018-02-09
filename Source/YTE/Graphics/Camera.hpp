@@ -40,6 +40,8 @@ namespace YTE
       return mWindow; 
     }
 
+    void SetUBOView(UBOView &aView);
+
     ///////////////////////////////////////
     // Events
     ///////////////////////////////////////
@@ -168,7 +170,7 @@ namespace YTE
       } 
     } 
     
-    void SetTargetPoint(glm::vec3 &aTargetPoint)
+    void SetTargetPoint(glm::vec3 aTargetPoint)
     { 
       mTargetPoint = aTargetPoint; 
  

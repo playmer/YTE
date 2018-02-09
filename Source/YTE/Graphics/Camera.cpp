@@ -405,6 +405,14 @@ namespace YTE
     mGraphicsView->UpdateIllumination(mIllumination);
   }
 
+  void Camera::SetUBOView(UBOView &aView)
+  {
+    mChanged = false;
+    mGraphicsView->UpdateView(this, aView);
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mGraphicsView->UpdateIllumination(mIllumination);
+  }
+
   // Handle the moment a mouse button is pressed
   void Camera::MousePress(MouseButtonEvent *aEvent)
   {
