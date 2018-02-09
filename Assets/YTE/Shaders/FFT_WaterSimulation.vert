@@ -4,7 +4,6 @@
 #extension GL_ARB_shading_language_420pack : enable
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_BONES 64
@@ -55,7 +54,6 @@ layout (location = 10) in ivec2 inBoneIDs2;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
-    vec4 mDiffuseColor;
   } Model;
 
 
@@ -92,8 +90,7 @@ layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec4 outPosition;
 layout (location = 4) out vec3 outPositionWorld;
-layout (location = 5) out mat4 outViewMatrix; // 5 - 8
-layout (location = 9) out vec4 outDiffuse;
+layout (location = 5) out mat4 outViewMatrix;
 
 // ========================
 // Positional Output of Vertex
@@ -101,6 +98,8 @@ out gl_PerVertex
 {
     vec4 gl_Position;
 };
+
+
 
 
 
@@ -153,7 +152,7 @@ void CalculatePosition(mat4 aProjMat, vec4 aPos)
                 aPos;
 
   // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
+  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
 }
 
 // ======================
@@ -199,7 +198,6 @@ void main()
   outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
   outViewMatrix = View.mViewMatrix;
-  outDiffuse = Model.mDiffuseColor;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 

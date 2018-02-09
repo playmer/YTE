@@ -14,6 +14,7 @@ namespace YTE
   class GraphicsDataUpdate;
   class GraphicsSystem;
   class GraphicsView;
+  class FFT_WaterSimulation;
   class InstantiatedModel;
   class Light;
   class Model;

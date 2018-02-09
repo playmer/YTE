@@ -10,6 +10,7 @@
 
 namespace YTE
 {
+  class InstantiatedHeightmap;
   class InstantiatedModel;
   class InstantiatedSprite;
   class InstantiatedLight;

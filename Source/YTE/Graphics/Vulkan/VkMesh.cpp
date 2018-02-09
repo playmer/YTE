@@ -472,6 +472,20 @@ namespace YTE
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
+  void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
+  {
+    Mesh::UpdateVertices(aSubmeshIndex, aVertices);
+
+    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+  }
+
+  void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  {
+    Mesh::UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+
+    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+  }
+
   VkMesh::~VkMesh()
   {
   }

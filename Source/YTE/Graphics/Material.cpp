@@ -1,6 +1,8 @@
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Material.hpp"
+#include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
+#include "YTE/Graphics/Generics/InstantiatedHeightmap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE
@@ -54,10 +56,29 @@ namespace YTE
   void MaterialRepresentation::UpdateUBO()
   {
     auto model = mMaterialComponent->GetOwner()->GetComponent<Model>();
+    auto fftWater = mMaterialComponent->GetOwner()->GetComponent<FFT_WaterSimulation>();
 
     if (nullptr != model)
     {
       auto instantiatedModel = model->GetInstantiatedModel();
+
+      if (nullptr != instantiatedModel)
+      {
+        // If we have submesh pointer, we're a submesh material, otherwise we're a 
+        // Model, or "Universal" material.
+        if (nullptr != mSubmesh)
+        {
+          instantiatedModel->UpdateUBOSubmeshMaterial(&mMaterial, mIndex);
+        }
+        else
+        {
+          instantiatedModel->UpdateUBOMaterial(&mMaterial);
+        }
+      }
+    }
+    else if (nullptr != fftWater)
+    {
+      auto instantiatedModel = fftWater->GetHeightmap(0)->GetInstantiatedModel();
 
       if (nullptr != instantiatedModel)
       {
@@ -85,7 +106,7 @@ namespace YTE
                                                     &Material::SubmeshMaterialLister, 
                                                     "Materials");
 
-    std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() }, { Model::GetStaticType(), FFT_WaterSimulation::GetStaticType() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
@@ -111,6 +132,7 @@ namespace YTE
   void Material::Create(ModelChanged *aEvent)
   {
     auto model = aEvent->Object->GetComponent<Model>();
+    auto fftWater = aEvent->Object->GetComponent<FFT_WaterSimulation>();
 
     if (nullptr != model)
     {
@@ -151,11 +173,51 @@ namespace YTE
         mName = instantiatedModel->GetMesh()->mName;
       }
     }
+    else if (nullptr != fftWater)
+    {
+      auto instantiatedModel = fftWater->GetHeightmap(0)->GetInstantiatedModel();
+
+      if (nullptr != instantiatedModel)
+      {
+        if (instantiatedModel->GetMesh()->mName != mName)
+        {
+          mSubmeshMaterials.clear();
+
+          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          {
+            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
+              this,
+              i,
+              &(*submesh));
+            mSubmeshMaterials.emplace_back(std::move(materialRep));
+          }
+
+          mModelMaterial = MaterialRepresentation{ instantiatedModel->GetUBOMaterialData(),
+            this,
+            0,
+            nullptr };
+        }
+        else
+        {
+          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          {
+            mSubmeshMaterials[i]->SetSubmesh(&(*submesh));
+            mSubmeshMaterials[i]->SetIndex(i);
+            mSubmeshMaterials[i]->UpdateUBO();
+          }
+
+          mModelMaterial.UpdateUBO();
+        }
+
+        mName = instantiatedModel->GetMesh()->mName;
+      }
+    }
   }
 
   void Material::Initialize()
   {
     mModel = mOwner->GetComponent<Model>();
+    mFFTWater = mOwner->GetComponent<FFT_WaterSimulation>();
 
     mOwner->YTERegister(Events::ModelChanged, this, &Material::Create);
 

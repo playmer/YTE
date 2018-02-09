@@ -324,11 +324,16 @@ LightingData SampleMaterialsAndTextures(vec2 aUV, inout vec4 aNormal)
 
   // diffuse
   lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  lightData.mDiffTexture  = texture(diffuseSampler, aUV);
+  lightData.mDiffTexture  = texture(diffuseSampler, aUV) * lightData.mDiffMat;
+
+  if (lightData.mDiffTexture.w <= 0.001f)
+  {
+    discard;
+  }
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
-  lightData.mSpecTexture = texture(specularSampler, aUV);
+  lightData.mSpecTexture = texture(specularSampler, aUV) * lightData.mSpecMat;
 
   // normal
   if (ModelMaterial.mUsesNormalTexture + SubmeshMaterial.mUsesNormalTexture > 0)
@@ -401,10 +406,18 @@ void main()
   if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
   else if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
   else
   {

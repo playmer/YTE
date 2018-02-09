@@ -35,6 +35,7 @@
 #include "YTE/Graphics/Skybox.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Graphics/SpriteText.hpp"
+#include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
@@ -96,6 +97,7 @@ namespace YTE
     helper.CreateComponentFactory<ParticleEmitter>();
     helper.CreateComponentFactory<Skybox>();
     helper.CreateComponentFactory<Animator>();
+    helper.CreateComponentFactory<FFT_WaterSimulation>();
     helper.CreateComponentFactory<TempDiffuseColoringComponent>();
 
     //helper.CreateComponentFactory<Collider>();

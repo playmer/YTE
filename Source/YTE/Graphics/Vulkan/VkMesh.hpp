@@ -129,6 +129,9 @@ namespace YTE
     void RemoveOffset(VkInstantiatedModel *aModel);
     void RequestOffset(VkInstantiatedModel *aModel);
 
+    virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices) override;
+    virtual void UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
+
     u32 GetOffset(VkInstantiatedModel *aModel)
     {
       return mInstanceManager.GetIndex(aModel);

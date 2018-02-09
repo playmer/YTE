@@ -175,7 +175,7 @@ namespace YTE
     , mTargetObject(nullptr)
     , mFieldOfViewY(glm::radians(45.0f))
     , mNearPlane(0.1f)
-    , mFarPlane(256.0f)
+    , mFarPlane(9999.9f)
     , mZoom(5.0f)
     , mZoomMin(5.0f)
     , mZoomMax(75.0f)
@@ -255,11 +255,21 @@ namespace YTE
     // projection matrix (since its an easy calculation, Ill leave it here for now, but
     // it really doesn't need to happen every view update
     view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
-                                              width / height,
+    
+                                          width / height,
                                               mNearPlane,
                                               mFarPlane);
 
-    view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
+
+
+    // matrix does perspective divide and flips vulkan y axis
+    const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
+                         0.0f, -1.0f, 0.0f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 1.0f);
+
+   view.mProjectionMatrix = clip * view.mProjectionMatrix;
+    //view.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
 
     switch (mType)
     {

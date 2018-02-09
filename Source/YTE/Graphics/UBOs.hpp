@@ -47,6 +47,39 @@ namespace YTE
 
   struct UBOMaterial
   {
+    UBOMaterial(glm::vec4 aDiffuse,
+                glm::vec4 aAmbient,
+                glm::vec4 aSpecular,
+                glm::vec4 aEmissive,
+                glm::vec4 aTransparent,
+                glm::vec4 aReflective,
+                float aOpacity,
+                float aShininess,
+                float aShininessStrength,
+                float aReflectivity,
+                float aReflectiveIndex,
+                float aBumpScaling)
+      : mDiffuse(aDiffuse)
+      , mAmbient(aAmbient)
+      , mSpecular(aSpecular)
+      , mEmissive(aEmissive)
+      , mTransparent(aTransparent)
+      , mReflective(aReflective)
+      , mOpacity(aOpacity)
+      , mShininess(aShininess)
+      , mShininessStrength(aShininessStrength)
+      , mReflectivity(aReflectivity)
+      , mReflectiveIndex(aReflectiveIndex)
+      , mBumpScaling(aBumpScaling)
+    {
+
+    }
+
+    UBOMaterial()
+    {
+
+    }
+    
     glm::vec4 mDiffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 mAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 mSpecular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);

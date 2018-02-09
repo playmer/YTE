@@ -117,6 +117,7 @@ namespace YTE
     void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
 
     VkMesh* CreateMesh(std::string &aFilename);
+    void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
 
     Mesh* CreateSimpleMesh(std::string &aName,
                            std::vector<Submesh> &aSubmeshes,
