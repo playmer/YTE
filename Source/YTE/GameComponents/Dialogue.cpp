@@ -23,6 +23,7 @@ namespace YTE
   Dialogue::Dialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mSprite(nullptr)
+    , mActive(false)
   {
     YTEUnusedArgument(aProperties);
   }
@@ -34,6 +35,11 @@ namespace YTE
     mOwner->GetEngine()->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
     mOwner->GetEngine()->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
 
+    mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
+    mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
+    mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
+
+
     mSprite = mOwner->FindFirstCompositionByName("DialogueBoi");
     auto transform = mSprite->GetComponent<Transform>();
     transform->SetScale(glm::vec3());
@@ -44,8 +50,27 @@ namespace YTE
 
   }
 
+  void Dialogue::OnCollisionPersist(CollisionPersisted * aEvent)
+  {
+  }
+
+  void Dialogue::OnCollisionStart(CollisionStarted * aEvent)
+  {
+    mActive = true;
+  }
+
+  void Dialogue::OnCollisionEnd(CollisionEnded * aEvent)
+  {
+    mActive = false;
+  }
+
   void Dialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
+    if (!mActive)
+    {
+      return;
+    }
+
     Composition *camera = aEvent->camera;
     
     auto orientation = camera->GetComponent<Orientation>();
@@ -56,11 +81,11 @@ namespace YTE
     
     glm::vec3 pos = camTransform->GetWorldTranslation();
     
-    glm::vec3 spritePos = pos + 10.0f * -forward;
+    glm::vec3 spritePos = pos - 5.0f * forward;
 
     auto spriteTransform = mSprite->GetComponent<Transform>();
-    spriteTransform->SetWorldTranslation(spritePos);
-    spriteTransform->SetScale(glm::vec3(10.0f, 10.0f, 10.0f));
+    spriteTransform->SetTranslation(spritePos);
+    spriteTransform->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
     spriteTransform->SetWorldRotation(camTransform->GetWorldRotation());
 
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
@@ -75,6 +100,11 @@ namespace YTE
 
   void Dialogue::OnConfirm(DialogueConfirm *aEvent)
   {
+    if (!mActive)
+    {
+      return;
+    }
+
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
     if (emitter)
@@ -85,6 +115,11 @@ namespace YTE
 
   void Dialogue::OnExit(DialogueExit *aEvent)
   {
+    if (!mActive)
+    {
+      return;
+    }
+
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
     if (emitter)
@@ -95,7 +130,7 @@ namespace YTE
     mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
 
     auto transform = mSprite->GetComponent<Transform>();
-    transform->SetScale(glm::vec3());
+    transform->SetScale(glm::vec3(0.0f, 0.0f, 0.0f));
   }
 
 }
