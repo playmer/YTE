@@ -51,6 +51,10 @@ namespace YTE
   {
     YTERegisterType(SpriteText);
 
+		std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+
+		SpriteText::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
 		YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
 			.AddAttribute<EditorProperty>()
 			.AddAttribute<Serializable>();
@@ -59,10 +63,16 @@ namespace YTE
 			.AddAttribute<EditorProperty>()
 			.AddAttribute<Serializable>()
 			.AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+		YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
+			.AddAttribute<EditorProperty>()
+			.AddAttribute<Serializable>();
   }
 
   SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties) : Component(aOwner, aSpace), mConstructing(true)
   {
+		mFontSize = 1.f;
+
     DeserializeByType(aProperties, this, GetStaticType());
 
     mConstructing = false;
@@ -98,7 +108,6 @@ namespace YTE
 			return;
 		}
 
-			// @@@TODO(Isaac): Have a way to update a single mesh
 		std::string meshName = "__SpriteText";
 		meshName += mOwner->GetGUID().ToString();
 
@@ -108,7 +117,7 @@ namespace YTE
 		u32 lastIndex = 0;
 		float offsetX = 0, offsetY = 0;
 
-		float sizeFactor = 1.0f / mFontInfo.mSize;
+		float sizeFactor = mFontSize / mFontInfo.mSize;
 
 		for (auto c : mText)
 		{
@@ -189,6 +198,7 @@ namespace YTE
 
 	void SpriteText::PrepareFont()
 	{
+			// Build the font atlas
 		std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
 		std::ifstream file(pathName, std::ios::binary | std::ios::ate);
 
@@ -202,7 +212,7 @@ namespace YTE
 		file.close();
 
 		auto atlasData = std::make_unique<unsigned char[]>(mFontInfo.mAtlasWidth * mFontInfo.mAtlasHeight);
-	  mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
+		mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
 
 		stbtt_pack_context context;
 		if (!stbtt_PackBegin(&context, atlasData.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 0, 1, nullptr))
@@ -214,13 +224,20 @@ namespace YTE
 
 		stbtt_PackEnd(&context);
 
+			// If the font texture does not already exist on disk, save it to disk for lookup
 		size_t extensionPos = mFontName.size() - 4;
-		mTextureName = mFontName;
-		mTextureName.replace(extensionPos, 4, ".png");
+		std::string texName = mFontName;
+		texName.replace(extensionPos, 4, ".png");
 
 		filesystem::path outPath = Path::GetGamePath().String();
-		outPath = outPath.parent_path() / L"Textures/Originals" / mTextureName;
+		outPath = outPath.parent_path() / "Textures/Originals" / texName;
 
-		stbi_write_png(outPath.string().c_str(), 512, 512, 1, atlasData.get(), 512);
+		if (!filesystem::exists(outPath))
+		{
+			stbi_write_png(outPath.string().c_str(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 1, atlasData.get(), mFontInfo.mAtlasWidth);
+		}
+
+			// Set our mTextureName (used to confirm we have a texture to read into)
+		mTextureName = texName;
 	}
 }

@@ -149,23 +149,23 @@ layout (location = 0) out vec4 outFragColor;
 // Entry Point of Shader
 void main()
 {
-  vec4 texColor = texture(diffuseSampler, inTextureCoordinates);
-
-  if (texColor != vec4(0.0f, 0.0f, 0.0f, 1.0f))
+  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
   {
-    if (SubmeshMaterial.mIsEditorObject > 0)
+      // Interpret the single channel as only an alpha value
+    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x);
+
+    if (outFragColor.w <= 0.001f)
     {
-      outFragColor = texColor;
-    }
-    else
-    {
-      outFragColor = texColor * inDiffuse;
+      discard;
     }
   }
-
   else
   {
-    outFragColor = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x) * inDiffuse;
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }
