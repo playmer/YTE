@@ -14,9 +14,46 @@
 
 namespace YTE
 {
+	static std::vector<std::string> PopulateDropDownList(Component *aComponent)
+	{
+		YTEUnusedArgument(aComponent);
+
+		std::wstring wStrPath = YTE::cWorkingDirectory;
+
+		filesystem::path fsPath = Path::GetGamePath().String();
+
+		filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
+
+		std::vector<std::string> result;
+
+		for (auto & p : filesystem::directory_iterator(finalPath))
+		{
+			std::string str = p.path().filename().generic_string();
+
+			result.push_back(str);
+		}
+
+		return result;
+	}
+
 	YTEDefineType(Button)
 	{
 		YTERegisterType(Button);
+
+		YTEBindProperty(&Button::GetHover, &Button::SetHover, "HoverSprite")
+			.AddAttribute<EditorProperty>()
+			.AddAttribute<Serializable>()
+			.AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+		YTEBindProperty(&Button::GetNeutral, &Button::SetNeutral, "NeutralSprite")
+			.AddAttribute<EditorProperty>()
+			.AddAttribute<Serializable>()
+			.AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+		YTEBindProperty(&Button::GetActivated, &Button::SetActivated, "ActivatedSprite")
+			.AddAttribute<EditorProperty>()
+			.AddAttribute<Serializable>()
+			.AddAttribute<DropDownStrings>(PopulateDropDownList);
 	}
 
 	Button::Button(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
@@ -30,15 +67,32 @@ namespace YTE
 	{
 		mOwner->YTERegister("MenuElementHover", this, &Button::OnButtonHover);
 		mOwner->YTERegister("MenuElementTrigger", this, &Button::OnButtonTrigger);
+		mOwner->YTERegister("MenuElementDeHover", this, &Button::OnButtonDeHover);
+
+		mCurrentSprite = mOwner->GetComponent<Sprite>();
 	}
 
 	void Button::OnButtonHover(MenuElementHover* aEvent)
 	{
-		std::cout << "Hovering over button: " << mOwner->GetName() << std::endl;
+		if (mCurrentSprite != nullptr && !mHoverSpriteName.empty())
+		{
+			mCurrentSprite->SetTexture(mHoverSpriteName);
+		}
 	}
 
 	void Button::OnButtonTrigger(MenuElementTrigger* aEvent)
 	{
-		std::cout << "Activating button: " << mOwner->GetName() << std::endl;
+		if (mCurrentSprite != nullptr && !mActivatedSpriteName.empty())
+		{
+			mCurrentSprite->SetTexture(mActivatedSpriteName);
+		}
+	}
+
+	void Button::OnButtonDeHover(MenuElementDeHover* aEvent)
+	{
+		if (mCurrentSprite != nullptr && !mNeutralSpriteName.empty())
+		{
+			mCurrentSprite->SetTexture(mNeutralSpriteName);
+		}
 	}
 }

@@ -21,6 +21,12 @@ namespace YTE
     void Initialize() override;
     void Update(LogicUpdate *aEvent);
 
+    bool mActive;
+
+    void OnCollisionPersist(CollisionPersisted *aEvent);
+    void OnCollisionStart(CollisionStarted *aEvent);
+    void OnCollisionEnd(CollisionEnded *aEvent);
+
   private:
 
     void OnDialogueStart(RequestDialogueStart *aEvent);

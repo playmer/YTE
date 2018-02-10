@@ -33,6 +33,12 @@ namespace YTE
 		YTEDeclareType(MenuElementTrigger);
 	};
 
+	class MenuElementDeHover : public Event
+	{
+	public:
+		YTEDeclareType(MenuElementDeHover);
+	};
+
   class MenuController : public Component
   {
 	public:
@@ -42,52 +48,24 @@ namespace YTE
 		void Initialize() override;
 
 		// PROPERTIES /////////////////////////////////////////
-		int GetNumMenuElements() { return mNumMenuElements; }
+		///////////////////////////////////////////////////////
 
-		void SetNumMenuElements(int& aNumElements)
-		{
-			mNumMenuElements = aNumElements;
-		}
-
-		std::string GetFirstMenuElementName() 
-		{ 
-      return mElementOneName;
-		}
-
-		std::string GetSecondMenuElementName() 
-		{ 
-      return mElementTwoName;
-		}
-
-		void SetFirstMenuElementName(std::string& aElementName)
-		{
-      mElementOneName = aElementName;
-			mMenuElements[0] = mSpace->FindFirstCompositionByName(aElementName);
-		}
-
-		void SetSecondMenuElementName(std::string& aElementName)
-		{
-      mElementTwoName = aElementName;
-			mMenuElements[1] = mSpace->FindFirstCompositionByName(aElementName);
-		}
-
-		////////////////////////////////////////////////////////
-
-    void OnXboxStickEvent(XboxStickEvent* aEvent);
+    void OnXboxFlickEvent(XboxFlickEvent* aEvent);
     void OnXboxButtonPress(XboxButtonEvent* aEvent);
+		void OnXboxButtonRelease(XboxButtonEvent* aEvent);
 
 	private:
 		XboxController* mGamePad;
 
-		int mNumMenuElements;
-		Composition* mMenuElements[2];
-		int mCurrMenuElement;
+		Transform* mMyTransform;
+		glm::vec3 mViewScale;
 
-    std::string mElementOneName;
-    std::string mElementTwoName;
+		int mCurrMenuElement;
+		int mNumElements;
+		YTE::CompositionMap* mMenuElements;
 
 		bool mIsDisplayed;
 
 		bool mConstructing;
   };
-} // End YTE namespace
+}

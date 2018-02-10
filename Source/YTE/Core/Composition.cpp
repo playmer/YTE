@@ -814,6 +814,8 @@ namespace YTE
       return;
     }
 
+    mOwner = aNewParent;
+
     if (aNewParent == nullptr)
     {
       aNewParent = mSpace;

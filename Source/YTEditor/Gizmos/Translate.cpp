@@ -55,12 +55,12 @@ namespace YTEditor
     // get the transform of the currently selected object
     YTE::Transform *transform = aObj->GetComponent<YTE::Transform>();
 
-    glm::vec3 pos = transform->GetWorldTranslation();
+    glm::vec3 pos = transform->GetTranslation();
     glm::vec3 newPos = pos + change;
 
-    transform->SetWorldTranslation(newPos);
+    transform->SetTranslation(newPos);
 
     YTE::Transform *gizmoTransform = mOwner->GetOwner()->GetComponent<YTE::Transform>();
-    gizmoTransform->SetWorldTranslation(newPos);
+    gizmoTransform->SetWorldTranslation(transform->GetWorldTranslation());
   }
 }

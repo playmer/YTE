@@ -310,7 +310,6 @@ namespace YTEditor
     glm::vec3 pos = objTransform->GetWorldTranslation();
     gizTransform->SetWorldTranslation(pos);
 
-
   }
 
   void Gizmo::RefreshAxesInPhysicsHandler()

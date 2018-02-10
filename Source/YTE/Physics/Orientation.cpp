@@ -43,20 +43,15 @@ namespace YTE
     : Component(aOwner, aSpace)
   {
     DeserializeByType(aProperties, this, GetStaticType());
-
-    const glm::vec3 forwardReset(0, 0, -1);
-    const glm::vec3 rightReset(1, 0, 0);
-    const glm::vec3 upReset(0, 1, 0);
   };
 
   void Orientation::Initialize()
   {
     mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
 
-    const glm::vec3 forwardReset(0, 0, -1);
-    const glm::vec3 rightReset(1, 0, 0);
+    const glm::vec3 forwardReset(0, 0, 1);
+    const glm::vec3 rightReset(-1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
-
 
     auto transform = mOwner->GetComponent<Transform>();
 
@@ -71,8 +66,8 @@ namespace YTE
   {
     //std::cout << "Orientation Rotation Change\n";
 
-    const glm::vec3 forwardReset{ 0, 0, -1 };
-    const glm::vec3 rightReset{1, 0, 0};
+    const glm::vec3 forwardReset{ 0, 0, 1 };
+    const glm::vec3 rightReset{-1, 0, 0};
     const glm::vec3 upReset{0, 1, 0};
 
     glm::quat rotation = aEvent->WorldRotation;

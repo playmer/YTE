@@ -69,7 +69,23 @@ namespace YTE
 				mFontName = aFont;
 
 				PrepareFont();
+
+				if (!mConstructing)
+					CreateSpriteText();
 			}
+		}
+
+		float GetFontSize()
+		{
+			return mFontSize * 10.f;
+		}
+
+		void SetFontSize(float& aFontSize)
+		{
+			mFontSize = aFontSize / 10.f;
+
+			if (!mConstructing)
+				CreateSpriteText();
 		}
 		////////////////////////////////////////////////////////
 
@@ -85,6 +101,7 @@ namespace YTE
 		std::string mText;
 		std::string mFontName;
 		std::string mTextureName;
+		float mFontSize;
 
 		Font mFontInfo;
 
