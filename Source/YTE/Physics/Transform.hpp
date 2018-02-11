@@ -139,6 +139,16 @@ namespace YTE
     void ParentRotationChanged(TransformChanged *aEvent);
     void ParentObjectChanged(ParentChanged *aEvent);
 
+    void SetInformPhysics(bool aInformPhysics)
+    {
+      mInformPhysics = aInformPhysics;
+    }
+
+    bool GetInformPhysics()
+    {
+      return mInformPhysics;
+    }
+
   private:
     glm::vec3 GetAccumulatedParentTranslation();
     glm::vec3 GetAccumulatedParentScale();
@@ -148,9 +158,9 @@ namespace YTE
     void SetInternalScale(const glm::vec3 &aParentScale, const glm::vec3 &aLocalScale);
     void SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation);
 
-    void InformPhysicsOfChange(const std::string &aEvent,
-                               glm::quat aLocalRotationDifference = glm::quat{},
-                               glm::quat aWorldRotationDifference = glm::quat{});
+    void SendTransformEvents(const std::string &aEvent,
+                             glm::quat aLocalRotationDifference = glm::quat{},
+                             glm::quat aWorldRotationDifference = glm::quat{});
 
     glm::vec3 mTranslation;
     glm::vec3 mScale;
@@ -159,6 +169,8 @@ namespace YTE
     glm::vec3 mWorldTranslation;
     glm::vec3 mWorldScale;
     glm::quat mWorldRotation;
+
+    bool mInformPhysics;
   };
 }
 
