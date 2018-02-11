@@ -52,11 +52,11 @@ namespace YTE
 
     // If the motionstate is changing the transform, we don't need the transform to come back
     // and inform Bullet of changes.
-    //auto informOriginal = mTransform->GetInformPhysics();
-    //mTransform->SetInformPhysics(false);
+    auto informOriginal = mTransform->GetInformPhysics();
+    mTransform->SetInformPhysics(false);
     mTransform->SetWorldTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
     mTransform->SetWorldRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
-    //mTransform->SetInformPhysics(informOriginal);
+    mTransform->SetInformPhysics(informOriginal);
   }
 
   YTEDefineType(Transform)
@@ -439,16 +439,16 @@ namespace YTE
                                       glm::quat aLocalRotationDifference,
                                       glm::quat aWorldRotationDifference)
   {
-    //if (mInformPhysics)
-    //{
+    if (mInformPhysics)
+    {
       // TODO: Inform physics of scale change.
       auto rigidBody = mOwner->GetComponent<RigidBody>();
-
+    
       if (rigidBody != nullptr)
       {
         rigidBody->SetPhysicsTransform(mTranslation, mRotation);
       }
-    //}
+    }
 
     TransformChanged newTransform;
     newTransform.Position = mTranslation;
