@@ -8,6 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
 
+#include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
@@ -20,6 +21,7 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -75,6 +77,7 @@ namespace YTE
     helper.CreateComponentFactory<WWiseListener>();
     helper.CreateComponentFactory<WWiseView>();
 
+    helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
 
     helper.CreateComponentFactory<AudioTest>();
@@ -83,6 +86,7 @@ namespace YTE
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
 		helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
 		helper.CreateComponentFactory<Button>();

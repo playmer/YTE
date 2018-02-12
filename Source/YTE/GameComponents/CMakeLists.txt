@@ -6,6 +6,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.cpp
     ${CMAKE_CURRENT_LIST_DIR}/CameraController.cpp
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Button.cpp
 	${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
@@ -18,6 +19,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
     ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
     ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Button.hpp
 	${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp

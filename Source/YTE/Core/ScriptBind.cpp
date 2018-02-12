@@ -8,6 +8,7 @@
 /******************************************************************************/
 #include "YTE/Core/ScriptBind.hpp"
 
+#include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -25,6 +26,7 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -77,6 +79,7 @@ namespace YTE
 {
   void InitializeYTETypes()
   {
+    InitializeType<ActionManager>();
     InitializeType<Component>();
     InitializeType<ComponentSystem>();
     InitializeType<Composition>();
@@ -93,6 +96,7 @@ namespace YTE
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();
 		InitializeType<MenuController>();
+    InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
 		InitializeType<Button>();
     InitializeType<Zone>();
