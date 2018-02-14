@@ -612,8 +612,6 @@ namespace YTE
 
       if (nullptr != dependencies)
       {
-        auto &types = dependencies->mTypes;
-
         for (auto &orTypes : dependencies->mTypes)
         {
           for (auto orType : orTypes)

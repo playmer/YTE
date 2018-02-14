@@ -274,6 +274,22 @@ namespace YTE
     SetInternalRotation(parentRotation, aLocalRotation);
   }
 
+
+  void Transform::Rotate(glm::vec3 aAxis, float aAngle)
+  {
+    auto rotation = YTE::AroundAxis(aAxis, aAngle);
+
+    SetRotation(mRotation * rotation);
+  }
+
+
+  void Transform::RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint)
+  {
+    YTEUnusedArgument(aAxis);
+    YTEUnusedArgument(aAngle);
+    YTEUnusedArgument(aPoint);
+  }
+
   ////////////////////////////////////////////////////////////////////////////
   // World Setters
   ////////////////////////////////////////////////////////////////////////////

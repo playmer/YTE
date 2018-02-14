@@ -109,6 +109,7 @@ namespace YTE
 /******************************************************************************/
     void BoatController::DockBoat(BoatDockEvent *aEvent)
     {
+      YTEUnusedArgument(aEvent);
       if (mCanDock)
       {
         // change input context
@@ -143,7 +144,7 @@ namespace YTE
 
     void BoatController::TurnBoat(BoatTurnEvent *aEvent)
     {
-      if (aEvent->StickDirection == glm::vec2(0,0))
+      if (aEvent->StickDirection == glm::vec2(0, 0))
       {
         mStartedTurning = false;
       }
@@ -158,17 +159,8 @@ namespace YTE
         mStartedTurning = true;
       }
 
-      mRotationAngle -= aEvent->StickDirection.x / 2.0f;
-      if (mRotationAngle > 360.0f)
-      {
-        mRotationAngle = 0.0f;
-      }
-      if (mRotationAngle < 0.0f)
-      {
-        mRotationAngle = 360.0f;
-      }
-
-      mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
+      auto rotationDelta = (aEvent->StickDirection.x / 2.0f) * mOwner->GetEngine()->GetDt();
+      mTransform->Rotate({0, 1, 0 }, rotationDelta);
     }
 
     void BoatController::ChangeSail(SailStateChanged *aEvent)
@@ -204,9 +196,9 @@ namespace YTE
 
       glm::vec3 vel = mRigidBody->GetVelocity();
 
-      mSoundSystem->SetRTPC("Sailing_Volume", vel.length());
 
-      mCurSpeed = vel.length();
+      mCurSpeed = glm::length(vel);
+      mSoundSystem->SetRTPC("Sailing_Volume", mCurSpeed);
 
       if (mIsSailUp)
       {

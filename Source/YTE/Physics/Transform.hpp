@@ -110,6 +110,9 @@ namespace YTE
     void SetRotation(const glm::vec3& aEulerRot);
     void SetRotation(float aThetaX, float aThetaY, float ThetaZ);
 
+    void Rotate(glm::vec3 aAxis, float aAngle);
+    void RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint);
+
     // WORLD SPACE TRANSFORM INFORMATION
     const glm::vec3& GetWorldTranslation() const;
     void SetWorldTranslation(const glm::vec3& aTrans);

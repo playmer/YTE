@@ -248,6 +248,7 @@ namespace YTE
 
     DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
                 "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
+    YTEUnusedArgument(aFileType);
 
     return toReturn;
   }
