@@ -98,7 +98,7 @@ namespace YTE
     , mScale{1.f, 1.f, 1.f}
     , mWorldTranslation{ 0.f,0.f,0.f }
     , mWorldScale{ 1.f, 1.f, 1.f }
-    , mInformPhysics{false}
+    , mInformPhysics{true}
   {
     DeserializeByType(aProperties, this, GetStaticType());
   };
