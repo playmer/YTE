@@ -19,7 +19,8 @@ struct Light
   vec4 mDirection;
   vec4 mAmbient;
   vec4 mDiffuse;
-  vec4 mSpecular;
+  vec3 mSpecular;
+  float mIntensity;
   vec2 mSpotLightConeAngles;    // (inner, outer)
   uint mLightType;  // 0 = none, 1 = directional, 2 = point, 3 = spot, 4 = area
   // area not in use right now
@@ -194,7 +195,7 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormal);
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
+  vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
 
   // ambient
   vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat / 10.0f;
@@ -224,7 +225,7 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormal);
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
+  vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
 
   // attenuation
   float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
@@ -254,7 +255,7 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
   // specular
   vec4 reflectVec = reflect(-lightVec, aLightData.mNormal);
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
-  vec4 specularColor = aLight.mSpecular * aLightData.mSpecTexture * specContribution;
+  vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
 
   // attenuation
   float att = min(1.0f / (Illumination.mFogCoefficients.x +

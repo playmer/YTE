@@ -262,6 +262,7 @@ namespace YTE
       {
         return mInstantiatedHeightmap[i].get();
       }
+      return nullptr;
     }
 
   private:

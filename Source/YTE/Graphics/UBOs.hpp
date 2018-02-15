@@ -111,7 +111,8 @@ namespace YTE
     glm::vec4 mDirection = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 mAmbient = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 mDiffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
-    glm::vec4 mSpecular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec3 mSpecular = glm::vec3(0.0f, 0.0f, 0.0f);
+    float mIntensity = 1.0f;
     glm::vec2 mSpotLightConeAngles = glm::vec2(0.0f, 0.0f); // (inner, outer)
     unsigned int mLightType = 0;
     float mSpotLightFalloff = 0.0f;
