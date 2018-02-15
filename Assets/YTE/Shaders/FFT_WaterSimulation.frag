@@ -19,7 +19,8 @@ struct Light
   vec4 mDirection;
   vec4 mAmbient;
   vec4 mDiffuse;
-  vec4 mSpecular;
+  vec3 mSpecular;
+  float mIntensity;
   vec2 mSpotLightConeAngles;    // (inner, outer)
   uint mLightType;  // 0 = none, 1 = directional, 2 = point, 3 = spot, 4 = area
   // area not in use right now

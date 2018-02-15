@@ -51,6 +51,7 @@ namespace YTE
     void SetLightType(std::string aLightType);
     void SetSpotLightFalloff(float& aFalloff);
     void SetActive(bool aValue);
+    void SetIntensity(float& aItensity);
 
     glm::vec3 GetPosition() const;
     glm::vec3 GetDirection() const;
@@ -61,6 +62,7 @@ namespace YTE
     std::string GetLightType() const;
     float GetSpotLightFalloff() const;
     bool GetActive() const;
+    float GetIntensity() const;
 
 
 

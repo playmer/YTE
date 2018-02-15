@@ -64,7 +64,7 @@ namespace YTE
 
     void SetSpecular(const glm::vec3& aColor)
     {
-      mLightUBOData.mSpecular = glm::vec4(aColor, 1.0f);
+      mLightUBOData.mSpecular = aColor;
       mDataChanged = true;
     }
 
@@ -89,6 +89,12 @@ namespace YTE
     void SetActive(const bool aValue)
     {
       mLightUBOData.mActive = aValue ? 10.0f : 0.0f;
+      mDataChanged = true;
+    }
+
+    void SetIntensity(const float aValue)
+    {
+      mLightUBOData.mIntensity = aValue;
       mDataChanged = true;
     }
 
@@ -141,6 +147,11 @@ namespace YTE
     bool GetActive()
     {
       return mLightUBOData.mActive;
+    }
+
+    float GetIntensity()
+    {
+      return mLightUBOData.mIntensity;
     }
 
 

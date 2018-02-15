@@ -55,6 +55,10 @@ namespace YTE
     YTEBindProperty(&Light::GetActive, &Light::SetActive, "Is Active")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Light::GetIntensity, &Light::SetIntensity, "Intensity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
 
@@ -235,7 +239,7 @@ namespace YTE
     }
     else
     {
-      mLightTemp.mSpecular = glm::vec4(aColor, 1.0f);
+      mLightTemp.mSpecular = aColor;
       mUseTemp = true;
     }
   }
@@ -322,6 +326,22 @@ namespace YTE
       mUseTemp = true;
     }
   }
+
+
+  void Light::SetIntensity(float& aItensity)
+  {
+    if (mInstantiatedLight)
+    {
+      mInstantiatedLight->SetIntensity(aItensity);
+    }
+    else
+    {
+      mLightTemp.mIntensity = aItensity;
+      mUseTemp = true;
+    }
+
+  }
+
 
   glm::vec3 Light::GetPosition() const
   {
@@ -444,6 +464,16 @@ namespace YTE
       return mInstantiatedLight->GetActive();
     }
     return false;
+  }
+
+
+  float Light::GetIntensity() const
+  {
+    if (mInstantiatedLight)
+    {
+      return mInstantiatedLight->GetIntensity();
+    }
+    return 1.0f;
   }
 
 
