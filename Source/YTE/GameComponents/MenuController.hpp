@@ -57,7 +57,8 @@ namespace YTE
     void OnXboxButtonPress(XboxButtonEvent* aEvent);
 		void OnXboxButtonRelease(XboxButtonEvent* aEvent);
 
-    void OnMenuStart(MenuStart* aEvent);
+    void OnMenuStart(MenuStart *aEvent);
+    void OnMenuExit(MenuExit *aEvent);
 
 	private:
 		XboxController* mGamePad;

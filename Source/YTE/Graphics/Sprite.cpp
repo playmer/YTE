@@ -40,6 +40,7 @@ namespace YTE
   YTEDefineType(Sprite)
   {
     YTERegisterType(Sprite);
+    GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&Sprite::GetTexture, &Sprite::SetTexture, "Texture")
       .AddAttribute<EditorProperty>()

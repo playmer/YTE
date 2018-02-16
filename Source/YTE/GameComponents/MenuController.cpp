@@ -45,7 +45,11 @@ namespace YTE
 		//mGamePad->YTERegister(Events::XboxStickFlicked, this, &MenuController::OnXboxFlickEvent);
 		//mGamePad->YTERegister(Events::XboxButtonPress, this, &MenuController::OnXboxButtonPress);
 		//mGamePad->YTERegister(Events::XboxButtonRelease, this, &MenuController::OnXboxButtonRelease);
-    mOwner->GetEngine()->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+    
+    auto engine = mOwner->GetEngine();
+
+    engine->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+    engine->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
 	
 		mMenuElements = mOwner->GetCompositions();
 		mNumElements = static_cast<int>(mMenuElements->size());
@@ -55,10 +59,10 @@ namespace YTE
 		mMyTransform->SetScale(0.f, 0.f, 0.f);
 	}
 
-  void MenuController::OnMenuStart(MenuStart* aEvent)
+  void MenuController::OnMenuStart(MenuStart *aEvent)
   {
       // Check that we are the correct menu to be opened
-    if (mOwner->GetName().c_str() == aEvent->mMenuName)
+    if (mOwner->GetName().c_str() == aEvent->MenuName)
     {
       auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
@@ -71,6 +75,35 @@ namespace YTE
 
       auto currElement = mMenuElements->begin() + mCurrMenuElement;
       currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+
+      mIsDisplayed = true;
+    }
+  }
+
+  void MenuController::OnMenuExit(MenuExit *aEvent)
+  {
+    if (mIsDisplayed)
+    {
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      mMyTransform->SetScale(0.f, 0.f, 0.f);
+      emitter->PlayEvent("UI_Menu_Unpause");
+
+      MenuElementDeHover deHoverEvent;
+
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+      mCurrMenuElement = 0;
+
+      mIsDisplayed = false;
+
+        // Pop up to the owning menu
+      if (!aEvent->ShouldExitAll)
+      {
+          // Opens the parent menu (aka parent of parent button)
+        MenuStart menuStart(mOwner->GetParent()->GetParent()->GetName().c_str());
+        mOwner->GetEngine()->SendEvent(Events::MenuStart, &menuStart);
+      }
     }
   }
 

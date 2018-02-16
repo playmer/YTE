@@ -168,10 +168,10 @@ namespace YTE
         break;
       case Xbox_Buttons::Start:
       {
-        mContext = InputContext::Menu;
-
         MenuStart menuStart(mRootPauseMenuName);
         mOwner->SendEvent(Events::MenuStart, &menuStart);
+
+        mContext = InputContext::Menu;
         break;
       }
       case Xbox_Buttons::LeftShoulder:
@@ -191,7 +191,13 @@ namespace YTE
       switch (aEvent->Button)
       {
       case Xbox_Buttons::Start:
+      {
+        MenuExit menuExit(true);
+        mOwner->SendEvent(Events::MenuExit, &menuExit);
+
+        mContext = InputContext::Sailing;
         break;
+      }
 
       case Xbox_Buttons::Back:
         break;

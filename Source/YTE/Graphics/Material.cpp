@@ -83,6 +83,7 @@ namespace YTE
   YTEDefineType(Material)
   {
     YTERegisterType(Material);
+    GetStaticType()->AddAttribute<RunInEditor>();
 
     GetStaticType()->AddAttribute<EditorHeaderList>(&Material::SubmeshMaterialDeserializer,
                                                     &Material::SubmeshMaterialSerializer,

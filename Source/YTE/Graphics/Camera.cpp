@@ -78,7 +78,8 @@ namespace YTE
 
   YTEDefineType(Camera) 
   { 
-    YTERegisterType(Camera); 
+    YTERegisterType(Camera);
+    GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() }, 
                                              { Orientation::GetStaticType() } };

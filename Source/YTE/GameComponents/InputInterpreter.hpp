@@ -95,8 +95,9 @@ namespace YTE
   {
   public:
     YTEDeclareType(MenuStart);
-    MenuStart(std::string aMenuName) { mMenuName = aMenuName; }
-    std::string mMenuName;
+    MenuStart(std::string aMenuName) { MenuName = aMenuName; }
+
+    std::string MenuName;
   };
 
   class MenuConfirm : public Event
@@ -109,6 +110,9 @@ namespace YTE
   {
   public:
     YTEDeclareType(MenuExit);
+    MenuExit(bool aExitAll) { ShouldExitAll = aExitAll;  }
+
+    bool ShouldExitAll;
   };
 
   /////////////////////////////////////////////////////////////////////////////////////

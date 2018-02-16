@@ -21,6 +21,13 @@ namespace YTE
     Serializable(DocumentedObject *aObject);
   };
 
+  class RunInEditor : public Attribute
+  {
+  public:
+    YTEDeclareType(RunInEditor);
+    RunInEditor(DocumentedObject *) {}
+  };
+
   class EditorProperty : public Attribute
   {
   public:
