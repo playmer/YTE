@@ -254,7 +254,7 @@ namespace YTE
     }
     else
     {
-      mLightTemp.mSpotLightConeAngles = aCones;
+      mLightTemp.mSpotLightConeAngles = glm::radians(aCones);
       mUseTemp = true;
     }
   }
