@@ -13,11 +13,13 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/GameComponents/InputInterpreter.hpp"
+
 #include "YTE/Platform/Gamepad.hpp"
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"
 
-#include "fmt/format.h"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -46,6 +48,7 @@ namespace YTE
     MenuController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     
 		void Initialize() override;
+    // void CloseMenu();
 
 		// PROPERTIES /////////////////////////////////////////
 		///////////////////////////////////////////////////////
@@ -53,6 +56,8 @@ namespace YTE
     void OnXboxFlickEvent(XboxFlickEvent* aEvent);
     void OnXboxButtonPress(XboxButtonEvent* aEvent);
 		void OnXboxButtonRelease(XboxButtonEvent* aEvent);
+
+    void OnMenuStart(MenuStart* aEvent);
 
 	private:
 		XboxController* mGamePad;

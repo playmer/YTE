@@ -42,9 +42,10 @@ namespace YTE
 	{
 		mGamePad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
 
-		mGamePad->YTERegister(Events::XboxStickFlicked, this, &MenuController::OnXboxFlickEvent);
-		mGamePad->YTERegister(Events::XboxButtonPress, this, &MenuController::OnXboxButtonPress);
-		mGamePad->YTERegister(Events::XboxButtonRelease, this, &MenuController::OnXboxButtonRelease);
+		//mGamePad->YTERegister(Events::XboxStickFlicked, this, &MenuController::OnXboxFlickEvent);
+		//mGamePad->YTERegister(Events::XboxButtonPress, this, &MenuController::OnXboxButtonPress);
+		//mGamePad->YTERegister(Events::XboxButtonRelease, this, &MenuController::OnXboxButtonRelease);
+    mOwner->GetEngine()->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
 	
 		mMenuElements = mOwner->GetCompositions();
 		mNumElements = static_cast<int>(mMenuElements->size());
@@ -53,6 +54,25 @@ namespace YTE
 		//mViewScale = mMyTransform->GetScale();
 		mMyTransform->SetScale(0.f, 0.f, 0.f);
 	}
+
+  void MenuController::OnMenuStart(MenuStart* aEvent)
+  {
+      // Check that we are the correct menu to be opened
+    if (mOwner->GetName().c_str() == aEvent->mMenuName)
+    {
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      mMyTransform->SetScale(-16.5, 9.5f, 1.f);
+      emitter->PlayEvent("UI_Menu_Pause");
+
+      mCurrMenuElement = 0;
+
+      MenuElementHover hoverEvent;
+
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+    }
+  }
 
 	void MenuController::OnXboxFlickEvent(XboxFlickEvent* aEvent)
 	{
