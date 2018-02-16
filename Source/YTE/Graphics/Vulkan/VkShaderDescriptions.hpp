@@ -20,10 +20,11 @@ namespace YTE
   class VkShaderDescriptions
   {
   public:
-    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
+    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8, size_t aNumberOfSamplers = 0)
     {
       mBindings.reserve(aNumberOfBindings);
       mAttributes.reserve(aNumberOfAttributes);
+      mSamplers.reserve(aNumberOfSamplers);
     }
 
     template <typename T>
@@ -70,6 +71,11 @@ namespace YTE
       mVertexOffset = 0;
     }
 
+    void AddSampler(std::string aSampler)
+    {
+      mSamplers.emplace_back(aSampler);
+    }
+
 
     template <typename T>
     void AddBuffer(std::string_view aName, 
@@ -105,6 +111,16 @@ namespace YTE
       return mAttributes.size();
     }
 
+    std::string* SamplerData()
+    {
+      return mSamplers.data();
+    }
+
+    size_t SamplerSize()
+    {
+      return mSamplers.size();
+    }
+
     std::vector<vk::VertexInputBindingDescription>& Bindings()
     {
       return mBindings;
@@ -113,6 +129,11 @@ namespace YTE
     std::vector<vk::VertexInputAttributeDescription>& Attributes()
     {
       return mAttributes;
+    }
+
+    std::vector<std::string>& Samplers()
+    {
+      return mSamplers;
     }
 
 
@@ -154,6 +175,7 @@ namespace YTE
     // Vertex Input Data
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
+    std::vector<std::string> mSamplers;
     std::vector<std::string> mLines;
     u32 mBinding = 0;
     u32 mVertexOffset = 0;

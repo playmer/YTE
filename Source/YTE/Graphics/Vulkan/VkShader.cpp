@@ -2,11 +2,14 @@
 // Author: Andrew Griffin
 // YTE - Graphics - Vulkan
 ///////////////////
+
 #include "fmt/format.h"
 
 #include "YTE/Core/AssetLoader.hpp"
+#include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderCompiler.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
@@ -18,18 +21,12 @@ namespace YTE
     YTERegisterType(VkShader);
   }
 
-  VkShader::VkShader(std::string &aName,
-                     VkRenderedSurface *aSurface,
-                     std::shared_ptr<vkhlf::PipelineLayout> aLayout,
-                     VkShaderDescriptions &aDescriptions,
-                     bool aCullBackfaces)
-    : Shader(aName)
-    , mSurface(aSurface)
-    , mPipelineLayout(aLayout)
-    , mDescriptions(aDescriptions)
-    , mCullBackFaces(aCullBackfaces)
+  VkShader::VkShader(VkCreatePipelineDataSet& aInfo, ViewData* aView)
+    : Shader(aInfo.mName)
+    , mSurface(aInfo.mSurface)
+    , mView(aView)
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
+    Load(aInfo);
   }
 
   VkShader::~VkShader()
@@ -37,32 +34,42 @@ namespace YTE
   }
 
 
-  void VkShader::Load()
+  VkCreatePipelineDataSet VkShader::CreateInfo(std::string &aName,
+                                               VkRenderedSurface *aSurface,
+                                               std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+                                               VkShaderDescriptions &aDescriptions,
+                                               bool aReload)
   {
-    auto device = mSurface->GetDevice();
+    auto device = aSurface->GetDevice();
 
-    auto vertex = mShaderSetName + ".vert";
-    auto fragment = mShaderSetName + ".frag";
+    auto vertex = aName + ".vert";
+    auto fragment = aName + ".frag";
 
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
     auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
 
-    auto lines = mDescriptions.GetLines();
+    auto lines = aDescriptions.GetLines();
 
-    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines);
-    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines);
+    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
+    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, false);
 
     if (false == vertexData.mValid || false == fragmentData.mValid)
     {
-      auto str = fmt::format("Vertex Shader {}:\n {}\nFragment Shader {}:\n {}\n", 
+      auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}", 
                              vertexFile, 
                              vertexData.mReason,
                              fragmentFile, 
                              fragmentData.mReason);
 
-      std::cout << str;
-      return;
+      //std::cout << str;
+      aSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
+        "Shader: {} Failed to Load! Errors Follow:\n############################################################\n{}\n############################################################",
+        aName,
+        str));
+
+      VkCreatePipelineDataSet ret(aName, str);
+      return ret;
     }
 
     auto vertexModule = device->createShaderModule(vertexData.mData);
@@ -72,34 +79,45 @@ namespace YTE
     // Initialize Pipeline
     std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
 
-    vkhlf::PipelineShaderStageCreateInfo vertexStage(vk::ShaderStageFlagBits::eVertex,
-                                                     vertexModule,
-                                                     "main");
-    vkhlf::PipelineShaderStageCreateInfo fragmentStage(vk::ShaderStageFlagBits::eFragment,
-                                                       fragmentModule,
-                                                       "main");
+    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> vertexStage =
+      std::make_shared<vkhlf::PipelineShaderStageCreateInfo>(vk::ShaderStageFlagBits::eVertex,
+                                                             vertexModule,
+                                                             "main");
+    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> fragmentStage =
+      std::make_shared<vkhlf::PipelineShaderStageCreateInfo>(vk::ShaderStageFlagBits::eFragment,
+                                                             fragmentModule,
+                                                             "main");
 
-    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(mDescriptions.Bindings(),
-                                                          mDescriptions.Attributes());
+    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(aDescriptions.Bindings(),
+                                                          aDescriptions.Attributes());
     vk::PipelineInputAssemblyStateCreateInfo assembly({},
                                                       vk::PrimitiveTopology::eTriangleList,
                                                       VK_FALSE);
 
     // One dummy viewport and scissor, as dynamic state sets them.
     vkhlf::PipelineViewportStateCreateInfo viewport({ {} }, { {} });
-    vk::PipelineRasterizationStateCreateInfo rasterization({},
-                                                           false,
-                                                           false,
-                                                           vk::PolygonMode::eFill,
-                                                           mCullBackFaces ? 
-                                                             vk::CullModeFlagBits::eBack : 
-                                                             vk::CullModeFlagBits::eNone,
-                                                           vk::FrontFace::eCounterClockwise,
-                                                           false,
-                                                           0.0f,
-                                                           0.0f,
-                                                           0.0f,
-                                                           1.0f);
+    vk::PipelineRasterizationStateCreateInfo rasterizationNoCull({},
+                                                                 false,
+                                                                 false,
+                                                                 vk::PolygonMode::eFill,
+                                                                 vk::CullModeFlagBits::eNone,
+                                                                 vk::FrontFace::eCounterClockwise,
+                                                                 false,
+                                                                 0.0f,
+                                                                 0.0f,
+                                                                 0.0f,
+                                                                 1.0f);
+    vk::PipelineRasterizationStateCreateInfo rasterizationCullBack({},
+                                                                   false,
+                                                                   false,
+                                                                   vk::PolygonMode::eFill,
+                                                                   vk::CullModeFlagBits::eBack,
+                                                                   vk::FrontFace::eCounterClockwise,
+                                                                   false,
+                                                                   0.0f,
+                                                                   0.0f,
+                                                                   0.0f,
+                                                                   1.0f);
 
     vkhlf::PipelineMultisampleStateCreateInfo multisample(vk::SampleCountFlagBits::e1,
                                                           false,
@@ -187,60 +205,94 @@ namespace YTE
     vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
                                                     vk::DynamicState::eScissor });
 
-    mShader = device->createGraphicsPipeline(pipelineCache,
-                                             {},
-                                             { vertexStage, fragmentStage },
-                                             vertexInput,
-                                             assembly,
-                                             nullptr,
-                                             viewport,
-                                             rasterization,
-                                             multisample,
-                                             enableDepthStencil,
-                                             noColorBlend,
-                                             dynamic,
-                                             mPipelineLayout,
-                                             mSurface->GetRenderPass());
-    mAdditiveBlendShader = device->createGraphicsPipeline(pipelineCache,
-                                                          {},
-                                                          { vertexStage, fragmentStage },
-                                                          vertexInput,
-                                                          assembly,
-                                                          nullptr,
-                                                          viewport,
-                                                          rasterization,
-                                                          multisample,
-                                                          disableDepthStencil,
-                                                          additiveColorBlend,
-                                                          dynamic,
-                                                          mPipelineLayout,
-                                                          mSurface->GetRenderPass());
-    mAlphaBlendShader = device->createGraphicsPipeline(pipelineCache,
-                                                       {},
-                                                       { vertexStage, fragmentStage },
-                                                       vertexInput,
-                                                       assembly,
-                                                       nullptr,
-                                                       viewport,
-                                                       rasterization,
-                                                       multisample,
-                                                       disableDepthStencil,
-                                                       alphaColorBlend,
-                                                       dynamic,
-                                                       mPipelineLayout,
-                                                       mSurface->GetRenderPass());
+    if (aReload)
+    {
+      aSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("\t-> {} Reloaded Successfully!",
+                                                                              aName));
+    }
+    else
+    {
+      aSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("Shader: {} Loaded Successfully!",
+                                                                              aName));
+    }
+
+    return VkCreatePipelineDataSet(pipelineCache,
+                                   {},
+                                   vertexStage,
+                                   fragmentStage,
+                                   vertexInput,
+                                   assembly,
+                                   nullptr,
+                                   viewport,
+                                   rasterizationNoCull,
+                                   rasterizationCullBack,
+                                   multisample,
+                                   enableDepthStencil,
+                                   disableDepthStencil,
+                                   noColorBlend,
+                                   additiveColorBlend,
+                                   dynamic,
+                                   aLayout,
+                                   aName,
+                                   "",
+                                   aSurface,
+                                   aDescriptions,
+                                   true);
   }
 
-  void VkShader::Reload()
+
+  void VkShader::Load(VkCreatePipelineDataSet& aInfo)
   {
-    Load();
+    mShader = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                            aInfo.mFlags,
+                                                            { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                            aInfo.mVertexInput,
+                                                            aInfo.mAssembly,
+                                                            aInfo.mTessalationState,
+                                                            aInfo.mViewport,
+                                                            aInfo.mRasterizationCullBack,
+                                                            aInfo.mMultiSample,
+                                                            aInfo.mEnableDepthStencil,
+                                                            aInfo.mNoColorBlend,
+                                                            aInfo.mDynamicState,
+                                                            aInfo.mPipelineLayout,
+                                                            mView->mRenderTarget->GetRenderPass());
+
+    mShaderNoCull = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                                  aInfo.mFlags,
+                                                                  { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                                  aInfo.mVertexInput,
+                                                                  aInfo.mAssembly,
+                                                                  aInfo.mTessalationState,
+                                                                  aInfo.mViewport,
+                                                                  aInfo.mRasterizationNoCull,
+                                                                  aInfo.mMultiSample,
+                                                                  aInfo.mEnableDepthStencil,
+                                                                  aInfo.mNoColorBlend,
+                                                                  aInfo.mDynamicState,
+                                                                  aInfo.mPipelineLayout,
+                                                                  mView->mRenderTarget->GetRenderPass());
+                       
+
+    mAdditiveBlendShader = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                                         aInfo.mFlags,
+                                                                         { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                                         aInfo.mVertexInput,
+                                                                         aInfo.mAssembly,
+                                                                         aInfo.mTessalationState,
+                                                                         aInfo.mViewport,
+                                                                         aInfo.mRasterizationNoCull,
+                                                                         aInfo.mMultiSample,
+                                                                         aInfo.mDisableDepthStencil,
+                                                                         aInfo.mAdditiveColorBlend,
+                                                                         aInfo.mDynamicState,
+                                                                         aInfo.mPipelineLayout,
+                                                                         mView->mRenderTarget->GetRenderPass());
   }
 
-  void VkShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
-  {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkShader::LoadToVulkan);
-    YTEUnusedArgument(aEvent);
 
-    Load();
+  void VkShader::Reload(VkCreatePipelineDataSet& aInfo)
+  {
+    Load(aInfo);
   }
 }

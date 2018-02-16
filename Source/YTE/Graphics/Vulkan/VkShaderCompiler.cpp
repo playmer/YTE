@@ -21,12 +21,21 @@ namespace YTE
 
   SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits stage, 
                            std::string const &aFile,
-                           std::string &aDefines)
+                           std::string &aDefines,
+                           bool aFilenameIsShaderText)
   {
     static StaticGLSLCompiler compiler;
 
     std::string shaderText;
-    ReadFileToString(aFile, shaderText);
+
+    if (aFilenameIsShaderText)
+    {
+      shaderText = aFile;
+    }
+    else
+    {
+      ReadFileToString(aFile, shaderText);
+    }
 
     TBuiltInResource  resource;
 

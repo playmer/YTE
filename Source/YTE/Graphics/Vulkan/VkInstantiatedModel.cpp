@@ -89,6 +89,8 @@ namespace YTE
     // create descriptor sets
     for (auto [submesh, i] : enumerate(mesh->mSubmeshes))
     {
+      submesh->second->CreateShader(mView);
+
       auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
                                               vk::BufferUsageFlagBits::eTransferDst |
                                               vk::BufferUsageFlagBits::eUniformBuffer,

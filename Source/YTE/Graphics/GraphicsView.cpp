@@ -6,6 +6,34 @@
 
 namespace YTE
 {
+  static std::vector<std::string> PopulateDrawerTypeDropDownList(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
+
+    std::vector<std::string> result
+    {
+      "DefaultDrawer",
+      "GameForwardDrawer"
+    };
+    return result;
+  }
+
+  static std::vector<std::string> PopulateCombinationTypeDropDownList(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
+
+    std::vector<std::string> result
+    {
+      "DefaultCombination",
+      "AlphaBlend",
+      "AdditiveBlend",
+      "Opaque",
+      "MultiplicativeBlend",
+      "DoNotInclude"
+    };
+    return result;
+  }
+
   YTEDefineType(GraphicsView)
   {
     YTERegisterType(GraphicsView);
@@ -25,6 +53,15 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
+
+    YTEBindProperty(&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType, "DrawerType")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDrawerTypeDropDownList);
+    YTEBindProperty(&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType, "DrawerCombination")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateCombinationTypeDropDownList);
   }
 
   GraphicsView::GraphicsView(Composition *aOwner, 
@@ -37,6 +74,8 @@ namespace YTE
     , mConstructing(true)
     , mOrder(0.0f)
     , mInitialized(false)
+    , mDrawerCombination(YTEDrawerTypeCombination::DefaultCombination)
+    , mDrawerType(YTEDrawerTypes::DefaultDrawer)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -63,7 +102,7 @@ namespace YTE
       return;
     }
 
-    mRenderer->RegisterView(this);
+    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
 
     auto engine = mSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -145,9 +184,137 @@ namespace YTE
   {
     if (false == mConstructing)
     {
-      mRenderer->ViewOrderChanged(this, mOrder, aOrder);
+      mRenderer->ViewOrderChanged(this, aOrder);
     }
 
     mOrder = aOrder;
+  }
+
+  std::string GraphicsView::GetDrawerCombinationType()
+  {
+    if (mDrawerCombination == YTEDrawerTypeCombination::AdditiveBlend)
+    {
+      return "AdditiveBlend";
+    }
+    else if (mDrawerCombination == YTEDrawerTypeCombination::AlphaBlend)
+    {
+      return "AlphaBlend";
+    }
+    else if (mDrawerCombination == YTEDrawerTypeCombination::Opaque)
+    {
+      return "Opaque";
+    }
+    else if (mDrawerCombination == YTEDrawerTypeCombination::MultiplicativeBlend)
+    {
+      return "MultiplicativeBlend";
+    }
+    else if (mDrawerCombination == YTEDrawerTypeCombination::DefaultCombination)
+    {
+      return "DefaultCombination";
+    }
+    else if (mDrawerCombination == YTEDrawerTypeCombination::DoNotInclude)
+    {
+      return "DoNotInclude";
+    }
+    else
+    {
+      return "DefaultCombination";
+    }
+  }
+
+  std::string GraphicsView::GetDrawerType()
+  {
+    if (mDrawerType == YTEDrawerTypes::GameForwardDrawer)
+    {
+      return "GameForwardDrawer";
+    }
+    else if (mDrawerType == YTEDrawerTypes::DefaultDrawer)
+    {
+      return "DefaultDrawer";
+    }
+    else
+    {
+      return "DefaultDrawer";
+    }
+  }
+
+  void GraphicsView::SetDrawerCombinationType(std::string aCombination)
+  {
+    YTEDrawerTypeCombination dc;
+
+    if (false == (aCombination != "AdditiveBlend"))
+    {
+      dc = YTEDrawerTypeCombination::AdditiveBlend;
+    }
+    else if (false == (aCombination != "AlphaBlend"))
+    {
+      dc = YTEDrawerTypeCombination::AlphaBlend;
+    }
+    else if (false == (aCombination != "Opaque"))
+    {
+      dc = YTEDrawerTypeCombination::Opaque;
+    }
+    else if (false == (aCombination != "MultiplicativeBlend"))
+    {
+      dc = YTEDrawerTypeCombination::MultiplicativeBlend;
+    }
+    else if (false == (aCombination != "DefaultCombination"))
+    {
+      dc = YTEDrawerTypeCombination::DefaultCombination;
+    }
+    else if (false == (aCombination != "DoNotInclude"))
+    {
+      dc = YTEDrawerTypeCombination::DoNotInclude;
+    }
+    else
+    {
+      dc = YTEDrawerTypeCombination::AlphaBlend;
+    }
+
+    if (dc == mDrawerCombination)
+    {
+      return;
+    }
+    else
+    {
+      mDrawerCombination = dc;
+    }
+
+    if (mConstructing == false)
+    {
+      mRenderer->SetViewCombinationType(this, mDrawerCombination);
+    }
+  }
+
+  void GraphicsView::SetDrawerType(std::string aType)
+  {
+    YTEDrawerTypes dt;
+
+    if (false == (aType != "GameForwardDrawer"))
+    {
+      dt = YTEDrawerTypes::GameForwardDrawer;
+    }
+    else if (false == (aType != "DefaultDrawer"))
+    {
+      dt = YTEDrawerTypes::GameForwardDrawer;
+    }
+    else
+    {
+      dt = YTEDrawerTypes::GameForwardDrawer;
+    }
+
+    if (dt == mDrawerType)
+    {
+      return;
+    }
+    else
+    {
+      mDrawerType = dt;
+    }
+
+    if (mConstructing == false)
+    {
+      mRenderer->SetViewDrawingType(this, mDrawerType, mDrawerCombination);
+    }
   }
 }

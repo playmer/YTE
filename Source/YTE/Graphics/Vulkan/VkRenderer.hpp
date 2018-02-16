@@ -48,8 +48,11 @@ namespace YTE
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
+    void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination) override;
+    void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination) override;
+    void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination) override;
     void DeregisterView(GraphicsView *aView) override;
-    void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder) override;
+    void ViewOrderChanged(GraphicsView *aView, float aNewOrder) override;
 
     /////////////////////////////////
     // Getter / Setter

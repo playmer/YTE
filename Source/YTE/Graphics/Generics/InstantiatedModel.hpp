@@ -73,8 +73,6 @@ namespace YTE
       YTEUnusedArgument(aUBO);
     }
 
-    void SetBackfaceCulling(bool aCulling);
-    
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
@@ -95,7 +93,7 @@ namespace YTE
     }
 
     bool mUseAdditiveBlending = false;
-    bool mUseAlphaBlending = false;
+    bool mBackFaceCull = true;
 
   protected:
     Mesh *mMesh;

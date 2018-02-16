@@ -276,7 +276,6 @@ namespace YTE
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 
-    mInstantiatedSprite->mUseAlphaBlending = true;
     mInstantiatedSprite->mUseAdditiveBlending = true;
 
     CreateTransform();

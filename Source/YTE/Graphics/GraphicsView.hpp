@@ -11,6 +11,22 @@
 
 namespace YTE
 {
+  enum class YTEDrawerTypes
+  {
+    DefaultDrawer,
+    GameForwardDrawer
+  };
+
+  enum class YTEDrawerTypeCombination
+  {
+    DoNotInclude,
+    DefaultCombination,
+    AlphaBlend,
+    AdditiveBlend,
+    Opaque,
+    MultiplicativeBlend
+  };
+
   class GraphicsView : public Component
   {
   public:
@@ -47,8 +63,15 @@ namespace YTE
 
     void KeyPressed(KeyboardEvent *aUpdate);
 
+    std::string GetDrawerCombinationType();
+    std::string GetDrawerType();
+    void SetDrawerCombinationType(std::string aCombination);
+    void SetDrawerType(std::string aType);
+
   private:
     Camera *mLastCamera;
+    YTEDrawerTypeCombination mDrawerCombination;
+    YTEDrawerTypes mDrawerType;
     Window *mWindow;
     Renderer *mRenderer;
     std::string mWindowName;

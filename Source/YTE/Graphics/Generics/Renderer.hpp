@@ -13,6 +13,7 @@
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -48,8 +49,11 @@ namespace YTE
 
     virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);
+    virtual void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
+    virtual void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
+    virtual void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination);
     virtual void DeregisterView(GraphicsView *aView);
-    virtual void ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder);
+    virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
   };
 }
 

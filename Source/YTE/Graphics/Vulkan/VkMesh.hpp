@@ -13,6 +13,7 @@
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 
 #include "YTE/StandardLibrary/Utilities.hpp"
 
@@ -36,6 +37,7 @@ namespace YTE
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
+    void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
     SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
                                            std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
@@ -56,7 +58,7 @@ namespace YTE
     VkTexture *mSpecularTexture;
     VkTexture *mNormalTexture;
 
-    VkShader *mShader;
+    VkShaderDescriptions mDescriptions;
     VkRenderedSurface *mSurface;
     
     VkMesh *mMesh;
@@ -145,9 +147,7 @@ namespace YTE
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
-    void RecreateShader() override;
-
-    std::unordered_multimap<VkShader*, std::unique_ptr<VkSubmesh>> mSubmeshes;
+    std::unordered_multimap<std::string, std::unique_ptr<VkSubmesh>> mSubmeshes;
     InstanceManager mInstanceManager;
     VkRenderedSurface *mSurface;
   };

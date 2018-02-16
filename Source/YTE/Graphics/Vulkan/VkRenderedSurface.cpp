@@ -8,6 +8,7 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
@@ -15,6 +16,7 @@
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderToScreen.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
 
@@ -45,6 +47,7 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
+    mConstructing = true;
     auto internals = mRenderer->GetVkInternals();
 
     auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
@@ -79,75 +82,20 @@ namespace YTE
 
     mGraphicsQueue = mDevice->getQueue(family , 0);
 
-    // Attachment Descriptions
-    vk::AttachmentDescription colorAttachment{{},
-                                              mColorFormat,
-                                              vk::SampleCountFlagBits::e1,
-                                              //vk::AttachmentLoadOp::eLoad,
-                                              vk::AttachmentLoadOp::eClear,
-                                              vk::AttachmentStoreOp::eStore, // color
-                                              vk::AttachmentLoadOp::eDontCare,
-                                              vk::AttachmentStoreOp::eDontCare, // stencil
-                                              vk::ImageLayout::eUndefined,
-                                              vk::ImageLayout::ePresentSrcKHR };
-
-    vk::AttachmentDescription depthAttachment{{},
-                                              mDepthFormat,
-                                              vk::SampleCountFlagBits::e1,
-                                              vk::AttachmentLoadOp::eClear,
-                                              vk::AttachmentStoreOp::eStore, // depth
-                                              vk::AttachmentLoadOp::eDontCare,
-                                              vk::AttachmentStoreOp::eDontCare, // stencil
-                                              vk::ImageLayout::eUndefined,
-                                              vk::ImageLayout::eDepthStencilAttachmentOptimal };
-
-    std::array<vk::AttachmentDescription, 2> attachmentDescriptions{colorAttachment,
-                                                                    depthAttachment};
-
-    // Subpass Description
-    vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
-    vk::AttachmentReference depthReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
-
-    vk::SubpassDescription subpass{ {},
-                                   vk::PipelineBindPoint::eGraphics,
-                                   0,
-                                   nullptr,
-                                   1,
-                                   &colorReference,
-                                   nullptr,
-                                   &depthReference,
-                                   0,
-                                   nullptr };
-
-    std::array<vk::SubpassDependency, 2> subpassDependencies;
-
-    // Transition from final to initial (VK_SUBPASS_EXTERNAL refers to all commmands executed outside of the actual renderpass)
-    subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependencies[0].dstSubpass = 0;
-    subpassDependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-    subpassDependencies[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-    subpassDependencies[0].srcAccessMask = vk::AccessFlagBits::eMemoryRead;
-    subpassDependencies[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
-                                           vk::AccessFlagBits::eColorAttachmentWrite;
-    subpassDependencies[0].dependencyFlags = vk::DependencyFlagBits::eByRegion;
-
-    // Transition from initial to final
-    subpassDependencies[1].srcSubpass = 0;
-    subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependencies[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-    subpassDependencies[1].dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-    subpassDependencies[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
-                                           vk::AccessFlagBits::eColorAttachmentWrite;
-    subpassDependencies[1].dstAccessMask = vk::AccessFlagBits::eMemoryRead;
-    subpassDependencies[1].dependencyFlags = vk::DependencyFlagBits::eByRegion;
-
-    mRenderPass = mDevice->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
-
-    mRenderCompleteSemaphore = mDevice->createSemaphore();
-
     // create a command pool for command buffer allocation
     mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
                                               family);
+
+    mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
+
+    mRenderCompleteSemaphore = mDevice->createSemaphore();
+    mRenderPass1 = mDevice->createSemaphore();
+    //mRenderPass2 = mDevice->createSemaphore();
+    //mRenderPass3 = mDevice->createSemaphore();
+
+    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
+    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
+    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
 
 
     mAllocators[AllocatorTypes::Mesh] =
@@ -170,6 +118,8 @@ namespace YTE
     mWindow->YTERegister(Events::WindowResize,
                          this,
                          &VkRenderedSurface::ResizeEvent);
+
+    mConstructing = false;
   }
 
 
@@ -179,8 +129,8 @@ namespace YTE
     mViewData.clear();
     mTextures.clear();
     mMeshes.clear();
-    mShaders.clear();
-    mFrameBufferSwapChain.reset();
+    mShaderCreateInfos.clear();
+    mRenderToScreen.reset();
   }
   
   void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
@@ -366,27 +316,49 @@ namespace YTE
   VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
                                             std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                                             VkShaderDescriptions &aDescription,
-                                            bool aCullBackFaces)
+                                            GraphicsView* aView)
   {
-    auto shaderIt = mShaders.find(aShaderSetName);
+    auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
     VkShader *shaderPtr{ nullptr };
+    ViewData* view = &GetViewData(aView);
+    auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
-    if (shaderIt == mShaders.end())
+    // if view doesnt have shader, but surface does
+    if (viewShaderIt == view->mShaders.end() && shaderIt != mShaderCreateInfos.end())
     {
-      auto shader = std::make_unique<VkShader>(aShaderSetName,
-                                               mRenderer->GetSurface(mWindow),
-                                               aPipelineLayout,
-                                               aDescription,
-                                               aCullBackFaces);
+      auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
 
       shaderPtr = shader.get();
 
-      mShaders[aShaderSetName] = std::move(shader);
-      mDataUpdateRequired = true;
+      view->mShaders[aShaderSetName] = std::move(shader);
     }
+    // if surface doesnt have shader
+    else if (shaderIt == mShaderCreateInfos.end())
+    {
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(aShaderSetName,
+                                                          this,
+                                                          aPipelineLayout,
+                                                          aDescription,
+                                                          false);
+                                    
+      DebugObjection(cpds.mValid == false,
+                  fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
+                              aShaderSetName, cpds.mErrorMessage)
+                  .c_str());
+
+      mShaderCreateInfos.emplace(aShaderSetName, cpds);
+
+      auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
+
+      shaderPtr = shader.get();
+
+      view->mShaders[aShaderSetName] = std::move(shader);
+      //mDataUpdateRequired = true; // shades do not load data
+    }
+    // otherwise both have the shader
     else
     {
-      shaderPtr = shaderIt->second.get();
+      shaderPtr = view->mShaders[aShaderSetName].get();
     }
 
     return shaderPtr;
@@ -416,22 +388,24 @@ namespace YTE
 
     auto extent = supportDetails.Capabilities().currentExtent;
 
-    mWindow->SetExtent(extent.height, extent.width);
+    // resize all render targets (and swapchain)
+    mRenderToScreen->Resize(extent);
 
-    DebugObjection((0 > extent.width) || (0 > extent.height),
-                   "Resizing to a negative x or y direction is not possible");
+    if (!mConstructing)
+    {
+      // reset swapchain's references to render target frame buffers
+      std::vector<VkRenderTarget*> rts;
+      for (auto &v : mViewData)
+      {
+        v.second.mRenderTarget->Resize(extent);
+        rts.push_back(v.second.mRenderTarget.get());
+      }
 
-    // TODO (Josh): According to vkhlf, you have to do this little dance,
-    //              unsure why, should find out.
-    mFrameBufferSwapChain.reset();
-    mFrameBufferSwapChain = std::make_unique<vkhlf::FramebufferSwapchain>(mDevice,
-                                                                          mSurface,
-                                                                          mColorFormat,
-                                                                          mDepthFormat,
-                                                                          mRenderPass);
-
-    DebugObjection(mFrameBufferSwapChain->getExtent() != extent,
-                   "Swap chain extent did not update with resize");
+      if (mViewData.size() != 0)
+      {
+        mRenderToScreen->ResetRenderTargets(rts);
+      }
+    }
 
     WindowResize event;
     event.height = extent.height;
@@ -441,12 +415,18 @@ namespace YTE
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)
   {
-    auto key = std::make_pair(aView->GetOrder(), aView);
-    auto it = mViewData.find(key);
+    RegisterView(aView, YTEDrawerTypes::DefaultDrawer, YTEDrawerTypeCombination::DefaultCombination);
+  }
+
+  void VkRenderedSurface::RegisterView(GraphicsView *aView,
+                                       YTEDrawerTypes aDrawerType,
+                                       YTEDrawerTypeCombination aCombination)
+  {
+    auto it = mViewData.find(aView);
 
     if (it == mViewData.end())
     {
-      auto emplaced = mViewData.emplace(key, ViewData());
+      auto emplaced = mViewData.try_emplace(aView);
 
       auto uboAllocator = mAllocators[AllocatorTypes::UniformBufferObject];
       auto buffer = mDevice->createBuffer(sizeof(UBOView),
@@ -465,35 +445,114 @@ namespace YTE
                                            uboAllocator);
 
       auto &view = emplaced.first->second;
+
+      view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mViewUBO = buffer;
       view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
+      view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
+      view.mRenderTarget->SetView(&view);
+      view.mViewOrder = 0.0f; // default
+      view.mRenderTarget->SetOrder(view.mViewOrder);
+    }
+
+    // reset swapchain's references to render target frame buffers
+    std::vector<VkRenderTarget*> rts;
+    for (auto &v : mViewData)
+    {
+      rts.push_back(v.second.mRenderTarget.get());
+    }
+
+    if (mViewData.size() != 0)
+    {
+      mRenderToScreen->SetRenderTargets(rts);
+    }
+  }
+
+  void VkRenderedSurface::SetViewDrawingType(GraphicsView *aView,
+                                                YTEDrawerTypes aDrawerType,
+                                                YTEDrawerTypeCombination aCombination)
+  {
+    auto& view = GetViewData(aView);
+    view.mRenderTarget.reset();
+    view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
+    view.mRenderTarget->SetView(&view);
+
+    // reset swapchain's references to render target frame buffers
+    std::vector<VkRenderTarget*> rts;
+    for (auto &v : mViewData)
+    {
+      rts.push_back(v.second.mRenderTarget.get());
+    }
+
+    if (mViewData.size() != 0)
+    {
+      mRenderToScreen->SetRenderTargets(rts);
+    }
+  }
+
+  void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
+                                                    YTEDrawerTypeCombination aCombination)
+  {
+    auto& view = GetViewData(aView);
+    view.mRenderTarget->SetCombinationType(aCombination);
+    view.mRenderTarget->SetView(&view);
+
+    // reset swapchain's references to render target frame buffers
+    std::vector<VkRenderTarget*> rts;
+    for (auto &v : mViewData)
+    {
+      rts.push_back(v.second.mRenderTarget.get());
+    }
+
+    if (mViewData.size() != 0)
+    {
+      mRenderToScreen->SetRenderTargets(rts);
     }
   }
 
   void VkRenderedSurface::DeregisterView(GraphicsView *aView)
   {
-    auto key = std::make_pair(aView->GetOrder(), aView);
-    auto it = mViewData.find(key);
+    auto it = mViewData.find(aView);
 
     if (it != mViewData.end())
     {
       mViewData.erase(it);
+    }
+
+    // reset swapchain's references to render target frame buffers
+    std::vector<VkRenderTarget*> rts;
+    for (auto &v : mViewData)
+    {
+      rts.push_back(v.second.mRenderTarget.get());
+    }
+
+    if (mViewData.size() != 0)
+    {
+      mRenderToScreen->SetRenderTargets(rts);
     }
   }
 
-  void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
-    auto it = mViewData.find(std::make_pair(aOldOrder, aView));
+    auto it = mViewData.find(aView);
 
     if (it != mViewData.end())
     {
-      mViewData.emplace(std::make_pair(aNewOrder, aView), std::move(it->second));
-      mViewData.erase(it);
+      it->second.mViewOrder = aNewOrder;
+      it->second.mRenderTarget->SetOrder(aNewOrder);
     }
-    else
+
+    // reset swapchain's references to render target frame buffers
+    std::vector<VkRenderTarget*> rts;
+    for (auto &v : mViewData)
     {
-      mViewData.emplace(std::make_pair(aNewOrder, aView), ViewData());
+      rts.push_back(v.second.mRenderTarget.get());
+    }
+    
+    if (mViewData.size() != 0)
+    {
+      mRenderToScreen->SetRenderTargets(rts);
     }
   }
 
@@ -515,30 +574,30 @@ namespace YTE
     YTEProfileFunction(profiler::colors::Red);
     YTEUnusedArgument(aEvent);
     // Get the index of the next available swapchain image:
-    mFrameBufferSwapChain->acquireNextFrame();
+    mRenderToScreen->FrameUpdate();
     RenderFrameForSurface();
   }
 
   void VkRenderedSurface::PresentFrame()
   {
-    //try
-    //{
-    //  mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
-    //}
-    //catch (...)
-    //{
-    //  // create Framebuffer & Swapchain
-    //  WindowResize event;
-    //  event.height = mWindow->GetHeight();
-    //  event.width = mWindow->GetWidth();
-    //  ResizeEvent(&event);
-    //}
+    // wait till rendering is complete
+    mGraphicsQueue->waitIdle();
+    
+    if (mRenderToScreen->PresentFrame(mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    {
+      // create Framebuffer & Swapchain
+      WindowResize event;
+      event.height = mWindow->GetHeight();
+      event.width = mWindow->GetWidth();
+      ResizeEvent(&event);
+    }
   }
 
   void VkRenderedSurface::GraphicsDataUpdate()
   {
     GraphicsDataUpdateVk update;
-    update.mCBO = mCommandPool->allocateCommandBuffer();
+    mGraphicsDataUpdateCBOB->NextCommandBuffer();
+    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
     update.mCBO->begin();
 
@@ -552,17 +611,42 @@ namespace YTE
 
   void VkRenderedSurface::ReloadAllShaders()
   {
-    for (auto &shader : mShaders)
+    GetRenderer()->GetEngine()->Log(LogType::Information, fmt::format("\n\nReloading All Shaders:"));
+
+    // reconstruct
+    for (auto &shader : mShaderCreateInfos)
     {
-      shader.second->Reload();
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(shader.second.mName,
+                                                          this,
+                                                          shader.second.mPipelineLayout,
+                                                          shader.second.mDescriptions,
+                                                          true);
+
+      // failed to compile, error already posted, just reuse the shader
+      if (cpds.mValid)
+      {
+        shader.second = cpds;
+      }
     }
+
+    // reload
+    for (auto &view : mViewData)
+    {
+      for (auto &shader : view.second.mShaders)
+      {
+        shader.second->Reload(mShaderCreateInfos[shader.first]);
+      }
+    }
+
+    mRenderToScreen->ReloadShaders();
   }
 
 
   void VkRenderedSurface::AnimationUpdate()
   {
     GraphicsDataUpdateVk update;
-    update.mCBO = mCommandPool->allocateCommandBuffer();
+    mAnimationUpdateCBOB->NextCommandBuffer();
+    update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
     update.mCBO->begin();
     SendEvent(Events::AnimationUpdateVk, &update);
     update.mCBO->end();
@@ -583,6 +667,13 @@ namespace YTE
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
+    if (mViewData.size() == 0)
+    {
+      return;
+    }
+
+    mGraphicsQueue->waitIdle();
+
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
       ReloadAllShaders();
@@ -594,256 +685,113 @@ namespace YTE
     }
 
     
-    // TODO: (CBO) A cbo is created here, stop this
-    auto buffer = mCommandPool->allocateCommandBuffer();
-
-    bool first = true;
-    buffer->begin();
-
     std::array<float, 4> colorValues;
 
-    if (0 < mViewData.size())
+    vk::ClearDepthStencilValue depthStencil{1.0f, 0};
+
+    auto &extent = mRenderToScreen->GetExtent();
+    mRenderingCBOB->NextCommandBuffer();
+
+
+    // build secondaries
+    for (auto &v : mViewData)
     {
-      auto &view = mViewData.begin()->second;
-      colorValues[0] = view.mClearColor.r;
-      colorValues[1] = view.mClearColor.g;
-      colorValues[2] = view.mClearColor.b;
-      colorValues[3] = view.mClearColor.a;
-    }
-    else
-    {
-      colorValues[0] = 0.44f;
-      colorValues[1] = 0.44f;
-      colorValues[2] = 0.44f;
-      colorValues[3] = 0.44f;
+      v.second.mRenderTarget->RenderFull(extent, mMeshes);
+      v.second.mRenderTarget->MoveToNextEvent();
     }
 
-    vk::ClearValue color{colorValues};
-    vk::ClearDepthStencilValue depthStensil{1.0f, 0};
+    // render to screen;
+    mRenderToScreen->RenderFull(extent);
+    mRenderToScreen->MoveToNextEvent();
 
-    auto &extent = mFrameBufferSwapChain->getExtent();
 
-    buffer->beginRenderPass(mRenderPass,
-                            mFrameBufferSwapChain->getFramebuffer(),
-                            vk::Rect2D({ 0, 0 }, extent),
-                            {color, depthStensil},
-                            vk::SubpassContents::eInline);
 
-    auto width = static_cast<float>(extent.width);
-    auto height = static_cast<float>(extent.height);
+    // build primary
+    auto cbo = mRenderingCBOB->GetCurrentCBO();
+    cbo->begin();
 
-    for (auto [viewData, i] : enumerate(mViewData))
+    // render all first pass render targets
+    // wait on present semaphore for first render
+    for (auto &v : mViewData)
     {
-      vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
-      buffer->setViewport(0, viewport);
+      v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
 
-      vk::Rect2D scissor{ { 0, 0 }, extent };
-      buffer->setScissor(0, scissor);
+      glm::vec4 col = v.second.mClearColor;
 
-      auto &instantiatedModels = viewData->second.mInstantiatedModels;
+      colorValues[0] = col.x;
+      colorValues[1] = col.y;
+      colorValues[2] = col.z;
+      colorValues[3] = col.w;
+      vk::ClearValue color{ colorValues };
 
-      for (auto &shader : mShaders)
-      {
-        auto &pipeline = shader.second->mShader;
+      cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
+                           v.second.mRenderTarget->GetFrameBuffer(),
+                           vk::Rect2D({ 0, 0 }, extent),
+                           { color, depthStencil },
+                           vk::SubpassContents::eSecondaryCommandBuffers);
 
-        buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-        for (auto &mesh : mMeshes)
-        {
-          auto &models = instantiatedModels[mesh.second.get()];
+      v.second.mRenderTarget->ExecuteCommands(cbo);
 
-          // We can early out on this mesh if there are no models that use it.
-          if (models.empty())
-          {
-            continue;
-          }
-
-          // We get the sub meshes that use the current shader, then draw them.
-          auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
-
-          if (mesh.second->GetInstanced())
-          {
-            buffer->bindVertexBuffer(1,
-                                     mesh.second->mInstanceManager.InstanceBuffer(),
-                                     0);
-          }
-
-          for (auto it = range.first; it != range.second; ++it)
-          {
-            auto &submesh = it->second;
-
-            buffer->bindVertexBuffer(0,
-                                     submesh->mVertexBuffer,
-                                     0);
-
-            buffer->bindIndexBuffer(submesh->mIndexBuffer,
-                                    0,
-                                    vk::IndexType::eUint32);
-
-
-
-            if (mesh.second->GetInstanced())
-            {
-              auto data = submesh->mPipelineData;
-              buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                         data.mPipelineLayout,
-                                         0,
-                                         data.mDescriptorSet,
-                                         nullptr);
-
-              buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                  1, 
-                                  0, 
-                                  0, 
-                                  0);
-            }
-            else
-            {
-              for (auto &model : models)
-              {
-                if (model->mUseAlphaBlending || model->mUseAdditiveBlending)
-                {
-                  continue;
-                }
-                auto &data = model->mPipelineData[submesh.get()];
-                buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                           data.mPipelineLayout,
-                                           0,
-                                           data.mDescriptorSet,
-                                           nullptr);
-
-                buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                    1, 
-                                    0, 
-                                    0, 
-                                    0);
-              }
-            }
-          }
-        }
-      }
-
-      // pass for additive and alpha
-      for (auto &shader : mShaders)
-      {
-        for (auto &mesh : mMeshes)
-        {
-          auto &models = instantiatedModels[mesh.second.get()];
-
-          // We can early out on this mesh if there are no models that use it.
-          if (models.empty())
-          {
-            continue;
-          }
-
-          // We get the sub meshes that use the current shader, then draw them.
-          auto range = mesh.second->mSubmeshes.equal_range(shader.second.get());
-
-          if (mesh.second->GetInstanced())
-          {
-            buffer->bindVertexBuffer(1,
-              mesh.second->mInstanceManager.InstanceBuffer(),
-              0);
-          }
-
-          for (auto it = range.first; it != range.second; ++it)
-          {
-            auto &submesh = it->second;
-
-            buffer->bindVertexBuffer(0,
-              submesh->mVertexBuffer,
-              0);
-
-            buffer->bindIndexBuffer(submesh->mIndexBuffer,
-              0,
-              vk::IndexType::eUint32);
-
-
-
-            if (mesh.second->GetInstanced())
-            {
-              auto data = submesh->mPipelineData;
-              buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                data.mPipelineLayout,
-                0,
-                data.mDescriptorSet,
-                nullptr);
-
-              buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                1,
-                0,
-                0,
-                0);
-            }
-            else
-            {
-              for (auto &model : models)
-              {
-                if (model->mUseAlphaBlending == false && model->mUseAdditiveBlending == false)
-                {
-                  continue;
-                }
-
-                if (model->mUseAlphaBlending)
-                {
-                  auto &pipeline = shader.second->mAlphaBlendShader;
-
-                  buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-                }
-                else if (model->mUseAdditiveBlending)
-                {
-                  auto &pipeline = shader.second->mAdditiveBlendShader;
-
-                  buffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-                }
-                
-                auto &data = model->mPipelineData[submesh.get()];
-                buffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                  data.mPipelineLayout,
-                  0,
-                  data.mDescriptorSet,
-                  nullptr);
-
-                buffer->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                  1,
-                  0,
-                  0,
-                  0);
-              }
-            }
-          }
-        }
-      }
-
-      if (i + 1 < mViewData.size())
-      {
-        buffer->nextSubpass(vk::SubpassContents::eInline);
-      }
+      cbo->endRenderPass();
     }
 
-    buffer->endRenderPass();
-    buffer->end();
+    colorValues[0] = 1.0f;
+    colorValues[1] = 0.0f;
+    colorValues[2] = 0.0f;
+    colorValues[3] = 1.0f;
+    vk::ClearValue color{ colorValues };
 
-    vkhlf::SubmitInfo submit{{mFrameBufferSwapChain->getPresentSemaphore()},
-                             {vk::PipelineStageFlagBits::eColorAttachmentOutput},
-                             buffer,
-                             mRenderCompleteSemaphore};
+    mRenderToScreen->ExecuteSecondaryEvent(cbo);
 
+    cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
+                         mRenderToScreen->GetFrameBuffer(),
+                         vk::Rect2D({ 0, 0 }, extent),
+                         { color, depthStencil },
+                         vk::SubpassContents::eSecondaryCommandBuffers);
+
+    mRenderToScreen->ExecuteCommands(cbo);
+
+    cbo->endRenderPass();
+    
+    cbo->end();
+
+    // submit
+    vkhlf::SubmitInfo submit{ { mRenderToScreen->GetPresentSemaphore() },
+                              { vk::PipelineStageFlagBits::eColorAttachmentOutput },
+                              cbo,
+                              mRenderCompleteSemaphore };
+    
     mGraphicsQueue->submit(submit);
-    mGraphicsQueue->waitIdle();
+  }
 
-    try
-    {
-      mFrameBufferSwapChain->present(mGraphicsQueue, mRenderCompleteSemaphore);
-    }
-    catch (...)
-    {
-      // create Framebuffer & Swapchain
-      WindowResize event;
-      event.height = mWindow->GetHeight();
-      event.width = mWindow->GetWidth();
-      ResizeEvent(&event);
-    }
 
-    mGraphicsQueue->waitIdle();
+  std::unique_ptr<VkRenderTarget> VkRenderedSurface::CreateRenderTarget(YTEDrawerTypes aDrawerType, 
+                                                                        ViewData *view,
+                                                                        YTEDrawerTypeCombination aCombination)
+  {
+    switch (aDrawerType)
+    {
+      case YTEDrawerTypes::GameForwardDrawer:
+      {
+        return std::move(std::make_unique<VkRTGameForwardDrawer>(this,
+                                                                 mColorFormat,
+                                                                 mDepthFormat,
+                                                                 mSurface,
+                                                                 view->mName,
+                                                                 aCombination));
+        break;
+      }
+      case YTEDrawerTypes::DefaultDrawer:
+      default:
+      {
+        return std::move(std::make_unique<VkRTGameForwardDrawer>(this, 
+                                                                 mColorFormat,
+                                                                 mDepthFormat,
+                                                                 mSurface,
+                                                                 view->mName,
+                                                                 aCombination));
+        break;
+      }
+    }
   }
 }

@@ -191,14 +191,29 @@ namespace YTE
     GetSurface(aView->GetWindow())->RegisterView(aView);
   }
 
+  void VkRenderer::RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  {
+    GetSurface(aView->GetWindow())->RegisterView(aView, aDrawerType, aCombination);
+  }
+
+  void VkRenderer::SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  {
+    GetSurface(aView->GetWindow())->SetViewDrawingType(aView, aDrawerType, aCombination);
+  }
+
+  void VkRenderer::SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination)
+  {
+    GetSurface(aView->GetWindow())->SetViewCombinationType(aView, aCombination);
+  }
+
   void VkRenderer::DeregisterView(GraphicsView *aView)
   {
     GetSurface(aView->GetWindow())->DeregisterView(aView);
   }
 
-  void VkRenderer::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  void VkRenderer::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
-    GetSurface(aView->GetWindow())->ViewOrderChanged(aView, aOldOrder, aNewOrder);
+    GetSurface(aView->GetWindow())->ViewOrderChanged(aView, aNewOrder);
   }
 
   void VkRenderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)

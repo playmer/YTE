@@ -953,8 +953,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::SetGirdSize(int aGridSize)
   {
-    int oldGridSize = mGridSize;
-    YTEUnusedArgument(oldGridSize);
+    //int oldGridSize = mGridSize;
     mGridSize = aGridSize;
 
     //if (mGridSize != 2 && mGridSize != 4 && mGridSize != 8 && mGridSize != 16 && mGridSize != 32 &&

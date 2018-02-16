@@ -124,7 +124,6 @@ namespace YTE
     : mDiffuseTexture(nullptr)
     , mSpecularTexture(nullptr)
     , mNormalTexture(nullptr)
-    , mShader(nullptr)
     , mSurface(aSurface)
     , mMesh(aMesh)
     , mSubmesh(aSubmesh)
@@ -138,7 +137,6 @@ namespace YTE
   {
     // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
-    VkShaderDescriptions descriptions;
 
     auto device = mSurface->GetDevice();
 
@@ -192,7 +190,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
     ++uniformBuffers;
 
     // Animation (Bone Array) Buffer for Vertex shader.
@@ -200,7 +198,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eVertex,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
     ++uniformBuffers;
 
     // Model Material Buffer for Fragment shader.
@@ -208,7 +206,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
     ++uniformBuffers;
     
     // Submesh Material Buffer for Fragment shader.
@@ -216,7 +214,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
     ++uniformBuffers;
 
     // Lights Buffer for Fragment shader.
@@ -224,7 +222,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
     ++uniformBuffers;
 
     // Illumination Buffer for Fragment shader.
@@ -232,7 +230,7 @@ namespace YTE
                        vk::DescriptorType::eUniformBuffer,
                        vk::ShaderStageFlagBits::eFragment,
                        nullptr);
-    descriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
     ++uniformBuffers;
 
 
@@ -246,32 +244,32 @@ namespace YTE
                          vk::DescriptorType::eCombinedImageSampler,
                          vk::ShaderStageFlagBits::eFragment,
                          nullptr);
-      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
+      mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
     }
-    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
+    mDescriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
+    mDescriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
+    mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
+    mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
 
     if (mMesh->GetInstanced())
     {
       // Adding the Instance Vertex information
-      descriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
-      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
-      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
-      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
-      descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
+      mDescriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
+      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
+      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
+      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
+      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
 
       // If we're instanced, we must tell the shaders.
-      descriptions.AddPreludeLine("#define INSTANCING");
+      mDescriptions.AddPreludeLine("#define INSTANCING");
     }
     else
     {
@@ -285,7 +283,7 @@ namespace YTE
       ++uniformBuffers;
 
       // We need to tell the shaders where to find the UBOModel.
-      descriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
+      mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
     }
 
     // Create the descriptor set and pipeline layouts.
@@ -298,23 +296,27 @@ namespace YTE
 
     mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
 
-    auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
+    //auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
+    // 
+    // load shader passing our created pipeline layout
+    //mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
+    //                                 pipelineLayout,
+    //                                 descriptions,
+    //                                 mMesh->GetView());
+  }
 
-    if (nullptr != mShader)
-    {
-      // Update relevant members, then load.
-      mShader->mDescriptions = descriptions;
-      mShader->mPipelineLayout = pipelineLayout;
-      mShader->Load();
-    }
-    else
-    {
-      // load shader passing our created pipeline layout
-      mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
-                                       pipelineLayout,
-                                       descriptions,
-                                       mSubmesh->mCullBackFaces);
-    }
+
+
+  void VkSubmesh::CreateShader(GraphicsView *aView)
+  {
+    auto device = mSurface->GetDevice();
+    auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
+     
+    // load shader passing our created pipeline layout
+    mSurface->CreateShader(mSubmesh->mShaderSetName,
+                           pipelineLayout,
+                           mDescriptions,
+                           aView);
   }
 
 
@@ -449,7 +451,7 @@ namespace YTE
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
       auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
-      mSubmeshes.emplace(submesh->mShader, std::move(submesh));
+      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
@@ -466,7 +468,7 @@ namespace YTE
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
       auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
-      mSubmeshes.emplace(submesh->mShader, std::move(submesh));
+      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
     aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
@@ -497,17 +499,6 @@ namespace YTE
     for (auto &submesh : mSubmeshes)
     {
       submesh.second->LoadToVulkan(aEvent);
-    }
-  }
-
-  void VkMesh::RecreateShader()
-  {
-    for (auto &it : mSubmeshes)
-    {
-      auto &submesh = it.second;
-
-      it.first->mCullBackFaces = submesh->mSubmesh->mCullBackFaces;
-      it.first->Reload();
     }
   }
 
