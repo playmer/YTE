@@ -277,7 +277,7 @@ namespace YTE
     AK::SoundEngine::SetRTPCValue(static_cast<AkRtpcID>(aRTPC), aValue);
   }
 
-  void WWiseSystem::Update(float)
+  void WWiseSystem::Update(double)
   {
     AK::SoundEngine::RenderAudio(true);
   }

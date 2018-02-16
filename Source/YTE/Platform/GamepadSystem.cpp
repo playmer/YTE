@@ -30,7 +30,7 @@ namespace YTE
     }
   }
 
-  void GamepadSystem::Update(float aDt)
+  void GamepadSystem::Update(double aDt)
   {
     UpdateXboxControllers(aDt);
   }

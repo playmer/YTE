@@ -218,7 +218,7 @@ namespace YTE
   }
 
 
-  void Composition::Update(float dt)
+  void Composition::Update(double dt)
   {
     (void)dt;
   }

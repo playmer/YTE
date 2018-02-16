@@ -36,20 +36,20 @@ namespace YTE
     virtual ~Animation();
     void Update(LogicUpdate* aEvent);
   
-    float GetSpeed() const
+    double GetSpeed() const
     {
       return mSpeed;
     }
 
-    void SetSpeed(float aSpeed)
+    void SetSpeed(double aSpeed)
     {
       mSpeed = aSpeed;
     }
 
     std::string mName;
-    float mCurrentAnimationTime;
+    double mCurrentAnimationTime;
     uint32_t mAnimationIndex;
-    float mSpeed;
+    double mSpeed;
     
   private:
     aiScene *mScene;
@@ -57,7 +57,7 @@ namespace YTE
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
-    float mElapsedTime;
+    double mElapsedTime;
 
     void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
     aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);

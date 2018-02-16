@@ -157,7 +157,7 @@ namespace YTE
     YTEUnusedArgument(aEvent);
     // TODO(if collision is fucked): mDynamicsWorld->updateAABBs 
     mDynamicsWorld->updateAabbs();
-    mDynamicsWorld->stepSimulation(aEvent->Dt, 10);
+    mDynamicsWorld->stepSimulation(static_cast<float>(aEvent->Dt), 10);
 
     DispatchCollisionEvents();
   }

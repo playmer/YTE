@@ -148,7 +148,7 @@ namespace YTE
     // Note that a dt value doesnt work, the FFT and DFT translate the sinusoids based on how
     // much time has elapsed, not the delta time
     /*******************/
-    void UpdateTime(float dt);
+    void UpdateTime(double dt);
 
     /*******************/
     // Constructs the initial data states of the variables
@@ -280,8 +280,8 @@ namespace YTE
     glm::vec2 mWindFactor;   
     float mVertexDistanceX;  
     float mVertexDistanceZ;  
-    float mTimeDilationEffect;
-    float mTime;
+    double mTimeDilationEffect;
+    double mTime;
     bool mReset;
     std::vector<UBOModel> mInstancingMatrices;
     std::string mRenderModeStr;

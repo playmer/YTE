@@ -579,7 +579,7 @@ namespace YTE
                     mDrawableVertices[vertex].mHTilde0mkConjugate.y);
 
     // disperse the waves
-    float disp = Dispersion(x, z) * mTime;
+    float disp = static_cast<float>(Dispersion(x, z) * mTime);
 
     // Euler's Formula to get around SimpMath::complex exp
     float cosine = cos(disp);
@@ -943,7 +943,7 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::UpdateTime(float dt)
+  void FFT_WaterSimulation::UpdateTime(double dt)
   {
     mTime += dt * mTimeDilationEffect;
   }

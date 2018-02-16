@@ -27,6 +27,6 @@ namespace YTE
     glm::vec3 mCurrentPosition;
     float mCurrentScale;
     glm::vec3 mCurrentRotation;
-    float mTime;
+    double mTime;
   };
 }

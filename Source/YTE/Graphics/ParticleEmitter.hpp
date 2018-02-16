@@ -23,7 +23,7 @@ namespace YTE
     glm::vec4 mColor;
 
     glm::vec3 mVelocity;
-    float mLife;
+    double mLife;
 
     glm::quat mRotation;
 
@@ -55,11 +55,11 @@ namespace YTE
     glm::vec3 GetVelocityVariance();
     void SetVelocityVariance(glm::vec3 aVelocity);
 
-    float GetLifetime();
-    void SetLifetime(float aLifetime);
+    double GetLifetime();
+    void SetLifetime(double aLifetime);
 
-    float GetLifetimeVariance();
-    void SetLifetimeVariance(float aLifetime);
+    double GetLifetimeVariance();
+    void SetLifetimeVariance(double aLifetime);
 
     glm::vec4 GetColor();
     void SetColor(glm::vec4 aColor);
@@ -96,8 +96,8 @@ namespace YTE
     glm::vec3 mInitVelocity;
     glm::vec3 mVelocityVariance;
     
-    float mLifetime;
-    float mLifetimeVariance;
+    double mLifetime;
+    double mLifetimeVariance;
 
     glm::vec4 mColor;
     glm::vec3 mParticleScale;

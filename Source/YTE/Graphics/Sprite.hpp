@@ -20,6 +20,8 @@ namespace YTE
     void Initialize() override;
     void CreateSprite();
 
+    void Update(LogicUpdate *aUpdate);
+
     std::string GetTexture()
     {
       return mTextureName;
@@ -43,6 +45,56 @@ namespace YTE
 
     void TransformUpdate(TransformChanged *aEvent);
 
+
+    void SetColumns(i32 aColumns)
+    {
+      if (aColumns > 0)
+      {
+        mColumns = aColumns;
+        mFrames = 1;
+      }
+    }
+
+    i32 GetColumns()
+    {
+      return mColumns;
+    }
+
+    void SetRows(i32 aRows)
+    {
+      if (aRows > 0)
+      {
+        mRows = aRows;
+        mFrames = 1;
+      }
+    }
+
+    i32 GetRows()
+    {
+      return mRows;
+    }
+
+    void SetFrames(i32 aFrames)
+    {
+      if (aFrames > 0 && aFrames > (mRows * mColumns))
+      {
+        mFrames = aFrames;
+      }
+    }
+
+    i32 GetFrames()
+    {
+      return mFrames;
+    }
+
+    bool GetAnimating()
+    {
+      return mAnimating;
+    }
+
+
+    void SetAnimating(bool aAnimating);
+
   private:
     Renderer *mRenderer;
     Window *mWindow;
@@ -52,5 +104,12 @@ namespace YTE
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
     bool mConstructing;
+
+    bool mAnimating;
+    i32 mColumns;
+    i32 mRows;
+    i32 mFrames;
+    float mSpeed;
+    size_t mCurrentIndex;
   };
 }

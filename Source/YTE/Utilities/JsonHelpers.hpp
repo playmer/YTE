@@ -37,10 +37,35 @@ namespace YTE
     return 0.0f;
   }
 
+  inline double ValueAsDouble(RSValue *aValue)
+  {
+    if (aValue->IsDouble())
+    {
+      return aValue->GetDouble();
+    }
+    else if (aValue->IsString())
+    {
+      std::string hex = aValue->GetString();
+
+      unsigned long long x = std::stoull(hex, nullptr, 16);
+      return *reinterpret_cast<double*>(&x);
+    }
+
+    return 0.0f;
+  }
+
   inline std::string FloatToString(float aFloat)
   {
     std::ostringstream stm;
-    stm << std::hex << std::uppercase << *reinterpret_cast<unsigned int*>(&aFloat);;
+    stm << std::hex << std::uppercase << *reinterpret_cast<unsigned int*>(&aFloat);
+
+    return stm.str();
+  }
+
+  inline std::string DoubleToString(double aDouble)
+  {
+    std::ostringstream stm;
+    stm << std::hex << std::uppercase << *reinterpret_cast<unsigned long long*>(&aDouble);
 
     return stm.str();
   }
@@ -55,6 +80,20 @@ namespace YTE
   {
     RSValue value;
     auto str = FloatToString(aFloat);
+    value.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
+    return value;
+  }
+
+  inline void DoubleAsValue(RSValue &aValue, double aDouble, RSAllocator &aAllocator)
+  {
+    auto str = DoubleToString(aDouble);
+    aValue.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
+  }
+
+  inline RSValue DoubleAsValue(double aDouble, RSAllocator &aAllocator)
+  {
+    RSValue value;
+    auto str = DoubleToString(aDouble);
     value.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
     return value;
   }

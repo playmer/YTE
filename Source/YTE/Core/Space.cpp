@@ -120,7 +120,7 @@ namespace YTE
   }
 
   // Updates the Space to the current frame.
-  void Space::Update(float aDt)
+  void Space::Update(double aDt)
   {
     if (mLoading)
     {

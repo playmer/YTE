@@ -61,7 +61,7 @@ namespace YTE
 
 
     mUBOAnimationData.mHasAnimation = true;
-    mElapsedTime = 0.0f;
+    mElapsedTime = 0.0;
 
     mSpeed = 1.0f;
   }
@@ -85,8 +85,8 @@ namespace YTE
   void Animation::Update(LogicUpdate* aEvent)
   {
     mElapsedTime += aEvent->Dt * mSpeed;
-    mCurrentAnimationTime = fmodf(static_cast<float>(mElapsedTime * mAnimation->mTicksPerSecond),
-                                  static_cast<float>(mAnimation->mDuration));
+    mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond,
+                                 mAnimation->mDuration);
 
     aiMatrix4x4 identity = aiMatrix4x4();
     ReadAnimation(mScene->mRootNode, identity);
@@ -162,7 +162,7 @@ namespace YTE
       aiVectorKey frame = aNode->mScalingKeys[index];
       aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
 
-      float delta = (mCurrentAnimationTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;
@@ -201,7 +201,7 @@ namespace YTE
       aiQuatKey frame = aNode->mRotationKeys[index];
       aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
 
-      float delta = (mCurrentAnimationTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiQuaternion& start = frame.mValue;
       const aiQuaternion& end = nextFrame.mValue;
@@ -237,7 +237,7 @@ namespace YTE
       aiVectorKey frame = aNode->mPositionKeys[index];
       aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
 
-      float delta = (mCurrentAnimationTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;

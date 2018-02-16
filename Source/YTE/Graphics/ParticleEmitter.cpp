@@ -117,7 +117,7 @@ namespace YTE
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    float dt = GetSpace()->GetEngine()->GetDt();
+    double dt = GetSpace()->GetEngine()->GetDt();
 
     // erase the dead bois
     mParticles.erase(
@@ -128,7 +128,7 @@ namespace YTE
       mParticles.end()
     );
 
-    static float timer = mEmitRate;
+    static double timer = mEmitRate;
 
     // time to make some new particle bois
     if (timer <= 0.0f)
@@ -157,11 +157,11 @@ namespace YTE
       //std::cout << fmt::format("{}\n", particle.mPosition.x);
     
       particle.mLife -= dt;
-      particle.mPosition += particle.mVelocity * dt;
+      particle.mPosition += particle.mVelocity * static_cast<float>(dt);
 
       if (mUseGravity)
       {
-        particle.mPosition.y -= (mLifetime - particle.mLife) * dt;
+        particle.mPosition.y -= static_cast<float>((mLifetime - particle.mLife) * dt);
       }
 
       particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
@@ -212,22 +212,22 @@ namespace YTE
     mVelocityVariance = aVelocity;
   }
 
-  float ParticleEmitter::GetLifetime()
+  double ParticleEmitter::GetLifetime()
   {
     return mLifetime;
   }
 
-  void ParticleEmitter::SetLifetime(float aLifetime)
+  void ParticleEmitter::SetLifetime(double aLifetime)
   {
     mLifetime = aLifetime;
   }
 
-  float ParticleEmitter::GetLifetimeVariance()
+  double ParticleEmitter::GetLifetimeVariance()
   {
     return mLifetimeVariance;
   }
 
-  void ParticleEmitter::SetLifetimeVariance(float aLifetime)
+  void ParticleEmitter::SetLifetimeVariance(double aLifetime)
   {
     mLifetimeVariance = aLifetime;
   }

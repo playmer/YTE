@@ -15,7 +15,7 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 namespace YTE
 {
-  inline void UpdateController(XboxController &aController, DWORD aIndex, float aDt)
+  inline void UpdateController(XboxController &aController, DWORD aIndex, double aDt)
   {
     XINPUT_STATE state;
 
@@ -34,7 +34,7 @@ namespace YTE
     }
   }
 
-  void GamepadSystem::UpdateXboxControllers(float aDt)
+  void GamepadSystem::UpdateXboxControllers(double aDt)
   {
     for (DWORD i = 0; i< XUSER_MAX_COUNT; i++)
     {

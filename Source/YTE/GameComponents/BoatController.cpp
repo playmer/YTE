@@ -159,7 +159,7 @@ namespace YTE
         mStartedTurning = true;
       }
 
-      auto rotationDelta = (aEvent->StickDirection.x / 2.0f) * mOwner->GetEngine()->GetDt();
+      auto rotationDelta = -(aEvent->StickDirection.x / 2.0f) * static_cast<float>(mOwner->GetEngine()->GetDt());
       mTransform->Rotate({0, 1, 0 }, rotationDelta);
     }
 
@@ -185,6 +185,7 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
+      float dt = static_cast<float>(aEvent->Dt);
       /*
       if (mParticleEmitter != NULL)
       {
@@ -196,32 +197,31 @@ namespace YTE
 
       glm::vec3 vel = mRigidBody->GetVelocity();
 
-
       mCurSpeed = glm::length(vel);
       mSoundSystem->SetRTPC("Sailing_Volume", mCurSpeed);
 
       if (mIsSailUp)
       {
         auto gamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(Controller_Id::Xbox_P1);
-
+        
         if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Left))
         {
-          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * dt);
         }
         else if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Right))
         {
-          mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * dt);
         }
         else
         {
-          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * dt);
         }
         
         //if (mCurSpeed < 50.0f)
         //{
-        //  mRigidBody->ApplyImpulse(-1.0f * mOrientation->GetForwardVector() * aEvent->Dt * 5.0f, glm::vec3(0, 0, 0));
+        //  mRigidBody->ApplyImpulse(mOrientation->GetForwardVector() * aEvent->Dt, 
+        //                           mTransform->GetTranslation());
         //}
-        
       }
       else
       {

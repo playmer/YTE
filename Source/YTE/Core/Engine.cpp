@@ -216,7 +216,7 @@ namespace YTE
     mShouldIntialize = false;
     mIsInitialized = true;
 
-    dt = 0.016f;
+    mDt = 0.016;
   }
 
   
@@ -224,34 +224,34 @@ namespace YTE
   void Engine::Update()
   {
     using namespace std::chrono;
-    duration<float> time_span = duration_cast<duration<float>>(high_resolution_clock::now() - mLastFrame);
+    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
-    dt = time_span.count();
+    mDt = time_span.count();
   
     // TODO (Josh): Should this be like it is?
-    if (dt > 0.5)
+    if (mDt > 0.5)
     {
-      dt = 0.016f;
+      mDt = 0.016f;
     }
 
     for (auto &window : mWindows)
     {
-      SetFrameRate(*window.second, dt);
+      SetFrameRate(*window.second, mDt);
       window.second->Update();
     }
     
     LogicUpdate updateEvent;
-    updateEvent.Dt = dt;
+    updateEvent.Dt = mDt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
-    GetComponent<WWiseSystem>()->Update(dt);
+    GetComponent<WWiseSystem>()->Update(mDt);
   
-    mGamepadSystem.Update(dt);
+    mGamepadSystem.Update(mDt);
   
     for (auto &space : mCompositions)
     {
-      space.second->Update(dt);
+      space.second->Update(mDt);
     }
 
     // If we're told to shut down then our windows might be invalidated
@@ -277,7 +277,7 @@ namespace YTE
     ++mFrame;
   }
 
-  void Engine::SetFrameRate(Window &aWindow, float aDt)
+  void Engine::SetFrameRate(Window &aWindow, double aDt)
   {
     static double totalTime = 0.0;
     totalTime += aDt;

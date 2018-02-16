@@ -287,7 +287,7 @@ namespace YTE
     float mRoll;
 
     // Utilities
-    float mDt;
+    double mDt;
     std::string mCameraType;
     bool mConstructing; 
     CameraType mType; 

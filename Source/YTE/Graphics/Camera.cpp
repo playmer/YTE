@@ -453,7 +453,7 @@ namespace YTE
     case CameraType::TargetObject:
     case CameraType::TargetPoint:
     {
-      UpdateZoom(aEvent->ScrollMovement.y * -mScrollSpeed * mDt);  // Zooms in and out
+      UpdateZoom(aEvent->ScrollMovement.y * -mScrollSpeed * static_cast<float>(mDt));  // Zooms in and out
       mChanged = true;
       break;
     }
@@ -461,7 +461,7 @@ namespace YTE
     {
       // modify mZoom directly since this is a movement, not a zooming motion
       // negate movement since scroll in is positive value
-      mZoom = mScrollSpeed * -(aEvent->ScrollMovement.y) * mDt;   // Moves in and out
+      mZoom = mScrollSpeed * -(aEvent->ScrollMovement.y) * static_cast<float>(mDt);   // Moves in and out
       mChanged = true;
       break;
     }
@@ -471,6 +471,8 @@ namespace YTE
   // Handle movement of the mouse. Should be fairly clear by code alone.
   void Camera::MouseMove(MouseMoveEvent *aEvent)
   {
+    auto dt = static_cast<float>(mDt);
+
     // finds the delta of mouse movement from the last frame
     float dx = static_cast<float>(aEvent->WorldCoordinates.x - mMouseInitialPosition.x);
     float dy = static_cast<float>(aEvent->WorldCoordinates.y - mMouseInitialPosition.y);
@@ -491,13 +493,13 @@ namespace YTE
       if (mMouse->IsButtonDown(Mouse_Buttons::Left))
       {
         // Left Mouse does Arc ball rotation
-        UpdateCameraRotation(-dy * mRotateSpeed * mDt, -dx * mRotateSpeed * mDt, 0.0f);
+        UpdateCameraRotation(-dy * mRotateSpeed * dt, -dx * mRotateSpeed * dt, 0.0f);
       }
 
       if (mMouse->IsButtonDown(Mouse_Buttons::Right))
       {
         // Right Mouse does Zoom
-        UpdateZoom(dy * mRotateSpeed * mDt);
+        UpdateZoom(dy * mRotateSpeed * dt);
       }
 
       if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
@@ -506,8 +508,8 @@ namespace YTE
 
         // we change the camera type since we were following an object and we just
         // jumped off to walk on our own
-        mMoveUp = dy * mPanSpeed * mDt;
-        mMoveRight = -dx * mPanSpeed * mDt;
+        mMoveUp = dy * mPanSpeed * dt;
+        mMoveRight = -dx * mPanSpeed * dt;
         mChanged = true;
       }
 
@@ -518,15 +520,15 @@ namespace YTE
       // allows look and move with WASD
       if (mMouse->IsButtonDown(Mouse_Buttons::Right))
       {
-        UpdateCameraRotation(-dy * mRotateSpeed * mDt, -dx * mRotateSpeed * mDt, 0.0f);
+        UpdateCameraRotation(-dy * mRotateSpeed * dt, -dx * mRotateSpeed * dt, 0.0f);
       }
 
       // allows panning
       if (mMouse->IsButtonDown(Mouse_Buttons::Middle))
       {
         // mouse moving up is a negative number, but it should drag the view up, which is translate down
-        mMoveUp = dy * mPanSpeed * mDt;
-        mMoveRight = -dx * mPanSpeed * mDt;
+        mMoveUp = dy * mPanSpeed * dt;
+        mMoveRight = -dx * mPanSpeed * dt;
         mChanged = true;
       }
 
@@ -541,38 +543,40 @@ namespace YTE
 
   void Camera::MousePersist(MouseButtonEvent *aEvent)
   {
+    auto dt = static_cast<float>(mDt);
+
     YTEUnusedArgument(aEvent);
 
     if (CameraType::Flyby == mType && Mouse_Buttons::Right == aEvent->Button)
     {
       if (mKeyboard->IsKeyDown(Keys::W))                                      // forward movement
       {
-        mZoom = -mMoveSpeed * mDt;
+        mZoom = -mMoveSpeed * dt;
         mChanged = true;
       }
       else if (mKeyboard->IsKeyDown(Keys::S))                                 // backward movement
       {
-        mZoom = mMoveSpeed * mDt;
+        mZoom = mMoveSpeed * dt;
         mChanged = true;
       }
       if (mKeyboard->IsKeyDown(Keys::A))                                      // Left Movement
       {
-        mMoveRight = -mMoveSpeed * mDt;
+        mMoveRight = -mMoveSpeed * dt;
         mChanged = true;
       }
       else if (mKeyboard->IsKeyDown(Keys::D))                                 // Right Movement
       {
-        mMoveRight = mMoveSpeed * mDt;
+        mMoveRight = mMoveSpeed * dt;
         mChanged = true;
       }
       if (mKeyboard->IsKeyDown(Keys::Space) || mKeyboard->IsKeyDown(Keys::E)) // Up Movement
       {
-        mMoveUp = mMoveSpeed * mDt;
+        mMoveUp = mMoveSpeed * dt;
         mChanged = true;
       }
       else if (mKeyboard->IsKeyDown(Keys::Control) || mKeyboard->IsKeyDown(Keys::Q)) // Down Movement
       {
-        mMoveUp = -mMoveSpeed * mDt;
+        mMoveUp = -mMoveSpeed * dt;
         mChanged = true;
       }
 

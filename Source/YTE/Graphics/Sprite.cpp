@@ -45,11 +45,32 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+    YTEBindProperty(&Sprite::GetColumns, &Sprite::SetColumns, "Columns")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Sprite::GetRows, &Sprite::SetRows, "Rows")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Sprite::GetFrames, &Sprite::SetFrames, "Frames")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+      
+    YTEBindProperty(&Sprite::GetAnimating, &Sprite::SetAnimating, "Animating")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mConstructing(true)
+    , mAnimating{false}
+    , mColumns{1}
+    , mRows{1}
+    , mSpeed{1.0f}
+    , mCurrentIndex{0}
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -59,6 +80,43 @@ namespace YTE
   Sprite::~Sprite()
   {
 
+  }
+
+  void Sprite::Update(LogicUpdate *aUpdate)
+  {
+    if (mInstantiatedSprite)
+    {
+      aUpdate->Dt;
+
+
+
+      ++mCurrentIndex;
+
+      if (mCurrentIndex > mFrames)
+      {
+        mCurrentIndex = 0;
+      }
+    }
+  }
+
+
+  void Sprite::SetAnimating(bool aAnimating)
+  {
+    if (aAnimating == mAnimating)
+    {
+      return;
+    }
+
+    mAnimating = aAnimating;
+
+    if (aAnimating)
+    {
+      mOwner->YTERegister(Events::LogicUpdate, this, &Sprite::TransformUpdate);
+    }
+    else
+    {
+      mOwner->YTEDeregister(Events::LogicUpdate, this, &Sprite::TransformUpdate);
+    }
   }
 
   void Sprite::Initialize()

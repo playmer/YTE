@@ -70,7 +70,7 @@ namespace YTE
 
     ~Composition();
 
-    virtual void Update(float dt);
+    virtual void Update(double dt);
 
     virtual void NativeInitialize();
     void PhysicsInitialize();

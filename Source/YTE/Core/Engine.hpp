@@ -48,7 +48,7 @@ namespace YTE
   public:
     YTEDeclareType(LogicUpdate);
 
-    float Dt;
+    double Dt;
   };
 
   class BoundTypeChanged : public Event
@@ -99,7 +99,7 @@ namespace YTE
 
     void Recompile();
 
-    void SetFrameRate(Window &aWindow, float aDt);
+    void SetFrameRate(Window &aWindow, double aDt);
 
     Window* GetWindow()
     {
@@ -132,9 +132,9 @@ namespace YTE
       return mEditorMode;
     }
 
-    float GetDt()
+    double GetDt()
     {
-      return dt;
+      return mDt;
     }
 
     size_t GetFrame() { return mFrame; }
@@ -170,7 +170,7 @@ namespace YTE
     std::unordered_map<std::string, Composition*> mCompositionsByGUID;
     std::unordered_map<std::string, Component*> mComponentsByGUID;
 
-    float dt;
+    double mDt;
     size_t mFrame;
   };
 }
