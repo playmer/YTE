@@ -51,7 +51,6 @@ namespace YTE
       if (aColumns > 0)
       {
         mColumns = aColumns;
-        mFrames = 1;
       }
     }
 
@@ -65,7 +64,6 @@ namespace YTE
       if (aRows > 0)
       {
         mRows = aRows;
-        mFrames = 1;
       }
     }
 
@@ -76,10 +74,7 @@ namespace YTE
 
     void SetFrames(i32 aFrames)
     {
-      if (aFrames > 0 && aFrames > (mRows * mColumns))
-      {
-        mFrames = aFrames;
-      }
+      mFrames = aFrames;
     }
 
     i32 GetFrames()
@@ -90,6 +85,16 @@ namespace YTE
     bool GetAnimating()
     {
       return mAnimating;
+    }
+
+    void SetSpeed(float aSpeed)
+    {
+      mSpeed = aSpeed;
+    }
+
+    float GetSpeed()
+    {
+      return mSpeed;
     }
 
 
@@ -110,6 +115,7 @@ namespace YTE
     i32 mRows;
     i32 mFrames;
     float mSpeed;
+    double mTimeAccumulated;
     size_t mCurrentIndex;
   };
 }

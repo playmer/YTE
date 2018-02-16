@@ -57,20 +57,27 @@ namespace YTE
     YTEBindProperty(&Sprite::GetFrames, &Sprite::SetFrames, "Frames")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-      
+
+    YTEBindProperty(&Sprite::GetSpeed, &Sprite::SetSpeed, "Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("How many seconds it will take for the full animation to run.");
+
     YTEBindProperty(&Sprite::GetAnimating, &Sprite::SetAnimating, "Animating")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
 
   Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
-    , mConstructing(true)
-    , mAnimating{false}
-    , mColumns{1}
-    , mRows{1}
-    , mSpeed{1.0f}
-    , mCurrentIndex{0}
+    : Component{ aOwner, aSpace }
+    , mConstructing{ true }
+    , mAnimating{ false }
+    , mColumns{ 1 }
+    , mRows{ 1 }
+    , mFrames{ 1 }
+    , mSpeed{ 1.0f }
+    , mTimeAccumulated{ 0.0 }
+    , mCurrentIndex{ 0 }
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -84,17 +91,36 @@ namespace YTE
 
   void Sprite::Update(LogicUpdate *aUpdate)
   {
+    auto delta = mSpeed / mFrames;
+
     if (mInstantiatedSprite)
     {
-      aUpdate->Dt;
+      mTimeAccumulated += aUpdate->Dt;
 
+      auto xWidth = 1.0f / mColumns;
+      auto yWidth = 1.0f / mRows;
 
+      glm::vec3 uv0 = { 0.0f,   0.0f, 0.0f };
+      glm::vec3 uv1 = { xWidth, 0.0f, 0.0f };
+      glm::vec3 uv2 = { xWidth, yWidth , 0.0f };
+      glm::vec3 uv3 = { 0.0f,   yWidth , 0.0f };
 
-      ++mCurrentIndex;
-
-      if (mCurrentIndex > mFrames)
+      if (mTimeAccumulated > delta)
       {
-        mCurrentIndex = 0;
+        mTimeAccumulated = 0.0;
+        auto column = mCurrentIndex % mColumns;
+        auto row = mCurrentIndex / mColumns;
+
+        
+
+        printf("Row: %d, Column: %d\n", row, column);
+
+        ++mCurrentIndex;
+
+        if (mCurrentIndex > (mFrames - 1))
+        {
+          mCurrentIndex = 0;
+        }
       }
     }
   }
@@ -111,11 +137,11 @@ namespace YTE
 
     if (aAnimating)
     {
-      mOwner->YTERegister(Events::LogicUpdate, this, &Sprite::TransformUpdate);
+      mSpace->YTERegister(Events::LogicUpdate, this, &Sprite::Update);
     }
     else
     {
-      mOwner->YTEDeregister(Events::LogicUpdate, this, &Sprite::TransformUpdate);
+      mSpace->YTEDeregister(Events::LogicUpdate, this, &Sprite::Update);
     }
   }
 
