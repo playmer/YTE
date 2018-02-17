@@ -98,12 +98,7 @@ namespace YTE
       mTimeAccumulated += aUpdate->Dt;
 
       auto xWidth = 1.0f / mColumns;
-      auto yWidth = 1.0f / mRows;
-
-      glm::vec3 uv0 = { 0.0f,   0.0f, 0.0f };
-      glm::vec3 uv1 = { xWidth, 0.0f, 0.0f };
-      glm::vec3 uv2 = { xWidth, yWidth , 0.0f };
-      glm::vec3 uv3 = { 0.0f,   yWidth , 0.0f };
+      auto yHeight = 1.0f / mRows;
 
       if (mTimeAccumulated > delta)
       {
@@ -111,9 +106,35 @@ namespace YTE
         auto column = mCurrentIndex % mColumns;
         auto row = mCurrentIndex / mColumns;
 
-        
+        glm::vec3 uv0 = { 0.0f,   1.0f - yHeight, 0.0f }; // Bottom Left
+        glm::vec3 uv1 = { xWidth, 1.0f - yHeight, 0.0f }; // Bottom Right
+        glm::vec3 uv2 = { xWidth, 1.0f,           0.0f }; // Top Right
+        glm::vec3 uv3 = { 0.0f,   1.0f,           0.0f }; // Top Left
 
         printf("Row: %d, Column: %d\n", row, column);
+        //auto translate = glm::translate(glm::mat4{}, glm::vec3{ xWidth * column, yHeight * row, 0.0f });
+
+        float xTranslate = xWidth * column;
+        float yTranslate = -yHeight * row;
+
+        uv0.x += xTranslate;
+        uv0.y += yTranslate;
+        uv1.x += xTranslate;
+        uv1.y += yTranslate;
+        uv2.x += xTranslate;
+        uv2.y += yTranslate;
+        uv3.x += xTranslate;
+        uv3.y += yTranslate;
+
+        // update the model
+        auto mesh = mInstantiatedSprite->GetMesh();
+
+        mSubmesh.mVertexBuffer[0].mTextureCoordinates = uv0;
+        mSubmesh.mVertexBuffer[1].mTextureCoordinates = uv1;
+        mSubmesh.mVertexBuffer[2].mTextureCoordinates = uv2;
+        mSubmesh.mVertexBuffer[3].mTextureCoordinates = uv3;
+        
+        mesh->UpdateVertices(0, mSubmesh.mVertexBuffer);
 
         ++mCurrentIndex;
 
@@ -201,8 +222,6 @@ namespace YTE
     std::string meshName = "__Sprite";
     meshName += mTextureName;
 
-    Submesh submesh;
-
     Vertex vert0;
     Vertex vert1;
     Vertex vert2;
@@ -217,28 +236,29 @@ namespace YTE
     vert3.mPosition = { -0.5, 0.5, 0.0 };
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
 
-    std::vector<u32> mIndices{
+    mSubmesh.mDiffuseMap = mTextureName;
+    mSubmesh.mDiffuseType = TextureViewType::e2D;
+    mSubmesh.mShaderSetName = "Sprite";
+
+    mSubmesh.mCullBackFaces = false;
+
+    mSubmesh.mVertexBuffer.clear();
+
+    mSubmesh.mVertexBuffer.emplace_back(vert0);
+    mSubmesh.mVertexBuffer.emplace_back(vert1);
+    mSubmesh.mVertexBuffer.emplace_back(vert2);
+    mSubmesh.mVertexBuffer.emplace_back(vert3);
+
+    mSubmesh.mIndexBuffer.clear();
+    mSubmesh.mIndexBuffer = {
       0, 1, 2,
       2, 3, 0
     };
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
-    submesh.mShaderSetName = "Sprite";
+    mSubmesh.mVertexBufferSize = mSubmesh.mVertexBuffer.size() * sizeof(Vertex);
+    mSubmesh.mIndexBufferSize = mSubmesh.mIndexBuffer.size() * sizeof(u32);
 
-    submesh.mCullBackFaces = false;
-
-    submesh.mVertexBuffer.emplace_back(vert0);
-    submesh.mVertexBuffer.emplace_back(vert1);
-    submesh.mVertexBuffer.emplace_back(vert2);
-    submesh.mVertexBuffer.emplace_back(vert3);
-
-    submesh.mIndexBuffer = std::move(mIndices);
-
-    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-    submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
-
-    std::vector<Submesh> submeshes{ submesh };
+    std::vector<Submesh> submeshes{ mSubmesh };
 
     auto view = mSpace->GetComponent<GraphicsView>();
 

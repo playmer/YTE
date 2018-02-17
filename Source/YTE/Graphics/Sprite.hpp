@@ -2,6 +2,7 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
@@ -108,6 +109,7 @@ namespace YTE
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
+    Submesh mSubmesh;
     bool mConstructing;
 
     bool mAnimating;
