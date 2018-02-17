@@ -150,7 +150,7 @@ namespace YTE
 
     for (auto &composition : mCompositions)
     {
-      composition.second->NativeInitialize();
+      composition.second->NativeInitialize(aCheckRunInEditor);
     }
   }
 
@@ -185,7 +185,7 @@ namespace YTE
 
     for (auto &composition : mCompositions)
     {
-      composition.second->PhysicsInitialize();
+      composition.second->PhysicsInitialize(aCheckRunInEditor);
     }
   }
 
@@ -224,7 +224,7 @@ namespace YTE
 
     for (auto &composition : mCompositions)
     {
-      composition.second->Initialize();
+      composition.second->Initialize(aCheckRunInEditor);
     }
 
     mShouldIntialize = false;
