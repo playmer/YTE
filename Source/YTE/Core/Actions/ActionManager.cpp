@@ -7,6 +7,8 @@ namespace YTE
   YTEDefineType(ActionManager)
   {
     YTERegisterType(ActionManager);
+
+    GetStaticType()->AddAttribute<RunInEditor>();
   }
 
   ActionManager::ActionManager(Composition * aOwner, Space * aSpace, RSValue * aProperties)

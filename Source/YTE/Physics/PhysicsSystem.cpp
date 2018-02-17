@@ -42,6 +42,9 @@ namespace YTE
   YTEDefineType(PhysicsSystem)
   {
     YTERegisterType(PhysicsSystem);
+
+    GetStaticType()->AddAttribute<RunInEditor>();
+
     YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
     YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
     YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));

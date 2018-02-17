@@ -139,10 +139,13 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && component.first->GetAttribute<RunInEditor>())
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
       {
-        component.second->NativeInitialize();
+        continue;
       }
+
+      component.second->NativeInitialize();
     }
 
     for (auto &composition : mCompositions)
@@ -171,10 +174,13 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && component.first->GetAttribute<RunInEditor>())
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
       {
-        component.second->PhysicsInitialize();
+        continue;
       }
+     
+      //component.second->PhysicsInitialize();
     }
 
     for (auto &composition : mCompositions)
@@ -207,10 +213,13 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && component.first->GetAttribute<RunInEditor>())
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
       {
-        component.second->Initialize();
+        continue;
       }
+     
+      component.second->Initialize();
     }
 
     for (auto &composition : mCompositions)
@@ -780,12 +789,17 @@ namespace YTE
 
     Component *component = AddComponent(aType, nullptr);
 
-    if (aCheckRunInEditor && aType->GetAttribute<RunInEditor>())
+
+    if (aCheckRunInEditor &&
+        nullptr == aType->GetAttribute<RunInEditor>())
     {
-      component->NativeInitialize();
-      component->PhysicsInitialize();
-      component->Initialize();
+      return component;
     }
+
+    component->NativeInitialize();
+    component->PhysicsInitialize();
+    component->Initialize();
+
     return component;
   }
 
