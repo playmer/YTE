@@ -236,6 +236,17 @@ namespace YTE
     vert3.mPosition = { -0.5, 0.5, 0.0 };
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
 
+    if (mAnimating)
+    {
+      auto xWidth = 1.0f / mColumns;
+      auto yHeight = 1.0f / mRows;
+
+      vert0.mTextureCoordinates = { 0.0f,   1.0f - yHeight, 0.0f };
+      vert1.mTextureCoordinates = { xWidth, 1.0f - yHeight, 0.0f };
+      vert2.mTextureCoordinates = { xWidth, 1.0f,           0.0f };
+      vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
+    }
+
     mSubmesh.mDiffuseMap = mTextureName;
     mSubmesh.mDiffuseType = TextureViewType::e2D;
     mSubmesh.mShaderSetName = "Sprite";

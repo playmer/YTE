@@ -346,7 +346,7 @@ namespace YTEditor
       }
 
       // Store the name and composition pointer in the object browser
-      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get());
+      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
 
       GetObjectBrowser().LoadAllChildObjects(cmp->second.get(), topItem);
     }

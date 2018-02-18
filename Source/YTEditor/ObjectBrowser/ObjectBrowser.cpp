@@ -126,7 +126,8 @@ namespace YTEditor
 
   ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
                                          YTE::Composition *aEngineObj,
-                                         int aIndex)
+                                         int aIndex,
+                                         bool aSetAsCurrent)
   {
     YTE::String name{ aItemName };
 
@@ -148,7 +149,10 @@ namespace YTEditor
     // (object should have no parent objects)
     this->insertTopLevelItem(aIndex, item);
 
-    this->setCurrentItem(item);
+    if (aSetAsCurrent)
+    {
+      this->setCurrentItem(item);
+    }
 
     return item;
   }
@@ -156,7 +160,8 @@ namespace YTEditor
   ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
                                          ObjectItem *aParentObj,
                                          YTE::Composition *aEngineObj,
-                                         int aIndex)
+                                         int aIndex,
+                                         bool aSetAsCurrent)
   {
     YTE::String name{ aItemName };
 
@@ -167,7 +172,10 @@ namespace YTEditor
     // add this object as a child of another tree item
     aParentObj->insertChild(aIndex, item);
 
-    this->setCurrentItem(item);
+    if (aSetAsCurrent)
+    {
+      this->setCurrentItem(item);
+    }
 
     return item;
   }
@@ -451,7 +459,7 @@ namespace YTEditor
 
     for (auto& cmp : *(aParentObj->GetCompositions()))
     {
-      ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get());
+      ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
 
       if (item)
       {

@@ -54,12 +54,14 @@ namespace YTEditor
 
     ObjectItem* AddTreeItem(const char *aItemName,
       YTE::Composition *aEngineObj,
-      int aIndex = 0);
+      int aIndex = 0,
+      bool aSetAsCurrent = true);
 
     ObjectItem* AddTreeItem(const char *aItemName,
       ObjectItem * aParentObj,
       YTE::Composition *aEngineObj,
-      int aIndex = 0);
+      int aIndex = 0,
+      bool aSetAsCurrent = true);
 
     ObjectItem* AddExistingComposition(const char *aCompositionName,
       YTE::Composition *aComposition);
