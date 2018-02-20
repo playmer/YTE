@@ -68,7 +68,11 @@ namespace YTE
     , mCompositionsByGUID()
     , mComponentsByGUID()
   {
-    profiler::startListen();
+    if constexpr (CompilerOptions::Debug())
+    {
+      profiler::startListen();
+    }
+
     EASY_FUNCTION(profiler::colors::Magenta);
 
     namespace fs = std::experimental::filesystem;
@@ -310,7 +314,11 @@ namespace YTE
   Engine::~Engine()
   {
     mCompositions.Clear();
-    profiler::stopListen();
+
+    if constexpr (CompilerOptions::Debug())
+    {
+      profiler::stopListen();
+    }
   }
 
   void Engine::Recompile()

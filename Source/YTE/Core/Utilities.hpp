@@ -27,6 +27,8 @@
 
 #include "YTE/Platform/DialogBox.hpp"
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 #include "YTE/StandardLibrary/OrderedMultiMap.hpp"
 #include "YTE/StandardLibrary/OrderedMap.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
@@ -34,6 +36,10 @@
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/Core/StaticIntents.hpp"
+
+
+
+#define YTEProfile(aColor, aName) EASY_BLOCK(aName, aColor)
 
 namespace YTE
 {
