@@ -15,6 +15,8 @@
 #include <memory>
 #include <unordered_map>
 
+#include <easy/profiler.h>
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"

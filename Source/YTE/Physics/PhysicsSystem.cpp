@@ -155,7 +155,8 @@ namespace YTE
   void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    // TODO(if collision is fucked): mDynamicsWorld->updateAABBs 
+    EASY_FUNCTION(profiler::colors::Red);
+
     mDynamicsWorld->updateAabbs();
     mDynamicsWorld->stepSimulation(static_cast<float>(aEvent->Dt), 10);
 

@@ -23,6 +23,16 @@ target_include_directories(YTE
     ${ParentDirectory}
 )
 
+# Find the QtWidgets library
+set(EasyProfilerSDKPath $ENV{EasyProfilerSDK})
+if(EasyProfilerSDKPath)
+  set(CMAKE_PREFIX_PATH ${EasyProfilerSDKPath}/lib/cmake/easy_profiler/)
+  find_package(easy_profiler REQUIRED)
+  target_link_libraries(YTE PUBLIC easy_profiler)
+
+else()
+  message(STATUS "Easy Profiler not found.")
+endif()
 
 target_link_libraries(YTE
   PUBLIC

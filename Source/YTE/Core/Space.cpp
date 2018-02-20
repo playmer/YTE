@@ -122,6 +122,7 @@ namespace YTE
   // Updates the Space to the current frame.
   void Space::Update(double aDt)
   {
+    EASY_FUNCTION(profiler::colors::Amber);
     if (mLoading)
     {
       mLevelName = mLoadingName;
