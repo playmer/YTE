@@ -15,6 +15,7 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
@@ -33,7 +34,7 @@ namespace YTE
 		std::unique_ptr<stbtt_packedchar[]> mCharInfo;
 	};
 
-  class SpriteText : public Component
+  class SpriteText : public BaseModel
   {
   public:
     YTEDeclareType(SpriteText);
@@ -91,6 +92,11 @@ namespace YTE
 
     void CreateTransform();
     void TransformUpdate(TransformChanged *aEvent);
+
+    InstantiatedModel* GetInstantiatedModel() override
+    {
+      return mInstantiatedSprite.get();
+    }
 
   private:
     Renderer *mRenderer;

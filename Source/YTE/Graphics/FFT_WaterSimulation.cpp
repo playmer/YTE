@@ -166,7 +166,7 @@ namespace YTE
 
   // ------------------------------------
   FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
+    : BaseModel{ aOwner, aSpace, aProperties }
     , mRenderMode(RenderMode::Triangle)   // triangle by default
     , mGravitationalPull(1000.0f)           // normal gravity
     , mGridSize(DefaultGridSize)          // grid size of 32 just for now
@@ -1362,6 +1362,15 @@ namespace YTE
     AdjustPositions();
   }
 
+  InstantiatedModel* FFT_WaterSimulation::GetInstantiatedModel()
+  {
+    if (mInstantiatedHeightmap.size())
+    {
+      return mInstantiatedHeightmap[0]->GetInstantiatedModel();
+    }
+
+    return nullptr;
+  }
 }
 
 #undef mGridSizePlus1

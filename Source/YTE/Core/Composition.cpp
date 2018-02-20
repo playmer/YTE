@@ -738,6 +738,23 @@ namespace YTE
     return toReturn;
   }
 
+  Component* Composition::GetDerivedComponent(BoundType *aType)
+  {
+    auto componentType = TypeId<Component>();
+
+    for (auto &componentIt : mComponents)
+    {
+      auto type = componentIt.first;
+
+      if (type->IsA(aType, componentType))
+      {
+        return componentIt.second.get();
+      }
+    }
+
+    return nullptr;
+  }
+
   Component* Composition::AddComponent(BoundType *aType)
   {
     // TODO: Output this to a debug logger. If this happens in game in the editor, 

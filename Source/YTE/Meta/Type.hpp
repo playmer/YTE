@@ -423,6 +423,7 @@ void Name::InitializeType()
     }
 
     bool IsA(Type *aType);
+    bool IsA(Type *aType, Type *aTypeToStopAt);
 
     template<typename tType>
     bool IsA()

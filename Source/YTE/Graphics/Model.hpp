@@ -10,6 +10,7 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
+#include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
@@ -31,7 +32,7 @@ namespace YTE
 
   };
 
-  class Model : public Component
+  class Model : public BaseModel
   {
   public:
     YTEDeclareType(Model);
@@ -84,7 +85,7 @@ namespace YTE
       return mMeshName;
     }
 
-    InstantiatedModel* GetInstantiatedModel()
+    InstantiatedModel* GetInstantiatedModel() override
     {
       return mInstantiatedModel.get();
     }

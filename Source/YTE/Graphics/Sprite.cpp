@@ -69,7 +69,7 @@ namespace YTE
   }
 
   Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component{ aOwner, aSpace }
+    : BaseModel{ aOwner, aSpace, aProperties }
     , mConstructing{ true }
     , mAnimating{ false }
     , mColumns{ 1 }
@@ -110,9 +110,6 @@ namespace YTE
         glm::vec3 uv1 = { xWidth, 1.0f - yHeight, 0.0f }; // Bottom Right
         glm::vec3 uv2 = { xWidth, 1.0f,           0.0f }; // Top Right
         glm::vec3 uv3 = { 0.0f,   1.0f,           0.0f }; // Top Left
-
-        printf("Row: %d, Column: %d\n", row, column);
-        //auto translate = glm::translate(glm::mat4{}, glm::vec3{ xWidth * column, yHeight * row, 0.0f });
 
         float xTranslate = xWidth * column;
         float yTranslate = -yHeight * row;

@@ -2,6 +2,7 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
@@ -11,7 +12,7 @@
 
 namespace YTE
 {
-  class Sprite : public Component
+  class Sprite : public BaseModel
   {
   public:
     YTEDeclareType(Sprite);
@@ -46,6 +47,10 @@ namespace YTE
 
     void TransformUpdate(TransformChanged *aEvent);
 
+    InstantiatedModel* GetInstantiatedModel() override
+    {
+      return mInstantiatedSprite.get();
+    }
 
     void SetColumns(i32 aColumns)
     {

@@ -1,6 +1,7 @@
 target_sources(YTE
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Animation.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/BaseModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Camera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.cpp
@@ -34,6 +35,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkDeviceInfo.cpp
 #  PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/Animation.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/BaseModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Camera.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.hpp

@@ -33,6 +33,7 @@
 #include "YTE/GameComponents/Island.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
+#include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -123,6 +124,7 @@ namespace YTE
 
     InitializeType<Animator>();
     InitializeType<Animation>();
+    InitializeType<BaseModel>();
     InitializeType<Camera>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();

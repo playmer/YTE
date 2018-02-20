@@ -14,12 +14,13 @@
 // YTE
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/BaseModel.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/UBOs.hpp"
+
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
-
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Math/Complex.hpp"           // complex
 #include "YTE/Math/Complex_KISSFFT.hpp"   // complex_kfft
@@ -35,7 +36,7 @@ namespace YTE
   // Simulates water using fft or dft algorithms
   // Use with caution, this class will be changing
   /*******************/
-  class FFT_WaterSimulation : public Component
+  class FFT_WaterSimulation : public BaseModel
   {
   public:
     /*******************/
@@ -97,6 +98,8 @@ namespace YTE
     // Updates the entire item when using in the editor, schedules vulkan memory copy, and prepares for the next draw cycle
     /*******************/
     void EditorUpdate(LogicUpdate *aEvent);
+
+    InstantiatedModel* GetInstantiatedModel() override;
 
 
   private:
