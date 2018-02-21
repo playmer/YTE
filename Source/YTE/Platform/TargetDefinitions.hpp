@@ -8,6 +8,8 @@
 /******************************************************************************/
 #pragma once
 
+#include <type_traits>
+
 #ifdef _WIN32
     // If _WIN32 is defined, we're on Windows.
   #define YTE_Windows
@@ -26,7 +28,7 @@ namespace YTE
 {
   struct CompilerOptions
   {
-    #ifdef _DEBUG
+    #if YTE_DEBUG
       using Release = std::integral_constant<bool, false>;
       using Debug = std::integral_constant<bool, true>;
     #else

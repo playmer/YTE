@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#ifdef Windows
+#ifdef YTE_Windows
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #endif
 
@@ -62,7 +62,7 @@ namespace YTEditor
     auto qtVal = QWindow::nativeEvent(aEventType, aMessage, aResult);
 
     // TODO Implement this on other platforms maybe?
-#ifdef Windows
+#ifdef YTE_Windows
     MSG message = *(static_cast<MSG*>(aMessage));
 
     TranslateMessage(&message);

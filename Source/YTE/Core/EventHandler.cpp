@@ -14,6 +14,8 @@ namespace YTE {
 
   void EventHandler::SendEvent(const std::string &aName, Event *aEvent)
   {
+    EASY_BLOCK(aName);
+
     auto &&list = mEventLists[aName];
 
     // If this event is already currently being sent on this object, we don't resend it.

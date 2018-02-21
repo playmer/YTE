@@ -38,14 +38,19 @@
 #include "YTE/Core/StaticIntents.hpp"
 
 
-
-#define YTEProfile(aColor, aName) EASY_BLOCK(aName, aColor)
+#if YTE_DEBUG
+  #define YTEProfile(aColor, aName) EASY_BLOCK(aName, aColor)
+#else
+  #define YTEProfile(aColor, aName)
+#endif
 
 namespace YTE
 {
-  template <typename Type> using SharedPointer = std::shared_ptr<Type>;
+  template <typename Type> 
+  using SharedPointer = std::shared_ptr<Type>;
 
-  template <typename Type, typename Deleter = std::default_delete<Type>> using UniquePointer = std::unique_ptr<Type, Deleter>;
+  template <typename Type, typename Deleter = std::default_delete<Type>> 
+  using UniquePointer = std::unique_ptr<Type, Deleter>;
 
   using BoundType = Type;
 

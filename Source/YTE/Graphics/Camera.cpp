@@ -598,6 +598,7 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
+    EASY_FUNCTION(profiler::colors::Red);
     if (mEngine->IsEditor())
     {
       if (mType == CameraType::Gameplay)
