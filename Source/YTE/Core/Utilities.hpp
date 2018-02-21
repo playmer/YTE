@@ -15,7 +15,9 @@
 #include <memory>
 #include <unordered_map>
 
+#if YTE_CAN_PROFILE
 #include <easy/profiler.h>
+#endif
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -37,11 +39,14 @@
 
 #include "YTE/Core/StaticIntents.hpp"
 
-
-#if YTE_DEBUG
-  #define YTEProfile(aColor, aName) EASY_BLOCK(aName, aColor)
+#if YTE_CAN_PROFILE 
+  #define YTEProfileName(aName) EASY_BLOCK(aName)
+  #define YTEProfileFunction(aColor) EASY_FUNCTION(aColor)
+  #define YTEProfileBlock(aColor, aName) EASY_BLOCK(aName, aColor)
 #else
-  #define YTEProfile(aColor, aName)
+  #define YTEProfileName(aName)
+  #define YTEProfileFunction(aColor)
+  #define YTEProfileBlock(aColor, aName)
 #endif
 
 namespace YTE

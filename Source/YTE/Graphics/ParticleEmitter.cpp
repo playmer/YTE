@@ -116,7 +116,7 @@ namespace YTE
 
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
-    EASY_FUNCTION(profiler::colors::Red);
+    YTEProfileFunction(profiler::colors::Red);
     YTEUnusedArgument(aEvent);
     double dt = GetSpace()->GetEngine()->GetDt();
 

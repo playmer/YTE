@@ -68,12 +68,12 @@ namespace YTE
     , mCompositionsByGUID()
     , mComponentsByGUID()
   {
-    if constexpr (CompilerOptions::Debug())
+    if constexpr (YTE_CAN_PROFILE)
     {
       profiler::startListen();
     }
 
-    EASY_FUNCTION(profiler::colors::Magenta);
+    YTEProfileFunction(profiler::colors::Magenta);
 
     namespace fs = std::experimental::filesystem;
     
@@ -230,7 +230,7 @@ namespace YTE
   // Updates the Space to the current frame.
   void Engine::Update()
   {
-    EASY_FUNCTION(profiler::colors::Blue);
+    YTEProfileFunction(profiler::colors::Blue);
     using namespace std::chrono;
     duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
@@ -315,7 +315,7 @@ namespace YTE
   {
     mCompositions.Clear();
 
-    if constexpr (CompilerOptions::Debug())
+    if constexpr (YTE_CAN_PROFILE)
     {
       profiler::stopListen();
     }

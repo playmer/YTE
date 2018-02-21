@@ -155,7 +155,7 @@ namespace YTE
   void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    EASY_FUNCTION(profiler::colors::Red);
+    YTEProfileFunction(profiler::colors::Red);
 
     mDynamicsWorld->updateAabbs();
     mDynamicsWorld->stepSimulation(static_cast<float>(aEvent->Dt), 10);

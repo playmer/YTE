@@ -14,7 +14,7 @@ namespace YTE {
 
   void EventHandler::SendEvent(const std::string &aName, Event *aEvent)
   {
-    EASY_BLOCK(aName);
+    YTEProfileName(aName);
 
     auto &&list = mEventLists[aName];
 

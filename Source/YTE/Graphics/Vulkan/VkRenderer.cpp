@@ -153,7 +153,7 @@ namespace YTE
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    EASY_FUNCTION(profiler::colors::Blue);
+    YTEProfileFunction(profiler::colors::Blue);
     for (auto& surface : mSurfaces)
     {
       surface.second->FrameUpdate(aEvent);
