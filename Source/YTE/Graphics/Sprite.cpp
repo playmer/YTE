@@ -218,6 +218,7 @@ namespace YTE
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;
+    meshName += mOwner->GetGUID().ToString();
 
     Vertex vert0;
     Vertex vert1;
