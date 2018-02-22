@@ -76,7 +76,7 @@ set_target_properties(LinearMath                          PROPERTIES FOLDER "Dep
 set_target_properties(crunch                              PROPERTIES FOLDER "Dependencies") 
 set_target_properties(fmt                                 PROPERTIES FOLDER "Dependencies") 
 set_target_properties(KissFFT                             PROPERTIES FOLDER "Dependencies") 
-set_target_properties(LuaJIT                              PROPERTIES FOLDER "Dependencies") 
+#set_target_properties(LuaJIT                              PROPERTIES FOLDER "Dependencies") 
 set_target_properties(STB                                 PROPERTIES FOLDER "Dependencies")
 set_target_properties(VkHLF                               PROPERTIES FOLDER "Dependencies/VkHLF") 
 set_target_properties(glslang                             PROPERTIES FOLDER "Dependencies/VkHLF/glslang") 
@@ -89,30 +89,44 @@ set_target_properties(WWise_SoundEngine                   PROPERTIES FOLDER "Dep
 
 
 # Turn the warnings off on our dependencies.
-target_compile_options(assimp                PRIVATE /W0)
-target_compile_options(Bullet2FileLoader     PRIVATE /W0) 
-target_compile_options(Bullet3Collision      PRIVATE /W0) 
-target_compile_options(Bullet3Common         PRIVATE /W0) 
-target_compile_options(Bullet3Dynamics       PRIVATE /W0) 
-target_compile_options(Bullet3Geometry       PRIVATE /W0) 
-target_compile_options(Bullet3OpenCL_clew    PRIVATE /W0) 
-target_compile_options(BulletCollision       PRIVATE /W0) 
-target_compile_options(BulletDynamics        PRIVATE /W0) 
-target_compile_options(BulletInverseDynamics PRIVATE /W0) 
-target_compile_options(BulletSoftBody        PRIVATE /W0) 
-target_compile_options(LinearMath            PRIVATE /W0) 
-target_compile_options(crunch                PRIVATE /W0)
-target_compile_options(fmt                   PRIVATE /W0)
-target_compile_options(LuaJIT                PRIVATE /W0)
-target_compile_options(STB                   PRIVATE /W0)
-target_compile_options(VkHLF                 PRIVATE /W0)
-target_compile_options(glslang               PRIVATE /W0)
-target_compile_options(OGLCompiler           PRIVATE /W0)
-target_compile_options(OSDependent           PRIVATE /W0)
-target_compile_options(SPIRV                 PRIVATE /W0)
-target_compile_options(SPVRemapper           PRIVATE /W0)
-#target_compile_options(HLSL                  PRIVATE /W0)
-target_compile_options(KissFFT               PRIVATE /W0)
+
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+  if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    set(disableWarning /W0)
+  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang OR
+          ${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang OR
+          ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+    set(disableWarning -w)
+  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
+    set(disableWarning -w0)
+  endif()
+endif()
+
+
+target_compile_options(assimp                PRIVATE ${disableWarning})
+target_compile_options(Bullet2FileLoader     PRIVATE ${disableWarning}) 
+target_compile_options(Bullet3Collision      PRIVATE ${disableWarning}) 
+target_compile_options(Bullet3Common         PRIVATE ${disableWarning}) 
+target_compile_options(Bullet3Dynamics       PRIVATE ${disableWarning}) 
+target_compile_options(Bullet3Geometry       PRIVATE ${disableWarning}) 
+target_compile_options(Bullet3OpenCL_clew    PRIVATE ${disableWarning}) 
+target_compile_options(BulletCollision       PRIVATE ${disableWarning}) 
+target_compile_options(BulletDynamics        PRIVATE ${disableWarning}) 
+target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning}) 
+target_compile_options(BulletSoftBody        PRIVATE ${disableWarning}) 
+target_compile_options(LinearMath            PRIVATE ${disableWarning}) 
+target_compile_options(crunch                PRIVATE ${disableWarning})
+target_compile_options(fmt                   PRIVATE ${disableWarning})
+#target_compile_options(LuaJIT                PRIVATE ${disableWarning})
+target_compile_options(STB                   PRIVATE ${disableWarning})
+target_compile_options(VkHLF                 PRIVATE ${disableWarning})
+target_compile_options(glslang               PRIVATE ${disableWarning})
+target_compile_options(OGLCompiler           PRIVATE ${disableWarning})
+target_compile_options(OSDependent           PRIVATE ${disableWarning})
+target_compile_options(SPIRV                 PRIVATE ${disableWarning})
+target_compile_options(SPVRemapper           PRIVATE ${disableWarning})
+#target_compile_options(HLSL                  PRIVATE ${disableWarning})
+target_compile_options(KissFFT               PRIVATE ${disableWarning})
 
 set_target_properties(assimp
                       Bullet2FileLoader
@@ -129,7 +143,7 @@ set_target_properties(assimp
                       crunch
                       fmt
                       KissFFT
-                      LuaJIT
+                      #LuaJIT
                       STB
                       VkHLF
                       glslang

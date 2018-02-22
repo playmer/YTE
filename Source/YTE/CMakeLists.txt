@@ -23,7 +23,7 @@ target_include_directories(YTE
     ${ParentDirectory}
 )
 
-# Find the QtWidgets library
+# Find the EasyProfiler library
 set(EasyProfilerSDKPath $ENV{EasyProfilerSDK})
 if(EasyProfilerSDKPath)
   set(CMAKE_PREFIX_PATH ${EasyProfilerSDKPath}/lib/cmake/easy_profiler/)
@@ -60,11 +60,12 @@ target_link_libraries(YTE
     glslang
     fmt    
     KissFFT
-    LuaJIT
+    #LuaJIT
     STB
     VkHLF
-    XInput9_1_0.lib
 ) 
+
+
 
 set_target_properties(YTE
                       PROPERTIES
