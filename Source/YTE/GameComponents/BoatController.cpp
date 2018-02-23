@@ -79,10 +79,10 @@ namespace YTE
         mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
         /* Event Registration */
-        mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-        mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
-        mOwner->GetEngine()->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
-        mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+        mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
+        mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
+        mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
         mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
         mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
         
@@ -113,7 +113,7 @@ namespace YTE
       if (mCanDock)
       {
         // change input context
-        mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+        mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
         // send the request dialogue event
         RequestDialogueStart dStart;
         dStart.camera = nullptr;

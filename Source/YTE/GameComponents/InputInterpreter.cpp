@@ -23,6 +23,7 @@ namespace YTE
   YTEDefineEvent(MenuStart);
   YTEDefineEvent(MenuConfirm);
   YTEDefineEvent(MenuExit);
+  YTEDefineEvent(MenuElementChange);
 
     // Boat Events
   YTEDefineEvent(SailStateChanged);
@@ -38,6 +39,7 @@ namespace YTE
   YTEDefineType(MenuStart) { YTERegisterType(MenuStart); }
   YTEDefineType(MenuConfirm) { YTERegisterType(MenuConfirm); }
   YTEDefineType(MenuExit) { YTERegisterType(MenuExit); }
+  YTEDefineType(MenuElementChange) { YTERegisterType(MenuElementChange); }
   YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
@@ -67,8 +69,10 @@ namespace YTE
     mContext = InputContext::Sailing;
     //mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
     //auto space = mOwner->GetEngine()->GetSpace();
-    mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::CheckSticks);
-    mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::CheckButtons);
+    mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
+    mGamepad->YTERegister(Events::XboxStickFlicked, this, &InputInterpreter::OnFlickEvent);
+    mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::OnButtonPress);
+    mGamepad->YTERegister(Events::XboxButtonRelease, this, &InputInterpreter::OnButtonRelease);
   }
 
   void InputInterpreter::SetInputContext(InputInterpreter::InputContext aContext)
@@ -85,7 +89,7 @@ namespace YTE
       Event Callbacks
   */
   /******************************************************************************/
-  void InputInterpreter::CheckSticks(XboxStickEvent *aEvent)
+  void InputInterpreter::OnStickEvent(XboxStickEvent *aEvent)
   {
     if (mContext == InputContext::Sailing)
     {
@@ -104,7 +108,30 @@ namespace YTE
     }
   }
 
-  void InputInterpreter::CheckButtons(XboxButtonEvent *aEvent)
+  void InputInterpreter::OnFlickEvent(XboxFlickEvent *aEvent)
+  {
+    if (mContext == InputContext::Menu)
+    {
+      if (aEvent->FlickedStick == Xbox_Buttons::LeftStick)
+      {
+        if (aEvent->FlickDirection.x < 0.01f)
+        {
+          MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+
+          mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+        }
+
+        else if (aEvent->FlickDirection.x > 0.01f)
+        {
+          MenuElementChange menuNext(MenuElementChange::Direction::Next);
+
+          mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+        }
+      }
+    }
+  }
+
+  void InputInterpreter::OnButtonPress(XboxButtonEvent *aEvent)
   {
     switch (mContext)
     {
@@ -190,6 +217,7 @@ namespace YTE
     {
       switch (aEvent->Button)
       {
+      case Xbox_Buttons::Back:
       case Xbox_Buttons::Start:
       {
         MenuExit menuExit(true);
@@ -199,19 +227,57 @@ namespace YTE
         break;
       }
 
-      case Xbox_Buttons::Back:
-        break;
-
       case Xbox_Buttons::A:
+      {
+        MenuConfirm menuConfirm(false);
+        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
         break;
+      }
 
       case Xbox_Buttons::B:
+      {
+        MenuExit menuExit(false);
+        mOwner->SendEvent(Events::MenuExit, &menuExit);
+
         break;
+      }
+
+      case Xbox_Buttons::DPAD_Left:
+      {
+        MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+        mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+
+        break;
+      }
+
+      case Xbox_Buttons::DPAD_Right:
+      {
+        MenuElementChange menuNext(MenuElementChange::Direction::Next);
+        mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+
+        break;
+      }
       }
 
       break;
     }
 
+    }
+  }
+
+  void InputInterpreter::OnButtonRelease(XboxButtonEvent *aEvent)
+  {
+    switch (mContext)
+    {
+    case InputContext::Menu:
+    {
+      if (aEvent->Button == Xbox_Buttons::A)
+      {
+        MenuConfirm menuConfirm(true);
+        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+        break;
+      }
+    }
     }
   }
 }

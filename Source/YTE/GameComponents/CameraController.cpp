@@ -34,7 +34,7 @@ namespace YTE
 
   void CameraController::Initialize()
   {
-    mOwner->GetEngine()->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
+    mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
 
     mTransform = mOwner->GetComponent<Transform>();
     mOrientation = mOwner->GetComponent<Orientation>();

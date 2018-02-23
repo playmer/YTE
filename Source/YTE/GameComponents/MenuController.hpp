@@ -52,25 +52,20 @@ namespace YTE
 
 		// PROPERTIES /////////////////////////////////////////
 		///////////////////////////////////////////////////////
-
-    void OnXboxFlickEvent(XboxFlickEvent* aEvent);
-    void OnXboxButtonPress(XboxButtonEvent* aEvent);
-		void OnXboxButtonRelease(XboxButtonEvent* aEvent);
-
     void OnMenuStart(MenuStart *aEvent);
     void OnMenuExit(MenuExit *aEvent);
+    void OnMenuConfirm(MenuConfirm *aEvent);
+    void OnMenuElementChange(MenuElementChange *aEvent);
 
 	private:
-		XboxController* mGamePad;
+    Component *mParentMenu = nullptr;
 
-		Transform* mMyTransform;
+		Transform *mMyTransform;
 		glm::vec3 mViewScale;
 
 		int mCurrMenuElement;
 		int mNumElements;
 		YTE::CompositionMap* mMenuElements;
-
-		bool mIsDisplayed;
 
 		bool mConstructing;
   };

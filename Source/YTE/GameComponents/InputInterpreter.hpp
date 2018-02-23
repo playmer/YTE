@@ -18,9 +18,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#ifndef YTE_Gameplay_InputInterpreter_hpp
-#define YTE_Gameplay_InputInterpreter_hpp
-
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -44,6 +41,7 @@ namespace YTE
   YTEDeclareEvent(MenuStart);
   YTEDeclareEvent(MenuConfirm);
   YTEDeclareEvent(MenuExit);
+  YTEDeclareEvent(MenuElementChange);
 
   class CameraRotateEvent : public Event
   {
@@ -104,16 +102,31 @@ namespace YTE
   {
   public:
     YTEDeclareType(MenuConfirm);
+    MenuConfirm(bool aIsReleased) { IsReleased = aIsReleased; }
+
+    bool IsReleased;
   };
 
   class MenuExit : public Event
   {
   public:
     YTEDeclareType(MenuExit);
-    MenuExit(bool aExitAll) { ShouldExitAll = aExitAll;  }
+    MenuExit(bool aExitAll) { ShouldExitAll = aExitAll; }
 
     bool ShouldExitAll;
   };
+
+  class MenuElementChange : public Event
+  {
+  public:
+    enum class Direction {Previous, Next, COUNT};
+
+    YTEDeclareType(MenuElementChange);
+    MenuElementChange(Direction aChangeDirection) { ChangeDirection = aChangeDirection; }
+
+    Direction ChangeDirection;
+  };
+
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
@@ -127,8 +140,10 @@ namespace YTE
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-    void CheckSticks(XboxStickEvent *aEvent);
-    void CheckButtons(XboxButtonEvent *aEvent);
+    void OnStickEvent(XboxStickEvent *aEvent);
+    void OnFlickEvent(XboxFlickEvent *aEvent);
+    void OnButtonPress(XboxButtonEvent *aEvent);
+    void OnButtonRelease(XboxButtonEvent *aEvent);
 
     void SetInputContext(InputContext aContext);
     InputContext GetInputContext();
@@ -145,6 +160,4 @@ namespace YTE
 
     bool mConstructing;
   };
-} // End YTE namespace
-
-#endif
+}
