@@ -28,9 +28,15 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
+
+    YTEBindProperty(&Animation::GetPlayOverTime, &Animation::SetPlayOverTime, "PlayOverTime")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("True if the animation should play with respect to time.");
   }
 
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
+    : mPlayOverTime(true)
   {
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
@@ -84,9 +90,12 @@ namespace YTE
 
   void Animation::Update(LogicUpdate* aEvent)
   {
-    mElapsedTime += aEvent->Dt * mSpeed;
+    if (mPlayOverTime)
+    {
+      mElapsedTime += aEvent->Dt * mSpeed;
     mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond,
                                  mAnimation->mDuration);
+    }
 
     aiMatrix4x4 identity = aiMatrix4x4();
     ReadAnimation(mScene->mRootNode, identity);
@@ -100,7 +109,28 @@ namespace YTE
     mModel->GetInstantiatedModel()->UpdateUBOAnimation(&this->mUBOAnimationData);
   }
 
+  void Animation::SetCurrentTime(double aCurrentTime)
+  {
+    if (0.0 <= aCurrentTime && aCurrentTime <= mAnimation->mDuration)
+    {
+      mCurrentAnimationTime = aCurrentTime;
+    }
+  }
 
+  double Animation::GetMaxTime() const
+  {
+    return mAnimation->mDuration;
+  }
+
+  bool Animation::GetPlayOverTime() const
+  {
+    return mPlayOverTime;
+  }
+
+  void Animation::SetPlayOverTime(bool aPlayOverTime)
+  {
+    mPlayOverTime = aPlayOverTime;
+  }
 
   void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
   {
@@ -110,6 +140,18 @@ namespace YTE
     
     if (pNodeAnim)
     {
+      int numKeys = pNodeAnim->mNumPositionKeys;
+
+      auto startKey = pNodeAnim->mPositionKeys[0];
+      auto endKey = pNodeAnim->mPositionKeys[numKeys - 1];
+
+      double duration = (endKey.mTime - startKey.mTime);
+
+      if (duration != 0.0f)
+      {
+        mAnimation->mDuration = duration;
+      }
+
       // Get interpolated matrices between current and next frame
       aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
       aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);	
@@ -163,7 +205,7 @@ namespace YTE
 
       aiVectorKey frame = aNode->mScalingKeys[index];
       aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
-
+      
       float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiVector3D& start = frame.mValue;
@@ -236,8 +278,13 @@ namespace YTE
         if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i+1].mTime - startFrame.mTime)
         {
           index = i;
+          
+          //std::cout << aNode->mNodeName.C_Str() << ": " << index << ", ";
+          
           break;
         }
+
+        //std::cout << "time: " << mCurrentAnimationTime << std::endl;
       }
 
       aiVectorKey frame = aNode->mPositionKeys[index];
