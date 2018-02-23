@@ -20,7 +20,6 @@ target_include_directories(assimp PUBLIC
 target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_options(assimp PRIVATE /bigobj)
 
-
 # Turn off/configure various parts of bullet3.
 OPTION(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
 OPTION(BUILD_UNIT_TESTS "Build Unit Tests"	OFF)
@@ -68,7 +67,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL Windows)
     set(disableWarning -w0)
   endif()
 endif()
-
 
 target_compile_options(assimp                PRIVATE ${disableWarning})
 target_compile_options(Bullet2FileLoader     PRIVATE ${disableWarning}) 

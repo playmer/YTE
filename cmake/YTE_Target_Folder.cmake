@@ -5,11 +5,10 @@ function(YTE_Target_Folder_Recursive aTarget aFolderDelimiter)
       get_target_property(targetType ${linkLibrary} TYPE)
 
       if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
-        get_target_property(targetFolder ${linkLibrary} FOLDER)
         set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
       endif ()
 
-      YTE_Target_Folder(${linkLibrary} ${aFolderDelimiter}/${linkLibrary})
+      YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary})
     endif()
   endforeach()
 endfunction(YTE_Target_Folder_Recursive)
