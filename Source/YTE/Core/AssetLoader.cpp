@@ -114,6 +114,23 @@ namespace YTE
     return path.string();
   }
 
+  std::string Path::GetTextsDirectory(const Path& aPath)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("Texts");
+
+    return path.string();
+  }
+
+  std::string Path::GetTextPath(const Path& aPath, const std::string &aName)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("Texts");
+    path.append(aName);
+
+    return path.string();
+  }
+
   const std::string& Path::String() const
   {
     return mPath;
@@ -181,6 +198,10 @@ namespace YTE
         case Asset::Type::Texture:
         {
           file = Path::GetTexturePath(aDirectory, aFileName);
+        } break;
+        case Asset::Type::Text:
+        {
+          file = Path::GetTextPath(aDirectory, aFileName);
         } break;
         default:
         {

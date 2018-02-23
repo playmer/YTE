@@ -17,6 +17,7 @@ namespace YTE
       Shader,
       Mesh,
       Texture,
+      Text,
 
       _Count
     };
