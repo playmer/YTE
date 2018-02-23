@@ -149,10 +149,12 @@ namespace YTE
     }
     else
     {
+      auto startFrame = aNode->mScalingKeys[0];
+
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i+1].mTime)
+        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i+1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -187,11 +189,13 @@ namespace YTE
     }
     else
     {
+      auto startFrame = aNode->mRotationKeys[0];
+      
       // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i+1].mTime)
+        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i+1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -224,10 +228,12 @@ namespace YTE
     }
     else
     {
+      auto startFrame = aNode->mPositionKeys[0];
+
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i+1].mTime)
+        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i+1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -255,6 +261,7 @@ namespace YTE
     for (uint32_t i = 0; i < mAnimation->mNumChannels; ++i)
     {
       const aiNodeAnim *anim = mAnimation->mChannels[i];
+
       if (!strcmp(anim->mNodeName.data, aName))
       {
         return anim;
