@@ -5,6 +5,7 @@
 
 #include <array>
 #include <filesystem>
+#include <fstream>
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -54,7 +55,7 @@ namespace YTE
       }
       case TextureType::DXT5_sRGB:
       {
-        format = vk::Format::eBc3SrgbBlock;
+        format = vk::Format::eBc3UnormBlock;
         break;
       }
       case TextureType::RGBA:
@@ -144,24 +145,55 @@ namespace YTE
     // The destructor of MappedImage will put the transfer into the command buffer.
     vkhlf::MappedImage mi(mImage, update, 0, mData.size());
     vk::SubresourceLayout layout = mi.getSubresourceLayout(vk::ImageAspectFlagBits::eColor, 0, 0);
-    uint8_t * data = reinterpret_cast<uint8_t*>(mi.getPointer());
+    uint8_t *data = reinterpret_cast<uint8_t*>(mi.getPointer());
 
     auto height = mHeight;
     auto width = mWidth;
 
     auto pixels = mData.data();
 
-    for (size_t y = 0; y < height; y++)
+    switch (mType)
     {
-      uint8_t * rowPtr = data;
-      for (size_t x = 0; x < width; x++, rowPtr += 4, pixels += 4)
+      case TextureType::DXT1_sRGB:
       {
-        rowPtr[0] = pixels[0];
-        rowPtr[1] = pixels[1];
-        rowPtr[2] = pixels[2];
-        rowPtr[3] = pixels[3];
+        break;
       }
-      data += layout.rowPitch;
+      case TextureType::DXT5_sRGB:
+      {
+        // Adapted from: https://stackoverflow.com/questions/36138217/unable-to-create-image-from-compressed-texture-data-s3tc
+        constexpr u32 blockSize{ 16 };
+        u32 widthBlocks = width / 4;
+        u32 heightBlocks = height / 4;
+        for (u32 y = 0; y < heightBlocks; ++y)
+        {
+          auto *rowPtr = data + y * layout.rowPitch; // rowPitch is 0
+          auto *rowSrc = pixels + y * (widthBlocks * blockSize);
+          for (u32 x = 0; x < widthBlocks; ++x)
+          {
+            auto *pxDest = rowPtr + x * blockSize;
+            auto *pxSrc = rowSrc + x * blockSize; // 4x4 image block
+            memcpy(pxDest, pxSrc, blockSize); // 128Bit per block
+          }
+        }
+
+        break;
+      }
+      case TextureType::RGBA:
+      default:
+      {
+        for (size_t y = 0; y < height; y++)
+        {
+          uint8_t *rowPtr = data;
+          for (size_t x = 0; x < width; x++, rowPtr += 4, pixels += 4)
+          {
+            rowPtr[0] = pixels[0];
+            rowPtr[1] = pixels[1];
+            rowPtr[2] = pixels[2];
+            rowPtr[3] = pixels[3];
+          }
+          data += layout.rowPitch;
+        }
+      }
     }
 
     mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
