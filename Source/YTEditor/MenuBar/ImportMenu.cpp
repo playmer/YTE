@@ -23,6 +23,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qfiledialog.h>
 #include <QSlider>
 #include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -67,17 +69,19 @@ namespace YTEditor
   }
 
   // CRN/DDS compression callback function.
-  static crn_bool progress_callback_func(crn_uint32 phase_index,
-    crn_uint32 total_phases,
-    crn_uint32 subphase_index,
-    crn_uint32 total_subphases,
-    void *pUser_data_ptr)
+  static crn_bool CrunchCallbackFunction(crn_uint32 phase_index,
+                                         crn_uint32 total_phases,
+                                         crn_uint32 subphase_index,
+                                         crn_uint32 total_subphases,
+                                         void *aUserData)
   {
     int percentage_complete = (int)(.5f +
                               (phase_index + float(subphase_index) / total_subphases) *
                               100.0f) / total_phases;
 
-    QProgressDialog *progress = static_cast<QProgressDialog*>(pUser_data_ptr);
+    QProgressDialog *progress = static_cast<QProgressDialog*>(aUserData);
+
+    QCoreApplication::processEvents();
 
     if (progress->wasCanceled())
     {
@@ -459,32 +463,65 @@ namespace YTEditor
     return helper;
   }
 
+  struct TextureImportData
+  {
+    crn_comp_params mParameters;
+    bool mCompress;
+  };
+
   class ImportTextureDialog : public QDialog
   {
-    Q_OBJECT
   public:
-    ImportTextureDialog(QWidget *aParent = nullptr)
-      : QDialog(aParent)
+    ImportTextureDialog(TextureImportData &aData, QWidget *aParent = nullptr)
+      : QDialog{aParent}
+      , mData(aData)
     {
       mSlider = new QSlider{ Qt::Orientation::Horizontal ,this };
       mSlider->setMinimum(0);
-      mSlider->setMinimum(255);
+      mSlider->setMaximum(255);
+      mSlider->setValue(255 / 2);
+      mSlider->setFocusPolicy(Qt::StrongFocus);
+      mSlider->setTickPosition(QSlider::TicksBothSides);
+      mSlider->setTickInterval(10);
+      mSlider->setSingleStep(1);
+      mSlider->setTracking(true);
 
       mCheckBox = new QCheckBox{ "Compress", this };
       mCheckBox->setCheckState(Qt::Unchecked);
       mCheckBox->setCheckable(true);
 
       this->setModal(true);
+
+      mButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                      | QDialogButtonBox::Cancel);
+
+      this->connect(mButtonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
+      this->connect(mButtonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+
+      QVBoxLayout *mainLayout = new QVBoxLayout{};
+      mainLayout->addWidget(mSlider);
+      mainLayout->addWidget(mCheckBox);
+      mainLayout->addWidget(mButtonBox);
+      setLayout(mainLayout);
     }
+
+    ~ImportTextureDialog()
+    {
+      mData.mParameters.m_quality_level = mSlider->value();
+      mData.mCompress = mCheckBox->isChecked();
+    }
+
 
   private:
     QSlider *mSlider;
     QCheckBox *mCheckBox;
+    QDialogButtonBox *mButtonBox;
+    TextureImportData &mData;
   };
 
   bool ImportMenu::CompressTextureFile(TextureHelper &aTexture)
   {
-    std::string message{ "Compressing " };
+    std::string message{ "Compressing..." };
     message += aTexture.mTextureFile;
     
     path textureCrunchDir{ aTexture.mTextureDirectory / L"Crunch" };
@@ -492,33 +529,50 @@ namespace YTEditor
     
     aTexture.mCrunchFilePath = textureCrunchDir / textureFile.filename().concat(L".crn");
     
+    crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(aTexture.mPixels);
+
+    TextureImportData textureData;
+    
+    textureData.mParameters.m_width = aTexture.mWidth;
+    textureData.mParameters.m_height = aTexture.mHeight;
+    textureData.mParameters.set_flag(cCRNCompFlagPerceptual, true);
+    textureData.mParameters.set_flag(cCRNCompFlagDXT1AForTransparency, false);
+    textureData.mParameters.set_flag(cCRNCompFlagHierarchical, false);
+    textureData.mParameters.m_file_type = cCRNFileTypeCRN;
+    
+    textureData.mParameters.m_format = (aTexture.mHasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
+    textureData.mParameters.m_pImages[0][0] = pixelSource;
+    textureData.mParameters.m_pProgress_func = CrunchCallbackFunction;
+
+    if (std::thread::hardware_concurrency() > 1)
+    {
+      textureData.mParameters.m_num_helper_threads = std::thread::hardware_concurrency() - 1;
+    }
+
+    textureData.mParameters.m_quality_level = 255;
+    
+    { 
+      ImportTextureDialog import{ textureData, this };
+      import.exec();
+    }
+
+    if (false == textureData.mCompress)
+    {
+      return true;
+    }
+
     QProgressDialog compressProgress(message.c_str(), "cancel", 0, 100, this);
     compressProgress.setWindowModality(Qt::WindowModal);
-    
-    
-    crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(aTexture.mPixels);
-    
-    crn_comp_params comp_params;
-    comp_params.m_width = aTexture.mWidth;
-    comp_params.m_height = aTexture.mHeight;
-    comp_params.set_flag(cCRNCompFlagPerceptual, true);
-    comp_params.set_flag(cCRNCompFlagDXT1AForTransparency, false);
-    comp_params.set_flag(cCRNCompFlagHierarchical, false);
-    comp_params.m_file_type = cCRNFileTypeCRN;
-    
-    comp_params.m_format = (aTexture.mHasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
-    comp_params.m_pImages[0][0] = pixelSource;
-    comp_params.m_pProgress_func = progress_callback_func;
-    comp_params.m_pProgress_func_data = &compressProgress;
-    comp_params.m_num_helper_threads = std::thread::hardware_concurrency();
-    comp_params.m_quality_level = 255;
-    
-    
-    auto check = comp_params.check();
-    
+    compressProgress.setValue(0);
+
+    textureData.mParameters.m_pProgress_func_data = &compressProgress;
     YTE::u32 filesize;
-    auto crnFileVoid = crn_compress(comp_params, filesize);
-    
+
+    compressProgress.show();
+    QCoreApplication::processEvents();
+
+    void *crnFileVoid = crn_compress(textureData.mParameters, filesize);
+
     if (nullptr == crnFileVoid)
     {
       mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,

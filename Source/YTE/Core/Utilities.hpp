@@ -44,6 +44,12 @@
   #define YTEProfileFunction(aColor) EASY_FUNCTION(aColor)
   #define YTEProfileBlock(aColor, aName) EASY_BLOCK(aName, aColor)
 #else
+  namespace profiler
+  {
+    inline void startListen(uint16_t aBlah = 1) { (void)aBlah; }
+    inline void stopListen() { }
+  }
+
   #define YTEProfileName(aName)
   #define YTEProfileFunction(aColor)
   #define YTEProfileBlock(aColor, aName)
