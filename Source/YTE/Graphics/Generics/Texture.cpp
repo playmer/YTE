@@ -61,20 +61,12 @@ namespace YTE
       textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
     }
 
-
-
     fs::path type{ textureFile };
     type = type.extension();
 
     if (type == L".png" || type == L".jpg")
     {
       int texWidth, texHeight, texChannels;
-
-
-      file = L"Originals" / file.filename();
-      std::string fileStr{ file.string() };
-
-      auto textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
 
       stbi_uc* loadedFile = stbi_load(textureFile.c_str(),
                                       &texWidth,
@@ -112,8 +104,6 @@ namespace YTE
     {
       file = L"Crunch" / file.filename();
       std::string fileStr{ file.string() };
-
-      auto textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
 
       std::ifstream fileToRead(textureFile, std::ios::binary | std::ios::ate);
       std::streamsize streamSize = fileToRead.tellg();

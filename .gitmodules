@@ -16,3 +16,6 @@
 [submodule "Dependencies/bullet3"]
 	path = Dependencies/bullet3
 	url = https://github.com/playmer/bullet3.git
+[submodule "Dependencies/crunch"]
+	path = Dependencies/crunch
+	url = https://github.com/playmer/crunch.git

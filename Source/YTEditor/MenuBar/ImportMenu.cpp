@@ -21,6 +21,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qprogressdialog.h>
 #include <qfiledialog.h>
+#include <QSlider>
+#include <QCheckBox>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -457,60 +459,85 @@ namespace YTEditor
     return helper;
   }
 
+  class ImportTextureDialog : public QDialog
+  {
+    Q_OBJECT
+  public:
+    ImportTextureDialog(QWidget *aParent = nullptr)
+      : QDialog(aParent)
+    {
+      mSlider = new QSlider{ Qt::Orientation::Horizontal ,this };
+      mSlider->setMinimum(0);
+      mSlider->setMinimum(255);
+
+      mCheckBox = new QCheckBox{ "Compress", this };
+      mCheckBox->setCheckState(Qt::Unchecked);
+      mCheckBox->setCheckable(true);
+
+      this->setModal(true);
+    }
+
+  private:
+    QSlider *mSlider;
+    QCheckBox *mCheckBox;
+  };
+
   bool ImportMenu::CompressTextureFile(TextureHelper &aTexture)
   {
-    //std::string message{ "Compressing " };
-    //message += aTexture.mTextureFile;
-    //
-    //path textureCrunchDir{ aTexture.mTextureDirectory / L"Crunch" };
-    //path textureFile{ aTexture.mTextureFile };
-    //
-    //aTexture.mCrunchFilePath = textureCrunchDir / textureFile.filename().concat(L".crn");
-    //
-    //QProgressDialog compressProgress(message.c_str(), "cancel", 0, 100, this);
-    //compressProgress.setWindowModality(Qt::WindowModal);
-    //
-    //
-    //crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(aTexture.mPixels);
-    //
-    //crn_comp_params comp_params;
-    //comp_params.m_width = aTexture.mWidth;
-    //comp_params.m_height = aTexture.mHeight;
-    //comp_params.set_flag(cCRNCompFlagPerceptual, true);
-    //comp_params.set_flag(cCRNCompFlagDXT1AForTransparency, false);
-    //comp_params.set_flag(cCRNCompFlagHierarchical, false);
-    //comp_params.m_file_type = cCRNFileTypeCRN;
-    //
-    //comp_params.m_format = (aTexture.mHasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
-    //comp_params.m_pImages[0][0] = pixelSource;
-    //comp_params.m_pProgress_func = progress_callback_func;
-    //comp_params.m_pProgress_func_data = &compressProgress;
-    //comp_params.m_num_helper_threads = std::thread::hardware_concurrency();
-    //
-    //auto check = comp_params.check();
-    //
-    //YTE::u32 filesize;
-    //auto crnFileVoid = crn_compress(comp_params, filesize);
-    //
-    //if (nullptr == crnFileVoid)
-    //{
-    //  mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-    //                                           "Failed to compress Texture file: %s",
-    //                                           aTexture.mTextureFile.c_str());
-    //
-    //  mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-    //                                           "Aborting texture load!");
-    //
-    //  return false;
-    //}
-    //
-    //const char *crnFile = static_cast<const char*>(crnFileVoid);
-    //std::ofstream ostrm(aTexture.mCrunchFilePath, std::ios::binary);
-    //ostrm.write(crnFile, filesize);
-    //
-    //crn_free_block(crnFileVoid);
-    //
-    //compressProgress.setValue(100);
+    std::string message{ "Compressing " };
+    message += aTexture.mTextureFile;
+    
+    path textureCrunchDir{ aTexture.mTextureDirectory / L"Crunch" };
+    path textureFile{ aTexture.mTextureFile };
+    
+    aTexture.mCrunchFilePath = textureCrunchDir / textureFile.filename().concat(L".crn");
+    
+    QProgressDialog compressProgress(message.c_str(), "cancel", 0, 100, this);
+    compressProgress.setWindowModality(Qt::WindowModal);
+    
+    
+    crn_uint32 *pixelSource = reinterpret_cast<crn_uint32*>(aTexture.mPixels);
+    
+    crn_comp_params comp_params;
+    comp_params.m_width = aTexture.mWidth;
+    comp_params.m_height = aTexture.mHeight;
+    comp_params.set_flag(cCRNCompFlagPerceptual, true);
+    comp_params.set_flag(cCRNCompFlagDXT1AForTransparency, false);
+    comp_params.set_flag(cCRNCompFlagHierarchical, false);
+    comp_params.m_file_type = cCRNFileTypeCRN;
+    
+    comp_params.m_format = (aTexture.mHasAlpha ? cCRNFmtDXT5 : cCRNFmtDXT1);
+    comp_params.m_pImages[0][0] = pixelSource;
+    comp_params.m_pProgress_func = progress_callback_func;
+    comp_params.m_pProgress_func_data = &compressProgress;
+    comp_params.m_num_helper_threads = std::thread::hardware_concurrency();
+    comp_params.m_quality_level = 255;
+    
+    
+    auto check = comp_params.check();
+    
+    YTE::u32 filesize;
+    auto crnFileVoid = crn_compress(comp_params, filesize);
+    
+    if (nullptr == crnFileVoid)
+    {
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+                                               "Failed to compress Texture file: %s",
+                                               aTexture.mTextureFile.c_str());
+    
+      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+                                               "Aborting texture load!");
+    
+      return false;
+    }
+    
+    const char *crnFile = static_cast<const char*>(crnFileVoid);
+    std::ofstream ostrm(aTexture.mCrunchFilePath, std::ios::binary);
+    ostrm.write(crnFile, filesize);
+    
+    crn_free_block(crnFileVoid);
+    
+    compressProgress.setValue(100);
 
     return true;
   }

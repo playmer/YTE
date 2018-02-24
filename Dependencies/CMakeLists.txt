@@ -80,9 +80,8 @@ target_compile_options(BulletDynamics        PRIVATE ${disableWarning})
 target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning}) 
 target_compile_options(BulletSoftBody        PRIVATE ${disableWarning}) 
 target_compile_options(LinearMath            PRIVATE ${disableWarning}) 
-target_compile_options(crunch                PRIVATE ${disableWarning})
+target_compile_options(crn                   PRIVATE ${disableWarning})
 target_compile_options(fmt                   PRIVATE ${disableWarning})
-#target_compile_options(LuaJIT                PRIVATE ${disableWarning})
 target_compile_options(STB                   PRIVATE ${disableWarning})
 target_compile_options(VkHLF                 PRIVATE ${disableWarning})
 target_compile_options(glslang               PRIVATE ${disableWarning})
@@ -90,7 +89,6 @@ target_compile_options(OGLCompiler           PRIVATE ${disableWarning})
 target_compile_options(OSDependent           PRIVATE ${disableWarning})
 target_compile_options(SPIRV                 PRIVATE ${disableWarning})
 target_compile_options(SPVRemapper           PRIVATE ${disableWarning})
-#target_compile_options(HLSL                  PRIVATE ${disableWarning})
 target_compile_options(KissFFT               PRIVATE ${disableWarning})
 
 set_target_properties(assimp
@@ -105,7 +103,7 @@ set_target_properties(assimp
                       BulletInverseDynamics
                       BulletSoftBody
                       LinearMath
-                      crunch
+                      crn
                       fmt
                       KissFFT
                       #LuaJIT

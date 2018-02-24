@@ -56,7 +56,7 @@ target_link_libraries(YTE
     BulletInverseDynamics
     BulletSoftBody
     LinearMath
-    crunch
+    crn
     glslang
     fmt    
     KissFFT
