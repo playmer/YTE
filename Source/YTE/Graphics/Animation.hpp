@@ -37,20 +37,13 @@ namespace YTE
     void Update(LogicUpdate* aEvent);
   
     double GetSpeed() const
-
     double GetMaxTime() const;
 
-    {
-      return mSpeed;
-    }
 
     void SetSpeed(double aSpeed)
-    {
-      mSpeed = aSpeed;
-    }
+    void SetSpeed(float aSpeed);
 
     bool GetPlayOverTime() const;
-
     void SetPlayOverTime(bool aPlayOverTime);
 
     std::string mName;
@@ -67,6 +60,7 @@ namespace YTE
     double mElapsedTime;
 
     bool mPlayOverTime;
+    bool mIsLooping;
 
     void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
     aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
@@ -100,7 +94,9 @@ namespace YTE
   private:
     Model *mModel;
     Engine *mEngine;
-    std::vector<std::pair<Animation*, std::string>> mAnimations;
+    //std::vector<std::pair<Animation*, std::string>> mAnimations;
+
+    std::map<std::string, Animation *> mAnimations;
   };
 
 

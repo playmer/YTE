@@ -37,6 +37,7 @@ namespace YTE
 
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
     : mPlayOverTime(true)
+    , mIsLooping(false)
   {
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
@@ -78,6 +79,10 @@ namespace YTE
     mModel = aModel;
     mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
     mEngine->YTERegister(Events::AnimationUpdate, this, &Animation::Update);
+
+    mSpeed = 0.2f;
+    mPlayOverTime = false;
+    Play();
   }
 
   Animation::~Animation()
@@ -95,6 +100,17 @@ namespace YTE
       mElapsedTime += aEvent->Dt * mSpeed;
     mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond,
                                  mAnimation->mDuration);
+    }
+
+    if (!mIsLooping)
+    {
+      if (mElapsedTime * mAnimation->mTicksPerSecond > mAnimation->mDuration)
+      {
+        mPlayOverTime = false;
+        mIsLooping = false;
+        mCurrentAnimationTime = 0.0;
+        mElapsedTime = 0.0;
+      }
     }
 
     aiMatrix4x4 identity = aiMatrix4x4();
@@ -120,6 +136,23 @@ namespace YTE
   double Animation::GetMaxTime() const
   {
     return mAnimation->mDuration;
+  }
+
+  void Animation::Play(bool aWillLoop)
+  {
+    mIsLooping = aWillLoop;
+    mPlayOverTime = true;
+    mElapsedTime = 0.0;
+  }
+
+  float Animation::GetSpeed() const
+  {
+    return mSpeed;
+  }
+
+  void Animation::SetSpeed(float aSpeed)
+  {
+    mSpeed = aSpeed;
   }
 
   bool Animation::GetPlayOverTime() const
@@ -352,7 +385,7 @@ namespace YTE
 
     for (auto it : mAnimations)
     {
-      delete it.first;
+      delete it.second;
     }
 
     mAnimations.clear();
@@ -364,7 +397,7 @@ namespace YTE
 
     for (auto it : mAnimations)
     {
-      it.first->Initialize(mModel, mEngine);
+      it.second->Initialize(mModel, mEngine);
     }
   }
 
@@ -376,7 +409,10 @@ namespace YTE
 
     for (auto &animation : self->mAnimations)
     {
-      animations.emplace_back(std::make_pair(animation.first, animation.second));
+      std::string name = animation.first;
+      Animation *anim = animation.second;
+
+      animations.emplace_back(std::make_pair(anim, name));
     }
 
     return animations;
@@ -394,7 +430,7 @@ namespace YTE
 
     Animation *anim = new Animation(aName);
 
-    mAnimations.emplace_back(std::make_pair(anim, aName));
+    mAnimations.insert_or_assign(aName, anim);
 
     return anim;
   }
@@ -403,9 +439,9 @@ namespace YTE
   {
     for (auto it = mAnimations.begin(); it != mAnimations.end(); ++it)
     {
-      if (it->first == aAnimation)
+      if (it->second == aAnimation)
       {
-        delete it->first;
+        delete it->second;
         mAnimations.erase(it);
         return;
       }
@@ -421,12 +457,12 @@ namespace YTE
     for (auto &animationIt : owner->mAnimations)
     {
       auto materialSerialized = SerializeByType(aAllocator, 
-                                                animationIt.first, 
+                                                animationIt.second, 
                                                 TypeId<Animation>());
 
       RSValue materialName;
 
-      auto &name = animationIt.second;
+      auto &name = animationIt.first;
       materialName.SetString(name.c_str(),
                              static_cast<RSSizeType>(name.size()),
                              aAllocator);
