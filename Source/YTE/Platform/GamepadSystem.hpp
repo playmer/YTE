@@ -24,14 +24,14 @@ namespace YTE
       
     GamepadSystem();
 
-    void Update(float aDt);
+    void Update(double aDt);
     void CheckForControllers(bool aChecking) { mChecking = aChecking; };
     XboxController* GetXboxController(Controller_Id aId);
 
   private:
-    void UpdateXboxControllers(float aDt);
+    void UpdateXboxControllers(double aDt);
 
-    std::array<std::pair<XboxController, float>, 4> mXboxControllers;
+    std::array<std::pair<XboxController, double>, 4> mXboxControllers;
     bool mChecking;
 
   };

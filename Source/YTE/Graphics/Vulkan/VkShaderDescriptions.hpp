@@ -71,6 +71,17 @@ namespace YTE
     }
 
 
+    template <typename T>
+    void AddBuffer(std::string_view aName, 
+                   vk::DescriptorType aType, 
+                   vk::ShaderStageFlagBits aShader)
+    {
+
+
+      mDescriptorSetLayout.emplace_back(mBufferBinding++, aType, aShader, nullptr);
+    }
+
+
     /////////////////////////////////
     // Getter 
     /////////////////////////////////
@@ -140,6 +151,7 @@ namespace YTE
       std::memcpy(mData.data() + current, static_cast<void*>(&aValue), sizeof(T));
     }
 
+    // Vertex Input Data
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
     std::vector<std::string> mLines;
@@ -147,6 +159,10 @@ namespace YTE
     u32 mVertexOffset = 0;
     u32 mLocation = 0;
     u32 mConstant = 0;
+
+    // Buffer Data
+    std::vector<vkhlf::DescriptorSetLayoutBinding> mDescriptorSetLayout;
+    u32 mBufferBinding = 0;
 
 
     std::vector<vk::SpecializationMapEntry> mEntries;

@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#ifdef Windows
+#ifdef YTE_Windows
 
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #include <XInput.h>
@@ -94,7 +94,7 @@ namespace YTE
     }
 
 
-  void XboxController::UpdateState(XboxControllerState *aState, float aDt)
+  void XboxController::UpdateState(XboxControllerState *aState, double aDt)
   {
     if (aState == nullptr)
     {
@@ -109,8 +109,8 @@ namespace YTE
     XINPUT_STATE *state = reinterpret_cast<XINPUT_STATE *>(aState);
       
     // TODO (Josh): Make some way to do this contiguously instead of using the TODO trick.
-      // Include trick for updating button states.
-#define ProcessButtonMacro(aOsKey, aOurKey) ProcessButton(state, aOsKey, aOurKey);
+    // Include trick for updating button states.
+    #define ProcessButtonMacro(aOsKey, aOurKey) ProcessButton(state, aOsKey, aOurKey);
     #include "YTE/Platform/Windows/OsXboxButtons_Windows.hpp"
     #undef ProcessButtonMacro
 
@@ -119,7 +119,7 @@ namespace YTE
     mLeftStick = GetStickState(state->Gamepad.sThumbLX, state->Gamepad.sThumbLY, true);
     mRightStick = GetStickState(state->Gamepad.sThumbRX, state->Gamepad.sThumbRY, false);
 
-    /* Evan, the geniuse gave the great point that comparing these to the prev stick value would 
+    /* Evan, the genius gave the great point that comparing these to the prev stick value would 
        function as a true stick change (and could save some event constructions in the case
        of a stick being held in the same position that is not zero) */
 
@@ -234,7 +234,7 @@ namespace YTE
     XInputSetState(mGamepadIndex, &zerovibration);
   }
 
-  void XboxController::VibrateForTime(float aLeftSpeed, float aRightSpeed, float aTime)
+  void XboxController::VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime)
   {
     Vibration vibe;
     vibe.mLeft = aLeftSpeed;

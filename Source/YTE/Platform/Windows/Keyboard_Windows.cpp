@@ -8,7 +8,7 @@
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#ifdef Windows
+#ifdef YTE_Windows
 
 #include <stdint.h>
 

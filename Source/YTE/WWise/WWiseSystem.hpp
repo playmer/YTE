@@ -68,7 +68,7 @@ namespace YTE
 
     virtual void Initialize() override;
     // Updates the system to the current frame.
-    void Update(float);
+    void Update(double);
 
     // Cleans up anything in the system.
     virtual ~WWiseSystem();

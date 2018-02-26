@@ -78,7 +78,7 @@ namespace YTE
 
     enabledExtensions.emplace_back("VK_KHR_surface");
 
-#if defined(Windows)
+#if defined(YTE_Windows)
     enabledExtensions.emplace_back("VK_KHR_win32_surface");
 #endif
 

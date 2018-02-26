@@ -45,11 +45,39 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+    YTEBindProperty(&Sprite::GetColumns, &Sprite::SetColumns, "Columns")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Sprite::GetRows, &Sprite::SetRows, "Rows")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Sprite::GetFrames, &Sprite::SetFrames, "Frames")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&Sprite::GetSpeed, &Sprite::SetSpeed, "Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("How many seconds it will take for the full animation to run.");
+
+    YTEBindProperty(&Sprite::GetAnimating, &Sprite::SetAnimating, "Animating")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
-    , mConstructing(true)
+    : BaseModel{ aOwner, aSpace, aProperties }
+    , mConstructing{ true }
+    , mAnimating{ false }
+    , mColumns{ 1 }
+    , mRows{ 1 }
+    , mFrames{ 1 }
+    , mSpeed{ 1.0f }
+    , mTimeAccumulated{ 0.0 }
+    , mCurrentIndex{ 0 }
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -59,6 +87,80 @@ namespace YTE
   Sprite::~Sprite()
   {
 
+  }
+
+  void Sprite::Update(LogicUpdate *aUpdate)
+  {
+    auto delta = mSpeed / mFrames;
+
+    if (mInstantiatedSprite)
+    {
+      mTimeAccumulated += aUpdate->Dt;
+
+      auto xWidth = 1.0f / mColumns;
+      auto yHeight = 1.0f / mRows;
+
+      if (mTimeAccumulated > delta)
+      {
+        mTimeAccumulated = 0.0;
+        auto column = mCurrentIndex % mColumns;
+        auto row = mCurrentIndex / mColumns;
+
+        glm::vec3 uv0 = { 0.0f,   1.0f - yHeight, 0.0f }; // Bottom Left
+        glm::vec3 uv1 = { xWidth, 1.0f - yHeight, 0.0f }; // Bottom Right
+        glm::vec3 uv2 = { xWidth, 1.0f,           0.0f }; // Top Right
+        glm::vec3 uv3 = { 0.0f,   1.0f,           0.0f }; // Top Left
+
+        float xTranslate = xWidth * column;
+        float yTranslate = -yHeight * row;
+
+        uv0.x += xTranslate;
+        uv0.y += yTranslate;
+        uv1.x += xTranslate;
+        uv1.y += yTranslate;
+        uv2.x += xTranslate;
+        uv2.y += yTranslate;
+        uv3.x += xTranslate;
+        uv3.y += yTranslate;
+
+        // update the model
+        auto mesh = mInstantiatedSprite->GetMesh();
+
+        mSubmesh.mVertexBuffer[0].mTextureCoordinates = uv0;
+        mSubmesh.mVertexBuffer[1].mTextureCoordinates = uv1;
+        mSubmesh.mVertexBuffer[2].mTextureCoordinates = uv2;
+        mSubmesh.mVertexBuffer[3].mTextureCoordinates = uv3;
+        
+        mesh->UpdateVertices(0, mSubmesh.mVertexBuffer);
+
+        ++mCurrentIndex;
+
+        if (mCurrentIndex > (mFrames - 1))
+        {
+          mCurrentIndex = 0;
+        }
+      }
+    }
+  }
+
+
+  void Sprite::SetAnimating(bool aAnimating)
+  {
+    if (aAnimating == mAnimating)
+    {
+      return;
+    }
+
+    mAnimating = aAnimating;
+
+    if (aAnimating)
+    {
+      mSpace->YTERegister(Events::LogicUpdate, this, &Sprite::Update);
+    }
+    else
+    {
+      mSpace->YTEDeregister(Events::LogicUpdate, this, &Sprite::Update);
+    }
   }
 
   void Sprite::Initialize()
@@ -116,8 +218,7 @@ namespace YTE
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;
-
-    Submesh submesh;
+    meshName += mOwner->GetGUID().ToString();
 
     Vertex vert0;
     Vertex vert1;
@@ -133,28 +234,40 @@ namespace YTE
     vert3.mPosition = { -0.5, 0.5, 0.0 };
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
 
-    std::vector<u32> mIndices{
+    if (mAnimating)
+    {
+      auto xWidth = 1.0f / mColumns;
+      auto yHeight = 1.0f / mRows;
+
+      vert0.mTextureCoordinates = { 0.0f,   1.0f - yHeight, 0.0f };
+      vert1.mTextureCoordinates = { xWidth, 1.0f - yHeight, 0.0f };
+      vert2.mTextureCoordinates = { xWidth, 1.0f,           0.0f };
+      vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
+    }
+
+    mSubmesh.mDiffuseMap = mTextureName;
+    mSubmesh.mDiffuseType = TextureViewType::e2D;
+    mSubmesh.mShaderSetName = "Sprite";
+
+    mSubmesh.mCullBackFaces = false;
+
+    mSubmesh.mVertexBuffer.clear();
+
+    mSubmesh.mVertexBuffer.emplace_back(vert0);
+    mSubmesh.mVertexBuffer.emplace_back(vert1);
+    mSubmesh.mVertexBuffer.emplace_back(vert2);
+    mSubmesh.mVertexBuffer.emplace_back(vert3);
+
+    mSubmesh.mIndexBuffer.clear();
+    mSubmesh.mIndexBuffer = {
       0, 1, 2,
       2, 3, 0
     };
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
-    submesh.mShaderSetName = "Sprite";
+    mSubmesh.mVertexBufferSize = mSubmesh.mVertexBuffer.size() * sizeof(Vertex);
+    mSubmesh.mIndexBufferSize = mSubmesh.mIndexBuffer.size() * sizeof(u32);
 
-    submesh.mCullBackFaces = false;
-
-    submesh.mVertexBuffer.emplace_back(vert0);
-    submesh.mVertexBuffer.emplace_back(vert1);
-    submesh.mVertexBuffer.emplace_back(vert2);
-    submesh.mVertexBuffer.emplace_back(vert3);
-
-    submesh.mIndexBuffer = std::move(mIndices);
-
-    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-    submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
-
-    std::vector<Submesh> submeshes{ submesh };
+    std::vector<Submesh> submeshes{ mSubmesh };
 
     auto view = mSpace->GetComponent<GraphicsView>();
 

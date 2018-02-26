@@ -61,8 +61,6 @@ namespace YTE
       textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
     }
 
-
-
     fs::path type{ textureFile };
     type = type.extension();
 
@@ -104,6 +102,9 @@ namespace YTE
     }
     else if (type == L".crn")
     {
+      file = L"Crunch" / file.filename();
+      std::string fileStr{ file.string() };
+
       std::ifstream fileToRead(textureFile, std::ios::binary | std::ios::ate);
       std::streamsize streamSize = fileToRead.tellg();
       fileToRead.seekg(0, std::ios::beg);
@@ -122,7 +123,7 @@ namespace YTE
         return;
       }
 
-      u32 ddsSize;
+      u32 ddsSize{ static_cast<u32>(mData.size()) };
       auto dds = crn_decompress_crn_to_dds(mData.data(), ddsSize);
 
       mData.clear();

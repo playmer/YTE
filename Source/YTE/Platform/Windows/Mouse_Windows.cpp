@@ -7,7 +7,7 @@
 */
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
-#ifdef Windows
+#ifdef YTE_Windows
 
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #include <Winuser.h>

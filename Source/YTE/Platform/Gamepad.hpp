@@ -58,7 +58,7 @@ namespace YTE
   {
     float mLeft;
     float mRight;
-    float mTime;
+    double mTime;
   };
 
 
@@ -70,9 +70,9 @@ namespace YTE
     XboxController(); 
     ~XboxController();
 
-    void UpdateState(XboxControllerState *state, float aDt);
+    void UpdateState(XboxControllerState *state, double aDt);
     void Vibrate(float aLeftSpeed, float aRightSpeed);
-    void VibrateForTime(float aLeftSpeed, float aRightSpeed, float aTime);
+    void VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime);
 
     bool IsButtonDown(Xbox_Buttons aButton);
     bool WasButtonDown(Xbox_Buttons aButton);

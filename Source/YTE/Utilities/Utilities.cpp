@@ -143,7 +143,7 @@ namespace YTE
     return finalPath;
   }
 
-  #ifdef Windows
+  #ifdef YTE_Windows
     static int vasprintf(char **strPtr, const char *aFormatString, va_list argv)
     {
       int needed = vsnprintf((*strPtr = nullptr), 0, aFormatString, argv);
@@ -248,6 +248,7 @@ namespace YTE
 
     DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
                 "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
+    YTEUnusedArgument(aFileType);
 
     return toReturn;
   }

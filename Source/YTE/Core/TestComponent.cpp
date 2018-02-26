@@ -63,7 +63,7 @@ namespace YTE
     //
     //glm::vec3 scale{ mCurrentScale, mCurrentScale, mCurrentScale };
 
-    mCurrentRotation.y = mTime;
+    mCurrentRotation.y = static_cast<float>(mTime);
 
     //printf("%s: %f\n", mOwner->GetName().c_str(), mCurrentRotation.y);
 

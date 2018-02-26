@@ -23,6 +23,24 @@ target_include_directories(YTE
     ${ParentDirectory}
 )
 
+# Find the EasyProfiler library
+set(EasyProfilerSDKPath $ENV{EasyProfilerSDK})
+if(EasyProfilerSDKPath)
+  set(CMAKE_PREFIX_PATH ${EasyProfilerSDKPath}/lib/cmake/easy_profiler/)
+  find_package(easy_profiler REQUIRED)
+  target_link_libraries(YTE PUBLIC easy_profiler)
+  target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CAN_PROFILE=1>)
+  target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CAN_PROFILE=0>)
+
+  set(EasyProfilerBeingUsed TRUE)
+endif()
+
+if(EasyProfilerBeingUsed)
+  target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CAN_PROFILE=1>)
+  target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CAN_PROFILE=0>)
+else()
+  target_compile_definitions(YTE PUBLIC YTE_CAN_PROFILE=0)
+endif()
 
 target_link_libraries(YTE
   PUBLIC
@@ -38,15 +56,16 @@ target_link_libraries(YTE
     BulletInverseDynamics
     BulletSoftBody
     LinearMath
-    crunch
+    crn
     glslang
     fmt    
     KissFFT
-    LuaJIT
+    #LuaJIT
     STB
     VkHLF
-    XInput9_1_0.lib
 ) 
+
+
 
 set_target_properties(YTE
                       PROPERTIES
@@ -69,3 +88,8 @@ target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GL
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
 
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_DEBUG=1>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_DEBUG=0>)
+
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_RELEASE=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_RELEASE=1>)

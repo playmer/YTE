@@ -14,6 +14,8 @@ namespace YTE {
 
   void EventHandler::SendEvent(const std::string &aName, Event *aEvent)
   {
+    YTEProfileName(aName);
+
     auto &&list = mEventLists[aName];
 
     // If this event is already currently being sent on this object, we don't resend it.

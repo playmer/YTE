@@ -4,59 +4,69 @@
 # Author : Joshua T. Fisher (2017)
 ################################################################################
 Function(FindWWise aTarget)
-  Get_Filename_Component(WWisePath $ENV{WWISESDK} ABSOLUTE) 
+  # Find the WWise library
+  set(WWisePath $ENV{WWISESDK})
+  if(NOT WWisePath)
+    string(CONCAT errorString
+       "Please define the environment variable `WWISESDK` with the path to WWise "
+       "2017.1.0.6302 - i.e. export WWISESDK = "
+       "C:\Program Files (x86)\Audiokinetic\Wwise 2017.1.0.6302\SDK")
+    message(FATAL_ERROR ${errorString})
+  endif()
+
+  get_filename_component(WWisePath $ENV{WWISESDK} ABSOLUTE)
  
-  File(GLOB_RECURSE 
+  file(GLOB_RECURSE 
        CommonFiles 
        "${WWisePath}/samples/SoundEngine/Common/*.inl"
        "${WWisePath}/samples/SoundEngine/Common/*.cpp"
        "${WWisePath}/samples/SoundEngine/Common/*.h"
        "${WWisePath}/samples/SoundEngine/Common/*.hpp")
 
-  If (${WIN32})
-    Set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
+  if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+    set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
     
-    File(GLOB_RECURSE 
+    file(GLOB_RECURSE 
          PlatformFiles 
          "${WWisePath}/samples/SoundEngine/Win32/*.inl"
          "${WWisePath}/samples/SoundEngine/Win32/*.cpp"
          "${WWisePath}/samples/SoundEngine/Win32/*.h"
          "${WWisePath}/samples/SoundEngine/Win32/*.hpp")
-  Else()
-    Set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
+  else()
+    set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
 
-    File(GLOB_RECURSE 
+    file(GLOB_RECURSE 
          PlatformFiles 
          "${WWisePath}/samples/SoundEngine/POSIX/*.inl"
          "${WWisePath}/samples/SoundEngine/POSIX/*.cpp"
          "${WWisePath}/samples/SoundEngine/POSIX/*.h"
          "${WWisePath}/samples/SoundEngine/POSIX/*.hpp")
-  EndIf()
+  endif()
   
-  Set(WWiseTargetFiles ${CommonFiles} ${PlatformFiles})
+  set(WWiseTargetFiles ${CommonFiles} ${PlatformFiles})
 
-  Add_Library(${aTarget} ${WWiseTargetFiles})
+  add_library(${aTarget} ${WWiseTargetFiles})
 
-  Target_Compile_Definitions(${aTarget} PRIVATE UNICODE)
-  Target_Include_Directories(${aTarget} PRIVATE ${PlatformIncludeDirectory})
-  Target_Include_Directories(${aTarget} PUBLIC ${WWisePath}/include)
-  Target_Include_Directories(${aTarget} PUBLIC ${WWisePath}/samples)
+  target_compile_definitions(${aTarget} PRIVATE UNICODE)
+  target_include_directories(${aTarget} PRIVATE ${PlatformIncludeDirectory})
+  target_include_directories(${aTarget} PUBLIC ${WWisePath}/include)
+  target_include_directories(${aTarget} PUBLIC ${WWisePath}/samples)
 
-  File(GLOB_RECURSE 
+  file(GLOB_RECURSE 
        staticLibraryRelease
        "${WWisePath}/x64_vc150/Release/lib"
        "${WWisePath}/x64_vc150/Release/lib/*.lib")
         
-  File(GLOB_RECURSE 
+  file(GLOB_RECURSE 
        staticLibraryDebug
        "${WWisePath}/x64_vc150/Debug/lib"
        "${WWisePath}/x64_vc150/Debug/lib/*.lib")
 
-  ForEach(library ${staticLibraryRelease})
-    Target_Link_Libraries(${aTarget} optimized ${library})
-  EndForEach()
+  foreach(library ${staticLibraryRelease})
+    target_link_libraries(${aTarget} optimized ${library})
+  endforeach()
     
-  ForEach(library ${staticLibraryDebug})
-    Target_Link_Libraries(${aTarget} debug ${library})
-  EndForEach()
-EndFunction()
+  foreach(library ${staticLibraryDebug})
+    target_link_libraries(${aTarget} debug ${library})
+  endforeach()
+endfunction()

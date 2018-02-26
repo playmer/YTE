@@ -70,7 +70,7 @@ namespace YTE
 
     ~Composition();
 
-    virtual void Update(float dt);
+    virtual void Update(double dt);
 
     virtual void NativeInitialize();
     void PhysicsInitialize();
@@ -141,19 +141,32 @@ namespace YTE
       return components;
     }
 
-    template <typename ComponentType>
-    ComponentType* GetComponent()
+    template <typename tComponentType>
+    tComponentType* GetComponent()
     {
-      static_assert(std::is_base_of<Component, ComponentType>()
-                    && !std::is_same<Component, ComponentType>());
-      auto iterator = mComponents.Find(ComponentType::GetStaticType());
+      static_assert(std::is_base_of<Component, tComponentType>()
+                    && !std::is_same<Component, tComponentType>(),
+                    "Type must be derived from YTE::Component");
+      auto iterator = mComponents.Find(TypeId<tComponentType>());
 
       if (iterator == mComponents.end())
       {
         return nullptr;
       }
 
-      return static_cast<ComponentType*>(iterator->second.get());
+      return static_cast<tComponentType*>(iterator->second.get());
+    }
+
+    Component* GetDerivedComponent(BoundType *aType);
+
+    template <typename tComponentType>
+    tComponentType* GetDerivedComponent()
+    {
+      static_assert(std::is_base_of<Component, tComponentType>()
+                    && !std::is_same<Component, tComponentType>(),
+                    "Type must be derived from YTE::Component");
+
+      return static_cast<tComponentType*>(GetDerivedComponent(TypeId<tComponentType>()));
     }
 
     Component* GetComponent(BoundType *aType);

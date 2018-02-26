@@ -166,7 +166,7 @@ namespace YTE
 
   // ------------------------------------
   FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
+    : BaseModel{ aOwner, aSpace, aProperties }
     , mRenderMode(RenderMode::Triangle)   // triangle by default
     , mGravitationalPull(1000.0f)           // normal gravity
     , mGridSize(DefaultGridSize)          // grid size of 32 just for now
@@ -579,7 +579,7 @@ namespace YTE
                     mDrawableVertices[vertex].mHTilde0mkConjugate.y);
 
     // disperse the waves
-    float disp = Dispersion(x, z) * mTime;
+    float disp = static_cast<float>(Dispersion(x, z) * mTime);
 
     // Euler's Formula to get around SimpMath::complex exp
     float cosine = cos(disp);
@@ -943,7 +943,7 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::UpdateTime(float dt)
+  void FFT_WaterSimulation::UpdateTime(double dt)
   {
     mTime += dt * mTimeDilationEffect;
   }
@@ -953,6 +953,7 @@ namespace YTE
   void FFT_WaterSimulation::SetGirdSize(int aGridSize)
   {
     int oldGridSize = mGridSize;
+    YTEUnusedArgument(oldGridSize);
     mGridSize = aGridSize;
 
     //if (mGridSize != 2 && mGridSize != 4 && mGridSize != 8 && mGridSize != 16 && mGridSize != 32 &&
@@ -1361,6 +1362,15 @@ namespace YTE
     AdjustPositions();
   }
 
+  InstantiatedModel* FFT_WaterSimulation::GetInstantiatedModel()
+  {
+    if (mInstantiatedHeightmap.size())
+    {
+      return mInstantiatedHeightmap[0]->GetInstantiatedModel();
+    }
+
+    return nullptr;
+  }
 }
 
 #undef mGridSizePlus1

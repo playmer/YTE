@@ -35,6 +35,25 @@ namespace YTE
     mFields.Emplace(aField->GetName(), std::move(aField));
   }
 
+  bool Type::IsA(Type *aType, Type *aTypeToStopAt)
+  {
+    DebugAssert(IsA(aTypeToStopAt),
+                "The aTypeToStopAt must be a base type of the type being searched.");
+
+    Type *base = this;
+
+    while (base && base != aTypeToStopAt)
+    {
+      if (base == aType)
+      {
+        return true;
+      }
+
+      base = base->GetBaseType();
+    }
+
+    return false;
+  }
 
   bool Type::IsA(Type *aType)
   {
@@ -62,9 +81,9 @@ namespace YTE
   {
     Type *type = this;
 
-    while (type->GetPointerTo() ||
-      type->GetReferenceTo() ||
-      type->GetConstOf())
+    while (type->GetPointerTo()   ||
+           type->GetReferenceTo() ||
+           type->GetConstOf())
     {
       if (type->GetPointerTo())
       {

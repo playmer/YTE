@@ -109,6 +109,7 @@ namespace YTE
 /******************************************************************************/
     void BoatController::DockBoat(BoatDockEvent *aEvent)
     {
+      YTEUnusedArgument(aEvent);
       if (mCanDock)
       {
         // change input context
@@ -143,7 +144,7 @@ namespace YTE
 
     void BoatController::TurnBoat(BoatTurnEvent *aEvent)
     {
-      if (aEvent->StickDirection == glm::vec2(0,0))
+      if (aEvent->StickDirection == glm::vec2(0, 0))
       {
         mStartedTurning = false;
       }
@@ -158,17 +159,8 @@ namespace YTE
         mStartedTurning = true;
       }
 
-      mRotationAngle -= aEvent->StickDirection.x / 2.0f;
-      if (mRotationAngle > 360.0f)
-      {
-        mRotationAngle = 0.0f;
-      }
-      if (mRotationAngle < 0.0f)
-      {
-        mRotationAngle = 360.0f;
-      }
-
-      mTransform->SetRotationProperty(glm::vec3(0, mRotationAngle, 0));
+      auto rotationDelta = -(aEvent->StickDirection.x / 2.0f) * static_cast<float>(mOwner->GetEngine()->GetDt());
+      mTransform->Rotate({0, 1, 0 }, rotationDelta);
     }
 
     void BoatController::ChangeSail(SailStateChanged *aEvent)
@@ -193,6 +185,7 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
+      float dt = static_cast<float>(aEvent->Dt);
       /*
       if (mParticleEmitter != NULL)
       {
@@ -204,32 +197,31 @@ namespace YTE
 
       glm::vec3 vel = mRigidBody->GetVelocity();
 
-      mSoundSystem->SetRTPC("Sailing_Volume", vel.length());
-
-      mCurSpeed = vel.length();
+      mCurSpeed = glm::length(vel);
+      mSoundSystem->SetRTPC("Sailing_Volume", mCurSpeed);
 
       if (mIsSailUp)
       {
         auto gamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(Controller_Id::Xbox_P1);
-
+        
         if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Left))
         {
-          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * dt);
         }
         else if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Right))
         {
-          mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * dt);
         }
         else
         {
-          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * aEvent->Dt);
+          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * dt);
         }
         
         //if (mCurSpeed < 50.0f)
         //{
-        //  mRigidBody->ApplyImpulse(-1.0f * mOrientation->GetForwardVector() * aEvent->Dt * 5.0f, glm::vec3(0, 0, 0));
+        //  mRigidBody->ApplyImpulse(mOrientation->GetForwardVector() * aEvent->Dt, 
+        //                           mTransform->GetTranslation());
         //}
-        
       }
       else
       {

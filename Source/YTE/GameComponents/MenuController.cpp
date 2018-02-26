@@ -47,7 +47,7 @@ namespace YTE
 		mGamePad->YTERegister(Events::XboxButtonRelease, this, &MenuController::OnXboxButtonRelease);
 	
 		mMenuElements = mOwner->GetCompositions();
-		mNumElements = mMenuElements->size();
+		mNumElements = static_cast<int>(mMenuElements->size());
 
 		mMyTransform = mOwner->GetComponent<Transform>();
 		//mViewScale = mMyTransform->GetScale();

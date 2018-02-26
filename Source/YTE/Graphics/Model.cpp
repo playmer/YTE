@@ -103,7 +103,7 @@ namespace YTE
   // Model Class Functions
   /////////////////////////////////
   Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
+    : BaseModel{ aOwner, aSpace, aProperties }
     , mRenderer(nullptr)
     , mWindow(nullptr)
     , mMeshName("")

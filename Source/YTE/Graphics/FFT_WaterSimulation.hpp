@@ -14,12 +14,13 @@
 // YTE
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/BaseModel.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/UBOs.hpp"
+
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
 #include "YTE/Physics/ForwardDeclarations.hpp"
-
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Math/Complex.hpp"           // complex
 #include "YTE/Math/Complex_KISSFFT.hpp"   // complex_kfft
@@ -35,7 +36,7 @@ namespace YTE
   // Simulates water using fft or dft algorithms
   // Use with caution, this class will be changing
   /*******************/
-  class FFT_WaterSimulation : public Component
+  class FFT_WaterSimulation : public BaseModel
   {
   public:
     /*******************/
@@ -98,6 +99,8 @@ namespace YTE
     /*******************/
     void EditorUpdate(LogicUpdate *aEvent);
 
+    InstantiatedModel* GetInstantiatedModel() override;
+
 
   private:
     /*******************/
@@ -148,7 +151,7 @@ namespace YTE
     // Note that a dt value doesnt work, the FFT and DFT translate the sinusoids based on how
     // much time has elapsed, not the delta time
     /*******************/
-    void UpdateTime(float dt);
+    void UpdateTime(double dt);
 
     /*******************/
     // Constructs the initial data states of the variables
@@ -280,8 +283,8 @@ namespace YTE
     glm::vec2 mWindFactor;   
     float mVertexDistanceX;  
     float mVertexDistanceZ;  
-    float mTimeDilationEffect;
-    float mTime;
+    double mTimeDilationEffect;
+    double mTime;
     bool mReset;
     std::vector<UBOModel> mInstancingMatrices;
     std::string mRenderModeStr;

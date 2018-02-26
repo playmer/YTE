@@ -218,7 +218,7 @@ namespace YTE
   }
 
 
-  void Composition::Update(float dt)
+  void Composition::Update(double dt)
   {
     (void)dt;
   }
@@ -612,8 +612,6 @@ namespace YTE
 
       if (nullptr != dependencies)
       {
-        auto &types = dependencies->mTypes;
-
         for (auto &orTypes : dependencies->mTypes)
         {
           for (auto orType : orTypes)
@@ -738,6 +736,23 @@ namespace YTE
     }
 
     return toReturn;
+  }
+
+  Component* Composition::GetDerivedComponent(BoundType *aType)
+  {
+    auto componentType = TypeId<Component>();
+
+    for (auto &componentIt : mComponents)
+    {
+      auto type = componentIt.first;
+
+      if (type->IsA(aType, componentType))
+      {
+        return componentIt.second.get();
+      }
+    }
+
+    return nullptr;
   }
 
   Component* Composition::AddComponent(BoundType *aType)

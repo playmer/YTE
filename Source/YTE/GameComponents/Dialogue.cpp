@@ -49,20 +49,23 @@ namespace YTE
 
   void Dialogue::Update(LogicUpdate *aEvent)
   {
-
+    YTEUnusedArgument(aEvent);
   }
 
   void Dialogue::OnCollisionPersist(CollisionPersisted * aEvent)
   {
+    YTEUnusedArgument(aEvent);
   }
 
   void Dialogue::OnCollisionStart(CollisionStarted * aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mActive = true;
   }
 
   void Dialogue::OnCollisionEnd(CollisionEnded * aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mActive = false;
   }
 
@@ -101,6 +104,7 @@ namespace YTE
 
   void Dialogue::OnConfirm(DialogueConfirm *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     if (!mActive)
     {
       return;
@@ -116,6 +120,7 @@ namespace YTE
 
   void Dialogue::OnExit(DialogueExit *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     if (!mActive)
     {
       return;

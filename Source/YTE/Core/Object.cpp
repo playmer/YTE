@@ -102,6 +102,10 @@ namespace YTE
       {
         setter->Invoke(aSelf, ValueAsFloat(value));
       }
+      else if (setterType == TypeId<double>())
+      {
+        setter->Invoke(aSelf, ValueAsDouble(value));
+      }
       else if (setterType->GetEnumOf())
       {
         Type *enumType = setterType;
@@ -236,6 +240,11 @@ namespace YTE
       {
         auto value = any.As<float>(); 
         FloatAsValue(propertyValue, value, aAllocator);
+      }
+      else if (propertyType == TypeId<double>())
+      {
+        auto value = any.As<double>();
+        DoubleAsValue(propertyValue, value, aAllocator);
       }
       else if (propertyType->GetEnumOf())
       {

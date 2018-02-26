@@ -46,10 +46,17 @@ namespace YTE
   void MotionState::setWorldTransform(const btTransform& centerOfMassWorldTrans)
   {
     if (mKinematic)
+    {
       return;
+    }
 
+    // If the motionstate is changing the transform, we don't need the transform to come back
+    // and inform Bullet of changes.
+    auto informOriginal = mTransform->GetInformPhysics();
+    mTransform->SetInformPhysics(false);
     mTransform->SetWorldTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
     mTransform->SetWorldRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
+    mTransform->SetInformPhysics(informOriginal);
   }
 
   YTEDefineType(Transform)
@@ -87,8 +94,11 @@ namespace YTE
 
   Transform::Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mScale(1.f, 1.f, 1.f)
-    , mWorldScale(1.f, 1.f, 1.f)
+    , mTranslation{0.f,0.f,0.f}
+    , mScale{1.f, 1.f, 1.f}
+    , mWorldTranslation{ 0.f,0.f,0.f }
+    , mWorldScale{ 1.f, 1.f, 1.f }
+    , mInformPhysics{true}
   {
     DeserializeByType(aProperties, this, GetStaticType());
   };
@@ -264,6 +274,22 @@ namespace YTE
     SetInternalRotation(parentRotation, aLocalRotation);
   }
 
+
+  void Transform::Rotate(glm::vec3 aAxis, float aAngle)
+  {
+    auto rotation = YTE::AroundAxis(aAxis, aAngle);
+
+    SetRotation(mRotation * rotation);
+  }
+
+
+  void Transform::RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint)
+  {
+    YTEUnusedArgument(aAxis);
+    YTEUnusedArgument(aAngle);
+    YTEUnusedArgument(aPoint);
+  }
+
   ////////////////////////////////////////////////////////////////////////////
   // World Setters
   ////////////////////////////////////////////////////////////////////////////
@@ -334,7 +360,7 @@ namespace YTE
     mWorldTranslation = aParentTranslation + aLocalTranslation;
     mTranslation = aLocalTranslation;
 
-    InformPhysicsOfChange(Events::PositionChanged);
+    SendTransformEvents(Events::PositionChanged);
   }
 
   void Transform::SetInternalScale(const glm::vec3 &aParentScale, const glm::vec3 &aLocalScale)
@@ -342,7 +368,7 @@ namespace YTE
     mWorldScale = aParentScale * aLocalScale;
     mScale = aLocalScale;
 
-    InformPhysicsOfChange(Events::ScaleChanged);
+    SendTransformEvents(Events::ScaleChanged);
   }
 
   void Transform::SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation)
@@ -358,7 +384,7 @@ namespace YTE
     mWorldRotation = newWorldRotation;
     mRotation = local;
 
-    InformPhysicsOfChange(Events::RotationChanged, localDifference, worldDifference);
+    SendTransformEvents(Events::RotationChanged, localDifference, worldDifference);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -425,15 +451,19 @@ namespace YTE
     return rotation;
   }
 
-  void Transform::InformPhysicsOfChange(const std::string &aEvent,
-                                        glm::quat aLocalRotationDifference,
-                                        glm::quat aWorldRotationDifference)
+  void Transform::SendTransformEvents(const std::string &aEvent,
+                                      glm::quat aLocalRotationDifference,
+                                      glm::quat aWorldRotationDifference)
   {
-    // TODO: Inform physics of scale change.
-    auto rigidBody = mOwner->GetComponent<RigidBody>();
-    if (rigidBody != nullptr)
+    if (mInformPhysics)
     {
-      rigidBody->SetPhysicsTransform(mTranslation, mRotation);
+      // TODO: Inform physics of scale change.
+      auto rigidBody = mOwner->GetComponent<RigidBody>();
+    
+      if (rigidBody != nullptr)
+      {
+        rigidBody->SetPhysicsTransform(mTranslation, mRotation);
+      }
     }
 
     TransformChanged newTransform;

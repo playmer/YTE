@@ -69,7 +69,9 @@ namespace YTE
 			.AddAttribute<Serializable>();
   }
 
-  SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties) : Component(aOwner, aSpace), mConstructing(true)
+  SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+    : BaseModel{ aOwner, aSpace, aProperties }
+    , mConstructing(true)
   {
 		mFontSize = 1.f;
 

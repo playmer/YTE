@@ -15,10 +15,14 @@ namespace YTE
 
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
   {
+    YTEUnusedArgument(aType);
+
     auto property = dynamic_cast<Property*>(aObject);
 
     auto getter = property->GetGetter();
     auto setter = property->GetSetter();
+
+    YTEUnusedArgument(getter);
 
     DebugObjection(nullptr == getter,
                    "%s %s missing getter",
@@ -31,6 +35,7 @@ namespace YTE
                    property->GetName().c_str());
 
     auto parameters = setter->GetParameters();
+    YTEUnusedArgument(parameters);
 
     DebugObjection(parameters->size() != 2,
                    "%s %s must have a setter that takes only one parameter,"
@@ -89,6 +94,7 @@ namespace YTE
     : mStringGettor(aStrGettor)
   {
     auto prop = dynamic_cast<Property*>(aObject);
+    YTEUnusedArgument(prop);
 
     DebugObjection(aStrGettor == nullptr, 
                    "SelectableStrings %s must be passed a valid function pointer"

@@ -15,6 +15,10 @@
 #include <memory>
 #include <unordered_map>
 
+#if YTE_CAN_PROFILE
+#include <easy/profiler.h>
+#endif
+
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
@@ -25,6 +29,8 @@
 
 #include "YTE/Platform/DialogBox.hpp"
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 #include "YTE/StandardLibrary/OrderedMultiMap.hpp"
 #include "YTE/StandardLibrary/OrderedMap.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
@@ -33,11 +39,29 @@
 
 #include "YTE/Core/StaticIntents.hpp"
 
+#if YTE_CAN_PROFILE 
+  #define YTEProfileName(aName) EASY_BLOCK(aName)
+  #define YTEProfileFunction(aColor) EASY_FUNCTION(aColor)
+  #define YTEProfileBlock(aColor, aName) EASY_BLOCK(aName, aColor)
+#else
+  namespace profiler
+  {
+    inline void startListen(uint16_t aBlah = 1) { (void)aBlah; }
+    inline void stopListen() { }
+  }
+
+  #define YTEProfileName(aName)
+  #define YTEProfileFunction(aColor)
+  #define YTEProfileBlock(aColor, aName)
+#endif
+
 namespace YTE
 {
-  template <typename Type> using SharedPointer = std::shared_ptr<Type>;
+  template <typename Type> 
+  using SharedPointer = std::shared_ptr<Type>;
 
-  template <typename Type, typename Deleter = std::default_delete<Type>> using UniquePointer = std::unique_ptr<Type, Deleter>;
+  template <typename Type, typename Deleter = std::default_delete<Type>> 
+  using UniquePointer = std::unique_ptr<Type, Deleter>;
 
   using BoundType = Type;
 

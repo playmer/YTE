@@ -25,7 +25,7 @@ namespace YTE
     Space(Engine *aEngine, RSValue *aProperties);
     void Load();
     void Load(RSValue *aLevel, bool aInitialize = true);
-    void Update(float dt);
+    void Update(double dt);
     ~Space();
 
     void Initialize() override;

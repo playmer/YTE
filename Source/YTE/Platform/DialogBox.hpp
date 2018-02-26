@@ -49,7 +49,7 @@ namespace YTE
   #define debugbreak __builtin_trap
 #endif
 
-#ifdef Windows
+#ifdef YTE_Windows
   #ifndef NDEBUG
     #define DebugObjection(aCondition, aString, ...)                    \
     do                                                                  \
