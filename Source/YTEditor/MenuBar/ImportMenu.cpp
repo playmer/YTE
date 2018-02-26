@@ -355,18 +355,18 @@ namespace YTEditor
       }
     }
 
-    for (auto [texture, i]: YTE::enumerate(loadedTextures))
-    {
-      if (false == CompressTextureFile(*texture))
-      {
-        for (size_t j = 0; j < i; ++j)
-        {
-          fs::remove(loadedTextures[j].mCrunchFilePath, code);
-        }
-
-        return;
-      }
-    }
+    //for (auto [texture, i]: YTE::enumerate(loadedTextures))
+    //{
+    //  if (false == CompressTextureFile(*texture))
+    //  {
+    //    for (size_t j = 0; j < i; ++j)
+    //    {
+    //      fs::remove(loadedTextures[j].mCrunchFilePath, code);
+    //    }
+    //
+    //    return;
+    //  }
+    //}
 
 
     for (auto &texture : loadedTextures)
