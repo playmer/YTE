@@ -22,7 +22,7 @@ namespace YTE
 
     filesystem::path fsPath = Path::GetGamePath().String();
 
-    filesystem::path finalPath = fsPath.parent_path() / L"Textures/Crunch";
+    filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
 
     std::vector<std::string> result;
 
