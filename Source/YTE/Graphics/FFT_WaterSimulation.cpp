@@ -894,7 +894,7 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::SetTimeDilationEffect(float aTimeDilationEffect)
+  void FFT_WaterSimulation::SetTimeDilationEffect(double aTimeDilationEffect)
   {
     if (aTimeDilationEffect < 0.0001f)
     {
@@ -1039,7 +1039,7 @@ namespace YTE
 
 
   // ------------------------------------
-  float FFT_WaterSimulation::GetTimeDilationEffect()
+  double FFT_WaterSimulation::GetTimeDilationEffect()
   {
     return mTimeDilationEffect;
   }
