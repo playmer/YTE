@@ -34,7 +34,7 @@ namespace YTE
   YTEDefineType(Space)
   {
     YTERegisterType(Space);
-    YTEBindFunction(&Space::LoadLevel, YTENoOverload, "LoadLevel", YTEParameterNames("aLevel")).Description()
+    YTEBindFunction(&Space::LoadLevel, YTENoOverload, "LoadLevel", YTEParameterNames("aLevel", "aCheckRunInEditor")).Description()
       = "Loads a level within the current space on the next frame. Current level will be torn down.";
 
     YTEBindFunction(&Space::SaveLevel, YTENoOverload, "SaveLevel", YTEParameterNames("aLevelName")).Description()
@@ -110,11 +110,11 @@ namespace YTE
   }
 
 
-  void Space::Initialize()
+  void Space::Initialize(bool)
   {
-    Composition::NativeInitialize();
-    Composition::PhysicsInitialize();
-    Composition::Initialize();
+    Composition::NativeInitialize(mCheckRunInEditor);
+    Composition::PhysicsInitialize(mCheckRunInEditor);
+    Composition::Initialize(mCheckRunInEditor);
 
     mShouldIntialize = true;
   }
@@ -175,8 +175,9 @@ namespace YTE
     mLoading = false;
   }
 
-  void Space::LoadLevel(String &level)
+  void Space::LoadLevel(String &level, bool aCheckRunInEditor)
   {
+    mCheckRunInEditor = aCheckRunInEditor;
     mLoading = true;
     mLevelToLoad = mEngine->GetLevel(level);
     mLoadingName = level;

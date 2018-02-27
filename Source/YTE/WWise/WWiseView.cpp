@@ -14,5 +14,7 @@ namespace YTE
   YTEDefineType(WWiseView)
   {
     YTERegisterType(WWiseView);
+
+    GetStaticType()->AddAttribute<RunInEditor>();
   }
 }

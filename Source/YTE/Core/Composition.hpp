@@ -72,9 +72,9 @@ namespace YTE
 
     virtual void Update(double dt);
 
-    virtual void NativeInitialize();
-    void PhysicsInitialize();
-    virtual void Initialize();
+    virtual void NativeInitialize(bool aCheckRunInEditor = false);
+    void PhysicsInitialize(bool aCheckRunInEditor = false);
+    virtual void Initialize(bool aCheckRunInEditor = false);
     void DeletionUpdate(LogicUpdate *aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
@@ -199,7 +199,7 @@ namespace YTE
       return toReturn;
     }
 
-    Component* AddComponent(BoundType *aType);
+    Component* AddComponent(BoundType *aType, bool aCheckRunInEditor = false);
     Component* AddComponent(BoundType *aType, RSValue *aProperties);
 
     Composition* FindFirstCompositionByName(String const &aName);

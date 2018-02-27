@@ -32,19 +32,17 @@ namespace YTE
 	MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
 	{
 		mCurrMenuElement = 0;
-		mIsDisplayed = false;
 
 		DeserializeByType(aProperties, this, GetStaticType());
 		mConstructing = false;
 	}
 
 	void MenuController::Initialize()
-	{
-		mGamePad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
-
-		mGamePad->YTERegister(Events::XboxStickFlicked, this, &MenuController::OnXboxFlickEvent);
-		mGamePad->YTERegister(Events::XboxButtonPress, this, &MenuController::OnXboxButtonPress);
-		mGamePad->YTERegister(Events::XboxButtonRelease, this, &MenuController::OnXboxButtonRelease);
+	{ 
+    mSpace->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+    mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
+    mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
 	
 		mMenuElements = mOwner->GetCompositions();
 		mNumElements = static_cast<int>(mMenuElements->size());
@@ -54,100 +52,92 @@ namespace YTE
 		mMyTransform->SetScale(0.f, 0.f, 0.f);
 	}
 
-	void MenuController::OnXboxFlickEvent(XboxFlickEvent* aEvent)
-	{
-		if (mIsDisplayed)
-		{
-			MenuElementDeHover deHoverEvent;
+  void MenuController::OnMenuStart(MenuStart *aEvent)
+  {
+      // Check that we are the correct menu to be opened
+    if (mOwner->GetName().c_str() == aEvent->MenuName)
+    {
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
-			auto currElement = mMenuElements->begin() + mCurrMenuElement;
-			currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+      mMyTransform->SetScale(-16.5, 9.5f, 1.f);
+      emitter->PlayEvent("UI_Menu_Pause");
 
-			if (aEvent->FlickDirection.x < 0.01f)
-				mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
+      mCurrMenuElement = 0;
 
-			else if (aEvent->FlickDirection.x > 0.01f)
-				mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
+      MenuElementHover hoverEvent;
 
-			auto emitter = mOwner->GetComponent<WWiseEmitter>();
-			emitter->PlayEvent("UI_Menu_Hover");
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+    }
+  }
 
-			MenuElementHover hoverEvent;
+  void MenuController::OnMenuExit(MenuExit *aEvent)
+  {
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
-			currElement = mMenuElements->begin() + mCurrMenuElement;
-			currElement->second->SendEvent("MenuElementHover", &hoverEvent);
-		}
-	}
+    mMyTransform->SetScale(0.f, 0.f, 0.f);
+    emitter->PlayEvent("UI_Menu_Unpause");
 
-	void MenuController::OnXboxButtonPress(XboxButtonEvent* aEvent)
-	{
-		auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    MenuElementDeHover deHoverEvent;
 
-		switch (aEvent->Button)
-		{
-		case (Xbox_Buttons::Start):
-		{
-			mIsDisplayed = !mIsDisplayed;
+    auto currElement = mMenuElements->begin() + mCurrMenuElement;
+    currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+    mCurrMenuElement = 0;
 
-      if (mIsDisplayed)
-      {
-				mMyTransform->SetScale(-16.5, 9.5f, 1.f);
-        emitter->PlayEvent("UI_Menu_Pause");
+      // Pop up to the owning menu
+    if (!aEvent->ShouldExitAll)
+    {
+        // Opens the parent menu (aka parent of parent button)
+      MenuStart menuStart(mOwner->GetParent()->GetParent()->GetName().c_str());
+      mOwner->GetEngine()->SendEvent(Events::MenuStart, &menuStart);
+    }
 
-				mCurrMenuElement = 0;
+    if (!mParentMenu)
+    {
+      mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+    }
+  }
 
-				MenuElementHover hoverEvent;
+  void MenuController::OnMenuConfirm(MenuConfirm *aEvent)
+  {
+    if (!aEvent->IsReleased)
+    {
+      mOwner->GetComponent<WWiseEmitter>()->PlayEvent("UI_Menu_Select");
 
-				auto currElement = mMenuElements->begin() + mCurrMenuElement;
-				currElement->second->SendEvent("MenuElementHover", &hoverEvent);
-      }
-      else
-      {
-				mMyTransform->SetScale(0.f, 0.f, 0.f);
-        emitter->PlayEvent("UI_Menu_Unpause");
+      MenuElementTrigger triggerEvent;
 
-				MenuElementDeHover deHoverEvent;
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent("MenuElementTrigger", &triggerEvent);
+    }
 
-				auto currElement = mMenuElements->begin() + mCurrMenuElement;
-				currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
-				mCurrMenuElement = 0;
-      }
+    else
+    {
+      MenuElementHover hoverEvent;
 
-			break;
-		}
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+    }
+  }
 
-		case (Xbox_Buttons::A):
-		{
-			if (mIsDisplayed)
-			{
-				emitter->PlayEvent("UI_Menu_Select");
+  void MenuController::OnMenuElementChange(MenuElementChange *aEvent)
+  {
+    MenuElementDeHover deHoverEvent;
 
-				MenuElementTrigger triggerEvent;
-        
-				auto currElement = mMenuElements->begin() + mCurrMenuElement;
-				currElement->second->SendEvent("MenuElementTrigger", &triggerEvent);
-			}
-      break;
-		}
-		}
-	}
+    auto currElement = mMenuElements->begin() + mCurrMenuElement;
+    currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
 
-	void MenuController::OnXboxButtonRelease(XboxButtonEvent* aEvent)
-	{
-		if (mIsDisplayed)
-		{
-			switch (aEvent->Button)
-			{
-			case (Xbox_Buttons::A):
-			{
-				MenuElementHover hoverEvent;
+    if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
+      mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
 
-				auto currElement = mMenuElements->begin() + mCurrMenuElement;
-				currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+    else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
+      mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
 
-				break;
-			}
-			}
-		}
-	}
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    emitter->PlayEvent("UI_Menu_Hover");
+
+    MenuElementHover hoverEvent;
+
+    currElement = mMenuElements->begin() + mCurrMenuElement;
+    currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+  }
 }

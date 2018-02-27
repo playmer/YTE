@@ -69,6 +69,8 @@ namespace YTE
   {
     YTERegisterType(Model);
 
+    GetStaticType()->AddAttribute<RunInEditor>();
+
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
     Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);

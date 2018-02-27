@@ -32,8 +32,8 @@ namespace YTE
   void Dialogue::Initialize()
   {
     mOwner->YTERegister(Events::RequestDialogueStart, this, &Dialogue::OnDialogueStart);
-    mOwner->GetEngine()->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
-    mOwner->GetEngine()->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
+    mSpace->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
+    mSpace->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
 
     mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
     mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
@@ -99,7 +99,7 @@ namespace YTE
       emitter->PlayEvent("UI_Dia_Start");
     }
 
-    mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+    mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
   }
 
   void Dialogue::OnConfirm(DialogueConfirm *aEvent)
@@ -133,7 +133,7 @@ namespace YTE
       emitter->PlayEvent("UI_Dia_End");
     }
 
-    mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+    mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
 
     auto transform = mSprite->GetComponent<Transform>();
     transform->SetTranslation(glm::vec3(0.0f, -100.0f, 0.0f));

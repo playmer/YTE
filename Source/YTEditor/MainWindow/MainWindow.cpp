@@ -477,7 +477,7 @@ namespace YTEditor
 
     YTE::Space* mainSession = GetEditingLevel();
 
-    mainSession->LoadLevel(aLevelName);
+    mainSession->LoadLevel(aLevelName, true);
 
     mRunningEngine->Update();
 

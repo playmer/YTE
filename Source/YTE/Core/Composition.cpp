@@ -58,7 +58,7 @@ namespace YTE
 
     YTEBindFunction(&Composition::GetComponent, (Component* (Composition::*)(BoundType*)), "GetComponent", { "aType" }).Description()
       = "Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.";
-    YTEBindFunction(&Composition::AddComponent, (Component*(Composition::*)(BoundType *)), "AddComponent", YTEParameterNames("aType")).Description()
+    YTEBindFunction(&Composition::AddComponent, (Component*(Composition::*)(BoundType *, bool)), "AddComponent", YTEParameterNames("aType", "aCheckRunInEditor")).Description()
       = "Adds a component via the typeid of the component you want.";
 
     YTEBindFunction(&Composition::FindFirstCompositionByName, YTENoOverload, "FindFirstCompositionByName", YTEParameterNames("aName")).Description()
@@ -130,7 +130,7 @@ namespace YTE
     }
   }
 
-  void Composition::NativeInitialize()
+  void Composition::NativeInitialize(bool aCheckRunInEditor)
   {
     if (mShouldIntialize == false)
     {
@@ -139,16 +139,22 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
+      {
+        continue;
+      }
+
       component.second->NativeInitialize();
     }
 
     for (auto &composition : mCompositions)
     {
-      composition.second->NativeInitialize();
+      composition.second->NativeInitialize(aCheckRunInEditor);
     }
   }
 
-  void Composition::PhysicsInitialize()
+  void Composition::PhysicsInitialize(bool aCheckRunInEditor)
   {
     if (mShouldIntialize == false)
     {
@@ -166,13 +172,24 @@ namespace YTE
     //auto transform = GetComponent<Transform>();
     //if (transform != nullptr) transform->PhysicsInitialize();
 
+    for (auto &component : mComponents)
+    {
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
+      {
+        continue;
+      }
+     
+      //component.second->PhysicsInitialize();
+    }
+
     for (auto &composition : mCompositions)
     {
-      composition.second->PhysicsInitialize();
+      composition.second->PhysicsInitialize(aCheckRunInEditor);
     }
   }
 
-  void Composition::Initialize()
+  void Composition::Initialize(bool aCheckRunInEditor)
   {
     if (mShouldIntialize == false)
     {
@@ -196,12 +213,18 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
+      if (aCheckRunInEditor && 
+          nullptr == component.first->GetAttribute<RunInEditor>())
+      {
+        continue;
+      }
+     
       component.second->Initialize();
     }
 
     for (auto &composition : mCompositions)
     {
-      composition.second->Initialize();
+      composition.second->Initialize(aCheckRunInEditor);
     }
 
     mShouldIntialize = false;
@@ -755,7 +778,7 @@ namespace YTE
     return nullptr;
   }
 
-  Component* Composition::AddComponent(BoundType *aType)
+  Component* Composition::AddComponent(BoundType *aType, bool aCheckRunInEditor)
   {
     // TODO: Output this to a debug logger. If this happens in game in the editor, 
     //       it won't be currently displayed.
@@ -765,9 +788,18 @@ namespace YTE
     }
 
     Component *component = AddComponent(aType, nullptr);
+
+
+    if (aCheckRunInEditor &&
+        nullptr == aType->GetAttribute<RunInEditor>())
+    {
+      return component;
+    }
+
     component->NativeInitialize();
     component->PhysicsInitialize();
     component->Initialize();
+
     return component;
   }
 

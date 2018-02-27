@@ -118,6 +118,11 @@ namespace YTEditor
 
     YTE::BoundType *type = FindBoundType(stdName);
 
+    if (currObj->GetComponent(type) != nullptr)
+    {
+      return;
+    }
+
     auto error = currObj->CheckDependencies(type);
 
     if (false == error.empty())

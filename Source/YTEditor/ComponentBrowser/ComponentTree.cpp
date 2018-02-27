@@ -182,7 +182,7 @@ namespace YTEditor
 
     YTE::Composition *currentObj = objBrowser.GetCurrentObject();
 
-    YTE::Component *component = currentObj->AddComponent(aComponentType);
+    YTE::Component *component = currentObj->AddComponent(aComponentType, true);
 
     YTE::String name = component->GetType()->GetName();
 

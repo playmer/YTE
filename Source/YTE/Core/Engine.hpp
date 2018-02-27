@@ -87,7 +87,8 @@ namespace YTE
     void Update();
     ~Engine();
 
-    void Initialize() override;
+    void Initialize(bool) override;
+    void Initialize() { Initialize(true); }
     void Deserialize(RSValue *aValue);
 
     Window* AddWindow(const char *aName);

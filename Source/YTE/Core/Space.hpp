@@ -28,10 +28,11 @@ namespace YTE
     void Update(double dt);
     ~Space();
 
-    void Initialize() override;
+    void Initialize(bool) override;
+    void Initialize() { Initialize(true); }
         
     void CreateBlankLevel(const String& aLevelName);
-    void LoadLevel(String &level);
+    void LoadLevel(String &level, bool aCheckRunInEditor = false);
     void SaveLevel(String &aLevelName);
   
     bool IsPaused() const { return mPaused; };
@@ -49,6 +50,7 @@ namespace YTE
     bool mFocusHandled = false;
 
     bool mLoading = true;
+    bool mCheckRunInEditor = false;
     String mLoadingName;
     String mLevelName;
     String mStartingLevel;

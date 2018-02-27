@@ -62,6 +62,8 @@ namespace YTE
   YTEDefineType(Transform)
   {
     YTERegisterType(Transform);
+    GetStaticType()->AddAttribute<RunInEditor>();
+
     YTEBindProperty(&Transform::GetTranslation, &Transform::SetTranslationProperty, "Translation")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();

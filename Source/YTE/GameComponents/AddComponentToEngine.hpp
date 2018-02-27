@@ -28,7 +28,7 @@ namespace YTE
   public:
     YTEDeclareType(AddComponentToEngine);
     AddComponentToEngine(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    //void Initialize() override;
+    void NativeInitialize() override;
   };
 
 } // end YTE namespace

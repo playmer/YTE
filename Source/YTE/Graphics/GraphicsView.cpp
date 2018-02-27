@@ -10,6 +10,8 @@ namespace YTE
   {
     YTERegisterType(GraphicsView);
 
+    GetStaticType()->AddAttribute<RunInEditor>();
+
     YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();

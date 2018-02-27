@@ -201,7 +201,7 @@ namespace YTE
     }
   }
 
-  void Engine::Initialize()
+  void Engine::Initialize(bool)
   {
     if (mShouldIntialize == false)
     {

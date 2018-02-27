@@ -13,6 +13,11 @@ namespace YTE
     YTERegisterType(Serializable);
   }
 
+  YTEDefineType(RunInEditor)
+  {
+    YTERegisterType(RunInEditor);
+  }
+
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
   {
     YTEUnusedArgument(aType);

@@ -29,6 +29,7 @@ namespace YTE
   YTEDefineType(Orientation)
   {
     YTERegisterType(Orientation);
+    GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 

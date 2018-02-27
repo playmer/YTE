@@ -26,6 +26,7 @@ namespace YTE
   YTEDefineType(Light)
   {
     YTERegisterType(Light);
+    GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&Light::GetLightType, &Light::SetLightType, "Light Type")
       .AddAttribute<EditorProperty>()
