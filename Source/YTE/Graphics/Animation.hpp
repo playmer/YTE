@@ -34,11 +34,9 @@ namespace YTE
     Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
     void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
-    void Update(LogicUpdate* aEvent);
   
     double GetSpeed() const
     double GetMaxTime() const;
-
 
     void SetSpeed(double aSpeed)
     void SetSpeed(float aSpeed);
@@ -51,6 +49,16 @@ namespace YTE
     uint32_t mAnimationIndex;
     double mSpeed;
     
+    bool mPlayOverTime;
+    float mElapsedTime;
+
+    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
+
+    aiScene* GetScene();
+    aiAnimation* GetAnimation();
+    UBOAnimation* GetUBOAnim();
+    Skeleton* GetSkeleton();
+
   private:
     aiScene *mScene;
     aiAnimation *mAnimation;
@@ -59,10 +67,6 @@ namespace YTE
     Engine *mEngine;
     double mElapsedTime;
 
-    bool mPlayOverTime;
-    bool mIsLooping;
-
-    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
     aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
     aiMatrix4x4 RotationInterpolation(const aiNodeAnim *aNode);
     aiMatrix4x4 TranslationInterpolation(const aiNodeAnim *aNode);
@@ -84,6 +88,12 @@ namespace YTE
 
     void Initialize() override;
 
+    void Update(LogicUpdate* aEvent);
+
+    void PlayAnimation(std::string aAnimation);
+
+    void SetDefaultAnimation(std::string aAnimation);
+
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
     static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
     static void Deserializer(RSValue &aValue, Object *aOwner);
@@ -94,7 +104,10 @@ namespace YTE
   private:
     Model *mModel;
     Engine *mEngine;
-    //std::vector<std::pair<Animation*, std::string>> mAnimations;
+
+    Animation *mDefaultAnimation;
+    Animation *mCurrentAnimation;
+    Animation *mNextAnimation;
 
     std::map<std::string, Animation *> mAnimations;
   };

@@ -37,7 +37,6 @@ namespace YTE
 
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
     : mPlayOverTime(true)
-    , mIsLooping(false)
   {
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
@@ -78,11 +77,9 @@ namespace YTE
     mEngine = aEngine;
     mModel = aModel;
     mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
-    mEngine->YTERegister(Events::AnimationUpdate, this, &Animation::Update);
 
     mSpeed = 0.2f;
     mPlayOverTime = false;
-    Play();
   }
 
   Animation::~Animation()
@@ -93,38 +90,8 @@ namespace YTE
     }
   }
 
-  void Animation::Update(LogicUpdate* aEvent)
-  {
-    if (mPlayOverTime)
-    {
-      mElapsedTime += aEvent->Dt * mSpeed;
     mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond,
                                  mAnimation->mDuration);
-    }
-
-    if (!mIsLooping)
-    {
-      if (mElapsedTime * mAnimation->mTicksPerSecond > mAnimation->mDuration)
-      {
-        mPlayOverTime = false;
-        mIsLooping = false;
-        mCurrentAnimationTime = 0.0;
-        mElapsedTime = 0.0;
-      }
-    }
-
-    aiMatrix4x4 identity = aiMatrix4x4();
-    ReadAnimation(mScene->mRootNode, identity);
-
-    for (int i = 0; i < mMeshSkeleton->GetBoneData().size(); ++i)
-    {
-      mUBOAnimationData.mBones[i] = AssimpToGLM(mMeshSkeleton->GetBoneData()[i].mFinalTransformation);
-    }
-
-    // cause update to graphics card
-    mModel->GetInstantiatedModel()->UpdateUBOAnimation(&this->mUBOAnimationData);
-  }
-
   void Animation::SetCurrentTime(double aCurrentTime)
   {
     if (0.0 <= aCurrentTime && aCurrentTime <= mAnimation->mDuration)
@@ -136,13 +103,6 @@ namespace YTE
   double Animation::GetMaxTime() const
   {
     return mAnimation->mDuration;
-  }
-
-  void Animation::Play(bool aWillLoop)
-  {
-    mIsLooping = aWillLoop;
-    mPlayOverTime = true;
-    mElapsedTime = 0.0;
   }
 
   float Animation::GetSpeed() const
@@ -163,6 +123,11 @@ namespace YTE
   void Animation::SetPlayOverTime(bool aPlayOverTime)
   {
     mPlayOverTime = aPlayOverTime;
+  }
+
+  aiAnimation* Animation::GetAnimation()
+  {
+    return mAnimation;
   }
 
   void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
@@ -211,6 +176,21 @@ namespace YTE
     {
       ReadAnimation(aNode->mChildren[i], GlobalTransformation);
     }
+  }
+
+  Skeleton* Animation::GetSkeleton()
+  {
+    return mMeshSkeleton;
+  }
+
+  UBOAnimation* Animation::GetUBOAnim()
+  {
+    return &mUBOAnimationData;
+  }
+
+  aiScene* Animation::GetScene()
+  {
+    return mScene;
   }
 
 
@@ -368,6 +348,9 @@ namespace YTE
 
   Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mDefaultAnimation(nullptr)
+    , mCurrentAnimation(nullptr)
+    , mNextAnimation(nullptr)
   {
     DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
@@ -399,6 +382,88 @@ namespace YTE
     {
       it.second->Initialize(mModel, mEngine);
     }
+
+    mEngine->YTERegister(Events::AnimationUpdate, this, &Animator::Update);
+  }
+
+  void Animator::Update(LogicUpdate *aEvent)
+  {
+    if (!mCurrentAnimation)
+    {
+      if (mNextAnimation)
+      {
+        mCurrentAnimation = mNextAnimation;
+        mNextAnimation = nullptr;
+      }
+      else if (mDefaultAnimation)
+      {
+        mCurrentAnimation = mDefaultAnimation;
+      }
+      else
+      {
+        return;
+      }
+    }
+
+    if (mCurrentAnimation->mPlayOverTime)
+    {
+      mCurrentAnimation->mElapsedTime += aEvent->Dt * mCurrentAnimation->mSpeed;
+
+      mCurrentAnimation->mCurrentAnimationTime = fmodf(static_cast<float>(mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond),
+        static_cast<float>(mCurrentAnimation->GetAnimation()->mDuration));
+
+      if (mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond > mCurrentAnimation->GetAnimation()->mDuration)
+      {
+        mCurrentAnimation->mCurrentAnimationTime = 0.0;
+        mCurrentAnimation->mElapsedTime = 0.0;
+        
+        // set to nullptr, will switch to appropriate animation at beginning of next update loop
+        mCurrentAnimation = nullptr;
+        
+        // send event that animation is finished
+        std::cout << "Animation Finished\n";
+      }
+    }
+
+    if (mCurrentAnimation)
+    {
+      aiMatrix4x4 identity = aiMatrix4x4();
+      mCurrentAnimation->ReadAnimation(mCurrentAnimation->GetScene()->mRootNode, identity);
+
+      for (int i = 0; i < mCurrentAnimation->GetSkeleton()->GetBoneData().size(); ++i)
+      {
+        mCurrentAnimation->GetUBOAnim()->mBones[i] = AssimpToGLM(mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation);
+      }
+
+      // cause update to graphics card
+      mModel->GetInstantiatedModel()->UpdateUBOAnimation(mCurrentAnimation->GetUBOAnim());
+    }
+  }
+
+  void Animator::PlayAnimation(std::string aAnimation)
+  {
+    auto it = mAnimations.find(aAnimation);
+
+    // animation doesn't exist on this animator component
+    if (it == mAnimations.end())
+    {
+      return;
+    }
+
+    mNextAnimation = it->second;
+  }
+
+  void Animator::SetDefaultAnimation(std::string aAnimation)
+  {
+    auto it = mAnimations.find(aAnimation);
+
+    // animation doesn't exist on this animator component
+    if (it == mAnimations.end())
+    {
+      return;
+    }
+
+    mDefaultAnimation = it->second;
   }
 
   std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)
