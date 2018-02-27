@@ -34,20 +34,21 @@ namespace YTE
     Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
     void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
+    void Update(LogicUpdate* aEvent);
   
-    double GetSpeed() const
+    void SetCurrentTime(double aCurrentTime);
     double GetMaxTime() const;
 
-    void SetSpeed(double aSpeed)
+    float GetSpeed() const;
     void SetSpeed(float aSpeed);
 
     bool GetPlayOverTime() const;
     void SetPlayOverTime(bool aPlayOverTime);
 
     std::string mName;
-    double mCurrentAnimationTime;
+    float mCurrentAnimationTime;
     uint32_t mAnimationIndex;
-    double mSpeed;
+    float mSpeed;
     
     bool mPlayOverTime;
     float mElapsedTime;
@@ -65,7 +66,6 @@ namespace YTE
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
-    double mElapsedTime;
 
     aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
     aiMatrix4x4 RotationInterpolation(const aiNodeAnim *aNode);
