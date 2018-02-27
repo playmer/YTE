@@ -23,8 +23,8 @@ namespace YTE
     std::vector<std::vector<Type*>> deps = { { Animator::GetStaticType() } };
 
     Animation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
-    
-    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed") 
+
+    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
@@ -41,23 +41,23 @@ namespace YTE
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
     auto scene = importer.ReadFile(aniFile.c_str(),
-                                   aiProcess_Triangulate |
-                                   aiProcess_CalcTangentSpace |
-                                   aiProcess_GenSmoothNormals);
+      aiProcess_Triangulate |
+      aiProcess_CalcTangentSpace |
+      aiProcess_GenSmoothNormals);
 
     YTEUnusedArgument(scene);
 
     DebugObjection(scene == nullptr,
-                   "Failed to load animation file %s from assimp",
-                   aniFile.c_str()); 
+      "Failed to load animation file %s from assimp",
+      aniFile.c_str());
 
     //TODO (Andrew): Dont keep the scene loaded
     mScene = importer.GetOrphanedScene();
 
     DebugObjection(mScene->HasAnimations() == false,
-                   "Failed to find animations in scene loaded from %s",
-                   aniFile.c_str());
-    
+      "Failed to find animations in scene loaded from %s",
+      aniFile.c_str());
+
     mAnimationIndex = aAnimationIndex;
 
     mAnimation = mScene->mAnimations[0];
@@ -131,9 +131,9 @@ namespace YTE
   void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
   {
     aiMatrix4x4 NodeTransformation(aNode->mTransformation);
-    
+
     const aiNodeAnim* pNodeAnim = FindNodeAnimation(aNode->mName.data);
-    
+
     if (pNodeAnim)
     {
       int numKeys = pNodeAnim->mNumPositionKeys;
@@ -150,12 +150,12 @@ namespace YTE
 
       // Get interpolated matrices between current and next frame
       aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
-      aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);	
+      aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);
       aiMatrix4x4 matTranslation = TranslationInterpolation(pNodeAnim);
-    
+
       NodeTransformation = matTranslation * matRotation * matScale;
     }
-    
+
     aiMatrix4x4 GlobalTransformation = aParentTransform * NodeTransformation;
 
     auto* bones = mMeshSkeleton->GetBones();
@@ -164,11 +164,11 @@ namespace YTE
     {
       uint32_t BoneIndex = bone->second;
       mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation =
-                                              mMeshSkeleton->GetGlobalInverseTransform() *
-                                              GlobalTransformation *
-                                              mMeshSkeleton->GetBoneData()[BoneIndex].mOffset;
+        mMeshSkeleton->GetGlobalInverseTransform() *
+        GlobalTransformation *
+        mMeshSkeleton->GetBoneData()[BoneIndex].mOffset;
     }
-    
+
     // visit the rest of the bone children
     for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
     {
@@ -206,7 +206,7 @@ namespace YTE
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i+1].mTime - startFrame.mTime)
+        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -215,7 +215,7 @@ namespace YTE
 
       aiVectorKey frame = aNode->mScalingKeys[index];
       aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
-      
+
       float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
 
       const aiVector3D& start = frame.mValue;
@@ -242,12 +242,12 @@ namespace YTE
     else
     {
       auto startFrame = aNode->mRotationKeys[0];
-      
+
       // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i+1].mTime - startFrame.mTime)
+        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -285,7 +285,7 @@ namespace YTE
       uint32_t index = 0;
       for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
       {
-        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i+1].mTime - startFrame.mTime)
+        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
@@ -328,10 +328,10 @@ namespace YTE
   {
     YTERegisterType(Animator);
 
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer, 
-                                                              &Serializer, 
-                                                              &Lister, 
-                                                              "Animations");
+    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
+      &Serializer,
+      &Lister,
+      "Animations");
 
     std::vector<std::vector<Type*>> deps = { { Model::GetStaticType() } };
 
@@ -408,10 +408,10 @@ namespace YTE
       {
         mCurrentAnimation->mCurrentAnimationTime = 0.0;
         mCurrentAnimation->mElapsedTime = 0.0;
-        
+
         // set to nullptr, will switch to appropriate animation at beginning of next update loop
         mCurrentAnimation = nullptr;
-        
+
         // send event that animation is finished
         std::cout << "Animation Finished\n";
       }
@@ -477,6 +477,15 @@ namespace YTE
 
   Animation* Animator::AddAnimation(std::string aName)
   {
+    Animation* anim = InternalAddAnimation(aName);
+
+    anim->Initialize(mModel, mEngine);
+
+    return anim;
+  }
+
+  Animation* Animator::InternalAddAnimation(std::string aName)
+  {
     std::experimental::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
@@ -513,16 +522,16 @@ namespace YTE
     animations.SetObject();
     for (auto &animationIt : owner->mAnimations)
     {
-      auto materialSerialized = SerializeByType(aAllocator, 
-                                                animationIt.second, 
-                                                TypeId<Animation>());
+      auto materialSerialized = SerializeByType(aAllocator,
+        animationIt.second,
+        TypeId<Animation>());
 
       RSValue materialName;
 
       auto &name = animationIt.first;
       materialName.SetString(name.c_str(),
-                             static_cast<RSSizeType>(name.size()),
-                             aAllocator);
+        static_cast<RSSizeType>(name.size()),
+        aAllocator);
 
       animations.AddMember(materialName, materialSerialized, aAllocator);
     }
@@ -533,11 +542,11 @@ namespace YTE
   void Animator::Deserializer(RSValue &aValue, Object *aOwner)
   {
     auto owner = static_cast<Animator*>(aOwner);
-    
+
     for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)
     {
-      auto animation = owner->AddAnimation(valueIt->name.GetString());
-    
+      auto animation = owner->InternalAddAnimation(valueIt->name.GetString());
+
       DeserializeByType(&(valueIt->value), animation, animation->GetType());
     }
   }

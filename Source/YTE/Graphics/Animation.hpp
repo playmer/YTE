@@ -30,11 +30,11 @@ namespace YTE
   {
   public:
     YTEDeclareType(Animation);
-  
+
     Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
     void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
-  
+
     void SetCurrentTime(double aCurrentTime);
     double GetMaxTime() const;
 
@@ -48,7 +48,7 @@ namespace YTE
     float mCurrentAnimationTime;
     uint32_t mAnimationIndex;
     float mSpeed;
-    
+
     bool mPlayOverTime;
     float mElapsedTime;
 
@@ -60,7 +60,7 @@ namespace YTE
     Skeleton* GetSkeleton();
 
   private:
-    aiScene *mScene;
+    aiScene * mScene;
     aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
@@ -98,10 +98,11 @@ namespace YTE
     static void Deserializer(RSValue &aValue, Object *aOwner);
 
     Animation* AddAnimation(std::string aName);
+    Animation* InternalAddAnimation(std::string aName);
     void RemoveAnimation(Animation *aAnimation);
 
   private:
-    Model *mModel;
+    Model * mModel;
     Engine *mEngine;
 
     Animation *mDefaultAnimation;
