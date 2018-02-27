@@ -473,7 +473,7 @@ namespace YTE
   {
     Animation* anim = InternalAddAnimation(aName);
 
-    anim->Initialize(mModel, mEngine);
+    anim->Initialize(mOwner->GetComponent<Model>(), mEngine);
 
     return anim;
   }
