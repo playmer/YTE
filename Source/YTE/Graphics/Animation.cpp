@@ -77,9 +77,6 @@ namespace YTE
     mEngine = aEngine;
     mModel = aModel;
     mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
-
-    mSpeed = 0.2f;
-    mPlayOverTime = false;
   }
 
   Animation::~Animation()
@@ -411,9 +408,6 @@ namespace YTE
 
         // set to nullptr, will switch to appropriate animation at beginning of next update loop
         mCurrentAnimation = nullptr;
-
-        // send event that animation is finished
-        std::cout << "Animation Finished\n";
       }
     }
 
