@@ -34,7 +34,6 @@ namespace YTE
     Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
     void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
-    void Update(LogicUpdate* aEvent);
   
     void SetCurrentTime(double aCurrentTime);
     double GetMaxTime() const;

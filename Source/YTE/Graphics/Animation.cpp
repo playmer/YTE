@@ -90,8 +90,6 @@ namespace YTE
     }
   }
 
-    mCurrentAnimationTime = fmod(mElapsedTime * mAnimation->mTicksPerSecond,
-                                 mAnimation->mDuration);
   void Animation::SetCurrentTime(double aCurrentTime)
   {
     if (0.0 <= aCurrentTime && aCurrentTime <= mAnimation->mDuration)
@@ -194,7 +192,6 @@ namespace YTE
   }
 
 
-
   aiMatrix4x4 Animation::ScaleInterpolation(const aiNodeAnim* aNode)
   {
     aiVector3D scale;
@@ -219,7 +216,7 @@ namespace YTE
       aiVectorKey frame = aNode->mScalingKeys[index];
       aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
       
-      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;
@@ -260,7 +257,7 @@ namespace YTE
       aiQuatKey frame = aNode->mRotationKeys[index];
       aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
 
-      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
 
       const aiQuaternion& start = frame.mValue;
       const aiQuaternion& end = nextFrame.mValue;
@@ -291,19 +288,14 @@ namespace YTE
         if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i+1].mTime - startFrame.mTime)
         {
           index = i;
-          
-          //std::cout << aNode->mNodeName.C_Str() << ": " << index << ", ";
-          
           break;
         }
-
-        //std::cout << "time: " << mCurrentAnimationTime << std::endl;
       }
 
       aiVectorKey frame = aNode->mPositionKeys[index];
       aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
 
-      float delta = static_cast<float>((mCurrentAnimationTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;
