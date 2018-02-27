@@ -207,7 +207,7 @@ namespace YTE
     void SetWaveHeight(float aWaveHeight);
     void SetWindFactor(glm::vec2 aWindFactor);
     void SetVertexDistance(glm::vec2 aDistance);
-    void SetTimeDilationEffect(float aTimeDilationEffect);
+    void SetTimeDilationEffect(double aTimeDilationEffect);
     void SetReset(bool aReset);
     void SetInstancingAmount(int aAmount);
     void SetUseFFT(bool aValue);
@@ -239,7 +239,7 @@ namespace YTE
     glm::vec2 GetVertexDistance();
     float GetVertexDistanceX();
     float GetVertexDistanceZ();
-    float GetTimeDilationEffect();
+    double GetTimeDilationEffect();
     bool GetReset();
     int GetInstancingAmount();
     bool GetUseFFT();

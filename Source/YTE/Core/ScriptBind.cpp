@@ -31,6 +31,7 @@
 #include "YTE/GameComponents/Button.hpp"
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
+#include "YTE/GameComponents/TestingComponent.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -102,6 +103,7 @@ namespace YTE
 		InitializeType<Button>();
     InitializeType<Zone>();
     InitializeType<Island>();
+    InitializeType<TestingComponent>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

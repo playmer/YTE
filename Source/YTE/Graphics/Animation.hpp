@@ -30,36 +30,42 @@ namespace YTE
   {
   public:
     YTEDeclareType(Animation);
-  
+
     Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
     void Initialize(Model *aModel, Engine *aEngine);
     virtual ~Animation();
-    void Update(LogicUpdate* aEvent);
-  
-    double GetSpeed() const
-    {
-      return mSpeed;
-    }
 
-    void SetSpeed(double aSpeed)
-    {
-      mSpeed = aSpeed;
-    }
+    void SetCurrentTime(double aCurrentTime);
+    double GetMaxTime() const;
+
+    float GetSpeed() const;
+    void SetSpeed(float aSpeed);
+
+    bool GetPlayOverTime() const;
+    void SetPlayOverTime(bool aPlayOverTime);
 
     std::string mName;
-    double mCurrentAnimationTime;
+    float mCurrentAnimationTime;
     uint32_t mAnimationIndex;
-    double mSpeed;
-    
+    float mSpeed;
+
+    bool mPlayOverTime;
+    float mElapsedTime;
+
+    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
+
+    aiScene* GetScene();
+    aiAnimation* GetAnimation();
+    UBOAnimation* GetUBOAnim();
+    Skeleton* GetSkeleton();
+
   private:
-    aiScene *mScene;
+    aiScene * mScene;
     aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
-    double mElapsedTime;
 
-    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
     aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
     aiMatrix4x4 RotationInterpolation(const aiNodeAnim *aNode);
     aiMatrix4x4 TranslationInterpolation(const aiNodeAnim *aNode);
@@ -81,17 +87,29 @@ namespace YTE
 
     void Initialize() override;
 
+    void Update(LogicUpdate* aEvent);
+
+    void PlayAnimation(std::string aAnimation);
+
+    void SetDefaultAnimation(std::string aAnimation);
+
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
     static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
     static void Deserializer(RSValue &aValue, Object *aOwner);
 
     Animation* AddAnimation(std::string aName);
+    Animation* InternalAddAnimation(std::string aName);
     void RemoveAnimation(Animation *aAnimation);
 
   private:
-    Model *mModel;
+    Model * mModel;
     Engine *mEngine;
-    std::vector<std::pair<Animation*, std::string>> mAnimations;
+
+    Animation *mDefaultAnimation;
+    Animation *mCurrentAnimation;
+    Animation *mNextAnimation;
+
+    std::map<std::string, Animation *> mAnimations;
   };
 
 

@@ -12,6 +12,7 @@ target_sources(YTE
 	${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
+	${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
 #  PUBLIC    
     ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
     ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -25,4 +26,5 @@ target_sources(YTE
 	${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
+	${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
 )
