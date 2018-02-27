@@ -125,8 +125,7 @@ namespace YTEditor
     ConstructMaterialViewer();
     ConstructWWiseWidget();
 
-    tabifyDockWidget(mMaterialViewer, mFileViewer);
-    tabifyDockWidget(mFileViewer, mComponentBrowser);
+    tabifyDockWidget(mMaterialViewer, mComponentBrowser);
     tabifyDockWidget(mMaterialViewer, mWWiseWidget);
 
     LoadCurrentLevelInfo();
@@ -786,7 +785,7 @@ namespace YTEditor
     FileViewer *fileTree = new FileViewer(mFileViewer);
     mFileViewer->setWidget(fileTree);
 
-    this->addDockWidget(Qt::RightDockWidgetArea, mFileViewer);
+    this->addDockWidget(Qt::BottomDockWidgetArea, mFileViewer);
   }
 
   void MainWindow::ConstructMenuBar()
