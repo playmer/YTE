@@ -37,6 +37,7 @@
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -116,6 +117,7 @@ namespace YTE
     InitializeType<Zone>();
     InitializeType<Island>();
     InitializeType<TestingComponent>();
+    InitializeType<JohnDialogue>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

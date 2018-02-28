@@ -5,6 +5,8 @@
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-02-23
 \brief
+DELAYED DEVELOPMENT, USE CHARACTER DIALOGUES
+
 An interface on the space for running dialogue. This component will 
 parse the dialogue texts,
 store them for the game to access at runtime...maybe other?

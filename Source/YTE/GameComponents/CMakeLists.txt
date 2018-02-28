@@ -22,6 +22,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.cpp
 #  PUBLIC    
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -45,4 +46,5 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.hpp
 )
