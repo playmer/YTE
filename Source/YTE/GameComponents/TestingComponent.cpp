@@ -34,9 +34,6 @@ namespace YTE
 
   void TestingComponent::Update(LogicUpdate *aEvent)
   {
-    glm::vec3 tr = mOwner->GetComponent<Transform>()->GetWorldTranslation();
-
-    mOwner->GetComponent<Transform>()->SetWorldTranslation(tr + glm::vec3(0.0f, 5.0f, 0.0f));
 
   }
 
@@ -46,7 +43,6 @@ namespace YTE
     {
     case Xbox_Buttons::A:
     {
-      //mOwner->GetComponent<Animator>()->SetDefaultAnimation("NPC_Walk_Loop.fbx");
       break;
     }
     }

@@ -29,8 +29,8 @@ namespace YTE
   {
     if (nullptr == mOwner->GetEngine()->GetComponent<InputInterpreter>())
     {
-      auto inputInterpreter = mOwner->GetEngine()->AddComponent<InputInterpreter>();
-      inputInterpreter->Initialize();
+      //auto inputInterpreter = mOwner->GetEngine()->AddComponent<InputInterpreter>();
+      //inputInterpreter->Initialize();
     }
   }
 }

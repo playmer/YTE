@@ -79,9 +79,9 @@ namespace YTE
         mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
         /* Event Registration */
-        mOwner->GetEngine()->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-        mOwner->GetEngine()->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
-        mOwner->GetEngine()->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
+        mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
+        mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
+        mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
         mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
         mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
         mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
@@ -190,7 +190,6 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
-
       float dt = static_cast<float>(aEvent->Dt);
       /*
       if (mParticleEmitter != NULL)
@@ -212,7 +211,7 @@ namespace YTE
         
         if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Left))
         {
-          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 1000.0f * mMaxSailSpeed * dt);
+          mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * dt);
         }
         else if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Right))
         {
@@ -220,21 +219,9 @@ namespace YTE
         }
         else
         {
-          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 500.0f * mMaxSailSpeed * dt);
+          mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * dt);
         }
 
-        //btTransform trans;
-        //mRigidBody->GetBody()->getMotionState()->getWorldTransform(trans);
-        //
-        //float matr[16]{ 0.0f };
-        //
-        //trans.getOpenGLMatrix(matr);
-        //
-        //float x = matr[12];
-        //float y = matr[13];
-        //float z = matr[14];
-        //
-        //std::cout << "Position :  (" << x << ", " << y << ", " << z << ")" << std::endl;
         
         //if (mCurSpeed < 50.0f)
         //{
@@ -245,7 +232,6 @@ namespace YTE
       else
       {
         mRigidBody->SetVelocity(glm::vec3(0,0,0));
-
         /*
         if (mCurSpeed > 0.0f)
         {
