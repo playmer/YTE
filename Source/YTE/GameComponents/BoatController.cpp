@@ -185,10 +185,6 @@ namespace YTE
 
     void BoatController::Update(LogicUpdate *aEvent)
     {
-      if (!mRigidBody)
-      {
-        return;
-      }
 
       float dt = static_cast<float>(aEvent->Dt);
       /*
@@ -356,7 +352,7 @@ namespace YTE
 
     void BoatController::ApplyMovementVector(glm::vec3 aImpulse)
     {
-      //mRigidBody->ApplyImpulse(aImpulse, glm::vec3(0, 0, 0));
+      mRigidBody->ApplyImpulse(aImpulse, glm::vec3(0, 0, 0));
     }
     
 }//end yte namespace

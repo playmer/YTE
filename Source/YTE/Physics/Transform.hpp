@@ -118,6 +118,8 @@ namespace YTE
     void SetWorldTranslation(const glm::vec3& aTrans);
     void SetWorldTranslation(float aX, float aY, float aZ);
 
+    void PhysicsSetWorldTransAndRot(const glm::vec3& aTrans, const glm::quat& aRotation);
+
     const glm::vec3& GetWorldScale() const;
     void SetWorldScale(const glm::vec3& aScale);
     void SetWorldScale(float aX, float aY, float aZ);

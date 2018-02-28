@@ -19,6 +19,7 @@ namespace YTE
   class Composition;
   class Component;
   class LogicUpdate;
+  class PhysicsUpdate;
   class CompositionRemoved;
   class BoundTypeChanged;
   template <typename T> class ComponentFactory;

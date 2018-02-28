@@ -102,35 +102,36 @@ namespace YTE
     auto baseCollider = collider->GetCollider();
     auto collisionShape = baseCollider->getCollisionShape();
 
-    if (isDynamic)
-    {
-      baseCollider->getCollisionShape()->calculateLocalInertia(mMass, localInertia);
-    }
+    //if (isDynamic)
+    //{
+    //  baseCollider->getCollisionShape()->calculateLocalInertia(mMass, localInertia);
+    //}
 
     auto transform = mOwner->GetComponent<Transform>();
 
+    // create motion state
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
     mMotionState = std::make_unique<MotionState>(transform);
+
+    // call calculate local inertia (pass inertia(0,0,0) and mass)
+    collisionShape->calculateLocalInertia(mMass, localInertia);
+    
+    // rb construct info
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mMass, mMotionState.get(), collisionShape, localInertia);
-    rbInfo.m_friction = 0.0f;
-    rbInfo.m_restitution = 0.0f;
-    rbInfo.m_mass = mMass;
-    rbInfo.m_rollingFriction = 0.0;
-
+    
+    // construct rigidbody
     mRigidBody = std::make_unique<btRigidBody>(rbInfo);
-    mRigidBody->setUserPointer(mOwner);
-
 
     if (isDynamic)
     {
       //mRigidBody->setAngularFactor(btVector3(1, 1, 1));
       //mRigidBody->setAngularFactor(btVector3(0, 0, 0));
-      mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
-      mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-      mRigidBody->updateInertiaTensor();
+      //mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
+      //mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+      //mRigidBody->updateInertiaTensor();
     }
 
-    mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
+    //mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
 
     world->addRigidBody(mRigidBody.get());
 
@@ -155,7 +156,6 @@ namespace YTE
       // set the collider's translation
       auto collider = GetColliderFromObject(mOwner);
       collider->SetTranslation(aTranslation.x, aTranslation.y, aTranslation.z);
-
     }
   }
 

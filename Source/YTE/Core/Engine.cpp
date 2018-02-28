@@ -26,6 +26,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
+  YTEDefineEvent(PhysicsUpdate);
   YTEDefineEvent(FrameUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
   YTEDefineEvent(DebugDrawUpdate);
@@ -41,6 +42,12 @@ namespace YTE
   {
     YTERegisterType(LogicUpdate);
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
+  }
+
+  YTEDefineType(PhysicsUpdate)
+  {
+    YTERegisterType(PhysicsUpdate);
+    YTEBindField(&PhysicsUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
@@ -268,9 +275,11 @@ namespace YTE
     {
       return;
     }
+
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
+    
     SendEvent(Events::LogicUpdate, &updateEvent);
 
     // We may also have been told to shut down here.

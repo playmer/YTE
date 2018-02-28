@@ -58,7 +58,7 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &PhysicsSystem::OnLogicUpdate);
+    mSpace->YTERegister(Events::PhysicsUpdate, this, &PhysicsSystem::OnPhysicsUpdate);
 
 
       // collision configuration contains default setup for memory , collision setup . Advanced
@@ -154,7 +154,7 @@ namespace YTE
     mDebugDrawer->End();
   }
 
-  void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
+  void PhysicsSystem::OnPhysicsUpdate(PhysicsUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
     YTEProfileFunction(profiler::colors::Red);
@@ -193,14 +193,17 @@ namespace YTE
   {
     YTEUnusedArgument(aManifold);
 
-    Body *body = aMainObject->GetComponent<RigidBody>();
-
-    if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
-    if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
-      
-    if (body)
+    if (aMainObject)
     {
-      body->AddCollidedThisFrame(aOtherObject);
+      Body *body = aMainObject->GetComponent<RigidBody>();
+
+      if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
+      if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
+        
+      if (body)
+      {
+        body->AddCollidedThisFrame(aOtherObject);
+      }
     }
   }
 

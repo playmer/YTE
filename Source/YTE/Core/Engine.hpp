@@ -33,6 +33,7 @@
 namespace YTE
 {
   YTEDeclareEvent(LogicUpdate);
+  YTEDeclareEvent(PhysicsUpdate);
   YTEDeclareEvent(FrameUpdate);
   YTEDeclareEvent(BeginDebugDrawUpdate);
   YTEDeclareEvent(DebugDrawUpdate);
@@ -47,6 +48,14 @@ namespace YTE
   {
   public:
     YTEDeclareType(LogicUpdate);
+
+    double Dt;
+  };
+
+  class PhysicsUpdate : public Event
+  {
+  public:
+    YTEDeclareType(PhysicsUpdate);
 
     double Dt;
   };

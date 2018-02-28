@@ -133,6 +133,10 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = aDt;
 
+    PhysicsUpdate physUpdate;
+    physUpdate.Dt = aDt;
+    SendEvent(Events::PhysicsUpdate, &physUpdate);
+
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     // TODO: Move the frame update calls to the graphics system

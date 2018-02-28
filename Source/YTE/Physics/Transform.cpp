@@ -54,8 +54,7 @@ namespace YTE
     // and inform Bullet of changes.
     auto informOriginal = mTransform->GetInformPhysics();
     mTransform->SetInformPhysics(false);
-    mTransform->SetWorldTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
-    mTransform->SetWorldRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
+    mTransform->PhysicsSetWorldTransAndRot(BtToOurVec3(centerOfMassWorldTrans.getOrigin()), BtToOurQuat(centerOfMassWorldTrans.getRotation()));
     mTransform->SetInformPhysics(informOriginal);
   }
 
@@ -299,6 +298,32 @@ namespace YTE
   {
     glm::vec3 world{ aX, aY, aZ };
     SetWorldTranslation(world);
+  }
+
+  void Transform::PhysicsSetWorldTransAndRot(const glm::vec3& aTrans, const glm::quat& aRotation)
+  {
+    // translation
+    glm::vec3 parentTranslation{ mWorldTranslation - mTranslation };
+    glm::vec3 localTranslation{ aTrans - parentTranslation };
+    mWorldTranslation = parentTranslation + localTranslation;
+    mTranslation = localTranslation;
+
+    // rotation
+    glm::quat parentRotation{ GetAccumulatedParentRotation() };
+    glm::quat localRotation{ aRotation * glm::inverse(parentRotation) };
+
+    glm::quat parent = glm::normalize(parentRotation);
+    glm::quat local = glm::normalize(localRotation);
+
+    glm::quat newWorldRotation = glm::normalize(parent * local);
+
+    glm::quat worldDifference{ glm::normalize(newWorldRotation) * glm::inverse(mWorldRotation) };
+    glm::quat localDifference{ local * glm::normalize(glm::inverse(mRotation)) };
+
+    mWorldRotation = newWorldRotation;
+    mRotation = local;
+
+    SendTransformEvents(Events::RotationChanged, localDifference, worldDifference);
   }
 
   void Transform::SetWorldTranslation(const glm::vec3& aWorldTranslation)

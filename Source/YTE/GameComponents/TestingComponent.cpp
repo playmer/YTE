@@ -36,7 +36,7 @@ namespace YTE
   {
     glm::vec3 tr = mOwner->GetComponent<Transform>()->GetWorldTranslation();
 
-    mOwner->GetComponent<Transform>()->SetWorldTranslation(tr + glm::vec3(0.0f, 1.0f, 0.0f));
+    mOwner->GetComponent<Transform>()->SetWorldTranslation(tr + glm::vec3(0.0f, 5.0f, 0.0f));
 
   }
 
