@@ -54,7 +54,8 @@ namespace YTE
     // and inform Bullet of changes.
     auto informOriginal = mTransform->GetInformPhysics();
     mTransform->SetInformPhysics(false);
-    mTransform->PhysicsSetWorldTransAndRot(BtToOurVec3(centerOfMassWorldTrans.getOrigin()), BtToOurQuat(centerOfMassWorldTrans.getRotation()));
+    mTransform->SetWorldTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
+    mTransform->SetWorldRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
     mTransform->SetInformPhysics(informOriginal);
   }
 
@@ -95,11 +96,11 @@ namespace YTE
 
   Transform::Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mTranslation{0.f,0.f,0.f}
-    , mScale{1.f, 1.f, 1.f}
+    , mTranslation{ 0.f,0.f,0.f }
+    , mScale{ 1.f, 1.f, 1.f }
     , mWorldTranslation{ 0.f,0.f,0.f }
     , mWorldScale{ 1.f, 1.f, 1.f }
-    , mInformPhysics{true}
+    , mInformPhysics{ true }
   {
     DeserializeByType(aProperties, this, GetStaticType());
   };
@@ -139,7 +140,7 @@ namespace YTE
   {
     auto oldParent = aEvent->mOldParent;
     auto newParent = aEvent->mNewParent;
-    
+
     if (oldParent)
     {
       oldParent->YTEDeregister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
@@ -162,7 +163,7 @@ namespace YTE
       mTranslation = mTranslation - parentTrans->GetTranslation();
     }
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // Local Getters
   ////////////////////////////////////////////////////////////////////////////
@@ -190,7 +191,7 @@ namespace YTE
   {
     return glm::eulerAngles(mRotation);
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // World Getters
   ////////////////////////////////////////////////////////////////////////////
@@ -253,9 +254,9 @@ namespace YTE
   {
     glm::vec3 eulerAngles = glm::radians(aEulerRotation);
 
-    const glm::vec3 localXAxis{1.0f, 0.0f, 0.0f};
-    const glm::vec3 localYAxis{0.0f, 1.0f, 0.0f};
-    const glm::vec3 localZAxis{0.0f, 0.0f, 1.0f};
+    const glm::vec3 localXAxis{ 1.0f, 0.0f, 0.0f };
+    const glm::vec3 localYAxis{ 0.0f, 1.0f, 0.0f };
+    const glm::vec3 localZAxis{ 0.0f, 0.0f, 1.0f };
 
     auto localX = glm::rotate(eulerAngles.x, localXAxis);
     auto localY = glm::rotate(eulerAngles.y, localYAxis);
@@ -263,7 +264,7 @@ namespace YTE
 
     auto localRotation = localZ * localY * localX;
 
-    glm::quat local{localRotation};
+    glm::quat local{ localRotation };
 
     SetRotation(local);
   }
@@ -300,32 +301,6 @@ namespace YTE
     SetWorldTranslation(world);
   }
 
-  void Transform::PhysicsSetWorldTransAndRot(const glm::vec3& aTrans, const glm::quat& aRotation)
-  {
-    // translation
-    glm::vec3 parentTranslation{ mWorldTranslation - mTranslation };
-    glm::vec3 localTranslation{ aTrans - parentTranslation };
-    mWorldTranslation = parentTranslation + localTranslation;
-    mTranslation = localTranslation;
-
-    // rotation
-    glm::quat parentRotation{ GetAccumulatedParentRotation() };
-    glm::quat localRotation{ aRotation * glm::inverse(parentRotation) };
-
-    glm::quat parent = glm::normalize(parentRotation);
-    glm::quat local = glm::normalize(localRotation);
-
-    glm::quat newWorldRotation = glm::normalize(parent * local);
-
-    glm::quat worldDifference{ glm::normalize(newWorldRotation) * glm::inverse(mWorldRotation) };
-    glm::quat localDifference{ local * glm::normalize(glm::inverse(mRotation)) };
-
-    mWorldRotation = newWorldRotation;
-    mRotation = local;
-
-    SendTransformEvents(Events::RotationChanged, localDifference, worldDifference);
-  }
-
   void Transform::SetWorldTranslation(const glm::vec3& aWorldTranslation)
   {
     auto parent{ mWorldTranslation - mTranslation };
@@ -356,18 +331,18 @@ namespace YTE
   {
     glm::vec3 eulerAngles = glm::radians(aWorldEulerRotation);
 
-    const glm::vec3 worldXAxis{1.0f, 0.0f, 0.0f};
-    const glm::vec3 worldYAxis{0.0f, 1.0f, 0.0f};
-    const glm::vec3 worldZAxis{0.0f, 0.0f, 1.0f};
-    
+    const glm::vec3 worldXAxis{ 1.0f, 0.0f, 0.0f };
+    const glm::vec3 worldYAxis{ 0.0f, 1.0f, 0.0f };
+    const glm::vec3 worldZAxis{ 0.0f, 0.0f, 1.0f };
+
     auto worldX = glm::rotate(eulerAngles.x, worldXAxis);
     auto worldY = glm::rotate(eulerAngles.y, worldYAxis);
     auto worldZ = glm::rotate(eulerAngles.z, worldZAxis);
-    
+
     auto localRotation = worldZ * worldY * worldX;
-    
-    glm::quat world{localRotation};
-    
+
+    glm::quat world{ localRotation };
+
     SetRotation(world);
   }
 
@@ -440,7 +415,7 @@ namespace YTE
 
   glm::vec3 Transform::GetAccumulatedParentScale()
   {
-    glm::vec3 scale{1.0f, 1.0f, 1.0f};
+    glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
     auto parent{ mOwner->GetOwner() };
 
     while (nullptr != parent)
@@ -479,14 +454,14 @@ namespace YTE
   }
 
   void Transform::SendTransformEvents(const std::string &aEvent,
-                                      glm::quat aLocalRotationDifference,
-                                      glm::quat aWorldRotationDifference)
+    glm::quat aLocalRotationDifference,
+    glm::quat aWorldRotationDifference)
   {
     if (mInformPhysics)
     {
       // TODO: Inform physics of scale change.
       auto rigidBody = mOwner->GetComponent<RigidBody>();
-    
+
       if (rigidBody != nullptr)
       {
         rigidBody->SetPhysicsTransform(mTranslation, mRotation);
@@ -495,13 +470,6 @@ namespace YTE
 
     TransformChanged newTransform;
     newTransform.Position = mTranslation;
-
-
-    if (mOwner->GetName() == "ealBoat" || mOwner->GetName() == "gameCamera")
-    {
-      std::cout << mOwner->GetName() << ":  (" << mWorldTranslation.x << ", " << mTranslation.y << ", " << mTranslation.z << ")" << std::endl;
-    }
-
     newTransform.Scale = mScale;
     newTransform.Rotation = mRotation;
     newTransform.WorldPosition = mWorldTranslation;

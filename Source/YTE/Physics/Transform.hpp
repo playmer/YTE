@@ -51,7 +51,7 @@ namespace YTE
     glm::quat LocalRotationDifference;
     glm::quat WorldRotationDifference;
   };
-  
+
   class MotionState : public btMotionState
   {
   public:
@@ -118,8 +118,6 @@ namespace YTE
     void SetWorldTranslation(const glm::vec3& aTrans);
     void SetWorldTranslation(float aX, float aY, float aZ);
 
-    void PhysicsSetWorldTransAndRot(const glm::vec3& aTrans, const glm::quat& aRotation);
-
     const glm::vec3& GetWorldScale() const;
     void SetWorldScale(const glm::vec3& aScale);
     void SetWorldScale(float aX, float aY, float aZ);
@@ -164,8 +162,8 @@ namespace YTE
     void SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation);
 
     void SendTransformEvents(const std::string &aEvent,
-                             glm::quat aLocalRotationDifference = glm::quat{},
-                             glm::quat aWorldRotationDifference = glm::quat{});
+      glm::quat aLocalRotationDifference = glm::quat{},
+      glm::quat aWorldRotationDifference = glm::quat{});
 
     glm::vec3 mTranslation;
     glm::vec3 mScale;
