@@ -470,6 +470,13 @@ namespace YTE
 
     TransformChanged newTransform;
     newTransform.Position = mTranslation;
+
+
+    if (mOwner->GetName() == "ealBoat" || mOwner->GetName() == "gameCamera")
+    {
+      std::cout << mOwner->GetName() << ":  (" << mWorldTranslation.x << ", " << mTranslation.y << ", " << mTranslation.z << ")" << std::endl;
+    }
+
     newTransform.Scale = mScale;
     newTransform.Rotation = mRotation;
     newTransform.WorldPosition = mWorldTranslation;

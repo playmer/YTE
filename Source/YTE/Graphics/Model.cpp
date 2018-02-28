@@ -343,7 +343,15 @@ namespace YTE
       return;
     }
 
-    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetWorldTranslation());
+    glm::vec3 tr = mTransform->GetWorldTranslation();
+
+    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), tr);
+    //
+    //float x = tr.x;
+    //float y = tr.y;
+    //float z = tr.z;
+    //
+    //std::cout << mOwner->GetName() << ":  (" << x << ", " << y << ", " << z << ")" << std::endl;
 
     mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetWorldRotation());
 
