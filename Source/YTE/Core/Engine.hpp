@@ -52,14 +52,6 @@ namespace YTE
     double Dt;
   };
 
-  class PhysicsUpdate : public Event
-  {
-  public:
-    YTEDeclareType(PhysicsUpdate);
-
-    double Dt;
-  };
-
   class BoundTypeChanged : public Event
   {
   public:

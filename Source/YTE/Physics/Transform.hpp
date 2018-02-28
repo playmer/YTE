@@ -162,8 +162,8 @@ namespace YTE
     void SetInternalRotation(const glm::quat &aParentRotation, const glm::quat &aLocalRotation);
 
     void SendTransformEvents(const std::string &aEvent,
-      glm::quat aLocalRotationDifference = glm::quat{},
-      glm::quat aWorldRotationDifference = glm::quat{});
+                             glm::quat aLocalRotationDifference = glm::quat{},
+                             glm::quat aWorldRotationDifference = glm::quat{});
 
     glm::vec3 mTranslation;
     glm::vec3 mScale;

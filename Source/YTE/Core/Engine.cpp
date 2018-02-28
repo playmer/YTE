@@ -44,12 +44,6 @@ namespace YTE
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
-  YTEDefineType(PhysicsUpdate)
-  {
-    YTERegisterType(PhysicsUpdate);
-    YTEBindField(&PhysicsUpdate::Dt, "Dt", PropertyBinding::GetSet);
-  }
-
   YTEDefineType(BoundTypeChanged)
   {
     YTERegisterType(BoundTypeChanged);

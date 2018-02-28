@@ -60,7 +60,6 @@ namespace YTE
 
     mSpace->YTERegister(Events::PhysicsUpdate, this, &PhysicsSystem::OnPhysicsUpdate);
 
-
       // collision configuration contains default setup for memory , collision setup . Advanced
       // users can create their own configuration .
     mCollisionConfiguration = std::make_unique<btDefaultCollisionConfiguration>();
@@ -154,7 +153,7 @@ namespace YTE
     mDebugDrawer->End();
   }
 
-  void PhysicsSystem::OnPhysicsUpdate(PhysicsUpdate *aEvent)
+  void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
     YTEProfileFunction(profiler::colors::Red);

@@ -47,7 +47,7 @@ namespace YTE
     void BeginDebugDrawUpdate(LogicUpdate *aEvent);
     void DebugDrawUpdate(LogicUpdate *aEvent);
     void EndDebugDrawUpdate(LogicUpdate *aEvent);
-    void OnPhysicsUpdate(PhysicsUpdate *aEvent);
+    void OnPhysicsUpdate(LogicUpdate *aEvent);
 
     RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
 

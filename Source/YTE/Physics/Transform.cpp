@@ -454,8 +454,8 @@ namespace YTE
   }
 
   void Transform::SendTransformEvents(const std::string &aEvent,
-    glm::quat aLocalRotationDifference,
-    glm::quat aWorldRotationDifference)
+                                      glm::quat aLocalRotationDifference,
+                                      glm::quat aWorldRotationDifference)
   {
     if (mInformPhysics)
     {

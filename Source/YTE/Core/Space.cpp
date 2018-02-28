@@ -133,9 +133,7 @@ namespace YTE
     LogicUpdate updateEvent;
     updateEvent.Dt = aDt;
 
-    PhysicsUpdate physUpdate;
-    physUpdate.Dt = aDt;
-    SendEvent(Events::PhysicsUpdate, &physUpdate);
+    SendEvent(Events::PhysicsUpdate, &updateEvent);
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
