@@ -45,12 +45,12 @@ namespace YTE
     void SetPlayOverTime(bool aPlayOverTime);
 
     std::string mName;
-    float mCurrentAnimationTime;
+    double mCurrentAnimationTime;
     uint32_t mAnimationIndex;
-    float mSpeed;
+    double mSpeed;
 
     bool mPlayOverTime;
-    float mElapsedTime;
+    double mElapsedTime;
 
     void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
 

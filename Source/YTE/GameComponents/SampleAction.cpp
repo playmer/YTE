@@ -36,7 +36,7 @@ namespace YTE
       g.Add<Quad::easeInOut>(mSimultaneousVal2, -36.0f, 1.5f);
       s.AddGroup(g);
 
-      int someValue = 3.0f;
+      int someValue = 3;
       s.Delay(0.5f);
       s.Call([someValue, this]() {
         std::cout << "Hey I'm a function callback that has been called! Look at this value:" << someValue << std::endl;

@@ -61,19 +61,23 @@ namespace YTE
 
     if (nullptr != model)
     {
-      auto instantiatedModel = model->GetInstantiatedModel();
+      auto instantiatedModels = model->GetInstantiatedModel();
 
-      if (nullptr != instantiatedModel)
+      for (size_t i = 0; i < instantiatedModels.size(); ++i)
       {
-        // If we have submesh pointer, we're a submesh material, otherwise we're a 
-        // Model, or "Universal" material.
-        if (nullptr != mSubmesh)
+        auto instantiatedModel = instantiatedModels[i];
+        if (nullptr != instantiatedModel)
         {
-          instantiatedModel->UpdateUBOSubmeshMaterial(&mMaterial, mIndex);
-        }
-        else
-        {
-          instantiatedModel->UpdateUBOMaterial(&mMaterial);
+          // If we have submesh pointer, we're a submesh material, otherwise we're a 
+          // Model, or "Universal" material.
+          if (nullptr != mSubmesh)
+          {
+            instantiatedModel->UpdateUBOSubmeshMaterial(&mMaterial, mIndex);
+          }
+          else
+          {
+            instantiatedModel->UpdateUBOMaterial(&mMaterial);
+          }
         }
       }
     }
@@ -126,8 +130,7 @@ namespace YTE
 
     if (nullptr != model)
     {
-      auto instantiatedModel = model->GetInstantiatedModel();
-
+      auto instantiatedModel = model->GetInstantiatedModel().front();
       if (nullptr != instantiatedModel)
       {
         if (instantiatedModel->GetMesh()->mName != mName)
@@ -143,10 +146,10 @@ namespace YTE
             mSubmeshMaterials.emplace_back(std::move(materialRep));
           }
 
-          mModelMaterial = MaterialRepresentation{instantiatedModel->GetUBOMaterialData(),
+          mModelMaterial = MaterialRepresentation{ instantiatedModel->GetUBOMaterialData(),
                                                   this,
                                                   0,
-                                                  nullptr};
+                                                  nullptr };
         }
         else
         {
