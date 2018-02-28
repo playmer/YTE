@@ -50,7 +50,7 @@ namespace YTE
       }
       case VK_DEBUG_REPORT_ERROR_BIT_EXT:
       {
-        printf("ERROR: ");
+        printf("\n\nERROR: ");
         break;
       }
       case VK_DEBUG_REPORT_DEBUG_BIT_EXT:

@@ -36,6 +36,7 @@ namespace YTE
   YTEDefineType(VkRenderedSurface)
   {
     YTERegisterType(VkRenderedSurface);
+    GetStaticType()->AddAttribute<RunInEditor>();
   }
 
 
@@ -126,6 +127,10 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
+    if (mCanPresent)
+    {
+      PresentFrame();
+    }
     mViewData.clear();
     mTextures.clear();
     mMeshes.clear();
@@ -580,6 +585,11 @@ namespace YTE
 
   void VkRenderedSurface::PresentFrame()
   {
+    if (mCanPresent == false)
+    {
+      return;
+    }
+
     // wait till rendering is complete
     mGraphicsQueue->waitIdle();
     
@@ -591,6 +601,8 @@ namespace YTE
       event.width = mWindow->GetWidth();
       ResizeEvent(&event);
     }
+
+    mCanPresent = false;
   }
 
   void VkRenderedSurface::GraphicsDataUpdate()
@@ -762,6 +774,8 @@ namespace YTE
                               mRenderCompleteSemaphore };
     
     mGraphicsQueue->submit(submit);
+
+    mCanPresent = true;
   }
 
 

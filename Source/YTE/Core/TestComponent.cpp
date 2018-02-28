@@ -12,6 +12,7 @@ namespace YTE
   YTEDefineType(TestComponent)
   {
     YTERegisterType(TestComponent);
+    GetStaticType()->AddAttribute<RunInEditor>();
   }
 
   TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)

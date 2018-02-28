@@ -317,6 +317,7 @@ namespace YTE
     // Engine Data
     bool mDataUpdateRequired;
     bool mConstructing;
+    bool mCanPresent = false;
   };
 }
 
