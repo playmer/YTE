@@ -46,7 +46,7 @@ namespace YTEditor
     switch (aType)
     {
       case YTE::LogType::Success: return OutputConsole::Color::Green;
-      case YTE::LogType::Information: return OutputConsole::Color::Blue;
+      case YTE::LogType::Information: return OutputConsole::Color::White;
       case YTE::LogType::Warning: return OutputConsole::Color::Yellow;
       case YTE::LogType::PerformanceWarning: return OutputConsole::Color::Orange;
       case YTE::LogType::Error: return OutputConsole::Color::Red;

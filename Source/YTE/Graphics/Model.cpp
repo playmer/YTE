@@ -60,7 +60,7 @@ namespace YTE
   static std::vector<std::string> PopulateShadingDropDown(Component *aComponent)
   {
     YTEUnusedArgument(aComponent);
-    return { "Standard", "Alpha Blending", "Additive Blending" };
+    return { "Standard", "Additive Blending" };
   }
 
 
@@ -232,19 +232,11 @@ namespace YTE
     if (aName == "Standard")
     {
       mShadingName = "Standard";
-      mInstantiatedModel->mUseAlphaBlending = false;
-      mInstantiatedModel->mUseAdditiveBlending = false;
-    }
-    else if (aName == "Alpha Blending")
-    {
-      mShadingName = "Alpha Blending";
-      mInstantiatedModel->mUseAlphaBlending = true;
       mInstantiatedModel->mUseAdditiveBlending = false;
     }
     else if (aName == "Additive Blending")
     {
       mShadingName = "Additive Blending";
-      mInstantiatedModel->mUseAlphaBlending = false;
       mInstantiatedModel->mUseAdditiveBlending = true;
     }
   }
@@ -340,7 +332,7 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->SetBackfaceCulling(aCulling);
+      mInstantiatedModel->mBackFaceCull = aCulling;
     }
   }
 

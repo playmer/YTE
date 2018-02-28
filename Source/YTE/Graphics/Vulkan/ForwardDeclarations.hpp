@@ -20,9 +20,12 @@ namespace YTE
   class VkMesh;
   class VkRenderer;
   class VkRenderedSurface;
+  struct ViewData;
   class VkShader;
   class VkSubmesh;
   class VkTexture;
+  class VkRenderToScreen;
+  class VkRenderTarget;
 }
 
 #endif

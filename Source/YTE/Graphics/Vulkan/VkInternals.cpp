@@ -14,14 +14,14 @@ namespace YTE
 #if !defined(NDEBUG)
   // debug report callback for vulkan
   static VKAPI_ATTR
-    VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
-                                            VkDebugReportObjectTypeEXT aObjectType,
-                                            uint64_t aObject,
-                                            size_t aLocation,
-                                            int32_t aMessageCode,
-                                            const char* aLayerPrefix,
-                                            const char* aMessage,
-                                            void *aUserData)
+  VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
+                                          VkDebugReportObjectTypeEXT aObjectType,
+                                          uint64_t aObject,
+                                          size_t aLocation,
+                                          int32_t aMessageCode,
+                                          const char* aLayerPrefix,
+                                          const char* aMessage,
+                                          void *aUserData)
   {
     YTEUnusedArgument(aObjectType);
     YTEUnusedArgument(aObject);
@@ -50,7 +50,7 @@ namespace YTE
       }
       case VK_DEBUG_REPORT_ERROR_BIT_EXT:
       {
-        printf("ERROR: ");
+        printf("\n\nERROR: ");
         break;
       }
       case VK_DEBUG_REPORT_DEBUG_BIT_EXT:

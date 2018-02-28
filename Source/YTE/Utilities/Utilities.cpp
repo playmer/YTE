@@ -76,6 +76,23 @@ namespace YTE
     return total;
   }
 
+  std::string GlobalUniqueIdentifier::ToIdentifierString() const
+  {
+    std::string total{ "GUID_" };
+    total += Format("%08X", mPart1);
+    total += '_';
+    total += Format("%04X", mPart2);
+    total += '_';
+    total += Format("%04X", mVersion);
+    total += '_';
+    total += Format("%04X", mVariant);
+    total += '_';
+    total += Format("%08X", mPart3);
+    total += Format("%04X", mPart4);
+
+    return total;
+  }
+
   bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID)
   {
     if (this->mPart1 == aGUID.mPart1 &&

@@ -20,11 +20,4 @@ namespace YTE
   {
 
   }
-
-  void InstantiatedModel::SetBackfaceCulling(bool aCulling)
-  {
-    mMesh->SetBackfaceCulling(aCulling);
-    mMesh->RecreateShader();
-  }
-
 }

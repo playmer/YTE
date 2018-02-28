@@ -22,5 +22,6 @@ namespace YTE
 
   SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits stage, 
                            std::string const &aFile, 
-                           std::string &aDefines);
+                           std::string &aDefines,
+                           bool aFilenameIsShaderText);
 }

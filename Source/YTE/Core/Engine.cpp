@@ -270,6 +270,7 @@ namespace YTE
     }
     
     SendEvent(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::PresentFrame, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
 
     // We may also have been told to shut down here.
@@ -280,7 +281,6 @@ namespace YTE
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
-    SendEvent(Events::PresentFrame, &updateEvent);
 
     ++mFrame;
   }

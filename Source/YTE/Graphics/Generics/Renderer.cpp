@@ -127,15 +127,34 @@ namespace YTE
     YTEUnusedArgument(aView);
   }
 
+  void Renderer::RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aDrawerType);
+    YTEUnusedArgument(aCombination);
+  }
+
+  void Renderer::SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aDrawerType);
+    YTEUnusedArgument(aCombination);
+  }
+
+  void Renderer::SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aCombination);
+  }
+
   void Renderer::DeregisterView(GraphicsView *aView)
   {
     YTEUnusedArgument(aView);
   }
 
-  void Renderer::ViewOrderChanged(GraphicsView *aView, float aOldOrder, float aNewOrder)
+  void Renderer::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
     YTEUnusedArgument(aView);
-    YTEUnusedArgument(aOldOrder);
     YTEUnusedArgument(aNewOrder);
   }
 }
