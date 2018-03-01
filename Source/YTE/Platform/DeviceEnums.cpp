@@ -51,6 +51,12 @@ constexpr auto GetEnumValueAsUnderlyingType()
   return static_cast<typename std::underlying_type<tEnumType>::type>(tValue);
 }
 
+template <typename tEnumType, tEnumType tValue>
+constexpr typename std::underlying_type<tEnumType>::type GetNativeType()
+{
+  return static_cast<typename std::underlying_type<tEnumType>::type>(tValue);
+}
+
 YTEDefineExternalType(YTE::Mouse_Buttons)
 {
   YTERegisterType(YTE::Mouse_Buttons);
@@ -58,13 +64,21 @@ YTEDefineExternalType(YTE::Mouse_Buttons)
   //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()),
   //                                            GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>)>::template Size();
 
-  ::YTE::BindFunction<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()), 
-                                                   GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>),
-                      GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()),
-                                          GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>,
+  //::YTE::BindFunction<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()), 
+  //                                                 GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>),
+  //                    GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()),
+  //                                        GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>,
+  //                    std::initializer_list<const char*>YTENoNames.size()>("Left", 
+  //                                                                         ::YTE::TypeId<decltype(Mouse_Buttons::Left)>(), 
+  //                                                                         YTENoNames);
+
+  ::YTE::BindFunction<decltype(&GetNativeType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>),
+                      &GetNativeType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>,
                       std::initializer_list<const char*>YTENoNames.size()>("Left", 
                                                                            ::YTE::TypeId<decltype(Mouse_Buttons::Left)>(), 
                                                                            YTENoNames);
+
+
 
   //YTEBindEnumValue(Mouse_Buttons::Left, "Left");
   //YTEBindEnumValue(Mouse_Buttons::Middle, "Middle");
