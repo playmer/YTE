@@ -86,7 +86,6 @@ namespace YTE
 YTEDefineExternalType(btIDebugDraw::DebugDrawModes)
 {
   YTERegisterType(btIDebugDraw::DebugDrawModes);
-//  YTEBindEnum(builder, type, SpecialType::Enumeration);
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP, "DisableBulletLCP");
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawAabb, "DrawAabb");
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits, "DrawConstraintLimits");
