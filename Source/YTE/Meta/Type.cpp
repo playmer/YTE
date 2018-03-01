@@ -225,20 +225,21 @@ namespace YTE
       mType = parameters[1].mType->GetMostBasicType();
     }
 
-    if (mSetter && mGetter)
-    {
-      auto parameters = mSetter->GetParameters();
-
-      DebugObjection(parameters[1].mType->GetMostBasicType() != mGetter->GetReturnType()->GetMostBasicType(),
-                     "%s %s must have a setter that takes as it's "
-                     "first parameter, the same type as it's getter returns. \n"
-                     "  Setter First Parameter Type: %s"
-                     "  Getter Return Type : %s",
-                     mOwningType->GetName().c_str(),
-                     mName.c_str(),
-                     parameters[1].mType->GetName().c_str(),
-                     mGetter->GetName().c_str());
-    }
+    // TODO: This check doesn't work as intended, should be something more like, convertible to.
+    //if (mSetter && mGetter)
+    //{
+    //  auto parameters = mSetter->GetParameters();
+    //
+    //  DebugObjection(parameters[1].mType->GetMostBasicType() != mGetter->GetReturnType()->GetMostBasicType(),
+    //                 "%s %s must have a setter that takes as it's "
+    //                 "first parameter, the same type as it's getter returns. \n"
+    //                 "  Setter First Parameter Type: %s"
+    //                 "  Getter Return Type : %s",
+    //                 mOwningType->GetName().c_str(),
+    //                 mName.c_str(),
+    //                 parameters[1].mType->GetName().c_str(),
+    //                 mGetter->GetName().c_str());
+    //}
   }
 
   YTEDefineType(Field)
