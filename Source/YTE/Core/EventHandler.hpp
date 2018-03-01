@@ -132,13 +132,19 @@ namespace YTE
                     "EventType must be derived from Event");
       Invoker callerFunction = EventDelegate::Caller<tFunctionType, aFunction, tObjectType, EventType>;
 
-      auto &allocator = cDelegateAllocators[aName];
       auto it = cDelegateAllocators.find(aName);
 
-      auto ptr = allocator.allocate();
+      if (it == cDelegateAllocators.end())
+      {
+        cDelegateAllocators.emplace(aName, BlockAllocator<EventDelegate>{});
 
-      ptr = new(ptr) EventDelegate(aObject, callerFunction, it->first);
-      mHooks.emplace_back(std::move(UniqueEvent(ptr, allocator.GetDeleter())));
+        it = cDelegateAllocators.find(aName);
+      }
+
+      auto ptr = it->second.allocate();
+
+      new(ptr) EventDelegate(aObject, callerFunction, it->first);
+      mHooks.emplace_back(std::move(UniqueEvent(ptr, it->second.GetDeleter())));
       return mHooks.back().get();
     }
 

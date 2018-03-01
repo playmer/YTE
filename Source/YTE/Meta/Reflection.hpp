@@ -1,12 +1,20 @@
 #pragma once
 
 #include "YTE/StandardLibrary/ConstexprString.hpp"
-#define CONSTEXPR_FUNCTION_SIGNATURE __FUNCSIG__
 
+#if defined(_MSC_VER) && !defined(__EDG__)
+#define __PRETTY_FUNCTION__ __FUNCSIG__
+#endif
+
+#if defined(__GNUC__) && !defined(__clang__)
+#define YTEConstexpr
+#else
+#define YTEConstexpr constexpr
+#endif
 
 namespace YTE
 {
-  constexpr size_t GetTypeStart(const char *aTypeNameString)
+  YTEConstexpr size_t GetTypeStart(const char *aTypeNameString)
   {
     size_t beginTrim = 0;
 
@@ -26,7 +34,7 @@ namespace YTE
     return beginTrim;
   }
 
-  constexpr size_t GetTypeEnd()
+  YTEConstexpr size_t GetTypeEnd()
   {
     size_t endTrim = 0;
 
@@ -39,18 +47,18 @@ namespace YTE
     return endTrim;
   }
 
-  template <typename T, T aFunction>
-  constexpr auto GetFunctionSignature()
-  {
-    constexpr const char* typeName = CONSTEXPR_FUNCTION_SIGNATURE;
+  //template <typename T, T aFunction>
+  //YTEConstexpr auto GetFunctionSignature()
+  //{
+  //  YTEConstexpr const char* typeName = CONSTEXPR_FUNCTION_SIGNATURE;
+  //
+  //  YTEConstexpr size_t required_length = StringLength(typeName);
+  //  ConstexprToken<required_length> test{ typeName };
+  //
+  //  return test;
+  //}
 
-    constexpr size_t required_length = StringLength(typeName);
-    ConstexprToken<required_length> test{ typeName };
-
-    return test;
-  }
-
-  constexpr bool IsWhiteSpace(char aCharacter)
+  YTEConstexpr bool IsWhiteSpace(char aCharacter)
   {
     if (((9 >= aCharacter) && (aCharacter <= 13)) || ' ' == aCharacter)
     {
@@ -61,12 +69,12 @@ namespace YTE
   }
 
 
-  constexpr bool IsIdentifier(char aCharacter)
+  YTEConstexpr bool IsIdentifier(char aCharacter)
   {
     if ((('a' <= aCharacter) && (aCharacter <= 'z')) ||
-      (('A' <= aCharacter) && (aCharacter <= 'Z')) ||
-      (('0' <= aCharacter) && (aCharacter <= '9')) ||
-      '_' == aCharacter)
+        (('A' <= aCharacter) && (aCharacter <= 'Z')) ||
+        (('0' <= aCharacter) && (aCharacter <= '9')) ||
+        '_' == aCharacter)
     {
       return true;
     }
@@ -74,7 +82,7 @@ namespace YTE
     return false;
   }
 
-  constexpr StringRange GetToken(StringRange aRange)
+  YTEConstexpr StringRange GetToken(StringRange aRange)
   {
     auto i = aRange.mBegin;
 
@@ -108,16 +116,15 @@ namespace YTE
 
 
   template <typename T>
-  constexpr auto GetTypeName()
+  YTEConstexpr auto GetTypeName()
   {
-    constexpr const char* functionName = CONSTEXPR_FUNCTION_SIGNATURE;
+    YTEConstexpr const char *functionName = __PRETTY_FUNCTION__;
 
-    // TODO: Should also work for GCC.
 #if defined(__clang__)
-    constexpr size_t firstBracket = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '[') + 1;
-    constexpr size_t lastBracket = GetLastInstanceOfCharacter(functionName, StringLength(functionName), ']');
+    YTEConstexpr size_t firstBracket = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '[') + 1;
+    YTEConstexpr size_t lastBracket = GetLastInstanceOfCharacter(functionName, StringLength(functionName), ']');
 
-    constexpr size_t typenameTotalRangeSize = lastBracket - firstBracket;
+    YTEConstexpr size_t typenameTotalRangeSize = lastBracket - firstBracket;
 
     ConstexprTokenWriter<typenameTotalRangeSize + 1> finalName;
 
@@ -143,11 +150,42 @@ namespace YTE
     }
 
     //auto finalName = functionName;
-#elif defined(_MSC_VER)
-    constexpr size_t firstArrow = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '<') + 1;
-    constexpr size_t lastArrow = GetLastInstanceOfCharacter(functionName, StringLength(functionName), '>');
 
-    constexpr size_t typenameTotalRangeSize = lastArrow - firstArrow;
+#elif defined(__GNUC__)
+    YTEConstexpr size_t firstBracket = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '[') + 1;
+    YTEConstexpr size_t lastBracket = GetLastInstanceOfCharacter(functionName, StringLength(functionName), ']');
+
+    std::string finalName;
+
+    StringRange totalType{ functionName + firstBracket, functionName + lastBracket };
+
+    size_t i = 0;
+
+    while (totalType.mBegin < totalType.mEnd)
+    {
+      auto token = GetToken(totalType);
+
+      if (i < 2)
+      {
+        ++token.mEnd;
+      }
+      else
+      {
+        for (auto i = token.mBegin; i < token.mEnd; ++i)
+        {
+          finalName.push_back(*i);
+        }
+      }
+
+      totalType.mBegin = token.mEnd;
+      ++i;
+    }
+
+#elif defined(_MSC_VER)
+    YTEConstexpr size_t firstArrow = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '<') + 1;
+    YTEConstexpr size_t lastArrow = GetLastInstanceOfCharacter(functionName, StringLength(functionName), '>');
+
+    YTEConstexpr size_t typenameTotalRangeSize = lastArrow - firstArrow;
 
     ConstexprTokenWriter<typenameTotalRangeSize + 1> finalName;
 
@@ -157,9 +195,20 @@ namespace YTE
     {
       auto token = GetToken(totalType);
 
+
       if (token == "struct" || token == "class")
       {
         ++token.mEnd;
+      }
+      else if (token.BeginsWith("struct"))
+      {
+        StringRange tokenToWrite{ token.mBegin + sizeof("struct") - 1, token.mEnd };
+        finalName.Write(tokenToWrite);
+      }
+      else if (token.BeginsWith("class"))
+      {
+        StringRange tokenToWrite{ token.mBegin + sizeof("class") - 1, token.mEnd };
+        finalName.Write(tokenToWrite);
       }
       else
       {

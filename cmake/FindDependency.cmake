@@ -3,6 +3,9 @@
 # Legal  : All content (C) 2017 DigiPen (USA) Corporation, all rights reserved. 
 # Author : Joshua T. Fisher (2017)
 ################################################################################
+################################################################################
+# Find WWise
+################################################################################
 Function(FindWWise aTarget)
   # Find the WWise library
   set(WWisePath $ENV{WWISESDK})

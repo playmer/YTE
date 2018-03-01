@@ -8,6 +8,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <sstream>
 #include <streambuf>
 #include <memory>
+#include <random>
 #include <cstdlib>
 #include <filesystem>
 #include <stdarg.h> /* va_list, va_start, va_end*/
@@ -127,7 +128,6 @@ namespace YTE
 
     return tokens;
   }
-
 
   filesystem::path relativeTo(filesystem::path from, filesystem::path to)
   {

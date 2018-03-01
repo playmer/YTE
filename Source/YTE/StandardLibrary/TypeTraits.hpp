@@ -262,6 +262,33 @@ namespace YTE
   template <typename Return, typename Arg = Return>
   struct CountFunctionArguments {};
 
+  template <typename Return>
+  struct CountFunctionArguments<Return(*)()>
+  {
+    constexpr static size_t Size()
+    {
+      return 0;
+    }
+  };
+
+  template <typename Return, typename Object>
+  struct CountFunctionArguments<Return(Object::*)()>
+  {
+    constexpr static size_t Size()
+    {
+      return 0;
+    }
+  };
+
+  template <typename Return, typename Object>
+  struct CountFunctionArguments<Return(Object::*)() const>
+  {
+    constexpr static size_t Size()
+    {
+      return 0;
+    }
+  };
+
   template <typename Return, typename ...Arguments>
   struct CountFunctionArguments<Return(*)(Arguments...)>
   {

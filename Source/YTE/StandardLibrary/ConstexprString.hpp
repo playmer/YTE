@@ -1,3 +1,5 @@
+#include <array>
+
 
 #pragma once
 
@@ -48,30 +50,48 @@ namespace YTE
 
     constexpr size_t Size() const { return tConstSize; };
     constexpr size_t size() const { return tConstSize; };
-    constexpr const char* Data() const { return mData; };
-    constexpr const char* data() const { return mData; };
+    constexpr const char* Data() const { return mData.data(); };
+    constexpr const char* data() const { return mData.data(); };
 
-    char mData[tConstSize + 1];
+    std::array<char, tConstSize + 1> mData;
   };
 
 
   struct StringRange
   {
     constexpr StringRange(const char *aBegin, const char *aEnd)
-      : mBegin(aBegin),
-      mEnd(aEnd)
+      : mBegin(aBegin)
+      , mEnd(aEnd)
     {
 
     }
 
     constexpr StringRange(const char *aBegin)
-      : mBegin(aBegin),
-      mEnd(aBegin + StringLength(aBegin))
+      : mBegin(aBegin)
+      , mEnd(aBegin + StringLength(aBegin))
     {
 
     }
 
-    bool operator==(const StringRange &aRight) const
+    constexpr bool BeginsWith(const StringRange &aRight) const
+    {
+      if (Size() >= aRight.Size())
+      {
+        for (size_t i = 0; i < aRight.Size(); ++i)
+        {
+          if (mBegin[i] != aRight.mBegin[i])
+          {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    constexpr bool operator==(const StringRange &aRight) const
     {
       if (Size() == aRight.Size())
       {
@@ -104,7 +124,7 @@ namespace YTE
   struct ConstexprTokenWriter : public ConstexprToken<tConstSize>
   {
     constexpr ConstexprTokenWriter()
-      : mWritingPosition(this->mData)
+      : mCurrentIndex(0)
     {
       for (size_t i = 0; i < tConstSize; i++)
       {
@@ -117,15 +137,17 @@ namespace YTE
 
     constexpr void Write(StringRange aRange)
     {
-      while (aRange.mBegin < aRange.mEnd)
+      while (aRange.mBegin < aRange.mEnd && mCurrentIndex < tConstSize)
       {
-        *mWritingPosition++ = *aRange.mBegin++;
+        this->mData[mCurrentIndex] = *aRange.mBegin;
+        ++mCurrentIndex;
+        ++aRange.mBegin;
       }
     }
 
 
   private:
-    char *mWritingPosition;
+    size_t mCurrentIndex;
   };
 
   constexpr size_t GetLastInstanceOfCharacter(const char *aString, size_t aSize, char aCharacter)

@@ -70,9 +70,9 @@ namespace YTE
 {
   using namespace std;
 
-  void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories)
+  void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &aComponentFactories)
   {
-    YTE::ComponentFactoryHelper helper{aEngine, &currComponentFactories};
+    YTE::ComponentFactoryHelper helper{aEngine, &aComponentFactories };
 
     helper.CreateComponentFactory<WWiseEmitter>();
     helper.CreateComponentFactory<WWiseListener>();
