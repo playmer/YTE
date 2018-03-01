@@ -41,6 +41,11 @@ namespace YTEditor
 
   void SubWindow::resizeEvent(QResizeEvent *aEvent)
   {
+    if (nullptr == mWindow)
+    {
+      return;
+    }
+
     auto size = aEvent->size();
 
     YTE::WindowResize event;
@@ -53,6 +58,11 @@ namespace YTEditor
 
   void SubWindow::keyPressEvent(QKeyEvent * aEvent)
   {
+    if (nullptr == mWindow)
+    {
+      return;
+    }
+
     mMainWindow->keyPressEvent(aEvent);
     aEvent->ignore();
   }
@@ -67,10 +77,15 @@ namespace YTEditor
 
     TranslateMessage(&message);
 
+    if ((WM_DESTROY == message.message) ||
+        (WM_CLOSE == message.message)   ||
+        (WM_NCDESTROY == message.message))
+    {
+      mWindow = nullptr;
+    }
+
     if ((WM_SIZE != message.message) &&
-        (WM_DESTROY != message.message) &&
-        (WM_CLOSE != message.message) &&
-        (WM_NCDESTROY != message.message) &&
+        (nullptr != mWindow) &&
         (0x90 /*WM_UAHDESTROYWINDOW*/ != message.message))
     {
       // commented out because window was already destroyed on delete

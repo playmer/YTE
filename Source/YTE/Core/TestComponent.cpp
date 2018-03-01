@@ -3,6 +3,8 @@
 
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/Graphics/GraphicsView.hpp"
+
 #include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"

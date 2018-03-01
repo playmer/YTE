@@ -48,6 +48,7 @@ namespace YTE
     }
 
     void ChangeWindow(const std::string& aWindowName);
+    //void ChangeWindow(const std::string& aWindowName);
 
     Window* GetWindow()
     {
