@@ -59,8 +59,12 @@ namespace YTE
   {
     if (false == mEngine->IsEditor())
     {
-      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, this, &Space::WindowLostOrGainedFocusHandler);
-      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
+      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, 
+                                        this, 
+                                        &Space::WindowLostOrGainedFocusHandler);
+      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, 
+                                        this, 
+                                        &Space::WindowMinimizedOrRestoredHandler);
     }
 
     if (nullptr != aProperties)
@@ -210,6 +214,22 @@ namespace YTE
     levelToSave.open(level);
     levelToSave << levelInJson;
     levelToSave.close();
+  }
+
+
+  Space* Space::AddChildSpace(String aLevelName)
+  {
+    auto newSpace = AddComposition<Space>(aLevelName, mEngine, nullptr);
+    newSpace->Load(mEngine->GetLevel(aLevelName));
+    auto ourView = GetComponent<GraphicsView>();
+    auto newView = newSpace->GetComponent<GraphicsView>();
+
+    if (ourView && newView)
+    {
+      newView->ChangeWindow(ourView->GetWindow());
+    }
+
+    return newSpace;
   }
 
 

@@ -34,6 +34,8 @@ namespace YTE
     void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level, bool aCheckRunInEditor = false);
     void SaveLevel(String &aLevelName);
+
+    Space* AddChildSpace(String aLevelName);
   
     bool IsPaused() const { return mPaused; };
     void SetPaused(bool aPause) { mPaused = aPause; };

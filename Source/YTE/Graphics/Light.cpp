@@ -75,9 +75,9 @@ namespace YTE
     , mSetTransform(false)
     , mUseTemp(false)
   {
-    mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    mGraphicsView = aSpace->GetComponent<GraphicsView>();
     mEngine = aSpace->GetEngine();
+    mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
+    mGraphicsView = aSpace->GetComponent<GraphicsView>();
 
     DeserializeByType(aProperties, this, GetStaticType());
   }

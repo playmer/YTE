@@ -168,6 +168,22 @@ namespace YTE
     }
   }
 
+
+  void GraphicsView::ChangeWindow(Window *aWindow)
+  {
+    if (false == mConstructing)
+    {
+      mRenderer->DeregisterView(this);
+    }
+
+    mWindow = aWindow;
+
+    if (false == mConstructing)
+    {
+      mRenderer->RegisterView(this);
+    }
+  }
+
   void GraphicsView::SetClearColor(const glm::vec4 &aColor)
   {
     mClearColor = aColor;
