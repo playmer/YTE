@@ -78,6 +78,7 @@ namespace YTE
     inline static const std::string Walk1 = "WalkPart1.fbx";
     inline static const std::string Walk2 = "WalkPart2.fbx";
   }
+#define DialogueData std::vector<const std::string>
 
   class DialogueNode
   {
@@ -93,7 +94,7 @@ namespace YTE
     void PlayAnim(void);
     void GetInput(void);
     void RunText(void);
-    std::vector<const std::string> mData;
+    DialogueData mData;
   };
 }//end yte
 #endif

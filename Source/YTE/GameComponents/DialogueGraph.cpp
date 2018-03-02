@@ -28,7 +28,7 @@ namespace YTE
 
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
   */
-  DialogueNode::DialogueNode(NodeType aType, std::vector<const std::string> aData, DialogueNode *aParent)
+  DialogueNode::DialogueNode(NodeType aType, DialogueData aData, DialogueNode *aParent)
     : mType(aType), mParent(aParent), mData(aData)
   {
     switch (aType)

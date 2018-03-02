@@ -67,7 +67,7 @@ namespace YTE
 
   void Quest::AddConvo(Conversation *aConvo)
   {
-    mConversationVec.push_back(aConvo);
+    mConversationVec.push_back(*aConvo);
   }
 
 /******************************************************************************
@@ -85,11 +85,16 @@ namespace YTE
     // Construct the quest
     Quest q1(Quest::Name::GuessChew);
     // Root node
-    DialogueNode convoRoot(DialogueNode::NodeType::Anim, std::vector<const std::string>(AnimationNames::WaveLoop));
+    DialogueData testvec2;
+    testvec2.push_back(AnimationNames::WaveLoop);
+    DialogueNode convoRoot(DialogueNode::NodeType::Anim, testvec2);
     // Construct the conversation
     Conversation c1(&convoRoot);
     // Start adding nodes
-    DialogueNode n1(DialogueNode::NodeType::Text, "HEY NICE TO MEET YOU", &convoRoot);
+    const std::string test = "HEY NICE TO MEET YOU";
+    DialogueData testvec;
+    testvec.push_back(test);
+    DialogueNode n1(DialogueNode::NodeType::Text, testvec, &convoRoot);
     // Add the dialogue graph to the quest
     q1.AddConvo(&c1);
   }
