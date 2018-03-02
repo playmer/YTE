@@ -104,6 +104,8 @@ namespace YTE
     int mSerializedStartingHeight;
     bool mSerializedStartingFullscreen;
     bool mSerializedShouldBeRenderedTo;
+
+    std::string mName;
   };
 }
 

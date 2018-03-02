@@ -179,12 +179,14 @@ namespace YTE
     if (false == mEditorMode)
     {
       auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this, nullptr));
+      toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
     else
     {
       auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this));
+      toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
@@ -253,6 +255,10 @@ namespace YTE
     updateEvent.Dt = mDt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
+    for (auto &space : mCompositions)
+    {
+      space.second->SendEvent(Events::DeletionUpdate, &updateEvent);
+    }
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);
