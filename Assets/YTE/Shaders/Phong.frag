@@ -386,7 +386,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 
   // Emissive and Global Illumination
   vec4 ITotal = lightData.mEmisMat +
-                (Illumination.mGlobalIllumination * lightData.mAmbMat * lightData.mDiffTexture);
+                (Illumination.mGlobalIllumination * lightData.mDiffTexture);
 
   // Light Calculations
   for (int i = 0; i < Lights.mNumberOfLights; ++i)
