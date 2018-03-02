@@ -73,41 +73,23 @@ namespace YTE
     enabledFeatures.setTextureCompressionBC(true);
 
     auto family = internals->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
-                                              0.0f};
 
-    mDevice = internals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                           nullptr,
-                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                           enabledFeatures);
-
-    mGraphicsQueue = mDevice->getQueue(family , 0);
+    mGraphicsQueue = mRenderer->mDevice->getQueue(family , 0);
 
     // create a command pool for command buffer allocation
-    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+    mCommandPool = mRenderer->mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
                                               family);
 
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
-    mRenderCompleteSemaphore = mDevice->createSemaphore();
-    mRenderPass1 = mDevice->createSemaphore();
+    mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
+    mRenderPass1 = mRenderer->mDevice->createSemaphore();
     //mRenderPass2 = mDevice->createSemaphore();
     //mRenderPass3 = mDevice->createSemaphore();
 
     mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
     mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
     mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-
-
-    mAllocators[AllocatorTypes::Mesh] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    // 4x 1024 texture size for rgba in this one
-    mAllocators[AllocatorTypes::Texture] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);  
-
-    mAllocators[AllocatorTypes::UniformBufferObject] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
 
     // create Framebuffer & Swapchain
     WindowResize event;
@@ -191,6 +173,18 @@ namespace YTE
     instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
+
+
+  std::shared_ptr<vkhlf::Device>& VkRenderedSurface::GetDevice()
+  {
+    return mRenderer->mDevice;
+  }
+
+  std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
+  {
+    return mRenderer->mAllocators[aName];
+  }
+
 
   void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
   {
@@ -433,15 +427,15 @@ namespace YTE
     {
       auto emplaced = mViewData.try_emplace(aView);
 
-      auto uboAllocator = mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mDevice->createBuffer(sizeof(UBOView),
+      auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
+      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
                                           vk::BufferUsageFlagBits::eTransferDst |
                                           vk::BufferUsageFlagBits::eUniformBuffer,
                                           vk::SharingMode::eExclusive,
                                           nullptr,
                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
                                           uboAllocator);
-      auto buffer2 = mDevice->createBuffer(sizeof(UBOIllumination),
+      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
                                            vk::BufferUsageFlagBits::eTransferDst |
                                            vk::BufferUsageFlagBits::eUniformBuffer,
                                            vk::SharingMode::eExclusive,
