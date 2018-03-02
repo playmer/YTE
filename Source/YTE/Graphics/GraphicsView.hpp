@@ -27,6 +27,15 @@ namespace YTE
     MultiplicativeBlend
   };
 
+  YTEDeclareEvent(SurfaceLost);
+  YTEDeclareEvent(SurfaceGained);
+
+  class ViewChanged : public Event
+  {
+  public:
+    GraphicsView *View;
+  };
+
   class GraphicsView : public Component
   {
   public:
@@ -53,6 +62,11 @@ namespace YTE
     Window* GetWindow()
     {
       return mWindow;
+    }
+
+    Renderer* GetRenderer()
+    {
+      return mRenderer;
     }
 
     float GetOrder()

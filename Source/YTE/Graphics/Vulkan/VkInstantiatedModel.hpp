@@ -29,6 +29,8 @@ namespace YTE
     ~VkInstantiatedModel() override;
 
     void Create();
+    void SurfaceLostEvent(ViewChanged *aEvent);
+    void SurfaceGainedEvent(ViewChanged *aEvent);
 
     void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;

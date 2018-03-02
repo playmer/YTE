@@ -34,6 +34,7 @@ namespace YTE
 
     void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent);
 
+    void AddLight(VkInstantiatedLight *aLight);
     std::unique_ptr<VkInstantiatedLight> CreateLight();
     void DestroyLight(VkInstantiatedLight* aLight);
 

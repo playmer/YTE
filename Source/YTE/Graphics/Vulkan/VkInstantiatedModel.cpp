@@ -29,6 +29,9 @@ namespace YTE
   {
     mMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     Create();
+
+    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
+    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
   }
 
   VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, 
@@ -43,6 +46,9 @@ namespace YTE
   {
     mMesh = static_cast<VkMesh*>(aMesh);
     Create();
+
+    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
+    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
   }
 
   VkInstantiatedModel::~VkInstantiatedModel()
@@ -50,8 +56,22 @@ namespace YTE
     mSurface->DestroyModel(mView, this);
   }
 
+  void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
+  {
+    mSurface->DestroyModel(mView, this);
+  }
+
+  void VkInstantiatedModel::SurfaceGainedEvent(ViewChanged *aEvent)
+  {
+    mView = aEvent->View;
+    mSurface = static_cast<VkRenderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
+    Create();
+  }
+
   void VkInstantiatedModel::Create()
   {
+    mMesh = mSurface->GetRenderer()->CreateSimpleMesh(mView, mMesh->mName, mMesh->mParts, false);
+    
     auto mesh = static_cast<VkMesh*>(mMesh);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);

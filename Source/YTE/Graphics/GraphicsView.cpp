@@ -34,6 +34,9 @@ namespace YTE
     return result;
   }
 
+  YTEDefineEvent(SurfaceLost);
+  YTEDefineEvent(SurfaceGained);
+
   YTEDefineType(GraphicsView)
   {
     YTERegisterType(GraphicsView);
@@ -152,8 +155,11 @@ namespace YTE
 
   void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
+    ViewChanged event;
+    event.View = this;
     if (false == mConstructing)
     {
+      SendEvent(Events::SurfaceLost, &event);
       mRenderer->DeregisterView(this);
     }
 
@@ -165,22 +171,29 @@ namespace YTE
     if (false == mConstructing)
     {
       mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
     }
   }
 
 
   void GraphicsView::ChangeWindow(Window *aWindow)
   {
+    ViewChanged event;
+    event.View = this;
+
     if (false == mConstructing)
     {
+      SendEvent(Events::SurfaceLost, &event);
       mRenderer->DeregisterView(this);
     }
 
     mWindow = aWindow;
+    mWindowName = aWindow->mName;
 
     if (false == mConstructing)
     {
       mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
     }
   }
 

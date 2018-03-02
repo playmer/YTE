@@ -18,8 +18,6 @@ namespace YTE
     mLightData.mNumOfLights = 0;
   }
 
-
-
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
     mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkLightManager::GraphicsDataUpdateVkEvent);
@@ -46,8 +44,6 @@ namespace YTE
     mUpdateRequired = true;
     mLightData.mNumOfLights = 0;
   }
-
-
 
   void VkLightManager::SetSurfaceAndView(VkRenderedSurface* aSurface, GraphicsView* aView)
   {
@@ -77,8 +73,6 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-
-
   void VkLightManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
   {
     SendEvent(Events::GraphicsDataUpdateVk, aEvent);
@@ -91,7 +85,24 @@ namespace YTE
     }
   }
 
+  void VkLightManager::AddLight(VkInstantiatedLight *aLight)
+  {
+    if (mLightData.mNumOfLights == YTE_Graphics_LightCount)
+    {
+      DebugObjection(true, "Light Manager is full, no new lights can be added, you may safely continue, no light was added");
+    }
 
+    if (mLightData.mNumOfLights == 0)
+    {
+      mLightData.mActive = 10.0f; // true
+    }
+
+    mLights.push_back(aLight);
+
+    aLight->SetIndex(mLightData.mNumOfLights);
+    mLightData.mNumOfLights++;
+    mUpdateRequired = true;
+  }
 
   std::unique_ptr<VkInstantiatedLight> VkLightManager::CreateLight()
   {
@@ -133,6 +144,11 @@ namespace YTE
 
     mLights.pop_back();
     mLightData.mNumOfLights -= 1;
+
+    if (mLightData.mNumOfLights == 0)
+    {
+      mLightData.mActive = 0.0f; // false
+    }
 
     mUpdateRequired = true;
   }
