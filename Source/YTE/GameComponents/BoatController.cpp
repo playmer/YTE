@@ -34,19 +34,19 @@ namespace YTE
     YTERegisterType(BoatController);
 
 
+    YTEBindProperty(&BoatController::GetSailUpScalar, &BoatController::SetSailUpScalar, "Sail Up Scalar")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&BoatController::GetSailDownScalar, &BoatController::SetSailDownScalar, "Sail Down Scalar")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
     YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "Max Sail Speed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "Rotation Speed")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-
-    YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "Wind Force")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-
-    YTEBindProperty(&BoatController::GetDecelerationForce, &BoatController::SetDecelerationForce, "Deceleration Force")
+    YTEBindProperty(&BoatController::GetMaxCruiseSpeed, &BoatController::SetMaxCruiseSpeed, "Max Cruise Speed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
@@ -63,13 +63,12 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mCanDock(false)
     , mNearbyDock(nullptr)
-    , mCurrSpeed(0.f)
   {
-    
-    mMaxSailSpeed = 25.0f;
-    mRotationSpeed = 35.0f;
-    mWindForce = 10.f;
-    mDecelerationForce = -25.f;
+    mSailUpScalar = 10.0f;
+    mSailDownScalar = 5.0f;
+    mCurSpeed = 0.0f;
+    mMaxSailSpeed = 10.0f;
+    mMaxCruiseSpeed = 5.0f;
 
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -83,9 +82,10 @@ namespace YTE
       mCollider = mOwner->GetComponent<BoxCollider>();
       mIsSailUp = false;
       mStartedTurning = false;
+      mRotationAngle = 0.0f;
       mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
-      mRigidBody->SetDamping(0.9f, 0.9f);
+      mMoveDir = mOrientation->GetForwardVector();
 
       /* Event Registration */
       mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
@@ -94,7 +94,7 @@ namespace YTE
       mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
       mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
       mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
- 
+        
       /*
       //temp
       auto composition = mOwner->FindFirstCompositionByName("particles");
@@ -158,11 +158,7 @@ namespace YTE
 
   void BoatController::TurnBoat(BoatTurnEvent *aEvent)
   {
-    if (aEvent->StickDirection.x > 0.1)
-      mRigidBody->ApplyForce(mOrientation->GetRightVector(), mOrientation->GetForwardVector());
-    else if (aEvent->StickDirection.x < -0.1)
-      mRigidBody->ApplyForce(-mOrientation->GetRightVector(), mOrientation->GetForwardVector());
-    /*if (aEvent->StickDirection == glm::vec2(0, 0))
+    if (aEvent->StickDirection == glm::vec2(0, 0))
     {
       mStartedTurning = false;
     }
@@ -178,7 +174,12 @@ namespace YTE
     }
 
     auto rotationDelta = -(aEvent->StickDirection.x / 2.0f) * static_cast<float>(mOwner->GetEngine()->GetDt());
-    mTransform->Rotate({0, 1, 0 }, rotationDelta);*/
+    mTransform->Rotate({0, 1, 0 }, rotationDelta);
+
+    if (mIsSailUp)
+    {
+      mRigidBody->SetGravity(10.f * mOrientation->GetForwardVector());
+    }
   }
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)
@@ -189,8 +190,7 @@ namespace YTE
       if (!mIsSailUp)
       {
         sound = "SFX_Sail_Up";
-        mRigidBody->SetGravity(mWindForce * mOrientation->GetForwardVector());
-        mRigidBody->SetDamping(0.f, 0.9f);
+        mRigidBody->SetGravity(10.0f * mOrientation->GetForwardVector());
       }
     }
     else
@@ -198,7 +198,7 @@ namespace YTE
       if (mIsSailUp)
       {
         sound = "SFX_Sail_Down";
-        mRigidBody->SetDamping(0.9f, 0.9f);
+        mRigidBody->SetGravity(-20.f * mOrientation->GetForwardVector());
       }
     }
 
@@ -212,24 +212,94 @@ namespace YTE
 
   void BoatController::Update(LogicUpdate *aEvent)
   {
+    float dt = static_cast<float>(aEvent->Dt);
+
     glm::vec3 vel = mRigidBody->GetVelocity();
 
-    mCurrSpeed = glm::length(vel);
-    mSoundSystem->SetRTPC("Sailing_Volume", mCurrSpeed);
+    mCurSpeed = glm::length(vel);
+    mSoundSystem->SetRTPC("Sailing_Volume", mCurSpeed);
 
     if (mIsSailUp)
     {
-      if (mCurrSpeed > mMaxSailSpeed)
-        mRigidBody->SetGravity(glm::vec3(0));
+      if (mCurSpeed > mMaxSailSpeed)
+        mRigidBody->SetVelocity(mMaxSailSpeed * mOrientation->GetForwardVector());
+      /*auto gamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(Controller_Id::Xbox_P1);
+        
+      if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Left))
+      {
+        mRigidBody->SetVelocity(mOrientation->GetUpVector() * 400.0f * mMaxSailSpeed * dt);
+      }
+      else if (gamepad->IsButtonDown(Xbox_Buttons::DPAD_Right))
+      {
+        mRigidBody->SetVelocity(mOrientation->GetRightVector() * 400.0f * mMaxSailSpeed * dt);
+      }
+      else
+      {
+        mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * dt);
+      }*/
     }
     else
     {  
-      if (mCurrSpeed < 0.1f)
+      if (mCurSpeed < 0.1f)
       {
         mRigidBody->SetVelocity(glm::vec3(0));
         mRigidBody->SetGravity(glm::vec3(0));
       }
+
+      //mRigidBody->SetVelocity(glm::vec3(0,0,0));
+      /*
+      if (mCurSpeed > 0.0f)
+      {
+        mRigidBody->ApplyImpulse(mOrientation->GetForwardVector() * aEvent->Dt * -10.0f, glm::vec3(0, 0, 0));
+      }
+      else
+      {
+        mRigidBody->SetVelocity(glm::vec3(0, 0, 0));
+      }
+      */
     }
+    //auto temp = mRigidBody->GetVelocity().length;
+    //mCurSpeed;
+  }
+
+  float BoatController::GetSailUpScalar()
+  {
+    return mSailUpScalar;
+  }
+
+  void BoatController::SetSailUpScalar(float aSpeed)
+  {
+    mSailUpScalar = aSpeed;
+  }
+
+  float BoatController::GetSailDownScalar()
+  {
+    return mSailDownScalar;
+  }
+
+  void BoatController::SetSailDownScalar(float aSpeed)
+  {
+    mSailDownScalar = aSpeed;
+  }
+
+  float BoatController::GetMaxSailSpeed()
+  {
+    return mMaxSailSpeed;
+  }
+    
+  void BoatController::SetMaxSailSpeed(float aSpeed)
+  {
+    mMaxSailSpeed = aSpeed;
+  }
+
+  float BoatController::GetMaxCruiseSpeed()
+  {
+    return mMaxCruiseSpeed;
+  }
+
+  void BoatController::SetMaxCruiseSpeed(float aSpeed)
+  {
+    mMaxCruiseSpeed = aSpeed;
   }
     
   void BoatController::OnCollisionStart(CollisionStarted *aEvent)

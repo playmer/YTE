@@ -108,8 +108,19 @@ namespace YTE
     // flag for turning
     bool mStartedTurning;
 
-    float mCurrSpeed;
-  };
-} 
+        float mSailUpScalar;
+        float mSailDownScalar;
+        float mCurSpeed;
+        float mMaxSailSpeed;
+        float mMaxCruiseSpeed;
+
+        // Vector that represents the direction of the force to apply to the boat (move elsewhere?)
+        glm::vec3 mMoveDir;
+        //glm::vec3 mForwardVec;
+        float mRotationAngle; // @@@TODO: take this out and add a Rotate() on the Transform later
+        //float mSailMaxSpeed;
+        //float mCurBoatRoll; i think this is going to change to a max roll
+    };
+} // End YTE namespace
 
 #endif
