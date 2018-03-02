@@ -1,7 +1,8 @@
 /******************************************************************************/
 /*!
 \file   BoatController.hpp
-\author Jonathan Ackerman
+\author Isaac Dayton
+        Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-19
 \brief
@@ -33,87 +34,82 @@ namespace YTE
 /////////////////////////////////////////////////////////////////////////////////////
 // Events
 /////////////////////////////////////////////////////////////////////////////////////
-    YTEDeclareEvent(RequestDialogueStart);
+  YTEDeclareEvent(RequestDialogueStart);
 
-    class RequestDialogueStart : public Event
-    {
-    public:
-      YTEDeclareType(RequestDialogueStart);
-      RequestDialogueStart() {  };
+  class RequestDialogueStart : public Event
+  {
+  public:
+    YTEDeclareType(RequestDialogueStart);
+    RequestDialogueStart() {  };
 
-      Composition *camera;
-    };
+    Composition *camera;
+  };
 
 /////////////////////////////////////////////////////////////////////////////////////
 // Class
 /////////////////////////////////////////////////////////////////////////////////////
 
-    class BoatController : public Component
-    {
-    public:
-        //void LowerSail(); callback to lower the sail when we hear a lowersail event or smth
-        YTEDeclareType(BoatController);
-        BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-        void Initialize() override;
-        void ChangeSail(SailStateChanged *aEvent);
-        void TurnBoat(BoatTurnEvent *aEvent);
-        void DockBoat(BoatDockEvent *aEvent);
-        void Update(LogicUpdate *aEvent);
-        void OnCollisionStart(CollisionStarted *aEvent);
-        void OnCollisionEnd(CollisionEnded *aEvent);
+  class BoatController : public Component
+  {
+  public:
+    //void LowerSail(); callback to lower the sail when we hear a lowersail event or smth
+    YTEDeclareType(BoatController);
+    BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    void Initialize() override;
+    void ChangeSail(SailStateChanged *aEvent);
+    void TurnBoat(BoatTurnEvent *aEvent);
+    void DockBoat(BoatDockEvent *aEvent);
+    void Update(LogicUpdate *aEvent);
+    void OnCollisionStart(CollisionStarted *aEvent);
+    void OnCollisionEnd(CollisionEnded *aEvent);
 
-        float GetSailUpScalar();
-        void SetSailUpScalar(float aSpeed);
+    // PROPERTIES ///////////////////////////////////////////////////////////////////
+    float GetMaxSailSpeed() { return mMaxSailSpeed; }
+    void SetMaxSailSpeed(float& aMaxSpeed) { mMaxSailSpeed = aMaxSpeed; }
 
-        float GetSailDownScalar();
-        void SetSailDownScalar(float aSpeed);
+    float GetRotationSpeed() { return mRotationSpeed; }
+    void SetRotationSpeed(float& aSpeed) { mRotationSpeed = aSpeed; }
 
-        float GetMaxSailSpeed();
-        void SetMaxSailSpeed(float aSpeed);
+    float GetWindForce() { return mWindForce; }
+    void SetWindForce(float& aForce) { mWindForce = aForce; }
 
-        float GetMaxCruiseSpeed();
-        void SetMaxCruiseSpeed(float aSpeed);
+    float GetDecelerationForce() { return -mDecelerationForce; }
+    void SetDecelerationForce(float& aForce) { mDecelerationForce = -aForce; }
+    /////////////////////////////////////////////////////////////////////////////////
 
+  private:
+    glm::vec3 CalculateMovementVector(float dt);
+    void ApplyMovementVector(glm::vec3 aImpulse);
+    //void ApplyForceToBoat();
+    //void RollBoat();
 
-    private:
-        glm::vec3 CalculateMovementVector(float dt);
-        void ApplyMovementVector(glm::vec3 aImpulse);
-        //void ApplyForceToBoat();
-        //void RollBoat();
+    Transform *mTransform;
+    Orientation *mOrientation;
+    RigidBody *mRigidBody;
+    BoxCollider *mCollider;
+    ParticleEmitter *mParticleEmitter;
+    WWiseEmitter *mSoundEmitter;
+    Composition *mNearbyDock; // be careful with this lambs
 
-        Transform *mTransform;
-        Orientation *mOrientation;
-        RigidBody *mRigidBody;
-        BoxCollider *mCollider;
-        ParticleEmitter *mParticleEmitter;
-        WWiseEmitter *mSoundEmitter;
-        Composition *mNearbyDock; // be careful with this lambs
+    WWiseSystem *mSoundSystem;
 
-        WWiseSystem *mSoundSystem;
+    float mMaxSailSpeed;
+    float mRotationSpeed;
+    float mWindForce;
+    float mDecelerationForce;
 
-        //Model *mSailModel; wherever i play anims for sail
-        //Transform *mSailOrient; sail might have a different transform to rotate around
+    //Model *mSailModel; wherever i play anims for sails
+    //Transform *mSailOrient; sail might have a different transform to rotate around
 
-        // Flag that represents the state of the boat's sail
-        bool mIsSailUp;
-        // flag for docking
-        bool mCanDock;
-        // flag for turning
-        bool mStartedTurning;
+    // Flag that represents the state of the boat's sail
+    bool mIsSailUp;
+    // flag for docking
+    bool mCanDock;
+    // flag for turning
+    bool mStartedTurning;
 
-        float mSailUpScalar;
-        float mSailDownScalar;
-        float mCurSpeed;
-        float mMaxSailSpeed;
-        float mMaxCruiseSpeed;
-
-        // Vector that represents the direction of the force to apply to the boat (move elsewhere?)
-        glm::vec3 mMoveDir;
-        //glm::vec3 mForwardVec;
-        float mRotationAngle; // @@@TODO: take this out and add a Rotate() on the Transform later
-        //float mSailMaxSpeed;
-        //float mCurBoatRoll; i think this is going to change to a max roll
-    };
-} // End YTE namespace
+    float mCurrSpeed;
+  };
+} 
 
 #endif
