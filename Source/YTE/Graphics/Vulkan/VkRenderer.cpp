@@ -39,6 +39,31 @@ namespace YTE
 
     auto instance = mVulkanInternals->GetInstance();
 
+
+    auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
+    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
+                                              0.0f};
+
+    // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
+    vk::PhysicalDeviceFeatures enabledFeatures;
+    enabledFeatures.setTextureCompressionBC(true);
+    
+    mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
+                                                           nullptr,
+                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                                           enabledFeatures);
+
+
+    mAllocators[AllocatorTypes::Mesh] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+
+    // 4x 1024 texture size for rgba in this one
+    mAllocators[AllocatorTypes::Texture] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
+
+    mAllocators[AllocatorTypes::UniformBufferObject] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+
     bool firstSet = false;
     for (auto &window : windows)
     {

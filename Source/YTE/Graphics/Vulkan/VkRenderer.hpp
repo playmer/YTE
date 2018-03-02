@@ -8,8 +8,11 @@
 #ifndef YTE_Graphics_Vulkan_VkRenderer_hpp
 #define YTE_Graphics_Vulkan_VkRenderer_hpp
 
+#include <unordered_map>
+
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 namespace YTE
 {
@@ -76,6 +79,8 @@ namespace YTE
       return mVulkanInternals.get();
     }
 
+    std::shared_ptr<vkhlf::Device> mDevice;
+    std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
   private:
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
