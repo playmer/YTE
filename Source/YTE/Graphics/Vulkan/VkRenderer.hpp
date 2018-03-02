@@ -81,6 +81,8 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Device> mDevice;
     std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
+    std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
+    std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
   private:
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;

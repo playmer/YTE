@@ -13,6 +13,9 @@
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 
+#include "YTE/Graphics/Vulkan/VkTexture.hpp"
+#include "YTE/Graphics/Vulkan/VkMesh.hpp"
+
 namespace YTE
 {
   YTEDefineType(VkRenderer)
@@ -98,6 +101,8 @@ namespace YTE
   VkRenderer::~VkRenderer()
   {
     mSurfaces.clear();
+    mTextures.clear();
+    mMeshes.clear();
   }
 
   void VkRenderer::RegisterWindowForDraw(Window *aWindow)

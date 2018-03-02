@@ -242,8 +242,6 @@ namespace YTE
     std::unique_ptr<VkRenderToScreen> mRenderToScreen;
 
     // loaded data
-    std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
-    std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
     std::map<GraphicsView*, ViewData> mViewData;
     std::unordered_map<std::string, VkCreatePipelineDataSet> mShaderCreateInfos;
 

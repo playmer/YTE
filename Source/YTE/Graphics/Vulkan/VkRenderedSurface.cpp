@@ -114,8 +114,6 @@ namespace YTE
       PresentFrame();
     }
     mViewData.clear();
-    mTextures.clear();
-    mMeshes.clear();
     mShaderCreateInfos.clear();
     mRenderToScreen.reset();
   }
@@ -233,11 +231,11 @@ namespace YTE
   // Meshes
   VkMesh* VkRenderedSurface::CreateMesh(std::string &aFilename)
   {
-    auto meshIt = mMeshes.find(aFilename);
+    auto meshIt = mRenderer->mMeshes.find(aFilename);
 
     VkMesh *meshPtr{ nullptr };
 
-    if (meshIt == mMeshes.end())
+    if (meshIt == mRenderer->mMeshes.end())
     {
       // create mesh
       auto mesh = std::make_unique<VkMesh>(mWindow,
@@ -246,7 +244,7 @@ namespace YTE
 
       meshPtr = mesh.get();
 
-      mMeshes[aFilename] = std::move(mesh);
+      mRenderer->mMeshes[aFilename] = std::move(mesh);
       mDataUpdateRequired = true;
     }
     else
@@ -262,11 +260,11 @@ namespace YTE
                                             std::vector<Submesh> &aSubmeshes,
 		                                        bool aForceUpdate)
   {
-    auto meshIt = mMeshes.find(aName);
+    auto meshIt = mRenderer->mMeshes.find(aName);
 
     VkMesh *meshPtr{ nullptr };
 
-    if (aForceUpdate || meshIt == mMeshes.end())
+    if (aForceUpdate || meshIt == mRenderer->mMeshes.end())
     {
       // create mesh
       auto mesh = std::make_unique<VkMesh>(mWindow,
@@ -276,7 +274,7 @@ namespace YTE
 
       meshPtr = mesh.get();
 
-      mMeshes[aName] = std::move(mesh);
+      mRenderer->mMeshes[aName] = std::move(mesh);
       mDataUpdateRequired = true;
     }
     else
@@ -290,17 +288,17 @@ namespace YTE
   // Textures
   VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
-    auto textureIt = mTextures.find(aFilename);
+    auto textureIt = mRenderer->mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
 
-    if (textureIt == mTextures.end())
+    if (textureIt == mRenderer->mTextures.end())
     {
       auto texture = std::make_unique<VkTexture>(aFilename,
                                                  mRenderer->GetSurface(mWindow),
                                                  aType);
 
       texturePtr = texture.get();
-      mTextures[aFilename] = std::move(texture);
+      mRenderer->mTextures[aFilename] = std::move(texture);
       mDataUpdateRequired = true;
     }
     else
@@ -702,7 +700,7 @@ namespace YTE
     // build secondaries
     for (auto &v : mViewData)
     {
-      v.second.mRenderTarget->RenderFull(extent, mMeshes);
+      v.second.mRenderTarget->RenderFull(extent, mRenderer->mMeshes);
       v.second.mRenderTarget->MoveToNextEvent();
     }
 
