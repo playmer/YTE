@@ -33,6 +33,7 @@
 namespace YTE
 {
   YTEDeclareEvent(LogicUpdate);
+  YTEDeclareEvent(PhysicsUpdate);
   YTEDeclareEvent(FrameUpdate);
   YTEDeclareEvent(BeginDebugDrawUpdate);
   YTEDeclareEvent(DebugDrawUpdate);

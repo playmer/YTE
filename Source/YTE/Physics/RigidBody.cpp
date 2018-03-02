@@ -1,9 +1,9 @@
 /******************************************************************************/
 /*!
- * \author Joshua T. Fisher
- * \date   2015-11-20
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
+* \author Joshua T. Fisher
+* \date   2015-11-20
+*
+* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 #include "YTE/Core/Engine.hpp"
@@ -29,14 +29,14 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType()},
-                                             { BoxCollider::GetStaticType(),
-                                               CapsuleCollider::GetStaticType(),
-                                               CylinderCollider::GetStaticType(),
-                                               MenuCollider::GetStaticType(),
-                                               MeshCollider::GetStaticType(),
-                                               SphereCollider::GetStaticType() }};
-    
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() },
+    { BoxCollider::GetStaticType(),
+      CapsuleCollider::GetStaticType(),
+      CylinderCollider::GetStaticType(),
+      MenuCollider::GetStaticType(),
+      MeshCollider::GetStaticType(),
+      SphereCollider::GetStaticType() } };
+
     RigidBody::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&RigidBody::GetMass, &RigidBody::SetMassProperty, "Mass")
@@ -71,10 +71,10 @@ namespace YTE
     , mIsInitialized(false)
     , mKinematic(true)
   {
-    DeserializeByType(aProperties,  this, GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   };
 
-  RigidBody::~RigidBody() 
+  RigidBody::~RigidBody()
   {
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     world->removeRigidBody(mRigidBody.get());
@@ -83,22 +83,22 @@ namespace YTE
   void RigidBody::PhysicsInitialize()
   {
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
-    auto collider =  GetColliderFromObject(mOwner);
+    auto collider = GetColliderFromObject(mOwner);
 
-    DebugObjection(collider == nullptr, 
-                "RigidBodies require a collider currently, sorry!\n ObjectName: %s",
-                mOwner->GetName().c_str());
+    DebugObjection(collider == nullptr,
+      "RigidBodies require a collider currently, sorry!\n ObjectName: %s",
+      mOwner->GetName().c_str());
 
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mMass != 0.f) && !mStatic;
-    DebugObjection((mMass != 0.f) && mStatic, 
-                "Shouldn't make a non-zero mass object that's also static.\n ObjectName: %s", 
-                mOwner->GetName().c_str());
-    DebugObjection((mMass == 0.f) && !mStatic, 
-                "Can't make a zero mass object that's also non-static.\n ObjectName: %s", 
-                mOwner->GetName().c_str());
+    DebugObjection((mMass != 0.f) && mStatic,
+      "Shouldn't make a non-zero mass object that's also static.\n ObjectName: %s",
+      mOwner->GetName().c_str());
+    DebugObjection((mMass == 0.f) && !mStatic,
+      "Can't make a zero mass object that's also non-static.\n ObjectName: %s",
+      mOwner->GetName().c_str());
 
-    btVector3 localInertia (0.f, 0.f, 0.f);
+    btVector3 localInertia(0.f, 0.f, 0.f);
     auto baseCollider = collider->GetCollider();
     auto collisionShape = baseCollider->getCollisionShape();
 
@@ -232,7 +232,7 @@ namespace YTE
 
     if (mRigidBody)
     {
-      mRigidBody->setMassProps(mMass, btVector3{0.0f, 0.0f, 0.0f});
+      mRigidBody->setMassProps(mMass, btVector3{ 0.0f, 0.0f, 0.0f });
     }
   }
 

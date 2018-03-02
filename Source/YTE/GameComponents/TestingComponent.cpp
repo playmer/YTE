@@ -43,7 +43,6 @@ namespace YTE
     {
     case Xbox_Buttons::A:
     {
-      mOwner->GetComponent<Animator>()->SetDefaultAnimation("NPC_Walk_Loop.fbx");
       break;
     }
     }

@@ -58,8 +58,7 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &PhysicsSystem::OnLogicUpdate);
-
+    mSpace->YTERegister(Events::PhysicsUpdate, this, &PhysicsSystem::OnPhysicsUpdate);
 
       // collision configuration contains default setup for memory , collision setup . Advanced
       // users can create their own configuration .
@@ -105,7 +104,6 @@ namespace YTE
       // Register for events.
     if (mDebugDraw == false)
     {
-
       //TODO (Josh): Reimplement the debug drawing functionality.
       //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
       //system->YTERegister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
@@ -155,7 +153,7 @@ namespace YTE
     mDebugDrawer->End();
   }
 
-  void PhysicsSystem::OnLogicUpdate(LogicUpdate *aEvent)
+  void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
     YTEProfileFunction(profiler::colors::Red);
@@ -194,14 +192,17 @@ namespace YTE
   {
     YTEUnusedArgument(aManifold);
 
-    Body *body = aMainObject->GetComponent<RigidBody>();
-
-    if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
-    if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
-      
-    if (body)
+    if (aMainObject)
     {
-      body->AddCollidedThisFrame(aOtherObject);
+      Body *body = aMainObject->GetComponent<RigidBody>();
+
+      if (body == nullptr) body = aMainObject->GetComponent<GhostBody>();
+      if (body == nullptr) body = aMainObject->GetComponent<CollisionBody>();
+        
+      if (body)
+      {
+        body->AddCollidedThisFrame(aOtherObject);
+      }
     }
   }
 

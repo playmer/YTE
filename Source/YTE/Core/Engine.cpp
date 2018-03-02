@@ -26,6 +26,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
+  YTEDefineEvent(PhysicsUpdate);
   YTEDefineEvent(FrameUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
   YTEDefineEvent(DebugDrawUpdate);
@@ -268,9 +269,11 @@ namespace YTE
     {
       return;
     }
+
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
+    
     SendEvent(Events::LogicUpdate, &updateEvent);
 
     // We may also have been told to shut down here.

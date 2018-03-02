@@ -35,11 +35,11 @@ namespace YTE
   void CameraController::Initialize()
   {
     mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
-
+    
     mTransform = mOwner->GetComponent<Transform>();
     mOrientation = mOwner->GetComponent<Orientation>();
     mCameraComponent = mOwner->GetComponent<Camera>();
-
+    
     Composition *boat = mOwner->GetParent();
     mBoatTransform = boat->GetComponent<Transform>();
     mBoatOrientation = boat->GetComponent<Orientation>();

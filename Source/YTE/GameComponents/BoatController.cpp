@@ -113,31 +113,36 @@ namespace YTE
       if (mCanDock)
       {
         // change input context
-        mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
-        // send the request dialogue event
-        RequestDialogueStart dStart;
-        dStart.camera = nullptr;
-
-        auto children = mOwner->GetCompositions();
-
-        for (auto &it : *children)
+        InputInterpreter *input = mSpace->GetComponent<InputInterpreter>();
+        
+        if (input)
         {
-          if (it.second->GetComponent<Camera>())
+          input->SetInputContext(InputInterpreter::InputContext::Dialogue);
+          // send the request dialogue event
+          RequestDialogueStart dStart;
+          dStart.camera = nullptr;
+
+          auto children = mOwner->GetCompositions();
+
+          for (auto &it : *children)
           {
-            dStart.camera = it.second.get();
-            break;
+            if (it.second->GetComponent<Camera>())
+            {
+              dStart.camera = it.second.get();
+              break;
+            }
           }
-        }
 
-        if (mNearbyDock)
-        {
-          mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
-        }
+          if (mNearbyDock)
+          {
+            mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
+          }
 
-        // play the docking sound
-        if (mSoundEmitter)
-        {
-          mSoundEmitter->PlayEvent("SFX_Boat_Bump");
+          // play the docking sound
+          if (mSoundEmitter)
+          {
+            mSoundEmitter->PlayEvent("SFX_Boat_Bump");
+          }
         }
       }
     }
@@ -216,6 +221,7 @@ namespace YTE
         {
           mRigidBody->SetVelocity(mOrientation->GetForwardVector() * 400.0f * mMaxSailSpeed * dt);
         }
+
         
         //if (mCurSpeed < 50.0f)
         //{

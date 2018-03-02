@@ -51,7 +51,7 @@ namespace YTE
     glm::quat LocalRotationDifference;
     glm::quat WorldRotationDifference;
   };
-  
+
   class MotionState : public btMotionState
   {
   public:

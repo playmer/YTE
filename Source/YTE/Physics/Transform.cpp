@@ -96,11 +96,11 @@ namespace YTE
 
   Transform::Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mTranslation{0.f,0.f,0.f}
-    , mScale{1.f, 1.f, 1.f}
+    , mTranslation{ 0.f,0.f,0.f }
+    , mScale{ 1.f, 1.f, 1.f }
     , mWorldTranslation{ 0.f,0.f,0.f }
     , mWorldScale{ 1.f, 1.f, 1.f }
-    , mInformPhysics{true}
+    , mInformPhysics{ true }
   {
     DeserializeByType(aProperties, this, GetStaticType());
   };
@@ -140,7 +140,7 @@ namespace YTE
   {
     auto oldParent = aEvent->mOldParent;
     auto newParent = aEvent->mNewParent;
-    
+
     if (oldParent)
     {
       oldParent->YTEDeregister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
@@ -163,7 +163,7 @@ namespace YTE
       mTranslation = mTranslation - parentTrans->GetTranslation();
     }
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // Local Getters
   ////////////////////////////////////////////////////////////////////////////
@@ -191,7 +191,7 @@ namespace YTE
   {
     return glm::eulerAngles(mRotation);
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////
   // World Getters
   ////////////////////////////////////////////////////////////////////////////
@@ -254,9 +254,9 @@ namespace YTE
   {
     glm::vec3 eulerAngles = glm::radians(aEulerRotation);
 
-    const glm::vec3 localXAxis{1.0f, 0.0f, 0.0f};
-    const glm::vec3 localYAxis{0.0f, 1.0f, 0.0f};
-    const glm::vec3 localZAxis{0.0f, 0.0f, 1.0f};
+    const glm::vec3 localXAxis{ 1.0f, 0.0f, 0.0f };
+    const glm::vec3 localYAxis{ 0.0f, 1.0f, 0.0f };
+    const glm::vec3 localZAxis{ 0.0f, 0.0f, 1.0f };
 
     auto localX = glm::rotate(eulerAngles.x, localXAxis);
     auto localY = glm::rotate(eulerAngles.y, localYAxis);
@@ -264,7 +264,7 @@ namespace YTE
 
     auto localRotation = localZ * localY * localX;
 
-    glm::quat local{localRotation};
+    glm::quat local{ localRotation };
 
     SetRotation(local);
   }
@@ -331,18 +331,18 @@ namespace YTE
   {
     glm::vec3 eulerAngles = glm::radians(aWorldEulerRotation);
 
-    const glm::vec3 worldXAxis{1.0f, 0.0f, 0.0f};
-    const glm::vec3 worldYAxis{0.0f, 1.0f, 0.0f};
-    const glm::vec3 worldZAxis{0.0f, 0.0f, 1.0f};
-    
+    const glm::vec3 worldXAxis{ 1.0f, 0.0f, 0.0f };
+    const glm::vec3 worldYAxis{ 0.0f, 1.0f, 0.0f };
+    const glm::vec3 worldZAxis{ 0.0f, 0.0f, 1.0f };
+
     auto worldX = glm::rotate(eulerAngles.x, worldXAxis);
     auto worldY = glm::rotate(eulerAngles.y, worldYAxis);
     auto worldZ = glm::rotate(eulerAngles.z, worldZAxis);
-    
+
     auto localRotation = worldZ * worldY * worldX;
-    
-    glm::quat world{localRotation};
-    
+
+    glm::quat world{ localRotation };
+
     SetRotation(world);
   }
 
@@ -415,7 +415,7 @@ namespace YTE
 
   glm::vec3 Transform::GetAccumulatedParentScale()
   {
-    glm::vec3 scale{1.0f, 1.0f, 1.0f};
+    glm::vec3 scale{ 1.0f, 1.0f, 1.0f };
     auto parent{ mOwner->GetOwner() };
 
     while (nullptr != parent)
@@ -461,7 +461,7 @@ namespace YTE
     {
       // TODO: Inform physics of scale change.
       auto rigidBody = mOwner->GetComponent<RigidBody>();
-    
+
       if (rigidBody != nullptr)
       {
         rigidBody->SetPhysicsTransform(mTranslation, mRotation);

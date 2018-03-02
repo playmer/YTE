@@ -24,6 +24,7 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
   }
+
   void AddComponentToEngine::NativeInitialize()
   {
     if (nullptr == mOwner->GetEngine()->GetComponent<InputInterpreter>())
