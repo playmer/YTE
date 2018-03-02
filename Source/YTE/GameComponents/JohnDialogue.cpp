@@ -13,26 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineEvent(DialogueNodeEvent);
-  YTEDefineType(DialogueNodeEvent) { YTERegisterType(DialogueNodeEvent); }
-
-  YTEDefineEvent(DialoguePrintText);
-  YTEDefineType(DialoguePrintText) { YTERegisterType(DialoguePrintText); }
-
-  YTEDefineEvent(DialoguePlayAnim);
-  YTEDefineType(DialoguePlayAnim) { YTERegisterType(DialoguePlayAnim); }
-
-  YTEDefineEvent(DialogueGetInput);
-  YTEDefineType(DialogueGetInput) { YTERegisterType(DialogueGetInput); }
-
-  YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
-
-  DialogueNode::DialogueNode(NodeType aType)
-    : mType(aType)
-  {
-    
-  }
-
+  /*
   void DialogueNode::SetActiveNode(DialogueNodeEvent *aEvent)
   {
     mOwner->GetSpace()->YTEDeregister(Events::DialogueNodeEvent, this, &DialogueNode::SetActiveNode);
@@ -66,43 +47,13 @@ namespace YTE
     DialogueNodeEvent next;
     SendEvent("DialogueNodeEvent", &next);
   }
-
+  */
 /******************************************************************************
   Conversation
 ******************************************************************************/
-  Conversation::Conversation(Conversation::Name aName)
+  Conversation::Conversation(DialogueNode *aRoot)
+    : mRoot(aRoot)
   {
-    switch (aName)
-    {
-      case Conversation::Name::Introduction:
-      {
-
-      }
-      case Conversation::Name::Hello:
-      {
-
-      }
-      case Conversation::Name::StartQuest:
-      {
-
-      }
-      case Conversation::Name::ProgressQuest:
-      {
-
-      }
-      case Conversation::Name::FinishQuest:
-      {
-
-      }
-      case Conversation::Name::Goodbye:
-      {
-
-      }
-      case Conversation::Name::NoQuest:
-      {
-
-      }
-    }
   }
 
 /******************************************************************************
@@ -112,16 +63,12 @@ namespace YTE
     : mName(aName), mState(State::Available)
   {
     mConversationVec = *(new std::vector<Conversation>());
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::Introduction)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::Hello)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::StartQuest)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::ProgressQuest)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::FinishQuest)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::Goodbye)));
-    mConversationVec.push_back(*(new Conversation(Conversation::Name::NoQuest)));
   }
 
-
+  void Quest::AddConvo(Conversation *aConvo)
+  {
+    mConversationVec.push_back(aConvo);
+  }
 
 /******************************************************************************
   Dialogue Component
@@ -132,9 +79,19 @@ namespace YTE
     mQuestVec = *(new std::vector<Quest>());
   }
 
+  // Here I begin the long and tedious process of hardcoding John's quests/convos
   void JohnDialogue::Initialize()
   {
-    
+    // Construct the quest
+    Quest q1(Quest::Name::GuessChew);
+    // Root node
+    DialogueNode convoRoot(DialogueNode::NodeType::Anim, std::vector<const std::string>(AnimationNames::WaveLoop));
+    // Construct the conversation
+    Conversation c1(&convoRoot);
+    // Start adding nodes
+    DialogueNode n1(DialogueNode::NodeType::Text, "HEY NICE TO MEET YOU", &convoRoot);
+    // Add the dialogue graph to the quest
+    q1.AddConvo(&c1);
   }
 
 
