@@ -32,7 +32,7 @@ namespace YTE
     VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface);
     ~VkSubmesh();
 
-    void Create();
+    void Create(VkRenderedSurface *aSurface);
     void Destroy();
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -59,7 +59,7 @@ namespace YTE
     VkTexture *mNormalTexture;
 
     VkShaderDescriptions mDescriptions;
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
     
     VkMesh *mMesh;
     Submesh *mSubmesh;
@@ -106,7 +106,7 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mInstanceBuffer;
     u32 mInstances = 0; // Number of Instances available in the buffer.
 
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
   };
 
   class VkMesh : public Mesh
@@ -149,7 +149,7 @@ namespace YTE
 
     std::unordered_multimap<std::string, std::unique_ptr<VkSubmesh>> mSubmeshes;
     InstanceManager mInstanceManager;
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
   };
 }
 

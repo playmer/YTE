@@ -156,15 +156,8 @@ namespace YTE
       return GetViewData(aView).mIlluminationUBO;
     }
 
-    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool()
-    {
-      return mCommandPool;
-    }
-
-    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue()
-    {
-      return mGraphicsQueue;
-    }
+    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool();
+    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue();
 
     void SetWindow(Window *aWindow)
     {
@@ -232,8 +225,6 @@ namespace YTE
 
     // Vkhlf stuff
     std::shared_ptr<vkhlf::Surface> mSurface;
-    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
-    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
     //std::shared_ptr<vkhlf::CommandBuffer> mRenderingCommandBuffer;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;

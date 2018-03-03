@@ -26,11 +26,11 @@ namespace YTE
     YTERegisterType(VkTexture);
   }
 
-  VkTexture::VkTexture(std::string &aFile, VkRenderedSurface *aSurface, vk::ImageViewType aType)
+  VkTexture::VkTexture(std::string &aFile, VkRenderer *aRenderer, vk::ImageViewType aType)
     : Texture(aFile)
-    , mSurface(aSurface)
+    , mRenderer(aRenderer)
   {
-    auto device = mSurface->GetDevice();
+    auto device = mRenderer->mDevice;
 
     fs::path file{ mTexturePath };
 
@@ -41,7 +41,7 @@ namespace YTE
     file = L"Originals" / file.filename();
     std::string fileStr{ file.string() };
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::Texture);
+    auto allocator = mRenderer->mAllocators[AllocatorTypes::Texture];
 
     // 1. init image
     vk::Format format;
@@ -70,7 +70,7 @@ namespace YTE
     }
 
     vk::FormatProperties imageFormatProperties =
-      mSurface->GetRenderer()->GetVkInternals()->GetPhysicalDevice()->getFormatProperties(format);
+      mRenderer->GetVkInternals()->GetPhysicalDevice()->getFormatProperties(format);
 
     DebugObjection(false == ((imageFormatProperties.linearTilingFeatures &
                              vk::FormatFeatureFlagBits::eSampledImage) ||
@@ -96,7 +96,7 @@ namespace YTE
                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
                                  allocator);
 
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
 
 
     vk::ComponentMapping components = { vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA };
@@ -196,6 +196,6 @@ namespace YTE
       }
     }
 
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
+    mRenderer->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
   }
 }

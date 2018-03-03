@@ -20,7 +20,7 @@ namespace YTE
     YTEDeclareType(VkTexture);
 
     VkTexture(std::string &aFile,
-              VkRenderedSurface *aSurface,
+              VkRenderer *aRenderer,
               vk::ImageViewType aType);
     ~VkTexture() override;
 
@@ -32,7 +32,7 @@ namespace YTE
     vk::ImageLayout mImageLayout;
     vk::DeviceMemory mDeviceMemory;
     vk::DescriptorImageInfo mDescriptor;
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
   };
 }
 

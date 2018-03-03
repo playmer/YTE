@@ -13,6 +13,7 @@
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
 
 namespace YTE
 {
@@ -83,7 +84,13 @@ namespace YTE
     std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
+    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
   private:
+
+    // create a command pool for command buffer allocation
+    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
+
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;

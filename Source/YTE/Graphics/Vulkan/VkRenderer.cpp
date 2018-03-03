@@ -56,6 +56,11 @@ namespace YTE
                                                            { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
                                                            enabledFeatures);
 
+    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+                                              mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
+    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
+
+    mGraphicsQueue = mDevice->getQueue(family, 0);
 
     mAllocators[AllocatorTypes::Mesh] =
       std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
@@ -175,6 +180,19 @@ namespace YTE
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    GraphicsDataUpdateVk update;
+    mGraphicsDataUpdateCBOB->NextCommandBuffer();
+    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+
+    update.mCBO->begin();
+
+    SendEvent(Events::GraphicsDataUpdateVk, &update);
+
+    update.mCBO->end();
+
+    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+
     for (auto& surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();

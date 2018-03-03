@@ -74,12 +74,6 @@ namespace YTE
 
     auto family = internals->GetQueueFamilies().GetGraphicsFamily();
 
-    mGraphicsQueue = mRenderer->mDevice->getQueue(family , 0);
-
-    // create a command pool for command buffer allocation
-    mCommandPool = mRenderer->mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              family);
-
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
@@ -87,9 +81,9 @@ namespace YTE
     //mRenderPass2 = mDevice->createSemaphore();
     //mRenderPass3 = mDevice->createSemaphore();
 
-    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
+    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
 
     // create Framebuffer & Swapchain
     WindowResize event;
@@ -294,7 +288,7 @@ namespace YTE
     if (textureIt == mRenderer->mTextures.end())
     {
       auto texture = std::make_unique<VkTexture>(aFilename,
-                                                 mRenderer->GetSurface(mWindow),
+                                                 mRenderer,
                                                  aType);
 
       texturePtr = texture.get();
@@ -370,6 +364,16 @@ namespace YTE
     return std::move(light);
   }
 
+
+  std::shared_ptr<vkhlf::CommandPool>& VkRenderedSurface::GetCommandPool()
+  {
+    return mRenderer->mCommandPool;
+  }
+
+  std::shared_ptr<vkhlf::Queue>& VkRenderedSurface::GetGraphicsQueue()
+  {
+    return mRenderer->mGraphicsQueue;
+  }
 
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
@@ -583,9 +587,9 @@ namespace YTE
     }
 
     // wait till rendering is complete
-    mGraphicsQueue->waitIdle();
+    mRenderer->mGraphicsQueue->waitIdle();
     
-    if (mRenderToScreen->PresentFrame(mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
     {
       // create Framebuffer & Swapchain
       WindowResize event;
@@ -609,7 +613,7 @@ namespace YTE
 
     update.mCBO->end();
 
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -654,7 +658,7 @@ namespace YTE
     update.mCBO->begin();
     SendEvent(Events::AnimationUpdateVk, &update);
     update.mCBO->end();
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -676,7 +680,7 @@ namespace YTE
       return;
     }
 
-    mGraphicsQueue->waitIdle();
+    mRenderer->mGraphicsQueue->waitIdle();
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
@@ -707,8 +711,6 @@ namespace YTE
     // render to screen;
     mRenderToScreen->RenderFull(extent);
     mRenderToScreen->MoveToNextEvent();
-
-
 
     // build primary
     auto cbo = mRenderingCBOB->GetCurrentCBO();
@@ -765,7 +767,7 @@ namespace YTE
                               cbo,
                               mRenderCompleteSemaphore };
     
-    mGraphicsQueue->submit(submit);
+    mRenderer->mGraphicsQueue->submit(submit);
 
     mCanPresent = true;
   }
