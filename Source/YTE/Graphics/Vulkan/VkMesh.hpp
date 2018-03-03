@@ -29,7 +29,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(VkSubmesh);
-    VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface);
+    VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer);
     ~VkSubmesh();
 
     void Create();
@@ -59,7 +59,7 @@ namespace YTE
     VkTexture *mNormalTexture;
 
     VkShaderDescriptions mDescriptions;
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
     
     VkMesh *mMesh;
     Submesh *mSubmesh;
@@ -106,7 +106,7 @@ namespace YTE
     std::shared_ptr<vkhlf::Buffer> mInstanceBuffer;
     u32 mInstances = 0; // Number of Instances available in the buffer.
 
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
   };
 
   class VkMesh : public Mesh
@@ -114,13 +114,11 @@ namespace YTE
   public:
     YTEDeclareType(VkMesh);
 
-    VkMesh(Window *aWindow,
-           VkRenderedSurface *aSurface,
+    VkMesh(VkRenderer *aRenderer,
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
 
-    VkMesh(Window *aWindow,
-           VkRenderedSurface *aSurface,
+    VkMesh(VkRenderer *aRenderer,
            std::string &aFile,
            std::vector<Submesh> &aSubmeshes);
 
@@ -149,7 +147,7 @@ namespace YTE
 
     std::unordered_multimap<std::string, std::unique_ptr<VkSubmesh>> mSubmeshes;
     InstanceManager mInstanceManager;
-    VkRenderedSurface *mSurface;
+    VkRenderer *mRenderer;
   };
 }
 

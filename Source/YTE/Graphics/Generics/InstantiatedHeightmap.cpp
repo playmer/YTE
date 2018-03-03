@@ -114,7 +114,7 @@ namespace YTE
     submesh.mNormalMap = mNormalTName;
 
     std::vector<Submesh> submeshes{ submesh };
-    auto mesh = mRenderer->CreateSimpleMesh(mGraphicsView, meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
     mModel = mRenderer->CreateModel(mGraphicsView, mesh);
   }
 }

@@ -72,42 +72,16 @@ namespace YTE
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
 
-    auto family = internals->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
-                                              0.0f};
-
-    mDevice = internals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                           nullptr,
-                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                           enabledFeatures);
-
-    mGraphicsQueue = mDevice->getQueue(family , 0);
-
-    // create a command pool for command buffer allocation
-    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              family);
-
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
-    mRenderCompleteSemaphore = mDevice->createSemaphore();
-    mRenderPass1 = mDevice->createSemaphore();
+    mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
+    mRenderPass1 = mRenderer->mDevice->createSemaphore();
     //mRenderPass2 = mDevice->createSemaphore();
     //mRenderPass3 = mDevice->createSemaphore();
 
-    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-
-
-    mAllocators[AllocatorTypes::Mesh] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    // 4x 1024 texture size for rgba in this one
-    mAllocators[AllocatorTypes::Texture] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);  
-
-    mAllocators[AllocatorTypes::UniformBufferObject] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
 
     // create Framebuffer & Swapchain
     WindowResize event;
@@ -132,8 +106,6 @@ namespace YTE
       PresentFrame();
     }
     mViewData.clear();
-    mTextures.clear();
-    mMeshes.clear();
     mShaderCreateInfos.clear();
     mRenderToScreen.reset();
   }
@@ -192,6 +164,18 @@ namespace YTE
     return std::move(model);
   }
 
+
+  std::shared_ptr<vkhlf::Device>& VkRenderedSurface::GetDevice()
+  {
+    return mRenderer->mDevice;
+  }
+
+  std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
+  {
+    return mRenderer->mAllocators[aName];
+  }
+
+
   void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
   {
     if (aModel == nullptr)
@@ -234,87 +218,6 @@ namespace YTE
 
       instantiatedModels.erase(mesh);
     }
-  }
-
-  // Meshes
-  VkMesh* VkRenderedSurface::CreateMesh(std::string &aFilename)
-  {
-    auto meshIt = mMeshes.find(aFilename);
-
-    VkMesh *meshPtr{ nullptr };
-
-    if (meshIt == mMeshes.end())
-    {
-      // create mesh
-      auto mesh = std::make_unique<VkMesh>(mWindow,
-                                           mRenderer->GetSurface(mWindow),
-                                           aFilename);
-
-      meshPtr = mesh.get();
-
-      mMeshes[aFilename] = std::move(mesh);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr;
-  }
-
-  
-  Mesh* VkRenderedSurface::CreateSimpleMesh(std::string &aName,
-                                            std::vector<Submesh> &aSubmeshes,
-		                                        bool aForceUpdate)
-  {
-    auto meshIt = mMeshes.find(aName);
-
-    VkMesh *meshPtr{ nullptr };
-
-    if (aForceUpdate || meshIt == mMeshes.end())
-    {
-      // create mesh
-      auto mesh = std::make_unique<VkMesh>(mWindow,
-                                           mRenderer->GetSurface(mWindow),
-                                           aName,
-                                           aSubmeshes);
-
-      meshPtr = mesh.get();
-
-      mMeshes[aName] = std::move(mesh);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr;
-  }
-
-  // Textures
-  VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
-  {
-    auto textureIt = mTextures.find(aFilename);
-    VkTexture *texturePtr{ nullptr };
-
-    if (textureIt == mTextures.end())
-    {
-      auto texture = std::make_unique<VkTexture>(aFilename,
-                                                 mRenderer->GetSurface(mWindow),
-                                                 aType);
-
-      texturePtr = texture.get();
-      mTextures[aFilename] = std::move(texture);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      texturePtr = textureIt->second.get();
-    }
-
-    return texturePtr;
   }
 
   // Shader
@@ -379,6 +282,16 @@ namespace YTE
   }
 
 
+  std::shared_ptr<vkhlf::CommandPool>& VkRenderedSurface::GetCommandPool()
+  {
+    return mRenderer->mCommandPool;
+  }
+
+  std::shared_ptr<vkhlf::Queue>& VkRenderedSurface::GetGraphicsQueue()
+  {
+    return mRenderer->mGraphicsQueue;
+  }
+
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
@@ -433,15 +346,15 @@ namespace YTE
     {
       auto emplaced = mViewData.try_emplace(aView);
 
-      auto uboAllocator = mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mDevice->createBuffer(sizeof(UBOView),
+      auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
+      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
                                           vk::BufferUsageFlagBits::eTransferDst |
                                           vk::BufferUsageFlagBits::eUniformBuffer,
                                           vk::SharingMode::eExclusive,
                                           nullptr,
                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
                                           uboAllocator);
-      auto buffer2 = mDevice->createBuffer(sizeof(UBOIllumination),
+      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
                                            vk::BufferUsageFlagBits::eTransferDst |
                                            vk::BufferUsageFlagBits::eUniformBuffer,
                                            vk::SharingMode::eExclusive,
@@ -591,9 +504,9 @@ namespace YTE
     }
 
     // wait till rendering is complete
-    mGraphicsQueue->waitIdle();
+    mRenderer->mGraphicsQueue->waitIdle();
     
-    if (mRenderToScreen->PresentFrame(mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
     {
       // create Framebuffer & Swapchain
       WindowResize event;
@@ -617,7 +530,7 @@ namespace YTE
 
     update.mCBO->end();
 
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -662,7 +575,7 @@ namespace YTE
     update.mCBO->begin();
     SendEvent(Events::AnimationUpdateVk, &update);
     update.mCBO->end();
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -684,7 +597,7 @@ namespace YTE
       return;
     }
 
-    mGraphicsQueue->waitIdle();
+    mRenderer->mGraphicsQueue->waitIdle();
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
@@ -708,15 +621,13 @@ namespace YTE
     // build secondaries
     for (auto &v : mViewData)
     {
-      v.second.mRenderTarget->RenderFull(extent, mMeshes);
+      v.second.mRenderTarget->RenderFull(extent, mRenderer->mMeshes);
       v.second.mRenderTarget->MoveToNextEvent();
     }
 
     // render to screen;
     mRenderToScreen->RenderFull(extent);
     mRenderToScreen->MoveToNextEvent();
-
-
 
     // build primary
     auto cbo = mRenderingCBOB->GetCurrentCBO();
@@ -773,7 +684,7 @@ namespace YTE
                               cbo,
                               mRenderCompleteSemaphore };
     
-    mGraphicsQueue->submit(submit);
+    mRenderer->mGraphicsQueue->submit(submit);
 
     mCanPresent = true;
   }

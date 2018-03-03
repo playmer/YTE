@@ -218,8 +218,7 @@ namespace YTE
 
     Submesh() = default;
 
-    Submesh(Window *aWindow,
-            const aiScene *aScene,
+    Submesh(const aiScene *aScene,
             const aiMesh *aMesh,
             Skeleton *aSkeleton,
             uint32_t aBoneStartingVertexOffset,
@@ -267,12 +266,10 @@ namespace YTE
   public:
     YTEDeclareType(Mesh);
 
-    Mesh(Window *aWindow,
-         std::string &aFile,
+    Mesh(std::string &aFile,
          CreateInfo *aCreateInfo = nullptr);
 
-    Mesh(Window *aWindow,
-         std::string &aFile,
+    Mesh(std::string &aFile,
          std::vector<Submesh> &aSubmeshes);
 
     virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices);

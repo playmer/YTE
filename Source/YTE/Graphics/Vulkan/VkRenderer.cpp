@@ -13,6 +13,9 @@
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 
+#include "YTE/Graphics/Vulkan/VkTexture.hpp"
+#include "YTE/Graphics/Vulkan/VkMesh.hpp"
+
 namespace YTE
 {
   YTEDefineType(VkRenderer)
@@ -38,6 +41,36 @@ namespace YTE
     auto &windows = aEngine->GetWindows();
 
     auto instance = mVulkanInternals->GetInstance();
+
+
+    auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
+    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
+                                              0.0f};
+
+    // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
+    vk::PhysicalDeviceFeatures enabledFeatures;
+    enabledFeatures.setTextureCompressionBC(true);
+    
+    mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
+                                                           nullptr,
+                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                                           enabledFeatures);
+
+    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+                                              mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
+    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
+
+    mGraphicsQueue = mDevice->getQueue(family, 0);
+
+    mAllocators[AllocatorTypes::Mesh] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+
+    // 4x 1024 texture size for rgba in this one
+    mAllocators[AllocatorTypes::Texture] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
+
+    mAllocators[AllocatorTypes::UniformBufferObject] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
 
     bool firstSet = false;
     for (auto &window : windows)
@@ -73,6 +106,8 @@ namespace YTE
   VkRenderer::~VkRenderer()
   {
     mSurfaces.clear();
+    mTextures.clear();
+    mMeshes.clear();
   }
 
   void VkRenderer::RegisterWindowForDraw(Window *aWindow)
@@ -111,22 +146,89 @@ namespace YTE
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
   }
 
-
-
   std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
   {
     return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
   }
 
+  // Textures
+  VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  {
+    auto textureIt = mTextures.find(aFilename);
+    VkTexture *texturePtr{ nullptr };
 
+    if (textureIt == mTextures.end())
+    {
+      auto texture = std::make_unique<VkTexture>(aFilename,
+                                                 this,
+                                                 aType);
 
-  Mesh* VkRenderer::CreateSimpleMesh(GraphicsView *aView,
-                                     std::string &aName,
+      texturePtr = texture.get();
+      mTextures[aFilename] = std::move(texture);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      texturePtr = textureIt->second.get();
+    }
+
+    return texturePtr;
+  }
+
+  // Meshes
+  VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
+  {
+    auto meshIt = mMeshes.find(aFilename);
+
+    VkMesh *meshPtr{ nullptr };
+
+    if (meshIt == mMeshes.end())
+    {
+      // create mesh
+      auto mesh = std::make_unique<VkMesh>(this,
+                                           aFilename);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aFilename] = std::move(mesh);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      meshPtr = meshIt->second.get();
+    }
+
+    return meshPtr;
+  }
+  
+  Mesh* VkRenderer::CreateSimpleMesh(std::string &aName,
                                      std::vector<Submesh> &aSubmeshes,
 		                                 bool aForceUpdate)
   {
-    return GetSurface(aView->GetWindow())->CreateSimpleMesh(aName, aSubmeshes, aForceUpdate);
+    auto meshIt = mMeshes.find(aName);
+
+    VkMesh *meshPtr{ nullptr };
+
+    if (aForceUpdate || meshIt == mMeshes.end())
+    {
+      // create mesh
+      auto mesh = std::make_unique<VkMesh>(this,
+                                           aName,
+                                           aSubmeshes);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aName] = std::move(mesh);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      meshPtr = meshIt->second.get();
+    }
+
+    return meshPtr;
   }
+
 
   void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
@@ -145,6 +247,19 @@ namespace YTE
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    GraphicsDataUpdateVk update;
+    mGraphicsDataUpdateCBOB->NextCommandBuffer();
+    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+
+    update.mCBO->begin();
+
+    SendEvent(Events::GraphicsDataUpdateVk, &update);
+
+    update.mCBO->end();
+
+    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+
     for (auto& surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
@@ -154,6 +269,12 @@ namespace YTE
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
     YTEProfileFunction(profiler::colors::Blue);
+
+    if (mDataUpdateRequired)
+    {
+      GraphicsDataUpdate(aEvent);
+    }
+
     for (auto& surface : mSurfaces)
     {
       surface.second->FrameUpdate(aEvent);

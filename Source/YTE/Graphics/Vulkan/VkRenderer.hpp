@@ -8,8 +8,12 @@
 #ifndef YTE_Graphics_Vulkan_VkRenderer_hpp
 #define YTE_Graphics_Vulkan_VkRenderer_hpp
 
+#include <unordered_map>
+
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
 
 namespace YTE
 {
@@ -28,12 +32,14 @@ namespace YTE
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
     void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel) override;
     std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
+
+    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
 
-    Mesh* CreateSimpleMesh(GraphicsView *aView,
-                           std::string &aName,
+    VkMesh* CreateMesh(std::string &aFilename);
+    Mesh* CreateSimpleMesh(std::string &aName,
                            std::vector<Submesh> &aSubmeshes,
 		                       bool aForceUpdate = false) override;
 
@@ -76,7 +82,17 @@ namespace YTE
       return mVulkanInternals.get();
     }
 
+    std::shared_ptr<vkhlf::Device> mDevice;
+    std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
+    std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
+    std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
+    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
   private:
+    bool mDataUpdateRequired = false;
+    // create a command pool for command buffer allocation
+    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
+
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;

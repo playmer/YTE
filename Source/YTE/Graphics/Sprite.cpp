@@ -272,7 +272,7 @@ namespace YTE
 
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 

@@ -42,24 +42,6 @@ namespace YTE
   {
   public:
     ViewData() = default;
-    //ViewData(ViewData &&aViewData) = delete;
-    //ViewData& operator= (ViewData &&aViewData) = delete;
-
-    //ViewData(ViewData &&aViewData)
-    //  : mViewUBO(std::move(aViewData.mViewUBO))
-    //  , mClearColor(std::move(aViewData.mClearColor))
-    //  , mViewUBOData(std::move(aViewData.mViewUBOData))
-    //  , mInstantiatedModels(std::move(aViewData.mInstantiatedModels))
-    //{
-    //}
-    //
-    //ViewData& operator= (ViewData &&aViewData)
-    //{
-    //  mViewUBO = std::move(aViewData.mViewUBO);
-    //  mClearColor = std::move(aViewData.mClearColor);
-    //  mViewUBOData = std::move(aViewData.mViewUBOData);
-    //  mInstantiatedModels = std::move(aViewData.mInstantiatedModels);
-    //}
 
     // Buffers
     std::shared_ptr<vkhlf::Buffer> mViewUBO;
@@ -77,9 +59,6 @@ namespace YTE
     float mViewOrder;
   };
 
-
-
-  
   class VkRenderedSurface : public EventHandler
   {
   public:
@@ -96,46 +75,15 @@ namespace YTE
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
 
-    //template<typename tType, typename tMap, typename ...tArguments>
-    //static tType* MakeThing(std::string &aName, tMap aContainer, tArguments aArguments...)
-    //{
-    //  auto it = aContainer.find(aName);
-    //  tType *ptr{ nullptr };
-    //
-    //  if (it == aContainer.end())
-    //  {
-    //    auto value = std::make_unique<tType>();
-    //
-    //    ptr = value.get();
-    //
-    //    aContainer[aName] = std::move(value);
-    //    mDataUpdateRequired = true;
-    //  }
-    //  else
-    //  {
-    //    ptr = shaderIt->second.get();
-    //  }
-    //
-    //  return ptr;
-    //
-    //}
-
-
     /////////////////////////////////
     // Creation / Destruction
     /////////////////////////////////
     std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, std::string &aModelFile);
     std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
     void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
-
-    VkMesh* CreateMesh(std::string &aFilename);
+    
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
-
-    Mesh* CreateSimpleMesh(std::string &aName,
-                           std::vector<Submesh> &aSubmeshes,
-			                     bool aForceUpdate);
-
-    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    
 
     VkShader* CreateShader(std::string &aShaderSetName,
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
@@ -183,15 +131,9 @@ namespace YTE
       return mSurface;
     }
 
-    std::shared_ptr<vkhlf::Device>& GetDevice()
-    {
-      return mDevice;
-    }
+    std::shared_ptr<vkhlf::Device>& GetDevice();
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName)
-    {
-      return mAllocators[aName];
-    }
+    std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName);
 
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass(GraphicsView *aView)
     {
@@ -208,15 +150,8 @@ namespace YTE
       return GetViewData(aView).mIlluminationUBO;
     }
 
-    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool()
-    {
-      return mCommandPool;
-    }
-
-    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue()
-    {
-      return mGraphicsQueue;
-    }
+    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool();
+    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue();
 
     void SetWindow(Window *aWindow)
     {
@@ -283,12 +218,8 @@ namespace YTE
     VkRenderer *mRenderer;
 
     // Vkhlf stuff
-    std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::shared_ptr<vkhlf::Surface> mSurface;
-    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
-    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
     //std::shared_ptr<vkhlf::CommandBuffer> mRenderingCommandBuffer;
-    std::shared_ptr<vkhlf::Device> mDevice;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
 
@@ -296,8 +227,6 @@ namespace YTE
     std::unique_ptr<VkRenderToScreen> mRenderToScreen;
 
     // loaded data
-    std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
-    std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
     std::map<GraphicsView*, ViewData> mViewData;
     std::unordered_map<std::string, VkCreatePipelineDataSet> mShaderCreateInfos;
 

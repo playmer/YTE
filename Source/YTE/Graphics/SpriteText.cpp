@@ -170,7 +170,7 @@ namespace YTE
 
 		auto view = mSpace->GetComponent<GraphicsView>();
 
-		auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes, true);
+		auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
 
 		mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 		CreateTransform();

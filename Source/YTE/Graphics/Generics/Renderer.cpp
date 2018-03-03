@@ -54,9 +54,8 @@ namespace YTE
     YTEUnusedArgument(aModel);
   }
 
-  Mesh* Renderer::CreateSimpleMesh(GraphicsView *aView, std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
+  Mesh* Renderer::CreateSimpleMesh(std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
   {
-    YTEUnusedArgument(aView);
     YTEUnusedArgument(aName);
     YTEUnusedArgument(aSubmeshes);
 		YTEUnusedArgument(aForceUpdate);

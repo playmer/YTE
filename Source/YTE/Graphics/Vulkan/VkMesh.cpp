@@ -7,6 +7,7 @@
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
@@ -96,20 +97,20 @@ namespace YTE
 
   void InstanceManager::GrowBuffer()
   {
-    u32 growTo = 2 * mInstances;
-    auto device = mSurface->GetDevice();
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
-
-    auto buffer = device->createBuffer(sizeof(Instance),
-      vk::BufferUsageFlagBits::eTransferDst |
-      vk::BufferUsageFlagBits::eVertexBuffer,
-      vk::SharingMode::eExclusive,
-      nullptr,
-      vk::MemoryPropertyFlagBits::eDeviceLocal,
-      allocator);
-
-    mInstances = growTo;
+    //u32 growTo = 2 * mInstances;
+    //auto device = mSurface->GetDevice();
+    //
+    //auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
+    //
+    //auto buffer = device->createBuffer(sizeof(Instance),
+    //  vk::BufferUsageFlagBits::eTransferDst |
+    //  vk::BufferUsageFlagBits::eVertexBuffer,
+    //  vk::SharingMode::eExclusive,
+    //  nullptr,
+    //  vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //  allocator);
+    //
+    //mInstances = growTo;
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -120,11 +121,11 @@ namespace YTE
     YTERegisterType(VkSubmesh);
   }
 
-  VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface)
+  VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
     : mDiffuseTexture(nullptr)
     , mSpecularTexture(nullptr)
     , mNormalTexture(nullptr)
-    , mSurface(aSurface)
+    , mRenderer(aRenderer)
     , mMesh(aMesh)
     , mSubmesh(aSubmesh)
     , mIndexCount(0)
@@ -137,10 +138,9 @@ namespace YTE
   {
     // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
+    auto allocator = mRenderer->mAllocators[AllocatorTypes::Mesh];
 
-    auto device = mSurface->GetDevice();
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
+    auto device = mRenderer->mDevice;
 
     // Create Vertex, Index, and Material buffers.
     mVertexBuffer = device->createBuffer(mSubmesh->mVertexBufferSize,
@@ -167,17 +167,17 @@ namespace YTE
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
-      mDiffuseTexture = mSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
+      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
       samplerTypes[samplers++] = "DIFFUSE";
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
-      mSpecularTexture = mSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
+      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
       samplerTypes[samplers++] = "SPECULAR";
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
-      mNormalTexture = mSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
+      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
       samplerTypes[samplers++] = "NORMAL";
     }
 
@@ -295,34 +295,26 @@ namespace YTE
     }
 
     mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
-
-    //auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
-    // 
-    // load shader passing our created pipeline layout
-    //mShader = mSurface->CreateShader(mSubmesh->mShaderSetName,
-    //                                 pipelineLayout,
-    //                                 descriptions,
-    //                                 mMesh->GetView());
   }
 
 
 
   void VkSubmesh::CreateShader(GraphicsView *aView)
   {
-    auto device = mSurface->GetDevice();
+    auto device = mRenderer->mDevice;
     auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
      
     // load shader passing our created pipeline layout
-    mSurface->CreateShader(mSubmesh->mShaderSetName,
-                           pipelineLayout,
-                           mDescriptions,
-                           aView);
+    mRenderer->GetSurface(aView->GetWindow())->CreateShader(mSubmesh->mShaderSetName,
+                                               pipelineLayout,
+                                               mDescriptions,
+                                               aView);
   }
 
 
   std::shared_ptr<vkhlf::DescriptorPool> VkSubmesh::MakePool()
   {
-    auto device = mSurface->GetDevice();
+    auto device = mRenderer->mDevice;
 
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
@@ -335,7 +327,8 @@ namespace YTE
   {
     auto mesh = static_cast<VkMesh*>(mMesh);
 
-    auto device = mSurface->GetDevice();
+    auto device = mRenderer->mDevice;
+    auto surface = mRenderer->GetSurface(aView->GetWindow());
 
     SubMeshPipelineData pipelineData;
     pipelineData.mPipelineLayout = device->createPipelineLayout(mDescriptorSetLayout,
@@ -354,7 +347,7 @@ namespace YTE
     // Add Uniform Buffers
 
     // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ mSurface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
+    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
     // Animation (Bone Array) Buffer for Vertex shader.
@@ -370,11 +363,11 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
 
     // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { mSurface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
+    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
 
     // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { mSurface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
+    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Add Texture Samplers
@@ -441,51 +434,49 @@ namespace YTE
     YTERegisterType(VkMesh);
   }
 
-  VkMesh::VkMesh(Window *aWindow,
-                 VkRenderedSurface *aSurface,
+  VkMesh::VkMesh(VkRenderer *aRenderer,
                  std::string &aFile,
                  CreateInfo *aCreateInfo)
-    : Mesh(aWindow, aFile, aCreateInfo)
-    , mSurface(aSurface)
+    : Mesh(aFile, aCreateInfo)
+    , mRenderer{ aRenderer }
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
 
-  VkMesh::VkMesh(Window *aWindow,
-                 VkRenderedSurface *aSurface,
+  VkMesh::VkMesh(VkRenderer *aRenderer,
                  std::string &aFile,
                  std::vector<Submesh> &aSubmeshes)
-    : Mesh(aWindow, aFile, aSubmeshes)
-    , mSurface(aSurface)
+    : Mesh(aFile, aSubmeshes)
+    , mRenderer{aRenderer}
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
   void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     Mesh::UpdateVertices(aSubmeshIndex, aVertices);
 
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
   void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     Mesh::UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
   VkMesh::~VkMesh()
@@ -494,7 +485,7 @@ namespace YTE
 
   void VkMesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
   {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
 
     for (auto &submesh : mSubmeshes)
     {
@@ -515,44 +506,45 @@ namespace YTE
 
   void VkMesh::SetInstanced(bool aInstanced)
   {
-    if (aInstanced == mInstanced)
-    {
-      return;
-    }
-
-    // We can clear our offsets if we're turning instancing off.
-    if (false == mInstanced)
-    {
-      mInstanceManager.Clear();
-    }
-
-    mInstanced = aInstanced;
-
-    // Switching between instancing or not forces us to recompile shaders and changes some
-    // our descriptors.
-    for (auto &submesh : mSubmeshes)
-    {
-      submesh.second->Destroy();
-      submesh.second->Create();
-    }
-
-    for (auto &viewIt : mSurface->GetViews())
-    {
-      // Switching also forces us to recreate our DescriptorSets on every model.
-      for (auto model : viewIt.second.mInstantiatedModels[this])
-      {
-        // If we're switching to instancing we need to generate offsets into the instance buffer
-        // for each model.
-        if (mInstanced)
-        {
-          mInstanceManager.AddModel(model);
-        }
-
-        for (auto [submesh, i] : enumerate(mSubmeshes))
-        {
-          model->CreateDescriptorSet(submesh->second.get(), i );
-        }
-      } 
-    }
+    YTEUnusedArgument(aInstanced);
+    //if (aInstanced == mInstanced)
+    //{
+    //  return;
+    //}
+    //
+    //// We can clear our offsets if we're turning instancing off.
+    //if (false == mInstanced)
+    //{
+    //  mInstanceManager.Clear();
+    //}
+    //
+    //mInstanced = aInstanced;
+    //
+    //// Switching between instancing or not forces us to recompile shaders and changes some
+    //// our descriptors.
+    //for (auto &submesh : mSubmeshes)
+    //{
+    //  submesh.second->Destroy();
+    //  submesh.second->Create();
+    //}
+    //
+    //for (auto &viewIt : mSurface->GetViews())
+    //{
+    //  // Switching also forces us to recreate our DescriptorSets on every model.
+    //  for (auto model : viewIt.second.mInstantiatedModels[this])
+    //  {
+    //    // If we're switching to instancing we need to generate offsets into the instance buffer
+    //    // for each model.
+    //    if (mInstanced)
+    //    {
+    //      mInstanceManager.AddModel(model);
+    //    }
+    //
+    //    for (auto [submesh, i] : enumerate(mSubmeshes))
+    //    {
+    //      model->CreateDescriptorSet(submesh->second.get(), i );
+    //    }
+    //  } 
+    //}
   }
 }
