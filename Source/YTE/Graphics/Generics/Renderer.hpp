@@ -32,8 +32,7 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
     virtual void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel);
 
-    virtual Mesh* CreateSimpleMesh(GraphicsView *aView,
-                                   std::string &aName,
+    virtual Mesh* CreateSimpleMesh(std::string &aName,
                                    std::vector<Submesh> &aSubmeshes,
 			                             bool aForceUpdate = false);
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);

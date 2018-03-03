@@ -82,14 +82,8 @@ namespace YTE
     std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
     void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
-    VkMesh* CreateMesh(std::string &aFilename);
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
-    Mesh* CreateSimpleMesh(std::string &aName,
-                           std::vector<Submesh> &aSubmeshes,
-			                     bool aForceUpdate);
-    
-    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
 
     VkShader* CreateShader(std::string &aShaderSetName,
                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,

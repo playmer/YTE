@@ -121,20 +121,20 @@ namespace YTE
     YTERegisterType(VkSubmesh);
   }
 
-  VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface)
+  VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
     : mDiffuseTexture(nullptr)
     , mSpecularTexture(nullptr)
     , mNormalTexture(nullptr)
-    , mRenderer(aSurface->GetRenderer())
+    , mRenderer(aRenderer)
     , mMesh(aMesh)
     , mSubmesh(aSubmesh)
     , mIndexCount(0)
   {
-    Create(aSurface);
+    Create();
   }
 
 
-  void VkSubmesh::Create(VkRenderedSurface *aSurface)
+  void VkSubmesh::Create()
   {
     // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
@@ -167,17 +167,17 @@ namespace YTE
 
     if (false == mSubmesh->mDiffuseMap.empty())
     {
-      mDiffuseTexture = aSurface->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
+      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
       samplerTypes[samplers++] = "DIFFUSE";
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
-      mSpecularTexture = aSurface->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
+      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
       samplerTypes[samplers++] = "SPECULAR";
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
-      mNormalTexture = aSurface->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
+      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
       samplerTypes[samplers++] = "NORMAL";
     }
 
@@ -434,16 +434,15 @@ namespace YTE
     YTERegisterType(VkMesh);
   }
 
-  VkMesh::VkMesh(Window *aWindow,
-                 VkRenderedSurface *aSurface,
+  VkMesh::VkMesh(VkRenderer *aRenderer,
                  std::string &aFile,
                  CreateInfo *aCreateInfo)
-    : Mesh(aWindow, aFile, aCreateInfo)
-    , mRenderer{ aSurface->GetRenderer() }
+    : Mesh(aFile, aCreateInfo)
+    , mRenderer{ aRenderer }
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
@@ -451,16 +450,15 @@ namespace YTE
   }
 
 
-  VkMesh::VkMesh(Window *aWindow,
-                 VkRenderedSurface *aSurface,
+  VkMesh::VkMesh(VkRenderer *aRenderer,
                  std::string &aFile,
                  std::vector<Submesh> &aSubmeshes)
-    : Mesh(aWindow, aFile, aSubmeshes)
-    , mRenderer{aSurface->GetRenderer()}
+    : Mesh(aFile, aSubmeshes)
+    , mRenderer{aRenderer}
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aSurface);
+      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
@@ -508,6 +506,7 @@ namespace YTE
 
   void VkMesh::SetInstanced(bool aInstanced)
   {
+    YTEUnusedArgument(aInstanced);
     //if (aInstanced == mInstanced)
     //{
     //  return;

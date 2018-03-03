@@ -29,10 +29,10 @@ namespace YTE
   {
   public:
     YTEDeclareType(VkSubmesh);
-    VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderedSurface *aSurface);
+    VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer);
     ~VkSubmesh();
 
-    void Create(VkRenderedSurface *aSurface);
+    void Create();
     void Destroy();
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -114,13 +114,11 @@ namespace YTE
   public:
     YTEDeclareType(VkMesh);
 
-    VkMesh(Window *aWindow,
-           VkRenderedSurface *aSurface,
+    VkMesh(VkRenderer *aRenderer,
            std::string &aFile,
            CreateInfo *aCreateInfo = nullptr);
 
-    VkMesh(Window *aWindow,
-           VkRenderedSurface *aSurface,
+    VkMesh(VkRenderer *aRenderer,
            std::string &aFile,
            std::vector<Submesh> &aSubmeshes);
 

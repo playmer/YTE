@@ -174,15 +174,12 @@ namespace YTE
 
 
 
-  Submesh::Submesh(Window *aWindow,
-                   const aiScene *aScene,
+  Submesh::Submesh(const aiScene *aScene,
                    const aiMesh *aMesh,
                    Skeleton* aSkeleton,
                    uint32_t aBoneStartingVertexOffset,
                    bool aIsEditorObject)
   {
-    YTEUnusedArgument(aWindow);
-
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
       pColor);
@@ -395,7 +392,7 @@ namespace YTE
 
 
 
-  Mesh::Mesh(Window *aWindow, std::string &aFile, CreateInfo *aCreateInfo)
+  Mesh::Mesh(std::string &aFile, CreateInfo *aCreateInfo)
     : mInstanced(false)
   {
     Assimp::Importer Importer;
@@ -488,7 +485,7 @@ namespace YTE
       uint32_t startingVertex = 0;
       for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(aWindow, pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex, isEditorObject);
+        mParts.emplace_back(pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex, isEditorObject);
         startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
       }
 
@@ -496,13 +493,10 @@ namespace YTE
     }
   }
 
-  Mesh::Mesh(Window *aWindow,
-             std::string &aFile,
+  Mesh::Mesh(std::string &aFile,
              std::vector<Submesh> &aSubmeshes)
     : mInstanced(false)
   {
-    YTEUnusedArgument(aWindow);
-
     mName = aFile;
     mParts = std::move(aSubmeshes);
   }

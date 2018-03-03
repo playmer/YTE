@@ -146,22 +146,89 @@ namespace YTE
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
   }
 
-
-
   std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
   {
     return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
   }
 
+  // Textures
+  VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  {
+    auto textureIt = mTextures.find(aFilename);
+    VkTexture *texturePtr{ nullptr };
 
+    if (textureIt == mTextures.end())
+    {
+      auto texture = std::make_unique<VkTexture>(aFilename,
+                                                 this,
+                                                 aType);
 
-  Mesh* VkRenderer::CreateSimpleMesh(GraphicsView *aView,
-                                     std::string &aName,
+      texturePtr = texture.get();
+      mTextures[aFilename] = std::move(texture);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      texturePtr = textureIt->second.get();
+    }
+
+    return texturePtr;
+  }
+
+  // Meshes
+  VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
+  {
+    auto meshIt = mMeshes.find(aFilename);
+
+    VkMesh *meshPtr{ nullptr };
+
+    if (meshIt == mMeshes.end())
+    {
+      // create mesh
+      auto mesh = std::make_unique<VkMesh>(this,
+                                           aFilename);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aFilename] = std::move(mesh);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      meshPtr = meshIt->second.get();
+    }
+
+    return meshPtr;
+  }
+  
+  Mesh* VkRenderer::CreateSimpleMesh(std::string &aName,
                                      std::vector<Submesh> &aSubmeshes,
 		                                 bool aForceUpdate)
   {
-    return GetSurface(aView->GetWindow())->CreateSimpleMesh(aName, aSubmeshes, aForceUpdate);
+    auto meshIt = mMeshes.find(aName);
+
+    VkMesh *meshPtr{ nullptr };
+
+    if (aForceUpdate || meshIt == mMeshes.end())
+    {
+      // create mesh
+      auto mesh = std::make_unique<VkMesh>(this,
+                                           aName,
+                                           aSubmeshes);
+
+      meshPtr = mesh.get();
+
+      mMeshes[aName] = std::move(mesh);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      meshPtr = meshIt->second.get();
+    }
+
+    return meshPtr;
   }
+
 
   void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
@@ -202,6 +269,12 @@ namespace YTE
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
     YTEProfileFunction(profiler::colors::Blue);
+
+    if (mDataUpdateRequired)
+    {
+      GraphicsDataUpdate(aEvent);
+    }
+
     for (auto& surface : mSurfaces)
     {
       surface.second->FrameUpdate(aEvent);

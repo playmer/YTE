@@ -72,8 +72,6 @@ namespace YTE
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
 
-    auto family = internals->GetQueueFamilies().GetGraphicsFamily();
-
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
@@ -220,87 +218,6 @@ namespace YTE
 
       instantiatedModels.erase(mesh);
     }
-  }
-
-  // Meshes
-  VkMesh* VkRenderedSurface::CreateMesh(std::string &aFilename)
-  {
-    auto meshIt = mRenderer->mMeshes.find(aFilename);
-
-    VkMesh *meshPtr{ nullptr };
-
-    if (meshIt == mRenderer->mMeshes.end())
-    {
-      // create mesh
-      auto mesh = std::make_unique<VkMesh>(mWindow,
-                                           mRenderer->GetSurface(mWindow),
-                                           aFilename);
-
-      meshPtr = mesh.get();
-
-      mRenderer->mMeshes[aFilename] = std::move(mesh);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr;
-  }
-
-  
-  Mesh* VkRenderedSurface::CreateSimpleMesh(std::string &aName,
-                                            std::vector<Submesh> &aSubmeshes,
-		                                        bool aForceUpdate)
-  {
-    auto meshIt = mRenderer->mMeshes.find(aName);
-
-    VkMesh *meshPtr{ nullptr };
-
-    if (aForceUpdate || meshIt == mRenderer->mMeshes.end())
-    {
-      // create mesh
-      auto mesh = std::make_unique<VkMesh>(mWindow,
-                                           mRenderer->GetSurface(mWindow),
-                                           aName,
-                                           aSubmeshes);
-
-      meshPtr = mesh.get();
-
-      mRenderer->mMeshes[aName] = std::move(mesh);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr;
-  }
-
-  // Textures
-  VkTexture* VkRenderedSurface::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
-  {
-    auto textureIt = mRenderer->mTextures.find(aFilename);
-    VkTexture *texturePtr{ nullptr };
-
-    if (textureIt == mRenderer->mTextures.end())
-    {
-      auto texture = std::make_unique<VkTexture>(aFilename,
-                                                 mRenderer,
-                                                 aType);
-
-      texturePtr = texture.get();
-      mRenderer->mTextures[aFilename] = std::move(texture);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      texturePtr = textureIt->second.get();
-    }
-
-    return texturePtr;
   }
 
   // Shader

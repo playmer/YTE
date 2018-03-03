@@ -354,7 +354,7 @@ namespace YTE
 
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(view, meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
 
     std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mesh);
 
