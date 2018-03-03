@@ -34,7 +34,7 @@ namespace YTE
 
   void TestingComponent::Update(LogicUpdate *aEvent)
   {
-
+    YTEUnusedArgument(aEvent);
   }
 
   void TestingComponent::CheckButtons(XboxButtonEvent * aEvent)

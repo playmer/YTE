@@ -34,7 +34,7 @@ namespace YTE
     for (auto it = mSequences.begin(); it != mSequences.end(); ++it)
     {
       auto& sequence = it->second;
-      sequence.Increment(aUpdate->Dt);
+      sequence.Increment(static_cast<float>(aUpdate->Dt));
       sequence();
       if (sequence.IsDone())
       {

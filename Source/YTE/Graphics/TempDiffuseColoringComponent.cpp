@@ -47,7 +47,7 @@ namespace YTE
     mModel = mOwner->GetComponent<Model>();
     if (update == true)
     {
-      auto m = static_cast<VkInstantiatedModel*>(mModel->GetInstantiatedModel());
+      auto m = static_cast<VkInstantiatedModel*>(mModel->GetInstantiatedModel()[0]);
       auto buff = m->GetUBOModelData();
       buff.mDiffuseColor = glm::vec4(mDiffuseColor, 1.0f);
       m->UpdateUBOModel(buff);
@@ -63,7 +63,7 @@ namespace YTE
 
     if (mModel)
     {
-      auto m = static_cast<VkInstantiatedModel*>(mModel->GetInstantiatedModel());
+      auto m = static_cast<VkInstantiatedModel*>(mModel->GetInstantiatedModel()[0]);
       auto buff = m->GetUBOModelData();
       buff.mDiffuseColor = glm::vec4(mDiffuseColor, 1.0f);
       m->UpdateUBOModel(buff);

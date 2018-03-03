@@ -99,7 +99,7 @@ namespace YTE
     /*******************/
     void EditorUpdate(LogicUpdate *aEvent);
 
-    InstantiatedModel* GetInstantiatedModel() override;
+    std::vector<InstantiatedModel*> GetInstantiatedModel() override;
 
 
   private:
@@ -179,6 +179,8 @@ namespace YTE
     /*******************/
     void CreateTransform();
 
+    void ReloadShaders();
+
 
     // ------------------------------------
     // KISS FFT Related
@@ -207,13 +209,14 @@ namespace YTE
     void SetWaveHeight(float aWaveHeight);
     void SetWindFactor(glm::vec2 aWindFactor);
     void SetVertexDistance(glm::vec2 aDistance);
-    void SetTimeDilationEffect(double aTimeDilationEffect);
+    void SetTimeDilationEffect(float aTimeDilationEffect);
     void SetReset(bool aReset);
     void SetInstancingAmount(int aAmount);
     void SetUseFFT(bool aValue);
     void SetShaderSetName(std::string aName)
     {
       mShaderSetName = aName;
+      ReloadShaders();
     }
     void SetRunWithEngineUpdate(bool aValue)
     {
@@ -239,7 +242,7 @@ namespace YTE
     glm::vec2 GetVertexDistance();
     float GetVertexDistanceX();
     float GetVertexDistanceZ();
-    double GetTimeDilationEffect();
+    float GetTimeDilationEffect();
     bool GetReset();
     int GetInstancingAmount();
     bool GetUseFFT();

@@ -93,9 +93,9 @@ namespace YTE
     void CreateTransform();
     void TransformUpdate(TransformChanged *aEvent);
 
-    InstantiatedModel* GetInstantiatedModel() override
+    std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
-      return mInstantiatedSprite.get();
+      return { mInstantiatedSprite.get() };
     }
 
   private:

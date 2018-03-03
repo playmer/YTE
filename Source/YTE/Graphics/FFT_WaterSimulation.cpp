@@ -894,7 +894,7 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::SetTimeDilationEffect(double aTimeDilationEffect)
+  void FFT_WaterSimulation::SetTimeDilationEffect(float aTimeDilationEffect)
   {
     if (aTimeDilationEffect < 0.0001f)
     {
@@ -904,7 +904,7 @@ namespace YTE
     }
     else
     {
-      mTimeDilationEffect = aTimeDilationEffect;
+      mTimeDilationEffect = static_cast<double>(aTimeDilationEffect);
     }
   }
 
@@ -1038,9 +1038,9 @@ namespace YTE
 
 
   // ------------------------------------
-  double FFT_WaterSimulation::GetTimeDilationEffect()
+  float FFT_WaterSimulation::GetTimeDilationEffect()
   {
-    return mTimeDilationEffect;
+    return static_cast<float>(mTimeDilationEffect);
   }
 
 
@@ -1362,14 +1362,35 @@ namespace YTE
     AdjustPositions();
   }
 
-  InstantiatedModel* FFT_WaterSimulation::GetInstantiatedModel()
+
+
+  // ------------------------------------
+  std::vector<InstantiatedModel*> FFT_WaterSimulation::GetInstantiatedModel()
   {
     if (mInstantiatedHeightmap.size())
     {
-      return mInstantiatedHeightmap[0]->GetInstantiatedModel();
+      std::vector<InstantiatedModel*> models;
+      for (size_t i = 0; i < mInstantiatedHeightmap.size(); ++i)
+      {
+        models.push_back(mInstantiatedHeightmap[i]->GetInstantiatedModel());
+      }
+      return models;
     }
 
-    return nullptr;
+    return { nullptr };
+  }
+
+  
+  
+  // ------------------------------------
+  void FFT_WaterSimulation::ReloadShaders()
+  {
+    int size = squared(mInstanceCount);
+
+    for (int i = 0; i < size; ++i)
+    {
+
+    }
   }
 }
 

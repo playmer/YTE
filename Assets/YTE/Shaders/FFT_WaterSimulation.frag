@@ -301,15 +301,15 @@ vec4 CalculateLight(int i, inout LightingData aLightData)
   // find type of light and call corresponding function
   if (light.mLightType == LightType_Directional)
   {
-    return Calc_DirectionalLight(light, aLightData);
+    return Calc_DirectionalLight(light, aLightData) * light.mIntensity;
   }
   else if(light.mLightType == LightType_Point)
   {
-    return Calc_PointLight(light, aLightData);
+    return Calc_PointLight(light, aLightData) * light.mIntensity;
   }
   else if(light.mLightType == LightType_Spot)
   {
-    return Calc_SpotLight(light, aLightData);
+    return Calc_SpotLight(light, aLightData) * light.mIntensity;
   }
 
   return vec4(0,0,0,0);
@@ -418,7 +418,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 
   // Emissive and Global Illumination
   vec4 ITotal = lightData.mEmisMat +
-                (Illumination.mGlobalIllumination * lightData.mAmbMat);
+                (Illumination.mGlobalIllumination * lightData.mDiffTexture);
 
   // Light Calculations
   for (int i = 0; i < Lights.mNumberOfLights; ++i)

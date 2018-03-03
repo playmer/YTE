@@ -4,6 +4,7 @@
 #define YTE_Graphics_BaseModel_hpp 
 
 #include "YTE/Core/Component.hpp"
+#include <vector>
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
@@ -16,9 +17,9 @@ namespace YTE
 
     BaseModel(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    virtual InstantiatedModel* GetInstantiatedModel()
+    virtual std::vector<InstantiatedModel*> GetInstantiatedModel()
     {
-      return nullptr;
+      return { nullptr };
     }
   };
 }

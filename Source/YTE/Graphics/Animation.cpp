@@ -102,12 +102,12 @@ namespace YTE
 
   float Animation::GetSpeed() const
   {
-    return mSpeed;
+    return static_cast<float>(mSpeed);
   }
 
   void Animation::SetSpeed(float aSpeed)
   {
-    mSpeed = aSpeed;
+    mSpeed = static_cast<double>(aSpeed);
   }
 
   bool Animation::GetPlayOverTime() const
@@ -213,7 +213,7 @@ namespace YTE
       aiVectorKey frame = aNode->mScalingKeys[index];
       aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
 
-      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;
@@ -254,7 +254,7 @@ namespace YTE
       aiQuatKey frame = aNode->mRotationKeys[index];
       aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
 
-      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiQuaternion& start = frame.mValue;
       const aiQuaternion& end = nextFrame.mValue;
@@ -292,7 +292,7 @@ namespace YTE
       aiVectorKey frame = aNode->mPositionKeys[index];
       aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
 
-      float delta = (mCurrentAnimationTime + startFrame.mTime - (float)frame.mTime) / (float)(nextFrame.mTime - frame.mTime);
+      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
       const aiVector3D& start = frame.mValue;
       const aiVector3D& end = nextFrame.mValue;
@@ -349,9 +349,9 @@ namespace YTE
   {
     if (mOwner->GetIsBeingDeleted() == false)
     {
-      if (mModel->GetInstantiatedModel())
+      if (mModel->GetInstantiatedModel().size())
       {
-        mModel->GetInstantiatedModel()->SetDefaultAnimationOffset();
+        mModel->GetInstantiatedModel()[0]->SetDefaultAnimationOffset();
       }
     }
 
@@ -422,7 +422,7 @@ namespace YTE
       }
 
       // cause update to graphics card
-      mModel->GetInstantiatedModel()->UpdateUBOAnimation(mCurrentAnimation->GetUBOAnim());
+      mModel->GetInstantiatedModel()[0]->UpdateUBOAnimation(mCurrentAnimation->GetUBOAnim());
     }
   }
 

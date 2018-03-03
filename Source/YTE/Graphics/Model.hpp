@@ -85,9 +85,9 @@ namespace YTE
       return mMeshName;
     }
 
-    InstantiatedModel* GetInstantiatedModel() override
+    std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
-      return mInstantiatedModel.get();
+      return { mInstantiatedModel.get() };
     }
 
     std::string GetShading()

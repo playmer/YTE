@@ -47,9 +47,9 @@ namespace YTE
 
     void TransformUpdate(TransformChanged *aEvent);
 
-    InstantiatedModel* GetInstantiatedModel() override
+    std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
-      return mInstantiatedSprite.get();
+      return { mInstantiatedSprite.get() };
     }
 
     void SetColumns(i32 aColumns)
