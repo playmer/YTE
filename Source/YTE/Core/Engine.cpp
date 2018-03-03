@@ -254,6 +254,9 @@ namespace YTE
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
+    SendEvent(Events::AnimationUpdate, &updateEvent);
+    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
+
     GetComponent<WWiseSystem>()->Update(mDt);
   
     mGamepadSystem.Update(mDt);
@@ -281,9 +284,6 @@ namespace YTE
     {
       return;
     }
-
-    SendEvent(Events::AnimationUpdate, &updateEvent);
-    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
 
     ++mFrame;
   }

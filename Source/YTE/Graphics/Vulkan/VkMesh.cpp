@@ -439,6 +439,7 @@ namespace YTE
                  std::string &aFile,
                  CreateInfo *aCreateInfo)
     : Mesh(aWindow, aFile, aCreateInfo)
+    , mRenderer{ aSurface->GetRenderer() }
   {
     for (unsigned i = 0; i < mParts.size(); ++i)
     {
@@ -446,7 +447,7 @@ namespace YTE
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    aSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
 
