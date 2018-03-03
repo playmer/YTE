@@ -20,6 +20,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Component.hpp"
 #include "YTE/Meta/Type.hpp"
 
+#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidget.hpp"
@@ -39,6 +40,7 @@ namespace YTEditor
     ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, MainWindow *aMainWindow, ComponentWidget* aParent)
       : PropertyWidget<T>(aProp.first, aMainWindow, aParent)
       , mParentComponent(aParent)
+      , mEngineProperty(aProp.second.get())
     {
       YTE::String tip = aProp.second->Description();
 
@@ -103,30 +105,34 @@ namespace YTEditor
     YTE::Function *mGetter;
     YTE::Function *mSetter;
 
+    YTE::Property *mEngineProperty;
   };
 
   template <class T>
   void ComponentProperty<T>::SaveToEngine()
   {
-    YTE::Type *cmpType = mParentComponent->GetEngineComponent()->GetStaticType();
+    YTE::Component *cmp = mParentComponent->GetEngineComponent();
 
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
     T val = this->GetPropertyValues();
     YTE::Any modVal = YTE::Any(val);
 
-    ArchetypeTools *archTools = mParentComponent->GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
+    MainWindow *mainWindow = mParentComponent->GetMainWindow();
+    ArchetypeTools *archTools = mainWindow->GetComponentBrowser().GetArchetypeTools();
+
+    std::string name = mEngineProperty->GetName();
 
     // Add command to main window undo redo
-    auto cmd = std::make_unique<ChangePropValCmd>(cmpType,
+    auto cmd = std::make_unique<ChangePropValCmd>(name,
+                                                  cmp->GetGUID(),
                                                   oldVal,
                                                   modVal,
-                                                  &mParentComponent->GetMainWindow()->GetOutputConsole(),
-                                                  archTools);
+                                                  mainWindow);
 
     mParentComponent->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
 
-    mParentComponent->GetMainWindow()->GetComponentBrowser().GetArchetypeTools()->IncrementChanges();
+    archTools->IncrementChanges();
 
     BaseSaveToEngine();
   }

@@ -49,7 +49,7 @@ namespace YTEditor
   private:
     YTE::Composition *mComposition;
     YTE::GlobalUniqueIdentifier mParentGuid;
-    ObjectBrowser *mBrowser;
+    ObjectBrowser *mObjectBrowser;
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
@@ -70,7 +70,7 @@ namespace YTEditor
   private:
     YTE::Composition *mComposition;
     YTE::GlobalUniqueIdentifier mParentGuid;
-    ObjectBrowser *mBrowser;
+    ObjectBrowser *mObjectBrowser;
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
@@ -96,7 +96,7 @@ namespace YTEditor
     YTE::RSAllocator mAllocator;
     YTE::GlobalUniqueIdentifier mGUID;
 
-    ComponentBrowser *mBrowser;
+    ComponentBrowser *mComponentBrowser;
   };
 
   class RemoveComponentCmd : public Command
@@ -118,7 +118,7 @@ namespace YTEditor
     YTE::RSAllocator mAllocator;
     YTE::GlobalUniqueIdentifier mGUID;
 
-    ComponentBrowser *mBrowser;
+    ComponentBrowser *mComponentBrowser;
 
   };
 
@@ -126,25 +126,35 @@ namespace YTEditor
   class ChangePropValCmd : public Command
   {
   public:
-    ChangePropValCmd(YTE::Type *aCmpType,
+    ChangePropValCmd(std::string aPropName,
+      YTE::GlobalUniqueIdentifier aGUID,
       YTE::Any aOldVal,
       YTE::Any aNewVal,
-      OutputConsole *aConsole,
-      ArchetypeTools *aTools);
-
+      MainWindow *aMainWindow);
     ~ChangePropValCmd();
-
     void Execute() override;
     void UnExecute() override;
-
   private:
+    std::string mPropertyName;
     YTE::Any mPreviousValue;
     YTE::Any mModifiedValue;
-    YTE::Type *mCmpType;
-
-    OutputConsole *mConsole;
+    YTE::GlobalUniqueIdentifier mCompGUID;
     ArchetypeTools *mArchTools;
-
+    MainWindow *mMainWindow;
   };
-
+  
+  class ObjectSelectionChangedCmd : public Command
+  {
+  public:
+    ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
+      std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
+      ObjectBrowser *aBrowser,
+      OutputConsole *aConsole);
+    void Execute() override;
+    void UnExecute() override;
+  private:
+    ObjectBrowser * mObjectBrowser;
+    std::vector<YTE::GlobalUniqueIdentifier> mNewSelection;
+    std::vector<YTE::GlobalUniqueIdentifier> mOldSelection;
+  };
 }

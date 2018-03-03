@@ -2,6 +2,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Meta/Type.hpp"
 
 #include "YTE/Graphics/Model.hpp"
 
@@ -12,6 +13,7 @@
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/Physics/PhysicsHandler.hpp"
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/UndoRedo/Commands.hpp"
 
 namespace YTEditor
 {
@@ -201,6 +203,44 @@ namespace YTEditor
     mFirstClickMousePos = YTE::BtToOurVec3(mouseWorld);
 
     mPrevMousePos = mFirstClickMousePos;
+
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+
+    YTE::Composition *curr = objBrowser.GetCurrentObject();
+
+    YTE::Transform *transform = curr->GetComponent<YTE::Transform>();
+
+    switch (mMode)
+    {
+    case Gizmo::Select:
+    {
+      break;
+    }
+
+    case Gizmo::Translate:
+    {
+      YTE::Property *prop = transform->GetProperty("Translation", transform->GetStaticType());
+
+      mStartValue = prop->GetGetter()->Invoke(transform);
+      break;
+    }
+
+    case Gizmo::Scale:
+    {
+      YTE::Property *prop = transform->GetProperty("Scale", transform->GetStaticType());
+
+      mStartValue = prop->GetGetter()->Invoke(transform);
+      break;
+    }
+
+    case Gizmo::Rotate:
+    {
+      YTE::Property *prop = transform->GetProperty("Rotation", transform->GetStaticType());
+
+      mStartValue = prop->GetGetter()->Invoke(transform);
+      break;
+    }
+    }
   }
 
   void Gizmo::OnMousePersist(YTE::MouseButtonEvent *aEvent, YTE::Space *aSpace, float aPickedDistance)
@@ -267,9 +307,54 @@ namespace YTEditor
     mPrevMousePos = YTE::BtToOurVec3(mouseWorld);
   }
 
-  void Gizmo::OnMouseRelease(YTE::MouseButtonEvent * aEvent)
+  void Gizmo::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    UndoRedo *undo = mMainWindow->GetUndoRedo();
+    ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+
+    YTE::Composition *curr = objBrowser.GetCurrentObject();
+
+    YTE::Transform *transform = curr->GetComponent<YTE::Transform>();
+
+    YTE::Property *prop = nullptr;
+
+    switch (mMode)
+    {
+    case Gizmo::Translate:
+    {
+      prop = transform->GetProperty("Translation", YTE::TypeId<YTE::Transform>());
+      break;
+    }
+
+    case Gizmo::Scale:
+    {
+      prop = transform->GetProperty("Scale", YTE::TypeId<YTE::Transform>());
+      break;
+    }
+
+    case Gizmo::Rotate:
+    {
+      prop = transform->GetProperty("Rotation", YTE::TypeId<YTE::Transform>());
+      break;
+    }
+    }
+
+    if (prop)
+    {
+      // Add command to main window undo redo
+      std::string name = prop->GetName();
+      YTE::Any modVal = prop->GetGetter()->Invoke(transform);
+
+      auto cmd = std::make_unique<ChangePropValCmd>(name,
+        transform->GetGUID(),
+        mStartValue,
+        modVal,
+        mMainWindow);
+
+      undo->InsertCommand(std::move(cmd));
+    }
   }
 
   MainWindow* Gizmo::GetMainWindow()

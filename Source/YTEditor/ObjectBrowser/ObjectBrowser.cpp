@@ -60,6 +60,10 @@ namespace YTEditor
     connect(this, &QTreeWidget::currentItemChanged,
       this, &ObjectBrowser::OnCurrentItemChanged);
 
+    // item selection for undo redo
+    connect(this, &QTreeWidget::itemSelectionChanged,
+      this, &ObjectBrowser::OnItemSelectionChanged);
+
     connect(this, &QTreeWidget::customContextMenuRequested,
       this, &ObjectBrowser::CreateContextMenu);
 
@@ -187,6 +191,7 @@ namespace YTEditor
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     this->setDragDropMode(QAbstractItemView::InternalMove);
     this->setMouseTracking(true);
+    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
   }
 
   void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
@@ -270,6 +275,87 @@ namespace YTEditor
       }
     }
   }
+
+  void ObjectBrowser::OnItemSelectionChanged()
+  {
+    QList<QTreeWidgetItem*> items = this->selectedItems();
+
+    OutputConsole *console = &mMainWindow->GetOutputConsole();
+
+    std::vector<YTE::GlobalUniqueIdentifier> newSelection;
+    std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
+
+    for (auto item : items)
+    {
+      ObjectItem *objItem = static_cast<ObjectItem*>(item);
+
+      auto guid = objItem->GetEngineObject()->GetGUID();
+
+      newSelection.push_back(guid);
+    }
+
+    for (auto item : mSelectedItems)
+    {
+      oldSelection.push_back(item);
+    }
+
+    if (mInsertSelectionChangedCmd)
+    {
+      UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
+      undoRedo->InsertCommand(std::make_unique<ObjectSelectionChangedCmd>(newSelection, oldSelection, this, console));
+    }
+
+    mSelectedItems = newSelection;
+
+    /*
+    // if objects were selected
+    if (items.size() > mSelectedItems.size())
+    {
+      QList<QTreeWidgetItem*> delta = items;
+
+      for (auto item : mSelectedItems)
+      {
+        delta.removeOne(item);
+      }
+
+      std::vector<YTE::GlobalUniqueIdentifier> guids;
+
+      for (auto item : delta)
+      {
+        ObjectItem *objItem = static_cast<ObjectItem*>(item);
+
+        auto guid = objItem->GetEngineObject()->GetGUID();
+
+        guids.push_back(guid);
+      }
+
+      UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
+      undoRedo->InsertCommand(std::make_unique<ObjectsSelectedCmd>(guids, this, console));
+    }
+    // if objects were unselected
+    else if (items.size() < mSelectedItems.size())
+    {
+      QList<QTreeWidgetItem*> delta = mSelectedItems;
+
+      for (auto item : items)
+      {
+        delta.removeOne(item);
+      }
+
+      std::vector<YTE::GlobalUniqueIdentifier> guids;
+
+      for (auto item : delta)
+      {
+        ObjectItem *objItem = static_cast<ObjectItem*>(item);
+
+        auto guid = objItem->GetEngineObject()->GetGUID();
+
+        guids.push_back(guid);
+      }
+    }
+    */
+  }
+
 
   void ObjectBrowser::DuplicateCurrentlySelected()
   {
@@ -380,6 +466,11 @@ namespace YTEditor
     currItem->DeleteFromEngine();
 
     RemoveObjectFromViewer(currItem);
+  }
+
+  void ObjectBrowser::SetInsertSelectionChangedCommand(bool isActive)
+  {
+    mInsertSelectionChangedCmd = isActive;
   }
 
   void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)

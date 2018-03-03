@@ -35,7 +35,7 @@ namespace YTEditor
                              ObjectBrowser *aBrowser)
     : Command(aConsole)
     , mComposition(aComposition)
-    , mBrowser(aBrowser)
+    , mObjectBrowser(aBrowser)
     , mName(aComposition->GetName())
     , mGUID(aComposition->GetGUID())
   {
@@ -49,7 +49,7 @@ namespace YTEditor
 
   void AddObjectCmd::Execute()
   {
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
@@ -64,12 +64,12 @@ namespace YTEditor
     
     if (parentObj->GetType()->IsA<YTE::Space>())
     {
-      mBrowser->AddTreeItem(name.c_str(), mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), mComposition);
     }
     else
     {
-      auto parent = mBrowser->FindItemByComposition(parentObj);
-      mBrowser->AddTreeItem(name.c_str(), parent, mComposition);
+      auto parent = mObjectBrowser->FindItemByComposition(parentObj);
+      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition);
     }
   }
 
@@ -81,15 +81,15 @@ namespace YTEditor
                        "AddObjectCmd::UnExecute() - Remove %s",
                        mComposition->GetName().c_str());
 
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    auto item = mBrowser->FindItemByComposition(mComposition);
+    auto item = mObjectBrowser->FindItemByComposition(mComposition);
     
     parentObj->RemoveComposition(mComposition);
     
-    mBrowser->RemoveObjectFromViewer(item);
+    mObjectBrowser->RemoveObjectFromViewer(item);
   }
 
   RemoveObjectCmd::RemoveObjectCmd(YTE::Composition *aComposition,
@@ -97,7 +97,7 @@ namespace YTEditor
                                    ObjectBrowser *aBrowser)
     : Command(aConsole)
     , mComposition(aComposition)
-    , mBrowser(aBrowser)
+    , mObjectBrowser(aBrowser)
     , mName(aComposition->GetName())
     , mGUID(aComposition->GetGUID())
   {
@@ -115,21 +115,21 @@ namespace YTEditor
                        "RemoveObjectCmd::Execute() - Remove %s",
                        mComposition->GetName().c_str());
 
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
     mComposition->SetGUID(mGUID);
 
-    auto item = mBrowser->FindItemByComposition(mComposition);
+    auto item = mObjectBrowser->FindItemByComposition(mComposition);
 
     parentObj->RemoveComposition(mComposition);
 
-    mBrowser->RemoveObjectFromViewer(item);
+    mObjectBrowser->RemoveObjectFromViewer(item);
   }
 
   void RemoveObjectCmd::UnExecute()
   {
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
@@ -143,12 +143,12 @@ namespace YTEditor
 
     if (parentObj->GetType()->IsA<YTE::Space>())
     {
-      mBrowser->AddTreeItem(name.c_str(), mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), mComposition);
     }
     else
     {
-      auto parent = mBrowser->FindItemByComposition(parentObj);
-      mBrowser->AddTreeItem(name.c_str(), parent, mComposition);
+      auto parent = mObjectBrowser->FindItemByComposition(parentObj);
+      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition);
     }
   }
 
@@ -156,7 +156,7 @@ namespace YTEditor
     ComponentBrowser *aBrowser,
     OutputConsole *aConsole)
     : Command(aConsole)
-    , mBrowser(aBrowser)
+    , mComponentBrowser(aBrowser)
     , mGUID(aComponent->GetGUID())
   {
     mComponentType = aComponent->GetType();
@@ -176,7 +176,7 @@ namespace YTEditor
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Add Component Command : Execute");
 
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
@@ -199,7 +199,7 @@ namespace YTEditor
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Add Component Command : UnExecute");
 
-    ComponentTree *compTree = mBrowser->GetComponentTree();
+    ComponentTree *compTree = mComponentBrowser->GetComponentTree();
     QTreeWidgetItem *componentItem = compTree->FindComponentItem(mComponentType);
     
     compTree->BaseRemoveComponent(componentItem);
@@ -209,7 +209,7 @@ namespace YTEditor
                                          ComponentBrowser *aBrowser,
                                          OutputConsole *aConsole)
     : Command(aConsole)
-    , mBrowser(aBrowser)
+    , mComponentBrowser(aBrowser)
     , mGUID(aComponent->GetGUID())
   {
     mComponentType = aComponent->GetType();
@@ -229,7 +229,7 @@ namespace YTEditor
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Remove Component Command : Execute");
 
-    ComponentTree *compTree = mBrowser->GetComponentTree();
+    ComponentTree *compTree = mComponentBrowser->GetComponentTree();
     QTreeWidgetItem *componentItem = compTree->FindComponentItem(mComponentType);
 
     compTree->BaseRemoveComponent(componentItem);
@@ -243,7 +243,7 @@ namespace YTEditor
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Remove Component Command : UnExecute");
 
-    MainWindow *mainWindow = mBrowser->GetMainWindow();
+    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
@@ -261,17 +261,18 @@ namespace YTEditor
   }
 
 
-  ChangePropValCmd::ChangePropValCmd(YTE::Type *aCmpType,
+  ChangePropValCmd::ChangePropValCmd(std::string aPropName,
+    YTE::GlobalUniqueIdentifier aGUID,
     YTE::Any aOldVal,
     YTE::Any aNewVal,
-    OutputConsole *aConsole,
-    ArchetypeTools *aTools)
-    : Command(aConsole),
-    mPreviousValue(aOldVal),
-    mModifiedValue(aNewVal),
-    mCmpType(aCmpType),
-    mConsole(aConsole),
-    mArchTools(aTools)
+    MainWindow *aMainWindow)
+    : Command(&aMainWindow->GetOutputConsole())
+    , mPropertyName(aPropName)
+    , mPreviousValue(aOldVal)
+    , mModifiedValue(aNewVal)
+    , mArchTools(aMainWindow->GetComponentBrowser().GetArchetypeTools())
+    , mMainWindow(aMainWindow)
+    , mCompGUID(aGUID)
   {
 
   }
@@ -286,15 +287,100 @@ namespace YTEditor
     int change = mArchTools->IncrementChanges();
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Execute: Changes = %d", change);
+
+    YTE::Engine *engine = mMainWindow->GetRunningEngine();
+    YTE::Component *comp = engine->GetComponentByGUID(mCompGUID);
+    YTE::Type *compType = comp->GetType();
+
+    YTE::Property *prop = comp->GetProperty(mPropertyName, compType);
+
+    prop->GetSetter()->Invoke(comp, mModifiedValue);
   }
 
   void ChangePropValCmd::UnExecute()
   {
     int change = mArchTools->DecrementChanges();
+
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "UnExecute: Changes = %d", change);
+
+    YTE::Engine *engine = mMainWindow->GetRunningEngine();
+    YTE::Component *comp = engine->GetComponentByGUID(mCompGUID);
+    YTE::Type *compType = comp->GetType();
+
+    YTE::Property *prop = comp->GetProperty(mPropertyName, compType);
+
+    prop->GetSetter()->Invoke(comp, mPreviousValue);
   }
 
+  ObjectSelectionChangedCmd::ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
+    std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
+    ObjectBrowser *aBrowser,
+    OutputConsole *aConsole)
+    : Command(aConsole)
+    , mObjectBrowser(aBrowser)
+    , mNewSelection(aNewSelection)
+    , mOldSelection(aOldSelection)
+  {
+  }
+
+  void ObjectSelectionChangedCmd::Execute()
+  {
+    // get all the object items
+    MainWindow *mainWin = mObjectBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWin->GetRunningEngine();
+
+    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
+    objBrowser.SetInsertSelectionChangedCommand(false);
+
+    mObjectBrowser->clearSelection();
+
+    for (auto guid : mNewSelection)
+    {
+      YTE::Composition *obj = engine->GetCompositionByGUID(guid);
+
+      if (obj)
+      {
+        ObjectItem *objItem = mObjectBrowser->FindItemByComposition(obj);
+
+        if (objItem)
+        {
+          mObjectBrowser->setItemSelected(objItem, true);
+        }
+      }
+    }
+
+    objBrowser.SetInsertSelectionChangedCommand(true);
+  }
+
+  void ObjectSelectionChangedCmd::UnExecute()
+  {
+    // get all the object items
+    MainWindow *mainWin = mObjectBrowser->GetMainWindow();
+    YTE::Engine *engine = mainWin->GetRunningEngine();
+
+    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
+    objBrowser.SetInsertSelectionChangedCommand(false);
+
+    mObjectBrowser->clearSelection();
+
+    for (auto guid : mOldSelection)
+    {
+      YTE::Composition *obj = engine->GetCompositionByGUID(guid);
+
+      if (obj)
+      {
+        ObjectItem *objItem = mObjectBrowser->FindItemByComposition(obj);
+
+        if (objItem)
+        {
+          mObjectBrowser->setItemSelected(objItem, true);
+        }
+      }
+    }
+
+    objBrowser.SetInsertSelectionChangedCommand(true);
+  }
 }
 
 

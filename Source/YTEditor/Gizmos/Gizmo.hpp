@@ -57,6 +57,8 @@ namespace YTEditor
 
     int mMode;
 
+    YTE::Any mStartValue;
+
   public:
     enum Mode
     {
