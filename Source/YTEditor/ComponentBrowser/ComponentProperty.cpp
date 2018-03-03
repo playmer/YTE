@@ -6,8 +6,37 @@ namespace YTEditor
   template <>
   void ComponentProperty<QStringList>::BaseSaveToEngine()
   {
-    QStringList value = this->GetPropertyValues();
-    mSetter->Invoke(mParentComponent->GetEngineComponent(), value[0].toStdString());
+    YTE::Component *cmp = mParentComponent->GetEngineComponent();
+
+    YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
+
+    MainWindow *mainWindow = mParentComponent->GetMainWindow();
+
+    ArchetypeTools *archTools = mainWindow->GetComponentBrowser().GetArchetypeTools();
+
+    QStringList val = this->GetPropertyValues();
+    YTE::Any modVal = YTE::Any(val[0].toStdString());
+
+    if (oldVal.As<std::string>() == val[0].toStdString())
+    {
+      return;
+    }
+
+    // Add command to main window undo redo
+    std::string name = mEngineProperty->GetName();
+
+    auto cmd = std::make_unique<ChangePropValCmd>(name,
+      cmp->GetGUID(),
+      oldVal,
+      modVal,
+      mainWindow);
+
+    mainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+
+    archTools->IncrementChanges();
+
+    // Add command to main window undo redo
+    BaseSaveToEngine();
   }
 
 

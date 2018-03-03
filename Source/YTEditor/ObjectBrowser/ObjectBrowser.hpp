@@ -44,30 +44,30 @@ namespace YTEditor
     void ClearObjectBrowser();
 
     ObjectItem* AddObject(const char *aCompositionName,
-      const char *aArchetypeName,
-      int aIndex = 0);
+                          const char *aArchetypeName,
+                          int aIndex = 0);
 
     ObjectItem* AddChildObject(const char *aCompositionName,
-      const char *aArchetypeName,
-      ObjectItem *aParentObj,
-      int aIndex = 0);
+                               const char *aArchetypeName,
+                               ObjectItem *aParentObj,
+                               int aIndex = 0);
 
     ObjectItem* AddTreeItem(const char *aItemName,
-      YTE::Composition *aEngineObj,
-      int aIndex = 0,
-      bool aSetAsCurrent = true);
+                            YTE::Composition *aEngineObj,
+                            int aIndex = 0,
+                            bool aSetAsCurrent = true);
 
     ObjectItem* AddTreeItem(const char *aItemName,
-      ObjectItem * aParentObj,
-      YTE::Composition *aEngineObj,
-      int aIndex = 0,
-      bool aSetAsCurrent = true);
+                            ObjectItem * aParentObj,
+                            YTE::Composition *aEngineObj,
+                            int aIndex = 0,
+                            bool aSetAsCurrent = true);
 
     ObjectItem* AddExistingComposition(const char *aCompositionName,
-      YTE::Composition *aComposition);
+                                       YTE::Composition *aComposition);
 
     void LoadAllChildObjects(YTE::Composition *aParentObj,
-      ObjectItem *aParentItem);
+                             ObjectItem *aParentItem);
 
     YTE::Composition* GetCurrentObject();
 
@@ -82,11 +82,15 @@ namespace YTEditor
     void SelectNoItem();
     
     void OnCurrentItemChanged(QTreeWidgetItem *current,
-      QTreeWidgetItem *previous);
+                              QTreeWidgetItem *previous);
+
+    void OnItemSelectionChanged();
 
     void DuplicateCurrentlySelected();
 
     void RemoveCurrentObject();
+
+    void SetInsertSelectionChangedCommand(bool isActive);
 
   private:
     MainWindow *mMainWindow;
@@ -98,14 +102,16 @@ namespace YTEditor
 
     void CreateContextMenu(const QPoint & pos);
 
-
     void keyPressEvent(QKeyEvent *aEvent);
 
     ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
 
     void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-      YTE::vector<ObjectItem*>* aResult,
-      ObjectItem* aItem);
+                                        YTE::vector<ObjectItem*>* aResult,
+                                        ObjectItem* aItem);
+
+    std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;
+    bool mInsertSelectionChangedCmd;
 
   };
 

@@ -198,6 +198,12 @@ namespace YTEditor
   void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    if (mIsHittingObject && mIsGizmoActive)
+    {
+      mMainWindow->GetGizmo()->OnMouseRelease(aEvent);
+    }
+
     mIsHittingObject = false;
     mIsGizmoActive = false;
     auto it = mObjects.find(mPickedObj);

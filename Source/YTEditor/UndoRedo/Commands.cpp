@@ -261,17 +261,18 @@ namespace YTEditor
   }
 
 
-  ChangePropValCmd::ChangePropValCmd(YTE::Type *aCmpType,
+  ChangePropValCmd::ChangePropValCmd(std::string aPropName,
+    YTE::GlobalUniqueIdentifier aGUID,
     YTE::Any aOldVal,
     YTE::Any aNewVal,
-    OutputConsole *aConsole,
-    ArchetypeTools *aTools)
-    : Command(aConsole),
-    mPreviousValue(aOldVal),
-    mModifiedValue(aNewVal),
-    mCmpType(aCmpType),
-    mConsole(aConsole),
-    mArchTools(aTools)
+    MainWindow *aMainWindow)
+    : Command(&aMainWindow->GetOutputConsole())
+    , mPropertyName(aPropName)
+    , mPreviousValue(aOldVal)
+    , mModifiedValue(aNewVal)
+    , mArchTools(aMainWindow->GetComponentBrowser().GetArchetypeTools())
+    , mMainWindow(aMainWindow)
+    , mCompGUID(aGUID)
   {
 
   }
@@ -286,19 +287,36 @@ namespace YTEditor
     int change = mArchTools->IncrementChanges();
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "Execute: Changes = %d", change);
+
+    YTE::Engine *engine = mMainWindow->GetRunningEngine();
+    YTE::Component *comp = engine->GetComponentByGUID(mCompGUID);
+    YTE::Type *compType = comp->GetType();
+
+    YTE::Property *prop = comp->GetProperty(mPropertyName, compType);
+
+    prop->GetSetter()->Invoke(comp, mModifiedValue);
   }
 
   void ChangePropValCmd::UnExecute()
   {
     int change = mArchTools->DecrementChanges();
+
     mConsole->PrintLnC(OutputConsole::Color::Blue,
       "UnExecute: Changes = %d", change);
+
+    YTE::Engine *engine = mMainWindow->GetRunningEngine();
+    YTE::Component *comp = engine->GetComponentByGUID(mCompGUID);
+    YTE::Type *compType = comp->GetType();
+
+    YTE::Property *prop = comp->GetProperty(mPropertyName, compType);
+
+    prop->GetSetter()->Invoke(comp, mPreviousValue);
   }
 
   ObjectSelectionChangedCmd::ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
-                                                       std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
-                                                       ObjectBrowser *aBrowser,
-                                                       OutputConsole *aConsole)
+    std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
+    ObjectBrowser *aBrowser,
+    OutputConsole *aConsole)
     : Command(aConsole)
     , mObjectBrowser(aBrowser)
     , mNewSelection(aNewSelection)
@@ -308,11 +326,12 @@ namespace YTEditor
 
   void ObjectSelectionChangedCmd::Execute()
   {
-    QSignalBlocker blocker(mObjectBrowser);
-
     // get all the object items
     MainWindow *mainWin = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWin->GetRunningEngine();
+
+    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
+    objBrowser.SetInsertSelectionChangedCommand(false);
 
     mObjectBrowser->clearSelection();
 
@@ -330,15 +349,18 @@ namespace YTEditor
         }
       }
     }
+
+    objBrowser.SetInsertSelectionChangedCommand(true);
   }
 
   void ObjectSelectionChangedCmd::UnExecute()
   {
-    QSignalBlocker blocker(mObjectBrowser);
-
     // get all the object items
     MainWindow *mainWin = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWin->GetRunningEngine();
+
+    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
+    objBrowser.SetInsertSelectionChangedCommand(false);
 
     mObjectBrowser->clearSelection();
 
@@ -356,6 +378,8 @@ namespace YTEditor
         }
       }
     }
+
+    objBrowser.SetInsertSelectionChangedCommand(true);
   }
 }
 
