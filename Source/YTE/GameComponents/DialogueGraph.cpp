@@ -29,7 +29,7 @@ namespace YTE
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
   */
   DialogueNode::DialogueNode(NodeType aType, DialogueData aData, DialogueNode *aParent)
-    : mType(aType), mParent(aParent), mData(aData)
+    : mType(aType), mData(aData), mParent(aParent)
   {
     switch (aType)
     {
@@ -42,13 +42,19 @@ namespace YTE
       case NodeType::Input:
       {
           // set the function pointer
-        mNodeLogic = GetInput;
+        mNodeLogic = GiveOptions;
         break;
       }
       case NodeType::Text:
       {
           // set the function pointer
         mNodeLogic = RunText;
+        break;
+      }
+      case NodeType::Sound:
+      {
+          // set the function pointer
+        mNodeLogic = PlaySound;
         break;
       }
     }
@@ -58,11 +64,15 @@ namespace YTE
   {
     
   }
-  void DialogueNode::GetInput()
+  void DialogueNode::GiveOptions()
   {
 
   }
   void DialogueNode::RunText()
+  {
+
+  }
+  void DialogueNode::PlaySound()
   {
 
   }

@@ -13,6 +13,11 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDefineType(JohnDialogue)
+  {
+    YTERegisterType(JohnDialogue);
+  }
+
   /*
   void DialogueNode::SetActiveNode(DialogueNodeEvent *aEvent)
   {
@@ -64,11 +69,12 @@ namespace YTE
   {
     mConversationVec = *(new std::vector<Conversation>());
   }
-
+  /*
   void Quest::AddConvo(Conversation *aConvo)
   {
     mConversationVec.push_back(*aConvo);
   }
+  */
 
 /******************************************************************************
   Dialogue Component
@@ -76,12 +82,14 @@ namespace YTE
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
+    YTEUnusedArgument(aProperties);
     mQuestVec = *(new std::vector<Quest>());
   }
 
   // Here I begin the long and tedious process of hardcoding John's quests/convos
   void JohnDialogue::Initialize()
   {
+    /*
     // Construct the quest
     Quest q1(Quest::Name::GuessChew);
     // Root node
@@ -97,6 +105,7 @@ namespace YTE
     DialogueNode n1(DialogueNode::NodeType::Text, testvec, &convoRoot);
     // Add the dialogue graph to the quest
     q1.AddConvo(&c1);
+    */
   }
 
 

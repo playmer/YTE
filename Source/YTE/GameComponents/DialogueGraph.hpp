@@ -21,80 +21,90 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  /*
-  YTEDeclareEvent(DialogueNodeEvent);
-  YTEDeclareEvent(DialogueResponseEvent);
-
-  YTEDeclareEvent(DialoguePrintText);
-  YTEDeclareEvent(DialoguePlayAnim);
-  YTEDeclareEvent(DialogueGetInput);
-
-
-  class DialogueNodeEvent : public Event
+  namespace AnimationNames 
   {
-  public:
-    YTEDeclareType(DialogueNodeEvent);
-    DialogueNodeEvent() {  };
-  };
-  class DialogueResponseEvent : public Event
-  {
-  public:
-    YTEDeclareType(DialogueResponseEvent);
-    DialogueResponseEvent() {  };
-
-    int ResponseNumber;
-  };
-  class DialoguePrintText : public Event
-  {
-  public:
-    YTEDeclareType(DialoguePrintText);
-    DialoguePrintText() {  };
-
-    std::vector<std::string> Data;
-  };
-  class DialoguePlayAnim : public Event
-  {
-  public:
-    YTEDeclareType(DialoguePlayAnim);
-    DialoguePlayAnim() {  };
-
-    std::vector<std::string> Data;
-  };
-  class DialogueGetInput : public Event
-  {
-  public:
-    YTEDeclareType(DialogueGetInput);
-    DialogueGetInput() {  };
-
-    std::vector<std::string> Data;
-  };
-  */
-
-  namespace AnimationNames {
-    inline static const std::string WalkLoop = "NPC_Walk_Loop.fbx";
-    inline static const std::string WaveInit = "NPC_Wave_Init.fbx";
-    inline static const std::string WaveLoop = "NPC_Wave_Loop.fbx";
-    inline static const std::string WalkFull = "WalkFull_2017.fbx";
-    inline static const std::string Walk1 = "WalkPart1.fbx";
-    inline static const std::string Walk2 = "WalkPart2.fbx";
+    static std::string WalkLoop = "NPC_Walk_Loop.fbx";
+    static std::string WaveInit = "NPC_Wave_Init.fbx";
+    static std::string WaveLoop = "NPC_Wave_Loop.fbx";
+    static std::string WalkFull = "WalkFull_2017.fbx";
+    static std::string Walk1 = "WalkPart1.fbx";
+    static std::string Walk2 = "WalkPart2.fbx";
   }
-#define DialogueData std::vector<const std::string>
+  /*
+  namespace SoundNames
+  {
+    static std::string SailingStart = "Sailing_Start";
+  }
+  */
+#define DialogueData std::vector<std::string>
 
   class DialogueNode
   {
   public:
-    enum class NodeType { Anim, Input, Text };
-    DialogueNode(NodeType aType, std::vector<const std::string> aData, DialogueNode *aParent = NULL);
+    enum class NodeType { Anim, Input, Text, Sound };
+    DialogueNode(NodeType aType, DialogueData aData, DialogueNode *aParent = nullptr);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
   private:
     NodeType mType;
     DialogueNode *mParent;
-    void(DialogueNode::*mNodeLogic)(void);
-    void PlayAnim(void);
-    void GetInput(void);
-    void RunText(void);
     DialogueData mData;
+
+    void (*mNodeLogic)(void);
+
+    void PlayAnim();
+    void GiveOptions();
+    void RunText();
+    void PlaySound();
   };
 }//end yte
 #endif
+
+ /*
+ YTEDeclareEvent(DialogueNodeEvent);
+ YTEDeclareEvent(DialogueResponseEvent);
+
+ YTEDeclareEvent(DialoguePrintText);
+ YTEDeclareEvent(DialoguePlayAnim);
+ YTEDeclareEvent(DialogueGetInput);
+
+
+ class DialogueNodeEvent : public Event
+ {
+ public:
+ YTEDeclareType(DialogueNodeEvent);
+ DialogueNodeEvent() {  };
+ };
+ class DialogueResponseEvent : public Event
+ {
+ public:
+ YTEDeclareType(DialogueResponseEvent);
+ DialogueResponseEvent() {  };
+
+ int ResponseNumber;
+ };
+ class DialoguePrintText : public Event
+ {
+ public:
+ YTEDeclareType(DialoguePrintText);
+ DialoguePrintText() {  };
+
+ std::vector<std::string> Data;
+ };
+ class DialoguePlayAnim : public Event
+ {
+ public:
+ YTEDeclareType(DialoguePlayAnim);
+ DialoguePlayAnim() {  };
+
+ std::vector<std::string> Data;
+ };
+ class DialogueGetInput : public Event
+ {
+ public:
+ YTEDeclareType(DialogueGetInput);
+ DialogueGetInput() {  };
+
+ std::vector<std::string> Data;
+ };
+ */

@@ -18,7 +18,6 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
-#include "YTE/Core/Engine.hpp"
 #include "YTE/GameComponents/DialogueGraph.hpp"
 
 namespace YTE
@@ -43,7 +42,7 @@ namespace YTE
     Quest::State GetState() { return mState; };
 
     void SetState(Quest::State aState) { mState = aState; };
-    void AddConvo(Conversation *aConvo);
+    //void AddConvo(Conversation *aConvo);
   private:
     Quest::Name mName;
     Quest::State mState;
