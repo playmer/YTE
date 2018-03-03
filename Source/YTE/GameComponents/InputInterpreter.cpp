@@ -57,7 +57,7 @@ namespace YTE
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace), mGamepad(nullptr), mConstructing(true)
+    : Component(aOwner, aSpace), mGamepad(nullptr), mIsRightTriggerDown(false), mIsLeftTriggerDown(false), mConstructing(true)
   {
     DeserializeByType(aProperties, this, GetStaticType());
     mConstructing = false;
@@ -67,8 +67,8 @@ namespace YTE
   {
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
     mContext = InputContext::Sailing;
-    //mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::CheckSticks);
-    //auto space = mOwner->GetEngine()->GetSpace();
+    
+		mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
     mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
     mGamepad->YTERegister(Events::XboxStickFlicked, this, &InputInterpreter::OnFlickEvent);
     mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::OnButtonPress);
@@ -89,7 +89,49 @@ namespace YTE
       Event Callbacks
   */
   /******************************************************************************/
-  void InputInterpreter::OnStickEvent(XboxStickEvent *aEvent)
+	void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
+	{
+		if (mContext == InputContext::Sailing)
+		{
+			if (mIsRightTriggerDown)
+			{
+				if (mGamepad->GetRightTrigger() < 0.1f)
+				{
+					mIsRightTriggerDown = false;
+				}
+			}
+			else
+			{
+				if (mGamepad->GetRightTrigger() > 0.5f)
+				{
+					SailStateChanged setSailUp(true);
+					mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+					mIsRightTriggerDown = true;
+				}
+			}
+
+			if (mIsLeftTriggerDown)
+			{
+				if (mGamepad->GetLeftTrigger() < 0.1f)
+				{
+					mIsLeftTriggerDown = false;
+				}
+			}
+			else
+			{
+				if (mGamepad->GetLeftTrigger() > 0.5f)
+				{
+					SailStateChanged setSailUp(false);
+					mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+					mIsLeftTriggerDown = true;
+				}
+			}
+		}
+	}
+	
+	void InputInterpreter::OnStickEvent(XboxStickEvent *aEvent)
   {
     if (mContext == InputContext::Sailing)
     {
@@ -166,17 +208,9 @@ namespace YTE
       switch (aEvent->Button)
       {
       case Xbox_Buttons::DPAD_Down:
-      {
-        SailStateChanged setSailUp(false);
-        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
         break;
-      }
       case Xbox_Buttons::DPAD_Up:
-      {
-        SailStateChanged setSailUp(true);
-        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
         break;
-      }
       case Xbox_Buttons::DPAD_Left:
         break;
       case Xbox_Buttons::DPAD_Right:

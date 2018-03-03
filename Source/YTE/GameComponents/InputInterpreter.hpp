@@ -140,6 +140,8 @@ namespace YTE
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+
+		void OnLogicUpdate(LogicUpdate *aEvent);
     void OnStickEvent(XboxStickEvent *aEvent);
     void OnFlickEvent(XboxFlickEvent *aEvent);
     void OnButtonPress(XboxButtonEvent *aEvent);
@@ -157,6 +159,9 @@ namespace YTE
     XboxController *mGamepad;
     std::string mRootPauseMenuName;
     InputContext mContext;
+
+		bool mIsRightTriggerDown;
+		bool mIsLeftTriggerDown;
 
     bool mConstructing;
   };
