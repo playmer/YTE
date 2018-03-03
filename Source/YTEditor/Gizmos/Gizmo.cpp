@@ -2,6 +2,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
+#include "YTE/Meta/Type.hpp"
 
 #include "YTE/Graphics/Model.hpp"
 
@@ -323,19 +324,19 @@ namespace YTEditor
     {
     case Gizmo::Translate:
     {
-      prop = transform->GetProperty("Translation", transform->GetStaticType());
+      prop = transform->GetProperty("Translation", YTE::TypeId<YTE::Transform>());
       break;
     }
 
     case Gizmo::Scale:
     {
-      prop = transform->GetProperty("Scale", transform->GetStaticType());
+      prop = transform->GetProperty("Scale", YTE::TypeId<YTE::Transform>());
       break;
     }
 
     case Gizmo::Rotate:
     {
-      prop = transform->GetProperty("Rotation", transform->GetStaticType());
+      prop = transform->GetProperty("Rotation", YTE::TypeId<YTE::Transform>());
       break;
     }
     }

@@ -311,54 +311,49 @@ namespace YTEditor
     // if objects were selected
     if (items.size() > mSelectedItems.size())
     {
-    QList<QTreeWidgetItem*> delta = items;
+      QList<QTreeWidgetItem*> delta = items;
 
-    for (auto item : mSelectedItems)
-    {
-    delta.removeOne(item);
-    }
+      for (auto item : mSelectedItems)
+      {
+        delta.removeOne(item);
+      }
 
-    std::vector<YTE::GlobalUniqueIdentifier> guids;
+      std::vector<YTE::GlobalUniqueIdentifier> guids;
 
-    for (auto item : delta)
-    {
-    ObjectItem *objItem = static_cast<ObjectItem*>(item);
+      for (auto item : delta)
+      {
+        ObjectItem *objItem = static_cast<ObjectItem*>(item);
 
-    auto guid = objItem->GetEngineObject()->GetGUID();
+        auto guid = objItem->GetEngineObject()->GetGUID();
 
-    guids.push_back(guid);
-    }
+        guids.push_back(guid);
+      }
 
-    UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
-    undoRedo->InsertCommand(std::make_unique<ObjectsSelectedCmd>(guids, this, console));
+      UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
+      undoRedo->InsertCommand(std::make_unique<ObjectsSelectedCmd>(guids, this, console));
     }
     // if objects were unselected
     else if (items.size() < mSelectedItems.size())
     {
-    QList<QTreeWidgetItem*> delta = mSelectedItems;
+      QList<QTreeWidgetItem*> delta = mSelectedItems;
 
-    for (auto item : items)
-    {
-    delta.removeOne(item);
-    }
+      for (auto item : items)
+      {
+        delta.removeOne(item);
+      }
 
-    std::vector<YTE::GlobalUniqueIdentifier> guids;
+      std::vector<YTE::GlobalUniqueIdentifier> guids;
 
-    for (auto item : delta)
-    {
-    ObjectItem *objItem = static_cast<ObjectItem*>(item);
+      for (auto item : delta)
+      {
+        ObjectItem *objItem = static_cast<ObjectItem*>(item);
 
-    auto guid = objItem->GetEngineObject()->GetGUID();
+        auto guid = objItem->GetEngineObject()->GetGUID();
 
-    guids.push_back(guid);
-    }
-    }
-    else
-    {
-
+        guids.push_back(guid);
+      }
     }
     */
-
   }
 
 

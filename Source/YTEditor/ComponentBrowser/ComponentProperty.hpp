@@ -112,7 +112,6 @@ namespace YTEditor
   void ComponentProperty<T>::SaveToEngine()
   {
     YTE::Component *cmp = mParentComponent->GetEngineComponent();
-    YTE::Type *cmpType = cmp->GetStaticType();
 
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
