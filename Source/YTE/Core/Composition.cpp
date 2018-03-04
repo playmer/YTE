@@ -486,7 +486,7 @@ namespace YTE
       }
 
       composition->SetOwner(this);
-      composition->Deserialize(&compositionIt->value);
+      composition->DeserializeInternal(&compositionIt->value, true);
     }
 
     if (aValue->HasMember("Archetype"))

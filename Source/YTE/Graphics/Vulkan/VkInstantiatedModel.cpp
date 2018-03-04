@@ -66,13 +66,12 @@ namespace YTE
   {
     mView = aEvent->View;
     mSurface = static_cast<VkRenderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
-    Create();
+    CreateShader();
+    mSurface->AddModel(this);
   }
 
   void VkInstantiatedModel::Create()
   {
-    mMesh = mSurface->GetRenderer()->CreateSimpleMesh(mMesh->mName, mMesh->mParts, false);
-    
     auto mesh = static_cast<VkMesh*>(mMesh);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
@@ -108,11 +107,24 @@ namespace YTE
                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
                                          allocator);
 
-    // create descriptor sets
-    for (auto [submesh, i] : enumerate(mesh->mSubmeshes))
-    {
-      submesh->second->CreateShader(mView);
 
+
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+    modelMaterial.mIsEditorObject = 0;
+
+    UpdateUBOMaterial(&modelMaterial);
+
+    mUBOModelData.mModelMatrix = glm::mat4(1.0f);
+
+
+    // create descriptor sets
+    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    {
       auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
                                               vk::BufferUsageFlagBits::eTransferDst |
                                               vk::BufferUsageFlagBits::eUniformBuffer,
@@ -126,22 +138,25 @@ namespace YTE
       mUBOSubmeshMaterials.emplace_back(materialUBO, material);
 
       UpdateUBOSubmeshMaterial(&material, i);
+    }
+
+    CreateShader();
+  }
+
+  void VkInstantiatedModel::CreateShader()
+  {
+    auto mesh = static_cast<VkMesh*>(mMesh);
+    mPipelineData.clear();
+
+    // create descriptor sets
+    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    {
+      submesh->second->CreateShader(mView);
 
       CreateDescriptorSet(submesh->second.get(), i);
     }
-
-    UBOMaterial modelMaterial{};
-    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
-    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
-    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
-    modelMaterial.mEmissive = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    modelMaterial.mShininess = 1.0f;
-    modelMaterial.mIsEditorObject = 0;
-
-    UpdateUBOMaterial(&modelMaterial);
-
-    mUBOModelData.mModelMatrix = glm::mat4(1.0f);
   }
+
 
   // TODO (Josh): Change the name to be more representative. (This is really 
   //              just telling the object to register to be updated)

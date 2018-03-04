@@ -154,7 +154,6 @@ namespace YTE
     return std::move(model);
   }
 
-
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
     mDataUpdateRequired = true;
@@ -164,6 +163,11 @@ namespace YTE
     return std::move(model);
   }
 
+  void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
+  {
+    auto &instantiatedModels = GetViewData(aModel->mView).mInstantiatedModels;
+    instantiatedModels[static_cast<VkMesh*>(aModel->GetMesh())].push_back(aModel);
+  }
 
   std::shared_ptr<vkhlf::Device>& VkRenderedSurface::GetDevice()
   {

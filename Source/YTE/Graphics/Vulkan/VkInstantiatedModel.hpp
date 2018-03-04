@@ -29,6 +29,7 @@ namespace YTE
     ~VkInstantiatedModel() override;
 
     void Create();
+    void CreateShader();
     void SurfaceLostEvent(ViewChanged *aEvent);
     void SurfaceGainedEvent(ViewChanged *aEvent);
 
