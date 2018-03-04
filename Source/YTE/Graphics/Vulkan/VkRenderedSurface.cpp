@@ -329,6 +329,11 @@ namespace YTE
     event.height = extent.height;
     event.width = extent.width;
     mWindow->SendEvent(Events::RendererResize, &event);
+
+    for (auto &view : mViewData)
+    {
+      view.first->SendEvent(Events::RendererResize, &event);
+    }
   }
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)

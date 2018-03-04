@@ -7,6 +7,7 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/UBOs.hpp"
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
@@ -53,6 +54,7 @@ namespace YTE
     void OrientationEvent(OrientationChanged *aEvent);
     void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
+    void SurfaceGainedEvent(ViewChanged *aEvent);
 
 
     ///////////////////////////////////////

@@ -101,7 +101,7 @@ namespace YTE
       
     if (nullptr != aLevel)
     {
-      Deserialize(aLevel);
+      DeserializeInternal(aLevel, true);
     }
     else
     {

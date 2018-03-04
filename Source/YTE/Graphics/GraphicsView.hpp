@@ -34,6 +34,7 @@ namespace YTE
   {
   public:
     GraphicsView *View;
+    Window *Window;
   };
 
   class GraphicsView : public Component

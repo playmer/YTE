@@ -279,6 +279,9 @@ namespace YTE
 
     for (auto &composition : compositionRange)
     {
+      composition.second->NativeInitialize();
+      composition.second->PhysicsInitialize();
+      composition.second->Initialize();
       mCompositions.Emplace(composition.second->GetName(), std::move(composition.second));
     }
 
@@ -395,7 +398,13 @@ namespace YTE
     return composition;
   }
 
+
   void Composition::Deserialize(RSValue *aValue)
+  {
+    DeserializeInternal(aValue, false);
+  }
+
+  void Composition::DeserializeInternal(RSValue *aValue, bool aForceToEmplaceInside)
   {
     RSStringBuffer buffer;
     RSPrettyWriter writer(buffer);
@@ -440,7 +449,9 @@ namespace YTE
 
     auto &components = (*aValue)["Components"];
 
-    for (auto componentIt = components.MemberBegin(); componentIt < components.MemberEnd(); ++componentIt)
+    for (auto componentIt = components.MemberBegin();
+         componentIt < components.MemberEnd();
+         ++componentIt)
     {
       std::string componentTypeName = componentIt->name.GetString();
       BoundType *componentType = Type::GetGlobalType(componentTypeName);
@@ -450,14 +461,29 @@ namespace YTE
 
     auto &compositions = (*aValue)["Compositions"];
 
-    for (auto compositionIt = compositions.MemberBegin(); compositionIt < compositions.MemberEnd(); ++compositionIt)
+    bool shouldSort = false;
+
+    for (auto compositionIt = compositions.MemberBegin();
+         compositionIt < compositions.MemberEnd();
+         ++compositionIt)
     {
+      shouldSort = true;
+
       String compositionName = compositionIt->name.GetString();
 
-      auto &composition = mCompositions.Emplace(compositionName,
-                                                std::make_unique<Composition>(mEngine, 
-                                                                              compositionName, 
-                                                                              mSpace))->second;
+      auto uniqueComposition = std::make_unique<Composition>(mEngine,
+                                                             compositionName,
+                                                             mSpace);
+      Composition *composition{ uniqueComposition.get() };
+
+      if (mIsInitialized || aForceToEmplaceInside)
+      {
+        mCompositions.Emplace(compositionName, std::move(uniqueComposition));
+      }
+      else
+      {
+        mEngine->mCompositionsToAdd.Emplace(this, std::move(uniqueComposition));
+      }
 
       composition->SetOwner(this);
       composition->Deserialize(&compositionIt->value);
@@ -467,7 +493,11 @@ namespace YTE
     {
         mArchetypeName = (*aValue)["Archetype"].GetString();
     }
-
+    
+    if (shouldSort)
+    {
+      GetSpaceOrEngine()->YTERegister(Events::AddUpdate, this, &Composition::AddUpdate);
+    }
   }
 
 

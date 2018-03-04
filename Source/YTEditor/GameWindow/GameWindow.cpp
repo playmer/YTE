@@ -52,6 +52,9 @@ namespace YTEditor
     event.height = size.height();
     event.width = size.width();
 
+    mWindow->SetHeight(event.height);
+    mWindow->SetWidth(event.width);
+
     mWindow->SendEvent(YTE::Events::WindowResize, &event);
     mWindow->mEngine->Update();
   }

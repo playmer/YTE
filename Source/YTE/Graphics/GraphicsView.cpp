@@ -157,6 +157,8 @@ namespace YTE
   {
     ViewChanged event;
     event.View = this;
+    event.Window = nullptr;
+
     if (false == mConstructing)
     {
       SendEvent(Events::SurfaceLost, &event);
@@ -167,6 +169,8 @@ namespace YTE
     auto it = mSpace->GetEngine()->GetWindows().find(mWindowName);
 
     mWindow = it->second.get();
+
+    event.Window = mWindow;
 
     if (false == mConstructing)
     {
@@ -180,6 +184,7 @@ namespace YTE
   {
     ViewChanged event;
     event.View = this;
+    event.Window = nullptr;
 
     if (false == mConstructing)
     {
@@ -189,6 +194,7 @@ namespace YTE
 
     mWindow = aWindow;
     mWindowName = aWindow->mName;
+    event.Window = mWindow;
 
     if (false == mConstructing)
     {

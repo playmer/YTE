@@ -80,6 +80,7 @@ namespace YTE
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
+    void DeserializeInternal(RSValue *aValue, bool aForceToEmplaceInside);
     void Deserialize(RSValue *aValue);
     RSValue Serialize(RSAllocator &aAllocator) override;
 
