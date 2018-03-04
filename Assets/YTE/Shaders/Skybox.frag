@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
+const uint MatFlag_IsGizmo    = 1 << 0;
+const uint MatFlag_IsSelected = 1 << 1;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,7 +90,7 @@ layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     float mPadding; // unused
 } SubmeshMaterial;
 
@@ -108,7 +110,7 @@ layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     float mPadding; // unused
 } ModelMaterial;
 
@@ -163,14 +165,5 @@ void main()
   vec2 skyUv = vec2(u, v);
   skyUv.y = 1.0 - skyUv.y;
 
-  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
-  {
-    outFragColor = texture(diffuseSampler, skyUv);
-  }
-  else
-  {
-    outFragColor = texture(diffuseSampler, skyUv) * inDiffuse;
-  }
-
-  //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+  outFragColor = texture(diffuseSampler, skyUv) * inDiffuse;
 }

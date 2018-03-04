@@ -115,7 +115,18 @@ namespace YTE
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
-    modelMaterial.mIsEditorObject = 0;
+
+    bool isEditorObject = false;
+    auto name = mMesh->mName;
+
+    if (name == "Move_X.fbx"   || name == "Move_Y.fbx"   || name == "Move_Z.fbx" ||
+        name == "Scale_X.fbx"  || name == "Scale_Y.fbx"  || name == "Scale_Z.fbx" ||
+        name == "Rotate_X.fbx" || name == "Rotate_Y.fbx" || name == "Rotate_Z.fbx")
+    {
+      isEditorObject = true;
+    }
+
+    modelMaterial.mFlags = isEditorObject ? (u32)UBOMaterialFlags::IsGizmo : 0;
 
     UpdateUBOMaterial(&modelMaterial);
 

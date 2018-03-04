@@ -45,6 +45,12 @@ namespace YTE
     glm::vec4 mDiffuseColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f); // tempDiffuseColorComponent
   };
 
+  enum class UBOMaterialFlags : unsigned int
+  {
+    IsGizmo    = 1 << 0,
+    IsSelected = 1 << 1,
+  };
+
   struct UBOMaterial
   {
     UBOMaterial(glm::vec4 aDiffuse,
@@ -92,8 +98,8 @@ namespace YTE
     float mReflectivity = 1.0f;
     float mReflectiveIndex = 1.0f;
     float mBumpScaling = 1.0f;
-    int mIsEditorObject = 0;
-    int mUsesNormalTexture = 0;
+    u32 mFlags = 0;
+    i32 mUsesNormalTexture = 0;
   };
 
 

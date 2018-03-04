@@ -49,9 +49,9 @@ namespace YTE
     //YTEBindProperty(&GetBumpScaling, &SetBumpScaling, "BumpScaling")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
   }
 
 

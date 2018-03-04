@@ -8,6 +8,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
+const uint MatFlag_IsGizmo    = 1 << 0;
+const uint MatFlag_IsSelected = 1 << 1;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -88,7 +90,7 @@ layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     float mPadding; // unused
 } SubmeshMaterial;
 
@@ -108,7 +110,7 @@ layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     float mPadding; // unused
 } ModelMaterial;
 
@@ -152,7 +154,7 @@ layout (location = 0) out vec4 outFragColor;
 // Entry Point of Shader
 void main()
 {
-  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
+  if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates);
 

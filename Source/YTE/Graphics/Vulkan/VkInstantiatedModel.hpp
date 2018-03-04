@@ -59,7 +59,7 @@ namespace YTE
 
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
-    
+
   private:
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;

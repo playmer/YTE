@@ -177,8 +177,7 @@ namespace YTE
   Submesh::Submesh(const aiScene *aScene,
                    const aiMesh *aMesh,
                    Skeleton* aSkeleton,
-                   uint32_t aBoneStartingVertexOffset,
-                   bool aIsEditorObject)
+                   uint32_t aBoneStartingVertexOffset)
   {
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
@@ -210,7 +209,7 @@ namespace YTE
     mUBOMaterial.mEmissive = glm::vec4(AssimpToGLM(&Emissive), 1.0f);
     mUBOMaterial.mTransparent = glm::vec4(AssimpToGLM(&Transparent), 1.0f);
     mUBOMaterial.mReflective = glm::vec4(AssimpToGLM(&Reflective), 1.0f);
-    mUBOMaterial.mIsEditorObject = aIsEditorObject ? 1 : 0;
+    mUBOMaterial.mFlags = 0;
 
     material->Get(AI_MATKEY_NAME, name);
     material->Get(AI_MATKEY_OPACITY, mUBOMaterial.mOpacity);
@@ -425,16 +424,6 @@ namespace YTE
       }
     }
 
-
-    bool isEditorObject = false;
-    if (aFile == "Move_X.fbx" || aFile == "Move_Y.fbx" || aFile == "Move_Z.fbx" || 
-        aFile == "Scale_X.fbx" || aFile == "Scale_Y.fbx" || aFile == "Scale_Z.fbx" || 
-        aFile == "Rotate_X.fbx" || aFile == "Rotate_Y.fbx" || aFile == "Rotate_Z.fbx")
-    {
-      isEditorObject = true;
-    }
-
-
     auto pScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |
       //aiProcess_PreTransformVertices |
@@ -485,7 +474,7 @@ namespace YTE
       uint32_t startingVertex = 0;
       for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex, isEditorObject);
+        mParts.emplace_back(pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex);
         startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
       }
 

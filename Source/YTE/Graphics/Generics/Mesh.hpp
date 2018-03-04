@@ -221,8 +221,7 @@ namespace YTE
     Submesh(const aiScene *aScene,
             const aiMesh *aMesh,
             Skeleton *aSkeleton,
-            uint32_t aBoneStartingVertexOffset,
-            bool aIsEditorObject);
+            uint32_t aBoneStartingVertexOffset);
 
     virtual ~Submesh()
     {
