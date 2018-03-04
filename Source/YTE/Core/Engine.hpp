@@ -39,6 +39,7 @@ namespace YTE
   YTEDeclareEvent(DebugDrawUpdate);
   YTEDeclareEvent(EndDebugDrawUpdate);
   YTEDeclareEvent(DeletionUpdate);
+  YTEDeclareEvent(AddUpdate);
   YTEDeclareEvent(BoundTypeChanged);
   YTEDeclareEvent(GraphicsDataUpdate);
   YTEDeclareEvent(PresentFrame);
@@ -126,9 +127,6 @@ namespace YTE
     RSDocument* GetLevel(String &aLevel);
     std::unordered_map<String, UniquePointer<RSDocument>>* GetLevels(void);
 
-    OrderedMultiMap<Composition*, UniquePointer<Composition>> mCompositionsToRemove;
-    OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
-
     bool IsEditor()
     {
       return mEditorMode;
@@ -153,6 +151,10 @@ namespace YTE
 
     void Log(LogType aType, std::string_view aLog);
 
+
+    OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToAdd;
+    OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
+    OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
   private:
     GamepadSystem mGamepadSystem;

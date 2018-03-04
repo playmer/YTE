@@ -32,6 +32,7 @@ namespace YTE
   YTEDefineEvent(DebugDrawUpdate);
   YTEDefineEvent(EndDebugDrawUpdate);
   YTEDefineEvent(DeletionUpdate);
+  YTEDefineEvent(AddUpdate);
   YTEDefineEvent(BoundTypeChanged);
   YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(PresentFrame);
@@ -255,10 +256,7 @@ namespace YTE
     updateEvent.Dt = mDt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
-    for (auto &space : mCompositions)
-    {
-      space.second->SendEvent(Events::DeletionUpdate, &updateEvent);
-    }
+    SendEvent(Events::AddUpdate, &updateEvent);
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);

@@ -138,7 +138,7 @@ namespace YTE
     }
 
     SendEvent(Events::DeletionUpdate, aEvent);
-    SendEvent(Events::SortUpdate, aEvent);
+    SendEvent(Events::AddUpdate, aEvent);
 
     SendEvent(Events::PhysicsUpdate, aEvent);
 
