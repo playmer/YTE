@@ -9,6 +9,8 @@ set(YTEditorSource main.cpp
                    ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
+                   ComponentBrowser/ColorPicker.cpp
+                   ComponentBrowser/ColorPicker.hpp
                    ComponentBrowser/ComponentBrowser.hpp
                    ComponentBrowser/ComponentBrowser.cpp
                    ComponentBrowser/ComponentProperty.hpp

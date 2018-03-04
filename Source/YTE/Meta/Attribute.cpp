@@ -18,6 +18,11 @@ namespace YTE
     YTERegisterType(RunInEditor);
   }
 
+  YTEDefineType(EditableColor)
+  {
+    YTERegisterType(EditableColor);
+  }
+
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
   {
     YTEUnusedArgument(aType);

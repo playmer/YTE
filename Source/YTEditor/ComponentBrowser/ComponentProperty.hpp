@@ -37,8 +37,10 @@ namespace YTEditor
   class ComponentProperty : public PropertyWidget<T>
   {
   public:
-    ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, MainWindow *aMainWindow, ComponentWidget* aParent)
-      : PropertyWidget<T>(aProp.first, aMainWindow, aParent)
+    ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, 
+                      MainWindow *aMainWindow, 
+                      ComponentWidget* aParent)
+      : PropertyWidget<T>(aProp.first, aProp.second.get(), aMainWindow, aParent)
       , mParentComponent(aParent)
       , mEngineProperty(aProp.second.get())
     {

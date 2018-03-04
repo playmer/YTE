@@ -14,6 +14,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
+#include <limits>
+
 #include <qcombobox.h>
 #include <qformlayout.h>
 #include <qlabel.h>
@@ -22,8 +24,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTEditor/ComponentBrowser/LineEdit.hpp"
+#include "YTEditor/ComponentBrowser/ColorPicker.hpp"
 #include "YTEditor/ComponentBrowser/CheckBox.hpp"
+#include "YTEditor/ComponentBrowser/LineEdit.hpp"
 #include "YTEditor/ComponentBrowser/PropertyWidgetBase.hpp"
 
 namespace YTEditor
@@ -34,68 +37,89 @@ namespace YTEditor
   {
   public:
 
-    PropertyWidget(const std::string &aName, MainWindow *aMainWindow, QWidget * aParent = nullptr)
-      : PropertyWidgetBase(aParent),
-      mValues(new QHBoxLayout(this)),
-      mPropertyName(aName),
-      mMainWindow(aMainWindow)
+    PropertyWidget(const std::string &aName, YTE::Property *aProperty, MainWindow *aMainWindow, QWidget * aParent = nullptr)
+      : PropertyWidgetBase(aParent)
+      , mMainWindow(aMainWindow)
+      , mProperty(aProperty)
+      , mValues(new QHBoxLayout(this))
+      , mPropertyName(aName)
     {
       this->setLayout(mValues);
       mLabel = new QLabel(aName.c_str(), this);
       mValues->addWidget(mLabel);
 
       // check for the type and add the appropriate widgets
-      if (std::is_same<T, int>())
+      if constexpr (std::is_same<T, int>())
       {
         mType = PropType::Int;
         AddInteger();
       }
-      else if (std::is_same<T, float>())
+      else if constexpr (std::is_same<T, float>())
       {
         mType = PropType::Float;
         AddFloat();
       }
-      else if (std::is_same<T, YTE::String>())
+      else if constexpr (std::is_same<T, YTE::String>())
       {
         mType = PropType::String;
         AddString();
       }
-      else if (std::is_same<T, std::string>())
+      else if constexpr (std::is_same<T, std::string>())
       {
         mType = PropType::StdString;
         AddStdString();
       }
-      else if (std::is_same<T, bool>())
+      else if constexpr (std::is_same<T, bool>())
       {
         mType = PropType::Bool;
         AddBool();
       }
-      else if (std::is_same<T, glm::vec2>())
+      else if constexpr (std::is_same<T, glm::vec2>())
       {
         mType = PropType::Vec2;
         AddFloat();
         AddFloat();
       }
-      else if (std::is_same<T, glm::vec3>())
+      else if constexpr (std::is_same<T, glm::vec3>())
       {
         mType = PropType::Vec3;
-        AddFloat();
-        AddFloat();
-        AddFloat();
+
+        if (aProperty->GetAttribute<YTE::EditableColor>())
+        {
+          auto widg = new ColorPicker(Qt::white, false, this);
+          mValues->addWidget(widg);
+          mWidgets.push_back(widg);
+        }
+        else
+        {
+          AddFloat();
+          AddFloat();
+          AddFloat();
+        }
       }
-      else if (std::is_same<T, glm::vec4>())
+      else if constexpr (std::is_same<T, glm::vec4>())
       {
         mType = PropType::Vec4;
-        AddFloat();
-        AddFloat();
-        AddFloat();
-        AddFloat();
+
+        if (aProperty->GetAttribute<YTE::EditableColor>())
+        {
+          auto widg = new ColorPicker(Qt::white, true, this);
+          mValues->addWidget(widg);
+          mWidgets.push_back(widg);
+        }
+        else
+        {
+          AddFloat();
+          AddFloat();
+          AddFloat();
+          AddFloat();
+        }
       }
-      else if (std::is_same<T, glm::quat>())
+      else if constexpr (std::is_same<T, glm::quat>())
       {
         mType = PropType::Quaternion;
       }
-      else if (std::is_same<T, QStringList>())
+      else if constexpr (std::is_same<T, QStringList>())
       {
         mType = PropType::SelectableStrings;
         AddSelectableStrings();
@@ -139,6 +163,7 @@ namespace YTEditor
   private:
 
     MainWindow *mMainWindow;
+    YTE::Property *mProperty;
 
     std::vector<QWidget*> mWidgets;
     QHBoxLayout *mValues;
@@ -155,14 +180,13 @@ namespace YTEditor
 
   };
 
-#define MAX_INT_RANGE 100000
-#define MAX_DOUBLE_RANGE 100000
-
   template<class T>
   inline void PropertyWidget<T>::AddInteger(int aVal)
   {
-    LineEdit * widg = new LineEdit(this, mMainWindow);
-    QIntValidator * validate = new QIntValidator(-MAX_INT_RANGE, MAX_INT_RANGE, this);
+    LineEdit *widg = new LineEdit(this, mMainWindow);
+    QIntValidator * validate = new QIntValidator(std::numeric_limits<int>::min(),
+                                                 std::numeric_limits<int>::max(),
+                                                 this);
     widg->setValidator(validate);
     widg->setText(QString(std::to_string(aVal).c_str()));
     mValues->addWidget(widg);
@@ -172,8 +196,11 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddFloat(float aVal)
   {
-    LineEdit * widg = new LineEdit(this, mMainWindow);
-    QDoubleValidator * validate = new QDoubleValidator(-MAX_DOUBLE_RANGE, MAX_DOUBLE_RANGE, 3, this);
+    LineEdit *widg = new LineEdit(this, mMainWindow);
+    QDoubleValidator * validate = new QDoubleValidator(std::numeric_limits<float>::min(),
+                                                       std::numeric_limits<float>::max(),
+                                                       3, 
+                                                       this);
     widg->setValidator(validate);
     char buff[20] = { '\0' };
     sprintf_s(buff, "%.3f", aVal);
@@ -185,7 +212,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddString(YTE::String aVal)
   {
-    LineEdit * widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mMainWindow);
     widg->setText(aVal.c_str());
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -194,7 +221,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddStdString(std::string aVal)
   {
-    LineEdit * widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mMainWindow);
     widg->setText(aVal.c_str());
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -203,7 +230,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddBool(bool aVal)
   {
-    CheckBox * widg = new CheckBox(this, mMainWindow);
+    CheckBox *widg = new CheckBox(this, mMainWindow);
     widg->setChecked(aVal);
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -212,7 +239,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddSelectableStrings(const QStringList &aStrList)
   {
-    QComboBox * widg = new QComboBox(this);
+    QComboBox *widg = new QComboBox(this);
     widg->insertItems(0, aStrList);
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -221,7 +248,7 @@ namespace YTEditor
   template<>
   inline int PropertyWidget<int>::GetPropertyValues()
   {
-    LineEdit * deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
+    LineEdit *deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
     int value = deriv->text().toInt();
     return value;
   }
@@ -229,7 +256,7 @@ namespace YTEditor
   template<>
   inline float PropertyWidget<float>::GetPropertyValues()
   {
-    LineEdit * deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
+    LineEdit *deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
     float value = deriv->text().toFloat();
     return value;
   }
@@ -237,7 +264,7 @@ namespace YTEditor
   template<>
   inline YTE::String PropertyWidget<YTE::String>::GetPropertyValues()
   {
-    LineEdit * deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
+    LineEdit *deriv = dynamic_cast<LineEdit*>(mWidgets[0]);
     YTE::String value = deriv->text().toStdString();
     return value;
   }
@@ -263,10 +290,10 @@ namespace YTEditor
   {
     glm::vec2 value;
 
-    LineEdit * w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
+    LineEdit *w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
     value[0] = w0->text().toFloat();
 
-    LineEdit * w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
+    LineEdit *w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
     value[1] = w1->text().toFloat();
 
     return value;
@@ -277,14 +304,23 @@ namespace YTEditor
   {
     glm::vec3 value;
 
-    LineEdit * w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
-    value[0] = w0->text().toFloat();
+    if (mProperty->GetAttribute<YTE::EditableColor>())
+    {
+      auto colorPicker = dynamic_cast<ColorPicker*>(mWidgets[0]);
+      auto color = colorPicker->GetColor();
+      value = glm::vec3{color.x, color.y, color.z};
+    }
+    else
+    {
+      LineEdit *w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
+      value[0] = w0->text().toFloat();
 
-    LineEdit * w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
-    value[1] = w1->text().toFloat();
+      LineEdit *w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
+      value[1] = w1->text().toFloat();
 
-    LineEdit * w2 = dynamic_cast<LineEdit*>(mWidgets[2]);
-    value[2] = w2->text().toFloat();
+      LineEdit * w2 = dynamic_cast<LineEdit*>(mWidgets[2]);
+      value[2] = w2->text().toFloat();
+    }
 
     return value;
   }
@@ -294,17 +330,25 @@ namespace YTEditor
   {
     glm::vec4 value;
 
-    LineEdit * w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
-    value[0] = w0->text().toFloat();
+    if (mProperty->GetAttribute<YTE::EditableColor>())
+    {
+      auto colorPicker = dynamic_cast<ColorPicker*>(mWidgets[0]);
+      value = colorPicker->GetColor();
+    }
+    else
+    {
+      LineEdit *w0 = dynamic_cast<LineEdit*>(mWidgets[0]);
+      value[0] = w0->text().toFloat();
 
-    LineEdit * w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
-    value[1] = w1->text().toFloat();
+      LineEdit *w1 = dynamic_cast<LineEdit*>(mWidgets[1]);
+      value[1] = w1->text().toFloat();
 
-    LineEdit * w2 = dynamic_cast<LineEdit*>(mWidgets[2]);
-    value[2] = w2->text().toFloat();
+      LineEdit *w2 = dynamic_cast<LineEdit*>(mWidgets[2]);
+      value[2] = w2->text().toFloat();
 
-    LineEdit * w3 = dynamic_cast<LineEdit*>(mWidgets[3]);
-    value[3] = w3->text().toFloat();
+      LineEdit *w3 = dynamic_cast<LineEdit*>(mWidgets[3]);
+      value[3] = w3->text().toFloat();
+    }
 
     return value;
   }
@@ -379,24 +423,40 @@ namespace YTEditor
   template<>
   inline void PropertyWidget<glm::vec3>::SetValue(glm::vec3 aVal)
   {
-    for (size_t i = 0; i < mWidgets.size(); ++i)
+    if (mProperty->GetAttribute<YTE::EditableColor>())
     {
-      LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
-      char buff[100] = { '\0' };
-      sprintf_s(buff, "%.3f", aVal[i]);
-      widg->setText(buff);
+      auto colorPicker = dynamic_cast<ColorPicker*>(mWidgets[0]);
+      colorPicker->SetColor(ToQColor(glm::vec4{ aVal, 1.0f }));
+    }
+    else
+    {
+      for (size_t i = 0; i < mWidgets.size(); ++i)
+      {
+        LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
+        char buff[100] = { '\0' };
+        sprintf_s(buff, "%.3f", aVal[i]);
+        widg->setText(buff);
+      }
     }
   }
 
   template<>
   inline void PropertyWidget<glm::vec4>::SetValue(glm::vec4 aVal)
   {
-    for (size_t i = 0; i < mWidgets.size(); ++i)
+    if (mProperty->GetAttribute<YTE::EditableColor>())
     {
-      LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
-      char buff[100] = { '\0' };
-      sprintf_s(buff, "%.3f", aVal[i]);
-      widg->setText(buff);
+      auto colorPicker = dynamic_cast<ColorPicker*>(mWidgets[0]);
+      colorPicker->SetColor(ToQColor(aVal));
+    }
+    else
+    {
+      for (size_t i = 0; i < mWidgets.size(); ++i)
+      {
+        LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
+        char buff[100] = { '\0' };
+        sprintf_s(buff, "%.3f", aVal[i]);
+        widg->setText(buff);
+      }
     }
   }
 

@@ -28,6 +28,13 @@ namespace YTE
     RunInEditor(DocumentedObject *) {}
   };
 
+  class EditableColor : public Attribute
+  {
+  public:
+    YTEDeclareType(EditableColor);
+    EditableColor(DocumentedObject *) {}
+  };
+
   class EditorProperty : public Attribute
   {
   public:

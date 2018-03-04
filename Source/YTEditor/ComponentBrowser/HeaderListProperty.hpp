@@ -30,7 +30,7 @@ namespace YTEditor
                        HeaderListWidget *aParent, 
                        YTE::Property *aProp,
                        YTE::Object *aObject)
-      : PropertyWidget<T>(aName, aMainWindow, aParent)
+      : PropertyWidget<T>(aName, aProp, aMainWindow, aParent)
       , mHeaderWidget(aParent)
       , mEngineProp(aProp)
       , mObject(aObject)
