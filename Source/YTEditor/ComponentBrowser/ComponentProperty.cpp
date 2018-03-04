@@ -36,7 +36,7 @@ namespace YTEditor
     archTools->IncrementChanges();
 
     // Add command to main window undo redo
-    //BaseSaveToEngine();
+    mSetter->Invoke(mParentComponent->GetEngineComponent(), val[0].toStdString());
   }
 
 
