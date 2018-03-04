@@ -333,7 +333,7 @@ namespace YTE
         return nullptr;
       }
 
-      composition->Deserialize(archetype);
+      composition->DeserializeInternal(archetype, true);
     };
 
     return composition.get();
