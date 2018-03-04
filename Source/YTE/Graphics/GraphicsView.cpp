@@ -315,7 +315,7 @@ namespace YTE
       mDrawerCombination = dc;
     }
 
-    if (mConstructing == false)
+    if (mConstructing == false && (mSpace->GetEngine()->IsEditor() == false && mSpace->GetName() != "YTE Play Space"))
     {
       mRenderer->SetViewCombinationType(this, mDrawerCombination);
     }
