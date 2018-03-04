@@ -37,6 +37,7 @@ namespace YTE
 
   void VkInstantiatedLight::SurfaceLostEvent(ViewChanged *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mManager->DestroyLight(this);
   }
 
@@ -47,6 +48,8 @@ namespace YTE
 
     mManager = &(mSurface->GetViewData(view).mLightManager);
     mManager->AddLight(this);
+    mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedLight::GraphicsDataUpdateVk);
+    mDataChanged = true;
   }
 
   void VkInstantiatedLight::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk* aEvent)

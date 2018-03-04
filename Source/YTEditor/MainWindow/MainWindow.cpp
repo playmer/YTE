@@ -406,8 +406,10 @@ namespace YTEditor
     window->SetWindowId(reinterpret_cast<void*>(id));
     renderer->RegisterWindowForDraw(window);
 
+    YTE::LogicUpdate update;
+    update.Dt = 0.0f;
     mRunningSpace->Initialize();
-    mRunningSpace->Update(0.0f);
+    mRunningSpace->Update(&update);
 
     auto comps = mRunningSpace->GetCompositions();
     for (auto it = comps->begin(); it != comps->end(); ++it)

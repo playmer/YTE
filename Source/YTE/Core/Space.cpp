@@ -67,6 +67,9 @@ namespace YTE
                                         &Space::WindowMinimizedOrRestoredHandler);
     }
 
+
+    mEngine->YTERegister(Events::LogicUpdate, this, &Space::Update);
+
     if (nullptr != aProperties)
     {
       DeserializeByType(aProperties, this, TypeId<Space>());
@@ -124,7 +127,7 @@ namespace YTE
   }
 
   // Updates the Space to the current frame.
-  void Space::Update(double aDt)
+  void Space::Update(LogicUpdate *aEvent)
   {
     YTEProfileFunction(profiler::colors::Amber);
     if (mLoading)
@@ -134,20 +137,18 @@ namespace YTE
       Load(mLevelToLoad);
     }
 
-    LogicUpdate updateEvent;
-    updateEvent.Dt = aDt;
+    SendEvent(Events::DeletionUpdate, aEvent);
+    SendEvent(Events::SortUpdate, aEvent);
 
-    SendEvent(Events::PhysicsUpdate, &updateEvent);
-
-    SendEvent(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::PhysicsUpdate, aEvent);
 
     // TODO: Move the frame update calls to the graphics system
-    SendEvent(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, aEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
     if (mPaused == false)
     {
-      SendEvent(Events::LogicUpdate, &updateEvent);
+      SendEvent(Events::LogicUpdate, aEvent);
     }
   }
     

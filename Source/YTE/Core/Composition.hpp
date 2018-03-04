@@ -210,7 +210,7 @@ namespace YTE
     void SetOwner(Composition *aOwner);
     Composition* GetParent();
     void ReParent(Composition *aNewParent = nullptr);
-    Composition* GetUniverseOrSpaceOrEngine();
+    Composition* GetSpaceOrEngine();
 
     String const& GetName() const { return mName; };
     void SetName(String &aName);
@@ -239,17 +239,14 @@ namespace YTE
     Engine *mEngine;
     Space *mSpace;
 
+    GlobalUniqueIdentifier mGUID;
+    String mArchetypeName;
+    String mName;
+
     bool mShouldSerialize;
     bool mShouldIntialize;
     bool mIsInitialized;
     bool mBeingDeleted;
-
-    String mArchetypeName;
-
-    GlobalUniqueIdentifier mGUID;
-
-  private:
-    String mName;
 
     Composition *mOwner;
     Composition(const Composition &) = delete;

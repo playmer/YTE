@@ -58,6 +58,7 @@ namespace YTE
 
   void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSurface->DestroyModel(mView, this);
   }
 
@@ -70,7 +71,7 @@ namespace YTE
 
   void VkInstantiatedModel::Create()
   {
-    mMesh = mSurface->GetRenderer()->CreateSimpleMesh(mView, mMesh->mName, mMesh->mParts, false);
+    mMesh = mSurface->GetRenderer()->CreateSimpleMesh(mMesh->mName, mMesh->mParts, false);
     
     auto mesh = static_cast<VkMesh*>(mMesh);
 

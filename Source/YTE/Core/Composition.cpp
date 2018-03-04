@@ -267,7 +267,7 @@ namespace YTE
     mEngine->mCompositionsToRemove.Erase(compositionRange);
 
     // Stop handling deletions, as we've completed all of them thus far.
-    GetUniverseOrSpaceOrEngine()->YTEDeregister(Events::DeletionUpdate, this, &Composition::BoundTypeChangedHandler);
+    GetSpaceOrEngine()->YTEDeregister(Events::DeletionUpdate, this, &Composition::BoundTypeChangedHandler);
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
@@ -287,6 +287,7 @@ namespace YTE
   Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
     mComposition->mName = aObjectName;
+
     auto &composition = mCompositions.Emplace(aObjectName, std::move(mComposition))->second;
     if (aSerialization)
     {
@@ -693,16 +694,6 @@ namespace YTE
   }
 
 
-
-
-
-
-
-
-
-
-
-
   std::string Composition::CheckDependencies(BoundType *aType)
   {
     std::string toReturn;
@@ -889,7 +880,7 @@ namespace YTE
   }
 
   // Get the parent Space or Engine.
-  Composition* Composition::GetUniverseOrSpaceOrEngine()
+  Composition* Composition::GetSpaceOrEngine()
   {
     Composition *parent = mSpace;
 
@@ -939,7 +930,7 @@ namespace YTE
       mCompositions.Erase(iter);
     }
 
-    GetUniverseOrSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -956,7 +947,7 @@ namespace YTE
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
 
-    GetUniverseOrSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
   }
 
   void Composition::RemoveComponent(Component *aComponent)
