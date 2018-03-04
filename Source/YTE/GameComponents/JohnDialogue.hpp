@@ -22,6 +22,21 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Events
+  /////////////////////////////////////////////////////////////////////////////////////
+  YTEDeclareEvent(RunConversation);
+
+  class RunConversation : public Event
+  {
+  public:
+    YTEDeclareType(RunConversation);
+    RunConversation() {  };
+  };
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Data Structure Classes
+  /////////////////////////////////////////////////////////////////////////////////////
   class Conversation
   {
   public:
@@ -42,13 +57,16 @@ namespace YTE
     Quest::State GetState() { return mState; };
 
     void SetState(Quest::State aState) { mState = aState; };
-    //void AddConvo(Conversation *aConvo);
+    void AddConvo(Conversation *aConvo);
   private:
     Quest::Name mName;
     Quest::State mState;
     std::vector<Conversation> mConversationVec;
   };
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Component
+  /////////////////////////////////////////////////////////////////////////////////////
   class JohnDialogue : public Component
   {
   public:
@@ -56,8 +74,10 @@ namespace YTE
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
   private:
+    void StartConvo(RunConversation *aEvent);
     std::vector<Quest> mQuestVec;
     Quest mActiveQuest;
   };
+
 } //end yte
 #endif

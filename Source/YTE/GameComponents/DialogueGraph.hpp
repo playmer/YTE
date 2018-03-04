@@ -36,21 +36,22 @@ namespace YTE
     static std::string SailingStart = "Sailing_Start";
   }
   */
-#define DialogueData std::vector<std::string>
+#define DialogueDataType std::vector<std::string>
+#define DialogueData(name, ...) DialogueDataType name{ __VA_ARGS__ }
 
   class DialogueNode
   {
   public:
     enum class NodeType { Anim, Input, Text, Sound };
-    DialogueNode(NodeType aType, DialogueData aData, DialogueNode *aParent = nullptr);
+    DialogueNode(NodeType aType, DialogueNode *aParent, int aStringCount, ...);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
   private:
     NodeType mType;
     DialogueNode *mParent;
-    DialogueData mData;
+    DialogueDataType mData;
 
-    void (*mNodeLogic)(void);
+    void (DialogueNode::*mNodeLogic)();
 
     void PlayAnim();
     void GiveOptions();
