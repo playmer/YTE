@@ -271,6 +271,22 @@ namespace YTE
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
+  void Composition::AddUpdate(LogicUpdate *aUpdate)
+  {
+    YTEUnusedArgument(aUpdate);
+
+    auto compositionRange = mEngine->mCompositionsToAdd.FindAll(this);
+
+    for (auto &composition : compositionRange)
+    {
+      mCompositions.Emplace(composition.second->GetName(), std::move(composition.second));
+    }
+
+    mEngine->mCompositionsToAdd.Erase(compositionRange);
+
+    GetSpaceOrEngine()->YTEDeregister(Events::AddUpdate, this, &Composition::AddUpdate);
+  }
+
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
     Composition *comp = AddCompositionInternal(std::make_unique<Composition>(mEngine,

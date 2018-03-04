@@ -76,6 +76,7 @@ namespace YTE
     void PhysicsInitialize(bool aCheckRunInEditor = false);
     virtual void Initialize(bool aCheckRunInEditor = false);
     void DeletionUpdate(LogicUpdate *aUpdate);
+    void AddUpdate(LogicUpdate *aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
