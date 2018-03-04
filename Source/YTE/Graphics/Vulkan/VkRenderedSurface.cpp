@@ -379,7 +379,7 @@ namespace YTE
       view.mLightManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
-      view.mViewOrder = 0.0f; // default
+      view.mViewOrder = aView->GetOrder(); // default
       view.mRenderTarget->SetOrder(view.mViewOrder);
     }
 
