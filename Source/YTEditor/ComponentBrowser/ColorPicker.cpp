@@ -10,7 +10,7 @@ namespace YTEditor
       : QPushButton{ aParent }
       , mAlpha{aAlpha}
     {
-      connect(this, &QPushButton::toggled, this, &ColorPicker::PickColor);
+      connect(this, &QPushButton::clicked, this, &ColorPicker::clicked);
       mCurrentColor = FromQColor(aColor);
     }
 
@@ -34,7 +34,7 @@ namespace YTEditor
       mCurrentColor = glm::vec4{aColor, 1.0f};
     }
 
-    void ColorPicker::PickColor()
+    void ColorPicker::clicked(bool aChecked)
     {
       auto options = QColorDialog::ColorDialogOptions();
 
@@ -54,7 +54,7 @@ namespace YTEditor
       }
     }
 
-    void ColorPicker::PaintEvent(QPaintEvent *aEvent)
+    void ColorPicker::paintEvent(QPaintEvent *aEvent)
     {
       QPushButton::paintEvent(aEvent);
 

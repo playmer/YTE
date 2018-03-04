@@ -40,8 +40,8 @@ namespace YTEditor
     void SetColor(const QColor &aColor);
     void SetColor(const glm::vec4 &aColor);
     void SetColor(const glm::vec3 &aColor);
-    void PickColor();
-    void PaintEvent(QPaintEvent *aEvent);
+    void clicked(bool aChecked);
+    void paintEvent(QPaintEvent *aEvent);
 
   private:
     glm::vec4 mCurrentColor;
