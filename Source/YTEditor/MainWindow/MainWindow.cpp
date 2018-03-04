@@ -120,6 +120,7 @@ namespace YTEditor
     mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
 
     aEngine->Initialize();
+    mEditingLevel->SetIsEditorSpace(aEngine->IsEditor());
 
     //// This needs to happen after the engine has been initialized.
     ConstructMaterialViewer();

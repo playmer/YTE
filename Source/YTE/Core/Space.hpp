@@ -41,6 +41,9 @@ namespace YTE
     void SetPaused(bool aPause) { mPaused = aPause; };
 
     String& GetLevelName() { return mLevelName; };
+
+    bool GetIsEditorSpace() { return mIsEditorSpace; }
+    void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
   private:
@@ -50,6 +53,7 @@ namespace YTE
     bool mPaused = false;
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
+    bool mIsEditorSpace = false;
 
     bool mLoading = true;
     bool mCheckRunInEditor = false;
