@@ -15,14 +15,14 @@
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
-#include "YTE/Platform/Gamepad.hpp"
-#include "YTE/Platform/GamepadSystem.hpp"
-#include "YTE/Platform/DeviceEnums.hpp"
-
 #include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
+	YTEDeclareEvent(MenuElementHover);
+	YTEDeclareEvent(MenuElementTrigger);
+	YTEDeclareEvent(MenuElementDeHover);
+
 	class MenuElementHover : public Event
 	{
 	public:
@@ -53,12 +53,13 @@ namespace YTE
 		// PROPERTIES /////////////////////////////////////////
 		///////////////////////////////////////////////////////
     void OnMenuStart(MenuStart *aEvent);
+		void OnDirectMenuExit(MenuExit *aEvent);
     void OnMenuExit(MenuExit *aEvent);
     void OnMenuConfirm(MenuConfirm *aEvent);
     void OnMenuElementChange(MenuElementChange *aEvent);
 
 	private:
-    Component *mParentMenu = nullptr;
+    Composition* mParentMenu = nullptr;
 
 		Transform *mMyTransform;
 		glm::vec3 mViewScale;
@@ -66,6 +67,8 @@ namespace YTE
 		int mCurrMenuElement;
 		int mNumElements;
 		YTE::CompositionMap* mMenuElements;
+
+		bool mIsDisplayed;
 
 		bool mConstructing;
   };

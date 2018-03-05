@@ -93,9 +93,8 @@ namespace YTE
   {
   public:
     YTEDeclareType(MenuStart);
-    MenuStart(std::string aMenuName) { MenuName = aMenuName; }
 
-    std::string MenuName;
+		Composition* ParentMenu = nullptr;
   };
 
   class MenuConfirm : public Event

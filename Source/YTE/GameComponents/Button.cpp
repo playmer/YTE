@@ -65,9 +65,9 @@ namespace YTE
 
   void Button::Initialize()
   {
-    mOwner->YTERegister("MenuElementHover", this, &Button::OnButtonHover);
-    mOwner->YTERegister("MenuElementTrigger", this, &Button::OnButtonTrigger);
-    mOwner->YTERegister("MenuElementDeHover", this, &Button::OnButtonDeHover);
+    mOwner->YTERegister(Events::MenuElementHover, this, &Button::OnButtonHover);
+    mOwner->YTERegister(Events::MenuElementTrigger, this, &Button::OnButtonTrigger);
+    mOwner->YTERegister(Events::MenuElementDeHover, this, &Button::OnButtonDeHover);
 
     mCurrentSprite = mOwner->GetComponent<Sprite>();
   }
@@ -83,7 +83,7 @@ namespace YTE
 
   void Button::OnButtonTrigger(MenuElementTrigger* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+		YTEUnusedArgument(aEvent);
     if (mCurrentSprite != nullptr && !mActivatedSpriteName.empty())
     {
       mCurrentSprite->SetTexture(mActivatedSpriteName);

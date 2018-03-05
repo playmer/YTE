@@ -50,10 +50,10 @@ namespace YTE
   {
     YTERegisterType(InputInterpreter);
 
-    YTEBindProperty(&GetRootMenuName, &SetRootMenuName, "PauseMenuName")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>()
-      .SetDocumentation("The root pause menu that should open when \"start\" is pressed -- Sure don't love string properties -- ID");
+    //YTEBindProperty(&GetRootMenuName, &SetRootMenuName, "PauseMenuName")
+      //.AddAttribute<Serializable>()
+      //.AddAttribute<EditorProperty>()
+      //.SetDocumentation("The root pause menu that should open when \"start\" is pressed -- Sure don't love string properties -- ID");
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -229,7 +229,7 @@ namespace YTE
         break;
       case Xbox_Buttons::Start:
       {
-        MenuStart menuStart(mRootPauseMenuName);
+        MenuStart menuStart;
         mOwner->SendEvent(Events::MenuStart, &menuStart);
 
         mContext = InputContext::Menu;
