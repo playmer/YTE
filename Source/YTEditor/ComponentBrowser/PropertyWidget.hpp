@@ -187,9 +187,9 @@ namespace YTEditor
   inline void PropertyWidget<T>::AddInteger(int aVal)
   {
     LineEdit *widg = new LineEdit(this, mMainWindow);
-    QIntValidator * validate = new QIntValidator(std::numeric_limits<int>::min(),
-                                                 std::numeric_limits<int>::max(),
-                                                 this);
+    QIntValidator *validate = new QIntValidator(std::numeric_limits<int>::min(),
+                                                std::numeric_limits<int>::max(),
+                                                this);
     widg->setValidator(validate);
     widg->setText(QString(std::to_string(aVal).c_str()));
     mValues->addWidget(widg);
@@ -200,10 +200,11 @@ namespace YTEditor
   inline void PropertyWidget<T>::AddFloat(float aVal)
   {
     LineEdit *widg = new LineEdit(this, mMainWindow);
-    QDoubleValidator * validate = new QDoubleValidator(std::numeric_limits<float>::min(),
-                                                       std::numeric_limits<float>::max(),
-                                                       3, 
-                                                       this);
+
+    QDoubleValidator *validate = new QDoubleValidator(-std::numeric_limits<float>::max(),
+                                                      std::numeric_limits<float>::max(),
+                                                      3, 
+                                                      this);
     widg->setValidator(validate);
     char buff[20] = { '\0' };
     sprintf_s(buff, "%.3f", aVal);
