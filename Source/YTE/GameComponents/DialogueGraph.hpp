@@ -43,12 +43,15 @@ namespace YTE
   {
   public:
     enum class NodeType { Anim, Input, Text, Sound };
-    DialogueNode(NodeType aType, DialogueNode *aParent, int aStringCount, ...);
+      // Ctor that uses multiple const char* as variadic args
+    //DialogueNode(NodeType aType, DialogueNode *aChildren, int aStringCount, ...);
+      // Ctor that uses DialogueData Ctor, more readable use this one
+    DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
   private:
     NodeType mType;
-    DialogueNode *mParent;
+    std::vector<DialogueNode*> mChildren;
     DialogueDataType mData;
 
     void (DialogueNode::*mNodeLogic)();

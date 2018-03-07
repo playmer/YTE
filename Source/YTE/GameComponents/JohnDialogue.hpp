@@ -49,7 +49,7 @@ namespace YTE
   {
   public:
     enum class State { Available, InProgress, Completed };
-    enum class Name { GuessChew, Ingredients, Cayenne };
+    enum class Name { Introduction, GuessChew, Ingredients, Cayenne };
     Quest() {};
     Quest(Quest::Name aName);
 

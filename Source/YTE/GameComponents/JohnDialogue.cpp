@@ -28,41 +28,103 @@ namespace YTE
 
 /******************************************************************************
   Quest
+    guidelines:
+      - Nodes are named nodeXY,
+        -- X is the letter of the level
+        -- Y is the number of the node on that level
+      - Data objects are named dataXY,
+        -- represents data of matching nodeXY
+
+    Notes:
+      The quest system should just iterate through the quests, not choose randomly
+      that way the player always encounters the Introduction quest first. Going
+      to need a public function to set quest state, so the quest system can mark
+      Introduction as done without the player having to sail home.
 ******************************************************************************/
   Quest::Quest(Quest::Name aName)
     : mName(aName), mState(State::Available)
   {
     mConversationVec = *(new std::vector<Conversation>());
-    //DialogueData(m, "HEY", "HI");
-    DialogueNode(DialogueNode::NodeType::Text, nullptr, 2, "HEY", "HI");
-    //DialogueData(node, "HEY HI", "HERES SOME TEXT");
-    //DialogueNode d0(DialogueNode::NodeType::Text, node);
-    /*
+      // This is the ugly way
+    //DialogueNode(DialogueNode::NodeType::Text, nullptr, 2, "HEY", "HI");
+      // This way is more readable
+    //DialogueData(data, "HEY", "HI");
+    //DialogueNode root = DialogueNode(DialogueNode::NodeType::Text, nullptr, &data);
     switch (aName)
     {
-      case Quest::Name::Cayenne:
+
+      case Quest::Name::Introduction:
       {
-        DialogueNode d0(DialogueNode::NodeType::Anim, DialogueData(AnimationNames::WaveInit));
-        Conversation c0(&d0);
+          // This is an array that will be used to hook up children pointers and will be overwritten many times
+        std::vector<DialogueNode*> children;
+
+        /*
+              root
+              |
+              A0
+              |
+              B0
+              |  \
+              C0  C1
+              |  /
+              D0
+        */
+
+        // LEVEL D
+        DialogueData(dataD0, "TEMP Go here, find this");
+        DialogueNode nodeD0(DialogueNode::NodeType::Text, nullptr, &dataD0);
+
+        children.push_back(&nodeD0);
+
+        // LEVEL C
+        DialogueData(dataC0, "Perfect timing, my fish is still in the oven", "I need you to go fetch my missing ingredients");
+        DialogueNode nodeC0(DialogueNode::NodeType::Text, &children, &dataC0);
+
+        DialogueData(dataC1, "Suuuure...", "Well while you're here, I need you to fetch my missing ingredients");
+        DialogueNode nodeC1(DialogueNode::NodeType::Text, &children, &dataC1);
+
+        children.clear();
+        children.push_back(&nodeC0);
+        children.push_back(&nodeC1);
+
+        // LEVEL B
+        DialogueData(dataB0, "Oh I'm not ordering, I'm here to help", "Friendship!");
+        DialogueNode nodeB0(DialogueNode::NodeType::Input, &children, &dataB0);
+
+        children.clear();
+        children.push_back(&nodeB0);
+
+        // LEVEL A
+        DialogueData(dataA0, "HOT BEHIND!", "Just one second I'm finishing this meal", "Okay what did you want to order?");
+        DialogueNode nodeA0(DialogueNode::NodeType::Text, &children, &dataA0);
+
+        children.clear();
+        children.push_back(&nodeA0);
+
+        // LEVEL ROOT
+        DialogueData(data, AnimationNames::WaveInit);
+        DialogueNode root(DialogueNode::NodeType::Anim, &children, &data);
+
+        delete &children;
+
+        Conversation c0(&root);
+
         mConversationVec.push_back(c0);
         break;
       }
       case Quest::Name::GuessChew:
       {
-        DialogueNode d0(DialogueNode::NodeType::Anim, DialogueData(AnimationNames::WaveInit));
-        Conversation c0(&d0);
-        mConversationVec.push_back(c0);
-        break;
+
       }
       case Quest::Name::Ingredients:
       {
-        DialogueNode d0(DialogueNode::NodeType::Anim, DialogueData(AnimationNames::WaveInit));
-        Conversation c0(&d0);
-        mConversationVec.push_back(c0);
-        break;
+
+      }
+      case Quest::Name::Cayenne:
+      {
+
       }
     }
-    */
   }
   
   void Quest::AddConvo(Conversation *aConvo)
@@ -80,6 +142,7 @@ namespace YTE
     YTEUnusedArgument(aProperties);
       // Construct the Quest Vector
     mQuestVec = *(new std::vector<Quest> { 
+      Quest::Name::Introduction,
       Quest::Name::GuessChew, 
       Quest::Name::Cayenne, 
       Quest::Name::Ingredients 

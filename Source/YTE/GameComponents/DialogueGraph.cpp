@@ -63,6 +63,50 @@ namespace YTE
   SendEvent("DialogueNodeEvent", &next);
   }
   */
+  DialogueNode::DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData)
+    : mType(aType), mData(*aData)
+  {
+    if (aChildren == nullptr)
+    {
+      mChildren = *(new std::vector<DialogueNode*>());
+    }
+    else
+    {
+      for (DialogueNode *child : *aChildren)
+      {
+        mChildren.push_back(child);
+      }
+    }
+
+    switch (aType)
+    {
+      case NodeType::Anim:
+      {
+        // set the function pointer
+        mNodeLogic = &DialogueNode::PlayAnim;
+        break;
+      }
+      case NodeType::Input:
+      {
+        // set the function pointer
+        mNodeLogic = &DialogueNode::GiveOptions;
+        break;
+      }
+      case NodeType::Text:
+      {
+        // set the function pointer
+        mNodeLogic = &DialogueNode::RunText;
+        break;
+      }
+      case NodeType::Sound:
+      {
+        // set the function pointer
+        mNodeLogic = &DialogueNode::PlaySound;
+        break;
+      }
+    }
+  }
+  /*
   DialogueNode::DialogueNode(NodeType aType, DialogueNode *aParent, int aStringCount, ...)
     : mType(aType), mParent(aParent)
   {
@@ -103,7 +147,7 @@ namespace YTE
       }
     }
   }
-
+  */
   void DialogueNode::PlayAnim()
   {
     
