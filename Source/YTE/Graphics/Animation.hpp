@@ -92,6 +92,13 @@ namespace YTE
     void PlayAnimation(std::string aAnimation);
 
     void SetDefaultAnimation(std::string aAnimation);
+    void SetCurrentAnimation(std::string aAnimation);
+    void SetCurrentPlayOverTime(bool aPlayOverTime);
+
+    void SetCurrentAnimTime(double aTime);
+    double GetMaxTime() const;
+
+    std::map<std::string, Animation*>& GetAnimations();
 
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
     static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
@@ -109,7 +116,7 @@ namespace YTE
     Animation *mCurrentAnimation;
     Animation *mNextAnimation;
 
-    std::map<std::string, Animation *> mAnimations;
+    std::map<std::string, Animation*> mAnimations;
   };
 
 

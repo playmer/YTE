@@ -54,6 +54,9 @@ namespace YTE
     //TODO (Andrew): Dont keep the scene loaded
     mScene = importer.GetOrphanedScene();
 
+    DebugObjection(mScene == nullptr,
+      "Failed to load orphaned scene");
+
     DebugObjection(mScene->HasAnimations() == false,
       "Failed to find animations in scene loaded from %s",
       aniFile.c_str());
@@ -89,7 +92,9 @@ namespace YTE
 
   void Animation::SetCurrentTime(double aCurrentTime)
   {
-    if (0.0 <= aCurrentTime && aCurrentTime <= mAnimation->mDuration)
+    aCurrentTime *= mAnimation->mTicksPerSecond;
+
+    if (0.0 < aCurrentTime && aCurrentTime < mAnimation->mDuration)
     {
       mCurrentAnimationTime = aCurrentTime;
     }
@@ -97,7 +102,7 @@ namespace YTE
 
   double Animation::GetMaxTime() const
   {
-    return mAnimation->mDuration;
+    return mAnimation->mDuration / mAnimation->mTicksPerSecond;
   }
 
   float Animation::GetSpeed() const
@@ -450,6 +455,39 @@ namespace YTE
     }
 
     mDefaultAnimation = it->second;
+  }
+
+  void Animator::SetCurrentAnimation(std::string aAnimation)
+  {
+    auto it = mAnimations.find(aAnimation);
+
+    // animation doesn't exist on this animator component
+    if (it == mAnimations.end())
+    {
+      return;
+    }
+
+    mCurrentAnimation = it->second;
+  }
+
+  void Animator::SetCurrentPlayOverTime(bool aPlayOverTime)
+  {
+    mCurrentAnimation->SetPlayOverTime(aPlayOverTime);
+  }
+
+  void Animator::SetCurrentAnimTime(double aTime)
+  {
+    mCurrentAnimation->SetCurrentTime(aTime);
+  }
+
+  double Animator::GetMaxTime() const
+  {
+    return mCurrentAnimation->GetMaxTime();
+  }
+
+  std::map<std::string, Animation*>& Animator::GetAnimations()
+  {
+    return mAnimations;
   }
 
   std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)

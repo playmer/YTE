@@ -6,6 +6,15 @@ namespace YTEditor
   template <>
   void ComponentProperty<QStringList>::BaseSaveToEngine()
   {
+    QStringList value = this->GetPropertyValues();
+
+    mSetter->Invoke(mParentComponent->GetEngineComponent(), value[0].toStdString());
+  }
+
+
+  template <>
+  void ComponentProperty<QStringList>::SaveToEngine()
+  {
     YTE::Component *cmp = mParentComponent->GetEngineComponent();
 
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
@@ -37,14 +46,6 @@ namespace YTEditor
 
     // Add command to main window undo redo
     mSetter->Invoke(mParentComponent->GetEngineComponent(), val[0].toStdString());
-  }
-
-
-  template <>
-  void ComponentProperty<QStringList>::SaveToEngine()
-  {
-    // Add command to main window undo redo
-    BaseSaveToEngine();
   }
 
   template <>
