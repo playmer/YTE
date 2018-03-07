@@ -161,12 +161,9 @@ void CalculatePosition(mat4 aProjMat, vec4 aPos)
 // CalculateNormal:
 // Calculates the normal used for this vertex
 // takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
-vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNormal)
+vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec3 aNormal)
 {
-  return normalize(vec3(inverse(transpose(//aViewMat *
-                                          aModelMat *
-                                          aAnimateMat)) *
-                        aNormal));
+  return normalize(mat3(transpose(inverse(/*aViewMat */ aModelMat * aAnimateMat))) * aNormal);
 }
 
 // ======================
@@ -209,7 +206,7 @@ void main()
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,
                               boneTransform, 
-                              vec4(inNormal, 1.0f));
+                              inNormal);
 
   CalculatePosition(View.mProjectionMatrix,
                     outPosition);

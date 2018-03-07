@@ -406,15 +406,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if ((ModelMaterial.mFlags & MatFlag_IsSelected) > 0)
-  {
-    outFragColor = vec4(1.0f, 1.0f, 0.0f, 1.0f);
-    if (outFragColor.w <= 0.001f)
-    {
-      discard;
-    }
-  }
-  else if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
+  if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
     if (outFragColor.w <= 0.001f)
@@ -433,5 +425,14 @@ void main()
   else
   {
     outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), inTextureCoordinates.xy);
+  }
+
+  if ((ModelMaterial.mFlags & MatFlag_IsSelected) > 0)
+  {
+    outFragColor = saturate(outFragColor + saturate(vec4(1.0f, 1.0f, 0.0f, 1.0f) * (1.0f - (dot(vec4(normalize(inNormal), 0.0f), normalize(Illumination.mCameraPosition - vec4(inPositionWorld, 1.0f))) * 2.0f ))));
+    if (outFragColor.w <= 0.001f)
+    {
+      discard;
+    }
   }
 }
