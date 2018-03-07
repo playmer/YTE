@@ -409,7 +409,8 @@ namespace YTEditor
 
     YTE::LogicUpdate update;
     update.Dt = 0.0f;
-    mRunningSpace->Initialize();
+    YTE::InitializeEvent event;
+    mRunningSpace->Initialize(&event);
     mRunningSpace->Update(&update);
 
     auto comps = mRunningSpace->GetCompositions();

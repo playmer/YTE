@@ -75,8 +75,6 @@ namespace YTE
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
       
-          submesh.mColliderVertexBuffer.at(i1);
-      
           mTriangles.addTriangle(OurVec3ToBt(submesh.mColliderVertexBuffer.at(i1)),
                                  OurVec3ToBt(submesh.mColliderVertexBuffer.at(i2)),
                                  OurVec3ToBt(submesh.mColliderVertexBuffer.at(i3)));

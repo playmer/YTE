@@ -28,8 +28,13 @@ namespace YTE
     void Update(LogicUpdate *aEvent);
     ~Space();
 
-    void Initialize(bool) override;
-    void Initialize() { Initialize(true); }
+    void Initialize(InitializeEvent *aEvent) override;
+    void Initialize() 
+    {
+      InitializeEvent event;
+      event.CheckRunInEditor = true;
+      Initialize(&event);
+    }
         
     void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level, bool aCheckRunInEditor = false);

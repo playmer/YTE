@@ -101,7 +101,7 @@ namespace YTE
       
     if (nullptr != aLevel)
     {
-      DeserializeInternal(aLevel, true);
+      Deserialize(aLevel);
     }
     else
     {
@@ -117,11 +117,11 @@ namespace YTE
   }
 
 
-  void Space::Initialize(bool)
+  void Space::Initialize(InitializeEvent *aEvent)
   {
-    Composition::NativeInitialize(mCheckRunInEditor);
-    Composition::PhysicsInitialize(mCheckRunInEditor);
-    Composition::Initialize(mCheckRunInEditor);
+    Composition::NativeInitialize(aEvent);
+    Composition::PhysicsInitialize(aEvent);
+    Composition::Initialize(aEvent);
 
     mShouldIntialize = true;
   }
@@ -138,7 +138,6 @@ namespace YTE
     }
 
     SendEvent(Events::DeletionUpdate, aEvent);
-    SendEvent(Events::AddUpdate, aEvent);
 
     SendEvent(Events::PhysicsUpdate, aEvent);
 

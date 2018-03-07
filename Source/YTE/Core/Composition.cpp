@@ -16,6 +16,17 @@
 
 namespace YTE
 {
+  YTEDefineEvent(NativeInitialize);
+  YTEDefineEvent(PhysicsInitialize);
+  YTEDefineEvent(Initialize);
+
+  YTEDefineType(InitializeEvent)
+  {
+    YTERegisterType(InitializeEvent);
+
+    YTEBindField(&InitializeEvent::CheckRunInEditor, "CheckRunInEditor", PropertyBinding::Get);
+  }
+
   YTEDefineEvent(CompositionAdded);
 
   YTEDefineType(CompositionAdded)
@@ -78,10 +89,10 @@ namespace YTE
     YTEBindProperty(&Composition::GetSpace, YTENoSetter, "Space");
   }
 
-  Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace)
+  Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
     : mEngine(aEngine)
     , mSpace(aSpace)
-    , mOwner(nullptr)
+    , mOwner(aOwner)
     , mName(aName)
     , mShouldSerialize(true)
     , mShouldIntialize(true)
@@ -90,12 +101,21 @@ namespace YTE
     , mGUID()
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+
+    auto parent = GetParent();
+
+    if (nullptr != parent)
+    {
+      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
+      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
+      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
+    }
   };
 
-  Composition::Composition(Engine *aEngine, Space *aSpace)
+  Composition::Composition(Engine *aEngine, Space *aSpace, Composition *aOwner)
     : mEngine(aEngine)
     , mSpace(aSpace)
-    , mOwner(nullptr)
+    , mOwner(aOwner)
     , mName()
     , mShouldSerialize(true)
     , mShouldIntialize(true)
@@ -104,6 +124,15 @@ namespace YTE
     , mGUID()
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+
+    auto parent = GetParent();
+
+    if (nullptr != parent)
+    {
+      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
+      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
+      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
+    }
   };
 
   Composition::~Composition()
@@ -130,7 +159,7 @@ namespace YTE
     }
   }
 
-  void Composition::NativeInitialize(bool aCheckRunInEditor)
+  void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
     if (mShouldIntialize == false)
     {
@@ -139,7 +168,7 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && 
+      if (aEvent->CheckRunInEditor &&
           nullptr == component.first->GetAttribute<RunInEditor>())
       {
         continue;
@@ -148,13 +177,10 @@ namespace YTE
       component.second->NativeInitialize();
     }
 
-    for (auto &composition : mCompositions)
-    {
-      composition.second->NativeInitialize(aCheckRunInEditor);
-    }
+    SendEvent(Events::NativeInitialize, aEvent);
   }
 
-  void Composition::PhysicsInitialize(bool aCheckRunInEditor)
+  void Composition::PhysicsInitialize(InitializeEvent *aEvent)
   {
     if (mShouldIntialize == false)
     {
@@ -174,7 +200,7 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && 
+      if (aEvent->CheckRunInEditor &&
           nullptr == component.first->GetAttribute<RunInEditor>())
       {
         continue;
@@ -183,13 +209,10 @@ namespace YTE
       //component.second->PhysicsInitialize();
     }
 
-    for (auto &composition : mCompositions)
-    {
-      composition.second->PhysicsInitialize(aCheckRunInEditor);
-    }
+    SendEvent(Events::PhysicsInitialize, aEvent);
   }
 
-  void Composition::Initialize(bool aCheckRunInEditor)
+  void Composition::Initialize(InitializeEvent *aEvent)
   {
     if (mShouldIntialize == false)
     {
@@ -213,7 +236,7 @@ namespace YTE
 
     for (auto &component : mComponents)
     {
-      if (aCheckRunInEditor && 
+      if (aEvent->CheckRunInEditor &&
           nullptr == component.first->GetAttribute<RunInEditor>())
       {
         continue;
@@ -222,10 +245,7 @@ namespace YTE
       component.second->Initialize();
     }
 
-    for (auto &composition : mCompositions)
-    {
-      composition.second->Initialize(aCheckRunInEditor);
-    }
+    SendEvent(Events::Initialize, aEvent);
 
     mShouldIntialize = false;
     mIsInitialized = true;
@@ -271,30 +291,21 @@ namespace YTE
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
-  void Composition::AddUpdate(LogicUpdate *aUpdate)
-  {
-    YTEUnusedArgument(aUpdate);
-
-    auto compositionRange = mEngine->mCompositionsToAdd.FindAll(this);
-
-    for (auto &composition : compositionRange)
-    {
-      composition.second->NativeInitialize();
-      composition.second->PhysicsInitialize();
-      composition.second->Initialize();
-      mCompositions.Emplace(composition.second->GetName(), std::move(composition.second));
-    }
-
-    mEngine->mCompositionsToAdd.Erase(compositionRange);
-
-    GetSpaceOrEngine()->YTEDeregister(Events::AddUpdate, this, &Composition::AddUpdate);
-  }
-
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
+    // If a Composition is just below the Space, we currently guarantee their mOwner is
+    // nullptr.
+    auto owner = this;
+
+    if (GetType()->IsA<Space>())
+    {
+      owner = nullptr;
+    }
+
     Composition *comp = AddCompositionInternal(std::make_unique<Composition>(mEngine,
                                                                              aObjectName,
-                                                                             mSpace),
+                                                                             mSpace,
+                                                                             owner),
                                                mEngine->GetArchetype(aArchetype),
                                                aObjectName);
 
@@ -333,41 +344,57 @@ namespace YTE
         return nullptr;
       }
 
-      composition->DeserializeInternal(archetype, true);
+      composition->Deserialize(archetype);
     };
 
     return composition.get();
   }
 
 
-  Composition* Composition::AddComposition(RSValue *aSerialization, String aObjectName)
+  Composition* Composition::AddComposition(RSValue *aSerialization, 
+                                           String aObjectName)
   {
+    // If a Composition is just below the Space, we currently guarantee their mOwner is
+    // nullptr.
+    auto owner = this;
+
+    if (GetType()->IsA<Space>())
+    {
+      owner = nullptr;
+    }
+
     auto composition = AddCompositionInternal(std::make_unique<Composition>(mEngine,
                                                                             aObjectName,
-                                                                            mSpace),
+                                                                            mSpace,
+                                                                            owner),
                                               aSerialization, 
                                               aObjectName);
 
     if (composition != nullptr)
     {
-      composition->NativeInitialize();
-      composition->PhysicsInitialize();
-      composition->Initialize();
+      InitializeEvent event;
+
+      composition->NativeInitialize(&event);
+      composition->PhysicsInitialize(&event);
+      composition->Initialize(&event);
     }
 
     return composition;
   }
 
 
-  Composition* Composition::AddComposition(String aArchetype, String aObjectName)
+  Composition* Composition::AddComposition(String aArchetype, 
+                                           String aObjectName)
   {
     auto composition = AddCompositionInternal(aArchetype, aObjectName);
 
     if (composition != nullptr)
     {
-      composition->NativeInitialize(); 
-      composition->PhysicsInitialize();
-      composition->Initialize();
+      InitializeEvent event;
+
+      composition->NativeInitialize(&event);
+      composition->PhysicsInitialize(&event);
+      composition->Initialize(&event);
     }
 
     composition->SetArchetypeName(aArchetype);
@@ -375,15 +402,19 @@ namespace YTE
     return composition;
   }
 
-  Composition* Composition::AddCompositionAtPosition(String aArchetype, String aObjectName, glm::vec3 aPosition)
+  Composition* Composition::AddCompositionAtPosition(String aArchetype, 
+                                                     String aObjectName, 
+                                                     glm::vec3 aPosition)
   {
     Composition *composition = AddCompositionInternal(aArchetype, aObjectName);
 
     if (composition != nullptr)
     {
+      InitializeEvent event;
+
       // Might need to be after the change of translation.
-      composition->NativeInitialize();
-      composition->PhysicsInitialize();
+      composition->NativeInitialize(&event);
+      composition->PhysicsInitialize(&event);
 
       auto transform = composition->GetComponent<Transform>();
 
@@ -392,7 +423,7 @@ namespace YTE
         transform->SetTranslation(aPosition);
       }
 
-      composition->Initialize();
+      composition->Initialize(&event);
     }
 
     return composition;
@@ -400,11 +431,6 @@ namespace YTE
 
 
   void Composition::Deserialize(RSValue *aValue)
-  {
-    DeserializeInternal(aValue, false);
-  }
-
-  void Composition::DeserializeInternal(RSValue *aValue, bool aForceToEmplaceInside)
   {
     RSStringBuffer buffer;
     RSPrettyWriter writer(buffer);
@@ -458,45 +484,37 @@ namespace YTE
       AddComponent(componentType, &componentIt->value);
     }
 
+    // If a Composition is just below the Space, we currently guarantee their mOwner is
+    // nullptr.
+    auto owner = this;
+
+    if (GetType()->IsA<Space>())
+    {
+      owner = nullptr;
+    }
 
     auto &compositions = (*aValue)["Compositions"];
-
-    bool shouldSort = false;
 
     for (auto compositionIt = compositions.MemberBegin();
          compositionIt < compositions.MemberEnd();
          ++compositionIt)
     {
-      shouldSort = true;
-
       String compositionName = compositionIt->name.GetString();
 
       auto uniqueComposition = std::make_unique<Composition>(mEngine,
                                                              compositionName,
-                                                             mSpace);
+                                                             mSpace,
+                                                             owner);
       Composition *composition{ uniqueComposition.get() };
 
-      if (mIsInitialized || aForceToEmplaceInside)
-      {
-        mCompositions.Emplace(compositionName, std::move(uniqueComposition));
-      }
-      else
-      {
-        mEngine->mCompositionsToAdd.Emplace(this, std::move(uniqueComposition));
-      }
+      mCompositions.Emplace(compositionName, std::move(uniqueComposition));
 
-      composition->SetOwner(this);
-      composition->DeserializeInternal(&compositionIt->value, true);
+      composition->Deserialize(&compositionIt->value);
     }
 
     if (aValue->HasMember("Archetype"))
     {
         mArchetypeName = (*aValue)["Archetype"].GetString();
-    }
-    
-    if (shouldSort)
-    {
-      GetSpaceOrEngine()->YTERegister(Events::AddUpdate, this, &Composition::AddUpdate);
     }
   }
 

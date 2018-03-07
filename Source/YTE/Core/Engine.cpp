@@ -32,7 +32,6 @@ namespace YTE
   YTEDefineEvent(DebugDrawUpdate);
   YTEDefineEvent(EndDebugDrawUpdate);
   YTEDefineEvent(DeletionUpdate);
-  YTEDefineEvent(AddUpdate);
   YTEDefineEvent(BoundTypeChanged);
   YTEDefineEvent(GraphicsDataUpdate);
   YTEDefineEvent(PresentFrame);
@@ -205,7 +204,7 @@ namespace YTE
     }
   }
 
-  void Engine::Initialize(bool)
+  void Engine::Initialize(InitializeEvent*)
   {
     if (mShouldIntialize == false)
     {
@@ -256,7 +255,6 @@ namespace YTE
     updateEvent.Dt = mDt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
-    SendEvent(Events::AddUpdate, &updateEvent);
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
     SendEvent(Events::GraphicsDataUpdate, &updateEvent);

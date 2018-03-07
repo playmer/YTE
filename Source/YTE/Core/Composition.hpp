@@ -29,6 +29,18 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(NativeInitialize);
+  YTEDeclareEvent(PhysicsInitialize);
+  YTEDeclareEvent(Initialize);
+
+  class InitializeEvent : public Event
+  {
+  public:
+    YTEDeclareType(InitializeEvent);
+
+    bool CheckRunInEditor = false;
+  };
+
   YTEDeclareEvent(CompositionAdded);
 
   class CompositionAdded : public Event
@@ -65,22 +77,20 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine *aEngine, const String &aName, Space *aSpace);
-    Composition(Engine *aEngine, Space *aSpace);
+    Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner = nullptr);
+    Composition(Engine *aEngine, Space *aSpace, Composition *aOwner = nullptr);
 
     ~Composition();
 
     virtual void Update(double dt);
 
-    virtual void NativeInitialize(bool aCheckRunInEditor = false);
-    void PhysicsInitialize(bool aCheckRunInEditor = false);
-    virtual void Initialize(bool aCheckRunInEditor = false);
+    virtual void NativeInitialize(InitializeEvent *aEvent);
+    void PhysicsInitialize(InitializeEvent *aEvent);
+    virtual void Initialize(InitializeEvent *aEvent);
     void DeletionUpdate(LogicUpdate *aUpdate);
-    void AddUpdate(LogicUpdate *aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
-    void DeserializeInternal(RSValue *aValue, bool aForceToEmplaceInside);
     void Deserialize(RSValue *aValue);
     RSValue Serialize(RSAllocator &aAllocator) override;
 

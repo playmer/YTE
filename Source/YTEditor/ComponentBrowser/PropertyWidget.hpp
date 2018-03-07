@@ -37,7 +37,10 @@ namespace YTEditor
   {
   public:
 
-    PropertyWidget(const std::string &aName, YTE::Property *aProperty, MainWindow *aMainWindow, QWidget * aParent = nullptr)
+    PropertyWidget(const std::string &aName, 
+                   YTE::Property *aProperty, 
+                   MainWindow *aMainWindow, 
+                   QWidget * aParent = nullptr)
       : PropertyWidgetBase(aParent)
       , mMainWindow(aMainWindow)
       , mProperty(aProperty)

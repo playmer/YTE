@@ -55,6 +55,7 @@ namespace YTE
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
 
     YTEBindProperty(&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType, "DrawerType")

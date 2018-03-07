@@ -39,7 +39,6 @@ namespace YTE
   YTEDeclareEvent(DebugDrawUpdate);
   YTEDeclareEvent(EndDebugDrawUpdate);
   YTEDeclareEvent(DeletionUpdate);
-  YTEDeclareEvent(AddUpdate);
   YTEDeclareEvent(BoundTypeChanged);
   YTEDeclareEvent(GraphicsDataUpdate);
   YTEDeclareEvent(PresentFrame);
@@ -89,8 +88,14 @@ namespace YTE
     void Update();
     ~Engine();
 
-    void Initialize(bool) override;
-    void Initialize() { Initialize(true); }
+    void Initialize(InitializeEvent*) override;
+    void Initialize()
+    {
+      InitializeEvent event;
+      event.CheckRunInEditor = true;
+      Initialize(&event);
+    }
+
     void Deserialize(RSValue *aValue);
 
     Window* AddWindow(const char *aName);
@@ -152,7 +157,6 @@ namespace YTE
     void Log(LogType aType, std::string_view aLog);
 
 
-    OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToAdd;
     OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
