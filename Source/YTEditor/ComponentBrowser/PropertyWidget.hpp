@@ -203,7 +203,7 @@ namespace YTEditor
 
     QDoubleValidator *validate = new QDoubleValidator(-std::numeric_limits<float>::max(),
                                                       std::numeric_limits<float>::max(),
-                                                      3, 
+                                                      7,
                                                       this);
     widg->setValidator(validate);
     char buff[20] = { '\0' };
@@ -438,7 +438,7 @@ namespace YTEditor
       {
         LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
         char buff[100] = { '\0' };
-        sprintf_s(buff, "%.3f", aVal[i]);
+        sprintf_s(buff, "%.6f", aVal[i]);
         widg->setText(buff);
       }
     }
@@ -458,7 +458,7 @@ namespace YTEditor
       {
         LineEdit * widg = dynamic_cast<LineEdit*>(mWidgets[i]);
         char buff[100] = { '\0' };
-        sprintf_s(buff, "%.3f", aVal[i]);
+        sprintf_s(buff, "%.6f", aVal[i]);
         widg->setText(buff);
       }
     }
