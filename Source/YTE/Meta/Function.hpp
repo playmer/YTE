@@ -89,30 +89,87 @@ namespace YTE
       return mName;
     }
 
-    const Type* GetOwningType() const
+    void SetOwningType(Type *aOwningType) 
+    {
+      mOwningType = aOwningType;
+    }
+
+    Type* GetOwningType() const
     {
       return mOwningType;
     }
+
+    bool IsSame(Function &aFunction) const
+    {
+      if (mName != aFunction.mName)
+      {
+        return false;
+      }
+
+      if (mReturnType != aFunction.mReturnType)
+      {
+        return false;
+      }
+
+      if (mParameters.size() == aFunction.mParameters.size())
+      {
+        for (size_t i = 0; i < mParameters.size(); ++i)
+        {
+          if (mParameters[i].mType != aFunction.mParameters[i].mType)
+          {
+            return false;
+          }
+        }
+      }
+
+      return true;
+    }
+
 
     Type* GetReturnType() const
     {
       return mReturnType;
     }
 
+    bool IsStaticOrFree()
+    {
+      return mStaticOrFree;
+    }
+
     void SetParameterNames(std::initializer_list<const char *> aNames)
     {
-      if (aNames.size() == mParameters.size())
+      // Member Function
+      if (false == mStaticOrFree && 
+          aNames.size() == (mParameters.size() - 1))
+      {
+        mParameters[0].mName = "aThisPointer";
+
+        for (size_t i = 1; i < mParameters.size(); ++i)
+        {
+          mParameters[i].mName = *(aNames.begin() + i - 1);
+        }
+      }
+      else if (aNames.size() == mParameters.size())
       {
         for (size_t i = 0; i < mParameters.size(); ++i)
         {
           mParameters[i].mName = *(aNames.begin() + i);
         }
       }
+      else
+      {
+        for (size_t i = 0; i < mParameters.size(); ++i)
+        {
+          std::string argumentName{ "aArgument" };
+          argumentName += std::to_string(i);
+          mParameters[i].mName = argumentName;
+        }
+      }
     }
 
-    std::vector<Parameter>* GetParameters()
+    std::vector<Parameter>& GetParameters()
     {
-      return &mParameters;
+      return mParameters;
     }
 
   private:
@@ -165,14 +222,15 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
       size_t i = 0;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = BoundFunc(arguments.at(i++).As<Arguments>()...);
+      Return capture = BoundFunc(aArguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
     }
@@ -197,14 +255,15 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
       size_t i = 0;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      BoundFunc(arguments.at(i++).As<Arguments>()...);
+      BoundFunc(aArguments.at(i++).As<Arguments>()...);
       return Any();
     }
 
@@ -241,16 +300,17 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
-      auto self = arguments.at(0).As<ObjectType*>();
+      auto self = aArguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
+      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
     }
@@ -288,16 +348,17 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
-      auto self = arguments.at(0).As<ObjectType*>();
+      auto self = aArguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
+      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
 
       return Any();
     }
@@ -338,16 +399,17 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
-      auto self = arguments.at(0).As<ObjectType*>();
+      auto self = aArguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
+      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
       Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
       return toReturn;
     }
@@ -385,16 +447,17 @@ namespace YTE
     using CallingType = Any(*)(std::vector<Any>&);
 
     template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& arguments)
+    static Any Caller(std::vector<Any>& aArguments)
     {
-      auto self = arguments.at(0).As<ObjectType*>();
+      auto self = aArguments.at(0).As<ObjectType*>();
 
       size_t i = 1;
 
-      // We get a warning for functions that don't have arguments and thus don't use i.
+      // We get a warning for functions that don't have arguments and thus don't use these.
+      YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      (self->*BoundFunc)(arguments.at(i++).As<Arguments>()...);
+      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
 
       return Any();
     }
@@ -443,9 +506,9 @@ namespace YTE
 
     auto function = Binding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
     function->SetParameterNames(aParameterNames);
+    function->SetOwningType(aType);
 
-    auto ptr = function.get();
-    aType->AddFunction(std::move(function));
+    auto ptr = aType->AddFunction(std::move(function));
 
     return *ptr;
   }

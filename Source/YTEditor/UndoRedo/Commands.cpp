@@ -153,8 +153,8 @@ namespace YTEditor
   }
 
   AddComponentCmd::AddComponentCmd(YTE::Component *aComponent,
-    ComponentBrowser *aBrowser,
-    OutputConsole *aConsole)
+                                   ComponentBrowser *aBrowser,
+                                   OutputConsole *aConsole)
     : Command(aConsole)
     , mComponentBrowser(aBrowser)
     , mGUID(aComponent->GetGUID())
@@ -262,10 +262,10 @@ namespace YTEditor
 
 
   ChangePropValCmd::ChangePropValCmd(std::string aPropName,
-    YTE::GlobalUniqueIdentifier aGUID,
-    YTE::Any aOldVal,
-    YTE::Any aNewVal,
-    MainWindow *aMainWindow)
+                                     YTE::GlobalUniqueIdentifier aGUID,
+                                     YTE::Any aOldVal,
+                                     YTE::Any aNewVal,
+                                     MainWindow *aMainWindow)
     : Command(&aMainWindow->GetOutputConsole())
     , mPropertyName(aPropName)
     , mPreviousValue(aOldVal)
@@ -314,9 +314,9 @@ namespace YTEditor
   }
 
   ObjectSelectionChangedCmd::ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
-    std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
-    ObjectBrowser *aBrowser,
-    OutputConsole *aConsole)
+                                                       std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
+                                                       ObjectBrowser *aBrowser,
+                                                       OutputConsole *aConsole)
     : Command(aConsole)
     , mObjectBrowser(aBrowser)
     , mNewSelection(aNewSelection)

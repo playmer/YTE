@@ -80,6 +80,7 @@ namespace YTE
     /////////////////////////////////
     std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, std::string &aModelFile);
     std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
+    void AddModel(VkInstantiatedModel *aModel);
     void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);

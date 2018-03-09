@@ -72,6 +72,9 @@ namespace YTE
     u32 GetHeight();
     u32 GetWidth();
 
+    void SetHeight(u32 aHeight);
+    void SetWidth(u32 aWidth);
+
     glm::i32vec2 GetPosition();
 
     std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
@@ -104,6 +107,8 @@ namespace YTE
     int mSerializedStartingHeight;
     bool mSerializedStartingFullscreen;
     bool mSerializedShouldBeRenderedTo;
+
+    std::string mName;
   };
 }
 

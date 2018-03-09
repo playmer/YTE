@@ -34,6 +34,9 @@ namespace YTE
     return result;
   }
 
+  YTEDefineEvent(SurfaceLost);
+  YTEDefineEvent(SurfaceGained);
+
   YTEDefineType(GraphicsView)
   {
     YTERegisterType(GraphicsView);
@@ -52,6 +55,7 @@ namespace YTE
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
 
     YTEBindProperty(&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType, "DrawerType")
@@ -152,8 +156,13 @@ namespace YTE
 
   void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
+    ViewChanged event;
+    event.View = this;
+    event.Window = nullptr;
+
     if (false == mConstructing)
     {
+      SendEvent(Events::SurfaceLost, &event);
       mRenderer->DeregisterView(this);
     }
 
@@ -162,9 +171,36 @@ namespace YTE
 
     mWindow = it->second.get();
 
+    event.Window = mWindow;
+
     if (false == mConstructing)
     {
       mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
+    }
+  }
+
+
+  void GraphicsView::ChangeWindow(Window *aWindow)
+  {
+    ViewChanged event;
+    event.View = this;
+    event.Window = nullptr;
+
+    if (false == mConstructing)
+    {
+      SendEvent(Events::SurfaceLost, &event);
+      mRenderer->DeregisterView(this);
+    }
+
+    mWindow = aWindow;
+    mWindowName = aWindow->mName;
+    event.Window = mWindow;
+
+    if (false == mConstructing)
+    {
+      mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
     }
   }
 
@@ -280,7 +316,7 @@ namespace YTE
       mDrawerCombination = dc;
     }
 
-    if (mConstructing == false)
+    if (mConstructing == false && mSpace->GetIsEditorSpace() == false)
     {
       mRenderer->SetViewCombinationType(this, mDrawerCombination);
     }

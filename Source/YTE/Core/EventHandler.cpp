@@ -1,6 +1,7 @@
 ﻿#include "YTE/Core/EventHandler.hpp"
 
-namespace YTE {
+namespace YTE 
+{
   YTEDefineType(Event)
   {
     YTERegisterType(Event);

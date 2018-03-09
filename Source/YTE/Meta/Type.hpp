@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -18,7 +19,7 @@ namespace YTE
   class Base
   {
   public:
-    virtual Type *GetType() = 0;
+    virtual Type* GetType() = 0;
     virtual ~Base() {};
   };
 
@@ -68,30 +69,50 @@ void Name::InitializeType()
 #define YTENoSetter nullptr
 #define YTENoGetter nullptr
 
-#define YTERegisterType(aType) ::YTE::Type::AddGlobalType(::YTE::TypeId<aType>()->GetName(), ::YTE::TypeId<aType>())
-
 #define YTEBindFunction(aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames)  \
-  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                         \
-               aFunctionPointer,                                                                       \
-               std::initializer_list<const char*>aInitializerListOfNames.size()>(                      \
-    aFunctionName,                                                                                     \
+  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                   \
+               aFunctionPointer,                                                                        \
+               std::initializer_list<const char*>aInitializerListOfNames.size()>(                       \
+    aFunctionName,                                                                                      \
     ::YTE::TypeId<::YTE::DecomposeFunctionObjectType<decltype(aOverloadResolution aFunctionPointer)>::ObjectType>(), \
     aInitializerListOfNames)
 
+#define YTEBindStaticOrFreeFunction(aType, aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames) \
+  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                                     \
+                      aFunctionPointer,                                                                                   \
+                      std::initializer_list<const char*>aInitializerListOfNames.size()>(aFunctionName,                    \
+                                                                                        ::YTE::TypeId<aType>(),           \
+                                                                                        aInitializerListOfNames)
 
-#define YTEBindEnum(aType) ;
+  template<typename tEnumValueType, tEnumValueType tValue>
+  tEnumValueType GetEnumAsNativeType()
+  {
+    return tValue;
+  }
+
+
+#define YTERegisterType(aType) \
+  ::YTE::Type::AddGlobalType(::YTE::TypeId<aType>()->GetName(), ::YTE::TypeId<aType>()); \
+  YTEBindStaticOrFreeFunction(aType, &::YTE::TypeId<aType>, YTENoOverload, "GetStaticType", YTENoNames)
+
+#define YTEBindEnumValue(aEnumValue, aEnumName)    \
+  ::YTE::BindFunction<decltype(GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>),    \
+                      GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>,              \
+                      std::initializer_list<const char*>YTENoNames.size()>(aEnumName,                                          \
+                                                                           ::YTE::TypeId<decltype(aEnumValue)>(),              \
+                                                                           YTENoNames)
 
 #define YTEBindField(aFieldPointer, aName, aPropertyBinding)              \
-  ::YTE::BindField<decltype(aFieldPointer), aFieldPointer>(                      \
+  ::YTE::BindField<decltype(aFieldPointer), aFieldPointer>(               \
     aName,                                                                \
     aPropertyBinding,                                                     \
     ::YTE::TypeId<::YTE::DecomposeFieldPointer<decltype(aFieldPointer)>::ObjectType>())
 
 #define YTEBindProperty(aGetterFunction, aSetterFunction, aName)            \
-  ::YTE::BindProperty<decltype(aGetterFunction), aGetterFunction,                  \
+  ::YTE::BindProperty<decltype(aGetterFunction), aGetterFunction,           \
                decltype(aSetterFunction), aSetterFunction>(                 \
     aName,                                                                  \
-    ::YTE::TypeId<::YTE::DecomposePropertyType<decltype(aGetterFunction),                 \
+    ::YTE::TypeId<::YTE::DecomposePropertyType<decltype(aGetterFunction),   \
                                  decltype(aSetterFunction)>::ObjectType>())
 
 
@@ -115,7 +136,7 @@ void Name::InitializeType()
 
     }
 
-    std::string GetDocumentation()
+    const std::string& GetDocumentation()
     {
       return mDocumentation;
     }
@@ -335,22 +356,18 @@ void Name::InitializeType()
       return false;
     }
 
-    void AddFunction(std::unique_ptr<Function> aFunction);
-    void AddProperty(std::unique_ptr<Property> aProperty);
-    void AddField(std::unique_ptr<Field>    aField);
+    Function* AddFunction(std::unique_ptr<Function> aFunction);
+    Property* AddProperty(std::unique_ptr<Property> aProperty);
+    Field* AddField(std::unique_ptr<Field>    aField);
 
-    OrderedMultiMap<std::string, std::unique_ptr<Function>>::range GetFunctionRange(const char *aName)
+    OrderedMultiMap<std::string, std::unique_ptr<Function>>::range GetFunctionRange(const std::string_view aName)
     {
-      std::string name{ aName };
-
-      return mFunctions.FindAll(name);
+      return mFunctions.FindAll(aName);
     }
 
-    Function* GetFirstFunction(const char *aName)
+    Function* GetFirstFunction(const std::string_view aName)
     {
-      std::string name{ aName };
-
-      auto it = mFunctions.FindFirst(name);
+      auto it = mFunctions.FindFirst(aName);
 
       if (it != mFunctions.end())
       {
@@ -386,9 +403,7 @@ void Name::InitializeType()
 
     Property* GetFirstProperty(const char *aName)
     {
-      std::string name{ aName };
-
-      auto it = mProperties.FindFirst(name);
+      auto it = mProperties.FindFirst(aName);
 
       if (it != mProperties.end())
       {
@@ -398,7 +413,7 @@ void Name::InitializeType()
       return nullptr;
     }
 
-    Property* GetFirstField(const std::string &aName)
+    Property* GetField(const std::string_view aName)
     {
       auto it = mFields.FindFirst(aName);
 
@@ -472,8 +487,11 @@ void Name::InitializeType()
     static void AddGlobalType(const std::string &aName, Type *aType);
     static Type* GetGlobalType(const std::string &aName);
 
+    static std::unordered_map<std::string, Type*>& GetGlobalTypes() { return sGlobalTypes; }
+
     OrderedMultiMap<std::string, std::unique_ptr<Property>>& GetProperties() { return mProperties; };
     OrderedMultiMap<std::string, std::unique_ptr<Property>>& GetFields() { return mFields; };
+    OrderedMultiMap<std::string, std::unique_ptr<Function>>& GetFunctions() { return mFunctions; };
 
   private:
     OrderedMultiMap<std::string, std::unique_ptr<Function>> mFunctions;
@@ -572,6 +590,20 @@ void Name::InitializeType()
     return TypeIdentification<T>::TypeId();
   }
 
+  // Specialized so void returns nullptr;
+  template<typename T>
+  inline Type* BaseTypeId()
+  {
+    return TypeIdentification<T>::TypeId();
+  }
+
+  template<>
+  inline Type* BaseTypeId<void>()
+  {
+    return nullptr;
+  }
+
+
   template<typename T>
   inline void InitializeType()
   {
@@ -606,15 +638,15 @@ namespace YTE                                              \
 
 YTEDeclareExternalType(void)
 YTEDeclareExternalType(bool)
-YTEDeclareExternalType(s8)
-YTEDeclareExternalType(i8)
-YTEDeclareExternalType(i16)
-YTEDeclareExternalType(i32)
-YTEDeclareExternalType(i64)
-YTEDeclareExternalType(u8)
-YTEDeclareExternalType(u16)
-YTEDeclareExternalType(u32)
-YTEDeclareExternalType(u64)
+YTEDeclareExternalType(YTE::s8)
+YTEDeclareExternalType(YTE::i8)
+YTEDeclareExternalType(YTE::i16)
+YTEDeclareExternalType(YTE::i32)
+YTEDeclareExternalType(YTE::i64)
+YTEDeclareExternalType(YTE::u8)
+YTEDeclareExternalType(YTE::u16)
+YTEDeclareExternalType(YTE::u32)
+YTEDeclareExternalType(YTE::u64)
 YTEDeclareExternalType(float)
 YTEDeclareExternalType(double)
 YTEDeclareExternalType(std::string)
@@ -624,4 +656,3 @@ YTEDeclareExternalType(YTE::String)
 #include "YTE/Meta/Property.hpp"
 #include "YTE/Meta/Field.hpp"
 #include "YTE/Meta/Attribute.hpp"
-

@@ -185,6 +185,7 @@ namespace YTE
     InitializeType<double>();
     InitializeType<std::string>();
     InitializeType<YTE::String>();
+    InitializeType<glm::i32vec2>();
     InitializeType<glm::vec2>();
     InitializeType<glm::vec3>();
     InitializeType<glm::vec4>();
@@ -194,5 +195,17 @@ namespace YTE
     InitializeType<YTE::Xbox_Buttons>();
     InitializeType<YTE::Mouse_Buttons>();
     InitializeType<YTE::Keys>();
+
+    InitializeType<CompositionMap::range>();
+
+    InitializeType<Type>();
+    InitializeType<DocumentedObject>();
+    InitializeType<Function>();
+    InitializeType<Property>();
+    InitializeType<Field>();
+    InitializeType<Attribute>();
+    InitializeType<Serializable>();
+    InitializeType<EditorProperty>();
+    InitializeType<DropDownStrings>();
   }
 }

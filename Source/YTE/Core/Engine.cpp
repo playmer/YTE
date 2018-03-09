@@ -179,12 +179,14 @@ namespace YTE
     if (false == mEditorMode)
     {
       auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this, nullptr));
+      toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
     else
     {
       auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this));
+      toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
@@ -202,7 +204,7 @@ namespace YTE
     }
   }
 
-  void Engine::Initialize(bool)
+  void Engine::Initialize(InitializeEvent*)
   {
     if (mShouldIntialize == false)
     {
@@ -261,10 +263,7 @@ namespace YTE
   
     mGamepadSystem.Update(mDt);
   
-    for (auto &space : mCompositions)
-    {
-      space.second->Update(mDt);
-    }
+    SendEvent(Events::LogicUpdate, &updateEvent);
 
     // If we're told to shut down then our windows might be invalidated
     // so we shouldn't try to run the Graphics updates.
@@ -272,12 +271,9 @@ namespace YTE
     {
       return;
     }
-
     
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
-    
-    SendEvent(Events::LogicUpdate, &updateEvent);
 
     // We may also have been told to shut down here.
     if (false == mShouldRun)

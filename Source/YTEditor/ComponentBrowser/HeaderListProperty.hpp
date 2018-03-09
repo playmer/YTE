@@ -30,7 +30,7 @@ namespace YTEditor
                        HeaderListWidget *aParent, 
                        YTE::Property *aProp,
                        YTE::Object *aObject)
-      : PropertyWidget<T>(aName, aMainWindow, aParent)
+      : PropertyWidget<T>(aName, aProp, aMainWindow, aParent)
       , mHeaderWidget(aParent)
       , mEngineProp(aProp)
       , mObject(aObject)
@@ -64,12 +64,23 @@ namespace YTEditor
       }
       else
       {
-        for (int i = 0; i < this->GetWidgets().size(); ++i)
+        if ((std::is_same<glm::vec3, T>() || std::is_same<glm::vec4, T>()) &&
+            mEngineProp->GetAttribute<YTE::EditableColor>())
         {
-          this->connect(dynamic_cast<QLineEdit*>(this->GetWidgets()[i]),
-            &QLineEdit::editingFinished,
-            this,
-            &HeaderListProperty<T>::SaveToEngine);
+          this->connect(dynamic_cast<ColorPicker*>(this->GetWidgets()[0]),
+                        &QPushButton::clicked,
+                        this,
+                        &HeaderListProperty<T>::SaveToEngine);
+        }
+        else
+        {
+          for (int i = 0; i < this->GetWidgets().size(); ++i)
+          {
+            this->connect(dynamic_cast<QLineEdit*>(this->GetWidgets()[i]),
+                                                   &QLineEdit::editingFinished,
+                                                   this,
+                                                   &HeaderListProperty<T>::SaveToEngine);
+          }
         }
       }
     }

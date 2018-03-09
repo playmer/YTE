@@ -29,6 +29,9 @@ namespace YTE
     ~VkInstantiatedModel() override;
 
     void Create();
+    void CreateShader();
+    void SurfaceLostEvent(ViewChanged *aEvent);
+    void SurfaceGainedEvent(ViewChanged *aEvent);
 
     void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;
@@ -56,7 +59,7 @@ namespace YTE
 
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
-    
+
   private:
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;

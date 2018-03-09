@@ -119,9 +119,19 @@ namespace YTE
       UpdateUBO();
     }
 
-    void SetIsEditorObject(bool aIsEditorObject)
+    void SetFlag(UBOMaterialFlags aFlag, bool aValue)
     {
-      mMaterial.mIsEditorObject = aIsEditorObject;
+      // Set flag
+      if (aValue)
+      {
+        mMaterial.mFlags |= (1u << ((u32)aFlag / 2));
+      }
+      // Clear Flag
+      else
+      {
+        mMaterial.mFlags &= ~(1u << ((u32)aFlag / 2));
+      }
+
       UpdateUBO();
     }
 
@@ -143,7 +153,7 @@ namespace YTE
     float     GetReflectivity() { return mMaterial.mReflectivity; }
     float     GetReflectiveIndex() { return mMaterial.mReflectiveIndex; }
     float     GetBumpScaling() { return mMaterial.mBumpScaling; }
-    bool      GetIsEditorObject() { return mMaterial.mIsEditorObject; }
+    u32       GetFlags() { return mMaterial.mFlags; }
     bool      GetUseNormalTexture() { return mMaterial.mUsesNormalTexture ? true : false; }
 
 

@@ -15,19 +15,24 @@ namespace YTE
 
     YTEBindProperty(&GetDiffuse, &SetDiffuse, "Diffuse")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
     YTEBindProperty(&GetAmbient, &SetAmbient, "Ambient")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
     YTEBindProperty(&GetSpecular, &SetSpecular, "Specular")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
     YTEBindProperty(&GetEmissive, &SetEmissive, "Emissive")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
     YTEBindProperty(&GetTransparent, &SetTransparent, "Transparent")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
     //YTEBindProperty(&GetReflective, &SetReflective, "Reflective")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
@@ -49,9 +54,9 @@ namespace YTE
     //YTEBindProperty(&GetBumpScaling, &SetBumpScaling, "BumpScaling")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+    //YTEBindProperty(&GetIsEditorObject, &SetIsEditorObject, "IsEditorObject")
+    //  .AddAttribute<EditorProperty>()
+    //  .AddAttribute<Serializable>();
   }
 
 

@@ -87,7 +87,7 @@ namespace YTE
     mRenderTargetData.clear();
     for (int i = 0; i < aRTs.size(); ++i)
     {
-      mRenderTargetData.push_back((aRTs[0]->GetRenderTargetData()));
+      mRenderTargetData.push_back((aRTs[i]->GetRenderTargetData()));
     }
     std::sort(mRenderTargetData.begin(),
               mRenderTargetData.end(),

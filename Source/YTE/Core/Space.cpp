@@ -59,9 +59,16 @@ namespace YTE
   {
     if (false == mEngine->IsEditor())
     {
-      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, this, &Space::WindowLostOrGainedFocusHandler);
-      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, this, &Space::WindowMinimizedOrRestoredHandler);
+      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, 
+                                        this, 
+                                        &Space::WindowLostOrGainedFocusHandler);
+      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, 
+                                        this, 
+                                        &Space::WindowMinimizedOrRestoredHandler);
     }
+
+
+    mEngine->YTERegister(Events::LogicUpdate, this, &Space::Update);
 
     if (nullptr != aProperties)
     {
@@ -110,17 +117,17 @@ namespace YTE
   }
 
 
-  void Space::Initialize(bool)
+  void Space::Initialize(InitializeEvent *aEvent)
   {
-    Composition::NativeInitialize(mCheckRunInEditor);
-    Composition::PhysicsInitialize(mCheckRunInEditor);
-    Composition::Initialize(mCheckRunInEditor);
+    Composition::NativeInitialize(aEvent);
+    Composition::PhysicsInitialize(aEvent);
+    Composition::Initialize(aEvent);
 
     mShouldIntialize = true;
   }
 
   // Updates the Space to the current frame.
-  void Space::Update(double aDt)
+  void Space::Update(LogicUpdate *aEvent)
   {
     YTEProfileFunction(profiler::colors::Amber);
     if (mLoading)
@@ -130,26 +137,26 @@ namespace YTE
       Load(mLevelToLoad);
     }
 
-    LogicUpdate updateEvent;
-    updateEvent.Dt = aDt;
+    SendEvent(Events::DeletionUpdate, aEvent);
 
-    SendEvent(Events::PhysicsUpdate, &updateEvent);
-
-    SendEvent(Events::DeletionUpdate, &updateEvent);
+    SendEvent(Events::PhysicsUpdate, aEvent);
 
     // TODO: Move the frame update calls to the graphics system
-    SendEvent(Events::FrameUpdate, &updateEvent);
+    SendEvent(Events::FrameUpdate, aEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
     if (mPaused == false)
     {
-      SendEvent(Events::LogicUpdate, &updateEvent);
+      SendEvent(Events::LogicUpdate, aEvent);
     }
   }
     
   // Cleans up anything in the Space.
-  Space::~Space() {  mCompositions.Clear();  }
-
+  Space::~Space() 
+  {  
+    mCompositions.Clear();
+    mComponents.Clear();
+  }
 
   void Space::CreateBlankLevel(const String& aLevelName)
 {
@@ -210,6 +217,22 @@ namespace YTE
     levelToSave.open(level);
     levelToSave << levelInJson;
     levelToSave.close();
+  }
+
+
+  Space* Space::AddChildSpace(String aLevelName)
+  {
+    auto newSpace = AddComposition<Space>(aLevelName, mEngine, nullptr);
+    newSpace->Load(mEngine->GetLevel(aLevelName));
+    auto ourView = GetComponent<GraphicsView>();
+    auto newView = newSpace->GetComponent<GraphicsView>();
+
+    if (ourView && newView)
+    {
+      newView->ChangeWindow(ourView->GetWindow());
+    }
+
+    return newSpace;
   }
 
 

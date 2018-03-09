@@ -95,7 +95,7 @@ namespace YTE
 
       // If the bound field/property does not have the Property Attribute, do nothing.
       auto setter = namedProperty->GetSetter();
-      auto setterType = setter->GetParameters()->at(1).mType->GetMostBasicType();
+      auto setterType = setter->GetParameters().at(1).mType->GetMostBasicType();
 
       // Type is a float
       if (setterType == TypeId<float>())

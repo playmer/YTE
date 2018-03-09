@@ -197,21 +197,22 @@ namespace YTE
   { 
     DeserializeByType(aProperties, this, GetStaticType()); 
  
-    mGraphicsView = mSpace->GetComponent<GraphicsView>(); 
- 
-    mWindow = mGraphicsView->GetWindow(); 
-    mEngine = mSpace->GetEngine();
-    mWindow->YTERegister(Events::RendererResize, this, &Camera::RendererResize); 
     mConstructing = false; 
 
     mTargetPoint = glm::vec3(0.0f, 0.0f, 0.0f);
   } 
  
   void Camera::Initialize()
-  { 
+  {
+    mGraphicsView = mSpace->GetComponent<GraphicsView>();
+    mWindow = mGraphicsView->GetWindow();
+    mEngine = mSpace->GetEngine();
+
     mMouse = &mWindow->mMouse;
     mKeyboard = &mWindow->mKeyboard;
 
+    mGraphicsView->YTERegister(Events::RendererResize, this, &Camera::RendererResize);
+    mGraphicsView->YTERegister(Events::SurfaceGained, this, &Camera::SurfaceGainedEvent);
     mMouse->YTERegister(Events::MouseMove, this, &Camera::MouseMove);
     mMouse->YTERegister(Events::MouseScroll, this, &Camera::MouseScroll);
     mMouse->YTERegister(Events::MousePress, this, &Camera::MousePress);
@@ -390,6 +391,13 @@ namespace YTE
     view.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
 
     return view;
+  }
+
+
+  void Camera::SurfaceGainedEvent(ViewChanged *aEvent)
+  {
+    mGraphicsView = aEvent->View;
+    mWindow = aEvent->Window;
   }
 
   void Camera::UpdateView()
@@ -611,10 +619,10 @@ namespace YTE
       }
       else if (mType != CameraType::Gameplay)
       {
-        if (mSpace->GetName() == "YTEditor Play Space")
-        {
-          return;
-        }
+        //if (mSpace->GetName() == "YTEditor Play Space")
+        //{
+        //  return;
+        //}
       }
     }
     else if (mType != CameraType::Gameplay)

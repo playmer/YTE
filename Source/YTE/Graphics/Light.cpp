@@ -35,15 +35,18 @@ namespace YTE
 
     YTEBindProperty(&Light::GetAmbient, &Light::SetAmbient, "Ambient")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
 
     YTEBindProperty(&Light::GetDiffuse, &Light::SetDiffuse, "Diffuse")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
 
     YTEBindProperty(&Light::GetSpecular, &Light::SetSpecular, "Specular")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditableColor>();
 
     YTEBindProperty(&Light::GetSpotLightCones, &Light::SetSpotLightCones, "Spot Light Cone Angles")
       .AddAttribute<EditorProperty>()
@@ -75,9 +78,9 @@ namespace YTE
     , mSetTransform(false)
     , mUseTemp(false)
   {
-    mRenderer = aSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    mGraphicsView = aSpace->GetComponent<GraphicsView>();
     mEngine = aSpace->GetEngine();
+    mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
+    mGraphicsView = aSpace->GetComponent<GraphicsView>();
 
     DeserializeByType(aProperties, this, GetStaticType());
   }

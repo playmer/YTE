@@ -18,6 +18,11 @@ namespace YTE
     YTERegisterType(RunInEditor);
   }
 
+  YTEDefineType(EditableColor)
+  {
+    YTERegisterType(EditableColor);
+  }
+
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
   {
     YTEUnusedArgument(aType);
@@ -42,20 +47,20 @@ namespace YTE
     auto parameters = setter->GetParameters();
     YTEUnusedArgument(parameters);
 
-    DebugObjection(parameters->size() != 2,
+    DebugObjection(parameters.size() != 2,
                    "%s %s must have a setter that takes only one parameter,"
                    " an instance of an object of the same type as it's getter returns.",
                    aType,
                    property->GetName().c_str());
 
-    DebugObjection((*parameters)[1].mType->GetMostBasicType() != getter->GetReturnType()->GetMostBasicType(),
+    DebugObjection(parameters[1].mType->GetMostBasicType() != getter->GetReturnType()->GetMostBasicType(),
                    "%s %s must have a setter that takes as it's "
                    "first parameter, the same type as it's getter returns. \n"
                    "  Setter First Parameter Type: %s"
                    "  Getter Return Type : %s",
                    aType,
                    property->GetName().c_str(),
-                   (*parameters)[1].mType->GetName().c_str(),
+                   parameters[1].mType->GetName().c_str(),
                    getter->GetName().c_str());
   }
 

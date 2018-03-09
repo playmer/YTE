@@ -16,36 +16,18 @@ namespace YTE
 
     Property(const char *aName,
              std::unique_ptr<Function> aGetter,
-             std::unique_ptr<Function> aSetter)
-      : mName(aName)
-      , mGetter(std::move(aGetter))
-      , mSetter(std::move(aSetter))
-    {
-      runtime_assert((nullptr != mGetter) || (nullptr != mSetter),
-                     "At least one of the getter and setter must be set.");
-    }
+             std::unique_ptr<Function> aSetter);
 
+    Type* GetOwningType() { return mOwningType; }
+    Type* GetPropertyType() { return mType; }
     const std::string& GetName() const { return mName; }
     Function* GetGetter() { return mGetter.get(); }
     Function* GetSetter() { return mSetter.get(); }
-
-    Type* GetPropertyType()
-    {
-      if (mGetter)
-      {
-        return mGetter->GetReturnType()->GetMostBasicType();
-      }
-
-      if (mSetter)
-      {
-        auto parameters = mSetter->GetParameters();
-        return (*parameters)[1].mType->GetMostBasicType();
-      }
-
-      return nullptr;
-    }
+    void SetPropertyType(Type *aType) { mType = aType; }
 
   protected:
+    Type *mOwningType;
+    Type *mType;
     std::string mName;
     std::unique_ptr<Function> mGetter;
     std::unique_ptr<Function> mSetter;
@@ -61,8 +43,8 @@ namespace YTE
     auto setter = Binding<SetterFunctionSignature>:: template BindFunction<SetterFunction>("Setter");
 
     auto property = std::make_unique<Property>(aName, std::move(getter), std::move(setter));
-    auto ptr = property.get();
-    aType->AddProperty(std::move(property));
+    
+    auto ptr = aType->AddProperty(std::move(property));
 
     return *ptr;
   }

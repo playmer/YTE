@@ -260,7 +260,10 @@ namespace YTE
   };
 
   template <typename Return, typename Arg = Return>
-  struct CountFunctionArguments {};
+  struct CountFunctionArguments
+  {
+
+  };
 
   template <typename Return, typename ...Arguments>
   struct CountFunctionArguments<Return(*)(Arguments...)>

@@ -152,6 +152,7 @@ namespace YTEditor
     btCollisionWorld::ClosestRayResultCallback rayCallback(rayFrom, rayTo);
     mDynamicsWorld->rayTest(rayFrom, rayTo, rayCallback);
 
+    auto previousObject = mCurrentObj;
 
     if (rayCallback.hasHit())
     {
@@ -177,9 +178,49 @@ namespace YTEditor
 
         // TODO(Evan/Nick): change to setSelectedItem for drag select in future
         browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+
+        auto model = mCurrentObj->GetComponent<YTE::Model>();
+
+        if (model)
+        {
+          auto instanceModel = model->GetInstantiatedModel();
+
+          if (instanceModel.size())
+          {
+            for (auto &mesh : instanceModel)
+            {
+              auto material = mesh->GetUBOMaterialData();
+              material.mFlags |= 1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2;
+              mesh->UpdateUBOMaterial(&material);
+            }
+          }
+        }
       }
 
       mIsHittingObject = true;
+    }
+
+    if (nullptr != previousObject &&
+        (false == rayCallback.hasHit() ||
+        (mCurrentObj != previousObject && 
+         false == mIsGizmoActive)))
+    {
+      auto model = previousObject->GetComponent<YTE::Model>();
+
+      if (model)
+      {
+        auto instanceModel = model->GetInstantiatedModel();
+
+        if (instanceModel.size())
+        {
+          for (auto &mesh : instanceModel)
+          {
+            auto material = mesh->GetUBOMaterialData();
+            material.mFlags &= ~(1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2);
+            mesh->UpdateUBOMaterial(&material);
+          }
+        }
+      }
     }
   }
 
@@ -309,6 +350,11 @@ namespace YTEditor
 
   void PhysicsHandler::Remove(YTE::Composition *aComposition)
   {
+    if (mCurrentObj == aComposition)
+    {
+      mCurrentObj = nullptr;
+    }
+
     auto it = mObjects.find(aComposition);
 
     if (it != mObjects.end())

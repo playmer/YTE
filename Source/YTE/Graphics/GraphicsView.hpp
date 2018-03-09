@@ -27,6 +27,16 @@ namespace YTE
     MultiplicativeBlend
   };
 
+  YTEDeclareEvent(SurfaceLost);
+  YTEDeclareEvent(SurfaceGained);
+
+  class ViewChanged : public Event
+  {
+  public:
+    GraphicsView *View;
+    Window *Window;
+  };
+
   class GraphicsView : public Component
   {
   public:
@@ -48,10 +58,16 @@ namespace YTE
     }
 
     void ChangeWindow(const std::string& aWindowName);
+    void ChangeWindow(Window *aWindow);
 
     Window* GetWindow()
     {
       return mWindow;
+    }
+
+    Renderer* GetRenderer()
+    {
+      return mRenderer;
     }
 
     float GetOrder()

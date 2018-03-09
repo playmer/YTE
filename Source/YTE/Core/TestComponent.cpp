@@ -3,6 +3,8 @@
 
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/Graphics/GraphicsView.hpp"
+
 #include "YTE/Physics/Transform.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
@@ -27,9 +29,7 @@ namespace YTE
   void TestComponent::Initialize()
   {
     String hud{ "LightingTests" };
-    auto engine = mSpace->GetEngine();
-    auto hudSpace = engine->AddComposition<Space>("LightingTests", engine, nullptr);
-    hudSpace->Load(engine->GetLevel(hud));
+    mSpace->AddChildSpace(hud);
 
     auto transform = mOwner->GetComponent<Transform>();
 

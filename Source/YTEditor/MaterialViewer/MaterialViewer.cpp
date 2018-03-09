@@ -97,25 +97,25 @@ namespace YTEditor
   {
   }
 
-  void MaterialViewer::LoadMaterial(YTE::UBOMaterial const & aMaterial)
+  void MaterialViewer::LoadMaterial(YTE::UBOMaterial const &aMaterial)
   {
     this->Clear();
 
     // glm::vec3
-    AddVec3Property("Diffuse", glm::vec3(aMaterial.mDiffuse));
-    AddVec3Property("Ambient", glm::vec3(aMaterial.mAmbient));
-    AddVec3Property("Specular", glm::vec3(aMaterial.mSpecular));
-    AddVec3Property("Emissive", glm::vec3(aMaterial.mEmissive));
-    AddVec3Property("Transparent", glm::vec3(aMaterial.mTransparent));
-    AddVec3Property("Reflective", glm::vec3(aMaterial.mReflective));
-
-    //float
-    AddFloatProperty("Opacity", aMaterial.mOpacity);
-    AddFloatProperty("Shininess", aMaterial.mShininess);
-    AddFloatProperty("Shiny Strength", aMaterial.mShininessStrength);
-    AddFloatProperty("Reflectivity", aMaterial.mReflectivity);
-    AddFloatProperty("Reflective Index", aMaterial.mReflectiveIndex);
-    AddFloatProperty("Bump Scaling", aMaterial.mBumpScaling);
+    //AddVec3Property("Diffuse", glm::vec3(aMaterial.mDiffuse));
+    //AddVec3Property("Ambient", glm::vec3(aMaterial.mAmbient));
+    //AddVec3Property("Specular", glm::vec3(aMaterial.mSpecular));
+    //AddVec3Property("Emissive", glm::vec3(aMaterial.mEmissive));
+    //AddVec3Property("Transparent", glm::vec3(aMaterial.mTransparent));
+    //AddVec3Property("Reflective", glm::vec3(aMaterial.mReflective));
+    //
+    ////float
+    //AddFloatProperty("Opacity", aMaterial.mOpacity);
+    //AddFloatProperty("Shininess", aMaterial.mShininess);
+    //AddFloatProperty("Shiny Strength", aMaterial.mShininessStrength);
+    //AddFloatProperty("Reflectivity", aMaterial.mReflectivity);
+    //AddFloatProperty("Reflective Index", aMaterial.mReflectiveIndex);
+    //AddFloatProperty("Bump Scaling", aMaterial.mBumpScaling);
   }
 
   void MaterialViewer::SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList)
@@ -159,17 +159,17 @@ namespace YTEditor
     }
   }
 
-  void MaterialViewer::AddVec3Property(const char * aName, glm::vec3 const & aVec)
-  {
-    PropertyWidget<glm::vec3> * prop = AddProperty<glm::vec3>(aName);
-    prop->SetValue(aVec);
-  }
-
-  void MaterialViewer::AddFloatProperty(const char * aName, float aVal)
-  {
-    PropertyWidget<float> * prop = AddProperty<float>(aName);
-    prop->SetValue(aVal);
-  }
+  //void MaterialViewer::AddVec3Property(const char *aName, glm::vec3 const &aVec)
+  //{
+  //  PropertyWidget<glm::vec3> * prop = AddProperty<glm::vec3>(aName);
+  //  prop->SetValue(aVec);
+  //}
+  //
+  //void MaterialViewer::AddFloatProperty(const char *aName, float aVal)
+  //{
+  //  PropertyWidget<float> * prop = AddProperty<float>(aName);
+  //  prop->SetValue(aVal);
+  //}
 
   void MaterialViewer::Clear()
   {

@@ -8,7 +8,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
-
+#define M_PI 3.1415926535897932384626433832795
+const uint MatFlag_IsGizmo    = 1 << 0;
+const uint MatFlag_IsSelected = 1 << 1;
+const float M_0_75_PI = M_PI * 0.75f;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Structures
@@ -87,7 +90,7 @@ layout (binding = UBO_SUBMESH_MATERIAL_BINDING) uniform UBOSubmeshMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     int mUsesNormalTexture;
 } SubmeshMaterial;
 
@@ -107,7 +110,7 @@ layout (binding = UBO_MODEL_MATERIAL_BINDING) uniform UBOModelMaterial
     float mReflectivity;
     float mReflectiveIndex;
     float mBumpScaling;
-    int mIsEditorObject;
+    uint mFlags;
     int mUsesNormalTexture;
 } ModelMaterial;
 
@@ -404,24 +407,33 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if (SubmeshMaterial.mIsEditorObject + ModelMaterial.mIsEditorObject > 0)
+  if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-    if (outFragColor.w <= 0.001f)
-    {
-      discard;
-    }
   }
   else if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-    if (outFragColor.w <= 0.001f)
-    {
-      discard;
-    }
   }
   else
   {
     outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), inTextureCoordinates.xy);
+  }
+
+  if (outFragColor.w <= 0.001f)
+  {
+    discard;
+  }
+
+  if ((ModelMaterial.mFlags & MatFlag_IsSelected) > 0)
+  {
+    float previousAlpha = outFragColor.w;
+
+    vec4 normal = vec4(normalize(inNormal), 0.0f);
+    vec4 cameraToNormal = normalize(vec4(inPositionWorld, 1.0f) - Illumination.mCameraPosition);
+
+    float luminance = acos(dot(normal, cameraToNormal)) / M_0_75_PI;
+    vec3 selectionColor = vec3(1.0f, 1.0f, 0.0f);
+    outFragColor = vec4(mix(outFragColor.xyz, selectionColor, saturate(1.0f - luminance)), previousAlpha);
   }
 }

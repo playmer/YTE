@@ -88,8 +88,14 @@ namespace YTE
     void Update();
     ~Engine();
 
-    void Initialize(bool) override;
-    void Initialize() { Initialize(true); }
+    void Initialize(InitializeEvent*) override;
+    void Initialize()
+    {
+      InitializeEvent event;
+      event.CheckRunInEditor = true;
+      Initialize(&event);
+    }
+
     void Deserialize(RSValue *aValue);
 
     Window* AddWindow(const char *aName);
@@ -126,9 +132,6 @@ namespace YTE
     RSDocument* GetLevel(String &aLevel);
     std::unordered_map<String, UniquePointer<RSDocument>>* GetLevels(void);
 
-    OrderedMultiMap<Composition*, UniquePointer<Composition>> mCompositionsToRemove;
-    OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
-
     bool IsEditor()
     {
       return mEditorMode;
@@ -153,6 +156,9 @@ namespace YTE
 
     void Log(LogType aType, std::string_view aLog);
 
+
+    OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
+    OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
   private:
     GamepadSystem mGamepadSystem;

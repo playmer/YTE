@@ -26,6 +26,8 @@ namespace YTE
     ~VkInstantiatedLight() override;
 
     void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
+    void SurfaceLostEvent(ViewChanged *aEvent);
+    void SurfaceGainedEvent(ViewChanged *aEvent);
 
     void SetIndex(unsigned int aIndex)
     {

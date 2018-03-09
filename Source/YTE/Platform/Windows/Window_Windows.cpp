@@ -708,6 +708,18 @@ namespace YTE
     return self->mWidth;
   }
 
+  void Window::SetHeight(u32 aHeight)
+  {
+    auto self = mData.Get<WindowData>();
+    self->mHeight = aHeight;
+  }
+
+  void Window::SetWidth(u32 aWidth)
+  {
+    auto self = mData.Get<WindowData>();
+    self->mWidth = aWidth;
+  }
+
   glm::i32vec2 Window::GetPosition()
   {
     auto self = mData.Get<WindowData>();

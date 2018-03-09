@@ -8,7 +8,7 @@ function(YTE_Target_Folder_Recursive aTarget aFolderDelimiter)
         set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
       endif ()
 
-      YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary})
+      YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary}_Dependencies)
     endif()
   endforeach()
 endfunction(YTE_Target_Folder_Recursive)

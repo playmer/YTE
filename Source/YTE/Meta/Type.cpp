@@ -13,6 +13,19 @@ namespace YTE
   YTEDefineType(Type)
   {
     YTERegisterType(Type);
+
+    YTEBindStaticOrFreeFunction(Type, &Type::GetGlobalType, YTENoOverload, "GetGlobalType", YTEParameterNames("aName"));
+
+    YTEBindProperty(&Type::Name, YTENoSetter, "Name")
+      .Description() = "Name of the Type.";
+    YTEBindProperty(&Type::Hash, YTENoSetter, "Hash")
+      .Description() = "Hash of the Type.";
+    YTEBindProperty(&Type::GetAllocatedSize, YTENoSetter, "AllocatedSize")
+      .Description() = "Allocated size of the Type.";
+    YTEBindProperty(&Type::GetStoredSize, YTENoSetter, "StoredSize")
+      .Description() = "Stored size of the Type.";
+    YTEBindProperty(&Type::GetUnqualifiedSize, YTENoSetter, "UnqualifiedSize")
+      .Description() = "Unqualified size of the Type.";
   }
 
   inline Type::~Type()
@@ -20,19 +33,22 @@ namespace YTE
 
   }
 
-  void Type::AddFunction(std::unique_ptr<Function> aFunction)
+  Function* Type::AddFunction(std::unique_ptr<Function> aFunction)
   {
-    mFunctions.Emplace(aFunction->GetName(), std::move(aFunction));
+    auto function = mFunctions.Emplace(aFunction->GetName(), std::move(aFunction));
+    return function->second.get();
   }
 
-  void Type::AddProperty(std::unique_ptr<Property> aProperty)
+  Property* Type::AddProperty(std::unique_ptr<Property> aProperty)
   {
-    mProperties.Emplace(aProperty->GetName(), std::move(aProperty));
+    auto property = mProperties.Emplace(aProperty->GetName(), std::move(aProperty));
+    return property->second.get();
   }
 
-  void Type::AddField(std::unique_ptr<Field> aField)
+  Field* Type::AddField(std::unique_ptr<Field> aField)
   {
-    mFields.Emplace(aField->GetName(), std::move(aField));
+    auto field = mFields.Emplace(aField->GetName(), std::move(aField));
+    return static_cast<Field*>(field->second.get());
   }
 
   bool Type::IsA(Type *aType, Type *aTypeToStopAt)
@@ -152,6 +168,14 @@ namespace YTE
   {
     YTERegisterType(Function);
 
+    YTEBindProperty(&Function::GetOwningType, YTENoSetter, "OwningType")
+      .Description() = "Type that owns this Function.";
+    YTEBindProperty(&Function::GetName, YTENoSetter, "Name")
+      .Description() = "Name of the property.";
+    YTEBindProperty(&Function::GetReturnType, YTENoSetter, "ReturnType")
+      .Description() = "The return type of the function.";
+    YTEBindProperty(&Function::IsStaticOrFree, YTENoSetter, "StaticOrFree")
+      .Description() = "Lets you know if this function is a static or free function, as in not a member function.";
   }
 
 
@@ -159,6 +183,63 @@ namespace YTE
   {
     YTERegisterType(Property);
 
+    YTEBindProperty(&Property::GetOwningType, YTENoSetter, "OwningType")
+      .Description() = "Type that owns this Property.";
+    YTEBindProperty(&Property::GetPropertyType, YTENoSetter, "PropertyType")
+      .Description() = "Type of the Property, what we can get or set.";
+    YTEBindProperty(&Property::GetName, YTENoSetter, "Name")
+      .Description() = "Name of the Property.";
+    YTEBindProperty(&Property::GetGetter, YTENoSetter, "Getter")
+      .Description() = "Getter function of the Property, may be null.";
+    YTEBindProperty(&Property::GetSetter, YTENoSetter, "Setter")
+      .Description() = "Setter function of the Property, may be null.";
+  }
+
+  Property::Property(const char *aName,
+                     std::unique_ptr<Function> aGetter,
+                     std::unique_ptr<Function> aSetter)
+    : mName(aName)
+    , mGetter(std::move(aGetter))
+    , mSetter(std::move(aSetter))
+  {
+    DebugAssert((nullptr != mGetter) || (nullptr != mSetter),
+                "At least one of the getter and setter must be set.");
+
+    if (mGetter)
+    {
+      mOwningType = mGetter->GetOwningType();
+      mType = mGetter->GetReturnType()->GetMostBasicType();
+    }
+
+    if (mSetter)
+    {
+      mOwningType = mSetter->GetOwningType();
+      auto parameters = mSetter->GetParameters();
+
+      DebugObjection(parameters.size() != 2,
+                     "%s %s must have a setter that takes only one parameter,"
+                     " an instance of an object of the same type as it's getter returns.",
+                     mOwningType->GetName().c_str(),
+                     mName.c_str());
+
+      mType = parameters[1].mType->GetMostBasicType();
+    }
+
+    // TODO: This check doesn't work as intended, should be something more like, convertible to.
+    //if (mSetter && mGetter)
+    //{
+    //  auto parameters = mSetter->GetParameters();
+    //
+    //  DebugObjection(parameters[1].mType->GetMostBasicType() != mGetter->GetReturnType()->GetMostBasicType(),
+    //                 "%s %s must have a setter that takes as it's "
+    //                 "first parameter, the same type as it's getter returns. \n"
+    //                 "  Setter First Parameter Type: %s"
+    //                 "  Getter Return Type : %s",
+    //                 mOwningType->GetName().c_str(),
+    //                 mName.c_str(),
+    //                 parameters[1].mType->GetName().c_str(),
+    //                 mGetter->GetName().c_str());
+    //}
   }
 
   YTEDefineType(Field)
@@ -170,54 +251,53 @@ namespace YTE
   {
     YTERegisterType(YTE::String);
   }
-
-
-  YTEDefineExternalType(s8)
-  {
-    YTERegisterType(s8);
-  }
-
-  YTEDefineExternalType(i8)
-  {
-    YTERegisterType(i8);
-  }
-
-  YTEDefineExternalType(i16)
-  {
-    YTERegisterType(i16);
-  }
-
-  YTEDefineExternalType(i32)
-  {
-    YTERegisterType(i32);
-  }
-
-  YTEDefineExternalType(i64)
-  {
-    YTERegisterType(i64);
-  }
-
-  YTEDefineExternalType(u8)
-  {
-    YTERegisterType(u8);
-  }
-
-  YTEDefineExternalType(u16)
-  {
-    YTERegisterType(u16);
-  }
-
-  YTEDefineExternalType(u32)
-  {
-    YTERegisterType(u32);
-  }
-
-  YTEDefineExternalType(u64)
-  {
-    YTERegisterType(u64);
-  }
 }
 
+
+YTEDefineExternalType(YTE::s8)
+{
+  YTERegisterType(YTE::s8);
+}
+
+YTEDefineExternalType(YTE::i8)
+{
+  YTERegisterType(YTE::i8);
+}
+
+YTEDefineExternalType(YTE::i16)
+{
+  YTERegisterType(YTE::i16);
+}
+
+YTEDefineExternalType(YTE::i32)
+{
+  YTERegisterType(YTE::i32);
+}
+
+YTEDefineExternalType(YTE::i64)
+{
+  YTERegisterType(YTE::i64);
+}
+
+YTEDefineExternalType(YTE::u8)
+{
+  YTERegisterType(YTE::u8);
+}
+
+YTEDefineExternalType(YTE::u16)
+{
+  YTERegisterType(YTE::u16);
+}
+
+YTEDefineExternalType(YTE::u32)
+{
+  YTERegisterType(YTE::u32);
+}
+
+YTEDefineExternalType(YTE::u64)
+{
+  YTERegisterType(YTE::u64);
+}
 
 YTEDefineExternalType(void)
 {

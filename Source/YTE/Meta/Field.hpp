@@ -19,6 +19,21 @@ namespace YTE
     }
 
     template<typename FieldPointerType, FieldPointerType aFieldPointer>
+    static size_t GetOffset()
+    {
+      using ObjectType = typename DecomposeFieldPointer<FieldPointerType>::ObjectType;
+      using FieldType = typename DecomposeFieldPointer<FieldPointerType>::FieldType;
+      std::array<char, sizeof(ObjectType)> selfData;
+      auto selfVoid = static_cast<void*>(selfData.data());
+      ObjectType *self{ static_cast<ObjectType*>(selfVoid) };
+
+      auto bytePtr = reinterpret_cast<byte*>(&(self->*aFieldPointer));
+      byte *byteAtSelf{ static_cast<byte*>(selfVoid) };
+      
+      return bytePtr - byteAtSelf;
+    }
+
+    template<typename FieldPointerType, FieldPointerType aFieldPointer>
     static Any Getter(std::vector<Any>& aArguments)
     {
       auto self = aArguments.at(0).As<typename DecomposeFieldPointer<FieldPointerType>::ObjectType*>();
@@ -33,7 +48,15 @@ namespace YTE
       return Any();
     }
 
+    void SetOffset(size_t aOffset)
+    {
+      mOffset = aOffset;
+    }
+
+    size_t GetOffset() { return mOffset; }
+
   private:
+    size_t mOffset;
   };
 
 
@@ -59,8 +82,13 @@ namespace YTE
     }
 
     auto field = std::make_unique<Field>(aName, std::move(getter), std::move(setter));
-    auto ptr = field.get();
-    aType->AddField(std::move(field));
+
+    auto type = TypeId<typename DecomposeFieldPointer<FieldPointerType>::FieldType>();
+
+    field->SetPropertyType(type);
+    field->SetOffset(Field::GetOffset<FieldPointerType, aFieldPointer>());
+    
+    auto ptr = aType->AddField(std::move(field));
     return *ptr;
   }
 

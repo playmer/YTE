@@ -29,6 +29,9 @@ namespace YTE
   {
     mMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     Create();
+
+    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
+    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
   }
 
   VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, 
@@ -43,11 +46,28 @@ namespace YTE
   {
     mMesh = static_cast<VkMesh*>(aMesh);
     Create();
+
+    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
+    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
   }
 
   VkInstantiatedModel::~VkInstantiatedModel()
   {
     mSurface->DestroyModel(mView, this);
+  }
+
+  void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+    mSurface->DestroyModel(mView, this);
+  }
+
+  void VkInstantiatedModel::SurfaceGainedEvent(ViewChanged *aEvent)
+  {
+    mView = aEvent->View;
+    mSurface = static_cast<VkRenderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
+    CreateShader();
+    mSurface->AddModel(this);
   }
 
   void VkInstantiatedModel::Create()
@@ -87,11 +107,35 @@ namespace YTE
                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
                                          allocator);
 
-    // create descriptor sets
-    for (auto [submesh, i] : enumerate(mesh->mSubmeshes))
-    {
-      submesh->second->CreateShader(mView);
 
+
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+
+    bool isEditorObject = false;
+    auto name = mMesh->mName;
+
+    if (name == "Move_X.fbx"   || name == "Move_Y.fbx"   || name == "Move_Z.fbx" ||
+        name == "Scale_X.fbx"  || name == "Scale_Y.fbx"  || name == "Scale_Z.fbx" ||
+        name == "Rotate_X.fbx" || name == "Rotate_Y.fbx" || name == "Rotate_Z.fbx")
+    {
+      isEditorObject = true;
+    }
+
+    modelMaterial.mFlags = isEditorObject ? (u32)UBOMaterialFlags::IsGizmo : 0;
+
+    UpdateUBOMaterial(&modelMaterial);
+
+    mUBOModelData.mModelMatrix = glm::mat4(1.0f);
+
+
+    // create descriptor sets
+    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    {
       auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
                                               vk::BufferUsageFlagBits::eTransferDst |
                                               vk::BufferUsageFlagBits::eUniformBuffer,
@@ -105,22 +149,25 @@ namespace YTE
       mUBOSubmeshMaterials.emplace_back(materialUBO, material);
 
       UpdateUBOSubmeshMaterial(&material, i);
+    }
+
+    CreateShader();
+  }
+
+  void VkInstantiatedModel::CreateShader()
+  {
+    auto mesh = static_cast<VkMesh*>(mMesh);
+    mPipelineData.clear();
+
+    // create descriptor sets
+    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    {
+      submesh->second->CreateShader(mView);
 
       CreateDescriptorSet(submesh->second.get(), i);
     }
-
-    UBOMaterial modelMaterial{};
-    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
-    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
-    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
-    modelMaterial.mEmissive = glm::vec4{0.0f, 0.0f, 0.0f, 1.0f};
-    modelMaterial.mShininess = 1.0f;
-    modelMaterial.mIsEditorObject = 0;
-
-    UpdateUBOMaterial(&modelMaterial);
-
-    mUBOModelData.mModelMatrix = glm::mat4(1.0f);
   }
+
 
   // TODO (Josh): Change the name to be more representative. (This is really 
   //              just telling the object to register to be updated)

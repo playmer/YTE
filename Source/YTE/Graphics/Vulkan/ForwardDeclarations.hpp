@@ -26,6 +26,7 @@ namespace YTE
   class VkTexture;
   class VkRenderToScreen;
   class VkRenderTarget;
+  class ViewChanged;
 }
 
 #endif

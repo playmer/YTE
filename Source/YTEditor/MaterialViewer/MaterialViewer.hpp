@@ -97,18 +97,18 @@ namespace YTEditor
     void OnCurrentMaterialChanged(int aIndex);
 
     // Add, Get, or Remove a property
-    template <typename TYPE>
-    PropertyWidget<TYPE> * AddProperty(const char * aName)
+    template <typename tType>
+    PropertyWidget<tType>* AddProperty(const char *aName, YTE::Property *aProp)
     {
-      PropertyWidget<TYPE> * prop = new PropertyWidget<TYPE>(aName, mMainWindow, mContainerLayout->widget());
+      PropertyWidget<tType> *prop = new PropertyWidget<tType>(aName, aProp, mMainWindow, mContainerLayout->widget());
       mContainerLayout->addWidget(prop);
       mContainer->setLayout(mContainerLayout);
       mProperties.push_back(prop);
       return prop;
     }
 
-    void AddVec3Property(const char * aName, glm::vec3 const& aVec);
-    void AddFloatProperty(const char * aName, float aVal);
+    //void AddVec3Property(const char * aName, glm::vec3 const& aVec);
+    //void AddFloatProperty(const char * aName, float aVal);
 
     void Clear();
     void ClearLayout();

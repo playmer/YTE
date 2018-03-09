@@ -25,20 +25,30 @@ namespace YTE
     Space(Engine *aEngine, RSValue *aProperties);
     void Load();
     void Load(RSValue *aLevel, bool aInitialize = true);
-    void Update(double dt);
+    void Update(LogicUpdate *aEvent);
     ~Space();
 
-    void Initialize(bool) override;
-    void Initialize() { Initialize(true); }
+    void Initialize(InitializeEvent *aEvent) override;
+    void Initialize() 
+    {
+      InitializeEvent event;
+      event.CheckRunInEditor = true;
+      Initialize(&event);
+    }
         
     void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level, bool aCheckRunInEditor = false);
     void SaveLevel(String &aLevelName);
+
+    Space* AddChildSpace(String aLevelName);
   
     bool IsPaused() const { return mPaused; };
     void SetPaused(bool aPause) { mPaused = aPause; };
 
     String& GetLevelName() { return mLevelName; };
+
+    bool GetIsEditorSpace() { return mIsEditorSpace; }
+    void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
   private:
@@ -48,6 +58,7 @@ namespace YTE
     bool mPaused = false;
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
+    bool mIsEditorSpace = false;
 
     bool mLoading = true;
     bool mCheckRunInEditor = false;
