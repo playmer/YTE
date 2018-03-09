@@ -18,22 +18,11 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/DialogueGraph.hpp"
 
 namespace YTE
 {
-  /////////////////////////////////////////////////////////////////////////////////////
-  // Events
-  /////////////////////////////////////////////////////////////////////////////////////
-  YTEDeclareEvent(RunConversation);
-
-  class RunConversation : public Event
-  {
-  public:
-    YTEDeclareType(RunConversation);
-    RunConversation() {  };
-  };
-
   /////////////////////////////////////////////////////////////////////////////////////
   // Data Structure Classes
   /////////////////////////////////////////////////////////////////////////////////////
@@ -55,13 +44,18 @@ namespace YTE
 
     Quest::Name GetName() { return mName; };
     Quest::State GetState() { return mState; };
+		std::vector<Conversation>::iterator GetActiveConvo() { return mActiveConvo; };
 
     void SetState(Quest::State aState) { mState = aState; };
+
     void AddConvo(Conversation *aConvo);
+		void ConvoCompleted();
   private:
     Quest::Name mName;
     Quest::State mState;
+		bool mConditionMet;
     std::vector<Conversation> mConversationVec;
+		std::vector<Conversation>::iterator mActiveConvo;
   };
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +68,9 @@ namespace YTE
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
   private:
-    void StartConvo(RunConversation *aEvent);
+    void OnDialogueStart(RequestDialogueStart *aEvent);
+		void OnDialogueExit(DialogueExit *aEvent);
+
     std::vector<Quest> mQuestVec;
     Quest mActiveQuest;
   };

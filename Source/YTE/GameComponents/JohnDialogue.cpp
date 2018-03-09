@@ -10,12 +10,12 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/DialogueRunner.hpp"
+#include "YTE/GameComponents/InputInterpreter.hpp"
+
 
 namespace YTE
 {
-  YTEDefineEvent(RunConversation);
-  YTEDefineType(RunConversation) { YTERegisterType(RunConversation); }
-
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
 
 /******************************************************************************
@@ -36,23 +36,15 @@ namespace YTE
         -- represents data of matching nodeXY
 
     Notes:
-      The quest system should just iterate through the quests, not choose randomly
-      that way the player always encounters the Introduction quest first. Going
-      to need a public function to set quest state, so the quest system can mark
-      Introduction as done without the player having to sail home.
+      Intro is a unique first quest.
+			Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
   Quest::Quest(Quest::Name aName)
-    : mName(aName), mState(State::Available)
+    : mName(aName), mState(State::Available), mConditionMet(false)
   {
     mConversationVec = *(new std::vector<Conversation>());
-      // This is the ugly way
-    //DialogueNode(DialogueNode::NodeType::Text, nullptr, 2, "HEY", "HI");
-      // This way is more readable
-    //DialogueData(data, "HEY", "HI");
-    //DialogueNode root = DialogueNode(DialogueNode::NodeType::Text, nullptr, &data);
     switch (aName)
     {
-
       case Quest::Name::Introduction:
       {
           // This is an array that will be used to hook up children pointers and will be overwritten many times
@@ -109,6 +101,7 @@ namespace YTE
 
         Conversation c0(&root);
 
+					// The introduction quest only has one conversation
         mConversationVec.push_back(c0);
         break;
       }
@@ -125,13 +118,44 @@ namespace YTE
 
       }
     }
+		mActiveConvo = mConversationVec.begin();
   }
   
   void Quest::AddConvo(Conversation *aConvo)
   {
     mConversationVec.push_back(*aConvo);
   }
-  
+
+	// This needs to change to checking when you start a conversation not when it ends, since that is when we decide what conversation to run
+	void Quest::ConvoCompleted()
+	{
+		switch (mState)
+		{
+			case Quest::State::Available:
+			{
+				++mActiveConvo;
+				mState = State::InProgress;
+				break;
+			}
+			case Quest::State::InProgress:
+			{
+				if (!mConditionMet)
+				{
+					mActiveConvo = mConversationVec.end() - 2;
+				}
+				else
+				{
+					
+				}
+				break;
+			}
+			case Quest::State::Completed:
+			{
+				mActiveConvo = mConversationVec.end() - 1;
+				break;
+			}
+		}
+	}
 
 /******************************************************************************
   Dialogue Component
@@ -143,16 +167,16 @@ namespace YTE
       // Construct the Quest Vector
     mQuestVec = *(new std::vector<Quest> { 
       Quest::Name::Introduction,
-      Quest::Name::GuessChew, 
-      Quest::Name::Cayenne, 
-      Quest::Name::Ingredients 
+      Quest::Name::GuessChew,
+      Quest::Name::Cayenne,
+      Quest::Name::Ingredients
     });
   }
 
   void JohnDialogue::Initialize()
   {
     // @@@JAY: This register and deregister should happen on CollisionStart and CollisionEnd so that other characters dont listen when they shouldnt
-    mOwner->YTERegister(Events::RunConversation, this, &JohnDialogue::StartConvo);
+    mOwner->YTERegister(Events::RequestDialogueStart, this, &JohnDialogue::OnDialogueStart);
     // @@@JAY: Maybe make a macro for this :)
     // Construct the quest
     //Quest q1(Quest::Name::GuessChew);
@@ -173,11 +197,17 @@ namespace YTE
     */
   }
 
-  void JohnDialogue::StartConvo(RunConversation *aEvent)
+  void JohnDialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
-    // pick quest
-    // register root node of conversation
+    // SendEvent to dialogue runner with pointer to conversation
+		Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
+		FillDialogueBox convo(temp);
+		mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+		mOwner->GetSpace()->SendEvent("FillDialogueBox", &convo);
   }
 
-
+	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
+	{
+		mActiveQuest.ConvoCompleted();
+	}
 } //end yte
