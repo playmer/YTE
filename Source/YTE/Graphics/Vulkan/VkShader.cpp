@@ -258,6 +258,25 @@ namespace YTE
                                                             aInfo.mPipelineLayout,
                                                             mView->mRenderTarget->GetRenderPass());
 
+    aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eLineList);
+
+    mShaderLines = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                                 aInfo.mFlags,
+                                                                 { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                                 aInfo.mVertexInput,
+                                                                 aInfo.mAssembly,
+                                                                 aInfo.mTessalationState,
+                                                                 aInfo.mViewport,
+                                                                 aInfo.mRasterizationCullBack,
+                                                                 aInfo.mMultiSample,
+                                                                 aInfo.mEnableDepthStencil,
+                                                                 aInfo.mNoColorBlend,
+                                                                 aInfo.mDynamicState,
+                                                                 aInfo.mPipelineLayout,
+                                                                 mView->mRenderTarget->GetRenderPass());
+
+    aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eTriangleList);
+
     mShaderNoCull = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
                                                                   aInfo.mFlags,
                                                                   { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },

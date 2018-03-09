@@ -122,6 +122,7 @@ namespace YTE
     void Reload(VkCreatePipelineDataSet& aInfo);
     
     std::shared_ptr<vkhlf::Pipeline> mShader;
+    std::shared_ptr<vkhlf::Pipeline> mShaderLines;
     std::shared_ptr<vkhlf::Pipeline> mShaderNoCull;
     std::shared_ptr<vkhlf::Pipeline> mAdditiveBlendShader;
     VkRenderedSurface *mSurface;

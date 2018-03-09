@@ -87,9 +87,6 @@ namespace YTE
 
     for (auto &shader : mParentViewData->mShaders)
     {
-      auto &pipeline = shader.second->mShader;
-
-      aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
       for (auto &mesh : aMeshes)
       {
         auto &models = instantiatedModels[mesh.second.get()];
@@ -103,234 +100,107 @@ namespace YTE
         // We get the sub meshes that use the current shader, then draw them.
         auto range = mesh.second->mSubmeshes.equal_range(shader.first);
 
-        if (mesh.second->GetInstanced())
-        {
-          aCBO->bindVertexBuffer(1,
-                                 mesh.second->mInstanceManager.InstanceBuffer(),
-                                 0);
-        }
-
         for (auto it = range.first; it != range.second; ++it)
         {
           auto &submesh = it->second;
 
-          aCBO->bindVertexBuffer(0,
-                                 submesh->mVertexBuffer,
-                                 0);
-
-          aCBO->bindIndexBuffer(submesh->mIndexBuffer,
-                                0,
-                                vk::IndexType::eUint32);
-
-
-
-          if (mesh.second->GetInstanced())
+          for (auto &model : models)
           {
-            auto data = submesh->mPipelineData;
-            aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                     data.mPipelineLayout,
-                                     0,
-                                     data.mDescriptorSet,
-                                     nullptr);
+            auto &data = model->mPipelineData[submesh.get()];
 
-            aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                              1,
-                              0,
-                              0,
-                              0);
-          }
-          else
-          {
-            for (auto &model : models)
+            // Gather up all the data for the individual passes.
+            std::shared_ptr<vkhlf::Pipeline> *toUseToDraw{ nullptr };
+            std::vector<DrawData> *toEmplaceInto{ nullptr };
+
+            switch (model->mType)
             {
-              if (model->mUseAdditiveBlending || model->mBackFaceCull == false)
+              case ShaderType::Shader:
               {
-                continue;
+                toUseToDraw = &shader.second->mShader;
+                toEmplaceInto = &mShaders;
+                break;
               }
-              auto &data = model->mPipelineData[submesh.get()];
-              aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                       data.mPipelineLayout,
-                                       0,
-                                       data.mDescriptorSet,
-                                       nullptr);
-
-              aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                1,
-                                0,
-                                0,
-                                0);
+              case ShaderType::ShaderLines:
+              {
+                toUseToDraw = &shader.second->mShaderLines;
+                toEmplaceInto = &mShaderLines;
+                break;
+              }
+              case ShaderType::ShaderNoCull:
+              {
+                toUseToDraw = &shader.second->mShaderNoCull;
+                toEmplaceInto = &mShaderNoCull;
+                break;
+              }
+              case ShaderType::AdditiveBlendShader:
+              {
+                toUseToDraw = &shader.second->mAdditiveBlendShader;
+                toEmplaceInto = &mAdditiveBlendShader;
+                break;
+              }
+              default:
+              {
+                assert(false);
+              }
             }
+
+            toEmplaceInto->emplace_back(*toUseToDraw,
+                                        submesh->mVertexBuffer,
+                                        submesh->mIndexBuffer,
+                                        data.mPipelineLayout,
+                                        data.mDescriptorSet,
+                                        static_cast<u32>(submesh->mIndexCount));
           }
         }
       }
     }
 
-    // pass for additive
-    for (auto &shader : mParentViewData->mShaders)
+
+    auto runPipelines = [](std::shared_ptr<vkhlf::CommandBuffer> &aCBO, 
+                           std::vector<DrawData> &aShaders)
     {
-      auto &pipeline = shader.second->mAdditiveBlendShader;
+      std::shared_ptr<vkhlf::Pipeline> *lastPipeline{ nullptr };
 
-      for (auto &mesh : aMeshes)
+      for (auto &drawCall : aShaders)
       {
-        auto &models = instantiatedModels[mesh.second.get()];
-
-        // We can early out on this mesh if there are no models that use it.
-        if (models.empty())
+        if (lastPipeline != &drawCall.mPipeline)
         {
-          continue;
+          aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
+                             drawCall.mPipeline);
+
+          lastPipeline = &drawCall.mPipeline;
         }
 
-        // We get the sub meshes that use the current shader, then draw them.
-        auto range = mesh.second->mSubmeshes.equal_range(shader.first);
+        aCBO->bindVertexBuffer(0,
+                               drawCall.mVertexBuffer,
+                               0);
 
-        if (mesh.second->GetInstanced())
-        {
-          aCBO->bindVertexBuffer(1,
-                                 mesh.second->mInstanceManager.InstanceBuffer(),
-                                 0);
-        }
-
-        for (auto it = range.first; it != range.second; ++it)
-        {
-          auto &submesh = it->second;
-
-          aCBO->bindVertexBuffer(0,
-                                 submesh->mVertexBuffer,
-                                 0);
-
-          aCBO->bindIndexBuffer(submesh->mIndexBuffer,
-                                0,
-                                vk::IndexType::eUint32);
-
-
-
-          if (mesh.second->GetInstanced())
-          {
-            auto data = submesh->mPipelineData;
-            aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                     data.mPipelineLayout,
-                                     0,
-                                     data.mDescriptorSet,
-                                     nullptr);
-
-            aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                              1,
+        aCBO->bindIndexBuffer(drawCall.mIndexBuffer,
                               0,
-                              0,
-                              0);
-          }
-          else
-          {
-            for (auto &model : models)
-            {
-              if (model->mUseAdditiveBlending == false)
-              {
-                continue;
-              }
+                              vk::IndexType::eUint32);
 
-
-              aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-
-              auto &data = model->mPipelineData[submesh.get()];
-              aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                       data.mPipelineLayout,
-                                       0,
-                                       data.mDescriptorSet,
-                                       nullptr);
-
-              aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                1,
-                                0,
-                                0,
-                                0);
-            }
-          }
-        }
+        aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                 drawCall.mPipelineLayout,
+                                 0,
+                                 drawCall.mDescriptorSet,
+                                 nullptr);
+        aCBO->drawIndexed(static_cast<u32>(drawCall.mIndexCount),
+                          1,
+                          0,
+                          0,
+                          0);
       }
-    }
+    };
 
-    // pass for no cull
-    for (auto &shader : mParentViewData->mShaders)
-    {
-      auto &pipeline = shader.second->mShaderNoCull;
+    runPipelines(aCBO, mShaders);
+    runPipelines(aCBO, mShaderLines);
+    runPipelines(aCBO, mShaderNoCull);
+    runPipelines(aCBO, mAdditiveBlendShader);
 
-      for (auto &mesh : aMeshes)
-      {
-        auto &models = instantiatedModels[mesh.second.get()];
-
-        // We can early out on this mesh if there are no models that use it.
-        if (models.empty())
-        {
-          continue;
-        }
-
-        // We get the sub meshes that use the current shader, then draw them.
-        auto range = mesh.second->mSubmeshes.equal_range(shader.first);
-
-        if (mesh.second->GetInstanced())
-        {
-          aCBO->bindVertexBuffer(1,
-                                 mesh.second->mInstanceManager.InstanceBuffer(),
-                                 0);
-        }
-
-        for (auto it = range.first; it != range.second; ++it)
-        {
-          auto &submesh = it->second;
-
-          aCBO->bindVertexBuffer(0,
-                                 submesh->mVertexBuffer,
-                                 0);
-
-          aCBO->bindIndexBuffer(submesh->mIndexBuffer,
-                                0,
-                                vk::IndexType::eUint32);
-
-
-
-          if (mesh.second->GetInstanced())
-          {
-            auto data = submesh->mPipelineData;
-            aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                     data.mPipelineLayout,
-                                     0,
-                                     data.mDescriptorSet,
-                                     nullptr);
-
-            aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                              1,
-                              0,
-                              0,
-                              0);
-          }
-          else
-          {
-            for (auto &model : models)
-            {
-              if (model->mBackFaceCull == true)
-              {
-                continue;
-              }
-
-              aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, pipeline);
-
-              auto &data = model->mPipelineData[submesh.get()];
-              aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                       data.mPipelineLayout,
-                                       0,
-                                       data.mDescriptorSet,
-                                       nullptr);
-
-              aCBO->drawIndexed(static_cast<u32>(submesh->mIndexCount),
-                                1,
-                                0,
-                                0,
-                                0);
-            }
-          }
-        }
-      }
-    }
+    mShaders.clear();
+    mShaderLines.clear();
+    mShaderNoCull.clear();
+    mAdditiveBlendShader.clear();
   }
 
   void VkRTGameForwardDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)

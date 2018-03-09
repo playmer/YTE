@@ -17,6 +17,14 @@
 
 namespace YTE
 {
+  enum class ShaderType
+  {
+    Shader,
+    ShaderLines,
+    ShaderNoCull,
+    AdditiveBlendShader,
+  };
+
   class InstantiatedModel : public EventHandler
   {
   public:
@@ -92,8 +100,7 @@ namespace YTE
       return mMesh;
     }
 
-    bool mUseAdditiveBlending = false;
-    bool mBackFaceCull = true;
+    ShaderType mType = ShaderType::Shader;
 
   protected:
     Mesh *mMesh;

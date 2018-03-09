@@ -49,7 +49,14 @@ namespace YTE
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
-      return { mInstantiatedSprite.get() };
+      std::vector<InstantiatedModel*> toReturn;
+
+      if (mInstantiatedSprite)
+      {
+          toReturn.emplace_back(mInstantiatedSprite.get());
+      }
+      
+      return toReturn;
     }
 
     void SetColumns(i32 aColumns)

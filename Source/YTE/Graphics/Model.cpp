@@ -232,12 +232,12 @@ namespace YTE
     if (aName == "Standard")
     {
       mShadingName = "Standard";
-      mInstantiatedModel->mUseAdditiveBlending = false;
+      mInstantiatedModel->mType = ShaderType::Shader;
     }
     else if (aName == "Additive Blending")
     {
       mShadingName = "Additive Blending";
-      mInstantiatedModel->mUseAdditiveBlending = true;
+      mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
     }
   }
 
@@ -332,7 +332,14 @@ namespace YTE
 
     if (mInstantiatedModel)
     {
-      mInstantiatedModel->mBackFaceCull = aCulling;
+      if (aCulling)
+      {
+        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
+      }
+      else
+      {
+        mInstantiatedModel->mType = ShaderType::ShaderNoCull;
+      }
     }
   }
 
