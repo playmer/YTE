@@ -38,15 +38,11 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "Rotation Speed")
+    /*YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "Rotation Speed")
       .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
+      .AddAttribute<EditorProperty>();*/
 
     YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "Wind Force")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-
-    YTEBindProperty(&BoatController::GetDecelerationForce, &BoatController::SetDecelerationForce, "Deceleration Force")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
@@ -64,12 +60,12 @@ namespace YTE
     , mCanDock(false)
     , mNearbyDock(nullptr)
     , mCurrSpeed(0.f)
+    , mCurrRotSpeed(0.f)
   {
     
     mMaxSailSpeed = 25.0f;
     mRotationSpeed = 35.0f;
     mWindForce = 10.f;
-    mDecelerationForce = -25.f;
 
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -164,6 +160,8 @@ namespace YTE
       mTurnVec = mOrientation->GetRightVector();//mRigidBody->ApplyForce(mOrientation->GetRightVector(), mOrientation->GetForwardVector());
     else if (aEvent->StickDirection.x < -0.1)
       mTurnVec = -mOrientation->GetRightVector(); //mRigidBody->ApplyForce(-mOrientation->GetRightVector(), mOrientation->GetForwardVector());
+    else
+      mCurrRotSpeed = 0.f;
 
     //std::cout << "Forward after turn: " << mOrientation->GetForwardVector().x << ", " << mOrientation->GetForwardVector().z << std::endl;
     /*if (aEvent->StickDirection == glm::vec2(0, 0))
@@ -218,7 +216,9 @@ namespace YTE
   {
     if (mStartedTurning)
     {
-      mRigidBody->ApplyForce(mTurnVec, mOrientation->GetForwardVector());
+      if (mCurrRotSpeed < 1.0f)
+        mCurrRotSpeed += static_cast<float>(aEvent->Dt);
+      mRigidBody->ApplyForce(mCurrRotSpeed * mTurnVec, mOrientation->GetForwardVector());
       //mRigidBody->ApplyForce(mTurnVec, glm::vec3(0, 1, 0));
     }
     /*else

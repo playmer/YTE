@@ -72,9 +72,6 @@ namespace YTE
 
     float GetWindForce() { return mWindForce; }
     void SetWindForce(float& aForce) { mWindForce = aForce; }
-
-    float GetDecelerationForce() { return -mDecelerationForce; }
-    void SetDecelerationForce(float& aForce) { mDecelerationForce = -aForce; }
     /////////////////////////////////////////////////////////////////////////////////
 
   private:
@@ -96,7 +93,6 @@ namespace YTE
     float mMaxSailSpeed;
     float mRotationSpeed;
     float mWindForce;
-    float mDecelerationForce;
 
     glm::vec3 mTurnVec;
 
@@ -111,6 +107,7 @@ namespace YTE
     bool mStartedTurning;
 
     float mCurrSpeed;
+    float mCurrRotSpeed;
   };
 } 
 
