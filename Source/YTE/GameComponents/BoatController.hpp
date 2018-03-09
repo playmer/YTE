@@ -67,19 +67,17 @@ namespace YTE
     float GetMaxSailSpeed() { return mMaxSailSpeed; }
     void SetMaxSailSpeed(float& aMaxSpeed) { mMaxSailSpeed = aMaxSpeed; }
 
-    float GetRotationSpeed() { return mRotationSpeed; }
-    void SetRotationSpeed(float& aSpeed) { mRotationSpeed = aSpeed; }
+    float GetRotationSpeed() { return mMaxTurnSpeed; }
+    void SetRotationSpeed(float& aSpeed) { mMaxTurnSpeed = aSpeed; }
+
+    float GetTurnAccFactor() { return mTurnAccFactor; }
+    void SetTurnAccFactor(float& aFactor) { mTurnAccFactor = aFactor; }
 
     float GetWindForce() { return mWindForce; }
     void SetWindForce(float& aForce) { mWindForce = aForce; }
     /////////////////////////////////////////////////////////////////////////////////
 
   private:
-    glm::vec3 CalculateMovementVector(float dt);
-    void ApplyMovementVector(glm::vec3 aImpulse);
-    //void ApplyForceToBoat();
-    //void RollBoat();
-
     Transform *mTransform;
     Orientation *mOrientation;
     RigidBody *mRigidBody;
@@ -91,7 +89,8 @@ namespace YTE
     WWiseSystem *mSoundSystem;
 
     float mMaxSailSpeed;
-    float mRotationSpeed;
+    float mMaxTurnSpeed;
+    float mTurnAccFactor;
     float mWindForce;
 
     glm::vec3 mTurnVec;
