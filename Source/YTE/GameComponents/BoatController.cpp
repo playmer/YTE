@@ -158,10 +158,14 @@ namespace YTE
 
   void BoatController::TurnBoat(BoatTurnEvent *aEvent)
   {
+    mStartedTurning = true;
+
     if (aEvent->StickDirection.x > 0.1)
-      mRigidBody->ApplyForce(mOrientation->GetRightVector(), mOrientation->GetForwardVector());
+      mTurnVec = mOrientation->GetRightVector();//mRigidBody->ApplyForce(mOrientation->GetRightVector(), mOrientation->GetForwardVector());
     else if (aEvent->StickDirection.x < -0.1)
-      mRigidBody->ApplyForce(-mOrientation->GetRightVector(), mOrientation->GetForwardVector());
+      mTurnVec = -mOrientation->GetRightVector(); //mRigidBody->ApplyForce(-mOrientation->GetRightVector(), mOrientation->GetForwardVector());
+
+    //std::cout << "Forward after turn: " << mOrientation->GetForwardVector().x << ", " << mOrientation->GetForwardVector().z << std::endl;
     /*if (aEvent->StickDirection == glm::vec2(0, 0))
     {
       mStartedTurning = false;
@@ -189,7 +193,7 @@ namespace YTE
       if (!mIsSailUp)
       {
         sound = "SFX_Sail_Up";
-        mRigidBody->SetGravity(mWindForce * mOrientation->GetForwardVector());
+        //mRigidBody->SetGravity(mWindForce * mOrientation->GetForwardVector());
         mRigidBody->SetDamping(0.f, 0.9f);
       }
     }
@@ -212,15 +216,30 @@ namespace YTE
 
   void BoatController::Update(LogicUpdate *aEvent)
   {
+    if (mStartedTurning)
+    {
+      mRigidBody->ApplyForce(mTurnVec, mOrientation->GetForwardVector());
+      //mRigidBody->ApplyForce(mTurnVec, glm::vec3(0, 1, 0));
+    }
+    /*else
+    {
+      if (mTransform->GetRotation().x != 0.0f)
+        mRigidBody->ApplyForce(-mTurnVec, glm::vec3(0, 1, 0));
+    }*/
+
     glm::vec3 vel = mRigidBody->GetVelocity();
 
     mCurrSpeed = glm::length(vel);
     mSoundSystem->SetRTPC("Sailing_Volume", mCurrSpeed);
 
+    mRigidBody->SetVelocity(mCurrSpeed * mOrientation->GetForwardVector());
+
     if (mIsSailUp)
     {
+      mRigidBody->ApplyForce(mWindForce * mOrientation->GetForwardVector(), glm::vec3(0)); //mRigidBody->SetGravity(glm::vec3(0));
+
       if (mCurrSpeed > mMaxSailSpeed)
-        mRigidBody->SetGravity(glm::vec3(0));
+        mRigidBody->ApplyForce(mWindForce * -mOrientation->GetForwardVector(), glm::vec3(0));
     }
     else
     {  
@@ -230,6 +249,10 @@ namespace YTE
         mRigidBody->SetGravity(glm::vec3(0));
       }
     }
+
+    
+
+    mStartedTurning = false;
   }
     
   void BoatController::OnCollisionStart(CollisionStarted *aEvent)

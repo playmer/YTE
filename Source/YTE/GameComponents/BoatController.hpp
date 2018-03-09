@@ -98,6 +98,8 @@ namespace YTE
     float mWindForce;
     float mDecelerationForce;
 
+    glm::vec3 mTurnVec;
+
     //Model *mSailModel; wherever i play anims for sails
     //Transform *mSailOrient; sail might have a different transform to rotate around
 
