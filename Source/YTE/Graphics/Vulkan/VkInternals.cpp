@@ -138,10 +138,6 @@ namespace YTE
 
     mQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(baseDevice);
 
-    // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-    vk::PhysicalDeviceFeatures enabledFeatures;
-    enabledFeatures.setTextureCompressionBC(true);
-
     auto family = mQueueFamilyIndices.GetGraphicsFamily();
     vkhlf::DeviceQueueCreateInfo deviceCreate{ family, 0.0f };
 

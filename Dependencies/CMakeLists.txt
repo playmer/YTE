@@ -91,6 +91,8 @@ target_compile_options(SPIRV                 PRIVATE ${disableWarning})
 target_compile_options(SPVRemapper           PRIVATE ${disableWarning})
 target_compile_options(KissFFT               PRIVATE ${disableWarning})
 
+set_target_properties(SPVRemapper PROPERTIES FOLDER "Ignore")
+
 set_target_properties(assimp
                       Bullet2FileLoader
                       Bullet3Collision

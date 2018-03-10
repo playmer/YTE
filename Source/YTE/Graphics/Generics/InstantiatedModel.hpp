@@ -19,8 +19,10 @@ namespace YTE
 {
   enum class ShaderType
   {
-    Shader,
-    ShaderLines,
+    Triangles,
+    Lines,
+    Curves,
+    Wireframe,
     ShaderNoCull,
     AdditiveBlendShader,
   };
@@ -100,7 +102,8 @@ namespace YTE
       return mMesh;
     }
 
-    ShaderType mType = ShaderType::Shader;
+    ShaderType mType = ShaderType::Triangles;
+    float mLineWidth = 1.0f;
 
   protected:
     Mesh *mMesh;

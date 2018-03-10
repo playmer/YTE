@@ -48,7 +48,6 @@ namespace YTE
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
     auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
 
-
     auto lines = aDescriptions.GetLines();
 
     auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
@@ -203,7 +202,8 @@ namespace YTE
                                                              { 1.0f, 1.0f, 1.0f, 1.0f });
 
     vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
-                                                    vk::DynamicState::eScissor });
+                                                    vk::DynamicState::eScissor,
+                                                    vk::DynamicState::eLineWidth});
 
     if (aReload)
     {
@@ -243,37 +243,72 @@ namespace YTE
 
   void VkShader::Load(VkCreatePipelineDataSet& aInfo)
   {
-    mShader = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+    mTriangles = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                               aInfo.mFlags,
+                                                               { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                               aInfo.mVertexInput,
+                                                               aInfo.mAssembly,
+                                                               aInfo.mTessalationState,
+                                                               aInfo.mViewport,
+                                                               aInfo.mRasterizationCullBack,
+                                                               aInfo.mMultiSample,
+                                                               aInfo.mEnableDepthStencil,
+                                                               aInfo.mNoColorBlend,
+                                                               aInfo.mDynamicState,
+                                                               aInfo.mPipelineLayout,
+                                                               mView->mRenderTarget->GetRenderPass());
+
+    aInfo.mRasterizationNoCull.setPolygonMode(vk::PolygonMode::eLine);
+    mWireframe = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                               aInfo.mFlags,
+                                                               { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                               aInfo.mVertexInput,
+                                                               aInfo.mAssembly,
+                                                               aInfo.mTessalationState,
+                                                               aInfo.mViewport,
+                                                               aInfo.mRasterizationNoCull,
+                                                               aInfo.mMultiSample,
+                                                               aInfo.mEnableDepthStencil,
+                                                               aInfo.mNoColorBlend,
+                                                               aInfo.mDynamicState,
+                                                               aInfo.mPipelineLayout,
+                                                               mView->mRenderTarget->GetRenderPass());
+
+    aInfo.mRasterizationNoCull.setPolygonMode(vk::PolygonMode::eFill);
+
+    aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eLineList);
+
+    mLines = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                           aInfo.mFlags,
+                                                           { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                           aInfo.mVertexInput,
+                                                           aInfo.mAssembly,
+                                                           aInfo.mTessalationState,
+                                                           aInfo.mViewport,
+                                                           aInfo.mRasterizationNoCull,
+                                                           aInfo.mMultiSample,
+                                                           aInfo.mEnableDepthStencil,
+                                                           aInfo.mNoColorBlend,
+                                                           aInfo.mDynamicState,
+                                                           aInfo.mPipelineLayout,
+                                                           mView->mRenderTarget->GetRenderPass());
+
+    aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eLineStrip);
+
+    mCurves = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
                                                             aInfo.mFlags,
                                                             { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
                                                             aInfo.mVertexInput,
                                                             aInfo.mAssembly,
                                                             aInfo.mTessalationState,
                                                             aInfo.mViewport,
-                                                            aInfo.mRasterizationCullBack,
+                                                            aInfo.mRasterizationNoCull,
                                                             aInfo.mMultiSample,
                                                             aInfo.mEnableDepthStencil,
                                                             aInfo.mNoColorBlend,
                                                             aInfo.mDynamicState,
                                                             aInfo.mPipelineLayout,
                                                             mView->mRenderTarget->GetRenderPass());
-
-    aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eLineList);
-
-    mShaderLines = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
-                                                                 aInfo.mFlags,
-                                                                 { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
-                                                                 aInfo.mVertexInput,
-                                                                 aInfo.mAssembly,
-                                                                 aInfo.mTessalationState,
-                                                                 aInfo.mViewport,
-                                                                 aInfo.mRasterizationCullBack,
-                                                                 aInfo.mMultiSample,
-                                                                 aInfo.mEnableDepthStencil,
-                                                                 aInfo.mNoColorBlend,
-                                                                 aInfo.mDynamicState,
-                                                                 aInfo.mPipelineLayout,
-                                                                 mView->mRenderTarget->GetRenderPass());
 
     aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eTriangleList);
 

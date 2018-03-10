@@ -68,10 +68,6 @@ namespace YTE
     PrintSurfaceFormats(formats);
     mDepthFormat = vk::Format::eD24UnormS8Uint;
 
-    // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-    vk::PhysicalDeviceFeatures enabledFeatures;
-    enabledFeatures.setTextureCompressionBC(true);
-
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();

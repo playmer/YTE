@@ -72,7 +72,9 @@ namespace YTE
     YTEUnusedArgument(aCBO);
   }
 
-  void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, const vk::Extent2D& extent, std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
+  void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, 
+                                     const vk::Extent2D& extent, 
+                                     std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
     auto width = static_cast<float>(extent.width);
     auto height = static_cast<float>(extent.height);
@@ -82,6 +84,7 @@ namespace YTE
 
     vk::Rect2D scissor{ { 0, 0 }, extent };
     aCBO->setScissor(0, scissor);
+    aCBO->setLineWidth(1.0f);
 
     auto &instantiatedModels = mParentViewData->mInstantiatedModels;
 
@@ -114,16 +117,28 @@ namespace YTE
 
             switch (model->mType)
             {
-              case ShaderType::Shader:
+              case ShaderType::Triangles:
               {
-                toUseToDraw = &shader.second->mShader;
-                toEmplaceInto = &mShaders;
+                toUseToDraw = &shader.second->mTriangles;
+                toEmplaceInto = &mTriangles;
                 break;
               }
-              case ShaderType::ShaderLines:
+              case ShaderType::Lines:
               {
-                toUseToDraw = &shader.second->mShaderLines;
-                toEmplaceInto = &mShaderLines;
+                toUseToDraw = &shader.second->mLines;
+                toEmplaceInto = &mLines;
+                break;
+              }
+              case ShaderType::Curves:
+              {
+                toUseToDraw = &shader.second->mCurves;
+                toEmplaceInto = &mCurves;
+                break;
+              }
+              case ShaderType::Wireframe:
+              {
+                toUseToDraw = &shader.second->mCurves;
+                toEmplaceInto = &mCurves;
                 break;
               }
               case ShaderType::ShaderNoCull:
@@ -149,7 +164,8 @@ namespace YTE
                                         submesh->mIndexBuffer,
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
-                                        static_cast<u32>(submesh->mIndexCount));
+                                        static_cast<u32>(submesh->mIndexCount),
+                                        model->mLineWidth);
           }
         }
       }
@@ -160,6 +176,7 @@ namespace YTE
                            std::vector<DrawData> &aShaders)
     {
       std::shared_ptr<vkhlf::Pipeline> *lastPipeline{ nullptr };
+      float lastLineWidth = 1.0f;
 
       for (auto &drawCall : aShaders)
       {
@@ -169,6 +186,12 @@ namespace YTE
                              drawCall.mPipeline);
 
           lastPipeline = &drawCall.mPipeline;
+        }
+
+        if (lastLineWidth != drawCall.mLineWidth)
+        {
+          aCBO->setLineWidth(drawCall.mLineWidth);
+          lastLineWidth = drawCall.mLineWidth;
         }
 
         aCBO->bindVertexBuffer(0,
@@ -190,17 +213,15 @@ namespace YTE
                           0,
                           0);
       }
+
+      aShaders.clear();
     };
 
-    runPipelines(aCBO, mShaders);
-    runPipelines(aCBO, mShaderLines);
+    runPipelines(aCBO, mTriangles);
+    runPipelines(aCBO, mLines);
+    runPipelines(aCBO, mCurves);
     runPipelines(aCBO, mShaderNoCull);
     runPipelines(aCBO, mAdditiveBlendShader);
-
-    mShaders.clear();
-    mShaderLines.clear();
-    mShaderNoCull.clear();
-    mAdditiveBlendShader.clear();
   }
 
   void VkRTGameForwardDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)

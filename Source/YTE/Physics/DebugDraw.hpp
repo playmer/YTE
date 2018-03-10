@@ -13,15 +13,16 @@
 
 #include "LinearMath/btIDebugDraw.h"
 
+#include "YTE/Graphics/Drawers.hpp"
+
 #include "YTE/Meta/Type.hpp"
 
 namespace YTE
 {
-  // TODO (Josh): Re-implement this
   class DebugDrawer : public btIDebugDraw
   {
   public:
-    DebugDrawer();
+    DebugDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
 
     void Begin();
     void End();
@@ -39,6 +40,8 @@ namespace YTE
     int getDebugMode() const  override { return mDebugMode; }
     
   private:
+    TriangleDrawer mTriangleDrawer;
+    LineDrawer mLineDrawer;
     int mDebugMode;
   };
 }

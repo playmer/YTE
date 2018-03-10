@@ -3,12 +3,12 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Animation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/BaseModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Camera.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Drawers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/LineDrawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.cpp
@@ -41,13 +41,13 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Animation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BaseModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Camera.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Drawers.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.hpp
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/LineDrawer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.hpp
 	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.hpp

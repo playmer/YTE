@@ -6,53 +6,70 @@
 * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
+
 #include "YTE/Physics/DebugDraw.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 
 namespace YTE
 {
-  DebugDrawer::DebugDrawer()
-        //mDebugMode(DBG_MAX_DEBUG_DRAW_MODE)
-        : mDebugMode(DBG_DrawWireframe | DBG_DrawAabb | DBG_DrawContactPoints | 
-                    DBG_DrawNormals | DBG_DrawFrames)
+  DebugDrawer::DebugDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView)
+    : mTriangleDrawer{ aUniqueName + "TriangleDrawer", aRenderer, aView }
+    , mLineDrawer{ aUniqueName + "LineDrawer", aRenderer, aView }
+    , mDebugMode{DBG_DrawWireframe |
+                 DBG_DrawAabb |
+                 DBG_DrawContactPoints |
+                 DBG_DrawNormals |
+                 DBG_DrawFrames }
   {
 
   }
 
   void DebugDrawer::Begin()
   {
-    //mPrimitiveBatcher.Begin();
+    mLineDrawer.Start();
+    mTriangleDrawer.Start();
   }
   void DebugDrawer::End()
   {
-    //mPrimitiveBatcher.End();
+    mLineDrawer.End();
+    mTriangleDrawer.End();
   }
 
-  void DebugDrawer::drawLine(const btVector3 &aFrom, const btVector3 &aTo, const btVector3 &aFromColor, const btVector3 &aToColor)
+  void DebugDrawer::drawLine(const btVector3 &aFrom, 
+                             const btVector3 &aTo, 
+                             const btVector3 &aFromColor, 
+                             const btVector3 &aToColor)
   {
     YTEUnusedArgument(aFrom);
     YTEUnusedArgument(aTo);
     YTEUnusedArgument(aFromColor);
     YTEUnusedArgument(aToColor);
-    //mPrimitiveBatcher.drawLine(BtToOurVec3(aFrom), BtToOurVec3(aTo), BtToOurVec3(aFromColor), BtToOurVec3(aToColor));
+    mLineDrawer.AddLine(BtToOurVec3(aFrom), 
+                        BtToOurVec3(aTo), 
+                        BtToOurVec3(aFromColor), 
+                        BtToOurVec3(aToColor));
   }
 
-  void DebugDrawer::drawLine(const btVector3 &aFrom, const btVector3 &aTo, const btVector3 &aColor)
+  void DebugDrawer::drawLine(const btVector3 &aFrom, 
+                             const btVector3 &aTo, 
+                             const btVector3 &aColor)
   {
-    YTEUnusedArgument(aFrom);
-    YTEUnusedArgument(aTo);
-    YTEUnusedArgument(aColor);
-    //mPrimitiveBatcher.drawLine(BtToOurVec3(aFrom), BtToOurVec3(aTo), BtToOurVec3(aColor));
+    mLineDrawer.AddLine(BtToOurVec3(aFrom), 
+                        BtToOurVec3(aTo), 
+                        BtToOurVec3(aColor));
   }
 
-  void DebugDrawer::drawTriangle(const btVector3 &aA, const btVector3 &aB, const btVector3 &aC, const btVector3 &aColor, btScalar aAlpha)
+  void DebugDrawer::drawTriangle(const btVector3 &aA, 
+                                 const btVector3 &aB, 
+                                 const btVector3 &aC, 
+                                 const btVector3 &aColor, 
+                                 btScalar aAlpha)
   {
-    YTEUnusedArgument(aA);
-    YTEUnusedArgument(aB);
-    YTEUnusedArgument(aC);
-    YTEUnusedArgument(aColor);
     YTEUnusedArgument(aAlpha);
-    //mPrimitiveBatcher.drawTriangle(BtToOurVec3(aA), BtToOurVec3(aB), BtToOurVec3(aC), BtToOurVec3(aColor), aAlpha);
+    mTriangleDrawer.AddTriangle(BtToOurVec3(aA), 
+                                BtToOurVec3(aB), 
+                                BtToOurVec3(aC), 
+                                BtToOurVec3(aColor));
   }
     
   void DebugDrawer::reportErrorWarning(const char * warningString)
@@ -72,7 +89,11 @@ namespace YTE
   }
 
 
-  void DebugDrawer::drawContactPoint(const btVector3& aPointOnB, const btVector3& aNormalOnB, btScalar aDistance, int aLifeTime, const btVector3& aColor)
+  void DebugDrawer::drawContactPoint(const btVector3& aPointOnB, 
+                                     const btVector3& aNormalOnB, 
+                                     btScalar aDistance, 
+                                     int aLifeTime, 
+                                     const btVector3& aColor)
   {
     YTEUnusedArgument(aPointOnB);
     YTEUnusedArgument(aNormalOnB);

@@ -13,6 +13,10 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
+
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/DebugDraw.hpp"
@@ -93,7 +97,10 @@ namespace YTE
 
   void PhysicsSystem::Initialize()
   {
-    mDebugDrawer = std::make_unique<DebugDrawer>();
+    auto renderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mDebugDrawer = std::make_unique<DebugDrawer>(mOwner->GetGUID().ToString(),
+                                                 renderer,
+                                                 mOwner->GetComponent<GraphicsView>());
     mDynamicsWorld->setDebugDrawer(mDebugDrawer.get());
   }
 

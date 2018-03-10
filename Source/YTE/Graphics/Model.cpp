@@ -232,7 +232,7 @@ namespace YTE
     if (aName == "Standard")
     {
       mShadingName = "Standard";
-      mInstantiatedModel->mType = ShaderType::Shader;
+      mInstantiatedModel->mType = ShaderType::Triangles;
     }
     else if (aName == "Additive Blending")
     {
