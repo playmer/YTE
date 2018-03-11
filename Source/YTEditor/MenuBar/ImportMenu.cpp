@@ -166,6 +166,37 @@ namespace YTEditor
       fs::copy_options::recursive |
       fs::copy_options::overwrite_existing,
       code);
+
+
+    // copy the face animation files if they exist
+    fs::path animStem = animationFile;
+    animStem.replace_extension("");
+
+    fs::path eyePath(animStem.string() + "_EyeAnim.txt");
+    std::ifstream eyeFile(eyePath);
+    
+    if (eyeFile.good())
+    {
+      fs::copy(eyePath,
+        animationDir / eyePath.filename(),
+        fs::copy_options::recursive |
+        fs::copy_options::overwrite_existing,
+        code);
+    }
+    eyeFile.close();
+
+    fs::path mouthPath(animStem.string() + "_MouthAnim.txt");
+    std::ifstream mouthFile(mouthPath);
+
+    if (mouthFile.good())
+    {
+      fs::copy(mouthPath,
+        animationDir / mouthPath.filename(),
+        fs::copy_options::recursive |
+        fs::copy_options::overwrite_existing,
+        code);
+    }
+    mouthFile.close();
   }
 
   void ImportMenu::ImportModel()

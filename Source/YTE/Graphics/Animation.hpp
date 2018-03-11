@@ -26,6 +26,19 @@ struct aiAnimation;
 
 namespace YTE
 {
+  struct FaceFrame
+  {
+    int id;
+    double time;
+    glm::vec2 uv;
+  };
+
+  struct FaceAnim
+  {
+    std::vector<FaceFrame> eyeFrames;
+    std::vector<FaceFrame> mouthFrames;
+  };
+
   class Animation : public EventHandler
   {
   public:
@@ -59,8 +72,10 @@ namespace YTE
     UBOAnimation* GetUBOAnim();
     Skeleton* GetSkeleton();
 
+    bool HasFaceAnim() const;
+
   private:
-    aiScene * mScene;
+    aiScene *mScene;
     aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
@@ -73,6 +88,9 @@ namespace YTE
 
     // from mesh, has the bone offsets
     Skeleton* mMeshSkeleton;
+
+    bool mHasFaceAnimation;
+    std::unique_ptr<FaceAnim> mFaceAnimation;
   };
 
 
