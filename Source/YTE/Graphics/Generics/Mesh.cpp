@@ -344,15 +344,16 @@ namespace YTE
       mDimension.mMin.z = fmin(pPos->z, mDimension.mMin.z);
     }
 
-    mDimension.mSize = mDimension.mMax - mDimension.mMin;
-
     uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
 
     for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
     {
       const aiFace &Face = aMesh->mFaces[j];
+
       if (Face.mNumIndices != 3)
+      {
         continue;
+      }
 
       mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
       mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
@@ -389,7 +390,29 @@ namespace YTE
     }
   }
 
+  Dimension CalculateDimensions(std::vector<Submesh> &mParts)
+  {
+    Dimension toReturn;
 
+    for (auto &part : mParts)
+    {
+      toReturn.mMax.x = fmax(part.mDimension.mMax.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(part.mDimension.mMax.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(part.mDimension.mMax.z, toReturn.mMax.z);
+      toReturn.mMax.x = fmax(part.mDimension.mMin.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(part.mDimension.mMin.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(part.mDimension.mMin.z, toReturn.mMax.z);
+
+      toReturn.mMin.x = fmin(part.mDimension.mMax.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(part.mDimension.mMax.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(part.mDimension.mMax.z, toReturn.mMin.z);
+      toReturn.mMin.x = fmin(part.mDimension.mMin.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(part.mDimension.mMin.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(part.mDimension.mMin.z, toReturn.mMin.z);
+    }
+
+    return toReturn;
+  }
 
   Mesh::Mesh(std::string &aFile, CreateInfo *aCreateInfo)
     : mInstanced(false)
@@ -480,6 +503,8 @@ namespace YTE
 
       mName = aFile;
     }
+
+    mDimension = CalculateDimensions(mParts);
   }
 
   Mesh::Mesh(std::string &aFile,
@@ -488,6 +513,8 @@ namespace YTE
   {
     mName = aFile;
     mParts = std::move(aSubmeshes);
+
+    mDimension = CalculateDimensions(mParts);
   }
 
 
