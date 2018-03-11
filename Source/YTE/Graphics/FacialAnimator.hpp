@@ -28,11 +28,12 @@ namespace YTE
   class FaceAnim
   {
   public:
-    FaceAnim(std::string animationFilename);
+    FaceAnim(std::string animationFilename, double ticksPerSecond);
 
-  private:
     std::vector<FaceFrame> eyeFrames;
     std::vector<FaceFrame> mouthFrames;
+
+    double ticksPerSecond;
   };
 
   class FacialAnimator : public Component
@@ -46,16 +47,28 @@ namespace YTE
 
     void Initialize() override;
 
-    void OnKeyFrameChange(KeyFrameChanged *event);
+    void OnModelChanged(ModelChanged *event);
+    void OnKeyFrameChanged(KeyFrameChanged *event);
     void OnAnimationAdded(AnimationAdded *event);
     void OnAnimationRemoved(AnimationRemoved *event);
 
   private:
 
+    Model *mModel;
     Animator *mAnimator;
 
-    std::map<std::string, FaceAnim> mFaceAnimations;
+    std::map<std::string, FaceAnim*> mFaceAnimations;
 
+    void RefreshInitialBufffers();
+
+    int mEyeBufferIndex;
+    std::vector<Vertex> mInitialEyeVertexBuffer;
+
+    int mMouthBufferIndex;
+    std::vector<Vertex> mInitialMouthVertexBuffer;
+
+    FaceFrame* FindEyeFrame(FaceAnim *anim, double time);
+    FaceFrame* FindMouthFrame(FaceAnim *anim, double time);
   };
 }
 

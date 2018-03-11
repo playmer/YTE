@@ -45,6 +45,7 @@ namespace YTE
     YTEDeclareType(AnimationAdded);
 
     std::string animation;
+    double ticksPerSecond;
   };
 
   YTEDeclareEvent(AnimationRemoved);

@@ -35,6 +35,7 @@ namespace YTE
   FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mAnimator(nullptr)
+    , mModel(nullptr)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -45,31 +46,83 @@ namespace YTE
 
   void FacialAnimator::Initialize()
   {
+    mModel = mOwner->GetComponent<Model>();
     mAnimator = mOwner->GetComponent<Animator>();
+
+    RefreshInitialBufffers();
 
     auto animations = mAnimator->GetAnimations();
 
     for (auto &anim : animations)
     {
-      mFaceAnimations.insert_or_assign(anim.first, FaceAnim(anim.first));
+      mFaceAnimations.insert_or_assign(anim.first, new FaceAnim(anim.first, anim.second->GetAnimation()->mTicksPerSecond));
     }
     
-    // register for key frame change
-    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
-    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
-    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
+    mOwner->YTERegister(Events::ModelChanged, this, &FacialAnimator::OnModelChanged);
+    mOwner->YTERegister(Events::KeyFrameChanged, this, &FacialAnimator::OnKeyFrameChanged);
+    mOwner->YTERegister(Events::AnimationAdded, this, &FacialAnimator::OnAnimationAdded);
+    mOwner->YTERegister(Events::AnimationRemoved, this, &FacialAnimator::OnAnimationRemoved);
   }
 
-  void FacialAnimator::OnKeyFrameChange(KeyFrameChanged *event)
+  void FacialAnimator::OnModelChanged(ModelChanged *event)
   {
+    RefreshInitialBufffers();
+  }
 
+  void FacialAnimator::OnKeyFrameChanged(KeyFrameChanged *event)
+  {
+    // get initial buffers
+    InstantiatedModel *instModel = mModel->GetInstantiatedModel()[0];
+    
+    FaceAnim *anim = mFaceAnimations[event->animation];
 
+    Mesh *mesh = instModel->GetMesh();
+
+    for (int i = 0; i < mesh->mParts.size(); i++)
+    {
+      Submesh &submesh = mesh->mParts[i];
+
+      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      {
+        FaceFrame *eyeFrame = FindEyeFrame(anim, event->time * anim->ticksPerSecond);
+
+        if (eyeFrame)
+        {
+          std::vector<Vertex> eyeBuffer = mInitialEyeVertexBuffer;
+
+          for (int j = 0; j < mInitialEyeVertexBuffer.size(); j++)
+          {
+            eyeBuffer[j].mTextureCoordinates.x += eyeFrame->uv.x;
+            eyeBuffer[j].mTextureCoordinates.y += eyeFrame->uv.y;
+          }
+
+          mesh->UpdateVertices(i, eyeBuffer);
+        }
+      }
+      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      {
+        FaceFrame *mouthFrame = FindMouthFrame(anim, event->time * anim->ticksPerSecond);
+
+        if (mouthFrame)
+        {
+          std::vector<Vertex> mouthBuffer = mInitialMouthVertexBuffer;
+
+          for (int j = 0; j < mInitialMouthVertexBuffer.size(); j++)
+          {
+            mouthBuffer[j].mTextureCoordinates.x += mouthFrame->uv.x;
+            mouthBuffer[j].mTextureCoordinates.y += mouthFrame->uv.y;
+          }
+
+          mesh->UpdateVertices(i, mouthBuffer);
+        }
+      }
+    }
   }
 
   void FacialAnimator::OnAnimationAdded(AnimationAdded *event)
   {
     std::string anim = event->animation;
-    mFaceAnimations.insert_or_assign(anim, FaceAnim(anim));
+    mFaceAnimations.insert_or_assign(anim, new FaceAnim(anim, event->ticksPerSecond));
   }
 
   void FacialAnimator::OnAnimationRemoved(AnimationRemoved *event)
@@ -77,7 +130,61 @@ namespace YTE
     mFaceAnimations.erase(event->animation);
   }
 
-  FaceAnim::FaceAnim(std::string animationFilename)
+  void FacialAnimator::RefreshInitialBufffers()
+  {
+    // get initial buffers
+    auto instModel = mModel->GetInstantiatedModel()[0];
+
+    Mesh *mesh = instModel->GetMesh();
+
+    for (int i = 0; i < mesh->mParts.size(); i++)
+    {
+      Submesh &submesh = mesh->mParts[i];
+
+      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      {
+        mEyeBufferIndex = i;
+        mInitialEyeVertexBuffer = submesh.mVertexBuffer;
+      }
+      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      {
+        mMouthBufferIndex = i;
+        mInitialMouthVertexBuffer = submesh.mVertexBuffer;
+      }
+    }
+  }
+
+  FaceFrame* FacialAnimator::FindEyeFrame(FaceAnim *anim, double time)
+  {
+    // find correct frame
+    for (int k = 0; k < anim->eyeFrames.size(); k++)
+    {
+      if (anim->eyeFrames[k].time > time)
+      {
+        std::cout << "Eye Time: " << anim->eyeFrames[k].time << ", Time: " << time << std::endl;
+        return &anim->eyeFrames[k];
+      }
+    }
+
+    return nullptr;
+  }
+
+  FaceFrame* FacialAnimator::FindMouthFrame(FaceAnim *anim, double time)
+  {
+    // find correct frame
+    for (int k = 0; k < anim->mouthFrames.size(); k++)
+    {
+      if (anim->mouthFrames[k].time > time)
+      {
+        return &anim->mouthFrames[k];
+      }
+    }
+
+    return nullptr;
+  }
+
+  FaceAnim::FaceAnim(std::string animationFilename, double ticksPerSecond)
+    : ticksPerSecond(ticksPerSecond)
   {
     fs::path workingDir{ YTE::Path::GetGamePath().String() };
     fs::path assetsDir{ workingDir.parent_path() };
@@ -107,8 +214,22 @@ namespace YTE
           FaceFrame eyeFrame;
           eyeFrame.id = std::stoi(values[0]);
           eyeFrame.time = std::stoi(values[1]);
-          eyeFrame.uv.x = std::stof(values[2]);
-          eyeFrame.uv.y = std::stof(values[3]);
+
+          float u = std::stof(values[2]);
+
+          if (u < 0.0)
+          {
+            u = 1.0 - u;
+          }
+          eyeFrame.uv.x = u;
+
+          float v = std::stof(values[3]);
+
+          if (v < 0.0)
+          {
+            v = 1.0 - v;
+          }
+          eyeFrame.uv.y = v;
 
           eyeFrames.push_back(eyeFrame);
         }
@@ -127,8 +248,22 @@ namespace YTE
           FaceFrame mouthFrame;
           mouthFrame.id = std::stoi(values[0]);
           mouthFrame.time = std::stoi(values[1]);
-          mouthFrame.uv.x = std::stof(values[2]);
-          mouthFrame.uv.y = std::stof(values[3]);
+          
+          float u = std::stof(values[2]);
+          
+          if (u < 0.0)
+          {
+            u = 1.0 - u;
+          }
+          mouthFrame.uv.x = u;
+          
+          float v = std::stof(values[3]);
+
+          if (v < 0.0)
+          {
+            v = 1.0 - v;
+          }
+          mouthFrame.uv.y = v;
 
           mouthFrames.push_back(mouthFrame);
         }
@@ -139,46 +274,4 @@ namespace YTE
     eyeFile.close();
     mouthFile.close();
   }
-
-  /*
-      // cause update to graphics card
-      auto instModel = mModel->GetInstantiatedModel()[0];
-
-      instModel->UpdateUBOAnimation(mCurrentAnimation->GetUBOAnim());
-
-      if (mCurrentAnimation->HasFaceAnim())
-      {
-        // get the submesh
-        Mesh *mesh = instModel->GetMesh();
-        Submesh* eyePlate;
-        int eyeIndex;
-        Submesh* mouthPlate;
-        int mouthIndex;
-
-        for (int i = 0; i < mesh->mParts.size(); i++)
-        {
-          Submesh &submesh = mesh->mParts[i];
-
-          if (submesh.mMaterialName == "OnlyDiff_Eye")
-          {
-            eyePlate = &submesh;
-            eyeIndex = i;
-          }
-          else if (submesh.mMaterialName == "OnlyDiff_Mouth")
-          {
-            mouthPlate = &submesh;
-            mouthIndex = i;
-          }
-        }
-
-        // make a copy of the vertex buffer
-        auto vBuff = mouthPlate->mVertexBuffer;
-
-        // offset its texture coordinates
-
-
-        // call mesh->updates vertices, pass submesh index and vertex buffer
-      }
-
-    */
 }

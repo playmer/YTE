@@ -95,7 +95,7 @@ namespace YTE
 
     mAnimation = mScene->mAnimations[0];
 
-    mName = mAnimation->mName.data;
+    mName = aFile;
     mCurrentAnimationTime = 0.0f;
 
     mUBOAnimationData.mHasAnimation = true;
@@ -443,6 +443,12 @@ namespace YTE
         // set to nullptr, will switch to appropriate animation at beginning of next update loop
         mCurrentAnimation = nullptr;
       }
+
+      KeyFrameChanged keyChange;
+      keyChange.animation = mCurrentAnimation->mName;
+      keyChange.time = mCurrentAnimation->mElapsedTime;
+
+      mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
     }
 
     if (mCurrentAnimation)
@@ -507,6 +513,12 @@ namespace YTE
   void Animator::SetCurrentAnimTime(double aTime)
   {
     mCurrentAnimation->SetCurrentTime(aTime);
+
+    KeyFrameChanged keyChange;
+    keyChange.animation = mCurrentAnimation->mName;
+    keyChange.time = aTime;
+
+    mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
   }
 
   double Animator::GetMaxTime() const
@@ -542,6 +554,11 @@ namespace YTE
 
     anim->Initialize(mOwner->GetComponent<Model>(), mEngine);
 
+    AnimationAdded animAdd;
+    animAdd.animation = anim->mName;
+    animAdd.ticksPerSecond = anim->GetAnimation()->mTicksPerSecond;
+    mOwner->SendEvent(Events::AnimationAdded, &animAdd);
+
     return anim;
   }
 
@@ -556,9 +573,7 @@ namespace YTE
     }
 
     Animation *anim = new Animation(aName);
-
     mAnimations.insert_or_assign(aName, anim);
-
     return anim;
   }
 
@@ -568,6 +583,10 @@ namespace YTE
     {
       if (it->second == aAnimation)
       {
+        AnimationRemoved animRemoved;
+        animRemoved.animation = it->second->mName;
+        mOwner->SendEvent(Events::AnimationRemoved, &animRemoved);
+
         delete it->second;
         mAnimations.erase(it);
         return;
