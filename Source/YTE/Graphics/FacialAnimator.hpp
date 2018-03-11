@@ -18,7 +18,6 @@
 
 namespace YTE
 {
-
   struct FaceFrame
   {
     int id;
@@ -47,7 +46,9 @@ namespace YTE
 
     void Initialize() override;
 
-    void OnKeyFrameChange();
+    void OnKeyFrameChange(KeyFrameChanged *event);
+    void OnAnimationAdded(AnimationAdded *event);
+    void OnAnimationRemoved(AnimationRemoved *event);
 
   private:
 

@@ -55,12 +55,26 @@ namespace YTE
     }
     
     // register for key frame change
+    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
+    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
+    mOwner->YTERegister(Events::KeyFrameChanged, this, &OnKeyFrameChange);
   }
 
-  void FacialAnimator::OnKeyFrameChange()
+  void FacialAnimator::OnKeyFrameChange(KeyFrameChanged *event)
   {
 
 
+  }
+
+  void FacialAnimator::OnAnimationAdded(AnimationAdded *event)
+  {
+    std::string anim = event->animation;
+    mFaceAnimations.insert_or_assign(anim, FaceAnim(anim));
+  }
+
+  void FacialAnimator::OnAnimationRemoved(AnimationRemoved *event)
+  {
+    mFaceAnimations.erase(event->animation);
   }
 
   FaceAnim::FaceAnim(std::string animationFilename)

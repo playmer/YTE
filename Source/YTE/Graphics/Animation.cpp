@@ -20,6 +20,32 @@
 
 namespace YTE
 {
+  YTEDefineEvent(KeyFrameChanged);
+
+  YTEDefineType(KeyFrameChanged)
+  {
+    YTERegisterType(KeyFrameChanged);
+    YTEBindField(&KeyFrameChanged::animation, "animation", PropertyBinding::Get);
+    YTEBindField(&KeyFrameChanged::time, "time", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(AnimationAdded);
+
+  YTEDefineType(AnimationAdded)
+  {
+    YTERegisterType(AnimationAdded);
+    YTEBindField(&AnimationAdded::animation, "animation", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(AnimationRemoved);
+
+  YTEDefineType(AnimationRemoved)
+  {
+    YTERegisterType(AnimationRemoved);
+    YTEBindField(&AnimationRemoved::animation, "animation", PropertyBinding::Get);
+  }
+
+
   YTEDefineType(Animation)
   {
     YTERegisterType(Animation);
@@ -76,73 +102,6 @@ namespace YTE
     mElapsedTime = 0.0;
 
     mSpeed = 1.0f;
-
-
-    // check to see if there is a facial animation for this animation
-    std::experimental::filesystem::path animPath(aniFile);
-    animPath.replace_extension("");
-
-    std::string eyePath(animPath.string() + "_EyeAnim.txt");
-    std::string mouthPath(animPath.string() + "_MouthAnim.txt");
-    std::ifstream eyeFile(eyePath);
-    std::ifstream mouthFile(mouthPath);
-
-    if (eyeFile.is_open() && mouthFile.is_open())
-    {
-      mFaceAnimation = std::make_unique<FaceAnim>();
-
-      // read eye frames
-      std::string eyeLine;
-
-      while (getline(eyeFile, eyeLine))
-      {
-        // parse line
-        auto values = split(eyeLine, '\t', true);
-
-        if (values.size() == 4)
-        {
-          FaceFrame eyeFrame;
-          eyeFrame.id = std::stoi(values[0]);
-          eyeFrame.time = std::stoi(values[1]);
-          eyeFrame.uv.x = std::stof(values[2]);
-          eyeFrame.uv.y = std::stof(values[3]);
-
-          mFaceAnimation->eyeFrames.push_back(eyeFrame);
-        }
-        else
-        {
-          // SOMETHING IS WRONG HERE
-        }
-      }
-
-      // read mouth frames
-      std::string mouthLine;
-
-      while (getline(mouthFile, mouthLine))
-      {
-        // parse line
-        auto values = split(mouthLine, '\t', true);
-
-        if (values.size() == 4)
-        {
-          FaceFrame mouthFrame;
-          mouthFrame.id = std::stoi(values[0]);
-          mouthFrame.time = std::stoi(values[1]);
-          mouthFrame.uv.x = std::stof(values[2]);
-          mouthFrame.uv.y = std::stof(values[3]);
-
-          mFaceAnimation->mouthFrames.push_back(mouthFrame);
-        }
-        else
-        {
-          // SOMETHING IS WRONG HERE
-        }
-      }
-    }
-
-    // close our files
-    eyeFile.close();
-    mouthFile.close();
   }
 
   void Animation::Initialize(Model *aModel, Engine *aEngine)
@@ -251,11 +210,6 @@ namespace YTE
   Skeleton* Animation::GetSkeleton()
   {
     return mMeshSkeleton;
-  }
-
-  bool Animation::HasFaceAnim() const
-  {
-    return mHasFaceAnimation;
   }
 
   UBOAnimation* Animation::GetUBOAnim()
