@@ -31,14 +31,14 @@ namespace YTE
       .AddAttribute<Serializable>();
 
     YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("size"))
-      .Description() = "Sets the size of the box collider from a Real3";
+      .SetDocumentation("Sets the size of the box collider from a Real3");
     YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (float, float, float)), "SetSize", YTEParameterNames("x", "y", "z"))
-      .Description() = "Sets the size of the box collider from three Reals X, Y, and Z";
+      .SetDocumentation("Sets the size of the box collider from three Reals X, Y, and Z");
 
     YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("offset"))
-      .Description() = "Sets the position offset of the box collider from a Real3 of x, y, and z coordinates";
+      .SetDocumentation("Sets the position offset of the box collider from a Real3 of x, y, and z coordinates");
     YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("x", "y", "z"))
-      .Description() = "Sets the position offset of the box collider from three Reals X, Y, and Z";
+      .SetDocumentation("Sets the position offset of the box collider from three Reals X, Y, and Z");
   }
 
   MenuCollider::MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -51,6 +51,7 @@ namespace YTE
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
     enabledFeatures.setWideLines(true);
+    enabledFeatures.setFillModeNonSolid(true);
     
     mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
                                                                   nullptr,

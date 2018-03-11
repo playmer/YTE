@@ -24,15 +24,20 @@ namespace YTE
   }
   
   CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
+    : Body(aOwner, aSpace, aProperties)
+    , mVelocity(0.f, 0.f, 0.f)
+    , mIsInitialized(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   };
 
   CollisionBody::~CollisionBody()
   {
-    auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
-    world->removeCollisionObject(mCollisionBody.get());
+    if (mCollisionBody)
+    {
+      auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
+      world->removeCollisionObject(mCollisionBody.get());
+    }
   }
 
   void CollisionBody::PhysicsInitialize()
@@ -40,15 +45,10 @@ namespace YTE
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider = GetColliderFromObject(mOwner);
 
-    DebugObjection(collider == nullptr,
-                "CollisionBodies require a collider currently, sorry!\n ObjectName: %s",
-                mOwner->GetName().c_str());
-
     auto baseCollider = collider->GetCollider();
     auto collisionShape = baseCollider->getCollisionShape();
 
     //using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-
     mCollisionBody = std::make_unique<btCollisionObject>();
     mCollisionBody->setCollisionShape(collisionShape);
     mCollisionBody->activate(true);

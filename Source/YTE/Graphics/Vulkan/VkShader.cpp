@@ -205,17 +205,6 @@ namespace YTE
                                                     vk::DynamicState::eScissor,
                                                     vk::DynamicState::eLineWidth});
 
-    if (aReload)
-    {
-      aSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("\t-> {} Reloaded Successfully!",
-                                                                              aName));
-    }
-    else
-    {
-      aSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("Shader: {} Loaded Successfully!",
-                                                                              aName));
-    }
-
     return VkCreatePipelineDataSet(pipelineCache,
                                    {},
                                    vertexStage,

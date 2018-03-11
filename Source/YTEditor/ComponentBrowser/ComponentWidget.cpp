@@ -135,14 +135,14 @@ namespace YTEditor
       return;
     }
 
-    YTE::Composition * object = mEngineComponent->GetOwner();
+    YTE::Composition *owner = mEngineComponent->GetOwner();
 
-    if (!object)
+    if (!owner)
     {
       return;
     }
 
-    object->RemoveComponent(mEngineComponent->GetType());
+    owner->RemoveComponent(mEngineComponent->GetType());
     mEngineComponent = nullptr;
   }
 

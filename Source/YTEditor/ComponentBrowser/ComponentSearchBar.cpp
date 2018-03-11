@@ -123,7 +123,7 @@ namespace YTEditor
       return;
     }
 
-    auto error = currObj->CheckDependencies(type);
+    auto error = currObj->HasDependencies(type);
 
     if (false == error.empty())
     {

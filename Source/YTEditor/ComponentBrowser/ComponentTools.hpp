@@ -28,7 +28,7 @@ namespace YTEditor
   {
   public:
 
-    ComponentTools(ComponentBrowser * parent = nullptr);
+    ComponentTools(ComponentBrowser *aParent = nullptr);
     ~ComponentTools();
 
     void CreateSubWidgets();
@@ -38,11 +38,11 @@ namespace YTEditor
 
   private:
 
-    QHBoxLayout * mLayout;
-    ComponentBrowser * mBrowser;
+    QHBoxLayout *mLayout;
+    ComponentBrowser *mBrowser;
 
     QLabel *mLabel;
-    ComponentSearchBar * mSearchBar;
+    ComponentSearchBar *mSearchBar;
 
   };
 

@@ -816,17 +816,6 @@ namespace YTE
                                              dynamic,
                                              modelData.mPipelineLayout,
                                              mParent->GetRenderPass());
-
-    if (aReload)
-    {
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("\t-> {} Reloaded Successfully!",
-                                                                                       aShaderSetName));
-    }
-    else
-    {
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("Shader: {} Loaded Successfully!",
-                                                                                       aShaderSetName));
-    }
   }
 
 
