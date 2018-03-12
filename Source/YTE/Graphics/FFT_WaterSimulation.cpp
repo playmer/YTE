@@ -1078,8 +1078,8 @@ namespace YTE
           mShaderSetName,
           mGraphicsView,
           mRenderer,
-          "copywrite_wateridffuse.png",
-          "copywrite_specularmap.png",
+          "copywriteWaterTextureDiffuse.png",
+          "copywriteFoamTextureSpecular.png",
           "copywritePerlinNoiseTextureNormal.png");
     }
   }

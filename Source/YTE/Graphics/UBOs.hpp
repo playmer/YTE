@@ -131,6 +131,8 @@ namespace YTE
     glm::vec4 mFogColor = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec4 mFogCoefficients = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
     glm::vec2 mFogPlanes = glm::vec2(0.0f, 0.0f);
+    float mTime;
+    float mPadding;
   };
 
   struct UBOLightMan
