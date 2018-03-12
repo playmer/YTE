@@ -638,17 +638,7 @@ namespace YTE
 
 
     // cube map render
-    std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores;
-    for (auto &v : mViewData)
-    {
-      if (v.second.mCubemapper)
-      {
-        // returns a semaphore for when it is finished, takes a semaphore for when to start
-        auto& semaphore = v.second.mCubemapper->RenderComplete(mRenderToScreen->GetPresentSemaphore());
-        waitSemaphores.push_back(semaphore);
-      }
-    }
-
+    std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
 
 
     // build primary

@@ -25,7 +25,6 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTCubeMapper.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.cpp
@@ -68,7 +67,6 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTCubeMapper.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkCommandBufferBuffer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkCommandBufferEventBuffer.hpp
