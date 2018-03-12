@@ -136,6 +136,11 @@ namespace YTE
     mIsInitialized = true;
   }
 
+  void RigidBody::ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition)
+  {
+    mRigidBody->applyForce(OurVec3ToBt(aForce), OurVec3ToBt(aRelativePosition));
+  }
+
   void RigidBody::ApplyImpulse(const glm::vec3 & aImpulse, const glm::vec3 & aRelativePosition)
   {
     mRigidBody->applyImpulse(OurVec3ToBt(aImpulse), OurVec3ToBt(aRelativePosition));
@@ -155,6 +160,16 @@ namespace YTE
       auto collider = GetColliderFromObject(mOwner);
       collider->SetTranslation(aTranslation.x, aTranslation.y, aTranslation.z);
     }
+  }
+
+  const glm::vec3 RigidBody::GetAngularVelocity() const
+  {
+    if (mIsInitialized)
+    {
+      auto velocity = BtToOurVec3(mRigidBody->getAngularVelocity());
+      return velocity;
+    }
+    return glm::vec3();
   }
 
   const glm::vec3 RigidBody::GetVelocity() const

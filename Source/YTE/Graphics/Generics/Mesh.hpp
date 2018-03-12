@@ -227,6 +227,20 @@ namespace YTE
       
     }
 
+    size_t GetTriangleCount()
+    {
+      return mIndexBuffer.size() / 3;
+    }
+
+    glm::uvec3 GetTriangle(size_t aIndex)
+    {
+      glm::uvec3 tri;
+      tri.x = (glm::uint)mIndexBuffer[aIndex++];
+      tri.y = (glm::uint)mIndexBuffer[aIndex++];
+      tri.z = (glm::uint)mIndexBuffer[aIndex++];
+      return tri;
+    }
+
     std::vector<Vertex> mVertexBuffer;
     std::vector<u32> mIndexBuffer;
 
@@ -276,6 +290,7 @@ namespace YTE
     virtual ~Mesh();
 
     bool CanAnimate();
+    std::vector<Submesh>& GetSubmeshes();
 
     void SetBackfaceCulling(bool aCulling);
     virtual void RecreateShader() {}

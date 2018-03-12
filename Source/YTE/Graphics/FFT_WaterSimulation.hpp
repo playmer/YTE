@@ -101,6 +101,7 @@ namespace YTE
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override;
 
+    float GetHeight(float x, float z);
 
   private:
     /*******************/

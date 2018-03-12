@@ -552,6 +552,11 @@ namespace YTE
     return mSkeleton.HasBones();
   }
 
+  std::vector<YTE::Submesh>& Mesh::GetSubmeshes()
+  {
+    return mParts;
+  }
+
   void Mesh::SetBackfaceCulling(bool aCulling)
   {
     for (auto &sub : mParts)
@@ -559,8 +564,6 @@ namespace YTE
       sub.mCullBackFaces = aCulling;
     }
   }
-
-
 
   void Mesh::CreateCollider(const aiScene* aScene)
   {

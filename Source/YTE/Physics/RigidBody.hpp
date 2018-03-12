@@ -31,8 +31,11 @@ namespace YTE
 
     void PhysicsInitialize() override;
 
+    void ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition);
     void ApplyImpulse(const glm::vec3& aImpulse, const glm::vec3& aRelativePosition);
     void SetPhysicsTransform(const glm::vec3& aTranslation, const glm::quat& aRotation);
+
+    const glm::vec3 GetAngularVelocity() const;
 
     const glm::vec3 GetVelocity() const;
     void SetVelocity(const glm::vec3& aVelocity);

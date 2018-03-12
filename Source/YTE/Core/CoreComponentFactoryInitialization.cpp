@@ -16,6 +16,7 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
@@ -83,6 +84,7 @@ namespace YTE
 
     helper.CreateComponentFactory<AudioTest>();
     helper.CreateComponentFactory<BoatController>();
+    helper.CreateComponentFactory<BoatPhysics>();
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
