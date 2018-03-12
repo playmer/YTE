@@ -28,9 +28,9 @@ namespace YTE
       size_t triCount = submesh.GetTriangleCount();
       for (size_t i = 0; i < triCount; ++i) 
       {
-        auto tri = submesh.GetTriangle(i);
+        auto tri = submesh.GetTriangle(3 * i);
         tri += glm::uvec3((glm::uint)boatVertices.size());
-        boatTriangles.push_back(submesh.GetTriangle(i));
+        boatTriangles.push_back(submesh.GetTriangle(3 * i));
       }
 
       for (auto& vert : submesh.mVertexBuffer)
@@ -77,6 +77,7 @@ namespace YTE
       auto height = aSim->GetHeight(gPos.x, gPos.z);
       allDistancesToWater[i] = gPos.y - height;
     }
+
     underwaterLength = glm::distance(max, min);
 
     AddTriangles(aSim);

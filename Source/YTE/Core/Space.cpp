@@ -138,8 +138,11 @@ namespace YTE
     }
 
     SendEvent(Events::DeletionUpdate, aEvent);
-
-    SendEvent(Events::PhysicsUpdate, aEvent);
+      
+    if (mPaused == false)
+    {
+      SendEvent(Events::PhysicsUpdate, aEvent);
+    }
 
     // TODO: Move the frame update calls to the graphics system
     SendEvent(Events::FrameUpdate, aEvent);

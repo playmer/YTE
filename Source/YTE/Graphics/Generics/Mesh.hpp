@@ -235,9 +235,9 @@ namespace YTE
     glm::uvec3 GetTriangle(size_t aIndex)
     {
       glm::uvec3 tri;
-      tri.x = (glm::uint)mIndexBuffer[aIndex++];
-      tri.y = (glm::uint)mIndexBuffer[aIndex++];
-      tri.z = (glm::uint)mIndexBuffer[aIndex++];
+      tri.x = (glm::uint)mIndexBuffer[aIndex];
+      tri.y = (glm::uint)mIndexBuffer[aIndex + 1];
+      tri.z = (glm::uint)mIndexBuffer[aIndex + 2];
       return tri;
     }
 

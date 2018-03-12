@@ -127,11 +127,11 @@ namespace YTE
       mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
       mRigidBody->updateInertiaTensor();
+      mRigidBody->setDamping(0.8f, 0.8f);
     }
 
-    mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
-
     world->addRigidBody(mRigidBody.get());
+    mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
 
     mIsInitialized = true;
   }

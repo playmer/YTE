@@ -52,10 +52,14 @@ namespace YTE
 
     modifyBoatMesh.GenerateUnderwaterMesh(waterSim, (float)aLogicUpdate->Dt);
 
+    //std::cout << modifyBoatMesh.UnderwaterTriangleData().size() << std::endl;
+
     mDebugDrawer->Start();
 
-    for (auto &tri : modifyBoatMesh.UnderwaterTriangleData())
+    for (int i = 0; i < modifyBoatMesh.UnderwaterTriangleData().size(); i++)
     {
+      auto &tri = modifyBoatMesh.UnderwaterTriangleData()[i];
+
       mDebugDrawer->AddTriangle(tri.p1, tri.p2, tri.p3);
     }
 
@@ -72,9 +76,9 @@ namespace YTE
     //}
 
     glm::vec3 total = under + over;
-    std::cout << "under: " << under.x << ", " << under.y << ", " << under.z << std::endl;
-    std::cout << "over: " << over.x << ", " << over.y << ", " << over.z << std::endl;
-    std::cout << "total: " << total.x << ", " << total.y << ", " << total.z << std::endl;
+    //std::cout << "under: " << under.x << ", " << under.y << ", " << under.z << std::endl;
+    //std::cout << "over: " << over.x << ", " << over.y << ", " << over.z << std::endl;
+    //std::cout << "total: " << total.x << ", " << total.y << ", " << total.z << std::endl;
   }
 
   glm::vec3 BoatPhysics::AddUnderwaterForces(FFT_WaterSimulation* aSim, float dt)

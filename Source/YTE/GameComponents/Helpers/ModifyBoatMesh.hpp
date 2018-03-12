@@ -29,6 +29,7 @@ namespace YTE
     float BoatArea();
     float CalculateUnderwaterLength();
     void CalculateOriginalTrianglesArea();
+
   private:
     void AddTriangles(FFT_WaterSimulation* aSim);
     void AddTrianglesOneAboveWater(std::vector<VertexData>& vertexData, int triangleCounter, FFT_WaterSimulation* aSim);
