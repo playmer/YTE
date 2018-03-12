@@ -5,6 +5,7 @@
 #include "YTE/GameComponents/Helpers/SlammingForceData.hpp"
 #include "YTE/GameComponents/Helpers/TriangleData.hpp"
 #include "YTE/Core/Utilities.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 
 namespace YTE
 {
@@ -49,5 +50,7 @@ namespace YTE
     float boatArea;
     float timeSinceStart;
     float underwaterLength;
+
+    LineDrawer *lineDrawer;
   };
 }

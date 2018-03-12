@@ -4,11 +4,15 @@
 #include "YTE/GameComponents/Helpers/SlammingForceData.hpp"
 #include "YTE/GameComponents/Helpers/TriangleData.hpp"
 
+#include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Model.hpp"
 
 #include "YTE/Physics/RigidBody.hpp"
+
+#include "YTE/Core/Composition.hpp"
+#include "YTE/Core/Space.hpp"
 
 #include <cmath>
 
@@ -45,6 +49,10 @@ namespace YTE
     slammingForceData.resize(boatTriangles.size());
 
     CalculateOriginalTrianglesArea();
+
+    auto gv = aComposition->GetSpace()->GetComponent<GraphicsView>();
+
+    lineDrawer = new LineDrawer("waterHeightDebugDraw", gv->GetRenderer(), gv);
   }
 
   void ModifyBoatMesh::GenerateUnderwaterMesh(FFT_WaterSimulation* aSim, float dt)
@@ -64,6 +72,7 @@ namespace YTE
     // if you try to use boat physics on something without verts, you can fix this. BAKA
     glm::vec3 max = boatVertices[0];
     glm::vec3 min = boatVertices[0];
+
     for (int i = 0; i < boatVertices.size(); ++i)
     {
       glm::vec4 gPos = m2w * glm::vec4(boatVertices[i], 1);
@@ -74,8 +83,9 @@ namespace YTE
         min[j] = std::max(gPos[j], min[j]);
       }
 
-      auto height = aSim->GetHeight(gPos.x, gPos.z);
-      allDistancesToWater[i] = gPos.y - height;
+      glm::vec3 height = aSim->GetHeight(gPos.x, gPos.z);
+
+      allDistancesToWater[i] = gPos.y - height.y;
     }
 
     underwaterLength = glm::distance(max, min);

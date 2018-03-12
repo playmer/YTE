@@ -13,7 +13,7 @@ namespace YTE
     (void)timeSinceStart;
     center = (p1 + p2 + p3) / 3.0f;
     auto height = aSim->GetHeight(center.x, center.z);
-    distanceToSurface = std::abs(center.y - height);
+    distanceToSurface = std::abs(center.y - height.y);
 
     glm::vec3 v1 = p2 - p1;
     glm::vec3 v2 = p3 - p1;

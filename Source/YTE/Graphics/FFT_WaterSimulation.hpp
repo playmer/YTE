@@ -101,7 +101,7 @@ namespace YTE
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override;
 
-    float GetHeight(float x, float z);
+    glm::vec3 GetHeight(float x, float z);
 
   private:
     /*******************/
@@ -271,6 +271,8 @@ namespace YTE
       }
       return nullptr;
     }
+
+    const std::vector<Vertex>& GetVertices();
 
   private:
     void CreateHeightmap();

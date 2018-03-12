@@ -1243,7 +1243,7 @@ namespace YTE
     }
   }
 
-  float FFT_WaterSimulation::GetHeight(float x, float z)
+  glm::vec3 FFT_WaterSimulation::GetHeight(float x, float z)
   {
     auto firstMatrix = mInstancingMatrices[0];
     auto world2Instance = glm::inverse(firstMatrix.mModelMatrix);
@@ -1253,20 +1253,32 @@ namespace YTE
     auto& map = mInstantiatedHeightmap[0];
     int x_coord = static_cast<int>(std::round(point.x)) % mGridSize;
     int z_coord = static_cast<int>(std::round(point.z)) % mGridSize;
-    if (x_coord < 0)
+
+    x_coord += mGridSize / 2;
+    z_coord += mGridSize / 2;
+
+    while (x_coord < 0)
     {
       x_coord += mGridSize;
     }
-    if (z_coord < 0)
+    while (z_coord < 0)
     {
       z_coord += mGridSize;
     }
 
-    auto vert = mVertices[z_coord * mGridSize + x_coord];
+    unsigned int index = z_coord * mGridSize + x_coord;
+
+    while (index > mVertices.size())
+    {
+      index -= mVertices.size();
+    }
+
+    auto vert = mVertices[index];
     point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
 
-    return point.y;
+    return glm::vec3(point.x, point.y, point.z);
   }
+
 
   // ------------------------------------
   //Vertex ComputationalToNormal(WaterComputationalVertex& rhs)
@@ -1291,6 +1303,11 @@ namespace YTE
   //  return v;
   //}
 
+
+  const std::vector<Vertex>& FFT_WaterSimulation::GetVertices()
+  {
+    return mVertices;
+  }
 
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
