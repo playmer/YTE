@@ -512,7 +512,7 @@ namespace YTE
     : mInstanced(false)
   {
     mName = aFile;
-    mParts = std::move(aSubmeshes);
+    mParts = aSubmeshes;
 
     mDimension = CalculateDimensions(mParts);
   }
