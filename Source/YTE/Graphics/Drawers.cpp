@@ -243,7 +243,7 @@ namespace YTE
     auto mesh = mRenderer->CreateSimpleMesh(mMeshName, mSubmeshes, true);
 
     mInstantiatedLines = mRenderer->CreateModel(mView, mesh);
-    mInstantiatedLines->mType = ShaderType::Triangles;
+    mInstantiatedLines->mType = ShaderType::Wireframe;
     auto data = mInstantiatedLines->GetUBOModelData();
     mInstantiatedLines->UpdateUBOModel(data);
     mInstantiatedLines->mLineWidth = 5.0f;
