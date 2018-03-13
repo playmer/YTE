@@ -39,6 +39,8 @@ namespace YTEditor
 
     void AddComponent(QString aCompName);
 
+    void ItemActivated(QString aCompName);
+
     void OnReturnPressed();
 
     void OnTabPressed();
