@@ -12,7 +12,7 @@
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -39,34 +39,49 @@ namespace YTE
   }
 
   void MenuController::Initialize()
-  { 
-    mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
-    mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
-
-    mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
-    mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
-    mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
-
+  {
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mMenuElements = mOwner->GetCompositions();
     mNumElements = static_cast<int>(mMenuElements->size());
 
     mMyTransform = mOwner->GetComponent<Transform>();
     //mViewScale = mMyTransform->GetScale();
     mMyTransform->SetScale(0.f, 0.f, 0.f);
+
+      // Cache sound ids used by this component
+    auto soundSystem = mOwner->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      soundSystem->GetSoundIDFromString("UI_Menu_Pause", mSoundPause);
+      soundSystem->GetSoundIDFromString("UI_Menu_Unpause", mSoundUnpause);
+      soundSystem->GetSoundIDFromString("UI_Menu_Up", mSoundElementNext);
+      soundSystem->GetSoundIDFromString("UI_Menu_Down", mSoundElementPrev);
+      soundSystem->GetSoundIDFromString("UI_Menu_Select", mSoundElementSelect);
+    }
+
+    mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+    mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
+
+    mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
+    mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
   }
 
   void MenuController::OnMenuStart(MenuStart *aEvent)
   {
     if (aEvent->ParentMenu)
+    {
       mParentMenu = aEvent->ParentMenu;
-
-    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    }
 
     mMyTransform->SetScale(-16.5, 9.5f, 1.f);
     mIsDisplayed = true;
 
     if (aEvent->PlaySound)
-      emitter->PlayEvent("UI_Menu_Pause");
+    {
+      mSoundEmitter->PlayEvent(mSoundPause);
+    }
 
     mCurrMenuElement = 0;
 
@@ -83,13 +98,13 @@ namespace YTE
   {
     if (mIsDisplayed)
     {
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
       mMyTransform->SetScale(0.f, 0.f, 0.f);
       mIsDisplayed = false;
 
       if (aEvent->PlaySound)
-        emitter->PlayEvent("UI_Menu_Unpause");
+      {
+        mSoundEmitter->PlayEvent(mSoundUnpause);
+      }
 
       if (mMenuElements->size() != 0)
       {
@@ -106,13 +121,13 @@ namespace YTE
   {
     if (mIsDisplayed && !aEvent->Handled)
     {
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
       mMyTransform->SetScale(0.f, 0.f, 0.f);
       mIsDisplayed = false;
 
       if (aEvent->PlaySound)
-        emitter->PlayEvent("UI_Menu_Unpause");
+      {
+        mSoundEmitter->PlayEvent(mSoundUnpause);
+      }
 
       if (mMenuElements->size() != 0)
       {
@@ -154,7 +169,7 @@ namespace YTE
     {
       if (!aEvent->IsReleased)
       {
-        mOwner->GetComponent<WWiseEmitter>()->PlayEvent("UI_Menu_Select");
+        mSoundEmitter->PlayEvent(mSoundElementSelect);
 
         MenuElementTrigger triggerEvent;
 
@@ -183,13 +198,15 @@ namespace YTE
       currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
 
       if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
+      {
         mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
-
+        mSoundEmitter->PlayEvent(mSoundElementPrev);
+      }
       else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
+      {
         mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
-
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
-      emitter->PlayEvent("UI_Menu_Hover");
+        mSoundEmitter->PlayEvent(mSoundElementNext);
+      }
 
       MenuElementHover hoverEvent;
 

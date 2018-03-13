@@ -30,6 +30,7 @@ namespace YTE
 
     void Play();
     void PlayEvent(const std::string & aEvent);
+    void PlayEvent(u64 aEvent);
 
     void ListenerChanged(WWiseListenerChanged *aListenerChange);
 

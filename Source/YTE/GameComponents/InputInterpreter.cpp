@@ -102,40 +102,28 @@ namespace YTE
 
     if (mContext == InputContext::Sailing)
     {
-      if (mIsRightTriggerDown)
+      if (mIsRightTriggerDown && mGamepad->GetRightTrigger() < 0.1f)
       {
-        if (mGamepad->GetRightTrigger() < 0.1f)
-        {
           mIsRightTriggerDown = false;
-        }
       }
-      else
+      else if (!mIsRightTriggerDown && mGamepad->GetRightTrigger() > 0.5f)
       {
-        if (mGamepad->GetRightTrigger() > 0.5f)
-        {
-          SailStateChanged setSailUp(true);
-          mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+        SailStateChanged setSailUp(true);
+        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
 
-          mIsRightTriggerDown = true;
-        }
+        mIsRightTriggerDown = true;
       }
 
-      if (mIsLeftTriggerDown)
+      if (mIsLeftTriggerDown && mGamepad->GetLeftTrigger() < 0.1f)
       {
-        if (mGamepad->GetLeftTrigger() < 0.1f)
-        {
-          mIsLeftTriggerDown = false;
-        }
+        mIsLeftTriggerDown = false;
       }
-      else
+      else if (!mIsLeftTriggerDown && mGamepad->GetLeftTrigger() > 0.5f)
       {
-        if (mGamepad->GetLeftTrigger() > 0.5f)
-        {
-          SailStateChanged setSailUp(false);
-          mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+        SailStateChanged setSailUp(false);
+        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
 
-          mIsLeftTriggerDown = true;
-        }
+        mIsLeftTriggerDown = true;
       }
     }
   }
@@ -186,127 +174,127 @@ namespace YTE
   {
     switch (mContext)
     {
-    case InputContext::Dialogue:
-    {
-      switch (aEvent->Button)
+      case InputContext::Dialogue:
       {
-      case Xbox_Buttons::Y:
+        switch (aEvent->Button)
+        {
+          case Xbox_Buttons::Y:
+          {
+            DialogueStart diagStart;
+            mOwner->SendEvent(Events::DialogueStart, &diagStart);
+            break;
+          }
+
+          case Xbox_Buttons::A:
+          {
+            DialogueConfirm diagConfirm;
+            mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
+            break;
+          }
+          case Xbox_Buttons::B:
+          {
+            DialogueExit diagExit;
+            mOwner->SendEvent(Events::DialogueExit, &diagExit);
+            break;
+          }
+        }
+        break;
+      }
+      case InputContext::Sailing:
       {
-        DialogueStart diagStart;
-        mOwner->SendEvent(Events::DialogueStart, &diagStart);
+        switch (aEvent->Button)
+        {
+          case Xbox_Buttons::DPAD_Down:
+            break;
+          case Xbox_Buttons::DPAD_Up:
+            break;
+          case Xbox_Buttons::DPAD_Left:
+            break;
+          case Xbox_Buttons::DPAD_Right:
+            break;
+          case Xbox_Buttons::A:
+          {
+            BoatDockEvent dock;
+            mOwner->SendEvent(Events::BoatDockEvent, &dock);
+            break;
+          }
+          case Xbox_Buttons::B:
+            break;
+          case Xbox_Buttons::X:
+            break;
+          case Xbox_Buttons::Y:
+            break;
+          case Xbox_Buttons::Start:
+          {
+            MenuStart menuStart;
+            menuStart.PlaySound = true;
+            mOwner->SendEvent(Events::MenuStart, &menuStart);
+
+            mContext = InputContext::Menu;
+            break;
+          }
+          case Xbox_Buttons::LeftShoulder:
+            break;
+          case Xbox_Buttons::RightShoulder:
+            break;
+          case Xbox_Buttons::LeftStick:
+            break;
+          case Xbox_Buttons::RightStick:
+            break;
+        }
         break;
       }
 
-      case Xbox_Buttons::A:
+      case InputContext::Menu:
       {
-        DialogueConfirm diagConfirm;
-        mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
-        break;
-      }
-      case Xbox_Buttons::B:
-      {
-        DialogueExit diagExit;
-        mOwner->SendEvent(Events::DialogueExit, &diagExit);
-        break;
-      }
-      }
-      break;
-    }
-    case InputContext::Sailing:
-    {
-      switch (aEvent->Button)
-      {
-      case Xbox_Buttons::DPAD_Down:
-        break;
-      case Xbox_Buttons::DPAD_Up:
-        break;
-      case Xbox_Buttons::DPAD_Left:
-        break;
-      case Xbox_Buttons::DPAD_Right:
-        break;
-      case Xbox_Buttons::A:
-      {
-        BoatDockEvent dock;
-        mOwner->SendEvent(Events::BoatDockEvent, &dock);
-        break;
-      }
-      case Xbox_Buttons::B:
-        break;
-      case Xbox_Buttons::X:
-        break;
-      case Xbox_Buttons::Y:
-        break;
-      case Xbox_Buttons::Start:
-      {
-        MenuStart menuStart;
-        menuStart.PlaySound = true;
-        mOwner->SendEvent(Events::MenuStart, &menuStart);
+        switch (aEvent->Button)
+        {
+          case Xbox_Buttons::Back:
+          case Xbox_Buttons::Start:
+          {
+            MenuExit menuExit(true);
+            menuExit.PlaySound = true;
+            mOwner->SendEvent(Events::MenuExit, &menuExit);
 
-        mContext = InputContext::Menu;
-        break;
-      }
-      case Xbox_Buttons::LeftShoulder:
-        break;
-      case Xbox_Buttons::RightShoulder:
-        break;
-      case Xbox_Buttons::LeftStick:
-        break;
-      case Xbox_Buttons::RightStick:
-        break;
-      }
-      break;
-    }
+            mContext = InputContext::Sailing;
+            break;
+          }
 
-    case InputContext::Menu:
-    {
-      switch (aEvent->Button)
-      {
-      case Xbox_Buttons::Back:
-      case Xbox_Buttons::Start:
-      {
-        MenuExit menuExit(true);
-        menuExit.PlaySound = true;
-        mOwner->SendEvent(Events::MenuExit, &menuExit);
+          case Xbox_Buttons::A:
+          {
+            MenuConfirm menuConfirm(false);
+            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+            break;
+          }
 
-        mContext = InputContext::Sailing;
-        break;
-      }
+          case Xbox_Buttons::B:
+          {
+            MenuExit menuExit(false);
+            menuExit.PlaySound = true;
+            mOwner->SendEvent(Events::MenuExit, &menuExit);
 
-      case Xbox_Buttons::A:
-      {
-        MenuConfirm menuConfirm(false);
-        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
-        break;
-      }
+            break;
+          }
 
-      case Xbox_Buttons::B:
-      {
-        MenuExit menuExit(false);
-        menuExit.PlaySound = true;
-        mOwner->SendEvent(Events::MenuExit, &menuExit);
+          case Xbox_Buttons::DPAD_Left:
+          {
+            MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+
+            break;
+          }
+
+          case Xbox_Buttons::DPAD_Right:
+          {
+            MenuElementChange menuNext(MenuElementChange::Direction::Next);
+            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+
+            break;
+          }
+        }
 
         break;
       }
-
-      case Xbox_Buttons::DPAD_Left:
-      {
-        MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-        mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
-
-        break;
-      }
-
-      case Xbox_Buttons::DPAD_Right:
-      {
-        MenuElementChange menuNext(MenuElementChange::Direction::Next);
-        mOwner->SendEvent(Events::MenuElementChange, &menuNext);
-
-        break;
-      }
-      }
-
-      break;
-    }
 
     }
   }
@@ -315,15 +303,15 @@ namespace YTE
   {
     switch (mContext)
     {
-    case InputContext::Menu:
-    {
-      if (aEvent->Button == Xbox_Buttons::A)
+      case InputContext::Menu:
       {
-        MenuConfirm menuConfirm(true);
-        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
-        break;
+        if (aEvent->Button == Xbox_Buttons::A)
+        {
+          MenuConfirm menuConfirm(true);
+          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          break;
+        }
       }
-    }
     }
   }
 
@@ -333,25 +321,25 @@ namespace YTE
     {
       switch (aEvent->Key)
       {
-      case Keys::A:
-      case Keys::Left:
-      {
-        BoatTurnEvent turnEvent;
-        turnEvent.StickDirection = glm::vec2(-1.0f, 0.f);
-        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+        case Keys::A:
+        case Keys::Left:
+        {
+          BoatTurnEvent turnEvent;
+          turnEvent.StickDirection = glm::vec2(-1.0f, 0.f);
+          mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
 
-        break;
-      }
+          break;
+        }
 
-      case Keys::D:
-      case Keys::Right:
-      {
-        BoatTurnEvent turnEvent;
-        turnEvent.StickDirection = glm::vec2(1.0f, 0.f);
-        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+        case Keys::D:
+        case Keys::Right:
+        {
+          BoatTurnEvent turnEvent;
+          turnEvent.StickDirection = glm::vec2(1.0f, 0.f);
+          mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
 
-        break;
-      }
+          break;
+        }
       }
     }
   }
@@ -360,104 +348,104 @@ namespace YTE
   {
     switch (mContext)
     {
-    case InputContext::Dialogue:
-    {
-    default:
-      break;
-    }
-    case InputContext::Sailing:
-    {
-      switch (aEvent->Key)
+      case InputContext::Dialogue:
       {
-      case Keys::Return:
-      {
-        BoatDockEvent dock;
-        mOwner->SendEvent(Events::BoatDockEvent, &dock);
+      default:
         break;
       }
-      case Keys::Escape:
+      case InputContext::Sailing:
       {
-        MenuStart menuStart;
-        menuStart.PlaySound = true;
-        mOwner->SendEvent(Events::MenuStart, &menuStart);
+        switch (aEvent->Key)
+        {
+          case Keys::Return:
+          {
+            BoatDockEvent dock;
+            mOwner->SendEvent(Events::BoatDockEvent, &dock);
+            break;
+          }
+          case Keys::Escape:
+          {
+            MenuStart menuStart;
+            menuStart.PlaySound = true;
+            mOwner->SendEvent(Events::MenuStart, &menuStart);
 
-        mContext = InputContext::Menu;
-        break;
-      }
+            mContext = InputContext::Menu;
+            break;
+          }
 
-      case Keys::W:
-      case Keys::Up:
-      {
-        SailStateChanged setSailUp(true);
-        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+          case Keys::W:
+          case Keys::Up:
+          {
+            SailStateChanged setSailUp(true);
+            mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
 
-        break;
-      }
+            break;
+          }
 
-      case Keys::S:
-      case Keys::Down:
-      {
-        SailStateChanged setSailUp(false);
-        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+          case Keys::S:
+          case Keys::Down:
+          {
+            SailStateChanged setSailUp(false);
+            mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
 
-        break;
-      }
-      }
-      break;
-    }
-
-    case InputContext::Menu:
-    {
-      switch (aEvent->Key)
-      {
-      case Keys::Escape:
-      {
-        MenuExit menuExit(true);
-        menuExit.PlaySound = true;
-        mOwner->SendEvent(Events::MenuExit, &menuExit);
-
-        mContext = InputContext::Sailing;
+            break;
+          }
+        }
         break;
       }
 
-      case Keys::Return:
+      case InputContext::Menu:
       {
-        MenuConfirm menuConfirm(false);
-        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+        switch (aEvent->Key)
+        {
+          case Keys::Escape:
+          {
+            MenuExit menuExit(true);
+            menuExit.PlaySound = true;
+            mOwner->SendEvent(Events::MenuExit, &menuExit);
+
+            mContext = InputContext::Sailing;
+            break;
+          }
+
+          case Keys::Return:
+          {
+            MenuConfirm menuConfirm(false);
+            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+
+            break;
+          }
+
+          case Keys::Backspace:
+          {
+            MenuExit menuExit(false);
+            menuExit.PlaySound = true;
+            mOwner->SendEvent(Events::MenuExit, &menuExit);
+
+            break;
+          }
+
+          case Keys::A:
+          case Keys::Left:
+          {
+            MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+
+            break;
+          }
+
+          case Keys::D:
+          case Keys::Right:
+          {
+            MenuElementChange menuNext(MenuElementChange::Direction::Next);
+            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+
+            break;
+          }
+        }
 
         break;
       }
-
-      case Keys::Backspace:
-      {
-        MenuExit menuExit(false);
-        menuExit.PlaySound = true;
-        mOwner->SendEvent(Events::MenuExit, &menuExit);
-
-        break;
-      }
-
-      case Keys::A:
-      case Keys::Left:
-      {
-        MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-        mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
-
-        break;
-      }
-
-      case Keys::D:
-      case Keys::Right:
-      {
-        MenuElementChange menuNext(MenuElementChange::Direction::Next);
-        mOwner->SendEvent(Events::MenuElementChange, &menuNext);
-
-        break;
-      }
-      }
-
-      break;
-    }
 
     }
   }
@@ -466,33 +454,33 @@ namespace YTE
   {
     switch (mContext)
     {
-    case InputContext::Sailing:
-    {
-      switch (aEvent->Key)
+      case InputContext::Sailing:
       {
-      case Keys::A:
-      case Keys::D:
-      case Keys::Left:
-      case Keys::Right:
-      {
-        BoatTurnEvent turnEvent;
-        turnEvent.StickDirection = glm::vec2(0.0f, 0.f);
-        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+        switch (aEvent->Key)
+        {
+          case Keys::A:
+          case Keys::D:
+          case Keys::Left:
+          case Keys::Right:
+          {
+            BoatTurnEvent turnEvent;
+            turnEvent.StickDirection = glm::vec2(0.0f, 0.f);
+            mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
 
-        break;
+            break;
+          }
+        }
       }
-      }
-    }
 
-    case InputContext::Menu:
-    {
-      if (aEvent->Key == Keys::Return)
+      case InputContext::Menu:
       {
-        MenuConfirm menuConfirm(true);
-        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
-        break;
+        if (aEvent->Key == Keys::Return)
+        {
+          MenuConfirm menuConfirm(true);
+          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          break;
+        }
       }
-    }
     }
   }
 }

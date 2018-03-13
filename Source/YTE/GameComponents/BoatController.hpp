@@ -86,8 +86,6 @@ namespace YTE
     WWiseEmitter *mSoundEmitter;
     Composition *mNearbyDock; // be careful with this lambs
 
-    WWiseSystem *mSoundSystem;
-
     float mMaxSailSpeed;
     float mMaxTurnSpeed;
     float mTurnAccFactor;
@@ -98,16 +96,18 @@ namespace YTE
     //Model *mSailModel; wherever i play anims for sails
     //Transform *mSailOrient; sail might have a different transform to rotate around
 
-    // Flag that represents the state of the boat's sail
     bool mIsSailUp;
-    // flag for docking
     bool mCanDock;
-    // flag for turning
     bool mStartedTurning;
     bool mPlayingTurnSound;
 
     float mCurrSpeed;
     float mCurrRotSpeed;
+
+    u64 mSoundSailUp;
+    u64 mSoundSailDown;
+    u64 mSoundBumpDock;
+    u64 mSoundBoatTurn;
   };
 } 
 

@@ -83,7 +83,7 @@ namespace YTE
 
   void Button::OnButtonTrigger(MenuElementTrigger* aEvent)
   {
-		YTEUnusedArgument(aEvent);
+    YTEUnusedArgument(aEvent);
     if (mCurrentSprite != nullptr && !mActivatedSpriteName.empty())
     {
       mCurrentSprite->SetTexture(mActivatedSpriteName);

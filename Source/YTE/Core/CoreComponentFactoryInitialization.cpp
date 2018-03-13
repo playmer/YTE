@@ -90,9 +90,9 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
-		helper.CreateComponentFactory<MenuController>();
-		helper.CreateComponentFactory<RootMenu>();
-		helper.CreateComponentFactory<LaunchMenu>();
+    helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<RootMenu>();
+    helper.CreateComponentFactory<LaunchMenu>();
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();

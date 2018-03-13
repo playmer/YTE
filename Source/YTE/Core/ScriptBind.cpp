@@ -102,9 +102,9 @@ namespace YTE
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();
-		InitializeType<MenuController>();
-		InitializeType<RootMenu>();
-		InitializeType<LaunchMenu>();
+    InitializeType<MenuController>();
+    InitializeType<RootMenu>();
+    InitializeType<LaunchMenu>();
     InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
     InitializeType<Button>();

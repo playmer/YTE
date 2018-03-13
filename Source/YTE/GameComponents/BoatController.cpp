@@ -34,19 +34,19 @@ namespace YTE
     YTERegisterType(BoatController);
 
 
-    YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "Max Sail Speed")
+    YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "MaxSailSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "Max Turn Speed")
+    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "MaxTurnSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor, "Turn Acceleration Factor")
+    YTEBindProperty(&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor, "TurnAccelerationFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "Wind Force")
+    YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "WindForce")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
@@ -89,6 +89,17 @@ namespace YTE
 
     mRigidBody->SetDamping(0.9f, 0.9f);
 
+      // Cache ids for all sounds used by this component
+    auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      soundSystem->GetSoundIDFromString("SFX_Sail_Up", mSoundSailUp);
+      soundSystem->GetSoundIDFromString("SFX_Sail_Down", mSoundSailDown);
+      soundSystem->GetSoundIDFromString("SFX_Boat_Bump", mSoundBumpDock);
+      soundSystem->GetSoundIDFromString("SFX_Boat_Turn", mSoundBoatTurn);
+    }
+
     /* Event Registration */
     mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
@@ -96,22 +107,6 @@ namespace YTE
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
     mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
-
-    /*
-    //temp
-    auto composition = mOwner->FindFirstCompositionByName("particles");
-    if (composition != nullptr)
-    {
-      mEmitter = composition->GetComponent<ParticleEmitter>();
-    }
-    */
-
-    mSoundSystem = mOwner->GetSpace()->GetComponent<WWiseSystem>();
-
-    if (mSoundEmitter)
-    {
-      mSoundEmitter->PlayEvent("Sailing_Start");
-    }
   }
   /******************************************************************************/
   /*
@@ -152,7 +147,7 @@ namespace YTE
         // play the docking sound
         if (mSoundEmitter)
         {
-          mSoundEmitter->PlayEvent("SFX_Boat_Bump");
+          mSoundEmitter->PlayEvent(mSoundBumpDock);
         }
       }
     }
@@ -160,12 +155,11 @@ namespace YTE
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)
   {
-    std::string sound;
     if (aEvent->SailUp)
     {
       if (!mIsSailUp)
       {
-        sound = "SFX_Sail_Up";
+        mSoundEmitter->PlayEvent(mSoundSailUp);
         mRigidBody->SetDamping(0.f, 0.9f);
       }
     }
@@ -173,14 +167,9 @@ namespace YTE
     {
       if (mIsSailUp)
       {
-        sound = "SFX_Sail_Down";
+        mSoundEmitter->PlayEvent(mSoundSailDown);
         mRigidBody->SetDamping(0.9f, 0.9f);
       }
-    }
-
-    if (mSoundEmitter)
-    {
-      mSoundEmitter->PlayEvent(sound);
     }
 
     mIsSailUp = aEvent->SailUp;
@@ -191,14 +180,18 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      mSoundEmitter->PlayEvent("SFX_Boat_Turn");
+      mSoundEmitter->PlayEvent(mSoundBoatTurn);
       mPlayingTurnSound = true;
     }
 
     if (aEvent->StickDirection.x > 0.1)
+    {
       mTurnVec = mOrientation->GetRightVector();
+    }
     else if (aEvent->StickDirection.x < -0.1)
+    {
       mTurnVec = -mOrientation->GetRightVector();
+    }
     else
     {
       mCurrRotSpeed = 0.f;
@@ -211,7 +204,10 @@ namespace YTE
     if (mStartedTurning)
     {
       if (mCurrRotSpeed < mMaxTurnSpeed)
+      {
         mCurrRotSpeed += static_cast<float>(mTurnAccFactor * aEvent->Dt);
+      }
+
       mRigidBody->ApplyForce(mCurrRotSpeed * mTurnVec, mOrientation->GetForwardVector());
       //mRigidBody->ApplyForce(mTurnVec, glm::vec3(0, 1, 0));
     }
@@ -224,7 +220,6 @@ namespace YTE
     glm::vec3 vel = mRigidBody->GetVelocity();
 
     mCurrSpeed = glm::length(vel);
-    mSoundSystem->SetRTPC("Sailing_Volume", mCurrSpeed);
 
     mRigidBody->SetVelocity(mCurrSpeed * mOrientation->GetForwardVector());
 
@@ -233,7 +228,9 @@ namespace YTE
       mRigidBody->ApplyForce(mWindForce * mOrientation->GetForwardVector(), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
+      {
         mRigidBody->ApplyForce(mWindForce * -mOrientation->GetForwardVector(), glm::vec3(0));
+      }
     }
     else
     {

@@ -17,6 +17,8 @@
 
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/WWise/WWiseEmitter.hpp"
+
 namespace YTE
 {
   YTEDeclareEvent(MenuElementHover);
@@ -59,6 +61,7 @@ namespace YTE
     void OnMenuElementChange(MenuElementChange *aEvent);
 
   private:
+    WWiseEmitter* mSoundEmitter;
     Composition* mParentMenu = nullptr;
 
     Transform *mMyTransform;
@@ -67,6 +70,12 @@ namespace YTE
     int mCurrMenuElement;
     int mNumElements;
     YTE::CompositionMap* mMenuElements;
+
+    u64 mSoundPause;
+    u64 mSoundUnpause;
+    u64 mSoundElementNext;
+    u64 mSoundElementPrev;
+    u64 mSoundElementSelect;
 
     bool mIsDisplayed;
 
