@@ -21,6 +21,7 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
@@ -36,6 +37,7 @@
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Light.hpp"
@@ -93,6 +95,7 @@ namespace YTE
 
     InitializeType<AudioTest>();
     InitializeType<BoatController>();
+    InitializeType<BoatPhysics>();
     InitializeType<Dialogue>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
@@ -128,6 +131,9 @@ namespace YTE
     InitializeType<Animation>();
     InitializeType<BaseModel>();
     InitializeType<Camera>();
+    InitializeType<CurveDrawer>();
+    InitializeType<LineDrawer>();
+    InitializeType<TriangleDrawer>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Material>();

@@ -29,15 +29,15 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() },
-    { BoxCollider::GetStaticType(),
-      CapsuleCollider::GetStaticType(),
-      CylinderCollider::GetStaticType(),
-      MenuCollider::GetStaticType(),
-      MeshCollider::GetStaticType(),
-      SphereCollider::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
+                                             { TypeId<BoxCollider>(),
+                                               TypeId<CapsuleCollider>(),
+                                               TypeId<CylinderCollider>(),
+                                               TypeId<MenuCollider>(),
+                                               TypeId<MeshCollider>(),
+                                               TypeId<SphereCollider>() } };
 
-    RigidBody::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&RigidBody::GetMass, &RigidBody::SetMassProperty, "Mass")
       .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable.")
@@ -76,18 +76,17 @@ namespace YTE
 
   RigidBody::~RigidBody()
   {
-    auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
-    world->removeRigidBody(mRigidBody.get());
+    if (mRigidBody)
+    {
+      auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
+      world->removeRigidBody(mRigidBody.get());
+    }
   }
 
   void RigidBody::PhysicsInitialize()
   {
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider = GetColliderFromObject(mOwner);
-
-    DebugObjection(collider == nullptr,
-      "RigidBodies require a collider currently, sorry!\n ObjectName: %s",
-      mOwner->GetName().c_str());
 
     //rigidbody is dynamic if and only if mass is non zero, otherwise static
     bool isDynamic = (mMass != 0.f) && !mStatic;
@@ -128,13 +127,18 @@ namespace YTE
       mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
       mRigidBody->updateInertiaTensor();
+      mRigidBody->setDamping(0.8f, 0.8f);
     }
 
+    world->addRigidBody(mRigidBody.get());
     mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
 
-    world->addRigidBody(mRigidBody.get());
-
     mIsInitialized = true;
+  }
+
+  void RigidBody::ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition)
+  {
+    mRigidBody->applyForce(OurVec3ToBt(aForce), OurVec3ToBt(aRelativePosition));
   }
 
   void RigidBody::ApplyImpulse(const glm::vec3 & aImpulse, const glm::vec3 & aRelativePosition)
@@ -155,8 +159,17 @@ namespace YTE
       // set the collider's translation
       auto collider = GetColliderFromObject(mOwner);
       collider->SetTranslation(aTranslation.x, aTranslation.y, aTranslation.z);
-
     }
+  }
+
+  const glm::vec3 RigidBody::GetAngularVelocity() const
+  {
+    if (mIsInitialized)
+    {
+      auto velocity = BtToOurVec3(mRigidBody->getAngularVelocity());
+      return velocity;
+    }
+    return glm::vec3();
   }
 
   const glm::vec3 RigidBody::GetVelocity() const
@@ -180,8 +193,6 @@ namespace YTE
     {
       mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
     }
-
-    // TODO@@@(Isaac): SEND UPDATED VELOCITY EVENT
   }
 
   void RigidBody::SetVelocity(float aVelX, float aVelY, float aVelZ)
@@ -194,8 +205,6 @@ namespace YTE
     {
       mVelocity = glm::vec3(aVelX, aVelY, aVelZ);
     }
-
-    // TODO@@@(Isaac): SEND UPDATED VELOCITY EVENT
   }
 
   void RigidBody::SetKinematic(bool flag)

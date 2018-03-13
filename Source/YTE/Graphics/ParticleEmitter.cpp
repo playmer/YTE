@@ -358,7 +358,7 @@ namespace YTE
 
     std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mesh);
 
-    model->mUseAdditiveBlending = true;
+    model->mType = ShaderType::AdditiveBlendShader;
 
     // calculate the random bullshit
     glm::vec3 velVar;

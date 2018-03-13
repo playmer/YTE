@@ -87,7 +87,14 @@ namespace YTE
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
-      return { mInstantiatedModel.get() };
+      std::vector<InstantiatedModel*> toReturn;
+
+      if (mInstantiatedModel)
+      {
+          toReturn.emplace_back(mInstantiatedModel.get());
+      }
+      
+      return toReturn;
     }
 
     std::string GetShading()

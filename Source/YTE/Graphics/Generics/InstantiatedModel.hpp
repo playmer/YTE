@@ -17,6 +17,16 @@
 
 namespace YTE
 {
+  enum class ShaderType
+  {
+    Triangles,
+    Lines,
+    Curves,
+    Wireframe,
+    ShaderNoCull,
+    AdditiveBlendShader,
+  };
+
   class InstantiatedModel : public EventHandler
   {
   public:
@@ -92,8 +102,8 @@ namespace YTE
       return mMesh;
     }
 
-    bool mUseAdditiveBlending = false;
-    bool mBackFaceCull = true;
+    ShaderType mType = ShaderType::Triangles;
+    float mLineWidth = 1.0f;
 
   protected:
     Mesh *mMesh;

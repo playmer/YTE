@@ -50,11 +50,13 @@ namespace YTE
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
+    enabledFeatures.setWideLines(true);
+    enabledFeatures.setFillModeNonSolid(true);
     
     mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                           nullptr,
-                                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                           enabledFeatures);
+                                                                  nullptr,
+                                                                  { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                                                  enabledFeatures);
 
     mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
                                               mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());

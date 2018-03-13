@@ -18,6 +18,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #define YTE_Composition_hpp
 
 #include <memory>
+#include <set>
 
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
@@ -123,8 +124,8 @@ namespace YTE
 
     void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
 
-
-    std::string CheckDependencies(BoundType *aComponent);
+    std::string IsDependecy(BoundType *aComponent);
+    std::string HasDependencies(BoundType *aComponent);
 
     // Gets all Components of the given type that are part of or childed to this composition.
     template <typename ComponentType>
@@ -239,10 +240,15 @@ namespace YTE
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
   protected:
+    std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
+                                  BoundType *aTypeToCheck);
+
     void RemoveCompositionInternal(CompositionMap::iterator &aComposition);
     void RemoveComponentInternal(ComponentMap::iterator &aComponent);
     Composition* AddCompositionInternal(String aArchetype, String aObjectName);
-    Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName);
+    Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
+                                        RSValue *aSerialization, 
+                                        String aObjectName);
     bool ParentBeingDeleted();
 
     CompositionMap mCompositions;

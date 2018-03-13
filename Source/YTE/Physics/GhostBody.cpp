@@ -16,11 +16,28 @@
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CapsuleCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
+#include "YTE/Physics/MenuCollider.hpp"
+#include "YTE/Physics/MeshCollider.hpp"
+#include "YTE/Physics/SphereCollider.hpp"
+
 namespace YTE
 {
   YTEDefineType(GhostBody)
   {
     YTERegisterType(GhostBody);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
+                                             { TypeId<BoxCollider>(),
+                                               TypeId<CapsuleCollider>(),
+                                               TypeId<CylinderCollider>(),
+                                               TypeId<MenuCollider>(),
+                                               TypeId<MeshCollider>(),
+                                               TypeId<SphereCollider>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   GhostBody::GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -31,18 +48,17 @@ namespace YTE
 
   GhostBody::~GhostBody()
   {
-    auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
-    world->removeCollisionObject(mGhostBody.get());
+    if (mGhostBody)
+    {
+      auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
+      world->removeCollisionObject(mGhostBody.get());
+    }
   }
 
   void GhostBody::PhysicsInitialize()
   {
     auto world = mSpace->GetComponent<PhysicsSystem>()->GetWorld();
     auto collider = GetColliderFromObject(mOwner);
-
-    DebugObjection(collider == nullptr,
-                "CollisionBodies require a collider currently, sorry!\n ObjectName: %s",
-                mOwner->GetName().c_str());
 
     auto baseCollider = collider->GetCollider();
     auto collisionShape = baseCollider->getCollisionShape();

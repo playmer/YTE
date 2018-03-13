@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Generics_Mesh_hpp
 #define YTE_Graphics_Generics_Mesh_hpp
 
+#include <limits> 
+
 #include "assimp/types.h"
 #include "assimp/vector3.h"
 
@@ -202,20 +204,17 @@ namespace YTE
   };
 
 
+  // Dimension struct is used for bounding box of 3D mesh
+  struct Dimension
+  {
+    glm::vec3 mMin = glm::vec3(std::numeric_limits<float>::max());
+    glm::vec3 mMax = glm::vec3(-std::numeric_limits<float>::max());
+  };
 
   // Submesh class contains all the data of the actual submesh
   class Submesh
   {
   public:
-    // Dimension struct is used for bounding box of 3D mesh
-    struct Dimension
-    {
-      glm::vec3 mMin = glm::vec3(FLT_MAX);
-      glm::vec3 mMax = glm::vec3(-FLT_MAX);
-      glm::vec3 mSize;
-    };
-
-
     Submesh() = default;
 
     Submesh(const aiScene *aScene,
@@ -226,6 +225,20 @@ namespace YTE
     virtual ~Submesh()
     {
       
+    }
+
+    size_t GetTriangleCount()
+    {
+      return mIndexBuffer.size() / 3;
+    }
+
+    glm::uvec3 GetTriangle(size_t aIndex)
+    {
+      glm::uvec3 tri;
+      tri.x = (glm::uint)mIndexBuffer[aIndex];
+      tri.y = (glm::uint)mIndexBuffer[aIndex + 1];
+      tri.z = (glm::uint)mIndexBuffer[aIndex + 2];
+      return tri;
     }
 
     std::vector<Vertex> mVertexBuffer;
@@ -277,14 +290,16 @@ namespace YTE
     virtual ~Mesh();
 
     bool CanAnimate();
+    std::vector<Submesh>& GetSubmeshes();
 
     void SetBackfaceCulling(bool aCulling);
     virtual void RecreateShader() {}
 
     std::string mName;
     std::vector<Submesh> mParts;
-    Skeleton mSkeleton;
     std::vector<ColliderMesh> mColliderParts;
+    Skeleton mSkeleton;
+    Dimension mDimension;
 
   private:
     void CreateCollider(const aiScene* aScene);

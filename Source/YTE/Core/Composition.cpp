@@ -1,3 +1,5 @@
+#include "fmt/format.h"
+
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -11,7 +13,7 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "rapidjson\document.h"
+#include "rapidjson/document.h"
 
 
 namespace YTE
@@ -744,10 +746,8 @@ namespace YTE
       }
     }
 
-
     std::vector<Type*> toReturn;
     toReturn.reserve(ordering.size());
-
 
     for (auto &type : ordering)
     {
@@ -758,11 +758,12 @@ namespace YTE
   }
 
 
-  std::string Composition::CheckDependencies(BoundType *aType)
+  std::string Composition::CheckDependencies(std::set<BoundType*> aTypesAvailible, 
+                                             BoundType *aTypeToCheck)
   {
     std::string toReturn;
 
-    auto componentDeps = aType->GetAttribute<ComponentDependencies>();
+    auto componentDeps = aTypeToCheck->GetAttribute<ComponentDependencies>();
 
     if (nullptr != componentDeps)
     {
@@ -776,7 +777,7 @@ namespace YTE
 
         for (auto type : typeOrs)
         {
-          if (nullptr != GetComponent(type))
+          if (aTypesAvailible.count(type))
           {
             haveAnOr = true;
             break;
@@ -792,10 +793,10 @@ namespace YTE
 
       if (false == haveAllANDs)
       {
-        toReturn += Format("Composition %s is attempting to add Component of "
+        toReturn += Format("Composition %s is attempting to add/remove Component of "
                            "type %s, but is missing the following Components:\n",
                            mName.c_str(),
-                           aType->GetName().c_str());
+                           aTypeToCheck->GetName().c_str());
 
         for (auto notAcceptedOrs : notAcceptedAnds)
         {
@@ -814,6 +815,67 @@ namespace YTE
     }
 
     return toReturn;
+  }
+
+  std::string Composition::IsDependecy(BoundType *aType)
+  {
+    std::vector<BoundType*> typesWithAProblem;
+    std::set<BoundType*> typesAvailible;
+
+    for (auto &component : mComponents)
+    {
+      if (component.first == aType)
+      {
+        continue;
+      }
+
+      typesAvailible.emplace(component.first);
+    }
+
+    for (auto &component : mComponents)
+    {
+      if (component.first == aType)
+      {
+        continue;
+      }
+
+      auto reason = CheckDependencies(typesAvailible, component.first);
+
+      if (reason.size())
+      {
+        typesWithAProblem.emplace_back(component.first);
+      }
+    }
+
+    std::string toReturn;
+
+    if (typesWithAProblem.size())
+    {
+      toReturn = fmt::format("Removing the {} component from {} would violate "
+                             "the dependencies of the following components:\n",
+                             aType->GetName(),
+                             mName.c_str());
+
+      for (auto type : typesWithAProblem)
+      {
+        toReturn += fmt::format("{}\n",
+                                type->GetName());
+      }
+    }
+
+    return toReturn;
+  }
+
+  std::string Composition::HasDependencies(BoundType *aType)
+  {
+    std::set<BoundType*> typesAvailible;
+
+    for (auto &component : mComponents)
+    {
+      typesAvailible.emplace(component.first);
+    }
+
+    return CheckDependencies(typesAvailible, aType);
   }
 
   Component* Composition::GetDerivedComponent(BoundType *aType)
@@ -837,7 +899,7 @@ namespace YTE
   {
     // TODO: Output this to a debug logger. If this happens in game in the editor, 
     //       it won't be currently displayed.
-    if (false == CheckDependencies(aType).empty())
+    if (false == HasDependencies(aType).empty())
     {
       return nullptr;
     }

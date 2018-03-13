@@ -188,6 +188,7 @@ namespace YTE
 
     vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
     cbo->setViewport(0, viewport);
+    cbo->setLineWidth(1.0f);
 
     vk::Rect2D scissor{ { 0, 0 }, aExtent };
     cbo->setScissor(0, scissor);
@@ -815,17 +816,6 @@ namespace YTE
                                              dynamic,
                                              modelData.mPipelineLayout,
                                              mParent->GetRenderPass());
-
-    if (aReload)
-    {
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("\t-> {} Reloaded Successfully!",
-                                                                                       aShaderSetName));
-    }
-    else
-    {
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Success, fmt::format("Shader: {} Loaded Successfully!",
-                                                                                       aShaderSetName));
-    }
   }
 
 

@@ -23,15 +23,15 @@ namespace YTE
   YTEDefineType(CapsuleCollider)
   {
     YTERegisterType(CapsuleCollider);
-    auto &radius = YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet);
-    radius.Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    radius.AddAttribute<EditorProperty>()
-          .AddAttribute<Serializable>();
+    YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet)
+      .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
-    auto &height = YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet);
-    height.Description() = "Only works for getting. Setting is used exclusively for serialization.";
-    height.AddAttribute<EditorProperty>()
-          .AddAttribute<Serializable>();
+    YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet)
+      .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -42,11 +42,6 @@ namespace YTE
 
   void CapsuleCollider::PhysicsInitialize()
   {
-    DebugObjection(mOwner->GetComponent<RigidBody>()     == nullptr && 
-                mOwner->GetComponent<CollisionBody>() == nullptr && 
-                mOwner->GetComponent<GhostBody>()     == nullptr,
-                "Colliders require a Body component of some sort, sorry!\n ObjectName: %s", mOwner->GetName().c_str());
-
       // Get info from transform and feed that ish to the Bullet collider
     auto transform = mOwner->GetComponent<Transform>();
     auto translation = transform->GetTranslation();

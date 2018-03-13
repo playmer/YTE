@@ -151,7 +151,9 @@ namespace YTEditor
   ComponentWidget* ComponentTree::AddComponent(YTE::Type *aComponentType)
   {
     ComponentWidget *widg = InternalAddComponent(aComponentType);
-    auto cmd = std::make_unique<AddComponentCmd>(widg->GetEngineComponent(), mComponentBrowser, mOutputConsole);
+    auto cmd = std::make_unique<AddComponentCmd>(widg->GetEngineComponent(), 
+                                                 mComponentBrowser, 
+                                                 mOutputConsole);
     mUndoRedo->InsertCommand(std::move(cmd));
 
     return widg;
@@ -169,8 +171,20 @@ namespace YTEditor
       return;
     }
 
+    auto component = compWidg->GetEngineComponent();
+    auto owner = component->GetOwner();
+    auto reason = owner->IsDependecy(component->GetType());
+
+    if (reason.size())
+    {
+      owner->GetEngine()->Log(YTE::LogType::Error, reason);
+      return;
+    }
+
     auto name = aWidget->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveComponentCmd>(compWidg->GetEngineComponent(), mComponentBrowser, mOutputConsole);
+    auto cmd = std::make_unique<RemoveComponentCmd>(compWidg->GetEngineComponent(), 
+                                                    mComponentBrowser, 
+                                                    mOutputConsole);
     mUndoRedo->InsertCommand(std::move(cmd));
     BaseRemoveComponent(aWidget);
   }
@@ -419,6 +433,17 @@ namespace YTEditor
       {
         matViewer->LoadNoMaterial();
       }
+    }
+
+    auto component = compWidg->GetEngineComponent();
+    YTE::Composition *owner = compWidg->GetEngineComponent()->GetOwner();
+
+    auto reason = owner->IsDependecy(component->GetType());
+
+    if (reason.size())
+    {
+      owner->GetEngine()->Log(YTE::LogType::Error, reason);
+      return;
     }
 
     compWidg->RemoveComponentFromEngine();

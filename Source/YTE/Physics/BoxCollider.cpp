@@ -30,14 +30,14 @@ namespace YTE
       .AddAttribute<Serializable>();
 
     YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
-      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
+      .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
     YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
-      .Description() = "Sets the collider scale as a multiple of the scale of the transform";
+      .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
 
     YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
-      .Description() = "Sets the collider position offset from the World Translation of the transform";
+      .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
     YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
-      .Description() = "Sets the collider position offset from the World Translation of the transform";
+      .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }
 
   BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -48,11 +48,6 @@ namespace YTE
 
   void BoxCollider::PhysicsInitialize()
   {
-    //DebugObjection(mOwner->GetComponent<RigidBody>()     == nullptr && 
-    //            mOwner->GetComponent<CollisionBody>() == nullptr && 
-    //            mOwner->GetComponent<GhostBody>()     == nullptr,
-    //            "Colliders require a Body component of some sort, sorry!\n ObjectName: %s", mOwner->GetName().c_str());
-
       // Get info from transform and feed that ish to the Bullet collider
     auto transform = mOwner->GetComponent<Transform>();
     auto translation = transform->GetTranslation();
