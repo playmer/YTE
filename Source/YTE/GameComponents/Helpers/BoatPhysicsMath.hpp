@@ -8,8 +8,8 @@ namespace YTE
   class BoatPhysicsMath
   {
   public:
-    static const float RHO_OCEAN;
-    static const float RHO_AIR;
+    static const float cRhoOcean;
+    static const float cRhoAir;
 
     static glm::vec3 GetTriangleVelocity(RigidBody* boatRB, Transform* boatTrans, glm::vec3 triCenter);
     static float GetTriangleArea(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3);

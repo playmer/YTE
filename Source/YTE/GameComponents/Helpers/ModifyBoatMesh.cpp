@@ -1,4 +1,4 @@
-#include "ModifyBoatMesh.hpp"
+#include "YTE/GameComponents/Helpers/ModifyBoatMesh.hpp"
 #include "YTE/GameComponents/Helpers/BoatPhysicsMath.hpp"
 #include "YTE/GameComponents/Helpers/ModifyBoatMesh.hpp"
 #include "YTE/GameComponents/Helpers/SlammingForceData.hpp"

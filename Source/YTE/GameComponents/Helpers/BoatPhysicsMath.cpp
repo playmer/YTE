@@ -1,4 +1,4 @@
-#include "BoatPhysicsMath.hpp"
+#include "YTE/GameComponents/Helpers/BoatPhysicsMath.hpp"
 #include "YTE/Physics/RigidBody.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "glm/gtx/vector_angle.hpp"
@@ -7,8 +7,8 @@
 namespace YTE
 {
 
-  const float BoatPhysicsMath::RHO_OCEAN = 1.270f;
-  const float BoatPhysicsMath::RHO_AIR = 1.225f;
+  const float BoatPhysicsMath::cRhoOcean = 1.270f;
+  const float BoatPhysicsMath::cRhoAir = 1.225f;
 
   glm::vec3 BoatPhysicsMath::GetTriangleVelocity(RigidBody* boatRB, Transform* boatTrans, glm::vec3 triCenter)
   {

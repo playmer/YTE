@@ -1,4 +1,3 @@
-#include "BoatPhysics.hpp"
 #include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Helpers/BoatPhysicsMath.hpp"
 
@@ -23,8 +22,8 @@ namespace YTE
 
   BoatPhysics::BoatPhysics(Composition *aOwner, Space * aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , waterDensity(BoatPhysicsMath::RHO_OCEAN)
-    , airDensity(BoatPhysicsMath::RHO_AIR)
+    , waterDensity(BoatPhysicsMath::cRhoOcean)
+    , airDensity(BoatPhysicsMath::cRhoAir)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -68,11 +67,12 @@ namespace YTE
   {
     glm::vec3 total;
     (void)aSim;
-    float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, glm::length(boatRB->GetVelocity()), modifyBoatMesh.CalculateUnderwaterLength());
-    auto slammingForceData = modifyBoatMesh.SlammingData();
-    CalculateSlammingVelocities(slammingForceData);
-    float boatArea = modifyBoatMesh.BoatArea();
-    float boatMass = boatRB->GetMass();
+    (void)dt;
+    //float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, glm::length(boatRB->GetVelocity()), modifyBoatMesh.CalculateUnderwaterLength());
+    //auto slammingForceData = modifyBoatMesh.SlammingData();
+    //CalculateSlammingVelocities(slammingForceData);
+    //float boatArea = modifyBoatMesh.BoatArea();
+    //float boatMass = boatRB->GetMass();
 
     auto indexOfOriginalTriangle = modifyBoatMesh.IndexOfOrigTris();
     auto underwaterTriangleData = modifyBoatMesh.UnderwaterTriangleData();
@@ -98,6 +98,7 @@ namespace YTE
 
   glm::vec3 BoatPhysics::AddAbovewaterForces(FFT_WaterSimulation* aSim)
   {
+    (void)aSim;
     /*
     glm::vec3 total;
     (void)aSim;
@@ -125,6 +126,7 @@ namespace YTE
 
   void BoatPhysics::CalculateSlammingVelocities(std::vector<SlammingForceData>& slammingForceData)
   {
+    (void)slammingForceData;
     /*
     auto ubo = model->GetInstantiatedModel()->GetUBOModelData();
     auto m2w = ubo.mModelMatrix;
