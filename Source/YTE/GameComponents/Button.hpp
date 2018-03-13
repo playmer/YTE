@@ -25,36 +25,36 @@ namespace YTE
 {
   class Button : public Component
   {
-	public:
+  public:
     YTEDeclareType(Button);
     Button(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    
-		void Initialize() override;
 
-		// PROPERTIES /////////////////////////////////////////
-		std::string GetHover() { return mHoverSpriteName; }
-		void SetHover(std::string& aHoverName) { mHoverSpriteName = aHoverName; }
+    void Initialize() override;
 
-		std::string GetActivated() { return mActivatedSpriteName; }
-		void SetActivated(std::string& aActivatedName) { mActivatedSpriteName = aActivatedName; }
+    // PROPERTIES /////////////////////////////////////////
+    std::string GetHover() { return mHoverSpriteName; }
+    void SetHover(std::string& aHoverName) { mHoverSpriteName = aHoverName; }
 
-		std::string GetNeutral() { return mNeutralSpriteName; }
-		void SetNeutral(std::string& aNeutralName) { mNeutralSpriteName = aNeutralName; }
-		////////////////////////////////////////////////////////
+    std::string GetActivated() { return mActivatedSpriteName; }
+    void SetActivated(std::string& aActivatedName) { mActivatedSpriteName = aActivatedName; }
+
+    std::string GetNeutral() { return mNeutralSpriteName; }
+    void SetNeutral(std::string& aNeutralName) { mNeutralSpriteName = aNeutralName; }
+    ////////////////////////////////////////////////////////
 
     void OnButtonHover(MenuElementHover* aEvent);
     void OnButtonTrigger(MenuElementTrigger* aEvent);
-		void OnButtonDeHover(MenuElementDeHover* aEvent);
+    void OnButtonDeHover(MenuElementDeHover* aEvent);
 
-	private:
-		// Store whatever button properties make sense
-		// Probably an audio queue and some state sprites or something
-		std::string mHoverSpriteName;
-		std::string mActivatedSpriteName;
-		std::string mNeutralSpriteName;
+  private:
+    // Store whatever button properties make sense
+    // Probably an audio queue and some state sprites or something
+    std::string mHoverSpriteName;
+    std::string mActivatedSpriteName;
+    std::string mNeutralSpriteName;
 
-		Sprite* mCurrentSprite = nullptr;
+    Sprite* mCurrentSprite = nullptr;
 
-		bool mConstructing;
+    bool mConstructing;
   };
 }

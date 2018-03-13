@@ -25,56 +25,56 @@
 
 namespace YTE
 {
-	static std::vector<std::string> PopulateDropDownList(Component *aComponent)
-	{
-		YTEUnusedArgument(aComponent);
+  static std::vector<std::string> PopulateDropDownList(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
 
-			// TODO(Isaac): Consider cross-platform solution
-		filesystem::path fontPath = "C:\\Windows\\Fonts";
+      // TODO(Isaac): Consider cross-platform solution
+    filesystem::path fontPath = "C:\\Windows\\Fonts";
 
-		std::vector<std::string> result;
+    std::vector<std::string> result;
 
-		for (auto &fonts : filesystem::directory_iterator(fontPath))
-		{
-			if (fonts.path().filename().extension().generic_string() == ".ttf")
-			{
-				std::string str = fonts.path().filename().generic_string();
+    for (auto &fonts : filesystem::directory_iterator(fontPath))
+    {
+      if (fonts.path().filename().extension().generic_string() == ".ttf")
+      {
+        std::string str = fonts.path().filename().generic_string();
 
-				result.push_back(str);
-			}
-		}
+        result.push_back(str);
+      }
+    }
 
-		return result;
-	}
+    return result;
+  }
 
   YTEDefineType(SpriteText)
   {
     YTERegisterType(SpriteText);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-		std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
-		SpriteText::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    SpriteText::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-		YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
-			.AddAttribute<EditorProperty>()
-			.AddAttribute<Serializable>();
+    YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
 
-		YTEBindProperty(&SpriteText::GetFont, &SpriteText::SetFont, "Font")
-			.AddAttribute<EditorProperty>()
-			.AddAttribute<Serializable>()
-			.AddAttribute<DropDownStrings>(PopulateDropDownList);
+    YTEBindProperty(&SpriteText::GetFont, &SpriteText::SetFont, "Font")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-		YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
-			.AddAttribute<EditorProperty>()
-			.AddAttribute<Serializable>();
+    YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : BaseModel{ aOwner, aSpace, aProperties }
     , mConstructing(true)
   {
-		mFontSize = 1.f;
+    mFontSize = 1.f;
 
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -101,145 +101,145 @@ namespace YTE
 
   void SpriteText::CreateSpriteText()
   {
-		if (nullptr != mInstantiatedSprite)
-		{
-			mInstantiatedSprite.reset();
-		}
+    if (nullptr != mInstantiatedSprite)
+    {
+      mInstantiatedSprite.reset();
+    }
 
-		if (mTextureName.empty())
-		{
-			return;
-		}
+    if (mTextureName.empty())
+    {
+      return;
+    }
 
-		std::string meshName = "__SpriteText";
-		meshName += mOwner->GetGUID().ToString();
+    std::string meshName = "__SpriteText";
+    meshName += mOwner->GetGUID().ToString();
 
-		Submesh submesh;
-		std::vector<Submesh> submeshes;
+    Submesh submesh;
+    std::vector<Submesh> submeshes;
 
-		u32 lastIndex = 0;
-		float offsetX = 0, offsetY = 0;
+    u32 lastIndex = 0;
+    float offsetX = 0, offsetY = 0;
 
-		float sizeFactor = mFontSize / mFontInfo.mSize;
+    float sizeFactor = mFontSize / mFontInfo.mSize;
 
-		for (auto c : mText)
-		{
-			Vertex vert0;
-			Vertex vert1;
-			Vertex vert2;
-			Vertex vert3;
+    for (auto c : mText)
+    {
+      Vertex vert0;
+      Vertex vert1;
+      Vertex vert2;
+      Vertex vert3;
 
-			stbtt_aligned_quad quad;
+      stbtt_aligned_quad quad;
 
-			stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, c - mFontInfo.mFirstChar, &offsetX, &offsetY, &quad, 1);
+      stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, c - mFontInfo.mFirstChar, &offsetX, &offsetY, &quad, 1);
 
-				// Save vertex attributes
-			vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };             // Bottom-left
-			vert0.mTextureCoordinates = { quad.s0, 1.0f - quad.t1, 0.0f };  // Bottom-left (UVs)
-			vert1.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y1, 0.0 };             // Bottom-right
-			vert1.mTextureCoordinates = { quad.s1, 1.0f - quad.t1, 0.0f };  // Bottom-right (UVs)
-			vert2.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y0, 0.0 };             // Top-right
-			vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
-			vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };             // Top-left
-			vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
+        // Save vertex attributes
+      vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };             // Bottom-left
+      vert0.mTextureCoordinates = { quad.s0, 1.0f - quad.t1, 0.0f };  // Bottom-left (UVs)
+      vert1.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y1, 0.0 };             // Bottom-right
+      vert1.mTextureCoordinates = { quad.s1, 1.0f - quad.t1, 0.0f };  // Bottom-right (UVs)
+      vert2.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y0, 0.0 };             // Top-right
+      vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
+      vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };             // Top-left
+      vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
 
-			submesh.mDiffuseMap = mTextureName;
-			submesh.mDiffuseType = TextureViewType::e2D;
-			submesh.mShaderSetName = "SpriteText";
+      submesh.mDiffuseMap = mTextureName;
+      submesh.mDiffuseType = TextureViewType::e2D;
+      submesh.mShaderSetName = "SpriteText";
 
-			submesh.mCullBackFaces = false;
+      submesh.mCullBackFaces = false;
 
-			submesh.mVertexBuffer.emplace_back(vert0);
-			submesh.mVertexBuffer.emplace_back(vert1);
-			submesh.mVertexBuffer.emplace_back(vert2);
-			submesh.mVertexBuffer.emplace_back(vert3);
+      submesh.mVertexBuffer.emplace_back(vert0);
+      submesh.mVertexBuffer.emplace_back(vert1);
+      submesh.mVertexBuffer.emplace_back(vert2);
+      submesh.mVertexBuffer.emplace_back(vert3);
 
-			submesh.mIndexBuffer.push_back(lastIndex);
-			submesh.mIndexBuffer.push_back(lastIndex + 1);
-			submesh.mIndexBuffer.push_back(lastIndex + 2);
-			submesh.mIndexBuffer.push_back(lastIndex);
-			submesh.mIndexBuffer.push_back(lastIndex + 2);
-			submesh.mIndexBuffer.push_back(lastIndex + 3);
+      submesh.mIndexBuffer.push_back(lastIndex);
+      submesh.mIndexBuffer.push_back(lastIndex + 1);
+      submesh.mIndexBuffer.push_back(lastIndex + 2);
+      submesh.mIndexBuffer.push_back(lastIndex);
+      submesh.mIndexBuffer.push_back(lastIndex + 2);
+      submesh.mIndexBuffer.push_back(lastIndex + 3);
 
-			submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-			submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
+      submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
+      submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
-			submeshes.emplace_back(submesh);
-			lastIndex += 4;
-		}
+      submeshes.emplace_back(submesh);
+      lastIndex += 4;
+    }
 
-		auto view = mSpace->GetComponent<GraphicsView>();
+    auto view = mSpace->GetComponent<GraphicsView>();
 
-		auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
 
-		mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
-		CreateTransform();
-		mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
-		mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
+    CreateTransform();
+    mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
+    mInstantiatedSprite->UpdateUBOModel(mUBOModel);
   }
 
   void SpriteText::CreateTransform()
   {
-		if (mTransform == nullptr)
-			return;
+    if (mTransform == nullptr)
+      return;
 
-		mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
-		mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
-		mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
+    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetTranslation());
+    mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetRotation());
+    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
   }
 
   void SpriteText::TransformUpdate(TransformChanged *aEvent)
   {
-		YTEUnusedArgument(aEvent);
+    YTEUnusedArgument(aEvent);
 
-		CreateTransform();
+    CreateTransform();
 
-		if (mInstantiatedSprite)
-			mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    if (mInstantiatedSprite)
+      mInstantiatedSprite->UpdateUBOModel(mUBOModel);
   }
 
-	void SpriteText::PrepareFont()
-	{
-			// Build the font atlas
-		std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
-		std::ifstream file(pathName, std::ios::binary | std::ios::ate);
+  void SpriteText::PrepareFont()
+  {
+      // Build the font atlas
+    std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
+    std::ifstream file(pathName, std::ios::binary | std::ios::ate);
 
-		if (!file.is_open())
-			std::cout << fmt::format("SpriteText: Failed to open file ", pathName) << std::endl;
+    if (!file.is_open())
+      std::cout << fmt::format("SpriteText: Failed to open file ", pathName) << std::endl;
 
-		auto size = file.tellg();
-		file.seekg(0, std::ios::beg);
-		auto bytes = std::vector<uint8_t>(size);
-		file.read(reinterpret_cast<char*>(&bytes[0]), size);
-		file.close();
+    auto size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    auto bytes = std::vector<uint8_t>(size);
+    file.read(reinterpret_cast<char*>(&bytes[0]), size);
+    file.close();
 
-		auto atlasData = std::make_unique<unsigned char[]>(mFontInfo.mAtlasWidth * mFontInfo.mAtlasHeight);
-		mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
+    auto atlasData = std::make_unique<unsigned char[]>(mFontInfo.mAtlasWidth * mFontInfo.mAtlasHeight);
+    mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
 
-		stbtt_pack_context context;
-		if (!stbtt_PackBegin(&context, atlasData.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 0, 1, nullptr))
-			std::cout << fmt::format("SpriteText: Failed to initialize font!") << std::endl;
+    stbtt_pack_context context;
+    if (!stbtt_PackBegin(&context, atlasData.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 0, 1, nullptr))
+      std::cout << fmt::format("SpriteText: Failed to initialize font!") << std::endl;
 
-		stbtt_PackSetOversampling(&context, 2, 2);
-		if (!stbtt_PackFontRange(&context, bytes.data(), 0, mFontInfo.mSize, mFontInfo.mFirstChar, mFontInfo.mCharCount, mFontInfo.mCharInfo.get()))
-			std::cout << fmt::format("SpriteText: Failed to pack font") << std::endl;
+    stbtt_PackSetOversampling(&context, 2, 2);
+    if (!stbtt_PackFontRange(&context, bytes.data(), 0, mFontInfo.mSize, mFontInfo.mFirstChar, mFontInfo.mCharCount, mFontInfo.mCharInfo.get()))
+      std::cout << fmt::format("SpriteText: Failed to pack font") << std::endl;
 
-		stbtt_PackEnd(&context);
+    stbtt_PackEnd(&context);
 
-			// If the font texture does not already exist on disk, save it to disk for lookup
-		size_t extensionPos = mFontName.size() - 4;
-		std::string texName = mFontName;
-		texName.replace(extensionPos, 4, ".png");
+      // If the font texture does not already exist on disk, save it to disk for lookup
+    size_t extensionPos = mFontName.size() - 4;
+    std::string texName = mFontName;
+    texName.replace(extensionPos, 4, ".png");
 
-		filesystem::path outPath = Path::GetGamePath().String();
-		outPath = outPath.parent_path() / "Textures/Originals" / texName;
+    filesystem::path outPath = Path::GetGamePath().String();
+    outPath = outPath.parent_path() / "Textures/Originals" / texName;
 
-		if (!filesystem::exists(outPath))
-		{
-			stbi_write_png(outPath.string().c_str(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 1, atlasData.get(), mFontInfo.mAtlasWidth);
-		}
+    if (!filesystem::exists(outPath))
+    {
+      stbi_write_png(outPath.string().c_str(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 1, atlasData.get(), mFontInfo.mAtlasWidth);
+    }
 
-			// Set our mTextureName (used to confirm we have a texture to read into)
-		mTextureName = texName;
-	}
+      // Set our mTextureName (used to confirm we have a texture to read into)
+    mTextureName = texName;
+  }
 }

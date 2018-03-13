@@ -16,6 +16,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
   ${CMAKE_CURRENT_LIST_DIR}/MenuController.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/LaunchMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
 #  PUBLIC    
@@ -36,7 +38,9 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
   ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/LaunchMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
-  
 )

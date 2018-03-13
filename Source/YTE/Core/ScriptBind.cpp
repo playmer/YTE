@@ -27,6 +27,8 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/RootMenu.hpp"
+#include "YTE/GameComponents/LaunchMenu.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
@@ -100,10 +102,12 @@ namespace YTE
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();
-		InitializeType<MenuController>();
+    InitializeType<MenuController>();
+    InitializeType<RootMenu>();
+    InitializeType<LaunchMenu>();
     InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
-		InitializeType<Button>();
+    InitializeType<Button>();
     InitializeType<Zone>();
     InitializeType<Island>();
     InitializeType<TestingComponent>();

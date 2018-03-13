@@ -264,4 +264,9 @@ namespace YTE
   {
     return mGravityAcceleration;
   }
+
+  void RigidBody::SetDamping(float aLinearDamp, float aAngularDamp)
+  {
+    mRigidBody->setDamping(aLinearDamp, aAngularDamp);
+  }
 }

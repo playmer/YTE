@@ -52,6 +52,8 @@ namespace YTE
     void SetGravity(glm::vec3 aAcceleration);
     glm::vec3 GetGravity();
 
+    void SetDamping(float aLinearDamp, float aAngularDamp);
+
   private:
     UniquePointer<btRigidBody> mRigidBody;
     UniquePointer<MotionState> mMotionState;

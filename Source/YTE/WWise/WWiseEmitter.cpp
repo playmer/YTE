@@ -37,7 +37,8 @@ namespace YTE
       .AddAttribute<EditorProperty>();
 
     YTEBindFunction(&WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
-    YTEBindFunction(&WWiseEmitter::PlayEvent, YTENoOverload, "PlaySound", YTEParameterNames("aSound"));
+    YTEBindFunction(&WWiseEmitter::PlayEvent, (void (WWiseEmitter::*)(const std::string&)), "PlaySound", YTEParameterNames("aSound"));
+    YTEBindFunction(&WWiseEmitter::PlayEvent, (void (WWiseEmitter::*)(u64)), "PlaySound", YTEParameterNames("aSound"));
   }
 
   WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -70,6 +71,11 @@ namespace YTE
   }
 
   void WWiseEmitter::PlayEvent(const std::string &aEvent)
+  {
+    mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(aEvent, OwnerId());
+  }
+
+  void WWiseEmitter::PlayEvent(u64 aEvent)
   {
     mSpace->GetEngine()->GetComponent<WWiseSystem>()->SendEvent(aEvent, OwnerId());
   }

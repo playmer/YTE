@@ -22,6 +22,8 @@
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/RootMenu.hpp"
+#include "YTE/GameComponents/LaunchMenu.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
@@ -88,11 +90,13 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
-		helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<MenuController>();
+    helper.CreateComponentFactory<RootMenu>();
+    helper.CreateComponentFactory<LaunchMenu>();
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
-		helper.CreateComponentFactory<Button>();
+    helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();
     helper.CreateComponentFactory<TestingComponent>();

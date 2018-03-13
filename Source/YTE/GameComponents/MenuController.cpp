@@ -12,132 +12,206 @@
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/GameComponents/MenuController.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
-	YTEDefineEvent(MenuElementHover);
-	YTEDefineEvent(MenuElementTrigger);
-	YTEDefineEvent(MenuElementDeHover)
+  YTEDefineEvent(MenuElementHover);
+  YTEDefineEvent(MenuElementTrigger);
+  YTEDefineEvent(MenuElementDeHover);
 
-	YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
-	YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
-	YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
+  YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
 
-	YTEDefineType(MenuController)
-	{
-		YTERegisterType(MenuController);
-	}
+  YTEDefineType(MenuController)
+  {
+    YTERegisterType(MenuController);
+  }
 
-	MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
-	{
-		mCurrMenuElement = 0;
+  MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
+  {
+    mCurrMenuElement = 0;
+    mIsDisplayed = false;
 
-		DeserializeByType(aProperties, this, GetStaticType());
-		mConstructing = false;
-	}
+    DeserializeByType(aProperties, this, GetStaticType());
+    mConstructing = false;
+  }
 
-	void MenuController::Initialize()
-	{ 
-    mSpace->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+  void MenuController::Initialize()
+  {
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mMenuElements = mOwner->GetCompositions();
+    mNumElements = static_cast<int>(mMenuElements->size());
+
+    mMyTransform = mOwner->GetComponent<Transform>();
+    //mViewScale = mMyTransform->GetScale();
+    mMyTransform->SetScale(0.f, 0.f, 0.f);
+
+      // Cache sound ids used by this component
+    auto soundSystem = mOwner->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      soundSystem->GetSoundIDFromString("UI_Menu_Pause", mSoundPause);
+      soundSystem->GetSoundIDFromString("UI_Menu_Unpause", mSoundUnpause);
+      soundSystem->GetSoundIDFromString("UI_Menu_Up", mSoundElementNext);
+      soundSystem->GetSoundIDFromString("UI_Menu_Down", mSoundElementPrev);
+      soundSystem->GetSoundIDFromString("UI_Menu_Select", mSoundElementSelect);
+    }
+
+    mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
+    mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
+
     mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
     mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
     mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
-	
-		mMenuElements = mOwner->GetCompositions();
-		mNumElements = static_cast<int>(mMenuElements->size());
-
-		mMyTransform = mOwner->GetComponent<Transform>();
-		//mViewScale = mMyTransform->GetScale();
-		mMyTransform->SetScale(0.f, 0.f, 0.f);
-	}
+  }
 
   void MenuController::OnMenuStart(MenuStart *aEvent)
   {
-      // Check that we are the correct menu to be opened
-    if (mOwner->GetName().c_str() == aEvent->MenuName)
+    if (aEvent->ParentMenu)
     {
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+      mParentMenu = aEvent->ParentMenu;
+    }
 
-      mMyTransform->SetScale(-16.5, 9.5f, 1.f);
-      emitter->PlayEvent("UI_Menu_Pause");
+    mMyTransform->SetScale(-16.5, 9.5f, 1.f);
+    mIsDisplayed = true;
 
-      mCurrMenuElement = 0;
+    if (aEvent->PlaySound)
+    {
+      mSoundEmitter->PlayEvent(mSoundPause);
+    }
 
+    mCurrMenuElement = 0;
+
+    if (mMenuElements->size() != 0)
+    {
       MenuElementHover hoverEvent;
 
       auto currElement = mMenuElements->begin() + mCurrMenuElement;
-      currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+      currElement->second->SendEvent(Events::MenuElementHover, &hoverEvent);
+    }
+  }
+
+  void MenuController::OnDirectMenuExit(MenuExit *aEvent)
+  {
+    if (mIsDisplayed)
+    {
+      mMyTransform->SetScale(0.f, 0.f, 0.f);
+      mIsDisplayed = false;
+
+      if (aEvent->PlaySound)
+      {
+        mSoundEmitter->PlayEvent(mSoundUnpause);
+      }
+
+      if (mMenuElements->size() != 0)
+      {
+        MenuElementDeHover deHoverEvent;
+
+        auto currElement = mMenuElements->begin() + mCurrMenuElement;
+        currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+        mCurrMenuElement = 0;
+      }
     }
   }
 
   void MenuController::OnMenuExit(MenuExit *aEvent)
   {
-    auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
-    mMyTransform->SetScale(0.f, 0.f, 0.f);
-    emitter->PlayEvent("UI_Menu_Unpause");
-
-    MenuElementDeHover deHoverEvent;
-
-    auto currElement = mMenuElements->begin() + mCurrMenuElement;
-    currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
-    mCurrMenuElement = 0;
-
-      // Pop up to the owning menu
-    if (!aEvent->ShouldExitAll)
+    if (mIsDisplayed && !aEvent->Handled)
     {
-        // Opens the parent menu (aka parent of parent button)
-      MenuStart menuStart(mOwner->GetParent()->GetParent()->GetName().c_str());
-      mOwner->GetEngine()->SendEvent(Events::MenuStart, &menuStart);
-    }
+      mMyTransform->SetScale(0.f, 0.f, 0.f);
+      mIsDisplayed = false;
 
-    if (!mParentMenu)
-    {
-      mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+      if (aEvent->PlaySound)
+      {
+        mSoundEmitter->PlayEvent(mSoundUnpause);
+      }
+
+      if (mMenuElements->size() != 0)
+      {
+        MenuElementDeHover deHoverEvent;
+
+        auto currElement = mMenuElements->begin() + mCurrMenuElement;
+        currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+        mCurrMenuElement = 0;
+      }
+
+        // Pop up to the owning menu
+      if (!aEvent->ShouldExitAll)
+      {
+        aEvent->Handled = true;
+
+          // Opens the parent menu
+        if (mParentMenu)
+        {
+          MenuStart menuStart;
+          mParentMenu->SendEvent(Events::MenuStart, &menuStart);
+        }
+
+          // Return context to the game if there aren't any parent menus to open
+        else
+        {
+          mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+        }
+      }
+      else
+      {
+        mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+      }
     }
   }
 
   void MenuController::OnMenuConfirm(MenuConfirm *aEvent)
   {
-    if (!aEvent->IsReleased)
+    if (mIsDisplayed && mMenuElements->size() != 0)
     {
-      mOwner->GetComponent<WWiseEmitter>()->PlayEvent("UI_Menu_Select");
+      if (!aEvent->IsReleased)
+      {
+        mSoundEmitter->PlayEvent(mSoundElementSelect);
 
-      MenuElementTrigger triggerEvent;
+        MenuElementTrigger triggerEvent;
 
-      auto currElement = mMenuElements->begin() + mCurrMenuElement;
-      currElement->second->SendEvent("MenuElementTrigger", &triggerEvent);
-    }
+        auto currElement = mMenuElements->begin() + mCurrMenuElement;
+        currElement->second->SendEvent(Events::MenuElementTrigger, &triggerEvent);
+      }
 
-    else
-    {
-      MenuElementHover hoverEvent;
+      else
+      {
+        MenuElementHover hoverEvent;
 
-      auto currElement = mMenuElements->begin() + mCurrMenuElement;
-      currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+        auto currElement = mMenuElements->begin() + mCurrMenuElement;
+        currElement->second->SendEvent(Events::MenuElementHover, &hoverEvent);
+      }
     }
   }
 
   void MenuController::OnMenuElementChange(MenuElementChange *aEvent)
   {
-    MenuElementDeHover deHoverEvent;
+    if (mIsDisplayed && mMenuElements->size() != 0)
+    {
+      MenuElementDeHover deHoverEvent;
 
-    auto currElement = mMenuElements->begin() + mCurrMenuElement;
-    currElement->second->SendEvent("MenuElementDeHover", &deHoverEvent);
+      auto currElement = mMenuElements->begin() + mCurrMenuElement;
 
-    if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
-      mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
+      currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
 
-    else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
-      mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
+      if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
+      {
+        mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
+        mSoundEmitter->PlayEvent(mSoundElementPrev);
+      }
+      else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
+      {
+        mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
+        mSoundEmitter->PlayEvent(mSoundElementNext);
+      }
 
-    auto emitter = mOwner->GetComponent<WWiseEmitter>();
-    emitter->PlayEvent("UI_Menu_Hover");
+      MenuElementHover hoverEvent;
 
-    MenuElementHover hoverEvent;
-
-    currElement = mMenuElements->begin() + mCurrMenuElement;
-    currElement->second->SendEvent("MenuElementHover", &hoverEvent);
+      currElement = mMenuElements->begin() + mCurrMenuElement;
+      currElement->second->SendEvent(Events::MenuElementHover, &hoverEvent);
+    }
   }
 }
