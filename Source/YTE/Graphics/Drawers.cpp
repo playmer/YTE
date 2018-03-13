@@ -115,6 +115,11 @@ namespace YTE
     mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
     mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
 
+    if (0 == mSubmeshes[0].mVertexBufferSize)
+    {
+      return;
+    }
+
     auto mesh = mRenderer->CreateSimpleMesh(mMeshName, mSubmeshes, true);
 
     mInstantiatedLines = mRenderer->CreateModel(mView, mesh);
@@ -340,6 +345,11 @@ namespace YTE
   {
     mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
     mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
+
+    if (0 == mSubmeshes[0].mVertexBufferSize)
+    {
+      return;
+    }
 
     auto mesh = mRenderer->CreateSimpleMesh(mMeshName, mSubmeshes, true);
 

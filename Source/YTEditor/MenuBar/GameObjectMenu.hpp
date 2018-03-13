@@ -56,10 +56,12 @@ namespace YTEditor
     QMenu * MakeLightMenu();
     void CreatePointLight();
     void CreateDirectionalLight();
-    void CreateAreaLight();
+    void CreateSpotlight();
+    YTE::Composition* MakeLight(std::string lightType);
 
     QMenu * MakeAudioMenu();
-    void CreateAudioSource();
+    void CreateAudioEmitter();
+    void CreateAudioListener();
 
     QMenu * MakeUIMenu();
     void CreateText();
