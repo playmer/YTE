@@ -120,7 +120,7 @@ namespace YTE
 				// Pop up to the owning menu
 			if (!aEvent->ShouldExitAll)
 			{
-					// Opens the parent menu (aka parent of parent button)
+					// Opens the parent menu
 				if (mParentMenu)
 				{
 					MenuStart menuStart;
