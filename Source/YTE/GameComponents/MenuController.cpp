@@ -16,27 +16,27 @@
 
 namespace YTE
 {
-	YTEDefineEvent(MenuElementHover);
-	YTEDefineEvent(MenuElementTrigger);
-	YTEDefineEvent(MenuElementDeHover)
+  YTEDefineEvent(MenuElementHover);
+  YTEDefineEvent(MenuElementTrigger);
+  YTEDefineEvent(MenuElementDeHover);
 
-	YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
-	YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
-	YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
+  YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
 
-	YTEDefineType(MenuController)
-	{
-		YTERegisterType(MenuController);
-	}
+  YTEDefineType(MenuController)
+  {
+    YTERegisterType(MenuController);
+  }
 
 	MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
 	{
 		mCurrMenuElement = 0;
 		mIsDisplayed = false;
 
-		DeserializeByType(aProperties, this, GetStaticType());
-		mConstructing = false;
-	}
+    DeserializeByType(aProperties, this, GetStaticType());
+    mConstructing = false;
+  }
 
 	void MenuController::Initialize()
 	{ 
@@ -46,14 +46,14 @@ namespace YTE
     mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
     mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
     mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
-	
-		mMenuElements = mOwner->GetCompositions();
-		mNumElements = static_cast<int>(mMenuElements->size());
 
-		mMyTransform = mOwner->GetComponent<Transform>();
-		//mViewScale = mMyTransform->GetScale();
-		mMyTransform->SetScale(0.f, 0.f, 0.f);
-	}
+    mMenuElements = mOwner->GetCompositions();
+    mNumElements = static_cast<int>(mMenuElements->size());
+
+    mMyTransform = mOwner->GetComponent<Transform>();
+    //mViewScale = mMyTransform->GetScale();
+    mMyTransform->SetScale(0.f, 0.f, 0.f);
+  }
 
   void MenuController::OnMenuStart(MenuStart *aEvent)
   {

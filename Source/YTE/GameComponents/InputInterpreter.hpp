@@ -166,8 +166,8 @@ namespace YTE
     std::string mRootPauseMenuName;
     InputContext mContext;
 
-		bool mIsRightTriggerDown;
-		bool mIsLeftTriggerDown;
+    bool mIsRightTriggerDown;
+    bool mIsLeftTriggerDown;
 
     bool mConstructing;
   };

@@ -107,7 +107,7 @@ namespace YTE
 		InitializeType<LaunchMenu>();
     InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
-		InitializeType<Button>();
+    InitializeType<Button>();
     InitializeType<Zone>();
     InitializeType<Island>();
     InitializeType<TestingComponent>();

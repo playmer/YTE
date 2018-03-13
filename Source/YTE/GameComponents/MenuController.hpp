@@ -29,29 +29,29 @@ namespace YTE
 		YTEDeclareType(MenuElementHover);
 	};
 
-	class MenuElementTrigger : public Event
-	{
-	public:
-		YTEDeclareType(MenuElementTrigger);
-	};
+  class MenuElementTrigger : public Event
+  {
+  public:
+    YTEDeclareType(MenuElementTrigger);
+  };
 
-	class MenuElementDeHover : public Event
-	{
-	public:
-		YTEDeclareType(MenuElementDeHover);
-	};
+  class MenuElementDeHover : public Event
+  {
+  public:
+    YTEDeclareType(MenuElementDeHover);
+  };
 
   class MenuController : public Component
   {
-	public:
+  public:
     YTEDeclareType(MenuController);
     MenuController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    
-		void Initialize() override;
+
+    void Initialize() override;
     // void CloseMenu();
 
-		// PROPERTIES /////////////////////////////////////////
-		///////////////////////////////////////////////////////
+    // PROPERTIES /////////////////////////////////////////
+    ///////////////////////////////////////////////////////
     void OnMenuStart(MenuStart *aEvent);
 		void OnDirectMenuExit(MenuExit *aEvent);
     void OnMenuExit(MenuExit *aEvent);
@@ -61,12 +61,12 @@ namespace YTE
 	private:
     Composition* mParentMenu = nullptr;
 
-		Transform *mMyTransform;
-		glm::vec3 mViewScale;
+    Transform *mMyTransform;
+    glm::vec3 mViewScale;
 
-		int mCurrMenuElement;
-		int mNumElements;
-		YTE::CompositionMap* mMenuElements;
+    int mCurrMenuElement;
+    int mNumElements;
+    YTE::CompositionMap* mMenuElements;
 
 		bool mIsDisplayed;
 

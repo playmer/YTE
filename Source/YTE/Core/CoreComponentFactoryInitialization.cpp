@@ -96,7 +96,7 @@ namespace YTE
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
-		helper.CreateComponentFactory<Button>();
+    helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();
     helper.CreateComponentFactory<TestingComponent>();
