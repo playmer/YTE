@@ -116,6 +116,7 @@ namespace YTE
 
     bool ShouldExitAll;
     bool PlaySound = false;
+    bool Handled = false;
   };
 
   class MenuElementChange : public Event

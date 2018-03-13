@@ -104,7 +104,7 @@ namespace YTE
 
   void MenuController::OnMenuExit(MenuExit *aEvent)
   {
-    if (mIsDisplayed)
+    if (mIsDisplayed && !aEvent->Handled)
     {
       auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
@@ -126,6 +126,8 @@ namespace YTE
         // Pop up to the owning menu
       if (!aEvent->ShouldExitAll)
       {
+        aEvent->Handled = true;
+
           // Opens the parent menu
         if (mParentMenu)
         {

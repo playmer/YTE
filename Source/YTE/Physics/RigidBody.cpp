@@ -265,11 +265,6 @@ namespace YTE
     return mGravityAcceleration;
   }
 
-  void RigidBody::ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition)
-  {
-    mRigidBody->applyForce(OurVec3ToBt(aForce), OurVec3ToBt(aRelativePosition));
-  }
-
   void RigidBody::SetDamping(float aLinearDamp, float aAngularDamp)
   {
     mRigidBody->setDamping(aLinearDamp, aAngularDamp);

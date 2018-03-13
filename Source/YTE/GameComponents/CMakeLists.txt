@@ -40,6 +40,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/LaunchMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
 )

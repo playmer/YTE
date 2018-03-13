@@ -52,8 +52,6 @@ namespace YTE
     void SetGravity(glm::vec3 aAcceleration);
     glm::vec3 GetGravity();
 
-    void ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition);
-
     void SetDamping(float aLinearDamp, float aAngularDamp);
 
   private:
