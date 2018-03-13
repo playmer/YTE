@@ -229,6 +229,7 @@ namespace YTE
     mIllumination.mFogColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
     mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
     mIllumination.mGlobalIllumination = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+    mIllumination.mTime = 0.0f;
 
     mConstructing = false;
     RendererResize(nullptr);
@@ -412,6 +413,7 @@ namespace YTE
     mChanged = false;
     mGraphicsView->UpdateView(this, view);
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mIllumination.mTime += static_cast<float>(mDt);
     mGraphicsView->UpdateIllumination(mIllumination);
   }
 
@@ -421,6 +423,7 @@ namespace YTE
     mChanged = false;
     mGraphicsView->UpdateView(this, view);
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mIllumination.mTime += static_cast<float>(mDt);
     mGraphicsView->UpdateIllumination(mIllumination);
   }
 
@@ -429,6 +432,7 @@ namespace YTE
     mChanged = false;
     mGraphicsView->UpdateView(this, aView);
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mIllumination.mTime += static_cast<float>(mDt);
     mGraphicsView->UpdateIllumination(mIllumination);
   }
 
@@ -644,6 +648,11 @@ namespace YTE
     if (mChanged)
     {
       UpdateView();
+    }
+    else
+    {
+      mIllumination.mTime += static_cast<float>(mDt);
+      mGraphicsView->UpdateIllumination(mIllumination);
     }
   }
 
