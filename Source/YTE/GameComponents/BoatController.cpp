@@ -63,6 +63,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mCanDock(false)
     , mNearbyDock(nullptr)
+    , mPlayingTurnSound(false)
     , mCurrSpeed(0.f)
     , mCurrRotSpeed(0.f)
   {
@@ -188,32 +189,21 @@ namespace YTE
   void BoatController::TurnBoat(BoatTurnEvent *aEvent)
   {
     mStartedTurning = true;
+    if (!mPlayingTurnSound)
+    {
+      mSoundEmitter->PlayEvent("SFX_Boat_Turn");
+      mPlayingTurnSound = true;
+    }
 
     if (aEvent->StickDirection.x > 0.1)
       mTurnVec = mOrientation->GetRightVector();
     else if (aEvent->StickDirection.x < -0.1)
       mTurnVec = -mOrientation->GetRightVector();
     else
+    {
       mCurrRotSpeed = 0.f;
-
-    //std::cout << "Forward after turn: " << mOrientation->GetForwardVector().x << ", " << mOrientation->GetForwardVector().z << std::endl;
-    /*if (aEvent->StickDirection == glm::vec2(0, 0))
-    {
-      mStartedTurning = false;
+      mPlayingTurnSound = false;
     }
-
-    if (!mStartedTurning && aEvent->StickDirection.x != 0.0f)
-    {
-      if (mSoundEmitter)
-      {
-        mSoundEmitter->PlayEvent("SFX_Boat_Turn");
-      }
-
-      mStartedTurning = true;
-    }
-
-    auto rotationDelta = -(aEvent->StickDirection.x / 2.0f) * static_cast<float>(mOwner->GetEngine()->GetDt());
-    mTransform->Rotate({0, 1, 0 }, rotationDelta);*/
   }
 
   void BoatController::Update(LogicUpdate *aEvent)
@@ -253,8 +243,6 @@ namespace YTE
         mRigidBody->SetGravity(glm::vec3(0));
       }
     }
-
-
 
     mStartedTurning = false;
   }

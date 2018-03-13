@@ -104,6 +104,7 @@ namespace YTE
     bool mCanDock;
     // flag for turning
     bool mStartedTurning;
+    bool mPlayingTurnSound;
 
     float mCurrSpeed;
     float mCurrRotSpeed;

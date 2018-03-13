@@ -17,22 +17,22 @@
 
 namespace YTE
 {
-	class LaunchMenu : public Component
-	{
-	public:
-		YTEDeclareType(LaunchMenu);
-		LaunchMenu(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+  class LaunchMenu : public Component
+  {
+  public:
+    YTEDeclareType(LaunchMenu);
+    LaunchMenu(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-		void Initialize() override;
+    void Initialize() override;
 
-		// PROPERTIES /////////////////////////////////////////
-		std::string GetMenuToLaunch() { return mMenuToLaunch; }
-		void SetMenuToLaunch(std::string& aLaunchMenu) { mMenuToLaunch = aLaunchMenu; }
-		////////////////////////////////////////////////////////
+    // PROPERTIES /////////////////////////////////////////
+    std::string GetMenuToLaunch() { return mMenuToLaunch; }
+    void SetMenuToLaunch(std::string& aLaunchMenu) { mMenuToLaunch = aLaunchMenu; }
+    ////////////////////////////////////////////////////////
 
-		void OnElementTrigger(MenuElementTrigger *aEvent);
+    void OnElementTrigger(MenuElementTrigger *aEvent);
 
-	private:
-		std::string mMenuToLaunch;
-	};
+  private:
+    std::string mMenuToLaunch;
+  };
 }

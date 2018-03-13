@@ -239,6 +239,7 @@ namespace YTE
       case Xbox_Buttons::Start:
       {
         MenuStart menuStart;
+        menuStart.PlaySound = true;
         mOwner->SendEvent(Events::MenuStart, &menuStart);
 
         mContext = InputContext::Menu;
@@ -264,6 +265,7 @@ namespace YTE
       case Xbox_Buttons::Start:
       {
         MenuExit menuExit(true);
+        menuExit.PlaySound = true;
         mOwner->SendEvent(Events::MenuExit, &menuExit);
 
         mContext = InputContext::Sailing;
@@ -280,6 +282,7 @@ namespace YTE
       case Xbox_Buttons::B:
       {
         MenuExit menuExit(false);
+        menuExit.PlaySound = true;
         mOwner->SendEvent(Events::MenuExit, &menuExit);
 
         break;
@@ -374,7 +377,8 @@ namespace YTE
       }
       case Keys::Escape:
       {
-        MenuStart menuStart(mRootPauseMenuName);
+        MenuStart menuStart;
+        menuStart.PlaySound = true;
         mOwner->SendEvent(Events::MenuStart, &menuStart);
 
         mContext = InputContext::Menu;
@@ -409,6 +413,7 @@ namespace YTE
       case Keys::Escape:
       {
         MenuExit menuExit(true);
+        menuExit.PlaySound = true;
         mOwner->SendEvent(Events::MenuExit, &menuExit);
 
         mContext = InputContext::Sailing;
@@ -426,6 +431,7 @@ namespace YTE
       case Keys::Backspace:
       {
         MenuExit menuExit(false);
+        menuExit.PlaySound = true;
         mOwner->SendEvent(Events::MenuExit, &menuExit);
 
         break;

@@ -19,15 +19,15 @@
 
 namespace YTE
 {
-	YTEDeclareEvent(MenuElementHover);
-	YTEDeclareEvent(MenuElementTrigger);
-	YTEDeclareEvent(MenuElementDeHover);
+  YTEDeclareEvent(MenuElementHover);
+  YTEDeclareEvent(MenuElementTrigger);
+  YTEDeclareEvent(MenuElementDeHover);
 
-	class MenuElementHover : public Event
-	{
-	public:
-		YTEDeclareType(MenuElementHover);
-	};
+  class MenuElementHover : public Event
+  {
+  public:
+    YTEDeclareType(MenuElementHover);
+  };
 
   class MenuElementTrigger : public Event
   {
@@ -53,12 +53,12 @@ namespace YTE
     // PROPERTIES /////////////////////////////////////////
     ///////////////////////////////////////////////////////
     void OnMenuStart(MenuStart *aEvent);
-		void OnDirectMenuExit(MenuExit *aEvent);
+    void OnDirectMenuExit(MenuExit *aEvent);
     void OnMenuExit(MenuExit *aEvent);
     void OnMenuConfirm(MenuConfirm *aEvent);
     void OnMenuElementChange(MenuElementChange *aEvent);
 
-	private:
+  private:
     Composition* mParentMenu = nullptr;
 
     Transform *mMyTransform;
@@ -68,8 +68,8 @@ namespace YTE
     int mNumElements;
     YTE::CompositionMap* mMenuElements;
 
-		bool mIsDisplayed;
+    bool mIsDisplayed;
 
-		bool mConstructing;
+    bool mConstructing;
   };
 }

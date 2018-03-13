@@ -95,7 +95,8 @@ namespace YTE
   public:
     YTEDeclareType(MenuStart);
 
-		Composition* ParentMenu = nullptr;
+    Composition* ParentMenu = nullptr;
+    bool PlaySound = false;
   };
 
   class MenuConfirm : public Event
@@ -114,6 +115,7 @@ namespace YTE
     MenuExit(bool aExitAll) { ShouldExitAll = aExitAll; }
 
     bool ShouldExitAll;
+    bool PlaySound = false;
   };
 
   class MenuElementChange : public Event
@@ -141,7 +143,7 @@ namespace YTE
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
-		void OnLogicUpdate(LogicUpdate *aEvent);
+    void OnLogicUpdate(LogicUpdate *aEvent);
 
     void OnStickEvent(XboxStickEvent *aEvent);
     void OnFlickEvent(XboxFlickEvent *aEvent);

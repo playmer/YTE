@@ -17,14 +17,14 @@
 
 namespace YTE
 {
-	class RootMenu : public Component
-	{
-	public:
-		YTEDeclareType(RootMenu);
-		RootMenu(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+  class RootMenu : public Component
+  {
+  public:
+    YTEDeclareType(RootMenu);
+    RootMenu(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-		void Initialize() override;
+    void Initialize() override;
 
-		void OnMenuStart(MenuStart *aEvent);
-	};
+    void OnMenuStart(MenuStart *aEvent);
+  };
 }

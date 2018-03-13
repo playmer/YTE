@@ -14,24 +14,24 @@
 
 namespace YTE
 {
-	YTEDefineType(RootMenu)
-	{
-		YTERegisterType(RootMenu);
-	}
+  YTEDefineType(RootMenu)
+  {
+    YTERegisterType(RootMenu);
+  }
 
-	RootMenu::RootMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace)
-	{
-		DeserializeByType(aProperties, this, GetStaticType());
-	}
+  RootMenu::RootMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace)
+  {
+    DeserializeByType(aProperties, this, GetStaticType());
+  }
 
-	void RootMenu::Initialize()
-	{
-		mSpace->YTERegister(Events::MenuStart, this, &RootMenu::OnMenuStart);
-	}
+  void RootMenu::Initialize()
+  {
+    mSpace->YTERegister(Events::MenuStart, this, &RootMenu::OnMenuStart);
+  }
 
-	void RootMenu::OnMenuStart(MenuStart *aEvent)
-	{
-		mOwner->SendEvent(Events::MenuStart, aEvent);
-	}
+  void RootMenu::OnMenuStart(MenuStart *aEvent)
+  {
+    mOwner->SendEvent(Events::MenuStart, aEvent);
+  }
 }
 
