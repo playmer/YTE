@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
 \file   InputInterpreter.cpp
-\author Jonathan Ackerman
-        Isaac Dayton
+\author Isaac Dayton
+        Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-19
 
@@ -11,26 +11,27 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
 
 namespace YTE
 {
-    // Dialogue Events
+  // Dialogue Events
   YTEDefineEvent(DialogueStart);
   YTEDefineEvent(DialogueConfirm);
   YTEDefineEvent(DialogueExit);
 
-    // Menu Events
+  // Menu Events
   YTEDefineEvent(MenuStart);
   YTEDefineEvent(MenuConfirm);
   YTEDefineEvent(MenuExit);
   YTEDefineEvent(MenuElementChange);
 
-    // Boat Events
+  // Boat Events
   YTEDefineEvent(SailStateChanged);
   YTEDefineEvent(BoatTurnEvent);
   YTEDefineEvent(BoatDockEvent);
 
-    // Camera Events
+  // Camera Events
   YTEDefineEvent(CameraRotateEvent);
 
   YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
@@ -66,13 +67,19 @@ namespace YTE
   void InputInterpreter::Initialize()
   {
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
+    mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
     mContext = InputContext::Sailing;
-    
-		mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
+
+    mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
+
     mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
     mGamepad->YTERegister(Events::XboxStickFlicked, this, &InputInterpreter::OnFlickEvent);
     mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::OnButtonPress);
     mGamepad->YTERegister(Events::XboxButtonRelease, this, &InputInterpreter::OnButtonRelease);
+
+    mKeyboard->YTERegister(Events::KeyPersist, this, &InputInterpreter::OnKeyPersist);
+    mKeyboard->YTERegister(Events::KeyPress, this, &InputInterpreter::OnKeyPress);
+    mKeyboard->YTERegister(Events::KeyRelease, this, &InputInterpreter::OnKeyRelease);
   }
 
   void InputInterpreter::SetInputContext(InputInterpreter::InputContext aContext)
@@ -89,49 +96,51 @@ namespace YTE
       Event Callbacks
   */
   /******************************************************************************/
-	void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
-	{
-		if (mContext == InputContext::Sailing)
-		{
-			if (mIsRightTriggerDown)
-			{
-				if (mGamepad->GetRightTrigger() < 0.1f)
-				{
-					mIsRightTriggerDown = false;
-				}
-			}
-			else
-			{
-				if (mGamepad->GetRightTrigger() > 0.5f)
-				{
-					SailStateChanged setSailUp(true);
-					mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+  void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
 
-					mIsRightTriggerDown = true;
-				}
-			}
+    if (mContext == InputContext::Sailing)
+    {
+      if (mIsRightTriggerDown)
+      {
+        if (mGamepad->GetRightTrigger() < 0.1f)
+        {
+          mIsRightTriggerDown = false;
+        }
+      }
+      else
+      {
+        if (mGamepad->GetRightTrigger() > 0.5f)
+        {
+          SailStateChanged setSailUp(true);
+          mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
 
-			if (mIsLeftTriggerDown)
-			{
-				if (mGamepad->GetLeftTrigger() < 0.1f)
-				{
-					mIsLeftTriggerDown = false;
-				}
-			}
-			else
-			{
-				if (mGamepad->GetLeftTrigger() > 0.5f)
-				{
-					SailStateChanged setSailUp(false);
-					mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+          mIsRightTriggerDown = true;
+        }
+      }
 
-					mIsLeftTriggerDown = true;
-				}
-			}
-		}
-	}
-	
-	void InputInterpreter::OnStickEvent(XboxStickEvent *aEvent)
+      if (mIsLeftTriggerDown)
+      {
+        if (mGamepad->GetLeftTrigger() < 0.1f)
+        {
+          mIsLeftTriggerDown = false;
+        }
+      }
+      else
+      {
+        if (mGamepad->GetLeftTrigger() > 0.5f)
+        {
+          SailStateChanged setSailUp(false);
+          mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+          mIsLeftTriggerDown = true;
+        }
+      }
+    }
+  }
+
+  void InputInterpreter::OnStickEvent(XboxStickEvent *aEvent)
   {
     if (mContext == InputContext::Sailing)
     {
@@ -306,6 +315,172 @@ namespace YTE
     case InputContext::Menu:
     {
       if (aEvent->Button == Xbox_Buttons::A)
+      {
+        MenuConfirm menuConfirm(true);
+        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+        break;
+      }
+    }
+    }
+  }
+
+  void InputInterpreter::OnKeyPersist(KeyboardEvent *aEvent)
+  {
+    if (mContext == InputContext::Sailing)
+    {
+      switch (aEvent->Key)
+      {
+      case Keys::A:
+      case Keys::Left:
+      {
+        BoatTurnEvent turnEvent;
+        turnEvent.StickDirection = glm::vec2(-1.0f, 0.f);
+        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+
+        break;
+      }
+
+      case Keys::D:
+      case Keys::Right:
+      {
+        BoatTurnEvent turnEvent;
+        turnEvent.StickDirection = glm::vec2(1.0f, 0.f);
+        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+
+        break;
+      }
+      }
+    }
+  }
+
+  void InputInterpreter::OnKeyPress(KeyboardEvent *aEvent)
+  {
+    switch (mContext)
+    {
+    case InputContext::Dialogue:
+    {
+    default:
+      break;
+    }
+    case InputContext::Sailing:
+    {
+      switch (aEvent->Key)
+      {
+      case Keys::Return:
+      {
+        BoatDockEvent dock;
+        mOwner->SendEvent(Events::BoatDockEvent, &dock);
+        break;
+      }
+      case Keys::Escape:
+      {
+        MenuStart menuStart(mRootPauseMenuName);
+        mOwner->SendEvent(Events::MenuStart, &menuStart);
+
+        mContext = InputContext::Menu;
+        break;
+      }
+
+      case Keys::W:
+      case Keys::Up:
+      {
+        SailStateChanged setSailUp(true);
+        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+        break;
+      }
+
+      case Keys::S:
+      case Keys::Down:
+      {
+        SailStateChanged setSailUp(false);
+        mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+        break;
+      }
+      }
+      break;
+    }
+
+    case InputContext::Menu:
+    {
+      switch (aEvent->Key)
+      {
+      case Keys::Escape:
+      {
+        MenuExit menuExit(true);
+        mOwner->SendEvent(Events::MenuExit, &menuExit);
+
+        mContext = InputContext::Sailing;
+        break;
+      }
+
+      case Keys::Return:
+      {
+        MenuConfirm menuConfirm(false);
+        mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+
+        break;
+      }
+
+      case Keys::Backspace:
+      {
+        MenuExit menuExit(false);
+        mOwner->SendEvent(Events::MenuExit, &menuExit);
+
+        break;
+      }
+
+      case Keys::A:
+      case Keys::Left:
+      {
+        MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+        mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+
+        break;
+      }
+
+      case Keys::D:
+      case Keys::Right:
+      {
+        MenuElementChange menuNext(MenuElementChange::Direction::Next);
+        mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+
+        break;
+      }
+      }
+
+      break;
+    }
+
+    }
+  }
+
+  void InputInterpreter::OnKeyRelease(KeyboardEvent *aEvent)
+  {
+    switch (mContext)
+    {
+    case InputContext::Sailing:
+    {
+      switch (aEvent->Key)
+      {
+      case Keys::A:
+      case Keys::D:
+      case Keys::Left:
+      case Keys::Right:
+      {
+        BoatTurnEvent turnEvent;
+        turnEvent.StickDirection = glm::vec2(0.0f, 0.f);
+        mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
+
+        break;
+      }
+      }
+    }
+
+    case InputContext::Menu:
+    {
+      if (aEvent->Key == Keys::Return)
       {
         MenuConfirm menuConfirm(true);
         mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);

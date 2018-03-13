@@ -1,8 +1,8 @@
 /******************************************************************************/
 /*!
 \file   InputInterpreter.hpp
-\author Jonathan Ackerman
-        Isaac Dayton
+\author Isaac Dayton
+        Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-19
 \brief
@@ -22,6 +22,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Gamepad.hpp"
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"
@@ -141,10 +142,15 @@ namespace YTE
     void Initialize() override;
 
 		void OnLogicUpdate(LogicUpdate *aEvent);
+
     void OnStickEvent(XboxStickEvent *aEvent);
     void OnFlickEvent(XboxFlickEvent *aEvent);
     void OnButtonPress(XboxButtonEvent *aEvent);
     void OnButtonRelease(XboxButtonEvent *aEvent);
+
+    void OnKeyPersist(KeyboardEvent *aEvent);
+    void OnKeyPress(KeyboardEvent *aEvent);
+    void OnKeyRelease(KeyboardEvent *aEvent);
 
     void SetInputContext(InputContext aContext);
     InputContext GetInputContext();
@@ -156,6 +162,7 @@ namespace YTE
 
   private:
     XboxController *mGamepad;
+    Keyboard *mKeyboard;
     std::string mRootPauseMenuName;
     InputContext mContext;
 
