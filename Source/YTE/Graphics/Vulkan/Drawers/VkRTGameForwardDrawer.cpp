@@ -31,7 +31,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aName,
                      aCombinationType)
   {
-
+    Initialize();
   }
 
   VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,
@@ -47,7 +47,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aName,
                      aCombinationType)
   {
-
+    Initialize();
   }
 
   VkRTGameForwardDrawer::~VkRTGameForwardDrawer()

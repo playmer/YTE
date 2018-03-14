@@ -39,12 +39,10 @@ namespace YTE
                                          std::vector<Vertex>& aVertices,
                                          std::vector<u32>& aIndices,
                                          std::string& aShaderSetName,
-                                         UBOMaterial& aStartingMaterial, 
                                          GraphicsView* aView,
                                          Renderer* aRenderer)
   {
     mShaderSetName = aShaderSetName;
-    mStartingMaterial = aStartingMaterial;
     mGraphicsView = aView;
     mRenderer = aRenderer;
 
@@ -55,7 +53,6 @@ namespace YTE
                                          std::vector<Vertex>& aVertices,
                                          std::vector<u32>& aIndices,
                                          std::string& aShaderSetName,
-                                         UBOMaterial& aStartingMaterial,
                                          GraphicsView* aView,
                                          Renderer* aRenderer,
                                          std::string aDiffuseTextureName,
@@ -63,7 +60,6 @@ namespace YTE
                                          std::string aNormalTextureName)
   {
     mShaderSetName = aShaderSetName;
-    mStartingMaterial = aStartingMaterial;
     mGraphicsView = aView;
     mRenderer = aRenderer;
     mDiffuseTName = aDiffuseTextureName;
@@ -107,8 +103,6 @@ namespace YTE
     submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
     submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
-    submesh.mUBOMaterial = mStartingMaterial;
-    submesh.mMaterialName = "__HeightmapMaterial";
     submesh.mDiffuseMap = mDiffuseTName;
     submesh.mSpecularMap = mSpecularTName;
     submesh.mNormalMap = mNormalTName;

@@ -580,7 +580,9 @@ namespace YTE
 
 
     // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](VkRenderTarget::RenderTargetData *aData, vkhlf::DescriptorImageInfo &aImageInfo)
+    auto addTS = [&wdss, &binding, &ds](size_t aAttachmentIndex,
+                                        VkRenderTarget::RenderTargetData *aData, 
+                                        vkhlf::DescriptorImageInfo &aImageInfo)
     {
       constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
 
@@ -590,14 +592,18 @@ namespace YTE
       }
 
       aImageInfo.sampler = aData->mSampler;
-      aImageInfo.imageView = aData->mColorData.mImageView;
+      aImageInfo.imageView = aData->mAttachments[aAttachmentIndex].mImageView;
       wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
     };
 
     for (u32 i = 0; i < mParent->mRenderTargetData.size(); ++i)
     {
-      vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
-      addTS(mParent->mRenderTargetData[i], dTexInfo);
+      auto &data = mParent->mRenderTargetData[i];
+      for (size_t k = 0; k < data->mColorAttachments.size(); ++k)
+      {
+        vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
+        addTS(data->mColorAttachments[k], data, dTexInfo);
+      }
     }
 
     device->updateDescriptorSets(wdss, nullptr);

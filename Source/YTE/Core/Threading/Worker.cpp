@@ -81,7 +81,7 @@ namespace YTE
   void Worker::YieldThread()
   {
     // TODO (Evan): Time tasks to figure out sleep length
-    std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    std::this_thread::sleep_for(std::chrono::microseconds(500));
   }
 
   void Worker::ExecuteNext()

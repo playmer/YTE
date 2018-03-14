@@ -13,6 +13,7 @@
 #include "YTE/Core/Engine.hpp" 
 #include "YTE/Core/Space.hpp" 
 #include "YTE/Core/Utilities.hpp" 
+#include "YTE/Core/Threading/JobSystem.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
@@ -30,22 +31,26 @@
 
 #include <iomanip>
 
-// just makes things faster than always adding one
-// note that this is undefined at the end of the file
-#define mGridSizePlus1 (mGridSize)
-#define DefaultGridSize 64
+#define DefaultGridSize 128
+
+// switch entirely over to the mGridSizePlus1 system. I need this to work for tiling
+
+//Intensity maps
+//y - height *= intensity;
+//normal y *= 1.0f / intensity;
+//
+//128x128
+//normal gravity
+//58x58 wind
+//25x25x1 size
+//0.00005 height
+
 
 // --------------------------
 // Definitions
 
 namespace YTE
 {
-  //static std::vector<std::string> PopulateDropDownList(Component *aComponent)
-  //{
-  //  YTEUnusedArgument(aComponent);
-  //  return { "Solid", "Wireframe" };
-  //}
-
   YTEDefineType(FFT_WaterSimulation)
   {
     YTERegisterType(FFT_WaterSimulation);
@@ -54,13 +59,6 @@ namespace YTE
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
     FFT_WaterSimulation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
-
-    //YTEBindProperty(&FFT_WaterSimulation::GetRenderMode, &FFT_WaterSimulation::SetRenderMode, "Rendering Mode")
-    //  .AddAttribute<EditorProperty>()
-    //  .AddAttribute<DropDownStrings>(PopulateDropDownList)
-    //  .SetDocumentation("The type of rendering you want to use. Options include:\n"
-    //                    " - Solid: Rendering using solid triangles\n"
-    //                    " - Wireframe: Rendering using lines between the triangles");
 
     YTEBindProperty(&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect, "Time Dilation")
       .AddAttribute<Serializable>()
@@ -71,10 +69,6 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Adjusts the distance between each individual vertex. This will expand or shrink the overall size of the mesh");
-
-    //YTEBindProperty(&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount, "Grid Size")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("Adjusts the size of the grid that the water is repeated on.");
 
     YTEBindProperty(&FFT_WaterSimulation::GetReset, &FFT_WaterSimulation::SetReset, "Reset Simulation")
       .AddAttribute<EditorProperty>()
@@ -100,54 +94,52 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the wind direction and magnitude. This requires a reset");
 
-    //YTEBindProperty(&FFT_WaterSimulation::GetUseFFT, &FFT_WaterSimulation::SetUseFFT, "Use FFT")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("If checked, the system will use a FFT to calculate the water");
-
     YTEBindProperty(&FFT_WaterSimulation::GetShaderSetName, &FFT_WaterSimulation::SetShaderSetName, "Shader Set Name")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("What shader to use for the object");
 
-    // material
-    //YTEBindProperty(&FFT_WaterSimulation::GetDiffuse, &FFT_WaterSimulation::SetDiffuse, "Diffuse")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The diffuse color");
-    //
-    //YTEBindProperty(&FFT_WaterSimulation::GetAmbient, &FFT_WaterSimulation::SetAmbient, "Ambient")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The ambient color");
-    //
-    //YTEBindProperty(&FFT_WaterSimulation::GetSpecular, &FFT_WaterSimulation::SetSpecular, "Specular")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The specular color");
-    //
-    //YTEBindProperty(&FFT_WaterSimulation::GetEmissive, &FFT_WaterSimulation::SetEmissive, "Emissive")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The emissive color");
-    //
-    //YTEBindProperty(&FFT_WaterSimulation::GetShinniness, &FFT_WaterSimulation::SetShinniness, "Shininess")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The shininess component");
-    //
-    //YTEBindProperty(&FFT_WaterSimulation::GetOpacity, &FFT_WaterSimulation::SetOpacity, "Opacity")
-    //  .AddAttribute<EditorProperty>()
-    //  .SetDocumentation("The opacity component");
-
     YTEBindProperty(&FFT_WaterSimulation::GetRunWithEngineUpdate, &FFT_WaterSimulation::SetRunWithEngineUpdate, "Run in Editor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Run while in editor");
+
     YTEBindProperty(&FFT_WaterSimulation::GetRunInSteps, &FFT_WaterSimulation::SetRunInSteps, "Dont Run Every Frame")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Prevents the FFT from running every frame");
+
     YTEBindProperty(&FFT_WaterSimulation::GetStepCount, &FFT_WaterSimulation::SetStepCount, "Run in __ Frames")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Runs the FFT every ___ frames");
 
     YTEBindProperty(&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount, "Instance Count")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("How far to instance from the origin of the world");
+
+    YTEBindProperty(&FFT_WaterSimulation::GetUseHTilde, &FFT_WaterSimulation::SetUseHTilde, "Use HTilde")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("How far to instance from the origin of the world");
+
+    YTEBindProperty(&FFT_WaterSimulation::GetUsePhillips, &FFT_WaterSimulation::SetUsePhillips, "Use Phillips")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("How far to instance from the origin of the world");
+
+    YTEBindProperty(&FFT_WaterSimulation::GetUseNoDisplacement, &FFT_WaterSimulation::SetUseNoDisplacement, "Use No Displacement")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("How far to instance from the origin of the world");
+
+    YTEBindProperty(&FFT_WaterSimulation::GetUseNewKs, &FFT_WaterSimulation::SetUseNewKs, "Use New Ks")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("How far to instance from the origin of the world");
+
+    YTEBindProperty(&FFT_WaterSimulation::GetUseHTildeSubZero, &FFT_WaterSimulation::SetUseHTildeSubZero, "Use HTilde Sub Zero")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
@@ -168,40 +160,38 @@ namespace YTE
   // ------------------------------------
   FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : BaseModel{ aOwner, aSpace, aProperties }
-    , mRenderMode(RenderMode::Triangle)   // triangle by default
-    , mGravitationalPull(1000.0f)           // normal gravity
+    , mGravitationalPull(9.81f)           // normal gravity
     , mGridSize(DefaultGridSize)          // grid size of 32 just for now
-    , mWaveHeight(0.0001f)                // normal wave height
-    , mWindFactor(1280.0f, 640.0f)           // normal wind
+    , mGridSizePlus1(mGridSize + 1)       // grid size of 32 just for now
+    , mWaveHeight(0.00005f)               // normal wave height
+    , mWindFactor(58.0f, 58.0f)           // normal wind
     , mVertexDistanceX(DefaultGridSize)   // same as grid size
     , mVertexDistanceZ(DefaultGridSize)   // ""
-    , mTimeDilationEffect(0.1f)           // no time dilation at all
+    , mTimeDilationEffect(1.0f)           // no time dilation at all
     , mTime(0.0f)                         // we start with no time
     , mReset(false)                       // dont reset
-    , mKFFTConfig(NULL)
     , mTransform(nullptr)
-    , mUseFFT(true)
     , mShaderSetName("FFT_WaterSimulation")
     , mResetNeeded(true)
-    , mStartingMaterial(glm::vec4(0.5f, 0.75f, 1.0f, 1.0f),
-                        glm::vec4(0.1f, 0.1f, 0.1f, 1.0f),
-                        glm::vec4(0.75f, 0.75f, 0.75f, 1.0f),
-                        glm::vec4(0.0f, 0.0f, 0.0f, 1.0f),
-                        glm::vec4(1.0f),
-                        glm::vec4(1.0f),
-                        1.0f,
-                        1000.0f,
-                        1000.0f,
-                        1.0f,
-                        1.0f,
-                        1.0f)
     , mRunWithEngineUpdate(true)
-    , mRunInSteps(true)
+    , mRunInSteps(false)
     , mSteps(0)
     , mStepsCount(5)
     , mInstanceCount(1)
     , mConstructing(true)
   {
+    for (int i = 0; i < 5; ++i)
+    {
+      mKFFTConfig[i] = NULL;
+    }
+
+#ifdef NDEBUG
+
+#else
+    mGridSize = DefaultGridSize / 2;
+    mGridSizePlus1 = mGridSize + 1;
+#endif
+
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
     mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
@@ -220,15 +210,15 @@ namespace YTE
     mSpace->YTERegister(Events::LogicUpdate, this, &FFT_WaterSimulation::Update);
     mTransform = mOwner->GetComponent<Transform>();
 
+    auto engine = mOwner->GetEngine();
+    mJobSystem = engine->GetComponent<JobSystem>();
+
     mConstructing = false;
 
-    srand(100);
     Destruct();
     Construct();
     StartKFFT();
     InstanceReset();
-
-    //AdjustPositions();
   }
 
 
@@ -239,16 +229,6 @@ namespace YTE
     Destruct();
     Construct();
     InstanceReset();
-    //AdjustPositions();
-
-    //std::cout << "Water Simulation Object Reset:"
-    //  << "\n\t\tGridSize:             " << mGridSize
-    //  << "\n\t\tGravity Factor:       " << mGravitationalPull
-    //  << "\n\t\tWave Height:          " << mWaveHeight
-    //  << "\n\t\tWind Factor:          " << mWindFactor.x << ", " << mWindFactor.y
-    //  << "\n\t\tVertex Distance:      " << mVertexDistanceX << ", " << mVertexDistanceZ
-    //  << "\n\t\tTime Dilation:        " << mTimeDilationEffect
-    //  << "\n\t\tInstanceing Distance: " << mInstancingDistance << std::endl;
   }
 
 
@@ -261,35 +241,43 @@ namespace YTE
     mH_TildeDX.GetVector().resize(squared(mGridSize));
     mH_TildeDZ.GetVector().resize(squared(mGridSize));
 
-    mDrawableVertices.resize(squared(mGridSizePlus1));
-    mDrawableIndices_Wireframe.reserve((squared(mGridSize) * 6) + (4 * mGridSize));
-    mDrawableIndices_Triangle.reserve((squared(mGridSize) * 6));
+    mComputationalVertices.resize(squared(mGridSizePlus1));
+    mIndices.reserve((squared(mGridSize) * 6));
     mVertices.resize(squared(mGridSizePlus1));
 
     mInstancingMatrices.resize(squared(mInstanceCount));
-    //AdjustPositions();
 
 
     // ------------------------------------
     // fill out the vertices initial data
 
 
-    for (int z = 0; z < mGridSize; ++z)
+    for (int z = 0; z < mGridSizePlus1; ++z)
     {
-      for (int x = 0; x < mGridSize; ++x)
+      for (int x = 0; x < mGridSizePlus1; ++x)
       {
-        int vertex = z * mGridSize + x; // 2D pointer arithmetic for a 1D array
+        int vertex = z * mGridSizePlus1 + x; // 2D pointer arithmetic for a 1D array
 
-                                        // calls phillips which sets up the wind factor, and the wave heights
+        // calls phillips which sets up the wind factor, and the wave heights
         complex ht0 = Calc_hTildeSub0(x, z);
-        complex ht0conj = Calc_hTildeSub0(-x, -z).conjugate();
+        complex ht0conj;
+        if (UseHTildeSubZero)
+        {
+          // FROM CONNOR
+          ht0conj = Calc_hTildeSub0(x, z).conjugate();
+          // END FROM CONNOR
+        }
+        else
+        {
+          ht0conj = Calc_hTildeSub0(-x, -z).conjugate();
+        }
 
         // set initial data for actual water simulation (wind factor and wave heights are used)
-        mDrawableVertices[vertex].mHTilde0 = glm::vec3(ht0.mReal, ht0.mImaginary, 0.0f);
-        mDrawableVertices[vertex].mHTilde0mkConjugate = glm::vec3(ht0conj.mReal,
-                                            ht0conj.mImaginary, 0.0f);
-        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize / 2) - 1);
-        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize / 2) - 1);
+        mComputationalVertices[vertex].mHTilde0 = glm::vec3(ht0.mReal, ht0.mImaginary, 0.0f);
+        mComputationalVertices[vertex].mHTilde0mkConjugate = glm::vec3(ht0conj.mReal,
+                                                                       ht0conj.mImaginary, 0.0f);
+        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize) - 1);
+        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize) - 1);
 
         // sets positions, and uses the length parameter to space out the grid in 3D space
         // x - (gridSize / 2.0f) = the physical position of the vertex without length expansion
@@ -297,29 +285,12 @@ namespace YTE
         // multiply together to find the grid position
         // note that y has no adjustments
         glm::vec3 pos(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)), 0.0f,
-          ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
-        mDrawableVertices[vertex].mPosition = mDrawableVertices[vertex].mOriginalPosition = pos;
+                      ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
+        mComputationalVertices[vertex].mPosition = mComputationalVertices[vertex].mOriginalPosition = pos;
 
         // initial normal is just the basic normal
-        mDrawableVertices[vertex].mNormal = glm::vec3(0.0f, 1.0f, 0.0f);
-
-        //std::cout << "For " << vertex << ": " << mDrawableVertices[vertex].mOriginalPosition.x
-        //  << ", " << mDrawableVertices[vertex].mOriginalPosition.y
-        //  << ", " << mDrawableVertices[vertex].mOriginalPosition.z
-        //  << " vs " << mDrawableVertices[vertex].mPosition.x
-        //  << ", " << mDrawableVertices[vertex].mPosition.y
-        //  << ", " << mDrawableVertices[vertex].mPosition.z << std::endl;
-      }
-    }
-
-
-    int indexCounter_Line = 0;
-    //int indexCounter_Tri = 0;
-    for (int z = 0; z < mGridSize - 1; ++z)
-    {
-      for (int x = 0; x < mGridSize - 1; ++x)
-      {
-        int vertex = z * mGridSize + x; // 2D pointer arithmetic for a 1D array
+        mComputationalVertices[vertex].mNormal = glm::vec3(0.0f, 1.0f, 0.0f);
+        
         //
         //// calls phillips which sets up the wind factor, and the wave heights
         //complex ht0 = Calc_hTildeSub0(x, z);
@@ -346,92 +317,21 @@ namespace YTE
         // ------------------------------------
         // index mapping
         // this goes from 0->GridSize so this if statement will stop before the last go
-        //if (x >= mGridSize || z >= mGridSize)
-        //{
-        //  continue;
-        //}
-
-        // triangles
-        //std::cout << vertex << " | " << mDrawableVertices[vertex].mPosition.x << ", " << mDrawableVertices[vertex].mPosition.y << mDrawableVertices[vertex].mPosition.z << std::endl;
-        //std::cout << vertex + mGridSize << " | " << mDrawableVertices[vertex + mGridSize].mPosition.x << ", " << mDrawableVertices[vertex + mGridSize].mPosition.y << mDrawableVertices[vertex + mGridSize].mPosition.z << std::endl;
-        //std::cout << vertex + mGridSize + 1 << " | " << mDrawableVertices[vertex + mGridSize + 1].mPosition.x << ", " << mDrawableVertices[vertex + mGridSize + 1].mPosition.y << mDrawableVertices[vertex + mGridSize + 1].mPosition.z << std::endl;
-        //std::cout << "==========================" << std::endl;
-        //std::cout << vertex << " | " << mDrawableVertices[vertex].mPosition.x << ", " << mDrawableVertices[vertex].mPosition.y << mDrawableVertices[vertex].mPosition.z << std::endl;
-        //std::cout << vertex + mGridSize + 1 << " | " << mDrawableVertices[vertex + mGridSize + 1].mPosition.x << ", " << mDrawableVertices[vertex + mGridSize + 1].mPosition.y << mDrawableVertices[vertex + mGridSize + 1].mPosition.z << std::endl;
-        //std::cout << vertex + 1 << " | " << mDrawableVertices[vertex + 1].mPosition.x << ", " << mDrawableVertices[vertex + 1].mPosition.y << mDrawableVertices[vertex + 1].mPosition.z << std::endl;
-        //std::cout << "==========================" << std::endl;
-
-        mDrawableIndices_Triangle.push_back(vertex);
-        mDrawableIndices_Triangle.push_back(vertex + mGridSize);
-        mDrawableIndices_Triangle.push_back(vertex + mGridSize + 1);
-        mDrawableIndices_Triangle.push_back(vertex);
-        mDrawableIndices_Triangle.push_back(vertex + mGridSize + 1);
-        mDrawableIndices_Triangle.push_back(vertex + 1);
-
-
-
-
-        // wireframe
-        mDrawableIndices_Wireframe.push_back(vertex);
-        mDrawableIndices_Wireframe.push_back(vertex + 1);
-        mDrawableIndices_Wireframe.push_back(vertex);
-        mDrawableIndices_Wireframe.push_back(vertex + mGridSizePlus1);
-        mDrawableIndices_Wireframe.push_back(vertex);
-        mDrawableIndices_Wireframe.push_back(vertex + mGridSizePlus1 + 1);
-
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex;
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + 1;
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex;
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + mGridSizePlus1;
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex;
-        mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + mGridSizePlus1 + 1;
-
-        // wrapping code
-        if (x == mGridSize - 1)
+        if (x >= mGridSize || z >= mGridSize)
         {
-          mDrawableIndices_Wireframe.push_back(vertex + 1);
-          mDrawableIndices_Wireframe.push_back(vertex + mGridSizePlus1 + 1);
-
-          mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + 1;
-          mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + mGridSizePlus1 + 1;
+          continue;
         }
-        if (z == mGridSize - 1)
-        {
-          mDrawableIndices_Wireframe.push_back(vertex + 1);
-          mDrawableIndices_Wireframe.push_back(vertex + mGridSizePlus1 + 1);
 
-          mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + 1;
-          mDrawableIndices_Wireframe[indexCounter_Line++] = vertex + mGridSizePlus1 + 1;
-        }
-        
-
-        //mDrawableIndices_Triangle.push_back(vertex);
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1);
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1 + 1);
-        //mDrawableIndices_Triangle.push_back(vertex);
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1 + 1);
-        //mDrawableIndices_Triangle.push_back(vertex + 1);
-
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1);
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1 + 1);
-        //mDrawableIndices_Triangle.push_back(vertex);
-        //mDrawableIndices_Triangle.push_back(vertex + mGridSizePlus1 + 1);
-        //mDrawableIndices_Triangle.push_back(vertex + 1);
-        //mDrawableIndices_Triangle.push_back(vertex);
-
-
-
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex;
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex + mGridSizePlus1;
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex + mGridSizePlus1 + 1;
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex;
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex + mGridSizePlus1 + 1;
-        //mDrawableIndices_Triangle[indexCounter_Tri++] = vertex + 1;
+        mIndices.push_back(vertex);
+        mIndices.push_back(vertex + mGridSizePlus1);
+        mIndices.push_back(vertex + mGridSizePlus1 + 1);
+        mIndices.push_back(vertex);
+        mIndices.push_back(vertex + mGridSizePlus1 + 1);
+        mIndices.push_back(vertex + 1);
       }
     }
 
 
-    //CreateHeightmap();
     InstanceReset();
     mResetNeeded = false;
   }
@@ -453,9 +353,8 @@ namespace YTE
     mH_TildeDZ.GetVector().clear();
     mH_TildeSlopeX.GetVector().clear();
     mH_TildeSlopeZ.GetVector().clear();
-    mDrawableVertices.clear();
-    mDrawableIndices_Wireframe.clear();
-    mDrawableIndices_Triangle.clear();
+    mComputationalVertices.clear();
+    mIndices.clear();
 
     DestroyHeightmap();
   }
@@ -466,11 +365,16 @@ namespace YTE
   {
     int size[] = { mGridSize, mGridSize };
     const int sizeDem = 2;
-    mKFFTConfig = kiss_fftnd_alloc(size, sizeDem, 0, NULL, NULL);
-    if (mKFFTConfig == NULL)
+
+    for (int i = 0; i < 5; ++i)
     {
-      std::cout << "FFT_WaterSimulation: Failed to create KFFT Config! No FFT calculations will be made"
-        << std::endl;
+      mKFFTConfig[i] = kiss_fftnd_alloc(size, sizeDem, 1, NULL, NULL);
+     
+      if (mKFFTConfig[i] == NULL)
+      {
+        std::cout << "FFT_WaterSimulation: Failed to create KFFT Config! No FFT calculations will be made"
+          << std::endl;
+      }
     }
   }
 
@@ -479,8 +383,11 @@ namespace YTE
   void FFT_WaterSimulation::StopKFFT()
   {
     kiss_fft_cleanup();
-    free(mKFFTConfig);
-    mKFFTConfig = NULL;
+    for (int i = 0; i < 5; ++i)
+    {
+      free(mKFFTConfig[i]);
+      mKFFTConfig[i] = NULL;
+    }
   }
 
 
@@ -488,27 +395,32 @@ namespace YTE
   void FFT_WaterSimulation::RunKFFT()
   {
     // perform the FFT on the rows of the water
-    kiss_fftnd(mKFFTConfig, mH_Tilde.GetKFFTArray(), mH_Tilde.GetKFFTArray()); 
-    kiss_fftnd(mKFFTConfig, mH_TildeSlopeX.GetKFFTArray(), mH_TildeSlopeX.GetKFFTArray());
-    kiss_fftnd(mKFFTConfig, mH_TildeSlopeZ.GetKFFTArray(), mH_TildeSlopeZ.GetKFFTArray()); 
-    kiss_fftnd(mKFFTConfig, mH_TildeDX.GetKFFTArray(), mH_TildeDX.GetKFFTArray()); 
-    kiss_fftnd(mKFFTConfig, mH_TildeDZ.GetKFFTArray(), mH_TildeDZ.GetKFFTArray()); 
+    auto handle1 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_A));
+    auto handle2 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_B));
+    auto handle3 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_C));
+    auto handle4 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_D));
+    auto handle5 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_E));
+
+    mJobSystem->WaitThisThread(handle1);
+    mJobSystem->WaitThisThread(handle2);
+    mJobSystem->WaitThisThread(handle3);
+    mJobSystem->WaitThisThread(handle4);
+    mJobSystem->WaitThisThread(handle5);
+
+    // original
+    //kiss_fftnd(mKFFTConfig, mH_Tilde.GetKFFTArray(), mH_Tilde.GetKFFTArray());
+    //kiss_fftnd(mKFFTConfig, mH_TildeSlopeX.GetKFFTArray(), mH_TildeSlopeX.GetKFFTArray());
+    //kiss_fftnd(mKFFTConfig, mH_TildeSlopeZ.GetKFFTArray(), mH_TildeSlopeZ.GetKFFTArray());
+    //kiss_fftnd(mKFFTConfig, mH_TildeDX.GetKFFTArray(), mH_TildeDX.GetKFFTArray());
+    //kiss_fftnd(mKFFTConfig, mH_TildeDZ.GetKFFTArray(), mH_TildeDZ.GetKFFTArray());
   }
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::Render(bool use_fft)
+  void FFT_WaterSimulation::Render()
   {
     // evaluate the current position for the waves
-    if (use_fft == false)
-    {
-      WaveGeneration_NoFFT();
-    }
-    else
-    {
-      WaveGeneration();
-    }
-
+    WaveGeneration();
     UpdateHeightmap();
   }
 
@@ -518,7 +430,7 @@ namespace YTE
   {
     // dispersion applies the choppiness of the waves
     // this function is called every frame
-    float w_0 = 2.0f * pi / 200.0f; //! what is this doing? This does tiling
+    float w_0 = 2.0f * pi / 200.0f; //! what is this doing? This does tiling   TODO(Andrew): Should this be a mGridSize instead of 200?
     float kx = pi * (2 * x - mGridSize) / mVertexDistanceX;
     float kz = pi * (2 * z - mGridSize) / mVertexDistanceZ;
     return floor(sqrt(mGravitationalPull * sqrt(squared(kx) + squared(kz))) / w_0) * w_0;
@@ -528,45 +440,76 @@ namespace YTE
   // ------------------------------------
   float FFT_WaterSimulation::PhillipsSpectrum(int x, int z)
   {
-    glm::vec2 k(pi * (2 * x - mGridSize) / mVertexDistanceX,
-                pi * (2 * z - mGridSize) / mVertexDistanceZ);
-
-    float kLen = glm::length(k); // cached since it used a lot
-    if (floatNotZero(kLen))
+    if (UsePhillips)
     {
-      return 0.0f;  // value is so small that the phillips value will not be noticeable
+      // FROM CONNOR NOT MINE
+      glm::vec2 k;
+      float m = z - (mGridSize / 2.0f);
+      k.y = (2.0f * pi * m) / mVertexDistanceZ;
+      float n = x - (mGridSize / 2.0f);
+      k.x = (2.0f * pi * n) / mVertexDistanceX;
+
+      float kMag = glm::length(k);
+      float wMag = glm::length(mWindFactor);
+
+      glm::vec2 wNorm = glm::normalize(mWindFactor);
+
+      if (kMag < 0.000001f)
+      {
+        return 0.0f;
+      }
+
+      float kMag2 = kMag * kMag;
+      float kMag4 = kMag2 * kMag2;
+
+      float L = wMag * wMag / mGravitationalPull;
+
+      float L2 = L * L;
+
+
+      glm::vec2 kNorm = glm::normalize(k);
+      float kdotw = glm::dot(kNorm, wNorm);
+      float kdotw2 = kdotw * kdotw;
+
+      float exponent = -1.0f / (kMag2 * L2);
+      float damping = 0.001f;
+
+      float l2 = L2 * damping * damping;
+
+      float factor = exp(exponent) / kMag4;
+      float factor2 = exp(-kMag2 * l2);
+
+      return mWaveHeight * factor * kdotw2 * factor2;
+      //// END FROM CONNOR NOT MINE
     }
+    else
+    {
+      glm::vec2 k(pi * (2.0f * x - mGridSize) / mVertexDistanceX,
+                  pi * (2.0f * z - mGridSize) / mVertexDistanceZ);
 
-    // needed for later
-    float kLen_Squared = squared(kLen);
+      float kLen = glm::length(k); // cached since it used a lot
+      if (floatNotZero(kLen))
+      {
+        return 0.0f;  // value is so small that the phillips value will not be noticeable
+      }
 
-    // apply the wind
-    float kdotWind = glm::dot(glm::normalize(k), glm::normalize(mWindFactor));
+      // needed for later
+      float kLen_Squared = squared(kLen);
 
-    // find the L (wind speed) value, and apply the velocity to have
-    // gravity too (limits winds effect)
-    float L = squared(glm::length(mWindFactor)) / mGravitationalPull;
-    float L_Squared = squared(L);
+      // apply the wind
+      float kdotWind = glm::dot(glm::normalize(k), glm::normalize(mWindFactor));
 
-    //! what does this do?
-    float damping = 0.001f;
-    float l2 = L_Squared * squared(damping);
+      // find the L (wind speed) value, and apply the velocity to have
+      // gravity too (limits winds effect)
+      float L = squared(glm::length(mWindFactor)) / mGravitationalPull;
+      float L_Squared = squared(L);
 
-    // correct math:
-    // A * (exp(-1.0f / (k_Len_Squared * L2)) / k_length4) * squared(k_dot_w);
+      //! what does this do?
+      float damping = 0.001f;
+      float l2 = L_Squared * squared(damping);
 
-    // original math:
-    // A * (exp(-1.0f / (k_Len_Squared * L2)) / k_length4) * squared(squared(squared(k_dot_w)))
-    //                                 * exp(-k_length2 * 12);
-    //
-    //return mWaveHeight * (exp(-1.0f / (kLen_Squared * L_Squared)) / squared(kLen_Squared)) *
-    //   kdotWind * kdotWind * kdotWind * kdotWind * kdotWind * kdotWind * exp(-kLen_Squared * l2);
-    //
-    //wrong = return mWaveHeight * exp(-1.0f / (kLen_Squared * L_Squared)) / squared(kLen_Squared)
-    // * kdotWind * kdotWind * kdotWind * kdotWind * kdotWind * kdotWind * exp(-kLen_Squared * l2);
-
-    return mWaveHeight * (exp(-1.0f / (kLen_Squared * L_Squared)) / squared(kLen_Squared)) *
-      (squared(squared(kdotWind)) * squared(kdotWind)) * exp(-kLen_Squared * l2);
+      return mWaveHeight * (exp(-1.0f / (kLen_Squared * L_Squared)) / squared(kLen_Squared)) * squared(kdotWind) * exp(-kLen_Squared * l2);
+    }
   }
 
 
@@ -575,9 +518,9 @@ namespace YTE
   {
     int vertex = z * mGridSizePlus1 + x;
 
-    complex hT0(mDrawableVertices[vertex].mHTilde0.x, mDrawableVertices[vertex].mHTilde0.y);
-    complex hT0conj(mDrawableVertices[vertex].mHTilde0mkConjugate.x,
-                    mDrawableVertices[vertex].mHTilde0mkConjugate.y);
+    complex hT0(mComputationalVertices[vertex].mHTilde0.x, mComputationalVertices[vertex].mHTilde0.y);
+    complex hT0conj(mComputationalVertices[vertex].mHTilde0mkConjugate.x,
+                    mComputationalVertices[vertex].mHTilde0mkConjugate.y);
 
     // disperse the waves
     float disp = static_cast<float>(Dispersion(x, z) * mTime);
@@ -588,7 +531,17 @@ namespace YTE
 
     // note that we do not do the cos and sin again since this is run every frame
     complex unit0(cosine, sine);
-    complex unit1(cosine, -sine);
+    complex unit1;
+    if (UseHTilde)
+    {
+      // FROM CONNOR
+      unit1 = complex(-cosine, -sine);
+      // END FROM CONNOR
+    }
+    else
+    {
+      unit1 = complex(cosine, -sine);
+    }
 
     // return the completed function
     return hT0 * unit0 + hT0conj * unit1;
@@ -604,75 +557,39 @@ namespace YTE
 
 
   // ------------------------------------
-  WaterComplexNormalVertex FFT_WaterSimulation::h_D_and_n(glm::vec2 pos)
-  {
-    // start out with empty data
-    WaterComplexNormalVertex hDn{ complex(0.0f, 0.0f),
-                                  glm::vec2(0.0f, 0.0f),
-                                  glm::vec3(0.0f, 0.0f, 0.0f) };
-
-    for (int z = 0; z < mGridSize; ++z)
-    {
-      glm::vec2 k;
-      k.y = 2.0f * pi * (z - mGridSize / 2.0f) / mVertexDistanceX;
-
-      for (int x = 0; x < mGridSize; ++x)
-      {
-        k.x = 2.0f * pi * (x - mGridSize / 2.0f) / mVertexDistanceX;
-
-        float kdotPos = glm::dot(k, pos);
-
-        // NOTE: K is supposed to have a mult by i (imaginary) here
-        complex unit = complex(cos(kdotPos), sin(kdotPos)); 
-        complex hTilde_unit = Calc_hTilde(x, z) * unit;
-
-        // wave height is adjusted here based on surrounding waves
-        hDn.mWaveHeight += hTilde_unit;
-
-
-        // normals are adjusted here based on surrounding waves        
-        hDn.mNormal += glm::vec3(-(k.x) * hTilde_unit.mImaginary, 0.0f,
-           -(k.y) * hTilde_unit.mImaginary); // y here is z
-
-        // cache
-        float kLen = glm::length(k);
-
-        if (floatNotZero(kLen))
-        {
-          // would have done div by zero, and would have added ~zero to the Displacement,
-          // so well just skip
-          continue; 
-        }
-
-        // Displacement is adjusted here                                        y is z here
-        // NOTE: K is supposed to be mult by -i (imaginary) here, only the negative is shown
-        hDn.mDisplacement += glm::vec2(k.x / kLen * hTilde_unit.mImaginary,
-          k.y / kLen * hTilde_unit.mImaginary);
-      }
-    }
-
-    // normalize the normal, and subtract the original placement for true placement
-    hDn.mNormal = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f) - hDn.mNormal);
-
-    // replace the final missing i (imaginary) multiplies from the k here (note that squared(i) = -1.0f)
-    hDn.mDisplacement.x *= -1.0f;
-    hDn.mDisplacement.y *= -1.0f; // y here is z
-
-    return hDn;
-  }
-
-
-  // ------------------------------------
   void FFT_WaterSimulation::WaveGeneration()
   {
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
     {
       glm::vec2 k;
-      k.y = pi * (2.0f * z - mGridSize) / mVertexDistanceZ;
+
+      if (UseNewKs)
+      {
+        // FROM CONNOR
+        float m = z - (mGridSize / 2.0f);
+        k.y = (pi * m) / mVertexDistanceZ;
+        // END FROM CONNOR
+      }
+      else
+      {
+        k.y = pi * (2.0f * z - mGridSize) / mVertexDistanceZ;
+      }
+      
       for (int x = 0; x < mGridSize; ++x)
       {
-        k.x = pi * (2.0f * x - mGridSize) / mVertexDistanceX;
+        if (UseNewKs)
+        {
+          // FROM CONNOR
+          float n = x - (mGridSize / 2.0f);
+          k.x = (pi * n) / mVertexDistanceX;
+          // END FROM CONNOR
+        }
+        else
+        {
+          k.x = pi * (2.0f * x - mGridSize) / mVertexDistanceX;
+        }
+
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
@@ -700,205 +617,115 @@ namespace YTE
     // Apply these new values to the system
     float sign; // because we bit twiddled
     float signs[] = { 1.0f, -1.0f };
-    for (int z = 0; z < mGridSize; ++z)
+    for (int z = 0; z < mGridSizePlus1; ++z)
     {
-      for (int x = 0; x < mGridSize; ++x)
+      for (int x = 0; x < mGridSizePlus1; ++x)
       {
         int tilde = z * mGridSize + x; // accessor to the h_tilde
         int vertex = z * mGridSizePlus1 + x; // accessor to the vertex
+
+        if (z >= mGridSize || x >= mGridSize)
+        {
+          // update draw list
+          mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
+          mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
+          continue;
+        }
 
         sign = signs[(x + z) & 1];
 
         mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        mDrawableVertices[vertex].mPosition.y = -(mH_Tilde[tilde].mReal);
+        mComputationalVertices[vertex].mPosition.y = (mH_Tilde[tilde].mReal);
 
-        // displacement update
-        mH_TildeDX[tilde] *= sign;
-        mH_TildeDZ[tilde] *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
-        mDrawableVertices[vertex].mPosition.x = mDrawableVertices[vertex].mOriginalPosition.x + 
-                                                mH_TildeDX[tilde].mReal * -1.0f;
-        mDrawableVertices[vertex].mPosition.z = mDrawableVertices[vertex].mOriginalPosition.z + 
-                                                mH_TildeDZ[tilde].mReal * -1.0f;
+        if (UseNoDisplacement)
+        {
+          // FROM CONNOR
+          // they do not use displacement at all, so no DX, no DZ, no position x and z updating, only position y updating
+          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x;
+          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z;
+          // END FROM CONNOR
+        }
+        else
+        {
+          // displacement update
+          mH_TildeDX[tilde] *= sign;
+          mH_TildeDZ[tilde] *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
+          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x +
+            mH_TildeDX[tilde].mReal * -1.0f;
+          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z +
+            mH_TildeDZ[tilde].mReal * -1.0f;
+        }
+
 
         // normal update
         mH_TildeSlopeX[tilde] *= sign;
         mH_TildeSlopeZ[tilde] *= sign;
-        mDrawableVertices[vertex].mNormal = glm::normalize(glm::vec3(-(mH_TildeSlopeX[tilde].mReal),
+        mComputationalVertices[vertex].mNormal = glm::normalize(glm::vec3(-(mH_TildeSlopeX[tilde].mReal),
                                                            1.0f,
                                                            -(mH_TildeSlopeZ[tilde].mReal)));
+        // tiling
+        bool useNoDis = UseNoDisplacement;
+        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, complex_kfft& aH_TildeDX, complex_kfft& aH_TildeDZ, int aIndex)
+        {
+          aVertices[aIndex].mPosition.y = aVertices[vertex].mPosition.y;
+
+          if (useNoDis)
+          {
+            // FROM CONNOR
+            // dont use displacement
+            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x;
+            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z;
+            // END FROM CONNOR
+          }
+          else
+          {
+            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x +
+                                            aH_TildeDX[tilde].mReal * -1.0f;
+            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z +
+                                            aH_TildeDZ[tilde].mReal * -1.0f;
+          }
+
+          aVertices[aIndex].mNormal = aVertices[vertex].mNormal;
+        };
 
         // tilling
-        if (x == 0 && z == 0) {
-          int index = squared(mGridSize) - 1;
-          mDrawableVertices[index].mPosition.y = -(mH_Tilde[tilde].mReal);
-
-          mDrawableVertices[index].mPosition.x = mDrawableVertices[index].mOriginalPosition.x +
-                                                 mH_TildeDX[tilde].mReal * -1.0f;
-          mDrawableVertices[index].mPosition.z = mDrawableVertices[index].mOriginalPosition.z +
-                                                 mH_TildeDZ[tilde].mReal * -1.0f;
-
-          mDrawableVertices[index].mNormal.x = mDrawableVertices[vertex].mNormal.x;
-          mDrawableVertices[index].mNormal.y = mDrawableVertices[vertex].mNormal.y;
-          mDrawableVertices[index].mNormal.z = mDrawableVertices[vertex].mNormal.z;
-        }
-        if (x == 0) {
-          int index = vertex + (mGridSize - 1);
-          mDrawableVertices[index].mPosition.y = -(mH_Tilde[tilde].mReal);
-
-          mDrawableVertices[index].mPosition.x = mDrawableVertices[index].mOriginalPosition.x + 
-                                                 mH_TildeDX[tilde].mReal * -1.0f;
-          mDrawableVertices[index].mPosition.z = mDrawableVertices[index].mOriginalPosition.z + 
-                                                 mH_TildeDZ[tilde].mReal * -1.0f;
-
-          mDrawableVertices[index].mNormal.x = mDrawableVertices[vertex].mNormal.x;
-          mDrawableVertices[index].mNormal.y = mDrawableVertices[vertex].mNormal.y;
-          mDrawableVertices[index].mNormal.z = mDrawableVertices[vertex].mNormal.z;
-        }
-        if (z == 0) {
-          int index = vertex + (mGridSize * (mGridSize - 1));
-          mDrawableVertices[index].mPosition.y = -(mH_Tilde[tilde].mReal);
-
-          mDrawableVertices[index].mPosition.x = mDrawableVertices[index].mOriginalPosition.x + 
-                                                 mH_TildeDX[tilde].mReal * -1.0f;
-          mDrawableVertices[index].mPosition.z = mDrawableVertices[index].mOriginalPosition.z + 
-                                                 mH_TildeDZ[tilde].mReal * -1.0f;
-
-          mDrawableVertices[index].mNormal.x = mDrawableVertices[vertex].mNormal.x;
-          mDrawableVertices[index].mNormal.y = mDrawableVertices[vertex].mNormal.y;
-          mDrawableVertices[index].mNormal.z = mDrawableVertices[vertex].mNormal.z;
-        }
-
-        // update draw list
-        mVertices[vertex].mPosition = mDrawableVertices[vertex].mPosition;
-        mVertices[vertex].mNormal = mDrawableVertices[vertex].mNormal;
-        //mVertices[vertex].mTextureCoordinates = mDrawableVertices[vertex].mOriginalPosition;
-
-        //std::cout << "For " << vertex << ": " << mDrawableVertices[vertex].mOriginalPosition.x
-        //  << ", " << mDrawableVertices[vertex].mOriginalPosition.y
-        //  << ", " << mDrawableVertices[vertex].mOriginalPosition.z
-        //  << " vs " << mDrawableVertices[vertex].mPosition.x
-        //  << ", " << mDrawableVertices[vertex].mPosition.y
-        //  << ", " << mDrawableVertices[vertex].mPosition.z
-        //  << " vs " << mVertices[vertex].mPosition.x
-        //  << ", " << mVertices[vertex].mPosition.y
-        //  << ", " << mVertices[vertex].mPosition.z << std::endl;
-      }
-    }
-  }
-
-
-  // ------------------------------------
-  void FFT_WaterSimulation::WaveGeneration_NoFFT()
-  {
-    // loop and evaluate
-    for (int z = 0; z < mGridSize; ++z)
-    {
-      for (int x = 0; x < mGridSize; ++x)
-      {
-        int vertex = z * mGridSizePlus1 + x;
-
-        // do computation for this position
-        // Note that all real computation is here
-        WaterComplexNormalVertex hDn = h_D_and_n(glm::vec2(mDrawableVertices[vertex].mPosition.x,
-                                                           mDrawableVertices[vertex].mPosition.z));
-
-        // update vertex data
-        // The waves height is adjusted here, therefore after this statement,
-        // you can get the vertex's actual height position in model coords
-        mDrawableVertices[vertex].mPosition.y = hDn.mWaveHeight.mReal;
-
-        // update position on plane: original position + the wave generation offset
-        // note the the original position is never changed after the initial data set is done
-        mDrawableVertices[vertex].mPosition.x = mDrawableVertices[vertex].mOriginalPosition.x + 
-                                                hDn.mDisplacement.x;
-        mDrawableVertices[vertex].mPosition.z = mDrawableVertices[vertex].mOriginalPosition.z + 
-                                                hDn.mDisplacement.y;
-
-        // update normals
-        mDrawableVertices[vertex].mNormal = hDn.mNormal;
-
-
-        // ------------------------------------
-        // update the edges (for tiling)
         if (x == 0 && z == 0)
         {
-          int tempVertex = vertex + mGridSize + mGridSizePlus1 * mGridSize;
-          // no computation is done here, just value setting
-          mDrawableVertices[tempVertex].mPosition.y = hDn.mWaveHeight.mReal;
-          mDrawableVertices[tempVertex].mPosition.x = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.x + 
-                                               hDn.mDisplacement.x;
-          mDrawableVertices[tempVertex].mPosition.z = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.z + 
-                                               hDn.mDisplacement.y;
-          mDrawableVertices[tempVertex].mNormal = hDn.mNormal;
+          //int index = squared(mGridSize) - 1;
+          int index = mGridSize + (mGridSizePlus1 * mGridSize);
+          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
         }
         if (x == 0)
         {
-          int tempVertex = vertex + mGridSize;
-          mDrawableVertices[tempVertex].mPosition.y = hDn.mWaveHeight.mReal;
-          mDrawableVertices[tempVertex].mPosition.x = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.x + 
-                                               hDn.mDisplacement.x;
-          mDrawableVertices[tempVertex].mPosition.z = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.z + 
-                                               hDn.mDisplacement.y;
-          mDrawableVertices[tempVertex].mNormal = hDn.mNormal;
+          //int index = vertex + (mGridSize - 1);
+          int index = vertex + mGridSize;
+          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
         }
         if (z == 0)
         {
-          int tempVertex = vertex + mGridSizePlus1 * mGridSize;
-          mDrawableVertices[tempVertex].mPosition.y = hDn.mWaveHeight.mReal;
-          mDrawableVertices[tempVertex].mPosition.x = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.x + 
-                                               hDn.mDisplacement.x;
-          mDrawableVertices[tempVertex].mPosition.z = 
-                                               mDrawableVertices[tempVertex].mOriginalPosition.z + 
-                                               hDn.mDisplacement.y;
-          mDrawableVertices[tempVertex].mNormal = hDn.mNormal;
+          //int index = vertex + (mGridSize * (mGridSize - 1));
+          int index = vertex + (mGridSizePlus1 * mGridSize);
+          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
         }
 
+
+
         // update draw list
-        mVertices[vertex].mPosition = mDrawableVertices[vertex].mPosition;
-        mVertices[vertex].mNormal = mDrawableVertices[vertex].mNormal;
-        //mVertices[vertex].mTextureCoordinates = mDrawableVertices[vertex].mOriginalPosition;
+        mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
+        mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
       }
     }
-  }
-
-
-  // ------------------------------------
-  void FFT_WaterSimulation::SetRenderMode(std::string aRenderMode)
-  {
-    if ((false == (aRenderMode != "Solid")) && (false == (aRenderMode != "Wireframe")) ||
-        aRenderMode == mRenderModeStr)
-    {
-      return;
-    }
-
-    mRenderModeStr = aRenderMode;
-
-    if (aRenderMode == "Solid")
-    {
-      mRenderMode = RenderMode::Triangle;
-    }
-    else if (aRenderMode == "Wireframe")
-    {
-      mRenderMode = RenderMode::Wireframe;
-    }
-
-    mResetNeeded = true;
   }
 
 
   // ------------------------------------
   void FFT_WaterSimulation::SetTimeDilationEffect(float aTimeDilationEffect)
   {
-    if (aTimeDilationEffect < 0.0001f)
+    if (aTimeDilationEffect < 0.0f)
     {
-      std::cout << "FFT_WaterSimulation Warning: Time Dilation cannot be set to zero or a negative number"
+      std::cout << "FFT_WaterSimulation Warning: Time Dilation cannot be set to a negative number"
         << std::endl;
       return;
     }
@@ -921,24 +748,6 @@ namespace YTE
     mVertexDistanceX = aDistance.x;
     mVertexDistanceZ = aDistance.y;
 
-    // loop through an change the original positions
-    // note that only Construct() sets original positions, and each frame adds the displacement
-    // offset to the original position to derive the new position, which means we can freely adjust
-    // this variable like we do below without changing anything else, or doing any complicated math
-    //for (int z = 0; z < mGridSizePlus1; ++z)
-    //{
-    //  for (int x = 0; x < mGridSizePlus1; ++x)
-    //  {
-    //    int vertex = z * mGridSizePlus1 + x;
-    //
-    //    // new default position
-    //    mDrawableVertices[vertex].mOriginalPosition =
-    //      glm::vec3(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)),
-    //        0.0f,
-    //        ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
-    //  }
-    //}
-
     mResetNeeded = true;
   }
 
@@ -953,27 +762,31 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::SetGirdSize(int aGridSize)
   {
-    //int oldGridSize = mGridSize;
-    mGridSize = aGridSize;
+    if (aGridSize != 2 && aGridSize != 4 && aGridSize != 8 && aGridSize != 16 && aGridSize != 32 &&
+        aGridSize != 64 && aGridSize != 128 && aGridSize != 256 && aGridSize != 512 && aGridSize != 1024)
+    {
+      mOwner->GetEngine()->Log(LogType::Error, fmt::format("WaterSimulation: Passed a GridSize of {} which is not a power of 2! Default GridSize of 32 will be used.\n", aGridSize));
 
-    //if (mGridSize != 2 && mGridSize != 4 && mGridSize != 8 && mGridSize != 16 && mGridSize != 32 &&
-    //  mGridSize != 64 && mGridSize != 128 && mGridSize != 256 && mGridSize != 512)
-    //{
-    //  std::cout << "WaterSimulation Warning: WaterSimulation was passed a "
-    //    << "Grid Size of " << mGridSize << " which is not a power of 2! The default grid size of "
-    //    << "8 will be used." << std::endl;
-    //
-    //  const int defaultGridSize = 32;  // 8 was chosen since its small so easily computed
-    //
-    //                                  // update the vertex distances if they were the same as the grid size
-    //  if (oldGridSize == mVertexDistanceX)
-    //  {
-    //    mVertexDistanceX = defaultGridSize;
-    //    mVertexDistanceZ = defaultGridSize; // also set here since they were set the same above
-    //  }
-    //
-    //  mGridSize = defaultGridSize;
-    //}
+      const int defaultGridSize = 32;  // 32 was chosen since its small so easily computed
+
+                                       // update the vertex distances if they were the same as the grid size
+      if (mGridSize == mVertexDistanceX)
+      {
+        mVertexDistanceX = defaultGridSize;
+      }
+      if (mGridSize == mVertexDistanceZ)
+      {
+        mVertexDistanceZ = defaultGridSize; // also set here since they were set the same above
+      }
+
+      mGridSize = defaultGridSize;
+      mGridSizePlus1 = mGridSize + 1;
+    }
+    else
+    {
+      mGridSize = aGridSize;
+      mGridSizePlus1 = mGridSize + 1;
+    }
 
     mResetNeeded = true;
   }
@@ -1026,14 +839,11 @@ namespace YTE
   // ------------------------------------
   int FFT_WaterSimulation::GetGridSize()
   {
+#ifdef NDEBUG
     return mGridSize;
-  }
-
-
-  // ------------------------------------
-  std::string FFT_WaterSimulation::GetRenderMode()
-  {
-    return mRenderModeStr;
+#else
+    return mGridSize * 2;
+#endif
   }
 
 
@@ -1103,28 +913,13 @@ namespace YTE
     {
       InstanceReset();
     }
-    //AdjustPositions();
   }
 
-
-  // ------------------------------------
-  void FFT_WaterSimulation::SetUseFFT(bool aValue)
-  {
-    mUseFFT = aValue;
-  }
-
-
+  
   // ------------------------------------
   int FFT_WaterSimulation::GetInstancingAmount()
   {
     return mInstanceCount;
-  }
-
-
-  // ------------------------------------
-  bool FFT_WaterSimulation::GetUseFFT()
-  {
-    return mUseFFT;
   }
 
 
@@ -1146,8 +941,11 @@ namespace YTE
         mInstancingMatrices[i].mModelMatrix = glm::scale(mInstancingMatrices[i].mModelMatrix, mTransform->GetWorldScale());
 
         glm::vec3 trans = mTransform->GetWorldTranslation();
-        trans.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
-        trans.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
+        //trans.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
+        //trans.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
+        trans.x += mVertexDistanceX * x;
+        trans.z += mVertexDistanceZ * -z;
+
 
         mInstancingMatrices[i].mModelMatrix = glm::translate(mInstancingMatrices[i].mModelMatrix, trans);
       }
@@ -1164,29 +962,6 @@ namespace YTE
     {
       mInstantiatedHeightmap[i]->GetInstantiatedModel()->UpdateUBOModel(mInstancingMatrices[i]);
     }
-
-    //if (mInstancingDistance == 1)
-    //{
-    //  glm::mat4 model = glm::scale(glm::mat4(1.0f), mTransform->GetScale());
-    //  model = glm::translate(model, mTransform->GetTranslation());
-    //
-    //  mInstancingMatrices[0] = (model);
-    //  return;
-    //}
-
-    //// do the rest
-    //for (int i = 0; i < mInstancingDistance; ++i)
-    //{
-    //  for (int j = 0; j < mInstancingDistance; ++j)
-    //  {
-    //    glm::mat4 model = glm::scale(glm::mat4(1.0f), mTransform->GetScale());
-    //    model = glm::translate(model, mTransform->GetTranslation()
-    //      + glm::vec3(mVertexDistanceX * j, 0, mVertexDistanceZ * -i));
-    //
-    //    mInstancingMatrices[i + j] = (model);
-    //  }
-    //}
-
   }
 
 
@@ -1200,7 +975,7 @@ namespace YTE
     }
 
     UpdateTime(aEvent->Dt);
-    Render(mUseFFT);
+    Render();
   }
 
 
@@ -1226,7 +1001,7 @@ namespace YTE
     if (mRunWithEngineUpdate && !mRunInSteps)
     {
       UpdateTime(aEvent->Dt);
-      Render(mUseFFT);
+      Render();
     }
     else if (mRunWithEngineUpdate && mRunInSteps)
     {
@@ -1234,7 +1009,7 @@ namespace YTE
       {
         mSteps = 0;
         UpdateTime(aEvent->Dt * (mStepsCount + 1));
-        Render(mUseFFT);
+        Render();
       }
       else
       {
@@ -1281,29 +1056,6 @@ namespace YTE
 
 
   // ------------------------------------
-  //Vertex ComputationalToNormal(WaterComputationalVertex& rhs)
-  //{
-  //  glm::vec3 color(0.25f, 0.25f, 1.0f);
-  //  glm::vec3 boneWeight0(0, 0, 0);
-  //  glm::vec2 boneWeight1(0, 0);
-  //  glm::ivec3 boneID0(0, 0, 0);
-  //  glm::ivec2 boneID1(0, 0);
-  //
-  //  Vertex v(rhs.mPosition,
-  //           rhs.mNormal,
-  //           color,
-  //           rhs.mHTilde0,
-  //           rhs.mHTilde0,
-  //           rhs.mHTilde0mkConjugate,
-  //           boneWeight0,
-  //           boneWeight1,
-  //           boneID0,
-  //           boneID1);
-  //
-  //  return v;
-  //}
-
-
   const std::vector<Vertex>& FFT_WaterSimulation::GetVertices()
   {
     return mVertices;
@@ -1312,49 +1064,23 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
   {
-    // creates vertices to draw with
-    //std::vector<Vertex> vertices;
-    //
-    //for (auto a : mDrawableVertices)
-    //{
-    //  vertices.push_back(ComputationalToNormal(a));
-    //}
-
-    // create object
-    std::stringstream sstream;
-    sstream << "__Heightmap_" << mGridSize;
-    std::string name = sstream.str();
+    // create objects
+    std::string guid = mOwner->GetGUID().ToIdentifierString();
+    std::string name = fmt::format("{}_heightmap_{}", guid, mGridSize);
     int size = squared(mInstanceCount);
 
     for (int i = 0; i < size; ++i)
     {
       mInstantiatedHeightmap.push_back(std::make_unique<InstantiatedHeightmap>());
-      if (mRenderMode == RenderMode::Triangle)
-      {
         mInstantiatedHeightmap[i]->Initialize(name,
           mVertices,
-          mDrawableIndices_Triangle,
+          mIndices,
           mShaderSetName,
-          mStartingMaterial,
           mGraphicsView,
           mRenderer,
-          "copywriteWaterTextureDiffuse.png",
-          "copywriteFoamTextureSpecular.png",
+          "copywrite_wateridffuse.png",
+          "copywrite_specularmap.png",
           "copywritePerlinNoiseTextureNormal.png");
-      }
-      else if (mRenderMode == RenderMode::Wireframe)
-      {
-        mInstantiatedHeightmap[i]->Initialize(name,
-          mVertices,
-          mDrawableIndices_Wireframe,
-          mShaderSetName,
-          mStartingMaterial,
-          mGraphicsView,
-          mRenderer,
-          "copywriteWaterTextureDiffuse.png",
-          "copywriteFoamTextureSpecular.png",
-          "copywritePerlinNoiseTextureNormal.png");
-      }
     }
   }
 
@@ -1374,23 +1100,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::UpdateHeightmap()
   {
-    // creates vertices to draw with
-    //std::vector<Vertex> vertices;
-    //
-    //for (auto a : mDrawableVertices)
-    //{
-    //  vertices.push_back(ComputationalToNormal(a));
-    //}
-
     // update
-    if (mRenderMode == RenderMode::Triangle)
-    {
-      mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mDrawableIndices_Triangle);
-    }
-    else if (mRenderMode == RenderMode::Wireframe)
-    {
-      mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mDrawableIndices_Wireframe);
-    }
+    mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mIndices);
   }
 
 
@@ -1426,14 +1137,41 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::ReloadShaders()
   {
-    int size = squared(mInstanceCount);
+    InstanceReset();
+  }
 
-    for (int i = 0; i < size; ++i)
-    {
 
-    }
+  // ------------------------------------
+  Any FFT_WaterSimulation::MT_A(JobHandle & aJob)
+  {
+    YTEUnusedArgument(aJob);
+    kiss_fftnd(mKFFTConfig[0], mH_Tilde.GetKFFTArray(), mH_Tilde.GetKFFTArray());
+    return Any();
+  }
+  Any FFT_WaterSimulation::MT_B(JobHandle & aJob)
+  {
+    YTEUnusedArgument(aJob);
+    kiss_fftnd(mKFFTConfig[1], mH_TildeSlopeX.GetKFFTArray(), mH_TildeSlopeX.GetKFFTArray());
+    return Any();
+  }
+  Any FFT_WaterSimulation::MT_C(JobHandle & aJob)
+  {
+    YTEUnusedArgument(aJob);
+    kiss_fftnd(mKFFTConfig[2], mH_TildeSlopeZ.GetKFFTArray(), mH_TildeSlopeZ.GetKFFTArray());
+    return Any();
+  }
+  Any FFT_WaterSimulation::MT_D(JobHandle & aJob)
+  {
+    YTEUnusedArgument(aJob);
+    kiss_fftnd(mKFFTConfig[3], mH_TildeDX.GetKFFTArray(), mH_TildeDX.GetKFFTArray());
+    return Any();
+  }
+  Any FFT_WaterSimulation::MT_E(JobHandle & aJob)
+  {
+    YTEUnusedArgument(aJob);
+    kiss_fftnd(mKFFTConfig[4], mH_TildeDZ.GetKFFTArray(), mH_TildeDZ.GetKFFTArray());
+    return Any();
   }
 }
 
-#undef mGridSizePlus1
 #undef DefaultGridSize

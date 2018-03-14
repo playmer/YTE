@@ -206,7 +206,7 @@ void main()
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,
                               boneTransform, 
-                              vec4(inNormal, 1.0f));
+                              vec4(inNormal, 0.0f));
 
   CalculatePosition(View.mProjectionMatrix,
                     outPosition);

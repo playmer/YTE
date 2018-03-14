@@ -23,6 +23,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "fmt/format.h"
+
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Meta/Type.hpp"

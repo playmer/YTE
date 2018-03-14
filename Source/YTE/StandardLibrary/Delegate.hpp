@@ -9,6 +9,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+#define YTEMakeDelegate(aDelegateType, aObject, aFunction) \
+aDelegateType::From<decltype(aFunction), aFunction>(aObject)
+
   template <typename Return, typename Arg = Return>
   struct Delegate {};
 
