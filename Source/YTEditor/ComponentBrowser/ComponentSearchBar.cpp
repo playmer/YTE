@@ -71,14 +71,14 @@ namespace YTEditor
     mCompleter->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     //mCompleter->setCompletionMode(QCompleter::PopupCompletion);
 
-    //SearchBarEventFilter * eventFilter = new SearchBarEventFilter(this, mCompleter);
-    //mCompleter->popup()->installEventFilter(eventFilter);
+    SearchBarEventFilter * eventFilter = new SearchBarEventFilter(this, mCompleter);
+    mCompleter->popup()->installEventFilter(eventFilter);
 
     this->setCompleter(mCompleter);
 
     // signal from qcompleter
-    connect(mCompleter, static_cast<void(QCompleter::*)(const QString &)>(&QCompleter::activated), 
-      this, [=](const QString &text) { ItemActivated(text); }, Qt::QueuedConnection);
+    //connect(mCompleter, static_cast<void(QCompleter::*)(const QString &)>(&QCompleter::activated), 
+    //  this, [=](const QString &text) { ItemActivated(text); });
 
     // copy the vector of types
     mComponentTypes = aTypeList;
@@ -86,6 +86,11 @@ namespace YTEditor
 
   void ComponentSearchBar::OnReturnPressed()
   {
+    auto index = mCompleter->popup()->currentIndex();
+    auto path = mCompleter->pathFromIndex(index);
+    std::string pathStr = path.toStdString();
+
+    AddComponent(path);
   }
 
   void ComponentSearchBar::OnTabPressed()
@@ -158,8 +163,7 @@ namespace YTEditor
 
   void ComponentSearchBar::ItemActivated(QString aCompName)
   {
-    QSignalBlocker block(mCompleter);
-    mCompleter->popup()->hide();
+    //mCompleter->popup()->hide();
     this->setText("");
     AddComponent(aCompName);
   }
