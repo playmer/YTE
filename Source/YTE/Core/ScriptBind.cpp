@@ -40,6 +40,7 @@
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/Drawers.hpp"
+#include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Light.hpp"
@@ -138,6 +139,7 @@ namespace YTE
     InitializeType<CurveDrawer>();
     InitializeType<LineDrawer>();
     InitializeType<TriangleDrawer>();
+    InitializeType<FacialAnimator>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Material>();
