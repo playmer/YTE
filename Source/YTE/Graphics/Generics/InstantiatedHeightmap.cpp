@@ -101,9 +101,21 @@ namespace YTE
     submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
     submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
+    submesh.mTextures.clear();
     submesh.mTextures.emplace_back(mDiffuseTName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     submesh.mTextures.emplace_back(mSpecularTName, TextureViewType::e2D, TextureTypeIDs::Specular);
     submesh.mTextures.emplace_back(mNormalTName, TextureViewType::e2D, TextureTypeIDs::Normal);
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    submesh.mUBOs.clear();
+    submesh.mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
 
     std::vector<Submesh> submeshes{ submesh };
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);

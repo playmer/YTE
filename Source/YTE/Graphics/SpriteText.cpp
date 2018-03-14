@@ -143,8 +143,20 @@ namespace YTE
       vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };             // Top-left
       vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
 
+      submesh.mTextures.clear();
       submesh.mTextures.emplace_back(mTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
 			submesh.mShaderSetName = "SpriteText";
+
+      ShaderUsage useVert(true, false);
+      ShaderUsage useFrag(false, true);
+      submesh.mUBOs.clear();
+      submesh.mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+      submesh.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
 
       submesh.mCullBackFaces = false;
 

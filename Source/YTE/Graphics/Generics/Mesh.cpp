@@ -255,22 +255,23 @@ namespace YTE
       mUBOMaterial.mUsesNormalTexture = 1; // true
     }
 
+    mTextures.clear();
     mTextures.emplace_back(mDiffuseMap, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     mTextures.emplace_back(mSpecularMap, TextureViewType::e2D, TextureTypeIDs::Specular);
     mTextures.emplace_back(mNormalMap, TextureViewType::e2D, TextureTypeIDs::Normal);
 
     ShaderUsage useVert(true, false);
     ShaderUsage useFrag(false, true);
-
-    mUBOs.emplace_back(UBOTypeIDs::View, useVert);
-    mUBOs.emplace_back(UBOTypeIDs::Animation, useVert);
-    mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag);
-    mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag);
-    mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag);
-    mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag);
+    mUBOs.clear();
+    mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
 
     mShaderSetName = "Phong";
-
 
     // get the vertex data with bones (if provided)
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)

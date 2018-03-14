@@ -154,8 +154,20 @@ namespace YTE
     sphere.mVertexBufferSize = sphere.mVertexBuffer.size() * sizeof(Vertex);
     sphere.mIndexBufferSize = sphere.mIndexBuffer.size() * sizeof(u32);
 
+    sphere.mTextures.clear();
     sphere.mTextures.emplace_back(aTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     sphere.mShaderSetName = "Skybox";
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    sphere.mUBOs.clear();
+    sphere.mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
 
     return sphere;
   }

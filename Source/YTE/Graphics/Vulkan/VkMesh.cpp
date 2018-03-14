@@ -200,9 +200,6 @@ namespace YTE
     }
 
     // Descriptions for the textures we support based on which maps we found above:
-    //   Diffuse
-    //   Specular
-    //   Normal
     for (size_t i = 0; i < samplers; ++i)
     {
       dslbs.emplace_back(binding,
@@ -212,6 +209,8 @@ namespace YTE
       mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
       ++binding;
     }
+
+    // vertex
     mDescriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
     mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
     mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
@@ -225,33 +224,34 @@ namespace YTE
     mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
     mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
 
-    if (mMesh->GetInstanced())
-    {
-      // Adding the Instance Vertex information
-      mDescriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
-
-      // If we're instanced, we must tell the shaders.
-      mDescriptions.AddPreludeLine("#define INSTANCING");
-    }
-    else
-    {
-      // Model Buffer for Vertex shader. (Non-instanced Meshes)
-      // We do this one last so as to make the binding numbers easier
-      // to set via #defines for the shader.
-      dslbs.emplace_back(binding,
-                         vk::DescriptorType::eUniformBuffer,
-                         vk::ShaderStageFlagBits::eVertex,
-                         nullptr);
-      ++uniformBuffers;
-
-      // We need to tell the shaders where to find the UBOModel.
-      mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
-      ++binding;
-    }
+    // UBO Model is made above, this is old
+    //if (mMesh->GetInstanced())
+    //{
+    //  // Adding the Instance Vertex information
+    //  mDescriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
+    //  mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
+    //  mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
+    //  mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
+    //  mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
+    //
+    //  // If we're instanced, we must tell the shaders.
+    //  mDescriptions.AddPreludeLine("#define INSTANCING");
+    //}
+    //else
+    //{
+    //  // Model Buffer for Vertex shader. (Non-instanced Meshes)
+    //  // We do this one last so as to make the binding numbers easier
+    //  // to set via #defines for the shader.
+    //  dslbs.emplace_back(binding,
+    //                     vk::DescriptorType::eUniformBuffer,
+    //                     vk::ShaderStageFlagBits::eVertex,
+    //                     nullptr);
+    //  ++uniformBuffers;
+    //
+    //  // We need to tell the shaders where to find the UBOModel.
+    //  mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
+    //  ++binding;
+    //}
 
     // Create the descriptor set and pipeline layouts.
     mDescriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
@@ -286,16 +286,9 @@ namespace YTE
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
 
-  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOModelMaterial,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
-                                                    GraphicsView *aView)
+  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::vector<std::shared_ptr<vkhlf::Buffer>> aBuffers)
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
     auto device = mRenderer->mDevice;
-    auto surface = mRenderer->GetSurface(aView->GetWindow());
 
     SubMeshPipelineData pipelineData;
     pipelineData.mPipelineLayout = device->createPipelineLayout(mDescriptorSetLayout,
@@ -304,7 +297,7 @@ namespace YTE
                                                                 mDescriptorSetLayout);
 
     std::vector<vkhlf::WriteDescriptorSet> wdss;
-    wdss.reserve(6);
+    wdss.reserve(aBuffers.size());
 
     // Helper constants and variables.
     constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
@@ -313,29 +306,11 @@ namespace YTE
 
     // Add Uniform Buffers
 
-    // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
-
-    // Animation (Bone Array) Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOAnimation) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
-
-    // Model Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOMaterial) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModelMaterial);
-
-    // Submesh Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
-
-    // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
-
-    // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
+    for (size_t i = 0; i < aBuffers.size(); ++i)
+    {
+      vkhlf::DescriptorBufferInfo uboView{ aBuffers[i], 0, mSubmesh->mUBOs[i].mSize };
+      wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
+    }
 
     // Add Texture Samplers
     auto addTS = [&wdss, &binding, &ds](VkTexture *aData,
@@ -353,22 +328,19 @@ namespace YTE
       wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
     };
 
-    vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
-    vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
-    vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
-
     for (size_t i = 0; i < mVkTextures.size(); ++i)
     {
+      vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
       addTS(mVkTextures[i], dTexInfo);
     }
 
-    // TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.
-    // We do the model last for easier binding.
-    if (false == mesh->GetInstanced())
-    {
-      vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
-      wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
-    }
+    //// TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.
+    //// We do the model last for easier binding.
+    //if (false == mesh->GetInstanced())
+    //{
+    //  vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
+    //  wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
+    //}
 
     device->updateDescriptorSets(wdss, nullptr);
 

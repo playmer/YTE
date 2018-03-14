@@ -66,20 +66,22 @@ namespace YTE
 
   struct UBOInformation
   {
-    UBOInformation() : mShaderUsage(), mTypeID(UBOTypeIDs::Invalid)
+    UBOInformation() : mShaderUsage(), mTypeID(UBOTypeIDs::Invalid), mSize(0)
     {
 
     }
 
-    UBOInformation(std::string aTypeID, ShaderUsage aShaderUsage)
+    UBOInformation(std::string aTypeID, ShaderUsage aShaderUsage, size_t aSize)
       : mShaderUsage(aShaderUsage)
       , mTypeID(aTypeID)
+      , mSize(aSize)
     {
 
     }
 
     ShaderUsage mShaderUsage;
     std::string mTypeID;
+    size_t mSize;
   };
 
   

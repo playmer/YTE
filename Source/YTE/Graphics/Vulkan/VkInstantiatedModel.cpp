@@ -231,12 +231,17 @@ namespace YTE
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
-    mPipelineData.emplace(aSubMesh, 
-                          aSubMesh->CreatePipelineData(mUBOModel, 
-                                                       mUBOAnimation,
-                                                       mUBOModelMaterial,
-                                                       mUBOSubmeshMaterials[aIndex].first,
-                                                       mView));
+    std::vector<std::shared_ptr<vkhlf::Buffer>> buffers;
+    buffers.push_back(mSurface->GetUBOViewBuffer(mView)); // View
+    buffers.push_back(mUBOAnimation); // Animation
+    buffers.push_back(mUBOModelMaterial); // Model Material
+    buffers.push_back(mUBOSubmeshMaterials[aIndex].first); // Submesh material
+    buffers.push_back(mSurface->GetLightManager(mView)->GetUBOLightBuffer()); // Lights
+    buffers.push_back(mSurface->GetUBOIlluminationBuffer(mView)); // Illumination
+    buffers.push_back(mUBOModel); // Model
+
+    mPipelineData.emplace(aSubMesh,
+                          aSubMesh->CreatePipelineData(buffers));
   }
 
   bool VkInstantiatedModel::GetInstanced()

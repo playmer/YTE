@@ -334,8 +334,20 @@ namespace YTE
       2, 3, 0
     };
 
+    submesh.mTextures.clear();
     submesh.mTextures.emplace_back(mTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     submesh.mShaderSetName = "Sprite";
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    submesh.mUBOs.clear();
+    submesh.mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
 
     submesh.mCullBackFaces = false;
 
