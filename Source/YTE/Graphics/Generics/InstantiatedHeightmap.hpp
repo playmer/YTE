@@ -31,7 +31,6 @@ namespace YTE
                     std::vector<Vertex>& aVertices,
                     std::vector<u32>& aIndices,
                     std::string& aShaderSetName,
-                    UBOMaterial& aStartingMaterial,
                     GraphicsView* aView,
                     Renderer* aRenderer);
 
@@ -39,7 +38,6 @@ namespace YTE
                     std::vector<Vertex>& aVertices,
                     std::vector<u32>& aIndices,
                     std::string& aShaderSetName,
-                    UBOMaterial& aStartingMaterial,
                     GraphicsView* aView,
                     Renderer* aRenderer,
                     std::string aTextureName,
@@ -58,7 +56,6 @@ namespace YTE
     void CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName);
 
     std::string mShaderSetName;
-    UBOMaterial mStartingMaterial;
     std::unique_ptr<InstantiatedModel> mModel;
     Renderer *mRenderer;
     GraphicsView *mGraphicsView;

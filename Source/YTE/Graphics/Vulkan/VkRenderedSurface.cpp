@@ -71,7 +71,8 @@ namespace YTE
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
-    mRenderPass1 = mRenderer->mDevice->createSemaphore();
+    mCubemapComplete = mRenderer->mDevice->createSemaphore();
+    //mRenderPass1 = mRenderer->mDevice->createSemaphore();
     //mRenderPass2 = mDevice->createSemaphore();
     //mRenderPass3 = mDevice->createSemaphore();
 
@@ -630,9 +631,15 @@ namespace YTE
       v.second.mRenderTarget->MoveToNextEvent();
     }
 
+
     // render to screen;
     mRenderToScreen->RenderFull(extent);
     mRenderToScreen->MoveToNextEvent();
+
+
+    // cube map render
+    std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
+
 
     // build primary
     auto cbo = mRenderingCBOB->GetCurrentCBO();
@@ -683,8 +690,10 @@ namespace YTE
     
     cbo->end();
 
+    vk::ArrayProxy<const std::shared_ptr<vkhlf::Semaphore>> vkWaitSemaphores(waitSemaphores);
+
     // submit
-    vkhlf::SubmitInfo submit{ { mRenderToScreen->GetPresentSemaphore() },
+    vkhlf::SubmitInfo submit{ vkWaitSemaphores,
                               { vk::PipelineStageFlagBits::eColorAttachmentOutput },
                               cbo,
                               mRenderCompleteSemaphore };

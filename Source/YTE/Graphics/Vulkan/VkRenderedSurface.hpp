@@ -237,10 +237,11 @@ namespace YTE
     std::unique_ptr<VkCBOB<3, false>> mRenderingCBOB;
 
     // rendering blocks
-    std::shared_ptr<vkhlf::Semaphore> mRenderPass1;
+    //std::shared_ptr<vkhlf::Semaphore> mRenderPass1;
     //std::shared_ptr<vkhlf::Semaphore> mRenderPass2;
     //std::shared_ptr<vkhlf::Semaphore> mRenderPass3;
     std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
+    std::shared_ptr<vkhlf::Semaphore> mCubemapComplete;
     // final semaphore is in the swapchain
 
 

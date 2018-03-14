@@ -24,14 +24,16 @@ namespace YTE
   public:
     struct RenderTargetData
     {
-      struct ColorData
+      struct Attachment
       {
-        std::shared_ptr<vkhlf::ImageView> mImageView;
-        std::shared_ptr<vkhlf::Image> mImage;
-      };
+        Attachment() : mImageView(nullptr), mImage(nullptr) {}
+        Attachment(std::shared_ptr<vkhlf::Image> aImage, std::shared_ptr<vkhlf::ImageView> aImageView)
+          : mImageView(aImageView)
+          , mImage(aImage)
+        {
 
-      struct DepthData
-      {
+        }
+
         std::shared_ptr<vkhlf::ImageView> mImageView;
         std::shared_ptr<vkhlf::Image> mImage;
       };
@@ -39,8 +41,8 @@ namespace YTE
       std::shared_ptr<vkhlf::Framebuffer> mFrameBuffer;
       std::shared_ptr<vkhlf::Sampler> mSampler;
       VkDescriptorImageInfo mDescriptor;
-      ColorData mColorData;
-      DepthData mDepthData;
+      std::vector<Attachment> mAttachments;
+      std::vector<size_t> mColorAttachments;
       std::string mName;
       YTEDrawerTypeCombination mCombinationType;
       float mOrder;
@@ -78,6 +80,8 @@ namespace YTE
     // for sorting
     //bool operator() (int i, int j);
     bool operator<(VkRenderTarget& rhs);
+
+    virtual void Initialize();
 
     virtual void Resize(vk::Extent2D& aExtent);
     virtual void RenderFull(const vk::Extent2D& aExtent,
@@ -121,8 +125,8 @@ namespace YTE
     }
 
   protected:
-    void CreateFrameBuffer();
-    void CreateRenderPass();
+    virtual void CreateFrameBuffer();
+    virtual void CreateRenderPass();
 
     VkRenderedSurface *mSurface;
     ViewData *mParentViewData;

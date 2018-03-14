@@ -39,9 +39,6 @@ namespace YTE
     mData.mCombinationType = aCombination;
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
-
-    CreateRenderPass();
-    CreateFrameBuffer();
   }
 
 
@@ -63,7 +60,11 @@ namespace YTE
     mData.mCombinationType = aCombination;
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+  }
 
+
+  void VkRenderTarget::Initialize()
+  {
     CreateRenderPass();
     CreateFrameBuffer();
   }
@@ -72,10 +73,14 @@ namespace YTE
 
   VkRenderTarget::~VkRenderTarget()
   {
-    mData.mColorData.mImageView.reset();
-    mData.mColorData.mImage.reset();
-    mData.mDepthData.mImageView.reset();
-    mData.mDepthData.mImage.reset();
+    for (int i = 0; i < mData.mAttachments.size(); ++i)
+    {
+      mData.mAttachments[i].mImageView.reset();
+      mData.mAttachments[i].mImage.reset();
+    }
+    mData.mAttachments.clear();
+    mData.mColorAttachments.clear();
+
     mRenderPass.reset();
     mData.mSampler.reset();
     mData.mFrameBuffer.reset();
@@ -135,12 +140,13 @@ namespace YTE
 
   void VkRenderTarget::CreateFrameBuffer()
   {
-    mData.mSampler.reset();
-    mData.mFrameBuffer.reset();
-    mData.mColorData.mImage.reset();
-    mData.mColorData.mImageView.reset();
-    mData.mDepthData.mImage.reset();
-    mData.mDepthData.mImageView.reset();
+    for (int i = 0; i < mData.mAttachments.size(); ++i)
+    {
+      mData.mAttachments[i].mImageView.reset();
+      mData.mAttachments[i].mImage.reset();
+    }
+    mData.mAttachments.clear();
+    mData.mColorAttachments.clear();
 
     auto device = mSurface->GetDevice();
     auto extent = mSurface->GetExtent();
@@ -161,20 +167,20 @@ namespace YTE
     vk::Extent3D imageExtent{ extent.width, extent.height, 1 };
 
     // create image
-    mData.mColorData.mImage = device->createImage({},
-                                                  vk::ImageType::e2D,
-                                                  mColorFormat,
-                                                  imageExtent,
-                                                  1,
-                                                  1,
-                                                  vk::SampleCountFlagBits::e1,
-                                                  vk::ImageTiling::eOptimal,
-                                                  vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
-                                                  vk::SharingMode::eExclusive,
-                                                  {},
-                                                  vk::ImageLayout::eUndefined,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  nullptr);
+   auto colorImage = device->createImage({},
+                                         vk::ImageType::e2D,
+                                         mColorFormat,
+                                         imageExtent,
+                                         1,
+                                         1,
+                                         vk::SampleCountFlagBits::e1,
+                                         vk::ImageTiling::eOptimal,
+                                         vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+                                         vk::SharingMode::eExclusive,
+                                         {},
+                                         vk::ImageLayout::eUndefined,
+                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                         nullptr);
 
     // create view
     vk::ComponentMapping components = { vk::ComponentSwizzle::eR, 
@@ -185,10 +191,14 @@ namespace YTE
     vk::ImageSubresourceRange subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, layers };
 
 
-    mData.mColorData.mImageView = mData.mColorData.mImage->createImageView(vk::ImageViewType::e2D,
-                                                                           mColorFormat,
-                                                                           components,
-                                                                           subresourceRange);
+    auto colorView = colorImage->createImageView(vk::ImageViewType::e2D,
+                                                 mColorFormat,
+                                                 components,
+                                                 subresourceRange);
+
+    size_t att = mData.mAttachments.size();
+    mData.mAttachments.emplace_back(colorImage, colorView);
+    mData.mColorAttachments.emplace_back(att);
 
     // Create sampler for the color
     mData.mSampler = device->createSampler(vk::Filter::eLinear,
@@ -210,52 +220,46 @@ namespace YTE
 
     ///////////////////
     // Depth Image
-    //vk::FormatProperties imageFormatProperties =
-    //  mSurface->GetRenderer()->GetVkInternals()->GetPhysicalDevice()->getFormatProperties(mDepthFormat);
-    //
-    //DebugObjection(false == ((imageFormatProperties.linearTilingFeatures &
-    //                          vk::FormatFeatureFlagBits::eSampledImage) ||
-    //                          (imageFormatProperties.optimalTilingFeatures &
-    //                           vk::FormatFeatureFlagBits::eSampledImage)),
-    //               "Depth Texture Format doesnt support system");
 
     // create image
-    mData.mDepthData.mImage = device->createImage({},
-                                                  vk::ImageType::e2D,
-                                                  mDepthFormat,
-                                                  imageExtent,
-                                                  1,
-                                                  1,
-                                                  vk::SampleCountFlagBits::e1,
-                                                  vk::ImageTiling::eOptimal,
-                                                  vk::ImageUsageFlagBits::eDepthStencilAttachment,
-                                                  vk::SharingMode::eExclusive,
-                                                  {},
-                                                  vk::ImageLayout::eUndefined,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  nullptr);
+    auto depthImage = device->createImage({},
+                                          vk::ImageType::e2D,
+                                          mDepthFormat,
+                                          imageExtent,
+                                          1,
+                                          1,
+                                          vk::SampleCountFlagBits::e1,
+                                          vk::ImageTiling::eOptimal,
+                                          vk::ImageUsageFlagBits::eDepthStencilAttachment,
+                                          vk::SharingMode::eExclusive,
+                                          {},
+                                          vk::ImageLayout::eUndefined,
+                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                          nullptr);
 
     // create view
     vk::ComponentMapping defaultMap;
     subresourceRange = { vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil, 0, 1, 0, layers };
 
 
-    mData.mDepthData.mImageView = mData.mDepthData.mImage->createImageView(vk::ImageViewType::e2D,
-                                                                           mDepthFormat,
-                                                                           defaultMap,
-                                                                           subresourceRange);
+    auto depthView = depthImage->createImageView(vk::ImageViewType::e2D,
+                                                 mDepthFormat,
+                                                 defaultMap,
+                                                 subresourceRange);
+
+    mData.mAttachments.emplace_back(depthImage, depthView);
 
     ///////////////////
     // FrameBuffer
     mData.mFrameBuffer = device->createFramebuffer(mRenderPass,
-                                                   { mData.mColorData.mImageView, mData.mDepthData.mImageView },
+                                                   { mData.mAttachments[0].mImageView, mData.mAttachments[1].mImageView },
                                                    extent,
                                                    1);
 
 
     // save data to descriptor
     mData.mDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    mData.mDescriptor.imageView = static_cast<vk::ImageView>(*mData.mColorData.mImageView);
+    mData.mDescriptor.imageView = static_cast<vk::ImageView>(*mData.mAttachments[0].mImageView);
     mData.mDescriptor.sampler = static_cast<vk::Sampler>(*mData.mSampler);
   }
 

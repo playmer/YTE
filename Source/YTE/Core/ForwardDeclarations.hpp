@@ -25,6 +25,7 @@ namespace YTE
   class ComponentSystem;
   class StringComponentFactory;
   class JobHandle;
+  class JobSystem;
 } // End yte namespace
 
 #endif

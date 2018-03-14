@@ -71,9 +71,6 @@ namespace YTE
       x1 = 2.0f * RandomUniformFloat() - 1.0f;  // * 2 - 1 normalizes to 0-1
       x2 = 2.0f * RandomUniformFloat() - 1.0f;  // these are our randoms
       check = (x1 * x1) + (x2 * x2);  // geometrically this will check if it is between 0-1
-      x1 = 0.5f;
-      x2 = 0.5f;
-      check = 0.5f;
     } while (check >= 1.0f);
 
     // now we have a value 0-1, we can do the rest of the computations
