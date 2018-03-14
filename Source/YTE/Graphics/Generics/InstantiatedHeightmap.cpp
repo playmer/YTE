@@ -91,8 +91,6 @@ namespace YTE
     std::string meshName = aModelName;
     Submesh submesh;
 
-    //submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = mShaderSetName;
 
     submesh.mCullBackFaces = true;
@@ -103,9 +101,9 @@ namespace YTE
     submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
     submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
-    submesh.mDiffuseMap = mDiffuseTName;
-    submesh.mSpecularMap = mSpecularTName;
-    submesh.mNormalMap = mNormalTName;
+    submesh.mTextures.emplace_back(mDiffuseTName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
+    submesh.mTextures.emplace_back(mSpecularTName, TextureViewType::e2D, TextureTypeIDs::Specular);
+    submesh.mTextures.emplace_back(mNormalTName, TextureViewType::e2D, TextureTypeIDs::Normal);
 
     std::vector<Submesh> submeshes{ submesh };
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);

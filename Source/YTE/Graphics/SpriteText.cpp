@@ -143,9 +143,8 @@ namespace YTE
       vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };             // Top-left
       vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
 
-      submesh.mDiffuseMap = mTextureName;
-      submesh.mDiffuseType = TextureViewType::e2D;
-      submesh.mShaderSetName = "SpriteText";
+      submesh.mTextures.emplace_back(mTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
+			submesh.mShaderSetName = "SpriteText";
 
       submesh.mCullBackFaces = false;
 

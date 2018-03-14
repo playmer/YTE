@@ -54,9 +54,11 @@ namespace YTE
     // Needed if instanced, otherwise this lives per-model.
     SubMeshPipelineData mPipelineData;
 
-    VkTexture *mDiffuseTexture;
-    VkTexture *mSpecularTexture;
-    VkTexture *mNormalTexture;
+    std::vector<VkTexture*> mVkTextures;
+
+    //VkTexture *mDiffuseTexture;
+    //VkTexture *mSpecularTexture;
+    //VkTexture *mNormalTexture;
 
     VkShaderDescriptions mDescriptions;
     VkRenderer *mRenderer;

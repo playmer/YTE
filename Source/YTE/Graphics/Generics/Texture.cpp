@@ -21,6 +21,16 @@ namespace fs = std::experimental::filesystem;
 
 namespace YTE
 {
+  namespace TextureTypeIDs
+  {
+    const std::string Diffuse{ "DIFFUSE" };
+    const std::string Specular{ "SPECULAR" };
+    const std::string Normal{ "NORMAL" };
+    const std::string Invalid{ "INVALID" };
+  }
+
+
+
   YTEDefineType(Texture)
   {
     YTERegisterType(Texture);

@@ -122,10 +122,7 @@ namespace YTE
   }
 
   VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
-    : mDiffuseTexture(nullptr)
-    , mSpecularTexture(nullptr)
-    , mNormalTexture(nullptr)
-    , mRenderer(aRenderer)
+    : mRenderer(aRenderer)
     , mMesh(aMesh)
     , mSubmesh(aSubmesh)
     , mIndexCount(0)
@@ -163,22 +160,12 @@ namespace YTE
 
     // Load Textures
     size_t samplers{ 0 };
-    std::array<const char *, 3> samplerTypes;
+    std::array<std::string, 3> samplerTypes;
 
-    if (false == mSubmesh->mDiffuseMap.empty())
+    for (size_t i = 0; i < mSubmesh->mTextures.size(); ++i)
     {
-      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
-      samplerTypes[samplers++] = "DIFFUSE";
-    }
-    if (false == mSubmesh->mSpecularMap.empty())
-    {
-      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
-      samplerTypes[samplers++] = "SPECULAR";
-    }
-    if (false == mSubmesh->mNormalMap.empty())
-    {
-      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
-      samplerTypes[samplers++] = "NORMAL";
+      mVkTextures.emplace_back(mRenderer->CreateTexture(mSubmesh->mTextures[i].mFileName, Convert(mSubmesh->mTextures[i].mViewType)));
+      samplerTypes[samplers++] = mSubmesh->mTextures[i].mTypeID;
     }
 
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
@@ -390,9 +377,10 @@ namespace YTE
     vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
     vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
 
-    addTS(mDiffuseTexture, dTexInfo);
-    addTS(mSpecularTexture, sTexInfo);
-    addTS(mNormalTexture, nTexInfo);
+    for (size_t i = 0; i < mVkTextures.size(); ++i)
+    {
+      addTS(mVkTextures[i], dTexInfo);
+    }
 
     // TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.
     // We do the model last for easier binding.

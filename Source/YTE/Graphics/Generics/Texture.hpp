@@ -22,6 +22,46 @@ namespace YTE
 
 
 
+  namespace TextureTypeIDs
+  {
+    extern const std::string Diffuse;
+    extern const std::string Specular;
+    extern const std::string Normal;
+    extern const std::string Invalid;
+  }
+
+
+
+  enum class TextureViewType
+  {
+    e2D,
+    eCube
+  };
+
+
+
+  struct TextureInformation
+  {
+    TextureInformation() : mFileName(TextureTypeIDs::Invalid),
+                          mViewType(TextureViewType::e2D),
+                          mTypeID(TextureTypeIDs::Invalid)
+    {
+
+    }
+
+    TextureInformation(std::string aFileName, TextureViewType aViewType, std::string aTypeID)
+      : mFileName(aFileName), mViewType(aViewType), mTypeID(aTypeID)
+    {
+
+    }
+
+    std::string mFileName;
+    TextureViewType mViewType;
+    std::string mTypeID; // found in Texture.hpp->TextureTypeIDs::[...]
+  };
+
+
+
   struct Texture : public EventHandler
   {
   public:

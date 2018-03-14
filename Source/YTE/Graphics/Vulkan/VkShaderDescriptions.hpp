@@ -15,6 +15,15 @@
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 
+
+/*
+
+Bindings - For Vertices and their binding values
+Attributes - For Vertices, their formats
+
+
+*/
+
 namespace YTE
 {
   class VkShaderDescriptions
@@ -198,6 +207,34 @@ namespace YTE
   private:
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
     std::vector<vk::DescriptorPoolSize> descriptorTypes;
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // I know its bad, but Im out of time and just needed soemthing dirty
+  class ShaderConstructionDetails
+  {
+  public:
+
+
+  private:
+
   };
 }
 

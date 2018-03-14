@@ -17,6 +17,7 @@
 
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vertex.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -86,13 +87,6 @@ namespace YTE
     glm::vec3 mScale;
     glm::vec2 mUVscale;
     glm::vec3 mCenter;
-  };
-
-
-  enum class TextureViewType
-  {
-    e2D,
-    eCube
   };
 
 
@@ -246,12 +240,14 @@ namespace YTE
 
     UBOMaterial mUBOMaterial;
 
-    std::string mDiffuseMap;
-    TextureViewType mDiffuseType = TextureViewType::e2D;
-    std::string mNormalMap;
-    TextureViewType mNormalType = TextureViewType::e2D;
-    std::string mSpecularMap;
-    TextureViewType mSpecularType = TextureViewType::e2D;
+    std::vector<TextureInformation> mTextures;
+
+    //std::string mDiffuseMap;
+    //TextureViewType mDiffuseType = TextureViewType::e2D;
+    //std::string mNormalMap;
+    //TextureViewType mNormalType = TextureViewType::e2D;
+    //std::string mSpecularMap;
+    //TextureViewType mSpecularType = TextureViewType::e2D;
 
     Dimension mDimension;
 

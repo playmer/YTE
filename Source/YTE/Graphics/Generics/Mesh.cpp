@@ -235,9 +235,9 @@ namespace YTE
 
     std::string defaultTexture{ "white.png" };
 
-    mDiffuseMap = defaultTexture;
-    mSpecularMap = defaultTexture;
-    mNormalMap = defaultTexture;
+    std::string mDiffuseMap = defaultTexture;
+    std::string mSpecularMap = defaultTexture;
+    std::string mNormalMap = defaultTexture;
 
     if (0 != diffuse.length)
     {
@@ -254,6 +254,10 @@ namespace YTE
       mNormalMap = normals.C_Str();
       mUBOMaterial.mUsesNormalTexture = 1; // true
     }
+
+    mTextures.emplace_back(mDiffuseMap, TextureViewType::e2D, TextureTypeIDs::Diffuse);
+    mTextures.emplace_back(mSpecularMap, TextureViewType::e2D, TextureTypeIDs::Specular);
+    mTextures.emplace_back(mNormalMap, TextureViewType::e2D, TextureTypeIDs::Normal);
 
     mShaderSetName = "Phong";
 

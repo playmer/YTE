@@ -246,8 +246,7 @@ namespace YTE
       vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
     }
 
-    mSubmesh.mDiffuseMap = mTextureName;
-    mSubmesh.mDiffuseType = TextureViewType::e2D;
+    mSubmesh.mTextures.emplace_back(mTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     mSubmesh.mShaderSetName = "Sprite";
 
     mSubmesh.mCullBackFaces = false;

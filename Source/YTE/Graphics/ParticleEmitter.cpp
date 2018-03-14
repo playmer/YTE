@@ -334,8 +334,7 @@ namespace YTE
       2, 3, 0
     };
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mTextures.emplace_back(mTextureName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
     submesh.mShaderSetName = "Sprite";
 
     submesh.mCullBackFaces = false;
