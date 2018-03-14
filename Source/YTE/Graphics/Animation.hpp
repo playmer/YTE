@@ -26,6 +26,38 @@ struct aiAnimation;
 
 namespace YTE
 {
+  YTEDeclareEvent(KeyFrameChanged);
+
+  class KeyFrameChanged :public Event
+  {
+  public:
+    YTEDeclareType(KeyFrameChanged);
+
+    std::string animation;
+    double time;
+  };
+
+  YTEDeclareEvent(AnimationAdded);
+
+  class AnimationAdded :public Event
+  {
+  public:
+    YTEDeclareType(AnimationAdded);
+
+    std::string animation;
+    double ticksPerSecond;
+  };
+
+  YTEDeclareEvent(AnimationRemoved);
+
+  class AnimationRemoved :public Event
+  {
+  public:
+    YTEDeclareType(AnimationRemoved);
+
+    std::string animation;
+  };
+
   class Animation : public EventHandler
   {
   public:
@@ -60,7 +92,7 @@ namespace YTE
     Skeleton* GetSkeleton();
 
   private:
-    aiScene * mScene;
+    aiScene *mScene;
     aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
@@ -92,6 +124,13 @@ namespace YTE
     void PlayAnimation(std::string aAnimation);
 
     void SetDefaultAnimation(std::string aAnimation);
+    void SetCurrentAnimation(std::string aAnimation);
+    void SetCurrentPlayOverTime(bool aPlayOverTime);
+
+    void SetCurrentAnimTime(double aTime);
+    double GetMaxTime() const;
+
+    std::map<std::string, Animation*>& GetAnimations();
 
     static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
     static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
@@ -109,7 +148,7 @@ namespace YTE
     Animation *mCurrentAnimation;
     Animation *mNextAnimation;
 
-    std::map<std::string, Animation *> mAnimations;
+    std::map<std::string, Animation*> mAnimations;
   };
 
 

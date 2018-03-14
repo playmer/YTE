@@ -5,6 +5,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Camera.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Drawers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/FacialAnimator.cpp
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
@@ -44,6 +45,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Drawers.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GameCamera.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/FacialAnimator.hpp
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp

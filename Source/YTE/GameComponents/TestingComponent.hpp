@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #pragma once
 
 #include "YTE/Core/Component.hpp"
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
@@ -28,7 +29,19 @@ namespace YTE
   
     void CheckButtons(XboxButtonEvent *aEvent);
 
+    std::string GetCurrentAnimation() const;
+    void SetCurrentAnimation(std::string aAnimation);
+
   private:
     XboxController *mGamepad;
+
+    Animator *mAnimator;
+
+    double mAnimLoopTimer;
+
+    std::string mCurrentAnimation;
+
+    bool mAnimForward;
+
   };
 }//end yte namespace

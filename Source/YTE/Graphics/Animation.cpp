@@ -3,6 +3,8 @@
 // YTE - Graphics
 ///////////////////
 
+#include <fstream>
+
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
@@ -14,8 +16,36 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Model.hpp"
 
+#include "YTE/Utilities/Utilities.hpp"
+
 namespace YTE
 {
+  YTEDefineEvent(KeyFrameChanged);
+
+  YTEDefineType(KeyFrameChanged)
+  {
+    YTERegisterType(KeyFrameChanged);
+    YTEBindField(&KeyFrameChanged::animation, "animation", PropertyBinding::Get);
+    YTEBindField(&KeyFrameChanged::time, "time", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(AnimationAdded);
+
+  YTEDefineType(AnimationAdded)
+  {
+    YTERegisterType(AnimationAdded);
+    YTEBindField(&AnimationAdded::animation, "animation", PropertyBinding::Get);
+  }
+
+  YTEDefineEvent(AnimationRemoved);
+
+  YTEDefineType(AnimationRemoved)
+  {
+    YTERegisterType(AnimationRemoved);
+    YTEBindField(&AnimationRemoved::animation, "animation", PropertyBinding::Get);
+  }
+
+
   YTEDefineType(Animation)
   {
     YTERegisterType(Animation);
@@ -54,6 +84,9 @@ namespace YTE
     //TODO (Andrew): Dont keep the scene loaded
     mScene = importer.GetOrphanedScene();
 
+    DebugObjection(mScene == nullptr,
+      "Failed to load orphaned scene");
+
     DebugObjection(mScene->HasAnimations() == false,
       "Failed to find animations in scene loaded from %s",
       aniFile.c_str());
@@ -62,9 +95,8 @@ namespace YTE
 
     mAnimation = mScene->mAnimations[0];
 
-    mName = mAnimation->mName.data;
+    mName = aFile;
     mCurrentAnimationTime = 0.0f;
-
 
     mUBOAnimationData.mHasAnimation = true;
     mElapsedTime = 0.0;
@@ -89,7 +121,9 @@ namespace YTE
 
   void Animation::SetCurrentTime(double aCurrentTime)
   {
-    if (0.0 <= aCurrentTime && aCurrentTime <= mAnimation->mDuration)
+    aCurrentTime *= mAnimation->mTicksPerSecond;
+
+    if (0.0 < aCurrentTime && aCurrentTime < mAnimation->mDuration)
     {
       mCurrentAnimationTime = aCurrentTime;
     }
@@ -97,7 +131,7 @@ namespace YTE
 
   double Animation::GetMaxTime() const
   {
-    return mAnimation->mDuration;
+    return mAnimation->mDuration / mAnimation->mTicksPerSecond;
   }
 
   float Animation::GetSpeed() const
@@ -409,6 +443,12 @@ namespace YTE
         // set to nullptr, will switch to appropriate animation at beginning of next update loop
         mCurrentAnimation = nullptr;
       }
+
+      KeyFrameChanged keyChange;
+      keyChange.animation = mCurrentAnimation->mName;
+      keyChange.time = mCurrentAnimation->mElapsedTime;
+
+      mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
     }
 
     if (mCurrentAnimation)
@@ -452,6 +492,45 @@ namespace YTE
     mDefaultAnimation = it->second;
   }
 
+  void Animator::SetCurrentAnimation(std::string aAnimation)
+  {
+    auto it = mAnimations.find(aAnimation);
+
+    // animation doesn't exist on this animator component
+    if (it == mAnimations.end())
+    {
+      return;
+    }
+
+    mCurrentAnimation = it->second;
+  }
+
+  void Animator::SetCurrentPlayOverTime(bool aPlayOverTime)
+  {
+    mCurrentAnimation->SetPlayOverTime(aPlayOverTime);
+  }
+
+  void Animator::SetCurrentAnimTime(double aTime)
+  {
+    mCurrentAnimation->SetCurrentTime(aTime);
+
+    KeyFrameChanged keyChange;
+    keyChange.animation = mCurrentAnimation->mName;
+    keyChange.time = aTime;
+
+    mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
+  }
+
+  double Animator::GetMaxTime() const
+  {
+    return mCurrentAnimation->GetMaxTime();
+  }
+
+  std::map<std::string, Animation*>& Animator::GetAnimations()
+  {
+    return mAnimations;
+  }
+
   std::vector<std::pair<YTE::Object*, std::string>> Animator::Lister(YTE::Object *aSelf)
   {
     auto self = static_cast<Animator*>(aSelf);
@@ -475,6 +554,11 @@ namespace YTE
 
     anim->Initialize(mOwner->GetComponent<Model>(), mEngine);
 
+    AnimationAdded animAdd;
+    animAdd.animation = anim->mName;
+    animAdd.ticksPerSecond = anim->GetAnimation()->mTicksPerSecond;
+    mOwner->SendEvent(Events::AnimationAdded, &animAdd);
+
     return anim;
   }
 
@@ -489,9 +573,7 @@ namespace YTE
     }
 
     Animation *anim = new Animation(aName);
-
     mAnimations.insert_or_assign(aName, anim);
-
     return anim;
   }
 
@@ -501,6 +583,10 @@ namespace YTE
     {
       if (it->second == aAnimation)
       {
+        AnimationRemoved animRemoved;
+        animRemoved.animation = it->second->mName;
+        mOwner->SendEvent(Events::AnimationRemoved, &animRemoved);
+
         delete it->second;
         mAnimations.erase(it);
         return;
