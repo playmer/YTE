@@ -241,13 +241,7 @@ namespace YTE
     UBOMaterial mUBOMaterial;
 
     std::vector<TextureInformation> mTextures;
-
-    //std::string mDiffuseMap;
-    //TextureViewType mDiffuseType = TextureViewType::e2D;
-    //std::string mNormalMap;
-    //TextureViewType mNormalType = TextureViewType::e2D;
-    //std::string mSpecularMap;
-    //TextureViewType mSpecularType = TextureViewType::e2D;
+    std::vector<UBOInformation> mUBOs;
 
     Dimension mDimension;
 

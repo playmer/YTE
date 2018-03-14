@@ -259,6 +259,16 @@ namespace YTE
     mTextures.emplace_back(mSpecularMap, TextureViewType::e2D, TextureTypeIDs::Specular);
     mTextures.emplace_back(mNormalMap, TextureViewType::e2D, TextureTypeIDs::Normal);
 
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+
+    mUBOs.emplace_back(UBOTypeIDs::View, useVert);
+    mUBOs.emplace_back(UBOTypeIDs::Animation, useVert);
+    mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag);
+    mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag);
+    mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag);
+    mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag);
+
     mShaderSetName = "Phong";
 
 

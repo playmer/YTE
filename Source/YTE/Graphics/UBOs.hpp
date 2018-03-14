@@ -31,6 +31,58 @@ namespace YTE
     //       a change in the shaders must be made as well
     const int MaxBones{ 64 };
   }
+  
+
+
+  namespace UBOTypeIDs
+  {
+    const std::string View{ "VIEW" };
+    const std::string Animation{ "ANIMATION_BONE" };
+    const std::string ModelMaterial{ "MODEL_MATERIAL" };
+    const std::string SubmeshMaterial{ "SUBMESH_MATERIAL" };
+    const std::string Lights{ "LIGHTS" };
+    const std::string Illumination{ "ILLUMINATION" };
+    const std::string Model{ "MODEL" };
+    const std::string Invalid{ "INVALID" };
+  }
+
+
+
+  struct ShaderUsage
+  {
+    ShaderUsage(bool aVert, bool aFrag) : mVertexShader(aVert), mFragmentShader(aFrag)
+    {
+
+    }
+
+    ShaderUsage() : mVertexShader(false), mFragmentShader(false)
+    {
+
+    }
+    bool mVertexShader;
+    bool mFragmentShader;
+  };
+
+
+  struct UBOInformation
+  {
+    UBOInformation() : mShaderUsage(), mTypeID(UBOTypeIDs::Invalid)
+    {
+
+    }
+
+    UBOInformation(std::string aTypeID, ShaderUsage aShaderUsage)
+      : mShaderUsage(aShaderUsage)
+      , mTypeID(aTypeID)
+    {
+
+    }
+
+    ShaderUsage mShaderUsage;
+    std::string mTypeID;
+  };
+
+  
 
   struct UBOView
   {

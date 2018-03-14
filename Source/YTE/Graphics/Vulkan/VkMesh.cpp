@@ -172,54 +172,32 @@ namespace YTE
     u32 binding{ 0 };
     u32 uniformBuffers{ 0 };
 
-    // View Buffer for Vertex shader.
-    dslbs.emplace_back(binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
-    ++uniformBuffers;
+    for (size_t i = 0; i < mSubmesh->mUBOs.size(); ++i)
+    {
+      vk::ShaderStageFlags flags;
 
-    // Animation (Bone Array) Buffer for Vertex shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
-    ++uniformBuffers;
+      if (mSubmesh->mUBOs[i].mShaderUsage.mVertexShader == true)
+      {
+        flags = vk::ShaderStageFlagBits::eVertex;
+        if (mSubmesh->mUBOs[i].mShaderUsage.mFragmentShader == true)
+        {
+          flags = vk::ShaderStageFlagBits::eFragment | vk::ShaderStageFlagBits::eVertex;
+        }
+      }
+      else if (mSubmesh->mUBOs[i].mShaderUsage.mFragmentShader == true)
+      {
+        flags = vk::ShaderStageFlagBits::eFragment;
+      }
 
-    // Model Material Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
-    ++uniformBuffers;
-    
-    // Submesh Material Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Lights Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Illumination Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
-    ++uniformBuffers;
-
+      // View Buffer for Vertex shader.
+      dslbs.emplace_back(binding,
+                         vk::DescriptorType::eUniformBuffer,
+                         flags,
+                         nullptr);
+      mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", mSubmesh->mUBOs[i].mTypeID, binding));
+      ++uniformBuffers;
+      ++binding;
+    }
 
     // Descriptions for the textures we support based on which maps we found above:
     //   Diffuse
@@ -227,11 +205,12 @@ namespace YTE
     //   Normal
     for (size_t i = 0; i < samplers; ++i)
     {
-      dslbs.emplace_back(++binding,
+      dslbs.emplace_back(binding,
                          vk::DescriptorType::eCombinedImageSampler,
                          vk::ShaderStageFlagBits::eFragment,
                          nullptr);
       mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
+      ++binding;
     }
     mDescriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
     mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
@@ -263,7 +242,7 @@ namespace YTE
       // Model Buffer for Vertex shader. (Non-instanced Meshes)
       // We do this one last so as to make the binding numbers easier
       // to set via #defines for the shader.
-      dslbs.emplace_back(++binding,
+      dslbs.emplace_back(binding,
                          vk::DescriptorType::eUniformBuffer,
                          vk::ShaderStageFlagBits::eVertex,
                          nullptr);
@@ -271,6 +250,7 @@ namespace YTE
 
       // We need to tell the shaders where to find the UBOModel.
       mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
+      ++binding;
     }
 
     // Create the descriptor set and pipeline layouts.

@@ -208,34 +208,6 @@ namespace YTE
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
     std::vector<vk::DescriptorPoolSize> descriptorTypes;
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // I know its bad, but Im out of time and just needed soemthing dirty
-  class ShaderConstructionDetails
-  {
-  public:
-
-
-  private:
-
-  };
 }
 
 #endif
