@@ -117,6 +117,7 @@ namespace YTE
     void SetCombinationType(YTEDrawerTypeCombination aCombination)
     {
       mData.mCombinationType = aCombination;
+      mCombination = aCombination;
     }
 
     std::shared_ptr<vkhlf::Framebuffer>& GetFrameBuffer()
@@ -139,6 +140,8 @@ namespace YTE
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
     bool mSignedUpForUpdate;
+    std::string mName;
+    YTEDrawerTypeCombination mCombination;
   };
 }
 

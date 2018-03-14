@@ -32,13 +32,11 @@ namespace YTE
     , mDepthFormat(aDepthFormat)
     , mVulkanSurface(aVulkanSurface)
     , mParentViewData(aView)
+    , mCombination(aCombination)
+    , mName(aName)
   {
     //mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderTarget::LoadToVulkan);
-    mSignedUpForUpdate = true;
-    mData.mName = aName;
-    mData.mCombinationType = aCombination;
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    //mSignedUpForUpdate = true;
   }
 
 
@@ -53,18 +51,21 @@ namespace YTE
     , mColorFormat(aColorFormat)
     , mDepthFormat(aDepthFormat)
     , mVulkanSurface(aVulkanSurface)
+    , mCombination(aCombination)
+    , mName(aName)
   {
     //mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderTarget::LoadToVulkan);
-    mSignedUpForUpdate = true;
-    mData.mName = aName;
-    mData.mCombinationType = aCombination;
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    //mSignedUpForUpdate = true;
   }
 
 
   void VkRenderTarget::Initialize()
   {
+    mData.mName = mName;
+    mData.mCombinationType = mCombination;
+    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
+    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+
     CreateRenderPass();
     CreateFrameBuffer();
   }

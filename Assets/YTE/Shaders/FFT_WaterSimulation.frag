@@ -511,6 +511,13 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV, vec3 aNo
 // Entry Point of Shader
 void main()
 {
+  //vec4 plane = vec4(0, -1, 0, 5);
+  //if (dot(plane, vec4(inPositionWorld, 1.0f)) < 0.0f)
+  //{
+  //  discard;
+  //  return;
+  //}
+
   if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy + (inNormal.xy / 10.0f));

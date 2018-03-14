@@ -395,6 +395,76 @@ namespace YTE
   }
 
 
+  void Camera::InvertAcrossPlane(float aWorldGroundHeight)
+  {
+    auto height = static_cast<float>(mWindow->GetHeight());
+    auto width = static_cast<float>(mWindow->GetWidth());
+
+    UBOView view;
+
+    // projection matrix (since its an easy calculation, Ill leave it here for now, but
+    // it really doesn't need to happen every view update
+    view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
+                                              width / height,
+                                              mNearPlane,
+                                              mFarPlane);
+
+
+
+    // matrix does perspective divide and flips vulkan y axis
+    const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
+                         0.0f, -1.0f, 0.0f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 1.0f);
+
+    view.mProjectionMatrix = clip * view.mProjectionMatrix;
+
+    glm::quat rot = mCameraTransform->GetRotation();
+    glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+    up4 = glm::rotate(rot, up4);
+
+    glm::vec3 trans = mCameraTransform->GetTranslation();
+    float amount = trans.y - aWorldGroundHeight;
+    trans.y -= amount;
+
+    view.mViewMatrix = glm::lookAt(trans, mTargetPoint, glm::vec3(up4));
+    view.mCameraPosition = glm::vec4(trans, 1.0f);
+    mGraphicsView->UpdateView(this, view);
+  }
+
+  void Camera::ResetInversion()
+  {
+    auto height = static_cast<float>(mWindow->GetHeight());
+    auto width = static_cast<float>(mWindow->GetWidth());
+
+    UBOView view;
+
+    // projection matrix (since its an easy calculation, Ill leave it here for now, but
+    // it really doesn't need to happen every view update
+    view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
+                                              width / height,
+                                              mNearPlane,
+                                              mFarPlane);
+
+
+
+    // matrix does perspective divide and flips vulkan y axis
+    const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
+                         0.0f, -1.0f, 0.0f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 0.0f,
+                         0.0f, 0.0f, 0.5f, 1.0f);
+
+    view.mProjectionMatrix = clip * view.mProjectionMatrix;
+
+    glm::quat rot = mCameraTransform->GetRotation();
+    glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
+    up4 = glm::rotate(rot, up4);
+    view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
+    view.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
+    mGraphicsView->UpdateView(this, view);
+  }
+
+
   void Camera::SurfaceGainedEvent(ViewChanged *aEvent)
   {
     mGraphicsView = aEvent->View;

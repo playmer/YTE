@@ -14,6 +14,7 @@ namespace YTE
   enum class YTEDrawerTypes
   {
     DefaultDrawer,
+    WaterDrawer,
     GameForwardDrawer
   };
 

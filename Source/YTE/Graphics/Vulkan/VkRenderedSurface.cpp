@@ -9,6 +9,7 @@
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkRTWaterDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
@@ -378,6 +379,13 @@ namespace YTE
       view.mRenderTarget->SetView(&view);
       view.mViewOrder = aView->GetOrder(); // default
       view.mRenderTarget->SetOrder(view.mViewOrder);
+
+      if (aDrawerType == YTEDrawerTypes::GameForwardDrawer)
+      {
+        view.mWaterDrawer = CreateRenderTarget(YTEDrawerTypes::WaterDrawer, &view, aCombination);
+        view.mWaterDrawer->SetView(&view);
+        view.mWaterDrawer->SetOrder(view.mViewOrder); // probably not needed
+      }
     }
 
     // reset swapchain's references to render target frame buffers
@@ -627,6 +635,12 @@ namespace YTE
     // build secondaries
     for (auto &v : mViewData)
     {
+      if (v.second.mWaterDrawer != nullptr)
+      {
+        v.second.mWaterDrawer->RenderFull(extent, mRenderer->mMeshes);
+        v.second.mWaterDrawer->MoveToNextEvent();
+      }
+
       v.second.mRenderTarget->RenderFull(extent, mRenderer->mMeshes);
       v.second.mRenderTarget->MoveToNextEvent();
     }
@@ -637,7 +651,6 @@ namespace YTE
     mRenderToScreen->MoveToNextEvent();
 
 
-    // cube map render
     std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
 
 
@@ -649,6 +662,12 @@ namespace YTE
     // wait on present semaphore for first render
     for (auto &v : mViewData)
     {
+      if (v.second.mWaterDrawer != nullptr)
+      {
+        // will do execute secondary event, render pass begin and end, and execute commands
+        v.second.mWaterDrawer->ExecuteCommands(cbo);
+      }
+
       v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
 
       glm::vec4 col = v.second.mClearColor;
@@ -718,6 +737,16 @@ namespace YTE
                                                                  mSurface,
                                                                  view->mName,
                                                                  aCombination));
+        break;
+      }
+      case YTEDrawerTypes::WaterDrawer:
+      {
+        return std::move(std::make_unique<VkRTWaterDrawer>(this,
+                                                           mColorFormat,
+                                                           mDepthFormat,
+                                                           mSurface,
+                                                           view->mName,
+                                                           aCombination));
         break;
       }
       case YTEDrawerTypes::DefaultDrawer:
