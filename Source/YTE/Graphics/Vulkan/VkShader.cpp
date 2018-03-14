@@ -40,6 +40,7 @@ namespace YTE
                                                VkShaderDescriptions &aDescriptions,
                                                bool aReload)
   {
+    YTEUnusedArgument(aReload);
     auto device = aSurface->GetDevice();
 
     auto vertex = aName + ".vert";

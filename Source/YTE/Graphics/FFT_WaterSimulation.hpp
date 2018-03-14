@@ -288,7 +288,7 @@ namespace YTE
     // FROM CONNORs
     bool UsePhillips = false;
     bool UseHTilde = false;
-    bool UseNewKs = false;
+    bool UseNewKs = true;
     bool UseNoDisplacement = false;
     bool UseHTildeSubZero = false;
 
