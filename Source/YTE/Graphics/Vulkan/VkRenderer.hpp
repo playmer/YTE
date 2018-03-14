@@ -37,6 +37,7 @@ namespace YTE
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
+    void UpdateWindowClipPlanesBuffer(GraphicsView* aView, UBOClipPlanes &aClipPlanes) override;
 
     VkMesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,

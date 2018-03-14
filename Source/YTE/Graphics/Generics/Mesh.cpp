@@ -270,6 +270,7 @@ namespace YTE
     mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
     mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
     mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
+    mUBOs.emplace_back(UBOTypeIDs::ClipPlanes, useFrag, sizeof(UBOClipPlanes));
 
     mShaderSetName = "Phong";
 

@@ -39,6 +39,7 @@ namespace YTE
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);
     virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination);
+    virtual void UpdateWindowClipPlanesBuffer(GraphicsView* aView, UBOClipPlanes &aClipPlanes);
     virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
     virtual void FrameUpdate(LogicUpdate *aEvent);
     virtual void PresentFrame(LogicUpdate *aEvent);

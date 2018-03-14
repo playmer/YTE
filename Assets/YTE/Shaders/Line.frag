@@ -135,6 +135,7 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   vec2 mFogPlanes;
 } Illumination;
 
+
 layout (location = 0) in vec4 inDiffuse;
 
 // ========================

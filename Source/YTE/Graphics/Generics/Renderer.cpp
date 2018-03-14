@@ -83,6 +83,12 @@ namespace YTE
     YTEUnusedArgument(aIllumination);
   }
 
+  void Renderer::UpdateWindowClipPlanesBuffer(GraphicsView* aView, UBOClipPlanes &aClipPlanes)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aClipPlanes);
+  }
+
 
   void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {

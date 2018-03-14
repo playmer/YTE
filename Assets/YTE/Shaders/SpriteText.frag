@@ -135,7 +135,6 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 } Illumination;
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
 layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;

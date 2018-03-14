@@ -168,6 +168,7 @@ namespace YTE
     sphere.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
     sphere.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
     sphere.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
+    sphere.mUBOs.emplace_back(UBOTypeIDs::ClipPlanes, useFrag, sizeof(UBOClipPlanes));
 
     return sphere;
   }

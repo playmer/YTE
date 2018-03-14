@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
+#define MAX_CLIP_PLANES 6
 #define M_PI 3.1415926535897932384626433832795
 const uint MatFlag_IsGizmo    = 1 << 0;
 const uint MatFlag_IsSelected = 1 << 1;
@@ -135,6 +136,15 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   float mTime;
   float mPadding;
 } Illumination;
+
+
+// ========================
+// Clip Planes Buffer
+layout (binding = UBO_CLIP_PLANES_BINDING) uniform UBOClipPlanes
+{
+  vec4 mPlanes[MAX_CLIP_PLANES];
+  uint mNumberOfPlanes;
+} ClipPlanes;
 
 
 
@@ -409,6 +419,17 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
+  //vec4 plane = vec4(0, -1, 0, 5);
+  for (uint i = 0; i < ClipPlanes.mNumberOfPlanes; ++i)
+  {
+    if (dot(ClipPlanes.mPlanes[i], vec4(inPositionWorld, 1.0f)) < 0.0f)
+    {
+      discard;
+      return;
+    }
+  }
+
+
   if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;

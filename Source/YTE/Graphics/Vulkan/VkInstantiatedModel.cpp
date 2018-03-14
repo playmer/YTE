@@ -232,13 +232,47 @@ namespace YTE
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
     std::vector<std::shared_ptr<vkhlf::Buffer>> buffers;
-    buffers.push_back(mSurface->GetUBOViewBuffer(mView)); // View
-    buffers.push_back(mUBOAnimation); // Animation
-    buffers.push_back(mUBOModelMaterial); // Model Material
-    buffers.push_back(mUBOSubmeshMaterials[aIndex].first); // Submesh material
-    buffers.push_back(mSurface->GetLightManager(mView)->GetUBOLightBuffer()); // Lights
-    buffers.push_back(mSurface->GetUBOIlluminationBuffer(mView)); // Illumination
-    buffers.push_back(mUBOModel); // Model
+
+    auto& ubos = aSubMesh->mSubmesh->mUBOs;
+    for (int i = 0; i < ubos.size(); ++i)
+    {
+      if (UBOTypeIDs::View == ubos[i].mTypeID)
+      {
+        buffers.push_back(mSurface->GetUBOViewBuffer(mView)); // View
+      }
+      else if (UBOTypeIDs::Animation == ubos[i].mTypeID)
+      {
+        buffers.push_back(mUBOAnimation); // Animation
+      }
+      else if (UBOTypeIDs::ModelMaterial == ubos[i].mTypeID)
+      {
+        buffers.push_back(mUBOModelMaterial); // Model Material
+      }
+      else if (UBOTypeIDs::SubmeshMaterial == ubos[i].mTypeID)
+      {
+        buffers.push_back(mUBOSubmeshMaterials[aIndex].first); // Submesh material
+      }
+      else if (UBOTypeIDs::Lights == ubos[i].mTypeID)
+      {
+        buffers.push_back(mSurface->GetLightManager(mView)->GetUBOLightBuffer()); // Lights
+      }
+      else if (UBOTypeIDs::Illumination == ubos[i].mTypeID)
+      {
+        buffers.push_back(mSurface->GetUBOIlluminationBuffer(mView)); // Illumination
+      }
+      else if (UBOTypeIDs::Model == ubos[i].mTypeID)
+      {
+        buffers.push_back(mUBOModel); // Model
+      }
+      else if (UBOTypeIDs::ClipPlanes == ubos[i].mTypeID)
+      {
+        buffers.push_back(mSurface->GetViewData(mView).mClipPlanesUBO); // Clip Planes
+      }
+      else
+      {
+        DebugObjection(true, fmt::format("Failed to find UBO for description name {}\n", ubos[i].mTypeID).c_str());
+      }
+    }
 
     mPipelineData.emplace(aSubMesh,
                           aSubMesh->CreatePipelineData(buffers));

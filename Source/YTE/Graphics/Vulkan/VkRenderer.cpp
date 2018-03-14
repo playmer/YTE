@@ -245,6 +245,12 @@ namespace YTE
   }
 
 
+  void VkRenderer::UpdateWindowClipPlanesBuffer(GraphicsView* aView, UBOClipPlanes& aClipPlanes)
+  {
+    GetSurface(aView->GetWindow())->UpdateSurfaceClipPlanesBuffer(aView, aClipPlanes);
+  }
+
+
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {

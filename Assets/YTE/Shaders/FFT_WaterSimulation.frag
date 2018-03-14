@@ -8,6 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_LIGHTS 64
+#define MAX_CLIP_PLANES 6
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -133,6 +134,15 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   float mTime;
   float mPadding;
 } Illumination;
+
+
+// ========================
+// Clip Planes Buffer
+layout (binding = UBO_CLIP_PLANES_BINDING) uniform UBOClipPlanes
+{
+  vec4 mPlanes[MAX_CLIP_PLANES];
+  uint mNumberOfPlanes;
+} ClipPlanes;
 
 
 
@@ -517,6 +527,12 @@ void main()
   //  discard;
   //  return;
   //}
+
+  if (ClipPlanes.mNumberOfPlanes > 0)
+  {
+    discard;
+    return;
+  }
 
   if (Lights.mActive < 0.5f)
   {

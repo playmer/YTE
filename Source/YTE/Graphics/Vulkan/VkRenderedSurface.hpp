@@ -46,12 +46,14 @@ namespace YTE
     // Buffers
     std::shared_ptr<vkhlf::Buffer> mViewUBO;
     std::shared_ptr<vkhlf::Buffer> mIlluminationUBO;
+    std::shared_ptr<vkhlf::Buffer> mClipPlanesUBO;
     std::string mName = "EMPTY";
 
     // Engine Side Data
     glm::vec4 mClearColor;
     UBOView mViewUBOData;
     UBOIllumination mIlluminationUBOData;
+    UBOClipPlanes mClipPlanesUBOData;
     VkLightManager mLightManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
@@ -72,6 +74,7 @@ namespace YTE
     ~VkRenderedSurface();
 
     void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOIllumination &aIllumination);
+    void UpdateSurfaceClipPlanesBuffer(GraphicsView* aView, UBOClipPlanes &aClipPlanes);
     void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 

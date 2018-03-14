@@ -129,6 +129,14 @@ namespace YTE
   }
 
 
+  void VkRenderedSurface::UpdateSurfaceClipPlanesBuffer(GraphicsView *aView, UBOClipPlanes& aClipPlanes)
+  {
+    GetViewData(aView).mClipPlanesUBOData = aClipPlanes;
+    this->YTERegister(Events::GraphicsDataUpdateVk, this,
+                      &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+  }
+
+
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
   {
@@ -368,12 +376,20 @@ namespace YTE
                                            nullptr,
                                            vk::MemoryPropertyFlagBits::eDeviceLocal,
                                            uboAllocator);
+      auto buffer3 = mRenderer->mDevice->createBuffer(sizeof(UBOClipPlanes),
+                                                      vk::BufferUsageFlagBits::eTransferDst |
+                                                      vk::BufferUsageFlagBits::eUniformBuffer,
+                                                      vk::SharingMode::eExclusive,
+                                                      nullptr,
+                                                      vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                                      uboAllocator);
 
       auto &view = emplaced.first->second;
 
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mViewUBO = buffer;
       view.mIlluminationUBO = buffer2;
+      view.mClipPlanesUBO = buffer3;
       view.mLightManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
@@ -495,6 +511,7 @@ namespace YTE
       auto &viewData = viewDataIt.second;
       viewData.mViewUBO->update<UBOView>(0, viewData.mViewUBOData, aEvent->mCBO);
       viewData.mIlluminationUBO->update<UBOIllumination>(0, viewData.mIlluminationUBOData, aEvent->mCBO);
+      viewData.mClipPlanesUBO->update<UBOClipPlanes>(0, viewData.mClipPlanesUBOData, aEvent->mCBO);
       this->YTEDeregister(Events::GraphicsDataUpdateVk, 
                           this,
                           &VkRenderedSurface::GraphicsDataUpdateVkEvent);

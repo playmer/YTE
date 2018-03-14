@@ -116,6 +116,7 @@ namespace YTE
     submesh.mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
     submesh.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
     submesh.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
+    submesh.mUBOs.emplace_back(UBOTypeIDs::ClipPlanes, useFrag, sizeof(UBOClipPlanes));
 
     std::vector<Submesh> submeshes{ submesh };
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);

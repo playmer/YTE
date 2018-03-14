@@ -12,6 +12,7 @@
 #include "YTE/Math/Constants.hpp"
 
 #define YTE_Graphics_LightCount 64
+#define YTE_Graphics_ClipPlaneCount 6
 
 namespace YTE
 {
@@ -43,6 +44,7 @@ namespace YTE
     const std::string Lights{ "LIGHTS" };
     const std::string Illumination{ "ILLUMINATION" };
     const std::string Model{ "MODEL" };
+    const std::string ClipPlanes{ "CLIP_PLANES" };
     const std::string Invalid{ "INVALID" };
   }
 
@@ -194,6 +196,12 @@ namespace YTE
     UBOLight mLights[YTE_Graphics_LightCount];
     unsigned int mNumOfLights = 0;
     float mActive = 0.0f;  // bool
+  };
+
+  struct UBOClipPlanes
+  {
+    glm::vec4 mPlanes[YTE_Graphics_ClipPlaneCount];
+    unsigned int mNumOfPlanes = 0;
   };
 }
 

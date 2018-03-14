@@ -22,6 +22,17 @@ namespace YTE
     mMeshName = aUniqueName;
     mSubmeshes.emplace_back(Submesh{});
     mSubmeshes[0].mShaderSetName = "Line";
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    mSubmeshes[0].mUBOs.clear();
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
   }
 
   LineDrawer::~LineDrawer()
@@ -147,6 +158,17 @@ namespace YTE
     mMeshName = aUniqueName;
     mSubmeshes.emplace_back(Submesh{});
     mSubmeshes[0].mShaderSetName = "Line";
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    mSubmeshes[0].mUBOs.clear();
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
   }
 
   TriangleDrawer::~TriangleDrawer()
@@ -277,6 +299,17 @@ namespace YTE
     mMeshName = aUniqueName;
     mSubmeshes.emplace_back(Submesh{});
     mSubmeshes[0].mShaderSetName = "Line";
+
+    ShaderUsage useVert(true, false);
+    ShaderUsage useFrag(false, true);
+    mSubmeshes[0].mUBOs.clear();
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::View, useVert, sizeof(UBOView));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Animation, useVert, sizeof(UBOAnimation));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::ModelMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::SubmeshMaterial, useFrag, sizeof(UBOMaterial));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Lights, useFrag, sizeof(UBOLightMan));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
+    mSubmeshes[0].mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
   }
 
   CurveDrawer::~CurveDrawer()

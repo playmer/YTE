@@ -28,6 +28,7 @@ namespace YTE
   struct UBOLight;
   struct UBOView;
   struct UBOIllumination;
+  struct UBOClipPlanes;
   struct Vertex;
 }
 #endif
