@@ -18,9 +18,19 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #define YTE_Gameplay_DialogueGraph_hpp
 
 #include "YTE/Core/Engine.hpp"
+#include "YTE/GameComponents/InputInterpreter.hpp"
 
 namespace YTE
 {
+	YTEDeclareEvent(DialogueNodeEvent);
+
+	class DialogueNodeEvent : public Event
+	{
+	public:
+		YTEDeclareType(DialogueNodeEvent);
+		DialogueNodeEvent() {  };
+	};
+
   namespace AnimationNames 
   {
     static std::string WalkLoop = "NPC_Walk_Loop.fbx";
@@ -49,6 +59,8 @@ namespace YTE
     DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
+		void ActivateNode();
+		void OnAdvanceConversation(AdvanceConversation *aEvent);
   private:
     NodeType mType;
     std::vector<DialogueNode*> mChildren;
@@ -65,7 +77,6 @@ namespace YTE
 #endif
 
  /*
- YTEDeclareEvent(DialogueNodeEvent);
  YTEDeclareEvent(DialogueResponseEvent);
 
  YTEDeclareEvent(DialoguePrintText);
@@ -73,12 +84,9 @@ namespace YTE
  YTEDeclareEvent(DialogueGetInput);
 
 
- class DialogueNodeEvent : public Event
- {
- public:
- YTEDeclareType(DialogueNodeEvent);
- DialogueNodeEvent() {  };
- };
+ 
+
+
  class DialogueResponseEvent : public Event
  {
  public:
@@ -87,6 +95,8 @@ namespace YTE
 
  int ResponseNumber;
  };
+
+
  class DialoguePrintText : public Event
  {
  public:
@@ -95,6 +105,8 @@ namespace YTE
 
  std::vector<std::string> Data;
  };
+
+
  class DialoguePlayAnim : public Event
  {
  public:
@@ -103,6 +115,8 @@ namespace YTE
 
  std::vector<std::string> Data;
  };
+
+
  class DialogueGetInput : public Event
  {
  public:

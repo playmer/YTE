@@ -13,9 +13,10 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  /*
   YTEDefineEvent(DialogueNodeEvent);
   YTEDefineType(DialogueNodeEvent) { YTERegisterType(DialogueNodeEvent); }
+
+  /*
 
   YTEDefineEvent(DialoguePrintText);
   YTEDefineType(DialoguePrintText) { YTERegisterType(DialoguePrintText); }
@@ -148,6 +149,31 @@ namespace YTE
     }
   }
   */
+
+	// Helper function to run the node logic and register children
+	void DialogueNode::ActivateNode()
+	{
+			// Deregister self
+		this->YTEDeregister(Events::AdvanceConversation, this, &ActivateNode);
+		//if (we are the correct node)
+		//{
+				// Call this nodes logic functor
+			mNodeLogic;
+				// Register children for the UI response event
+			for (auto child : mChildren)
+			{
+				this->YTERegister(Events::AdvanceConversation, this, &ActivateNode);
+			}
+		//}
+	}
+
+	// @@@ this ui response should be an OnAdvanceConversation from inputinterpreter
+	void DialogueNode::OnAdvanceConversation(AdvanceConversation *aEvent)
+	{
+		ActivateNode();
+	}
+
+	// Functors
   void DialogueNode::PlayAnim()
   {
     

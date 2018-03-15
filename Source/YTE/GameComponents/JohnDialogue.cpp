@@ -10,7 +10,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/JohnDialogue.hpp"
-#include "YTE/GameComponents/InputInterpreter.hpp"
 
 
 namespace YTE
@@ -180,11 +179,10 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
-    // SendEvent to dialogue runner with pointer to conversation
+		// SendEvent to root node (even though we have access directly through a ptr, the functionality is the same as the others so we just send an event so we have no duplicate code
 		Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
-		//FillDialogueBox convo(temp);
-		//mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
-		//mOwner->GetSpace()->SendEvent("FillDialogueBox", &convo);
+		AdvanceConversation advConvo;
+		temp->mRoot->SendEvent("AdvanceConversation", &advConvo);
   }
 
 	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
