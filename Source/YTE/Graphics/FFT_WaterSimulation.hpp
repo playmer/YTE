@@ -198,7 +198,11 @@ namespace YTE
     void SetShaderSetName(std::string aName)
     {
       mShaderSetName = aName;
-      ReloadShaders();
+      
+      if (!mConstructing)
+      {
+        ReloadShaders();
+      }
     }
     void SetRunWithEngineUpdate(bool aValue)
     {

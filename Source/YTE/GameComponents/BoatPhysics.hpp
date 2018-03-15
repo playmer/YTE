@@ -24,10 +24,11 @@ namespace YTE
     glm::vec3 AddAbovewaterForces(FFT_WaterSimulation* aSim);
     void CalculateSlammingVelocities(std::vector<SlammingForceData>& slammingForceData);
 
-    Transform * transform;
-    RigidBody * boatRB;
-    Orientation * orientation;
-    Model * model;
+    Transform *mTransform;
+    Transform *mBoatTransform;
+    RigidBody *mBoatRB;
+    Orientation *mBoatOrientation;
+    Model *mModel;
     ModifyBoatMesh modifyBoatMesh;
     float waterDensity;
     float airDensity;

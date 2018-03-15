@@ -126,8 +126,8 @@ namespace YTE
       //mRigidBody->setAngularFactor(btVector3(0, 0, 0));
       mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-      mRigidBody->updateInertiaTensor();
       mRigidBody->setDamping(0.8f, 0.8f);
+      mRigidBody->updateInertiaTensor();
     }
 
     world->addRigidBody(mRigidBody.get());

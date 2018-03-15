@@ -23,7 +23,7 @@ namespace YTE
   {
     boatTrans = aComposition->GetComponent<Transform>();
     boatModel = aComposition->GetComponent<Model>();
-    boatRB = aComposition->GetComponent<RigidBody>();
+    boatRB = aComposition->GetParent()->GetComponent<RigidBody>();
     auto mesh = boatModel->GetMesh();
     auto submeshes = mesh->GetSubmeshes();
     

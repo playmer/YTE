@@ -87,8 +87,6 @@ namespace YTE
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
-    mRigidBody->SetDamping(0.9f, 0.9f);
-
       // Cache ids for all sounds used by this component
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
@@ -160,7 +158,7 @@ namespace YTE
       if (!mIsSailUp)
       {
         mSoundEmitter->PlayEvent(mSoundSailUp);
-        mRigidBody->SetDamping(0.f, 0.9f);
+        //mRigidBody->SetDamping(0.f, 0.9f);
       }
     }
     else
@@ -168,7 +166,7 @@ namespace YTE
       if (mIsSailUp)
       {
         mSoundEmitter->PlayEvent(mSoundSailDown);
-        mRigidBody->SetDamping(0.9f, 0.9f);
+        //mRigidBody->SetDamping(0.9f, 0.9f);
       }
     }
 
@@ -221,11 +219,11 @@ namespace YTE
 
     mCurrSpeed = glm::length(vel);
 
-    mRigidBody->SetVelocity(mCurrSpeed * mOrientation->GetForwardVector());
+    //mRigidBody->SetVelocity(mCurrSpeed * mOrientation->GetForwardVector());
 
     if (mIsSailUp)
     {
-      mRigidBody->ApplyForce(mWindForce * mOrientation->GetForwardVector(), glm::vec3(0));
+      mRigidBody->ApplyForce(mWindForce * (mOrientation->GetForwardVector()), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
@@ -236,8 +234,8 @@ namespace YTE
     {
       if (mCurrSpeed < 0.1f)
       {
-        mRigidBody->SetVelocity(glm::vec3(0));
-        mRigidBody->SetGravity(glm::vec3(0));
+        //mRigidBody->SetVelocity();
+        //mRigidBody->SetGravity(glm::vec3(0));
       }
     }
 

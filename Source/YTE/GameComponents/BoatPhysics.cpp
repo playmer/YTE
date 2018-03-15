@@ -31,10 +31,12 @@ namespace YTE
   void BoatPhysics::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatPhysics::Update);
-    boatRB = mOwner->GetComponent<RigidBody>();
-    transform = mOwner->GetComponent<Transform>();
-    orientation = mOwner->GetComponent<Orientation>();
-    model = mOwner->GetComponent<Model>();
+    mBoatRB = mOwner->GetParent()->GetComponent<RigidBody>();
+    mBoatTransform = mOwner->GetParent()->GetComponent<Transform>();
+    mBoatOrientation = mOwner->GetParent()->GetComponent<Orientation>();
+
+    mTransform = mOwner->GetComponent<Transform>();
+    mModel = mOwner->GetComponent<Model>();
 
     modifyBoatMesh = ModifyBoatMesh(mOwner);
 
@@ -57,6 +59,7 @@ namespace YTE
     {
       under = AddUnderwaterForces(waterSim, (float)aLogicUpdate->Dt);
     }
+    
     //if (modifyBoatMesh.AbovewaterTriangleData().size() > 0)
     //{
     //  over = AddAbovewaterForces(waterSim);
@@ -68,11 +71,11 @@ namespace YTE
     glm::vec3 total;
     (void)aSim;
     (void)dt;
-    //float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, glm::length(boatRB->GetVelocity()), modifyBoatMesh.CalculateUnderwaterLength());
-    //auto slammingForceData = modifyBoatMesh.SlammingData();
-    //CalculateSlammingVelocities(slammingForceData);
-    //float boatArea = modifyBoatMesh.BoatArea();
-    //float boatMass = boatRB->GetMass();
+    float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, glm::length(mBoatRB->GetVelocity()), modifyBoatMesh.CalculateUnderwaterLength());
+    auto slammingForceData = modifyBoatMesh.SlammingData();
+    CalculateSlammingVelocities(slammingForceData);
+    float boatArea = modifyBoatMesh.BoatArea();
+    float boatMass = mBoatRB->GetMass();
 
     auto indexOfOriginalTriangle = modifyBoatMesh.IndexOfOrigTris();
     auto underwaterTriangleData = modifyBoatMesh.UnderwaterTriangleData();
@@ -80,18 +83,31 @@ namespace YTE
     {
       TriangleData triangleData = underwaterTriangleData[i];
       glm::vec3 forceToAdd;
-      forceToAdd += BoatPhysicsMath::BuoyancyForce(waterDensity, boatRB->GetGravity().y, triangleData);
+      forceToAdd += BoatPhysicsMath::BuoyancyForce(waterDensity, mBoatRB->GetGravity().y, triangleData);
       //forceToAdd += BoatPhysicsMath::ViscousWaterResistanceForce(waterDensity, triangleData, Cf);
       //forceToAdd += BoatPhysicsMath::PressureDragForce(triangleData);
-      //int originalTriangleIndex = indexOfOriginalTriangle[i];
-      //SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
+      int originalTriangleIndex = indexOfOriginalTriangle[i];
+      SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
       //
       //forceToAdd += BoatPhysicsMath::SlammingForce(slammingData, triangleData, boatArea, boatMass, dt);
-
+    
       total += forceToAdd;
       // Add the forces to the boat
-      boatRB->ApplyForce(forceToAdd, triangleData.center - transform->GetWorldTranslation());
+      //boatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
+      mBoatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
     }
+
+    //auto trans = mTransform->GetWorldTranslation();
+    //
+    //auto height = aSim->GetHeight(trans.x, trans.z);
+    //
+    //float heightDiff = trans.y - height.y;
+    //
+    //float bF = 1270.0f * 10.0f * heightDiff;
+    //
+    //glm::vec3 force(0.0f, bF, 0.0f);
+    //
+    //mBoatRB->ApplyForce(force, glm::vec3(0.0f));
 
     return total;
   }
@@ -99,10 +115,9 @@ namespace YTE
   glm::vec3 BoatPhysics::AddAbovewaterForces(FFT_WaterSimulation* aSim)
   {
     (void)aSim;
-    /*
+    
     glm::vec3 total;
-    (void)aSim;
-    auto ubo = model->GetInstantiatedModel()->GetUBOModelData();
+    auto ubo = mModel->GetInstantiatedModel()[0]->GetUBOModelData();
     auto m2w = ubo.mModelMatrix;
     auto aboveWaterTriangleData = modifyBoatMesh.AbovewaterTriangleData();
 
@@ -114,21 +129,21 @@ namespace YTE
       glm::vec3 forceToAdd;
 
       // Force 1 - Air resistance
-      //forceToAdd += BoatPhysicsMath::AirResistanceForce(airDensity, triangleData, 1.28f);
+      forceToAdd += BoatPhysicsMath::AirResistanceForce(airDensity, triangleData, 1.28f);
 
       // Add the forces to the boat
-      boatRB->ApplyForce(forceToAdd, triangleData.center - transform->GetWorldTranslation());
+      mBoatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
       total += forceToAdd;
     }
-    */
+    
     return glm::vec3(0.0f, 0.0f, 0.0f);
   }
 
   void BoatPhysics::CalculateSlammingVelocities(std::vector<SlammingForceData>& slammingForceData)
   {
     (void)slammingForceData;
-    /*
-    auto ubo = model->GetInstantiatedModel()->GetUBOModelData();
+    
+    auto ubo = mModel->GetInstantiatedModel()[0]->GetUBOModelData();
     auto m2w = ubo.mModelMatrix;
     for (int i = 0; i < slammingForceData.size(); ++i)
     {
@@ -139,9 +154,9 @@ namespace YTE
       glm::vec4 c = m2w * glm::vec4(slammingForceData[i].triangleCenter, 1);
       glm::vec3 center(c.x, c.y, c.z);
 
-      slammingForceData[i].velocity = BoatPhysicsMath::GetTriangleVelocity(boatRB, transform, center);
+      slammingForceData[i].velocity = BoatPhysicsMath::GetTriangleVelocity(mBoatRB, mTransform, center);
     }
-    */
+    
   }
 
 }

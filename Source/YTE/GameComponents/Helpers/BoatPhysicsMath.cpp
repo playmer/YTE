@@ -7,7 +7,7 @@
 namespace YTE
 {
 
-  const float BoatPhysicsMath::cRhoOcean = 1.270f;
+  const float BoatPhysicsMath::cRhoOcean = 12.70f;
   const float BoatPhysicsMath::cRhoAir = 1.225f;
 
   glm::vec3 BoatPhysicsMath::GetTriangleVelocity(RigidBody* boatRB, Transform* boatTrans, glm::vec3 triCenter)
@@ -32,6 +32,14 @@ namespace YTE
     glm::vec3 bF = rho * gravityY * triangleData.distanceToSurface * triangleData.area * triangleData.normal;
 
     bF = CheckForceIsValid(bF, "Buoyancy");
+
+    bF.x = 0.0f;
+    bF.z = 0.0f;
+    
+    //if (bF.y < 0.1f)
+    //{
+    //  bF.y = 0.0f;
+    //}
 
     return bF;
   }
