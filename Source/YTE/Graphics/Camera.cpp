@@ -427,7 +427,7 @@ namespace YTE
     float amount = trans.y - aWorldGroundHeight;
     trans.y -= amount;
 
-    view.mViewMatrix = glm::lookAt(trans, mTargetPoint, glm::vec3(up4));
+    view.mViewMatrix = glm::lookAt(trans, mTargetPoint, glm::vec3(up4.x, up4.y, up4.z));
     view.mCameraPosition = glm::vec4(trans, 1.0f);
     return view;
   }

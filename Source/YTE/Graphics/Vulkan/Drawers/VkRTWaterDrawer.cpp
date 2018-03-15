@@ -39,7 +39,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aName,
                      aCombinationType)
   {
-    //Initialize();
+    Initialize();
   }
 
   VkRTWaterDrawer::VkRTWaterDrawer(VkRenderedSurface *aSurface,
@@ -55,7 +55,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aName,
                      aCombinationType)
   {
-    //Initialize();
+    Initialize();
   }
 
   VkRTWaterDrawer::~VkRTWaterDrawer()
@@ -76,7 +76,6 @@ namespace YTE
   void VkRTWaterDrawer::RenderFull(const vk::Extent2D& aExtent,
                                    std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    return;
     if (mWaterComponent == nullptr)
     {
       return;
@@ -95,7 +94,7 @@ namespace YTE
     mReflectiveCBOB->NextCommandBuffer();
     auto reflectiveCBO = mReflectiveCBOB->GetCurrentCBO();
     reflectiveCBO->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mReflectiveRenderPass);
-    RenderReflective(cbo, aExtent, aMeshes);
+    RenderReflective(reflectiveCBO, aExtent, aMeshes);
     reflectiveCBO->end();
   }
 
@@ -273,6 +272,8 @@ namespace YTE
 
   void VkRTWaterDrawer::Initialize()
   {
+    extent = mSurface->GetExtent();
+
     mWaterComponent = nullptr;
     mData.mName = mName + "Refractive";
     mData.mCombinationType = mCombination;
@@ -292,14 +293,22 @@ namespace YTE
 
   void VkRTWaterDrawer::Resize(vk::Extent2D& aExtent)
   {
-    return;
-    YTEUnusedArgument(aExtent);
-    CreateFrameBuffer();
+    extent = aExtent;
+    extent.width = static_cast<uint32_t>(static_cast<float>(extent.width) * EXTENT_FACTOR);
+    extent.height = static_cast<uint32_t>(static_cast<float>(extent.height) * EXTENT_FACTOR);
+
+    CreateRefractiveFrameBuffer();
+    CreateReflectiveFrameBuffer();
   }
 
   void VkRTWaterDrawer::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    return;
+    if (mWaterComponent == nullptr)
+    {
+      return;
+    }
+
+
     // -----------------------------------
     // refractive
     // dont move camera
@@ -396,14 +405,12 @@ namespace YTE
 
   void VkRTWaterDrawer::MoveToNextEvent()
   {
-    return;
     mCBEB->NextEvent();
     mReflectiveCBEB->NextEvent();
   }
 
   void VkRTWaterDrawer::NotifyWaterComponent()
   {
-    return;
     if (mWaterComponent)
     {
       mWaterComponent->SetupSamplersFromVulkan(mData.mSampler, 

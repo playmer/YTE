@@ -326,6 +326,10 @@ namespace YTE
       for (auto &v : mViewData)
       {
         v.second.mRenderTarget->Resize(extent);
+        if (v.second.mWaterDrawer != nullptr)
+        {
+          v.second.mWaterDrawer->Resize(extent);
+        }
         rts.push_back(v.second.mRenderTarget.get());
       }
 
@@ -396,7 +400,7 @@ namespace YTE
       view.mViewOrder = aView->GetOrder(); // default
       view.mRenderTarget->SetOrder(view.mViewOrder);
 
-      if (aDrawerType == YTEDrawerTypes::GameForwardDrawer)
+      if (aDrawerType == YTEDrawerTypes::GameForwardDrawer || aDrawerType == YTEDrawerTypes::DefaultDrawer)
       {
         view.mWaterDrawer = CreateRenderTarget(YTEDrawerTypes::WaterDrawer, &view, aCombination);
         view.mWaterDrawer->SetView(&view);
