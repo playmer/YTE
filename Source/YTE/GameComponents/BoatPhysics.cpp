@@ -97,6 +97,12 @@ namespace YTE
       mBoatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
     }
 
+    auto velocity = mBoatRB->GetVelocity();
+
+    float velY = velocity.y;
+    velY *= 0.4;
+    mBoatRB->SetVelocity(velocity.x, velY, velocity.z);
+
     //auto trans = mTransform->GetWorldTranslation();
     //
     //auto height = aSim->GetHeight(trans.x, trans.z);
