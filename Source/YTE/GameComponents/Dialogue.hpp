@@ -1,3 +1,12 @@
+/******************************************************************************/
+/*!
+* \author Isaac Dayton
+* \date   2018/03/15
+*
+* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
+*/
+/******************************************************************************/
+
 #pragma once
 
 #include "YTE/Core/Composition.hpp"

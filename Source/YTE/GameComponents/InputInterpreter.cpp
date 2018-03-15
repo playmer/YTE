@@ -17,6 +17,7 @@ namespace YTE
 {
   // Dialogue Events
   YTEDefineEvent(DialogueStart);
+  YTEDefineEvent(DialogueSelect);
   YTEDefineEvent(DialogueConfirm);
   YTEDefineEvent(DialogueExit);
 
@@ -35,6 +36,7 @@ namespace YTE
   YTEDefineEvent(CameraRotateEvent);
 
   YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
+  YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
   YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
   YTEDefineType(DialogueExit) { YTERegisterType(DialogueExit); }
   YTEDefineType(MenuStart) { YTERegisterType(MenuStart); }
@@ -143,6 +145,16 @@ namespace YTE
         CameraRotateEvent camRot;
         camRot.StickDirection = aEvent->StickDirection;
         mOwner->SendEvent(Events::CameraRotateEvent, &camRot);
+      }
+    }
+
+    else if (mContext == InputContext::Dialogue) 
+    {
+      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      {
+        DialogueSelect selectEvent;
+        selectEvent.StickDirection = aEvent->StickDirection;
+        mOwner->SendEvent(Events::DialogueSelect, &selectEvent);
       }
     }
   }

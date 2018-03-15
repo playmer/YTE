@@ -87,6 +87,8 @@ namespace YTE
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
+    mRigidBody->SetDamping(0.9f, 0.9f);
+
       // Cache ids for all sounds used by this component
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
@@ -139,7 +141,8 @@ namespace YTE
 
         if (mNearbyDock)
         {
-          mNearbyDock->SendEvent("RequestDialogueStart", &dStart);
+          mNearbyDock->SendEvent(Events::RequestDialogueStart, &dStart);
+          dStart.camera->SendEvent(Events::RequestDialogueStart, &dStart);
         }
 
         // play the docking sound
@@ -158,7 +161,7 @@ namespace YTE
       if (!mIsSailUp)
       {
         mSoundEmitter->PlayEvent(mSoundSailUp);
-        //mRigidBody->SetDamping(0.f, 0.9f);
+        mRigidBody->SetDamping(0.f, 0.9f);
       }
     }
     else
@@ -166,7 +169,7 @@ namespace YTE
       if (mIsSailUp)
       {
         mSoundEmitter->PlayEvent(mSoundSailDown);
-        //mRigidBody->SetDamping(0.9f, 0.9f);
+        mRigidBody->SetDamping(0.9f, 0.9f);
       }
     }
 
@@ -217,9 +220,10 @@ namespace YTE
 
     glm::vec3 vel = mRigidBody->GetVelocity();
 
-    mCurrSpeed = glm::length(vel);
+    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
 
-    //mRigidBody->SetVelocity(mCurrSpeed * mOrientation->GetForwardVector());
+    auto forward = mOrientation->GetForwardVector();
+    mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
 
     if (mIsSailUp)
     {
@@ -234,7 +238,7 @@ namespace YTE
     {
       if (mCurrSpeed < 0.1f)
       {
-        //mRigidBody->SetVelocity();
+        mRigidBody->SetVelocity(0, vel.y, 0);
         //mRigidBody->SetGravity(glm::vec3(0));
       }
     }

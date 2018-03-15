@@ -29,6 +29,7 @@ namespace YTE
     CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
     void RotateCamera(CameraRotateEvent *aEvent);
+    void OnDialogueExit(DialogueExit *aEvent);
   private:
     Transform *mBoatTransform;
     Orientation *mBoatOrientation;

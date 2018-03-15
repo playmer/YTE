@@ -2,6 +2,7 @@
 /*!
 \file   CameraController.cpp
 \author Jonathan Ackerman
+        Isaac Dayton
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-01-27
 
@@ -35,6 +36,7 @@ namespace YTE
   void CameraController::Initialize()
   {
     mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
+    mSpace->YTERegister(Events::DialogueExit, this, &CameraController::OnDialogueExit);
     
     mTransform = mOwner->GetComponent<Transform>();
     mOrientation = mOwner->GetComponent<Orientation>();
@@ -91,5 +93,11 @@ namespace YTE
     mTransform->SetTranslation(mTransform->GetTranslation() + translationVec);
     mTransform->SetRotationProperty(camForward);
     */
+  }
+
+  void CameraController::OnDialogueExit(DialogueExit *aEvent)
+  {
+    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
+    mCameraComponent->SetTargetPoint(mBoatTransform->GetWorldTranslation());
   }
 }// end yte namespace

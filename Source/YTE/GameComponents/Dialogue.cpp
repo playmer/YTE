@@ -1,3 +1,12 @@
+/******************************************************************************/
+/*!
+* \author Isaac Dayton
+* \date   2018/03/15
+*
+* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
+*/
+/******************************************************************************/
+
 #include "YTE/Graphics/Camera.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
@@ -76,6 +85,8 @@ namespace YTE
       return;
     }
 
+    Transform *dialogCamTrans = mOwner->FindFirstCompositionByName("DialogueCamera")->GetComponent<Transform>();
+
     Composition *camera = aEvent->camera;
     
     auto orientation = camera->GetComponent<Orientation>();
@@ -83,14 +94,18 @@ namespace YTE
     glm::vec3 forward = orientation->GetForwardVector();
     
     auto camTransform = camera->GetComponent<Transform>();
-    
-    glm::vec3 pos = camTransform->GetWorldTranslation();
+   
+    camTransform->SetWorldTranslation(dialogCamTrans->GetWorldTranslation());
+    camTransform->SetWorldRotation(dialogCamTrans->GetWorldRotation());
+    camTransform->SetWorldScale(dialogCamTrans->GetWorldScale());
+
+    /*glm::vec3 pos = camTransform->GetWorldTranslation();
     
     glm::vec3 spritePos = pos - 3.0f * forward;
 
     auto spriteTransform = mSprite->GetComponent<Transform>();
     spriteTransform->SetWorldTranslation(spritePos);
-    spriteTransform->SetWorldRotation(camTransform->GetWorldRotation());
+    spriteTransform->SetWorldRotation(camTransform->GetWorldRotation());*/
 
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
 

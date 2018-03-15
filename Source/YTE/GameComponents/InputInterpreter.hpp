@@ -36,6 +36,7 @@ namespace YTE
   YTEDeclareEvent(BoatTurnEvent);
   YTEDeclareEvent(BoatDockEvent);
   YTEDeclareEvent(DialogueStart);
+  YTEDeclareEvent(DialogueSelect);
   YTEDeclareEvent(DialogueConfirm);
   YTEDeclareEvent(DialogueExit);
   YTEDeclareEvent(CameraRotateEvent);
@@ -76,6 +77,13 @@ namespace YTE
   {
   public:
     YTEDeclareType(DialogueStart);
+  };
+
+  class DialogueSelect : public Event
+  {
+  public:
+    YTEDeclareType(DialogueSelect);
+    glm::vec2 StickDirection;
   };
 
   class DialogueConfirm : public Event
