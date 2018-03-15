@@ -44,10 +44,10 @@ namespace YTE
     virtual void RenderFull(const vk::Extent2D& aExtent,
                             std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes) override;
     void RenderRefractive(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                          const vk::Extent2D& extent,
+                          const vk::Extent2D& aExtent,
                           std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
     void RenderReflective(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                          const vk::Extent2D& extent,
+                          const vk::Extent2D& aExtent,
                           std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
 
     void SetWaterComponent(FFT_WaterSimulation* aComponent)
@@ -61,6 +61,49 @@ namespace YTE
     }
 
   protected:
+    struct DrawDataW
+    {
+      DrawDataW(std::shared_ptr<vkhlf::Pipeline> &aPipeline,
+                std::shared_ptr<vkhlf::Buffer> &aVertexBuffer,
+                std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
+                std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+                std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
+                u32 aIndexCount,
+                float aLineWidth)
+        : mPipeline{ aPipeline }
+        , mVertexBuffer{ aVertexBuffer }
+        , mIndexBuffer{ aIndexBuffer }
+        , mPipelineLayout{ aPipelineLayout }
+        , mDescriptorSet{ aDescriptorSet }
+        , mIndexCount{ aIndexCount }
+        , mLineWidth(aLineWidth)
+      {
+
+      }
+
+      std::shared_ptr<vkhlf::Pipeline> &mPipeline;
+      std::shared_ptr<vkhlf::Buffer> &mVertexBuffer;
+      std::shared_ptr<vkhlf::Buffer> &mIndexBuffer;
+      std::shared_ptr<vkhlf::PipelineLayout> &mPipelineLayout;
+      std::shared_ptr<vkhlf::DescriptorSet> &mDescriptorSet;
+      u32 mIndexCount;
+      float mLineWidth;
+    };
+    std::vector<DrawDataW> mTriangles;
+    std::vector<DrawDataW> mLines;
+    std::vector<DrawDataW> mCurves;
+    std::vector<DrawDataW> mShaderNoCull;
+    std::vector<DrawDataW> mAdditiveBlendShader;
+
+
+
+
+
+
+
+
+
+    void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, const vk::Extent2D& aExtent, std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
     void NotifyWaterComponent();  // tells water component about new samplers
 
     void CreateReflectiveRenderPass();
@@ -77,6 +120,7 @@ namespace YTE
     // mCBOB and mCBEB are for refractive
     std::unique_ptr<VkCBOB<3, true>> mReflectiveCBOB;
     std::unique_ptr<VkCBEB<3 >> mReflectiveCBEB;
+    vk::Extent2D extent;
   };
 }
 

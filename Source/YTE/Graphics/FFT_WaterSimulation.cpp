@@ -22,6 +22,8 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkRTWaterDrawer.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -219,6 +221,11 @@ namespace YTE
     Construct();
     StartKFFT();
     InstanceReset();
+
+    if (mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer != nullptr)
+    {
+      static_cast<VkRTWaterDrawer*>(mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer.get())->SetWaterComponent(this);
+    }
   }
 
 
@@ -342,6 +349,11 @@ namespace YTE
   {
     Destruct();
     StopKFFT();
+
+    if (mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer != nullptr)
+    {
+      static_cast<VkRTWaterDrawer*>(mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer.get())->SetWaterComponent(nullptr);
+    }
   }
 
 
@@ -1062,25 +1074,42 @@ namespace YTE
   }
 
   // ------------------------------------
-  void FFT_WaterSimulation::CreateHeightmap()
+  void FFT_WaterSimulation::CreateHeightmap(vkhlf::Sampler* aRefractiveSampler,
+                                            vkhlf::ImageView* aRefractiveImageView,
+                                            vkhlf::Sampler* aReflectiveSampler,
+                                            vkhlf::ImageView* aReflectiveImageView)
   {
     // create objects
     std::string guid = mOwner->GetGUID().ToIdentifierString();
     std::string name = fmt::format("{}_heightmap_{}", guid, mGridSize);
     int size = squared(mInstanceCount);
 
+    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs;
+    std::vector<TextureInformation> texs;
+    std::vector<UBOInformation> ubos;
+
+    //if (aRefractiveSampler)
+    //{
+    //  fbs.emplace_back(aRefractiveSampler, aRefractiveImageView);
+    //  fbs.emplace_back(aReflectiveSampler, aReflectiveImageView);
+    //}
+
+    texs.emplace_back("copywriteWaterTextureDiffuse.png", TextureViewType::e2D, TextureTypeIDs::Diffuse);
+    texs.emplace_back("copywriteFoamTextureSpecular.png", TextureViewType::e2D, TextureTypeIDs::Specular);
+    texs.emplace_back("copywritePerlinNoiseTextureNormal.png", TextureViewType::e2D, TextureTypeIDs::Normal);
+
     for (int i = 0; i < size; ++i)
     {
       mInstantiatedHeightmap.push_back(std::make_unique<InstantiatedHeightmap>());
-        mInstantiatedHeightmap[i]->Initialize(name,
-          mVertices,
-          mIndices,
-          mShaderSetName,
-          mGraphicsView,
-          mRenderer,
-          "copywriteWaterTextureDiffuse.png",
-          "copywriteFoamTextureSpecular.png",
-          "copywritePerlinNoiseTextureNormal.png");
+      mInstantiatedHeightmap[i]->Initialize(name,
+                                            mVertices,
+                                            mIndices,
+                                            mShaderSetName,
+                                            mGraphicsView,
+                                            mRenderer,
+                                            fbs,
+                                            texs,
+                                            ubos);
     }
   }
 
@@ -1130,6 +1159,19 @@ namespace YTE
     }
 
     return { nullptr };
+  }
+
+
+
+  // ------------------------------------
+  void FFT_WaterSimulation::SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler> aRefractiveSampler,
+                                                    std::shared_ptr<vkhlf::ImageView> aRefractiveImageView,
+                                                    std::shared_ptr<vkhlf::Sampler> aReflectiveSampler,
+                                                    std::shared_ptr<vkhlf::ImageView> aReflectiveImageView)
+  {
+    DestroyHeightmap();
+    CreateHeightmap(aRefractiveSampler.get(), aRefractiveImageView.get(), aReflectiveSampler.get(), aReflectiveImageView.get());
+    AdjustPositions();
   }
 
   

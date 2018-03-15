@@ -18,6 +18,8 @@
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -253,8 +255,19 @@ namespace YTE
 
     const std::vector<Vertex>& GetVertices();
 
+
+    Transform *mTransform;
+
+    void SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler> aRefractiveSampler,
+                                 std::shared_ptr<vkhlf::ImageView> aRefractiveImageView,
+                                 std::shared_ptr<vkhlf::Sampler> aReflectiveSampler,
+                                 std::shared_ptr<vkhlf::ImageView> aReflectiveImageView);
+
   private:
-    void CreateHeightmap();
+    void CreateHeightmap(vkhlf::Sampler* aRefractiveSampler = nullptr,
+                         vkhlf::ImageView* aRefractiveImageView = nullptr,
+                         vkhlf::Sampler* aReflectiveSampler = nullptr,
+                         vkhlf::ImageView* aReflectiveImageView = nullptr);
     void DestroyHeightmap();
     void UpdateHeightmap();
     void InstanceReset();
@@ -322,14 +335,13 @@ namespace YTE
     kiss_fftnd_cfg mKFFTConfig[5];
 
     // vulkan specific
-    Renderer *mRenderer;
+    VkRenderer *mRenderer;
     std::vector<std::unique_ptr<InstantiatedHeightmap>> mInstantiatedHeightmap;
     std::string mShaderSetName;
     GraphicsView *mGraphicsView;
 
     // YTE specific
     Window *mWindow;
-    Transform *mTransform;
   };
 }
 

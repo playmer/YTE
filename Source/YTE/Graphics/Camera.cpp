@@ -395,7 +395,7 @@ namespace YTE
   }
 
 
-  void Camera::InvertAcrossPlane(float aWorldGroundHeight)
+  UBOView Camera::InvertAcrossPlane(float aWorldGroundHeight)
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
@@ -429,10 +429,10 @@ namespace YTE
 
     view.mViewMatrix = glm::lookAt(trans, mTargetPoint, glm::vec3(up4));
     view.mCameraPosition = glm::vec4(trans, 1.0f);
-    mGraphicsView->UpdateView(this, view);
+    return view;
   }
 
-  void Camera::ResetInversion()
+  UBOView Camera::ResetInversion()
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
@@ -461,7 +461,7 @@ namespace YTE
     up4 = glm::rotate(rot, up4);
     view.mViewMatrix = glm::lookAt(mCameraTransform->GetTranslation(), mTargetPoint, glm::vec3(up4));
     view.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
-    mGraphicsView->UpdateView(this, view);
+    return view;
   }
 
 

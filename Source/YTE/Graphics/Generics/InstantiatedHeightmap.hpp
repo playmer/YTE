@@ -13,6 +13,7 @@
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -40,9 +41,9 @@ namespace YTE
                     std::string& aShaderSetName,
                     GraphicsView* aView,
                     Renderer* aRenderer,
-                    std::string aTextureName,
-                    std::string aSpecularTextureName,
-                    std::string aNormalTextureName);
+                    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                    std::vector<TextureInformation> texs,
+                    std::vector<UBOInformation> ubos);
 
     void UpdateMesh(std::vector<Vertex>& aVertices);
     void UpdateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
@@ -53,15 +54,17 @@ namespace YTE
     }
 
   private:
-    void CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName);
+    void CreateMesh(std::vector<Vertex>& aVertices, 
+                    std::vector<u32>& aIndices, 
+                    std::string& aModelName,
+                    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                    std::vector<TextureInformation> texs,
+                    std::vector<UBOInformation> ubos);
 
     std::string mShaderSetName;
     std::unique_ptr<InstantiatedModel> mModel;
     Renderer *mRenderer;
     GraphicsView *mGraphicsView;
-    std::string mDiffuseTName;
-    std::string mSpecularTName;
-    std::string mNormalTName;
   };
 }
 

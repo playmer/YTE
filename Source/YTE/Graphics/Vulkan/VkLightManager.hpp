@@ -47,12 +47,13 @@ namespace YTE
       return mBuffer;
     }
 
+    GraphicsView* mGraphicsView;
+
   private:
     std::vector<VkInstantiatedLight*> mLights;
     UBOLightMan mLightData;
     std::shared_ptr<vkhlf::Buffer> mBuffer;
     VkRenderedSurface* mSurface;
-    GraphicsView* mGraphicsView;
     unsigned char mLightUse[YTE_Graphics_LightCount];
     bool mUpdateRequired;
   };

@@ -46,7 +46,7 @@ namespace YTE
     mGraphicsView = aView;
     mRenderer = aRenderer;
 
-    CreateMesh(aVertices, aIndices, aModelName);
+    CreateMesh(aVertices, aIndices, aModelName, {}, {}, {});
   }
 
   void InstantiatedHeightmap::Initialize(std::string& aModelName,
@@ -55,18 +55,15 @@ namespace YTE
                                          std::string& aShaderSetName,
                                          GraphicsView* aView,
                                          Renderer* aRenderer,
-                                         std::string aDiffuseTextureName,
-                                         std::string aSpecularTextureName,
-                                         std::string aNormalTextureName)
+                                         std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                                         std::vector<TextureInformation> texs,
+                                         std::vector<UBOInformation> ubos)
   {
     mShaderSetName = aShaderSetName;
     mGraphicsView = aView;
     mRenderer = aRenderer;
-    mDiffuseTName = aDiffuseTextureName;
-    mSpecularTName = aSpecularTextureName;
-    mNormalTName = aNormalTextureName;
 
-    CreateMesh(aVertices, aIndices, aModelName);
+    CreateMesh(aVertices, aIndices, aModelName, fbs, texs, ubos);
   }
 
 
@@ -86,7 +83,12 @@ namespace YTE
   }
 
 
-  void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName)
+  void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices,
+                                         std::vector<u32>& aIndices,
+                                         std::string& aModelName,
+                                         std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                                         std::vector<TextureInformation> texs,
+                                         std::vector<UBOInformation> ubos)
   {
     std::string meshName = aModelName;
     Submesh submesh;
@@ -102,9 +104,10 @@ namespace YTE
     submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
 
     submesh.mTextures.clear();
-    submesh.mTextures.emplace_back(mDiffuseTName, TextureViewType::e2D, TextureTypeIDs::Diffuse);
-    submesh.mTextures.emplace_back(mSpecularTName, TextureViewType::e2D, TextureTypeIDs::Specular);
-    submesh.mTextures.emplace_back(mNormalTName, TextureViewType::e2D, TextureTypeIDs::Normal);
+    for (size_t i = 0; i < texs.size(); ++i)
+    {
+      submesh.mTextures.push_back(texs[i]);
+    }
 
     ShaderUsage useVert(true, false);
     ShaderUsage useFrag(false, true);
@@ -117,9 +120,13 @@ namespace YTE
     submesh.mUBOs.emplace_back(UBOTypeIDs::Illumination, useFrag, sizeof(UBOIllumination));
     submesh.mUBOs.emplace_back(UBOTypeIDs::Model, useVert, sizeof(UBOModel));
     submesh.mUBOs.emplace_back(UBOTypeIDs::ClipPlanes, useFrag, sizeof(UBOClipPlanes));
+    for (size_t i = 0; i < ubos.size(); ++i)
+    {
+      submesh.mUBOs.push_back(ubos[i]);
+    }
 
     std::vector<Submesh> submeshes{ submesh };
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    Mesh* mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
     mModel = mRenderer->CreateModel(mGraphicsView, mesh);
   }
 }

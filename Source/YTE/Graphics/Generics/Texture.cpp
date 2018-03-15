@@ -26,6 +26,12 @@ namespace YTE
     const std::string Diffuse{ "DIFFUSE" };
     const std::string Specular{ "SPECULAR" };
     const std::string Normal{ "NORMAL" };
+    const std::string FB1{ "FB1" };
+    const std::string FB2{ "FB2" };
+    const std::string FB3{ "FB3" };
+    const std::string FB4{ "FB4" };
+    const std::string FB5{ "FB5" };
+    const std::string FB6{ "FB6" };
     const std::string Invalid{ "INVALID" };
   }
 

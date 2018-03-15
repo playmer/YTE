@@ -65,6 +65,10 @@ namespace YTE
       }
     }
     printf("%s\n", aMessage);
+    if (aFlags == VK_DEBUG_REPORT_ERROR_BIT_EXT)
+    {
+      __debugbreak();
+    }
     assert(aFlags != VK_DEBUG_REPORT_ERROR_BIT_EXT);
     return VK_TRUE;
   }

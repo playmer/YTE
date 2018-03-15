@@ -42,8 +42,8 @@ namespace YTE
     }
 
     void SetUBOView(UBOView &aView);
-    void InvertAcrossPlane(float aWorldGroundHeight);
-    void ResetInversion();
+    UBOView InvertAcrossPlane(float aWorldGroundHeight);
+    UBOView ResetInversion();
 
     ///////////////////////////////////////
     // Events

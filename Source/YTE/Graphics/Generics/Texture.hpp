@@ -27,6 +27,12 @@ namespace YTE
     extern const std::string Diffuse;
     extern const std::string Specular;
     extern const std::string Normal;
+    extern const std::string FB1;
+    extern const std::string FB2;
+    extern const std::string FB3;
+    extern const std::string FB4;
+    extern const std::string FB5;
+    extern const std::string FB6;
     extern const std::string Invalid;
   }
 
