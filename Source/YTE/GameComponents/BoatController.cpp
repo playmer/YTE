@@ -91,6 +91,8 @@ namespace YTE
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
+    mRigidBody->SetDamping(0.9f, 0.9f);
+
       // Cache ids for all sounds used by this component
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
