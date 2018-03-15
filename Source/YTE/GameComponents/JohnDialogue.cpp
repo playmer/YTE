@@ -10,7 +10,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/JohnDialogue.hpp"
-#include "YTE/GameComponents/DialogueRunner.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
 
@@ -177,33 +176,15 @@ namespace YTE
   {
     // @@@JAY: This register and deregister should happen on CollisionStart and CollisionEnd so that other characters dont listen when they shouldnt
     mOwner->YTERegister(Events::RequestDialogueStart, this, &JohnDialogue::OnDialogueStart);
-    // @@@JAY: Maybe make a macro for this :)
-    // Construct the quest
-    //Quest q1(Quest::Name::GuessChew);
-    // Root node
-    /*
-    DialogueDataType testvec2;
-    testvec2.push_back(AnimationNames::WaveLoop);
-    DialogueNode convoRoot(DialogueNode::NodeType::Anim, testvec2);
-    // Construct the conversation
-    Conversation c1(&convoRoot);
-    // Start adding nodes
-    const std::string test = "HEY NICE TO MEET YOU";
-    DialogueDataType testvec;
-    testvec.push_back(test);
-    DialogueNode n1(DialogueNode::NodeType::Text, testvec, &convoRoot);
-    // Add the dialogue graph to the quest
-    //q1.AddConvo(&c1);
-    */
   }
 
   void JohnDialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
     // SendEvent to dialogue runner with pointer to conversation
 		Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
-		FillDialogueBox convo(temp);
-		mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
-		mOwner->GetSpace()->SendEvent("FillDialogueBox", &convo);
+		//FillDialogueBox convo(temp);
+		//mOwner->GetEngine()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+		//mOwner->GetSpace()->SendEvent("FillDialogueBox", &convo);
   }
 
 	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
