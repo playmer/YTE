@@ -160,12 +160,18 @@ namespace YTE
 
     // Load Textures
     size_t samplers{ 0 };
-    std::array<std::string, 3> samplerTypes;
+    std::vector<std::string> samplerTypes;
+    samplerTypes.resize(mSubmesh->mFrameBuffers.size() + mSubmesh->mTextures.size());
 
     for (size_t i = 0; i < mSubmesh->mTextures.size(); ++i)
     {
       mVkTextures.emplace_back(mRenderer->CreateTexture(mSubmesh->mTextures[i].mFileName, Convert(mSubmesh->mTextures[i].mViewType)));
       samplerTypes[samplers++] = mSubmesh->mTextures[i].mTypeID;
+    }
+
+    for (size_t i = 0; i < mSubmesh->mFrameBuffers.size(); ++i)
+    {
+      samplerTypes[samplers++] = mSubmesh->mFrameBuffers[i].mTypeID;
     }
 
     std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
@@ -286,7 +292,9 @@ namespace YTE
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
 
-  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::vector<std::shared_ptr<vkhlf::Buffer>> aBuffers)
+  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::vector<std::shared_ptr<vkhlf::Buffer>> aBuffers,
+                                                    std::vector<std::shared_ptr<vkhlf::Sampler>*> aSamplers,
+                                                    std::vector<std::shared_ptr<vkhlf::ImageView>*> aImageViews)
   {
     auto device = mRenderer->mDevice;
 
@@ -332,6 +340,25 @@ namespace YTE
     {
       vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
       addTS(mVkTextures[i], dTexInfo);
+    }
+
+
+    // Add Framebuffer Samplers
+    auto addFBS = [&wdss, &binding, &ds](std::shared_ptr<vkhlf::Sampler>* aSampler,
+                                        std::shared_ptr<vkhlf::ImageView> *aImageView,
+                                        vkhlf::DescriptorImageInfo &aImageInfo)
+    {
+      constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
+
+      aImageInfo.sampler = *aSampler;
+      aImageInfo.imageView = *aImageView;
+      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
+    };
+
+    for (size_t i = 0; i < aSamplers.size(); ++i)
+    {
+      vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
+      addFBS(aSamplers[i], aImageViews[i], dTexInfo);
     }
 
     //// TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.

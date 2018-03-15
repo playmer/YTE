@@ -18,6 +18,7 @@
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -242,6 +243,7 @@ namespace YTE
 
     std::vector<TextureInformation> mTextures;
     std::vector<UBOInformation> mUBOs;
+    std::vector<FrameBufferInformation> mFrameBuffers;
 
     Dimension mDimension;
 

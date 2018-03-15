@@ -220,11 +220,16 @@ namespace YTE
     Destruct();
     Construct();
     StartKFFT();
-    InstanceReset();
 
     if (mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer != nullptr)
     {
-      static_cast<VkRTWaterDrawer*>(mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer.get())->SetWaterComponent(this);
+      auto waterdrawer = static_cast<VkRTWaterDrawer*>(mRenderer->GetSurface(mWindow)->GetViewData(mGraphicsView).mWaterDrawer.get());
+      waterdrawer->SetWaterComponent(this);
+    }
+    else
+    {
+      //InstanceReset();
+      __debugbreak();
     }
   }
 
@@ -339,7 +344,6 @@ namespace YTE
     }
 
 
-    InstanceReset();
     mResetNeeded = false;
   }
 
@@ -1074,25 +1078,22 @@ namespace YTE
   }
 
   // ------------------------------------
-  void FFT_WaterSimulation::CreateHeightmap(vkhlf::Sampler* aRefractiveSampler,
-                                            vkhlf::ImageView* aRefractiveImageView,
-                                            vkhlf::Sampler* aReflectiveSampler,
-                                            vkhlf::ImageView* aReflectiveImageView)
+  void FFT_WaterSimulation::CreateHeightmap()
   {
     // create objects
     std::string guid = mOwner->GetGUID().ToIdentifierString();
     std::string name = fmt::format("{}_heightmap_{}", guid, mGridSize);
     int size = squared(mInstanceCount);
 
-    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs;
+    std::vector<FrameBufferInformation> fbs;
     std::vector<TextureInformation> texs;
     std::vector<UBOInformation> ubos;
 
-    //if (aRefractiveSampler)
-    //{
-    //  fbs.emplace_back(aRefractiveSampler, aRefractiveImageView);
-    //  fbs.emplace_back(aReflectiveSampler, aReflectiveImageView);
-    //}
+    if (mRefractiveSampler != nullptr)
+    {
+      fbs.emplace_back(mRefractiveSampler, mRefractiveImage, TextureViewType::e2D, TextureTypeIDs::FB1);
+      fbs.emplace_back(mReflectiveSampler, mReflectiveImage, TextureViewType::e2D, TextureTypeIDs::FB2);
+    }
 
     texs.emplace_back("copywriteWaterTextureDiffuse.png", TextureViewType::e2D, TextureTypeIDs::Diffuse);
     texs.emplace_back("copywriteFoamTextureSpecular.png", TextureViewType::e2D, TextureTypeIDs::Specular);
@@ -1117,12 +1118,23 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::DestroyHeightmap()
   {
+    Mesh* m = nullptr;
+    if (mInstantiatedHeightmap.size() > 0)
+    {
+      m = mInstantiatedHeightmap[0]->GetInstantiatedModel()->GetMesh();
+    }
+
     for (int i = 0; i < mInstantiatedHeightmap.size(); ++i)
     {
       mInstantiatedHeightmap[i].reset(nullptr);
     }
 
     mInstantiatedHeightmap.clear();
+
+    if (m != nullptr)
+    {
+      mRenderer->DestroyMesh(mGraphicsView, m);
+    }
   }
 
 
@@ -1164,14 +1176,27 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler> aRefractiveSampler,
-                                                    std::shared_ptr<vkhlf::ImageView> aRefractiveImageView,
-                                                    std::shared_ptr<vkhlf::Sampler> aReflectiveSampler,
-                                                    std::shared_ptr<vkhlf::ImageView> aReflectiveImageView)
+  void FFT_WaterSimulation::SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler>* aRefractiveSampler,
+                                                    std::shared_ptr<vkhlf::ImageView>* aRefractiveImageView,
+                                                    std::shared_ptr<vkhlf::Sampler>* aReflectiveSampler,
+                                                    std::shared_ptr<vkhlf::ImageView>* aReflectiveImageView)
   {
-    DestroyHeightmap();
-    CreateHeightmap(aRefractiveSampler.get(), aRefractiveImageView.get(), aReflectiveSampler.get(), aReflectiveImageView.get());
-    AdjustPositions();
+    mReflectiveSampler = aReflectiveSampler;
+    mReflectiveImage = aReflectiveImageView;
+    mRefractiveSampler = aRefractiveSampler;
+    mRefractiveImage = aRefractiveImageView;
+    InstanceReset();
+  }
+
+
+  // ------------------------------------
+  void FFT_WaterSimulation::DeSetupSamplersFromVulkan()
+  {
+    mReflectiveSampler = nullptr;
+    mReflectiveImage = nullptr;
+    mRefractiveSampler = nullptr;
+    mRefractiveImage = nullptr;
+    InstanceReset();
   }
 
   

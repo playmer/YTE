@@ -274,8 +274,17 @@ namespace YTE
       }
     }
 
+
+    std::vector<std::shared_ptr<vkhlf::Sampler>*> samplers;
+    std::vector<std::shared_ptr<vkhlf::ImageView>*> images;
+    for (size_t i = 0; i < aSubMesh->mSubmesh->mFrameBuffers.size(); ++i)
+    {
+      samplers.push_back(aSubMesh->mSubmesh->mFrameBuffers[i].mSampler);
+      images.push_back(aSubMesh->mSubmesh->mFrameBuffers[i].mImage);
+    }
+
     mPipelineData.emplace(aSubMesh,
-                          aSubMesh->CreatePipelineData(buffers));
+                          aSubMesh->CreatePipelineData(buffers, samplers, images));
   }
 
   bool VkInstantiatedModel::GetInstanced()

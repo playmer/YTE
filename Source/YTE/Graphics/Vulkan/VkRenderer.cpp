@@ -148,6 +148,11 @@ namespace YTE
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
   }
 
+  void VkRenderer::DestroyMesh(GraphicsView *aView, Mesh *aMesh)
+  {
+    GetSurface(aView->GetWindow())->DestroyMesh(aView, static_cast<VkMesh*>(aMesh));
+  }
+
   std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
   {
     return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));

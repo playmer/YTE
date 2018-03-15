@@ -39,7 +39,9 @@ namespace YTE
 
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
-    SubMeshPipelineData CreatePipelineData(std::vector<std::shared_ptr<vkhlf::Buffer>> aBuffers);
+    SubMeshPipelineData CreatePipelineData(std::vector<std::shared_ptr<vkhlf::Buffer>> aBuffers,
+                                           std::vector<std::shared_ptr<vkhlf::Sampler>*> aSamplers,
+                                           std::vector<std::shared_ptr<vkhlf::ImageView>*> aImageViews);
 
     std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
     std::shared_ptr<vkhlf::Buffer> mIndexBuffer;

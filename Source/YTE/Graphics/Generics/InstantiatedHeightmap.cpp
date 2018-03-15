@@ -55,7 +55,7 @@ namespace YTE
                                          std::string& aShaderSetName,
                                          GraphicsView* aView,
                                          Renderer* aRenderer,
-                                         std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                                         std::vector<FrameBufferInformation> fbs,
                                          std::vector<TextureInformation> texs,
                                          std::vector<UBOInformation> ubos)
   {
@@ -86,7 +86,7 @@ namespace YTE
   void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices,
                                          std::vector<u32>& aIndices,
                                          std::string& aModelName,
-                                         std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                                         std::vector<FrameBufferInformation> fbs,
                                          std::vector<TextureInformation> texs,
                                          std::vector<UBOInformation> ubos)
   {
@@ -107,6 +107,12 @@ namespace YTE
     for (size_t i = 0; i < texs.size(); ++i)
     {
       submesh.mTextures.push_back(texs[i]);
+    }
+
+    submesh.mFrameBuffers.clear();
+    for (size_t i = 0; i < fbs.size(); ++i)
+    {
+      submesh.mFrameBuffers.emplace_back(fbs[i].mSampler, fbs[i].mImage, fbs[i].mViewType, fbs[i].mTypeID);
     }
 
     ShaderUsage useVert(true, false);

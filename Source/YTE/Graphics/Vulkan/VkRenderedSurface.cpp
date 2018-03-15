@@ -230,6 +230,23 @@ namespace YTE
     }
   }
 
+  void VkRenderedSurface::DestroyMesh(GraphicsView *aView, VkMesh *aMesh)
+  {
+    if (aMesh == nullptr)
+    {
+      return;
+    }
+
+    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+
+    auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aMesh));
+
+    if (mesh != instantiatedModels.end())
+    {
+      instantiatedModels.erase(mesh);
+    }
+  }
+
   // Shader
   VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
                                             std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,

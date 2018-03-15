@@ -151,6 +151,8 @@ layout (binding = UBO_CLIP_PLANES_BINDING) uniform UBOClipPlanes
 layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;  // diff
 layout (binding = UBO_SPECULAR_BINDING) uniform sampler2D specularSampler; // foam
 layout (binding = UBO_NORMAL_BINDING) uniform sampler2D normalSampler;   // noise
+layout (binding = UBO_FB1_BINDING) uniform sampler2D fbRefractiveSampler;
+layout (binding = UBO_FB2_BINDING) uniform sampler2D fbReflectiveSampler;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -533,6 +535,9 @@ void main()
     discard;
     return;
   }
+
+  outFragColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
+  return;
 
   if (Lights.mActive < 0.5f)
   {

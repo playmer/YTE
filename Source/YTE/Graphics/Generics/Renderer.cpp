@@ -54,6 +54,13 @@ namespace YTE
     YTEUnusedArgument(aModel);
   }
 
+  void Renderer::DestroyMesh(GraphicsView *aView, Mesh *aMesh)
+  {
+    YTEUnusedArgument(aView);
+    YTEUnusedArgument(aMesh);
+  }
+
+
   Mesh* Renderer::CreateSimpleMesh(std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
   {
     YTEUnusedArgument(aName);

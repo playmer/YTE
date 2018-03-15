@@ -258,16 +258,14 @@ namespace YTE
 
     Transform *mTransform;
 
-    void SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler> aRefractiveSampler,
-                                 std::shared_ptr<vkhlf::ImageView> aRefractiveImageView,
-                                 std::shared_ptr<vkhlf::Sampler> aReflectiveSampler,
-                                 std::shared_ptr<vkhlf::ImageView> aReflectiveImageView);
+    void SetupSamplersFromVulkan(std::shared_ptr<vkhlf::Sampler>* aRefractiveSampler,
+                                 std::shared_ptr<vkhlf::ImageView>* aRefractiveImageView,
+                                 std::shared_ptr<vkhlf::Sampler>* aReflectiveSampler,
+                                 std::shared_ptr<vkhlf::ImageView>* aReflectiveImageView);
+    void DeSetupSamplersFromVulkan();
 
   private:
-    void CreateHeightmap(vkhlf::Sampler* aRefractiveSampler = nullptr,
-                         vkhlf::ImageView* aRefractiveImageView = nullptr,
-                         vkhlf::Sampler* aReflectiveSampler = nullptr,
-                         vkhlf::ImageView* aReflectiveImageView = nullptr);
+    void CreateHeightmap();
     void DestroyHeightmap();
     void UpdateHeightmap();
     void InstanceReset();
@@ -295,6 +293,11 @@ namespace YTE
     int mSteps;
     int mStepsCount;
     bool mConstructing;
+
+    std::shared_ptr<vkhlf::Sampler>* mRefractiveSampler = nullptr;
+    std::shared_ptr<vkhlf::ImageView>* mRefractiveImage = nullptr;
+    std::shared_ptr<vkhlf::Sampler>* mReflectiveSampler = nullptr;
+    std::shared_ptr<vkhlf::ImageView>* mReflectiveImage = nullptr;
 
 
 

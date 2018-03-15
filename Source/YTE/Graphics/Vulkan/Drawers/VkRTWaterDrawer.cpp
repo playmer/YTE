@@ -285,10 +285,13 @@ namespace YTE
     mReflectiveCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mReflectiveCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
 
+    DeNotifyWaterComponent();
     CreateRefractiveRenderPass();
     CreateRefractiveFrameBuffer();
     CreateReflectiveRenderPass();
     CreateReflectiveFrameBuffer();
+
+    NotifyWaterComponent();
   }
 
   void VkRTWaterDrawer::Resize(vk::Extent2D& aExtent)
@@ -297,8 +300,10 @@ namespace YTE
     extent.width = static_cast<uint32_t>(static_cast<float>(extent.width) * EXTENT_FACTOR);
     extent.height = static_cast<uint32_t>(static_cast<float>(extent.height) * EXTENT_FACTOR);
 
+    DeNotifyWaterComponent();
     CreateRefractiveFrameBuffer();
     CreateReflectiveFrameBuffer();
+    NotifyWaterComponent();
   }
 
   void VkRTWaterDrawer::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
@@ -328,7 +333,7 @@ namespace YTE
     colorValues[0] = 1.0f;
     colorValues[1] = 0.0f;
     colorValues[2] = 0.0f;
-    colorValues[3] = 1.0f;
+    colorValues[3] = 0.5f;
     vk::ClearValue color{ colorValues };
 
     aCBO->beginRenderPass(mRenderPass,
@@ -373,7 +378,7 @@ namespace YTE
     colorValues[0] = 0.0f;
     colorValues[1] = 1.0f;
     colorValues[2] = 0.0f;
-    colorValues[3] = 1.0f;
+    colorValues[3] = 0.5f;
     vk::ClearValue color2{ colorValues };
 
     aCBO->beginRenderPass(mReflectiveRenderPass,
@@ -413,10 +418,18 @@ namespace YTE
   {
     if (mWaterComponent)
     {
-      mWaterComponent->SetupSamplersFromVulkan(mData.mSampler, 
-                                               mData.mAttachments[mData.mColorAttachments[0]].mImageView,
-                                               mReflectiveData.mSampler, 
-                                               mReflectiveData.mAttachments[mData.mColorAttachments[0]].mImageView);
+      mWaterComponent->SetupSamplersFromVulkan(&mData.mSampler, 
+                                               &mData.mAttachments[mData.mColorAttachments[0]].mImageView,
+                                               &mReflectiveData.mSampler, 
+                                               &mReflectiveData.mAttachments[mData.mColorAttachments[0]].mImageView);
+    }
+  }
+
+  void VkRTWaterDrawer::DeNotifyWaterComponent()
+  {
+    if (mWaterComponent)
+    {
+      mWaterComponent->DeSetupSamplersFromVulkan();
     }
   }
 

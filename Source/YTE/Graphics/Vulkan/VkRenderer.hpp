@@ -31,6 +31,7 @@ namespace YTE
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aMeshFile) override;
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
     void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel) override;
+    void DestroyMesh(GraphicsView *aView, Mesh *aMesh) override;
     std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
 
     VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);

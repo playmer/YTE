@@ -88,6 +88,7 @@ namespace YTE
     void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
+    void DestroyMesh(GraphicsView *aView, VkMesh *aMesh);
     
 
     VkShader* CreateShader(std::string &aShaderSetName,

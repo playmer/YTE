@@ -9,6 +9,7 @@
 #define YTE_Graphics_Generics_Texture_hpp
 
 #include "YTE/Core/EventHandler.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 namespace YTE
 {
@@ -62,6 +63,30 @@ namespace YTE
     }
 
     std::string mFileName;
+    TextureViewType mViewType;
+    std::string mTypeID; // found in Texture.hpp->TextureTypeIDs::[...]
+  };
+
+
+
+  struct FrameBufferInformation
+  {
+    FrameBufferInformation() : mSampler(nullptr),
+                           mImage(nullptr),
+                           mViewType(TextureViewType::e2D),
+                           mTypeID(TextureTypeIDs::Invalid)
+    {
+
+    }
+
+    FrameBufferInformation(std::shared_ptr<vkhlf::Sampler>* aSampler, std::shared_ptr<vkhlf::ImageView>* aImage, TextureViewType aViewType, std::string aTypeID)
+      : mSampler(aSampler), mImage(aImage), mViewType(aViewType), mTypeID(aTypeID)
+    {
+      
+    }
+
+    std::shared_ptr<vkhlf::Sampler>* mSampler;
+    std::shared_ptr<vkhlf::ImageView>* mImage;
     TextureViewType mViewType;
     std::string mTypeID; // found in Texture.hpp->TextureTypeIDs::[...]
   };

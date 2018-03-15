@@ -53,12 +53,16 @@ namespace YTE
     void SetWaterComponent(FFT_WaterSimulation* aComponent)
     {
       mWaterComponent = aComponent;
+      NotifyWaterComponent();
     }
 
     FFT_WaterSimulation* GetWaterComponent()
     {
       return mWaterComponent;
     }
+
+    void NotifyWaterComponent();  // tells water component about new samplers
+    void DeNotifyWaterComponent();
 
   protected:
     struct DrawDataW
@@ -104,7 +108,6 @@ namespace YTE
 
 
     void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, const vk::Extent2D& aExtent, std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
-    void NotifyWaterComponent();  // tells water component about new samplers
 
     void CreateReflectiveRenderPass();
     void CreateReflectiveFrameBuffer();

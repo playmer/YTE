@@ -41,7 +41,7 @@ namespace YTE
                     std::string& aShaderSetName,
                     GraphicsView* aView,
                     Renderer* aRenderer,
-                    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                    std::vector<FrameBufferInformation> fbs,
                     std::vector<TextureInformation> texs,
                     std::vector<UBOInformation> ubos);
 
@@ -57,7 +57,7 @@ namespace YTE
     void CreateMesh(std::vector<Vertex>& aVertices, 
                     std::vector<u32>& aIndices, 
                     std::string& aModelName,
-                    std::vector<std::pair<vkhlf::Sampler*, vkhlf::ImageView*>> fbs,
+                    std::vector<FrameBufferInformation> fbs,
                     std::vector<TextureInformation> texs,
                     std::vector<UBOInformation> ubos);
 
