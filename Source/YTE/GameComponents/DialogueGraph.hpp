@@ -49,7 +49,7 @@ namespace YTE
 #define DialogueDataType std::vector<std::string>
 #define DialogueData(name, ...) DialogueDataType name{ __VA_ARGS__ }
 
-  class DialogueNode
+  class DialogueNode : public EventHandler
   {
   public:
     enum class NodeType { Anim, Input, Text, Sound };

@@ -154,7 +154,7 @@ namespace YTE
 	void DialogueNode::ActivateNode()
 	{
 			// Deregister self
-		this->YTEDeregister(Events::AdvanceConversation, this, &ActivateNode);
+		YTEDeregister(Events::AdvanceConversation, this, &ActivateNode);
 		//if (we are the correct node)
 		//{
 				// Call this nodes logic functor
@@ -162,7 +162,7 @@ namespace YTE
 				// Register children for the UI response event
 			for (auto child : mChildren)
 			{
-				this->YTERegister(Events::AdvanceConversation, this, &ActivateNode);
+				YTERegister(Events::AdvanceConversation, this, &ActivateNode);
 			}
 		//}
 	}
