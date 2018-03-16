@@ -444,7 +444,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
 
   // diffuse
   lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  lightData.mDiffTexture  = vec4(0.2431f, 0.6392f, 0.7157f, 1.0f) * lightData.mDiffMat;//texture(diffuseSampler, uv) * lightData.mDiffMat;
+  lightData.mDiffTexture  = texture(diffuseSampler, uv) * lightData.mDiffMat;
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
