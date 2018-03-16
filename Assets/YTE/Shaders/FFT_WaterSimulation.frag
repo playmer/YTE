@@ -54,6 +54,7 @@ struct LightingData
   vec4 mViewVec;
   vec4 mNormal;
   vec4 mPosition;
+  vec3 mNoiseOffset;
 };
 
 
@@ -129,6 +130,8 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   vec4 mFogColor;
   vec4 mFogCoefficients;
   vec2 mFogPlanes;
+  float mTime;
+  float mPadding;
 } Illumination;
 
 
@@ -181,24 +184,75 @@ float saturate(float aValue)
   return clamp(aValue, 0.0f, 1.0f);
 }
 
+
+
+
+
+
+vec2 random2(vec2 st){
+    st = vec2( dot(st,vec2(127.1,311.7)),
+              dot(st,vec2(269.5,183.3)) );
+    return -1.0 + 2.0*fract(sin(st)*43758.5453123);
+}
+
+// Value Noise by Inigo Quilez - iq/2013
+// https://www.shadertoy.com/view/lsf3WH
+float noise(vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    vec2 u = f*f*(3.0-2.0*f);
+
+    return mix( mix( dot( random2(i + vec2(0.0,0.0) ), f - vec2(0.0,0.0) ),
+                     dot( random2(i + vec2(1.0,0.0) ), f - vec2(1.0,0.0) ), u.x),
+                mix( dot( random2(i + vec2(0.0,1.0) ), f - vec2(0.0,1.0) ),
+                     dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
+}
+
+vec3 CalculateNoise(vec2 aUV)
+{
+    float t = Illumination.mTime * 0.125;
+    vec2 st1 = vec2(aUV.x + t, aUV.y);
+    vec2 st2 = vec2(aUV.x + t, aUV.y + t);
+    vec2 st3 = vec2(aUV.x, aUV.y + t);
+    vec2 st4 = vec2(aUV.x + t, aUV.y - t);
+
+    vec3 color = vec3(0.0);
+
+    vec2 pos1 = vec2(st1*50.0);
+    vec2 pos2 = vec2(st2*20.0);
+    vec2 pos3 = vec2(st3*100.0);
+    vec2 pos4 = vec2(st4*70.0);
+
+    color += vec3( noise(pos1)*.5+.5 );
+    color += vec3( noise(pos2)*.5+.5 );
+    color += vec3( noise(pos3)*.5+.5 );
+    color += vec3( noise(pos4)*.5+.5 );
+
+    return color * 0.25;
+}
+
+
 // ======================
 // Calc_DirectionalLight:
 // Calculates as a directional light with the given light
 vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 {
   vec4 lightVec = normalize(-aLight.mDirection);
+  vec4 lightVecNew = normalize(-vec4(vec3(aLight.mDirection) + aLightData.mNoiseOffset, aLight.mDirection.w));
 
   // diffuse
   float diffContribution = max(dot(lightVec, aLightData.mNormal), 0.0f);
   vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffTexture;
   
   // specular
-  vec4 reflectVec = normalize(reflect(-lightVec, aLightData.mNormal));
+  vec4 reflectVec = normalize(reflect(-lightVecNew, aLightData.mNormal));
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
   float specContribution2 = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat / 10.0f);
   vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
   vec4 specularColor2 = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution2;
-  specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
+  //specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
+
 
   // ambient
   vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat / 10.0f;
@@ -213,6 +267,8 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
 // Calculates as a point light with the given light
 vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
 {
+  vec4 lightVecNew = vec4(aLight.mPosition + aLightData.mNoiseOffset, 1.0f) - aLightData.mPosition;
+
   vec4 lightVec = vec4(aLight.mPosition, 1.0f) - aLightData.mPosition;
   float lightVecDistance = length(lightVec);
   
@@ -226,12 +282,12 @@ vec4 Calc_PointLight(inout Light aLight, inout LightingData aLightData)
   vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffTexture;
 
   // specular
-  vec4 reflectVec = normalize(reflect(-lightVec, aLightData.mNormal));
+  vec4 reflectVec = normalize(reflect(-lightVecNew, aLightData.mNormal));
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
   float specContribution2 = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat / 10.0f);
   vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
   vec4 specularColor2 = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution2;
-  specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
+  //specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
 
   // attenuation
   float att = 1.0f / ( (Illumination.mFogCoefficients.x) +
@@ -250,6 +306,7 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
   vec4 lightVec = (inViewMatrix * vec4(aLight.mPosition, 1.0f)) - (inViewMatrix * aLightData.mPosition);
   float lightVecDistance = length(lightVec);
   lightVec = normalize(lightVec);
+  vec4 lightVecNew = (inViewMatrix * vec4(aLight.mPosition + aLightData.mNoiseOffset, 1.0f)) - (inViewMatrix * aLightData.mPosition);
 
   // ambient
   vec4 ambientColor = aLight.mAmbient * aLightData.mAmbMat / 10.0f;
@@ -259,12 +316,12 @@ vec4 Calc_SpotLight(inout Light aLight, inout LightingData aLightData)
   vec4 diffuseColor = diffContribution * aLight.mDiffuse * aLightData.mDiffTexture;
 
   // specular
-  vec4 reflectVec = normalize(reflect(-lightVec, aLightData.mNormal));
+  vec4 reflectVec = normalize(reflect(-lightVecNew, aLightData.mNormal));
   float specContribution = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat);
   float specContribution2 = pow(max(dot(reflectVec, aLightData.mViewVec), 0.0f), aLightData.mShininessMat / 10.0f);
   vec4 specularColor = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution;
   vec4 specularColor2 = vec4(aLight.mSpecular, 1.0f) * aLightData.mSpecTexture * specContribution2;
-  specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
+  //specularColor = mix(specularColor, specularColor2, ((specContribution - specContribution2) * 0.5f) + specContribution2);
 
   // attenuation
   float att = min(1.0f / (Illumination.mFogCoefficients.x +
@@ -370,6 +427,10 @@ float saturatehigh(float aValue)
 }
 
 
+
+
+
+
 // ======================
 // SampleTextures:
 // Calculates the phong illumination for fragment
@@ -383,7 +444,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
 
   // diffuse
   lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  lightData.mDiffTexture  = vec4(1,1,1,1);// texture(diffuseSampler, uv) * lightData.mDiffMat;
+  lightData.mDiffTexture  = texture(diffuseSampler, uv) * lightData.mDiffMat;
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
@@ -392,7 +453,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
   // normal
   lightData.mNormalTexture   = aNormal;
   //lightData.mNormalTexture = aNormal;
-  lightData.mDiffTexture  = Foam(lightData.mDiffTexture, lightData.mNormalTexture.x, uv);
+  //lightData.mDiffTexture  = Foam(lightData.mDiffTexture, lightData.mNormalTexture.x, uv);
 
   // emissive
   lightData.mEmisMat = SubmeshMaterial.mEmissive * ModelMaterial.mEmissive;
@@ -410,7 +471,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
 // ======================
 // Phong:
 // Calculates the phong illumination for fragment
-vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
+vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV, vec3 aNoiseOffset)
 {
   // view vector in view space for attenuation
   vec4 viewVec = ((inViewMatrix * Illumination.mCameraPosition) - aPosition);
@@ -428,6 +489,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
   lightData.mViewVec = viewVec;
   lightData.mNormal = aNormal;
   lightData.mPosition = aPositionWorld;
+  lightData.mNoiseOffset = aNoiseOffset;
 
   // Emissive and Global Illumination
   vec4 ITotal = lightData.mEmisMat +
@@ -457,6 +519,15 @@ void main()
   }
   else
   {
-    outFragColor = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), inTextureCoordinates.xy);
+    vec3 n = CalculateNoise(inTextureCoordinates.xy);
+    vec4 posView = inPosition;
+    posView.y += n.y;
+    vec4 posWorld = vec4(inPositionWorld, 1.0f);
+    posWorld.y += n.y;
+    vec2 uv = inTextureCoordinates.xy;
+    vec3 normal = normalize(inNormal) + n;
+    normal = normalize(normal);
+    //uv += n.xy;
+    outFragColor = Phong(vec4(normal, 0.0f), posView, posWorld, uv, n);
   }
 }

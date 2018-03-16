@@ -132,6 +132,8 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   vec4 mFogColor;
   vec4 mFogCoefficients;
   vec2 mFogPlanes;
+  float mTime;
+  float mPadding;
 } Illumination;
 
 
