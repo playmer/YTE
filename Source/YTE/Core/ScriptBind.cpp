@@ -24,6 +24,7 @@
 #include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
+#include "YTE/GameComponents/DialogueElement.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
@@ -102,6 +103,7 @@ namespace YTE
     InitializeType<BoatPhysics>();
     InitializeType<Dialogue>();
     InitializeType<DialogueDirector>();
+    InitializeType<DialogueElement>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();

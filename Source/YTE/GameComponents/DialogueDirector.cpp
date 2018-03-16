@@ -69,17 +69,8 @@ namespace YTE
 
     mCharacterDialogue = mOwner->FindFirstCompositionByName("DiaCharacter");
     mDialogueOption1 = mOwner->FindFirstCompositionByName("DiaPlayer1");
-    mDialogueOption1 = mOwner->FindFirstCompositionByName("DiaPlayer2");
-    mDialogueOption1 = mOwner->FindFirstCompositionByName("DiaPlayer3");
-
-      // Initially close all speech bubbles
-    UIDisplayEvent display(true);
-
-    auto children = mOwner->GetCompositions()->All();
-    for (auto &child : children)
-    {
-      child.second->SendEvent(Events::UIDisplayEvent, &display);
-    }
+    mDialogueOption2 = mOwner->FindFirstCompositionByName("DiaPlayer2");
+    mDialogueOption3 = mOwner->FindFirstCompositionByName("DiaPlayer3");
     
       // @@@JAY
       // @@@NICK: Uncomment these if you have a child object representing the character mark points
@@ -87,6 +78,7 @@ namespace YTE
     //mCameraAnchorPosition = mOwner->FindFirstCompositionByName("CharacterMark")->GetComponent<Transform>()->GetWorldTranslation();
 
     mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+    mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
     mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
     mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
 
@@ -164,7 +156,7 @@ namespace YTE
 
       if (aEvent->StickDirection.y > 0.0f)
       {
-        if (stickAngle >= 0.f && stickAngle < (pi / 6.0f))
+        if (stickAngle >= 0.f && stickAngle < (pi / 3.0f))
         {
           if (mLastSelected)
           {
@@ -174,8 +166,9 @@ namespace YTE
 
           UISelectEvent select(true);
           mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+          mLastSelected = mDialogueOption2;
         }
-        else if (stickAngle >= -(pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
+        else if (stickAngle >= (pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
         {
           if (mLastSelected)
           {
@@ -185,8 +178,9 @@ namespace YTE
 
           UISelectEvent select(true);
           mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+          mLastSelected = mDialogueOption1;
         }
-        else if (stickAngle >= (5.0f * pi / 6.0f) && stickAngle < pi)
+        else if (stickAngle >= (2.0f * pi / 3.0f) && stickAngle < pi)
         {
           if (mLastSelected)
           {
@@ -196,41 +190,18 @@ namespace YTE
 
           UISelectEvent select(true);
           mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
+          mLastSelected = mDialogueOption3;
         }
       }
-      else
+      else if (stickAngle >= -(pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
       {
-        if (stickAngle >= 0.f && stickAngle < (pi / 6.0f))
-        {
-          if (mLastSelected)
-          {
-            UISelectEvent select(false);
-            mLastSelected->SendEvent(Events::UISelectEvent, &select);
-          }
+          // If the user presses "down", deselect all options
+        UISelectEvent select(false);
+        mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+        mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+        mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
 
-          UISelectEvent select(true);
-          mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
-        }
-        else if (stickAngle >= -(pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
-        {
-            // If the user presses "down", deselect all options
-          UISelectEvent select(false);
-
-          mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
-          mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
-          mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
-        }
-        else if (stickAngle >= (5.0f * pi / 6.0f) && stickAngle < pi)
-        {
-          if (mLastSelected)
-          {
-            UISelectEvent select(false);
-            mLastSelected->SendEvent(Events::UISelectEvent, &select);
-          }
-
-          UISelectEvent select(true);
-          mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
-        }
+        mLastSelected = nullptr;
       }
     }
   }
