@@ -613,9 +613,11 @@ namespace YTE
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
-        mH_Tilde[vertex] = Calc_hTilde(x, z);
-        mH_TildeSlopeX[vertex] = mH_Tilde[vertex] * complex(0, k.x);    
-        mH_TildeSlopeZ[vertex] = mH_Tilde[vertex] * complex(0, k.y); 
+        auto &h_Tilde = mH_Tilde[vertex];
+
+        h_Tilde = Calc_hTilde(x, z);
+        mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
+        mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
 
         if (floatNotZero(kLen))
         {
@@ -624,8 +626,8 @@ namespace YTE
         }
         else
         {
-          mH_TildeDX[vertex] = mH_Tilde[vertex] * complex(0, -(k.x) / kLen);
-          mH_TildeDZ[vertex] = mH_Tilde[vertex] * complex(0, -(k.y) / kLen);
+          mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
+          mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
         }
       }
     }
@@ -644,11 +646,14 @@ namespace YTE
         int tilde = z * mGridSize + x; // accessor to the h_tilde
         int vertex = z * mGridSizePlus1 + x; // accessor to the vertex
 
+        auto &computationalVertex = mComputationalVertices[vertex];
+        auto &vertexAtMainIndex = mVertices[vertex];
+
         if (z >= mGridSize || x >= mGridSize)
         {
           // update draw list
-          mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
-          mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
+          vertexAtMainIndex.mPosition = computationalVertex.mPosition;
+          vertexAtMainIndex.mNormal = computationalVertex.mNormal;
           continue;
         }
 
@@ -657,57 +662,68 @@ namespace YTE
         mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        mComputationalVertices[vertex].mPosition.y = (mH_Tilde[tilde].mReal);
+        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal);
 
         if (UseNoDisplacement)
         {
           // FROM CONNOR
           // they do not use displacement at all, so no DX, no DZ, no position x and z updating, only position y updating
-          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x;
-          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z;
+          computationalVertex.mPosition.x = computationalVertex.mOriginalPosition.x;
+          computationalVertex.mPosition.z = computationalVertex.mOriginalPosition.z;
           // END FROM CONNOR
         }
         else
         {
+          auto &hTildeDX = mH_TildeDX[tilde];
+          auto &hTildeDZ = mH_TildeDZ[tilde];
+
           // displacement update
-          mH_TildeDX[tilde] *= sign;
-          mH_TildeDZ[tilde] *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
-          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x +
-            mH_TildeDX[tilde].mReal * -1.0f;
-          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z +
-            mH_TildeDZ[tilde].mReal * -1.0f;
+          hTildeDX *= sign;
+          hTildeDZ *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
+          computationalVertex.mPosition.x = computationalVertex.mOriginalPosition.x +
+            hTildeDX.mReal * -1.0f;
+          computationalVertex.mPosition.z = computationalVertex.mOriginalPosition.z +
+            hTildeDZ.mReal * -1.0f;
         }
 
 
         // normal update
-        mH_TildeSlopeX[tilde] *= sign;
-        mH_TildeSlopeZ[tilde] *= sign;
-        mComputationalVertices[vertex].mNormal = glm::normalize(glm::vec3(-(mH_TildeSlopeX[tilde].mReal),
-                                                           1.0f,
-                                                           -(mH_TildeSlopeZ[tilde].mReal)));
+        auto &hTildeSlopeX = mH_TildeSlopeX[tilde];
+        auto &hTildeSlopeZ = mH_TildeSlopeZ[tilde];
+        hTildeSlopeX *= sign;
+        hTildeSlopeZ *= sign;
+        computationalVertex.mNormal = glm::normalize(glm::vec3(-(hTildeSlopeX.mReal),
+                                                               1.0f,
+                                                               -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, complex_kfft& aH_TildeDX, complex_kfft& aH_TildeDZ, int aIndex)
+        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, 
+                                                   complex_kfft& aH_TildeDX, 
+                                                   complex_kfft& aH_TildeDZ, 
+                                                   int aIndex)
         {
-          aVertices[aIndex].mPosition.y = aVertices[vertex].mPosition.y;
+          auto &vertexAtIndex = aVertices[aIndex];
+          auto &vertexAtVertex = aVertices[vertex];
+
+          vertexAtIndex.mPosition.y = vertexAtVertex.mPosition.y;
 
           if (useNoDis)
           {
             // FROM CONNOR
             // dont use displacement
-            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x;
-            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z;
+            vertexAtIndex.mPosition.x = vertexAtIndex.mOriginalPosition.x;
+            vertexAtIndex.mPosition.z = vertexAtIndex.mOriginalPosition.z;
             // END FROM CONNOR
           }
           else
           {
-            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x +
+            vertexAtIndex.mPosition.x = vertexAtIndex.mOriginalPosition.x +
                                             aH_TildeDX[tilde].mReal * -1.0f;
-            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z +
+            vertexAtIndex.mPosition.z = vertexAtIndex.mOriginalPosition.z +
                                             aH_TildeDZ[tilde].mReal * -1.0f;
           }
 
-          aVertices[aIndex].mNormal = aVertices[vertex].mNormal;
+          vertexAtIndex.mNormal = vertexAtVertex.mNormal;
         };
 
         // tilling
@@ -733,8 +749,8 @@ namespace YTE
 
 
         // update draw list
-        mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
-        mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
+        vertexAtMainIndex.mPosition = computationalVertex.mPosition;
+        vertexAtMainIndex.mNormal = computationalVertex.mNormal;
       }
     }
   }
