@@ -539,15 +539,16 @@ void main()
 
   vec2 ndc = (inClipSpace.xy/inClipSpace.w)/2.0f + 0.5f;
   vec2 refractCoords = vec2(ndc.x, ndc.y);
-  vec2 reflectCoords = vec2(ndc.x, ndc.y);
+  vec2 reflectCoords = vec2(ndc.x, 1 - ndc.y);
 
   vec4 reflectColor = texture(fbReflectiveSampler, reflectCoords);
-  //vec4 refractColor = texture(fbRefractiveSampler, refractCoords);
-  outFragColor = reflectColor;
-  //outFragColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
-  //outFragColor = mix(reflectColor, refractColor, 0.5f);
-
-
+  vec4 refractColor = texture(fbRefractiveSampler, refractCoords);
+  //outFragColor = reflectColor;
+  outFragColor = mix(reflectColor, refractColor, 0.5f);
+  //vec4 originalRefractiveColor = texture(fbRefractiveSampler, inTextureCoordinates.xy);
+  //vec4 originalReflectionColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
+  //outFragColor = mix(originalReflectionColor, originalRefractiveColor, 0.5f);
+  //outFragColor = originalReflectionColor;
 
   
   return;

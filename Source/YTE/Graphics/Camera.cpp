@@ -440,6 +440,7 @@ namespace YTE
     forward = glm::vec3(forward.x, -forward.y, forward.z);
 
     glm::vec3 right = mCameraOrientation->GetRightVector();
+    right = glm::vec3(right.x, -right.y, right.z);
     glm::vec3 up = glm::cross(right, forward);
     up = glm::normalize(up);
 
