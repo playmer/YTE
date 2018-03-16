@@ -10,6 +10,9 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+
+#include "YTE/Graphics/GraphicsView.hpp"
+
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
@@ -48,6 +51,9 @@ namespace YTE
 
   void Orientation::Initialize()
   {
+    //auto view = mSpace->GetComponent<GraphicsView>();
+    //mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), view->GetRenderer(), view);
+
     mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
 
     const glm::vec3 forwardReset(0, 0, 1);
@@ -61,6 +67,14 @@ namespace YTE
     mForwardVector = rotation * forwardReset;
     mRightVector = rotation * rightReset;
     mUpVector = rotation * upReset;
+
+    auto drawerPosition = transform->GetWorldTranslation();
+
+    //mDrawer->Start();
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mForwardVector * 6.0f), glm::vec3{ 0,0,1 });
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mRightVector * 6.0f), glm::vec3{ 1,0,0 });
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mUpVector * 6.0f), glm::vec3{ 0,1,0 });
+    //mDrawer->End();
   }
 
   void Orientation::OnRotationChanged(TransformChanged *aEvent)
@@ -83,6 +97,14 @@ namespace YTE
     newOrientation.RightVector = mRightVector;
     newOrientation.UpVector = mUpVector;
     mOwner->SendEvent(Events::OrientationChanged, &newOrientation);
+
+    auto drawerPosition = aEvent->WorldPosition;
+
+    //mDrawer->Start();
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mForwardVector * 6.0f), glm::vec3{ 0,0,1 });
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mRightVector * 6.0f), glm::vec3{ 1,0,0 });
+    //mDrawer->AddLine(drawerPosition, drawerPosition + (mUpVector * 6.0f), glm::vec3{ 0,1,0 });
+    //mDrawer->End();
   }
 
   glm::vec3 Orientation::GetForwardVector() const

@@ -8,6 +8,7 @@
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 #include "YTE/Graphics/UBOs.hpp"
  
 #include "YTE/Platform/ForwardDeclarations.hpp" 
@@ -278,6 +279,7 @@ namespace YTE
     float mNearPlane; 
     float mFarPlane; 
 
+    std::unique_ptr<LineDrawer> mDrawer;
     // Movement
     float mZoom;
     float mZoomMin;

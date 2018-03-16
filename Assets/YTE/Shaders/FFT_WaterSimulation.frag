@@ -161,8 +161,9 @@ layout (location = 0) in vec3 inColor;
 layout (location = 1) in vec2 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
 layout (location = 3) in vec4 inPosition;
-layout (location = 4) in vec3 inPositionWorld;
-layout (location = 5) in mat4 inViewMatrix;
+layout (location = 4) in vec4 inClipSpace;
+layout (location = 5) in vec3 inPositionWorld;
+layout (location = 6) in mat4 inViewMatrix;
 
 // ========================
 // Output of Fragment
@@ -536,7 +537,19 @@ void main()
     return;
   }
 
-  outFragColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
+  vec2 ndc = (inClipSpace.xy/inClipSpace.w)/2.0f + 0.5f;
+  vec2 refractCoords = vec2(ndc.x, ndc.y);
+  vec2 reflectCoords = vec2(ndc.x, ndc.y);
+
+  vec4 reflectColor = texture(fbReflectiveSampler, reflectCoords);
+  //vec4 refractColor = texture(fbRefractiveSampler, refractCoords);
+  outFragColor = reflectColor;
+  //outFragColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
+  //outFragColor = mix(reflectColor, refractColor, 0.5f);
+
+
+
+  
   return;
 
   if (Lights.mActive < 0.5f)

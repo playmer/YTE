@@ -1080,6 +1080,11 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
   {
+    if (mVertices.size() <= 0)
+    {
+      return;
+    }
+
     // create objects
     std::string guid = mOwner->GetGUID().ToIdentifierString();
     std::string name = fmt::format("{}_heightmap_{}", guid, mGridSize);

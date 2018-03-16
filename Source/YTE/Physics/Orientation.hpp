@@ -13,6 +13,8 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Drawers.hpp"
+
 #include "YTE/Physics/ForwardDeclarations.hpp"
 #include "YTE/Physics/Transform.hpp"
 
@@ -49,6 +51,7 @@ namespace YTE
     glm::vec3 mForwardVector;
     glm::vec3 mRightVector;
     glm::vec3 mUpVector;
+    std::unique_ptr<LineDrawer> mDrawer;
   };
 }
 

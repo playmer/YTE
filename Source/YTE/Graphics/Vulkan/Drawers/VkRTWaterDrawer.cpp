@@ -330,10 +330,10 @@ namespace YTE
 
     vk::ClearDepthStencilValue depthStencil{ 1.0f, 0 };
     std::array<float, 4> colorValues;
-    colorValues[0] = 1.0f;
+    colorValues[0] = 0.0f;
     colorValues[1] = 0.0f;
     colorValues[2] = 0.0f;
-    colorValues[3] = 0.5f;
+    colorValues[3] = 0.0f;
     vk::ClearValue color{ colorValues };
 
     aCBO->beginRenderPass(mRenderPass,
@@ -376,9 +376,9 @@ namespace YTE
     aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
 
     colorValues[0] = 0.0f;
-    colorValues[1] = 1.0f;
+    colorValues[1] = 0.0f;
     colorValues[2] = 0.0f;
-    colorValues[3] = 0.5f;
+    colorValues[3] = 0.0f;
     vk::ClearValue color2{ colorValues };
 
     aCBO->beginRenderPass(mReflectiveRenderPass,

@@ -89,8 +89,9 @@ layout (location = 0) out vec3 outColor;
 layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec4 outPosition;
-layout (location = 4) out vec3 outPositionWorld;
-layout (location = 5) out mat4 outViewMatrix;
+layout (location = 4) out vec4 outClipSpace;
+layout (location = 5) out vec3 outPositionWorld;
+layout (location = 6) out mat4 outViewMatrix;
 
 // ========================
 // Positional Output of Vertex
@@ -205,6 +206,8 @@ void main()
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
+
+  outClipSpace = View.mProjectionMatrix * outPosition;
 
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,

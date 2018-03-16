@@ -209,6 +209,9 @@ namespace YTE
     mWindow = mGraphicsView->GetWindow();
     mEngine = mSpace->GetEngine();
 
+    auto view = mSpace->GetComponent<GraphicsView>();
+    mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), view->GetRenderer(), view);
+
     mMouse = &mWindow->mMouse;
     mKeyboard = &mWindow->mKeyboard;
 
@@ -420,21 +423,45 @@ namespace YTE
 
     view.mProjectionMatrix = clip * view.mProjectionMatrix;
 
-    glm::quat rot = mCameraTransform->GetRotation();
+    /*
+    glm::vec3 forward = mCameraOrientation->GetForwardVector();
+    float angle = glm::dot(forward, glm::vec3(0, 0, 1));
 
-    glm::vec3 euler = mCameraTransform->GetRotationAsEuler();
-    euler.x *= -1.0f;
-    mCameraTransform->SetRotation(euler);
-    glm::quat rot2 = mCameraTransform->GetRotation();
-    glm::vec4 up4(0.0f, 1.0f, 0.0f, 1.0f);
-    up4 = glm::rotate(rot2, up4);
+    glm::mat4 rot = glm::yawPitchRoll(0.0f, -angle, 0.0f);
+
+    //glm::vec4 newForward = rot * glm::vec4(0, 0, 1, 0);
+    //glm::vec3 right = mCameraOrientation->GetRightVector();
+    glm::vec4 up4 = rot * glm::vec4(mCameraOrientation->GetUpVector(), 0.0f);
+    up4 = glm::normalize(up4);
+    */
+
+
+    glm::vec3 forward = mCameraOrientation->GetForwardVector();
+    forward = glm::vec3(forward.x, -forward.y, forward.z);
+
+    glm::vec3 right = mCameraOrientation->GetRightVector();
+    glm::vec3 up = glm::cross(right, forward);
+    up = glm::normalize(up);
+
+
+
     glm::vec3 trans = mCameraTransform->GetTranslation();
     float amount = trans.y - aWorldGroundHeight;
-    trans.y -= amount;
-    view.mViewMatrix = glm::lookAt(trans, mTargetPoint, glm::vec3(up4));
+    trans.y -= 2.0f * amount;
+
+    view.mViewMatrix = glm::lookAt(trans, trans + -forward, glm::vec3(up));
     view.mCameraPosition = glm::vec4(trans, 1.0f);
 
-    mCameraTransform->SetRotation(rot);
+    trans = mCameraTransform->GetTranslation();
+    trans.x += 2.0f;
+    trans.z += 6.0f;
+
+    mDrawer->Start();
+    mDrawer->AddLine(trans, trans + (-forward * 6.0f), glm::vec3{ 0,0,1 });
+    mDrawer->AddLine(trans, trans + (right * 6.0f), glm::vec3{ 1,0,0 });
+    mDrawer->AddLine(trans, trans + (up * 6.0f), glm::vec3{ 0,1,0 });
+    mDrawer->End();
+
     return view;
   }
 
