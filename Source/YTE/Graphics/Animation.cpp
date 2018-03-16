@@ -443,12 +443,14 @@ namespace YTE
         // set to nullptr, will switch to appropriate animation at beginning of next update loop
         mCurrentAnimation = nullptr;
       }
+      else
+      {
+        KeyFrameChanged keyChange;
+        keyChange.animation = mCurrentAnimation->mName;
+        keyChange.time = mCurrentAnimation->mElapsedTime;
 
-      KeyFrameChanged keyChange;
-      keyChange.animation = mCurrentAnimation->mName;
-      keyChange.time = mCurrentAnimation->mElapsedTime;
-
-      mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
+        mOwner->SendEvent(Events::KeyFrameChanged, &keyChange);
+      }
     }
 
     if (mCurrentAnimation)

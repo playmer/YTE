@@ -108,6 +108,13 @@ namespace YTE
     u64 mSoundSailDown;
     u64 mSoundBumpDock;
     u64 mSoundBoatTurn;
+
+    Animator *mAnimator;
+    Animator *mSailsAnimator;
+    Animator *mMainsailAnimator;
+
+    float mTurnAmount;
+
   };
 } 
 

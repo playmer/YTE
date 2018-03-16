@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/BoatController.hpp"
 
+#include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
@@ -66,6 +67,9 @@ namespace YTE
     , mPlayingTurnSound(false)
     , mCurrSpeed(0.f)
     , mCurrRotSpeed(0.f)
+    , mAnimator(nullptr)
+    , mSailsAnimator(nullptr)
+    , mMainsailAnimator(nullptr)
   {
 
     mMaxSailSpeed = 25.0f;
@@ -107,6 +111,37 @@ namespace YTE
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
     mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+
+    mAnimator = mOwner->GetComponent<Animator>();
+    
+    if (Composition *sails = mOwner->FindFirstCompositionByName("Sails"))
+    {
+      mSailsAnimator = sails->GetComponent<Animator>();
+    }
+    
+    if (Composition *mainsail = mOwner->FindFirstCompositionByName("Mainsail"))
+    {
+      mMainsailAnimator = mainsail->GetComponent<Animator>();
+    }
+
+    if (mAnimator)
+    {
+      mAnimator->SetDefaultAnimation("Boat_Turn.fbx");
+      mAnimator->SetCurrentAnimation("Boat_Turn.fbx");
+    }
+
+    if (mSailsAnimator)
+    {
+      mSailsAnimator->SetDefaultAnimation("Boat_Turn.fbx");
+      mSailsAnimator->SetCurrentAnimation("Boat_Turn.fbx");
+    }
+
+    if (mMainsailAnimator)
+    {
+      mMainsailAnimator->SetDefaultAnimation("Boat_Turn.fbx");
+      mMainsailAnimator->SetCurrentAnimation("Boat_Turn.fbx");
+    }
+
   }
   /******************************************************************************/
   /*
@@ -198,10 +233,44 @@ namespace YTE
       mCurrRotSpeed = 0.f;
       mPlayingTurnSound = false;
     }
+
+
+    if (mAnimator)
+    {
+      double maxTime = mAnimator->GetMaxTime();
+      double stickTurn = ((aEvent->StickDirection.x + 1.0) * maxTime) / 2.0;
+      
+      // update boat animation : current stick rotation
+      mAnimator->SetCurrentAnimTime(stickTurn);
+    }
+
+    // update character animation : current stick rotation
+
+
   }
 
   void BoatController::Update(LogicUpdate *aEvent)
   {
+    // calculate anim key frame
+    double sinVal = sin(glm::radians(mTransform->GetWorldRotationAsEuler().y));
+
+    if (mSailsAnimator)
+    {
+      double sailsFrame = ((sinVal + 1) * mSailsAnimator->GetMaxTime()) / 2.0;
+
+      // update sails animation : world rotation y axis
+      mSailsAnimator->SetCurrentAnimTime(sailsFrame);
+    }
+
+    if (mMainsailAnimator)
+    {
+      double mainsailFrame = ((sinVal + 1) * mMainsailAnimator->GetMaxTime()) / 2.0;
+
+      // update mainsail animation : world rotation y axis
+      mMainsailAnimator->SetCurrentAnimTime(mainsailFrame);
+    }
+
+
     if (mStartedTurning)
     {
       if (mCurrRotSpeed < mMaxTurnSpeed)

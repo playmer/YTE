@@ -72,13 +72,13 @@ namespace YTE
     //
     //mCameraComponent->SetUBOView(view);
 
-    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
+    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 2.0f, 0.0f));
     mTransform->SetWorldRotationProperty(glm::vec3(0.0f, mRotationAngle, 0.0f));
     glm::quat rot = mTransform->GetWorldRotation();
     glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
     unitVector = glm::rotate(rot, unitVector);
     unitVector = glm::normalize(unitVector);
-    unitVector = 30.0f * unitVector;
+    unitVector = 15.0f * unitVector;
     mTransform->SetWorldTranslation(mTransform->GetWorldTranslation() - glm::vec3(unitVector));
     mCameraComponent->SetTargetPoint(mBoatTransform->GetWorldTranslation());
 
