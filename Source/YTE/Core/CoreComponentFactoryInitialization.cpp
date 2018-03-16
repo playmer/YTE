@@ -18,7 +18,7 @@
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
-#include "YTE/GameComponents/Dialogue_Isaac.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
@@ -98,7 +98,7 @@ namespace YTE
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
-    helper.CreateComponentFactory<DialogueIsaac>();
+    helper.CreateComponentFactory<DialogueDirector>();
     helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();

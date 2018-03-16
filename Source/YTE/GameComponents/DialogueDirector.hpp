@@ -23,33 +23,75 @@ namespace YTE
   /////////////////////////////////////////////////////////////////////////////////////
   // Events
   /////////////////////////////////////////////////////////////////////////////////////
-  YTEDeclareEvent(DialogueStart);
+  YTEDeclareEvent(UISelectEvent);
+  YTEDeclareEvent(UIConfirmEvent);
+  YTEDeclareEvent(UIDisplayEvent);
+  YTEDeclareEvent(UIUpdateContent);
+
+  class UISelectEvent : public Event
+  {
+  public:
+    YTEDeclareType(UISelectEvent);
+    UISelectEvent(bool aShouldSelect) { SelectOrDeselect = aShouldSelect; }
+    bool SelectOrDeselect;
+  };
+
+  class UIConfirmEvent : public Event
+  {
+  public:
+    YTEDeclareType(UIConfirmEvent);
+  };
+
+  class UIDisplayEvent : public Event
+  {
+  public:
+    YTEDeclareType(UIDisplayEvent);
+    UIDisplayEvent(bool aShouldDisplay) { ShouldDisplay = aShouldDisplay; }
+    bool ShouldDisplay;
+  };
+
+  class UIUpdateContent : public Event
+  {
+  public:
+    YTEDeclareType(UIUpdateContent);
+    UIUpdateContent(const std::string& aNewMessage) { ContentMessage = aNewMessage; }
+    std::string ContentMessage;
+  };
+  
+  /*YTEDeclareEvent(DialogueStart);
 
   class DialogueStart : public Event
   {
   public:
     YTEDeclareType(DialogueStart);
     //Composition *camera;
-  };
+  };*/
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
   /////////////////////////////////////////////////////////////////////////////////////
-  class DialogueIsaac : public Component
+  class DialogueDirector : public Component
   {
   public:
 
-    YTEDeclareType(DialogueIsaac);
-    DialogueIsaac(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTEDeclareType(DialogueDirector);
+    DialogueDirector(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
     void Update(LogicUpdate *aEvent);
 
     // Properties /////////////////////////////////////////////////////////////////////
     const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
     void SetCamAnchor(const glm::vec3& aCamAnchor) { mCameraAnchorPosition = aCamAnchor; }
+
+    const glm::vec3& GetPlayerMark() { return mPlayerMark; }
+    void SetPlayerMark(const glm::vec3& aMark) { mPlayerMark = aMark; }
+
+    const glm::vec3& GetCharMark() { return mCharacterMark; }
+    void SetCharMark(const glm::vec3& aMark) { mCharacterMark = aMark; }
     ///////////////////////////////////////////////////////////////////////////////////
 
     void OnRequestDialogueStart(RequestDialogueStart *aEvent);
+    void OnDialogueSelect(DialogueSelect *aEvent);
     void OnDialogueConfirm(DialogueConfirm *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
     void OnCollisionPersist(CollisionPersisted *aEvent);
@@ -59,8 +101,18 @@ namespace YTE
   private:
     glm::vec3 mDockAnchorPosition;
     glm::vec3 mCameraAnchorPosition;
-    bool mActive;
-    //Composition *mSprite;
+    
+    Composition* mCharacterDialogue;
+    Composition* mDialogueOption1;
+    Composition* mDialogueOption2;
+    Composition* mDialogueOption3;
+    Composition* mLastSelected;
 
+    bool mActive;
+
+      // @@@NICK: Currently unused, but may be needed to animate characters on dock?
+      // Set the models to hit their "mark" during the RequestDialogueStart handler
+    glm::vec3 mPlayerMark;
+    glm::vec3 mCharacterMark;
   };
 }
