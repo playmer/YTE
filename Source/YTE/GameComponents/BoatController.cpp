@@ -105,8 +105,8 @@ namespace YTE
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-    mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
-    mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+    //mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
+    //mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
 
     mAnimator = mOwner->GetComponent<Animator>();
     
@@ -146,39 +146,15 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    StopBoatImmediately();
+		StopBoatImmediately();
 
-      if (mSoundEmitter)
-      {
-        input->SetInputContext(InputInterpreter::InputContext::Dialogue);
-        // send the request dialogue event
-        RequestDialogueStart dStart;
-        dStart.camera = nullptr;
+		mTransform->SetWorldTranslation(aEvent->DockAnchorPos.x, mTransform->GetWorldTranslation().y, aEvent->DockAnchorPos.z);
+		mTransform->RotateToward(aEvent->DockDirection, mOrientation->GetUpVector());
 
-        auto children = mOwner->GetCompositions();
-
-        for (auto &it : *children)
-        {
-          if (it.second->GetComponent<Camera>())
-          {
-            dStart.camera = it.second.get();
-            break;
-          }
-        }
-
-        if (mNearbyDock)
-        {
-          mNearbyDock->SendEvent(Events::RequestDialogueStart, &dStart);
-          dStart.camera->SendEvent(Events::RequestDialogueStart, &dStart);
-        }
-
-        // play the docking sound
-        if (mSoundEmitter)
-        {
-          //mSoundEmitter->PlayEvent(mSoundBumpDock);
-        }
-      }
-    //}
+		if (mSoundEmitter)
+		{
+			mSoundEmitter->PlayEvent(mSoundBumpDock);
+		}
   }
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)
