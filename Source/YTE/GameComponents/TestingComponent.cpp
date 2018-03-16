@@ -53,31 +53,7 @@ namespace YTE
     }
 
     mAnimator->SetCurrentAnimation(mCurrentAnimation);
-    mAnimator->SetCurrentPlayOverTime(false);
-
-    double maxTime = mAnimator->GetMaxTime();
-
-    if (mAnimForward)
-    {
-      mAnimLoopTimer += aEvent->Dt;
-    }
-    else
-    {
-      mAnimLoopTimer -= aEvent->Dt;
-    }
-
-    if (mAnimLoopTimer > maxTime)
-    {
-      mAnimLoopTimer = maxTime;
-      mAnimForward = false;
-    }
-    else if (mAnimLoopTimer < 0.0)
-    {
-      mAnimLoopTimer = 0.0;
-      mAnimForward = true;
-    }
-
-    mAnimator->SetCurrentAnimTime(mAnimLoopTimer);
+    mAnimator->SetDefaultAnimation(mCurrentAnimation);
   }
 
   void TestingComponent::CheckButtons(XboxButtonEvent * aEvent)
