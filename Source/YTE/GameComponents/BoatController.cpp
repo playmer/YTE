@@ -26,10 +26,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineEvent(RequestDialogueStart);
-
-  YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
-
   YTEDefineType(BoatController)
   {
     YTERegisterType(BoatController);
@@ -150,13 +146,12 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    if (mCanDock)
-    {
-      // change input context
-      InputInterpreter *input = mSpace->GetComponent<InputInterpreter>();
+    //YTEUnusedArgument(aEvent);
+    //if (mCanDock)
+    //{
+    mTransform->SetWorldTranslation(aEvent->DockAnchorPos);
 
-      if (input)
+      if (mSoundEmitter)
       {
         input->SetInputContext(InputInterpreter::InputContext::Dialogue);
         // send the request dialogue event
@@ -186,7 +181,7 @@ namespace YTE
           //mSoundEmitter->PlayEvent(mSoundBumpDock);
         }
       }
-    }
+    //}
   }
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)

@@ -19,7 +19,7 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/DeviceEnums.hpp"
 
-#include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/UI/MenuController.hpp"
 
 namespace YTE
 {

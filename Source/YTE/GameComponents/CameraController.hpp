@@ -28,8 +28,10 @@ namespace YTE
     YTEDeclareType(CameraController);
     CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void OnLogicUpdate(LogicUpdate *aEvent);
     void RotateCamera(CameraRotateEvent *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
+
   private:
     Transform *mBoatTransform;
     Orientation *mBoatOrientation;
@@ -37,5 +39,7 @@ namespace YTE
     Transform *mTransform;
     Orientation *mOrientation;
     Camera *mCameraComponent;
+
+    void RotateOnBoom(float aRotation, const glm::vec3& aFocusPoint);
   };
-}//end yte namespace
+}

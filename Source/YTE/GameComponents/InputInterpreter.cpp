@@ -16,7 +16,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   // Dialogue Events
-  YTEDefineEvent(DialogueStart);
+  YTEDefineEvent(RequestDialogueStart);
   YTEDefineEvent(DialogueSelect);
   YTEDefineEvent(DialogueConfirm);
   YTEDefineEvent(DialogueExit);
@@ -35,7 +35,7 @@ namespace YTE
   // Camera Events
   YTEDefineEvent(CameraRotateEvent);
 
-  YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
+  YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
   YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
   YTEDefineType(DialogueExit) { YTERegisterType(DialogueExit); }
@@ -190,13 +190,6 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::Y:
-          {
-            DialogueStart diagStart;
-            mOwner->SendEvent(Events::DialogueStart, &diagStart);
-            break;
-          }
-
           case Xbox_Buttons::A:
           {
             DialogueConfirm diagConfirm;
@@ -226,8 +219,8 @@ namespace YTE
             break;
           case Xbox_Buttons::A:
           {
-            BoatDockEvent dock;
-            mOwner->SendEvent(Events::BoatDockEvent, &dock);
+            RequestDialogueStart dock;
+            mOwner->SendEvent(Events::RequestDialogueStart, &dock);
             break;
           }
           case Xbox_Buttons::B:
@@ -371,8 +364,8 @@ namespace YTE
         {
           case Keys::Return:
           {
-            BoatDockEvent dock;
-            mOwner->SendEvent(Events::BoatDockEvent, &dock);
+            RequestDialogueStart dock;
+            mOwner->SendEvent(Events::RequestDialogueStart, &dock);
             break;
           }
           case Keys::Escape:

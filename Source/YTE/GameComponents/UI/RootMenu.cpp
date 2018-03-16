@@ -10,7 +10,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/GameComponents/RootMenu.hpp"
+#include "YTE/GameComponents/UI/RootMenu.hpp"
 
 namespace YTE
 {

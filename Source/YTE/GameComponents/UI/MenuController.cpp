@@ -11,7 +11,7 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/GameComponents/MenuController.hpp"
+#include "YTE/GameComponents/UI/MenuController.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE

@@ -35,6 +35,7 @@ namespace YTE
 
   void CameraController::Initialize()
   {
+    mSpace->YTERegister(Events::LogicUpdate, this, &CameraController::OnLogicUpdate);
     mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
     mSpace->YTERegister(Events::DialogueExit, this, &CameraController::OnDialogueExit);
     
@@ -45,6 +46,12 @@ namespace YTE
     Composition *boat = mOwner->GetParent();
     mBoatTransform = boat->GetComponent<Transform>();
     mBoatOrientation = boat->GetComponent<Orientation>();
+  }
+
+  void CameraController::OnLogicUpdate(LogicUpdate *aEvent)
+  {
+    //glm::vec3 currTranslation = mTransform->GetTranslation();
+    //mTransform->SetTranslation(currTranslation.x, mFixedHeight, currTranslation.z);
   }
 
   void CameraController::RotateCamera(CameraRotateEvent *aEvent)
@@ -100,4 +107,16 @@ namespace YTE
     mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
     mCameraComponent->SetTargetPoint(mBoatTransform->GetWorldTranslation());
   }
-}// end yte namespace
+
+  void CameraController::RotateOnBoom(float aRotation, const glm::vec3& aFocusPoint)
+  {
+    mTransform->SetWorldRotationProperty(glm::vec3(0.0f, aRotation, 0.0f));
+    glm::quat rot = mTransform->GetWorldRotation();
+    glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
+    unitVector = glm::rotate(rot, unitVector);
+    unitVector = glm::normalize(unitVector);
+    unitVector = 30.0f * unitVector;
+    mTransform->SetWorldTranslation(mTransform->GetWorldTranslation() - glm::vec3(unitVector));
+    mCameraComponent->SetTargetPoint(aFocusPoint);
+  }
+}

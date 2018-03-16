@@ -75,8 +75,8 @@ namespace YTE
     mGhostBody->setUserPointer(mOwner);
 
     btTransform translationAndRotation;
-    translationAndRotation.setOrigin(OurVec3ToBt(transform->GetTranslation()));
-    translationAndRotation.setRotation(OurQuatToBt(transform->GetRotation()));
+    translationAndRotation.setOrigin(OurVec3ToBt(transform->GetWorldTranslation()));
+    translationAndRotation.setRotation(OurQuatToBt(transform->GetWorldRotation()));
     mGhostBody->setWorldTransform(translationAndRotation);
 
     world->addCollisionObject(mGhostBody.get());

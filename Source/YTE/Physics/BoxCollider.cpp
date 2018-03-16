@@ -50,9 +50,9 @@ namespace YTE
   {
       // Get info from transform and feed that ish to the Bullet collider
     auto transform = mOwner->GetComponent<Transform>();
-    auto translation = transform->GetTranslation();
-    auto scale = transform->GetScale() / 2.0f;
-    auto rotation = transform->GetRotation();
+    auto translation = transform->GetWorldTranslation();
+    auto scale = transform->GetWorldScale() / 2.0f;
+    auto rotation = transform->GetWorldRotation();
     auto bulletRot = OurQuatToBt(rotation);
     auto bulletTransform = btTransform(bulletRot,
                                         btVector3(translation.x + mOffset.x, 
@@ -75,7 +75,7 @@ namespace YTE
       // Update the underlying collider if it exists
     if (mBoxShape)
     {
-      auto scale = mOwner->GetComponent<Transform>()->GetScale() / 2.0f;
+      auto scale = mOwner->GetComponent<Transform>()->GetWorldScale() / 2.0f;
       auto localScaling = btVector3(aSize.x * scale.x, aSize.y * scale.y, aSize.z * scale.z);
 
       mBoxShape->setLocalScaling(localScaling);
@@ -97,8 +97,8 @@ namespace YTE
     if (mCollider)
     {
       auto transform = mOwner->GetComponent<Transform>();
-      auto translation = transform->GetTranslation();
-      auto rotation = transform->GetRotation();
+      auto translation = transform->GetWorldTranslation();
+      auto rotation = transform->GetWorldRotation();
       auto bulletRot = OurQuatToBt(rotation);
       auto bulletTransform = btTransform(bulletRot,
                                           btVector3(translation.x + mOffset.x, 

@@ -8,6 +8,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Dialogue_Isaac.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/BoatPhysicsMath.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.cpp
@@ -15,9 +16,9 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/MenuController.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/LaunchMenu.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/RootMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/MenuController.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/LaunchMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
 #  PUBLIC    
@@ -29,7 +30,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Dialogue_Isaac.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/BoatPhysicsMath.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.hpp
@@ -37,10 +38,9 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/MenuController.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/LaunchMenu.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/RootMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/MenuController.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/LaunchMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
 )

@@ -23,12 +23,13 @@
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
+#include "YTE/GameComponents/Dialogue_Isaac.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
-#include "YTE/GameComponents/MenuController.hpp"
-#include "YTE/GameComponents/RootMenu.hpp"
-#include "YTE/GameComponents/LaunchMenu.hpp"
+#include "YTE/GameComponents/UI/MenuController.hpp"
+#include "YTE/GameComponents/UI/RootMenu.hpp"
+#include "YTE/GameComponents/UI/LaunchMenu.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Button.hpp"
@@ -100,6 +101,7 @@ namespace YTE
     InitializeType<BoatController>();
     InitializeType<BoatPhysics>();
     InitializeType<Dialogue>();
+    InitializeType<DialogueIsaac>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraController>();

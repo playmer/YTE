@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2018/03/15
-*
-* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include "YTE/Graphics/Camera.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
@@ -85,7 +76,7 @@ namespace YTE
       return;
     }
 
-    Transform *dialogCamTrans = mOwner->FindFirstCompositionByName("DialogueCamera")->GetComponent<Transform>();
+    /*Transform *dialogCamTrans = mOwner->FindFirstCompositionByName("DialogueCamera")->GetComponent<Transform>();
 
     Composition *camera = aEvent->camera;
     
@@ -97,7 +88,7 @@ namespace YTE
    
     camTransform->SetWorldTranslation(dialogCamTrans->GetWorldTranslation());
     camTransform->SetWorldRotation(dialogCamTrans->GetWorldRotation());
-    camTransform->SetWorldScale(dialogCamTrans->GetWorldScale());
+    camTransform->SetWorldScale(dialogCamTrans->GetWorldScale());*/
 
     /*glm::vec3 pos = camTransform->GetWorldTranslation();
     

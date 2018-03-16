@@ -35,7 +35,7 @@ namespace YTE
   YTEDeclareEvent(SailStateChanged);
   YTEDeclareEvent(BoatTurnEvent);
   YTEDeclareEvent(BoatDockEvent);
-  YTEDeclareEvent(DialogueStart);
+  YTEDeclareEvent(RequestDialogueStart);
   YTEDeclareEvent(DialogueSelect);
   YTEDeclareEvent(DialogueConfirm);
   YTEDeclareEvent(DialogueExit);
@@ -71,12 +71,15 @@ namespace YTE
   {
   public:
     YTEDeclareType(BoatDockEvent);
+    BoatDockEvent(const glm::vec3& aAnchorPos) { DockAnchorPos = aAnchorPos; }
+    glm::vec3 DockAnchorPos;
   };
 
-  class DialogueStart : public Event
+  class RequestDialogueStart : public Event
   {
   public:
-    YTEDeclareType(DialogueStart);
+    YTEDeclareType(RequestDialogueStart);
+    bool EventHandled = false;
   };
 
   class DialogueSelect : public Event

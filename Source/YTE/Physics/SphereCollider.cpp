@@ -39,7 +39,7 @@ namespace YTE
   }
 
   SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Collider(aOwner, aSpace), mRadius(1.f)
+    : Collider(aOwner, aSpace), mRadius(1.0f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -48,9 +48,9 @@ namespace YTE
   {
       // Get info from transform and feed that ish to the Bullet collider
     auto transform = mOwner->GetComponent<Transform>();
-    auto translation = transform->GetTranslation();
-    auto scale = transform->GetScale() / 2.0f;
-    auto rotation = transform->GetRotation();
+    auto translation = transform->GetWorldTranslation();
+    auto scale = transform->GetWorldScale() / 2.0f;
+    auto rotation = transform->GetWorldRotation();
     auto bulletRot = btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
     auto bulletTransform = btTransform(bulletRot,
                                         btVector3(translation.x + mOffset.x,
@@ -72,7 +72,7 @@ namespace YTE
     if (mSphereShape)
     {
       glm::vec3 a;
-      auto scale = mOwner->GetComponent<Transform>()->GetScale() / 2.0f;
+      auto scale = mOwner->GetComponent<Transform>()->GetWorldScale() / 2.0f;
       auto localScaling = btVector3(aRadius * scale.x, aRadius * scale.x, aRadius * scale.x);
 
       mSphereShape->setLocalScaling(localScaling);
@@ -87,8 +87,8 @@ namespace YTE
     if (mCollider)
     {
       auto transform = mOwner->GetComponent<Transform>();
-      auto translation = transform->GetTranslation();
-      auto rotation = transform->GetRotation();
+      auto translation = transform->GetWorldTranslation();
+      auto rotation = transform->GetWorldRotation();
       auto bulletRot = btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
       auto bulletTransform = btTransform(bulletRot,
                                           btVector3(translation.x + mOffset.x,
