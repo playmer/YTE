@@ -18,8 +18,8 @@
 
 namespace YTE
 {
-  /*YTEDefineEvent(DialogueStart);
-  YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }*/
+  YTEDefineEvent(DialogueStart);
+  YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
 
   YTEDefineEvent(UISelectEvent);
   YTEDefineEvent(UIConfirmEvent);
@@ -30,6 +30,7 @@ namespace YTE
   YTEDefineType(UIConfirmEvent) { YTERegisterType(UIConfirmEvent); }
   YTEDefineType(UIDisplayEvent) { YTERegisterType(UIDisplayEvent); }
   YTEDefineType(UIUpdateContent) { YTERegisterType(UIUpdateContent); }
+
 
   YTEDefineType(DialogueDirector)
   {
@@ -78,6 +79,7 @@ namespace YTE
     //mCameraAnchorPosition = mOwner->FindFirstCompositionByName("CharacterMark")->GetComponent<Transform>()->GetWorldTranslation();
 
     mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+    mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
     mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
     mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
     mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
@@ -125,14 +127,8 @@ namespace YTE
       DirectCameraEvent directCam(mCameraAnchorPosition, mOwner->GetParent()->GetComponent<Transform>()->GetWorldTranslation());
       mSpace->SendEvent(Events::DirectCameraEvent, &directCam);
 
-      mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
-
-      // @@@JAY: Send your initial event here!!
-
-        // Send an UIUpdateContent event for the opening line
-      std::string message /* = your message from the event you sent */;
-      UIUpdateContent content(message);
-      mCharacterDialogue->SendEvent(Events::UIUpdateContent, &content);
+      DialogueStart startDialogue;
+      mSpace->SendEvent(Events::DialogueStart, &startDialogue);
 
         // Then I open up all the speech bubbles
       UIDisplayEvent display(true);
@@ -141,6 +137,41 @@ namespace YTE
       for (auto &child : children)
       {
         child.second->SendEvent(Events::UIDisplayEvent, &display);
+      }
+
+      mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
+    }
+  }
+
+  void DialogueDirector::OnDialogueNodeReady(DialogueNodeReady *aEvent)
+  {
+    if (aEvent->DialogueType == DialogueNode::NodeType::Text)
+    {
+        // Send an UIUpdateContent event for the opening line
+      UIUpdateContent content(aEvent->ContentMessages[0]);
+      mCharacterDialogue->SendEvent(Events::UIUpdateContent, &content);
+    }
+    else if (aEvent->DialogueType == DialogueNode::NodeType::Input)
+    {
+        // Send an UIUpdateContent event for the opening line
+      size_t size = aEvent->ContentMessages.size();
+
+      if (size > 0)
+      {
+        UIUpdateContent content(aEvent->ContentMessages[0]);
+        mDialogueOption1->SendEvent(Events::UIUpdateContent, &content);
+
+        if (size > 1)
+        {
+          UIUpdateContent content2(aEvent->ContentMessages[1]);
+          mDialogueOption2->SendEvent(Events::UIUpdateContent, &content2);
+
+          if (size > 3)
+          {
+            UIUpdateContent content3(aEvent->ContentMessages[2]);
+            mDialogueOption3->SendEvent(Events::UIUpdateContent, &content3);
+          }
+        }
       }
     }
   }
@@ -208,16 +239,33 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *aEvent)
   {
+    bool test = mActive;
     if (mActive && !aEvent->EventHandled)
     {
       aEvent->EventHandled = true;
 
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+      if (mLastSelected == mDialogueOption1)
+      {
+        DialogueNodeConfirm confirm(0);
+        mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+      }
+      else if (mLastSelected == mDialogueOption2)
+      {
+        DialogueNodeConfirm confirm(1);
+        mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+      }
+      else if (mLastSelected == mDialogueOption3)
+      {
+        DialogueNodeConfirm confirm(2);
+        mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+      }
+
+      /*auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
       if (emitter)
       {
         emitter->PlayEvent("UI_Dia_Next");
-      }
+      }*/
     }
   }
 

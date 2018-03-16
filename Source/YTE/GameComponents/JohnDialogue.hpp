@@ -20,6 +20,7 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/DialogueGraph.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 
 namespace YTE
 {
@@ -41,7 +42,7 @@ namespace YTE
     enum class State { Available, InProgress, Completed };
     enum class Name { Introduction, GuessChew, Ingredients, Cayenne };
     Quest() {};
-    Quest(Quest::Name aName);
+    Quest(Quest::Name aName, Composition *aJohn);
 
     Quest::Name GetName() { return mName; };
     Quest::State GetState() { return mState; };
@@ -69,8 +70,9 @@ namespace YTE
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
   private:
-    void OnDialogueStart(RequestDialogueStart *aEvent);
-		void OnDialogueExit(DialogueExit *aEvent);
+    void OnDialogueStart(DialogueStart *aEvent);
+    void RegisterJohn(CollisionStarted *aEvent);
+    void DeregisterJohn(CollisionEnded *aEvent);
 
     std::vector<Quest> mQuestVec;
     Quest mActiveQuest;

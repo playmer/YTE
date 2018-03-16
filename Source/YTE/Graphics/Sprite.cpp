@@ -276,7 +276,7 @@ namespace YTE
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 
-    mInstantiatedSprite->mType = ShaderType::AdditiveBlendShader;
+    mInstantiatedSprite->mType = ShaderType::ShaderNoCull;
 
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;

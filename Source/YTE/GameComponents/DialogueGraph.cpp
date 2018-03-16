@@ -18,6 +18,12 @@ namespace YTE
 
 	YTEDefineType(DialogueNode) { YTERegisterType(DialogueNode); }
 
+  YTEDefineEvent(DialogueNodeReady);
+  YTEDefineEvent(DialogueNodeConfirm);
+
+  YTEDefineType(DialogueNodeReady) { YTERegisterType(DialogueNodeReady); }
+  YTEDefineType(DialogueNodeConfirm) { YTERegisterType(DialogueNodeConfirm); }
+
   /*
 
   YTEDefineEvent(DialoguePrintText);
@@ -109,6 +115,49 @@ namespace YTE
       }
     }
   }
+  DialogueNode::DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData, Composition *aOwner, int aId)
+    : mType(aType), mData(*aData), mOwner(aOwner), mId(aId)
+  {
+    if (aChildren == nullptr)
+    {
+      mChildren = *(new std::vector<DialogueNode*>());
+    }
+    else
+    {
+      for (DialogueNode *child : *aChildren)
+      {
+        mChildren.push_back(child);
+      }
+    }
+
+    switch (aType)
+    {
+    case NodeType::Anim:
+    {
+      // set the function pointer
+      mNodeLogic = &DialogueNode::PlayAnim;
+      break;
+    }
+    case NodeType::Input:
+    {
+      // set the function pointer
+      mNodeLogic = &DialogueNode::GiveOptions;
+      break;
+    }
+    case NodeType::Text:
+    {
+      // set the function pointer
+      mNodeLogic = &DialogueNode::RunText;
+      break;
+    }
+    case NodeType::Sound:
+    {
+      // set the function pointer
+      mNodeLogic = &DialogueNode::PlaySound;
+      break;
+    }
+    }
+  }
   /*
   DialogueNode::DialogueNode(NodeType aType, DialogueNode *aParent, int aStringCount, ...)
     : mType(aType), mParent(aParent)
@@ -152,45 +201,41 @@ namespace YTE
   }
   */
 
-	// Helper function to run the node logic and register children
-	void DialogueNode::ActivateNode()
+	void DialogueNode::NextNode(DialogueNodeConfirm *aEvent)
 	{
-			// Deregister self
-		YTEDeregister(Events::AdvanceConversation, this, &DialogueNode::OnAdvanceConversation);
-		//if (we are the correct node)
-		//{
-				// Call this nodes logic functor
-			mNodeLogic;
-				// Register children for the UI response event
-			for (auto child : mChildren)
-			{
-				YTERegister(Events::AdvanceConversation, this, &DialogueNode::OnAdvanceConversation);
-			}
-		//}
-	}
+    auto space = mOwner->GetSpace();
 
-	// @@@ this ui response should be an OnAdvanceConversation from inputinterpreter
-	void DialogueNode::OnAdvanceConversation(AdvanceConversation *aEvent)
-	{
-		ActivateNode();
+    space->YTEDeregister(Events::DialogueNodeConfirm, this, &DialogueNode::NextNode);
+   
+    if (aEvent->Selection == mId)
+    {
+      mNodeLogic;
+      for (auto child : mChildren)
+      {
+        // this needs to register on the space?
+        space->YTERegister(Events::DialogueNodeConfirm, child, &DialogueNode::NextNode);
+      }
+    }
 	}
 
 	// Functors
   void DialogueNode::PlayAnim()
   {
-    
+    //mOwner->GetComponent<Animator>();
   }
   void DialogueNode::GiveOptions()
   {
-
+    DialogueNodeReady options(mData);
+    mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
   }
   void DialogueNode::RunText()
   {
-
+    DialogueNodeReady options(mData);
+    mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
   }
   void DialogueNode::PlaySound()
   {
-
+    //mOwner->GetComponent<WWiseEmitter>()
   }
 
 }//end yte

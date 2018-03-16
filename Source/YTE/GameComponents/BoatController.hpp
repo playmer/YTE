@@ -104,6 +104,7 @@ namespace YTE
     Animator *mAnimator;
     Animator *mSailsAnimator;
     Animator *mMainsailAnimator;
+    Animator *mCharacterAnimator;
 
     float mTurnAmount;
 

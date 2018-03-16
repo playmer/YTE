@@ -15,6 +15,7 @@
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/DialogueGraph.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
 
@@ -27,6 +28,7 @@ namespace YTE
   YTEDeclareEvent(UIConfirmEvent);
   YTEDeclareEvent(UIDisplayEvent);
   YTEDeclareEvent(UIUpdateContent);
+
 
   class UISelectEvent : public Event
   {
@@ -58,14 +60,14 @@ namespace YTE
     std::string ContentMessage;
   };
   
-  /*YTEDeclareEvent(DialogueStart);
+  YTEDeclareEvent(DialogueStart);
 
   class DialogueStart : public Event
   {
   public:
     YTEDeclareType(DialogueStart);
     //Composition *camera;
-  };*/
+  };
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
@@ -91,6 +93,7 @@ namespace YTE
     ///////////////////////////////////////////////////////////////////////////////////
 
     void OnRequestDialogueStart(RequestDialogueStart *aEvent);
+    void OnDialogueNodeReady(DialogueNodeReady *aEvent);
     void OnDialogueSelect(DialogueSelect *aEvent);
     void OnDialogueConfirm(DialogueConfirm *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);

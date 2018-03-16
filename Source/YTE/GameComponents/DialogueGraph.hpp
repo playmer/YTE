@@ -21,6 +21,9 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(DialogueNodeReady);
+  YTEDeclareEvent(DialogueNodeConfirm);
+
 	YTEDeclareEvent(AdvanceConversation);
 
 	class AdvanceConversation : public Event
@@ -47,6 +50,8 @@ namespace YTE
   */
 #define DialogueDataType std::vector<std::string>
 #define DialogueData(name, ...) DialogueDataType name{ __VA_ARGS__ }
+  class DialogueNodeConfirm;
+
 
   class DialogueNode : public EventHandler
   {
@@ -57,14 +62,19 @@ namespace YTE
     //DialogueNode(NodeType aType, DialogueNode *aChildren, int aStringCount, ...);
       // Ctor that uses DialogueData Ctor, more readable use this one
     DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData);
+    DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData, Composition *aOwner, int aId);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
-		void ActivateNode();
-		void OnAdvanceConversation(AdvanceConversation *aEvent);
+		void NextNode(DialogueNodeConfirm *aEvent);
+
+    Composition *mOwner;
   private:
     NodeType mType;
     std::vector<DialogueNode*> mChildren;
+    int mId;
     DialogueDataType mData;
+      // @@@(Jay): This is 1000% temporary
+    
 
     void (DialogueNode::*mNodeLogic)();
 
@@ -72,6 +82,30 @@ namespace YTE
     void GiveOptions();
     void RunText();
     void PlaySound();
+  };
+
+  //EVENT TO LISTEN TO NODE WILL LOOK KINDA LIKE THIS
+  class DialogueNodeReady : public Event
+  {
+  public:
+    YTEDeclareType(DialogueNodeReady);
+    DialogueNodeReady(std::vector<std::string> aNewMessage) {
+      for (auto s : aNewMessage)
+      {
+        ContentMessages.push_back(s);
+      }
+    }
+    std::vector<std::string> ContentMessages;
+    DialogueNode::NodeType DialogueType;
+  };
+
+  class DialogueNodeConfirm : public Event
+  {
+  public:
+    YTEDeclareType(DialogueNodeConfirm);
+    DialogueNodeConfirm(int aSelection) { Selection = aSelection; }
+
+    int Selection;
   };
 }//end yte
 #endif

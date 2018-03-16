@@ -120,6 +120,11 @@ namespace YTE
       mMainsailAnimator = mainsail->GetComponent<Animator>();
     }
 
+    if (Composition *character= mOwner->FindFirstCompositionByName("MainCharacter"))
+    {
+      mCharacterAnimator = character->GetComponent<Animator>();
+    }
+
     if (mAnimator)
     {
       mAnimator->SetDefaultAnimation("Boat_Turn.fbx");
@@ -136,6 +141,12 @@ namespace YTE
     {
       mMainsailAnimator->SetDefaultAnimation("Boat_Turn.fbx");
       mMainsailAnimator->SetCurrentAnimation("Boat_Turn.fbx");
+    }
+
+    if (mCharacterAnimator)
+    {
+      mCharacterAnimator->SetDefaultAnimation("MC_Boat_Turn.fbx");
+      mCharacterAnimator->SetCurrentAnimation("MC_Boat_Turn.fbx");
     }
 
   }
@@ -216,6 +227,15 @@ namespace YTE
       
       // update boat animation : current stick rotation
       mAnimator->SetCurrentAnimTime(stickTurn);
+    }
+
+    if (mCharacterAnimator)
+    {
+      double maxTime = mAnimator->GetMaxTime();
+      double stickTurn = ((aEvent->StickDirection.x + 1.0) * maxTime) / 2.0;
+
+      // update boat animation : current stick rotation
+      mCharacterAnimator->SetCurrentAnimTime(stickTurn);
     }
 
     // update character animation : current stick rotation

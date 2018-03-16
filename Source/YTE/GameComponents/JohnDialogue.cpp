@@ -37,7 +37,7 @@ namespace YTE
       Intro is a unique first quest.
 			Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
-  Quest::Quest(Quest::Name aName)
+  Quest::Quest(Quest::Name aName, Composition *aJohn)
     : mName(aName), mState(State::Available), mConditionMet(false)
   {
     mConversationVec = *(new std::vector<Conversation>());
@@ -62,16 +62,16 @@ namespace YTE
 
         // LEVEL D
         DialogueData(dataD0, "TEMP Go here, find this");
-        DialogueNode nodeD0(DialogueNode::NodeType::Text, nullptr, &dataD0);
+        DialogueNode nodeD0(DialogueNode::NodeType::Text, nullptr, &dataD0, aJohn, 0);
 
         children.push_back(&nodeD0);
 
         // LEVEL C
         DialogueData(dataC0, "Perfect timing, my fish is still in the oven", "I need you to go fetch my missing ingredients");
-        DialogueNode nodeC0(DialogueNode::NodeType::Text, &children, &dataC0);
+        DialogueNode nodeC0(DialogueNode::NodeType::Text, &children, &dataC0, aJohn, 0);
 
         DialogueData(dataC1, "Suuuure...", "Well while you're here, I need you to fetch my missing ingredients");
-        DialogueNode nodeC1(DialogueNode::NodeType::Text, &children, &dataC1);
+        DialogueNode nodeC1(DialogueNode::NodeType::Text, &children, &dataC1, aJohn, 1);
 
         children.clear();
         children.push_back(&nodeC0);
@@ -79,28 +79,30 @@ namespace YTE
 
         // LEVEL B
         DialogueData(dataB0, "Oh I'm not ordering, I'm here to help", "Friendship!");
-        DialogueNode nodeB0(DialogueNode::NodeType::Input, &children, &dataB0);
+        DialogueNode nodeB0(DialogueNode::NodeType::Input, &children, &dataB0, aJohn, 0);
 
         children.clear();
         children.push_back(&nodeB0);
 
         // LEVEL A
         DialogueData(dataA0, "HOT BEHIND!", "Just one second I'm finishing this meal", "Okay what did you want to order?");
-        DialogueNode nodeA0(DialogueNode::NodeType::Text, &children, &dataA0);
+        DialogueNode nodeA0(DialogueNode::NodeType::Text, &children, &dataA0, aJohn, 0);
 
         children.clear();
         children.push_back(&nodeA0);
 
         // LEVEL ROOT
         DialogueData(data, AnimationNames::WaveInit);
-        DialogueNode root(DialogueNode::NodeType::Anim, &children, &data);
-
-        delete &children;
+        DialogueNode root(DialogueNode::NodeType::Anim, &children, &data, aJohn, 0);
 
         Conversation c0(&root);
 
 					// The introduction quest only has one conversation
         mConversationVec.push_back(c0);
+
+        // register the first node for when we start        
+        root.mOwner->GetSpace()->YTERegister(Events::DialogueNodeConfirm, &root, &DialogueNode::NextNode);
+        //delete &children;
         break;
       }
       case Quest::Name::GuessChew:
@@ -163,29 +165,38 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
       // Construct the Quest Vector
-    mQuestVec = *(new std::vector<Quest> { 
-      Quest::Name::Introduction,
-      Quest::Name::GuessChew,
-      Quest::Name::Cayenne,
-      Quest::Name::Ingredients
-    });
+    /*mQuestVec = *(new std::vector<Quest> { 
+      (Quest::Name::Introduction, aOwner),
+      (Quest::Name::GuessChew, aOwner),
+      (Quest::Name::Cayenne, aOwner),
+      (Quest::Name::Ingredients, aOwner)
+    });*/
+
+    Quest intro(Quest::Name::Introduction, aOwner);
+    mQuestVec.push_back(intro);
+  }
+
+  void JohnDialogue::RegisterJohn(CollisionStarted *aEvent)
+  {
+    mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+  }
+  void JohnDialogue::DeregisterJohn(CollisionEnded *aEvent)
+  {
+    mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
   }
 
   void JohnDialogue::Initialize()
   {
-    // @@@JAY: This register and deregister should happen on CollisionStart and CollisionEnd so that other characters dont listen when they shouldnt
-    mOwner->YTERegister(Events::RequestDialogueStart, this, &JohnDialogue::OnDialogueStart);
+    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterJohn);
+    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterJohn);
   }
 
-  void JohnDialogue::OnDialogueStart(RequestDialogueStart *aEvent)
+  void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-		Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
-		AdvanceConversation advConvo;
-		temp->GetRoot()->SendEvent("AdvanceConversation", &advConvo);
-  }
+		//Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
 
-	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
-	{
-		mActiveQuest.ConvoCompleted();
-	}
+    // this is just so that we start a conversation the same way as advancing
+    DialogueNodeConfirm conf(0);
+		mSpace->SendEvent(Events::DialogueNodeConfirm, &conf);
+  }
 } //end yte
