@@ -29,12 +29,7 @@ namespace YTE
     ~Space();
 
     void Initialize(InitializeEvent *aEvent) override;
-    void Initialize() 
-    {
-      InitializeEvent event;
-      event.CheckRunInEditor = true;
-      Initialize(&event);
-    }
+    void Initialize();
         
     void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level, bool aCheckRunInEditor = false);

@@ -148,7 +148,7 @@ namespace YTE
         // play the docking sound
         if (mSoundEmitter)
         {
-          mSoundEmitter->PlayEvent(mSoundBumpDock);
+          //mSoundEmitter->PlayEvent(mSoundBumpDock);
         }
       }
     }
@@ -160,7 +160,7 @@ namespace YTE
     {
       if (!mIsSailUp)
       {
-        mSoundEmitter->PlayEvent(mSoundSailUp);
+        //mSoundEmitter->PlayEvent(mSoundSailUp);
         mRigidBody->SetDamping(0.f, 0.9f);
       }
     }
@@ -168,7 +168,7 @@ namespace YTE
     {
       if (mIsSailUp)
       {
-        mSoundEmitter->PlayEvent(mSoundSailDown);
+        //mSoundEmitter->PlayEvent(mSoundSailDown);
         mRigidBody->SetDamping(0.9f, 0.9f);
       }
     }
@@ -181,7 +181,7 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      mSoundEmitter->PlayEvent(mSoundBoatTurn);
+      //mSoundEmitter->PlayEvent(mSoundBoatTurn);
       mPlayingTurnSound = true;
     }
 

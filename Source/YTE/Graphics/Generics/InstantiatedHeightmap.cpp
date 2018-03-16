@@ -91,6 +91,10 @@ namespace YTE
     std::string meshName = aModelName;
     Submesh submesh;
 
+    submesh.mUBOMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    submesh.mUBOMaterial.mSpecular = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    submesh.mUBOMaterial.mShininess = 200.0f;
+
     //submesh.mDiffuseMap = mTextureName;
     submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = mShaderSetName;

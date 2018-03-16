@@ -76,6 +76,12 @@ namespace YTE
     }
   }
 
+  void Space::Initialize()
+  {
+    InitializeEvent event;
+    event.CheckRunInEditor = mEngine->IsEditor();
+    Initialize(&event);
+  }
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.

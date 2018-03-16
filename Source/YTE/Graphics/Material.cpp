@@ -135,7 +135,15 @@ namespace YTE
 
     if (nullptr != model)
     {
-      auto instantiatedModel = model->GetInstantiatedModel().front();
+      InstantiatedModel *instantiatedModel{ nullptr };
+
+      auto models = model->GetInstantiatedModel();
+
+      if (false == models.empty())
+      {
+        auto instantiatedModel = models.front();
+      }
+
       if (nullptr != instantiatedModel)
       {
         if (instantiatedModel->GetMesh()->mName != mName)
@@ -237,7 +245,13 @@ namespace YTE
 
       RSValue materialName;
 
-      auto &name = submeshMaterial->GetSubmesh()->mMaterialName;
+      std::string name;
+
+      if (submeshMaterial->GetSubmesh())
+      {
+        name = submeshMaterial->GetSubmesh()->mMaterialName;
+      }
+
       materialName.SetString(name.c_str(),
                              static_cast<RSSizeType>(name.size()),
                              aAllocator);
