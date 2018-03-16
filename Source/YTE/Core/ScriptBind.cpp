@@ -38,6 +38,7 @@
 #include "YTE/GameComponents/Island.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/DialogueGraph.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -118,6 +119,7 @@ namespace YTE
     InitializeType<Island>();
     InitializeType<TestingComponent>();
     InitializeType<JohnDialogue>();
+		InitializeType<DialogueNode>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

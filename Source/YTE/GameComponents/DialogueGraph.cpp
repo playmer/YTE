@@ -16,6 +16,8 @@ namespace YTE
   YTEDefineEvent(AdvanceConversation);
   YTEDefineType(AdvanceConversation) { YTERegisterType(AdvanceConversation); }
 
+	YTEDefineType(DialogueNode) { YTERegisterType(DialogueNode); }
+
   /*
 
   YTEDefineEvent(DialoguePrintText);

@@ -51,6 +51,7 @@ namespace YTE
   class DialogueNode : public EventHandler
   {
   public:
+		YTEDeclareType(DialogueNode);
     enum class NodeType { Anim, Input, Text, Sound };
       // Ctor that uses multiple const char* as variadic args
     //DialogueNode(NodeType aType, DialogueNode *aChildren, int aStringCount, ...);
