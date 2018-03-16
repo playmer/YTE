@@ -98,6 +98,12 @@ int main(int argc, char *argv[])
   YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
   //camera->Initialize();
   
+  if (camera->ShouldSerialize())
+  {
+    camera->ToggleSerialize();
+  }
+  
+  
   // add the camera component to the camera object
   camera->AddComponent(YTE::Camera::GetStaticType());
   
