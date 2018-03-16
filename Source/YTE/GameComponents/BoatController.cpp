@@ -197,6 +197,9 @@ namespace YTE
       {
         //mSoundEmitter->PlayEvent(mSoundSailUp);
         mRigidBody->SetDamping(0.f, 0.9f);
+
+        mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(1.0f));
+        mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(1.0f));
       }
     }
     else
@@ -205,6 +208,9 @@ namespace YTE
       {
         //mSoundEmitter->PlayEvent(mSoundSailDown);
         mRigidBody->SetDamping(0.9f, 0.9f);
+
+        mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(0.0f));
+        mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(0.0f));
       }
     }
 

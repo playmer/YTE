@@ -100,7 +100,7 @@ namespace YTE
     auto velocity = mBoatRB->GetVelocity();
 
     float velY = velocity.y;
-    velY *= 0.4;
+    velY *= 0.8;
     mBoatRB->SetVelocity(velocity.x, velY, velocity.z);
 
     //auto trans = mTransform->GetWorldTranslation();
