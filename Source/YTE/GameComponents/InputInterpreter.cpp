@@ -34,6 +34,7 @@ namespace YTE
 
   // Camera Events
   YTEDefineEvent(CameraRotateEvent);
+  YTEDefineEvent(DirectCameraEvent);
 
   YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
@@ -47,6 +48,7 @@ namespace YTE
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
   YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
+  YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
 
 
   YTEDefineType(InputInterpreter)

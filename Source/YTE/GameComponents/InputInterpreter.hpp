@@ -40,6 +40,7 @@ namespace YTE
   YTEDeclareEvent(DialogueConfirm);
   YTEDeclareEvent(DialogueExit);
   YTEDeclareEvent(CameraRotateEvent);
+  YTEDeclareEvent(DirectCameraEvent);
   YTEDeclareEvent(MenuStart);
   YTEDeclareEvent(MenuConfirm);
   YTEDeclareEvent(MenuExit);
@@ -50,6 +51,15 @@ namespace YTE
   public:
     YTEDeclareType(CameraRotateEvent);
     glm::vec2 StickDirection;
+  };
+
+  class DirectCameraEvent : public Event
+  {
+  public:
+    YTEDeclareType(DirectCameraEvent);
+    DirectCameraEvent(const glm::vec3& aAnchorPos, const glm::vec3& aLookAtPoint) { CameraAnchor = aAnchorPos; LookAtPoint = aLookAtPoint; }
+    glm::vec3 CameraAnchor;
+    glm::vec3 LookAtPoint;
   };
 
   class SailStateChanged : public Event
@@ -71,8 +81,9 @@ namespace YTE
   {
   public:
     YTEDeclareType(BoatDockEvent);
-    BoatDockEvent(const glm::vec3& aAnchorPos) { DockAnchorPos = aAnchorPos; }
+    BoatDockEvent(const glm::vec3& aAnchorPos, const glm::vec3& aDockDir) { DockAnchorPos = aAnchorPos; DockDirection = aDockDir; }
     glm::vec3 DockAnchorPos;
+    glm::vec3 DockDirection;
   };
 
   class RequestDialogueStart : public Event

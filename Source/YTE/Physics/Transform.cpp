@@ -284,6 +284,20 @@ namespace YTE
     SetRotation(mRotation * rotation);
   }
 
+  void Transform::RotateToward(const glm::vec3& aTargetVector, const glm::vec3& aUpVector)
+  {
+    SetWorldRotation(glm::vec3(0.f));
+
+    float magB = glm::length(aTargetVector);
+
+    if (magB != 0)
+    {
+      float angle = glm::acos(glm::dot(glm::vec3(0.0f, 0.0f, 1.0), aTargetVector) / (magB));
+      auto rotation = YTE::AroundAxis(aUpVector, angle);
+
+      SetRotation(mRotation * rotation);
+    }
+  }
 
   void Transform::RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint)
   {

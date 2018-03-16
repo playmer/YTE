@@ -25,6 +25,10 @@ namespace YTE
   {
     YTERegisterType(DialogueIsaac);
 
+    YTEBindProperty(&GetCamAnchor, &SetCamAnchor, "CameraPos")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
     //std::vector<std::vector<Type*>> deps =
     //{
     //};
@@ -33,17 +37,15 @@ namespace YTE
 
 
   DialogueIsaac::DialogueIsaac(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace)
-    //, mSprite(nullptr)
-    , mActive(false)
+    : Component(aOwner, aSpace), mDockAnchorPosition(0.f), mCameraAnchorPosition(0.f), mActive(false)
   {
-    YTEUnusedArgument(aProperties);
+    DeserializeByType(aProperties, this, GetStaticType());
   }
-
 
   void DialogueIsaac::Initialize()
   {
     mDockAnchorPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
+    mCameraAnchorPosition = mOwner->FindFirstCompositionByName("CameraAnchor")->GetComponent<Transform>()->GetWorldTranslation();
 
     mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueIsaac::OnRequestDialogueStart);
     mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueIsaac::OnDialogueConfirm);
@@ -72,14 +74,18 @@ namespace YTE
 
   void DialogueIsaac::OnCollisionStart(CollisionStarted * aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    mActive = true;
+    if (aEvent->OtherObject->GetComponent<BoatController>())
+    {
+      mActive = true;
+    }
   }
 
   void DialogueIsaac::OnCollisionEnd(CollisionEnded * aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    mActive = false;
+    if (aEvent->OtherObject->GetComponent<BoatController>())
+    {
+      mActive = false;
+    }
   }
 
   void DialogueIsaac::OnRequestDialogueStart(RequestDialogueStart *aEvent)
@@ -88,8 +94,11 @@ namespace YTE
     {
       aEvent->EventHandled = true;
 
-      BoatDockEvent dockEvent(mDockAnchorPosition);
+      BoatDockEvent dockEvent(mDockAnchorPosition, mOwner->GetComponent<Orientation>()->GetForwardVector());
       mSpace->SendEvent(Events::BoatDockEvent, &dockEvent);
+
+      DirectCameraEvent directCam(mCameraAnchorPosition, mOwner->GetParent()->GetComponent<Transform>()->GetWorldTranslation());
+      mSpace->SendEvent(Events::DirectCameraEvent, &directCam);
 
       /*Transform *dialogCamTrans = mOwner->FindFirstCompositionByName("DialogueCamera")->GetComponent<Transform>();
 

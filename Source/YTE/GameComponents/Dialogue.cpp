@@ -31,13 +31,13 @@ namespace YTE
 
   void Dialogue::Initialize()
   {
-    mOwner->YTERegister(Events::RequestDialogueStart, this, &Dialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
-    mSpace->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
+    //mOwner->YTERegister(Events::RequestDialogueStart, this, &Dialogue::OnDialogueStart);
+    //mSpace->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
+    //mSpace->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
 
-    mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
-    mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
-    mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
+    //mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
+    //mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
+    //mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
 
 
     mSprite = mOwner->FindFirstCompositionByName("DialogueBoi");
@@ -71,6 +71,8 @@ namespace YTE
 
   void Dialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     if (!mActive)
     {
       return;

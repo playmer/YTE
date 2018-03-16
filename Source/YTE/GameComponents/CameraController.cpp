@@ -37,6 +37,7 @@ namespace YTE
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &CameraController::OnLogicUpdate);
     mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
+    mSpace->YTERegister(Events::DirectCameraEvent, this, &CameraController::OnDirectCamera);
     mSpace->YTERegister(Events::DialogueExit, this, &CameraController::OnDialogueExit);
     
     mTransform = mOwner->GetComponent<Transform>();
@@ -46,10 +47,15 @@ namespace YTE
     Composition *boat = mOwner->GetParent();
     mBoatTransform = boat->GetComponent<Transform>();
     mBoatOrientation = boat->GetComponent<Orientation>();
+
+    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
+    mTransform->SetWorldRotation(glm::vec3(0.f));
+    RotateOnBoom(mBoatTransform->GetWorldTranslation());
   }
 
   void CameraController::OnLogicUpdate(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     //glm::vec3 currTranslation = mTransform->GetTranslation();
     //mTransform->SetTranslation(currTranslation.x, mFixedHeight, currTranslation.z);
   }
@@ -89,6 +95,10 @@ namespace YTE
     mTransform->SetWorldTranslation(mTransform->GetWorldTranslation() - glm::vec3(unitVector));
     mCameraComponent->SetTargetPoint(mBoatTransform->GetWorldTranslation());
 
+    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
+    mTransform->SetWorldRotationProperty(glm::vec3(0.0f, mRotationAngle, 0.0f));
+    RotateOnBoom(mBoatTransform->GetWorldTranslation());
+
     //mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() - mOrientation->GetForwardVector() * 10.0f);
 
     /*
@@ -102,15 +112,28 @@ namespace YTE
     */
   }
 
-  void CameraController::OnDialogueExit(DialogueExit *aEvent)
+  void CameraController::OnDirectCamera(DirectCameraEvent *aEvent)
   {
-    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
-    mCameraComponent->SetTargetPoint(mBoatTransform->GetWorldTranslation());
+    mTransform->SetWorldTranslation(aEvent->CameraAnchor);
+    //mTransform->SetWorldRotation(glm::vec3(0.f));
+
+    auto lookAt = aEvent->LookAtPoint - aEvent->CameraAnchor;
+    //mTransform->RotateToward(lookAt, glm::cross(lookAt, mOrientation->GetRightVector()));
+    //RotateOnBoom(aEvent->LookAtPoint);
+    mCameraComponent->SetTargetPoint(aEvent->LookAtPoint);
   }
 
-  void CameraController::RotateOnBoom(float aRotation, const glm::vec3& aFocusPoint)
+  void CameraController::OnDialogueExit(DialogueExit *aEvent)
   {
-    mTransform->SetWorldRotationProperty(glm::vec3(0.0f, aRotation, 0.0f));
+    YTEUnusedArgument(aEvent);
+    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
+    mTransform->SetWorldRotation(glm::vec3(0.f));
+    //mTransform->RotateToward(mOrientation->GetForwardVector(), mBoatOrientation->GetForwardVector(), mBoatOrientation->GetUpVector());
+    RotateOnBoom(mBoatTransform->GetWorldTranslation());
+  }
+
+  void CameraController::RotateOnBoom(const glm::vec3& aFocusPoint)
+  {
     glm::quat rot = mTransform->GetWorldRotation();
     glm::vec4 unitVector(0.0f, 0.0f, 1.0f, 1.0f); // used to translate away from target point by 1
     unitVector = glm::rotate(rot, unitVector);

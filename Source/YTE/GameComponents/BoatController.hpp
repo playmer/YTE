@@ -51,8 +51,9 @@ namespace YTE
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);
     void Update(LogicUpdate *aEvent);
-    void OnCollisionStart(CollisionStarted *aEvent);
-    void OnCollisionEnd(CollisionEnded *aEvent);
+    void OnMenuStart(MenuStart *aEvent);
+    //void OnCollisionStart(CollisionStarted *aEvent);
+    //void OnCollisionEnd(CollisionEnded *aEvent);
 
     // PROPERTIES ///////////////////////////////////////////////////////////////////
     float GetMaxSailSpeed() { return mMaxSailSpeed; }
@@ -88,7 +89,7 @@ namespace YTE
     //Transform *mSailOrient; sail might have a different transform to rotate around
 
     bool mIsSailUp;
-    bool mCanDock;
+    bool mIsDocked;
     bool mStartedTurning;
     bool mPlayingTurnSound;
 
@@ -106,6 +107,8 @@ namespace YTE
 
     float mTurnAmount;
 
+
+    void StopBoatImmediately();
   };
 } 
 

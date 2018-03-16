@@ -58,7 +58,6 @@ namespace YTE
 
   BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mCanDock(false)
     , mNearbyDock(nullptr)
     , mPlayingTurnSound(false)
     , mCurrSpeed(0.f)
@@ -84,6 +83,7 @@ namespace YTE
     mTransform = mOwner->GetComponent<Transform>();
     mCollider = mOwner->GetComponent<BoxCollider>();
     mIsSailUp = false;
+    mIsDocked = false;
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
@@ -146,10 +146,7 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    //YTEUnusedArgument(aEvent);
-    //if (mCanDock)
-    //{
-    mTransform->SetWorldTranslation(aEvent->DockAnchorPos);
+    StopBoatImmediately();
 
       if (mSoundEmitter)
       {
@@ -316,20 +313,17 @@ namespace YTE
     mStartedTurning = false;
   }
 
-  void BoatController::OnCollisionStart(CollisionStarted *aEvent)
+  void BoatController::OnMenuStart(MenuStart *aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<Island>() != nullptr)
-    {
-      mCanDock = true;
-      mNearbyDock = aEvent->OtherObject;
-    }
+    YTEUnusedArgument(aEvent);
+    StopBoatImmediately();
   }
-  void BoatController::OnCollisionEnd(CollisionEnded *aEvent)
+  ////////////////////////////////////////////////////////////////////////////////////
+
+  void BoatController::StopBoatImmediately()
   {
-    if (aEvent->OtherObject->GetComponent<Island>() != nullptr)
-    {
-      mCanDock = false;
-      mNearbyDock = nullptr;
-    }
+    mIsSailUp = false;
+    mRigidBody->SetVelocity(0.f, mRigidBody->GetVelocity().y, 0.f);
+    mRigidBody->SetDamping(1.0f, 1.0f);
   }
 }

@@ -30,6 +30,7 @@ namespace YTE
     void Initialize() override;
     void OnLogicUpdate(LogicUpdate *aEvent);
     void RotateCamera(CameraRotateEvent *aEvent);
+    void OnDirectCamera(DirectCameraEvent *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
 
   private:
@@ -40,6 +41,6 @@ namespace YTE
     Orientation *mOrientation;
     Camera *mCameraComponent;
 
-    void RotateOnBoom(float aRotation, const glm::vec3& aFocusPoint);
+    void RotateOnBoom(const glm::vec3& aFocusPoint);
   };
 }

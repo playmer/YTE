@@ -44,7 +44,10 @@ namespace YTE
     void Initialize() override;
     void Update(LogicUpdate *aEvent);
 
-    bool mActive;
+    // Properties /////////////////////////////////////////////////////////////////////
+    const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
+    void SetCamAnchor(const glm::vec3& aCamAnchor) { mCameraAnchorPosition = aCamAnchor; }
+    ///////////////////////////////////////////////////////////////////////////////////
 
     void OnRequestDialogueStart(RequestDialogueStart *aEvent);
     void OnDialogueConfirm(DialogueConfirm *aEvent);
@@ -55,6 +58,8 @@ namespace YTE
 
   private:
     glm::vec3 mDockAnchorPosition;
+    glm::vec3 mCameraAnchorPosition;
+    bool mActive;
     //Composition *mSprite;
 
   };
