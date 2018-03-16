@@ -435,6 +435,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Render()
   {
+    YTEProfileFunction();
+
     // evaluate the current position for the waves
     WaveGeneration();
     UpdateHeightmap();
@@ -575,6 +577,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::WaveGeneration()
   {
+    YTEProfileFunction();
+
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
     {
@@ -984,6 +988,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Update(LogicUpdate* aEvent)
   {
+    YTEProfileFunction();
+
     if (mResetNeeded)
     {
       Reset();
@@ -998,6 +1004,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::EditorUpdate(LogicUpdate* aEvent)
   {
+    YTEProfileFunction();
+
     if (!mSpace->GetEngine()->IsEditor())
     {
       return;
@@ -1146,6 +1154,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::UpdateHeightmap()
   {
+    YTEProfileFunction();
+
     // update
     mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mIndices);
   }
