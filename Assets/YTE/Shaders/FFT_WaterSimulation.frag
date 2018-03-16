@@ -132,7 +132,7 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
   vec4 mFogCoefficients;
   vec2 mFogPlanes;
   float mTime;
-  float mPadding;
+  float mMoveAmount;
 } Illumination;
 
 
@@ -533,24 +533,35 @@ void main()
 
   if (ClipPlanes.mNumberOfPlanes > 0)
   {
+    //outFragColor = vec4(0,0,1,0);
     discard;
     return;
   }
 
+  float distortionStrength = 0.02f;
   vec2 ndc = (inClipSpace.xy/inClipSpace.w)/2.0f + 0.5f;
   vec2 refractCoords = vec2(ndc.x, ndc.y);
   vec2 reflectCoords = vec2(ndc.x, 1 - ndc.y);
 
+  vec2 distA = (texture(normalSampler, vec2(inTextureCoordinates.x + Illumination.mTime * 0.5f, inTextureCoordinates.y)).rg) * distortionStrength;
+  vec2 distB = (texture(normalSampler, vec2(-inTextureCoordinates.x + Illumination.mTime * 0.5f, inTextureCoordinates.y + Illumination.mTime * 0.5f)).rg) * distortionStrength;
+  vec2 totalDist = distA + distB;
+  refractCoords += totalDist;
+  refractCoords = clamp(refractCoords, 0.001, 0.999);
+  reflectCoords += totalDist;
+  reflectCoords.x = clamp(reflectCoords.x, 0.001, 0.999);
+  reflectCoords.y = clamp(reflectCoords.y, -0.999, -0.001);
+
   vec4 reflectColor = texture(fbReflectiveSampler, reflectCoords);
   vec4 refractColor = texture(fbRefractiveSampler, refractCoords);
-  //outFragColor = reflectColor;
-  outFragColor = mix(reflectColor, refractColor, 0.5f);
+  outFragColor = reflectColor;
+  //outFragColor = mix(reflectColor, refractColor, 0.5f);
+  outFragColor = mix(outFragColor, vec4(0.0f, 0.3f, 0.5f, 1.0f), 0.2f);
   //vec4 originalRefractiveColor = texture(fbRefractiveSampler, inTextureCoordinates.xy);
   //vec4 originalReflectionColor = texture(fbReflectiveSampler, inTextureCoordinates.xy);
-  //outFragColor = mix(originalReflectionColor, originalRefractiveColor, 0.5f);
-  //outFragColor = originalReflectionColor;
+  ////outFragColor = mix(originalReflectionColor, originalRefractiveColor, 0.5f);
+  ////outFragColor = originalReflectionColor;
 
-  
   return;
 
   if (Lights.mActive < 0.5f)

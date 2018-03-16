@@ -198,9 +198,12 @@ void main()
   // animation matrix calculation
   mat4 boneTransform = Animate();
 
+  float tilingAmount = 6.0f;
+  outTextureCoordinates = vec2(inPosition.x/128.0f + 0.5f, inPosition.y/128.0f + 0.5f) * tilingAmount;
+
   // remaining output for fragment shader
   outColor = inColor;
-  outTextureCoordinates = inTextureCoordinates.xy;
+  //outTextureCoordinates = inTextureCoordinates.xy * tilingAmount;
   outViewMatrix = View.mViewMatrix;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));

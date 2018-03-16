@@ -820,8 +820,13 @@ namespace YTE
     }
     else
     {
+
+#ifdef NDEBUG
       mGridSize = aGridSize;
+#else
+      mGridSize = aGridSize / 2;
       mGridSizePlus1 = mGridSize + 1;
+#endif
     }
 
     mResetNeeded = true;
@@ -1126,7 +1131,7 @@ namespace YTE
 
     texs.emplace_back("copywriteWaterTextureDiffuse.png", TextureViewType::e2D, TextureTypeIDs::Diffuse);
     texs.emplace_back("copywriteFoamTextureSpecular.png", TextureViewType::e2D, TextureTypeIDs::Specular);
-    texs.emplace_back("copywritePerlinNoiseTextureNormal.png", TextureViewType::e2D, TextureTypeIDs::Normal);
+    texs.emplace_back("copywrite_dudvmap.png", TextureViewType::e2D, TextureTypeIDs::Normal);
 
     for (int i = 0; i < size; ++i)
     {

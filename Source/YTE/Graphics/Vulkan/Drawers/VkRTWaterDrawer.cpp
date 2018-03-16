@@ -14,6 +14,7 @@
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Core/Engine.hpp"
 
 static float EXTENT_FACTOR = 1.0f;
 
@@ -401,6 +402,15 @@ namespace YTE
     // move camera back
     view = mParentViewData->mLightManager.mGraphicsView->GetLastCamera()->ResetInversion();
     mParentViewData->mViewUBO->update<UBOView>(0, view, aCBO);
+
+    // set the move amount for final render
+    UBOIllumination ill = mParentViewData->mIlluminationUBOData;
+    ill.mMoveAmount += static_cast<VkRenderer*>(mParentViewData->mLightManager.mGraphicsView->GetRenderer())->GetEngine()->GetDt();
+    //if (ill.mMoveAmount >= 1.0f)
+    //{
+    //  ill.mMoveAmount = 0.0f;
+    //}
+    mParentViewData->mIlluminationUBO->update<UBOIllumination>(0, ill, aCBO);
   }
 
   void VkRTWaterDrawer::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)

@@ -84,6 +84,11 @@ namespace YTE
       return mVulkanInternals.get();
     }
 
+    Engine *GetEngine()
+    {
+      return mEngine;
+    }
+
     std::shared_ptr<vkhlf::Device> mDevice;
     std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
