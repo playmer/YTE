@@ -30,6 +30,7 @@ namespace YTE
   {
   public:
     Conversation(DialogueNode *aRoot);
+		DialogueNode *GetRoot() { return mRoot; };
   private:
     DialogueNode *mRoot;
   };

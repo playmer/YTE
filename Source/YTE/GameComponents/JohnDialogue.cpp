@@ -179,10 +179,9 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
-		// SendEvent to root node (even though we have access directly through a ptr, the functionality is the same as the others so we just send an event so we have no duplicate code
 		Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
 		AdvanceConversation advConvo;
-		temp->mRoot->SendEvent("AdvanceConversation", &advConvo);
+		temp->GetRoot()->SendEvent("AdvanceConversation", &advConvo);
   }
 
 	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)

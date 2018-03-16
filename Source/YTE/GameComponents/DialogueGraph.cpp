@@ -13,8 +13,8 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineEvent(DialogueNodeEvent);
-  YTEDefineType(DialogueNodeEvent) { YTERegisterType(DialogueNodeEvent); }
+  YTEDefineEvent(AdvanceConversation);
+  YTEDefineType(AdvanceConversation) { YTERegisterType(AdvanceConversation); }
 
   /*
 

@@ -18,17 +18,16 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #define YTE_Gameplay_DialogueGraph_hpp
 
 #include "YTE/Core/Engine.hpp"
-#include "YTE/GameComponents/InputInterpreter.hpp"
 
 namespace YTE
 {
-	YTEDeclareEvent(DialogueNodeEvent);
+	YTEDeclareEvent(AdvanceConversation);
 
-	class DialogueNodeEvent : public Event
+	class AdvanceConversation : public Event
 	{
 	public:
-		YTEDeclareType(DialogueNodeEvent);
-		DialogueNodeEvent() {  };
+		YTEDeclareType(AdvanceConversation);
+		AdvanceConversation() {  };
 	};
 
   namespace AnimationNames 
