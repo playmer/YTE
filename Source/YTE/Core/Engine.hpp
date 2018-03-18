@@ -84,7 +84,7 @@ namespace YTE
   public:
     YTEDeclareType(Engine);
     
-    Engine(const char *aFile = nullptr, bool aEditorMode = false);
+    Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode = false);
     void Update();
     ~Engine();
 

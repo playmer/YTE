@@ -61,7 +61,7 @@ namespace YTE
 
   static String cEngineName{ "Engine" };
 
-  Engine::Engine(const char *aFile, bool aEditorMode)
+  Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
     : Composition(this, cEngineName, nullptr)
     , mShouldRun(true)
     , mEditorMode(aEditorMode)
@@ -69,9 +69,24 @@ namespace YTE
     , mCompositionsByGUID()
     , mComponentsByGUID()
   {
+    namespace fs = std::experimental::filesystem;
+
     if constexpr (YTE_CAN_PROFILE)
     {
       profiler::startListen();
+    }
+
+    const char *pathToUse{ nullptr };
+
+    for (auto path : aConfigFilePath)
+    {
+      auto file = GetConfigPath(path);
+
+      if (fs::exists(file))
+      {
+        pathToUse = path;
+        break;
+      }
     }
 
     YTEProfileFunction(profiler::colors::Magenta);
@@ -80,7 +95,7 @@ namespace YTE
     
     auto enginePath = Path::SetEnginePath(fs::current_path().string());
 
-    fs::path configFilePath{ aFile };
+    fs::path configFilePath{ pathToUse };
     configFilePath = configFilePath.parent_path();
 
     Path::SetEnginePath(fs::current_path().parent_path().string());
@@ -93,7 +108,6 @@ namespace YTE
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
     mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
 
-    namespace fs = std::experimental::filesystem;
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();
@@ -117,9 +131,9 @@ namespace YTE
       mLevels.emplace(std::make_pair(levelName, std::unique_ptr<RSDocument>(nullptr)));
     }
 
-    if (nullptr != aFile)
+    if (nullptr != pathToUse)
     {
-      auto path = GetConfigPath(aFile);
+      auto path = GetConfigPath(pathToUse);
       std::string fileText;
       auto success = ReadFileToString(path, fileText);
 
@@ -127,7 +141,7 @@ namespace YTE
       
       if (success && document.Parse(fileText.c_str()).HasParseError())
       {
-        std::cout << "Error in Config: " << aFile << std::endl;
+        std::cout << "Error in Config: " << pathToUse << std::endl;
       }
 
       Deserialize(&document);

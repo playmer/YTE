@@ -74,7 +74,14 @@ int main(int argc, char *argv[])
 
   // RUNNING THE GAME
   YTE::InitializeYTETypes();
-  YTE::Engine mainEngine{ YTE_ENGINE_CONFIG, true };
+
+  YTE::Engine mainEngine{
+    {
+      "../../../../../Assets/Bin/Config",
+      "./Config"
+    },
+    true
+  };
 
   // initialize types first
   YTEditor::InitializeYTEditorTypes();
