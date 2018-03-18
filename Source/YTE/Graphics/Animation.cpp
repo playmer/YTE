@@ -50,9 +50,9 @@ namespace YTE
   {
     YTERegisterType(Animation);
 
-    std::vector<std::vector<Type*>> deps = { { Animator::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
-    Animation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed")
       .AddAttribute<EditorProperty>()
@@ -359,14 +359,14 @@ namespace YTE
   {
     YTERegisterType(Animator);
 
-    Animator::GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
-      &Serializer,
-      &Lister,
-      "Animations");
+    GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
+                                                    &Serializer,
+                                                    &Lister,
+                                                    "Animations");
 
-    std::vector<std::vector<Type*>> deps = { { Model::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Model>() } };
 
-    Animator::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)

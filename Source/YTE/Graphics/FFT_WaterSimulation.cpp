@@ -56,9 +56,9 @@ namespace YTE
     YTERegisterType(FFT_WaterSimulation);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
-    FFT_WaterSimulation::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect, "TimeDilation")
       .AddAttribute<Serializable>()
@@ -196,7 +196,7 @@ namespace YTE
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
     mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
-    DeserializeByType(aProperties, this, FFT_WaterSimulation::GetStaticType());
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 

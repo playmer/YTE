@@ -43,11 +43,11 @@ namespace YTE
 
         std::vector<std::vector<Type*>> deps = 
         { 
-            { Transform::GetStaticType() }, 
-            { WWiseEmitter::GetStaticType() }
+            { TypeId<Transform>() }, 
+            { TypeId<WWiseEmitter>() }
         };
 
-        AudioTest::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+        GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
 
         YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")

@@ -19,7 +19,7 @@ namespace YTE
   {
     YTERegisterType(MenuCollider);
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 

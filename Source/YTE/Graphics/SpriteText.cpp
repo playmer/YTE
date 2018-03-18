@@ -52,9 +52,9 @@ namespace YTE
     YTERegisterType(SpriteText);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
-    SpriteText::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
       .AddAttribute<EditorProperty>()

@@ -27,9 +27,9 @@ namespace YTE
   {
     YTERegisterType(FacialAnimator);
 
-    std::vector<std::vector<Type*>> deps = { { Animator::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
-    FacialAnimator::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -133,7 +133,14 @@ namespace YTE
   void FacialAnimator::RefreshInitialBufffers()
   {
     // get initial buffers
-    auto instModel = mModel->GetInstantiatedModel()[0];
+    auto models = mModel->GetInstantiatedModel();
+
+    if (models.empty())
+    {
+      return;
+    }
+
+    auto instModel = models[0];
 
     Mesh *mesh = instModel->GetMesh();
 
@@ -161,7 +168,6 @@ namespace YTE
     {
       if (anim->eyeFrames[k].time > time)
       {
-        std::cout << "Eye Time: " << anim->eyeFrames[k].time << ", Time: " << time << std::endl;
         return &anim->eyeFrames[k];
       }
     }

@@ -51,7 +51,7 @@ namespace YTE
     //std::vector<std::vector<Type*>> deps =
     //{
     //};
-    //Dialogue::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    //GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
 

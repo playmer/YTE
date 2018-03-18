@@ -20,7 +20,7 @@ namespace YTE
     YTERegisterType(ParticleEmitter);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 

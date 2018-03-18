@@ -18,6 +18,10 @@ namespace YTE
   YTEDefineType(CameraController)
   {
     YTERegisterType(CameraController);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   CameraController::CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties)

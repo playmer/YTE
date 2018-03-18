@@ -81,10 +81,10 @@ namespace YTE
     YTERegisterType(Camera);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() }, 
-                                             { Orientation::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
+                                             { TypeId<Orientation>() } };
 
-    Camera::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
  
     YTEBindProperty(&Camera::GetTargetObject, &Camera::SetTargetObject, "TargetObject") 
       .SetDocumentation("Object the camera will point at if it's type is set to \"TargetObject\"."); 

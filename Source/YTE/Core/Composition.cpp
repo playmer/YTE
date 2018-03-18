@@ -161,6 +161,8 @@ namespace YTE
     }
   }
 
+  std::vector<Type*> GetDependencyOrder(Composition *aComposition);
+
   void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
     if (mShouldIntialize == false)
@@ -168,15 +170,21 @@ namespace YTE
       return;
     }
 
-    for (auto &component : mComponents)
+    auto order = GetDependencyOrder(this);
+
+    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
+
+    for (auto &type : order)
     {
+      auto component = GetComponent(type);
+
       if (aEvent->CheckRunInEditor &&
-          nullptr == component.first->GetAttribute<RunInEditor>())
+          nullptr == type->GetAttribute<RunInEditor>())
       {
         continue;
       }
 
-      component.second->NativeInitialize();
+      component->NativeInitialize();
     }
 
     SendEvent(Events::NativeInitialize, aEvent);
@@ -200,15 +208,21 @@ namespace YTE
     //auto transform = GetComponent<Transform>();
     //if (transform != nullptr) transform->PhysicsInitialize();
 
-    for (auto &component : mComponents)
+    auto order = GetDependencyOrder(this);
+
+    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
+
+    for (auto &type : order)
     {
+      auto component = GetComponent(type);
+
       if (aEvent->CheckRunInEditor &&
-          nullptr == component.first->GetAttribute<RunInEditor>())
+          nullptr == type->GetAttribute<RunInEditor>())
       {
         continue;
       }
-     
-      //component.second->PhysicsInitialize();
+
+      //component->PhysicsInitialize();
     }
 
     SendEvent(Events::PhysicsInitialize, aEvent);
@@ -236,22 +250,27 @@ namespace YTE
       }
     }
 
-    for (auto &component : mComponents)
+    auto order = GetDependencyOrder(this);
+
+    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
+
+    for (auto &type : order)
     {
+      auto component = GetComponent(type);
+
       if (aEvent->CheckRunInEditor &&
-          nullptr == component.first->GetAttribute<RunInEditor>())
+          nullptr == type->GetAttribute<RunInEditor>())
       {
         continue;
       }
-     
-      component.second->Initialize();
+
+      component->Initialize();
     }
 
     SendEvent(Events::Initialize, aEvent);
 
     mShouldIntialize = false;
     mIsInitialized = true;
-
 
     CompositionAdded event;
     event.mComposition = this;
@@ -431,7 +450,6 @@ namespace YTE
     return composition;
   }
 
-
   void Composition::Deserialize(RSValue *aValue)
   {
     RSStringBuffer buffer;
@@ -520,13 +538,8 @@ namespace YTE
     }
   }
 
-
-  std::vector<Type*> GetDependencyOrder(Composition *aComposition);
-
   RSValue Composition::Serialize(RSAllocator &aAllocator)
   {
-    auto order = GetDependencyOrder(this);
-
     RSValue toReturn;
     toReturn.SetObject();
 

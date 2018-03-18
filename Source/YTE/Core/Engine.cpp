@@ -88,10 +88,10 @@ namespace YTE
 
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
-    mComponents.Emplace(ComponentSystem::GetStaticType(), std::make_unique<ComponentSystem>(this, nullptr));
-    mComponents.Emplace(WWiseSystem::GetStaticType(), std::make_unique<WWiseSystem>(this, nullptr));
-    mComponents.Emplace(GraphicsSystem::GetStaticType(), std::make_unique<GraphicsSystem>(this, nullptr));
-    mComponents.Emplace(JobSystem::GetStaticType(), std::make_unique<JobSystem>(this, nullptr));
+    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this, nullptr));
+    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this, nullptr));
+    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
+    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
 
     namespace fs = std::experimental::filesystem;
 

@@ -49,11 +49,12 @@ namespace YTE
 
     std::vector<std::vector<Type*>> deps =
     {
-      { Transform::GetStaticType() },
-      { Orientation::GetStaticType() },
-      { RigidBody::GetStaticType() }
+      { TypeId<Transform>() },
+      { TypeId<Orientation>() },
+      { TypeId<RigidBody>() }
     };
-    BoatController::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)

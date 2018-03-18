@@ -371,11 +371,11 @@ namespace YTEditor
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
     // add transform
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::BoundType* transform = YTE::TypeId<YTE::Transform>();
     compTree->AddComponent(transform);
 
     // add model
-    YTE::BoundType* modelType = YTE::Model::GetStaticType();
+    YTE::BoundType* modelType = YTE::TypeId<YTE::Model>();
     ComponentWidget *compWidget = compTree->AddComponent(modelType);
 
     YTE::Model *modelComponent = static_cast<YTE::Model*>(compWidget->GetEngineComponent());

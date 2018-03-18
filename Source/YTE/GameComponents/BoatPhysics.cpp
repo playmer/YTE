@@ -18,6 +18,14 @@ namespace YTE
   YTEDefineType(BoatPhysics)
   {
     YTERegisterType(BoatPhysics);
+
+    std::vector<std::vector<Type*>> deps = { 
+      { TypeId<Model>() },
+      { TypeId<RigidBody>() } 
+    };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    
   }
 
   BoatPhysics::BoatPhysics(Composition *aOwner, Space * aSpace, RSValue *aProperties)

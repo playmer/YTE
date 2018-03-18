@@ -71,9 +71,9 @@ namespace YTE
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
-    Model::GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
     YTEBindProperty(&Model::GetMeshName, &Model::SetMeshName, "Mesh")
       .AddAttribute<EditorProperty>()
