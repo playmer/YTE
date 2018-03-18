@@ -172,19 +172,36 @@ namespace YTE
 
     auto order = GetDependencyOrder(this);
 
-    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
-
-    for (auto &type : order)
+    // If our order is compromised, we just initialize in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
     {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
+      for (auto &component : mComponents)
       {
-        continue;
-      }
+        if (aEvent->CheckRunInEditor &&
+            nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
 
-      component->NativeInitialize();
+        component.second->NativeInitialize();
+      }
+    }
+    else
+    {
+      for (auto &type : order)
+      {
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+            nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component->NativeInitialize();
+      }
     }
 
     SendEvent(Events::NativeInitialize, aEvent);
@@ -207,22 +224,39 @@ namespace YTE
     if (rigidBody != nullptr) rigidBody->PhysicsInitialize();
     //auto transform = GetComponent<Transform>();
     //if (transform != nullptr) transform->PhysicsInitialize();
-
+    
     auto order = GetDependencyOrder(this);
 
-    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
-
-    for (auto &type : order)
+    // If our order is compromised, we just initialize in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
     {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
+      for (auto &component : mComponents)
       {
-        continue;
-      }
+        if (aEvent->CheckRunInEditor &&
+            nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
 
-      //component->PhysicsInitialize();
+        //component.second->PhysicsInitialize();
+      }
+    }
+    else
+    {
+      for (auto &type : order)
+      {
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+            nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        //component->PhysicsInitialize();
+      }
     }
 
     SendEvent(Events::PhysicsInitialize, aEvent);
