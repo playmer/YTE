@@ -252,19 +252,36 @@ namespace YTE
 
     auto order = GetDependencyOrder(this);
 
-    DebugAssert(order.size() == mComponents.size(), "Order must be the same.");
-
-    for (auto &type : order)
+    // If our order is compromised, we just initialize in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
     {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
+      for (auto &component : mComponents)
       {
-        continue;
-      }
+        if (aEvent->CheckRunInEditor &&
+            nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
 
-      component->Initialize();
+        component.second->Initialize();
+      }
+    }
+    else
+    {
+      for (auto &type : order)
+      {
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+            nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component->Initialize();
+      }
     }
 
     SendEvent(Events::Initialize, aEvent);
