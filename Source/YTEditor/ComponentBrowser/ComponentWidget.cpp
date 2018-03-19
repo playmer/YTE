@@ -108,11 +108,19 @@ namespace YTEditor
       }
     }
 
-    auto &propertyMap = aComponent->GetType()->GetProperties();
-    auto &fieldMap = aComponent->GetType()->GetFields();
 
-    LoadPropertyMap(aComponent, propertyMap, true);
-    LoadPropertyMap(aComponent, fieldMap, false);
+    YTE::Type *parent{ aComponent->GetType() };
+
+    while (parent)
+    {
+      auto &propertyMap = parent->GetProperties();
+      auto &fieldMap = parent->GetFields();
+
+      LoadPropertyMap(aComponent, propertyMap, true);
+      LoadPropertyMap(aComponent, fieldMap, false);
+
+      parent = parent->GetBaseType();
+    }
   }
 
   void ComponentWidget::SavePropertiesToEngine()

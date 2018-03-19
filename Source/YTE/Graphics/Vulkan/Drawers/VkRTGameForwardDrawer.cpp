@@ -93,7 +93,7 @@ namespace YTE
       for (auto &mesh : aMeshes)
       {
         auto &models = instantiatedModels[mesh.second.get()];
-
+        
         // We can early out on this mesh if there are no models that use it.
         if (models.empty())
         {
@@ -109,6 +109,11 @@ namespace YTE
 
           for (auto &model : models)
           {
+            if (false == model->GetVisibility())
+            {
+              continue;
+            }
+
             auto &data = model->mPipelineData[submesh.get()];
 
             // Gather up all the data for the individual passes.

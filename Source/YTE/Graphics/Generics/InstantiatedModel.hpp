@@ -102,6 +102,17 @@ namespace YTE
       return mMesh;
     }
 
+
+    void SetVisibility(bool aVisibility)
+    {
+      mVisibility = aVisibility;
+    }
+
+    bool GetVisibility()
+    {
+      return mVisibility;
+    }
+
     ShaderType mType = ShaderType::Triangles;
     float mLineWidth = 1.0f;
 
@@ -110,6 +121,7 @@ namespace YTE
     UBOModel mUBOModelData;
     UBOAnimation *mUBOAnimationData;
     UBOMaterial mUBOModelMaterialData;
+    bool mVisibility = true;
   };
 }
 

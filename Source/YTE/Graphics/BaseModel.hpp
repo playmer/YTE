@@ -21,6 +21,31 @@ namespace YTE
     {
       return { nullptr };
     }
+
+    void SetVisibility(bool aVisibility)
+    {
+      auto models = GetInstantiatedModel();
+
+      for (auto &model : models)
+      {
+        model->SetVisibility(aVisibility);
+      }
+    }
+
+    bool GetVisibility()
+    {
+      auto models = GetInstantiatedModel();
+
+      for (auto &model : models)
+      {
+        if (false == model->GetVisibility())
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
   };
 }
 
