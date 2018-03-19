@@ -24,8 +24,8 @@ namespace YTE
   {
   public:
     virtual UniquePointer<Component> MakeComponent(Composition *aOwner,
-                                                    Space *aSpace,
-                                                    RSValue *aProperties) = 0;
+                                                   Space *aSpace,
+                                                   RSValue *aProperties) = 0;
 
     StringComponentFactory(Engine *aEngine) : mEngine(aEngine) {};
 

@@ -19,6 +19,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/CSharp/CSharpSystem.hpp"
+
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/BoatPhysics.hpp"
@@ -99,6 +101,10 @@ namespace YTE
     InitializeType<Object>();
     InitializeType<Space>();
     InitializeType<TestComponent>();
+
+    InitializeType<CSharpSystem>();
+    InitializeType<CSharpRedirect>();
+
 
     InitializeType<AudioTest>();
     InitializeType<BoatController>();

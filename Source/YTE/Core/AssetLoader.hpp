@@ -28,6 +28,8 @@ namespace YTE
       non_member std::string GetShaderPath(const Path& aPath, const std::string &aName);
       non_member std::string GetModelPath(const Path& aPath, const std::string &aName);
       non_member std::string GetAnimationPath(const Path& aPath, const std::string &aName);
+      non_member std::string GetCSharpBinaryFolder(const Path& aPath);
+      non_member std::string GetCSharpFolder(const Path& aPath);
       non_member std::string GetTexturePath(const Path& aPath, const std::string &aName);
       non_member std::string GetWWisePath(const Path& aPath, const std::string &aName);
       non_member std::string GetTextPath(const Path& aPath, const std::string &aName);

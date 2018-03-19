@@ -19,6 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 
+#include "YTE/CSharp/CSharpSystem.hpp"
+
 #include "YTE/Graphics/GraphicsSystem.hpp"
 
 #include "YTE/WWise//WWiseSystem.hpp"
@@ -107,6 +109,7 @@ namespace YTE
     mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this, nullptr));
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
     mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
+    mComponents.Emplace(TypeId<CSharpSystem>(), std::make_unique<CSharpSystem>(this, nullptr));
 
 
     fs::path archetypesPath = Path::GetGamePath().String();
@@ -240,9 +243,10 @@ namespace YTE
     mShouldIntialize = false;
     mIsInitialized = true;
 
+
+    GetComponent<CSharpSystem>()->GenerateSolution();
     mDt = 0.016;
   }
-
   
   // Updates the Space to the current frame.
   void Engine::Update()

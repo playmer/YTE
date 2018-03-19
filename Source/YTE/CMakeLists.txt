@@ -2,6 +2,7 @@ add_library(YTE "")
 
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
+include(CSharp/CMakeLists.txt)
 include(Core/CMakeLists.txt)
 include(GameComponents/CMakeLists.txt)
 include(Graphics/CMakeLists.txt)

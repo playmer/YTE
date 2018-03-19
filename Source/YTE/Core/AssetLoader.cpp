@@ -69,6 +69,22 @@ namespace YTE
     return path.string();
   }
 
+  std::string Path::GetCSharpBinaryFolder(const Path& aPath)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("CSharpBinary");
+
+    return path.string();
+  }
+
+  std::string Path::GetCSharpFolder(const Path& aPath)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("CSharp");
+
+    return path.string();
+  }
+
   std::string Path::GetWWisePath(const Path& aPath, const std::string &aName)
   {
     fs::path path{ aPath.mPath };
