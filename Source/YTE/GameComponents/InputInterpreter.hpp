@@ -37,6 +37,7 @@ namespace YTE
   YTEDeclareEvent(SailStateChanged);
   YTEDeclareEvent(BoatTurnEvent);
   YTEDeclareEvent(BoatDockEvent);
+  YTEDeclareEvent(BoatRotation);
   YTEDeclareEvent(RequestDialogueStart);
   YTEDeclareEvent(DialogueSelect);
   YTEDeclareEvent(DialogueConfirm);
@@ -48,6 +49,7 @@ namespace YTE
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
   YTEDeclareEvent(DebugSwitch);
+  YTEDeclareEvent(HudElementToggled);
 
   class CameraRotateEvent : public Event
   {
@@ -81,6 +83,16 @@ namespace YTE
   {
   public:
     YTEDeclareType(BoatDockEvent);
+    BoatDockEvent(const glm::vec3& aAnchorPos, const glm::vec3& aDockDir) { DockAnchorPos = aAnchorPos; DockDirection = aDockDir; }
+    glm::vec3 DockAnchorPos;
+    glm::vec3 DockDirection;
+  };
+
+  class BoatRotation : public Event
+  {
+  public:
+    YTEDeclareType(BoatRotation);
+    glm::vec3 BoatForward;
   };
 
   class RequestDialogueStart : public Event
@@ -160,6 +172,17 @@ namespace YTE
     bool EnableDebug;
   };
 
+  class HudElementToggled : public Event
+  {
+  public:
+    enum class Element {Compass, Map, Postcard};
+
+    YTEDeclareType(HudElementToggled);
+    HudElementToggled(Element aElement) { mElement = aElement; }
+
+    Element mElement;
+  };
+
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
@@ -196,6 +219,7 @@ namespace YTE
     Keyboard *mKeyboard;
 
     Space *mMenuSpace;
+    Space *mHudSpace;
 
     InputContext mContext;
 

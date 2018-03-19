@@ -17,6 +17,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/TriangleData.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/HudController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
@@ -47,6 +48,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/TriangleData.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/HudController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp

@@ -363,6 +363,12 @@ namespace YTE
     }
 
     mStartedTurning = false;
+
+
+    // send boat rotation event for compass needle
+    BoatRotation boatRotEvent;
+    boatRotEvent.BoatForward = mOrientation->GetForwardVector();
+    mSpace->SendEvent(Events::BoatRotation, &boatRotEvent);
   }
   float BoatController::GetCurrentSpeed() const
   {
