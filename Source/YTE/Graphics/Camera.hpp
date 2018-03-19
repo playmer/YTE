@@ -36,6 +36,7 @@ namespace YTE
     // Events
     ///////////////////////////////////////
     void OrientationEvent(OrientationChanged *aEvent);
+    void TransformEvent(TransformChanged *aEvent);
     void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
     void SurfaceGainedEvent(ViewChanged *aEvent);

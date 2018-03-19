@@ -144,6 +144,7 @@ namespace YTE
     mGraphicsView->YTERegister(Events::RendererResize, this, &Camera::RendererResize);
     mGraphicsView->YTERegister(Events::SurfaceGained, this, &Camera::SurfaceGainedEvent);
     mSpace->YTERegister(Events::FrameUpdate, this, &Camera::Update);
+    mOwner->YTERegister(Events::PositionChanged, this, &Camera::TransformEvent);
     mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
@@ -195,10 +196,6 @@ namespace YTE
 
     view.mProjectionMatrix = clip * view.mProjectionMatrix;
 
-    //view.mViewMatrix = CreateViewMatrix(mCameraOrientation->GetRightVector(),
-    //                                    mCameraOrientation->GetUpVector(),
-    //                                    mCameraOrientation->GetForwardVector(),
-    //                                    mCameraTransform->GetTranslation());
     auto translation = mCameraTransform->GetWorldTranslation();
     auto lookAtPoint = mCameraOrientation->GetForwardVector() + translation;
     view.mViewMatrix = glm::lookAt(translation,
@@ -255,6 +252,12 @@ namespace YTE
     mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
     mIllumination.mTime += static_cast<float>(mDt);
     mGraphicsView->UpdateIllumination(mIllumination);
+  }
+
+  void Camera::TransformEvent(TransformChanged *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+    mChanged = true;
   }
 
   void Camera::OrientationEvent(OrientationChanged *aEvent)

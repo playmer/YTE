@@ -46,8 +46,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
+
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -328,6 +331,25 @@ namespace YTEditor
     GetComponentBrowser().GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
+    // Add the camera object to the new level
+    YTE::String camName{ "EditorCamera" };
+    YTE::Composition *camera = mEditingLevel->AddComposition<YTE::Composition>(camName,
+                                                                               GetRunningEngine(),
+                                                                               camName,
+                                                                               mEditingLevel);
+
+    if (camera->ShouldSerialize())
+    {
+      camera->ToggleSerialize();
+    }
+
+    // add the camera component to the camera object
+    camera->AddComponent(YTE::Transform::GetStaticType());
+    camera->AddComponent(YTE::Orientation::GetStaticType());
+    camera->AddComponent(YTE::Camera::GetStaticType());
+    camera->AddComponent(YTE::FlybyCamera::GetStaticType());
+    camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, -5.0f });
+
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();
 
@@ -339,8 +361,8 @@ namespace YTEditor
 
       YTE::Composition *engineObj = cmp->second.get();
 
-      // temp hardcode to not add Gizmo or engineObj to object browser
-      if (objName == "Gizmo" || engineObj->GetComponent<YTE::Camera>())
+      // temp hardcode to not add Gizmo to object browser
+      if (objName == "Gizmo")
       {
         continue;
       }
