@@ -230,34 +230,34 @@ namespace YTE
     // If our order is compromised, we just initialize in whatever
     // order the Type* are sorted. Ideally we fix the GetDependencyOrder
     // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        //component.second->PhysicsInitialize();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        //component->PhysicsInitialize();
-      }
-    }
+    //if (order.size() != mComponents.size())
+    //{
+    //  for (auto &component : mComponents)
+    //  {
+    //    if (aEvent->CheckRunInEditor &&
+    //        nullptr == component.first->GetAttribute<RunInEditor>())
+    //    {
+    //      continue;
+    //    }
+    //
+    //    component.second->PhysicsInitialize();
+    //  }
+    //}
+    //else
+    //{
+    //  for (auto &type : order)
+    //  {
+    //    auto component = GetComponent(type);
+    //    
+    //    if (aEvent->CheckRunInEditor &&
+    //        nullptr == type->GetAttribute<RunInEditor>())
+    //    {
+    //      continue;
+    //    }
+    //    
+    //    component->PhysicsInitialize();
+    //  }
+    //}
 
     SendEvent(Events::PhysicsInitialize, aEvent);
   }

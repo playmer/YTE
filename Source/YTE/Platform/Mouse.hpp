@@ -83,6 +83,7 @@ namespace YTE
     bool IsButtonDown(Mouse_Buttons aButton);
     bool WasButtonDown(Mouse_Buttons aButton);
     glm::i32vec2 GetCursorPosition();
+    void SetCursorPosition(glm::i32vec2 aPosition);
 
   private:
     glm::i32vec2 mPosition;

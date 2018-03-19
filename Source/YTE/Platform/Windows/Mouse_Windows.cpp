@@ -39,6 +39,11 @@ namespace YTE
   {
     return GetSystemMetrics(SM_SWAPBUTTON) != 0;
   }
+
+  void Mouse::SetCursorPosition(glm::i32vec2 aPosition)
+  {
+    SetCursorPos(aPosition.x, aPosition.y);
+  }
 }
 
 #endif

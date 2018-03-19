@@ -19,17 +19,6 @@ namespace YTE
   class Camera : public Component 
   { 
   public:
-    enum class CameraType 
-    { 
-      TargetObject, 
-      TargetPoint, 
-      CameraOrientation, 
-      Flyby,
-      Gameplay,
-      Unknown 
-    };
-
-    // Component, Ctor and YTE stuff
     YTEDeclareType(Camera); 
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override; 
@@ -46,11 +35,6 @@ namespace YTE
     ///////////////////////////////////////
     // Events
     ///////////////////////////////////////
-    void MousePress(MouseButtonEvent *aEvent);
-    void MouseScroll(MouseWheelEvent *aEvent);
-    void MouseMove(MouseMoveEvent *aEvent);
-    void MousePersist(MouseButtonEvent *aEvent);
-    void MouseRelease(MouseButtonEvent *aEvent);
     void OrientationEvent(OrientationChanged *aEvent);
     void Update(LogicUpdate* aEvent);
     void RendererResize(WindowResize *aEvent);
@@ -60,11 +44,6 @@ namespace YTE
     ///////////////////////////////////////
     // Getters
     ///////////////////////////////////////
-    std::string& GetCameraType()
-    { 
-      return mCameraType; 
-    } 
-    
     float GetNearPlane()
     {
       return mNearPlane;
@@ -78,41 +57,6 @@ namespace YTE
     float GetFieldOfViewY()
     {
       return glm::degrees(mFieldOfViewY);
-    }
-    
-    glm::vec3 GetTargetPoint()
-    {
-      return mTargetPoint;
-    }
-    
-    Transform* GetTargetObject()
-    {
-      return mTargetObject;
-    }
-    
-    glm::vec2 GetZoomingMaxAndMin() const
-    {
-      return glm::vec2(mZoomMin, mZoomMax);
-    }
-
-    float GetPanSpeed() const
-    {
-      return mPanSpeed;
-    }
-
-    float GetRotateSpeed() const
-    {
-      return mRotateSpeed;
-    }
-
-    float GetMoveSpeed() const
-    {
-      return mMoveSpeed;
-    }
-
-    float GetScrollSpeed() const
-    {
-      return mScrollSpeed;
     }
 
     glm::vec3 GetGlobalIlluminaton() const
@@ -171,59 +115,6 @@ namespace YTE
         UpdateView(); 
       } 
     } 
-    
-    void SetTargetPoint(glm::vec3 aTargetPoint)
-    { 
-      mTargetPoint = aTargetPoint; 
- 
-      if (false == mConstructing) 
-      { 
-        UpdateView(); 
-      } 
-    } 
-    
-    void SetTargetObject(Transform *aTargetObject)
-    { 
-      mTargetObject = aTargetObject; 
- 
-      if (false == mConstructing) 
-      { 
-        UpdateView(); 
-      } 
-    } 
-    
-    void SetZoomingMaxAndMin(glm::vec2 aDist)
-    {
-      // prevents weirdness
-      if (aDist.x > aDist.y)
-      {
-        mZoomMax = aDist.x;
-        mZoomMin = aDist.y;
-      }
-
-      mZoomMax = aDist.y;
-      mZoomMin = aDist.x;
-    }
-
-    void SetPanSpeed(float aPanSpeed)  
-    {
-      mPanSpeed = aPanSpeed;
-    }
-
-    void SetRotateSpeed(float aRotateSpeed)  
-    {
-      mRotateSpeed = aRotateSpeed;
-    }
-
-    void SetMoveSpeed(float aMoveSpeed)  
-    {
-      mMoveSpeed = aMoveSpeed;
-    }
-
-    void SetScrollSpeed(float aScrollSpeed)  
-    {
-      mScrollSpeed = aScrollSpeed;
-    }
 
     void SetGlobalIlluminaton(glm::vec3 aGlobalIllum)
     {
@@ -245,16 +136,7 @@ namespace YTE
       mIllumination.mFogPlanes = aFogPlanes;
     }
 
-    void SetCameraType(std::string &aCameraType);
-
     void SetCameraAsActive();
-
-
-  private:
-    void UpdateCameraRotation(float aPitch, float aYaw, float aRoll);
-    void UpdateZoom(float aZoom);
-    void ToTargetCamera(bool aUseTarget);
-    void ToFlybyCamera();
 
   private: 
     // YTE
@@ -262,45 +144,17 @@ namespace YTE
     GraphicsView *mGraphicsView; 
     Transform *mCameraTransform; 
     Orientation *mCameraOrientation; 
-    Mouse *mMouse;
-    Keyboard *mKeyboard;
     Window *mWindow; 
-    Transform *mTargetObject; 
 
-    // Other object Related
-    glm::vec3 mTargetPoint; 
-    glm::i32vec2 mMouseInitialPosition;
-   
     // Perspective
     float mFieldOfViewY; 
     float mNearPlane; 
     float mFarPlane; 
 
-    // Movement
-    float mZoom;
-    float mZoomMin;
-    float mZoomMax;
-    float mMoveUp;
-    float mMoveRight;
-
-    // Rotation
-    float mPitch;
-    float mYaw;
-    float mRoll;
-
     // Utilities
     double mDt;
-    std::string mCameraType;
     bool mConstructing; 
-    CameraType mType; 
     bool mChanged;
-
-    // speeds
-    float mPanSpeed;
-    float mMoveSpeed;
-    float mScrollSpeed;
-    float mRotateSpeed;
-    float mSpeedLimiter;
 
     UBOIllumination mIllumination;
   }; 

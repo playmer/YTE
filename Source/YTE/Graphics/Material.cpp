@@ -141,7 +141,7 @@ namespace YTE
 
       if (false == models.empty())
       {
-        auto instantiatedModel = models.front();
+        instantiatedModel = models.front();
       }
 
       if (nullptr != instantiatedModel)

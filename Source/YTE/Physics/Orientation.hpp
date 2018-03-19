@@ -45,10 +45,14 @@ namespace YTE
     glm::vec3 GetRightVector() const;
     glm::vec3 GetUpVector() const;
 
+    void LookAt(glm::vec3 const &aDirection);
+    void LookAtPoint(glm::vec3 const &aPoint);
+
   private:
     glm::vec3 mForwardVector;
     glm::vec3 mRightVector;
     glm::vec3 mUpVector;
+    Transform *mTransform;
   };
 }
 

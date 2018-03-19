@@ -412,20 +412,6 @@ namespace YTEditor
     YTE::InitializeEvent event;
     mRunningSpace->Initialize(&event);
     mRunningSpace->Update(&update);
-
-    auto comps = mRunningSpace->GetCompositions();
-    for (auto it = comps->begin(); it != comps->end(); ++it)
-    {
-      auto cam = it->second->GetComponent<YTE::Camera>();
-      if (cam)
-      {
-        if (cam->GetCameraType() == "Gameplay")
-        {
-          cam->SetCameraAsActive();
-          break;
-        }
-      }
-    }
   }
 
   void MainWindow::PauseLevel(bool pauseState)

@@ -352,9 +352,6 @@ namespace YTEditor
     ComponentWidget *compWidget = compTree->AddComponent(particleType);
 
     YTE::Camera *cameraComponent = static_cast<YTE::Camera*>(compWidget->GetEngineComponent());
-    
-    std::string camType = "Gameplay";
-    cameraComponent->SetCameraType(camType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
