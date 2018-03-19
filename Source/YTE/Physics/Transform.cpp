@@ -343,8 +343,20 @@ namespace YTE
 
   void Transform::SetWorldScale(const glm::vec3& aWorldScale)
   {
-    auto parent{ mWorldScale - mScale };
-    auto local{ aWorldScale - parent };
+    glm::vec3 parent{};
+    glm::vec3 local{0.f, 0.f, 0.f};
+
+    if (0.0f != glm::length(mScale))
+    {
+      parent =  mWorldScale / mScale;
+      local =  aWorldScale / parent;
+    }
+    else if (parent = GetAccumulatedParentScale();
+             0.0f != glm::length(parent))
+    {
+      local = aWorldScale / parent;
+    }
+
     SetInternalScale(parent, local);
   }
 
