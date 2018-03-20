@@ -191,7 +191,7 @@ namespace YTEditor
 
     // convert the two positions to world coordinates
     auto view = aSpace->GetComponent<YTE::GraphicsView>();
-    auto camera = view->GetLastCamera();
+    auto camera = view->GetActiveCamera();
     YTE::UBOView uboView = camera->ConstructUBOView();
 
     auto camPos = camera->GetOwner()->GetComponent<YTE::Transform>()->GetWorldTranslation();
@@ -251,7 +251,7 @@ namespace YTEditor
 
     // convert the two positions to world coordinates
     auto view = aSpace->GetComponent<YTE::GraphicsView>();
-    auto camera = view->GetLastCamera();
+    auto camera = view->GetActiveCamera();
     YTE::UBOView uboView = camera->ConstructUBOView();
 
     auto camPos = camera->GetOwner()->GetComponent<YTE::Transform>()->GetWorldTranslation();

@@ -189,7 +189,7 @@ namespace YTEditor
           glm::vec3 objPos = objTransform->GetWorldTranslation();
 
           auto view = mEditingLevel->GetComponent<YTE::GraphicsView>();
-          auto cameraComponent = view->GetLastCamera();
+          auto cameraComponent = view->GetActiveCamera();
           auto cameraObject = cameraComponent->GetOwner();
           auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
           glm::vec3 camPos = cameraTransform->GetWorldTranslation();
@@ -349,6 +349,8 @@ namespace YTEditor
     camera->AddComponent(YTE::Camera::GetStaticType());
     camera->AddComponent(YTE::FlybyCamera::GetStaticType());
     camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
+
+    camera->GetComponent<YTE::Camera>()->SetCameraAsActive();
 
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();

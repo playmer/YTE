@@ -100,7 +100,7 @@ namespace YTEditor
           if (transform)
           {
             auto view = mMainWindow->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
-            auto cameraComponent = view->GetLastCamera();
+            auto cameraComponent = view->GetActiveCamera();
             auto cameraObject = cameraComponent->GetOwner();
             auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
             glm::vec3 camPos = cameraTransform->GetWorldTranslation();

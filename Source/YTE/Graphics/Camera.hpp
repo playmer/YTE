@@ -23,14 +23,11 @@ namespace YTE
     Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override; 
     UBOView ConstructUBOView();
-    void UpdateView();
  
     Window* GetWindow()
     { 
       return mWindow; 
     }
-
-    void SetUBOView(UBOView &aView);
 
     ///////////////////////////////////////
     // Events
@@ -88,11 +85,6 @@ namespace YTE
       mNearPlane = aNearPlane; 
  
       mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
-
-      if (false == mConstructing)
-      { 
-        UpdateView(); 
-      } 
     } 
     
     void SetFarPlane(float aFarPlane)
@@ -100,21 +92,11 @@ namespace YTE
       mFarPlane = aFarPlane; 
  
       mIllumination.mFogPlanes = glm::vec2(mFarPlane / 2.0f, mFarPlane);
-
-      if (false == mConstructing)
-      { 
-        UpdateView(); 
-      } 
     } 
     
     void SetFieldOfViewY(float aFieldOfViewY)
     { 
       mFieldOfViewY = glm::radians(aFieldOfViewY); 
- 
-      if (false == mConstructing) 
-      { 
-        UpdateView(); 
-      } 
     } 
 
     void SetGlobalIlluminaton(glm::vec3 aGlobalIllum)

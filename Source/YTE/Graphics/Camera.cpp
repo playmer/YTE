@@ -146,6 +146,11 @@ namespace YTE
     mSpace->YTERegister(Events::FrameUpdate, this, &Camera::Update);
     mOwner->YTERegister(Events::PositionChanged, this, &Camera::TransformEvent);
     mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
+
+    if (nullptr == mGraphicsView->GetActiveCamera())
+    {
+      SetCameraAsActive();
+    }
  
     mCameraTransform = mOwner->GetComponent<Transform>(); 
     mCameraOrientation = mOwner->GetComponent<Orientation>(); 
@@ -159,7 +164,6 @@ namespace YTE
 
     mConstructing = false;
     RendererResize(nullptr);
-    UpdateView();
   }
 
   UBOView Camera::ConstructUBOView()
@@ -202,39 +206,9 @@ namespace YTE
     mWindow = aEvent->Window;
   }
 
-  void Camera::UpdateView()
-  {
-    if (mChanged == false)
-    {
-      return;
-    }
-
-    UBOView view = ConstructUBOView();
-
-    mChanged = false;
-    mGraphicsView->UpdateView(this, view);
-    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
-    mIllumination.mTime += static_cast<float>(mDt);
-    mGraphicsView->UpdateIllumination(mIllumination);
-  }
-
   void Camera::SetCameraAsActive()
   {
-    UBOView view = ConstructUBOView();
-    mChanged = false;
-    mGraphicsView->UpdateView(this, view);
-    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
-    mIllumination.mTime += static_cast<float>(mDt);
-    mGraphicsView->UpdateIllumination(mIllumination);
-  }
-
-  void Camera::SetUBOView(UBOView &aView)
-  {
-    mChanged = false;
-    mGraphicsView->UpdateView(this, aView);
-    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
-    mIllumination.mTime += static_cast<float>(mDt);
-    mGraphicsView->UpdateIllumination(mIllumination);
+    mGraphicsView->SetActiveCamera(this);
   }
 
   void Camera::TransformEvent(TransformChanged *aEvent)
@@ -253,16 +227,20 @@ namespace YTE
   {
     YTEProfileFunction(profiler::colors::Red);
 
+    bool active = mGraphicsView->GetActiveCamera() == this;
     mDt = aEvent->Dt;
-    if (mChanged)
+
+    if (active && mChanged)
     {
-      UpdateView();
+      UBOView view = ConstructUBOView();
+
+      mChanged = false;
+      mGraphicsView->UpdateView(this, view);
+      mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
     }
-    else
-    {
-      mIllumination.mTime += static_cast<float>(mDt);
-      mGraphicsView->UpdateIllumination(mIllumination);
-    }
+
+    mIllumination.mTime += static_cast<float>(mDt);
+    mGraphicsView->UpdateIllumination(mIllumination);
   }
 
   void Camera::RendererResize(WindowResize *aEvent)

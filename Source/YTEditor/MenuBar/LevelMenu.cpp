@@ -128,7 +128,7 @@ namespace YTEditor
   void LevelMenu::SelectCamera()
   {
     auto view = mMainWindow->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
-    auto cameraComponent = view->GetLastCamera();
+    auto cameraComponent = view->GetActiveCamera();
     auto cameraObject = cameraComponent->GetOwner();
 
     mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cameraObject);

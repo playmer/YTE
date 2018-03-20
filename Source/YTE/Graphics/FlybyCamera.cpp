@@ -87,7 +87,6 @@ namespace YTE
     yaw = mouseX_Sensitivity * -mMouseDelta.x;
     pitch = mouseY_Sensitivity * mMouseDelta.y;
 
-
     //order matters,update camera_quat
     auto cameraRotation = mTransform->GetRotation();
 
@@ -102,6 +101,8 @@ namespace YTE
     cameraRotation = glm::normalize(cameraRotation);
 
     mTransform->SetRotation(cameraRotation);
+
+    mMouseDelta = glm::ivec2{ 0, 0 };
   }
 
   void FlybyCamera::MousePress(MouseButtonEvent *aEvent)

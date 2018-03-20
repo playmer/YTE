@@ -1,6 +1,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
@@ -72,7 +73,7 @@ namespace YTE
                              Space *aSpace, 
                              RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mLastCamera(nullptr)
+    , mActiveCamera(nullptr)
     , mWindow(nullptr)
     , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
     , mConstructing(true)
@@ -135,7 +136,17 @@ namespace YTE
 
   void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
   {
-    mLastCamera = aCamera;
+    if (aCamera != mActiveCamera)
+    {
+      mOwner->GetEngine()->Log(LogType::Warning,
+                               fmt::format("A camera by the name of {} is attempting to update "
+                                           "the GraphicsView despite it not being the active "
+                                           "camera. The current active camera is named {}",
+                                           aCamera->GetOwner()->GetName().c_str(),
+                                           mActiveCamera->GetOwner()->GetName().c_str()));
+      return;
+    }
+
     mRenderer->UpdateWindowViewBuffer(this, aView);
   }
   
