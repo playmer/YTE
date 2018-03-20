@@ -38,7 +38,7 @@ namespace YTE
     glm::ivec2 mMouseDelta;
     Window *mWindow;
     Mouse *mMouse;
-    float mMovementSpeed = 5.0f;
+    float mMovementSpeed = 10.0f;
     bool mMouseHeld = false;
   };
 }

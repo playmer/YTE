@@ -236,11 +236,16 @@ namespace YTE
 
       mChanged = false;
       mGraphicsView->UpdateView(this, view);
-      mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetTranslation(), 1.0f);
     }
 
+    mIllumination.mCameraPosition = glm::vec4(mCameraTransform->GetWorldTranslation(), 1.0f);
     mIllumination.mTime += static_cast<float>(mDt);
     mGraphicsView->UpdateIllumination(mIllumination);
+
+    std::cout << fmt::format("Buffer: x: {}, y: {}, z: {}  \n",
+                             mIllumination.mCameraPosition.x,
+                             mIllumination.mCameraPosition.y,
+                             mIllumination.mCameraPosition.z);
   }
 
   void Camera::RendererResize(WindowResize *aEvent)

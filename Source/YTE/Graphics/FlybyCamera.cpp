@@ -19,6 +19,11 @@ namespace YTE
                                              { TypeId<Orientation>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
+    YTEBindField(&FlybyCamera::mMovementSpeed, "MovementSpeed", PropertyBinding::GetSet)
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("The near plane the view will be rendered with.");
   }
 
   FlybyCamera::FlybyCamera(Composition *aOwner, 
