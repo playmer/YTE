@@ -288,16 +288,32 @@ namespace YTE
         mComputationalVertices[vertex].mHTilde0 = glm::vec3(ht0.mReal, ht0.mImaginary, 0.0f);
         mComputationalVertices[vertex].mHTilde0mkConjugate = glm::vec3(ht0conj.mReal,
                                                                        ht0conj.mImaginary, 0.0f);
-        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize) - 1);
-        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize) - 1);
+
+        // tiling is done as so
+        // 2.0f will double the textures (0 - 2)
+        // 1.0f will be normal (0 - 1)
+        // 0.5f will half it (0 - 0.5)
+        float tilingAmount = 1.0f;
+
+
+        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / (static_cast<float>(mGridSize) / 2.0f);
+        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / (static_cast<float>(mGridSize) / 2.0f);
 
         // sets positions, and uses the length parameter to space out the grid in 3D space
         // x - (gridSize / 2.0f) = the physical position of the vertex without length expansion
         // (vertexDistance / gridSize) = the length expansion or reduction
         // multiply together to find the grid position
         // note that y has no adjustments
-        glm::vec3 pos(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)), 0.0f,
-                      ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
+
+        // new pos makes it on a 0 - 1 basis
+        glm::vec3 pos(
+          static_cast<float>(x) / static_cast<float>(mGridSize),
+          0.0f,
+          static_cast<float>(z) / static_cast<float>(mGridSize)
+        );
+
+        //glm::vec3 pos(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)), 0.0f,
+        //              ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
         mComputationalVertices[vertex].mPosition = mComputationalVertices[vertex].mOriginalPosition = pos;
 
         // initial normal is just the basic normal
@@ -662,7 +678,7 @@ namespace YTE
         mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal);
+        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal) / mGridSize;
 
         if (UseNoDisplacement)
         {
@@ -680,10 +696,10 @@ namespace YTE
           // displacement update
           hTildeDX *= sign;
           hTildeDZ *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
-          computationalVertex.mPosition.x = computationalVertex.mOriginalPosition.x +
-            hTildeDX.mReal * -1.0f;
-          computationalVertex.mPosition.z = computationalVertex.mOriginalPosition.z +
-            hTildeDZ.mReal * -1.0f;
+          computationalVertex.mPosition.x = ((computationalVertex.mOriginalPosition.x * mGridSize) +
+                                            hTildeDX.mReal * -1.0f) / mGridSize;
+          computationalVertex.mPosition.z = ((computationalVertex.mOriginalPosition.z * mGridSize) +
+                                            hTildeDZ.mReal * -1.0f) / mGridSize;
         }
 
 
@@ -697,10 +713,11 @@ namespace YTE
                                                                -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, 
-                                                   complex_kfft& aH_TildeDX, 
-                                                   complex_kfft& aH_TildeDZ, 
-                                                   int aIndex)
+        int grid = mGridSize;
+        auto tiling = [&vertex, &tilde, &useNoDis, &grid](std::vector<WaterComputationalVertex>& aVertices, 
+                                                               complex_kfft& aH_TildeDX, 
+                                                               complex_kfft& aH_TildeDZ, 
+                                                               int aIndex)
         {
           auto &vertexAtIndex = aVertices[aIndex];
           auto &vertexAtVertex = aVertices[vertex];
@@ -717,10 +734,10 @@ namespace YTE
           }
           else
           {
-            vertexAtIndex.mPosition.x = vertexAtIndex.mOriginalPosition.x +
-                                            aH_TildeDX[tilde].mReal * -1.0f;
-            vertexAtIndex.mPosition.z = vertexAtIndex.mOriginalPosition.z +
-                                            aH_TildeDZ[tilde].mReal * -1.0f;
+            vertexAtIndex.mPosition.x = ((vertexAtIndex.mOriginalPosition.x * grid) +
+                                        aH_TildeDX[tilde].mReal * -1.0f) / grid;
+            vertexAtIndex.mPosition.z = ((vertexAtIndex.mOriginalPosition.z * grid) +
+                                        aH_TildeDZ[tilde].mReal * -1.0f) / grid;
           }
 
           vertexAtIndex.mNormal = vertexAtVertex.mNormal;
@@ -984,8 +1001,8 @@ namespace YTE
         glm::vec3 trans = mTransform->GetWorldTranslation();
         //trans.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
         //trans.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
-        trans.x += mVertexDistanceX * x;
-        trans.z += mVertexDistanceZ * -z;
+        trans.x += x;
+        trans.z += -z;
 
 
         mInstancingMatrices[i].mModelMatrix = glm::translate(mInstancingMatrices[i].mModelMatrix, trans);

@@ -210,7 +210,6 @@ namespace YTE
     mEngine = mSpace->GetEngine();
 
     auto view = mSpace->GetComponent<GraphicsView>();
-    mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), view->GetRenderer(), view);
 
     mMouse = &mWindow->mMouse;
     mKeyboard = &mWindow->mKeyboard;
@@ -456,12 +455,6 @@ namespace YTE
     trans = mCameraTransform->GetTranslation();
     trans.x += 2.0f;
     trans.z += 6.0f;
-
-    mDrawer->Start();
-    mDrawer->AddLine(trans, trans + (-forward * 6.0f), glm::vec3{ 0,0,1 });
-    mDrawer->AddLine(trans, trans + (right * 6.0f), glm::vec3{ 1,0,0 });
-    mDrawer->AddLine(trans, trans + (up * 6.0f), glm::vec3{ 0,1,0 });
-    mDrawer->End();
 
     return view;
   }

@@ -279,7 +279,6 @@ namespace YTE
     float mNearPlane; 
     float mFarPlane; 
 
-    std::unique_ptr<LineDrawer> mDrawer;
     // Movement
     float mZoom;
     float mZoomMin;

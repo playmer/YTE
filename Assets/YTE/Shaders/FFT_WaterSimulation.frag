@@ -562,7 +562,7 @@ void main()
   ////outFragColor = mix(originalReflectionColor, originalRefractiveColor, 0.5f);
   ////outFragColor = originalReflectionColor;
 
-  return;
+  //return;
 
   if (Lights.mActive < 0.5f)
   {
