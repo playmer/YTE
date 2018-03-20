@@ -283,6 +283,7 @@ namespace YTE
     {
       mUBOModel.mDiffuseColor = mInstantiatedModel->GetUBOModelData().mDiffuseColor;
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
+      mInstantiatedModel->SetVisibility(mVisibility);
     }
 
     if (mInstantiatedModel->GetMesh()->CanAnimate())
