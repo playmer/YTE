@@ -184,14 +184,14 @@ namespace YTE
     InputContext GetInputContext();
 
     // PROPERTIES //////////////////////////////////////////////////////
-    std::string GetRootMenuName() { return mRootPauseMenuName; }
-    void SetRootMenuName(std::string& aRootMenuName) { mRootPauseMenuName = aRootMenuName; }
     ////////////////////////////////////////////////////////////////////
 
   private:
     XboxController *mGamepad;
     Keyboard *mKeyboard;
-    std::string mRootPauseMenuName;
+
+    Space *mMenuSpace;
+
     InputContext mContext;
 
     bool mIsRightTriggerDown;

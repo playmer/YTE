@@ -74,6 +74,8 @@ namespace YTE
     mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
     mContext = InputContext::Sailing;
 
+    mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
+
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 
     mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
@@ -171,14 +173,14 @@ namespace YTE
         {
           MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
 
-          mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+          mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
         }
 
         else if (aEvent->FlickDirection.x > 0.01f)
         {
           MenuElementChange menuNext(MenuElementChange::Direction::Next);
 
-          mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+          mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
         }
       }
     }
@@ -235,7 +237,7 @@ namespace YTE
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
-            mOwner->SendEvent(Events::MenuStart, &menuStart);
+            mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
@@ -261,7 +263,7 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
             break;
@@ -270,7 +272,7 @@ namespace YTE
           case XboxButtons::A:
           {
             MenuConfirm menuConfirm(false);
-            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+            mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
             break;
           }
 
@@ -278,7 +280,7 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
           }
@@ -286,7 +288,7 @@ namespace YTE
           case XboxButtons::DPAD_Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
 
             break;
           }
@@ -294,7 +296,7 @@ namespace YTE
           case XboxButtons::DPAD_Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
-            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
 
             break;
           }
@@ -315,7 +317,7 @@ namespace YTE
         if (aEvent->Button == XboxButtons::A)
         {
           MenuConfirm menuConfirm(true);
-          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
           break;
         }
       }
@@ -409,7 +411,7 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
             break;
@@ -418,7 +420,7 @@ namespace YTE
           case Keys::Return:
           {
             MenuConfirm menuConfirm(false);
-            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+            mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
 
             break;
           }
@@ -427,7 +429,7 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
           }
@@ -436,7 +438,7 @@ namespace YTE
           case Keys::Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
 
             break;
           }
@@ -445,7 +447,7 @@ namespace YTE
           case Keys::Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
-            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
 
             break;
           }
@@ -484,7 +486,7 @@ namespace YTE
         if (aEvent->Key == Keys::Return)
         {
           MenuConfirm menuConfirm(true);
-          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
           break;
         }
       }

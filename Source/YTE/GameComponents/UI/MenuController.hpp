@@ -15,7 +15,7 @@
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
-#include "YTE/Physics/Transform.hpp"
+#include "YTE/Graphics/Sprite.hpp"
 
 #include "YTE/WWise/WWiseEmitter.hpp"
 
@@ -53,7 +53,11 @@ namespace YTE
     // void CloseMenu();
 
     // PROPERTIES /////////////////////////////////////////
+    bool GetDisplayed() { return mIsDisplayed; }
+    void SetDisplayed(bool aDisplay) { mIsDisplayed = aDisplay; }
     ///////////////////////////////////////////////////////
+    void OnChildrenInitialized(LogicUpdate *aEvent);
+
     void OnMenuStart(MenuStart *aEvent);
     void OnDirectMenuExit(MenuExit *aEvent);
     void OnMenuExit(MenuExit *aEvent);
@@ -64,8 +68,7 @@ namespace YTE
     WWiseEmitter* mSoundEmitter;
     Composition* mParentMenu = nullptr;
 
-    Transform *mMyTransform;
-    glm::vec3 mViewScale;
+    Sprite* mMySprite;
 
     int mCurrMenuElement;
     int mNumElements;
@@ -80,5 +83,7 @@ namespace YTE
     bool mIsDisplayed;
 
     bool mConstructing;
+
+    void UpdateVisibility();
   };
 }
