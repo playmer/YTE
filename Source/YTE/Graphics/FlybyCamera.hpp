@@ -39,6 +39,7 @@ namespace YTE
     Window *mWindow;
     Mouse *mMouse;
     float mMovementSpeed = 10.0f;
+    bool mFasterMovement = false;
     bool mMouseHeld = false;
   };
 }

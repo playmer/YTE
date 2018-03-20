@@ -67,13 +67,22 @@ namespace YTE
       mMovementDirection = glm::normalize(mMovementDirection);
     }
 
+    auto speed = mMovementSpeed;
+
+    if (mFasterMovement)
+    {
+      speed *= 10.f;
+    }
+
     mMovementDirection = mMovementDirection 
-                       * mMovementSpeed
+                       * speed
                        * static_cast<float>(aEvent->Dt);
 
     mTransform->SetWorldTranslation(mTransform->GetWorldTranslation() + 
                                     mMovementDirection);
     mMovementDirection = glm::vec3{ 0.0f, 0.0f, 0.0f };
+
+    mFasterMovement = false;
 
     // Mouse, reference: http://in2gpu.com/2016/03/14/opengl-fps-camera-quaternion/
     if (0 == mMouseDelta.x &&
@@ -174,6 +183,11 @@ namespace YTE
       case Keys::A:
       {
         mMovementDirection += mOrientation->GetRightVector();
+        break;
+      }
+      case Keys::Shift:
+      {
+        mFasterMovement = true;
         break;
       }
       case Keys::D:
