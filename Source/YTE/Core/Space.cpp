@@ -79,7 +79,7 @@ namespace YTE
   void Space::Initialize()
   {
     InitializeEvent event;
-    event.CheckRunInEditor = mEngine->IsEditor();
+    event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
   }
 

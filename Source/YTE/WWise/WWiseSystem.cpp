@@ -606,7 +606,7 @@ namespace YTE
     AK::SoundEngine::SetState(static_cast<AkStateGroupID>(aStateGroupId), static_cast<AkStateID>(aStateId));
   }
 
-  void WWiseSystem::GetSoundIDFromString(const std::string& aName, u64& aOutID)
+  u64 WWiseSystem::GetSoundIDFromString(const std::string& aName)
   {
     for (auto &bank : mBanks)
     {
@@ -614,13 +614,15 @@ namespace YTE
       {
         if (event.mName == aName)
         {
-          aOutID = event.mId;
-          return;
+          return event.mId;
         }
       }
     }
 
-    std::string errorString("WwiseSystem: Could not find sound with name \"" + aName + "\"");
-    mOwner->GetEngine()->Log(LogType::Error, errorString);
+    mOwner->GetEngine()->Log(LogType::Error, 
+                             fmt::format("WwiseSystem: Could not find sound with name {}",
+                                         aName));
+
+    return 0;
   }
 }

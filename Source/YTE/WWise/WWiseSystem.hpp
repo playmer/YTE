@@ -94,7 +94,7 @@ namespace YTE
     void SetState(const std::string &aStateGroup, const std::string &aState);
     void SetState(u64 aStateGroupId, u64 aStateId);
 
-    void GetSoundIDFromString(const std::string& aName, u64& aOutID);
+    u64 GetSoundIDFromString(const std::string& aName);
 
     void SetRTPC(const std::string &aRTPC, float aValue);
     void SetRTPC(u64 aRTPC, float aValue);

@@ -55,11 +55,11 @@ namespace YTE
 
     if (soundSystem)
     {
-      soundSystem->GetSoundIDFromString("UI_Menu_Pause", mSoundPause);
-      soundSystem->GetSoundIDFromString("UI_Menu_Unpause", mSoundUnpause);
-      soundSystem->GetSoundIDFromString("UI_Menu_Up", mSoundElementNext);
-      soundSystem->GetSoundIDFromString("UI_Menu_Down", mSoundElementPrev);
-      soundSystem->GetSoundIDFromString("UI_Menu_Select", mSoundElementSelect);
+      mSoundPause = soundSystem->GetSoundIDFromString("UI_Menu_Pause");
+      mSoundUnpause = soundSystem->GetSoundIDFromString("UI_Menu_Unpause");
+      mSoundElementNext = soundSystem->GetSoundIDFromString("UI_Menu_Up");
+      mSoundElementPrev = soundSystem->GetSoundIDFromString("UI_Menu_Down");
+      mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
     }
 
     mSpace->YTERegister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
