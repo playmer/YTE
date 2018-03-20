@@ -191,6 +191,8 @@ namespace YTE
 
 #else
     mGridSize = DefaultGridSize / 2;
+    mVertexDistanceX = mVertexDistanceX / 2.0f;
+    mVertexDistanceZ = mVertexDistanceZ / 2.0f;
     mGridSizePlus1 = mGridSize + 1;
 #endif
 
@@ -296,8 +298,8 @@ namespace YTE
         float tilingAmount = 1.0f;
 
 
-        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / (static_cast<float>(mGridSize) / 2.0f);
-        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / (static_cast<float>(mGridSize) / 2.0f);
+        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / (static_cast<float>(mGridSize) / tilingAmount);
+        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / (static_cast<float>(mGridSize) / tilingAmount);
 
         // sets positions, and uses the length parameter to space out the grid in 3D space
         // x - (gridSize / 2.0f) = the physical position of the vertex without length expansion
@@ -678,7 +680,7 @@ namespace YTE
         mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal) / mGridSize;
+        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal) / static_cast<float>(mGridSize);
 
         if (UseNoDisplacement)
         {
@@ -696,10 +698,10 @@ namespace YTE
           // displacement update
           hTildeDX *= sign;
           hTildeDZ *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
-          computationalVertex.mPosition.x = ((computationalVertex.mOriginalPosition.x * mGridSize) +
-                                            hTildeDX.mReal * -1.0f) / mGridSize;
-          computationalVertex.mPosition.z = ((computationalVertex.mOriginalPosition.z * mGridSize) +
-                                            hTildeDZ.mReal * -1.0f) / mGridSize;
+          computationalVertex.mPosition.x = ((computationalVertex.mOriginalPosition.x * static_cast<float>(mGridSize)) +
+                                            hTildeDX.mReal * -1.0f) / static_cast<float>(mGridSize);
+          computationalVertex.mPosition.z = ((computationalVertex.mOriginalPosition.z * static_cast<float>(mGridSize)) +
+                                            hTildeDZ.mReal * -1.0f) / static_cast<float>(mGridSize);
         }
 
 
@@ -713,7 +715,7 @@ namespace YTE
                                                                -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        int grid = mGridSize;
+        float grid = static_cast<float>(mGridSize);
         auto tiling = [&vertex, &tilde, &useNoDis, &grid](std::vector<WaterComputationalVertex>& aVertices, 
                                                                complex_kfft& aH_TildeDX, 
                                                                complex_kfft& aH_TildeDZ, 
@@ -798,8 +800,13 @@ namespace YTE
       return;
     }
 
+#ifdef NDEBUG
     mVertexDistanceX = aDistance.x;
     mVertexDistanceZ = aDistance.y;
+#else
+    mVertexDistanceX = aDistance.x / 2.0f;
+    mVertexDistanceZ = aDistance.y / 2.0f;
+#endif
 
     mResetNeeded = true;
   }
@@ -842,6 +849,8 @@ namespace YTE
       mGridSize = aGridSize;
 #else
       mGridSize = aGridSize / 2;
+      mVertexDistanceX = mVertexDistanceX / 2.0f;
+      mVertexDistanceZ = mVertexDistanceZ / 2.0f;
       mGridSizePlus1 = mGridSize + 1;
 #endif
     }
@@ -901,6 +910,8 @@ namespace YTE
     return mGridSize;
 #else
     return mGridSize * 2;
+    mVertexDistanceX = mVertexDistanceX * 2.0f;
+    mVertexDistanceZ = mVertexDistanceZ * 2.0f;
 #endif
   }
 
@@ -915,21 +926,33 @@ namespace YTE
   // ------------------------------------
   glm::vec2 FFT_WaterSimulation::GetVertexDistance()
   {
+#ifdef NDEBUG
     return glm::vec2(mVertexDistanceX, mVertexDistanceZ);
+#else
+    return glm::vec2(mVertexDistanceX * 2.0f, mVertexDistanceZ * 2.0f);
+#endif
   }
 
 
   // ------------------------------------
   float FFT_WaterSimulation::GetVertexDistanceX()
   {
+#ifdef NDEBUG
     return mVertexDistanceX;
+#else
+    return mVertexDistanceX * 2.0f;
+#endif
   }
 
 
   // ------------------------------------
   float FFT_WaterSimulation::GetVertexDistanceZ()
   {
+#ifdef NDEBUG
     return mVertexDistanceZ;
+#else
+    return mVertexDistanceZ * 2.0f;
+#endif
   }
 
 

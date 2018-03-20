@@ -406,10 +406,10 @@ namespace YTE
     // set the move amount for final render
     UBOIllumination ill = mParentViewData->mIlluminationUBOData;
     ill.mMoveAmount += static_cast<VkRenderer*>(mParentViewData->mLightManager.mGraphicsView->GetRenderer())->GetEngine()->GetDt();
-    //if (ill.mMoveAmount >= 1.0f)
-    //{
-    //  ill.mMoveAmount = 0.0f;
-    //}
+    if (ill.mMoveAmount >= 1.0f)
+    {
+      ill.mMoveAmount = 0.0f;
+    }
     mParentViewData->mIlluminationUBO->update<UBOIllumination>(0, ill, aCBO);
   }
 

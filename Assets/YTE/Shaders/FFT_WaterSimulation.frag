@@ -543,8 +543,8 @@ void main()
   vec2 refractCoords = vec2(ndc.x, ndc.y);
   vec2 reflectCoords = vec2(ndc.x, 1 - ndc.y);
 
-  vec2 distA = (texture(normalSampler, vec2(inTextureCoordinates.x + Illumination.mTime * 0.5f, inTextureCoordinates.y)).rg) * distortionStrength;
-  vec2 distB = (texture(normalSampler, vec2(-inTextureCoordinates.x + Illumination.mTime * 0.5f, inTextureCoordinates.y + Illumination.mTime * 0.5f)).rg) * distortionStrength;
+  vec2 distA = (texture(normalSampler, vec2(inTextureCoordinates.x + Illumination.mMoveAmount, inTextureCoordinates.y)).rg * 2.0f - 1.0f) * distortionStrength;
+  vec2 distB = (texture(normalSampler, vec2(-inTextureCoordinates.x + Illumination.mMoveAmount, inTextureCoordinates.y + Illumination.mMoveAmount)).rg * 2.0f - 1.0f) * distortionStrength;
   vec2 totalDist = distA + distB;
   refractCoords += totalDist;
   refractCoords = clamp(refractCoords, 0.001, 0.999);
@@ -562,7 +562,7 @@ void main()
   ////outFragColor = mix(originalReflectionColor, originalRefractiveColor, 0.5f);
   ////outFragColor = originalReflectionColor;
 
-  //return;
+  return;
 
   if (Lights.mActive < 0.5f)
   {
