@@ -2,6 +2,7 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
 namespace YTE
@@ -135,13 +136,62 @@ namespace YTE
 
   void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
   {
-    mLastCamera = aCamera;
-    mRenderer->UpdateWindowViewBuffer(this, aView);
+    if (mSpace->GetIsEditorSpace())
+    {
+      // in editor
+      if (aCamera->GetCameraType() == "Gameplay")
+      {
+        // do nothing
+      }
+      else
+      {
+        mLastCamera = aCamera;
+        mRenderer->UpdateWindowViewBuffer(this, aView);
+      }
+    }
+    else
+    {
+      // in gameplay
+      if (aCamera->GetCameraType() != "Gameplay")
+      {
+        // do nothing
+      }
+      else
+      {
+        mLastCamera = aCamera;
+        mRenderer->UpdateWindowViewBuffer(this, aView);
+      }
+    }
   }
   
   void GraphicsView::UpdateIllumination(UBOIllumination& aIllumination)
   {
-    mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
+    if (mSpace->GetIsEditorSpace())
+    {
+      // in editor
+      if (mLastCamera->GetCameraType() == "Gameplay")
+      {
+        // do nothing
+      }
+      else
+      {
+        mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
+      }
+    }
+    else
+    {
+      // in gameplay
+      if (mLastCamera->GetCameraType() != "Gameplay")
+      {
+        // do nothing
+      }
+      else
+      {
+        mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
+      }
+    }
+
+
   }
 
   glm::vec4 GraphicsView::GetClearColor()

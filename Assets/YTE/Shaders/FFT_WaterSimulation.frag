@@ -229,7 +229,8 @@ vec3 CalculateNoise(vec2 aUV)
     color += vec3( noise(pos3)*.5+.5 );
     color += vec3( noise(pos4)*.5+.5 );
 
-    return color * 0.25;
+    color = color * 0.25;
+    return (color * 2.0f) - 1.0f;
 }
 
 
@@ -242,7 +243,7 @@ vec4 Calc_DirectionalLight(inout Light aLight, inout LightingData aLightData)
   vec4 lightVecNew = normalize(-vec4(vec3(aLight.mDirection) + aLightData.mNoiseOffset, aLight.mDirection.w));
 
   // diffuse
-  float diffContribution = max(dot(lightVec, aLightData.mNormal), 0.0f);
+  float diffContribution = max(dot(lightVec, aLightData.mNormalTexture), 0.0f);
   vec4 diffuseColor = aLight.mDiffuse * diffContribution * aLightData.mDiffTexture;
   
   // specular
@@ -487,7 +488,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV, vec3 aNo
   // Sample all textures at our position and fill out lighting data
   LightingData lightData = SampleTextures(aUV, aNormal, viewVec);
   lightData.mViewVec = viewVec;
-  lightData.mNormal = aNormal;
+  lightData.mNormal = normalize(aNormal + vec4(aNoiseOffset, 0.0f));
   lightData.mPosition = aPositionWorld;
   lightData.mNoiseOffset = aNoiseOffset;
 
@@ -525,8 +526,9 @@ void main()
     vec4 posWorld = vec4(inPositionWorld, 1.0f);
     posWorld.y += n.y;
     vec2 uv = inTextureCoordinates.xy;
-    vec3 normal = normalize(inNormal) + n;
-    normal = normalize(normal);
+    //vec3 normal = normalize(inNormal) + n;
+    //normal = normalize(normal);
+    vec3 normal = normalize(inNormal);
     //uv += n.xy;
     outFragColor = Phong(vec4(normal, 0.0f), posView, posWorld, uv, n);
   }
