@@ -34,6 +34,7 @@ namespace YTE
     Transform *mTransform;
     Orientation *mOrientation;
     glm::vec3 mMovementDirection;
-    float mMovementSpeed = 5.0f;
+    float mMovementSpeed = 5.0f; 
+    bool mMouseChanged = false;
   };
 }

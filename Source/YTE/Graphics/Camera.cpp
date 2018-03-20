@@ -162,18 +162,6 @@ namespace YTE
     UpdateView();
   }
 
-  // generic view matrix creation
-  static glm::mat4 CreateViewMatrix(const glm::vec3 &aRight,
-                                    const glm::vec3 &aUp,
-                                    const glm::vec3 &aForward,
-                                    const glm::vec3 &aPosition)
-  {
-    return { glm::vec4{ aRight.x, aRight.y, aRight.z, 0.0f },
-             glm::vec4{ aUp.x, aUp.y, aUp.z, 0.0f },
-             glm::vec4{ aForward.x, aForward.y, aForward.z, 0.0f },
-             glm::vec4{ aPosition.x, aPosition.y, aPosition.z, 1.0f } };
-  }
-
   UBOView Camera::ConstructUBOView()
   {
     auto height = static_cast<float>(mWindow->GetHeight());
@@ -197,7 +185,7 @@ namespace YTE
     view.mProjectionMatrix = clip * view.mProjectionMatrix;
 
     auto translation = mCameraTransform->GetWorldTranslation();
-    auto lookAtPoint = mCameraOrientation->GetForwardVector() + translation;
+    auto lookAtPoint = (-mCameraOrientation->GetForwardVector()) + translation;
     view.mViewMatrix = glm::lookAt(translation,
                                    lookAtPoint,
                                    mCameraOrientation->GetUpVector());

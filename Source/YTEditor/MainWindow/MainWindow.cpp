@@ -348,7 +348,7 @@ namespace YTEditor
     camera->AddComponent(YTE::Orientation::GetStaticType());
     camera->AddComponent(YTE::Camera::GetStaticType());
     camera->AddComponent(YTE::FlybyCamera::GetStaticType());
-    camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, -5.0f });
+    camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
 
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();

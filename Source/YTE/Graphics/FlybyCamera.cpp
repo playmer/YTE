@@ -102,26 +102,27 @@ namespace YTE
 
   void FlybyCamera::KeyboardPersist(KeyboardEvent *aEvent)
   {
+    // WASD Controls are flipped, because the camera looks down the -Z axis.
     switch (aEvent->Key)
     {
       case Keys::W:
       {
-        mMovementDirection += mOrientation->GetForwardVector();
+        mMovementDirection += -mOrientation->GetForwardVector();
         break;
       }
       case Keys::S:
       {
-        mMovementDirection += -mOrientation->GetForwardVector();
+        mMovementDirection += mOrientation->GetForwardVector();
         break;
       }
       case Keys::A:
       {
-        mMovementDirection += -mOrientation->GetRightVector();
+        mMovementDirection += mOrientation->GetRightVector();
         break;
       }
       case Keys::D:
       {
-        mMovementDirection += mOrientation->GetRightVector();
+        mMovementDirection += -mOrientation->GetRightVector();
         break;
       }
       case Keys::E:
