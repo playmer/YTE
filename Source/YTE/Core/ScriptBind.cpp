@@ -213,9 +213,9 @@ namespace YTE
     InitializeType<glm::vec4>();
     InitializeType<glm::quat>();
     InitializeType<btIDebugDraw::DebugDrawModes>();
-    InitializeType<YTE::Controller_Id>();
-    InitializeType<YTE::Xbox_Buttons>();
-    InitializeType<YTE::Mouse_Buttons>();
+    InitializeType<YTE::ControllerId>();
+    InitializeType<YTE::XboxButtons>();
+    InitializeType<YTE::MouseButtons>();
     InitializeType<YTE::Keys>();
 
     InitializeType<CompositionMap::range>();

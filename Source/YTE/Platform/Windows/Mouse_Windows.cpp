@@ -16,11 +16,11 @@
 
 namespace YTE
 {
-  uint64_t TranslateFromMouseButtonToOsKey(Mouse_Buttons aOurButton)
+  uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOurButton)
   {
     switch (aOurButton)
     {
-      #define ProcessKey(aOsKey, aOurKey) case (Mouse_Buttons::aOurKey) : return aOsKey;
+      #define ProcessKey(aOsKey, aOurKey) case (MouseButtons::aOurKey) : return aOsKey;
       #include "YTE/Platform/Windows/OsMouseButtons_Windows.hpp"
       #undef ProcessKey
       default: return 0;

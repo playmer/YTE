@@ -35,7 +35,7 @@ namespace YTE
   {
     mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &TestingComponent::Update);
 
-    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
+    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
     mGamepad->YTERegister(Events::XboxButtonPress, this, &TestingComponent::CheckButtons);
 
     mAnimator = mOwner->GetComponent<Animator>();
@@ -84,7 +84,7 @@ namespace YTE
   {
     switch (aEvent->Button)
     {
-    case Xbox_Buttons::A:
+    case XboxButtons::A:
     {
       break;
     }

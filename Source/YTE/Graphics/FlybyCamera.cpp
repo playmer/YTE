@@ -36,18 +36,20 @@ namespace YTE
   void FlybyCamera::Initialize()
   {
     auto graphicsView = mSpace->GetComponent<GraphicsView>();
-    auto window = graphicsView->GetWindow();
+    mWindow = graphicsView->GetWindow();
     auto engine = mSpace->GetEngine();
 
     mTransform = mOwner->GetComponent<Transform>();
     mOrientation = mOwner->GetComponent<Orientation>();
 
-    window->mMouse.YTERegister(Events::MouseMove,    this, &FlybyCamera::MouseMove);
-    window->mMouse.YTERegister(Events::MouseScroll,  this, &FlybyCamera::MouseScroll);
-    window->mMouse.YTERegister(Events::MousePress,   this, &FlybyCamera::MousePress);
-    window->mMouse.YTERegister(Events::MouseRelease, this, &FlybyCamera::MouseRelease);
-    window->mMouse.YTERegister(Events::MousePersist, this, &FlybyCamera::MousePersist);
-    window->mKeyboard.YTERegister(Events::KeyPersist, this, &FlybyCamera::KeyboardPersist);
+    mMouse = &mWindow->mMouse;
+
+    mMouse->YTERegister(Events::MouseMove,    this, &FlybyCamera::MouseMove);
+    mMouse->YTERegister(Events::MouseScroll,  this, &FlybyCamera::MouseScroll);
+    mMouse->YTERegister(Events::MousePress,   this, &FlybyCamera::MousePress);
+    mMouse->YTERegister(Events::MouseRelease, this, &FlybyCamera::MouseRelease);
+    mMouse->YTERegister(Events::MousePersist, this, &FlybyCamera::MousePersist);
+    mWindow->mKeyboard.YTERegister(Events::KeyPersist, this, &FlybyCamera::KeyboardPersist);
 
     engine->YTERegister(Events::LogicUpdate, this, &FlybyCamera::Update);
   }
@@ -68,16 +70,43 @@ namespace YTE
                                     mMovementDirection);
     mMovementDirection = glm::vec3{ 0.0f, 0.0f, 0.0f };
 
-    std::cout << fmt::format("Move: x: {}, y: {}, z: {}, \n",
-                             mTransform->GetWorldTranslation().x,
-                             mTransform->GetWorldTranslation().y,
-                             mTransform->GetWorldTranslation().z);
-    // Mouse
+    // Mouse, reference: http://in2gpu.com/2016/03/14/opengl-fps-camera-quaternion/
+    if (0 == mMouseDelta.x &&
+        0 == mMouseDelta.y)
+    {
+      return;
+    }
+
+    ////notice that we reduce the sensitivity
+    const float mouseX_Sensitivity = 0.0020f;
+    const float mouseY_Sensitivity = 0.0020f;
+
+    float pitch{ 0.0f };
+    float yaw{ 0.0f };
+    float roll{ 0.0f };
+
+    yaw = mouseX_Sensitivity * mMouseDelta.x;
+    pitch = mouseY_Sensitivity * mMouseDelta.y;
+
+    //temporary frame quaternion from pitch,yaw,roll 
+    //here roll is not used
+    glm::quat keyRotation = glm::quat(glm::vec3(pitch, yaw, roll));
+    
+    //order matters,update camera_quat
+    auto cameraRotation = mTransform->GetWorldRotation();
+    cameraRotation = keyRotation * cameraRotation;
+    cameraRotation = glm::normalize(cameraRotation);
+
+    mTransform->SetWorldRotation(cameraRotation);
   }
 
   void FlybyCamera::MousePress(MouseButtonEvent *aEvent)
   {
-
+    if (MouseButtons::Right == aEvent->Button)
+    {
+      mMouseInitialPosition = aEvent->WorldCoordinates + mWindow->GetPosition();
+      mMouseHeld = true;
+    }
   }
 
   void FlybyCamera::MouseScroll(MouseWheelEvent *aEvent)
@@ -87,7 +116,17 @@ namespace YTE
 
   void FlybyCamera::MouseMove(MouseMoveEvent *aEvent)
   {
+    if (mMouseHeld)
+    {
+      auto screenCoordinates = mWindow->GetPosition() + aEvent->WorldCoordinates;
 
+      mMouseDelta = screenCoordinates - mMouseInitialPosition;
+      mMouse->SetCursorPosition(mMouseInitialPosition);
+
+      std::cout << fmt::format("Mouse: x: {}, y: {} \n",
+                               mMouseDelta.x,
+                               mMouseDelta.y);
+    }
   }
 
   void FlybyCamera::MousePersist(MouseButtonEvent *aEvent)
@@ -97,7 +136,12 @@ namespace YTE
 
   void FlybyCamera::MouseRelease(MouseButtonEvent *aEvent)
   {
-
+    if (MouseButtons::Right == aEvent->Button)
+    {
+      mMouseInitialPosition = glm::ivec2{ 0, 0 };
+      mMouseDelta = mMouseInitialPosition;
+      mMouseHeld = false;
+    }
   }
 
   void FlybyCamera::KeyboardPersist(KeyboardEvent *aEvent)

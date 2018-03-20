@@ -52,7 +52,7 @@ namespace YTE
   }
 
 
-    void XboxController::ProcessButton(void *aState, size_t aOsButton, Xbox_Buttons aOurKey)
+    void XboxController::ProcessButton(void *aState, size_t aOsButton, XboxButtons aOurKey)
     {
       XINPUT_STATE *state = static_cast<XINPUT_STATE*>(aState);
       XboxButtonEvent xboxEvent;
@@ -128,7 +128,7 @@ namespace YTE
     {
       XboxStickEvent stickEvent;
       stickEvent.StickDirection = mLeftStick;
-      stickEvent.Stick = Xbox_Buttons::LeftStick;
+      stickEvent.Stick = XboxButtons::LeftStick;
       stickEvent.Controller = this;
       SendEvent(Events::XboxStickEvent, &stickEvent);
     }
@@ -137,7 +137,7 @@ namespace YTE
     {
       XboxStickEvent stickEvent;
       stickEvent.StickDirection = mRightStick;
-      stickEvent.Stick = Xbox_Buttons::RightStick;
+      stickEvent.Stick = XboxButtons::RightStick;
       stickEvent.Controller = this;
       SendEvent(Events::XboxStickEvent, &stickEvent);
     }
@@ -146,7 +146,7 @@ namespace YTE
     {
       XboxStickEvent stickEvent;
       stickEvent.StickDirection = mLeftStick;
-      stickEvent.Stick = Xbox_Buttons::LeftStick;
+      stickEvent.Stick = XboxButtons::LeftStick;
       stickEvent.Controller = this;
       SendEvent(Events::XboxStickEvent, &stickEvent);
     }
@@ -155,7 +155,7 @@ namespace YTE
     {
       XboxStickEvent stickEvent;
       stickEvent.StickDirection = mRightStick;
-      stickEvent.Stick = Xbox_Buttons::RightStick;
+      stickEvent.Stick = XboxButtons::RightStick;
       stickEvent.Controller = this;
       SendEvent(Events::XboxStickEvent, &stickEvent);
     }
@@ -167,7 +167,7 @@ namespace YTE
     if (leftStickFlicked && !mLeftStickFlicked)
     {
       XboxFlickEvent flickEvent;
-      flickEvent.FlickedStick = Xbox_Buttons::LeftStick;
+      flickEvent.FlickedStick = XboxButtons::LeftStick;
       flickEvent.FlickDirection = glm::normalize(mLeftStick);
       flickEvent.Controller = this;
       SendEvent(Events::XboxStickFlicked, &flickEvent);
@@ -176,7 +176,7 @@ namespace YTE
     if (rightStickFlicked && !mRightStickFlicked)
     {
       XboxFlickEvent flickEvent;
-      flickEvent.FlickedStick = Xbox_Buttons::RightStick;
+      flickEvent.FlickedStick = XboxButtons::RightStick;
       flickEvent.FlickDirection = glm::normalize(mRightStick);
       flickEvent.Controller = this;
       SendEvent(Events::XboxStickFlicked, &flickEvent);

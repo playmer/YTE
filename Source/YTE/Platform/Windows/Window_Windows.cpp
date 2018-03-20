@@ -179,15 +179,15 @@ namespace YTE
     return glm::vec2((int)(short)LOWORD(lParam), (int)(short)HIWORD(lParam));
   }
 
-  Mouse_Buttons XButtonFromWParam(WPARAM aButton)
+  MouseButtons XButtonFromWParam(WPARAM aButton)
   {
     if (HIWORD(aButton) == XBUTTON1)
     {
-      return Mouse_Buttons::Back;
+      return MouseButtons::Back;
     }
     else
     {
-      return Mouse_Buttons::Forward;
+      return MouseButtons::Forward;
     }
   }
 
@@ -249,13 +249,13 @@ namespace YTE
 
     // Mouse Button was pressed.
     case WM_LBUTTONDOWN:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Left, true, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Left, true, PositionFromLParam(aLParam));
       break;
     case WM_RBUTTONDOWN:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Right, true, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Right, true, PositionFromLParam(aLParam));
       break;
     case WM_MBUTTONDOWN:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Middle, true, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Middle, true, PositionFromLParam(aLParam));
       break;
     case WM_XBUTTONDOWN:
       aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), true, PositionFromLParam(aLParam));
@@ -263,13 +263,13 @@ namespace YTE
 
       // Mouse Button was released.
     case WM_LBUTTONUP:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Left, false, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Left, false, PositionFromLParam(aLParam));
       break;
     case WM_RBUTTONUP:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Right, false, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Right, false, PositionFromLParam(aLParam));
       break;
     case WM_MBUTTONUP:
-      aWindow->mMouse.UpdateButton(Mouse_Buttons::Middle, false, PositionFromLParam(aLParam));
+      aWindow->mMouse.UpdateButton(MouseButtons::Middle, false, PositionFromLParam(aLParam));
       break;
     case WM_XBUTTONUP:
       aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), false, PositionFromLParam(aLParam));

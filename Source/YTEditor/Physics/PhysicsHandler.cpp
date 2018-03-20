@@ -124,7 +124,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
   {
-    if (aEvent->Button != YTE::Mouse_Buttons::Left)
+    if (aEvent->Button != YTE::MouseButtons::Left)
     {
       return;
     }

@@ -189,11 +189,6 @@ namespace YTE
     view.mViewMatrix = glm::lookAt(translation,
                                    lookAtPoint,
                                    mCameraOrientation->GetUpVector());
-
-    std::cout << fmt::format("Up: x: {}, y: {}, z: {}, \n",
-                             mCameraOrientation->GetUpVector().x,
-                             mCameraOrientation->GetUpVector().y,
-                             mCameraOrientation->GetUpVector().z);
         
     view.mCameraPosition = glm::vec4(translation, 1.0f);
 

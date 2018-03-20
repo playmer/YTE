@@ -26,7 +26,7 @@ namespace YTE
 
     void Update(double aDt);
     void CheckForControllers(bool aChecking) { mChecking = aChecking; };
-    XboxController* GetXboxController(Controller_Id aId);
+    XboxController* GetXboxController(ControllerId aId);
 
   private:
     void UpdateXboxControllers(double aDt);

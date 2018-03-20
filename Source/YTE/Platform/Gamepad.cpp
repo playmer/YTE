@@ -89,11 +89,11 @@ namespace YTE
   //////////////////////////////
   // Getters/Setters
   //////////////////////////////
-  bool XboxController::IsButtonDown(Xbox_Buttons aButton)
+  bool XboxController::IsButtonDown(XboxButtons aButton)
   {
     return mCurrentButtons[static_cast<size_t>(aButton)];
   }
-  bool XboxController::WasButtonDown(Xbox_Buttons aButton)
+  bool XboxController::WasButtonDown(XboxButtons aButton)
   {
     return mPreviousButtons[static_cast<size_t>(aButton)];
   }

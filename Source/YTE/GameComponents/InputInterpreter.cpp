@@ -70,7 +70,7 @@ namespace YTE
 
   void InputInterpreter::Initialize()
   {
-    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
+    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
     mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
     mContext = InputContext::Sailing;
 
@@ -136,13 +136,13 @@ namespace YTE
   {
     if (mContext == InputContext::Sailing)
     {
-      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      if (aEvent->Stick == XboxButtons::LeftStick)
       {
         BoatTurnEvent turnEvent;
         turnEvent.StickDirection = aEvent->StickDirection;
         mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
       }
-      else if (aEvent->Stick == Xbox_Buttons::RightStick)
+      else if (aEvent->Stick == XboxButtons::RightStick)
       {
         CameraRotateEvent camRot;
         camRot.StickDirection = aEvent->StickDirection;
@@ -152,7 +152,7 @@ namespace YTE
 
     else if (mContext == InputContext::Dialogue) 
     {
-      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      if (aEvent->Stick == XboxButtons::LeftStick)
       {
         DialogueSelect selectEvent;
         selectEvent.StickDirection = aEvent->StickDirection;
@@ -165,7 +165,7 @@ namespace YTE
   {
     if (mContext == InputContext::Menu)
     {
-      if (aEvent->FlickedStick == Xbox_Buttons::LeftStick)
+      if (aEvent->FlickedStick == XboxButtons::LeftStick)
       {
         if (aEvent->FlickDirection.x < 0.01f)
         {
@@ -192,13 +192,13 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             DialogueConfirm diagConfirm;
             mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
             break;
           }
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
           {
             DialogueExit diagExit;
             mOwner->SendEvent(Events::DialogueExit, &diagExit);
@@ -211,27 +211,27 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::DPAD_Down:
+          case XboxButtons::DPAD_Down:
             break;
-          case Xbox_Buttons::DPAD_Up:
+          case XboxButtons::DPAD_Up:
             break;
-          case Xbox_Buttons::DPAD_Left:
+          case XboxButtons::DPAD_Left:
             break;
-          case Xbox_Buttons::DPAD_Right:
+          case XboxButtons::DPAD_Right:
             break;
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             RequestDialogueStart dock;
             mOwner->SendEvent(Events::RequestDialogueStart, &dock);
             break;
           }
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
             break;
-          case Xbox_Buttons::X:
+          case XboxButtons::X:
             break;
-          case Xbox_Buttons::Y:
+          case XboxButtons::Y:
             break;
-          case Xbox_Buttons::Start:
+          case XboxButtons::Start:
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
@@ -240,13 +240,13 @@ namespace YTE
             mContext = InputContext::Menu;
             break;
           }
-          case Xbox_Buttons::LeftShoulder:
+          case XboxButtons::LeftShoulder:
             break;
-          case Xbox_Buttons::RightShoulder:
+          case XboxButtons::RightShoulder:
             break;
-          case Xbox_Buttons::LeftStick:
+          case XboxButtons::LeftStick:
             break;
-          case Xbox_Buttons::RightStick:
+          case XboxButtons::RightStick:
             break;
         }
         break;
@@ -256,8 +256,8 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::Back:
-          case Xbox_Buttons::Start:
+          case XboxButtons::Back:
+          case XboxButtons::Start:
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
@@ -267,14 +267,14 @@ namespace YTE
             break;
           }
 
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             MenuConfirm menuConfirm(false);
             mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
             break;
           }
 
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
@@ -283,7 +283,7 @@ namespace YTE
             break;
           }
 
-          case Xbox_Buttons::DPAD_Left:
+          case XboxButtons::DPAD_Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
             mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
@@ -291,7 +291,7 @@ namespace YTE
             break;
           }
 
-          case Xbox_Buttons::DPAD_Right:
+          case XboxButtons::DPAD_Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
             mOwner->SendEvent(Events::MenuElementChange, &menuNext);
@@ -312,7 +312,7 @@ namespace YTE
     {
       case InputContext::Menu:
       {
-        if (aEvent->Button == Xbox_Buttons::A)
+        if (aEvent->Button == XboxButtons::A)
         {
           MenuConfirm menuConfirm(true);
           mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);

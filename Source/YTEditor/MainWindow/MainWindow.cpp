@@ -533,7 +533,7 @@ namespace YTEditor
         GetGizmo()->RefreshAxesInPhysicsHandler();
       }
 
-      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      if (mouse.IsButtonDown(YTE::MouseButtons::Right) == false)
       {
         // increase gizmo scale factor
         if (aEvent->key() == Qt::Key_E)
@@ -554,7 +554,7 @@ namespace YTEditor
     }
     else if (aEvent->modifiers() != Qt::Modifier::ALT)
     {
-      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      if (mouse.IsButtonDown(YTE::MouseButtons::Right) == false)
       {
         // change to select gizmo
         if (aEvent->key() == Qt::Key_Q)

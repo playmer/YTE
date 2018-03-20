@@ -29,7 +29,7 @@ namespace YTE
     YTEDeclareType(XboxFlickEvent);
 
     glm::vec2 FlickDirection;
-    Xbox_Buttons FlickedStick;
+    XboxButtons FlickedStick;
     XboxController *Controller;
   };
 
@@ -39,7 +39,7 @@ namespace YTE
     YTEDeclareType(XboxStickEvent);
 
     glm::vec2 StickDirection;
-    Xbox_Buttons Stick;
+    XboxButtons Stick;
     XboxController *Controller;
   };
 
@@ -48,7 +48,7 @@ namespace YTE
   public:
     YTEDeclareType(XboxButtonEvent);
 
-    Xbox_Buttons Button;
+    XboxButtons Button;
     XboxController *Controller;
   };
 
@@ -74,8 +74,8 @@ namespace YTE
     void Vibrate(float aLeftSpeed, float aRightSpeed);
     void VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime);
 
-    bool IsButtonDown(Xbox_Buttons aButton);
-    bool WasButtonDown(Xbox_Buttons aButton);
+    bool IsButtonDown(XboxButtons aButton);
+    bool WasButtonDown(XboxButtons aButton);
     inline bool Active() { return mActive; };
     inline glm::vec2 GetLeftStick() { return mLeftStick; };
     inline glm::vec2 GetRightStick() { return mRightStick; };
@@ -85,12 +85,12 @@ namespace YTE
 
     uint8_t mGamepadIndex;
   private:
-    void ProcessButton(void *aState, size_t aOsButton, Xbox_Buttons aOurKey);
+    void ProcessButton(void *aState, size_t aOsButton, XboxButtons aOurKey);
     
     XboxController& operator=(XboxController&);
 
-    bool mButtonArrayOne[static_cast<size_t>(Xbox_Buttons::Xbox_Buttons_Number)];
-    bool mButtonArrayTwo[static_cast<size_t>(Xbox_Buttons::Xbox_Buttons_Number)];
+    bool mButtonArrayOne[static_cast<size_t>(XboxButtons::Xbox_Buttons_Number)];
+    bool mButtonArrayTwo[static_cast<size_t>(XboxButtons::Xbox_Buttons_Number)];
 
     bool *mCurrentButtons;
     bool *mPreviousButtons;
