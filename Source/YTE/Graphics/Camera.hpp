@@ -77,6 +77,11 @@ namespace YTE
       return mIllumination.mFogPlanes;
     }
 
+    bool GetUseOrtho() const
+    {
+      return mUseOrthographicProj;
+    }
+
     ///////////////////////////////////////
     // Setters
     ///////////////////////////////////////
@@ -119,6 +124,11 @@ namespace YTE
       mIllumination.mFogPlanes = aFogPlanes;
     }
 
+    void SetUseOrtho(bool aUseOrtho)
+    {
+      mUseOrthographicProj = aUseOrtho;
+    }
+
     void SetCameraAsActive();
 
   private: 
@@ -133,6 +143,7 @@ namespace YTE
     float mFieldOfViewY; 
     float mNearPlane; 
     float mFarPlane; 
+    bool mUseOrthographicProj;
 
     // Utilities
     double mDt;

@@ -163,22 +163,24 @@ namespace YTE
           // Return context to the game if there aren't any parent menus to open
         else
         {
-          mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+          aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
         }
       }
       else
       {
-        mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+        aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
       }
     }
   }
 
   void MenuController::OnMenuConfirm(MenuConfirm *aEvent)
   {
-    if (mIsDisplayed && mMenuElements->size() != 0)
+    if (!aEvent->IsHandled && mIsDisplayed && mMenuElements->size() != 0)
     {
       if (!aEvent->IsReleased)
       {
+        aEvent->IsHandled = true;
+        
         mSoundEmitter->PlayEvent(mSoundElementSelect);
 
         MenuElementTrigger triggerEvent;

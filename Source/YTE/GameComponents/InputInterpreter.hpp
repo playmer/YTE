@@ -29,6 +29,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  class InputInterpreter;
+
   /////////////////////////////////////////////////////////////////////////////////////
   // Events
   /////////////////////////////////////////////////////////////////////////////////////
@@ -130,6 +132,7 @@ namespace YTE
     YTEDeclareType(MenuConfirm);
     MenuConfirm(bool aIsReleased) { IsReleased = aIsReleased; }
 
+    bool IsHandled = false;
     bool IsReleased;
   };
 
@@ -142,6 +145,7 @@ namespace YTE
     bool ShouldExitAll;
     bool PlaySound = false;
     bool Handled = false;
+    InputInterpreter* ContextSwitcher;
   };
 
   class MenuElementChange : public Event

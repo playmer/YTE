@@ -169,18 +169,35 @@ namespace YTE
     {
       if (aEvent->FlickedStick == XboxButtons::LeftStick)
       {
-        if (aEvent->FlickDirection.x < 0.01f)
+        glm::vec2 flickDir = aEvent->FlickDirection;
+
+          // Check dead-zone
+        if (glm::length(flickDir) > 0.01f)
         {
-          MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+            // Transform the flick direction by 45 degrees
+            // Pressing something mostly-right or mostly-down should progess to the next
+            //   menu element. Mostly-left or mostly-up goes back.
+            // This transform makes the following checks easier by allowing us to simply check
+            //   if the x component is greater than 0 (0 is okay here because we've already passed
+            //   our dead-zone check).
+          float cos45 = glm::cos(glm::quarter_pi<float>());
+          float sin45 = glm::cos(glm::quarter_pi<float>());
+          glm::vec2 rotatedDir(flickDir.x * cos45 - flickDir.y * sin45, flickDir.x * sin45 + flickDir.y * cos45);
 
-          mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
-        }
+            // Check forward region
+          if (rotatedDir.x > 0.0f)
+          {
+            MenuElementChange menuNext(MenuElementChange::Direction::Next);
 
-        else if (aEvent->FlickDirection.x > 0.01f)
-        {
-          MenuElementChange menuNext(MenuElementChange::Direction::Next);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
+          }
 
-          mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
+          else //(aEvent->FlickDirection.x < 0.01f)
+          {
+            MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
+          }
         }
       }
     }
@@ -280,6 +297,7 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
+            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
@@ -429,6 +447,7 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
+            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;

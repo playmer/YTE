@@ -114,6 +114,11 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the fog coefficients of the world");
+
+    YTEBindProperty(&Camera::GetUseOrtho, &Camera::SetUseOrtho, "UseOrthographicProjection")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Sets whether this camera uses an orthographic projection or a perspective projection. Perspective by default");
   } 
   
   Camera::Camera(Composition *aOwner,
@@ -126,6 +131,7 @@ namespace YTE
     , mFieldOfViewY(glm::radians(45.0f))
     , mNearPlane(0.1f)
     , mFarPlane(9999.9f)
+    , mUseOrthographicProj(false)
     , mDt(0.0f)
     , mConstructing(true)
     , mChanged(true)
@@ -175,18 +181,38 @@ namespace YTE
 
     // projection matrix (since its an easy calculation, Ill leave it here for now, but
     // it really doesn't need to happen every view update
-    view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
-                                              width / height,
-                                              mNearPlane,
-                                              mFarPlane);
+    if (!mUseOrthographicProj)
+    {
+      view.mProjectionMatrix = glm::perspective(mFieldOfViewY,
+                                                width / height,
+                                                mNearPlane,
+                                                mFarPlane);
 
-    // matrix does perspective divide and flips vulkan y axis
-    const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
-                         0.0f,-1.0f, 0.0f, 0.0f,
-                         0.0f, 0.0f, 0.5f, 0.0f,
-                         0.0f, 0.0f, 0.5f, 1.0f);
+      // matrix does perspective divide and flips vulkan y axis
+      const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
+                           0.0f,-1.0f, 0.0f, 0.0f,
+                           0.0f, 0.0f, 0.5f, 0.0f,
+                           0.0f, 0.0f, 0.5f, 1.0f);
 
-    view.mProjectionMatrix = clip * view.mProjectionMatrix;
+      view.mProjectionMatrix = clip * view.mProjectionMatrix;
+    }
+    else
+    {
+      view.mProjectionMatrix = glm::ortho(-width / 2.f,
+                                          width / 2.f,
+                                          -height / 2.f,
+                                          height / 2.f,
+                                          mNearPlane,
+                                          mFarPlane);
+
+        // Flip Vulkan y axis
+      const glm::mat4 flip(1.0f, 0.0f, 0.0f, 0.0f,
+                           0.0f, -1.0f, 0.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 0.0f,
+                           0.0f, 0.0f, 1.0f, 1.0f);
+
+      view.mProjectionMatrix = flip * view.mProjectionMatrix;
+    }
 
     auto translation = mCameraTransform->GetWorldTranslation();
     auto lookAtPoint = (-mCameraOrientation->GetForwardVector()) + translation;
