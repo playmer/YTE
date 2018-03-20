@@ -83,21 +83,25 @@ namespace YTE
 
     float pitch{ 0.0f };
     float yaw{ 0.0f };
-    float roll{ 0.0f };
 
-    yaw = mouseX_Sensitivity * mMouseDelta.x;
+    yaw = mouseX_Sensitivity * -mMouseDelta.x;
     pitch = mouseY_Sensitivity * mMouseDelta.y;
 
-    //temporary frame quaternion from pitch,yaw,roll 
-    //here roll is not used
-    glm::quat keyRotation = glm::quat(glm::vec3(pitch, yaw, roll));
-    
+
     //order matters,update camera_quat
-    auto cameraRotation = mTransform->GetWorldRotation();
-    cameraRotation = keyRotation * cameraRotation;
+    auto cameraRotation = mTransform->GetRotation();
+
+    glm::quat yawRotation = AroundAxis(glm::vec3{ 0.f, 1.0f, 0.f }, yaw);
+    cameraRotation = yawRotation * cameraRotation;
     cameraRotation = glm::normalize(cameraRotation);
 
-    mTransform->SetWorldRotation(cameraRotation);
+    mTransform->SetRotation(cameraRotation);
+
+    glm::quat pitchRotation = AroundAxis(mOrientation->GetRightVector(), pitch);
+    cameraRotation = pitchRotation * cameraRotation;
+    cameraRotation = glm::normalize(cameraRotation);
+
+    mTransform->SetRotation(cameraRotation);
   }
 
   void FlybyCamera::MousePress(MouseButtonEvent *aEvent)
@@ -106,6 +110,7 @@ namespace YTE
     {
       mMouseInitialPosition = aEvent->WorldCoordinates + mWindow->GetPosition();
       mMouseHeld = true;
+      mWindow->SetCursorVisibility(false);
     }
   }
 
@@ -141,6 +146,7 @@ namespace YTE
       mMouseInitialPosition = glm::ivec2{ 0, 0 };
       mMouseDelta = mMouseInitialPosition;
       mMouseHeld = false;
+      mWindow->SetCursorVisibility(true);
     }
   }
 
