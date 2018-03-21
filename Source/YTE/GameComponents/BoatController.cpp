@@ -106,8 +106,7 @@ namespace YTE
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-    //mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
-    //mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
+    mSpace->YTERegister(Events::MenuStart, this, &BoatController::OnMenuStart);
 
     mAnimator = mOwner->GetComponent<Animator>();
     
@@ -202,7 +201,7 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      //mSoundEmitter->PlayEvent(mSoundBoatTurn);
+      mSoundEmitter->PlayEvent(mSoundBoatTurn);
       mPlayingTurnSound = true;
     }
 
@@ -310,9 +309,8 @@ namespace YTE
     mStartedTurning = false;
   }
 
-  void BoatController::OnMenuStart(MenuStart *aEvent)
+  void BoatController::OnMenuStart(MenuStart*)
   {
-    YTEUnusedArgument(aEvent);
     StopBoatImmediately();
   }
   ////////////////////////////////////////////////////////////////////////////////////
