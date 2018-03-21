@@ -3,26 +3,26 @@
 namespace YTE
 {
   Action::Action(float aDur)
-    : d(aDur)
-    , t(0)
-    , Time(t)
+    : mD(aDur)
+    , mT(0)
+    , mTime(mT)
   {
   }
 
   float Action::Increment(float dt)
   {
-    Time += dt;
-    t = Time;
-    if (Time > d)
+    mTime += dt;
+    mT = mTime;
+    if (mTime > mD)
     {
-      t = d;
+      mT = mD;
     }
-    return Time - d;
+    return mTime - mD;
   }
 
   bool Action::IsDone() const
   {
-    return Time >= d;
+    return mTime >= mD;
   }
 
   void Action::Init()

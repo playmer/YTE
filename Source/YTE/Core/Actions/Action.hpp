@@ -20,34 +20,47 @@ namespace YTE
   public:                                       \
   name(float& aValue, float aFinal, float aDur) \
     : Action_CRTP(aDur, this)                   \
-    , value(aValue)                             \
-    , b(aValue)                                 \
-    , c(aFinal - b)                             \
+    , mValue(aValue)                            \
+    , mB(aValue)                                \
+    , mC(aFinal - mB)                           \
   {                                             \
   }                                             \
   name(const name& aAction)                     \
-    : Action_CRTP(aAction.d, this)              \
-    , value(aAction.value)                      \
-    , b(aAction.b)                              \
-    , c(aAction.c)                              \
+    : Action_CRTP(aAction.mD, this)              \
+    , mValue(aAction.mValue)                    \
+    , mB(aAction.mB)                            \
+    , mC(aAction.mC)                            \
   {                                             \
   }                                             \
-  float& value;                                 \
-  float b;                                      \
-  float c;                                      \
+  float &mValue;                                \
+  float mB;                                     \
+  float mC;                                     \
   void Init() override                          \
   {                                             \
-    if (b != value) {                           \
-      float f = b + c;                          \
-      b = value;                                \
-      c = f - b;                                \
+    if (mB != mValue)                           \
+    {                                           \
+      float f = mB + mC;                        \
+      mB = mValue;                              \
+      mC = f - mB;                              \
     }                                           \
   }                                             \
-  void operator()();                            \
+  void operator()()                             \
+  {                                             \
+    Ease(mValue, mB, mC, mT, mD);               \
+  }                                             \
+  static void Ease(float &value,                \
+                   float &b,                    \
+                   float &c,                    \
+                   float &t,                    \
+                   float &d);                   \
   }
 
-#define YTEDefineAction(name)    \
-  void name::operator()()
+#define YTEDefineAction(name)     \
+  void name::Ease(float &value,   \
+                  float &b,       \
+                  float &c,       \
+                  float &t,       \
+                  float &d)
 
   class Action
   {
@@ -61,9 +74,9 @@ namespace YTE
     virtual void operator() ();
     virtual ~Action();
   protected:
-    float d;
-    float t;
-    float Time;
+    float mD;
+    float mT;
+    float mTime;
   };
 
   template <typename tActionType>
