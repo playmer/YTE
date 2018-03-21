@@ -55,7 +55,6 @@ namespace YTE
 
     YTEBindProperty(&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling, "SuperSampling")
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>()
       .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
 
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
