@@ -280,6 +280,7 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
+            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
@@ -431,6 +432,7 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
+            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;

@@ -113,9 +113,9 @@ namespace YTE
     mImageView = mImage->createImageView(aType, format, components, subresourceRange);
 
     // 2. init sampler
-    mSampler = device->createSampler(vk::Filter::eNearest,
-                                     vk::Filter::eNearest,
-                                     vk::SamplerMipmapMode::eNearest,
+    mSampler = device->createSampler(vk::Filter::eLinear,
+                                     vk::Filter::eLinear,
+                                     vk::SamplerMipmapMode::eLinear,
                                      vk::SamplerAddressMode::eRepeat,
                                      vk::SamplerAddressMode::eRepeat,
                                      vk::SamplerAddressMode::eRepeat,
