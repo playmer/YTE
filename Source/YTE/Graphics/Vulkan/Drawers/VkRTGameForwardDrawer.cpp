@@ -73,16 +73,19 @@ namespace YTE
   }
 
   void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, 
-                                     const vk::Extent2D& extent, 
+                                     const vk::Extent2D& aExtent, 
                                      std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    auto width = static_cast<float>(extent.width);
-    auto height = static_cast<float>(extent.height);
+    auto renderTargetExtent = aExtent;
+    renderTargetExtent.height *= 4;
+    renderTargetExtent.width *= 4;
+
+    auto width = static_cast<float>(renderTargetExtent.width);
+    auto height = static_cast<float>(renderTargetExtent.height);
 
     vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
     aCBO->setViewport(0, viewport);
-
-    vk::Rect2D scissor{ { 0, 0 }, extent };
+    vk::Rect2D scissor{ { 0, 0 }, renderTargetExtent };
     aCBO->setScissor(0, scissor);
     aCBO->setLineWidth(1.0f);
 

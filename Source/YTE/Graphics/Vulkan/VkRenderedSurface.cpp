@@ -314,6 +314,10 @@ namespace YTE
     {
       // reset swapchain's references to render target frame buffers
       std::vector<VkRenderTarget*> rts;
+
+      auto renderTargetExtent = extent;
+      renderTargetExtent.height *= 4;
+      renderTargetExtent.width *= 4;
       for (auto &v : mViewData)
       {
         v.second.mRenderTarget->Resize(extent);
@@ -647,6 +651,11 @@ namespace YTE
 
     // render all first pass render targets
     // wait on present semaphore for first render
+
+    auto renderTargetExtent = extent;
+    renderTargetExtent.height *= 4;
+    renderTargetExtent.width *= 4;
+
     for (auto &v : mViewData)
     {
       v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
@@ -661,7 +670,7 @@ namespace YTE
 
       cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
                            v.second.mRenderTarget->GetFrameBuffer(),
-                           vk::Rect2D({ 0, 0 }, extent),
+                           vk::Rect2D({ 0, 0 }, renderTargetExtent),
                            { color, depthStencil },
                            vk::SubpassContents::eSecondaryCommandBuffers);
 

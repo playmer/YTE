@@ -40,7 +40,6 @@ namespace YTE
 
       std::shared_ptr<vkhlf::Framebuffer> mFrameBuffer;
       std::shared_ptr<vkhlf::Sampler> mSampler;
-      VkDescriptorImageInfo mDescriptor;
       std::vector<Attachment> mAttachments;
       std::vector<size_t> mColorAttachments;
       std::string mName;

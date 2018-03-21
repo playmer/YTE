@@ -150,6 +150,8 @@ namespace YTE
 
     auto device = mSurface->GetDevice();
     auto extent = mSurface->GetExtent();
+    extent.height *= 4;
+    extent.width *= 4;
 
     ///////////////////
     // Color Image
@@ -255,12 +257,6 @@ namespace YTE
                                                    { mData.mAttachments[0].mImageView, mData.mAttachments[1].mImageView },
                                                    extent,
                                                    1);
-
-
-    // save data to descriptor
-    mData.mDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    mData.mDescriptor.imageView = static_cast<vk::ImageView>(*mData.mAttachments[0].mImageView);
-    mData.mDescriptor.sampler = static_cast<vk::Sampler>(*mData.mSampler);
   }
 
 
