@@ -52,6 +52,7 @@ namespace YTE
     enabledFeatures.setTextureCompressionBC(true);
     enabledFeatures.setWideLines(true);
     enabledFeatures.setFillModeNonSolid(true);
+    enabledFeatures.setSamplerAnisotropy(true);
     
     mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
                                                                   nullptr,
