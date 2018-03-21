@@ -89,6 +89,13 @@ namespace YTE
     void SetDrawerCombinationType(std::string aCombination);
     void SetDrawerType(std::string aType);
 
+    void SetSuperSampling(i32 aSuperSampling);
+
+    i32 GetSuperSampling()
+    {
+      return mSuperSampling;
+    }
+
   private:
     Camera *mActiveCamera;
     YTEDrawerTypeCombination mDrawerCombination;
@@ -97,6 +104,7 @@ namespace YTE
     Renderer *mRenderer;
     std::string mWindowName;
     glm::vec4 mClearColor;
+    i32 mSuperSampling;
     float mOrder;
     bool mConstructing;
     bool mInitialized;

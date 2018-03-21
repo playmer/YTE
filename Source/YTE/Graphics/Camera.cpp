@@ -130,7 +130,7 @@ namespace YTE
     , mCameraOrientation(nullptr)
     , mFieldOfViewY(glm::radians(45.0f))
     , mNearPlane(0.1f)
-    , mFarPlane(9999.9f)
+    , mFarPlane(20000.f)
     , mUseOrthographicProj(false)
     , mDt(0.0f)
     , mConstructing(true)

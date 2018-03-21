@@ -362,5 +362,10 @@ namespace YTE
 
     return surface->second.get();
   }
+
+  void VkRenderer::ResetView(GraphicsView *aView)
+  {
+    GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
+  }
 }
 

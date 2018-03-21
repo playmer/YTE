@@ -26,9 +26,7 @@ namespace YTE
     void Update(LogicUpdate *aEvent);
 
     void MousePress(MouseButtonEvent *aEvent);
-    void MouseScroll(MouseWheelEvent *aEvent);
     void MouseMove(MouseMoveEvent *aEvent);
-    void MousePersist(MouseButtonEvent *aEvent);
     void MouseRelease(MouseButtonEvent *aEvent);
     void KeyboardPersist(KeyboardEvent *aEvent);
 

@@ -156,4 +156,9 @@ namespace YTE
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aNewOrder);
   }
+
+  void Renderer::ResetView(GraphicsView *aView)
+  {
+    YTEUnusedArgument(aView);
+  }
 }

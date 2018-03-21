@@ -53,6 +53,11 @@ namespace YTE
       .AddAttribute<Serializable>()
       .SetDocumentation("The order to render the views. We render lowest to highest.");
 
+    YTEBindProperty(&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling, "SuperSampling")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
+
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
@@ -74,13 +79,14 @@ namespace YTE
                              RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mActiveCamera(nullptr)
-    , mWindow(nullptr)
-    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
-    , mConstructing(true)
-    , mOrder(0.0f)
-    , mInitialized(false)
     , mDrawerCombination(YTEDrawerTypeCombination::DefaultCombination)
     , mDrawerType(YTEDrawerTypes::DefaultDrawer)
+    , mWindow(nullptr)
+    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
+    , mSuperSampling(1)
+    , mOrder(0.0f)
+    , mConstructing(true)
+    , mInitialized(false)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -98,6 +104,24 @@ namespace YTE
   GraphicsView::~GraphicsView()
   {
     mRenderer->DeregisterView(this);
+  }
+
+  // https://stackoverflow.com/a/108340
+  static bool IsPowerOf2(i32 aValue)
+  {
+    return (aValue > 0 && !(aValue & (aValue - 1)));
+  }
+
+  void GraphicsView::SetSuperSampling(i32 aSuperSampling)
+  {
+    if (!IsPowerOf2(aSuperSampling))
+    {
+      return;
+    }
+
+    mSuperSampling = aSuperSampling;
+
+    mRenderer->ResetView(this);
   }
 
   void GraphicsView::NativeInitialize()

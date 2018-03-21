@@ -50,10 +50,8 @@ namespace YTE
     mMouse = &mWindow->mMouse;
 
     mMouse->YTERegister(Events::MouseMove,    this, &FlybyCamera::MouseMove);
-    mMouse->YTERegister(Events::MouseScroll,  this, &FlybyCamera::MouseScroll);
     mMouse->YTERegister(Events::MousePress,   this, &FlybyCamera::MousePress);
     mMouse->YTERegister(Events::MouseRelease, this, &FlybyCamera::MouseRelease);
-    mMouse->YTERegister(Events::MousePersist, this, &FlybyCamera::MousePersist);
     mWindow->mKeyboard.YTERegister(Events::KeyPersist, this, &FlybyCamera::KeyboardPersist);
 
     engine->YTERegister(Events::LogicUpdate, this, &FlybyCamera::Update);
@@ -129,11 +127,6 @@ namespace YTE
     }
   }
 
-  void FlybyCamera::MouseScroll(MouseWheelEvent *aEvent)
-  {
-
-  }
-
   void FlybyCamera::MouseMove(MouseMoveEvent *aEvent)
   {
     if (mMouseHeld)
@@ -147,11 +140,6 @@ namespace YTE
                                mMouseDelta.x,
                                mMouseDelta.y);
     }
-  }
-
-  void FlybyCamera::MousePersist(MouseButtonEvent *aEvent)
-  {
-
   }
 
   void FlybyCamera::MouseRelease(MouseButtonEvent *aEvent)

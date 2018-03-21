@@ -40,6 +40,7 @@ namespace YTE
 
       std::shared_ptr<vkhlf::Framebuffer> mFrameBuffer;
       std::shared_ptr<vkhlf::Sampler> mSampler;
+      vk::Extent2D mExtent;
       std::vector<Attachment> mAttachments;
       std::vector<size_t> mColorAttachments;
       std::string mName;
@@ -83,8 +84,7 @@ namespace YTE
     virtual void Initialize();
 
     virtual void Resize(vk::Extent2D& aExtent);
-    virtual void RenderFull(const vk::Extent2D& aExtent,
-                            std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
+    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
 
     virtual void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 

@@ -55,14 +55,13 @@ namespace YTE
     //VkRenderTarget::~VkRenderTarget();
   }
 
-  void VkRTGameForwardDrawer::RenderFull(const vk::Extent2D& aExtent,
-                                         std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
+  void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
     RenderBegin(cbo);
-    Render(cbo, aExtent, aMeshes);
+    Render(cbo, aMeshes);
     RenderEnd(cbo);
     cbo->end();
   }
@@ -72,20 +71,15 @@ namespace YTE
     YTEUnusedArgument(aCBO);
   }
 
-  void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO, 
-                                     const vk::Extent2D& aExtent, 
+  void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
                                      std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    auto renderTargetExtent = aExtent;
-    renderTargetExtent.height *= 4;
-    renderTargetExtent.width *= 4;
-
-    auto width = static_cast<float>(renderTargetExtent.width);
-    auto height = static_cast<float>(renderTargetExtent.height);
+    auto width = static_cast<float>(mData.mExtent.width);
+    auto height = static_cast<float>(mData.mExtent.height);
 
     vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
     aCBO->setViewport(0, viewport);
-    vk::Rect2D scissor{ { 0, 0 }, renderTargetExtent };
+    vk::Rect2D scissor{ { 0, 0 }, mData.mExtent };
     aCBO->setScissor(0, scissor);
     aCBO->setLineWidth(1.0f);
 

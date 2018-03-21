@@ -34,12 +34,10 @@ namespace YTE
 
     virtual ~VkRTGameForwardDrawer() override;
 
-    virtual void RenderFull(const vk::Extent2D& aExtent,
-                            std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes) override;
+    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes) override;
     void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
     void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                        const vk::Extent2D& extent,
-                        std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
+                std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
     void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
 
 
