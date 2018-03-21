@@ -33,6 +33,7 @@ namespace YTE
     , mBoatOrientation(nullptr)
     , mCameraComponent(nullptr)
     , mAnchorTransform(nullptr)
+    , mFlybyComponent(nullptr)
   {
     YTEUnusedArgument(aProperties);
     //will probably have some props
@@ -44,6 +45,7 @@ namespace YTE
 
     //mSpace->YTERegister(Events::LogicUpdate, this, &CameraController::OnLogicUpdate);
     mSpace->YTERegister(Events::AttachCamera, this, &CameraController::OnAttachCamera);
+    mSpace->YTERegister(Events::DebugSwitch, this, &CameraController::OnDebugSwitch);
     //mSpace->YTERegister(Events::AnchorUpdate, this, &CameraController::OnAnchorUpdate);
     /*mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
     mSpace->YTERegister(Events::DirectCameraEvent, this, &CameraController::OnDirectCamera);
@@ -88,6 +90,38 @@ namespace YTE
   void CameraController::OnAnchorRotationUpdate(TransformChanged* aEvent)
   {
     mTransform->SetWorldRotation(aEvent->WorldRotation);
+  }
+
+  void CameraController::OnDebugSwitch(DebugSwitch *aEvent)
+  {
+    if (aEvent->EnableDebug)
+    {
+      if (mFlybyComponent == nullptr)
+      {
+        if (mAnchorTransform)
+        {
+          mAnchor->YTEDeregister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
+          mAnchor->YTEDeregister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+        }
+
+        mFlybyComponent = mOwner->AddComponent<FlybyCamera>();
+        mFlybyComponent->Initialize();
+      }
+    }
+    else
+    {
+      mOwner->RemoveComponent(mFlybyComponent);
+      mFlybyComponent = nullptr;
+
+      if (mAnchorTransform != nullptr)
+      {
+        mAnchor->YTERegister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
+        mAnchor->YTERegister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+
+        mTransform->SetWorldTranslation(mAnchorTransform->GetWorldTranslation());
+        mTransform->SetWorldRotation(mAnchorTransform->GetWorldRotation());
+      }
+    }
   }
 
   //void CameraController::RotateCamera(CameraRotateEvent *aEvent)

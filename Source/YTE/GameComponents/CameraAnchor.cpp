@@ -18,10 +18,7 @@
 namespace YTE
 {
   YTEDefineEvent(AttachCamera);
-  YTEDefineEvent(AnchorUpdate);
-
   YTEDefineType(AttachCamera) { YTERegisterType(AttachCamera); }
-  YTEDefineType(AnchorUpdate) { YTERegisterType(AnchorUpdate); }
 
   YTEDefineType(CameraAnchor)
   {

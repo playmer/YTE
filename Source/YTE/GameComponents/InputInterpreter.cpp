@@ -36,6 +36,9 @@ namespace YTE
   YTEDefineEvent(CameraRotateEvent);
   YTEDefineEvent(DirectCameraEvent);
 
+  // Debug Events
+  YTEDefineEvent(DebugSwitch);
+
   YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
   YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
@@ -49,7 +52,7 @@ namespace YTE
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
   YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
   YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
-
+  YTEDefineType(DebugSwitch) { YTERegisterType(DebugSwitch); }
 
   YTEDefineType(InputInterpreter)
   {
@@ -255,6 +258,7 @@ namespace YTE
             MenuStart menuStart;
             menuStart.PlaySound = true;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
+            mSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
@@ -378,9 +382,24 @@ namespace YTE
   {
     switch (mContext)
     {
+      case InputContext::Debug:
+      {
+        switch (aEvent->Key)
+        {
+          case Keys::F1:
+          {
+            DebugSwitch setDebug(false);
+            mOwner->SendEvent(Events::DebugSwitch, &setDebug);
+
+            mContext = InputContext::Sailing;
+
+            break;
+          }
+        }
+      }
+
       case InputContext::Dialogue:
       {
-      default:
         break;
       }
       case InputContext::Sailing:
@@ -398,6 +417,7 @@ namespace YTE
             MenuStart menuStart;
             menuStart.PlaySound = true;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
+            mSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
@@ -417,6 +437,16 @@ namespace YTE
           {
             SailStateChanged setSailUp(false);
             mOwner->SendEvent(Events::SailStateChanged, &setSailUp);
+
+            break;
+          }
+
+          case Keys::F1:
+          {
+            DebugSwitch setDebug(true);
+            mOwner->SendEvent(Events::DebugSwitch, &setDebug);
+
+            mContext = InputContext::Debug;
 
             break;
           }

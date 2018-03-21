@@ -6,6 +6,8 @@
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/Keyboard.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"

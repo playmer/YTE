@@ -47,6 +47,7 @@ namespace YTE
   YTEDeclareEvent(MenuConfirm);
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
+  YTEDeclareEvent(DebugSwitch);
 
   class CameraRotateEvent : public Event
   {
@@ -160,6 +161,15 @@ namespace YTE
     Direction ChangeDirection;
   };
 
+  class DebugSwitch : public Event
+  {
+  public:
+    YTEDeclareType(DebugSwitch);
+    DebugSwitch(bool aEnableDebug) { EnableDebug = aEnableDebug; }
+
+    bool EnableDebug;
+  };
+
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
@@ -168,7 +178,7 @@ namespace YTE
   class InputInterpreter : public Component
   {
   public:
-    enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
+    enum class InputContext { Sailing, Dialogue, UI, Menu, Debug, num_contexts };
 
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
