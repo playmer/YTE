@@ -106,7 +106,6 @@ namespace YTE
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-    mSpace->YTERegister(Events::MenuStart, this, &BoatController::OnMenuStart);
 
     mAnimator = mOwner->GetComponent<Animator>();
     
@@ -307,11 +306,6 @@ namespace YTE
     }
 
     mStartedTurning = false;
-  }
-
-  void BoatController::OnMenuStart(MenuStart*)
-  {
-    StopBoatImmediately();
   }
   ////////////////////////////////////////////////////////////////////////////////////
 

@@ -50,7 +50,6 @@ namespace YTE
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);
     void Update(LogicUpdate *aEvent);
-    void OnMenuStart(MenuStart*);
 
     // PROPERTIES ///////////////////////////////////////////////////////////////////
     float GetMaxSailSpeed() { return mMaxSailSpeed; }

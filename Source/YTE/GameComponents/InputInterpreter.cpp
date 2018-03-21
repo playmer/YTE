@@ -250,10 +250,12 @@ namespace YTE
             break;
           case XboxButtons::Start:
           {
+            SailStateChanged sailUp(false);
+            mSpace->SendEvent(Events::SailStateChanged, &sailUp);
+
             MenuStart menuStart;
             menuStart.PlaySound = true;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
-            mSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
