@@ -128,6 +128,7 @@ namespace YTE
     Composition::NativeInitialize(aEvent);
     Composition::PhysicsInitialize(aEvent);
     Composition::Initialize(aEvent);
+    Composition::Start(aEvent);
 
     mShouldIntialize = true;
   }

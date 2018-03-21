@@ -112,6 +112,7 @@ namespace YTE
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
+      parent->YTERegister(Events::Start, this, &Composition::Start);
     }
   };
 
