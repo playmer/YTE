@@ -23,12 +23,13 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
-#include "YTE/GameComponents/UI/MenuController.hpp"
-#include "YTE/GameComponents/UI/RootMenu.hpp"
-#include "YTE/GameComponents/UI/LaunchMenu.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
+#include "YTE/GameComponents/Menu/RootMenu.hpp"
+#include "YTE/GameComponents/Menu/LaunchMenu.hpp"
+#include "YTE/GameComponents/Menu/Button.hpp"
+#include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
-#include "YTE/GameComponents/Button.hpp"
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
@@ -95,15 +96,18 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraController>();
+
     helper.CreateComponentFactory<MenuController>();
     helper.CreateComponentFactory<RootMenu>();
     helper.CreateComponentFactory<LaunchMenu>();
+    helper.CreateComponentFactory<Button>();
+    helper.CreateComponentFactory<ButtonAnimate>();
+
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();
     helper.CreateComponentFactory<DialogueDirector>();
     helper.CreateComponentFactory<DialogueElement>();
-    helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();
     helper.CreateComponentFactory<TestingComponent>();

@@ -303,6 +303,7 @@ namespace YTE
             break;
           }
 
+          case XboxButtons::DPAD_Up:
           case XboxButtons::DPAD_Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
@@ -311,6 +312,7 @@ namespace YTE
             break;
           }
 
+          case XboxButtons::DPAD_Down:
           case XboxButtons::DPAD_Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
@@ -453,6 +455,8 @@ namespace YTE
             break;
           }
 
+          case Keys::W:
+          case Keys::Up:
           case Keys::A:
           case Keys::Left:
           {
@@ -462,6 +466,8 @@ namespace YTE
             break;
           }
 
+          case Keys::S:
+          case Keys::Down:
           case Keys::D:
           case Keys::Right:
           {

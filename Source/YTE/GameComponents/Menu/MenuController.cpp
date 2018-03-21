@@ -11,7 +11,7 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/GameComponents/UI/MenuController.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
@@ -74,6 +74,7 @@ namespace YTE
 
   void MenuController::OnChildrenInitialized(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     UpdateVisibility();
     mSpace->YTEDeregister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
   }
@@ -85,6 +86,11 @@ namespace YTE
       mParentMenu = aEvent->ParentMenu;
     }
 
+    if (aEvent->ResetCursor)
+    {
+      mCurrMenuElement = 0;
+    }
+
     mIsDisplayed = true;
     UpdateVisibility();
 
@@ -93,7 +99,7 @@ namespace YTE
       mSoundEmitter->PlayEvent(mSoundPause);
     }
 
-    mCurrMenuElement = 0;
+    //mCurrMenuElement = 0;
 
     if (mMenuElements->size() != 0)
     {
@@ -122,7 +128,7 @@ namespace YTE
 
         auto currElement = mMenuElements->begin() + mCurrMenuElement;
         currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
-        mCurrMenuElement = 0;
+        //mCurrMenuElement = 0;
       }
     }
   }
@@ -145,7 +151,7 @@ namespace YTE
 
         auto currElement = mMenuElements->begin() + mCurrMenuElement;
         currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
-        mCurrMenuElement = 0;
+        //mCurrMenuElement = 0;
       }
 
         // Pop up to the owning menu

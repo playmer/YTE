@@ -124,6 +124,7 @@ namespace YTE
 
     Composition* ParentMenu = nullptr;
     bool PlaySound = false;
+    bool ResetCursor = false;
   };
 
   class MenuConfirm : public Event

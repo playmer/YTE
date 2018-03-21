@@ -13,7 +13,7 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/GameComponents/UI/MenuController.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
 
 namespace YTE
 {
