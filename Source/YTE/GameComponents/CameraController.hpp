@@ -18,7 +18,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Component.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/GameComponents/InputInterpreter.hpp"
+
+#include "YTE/GameComponents/CameraAnchor.hpp"
 
 namespace YTE
 {
@@ -28,10 +29,16 @@ namespace YTE
     YTEDeclareType(CameraController);
     CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-    void OnLogicUpdate(LogicUpdate *aEvent);
-    void RotateCamera(CameraRotateEvent *aEvent);
+
+    void OnAttachCamera(AttachCamera *aEvent);
+    void OnAnchorPositionUpdate(TransformChanged* aEvent);
+    void OnAnchorRotationUpdate(TransformChanged* aEvent);
+
+    //void OnDebugSwitch(DebugCameraSwitch *aEvent);
+
+    /*void RotateCamera(CameraRotateEvent *aEvent);
     void OnDirectCamera(DirectCameraEvent *aEvent);
-    void OnDialogueExit(DialogueExit *aEvent);
+    void OnDialogueExit(DialogueExit *aEvent);*/
 
   private:
     Transform *mBoatTransform;
@@ -41,6 +48,9 @@ namespace YTE
     Orientation *mOrientation;
     Camera *mCameraComponent;
 
-    void RotateOnBoom(const glm::vec3& aFocusPoint);
+    Composition *mAnchor;
+    Transform *mAnchorTransform;
+
+    //void RotateOnBoom(const glm::vec3& aFocusPoint);
   };
 }

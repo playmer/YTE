@@ -3,7 +3,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.cpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.cpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.cpp   
+  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.cpp   
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
@@ -29,7 +30,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.hpp   
+  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.hpp   
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp

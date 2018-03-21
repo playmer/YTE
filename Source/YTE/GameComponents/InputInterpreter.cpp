@@ -397,7 +397,7 @@ namespace YTE
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
-            mOwner->SendEvent(Events::MenuStart, &menuStart);
+            mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
