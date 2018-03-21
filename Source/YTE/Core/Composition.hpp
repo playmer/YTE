@@ -33,6 +33,7 @@ namespace YTE
   YTEDeclareEvent(NativeInitialize);
   YTEDeclareEvent(PhysicsInitialize);
   YTEDeclareEvent(Initialize);
+  YTEDeclareEvent(Start);
 
   class InitializeEvent : public Event
   {
@@ -88,6 +89,7 @@ namespace YTE
     virtual void NativeInitialize(InitializeEvent *aEvent);
     void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);
+    virtual void Start(InitializeEvent *aEvent);
     void DeletionUpdate(LogicUpdate *aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };

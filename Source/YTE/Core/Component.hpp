@@ -31,9 +31,9 @@ namespace YTE
     virtual ~Component();
 
     virtual void NativeInitialize() { };
-    virtual void Initialize() { };
-
     virtual void PhysicsInitialize() { };
+    virtual void Initialize() { };
+    virtual void Start() { };
 
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }
