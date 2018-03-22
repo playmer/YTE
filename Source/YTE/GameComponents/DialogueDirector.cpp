@@ -215,6 +215,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption2;
+
+					UISelectEvent notChosen(false);
+					mDialogueOption1->SendEvent(Events::UISelectEvent, &notChosen);
+					mDialogueOption3->SendEvent(Events::UISelectEvent, &notChosen);
         }
         else if (stickAngle >= (pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
         {
@@ -227,6 +231,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption1;
+
+					UISelectEvent notChosen(false);
+					mDialogueOption2->SendEvent(Events::UISelectEvent, &notChosen);
+					mDialogueOption3->SendEvent(Events::UISelectEvent, &notChosen);
         }
         else if (stickAngle >= (2.0f * pi / 3.0f) && stickAngle < pi)
         {
@@ -239,6 +247,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption3;
+
+					UISelectEvent notChosen(false);
+					mDialogueOption1->SendEvent(Events::UISelectEvent, &notChosen);
+					mDialogueOption2->SendEvent(Events::UISelectEvent, &notChosen);
         }
       }
       else if (stickAngle >= -(pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
@@ -294,6 +306,14 @@ namespace YTE
 					mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
 				}
 
+				// reset our options
+				UISelectEvent select(false);
+				mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+				mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+				mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
+
+				mLastSelected = nullptr;
+
 				/*auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
 				if (emitter)
@@ -309,6 +329,13 @@ namespace YTE
     if (mActive && !aEvent->EventHandled)
     {
       aEvent->EventHandled = true;
+
+			UISelectEvent select(false);
+			mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+			mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+			mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
+
+			mLastSelected = nullptr;
 
       auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
