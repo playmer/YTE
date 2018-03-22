@@ -333,7 +333,12 @@ namespace YTE
 
     YTEDefineAction(easeOut)
     {
-      value = c * (t*t) / (d*d) + b;
+      value = -c * (t / d)*((t / d) - 2.0f) + b;
+    }
+
+    YTEDefineAction(piecewiseEaseOut)
+    {
+      value = -c * ((t / d) - 1.0f) * ((t / d) - 1.0f) + b;
     }
 
     YTEDefineAction(easeInOut)

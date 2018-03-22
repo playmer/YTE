@@ -71,7 +71,7 @@ namespace YTE
 
   void CameraAnchor::RotateCamera(CameraRotateEvent *aEvent)
   {
-
+    //aEvent->StickDirection
   }
 
   void CameraAnchor::OnDirectCamera(DirectCameraEvent *aEvent)

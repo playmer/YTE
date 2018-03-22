@@ -12,6 +12,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/BoatController.hpp"
 
+#include "YTE/Core/Actions/Action.hpp"
+
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -173,7 +175,7 @@ namespace YTE
     {
       if (!mIsSailUp)
       {
-        //mSoundEmitter->PlayEvent(mSoundSailUp);
+        mSoundEmitter->PlayEvent(mSoundSailUp);
         mRigidBody->SetDamping(0.f, 0.9f);
 
         mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(1.0f));
@@ -184,7 +186,7 @@ namespace YTE
     {
       if (mIsSailUp)
       {
-        //mSoundEmitter->PlayEvent(mSoundSailDown);
+        mSoundEmitter->PlayEvent(mSoundSailDown);
         mRigidBody->SetDamping(0.9f, 0.9f);
 
         mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(0.0f));
@@ -204,42 +206,101 @@ namespace YTE
       mPlayingTurnSound = true;
     }
 
-    if (aEvent->StickDirection.x > 0.1)
+      // Dead-zone check and apply response curves
+    float length = glm::length(aEvent->StickDirection);
+
+    if (length > 0.01f)
     {
-      mTurnVec = mOrientation->GetRightVector();
-    }
-    else if (aEvent->StickDirection.x < -0.1)
-    {
-      mTurnVec = -mOrientation->GetRightVector();
+      float absX = glm::abs(aEvent->StickDirection.x);
+
+      float turnScale;
+      float startVal = 0.0f;
+      float change = 1.0f / absX;
+      float duration = 1.0f;
+
+      if (absX < 0.3f)
+      {
+        Quad::easeIn::Ease(turnScale, startVal, change, absX, duration);
+      }
+      else if (absX < 0.7f)
+      {
+        turnScale = absX;
+      }
+      else
+      {
+          // Have to manipulate the parabola to line up with our piecewise function correctly
+        float vertOffset = 1.0f;
+        float narrowingFactor = 1.0f / 0.3f;
+        Quad::piecewiseEaseOut::Ease(turnScale, vertOffset, narrowingFactor, absX, duration);
+      }
+
+        // Can check zero here because we've already passed the dead-zone check
+      if (aEvent->StickDirection.x >= 0.0f)
+      {
+        mTurnVec = turnScale * mOrientation->GetRightVector();
+
+        if (mAnimator)
+        {
+          double maxTime = mAnimator->GetMaxTime();
+          double stickTurn = (((turnScale + 1.0) / 2.0) * maxTime);
+
+            // update boat animation : current stick rotation
+          mAnimator->SetCurrentAnimTime(stickTurn);
+        }
+
+        if (mCharacterAnimator)
+        {
+          double maxTime = mAnimator->GetMaxTime();
+          double stickTurn = (((turnScale + 1.0) / 2.0) * maxTime);
+
+            // update boat animation : current stick rotation
+          mCharacterAnimator->SetCurrentAnimTime(stickTurn);
+        }
+      }
+      else
+      {
+        mTurnVec = -turnScale * mOrientation->GetRightVector();
+
+        if (mAnimator)
+        {
+          double maxTime = mAnimator->GetMaxTime();
+          double stickTurn = ((-turnScale + 1.0) * maxTime) / 2.0;
+
+          // update boat animation : current stick rotation
+          mAnimator->SetCurrentAnimTime(stickTurn);
+        }
+
+        if (mCharacterAnimator)
+        {
+          double maxTime = mAnimator->GetMaxTime();
+          double stickTurn = ((-turnScale + 1.0) * maxTime) / 2.0;
+
+          // update boat animation : current stick rotation
+          mCharacterAnimator->SetCurrentAnimTime(stickTurn);
+        }
+      }
+      // update character animation : current stick rotation
+
     }
     else
     {
       mCurrRotSpeed = 0.f;
       mPlayingTurnSound = false;
+
+      if (mAnimator)
+      {
+        double maxTime = mAnimator->GetMaxTime();
+        //double stickTurn = ((turnScale /*aEvent->StickDirection.x + 1.0 */)* maxTime);// / 2.0;
+        mAnimator->SetCurrentAnimTime(0.5 * maxTime);
+      }
+
+      if (mCharacterAnimator)
+      {
+        double maxTime = mAnimator->GetMaxTime();
+        //double stickTurn = ((turnScale /*aEvent->StickDirection.x + 1.0*/)* maxTime);// / 2.0;
+        mCharacterAnimator->SetCurrentAnimTime(0.5 * maxTime);
+      }
     }
-
-
-    if (mAnimator)
-    {
-      double maxTime = mAnimator->GetMaxTime();
-      double stickTurn = ((aEvent->StickDirection.x + 1.0) * maxTime) / 2.0;
-      
-      // update boat animation : current stick rotation
-      mAnimator->SetCurrentAnimTime(stickTurn);
-    }
-
-    if (mCharacterAnimator)
-    {
-      double maxTime = mAnimator->GetMaxTime();
-      double stickTurn = ((aEvent->StickDirection.x + 1.0) * maxTime) / 2.0;
-
-      // update boat animation : current stick rotation
-      mCharacterAnimator->SetCurrentAnimTime(stickTurn);
-    }
-
-    // update character animation : current stick rotation
-
-
   }
 
   void BoatController::Update(LogicUpdate *aEvent)

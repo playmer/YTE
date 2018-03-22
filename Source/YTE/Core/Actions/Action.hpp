@@ -164,6 +164,7 @@ namespace YTE
   {
     YTEDeclareAction(easeIn);
     YTEDeclareAction(easeOut);
+    YTEDeclareAction(piecewiseEaseOut);
     YTEDeclareAction(easeInOut);
   }
 
