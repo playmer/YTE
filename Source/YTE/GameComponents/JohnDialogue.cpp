@@ -18,10 +18,14 @@ namespace YTE
 
 /******************************************************************************
   Conversation
+		assumes the first element of the vector is the root
 ******************************************************************************/
-  Conversation::Conversation(DialogueNode *aRoot)
-    : mRoot(aRoot)
+  Conversation::Conversation(std::vector<DialogueNode> *aNodes)
   {
+		for (DialogueNode i : *aNodes)
+		{
+			mNodeVec.push_back(i);
+		}
   }
 
 /******************************************************************************
@@ -37,125 +41,14 @@ namespace YTE
       Intro is a unique first quest.
 			Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
-  Quest::Quest(Quest::Name aName, Composition *aJohn)
+  Quest::Quest(Quest::Name aName, std::vector<Conversation> *aConvos)
     : mName(aName), mState(State::Available), mConditionMet(false)
   {
-    mConversationVec = *(new std::vector<Conversation>());
-    switch (aName)
-    {
-      case Quest::Name::Introduction:
-      {
-          // This is an array that will be used to hook up children pointers and will be overwritten many times
-        std::vector<DialogueNode*> children;
-
-        /*
-              root
-              |
-              A0
-              |
-              B0
-              |  \
-              C0  C1
-              |  /
-              D0
-        */
-
-        // LEVEL D
-        DialogueData(dataD0, "TEMP Go here, find this");
-        DialogueNode nodeD0(DialogueNode::NodeType::Text, nullptr, &dataD0, aJohn, 0);
-
-        children.push_back(&nodeD0);
-
-        // LEVEL C
-        DialogueData(dataC0, "Perfect timing, my fish is still in the oven", "I need you to go fetch my missing ingredients");
-        DialogueNode nodeC0(DialogueNode::NodeType::Text, &children, &dataC0, aJohn, 0);
-
-        DialogueData(dataC1, "Suuuure...", "Well while you're here, I need you to fetch my missing ingredients");
-        DialogueNode nodeC1(DialogueNode::NodeType::Text, &children, &dataC1, aJohn, 1);
-
-        children.clear();
-        children.push_back(&nodeC0);
-        children.push_back(&nodeC1);
-
-        // LEVEL B
-        DialogueData(dataB0, "Oh I'm not ordering, I'm here to help", "Friendship!");
-        DialogueNode nodeB0(DialogueNode::NodeType::Input, &children, &dataB0, aJohn, 0);
-
-        children.clear();
-        children.push_back(&nodeB0);
-
-        // LEVEL A
-        DialogueData(dataA0, "HOT BEHIND!", "Just one second I'm finishing this meal", "Okay what did you want to order?");
-        DialogueNode nodeA0(DialogueNode::NodeType::Text, &children, &dataA0, aJohn, 0);
-
-        children.clear();
-        children.push_back(&nodeA0);
-
-        // LEVEL ROOT
-        DialogueData(data, AnimationNames::WaveInit);
-        DialogueNode root(DialogueNode::NodeType::Anim, &children, &data, aJohn, 0);
-
-        Conversation c0(&root);
-
-					// The introduction quest only has one conversation
-        mConversationVec.push_back(c0);
-
-        // register the first node for when we start        
-        root.mOwner->GetSpace()->YTERegister(Events::DialogueNodeConfirm, &root, &DialogueNode::NextNode);
-        //delete &children;
-        break;
-      }
-      case Quest::Name::GuessChew:
-      {
-
-      }
-      case Quest::Name::Ingredients:
-      {
-
-      }
-      case Quest::Name::Cayenne:
-      {
-
-      }
-    }
-		mActiveConvo = mConversationVec.begin();
-  }
-  
-  void Quest::AddConvo(Conversation *aConvo)
-  {
-    mConversationVec.push_back(*aConvo);
-  }
-
-	// This needs to change to checking when you start a conversation not when it ends, since that is when we decide what conversation to run
-	void Quest::ConvoCompleted()
-	{
-		switch (mState)
+		for (Conversation i : *aConvos)
 		{
-			case Quest::State::Available:
-			{
-				++mActiveConvo;
-				mState = State::InProgress;
-				break;
-			}
-			case Quest::State::InProgress:
-			{
-				if (!mConditionMet)
-				{
-					mActiveConvo = mConversationVec.end() - 2;
-				}
-				else
-				{
-					
-				}
-				break;
-			}
-			case Quest::State::Completed:
-			{
-				mActiveConvo = mConversationVec.end() - 1;
-				break;
-			}
+			mConversationVec.push_back(i);
 		}
-	}
+  }
 
 /******************************************************************************
   Dialogue Component
@@ -164,27 +57,75 @@ namespace YTE
     : Component(aOwner, aSpace)
   {
     YTEUnusedArgument(aProperties);
-      // Construct the Quest Vector
-    /*mQuestVec = *(new std::vector<Quest> { 
-      (Quest::Name::Introduction, aOwner),
-      (Quest::Name::GuessChew, aOwner),
-      (Quest::Name::Cayenne, aOwner),
-      (Quest::Name::Ingredients, aOwner)
-    });*/
 
-    Quest intro(Quest::Name::Introduction, aOwner);
+		/*
+		root
+		|
+		A0
+		|
+		B0
+		|  \
+		C0  C1
+		|  /
+		D0
+		*/
+
+		// LEVEL D
+		DialogueData(dataD0, "TEMP Go here, find this");
+		DialogueNode nodeD0(DialogueNode::NodeType::Text, &dataD0, 0);
+
+		// LEVEL C
+		DialogueData(dataC0, "Perfect timing, my fish is still in the oven", "I need you to go fetch my missing ingredients");
+		DialogueNode nodeC0(DialogueNode::NodeType::Text, &dataC0, 0);
+
+		DialogueData(dataC1, "Suuuure...", "Well while you're here, I need you to fetch my missing ingredients");
+		DialogueNode nodeC1(DialogueNode::NodeType::Text, &dataC1, 1);
+
+		// LEVEL B
+		DialogueData(dataB0, "Oh I'm not ordering, I'm here to help", "Friendship!");
+		DialogueNode nodeB0(DialogueNode::NodeType::Input, &dataB0, 0);
+
+		// LEVEL A
+		DialogueData(dataA0, "HOT BEHIND!", "Just one second I'm finishing this meal", "Okay what did you want to order?");
+		DialogueNode nodeA0(DialogueNode::NodeType::Text, &dataA0, 0);
+
+		// LEVEL ROOT
+		DialogueData(data, AnimationNames::WaveInit);
+		DialogueNode root(DialogueNode::NodeType::Anim, &data, 0);
+
+		std::vector<DialogueNode> *nodes = new std::vector<DialogueNode>{ root, nodeA0, nodeB0, nodeC0, nodeC1, nodeD0 };
+		nodes->at(0).SetChildren(1, &nodes->at(1));
+		nodes->at(1).SetChildren(1, &nodes->at(2));
+		nodes->at(2).SetChildren(2, &nodes->at(3), &nodes->at(4));
+		nodes->at(3).SetChildren(1, &nodes->at(5));
+		nodes->at(4).SetChildren(1, &nodes->at(5));
+		nodes->at(5).SetChildren(0, nullptr);
+			// construct the convos
+		Conversation c0(nodes);
+			// add them to a vector to pass to quest
+		std::vector<Conversation> *convos = new std::vector<Conversation>;
+		convos->push_back(c0);
+			// construct the quest with the convo vector ptr
+    Quest intro(Quest::Name::Introduction, convos);
     mQuestVec.push_back(intro);
+		
+		mActiveQuest = &mQuestVec[0];
+		mActiveConvo = &mActiveQuest->GetConversations()->at(0);
+		mActiveNode = mActiveConvo->GetRoot();
   }
 
   void JohnDialogue::RegisterJohn(CollisionStarted *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+		mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
   }
+
   void JohnDialogue::DeregisterJohn(CollisionEnded *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+		mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
   }
 
   void JohnDialogue::Initialize()
@@ -195,11 +136,44 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-		//Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
-
-    // this is just so that we start a conversation the same way as advancing
-    DialogueNodeConfirm conf(0);
-		mSpace->SendEvent(Events::DialogueNodeConfirm, &conf);
+		mQuestVec;
+		mActiveQuest;
+		mActiveConvo;
+		mActiveNode;
+		DialogueNode::NodeType type = mActiveNode->GetNodeType();
+			// For anims and sounds we wont hear back from the director so send an event to ourselves to begin
+		if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
+		{
+				// Anims and Sounds always have 1 child
+			DialogueNodeConfirm next(0);
+			mSpace->SendEvent(Events::DialogueNodeConfirm, &next);
+		}
+			// For input and text we rely on the director responding
+		else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
+		{
+			DialogueNodeReady next(mActiveNode->GetNodeData());
+			next.DialogueType = type;
+			mSpace->SendEvent(Events::DialogueNodeReady, &next);
+		}
   }
+
+	void JohnDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
+	{
+		mActiveNode->ActivateNode();
+		mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+		DialogueNode::NodeType type = mActiveNode->GetNodeType();
+		if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
+		{
+			// Anims and Sounds always have 1 child
+			DialogueNodeConfirm next(0);
+			mSpace->SendEvent(Events::DialogueNodeConfirm, &next);
+		}
+		// For input and text we rely on the director responding
+		else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
+		{
+			DialogueNodeReady next(mActiveNode->GetNodeData());
+			next.DialogueType = type;
+			mSpace->SendEvent(Events::DialogueNodeReady, &next);
+		}
+	}
 } //end yte

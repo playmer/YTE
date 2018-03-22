@@ -72,93 +72,63 @@ namespace YTE
   SendEvent("DialogueNodeEvent", &next);
   }
   */
-  DialogueNode::DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData)
-    : mType(aType), mData(*aData)
-  {
-    if (aChildren == nullptr)
-    {
-      mChildren = *(new std::vector<DialogueNode*>());
-    }
-    else
-    {
-      for (DialogueNode *child : *aChildren)
-      {
-        mChildren.push_back(child);
-      }
-    }
 
+	// Data is being shallow copieddddddddd
+	DialogueNode::DialogueNode(NodeType aType, DialogueDataType *aData, int aId)
+    : mType(aType), mId(aId)
+  {
+		for (auto i : *aData)
+		{
+			mData.push_back(i);
+		}
     switch (aType)
     {
-      case NodeType::Anim:
-      {
-        // set the function pointer
-        mNodeLogic = &DialogueNode::PlayAnim;
-        break;
-      }
-      case NodeType::Input:
-      {
-        // set the function pointer
-        mNodeLogic = &DialogueNode::GiveOptions;
-        break;
-      }
-      case NodeType::Text:
-      {
-        // set the function pointer
-        mNodeLogic = &DialogueNode::RunText;
-        break;
-      }
-      case NodeType::Sound:
-      {
-        // set the function pointer
-        mNodeLogic = &DialogueNode::PlaySound;
-        break;
-      }
+			case NodeType::Anim:
+			{
+				// set the function pointer
+				mNodeLogic = &DialogueNode::PlayAnim;
+				break;
+			}
+			case NodeType::Input:
+			{
+				// set the function pointer
+				mNodeLogic = &DialogueNode::GiveOptions;
+				break;
+			}
+			case NodeType::Text:
+			{
+				// set the function pointer
+				mNodeLogic = &DialogueNode::RunText;
+				break;
+			}
+			case NodeType::Sound:
+			{
+				// set the function pointer
+				mNodeLogic = &DialogueNode::PlaySound;
+				break;
+			}
     }
   }
-  DialogueNode::DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData, Composition *aOwner, int aId)
-    : mType(aType), mData(*aData), mOwner(aOwner), mId(aId)
-  {
-    if (aChildren == nullptr)
-    {
-      mChildren = *(new std::vector<DialogueNode*>());
-    }
-    else
-    {
-      for (DialogueNode *child : *aChildren)
-      {
-        mChildren.push_back(child);
-      }
-    }
 
-    switch (aType)
-    {
-    case NodeType::Anim:
-    {
-      // set the function pointer
-      mNodeLogic = &DialogueNode::PlayAnim;
-      break;
-    }
-    case NodeType::Input:
-    {
-      // set the function pointer
-      mNodeLogic = &DialogueNode::GiveOptions;
-      break;
-    }
-    case NodeType::Text:
-    {
-      // set the function pointer
-      mNodeLogic = &DialogueNode::RunText;
-      break;
-    }
-    case NodeType::Sound:
-    {
-      // set the function pointer
-      mNodeLogic = &DialogueNode::PlaySound;
-      break;
-    }
-    }
-  }
+	void DialogueNode::SetChildren(int aCount, DialogueNode *aNode, ...)
+	{
+		mChildren = *(new std::vector<DialogueNode*>);
+		if (aCount > 0)
+		{
+			va_list ap;
+			va_start(ap, aCount);
+			for (int i = 0; i < aCount; ++i)
+			{
+				mChildren.push_back(va_arg(ap, DialogueNode*));
+			}
+			va_end(ap);
+		}
+	}
+
   /*
+
+	(JAY): dont delete this yet, we're not using it but its a cool thing i want to look at later, ty!
+
   DialogueNode::DialogueNode(NodeType aType, DialogueNode *aParent, int aStringCount, ...)
     : mType(aType), mParent(aParent)
   {
@@ -201,21 +171,9 @@ namespace YTE
   }
   */
 
-	void DialogueNode::NextNode(DialogueNodeConfirm *aEvent)
+	void DialogueNode::ActivateNode()
 	{
-    auto space = mOwner->GetSpace();
-
-    space->YTEDeregister(Events::DialogueNodeConfirm, this, &DialogueNode::NextNode);
-   
-    if (aEvent->Selection == mId)
-    {
-      mNodeLogic;
-      for (auto child : mChildren)
-      {
-        // this needs to register on the space?
-        space->YTERegister(Events::DialogueNodeConfirm, child, &DialogueNode::NextNode);
-      }
-    }
+    mNodeLogic;
 	}
 
 	// Functors
@@ -225,13 +183,13 @@ namespace YTE
   }
   void DialogueNode::GiveOptions()
   {
-    DialogueNodeReady options(mData);
-    mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
+    //DialogueNodeReady options(mData);
+    //mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
   }
   void DialogueNode::RunText()
   {
-    DialogueNodeReady options(mData);
-    mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
+    //DialogueNodeReady options(mData);
+    //mOwner->GetSpace()->SendEvent(Events::DialogueNodeReady, &options);
   }
   void DialogueNode::PlaySound()
   {

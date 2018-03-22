@@ -30,10 +30,12 @@ namespace YTE
   class Conversation
   {
   public:
-    Conversation(DialogueNode *aRoot);
-		DialogueNode *GetRoot() { return mRoot; };
+		Conversation() {};
+    Conversation(std::vector<DialogueNode> *aNodes);
+
+		DialogueNode *GetRoot() { return &mNodeVec[0]; };
   private:
-    DialogueNode *mRoot;
+		std::vector<DialogueNode> mNodeVec;
   };
 
   class Quest
@@ -42,22 +44,18 @@ namespace YTE
     enum class State { Available, InProgress, Completed };
     enum class Name { Introduction, GuessChew, Ingredients, Cayenne };
     Quest() {};
-    Quest(Quest::Name aName, Composition *aJohn);
+    Quest(Quest::Name aName, std::vector<Conversation> *aConvos);
 
     Quest::Name GetName() { return mName; };
+		std::vector<Conversation> *GetConversations() { return &mConversationVec; };
     Quest::State GetState() { return mState; };
-		std::vector<Conversation>::iterator GetActiveConvo() { return mActiveConvo; };
-
     void SetState(Quest::State aState) { mState = aState; };
-
-    void AddConvo(Conversation *aConvo);
-		void ConvoCompleted();
   private:
     Quest::Name mName;
     Quest::State mState;
 		bool mConditionMet;
+
     std::vector<Conversation> mConversationVec;
-		std::vector<Conversation>::iterator mActiveConvo;
   };
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +67,18 @@ namespace YTE
     YTEDeclareType(JohnDialogue);
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+		// this cant be used until we know the location of the node
+		void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
   private:
     void OnDialogueStart(DialogueStart *aEvent);
     void RegisterJohn(CollisionStarted *aEvent);
     void DeregisterJohn(CollisionEnded *aEvent);
+		void OnDialogueContinue(DialogueNodeConfirm *aEvent);
 
     std::vector<Quest> mQuestVec;
-    Quest mActiveQuest;
+		Quest *mActiveQuest;
+		Conversation *mActiveConvo;
+		DialogueNode *mActiveNode;
   };
 
 } //end yte

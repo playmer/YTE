@@ -53,7 +53,7 @@ namespace YTE
   class DialogueNodeConfirm;
 
 
-  class DialogueNode : public EventHandler
+  class DialogueNode
   {
   public:
 		YTEDeclareType(DialogueNode);
@@ -61,21 +61,22 @@ namespace YTE
       // Ctor that uses multiple const char* as variadic args
     //DialogueNode(NodeType aType, DialogueNode *aChildren, int aStringCount, ...);
       // Ctor that uses DialogueData Ctor, more readable use this one
-    DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData);
-    DialogueNode(NodeType aType, std::vector<DialogueNode*> *aChildren, DialogueDataType *aData, Composition *aOwner, int aId);
+		DialogueNode() {};
+    DialogueNode(NodeType aType, DialogueDataType *aData, int aId);
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
-		void NextNode(DialogueNodeConfirm *aEvent);
+		void ActivateNode();
+		DialogueNode *GetChild(int pos) { return mChildren[pos]; };
+		void SetChildren(int aCount, DialogueNode *aChild, ...);
+		NodeType GetNodeType() { return mType; };
+		DialogueDataType GetNodeData() { return mData; };
 
-    Composition *mOwner;
-  private:
+	private:
     NodeType mType;
     std::vector<DialogueNode*> mChildren;
     int mId;
     DialogueDataType mData;
-      // @@@(Jay): This is 1000% temporary
     
-
     void (DialogueNode::*mNodeLogic)();
 
     void PlayAnim();
@@ -84,7 +85,6 @@ namespace YTE
     void PlaySound();
   };
 
-  //EVENT TO LISTEN TO NODE WILL LOOK KINDA LIKE THIS
   class DialogueNodeReady : public Event
   {
   public:
