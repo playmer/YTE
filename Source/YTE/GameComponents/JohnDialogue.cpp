@@ -21,6 +21,7 @@ namespace YTE
 		assumes the first element of the vector is the root
 ******************************************************************************/
   Conversation::Conversation(std::vector<DialogueNode> *aNodes)
+		: mState(Conversation::State::Available)
   {
 		for (DialogueNode i : *aNodes)
 		{
@@ -42,7 +43,7 @@ namespace YTE
 			Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
   Quest::Quest(Quest::Name aName, std::vector<Conversation> *aConvos)
-    : mName(aName), mState(State::Available), mConditionMet(false)
+    : mName(aName), mState(Quest::State::Available), mConditionMet(false)
   {
 		for (Conversation i : *aConvos)
 		{
@@ -119,6 +120,7 @@ namespace YTE
     YTEUnusedArgument(aEvent);
     mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
 		mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+		mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
   }
 
   void JohnDialogue::DeregisterJohn(CollisionEnded *aEvent)
@@ -126,6 +128,7 @@ namespace YTE
     YTEUnusedArgument(aEvent);
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
 		mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+		mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
   }
 
   void JohnDialogue::Initialize()
@@ -136,6 +139,17 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
+			// if we exited early just start the conversation over
+		if (mActiveConvo->GetState() == Conversation::State::EarlyExit)
+		{
+			mActiveNode = mActiveConvo->GetRoot();
+		}
+		// @@@(JAY): This is temporary since we dont have another convo yet, prevents breaking
+		else if (mActiveConvo->GetState() == Conversation::State::Completed)
+		{
+			mActiveNode = mActiveConvo->GetRoot();
+		}
+
 		DialogueNode::NodeType type = mActiveNode->GetNodeType();
 			// For anims and sounds we wont hear back from the director so send an event to ourselves to begin
 		if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
@@ -152,6 +166,11 @@ namespace YTE
 			mSpace->SendEvent(Events::DialogueNodeReady, &next);
 		}
   }
+
+	void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
+	{
+		mActiveConvo->SetState(Conversation::State::EarlyExit);
+	}
 
 	void JohnDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
 	{
@@ -178,6 +197,7 @@ namespace YTE
 		{
 			DialogueExit diagExit;
 			mSpace->SendEvent(Events::DialogueExit, &diagExit);
+			mActiveConvo->SetState(Conversation::State::Completed);
 		}
 	}
 } //end yte

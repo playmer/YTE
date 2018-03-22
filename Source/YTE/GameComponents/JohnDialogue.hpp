@@ -30,12 +30,16 @@ namespace YTE
   class Conversation
   {
   public:
+		enum class State { Available, Completed, EarlyExit};
 		Conversation() {};
     Conversation(std::vector<DialogueNode> *aNodes);
 
 		DialogueNode *GetRoot() { return &mNodeVec[0]; };
+		Conversation::State GetState() { return mState; };
+		void SetState(Conversation::State aState) { mState = aState; };
   private:
 		std::vector<DialogueNode> mNodeVec;
+		Conversation::State mState;
   };
 
   class Quest
@@ -71,6 +75,7 @@ namespace YTE
 		void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
   private:
     void OnDialogueStart(DialogueStart *aEvent);
+		void OnDialogueExit(DialogueExit *aEvent);
     void RegisterJohn(CollisionStarted *aEvent);
     void DeregisterJohn(CollisionEnded *aEvent);
 		void OnDialogueContinue(DialogueNodeConfirm *aEvent);
