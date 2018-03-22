@@ -110,6 +110,18 @@ namespace YTE
     }
   }
 
+	DialogueNode *DialogueNode::GetChild(int pos)
+	{
+		if (mChildren.size() > 0)
+		{
+			return mChildren[pos];
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
 	void DialogueNode::SetChildren(int aCount, DialogueNode *aNode, ...)
 	{
 		mChildren = *(new std::vector<DialogueNode*>);

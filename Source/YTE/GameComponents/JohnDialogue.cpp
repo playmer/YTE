@@ -157,19 +157,27 @@ namespace YTE
 	{
 		mActiveNode->ActivateNode();
 		mActiveNode = mActiveNode->GetChild(aEvent->Selection);
-		DialogueNode::NodeType type = mActiveNode->GetNodeType();
-		if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
+		if (mActiveNode != nullptr)
 		{
-			// Anims and Sounds always have 1 child
-			DialogueNodeConfirm next(0);
-			mSpace->SendEvent(Events::DialogueNodeConfirm, &next);
+			DialogueNode::NodeType type = mActiveNode->GetNodeType();
+			if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
+			{
+				// Anims and Sounds always have 1 child
+				DialogueNodeConfirm next(0);
+				mSpace->SendEvent(Events::DialogueNodeConfirm, &next);
+			}
+			// For input and text we rely on the director responding
+			else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
+			{
+				DialogueNodeReady next(mActiveNode->GetNodeData());
+				next.DialogueType = type;
+				mSpace->SendEvent(Events::DialogueNodeReady, &next);
+			}
 		}
-		// For input and text we rely on the director responding
-		else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
+		else
 		{
-			DialogueNodeReady next(mActiveNode->GetNodeData());
-			next.DialogueType = type;
-			mSpace->SendEvent(Events::DialogueNodeReady, &next);
+			DialogueExit diagExit;
+			mSpace->SendEvent(Events::DialogueExit, &diagExit);
 		}
 	}
 } //end yte
