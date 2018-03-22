@@ -54,13 +54,13 @@ namespace YTE
     const glm::vec3 rightReset(-1, 0, 0);
     const glm::vec3 upReset(0, 1, 0);
 
-    auto transform = mOwner->GetComponent<Transform>();
+    mTransform = mOwner->GetComponent<Transform>();
 
-    glm::quat rotation = transform->GetWorldRotation();
+    glm::quat rotation = mTransform->GetWorldRotation();
 
-    mForwardVector = rotation * forwardReset;
-    mRightVector = rotation * rightReset;
-    mUpVector = rotation * upReset;
+    mForwardVector = glm::normalize(rotation * forwardReset);
+    mRightVector   = glm::normalize(rotation * rightReset);
+    mUpVector      = glm::normalize(rotation * upReset);
   }
 
   void Orientation::OnRotationChanged(TransformChanged *aEvent)
@@ -73,9 +73,9 @@ namespace YTE
 
     glm::quat rotation = aEvent->WorldRotation;
 
-    mForwardVector = rotation * forwardReset;
-    mRightVector = rotation * rightReset;
-    mUpVector = rotation * upReset;
+    mForwardVector = glm::normalize(rotation * forwardReset);
+    mRightVector   = glm::normalize(rotation * rightReset);
+    mUpVector      = glm::normalize(rotation * upReset);
 
     OrientationChanged newOrientation;
     newOrientation.Orientation = this;
@@ -98,5 +98,63 @@ namespace YTE
   glm::vec3 Orientation::GetUpVector() const
   {
     return mUpVector;
+  }
+
+  void Orientation::LookAt(glm::vec3 const &aDirection)
+  {
+    //YTEUnusedArgument(aUp);
+    //
+    /////Derived from pseudo code found here:
+    /////http://stackoverflow.com/questions/13014973/quaternion-rotate-to
+    ///// and actual code from :
+    /////http://stackoverflow.com/questions/14337441/looking-at-an-object-with-a-quaternion
+    
+    auto transform = mOwner->GetComponent<Transform>();
+    auto position = transform->GetTranslation();
+    
+    //Normalize VectorTo
+    auto direction = glm::normalize(aDirection);
+    
+    //Get the dot product to find the angle
+    float forwardAngle = std::atan2(mForwardVector.z, mForwardVector.x);
+    float directionAngle = std::atan2(direction.z, direction.x);
+    
+    // create [0, 2pi] ranges instead of [-pi, pi]
+    if (forwardAngle < 0.0f)
+    {
+      forwardAngle = 2.0f * glm::pi<float>() + forwardAngle;
+    }
+    if (directionAngle < 0.0f)
+    {
+      directionAngle = 2.0f * glm::pi<float>() + directionAngle;
+    }
+    
+    glm::vec3 eulers = transform->GetRotationAsEuler();
+    eulers.x = glm::radians(eulers.x);
+    eulers.y = glm::radians(eulers.y);
+    eulers.z = glm::radians(eulers.z);
+    
+    float yRotation = directionAngle - forwardAngle;
+    eulers.y += yRotation;
+    
+    //Finally, create a quaternion
+    glm::quat axisAngle(eulers);
+    
+    //And multiply it into the current orientation
+    transform->SetRotation(axisAngle);
+
+
+    //Alternative
+    //auto direction = glm::normalize(aDirection);
+    //
+    //auto axis = glm::cross(aDirection, mForwardVector);
+    //auto angle = glm::dot(aDirection, mForwardVector);
+    //
+    //mTransform->Rotate(axis, angle);
+  }
+
+  void Orientation::LookAtPoint(glm::vec3 const &aPoint)
+  {
+    LookAt(aPoint - mTransform->GetWorldTranslation());
   }
 }

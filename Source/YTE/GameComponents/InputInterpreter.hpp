@@ -29,6 +29,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  class InputInterpreter;
+
   /////////////////////////////////////////////////////////////////////////////////////
   // Events
   /////////////////////////////////////////////////////////////////////////////////////
@@ -45,6 +47,7 @@ namespace YTE
   YTEDeclareEvent(MenuConfirm);
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
+  YTEDeclareEvent(DebugSwitch);
 
   class CameraRotateEvent : public Event
   {
@@ -122,6 +125,7 @@ namespace YTE
 
     Composition* ParentMenu = nullptr;
     bool PlaySound = false;
+    bool ResetCursor = false;
   };
 
   class MenuConfirm : public Event
@@ -130,6 +134,7 @@ namespace YTE
     YTEDeclareType(MenuConfirm);
     MenuConfirm(bool aIsReleased) { IsReleased = aIsReleased; }
 
+    bool IsHandled = false;
     bool IsReleased;
   };
 
@@ -142,6 +147,7 @@ namespace YTE
     bool ShouldExitAll;
     bool PlaySound = false;
     bool Handled = false;
+    InputInterpreter* ContextSwitcher;
   };
 
   class MenuElementChange : public Event
@@ -155,6 +161,15 @@ namespace YTE
     Direction ChangeDirection;
   };
 
+  class DebugSwitch : public Event
+  {
+  public:
+    YTEDeclareType(DebugSwitch);
+    DebugSwitch(bool aEnableDebug) { EnableDebug = aEnableDebug; }
+
+    bool EnableDebug;
+  };
+
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Class
@@ -163,7 +178,7 @@ namespace YTE
   class InputInterpreter : public Component
   {
   public:
-    enum class InputContext { Sailing, Dialogue, UI, Menu, num_contexts };
+    enum class InputContext { Sailing, Dialogue, UI, Menu, Debug, num_contexts };
 
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
@@ -184,14 +199,14 @@ namespace YTE
     InputContext GetInputContext();
 
     // PROPERTIES //////////////////////////////////////////////////////
-    std::string GetRootMenuName() { return mRootPauseMenuName; }
-    void SetRootMenuName(std::string& aRootMenuName) { mRootPauseMenuName = aRootMenuName; }
     ////////////////////////////////////////////////////////////////////
 
   private:
     XboxController *mGamepad;
     Keyboard *mKeyboard;
-    std::string mRootPauseMenuName;
+
+    Space *mMenuSpace;
+
     InputContext mContext;
 
     bool mIsRightTriggerDown;

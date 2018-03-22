@@ -36,6 +36,9 @@ namespace YTE
   YTEDefineEvent(CameraRotateEvent);
   YTEDefineEvent(DirectCameraEvent);
 
+  // Debug Events
+  YTEDefineEvent(DebugSwitch);
+
   YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
   YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
@@ -49,16 +52,11 @@ namespace YTE
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
   YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
   YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
-
+  YTEDefineType(DebugSwitch) { YTERegisterType(DebugSwitch); }
 
   YTEDefineType(InputInterpreter)
   {
     YTERegisterType(InputInterpreter);
-
-    //YTEBindProperty(&GetRootMenuName, &SetRootMenuName, "PauseMenuName")
-      //.AddAttribute<Serializable>()
-      //.AddAttribute<EditorProperty>()
-      //.SetDocumentation("The root pause menu that should open when \"start\" is pressed -- Sure don't love string properties -- ID");
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -70,9 +68,11 @@ namespace YTE
 
   void InputInterpreter::Initialize()
   {
-    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::Controller_Id::Xbox_P1);
+    mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
     mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
     mContext = InputContext::Sailing;
+
+    mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
 
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 
@@ -136,13 +136,13 @@ namespace YTE
   {
     if (mContext == InputContext::Sailing)
     {
-      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      if (aEvent->Stick == XboxButtons::LeftStick)
       {
         BoatTurnEvent turnEvent;
         turnEvent.StickDirection = aEvent->StickDirection;
         mOwner->SendEvent(Events::BoatTurnEvent, &turnEvent);
       }
-      else if (aEvent->Stick == Xbox_Buttons::RightStick)
+      else if (aEvent->Stick == XboxButtons::RightStick)
       {
         CameraRotateEvent camRot;
         camRot.StickDirection = aEvent->StickDirection;
@@ -152,7 +152,7 @@ namespace YTE
 
     else if (mContext == InputContext::Dialogue) 
     {
-      if (aEvent->Stick == Xbox_Buttons::LeftStick)
+      if (aEvent->Stick == XboxButtons::LeftStick)
       {
         DialogueSelect selectEvent;
         selectEvent.StickDirection = aEvent->StickDirection;
@@ -165,20 +165,37 @@ namespace YTE
   {
     if (mContext == InputContext::Menu)
     {
-      if (aEvent->FlickedStick == Xbox_Buttons::LeftStick)
+      if (aEvent->FlickedStick == XboxButtons::LeftStick)
       {
-        if (aEvent->FlickDirection.x < 0.01f)
+        glm::vec2 flickDir = aEvent->FlickDirection;
+
+          // Check dead-zone
+        if (glm::length(flickDir) > 0.01f)
         {
-          MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+            // Transform the flick direction by 45 degrees
+            // Pressing something mostly-right or mostly-down should progess to the next
+            //   menu element. Mostly-left or mostly-up goes back.
+            // This transform makes the following checks easier by allowing us to simply check
+            //   if the x component is greater than 0 (0 is okay here because we've already passed
+            //   our dead-zone check).
+          float cos45 = glm::cos(glm::quarter_pi<float>());
+          float sin45 = glm::cos(glm::quarter_pi<float>());
+          glm::vec2 rotatedDir(flickDir.x * cos45 - flickDir.y * sin45, flickDir.x * sin45 + flickDir.y * cos45);
 
-          mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
-        }
+            // Check forward region
+          if (rotatedDir.x > 0.0f)
+          {
+            MenuElementChange menuNext(MenuElementChange::Direction::Next);
 
-        else if (aEvent->FlickDirection.x > 0.01f)
-        {
-          MenuElementChange menuNext(MenuElementChange::Direction::Next);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
+          }
 
-          mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+          else //(aEvent->FlickDirection.x < 0.01f)
+          {
+            MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
+
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
+          }
         }
       }
     }
@@ -192,13 +209,13 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             DialogueConfirm diagConfirm;
             mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
             break;
           }
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
           {
             DialogueExit diagExit;
             mOwner->SendEvent(Events::DialogueExit, &diagExit);
@@ -211,42 +228,45 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::DPAD_Down:
+          case XboxButtons::DPAD_Down:
             break;
-          case Xbox_Buttons::DPAD_Up:
+          case XboxButtons::DPAD_Up:
             break;
-          case Xbox_Buttons::DPAD_Left:
+          case XboxButtons::DPAD_Left:
             break;
-          case Xbox_Buttons::DPAD_Right:
+          case XboxButtons::DPAD_Right:
             break;
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             RequestDialogueStart dock;
             mOwner->SendEvent(Events::RequestDialogueStart, &dock);
             break;
           }
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
             break;
-          case Xbox_Buttons::X:
+          case XboxButtons::X:
             break;
-          case Xbox_Buttons::Y:
+          case XboxButtons::Y:
             break;
-          case Xbox_Buttons::Start:
+          case XboxButtons::Start:
           {
+            SailStateChanged sailUp(false);
+            mSpace->SendEvent(Events::SailStateChanged, &sailUp);
+
             MenuStart menuStart;
             menuStart.PlaySound = true;
-            mOwner->SendEvent(Events::MenuStart, &menuStart);
+            mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
           }
-          case Xbox_Buttons::LeftShoulder:
+          case XboxButtons::LeftShoulder:
             break;
-          case Xbox_Buttons::RightShoulder:
+          case XboxButtons::RightShoulder:
             break;
-          case Xbox_Buttons::LeftStick:
+          case XboxButtons::LeftStick:
             break;
-          case Xbox_Buttons::RightStick:
+          case XboxButtons::RightStick:
             break;
         }
         break;
@@ -256,45 +276,49 @@ namespace YTE
       {
         switch (aEvent->Button)
         {
-          case Xbox_Buttons::Back:
-          case Xbox_Buttons::Start:
+          case XboxButtons::Back:
+          case XboxButtons::Start:
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            menuExit.ContextSwitcher = this;
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
             break;
           }
 
-          case Xbox_Buttons::A:
+          case XboxButtons::A:
           {
             MenuConfirm menuConfirm(false);
-            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+            mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
             break;
           }
 
-          case Xbox_Buttons::B:
+          case XboxButtons::B:
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            menuExit.ContextSwitcher = this;
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
           }
 
-          case Xbox_Buttons::DPAD_Left:
+          case XboxButtons::DPAD_Up:
+          case XboxButtons::DPAD_Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
 
             break;
           }
 
-          case Xbox_Buttons::DPAD_Right:
+          case XboxButtons::DPAD_Down:
+          case XboxButtons::DPAD_Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
-            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
 
             break;
           }
@@ -312,10 +336,10 @@ namespace YTE
     {
       case InputContext::Menu:
       {
-        if (aEvent->Button == Xbox_Buttons::A)
+        if (aEvent->Button == XboxButtons::A)
         {
           MenuConfirm menuConfirm(true);
-          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
           break;
         }
       }
@@ -355,9 +379,24 @@ namespace YTE
   {
     switch (mContext)
     {
+      case InputContext::Debug:
+      {
+        switch (aEvent->Key)
+        {
+          case Keys::F1:
+          {
+            DebugSwitch setDebug(false);
+            mOwner->SendEvent(Events::DebugSwitch, &setDebug);
+
+            mContext = InputContext::Sailing;
+
+            break;
+          }
+        }
+      }
+
       case InputContext::Dialogue:
       {
-      default:
         break;
       }
       case InputContext::Sailing:
@@ -374,7 +413,8 @@ namespace YTE
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
-            mOwner->SendEvent(Events::MenuStart, &menuStart);
+            mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
+            mSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
             break;
@@ -397,6 +437,16 @@ namespace YTE
 
             break;
           }
+
+          case Keys::F1:
+          {
+            DebugSwitch setDebug(true);
+            mOwner->SendEvent(Events::DebugSwitch, &setDebug);
+
+            mContext = InputContext::Debug;
+
+            break;
+          }
         }
         break;
       }
@@ -409,7 +459,8 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            menuExit.ContextSwitcher = this;
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
             break;
@@ -418,7 +469,7 @@ namespace YTE
           case Keys::Return:
           {
             MenuConfirm menuConfirm(false);
-            mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+            mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
 
             break;
           }
@@ -427,25 +478,30 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            mOwner->SendEvent(Events::MenuExit, &menuExit);
+            menuExit.ContextSwitcher = this;
+            mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
           }
 
+          case Keys::W:
+          case Keys::Up:
           case Keys::A:
           case Keys::Left:
           {
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
-            mOwner->SendEvent(Events::MenuElementChange, &menuPrev);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
 
             break;
           }
 
+          case Keys::S:
+          case Keys::Down:
           case Keys::D:
           case Keys::Right:
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
-            mOwner->SendEvent(Events::MenuElementChange, &menuNext);
+            mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
 
             break;
           }
@@ -484,7 +540,7 @@ namespace YTE
         if (aEvent->Key == Keys::Return)
         {
           MenuConfirm menuConfirm(true);
-          mOwner->SendEvent(Events::MenuConfirm, &menuConfirm);
+          mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
           break;
         }
       }

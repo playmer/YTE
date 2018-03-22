@@ -43,6 +43,8 @@ namespace YTE
                            std::vector<Submesh> &aSubmeshes,
 		                       bool aForceUpdate = false) override;
 
+    void ResetView(GraphicsView *aView);
+
 
     /////////////////////////////////
     // Events

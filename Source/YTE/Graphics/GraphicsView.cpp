@@ -1,6 +1,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
@@ -52,6 +53,10 @@ namespace YTE
       .AddAttribute<Serializable>()
       .SetDocumentation("The order to render the views. We render lowest to highest.");
 
+    YTEBindProperty(&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling, "SuperSampling")
+      .AddAttribute<EditorProperty>()
+      .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
+
     YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
@@ -72,14 +77,15 @@ namespace YTE
                              Space *aSpace, 
                              RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mLastCamera(nullptr)
-    , mWindow(nullptr)
-    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
-    , mConstructing(true)
-    , mOrder(0.0f)
-    , mInitialized(false)
+    , mActiveCamera(nullptr)
     , mDrawerCombination(YTEDrawerTypeCombination::DefaultCombination)
     , mDrawerType(YTEDrawerTypes::DefaultDrawer)
+    , mWindow(nullptr)
+    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
+    , mSuperSampling(1)
+    , mOrder(0.0f)
+    , mConstructing(true)
+    , mInitialized(false)
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
@@ -97,6 +103,24 @@ namespace YTE
   GraphicsView::~GraphicsView()
   {
     mRenderer->DeregisterView(this);
+  }
+
+  // https://stackoverflow.com/a/108340
+  static bool IsPowerOf2(i32 aValue)
+  {
+    return (aValue > 0 && !(aValue & (aValue - 1)));
+  }
+
+  void GraphicsView::SetSuperSampling(i32 aSuperSampling)
+  {
+    if (!IsPowerOf2(aSuperSampling))
+    {
+      return;
+    }
+
+    mSuperSampling = aSuperSampling;
+
+    mRenderer->ResetView(this);
   }
 
   void GraphicsView::NativeInitialize()
@@ -135,7 +159,17 @@ namespace YTE
 
   void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
   {
-    mLastCamera = aCamera;
+    if (aCamera != mActiveCamera)
+    {
+      mOwner->GetEngine()->Log(LogType::Warning,
+                               fmt::format("A camera by the name of {} is attempting to update "
+                                           "the GraphicsView despite it not being the active "
+                                           "camera. The current active camera is named {}",
+                                           aCamera->GetOwner()->GetName().c_str(),
+                                           mActiveCamera->GetOwner()->GetName().c_str()));
+      return;
+    }
+
     mRenderer->UpdateWindowViewBuffer(this, aView);
   }
   

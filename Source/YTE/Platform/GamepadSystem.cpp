@@ -35,9 +35,9 @@ namespace YTE
     UpdateXboxControllers(aDt);
   }
     
-  XboxController* GamepadSystem::GetXboxController(Controller_Id aId)
+  XboxController* GamepadSystem::GetXboxController(ControllerId aId)
   {
-    if (aId >= Controller_Id::Xbox_Controllers_Number)
+    if (aId >= ControllerId::Xbox_Controllers_Number)
     {
       return nullptr;
     }

@@ -46,8 +46,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
+
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -186,7 +189,7 @@ namespace YTEditor
           glm::vec3 objPos = objTransform->GetWorldTranslation();
 
           auto view = mEditingLevel->GetComponent<YTE::GraphicsView>();
-          auto cameraComponent = view->GetLastCamera();
+          auto cameraComponent = view->GetActiveCamera();
           auto cameraObject = cameraComponent->GetOwner();
           auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
           glm::vec3 camPos = cameraTransform->GetWorldTranslation();
@@ -328,6 +331,27 @@ namespace YTEditor
     GetComponentBrowser().GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
+    // Add the camera object to the new level
+    YTE::String camName{ "EditorCamera" };
+    YTE::Composition *camera = mEditingLevel->AddComposition<YTE::Composition>(camName,
+                                                                               GetRunningEngine(),
+                                                                               camName,
+                                                                               mEditingLevel);
+
+    if (camera->ShouldSerialize())
+    {
+      camera->ToggleSerialize();
+    }
+
+    // add the camera component to the camera object
+    camera->AddComponent(YTE::Transform::GetStaticType());
+    camera->AddComponent(YTE::Orientation::GetStaticType());
+    camera->AddComponent(YTE::Camera::GetStaticType());
+    camera->AddComponent(YTE::FlybyCamera::GetStaticType());
+    camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
+
+    camera->GetComponent<YTE::Camera>()->SetCameraAsActive();
+
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();
 
@@ -339,8 +363,8 @@ namespace YTEditor
 
       YTE::Composition *engineObj = cmp->second.get();
 
-      // temp hardcode to not add Gizmo or engineObj to object browser
-      if (objName == "Gizmo" || engineObj->GetComponent<YTE::Camera>())
+      // temp hardcode to not add Gizmo to object browser
+      if (objName == "Gizmo")
       {
         continue;
       }
@@ -412,20 +436,6 @@ namespace YTEditor
     YTE::InitializeEvent event;
     mRunningSpace->Initialize(&event);
     mRunningSpace->Update(&update);
-
-    auto comps = mRunningSpace->GetCompositions();
-    for (auto it = comps->begin(); it != comps->end(); ++it)
-    {
-      auto cam = it->second->GetComponent<YTE::Camera>();
-      if (cam)
-      {
-        if (cam->GetCameraType() == "Gameplay")
-        {
-          cam->SetCameraAsActive();
-          break;
-        }
-      }
-    }
   }
 
   void MainWindow::PauseLevel(bool pauseState)
@@ -525,7 +535,7 @@ namespace YTEditor
         GetGizmo()->RefreshAxesInPhysicsHandler();
       }
 
-      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      if (mouse.IsButtonDown(YTE::MouseButtons::Right) == false)
       {
         // increase gizmo scale factor
         if (aEvent->key() == Qt::Key_E)
@@ -546,7 +556,7 @@ namespace YTEditor
     }
     else if (aEvent->modifiers() != Qt::Modifier::ALT)
     {
-      if (mouse.IsButtonDown(YTE::Mouse_Buttons::Right) == false)
+      if (mouse.IsButtonDown(YTE::MouseButtons::Right) == false)
       {
         // change to select gizmo
         if (aEvent->key() == Qt::Key_Q)

@@ -64,17 +64,18 @@ namespace YTE
     mOwner->YTERegister(Events::AnimationRemoved, this, &FacialAnimator::OnAnimationRemoved);
   }
 
-  void FacialAnimator::OnModelChanged(ModelChanged *event)
+  void FacialAnimator::OnModelChanged(ModelChanged *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     RefreshInitialBufffers();
   }
 
-  void FacialAnimator::OnKeyFrameChanged(KeyFrameChanged *event)
+  void FacialAnimator::OnKeyFrameChanged(KeyFrameChanged *aEvent)
   {
     // get initial buffers
     InstantiatedModel *instModel = mModel->GetInstantiatedModel()[0];
     
-    FaceAnim *anim = mFaceAnimations[event->animation];
+    FaceAnim *anim = mFaceAnimations[aEvent->animation];
 
     Mesh *mesh = instModel->GetMesh();
 
@@ -84,7 +85,7 @@ namespace YTE
 
       if (submesh.mMaterialName == "OnlyDiff_Eye")
       {
-        FaceFrame *eyeFrame = FindEyeFrame(anim, event->time * anim->ticksPerSecond);
+        FaceFrame *eyeFrame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
 
         if (eyeFrame)
         {
@@ -101,7 +102,7 @@ namespace YTE
       }
       else if (submesh.mMaterialName == "OnlyDiff_Mouth")
       {
-        FaceFrame *mouthFrame = FindMouthFrame(anim, event->time * anim->ticksPerSecond);
+        FaceFrame *mouthFrame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
 
         if (mouthFrame)
         {
@@ -223,17 +224,17 @@ namespace YTE
 
           float u = std::stof(values[2]);
 
-          if (u < 0.0)
+          if (u < 0.0f)
           {
-            u = 1.0 - u;
+            u = 1.0f - u;
           }
           eyeFrame.uv.x = u;
 
           float v = std::stof(values[3]);
 
-          if (v < 0.0)
+          if (v < 0.0f)
           {
-            v = 1.0 - v;
+            v = 1.0f - v;
           }
           eyeFrame.uv.y = v;
 
@@ -257,17 +258,17 @@ namespace YTE
           
           float u = std::stof(values[2]);
           
-          if (u < 0.0)
+          if (u < 0.0f)
           {
-            u = 1.0 - u;
+            u = 1.0f - u;
           }
           mouthFrame.uv.x = u;
           
           float v = std::stof(values[3]);
 
-          if (v < 0.0)
+          if (v < 0.0f)
           {
-            v = 1.0 - v;
+            v = 1.0f - v;
           }
           mouthFrame.uv.y = v;
 

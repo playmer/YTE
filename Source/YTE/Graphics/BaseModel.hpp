@@ -30,6 +30,8 @@ namespace YTE
       {
         model->SetVisibility(aVisibility);
       }
+
+      mVisibility = aVisibility;
     }
 
     bool GetVisibility()
@@ -46,6 +48,10 @@ namespace YTE
 
       return true;
     }
+
+  protected:
+
+    bool mVisibility = true;
   };
 }
 

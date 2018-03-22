@@ -22,9 +22,13 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/Utilities.hpp"
+
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/FlybyCamera.hpp"
+
 #include "YTE/Physics/PhysicsSystem.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
@@ -98,22 +102,6 @@ int main(int argc, char *argv[])
   YTE::Space *newLevel = mainEngine.AddComposition<YTE::Space>(newLevelName, &mainEngine, nullptr);
   //newLevel->Initialize();
   newLevel->SetPaused(true);
-  
-  YTE::String camName{ "Camera" };
-  
-  // add the camera object to the new level
-  YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, &mainEngine, camName, newLevel);
-  //camera->Initialize();
-  
-  if (camera->ShouldSerialize())
-  {
-    camera->ToggleSerialize();
-  }
-  
-  
-  // add the camera component to the camera object
-  camera->AddComponent(YTE::Camera::GetStaticType());
-  
   newLevel->AddComponent(YTE::PhysicsSystem::GetStaticType());
 
 

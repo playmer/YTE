@@ -52,6 +52,7 @@ namespace YTE
     enabledFeatures.setTextureCompressionBC(true);
     enabledFeatures.setWideLines(true);
     enabledFeatures.setFillModeNonSolid(true);
+    enabledFeatures.setSamplerAnisotropy(true);
     
     mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
                                                                   nullptr,
@@ -360,6 +361,11 @@ namespace YTE
     }
 
     return surface->second.get();
+  }
+
+  void VkRenderer::ResetView(GraphicsView *aView)
+  {
+    GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
 }
 

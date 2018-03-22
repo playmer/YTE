@@ -79,7 +79,7 @@ namespace YTE
   void Space::Initialize()
   {
     InitializeEvent event;
-    event.CheckRunInEditor = mEngine->IsEditor();
+    event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
   }
 
@@ -128,6 +128,7 @@ namespace YTE
     Composition::NativeInitialize(aEvent);
     Composition::PhysicsInitialize(aEvent);
     Composition::Initialize(aEvent);
+    Composition::Start(aEvent);
 
     mShouldIntialize = true;
   }

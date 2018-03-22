@@ -53,6 +53,8 @@ namespace YTE
     virtual void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination);
     virtual void DeregisterView(GraphicsView *aView);
     virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
+
+    virtual void ResetView(GraphicsView *aView);
   };
 }
 

@@ -178,10 +178,12 @@ namespace YTE
 
   void JohnDialogue::RegisterJohn(CollisionStarted *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
   }
   void JohnDialogue::DeregisterJohn(CollisionEnded *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
   }
 
@@ -193,6 +195,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
+    YTEUnusedArgument(aEvent);
 		//Conversation *temp = &(*(mActiveQuest.GetActiveConvo()));
 
     // this is just so that we start a conversation the same way as advancing

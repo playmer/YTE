@@ -95,10 +95,10 @@ namespace YTE
 
     if (soundSystem)
     {
-      soundSystem->GetSoundIDFromString("SFX_Sail_Up", mSoundSailUp);
-      soundSystem->GetSoundIDFromString("SFX_Sail_Down", mSoundSailDown);
-      soundSystem->GetSoundIDFromString("SFX_Boat_Bump", mSoundBumpDock);
-      soundSystem->GetSoundIDFromString("SFX_Boat_Turn", mSoundBoatTurn);
+      mSoundSailUp   = soundSystem->GetSoundIDFromString("SFX_Sail_Up");
+      mSoundSailDown = soundSystem->GetSoundIDFromString("SFX_Sail_Down");
+      mSoundBumpDock = soundSystem->GetSoundIDFromString("SFX_Boat_Bump");
+      mSoundBoatTurn = soundSystem->GetSoundIDFromString("SFX_Boat_Turn");
     }
 
     /* Event Registration */
@@ -106,8 +106,6 @@ namespace YTE
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
-    //mOwner->YTERegister(Events::CollisionStarted, this, &BoatController::OnCollisionStart);
-    //mOwner->YTERegister(Events::CollisionEnded, this, &BoatController::OnCollisionEnd);
 
     mAnimator = mOwner->GetComponent<Animator>();
     
@@ -202,7 +200,7 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      //mSoundEmitter->PlayEvent(mSoundBoatTurn);
+      mSoundEmitter->PlayEvent(mSoundBoatTurn);
       mPlayingTurnSound = true;
     }
 
@@ -308,12 +306,6 @@ namespace YTE
     }
 
     mStartedTurning = false;
-  }
-
-  void BoatController::OnMenuStart(MenuStart *aEvent)
-  {
-    YTEUnusedArgument(aEvent);
-    StopBoatImmediately();
   }
   ////////////////////////////////////////////////////////////////////////////////////
 

@@ -88,6 +88,6 @@ namespace YTE
 
   void DialogueElement::OnConfirmEvent(UIConfirmEvent *aEvent)
   {
-
+    YTEUnusedArgument(aEvent);
   }
 }

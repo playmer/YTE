@@ -11,37 +11,37 @@
 /*******************************************************************************
 YTE Enums
 *******************************************************************************/
-YTEDefineExternalType(YTE::Controller_Id)
+YTEDefineExternalType(YTE::ControllerId)
 {
-  YTERegisterType(YTE::Controller_Id);
+  YTERegisterType(YTE::ControllerId);
 
-//  YTEBindEnumValue(Controller_Id::Xbox_P1, "Xbox_P1");
-//  YTEBindEnumValue(Controller_Id::Xbox_P2, "Xbox_P2");
-//  YTEBindEnumValue(Controller_Id::Xbox_P3, "Xbox_P3");
-//  YTEBindEnumValue(Controller_Id::Xbox_P4, "Xbox_P4");
-//  YTEBindEnumValue(Controller_Id::Xbox_Controllers_Number, "Xbox_Controllers_Number");
-//  YTEBindEnumValue(Controller_Id::Unknown, "Unknown");
+//  YTEBindEnumValue(ControllerId::Xbox_P1, "Xbox_P1");
+//  YTEBindEnumValue(ControllerId::Xbox_P2, "Xbox_P2");
+//  YTEBindEnumValue(ControllerId::Xbox_P3, "Xbox_P3");
+//  YTEBindEnumValue(ControllerId::Xbox_P4, "Xbox_P4");
+//  YTEBindEnumValue(ControllerId::Xbox_Controllers_Number, "Xbox_Controllers_Number");
+//  YTEBindEnumValue(ControllerId::Unknown, "Unknown");
 }
 
-YTEDefineExternalType(YTE::Xbox_Buttons)
+YTEDefineExternalType(YTE::XboxButtons)
 {
-  YTERegisterType(YTE::Xbox_Buttons);
+  YTERegisterType(YTE::XboxButtons);
 //
-//  YTEBindEnumValue(Xbox_Buttons::DPAD_Up, "DPAD_Up");
-//  YTEBindEnumValue(Xbox_Buttons::DPAD_Down, "DPAD_Down");
-//  YTEBindEnumValue(Xbox_Buttons::DPAD_Left, "DPAD_Left");
-//  YTEBindEnumValue(Xbox_Buttons::DPAD_Right, "DPAD_Right");
-//  YTEBindEnumValue(Xbox_Buttons::Start, "Start");
-//  YTEBindEnumValue(Xbox_Buttons::Back, "Back");
-//  YTEBindEnumValue(Xbox_Buttons::LeftStick, "LeftStick");
-//  YTEBindEnumValue(Xbox_Buttons::RightStick, "RightStick");
-//  YTEBindEnumValue(Xbox_Buttons::LeftShoulder, "LeftShoulder");
-//  YTEBindEnumValue(Xbox_Buttons::RightShoulder, "RightShoulder");
-//  YTEBindEnumValue(Xbox_Buttons::A, "A");
-//  YTEBindEnumValue(Xbox_Buttons::B, "B");
-//  YTEBindEnumValue(Xbox_Buttons::X, "X");
-//  YTEBindEnumValue(Xbox_Buttons::Y, "Y");
-//  YTEBindEnumValue(Xbox_Buttons::Unknown, "Unknown");
+//  YTEBindEnumValue(XboxButtons::DPAD_Up, "DPAD_Up");
+//  YTEBindEnumValue(XboxButtons::DPAD_Down, "DPAD_Down");
+//  YTEBindEnumValue(XboxButtons::DPAD_Left, "DPAD_Left");
+//  YTEBindEnumValue(XboxButtons::DPAD_Right, "DPAD_Right");
+//  YTEBindEnumValue(XboxButtons::Start, "Start");
+//  YTEBindEnumValue(XboxButtons::Back, "Back");
+//  YTEBindEnumValue(XboxButtons::LeftStick, "LeftStick");
+//  YTEBindEnumValue(XboxButtons::RightStick, "RightStick");
+//  YTEBindEnumValue(XboxButtons::LeftShoulder, "LeftShoulder");
+//  YTEBindEnumValue(XboxButtons::RightShoulder, "RightShoulder");
+//  YTEBindEnumValue(XboxButtons::A, "A");
+//  YTEBindEnumValue(XboxButtons::B, "B");
+//  YTEBindEnumValue(XboxButtons::X, "X");
+//  YTEBindEnumValue(XboxButtons::Y, "Y");
+//  YTEBindEnumValue(XboxButtons::Unknown, "Unknown");
 }
 
 
@@ -57,35 +57,35 @@ constexpr typename std::underlying_type<tEnumType>::type GetNativeType()
   return static_cast<typename std::underlying_type<tEnumType>::type>(tValue);
 }
 
-YTEDefineExternalType(YTE::Mouse_Buttons)
+YTEDefineExternalType(YTE::MouseButtons)
 {
-  YTERegisterType(YTE::Mouse_Buttons);
+  YTERegisterType(YTE::MouseButtons);
 
-  //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()),
-  //                                            GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>)>::template Size();
+  //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
+  //                                            GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>)>::template Size();
 
-  //::YTE::BindFunction<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()), 
-  //                                                 GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>),
-  //                    GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()),
-  //                                        GetEnumValueAsUnderlyingType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>()>,
+  //::YTE::BindFunction<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()), 
+  //                                                 GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>),
+  //                    GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
+  //                                        GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>,
   //                    std::initializer_list<const char*>YTENoNames.size()>("Left", 
-  //                                                                         ::YTE::TypeId<decltype(Mouse_Buttons::Left)>(), 
+  //                                                                         ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
   //                                                                         YTENoNames);
 
-  ::YTE::BindFunction<decltype(&GetNativeType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>),
-                      &GetNativeType<decltype(Mouse_Buttons::Left), Mouse_Buttons::Left>,
+  ::YTE::BindFunction<decltype(&GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>),
+                      &GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>,
                       std::initializer_list<const char*>YTENoNames.size()>("Left", 
-                                                                           ::YTE::TypeId<decltype(Mouse_Buttons::Left)>(), 
+                                                                           ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
                                                                            YTENoNames);
 
 
 
-  //YTEBindEnumValue(Mouse_Buttons::Left, "Left");
-  //YTEBindEnumValue(Mouse_Buttons::Middle, "Middle");
-  //YTEBindEnumValue(Mouse_Buttons::Right, "Right");
-  //YTEBindEnumValue(Mouse_Buttons::Back, "Back");
-  //YTEBindEnumValue(Mouse_Buttons::Forward, "Forward");
-  //YTEBindEnumValue(Mouse_Buttons::Unknown, "Unknown");
+  //YTEBindEnumValue(MouseButtons::Left, "Left");
+  //YTEBindEnumValue(MouseButtons::Middle, "Middle");
+  //YTEBindEnumValue(MouseButtons::Right, "Right");
+  //YTEBindEnumValue(MouseButtons::Back, "Back");
+  //YTEBindEnumValue(MouseButtons::Forward, "Forward");
+  //YTEBindEnumValue(MouseButtons::Unknown, "Unknown");
 }
 
 YTEDefineExternalType(YTE::Keys)

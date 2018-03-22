@@ -33,7 +33,7 @@ namespace YTE
     YTEDeclareType(MouseButtonEvent);
 
     glm::i32vec2 WorldCoordinates;
-    Mouse_Buttons Button;
+    MouseButtons Button;
     Mouse *Mouse;
   };
 
@@ -60,7 +60,7 @@ namespace YTE
   glm::i32vec2 GetMousePosition();
   bool GetLRSwapped();
   void SurveyMouse(bool *aMouse);
-  uint64_t TranslateFromMouseButtonToOsKey(Mouse_Buttons aOsKey);
+  uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOsKey);
 
   class Mouse : public EventHandler
   {
@@ -70,7 +70,7 @@ namespace YTE
     Mouse();
 
     void Update();
-    void UpdateButton(Mouse_Buttons aButton, bool aDown, glm::i32vec2 aPosition);
+    void UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition);
     void UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition);
     void UpdatePosition(glm::i32vec2 aPosition);
 
@@ -80,9 +80,10 @@ namespace YTE
     // Updates the buttons via the OS.
     void UpdateAllButtons(glm::i32vec2 aRelativePosition);
     bool AnyButtonDown();
-    bool IsButtonDown(Mouse_Buttons aButton);
-    bool WasButtonDown(Mouse_Buttons aButton);
+    bool IsButtonDown(MouseButtons aButton);
+    bool WasButtonDown(MouseButtons aButton);
     glm::i32vec2 GetCursorPosition();
+    void SetCursorPosition(glm::i32vec2 aPosition);
 
   private:
     glm::i32vec2 mPosition;
@@ -93,8 +94,8 @@ namespace YTE
     bool *mMouseCurrent;
     bool *mMousePrevious;
 
-    bool mArrayOne[static_cast<size_t>(Mouse_Buttons::Mouse_Buttons_Number)];
-    bool mArrayTwo[static_cast<size_t>(Mouse_Buttons::Mouse_Buttons_Number)];
+    bool mArrayOne[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
+    bool mArrayTwo[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
 
     bool mLRSwapped;
   };

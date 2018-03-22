@@ -124,7 +124,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
   {
-    if (aEvent->Button != YTE::Mouse_Buttons::Left)
+    if (aEvent->Button != YTE::MouseButtons::Left)
     {
       return;
     }
@@ -132,7 +132,7 @@ namespace YTEditor
     static size_t i = 0;
 
     auto view = mSpace->GetComponent<YTE::GraphicsView>();
-    auto camera = view->GetLastCamera();
+    auto camera = view->GetActiveCamera();
     auto owner = camera->GetOwner();
     auto transform = owner->GetComponent<YTE::Transform>();
     auto orientation = owner->GetComponent<YTE::Orientation>();

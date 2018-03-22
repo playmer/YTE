@@ -27,13 +27,15 @@
 #include "YTE/GameComponents/DialogueElement.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
+#include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
-#include "YTE/GameComponents/UI/MenuController.hpp"
-#include "YTE/GameComponents/UI/RootMenu.hpp"
-#include "YTE/GameComponents/UI/LaunchMenu.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
+#include "YTE/GameComponents/Menu/RootMenu.hpp"
+#include "YTE/GameComponents/Menu/LaunchMenu.hpp"
+#include "YTE/GameComponents/Menu/Button.hpp"
+#include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
-#include "YTE/GameComponents/Button.hpp"
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
@@ -43,6 +45,7 @@
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/Drawers.hpp"
 #include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -108,13 +111,15 @@ namespace YTE
     InitializeType<DialogueElement>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
+    InitializeType<CameraAnchor>();
     InitializeType<CameraController>();
     InitializeType<MenuController>();
     InitializeType<RootMenu>();
     InitializeType<LaunchMenu>();
+    InitializeType<Button>();
+    InitializeType<ButtonAnimate>();
     InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
-    InitializeType<Button>();
     InitializeType<Zone>();
     InitializeType<Island>();
     InitializeType<TestingComponent>();
@@ -148,6 +153,7 @@ namespace YTE
     InitializeType<LineDrawer>();
     InitializeType<TriangleDrawer>();
     InitializeType<FacialAnimator>();
+    InitializeType<FlybyCamera>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
     InitializeType<Material>();
@@ -211,9 +217,9 @@ namespace YTE
     InitializeType<glm::vec4>();
     InitializeType<glm::quat>();
     InitializeType<btIDebugDraw::DebugDrawModes>();
-    InitializeType<YTE::Controller_Id>();
-    InitializeType<YTE::Xbox_Buttons>();
-    InitializeType<YTE::Mouse_Buttons>();
+    InitializeType<YTE::ControllerId>();
+    InitializeType<YTE::XboxButtons>();
+    InitializeType<YTE::MouseButtons>();
     InitializeType<YTE::Keys>();
 
     InitializeType<CompositionMap::range>();

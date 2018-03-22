@@ -67,11 +67,11 @@ namespace YTE
     MouseButtonEvent mouseEvent;
     mouseEvent.WorldCoordinates = mPosition;
 
-    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
-        mouseEvent.Button = static_cast<Mouse_Buttons>(i);
+        mouseEvent.Button = static_cast<MouseButtons>(i);
         mouseEvent.Mouse = this;
 
         SendEvent(Events::MousePersist, &mouseEvent);
@@ -87,7 +87,7 @@ namespace YTE
     }
   }
 
-  void Mouse::UpdateButton(Mouse_Buttons aButton, bool aDown, glm::i32vec2 aPosition)
+  void Mouse::UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition)
   {
     size_t index = enum_cast(aButton);
 
@@ -158,9 +158,9 @@ namespace YTE
 
   void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)
   {
-    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
-      auto button = static_cast<Mouse_Buttons>(i);
+      auto button = static_cast<MouseButtons>(i);
       auto osButton = TranslateFromMouseButtonToOsKey(button);
       auto key = TranslateFromOsToOurKey(osButton);
       auto down = CheckKey(key);
@@ -170,7 +170,7 @@ namespace YTE
 
   bool Mouse::AnyButtonDown()
   {
-    for (size_t i = 0; i < enum_cast(Mouse_Buttons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       if (mMouseCurrent[i])
       {
@@ -181,12 +181,12 @@ namespace YTE
     return false;
   }
 
-  bool Mouse::IsButtonDown(Mouse_Buttons aButton)
+  bool Mouse::IsButtonDown(MouseButtons aButton)
   {
     return mMouseCurrent[enum_cast(aButton)];
   }
 
-  bool Mouse::WasButtonDown(Mouse_Buttons aButton)
+  bool Mouse::WasButtonDown(MouseButtons aButton)
   {
     return mMousePrevious[enum_cast(aButton)];
   }

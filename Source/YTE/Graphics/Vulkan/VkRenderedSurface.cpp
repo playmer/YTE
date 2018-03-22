@@ -293,7 +293,6 @@ namespace YTE
     return mRenderer->mGraphicsQueue;
   }
 
-
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -314,9 +313,16 @@ namespace YTE
     {
       // reset swapchain's references to render target frame buffers
       std::vector<VkRenderTarget*> rts;
+
       for (auto &v : mViewData)
       {
-        v.second.mRenderTarget->Resize(extent);
+        auto superSampling = v.first->GetSuperSampling();
+
+        auto renderTargetExtent = extent;
+        renderTargetExtent.height *= superSampling;
+        renderTargetExtent.width *= superSampling;
+
+        v.second.mRenderTarget->Resize(renderTargetExtent);
         rts.push_back(v.second.mRenderTarget.get());
       }
 
@@ -627,7 +633,7 @@ namespace YTE
     // build secondaries
     for (auto &v : mViewData)
     {
-      v.second.mRenderTarget->RenderFull(extent, mRenderer->mMeshes);
+      v.second.mRenderTarget->RenderFull(mRenderer->mMeshes);
       v.second.mRenderTarget->MoveToNextEvent();
     }
 
@@ -661,7 +667,7 @@ namespace YTE
 
       cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
                            v.second.mRenderTarget->GetFrameBuffer(),
-                           vk::Rect2D({ 0, 0 }, extent),
+                           vk::Rect2D({ 0, 0 }, v.second.mRenderTarget->GetRenderTargetData()->mExtent),
                            { color, depthStencil },
                            vk::SubpassContents::eSecondaryCommandBuffers);
 

@@ -284,6 +284,12 @@ namespace YTE
     SetRotation(mRotation * rotation);
   }
 
+  void Transform::RotateTowardPoint(const glm::vec3& aTargetPoint, const glm::vec3& aUpVector)
+  {
+    RotateToward(aTargetPoint - mWorldTranslation,
+                 aUpVector);
+  }
+
   void Transform::RotateToward(const glm::vec3& aTargetVector, const glm::vec3& aUpVector)
   {
     SetWorldRotation(glm::vec3(0.f));

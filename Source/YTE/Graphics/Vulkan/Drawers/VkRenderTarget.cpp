@@ -99,16 +99,14 @@ namespace YTE
 
   void VkRenderTarget::Resize(vk::Extent2D& aExtent)
   {
-    YTEUnusedArgument(aExtent);
+    mData.mExtent = aExtent;
     CreateFrameBuffer();
   }
 
 
 
-  void VkRenderTarget::RenderFull(const vk::Extent2D& aExtent,
-                                  std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
+  void VkRenderTarget::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEUnusedArgument(aExtent);
     YTEUnusedArgument(aMeshes);
   }
 
@@ -149,7 +147,12 @@ namespace YTE
     mData.mColorAttachments.clear();
 
     auto device = mSurface->GetDevice();
-    auto extent = mSurface->GetExtent();
+
+    if (0 == mData.mExtent.width ||
+        0 == mData.mExtent.height)
+    {
+      mData.mExtent = mSurface->GetExtent();
+    }
 
     ///////////////////
     // Color Image
@@ -164,7 +167,7 @@ namespace YTE
                              vk::FormatFeatureFlagBits::eSampledImage)),
                    "Texture Format doesnt support system");
 
-    vk::Extent3D imageExtent{ extent.width, extent.height, 1 };
+    vk::Extent3D imageExtent{ mData.mExtent.width, mData.mExtent.height, 1 };
 
     // create image
    auto colorImage = device->createImage({},
@@ -253,14 +256,8 @@ namespace YTE
     // FrameBuffer
     mData.mFrameBuffer = device->createFramebuffer(mRenderPass,
                                                    { mData.mAttachments[0].mImageView, mData.mAttachments[1].mImageView },
-                                                   extent,
+                                                   mData.mExtent,
                                                    1);
-
-
-    // save data to descriptor
-    mData.mDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    mData.mDescriptor.imageView = static_cast<vk::ImageView>(*mData.mAttachments[0].mImageView);
-    mData.mDescriptor.sampler = static_cast<vk::Sampler>(*mData.mSampler);
   }
 
 

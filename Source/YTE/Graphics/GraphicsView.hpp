@@ -52,9 +52,14 @@ namespace YTE
     glm::vec4 GetClearColor();
     void SetClearColor(const glm::vec4 &aColor);
 
-    Camera* GetLastCamera()
+    Camera* GetActiveCamera()
     {
-      return mLastCamera;
+      return mActiveCamera;
+    }
+
+    void SetActiveCamera(Camera *aCamera)
+    {
+      mActiveCamera = aCamera;
     }
 
     void ChangeWindow(const std::string& aWindowName);
@@ -84,14 +89,22 @@ namespace YTE
     void SetDrawerCombinationType(std::string aCombination);
     void SetDrawerType(std::string aType);
 
+    void SetSuperSampling(i32 aSuperSampling);
+
+    i32 GetSuperSampling()
+    {
+      return mSuperSampling;
+    }
+
   private:
-    Camera *mLastCamera;
+    Camera *mActiveCamera;
     YTEDrawerTypeCombination mDrawerCombination;
     YTEDrawerTypes mDrawerType;
     Window *mWindow;
     Renderer *mRenderer;
     std::string mWindowName;
     glm::vec4 mClearColor;
+    i32 mSuperSampling;
     float mOrder;
     bool mConstructing;
     bool mInitialized;

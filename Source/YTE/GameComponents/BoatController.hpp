@@ -43,7 +43,6 @@ namespace YTE
   class BoatController : public Component
   {
   public:
-    //void LowerSail(); callback to lower the sail when we hear a lowersail event or smth
     YTEDeclareType(BoatController);
     BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
@@ -51,9 +50,6 @@ namespace YTE
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);
     void Update(LogicUpdate *aEvent);
-    void OnMenuStart(MenuStart *aEvent);
-    //void OnCollisionStart(CollisionStarted *aEvent);
-    //void OnCollisionEnd(CollisionEnded *aEvent);
 
     // PROPERTIES ///////////////////////////////////////////////////////////////////
     float GetMaxSailSpeed() { return mMaxSailSpeed; }
@@ -107,7 +103,6 @@ namespace YTE
     Animator *mCharacterAnimator;
 
     float mTurnAmount;
-
 
     void StopBoatImmediately();
   };

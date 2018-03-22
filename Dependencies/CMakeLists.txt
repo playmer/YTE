@@ -1,7 +1,7 @@
 add_subdirectory(crunch)
 add_subdirectory(kiss_fft)
 add_subdirectory(fmt)
-add_subdirectory(LuaJIT)
+#add_subdirectory(LuaJIT)
 add_subdirectory(stb)
 
 # Turn off/configure various parts of assimp.

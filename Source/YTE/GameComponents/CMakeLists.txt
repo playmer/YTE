@@ -3,8 +3,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.cpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.cpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.cpp   
-  ${CMAKE_CURRENT_LIST_DIR}/Button.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.cpp   
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
@@ -17,9 +17,11 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/MenuController.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/LaunchMenu.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.cpp
@@ -28,8 +30,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.hpp   
-  ${CMAKE_CURRENT_LIST_DIR}/Button.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.hpp   
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
@@ -42,9 +44,11 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/MenuController.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/LaunchMenu.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/UI/RootMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.hpp

@@ -11,7 +11,7 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/GameComponents/UI/MenuController.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
@@ -27,6 +27,10 @@ namespace YTE
   YTEDefineType(MenuController)
   {
     YTERegisterType(MenuController);
+
+    YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
   MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
@@ -44,21 +48,21 @@ namespace YTE
     mMenuElements = mOwner->GetCompositions();
     mNumElements = static_cast<int>(mMenuElements->size());
 
-    mMyTransform = mOwner->GetComponent<Transform>();
-    //mViewScale = mMyTransform->GetScale();
-    mMyTransform->SetScale(0.f, 0.f, 0.f);
+    mMySprite = mOwner->GetComponent<Sprite>();
 
       // Cache sound ids used by this component
     auto soundSystem = mOwner->GetEngine()->GetComponent<WWiseSystem>();
 
     if (soundSystem)
     {
-      soundSystem->GetSoundIDFromString("UI_Menu_Pause", mSoundPause);
-      soundSystem->GetSoundIDFromString("UI_Menu_Unpause", mSoundUnpause);
-      soundSystem->GetSoundIDFromString("UI_Menu_Up", mSoundElementNext);
-      soundSystem->GetSoundIDFromString("UI_Menu_Down", mSoundElementPrev);
-      soundSystem->GetSoundIDFromString("UI_Menu_Select", mSoundElementSelect);
+      mSoundPause = soundSystem->GetSoundIDFromString("UI_Menu_Pause");
+      mSoundUnpause = soundSystem->GetSoundIDFromString("UI_Menu_Unpause");
+      mSoundElementNext = soundSystem->GetSoundIDFromString("UI_Menu_Up");
+      mSoundElementPrev = soundSystem->GetSoundIDFromString("UI_Menu_Down");
+      mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
     }
+
+    mSpace->YTERegister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
 
     mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
     mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
@@ -68,6 +72,13 @@ namespace YTE
     mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
   }
 
+  void MenuController::OnChildrenInitialized(LogicUpdate *aEvent)
+  {
+    YTEUnusedArgument(aEvent);
+    UpdateVisibility();
+    mSpace->YTEDeregister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
+  }
+
   void MenuController::OnMenuStart(MenuStart *aEvent)
   {
     if (aEvent->ParentMenu)
@@ -75,15 +86,20 @@ namespace YTE
       mParentMenu = aEvent->ParentMenu;
     }
 
-    mMyTransform->SetScale(-16.5, 9.5f, 1.f);
+    if (aEvent->ResetCursor)
+    {
+      mCurrMenuElement = 0;
+    }
+
     mIsDisplayed = true;
+    UpdateVisibility();
 
     if (aEvent->PlaySound)
     {
       mSoundEmitter->PlayEvent(mSoundPause);
     }
 
-    mCurrMenuElement = 0;
+    //mCurrMenuElement = 0;
 
     if (mMenuElements->size() != 0)
     {
@@ -98,8 +114,8 @@ namespace YTE
   {
     if (mIsDisplayed)
     {
-      mMyTransform->SetScale(0.f, 0.f, 0.f);
       mIsDisplayed = false;
+      UpdateVisibility();
 
       if (aEvent->PlaySound)
       {
@@ -112,7 +128,7 @@ namespace YTE
 
         auto currElement = mMenuElements->begin() + mCurrMenuElement;
         currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
-        mCurrMenuElement = 0;
+        //mCurrMenuElement = 0;
       }
     }
   }
@@ -121,8 +137,8 @@ namespace YTE
   {
     if (mIsDisplayed && !aEvent->Handled)
     {
-      mMyTransform->SetScale(0.f, 0.f, 0.f);
       mIsDisplayed = false;
+      UpdateVisibility();
 
       if (aEvent->PlaySound)
       {
@@ -135,7 +151,7 @@ namespace YTE
 
         auto currElement = mMenuElements->begin() + mCurrMenuElement;
         currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
-        mCurrMenuElement = 0;
+        //mCurrMenuElement = 0;
       }
 
         // Pop up to the owning menu
@@ -153,22 +169,24 @@ namespace YTE
           // Return context to the game if there aren't any parent menus to open
         else
         {
-          mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+          aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
         }
       }
       else
       {
-        mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
+        aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
       }
     }
   }
 
   void MenuController::OnMenuConfirm(MenuConfirm *aEvent)
   {
-    if (mIsDisplayed && mMenuElements->size() != 0)
+    if (!aEvent->IsHandled && mIsDisplayed && mMenuElements->size() != 0)
     {
       if (!aEvent->IsReleased)
       {
+        aEvent->IsHandled = true;
+        
         mSoundEmitter->PlayEvent(mSoundElementSelect);
 
         MenuElementTrigger triggerEvent;
@@ -212,6 +230,26 @@ namespace YTE
 
       currElement = mMenuElements->begin() + mCurrMenuElement;
       currElement->second->SendEvent(Events::MenuElementHover, &hoverEvent);
+    }
+  }
+
+  void MenuController::UpdateVisibility()
+  {
+    if (mMySprite != nullptr)
+    {
+      mMySprite->SetVisibility(mIsDisplayed);
+    }
+
+    auto children = mMenuElements->All();
+
+    for (auto &child : children)
+    {
+      Sprite* childSprite = child.second->GetComponent<Sprite>();
+
+      if (childSprite != nullptr)
+      {
+        childSprite->SetVisibility(mIsDisplayed);
+      }
     }
   }
 }

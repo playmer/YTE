@@ -140,11 +140,6 @@ namespace YTEditor
       return nullptr;
     }
 
-    if (aEngineObj->GetComponent<YTE::Camera>())
-    {
-      return nullptr;
-    }
-
     YTE::Composition *space = mMainWindow->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, this, aEngineObj, space);

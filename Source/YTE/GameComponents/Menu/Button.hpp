@@ -15,11 +15,7 @@
 
 #include "YTE/Graphics/Sprite.hpp"
 
-#include "YTE/Platform/Gamepad.hpp"
-#include "YTE/Platform/GamepadSystem.hpp"
-#include "YTE/Platform/DeviceEnums.hpp"
-
-#include "YTE/GameComponents/UI/MenuController.hpp"
+#include "YTE/GameComponents/Menu/MenuController.hpp"
 
 namespace YTE
 {

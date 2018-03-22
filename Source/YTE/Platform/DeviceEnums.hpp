@@ -18,7 +18,7 @@
 
 namespace YTE
 {
-  enum class Controller_Id : uint32_t
+  enum class ControllerId : uint32_t
   {
     Xbox_P1,
     Xbox_P2,
@@ -28,7 +28,7 @@ namespace YTE
     Unknown
   };
 
-  enum class Xbox_Buttons : uint32_t
+  enum class XboxButtons : uint32_t
   {
     DPAD_Up,
     DPAD_Down,
@@ -48,7 +48,7 @@ namespace YTE
     Unknown
   };
 
-  enum class Mouse_Buttons : uint32_t
+  enum class MouseButtons : uint32_t
   {
     Left,
     Right,
@@ -202,35 +202,35 @@ namespace YTE
   ///////////////////////////////////////
   // Static Functions
   ///////////////////////////////////////
-  inline Xbox_Buttons& operator++(Xbox_Buttons &aButton)
+  inline XboxButtons& operator++(XboxButtons &aButton)
   {
-    using IntType = std::underlying_type<Xbox_Buttons>::type;
+    using IntType = std::underlying_type<XboxButtons>::type;
 
-    aButton = static_cast<Xbox_Buttons>(static_cast<IntType>(aButton) + 1);
+    aButton = static_cast<XboxButtons>(static_cast<IntType>(aButton) + 1);
 
     return aButton;
   }
 
-  inline Xbox_Buttons operator++(Xbox_Buttons &aButton, int)
+  inline XboxButtons operator++(XboxButtons &aButton, int)
   {
-    Xbox_Buttons result = aButton;
+    XboxButtons result = aButton;
     ++aButton;
     return result;
   }
 
 
-  inline Mouse_Buttons& operator++(Mouse_Buttons &aButton)
+  inline MouseButtons& operator++(MouseButtons &aButton)
   {
-    using IntType = std::underlying_type<Mouse_Buttons>::type;
+    using IntType = std::underlying_type<MouseButtons>::type;
 
-    aButton = static_cast<Mouse_Buttons>(static_cast<IntType>(aButton) + 1);
+    aButton = static_cast<MouseButtons>(static_cast<IntType>(aButton) + 1);
 
     return aButton;
   }
 
-  inline Mouse_Buttons operator++(Mouse_Buttons &aButton, int)
+  inline MouseButtons operator++(MouseButtons &aButton, int)
   {
-    Mouse_Buttons result = aButton;
+    MouseButtons result = aButton;
     ++aButton;
     return result;
   }
@@ -252,9 +252,9 @@ namespace YTE
   }
 }
 
-YTEDeclareExternalType(YTE::Controller_Id);
-YTEDeclareExternalType(YTE::Xbox_Buttons);
-YTEDeclareExternalType(YTE::Mouse_Buttons);
+YTEDeclareExternalType(YTE::ControllerId);
+YTEDeclareExternalType(YTE::XboxButtons);
+YTEDeclareExternalType(YTE::MouseButtons);
 YTEDeclareExternalType(YTE::Keys);
 
 #endif

@@ -10,7 +10,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/GameComponents/UI/RootMenu.hpp"
+#include "YTE/GameComponents/Menu/RootMenu.hpp"
 
 namespace YTE
 {
@@ -31,6 +31,7 @@ namespace YTE
 
   void RootMenu::OnMenuStart(MenuStart *aEvent)
   {
+    aEvent->ResetCursor = true;
     mOwner->SendEvent(Events::MenuStart, aEvent);
   }
 }

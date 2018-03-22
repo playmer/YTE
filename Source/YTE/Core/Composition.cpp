@@ -21,6 +21,7 @@ namespace YTE
   YTEDefineEvent(NativeInitialize);
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
+  YTEDefineEvent(Start);
 
   YTEDefineType(InitializeEvent)
   {
@@ -111,6 +112,7 @@ namespace YTE
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
+      parent->YTERegister(Events::Start, this, &Composition::Start);
     }
   };
 
@@ -134,6 +136,7 @@ namespace YTE
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
+      parent->YTERegister(Events::Start, this, &Composition::Start);
     }
   };
 
@@ -230,34 +233,34 @@ namespace YTE
     // If our order is compromised, we just initialize in whatever
     // order the Type* are sorted. Ideally we fix the GetDependencyOrder
     // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        //component.second->PhysicsInitialize();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        //component->PhysicsInitialize();
-      }
-    }
+    //if (order.size() != mComponents.size())
+    //{
+    //  for (auto &component : mComponents)
+    //  {
+    //    if (aEvent->CheckRunInEditor &&
+    //        nullptr == component.first->GetAttribute<RunInEditor>())
+    //    {
+    //      continue;
+    //    }
+    //
+    //    component.second->PhysicsInitialize();
+    //  }
+    //}
+    //else
+    //{
+    //  for (auto &type : order)
+    //  {
+    //    auto component = GetComponent(type);
+    //    
+    //    if (aEvent->CheckRunInEditor &&
+    //        nullptr == type->GetAttribute<RunInEditor>())
+    //    {
+    //      continue;
+    //    }
+    //    
+    //    component->PhysicsInitialize();
+    //  }
+    //}
 
     SendEvent(Events::PhysicsInitialize, aEvent);
   }
@@ -330,6 +333,67 @@ namespace YTE
     {
       mSpace->SendEvent(Events::CompositionAdded, &event);
     }
+  }
+
+
+
+  void Composition::Start(InitializeEvent *aEvent)
+  {
+    if (mShouldIntialize == false)
+    {
+      return;
+    }
+
+    Composition *collision = mEngine->StoreCompositionGUID(this);
+
+    while (collision)
+    {
+      if (collision == this)
+      {
+        break;
+      }
+      else
+      {
+        mGUID = GlobalUniqueIdentifier();
+        collision = mEngine->StoreCompositionGUID(this);
+      }
+    }
+
+    auto order = GetDependencyOrder(this);
+
+    // If our order is compromised, we just Start in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
+    {
+      for (auto &component : mComponents)
+      {
+        if (aEvent->CheckRunInEditor &&
+            nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component.second->Start();
+      }
+    }
+    else
+    {
+      for (auto &type : order)
+      {
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+            nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component->Start();
+      }
+    }
+
+    SendEvent(Events::Start, aEvent);
   }
 
 
@@ -449,6 +513,7 @@ namespace YTE
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
+      composition->Start(&event);
     }
 
     return composition;
@@ -467,6 +532,7 @@ namespace YTE
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
+      composition->Start(&event);
     }
 
     composition->SetArchetypeName(aArchetype);
@@ -496,6 +562,7 @@ namespace YTE
       }
 
       composition->Initialize(&event);
+      composition->Start(&event);
     }
 
     return composition;
@@ -980,6 +1047,7 @@ namespace YTE
     component->NativeInitialize();
     component->PhysicsInitialize();
     component->Initialize();
+    component->Start();
 
     return component;
   }

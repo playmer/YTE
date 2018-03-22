@@ -239,7 +239,7 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *aEvent)
   {
-    bool test = mActive;
+    //bool test = mActive;
     if (mActive && !aEvent->EventHandled)
     {
       aEvent->EventHandled = true;
