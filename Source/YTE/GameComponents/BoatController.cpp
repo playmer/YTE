@@ -215,7 +215,7 @@ namespace YTE
 
       float turnScale;
       float startVal = 0.0f;
-      float change = 1.0f / absX;
+      float change = 1.0f / 0.3f;
       float duration = 1.0f;
 
       if (absX < 0.3f)
@@ -230,8 +230,7 @@ namespace YTE
       {
           // Have to manipulate the parabola to line up with our piecewise function correctly
         float vertOffset = 1.0f;
-        float narrowingFactor = 1.0f / 0.3f;
-        Quad::piecewiseEaseOut::Ease(turnScale, vertOffset, narrowingFactor, absX, duration);
+        Quad::piecewiseEaseOut::Ease(turnScale, vertOffset, change, absX, duration);
       }
 
         // Can check zero here because we've already passed the dead-zone check
