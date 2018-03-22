@@ -3,6 +3,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.cpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.cpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/BoatParticles.cpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.cpp
   ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.cpp 
   ${CMAKE_CURRENT_LIST_DIR}/CameraBoom.cpp  
@@ -31,6 +32,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatController.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/BoatParticles.hpp
   ${CMAKE_CURRENT_LIST_DIR}/BoatPhysics.hpp
   ${CMAKE_CURRENT_LIST_DIR}/CameraAnchor.hpp
   ${CMAKE_CURRENT_LIST_DIR}/CameraBoom.hpp   

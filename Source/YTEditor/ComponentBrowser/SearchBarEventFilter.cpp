@@ -30,13 +30,13 @@ namespace YTEditor
   {
   }
 
-  bool SearchBarEventFilter::eventFilter(QObject * aWatched, QEvent * aEvent)
+  bool SearchBarEventFilter::eventFilter(QObject *aWatched, QEvent *aEvent)
   {
-    QAbstractItemView * view = qobject_cast<QAbstractItemView*>(aWatched);
+    QAbstractItemView *view = qobject_cast<QAbstractItemView*>(aWatched);
 
     if (aEvent->type() == QEvent::KeyPress)
     {
-      QKeyEvent * keyEvent = static_cast<QKeyEvent*>(aEvent);
+      QKeyEvent *keyEvent = static_cast<QKeyEvent*>(aEvent);
 
       if (keyEvent->key() == Qt::Key_Return ||
         keyEvent->key() == Qt::Key_Enter)
@@ -55,7 +55,7 @@ namespace YTEditor
     }
     else if (aEvent->type() == QEvent::MouseButtonPress)
     {
-      QMouseEvent * mouseEvent = static_cast<QMouseEvent*>(aEvent);
+      QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(aEvent);
 
       if (mouseEvent->button() == Qt::MouseButton::LeftButton)
       {
@@ -67,6 +67,7 @@ namespace YTEditor
           return false;
         }
 
+        mSearchBar->OnReturnPressed();
         mSearchBar->clear();
         view->hide();
         return true;

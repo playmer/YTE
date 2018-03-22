@@ -44,16 +44,20 @@ namespace YTEditor
       , mParentComponent(aParent)
       , mEngineProperty(aProp.second.get())
     {
-      YTE::String tip = aProp.second->Description();
 
       mGetter = aProp.second->GetGetter();
       mSetter = aProp.second->GetSetter();
 
+      // get property tooltip
+      YTE::String tip = aProp.second->Description();
+
+      // set tooltip for property label
       this->GetLabelWidget()->setToolTip(tip.c_str());
+      
+      auto inputWidgets = this->GetWidgets();
 
-      auto widgets = this->GetWidgets();
-
-      for (auto it : widgets)
+      // set tooltip for all input widgets
+      for (auto it : inputWidgets)
       {
         it->setToolTip(tip.c_str());
       }
@@ -61,47 +65,54 @@ namespace YTEditor
 
     void SetEvents()
     {
+      // bool so the widget is a checkbox
       if (std::is_same<bool, T>())
       {
-        this->connect(static_cast<QCheckBox*>(this->GetWidgets()[0]),
-          &QCheckBox::stateChanged,
-          this,
-          &ComponentProperty::SaveToEngine);
+        // there is only ever one checkbox widget for a bool
+        QCheckBox *checkbox = static_cast<QCheckBox*>(this->GetWidgets()[0]);
+
+        // register to listen for checkbox to change, save to engine when changed
+        this->connect(checkbox, &QCheckBox::stateChanged, this, &ComponentProperty::SaveToEngine);
       }
+      // list of string, so widget is a dropdown
       else if (std::is_same<QStringList, T>())
       {
+        // there is only ever one dropdown widget
         QComboBox *combo = static_cast<QComboBox*>(this->GetWidgets()[0]);
 
+        // adjust combo style and max visible items
         combo->setStyleSheet("combobox-popup: 0;");
         combo->setMaxVisibleItems(25);
 
-        this->connect(combo,
-                      static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-                      this, &ComponentProperty::SaveToEngine);
+        // QComboBox function that we listen to for changes
+        auto signalFunc = static_cast<void(QComboBox::*)(int)>(&QComboBox::currentIndexChanged);
 
+        // register to listen for index changes, save to engine when changed
+        this->connect(combo, signalFunc, this, &ComponentProperty::SaveToEngine);
+
+      }
+      // if the property is an editable color
+      else if ((std::is_same<glm::vec3, T>() || std::is_same<glm::vec4, T>()) &&
+                mEngineProperty->GetAttribute<YTE::EditableColor>())
+      {
+        // only ever one color picker for a property
+        ColorPicker *colPick = static_cast<ColorPicker*>(this->GetWidgets()[0]);
+
+        // save to engine when color picker changes are applied
+        this->connect(colPick, &QPushButton::clicked, this, &ComponentProperty::SaveToEngine);
       }
       else
       {
-
-        if ((std::is_same<glm::vec3, T>() || std::is_same<glm::vec4, T>()) &&
-            mEngineProperty->GetAttribute<YTE::EditableColor>())
+        // unknown number of input widgets, so loop through all
+        for (int i = 0; i < this->GetWidgets().size(); ++i)
         {
-          this->connect(dynamic_cast<ColorPicker*>(this->GetWidgets()[0]),
-                        &QPushButton::clicked,
-                        this,
-                        &ComponentProperty::SaveToEngine);
-        }
-        else
-        {
-          for (int i = 0; i < this->GetWidgets().size(); ++i)
-          {
-            this->connect(dynamic_cast<QLineEdit*>(this->GetWidgets()[i]),
-                          &QLineEdit::editingFinished,
-                          this,
-                          &ComponentProperty::SaveToEngine);
-          }
+          QLineEdit *inputWidg = static_cast<QLineEdit*>(this->GetWidgets()[i]);
+          
+          // save to engine when line edit widget loses focus (user is done making changes)
+          this->connect(inputWidg, &QLineEdit::editingFinished, this, &ComponentProperty::SaveToEngine);
         }
       }
+      
     }
 
     ~ComponentProperty() { }
@@ -127,34 +138,41 @@ namespace YTEditor
   {
     YTE::Component *cmp = mParentComponent->GetEngineComponent();
 
+    // get current value on engine-side
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
+    //get current value editor-side
     T val = this->GetPropertyValues();
     YTE::Any modVal = YTE::Any(val);
 
+    // notify that change has been made to object instance
     MainWindow *mainWindow = mParentComponent->GetMainWindow();
     ArchetypeTools *archTools = mainWindow->GetComponentBrowser().GetArchetypeTools();
-
+    archTools->IncrementChanges();
+  
     std::string name = mEngineProperty->GetName();
 
-    // Add command to main window undo redo
+    // property value changed to be inserted
     auto cmd = std::make_unique<ChangePropValCmd>(name,
                                                   cmp->GetGUID(),
                                                   oldVal,
                                                   modVal,
                                                   mainWindow);
 
-    mParentComponent->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
+    // add property changed command to undo/redo
+    mainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
 
-    archTools->IncrementChanges();
-
+    // actually change the property value engine-side
     BaseSaveToEngine();
   }
 
   template<class T>
   void ComponentProperty<T>::BaseSaveToEngine()
   {
+    // get current property value
     T value = this->GetPropertyValues();
+
+    // call setter to change value engine-side
     mSetter->Invoke(mParentComponent->GetEngineComponent(), value);
   }
 
@@ -170,18 +188,23 @@ namespace YTEditor
   template <class T>
   void ComponentProperty<T>::ReloadValueFromEngine()
   {
-    std::vector<QWidget*> widgs = this->GetWidgets();
+    // input widgets for property
+    std::vector<QWidget*> inputWidgets = this->GetWidgets();
 
-    for (QWidget *w : widgs)
+    for (QWidget *widget : inputWidgets)
     {
-      if (w->hasFocus())
+      // check if user is changing any of the values
+      // if so, return so we don't reload them
+      if (widget->hasFocus())
       {
         return;
       }
     }
 
+    // otherwise get the current value engine-side
     YTE::Any updatedValue = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
+    // update value in editor to accurately reflect engine
     this->SetValue(updatedValue.As<T>());
   }
   

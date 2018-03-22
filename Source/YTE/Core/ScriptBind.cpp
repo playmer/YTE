@@ -21,6 +21,7 @@
 
 #include "YTE/GameComponents/AudioTest.hpp"
 #include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/BoatParticles.hpp"
 #include "YTE/GameComponents/BoatPhysics.hpp"
 #include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
@@ -106,6 +107,7 @@ namespace YTE
 
     InitializeType<AudioTest>();
     InitializeType<BoatController>();
+    InitializeType<BoatParticles>();
     InitializeType<BoatPhysics>();
     InitializeType<Dialogue>();
     InitializeType<DialogueDirector>();

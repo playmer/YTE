@@ -39,8 +39,6 @@ namespace YTEditor
   ComponentSearchBar::ComponentSearchBar(ComponentTools *compTools, QWidget *parent)
     : QLineEdit(parent), mComponentTools(compTools), mCompleter(nullptr)
   {
-    // signal from qlineedit
-    //connect(this, &QLineEdit::returnPressed, this, &ComponentSearchBar::OnReturnPressed);
   }
 
   ComponentSearchBar::~ComponentSearchBar()
@@ -49,9 +47,12 @@ namespace YTEditor
 
   void ComponentSearchBar::SetComponentList(const std::vector<YTE::BoundType*>& aTypeList)
   {
+    // replace the list of types
+    mComponentTypes = aTypeList;
+
     if (mCompleter)
     {
-      // delete the old completer
+      // delete the old completer, must remake becaues of 
       delete mCompleter;
     }
 
@@ -69,19 +70,16 @@ namespace YTEditor
     mCompleter->setCaseSensitivity(Qt::CaseInsensitive);
     mCompleter->setModelSorting(QCompleter::CaseInsensitivelySortedModel);
     mCompleter->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
-    //mCompleter->setCompletionMode(QCompleter::PopupCompletion);
 
-    SearchBarEventFilter * eventFilter = new SearchBarEventFilter(this, mCompleter);
-    mCompleter->popup()->installEventFilter(eventFilter);
+    QAbstractItemView *popup = mCompleter->popup();
 
-    this->setCompleter(mCompleter);
+    SearchBarEventFilter *eventFilter = new SearchBarEventFilter(this, mCompleter);
+    popup->installEventFilter(eventFilter);
+    setCompleter(mCompleter);
 
-    // signal from qcompleter
-    //connect(mCompleter, static_cast<void(QCompleter::*)(const QString &)>(&QCompleter::activated), 
-    //  this, [=](const QString &text) { ItemActivated(text); });
+    popup->connect(popup, &QAbstractItemView::clicked, this, &ComponentSearchBar::OnReturnPressed);
 
-    // copy the vector of types
-    mComponentTypes = aTypeList;
+    
   }
 
   void ComponentSearchBar::OnReturnPressed()
@@ -89,6 +87,9 @@ namespace YTEditor
     auto index = mCompleter->popup()->currentIndex();
     auto path = mCompleter->pathFromIndex(index);
     std::string pathStr = path.toStdString();
+
+    clear();
+    mCompleter->popup()->hide();
 
     AddComponent(path);
   }

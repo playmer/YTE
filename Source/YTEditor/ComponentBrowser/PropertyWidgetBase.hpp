@@ -38,6 +38,7 @@ namespace YTEditor
     {
       Int,
       Float,
+      Double,
       String,
       StdString,
       Bool,

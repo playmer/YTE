@@ -47,7 +47,7 @@ namespace YTEditor
 
   private:
 
-    QCompleter * mCompleter;
+    QCompleter *mCompleter;
 
     QStringList mComponentList;
 
@@ -55,7 +55,7 @@ namespace YTEditor
 
     YTE::Type* FindBoundType(std::string &aName);
 
-    ComponentTools * mComponentTools;
+    ComponentTools *mComponentTools;
 
   };
 

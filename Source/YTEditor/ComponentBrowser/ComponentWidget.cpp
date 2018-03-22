@@ -220,6 +220,13 @@ namespace YTEditor
       comProp->SetValue(propData);
       comProp->SetEvents();
     }
+    else if (value.IsType<double>())
+    {
+      ComponentProperty<double> *comProp = AddPropertyOrField<double>(aProp, aProperty);
+      double propData = value.As<double>();
+      comProp->SetValue(propData);
+      comProp->SetEvents();
+    }
     else if (value.IsType<YTE::String>())
     {
       ComponentProperty<YTE::String> *comProp = AddPropertyOrField<YTE::String>(aProp, aProperty);

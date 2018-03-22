@@ -92,6 +92,8 @@ namespace YTEditor
 
     void SetInsertSelectionChangedCommand(bool isActive);
 
+    void MoveToFrontOfCamera(YTE::Composition *aObject);
+
   private:
     MainWindow *mMainWindow;
     void SetWidgetSettings();

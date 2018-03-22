@@ -98,6 +98,7 @@ namespace YTEditor
     , mFileMenu(nullptr)
     , mGameObjectMenu(nullptr)
     , mGizmoScaleFactor(1.0f)
+    , mEditorCamera(nullptr)
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -333,24 +334,24 @@ namespace YTEditor
 
     // Add the camera object to the new level
     YTE::String camName{ "EditorCamera" };
-    YTE::Composition *camera = mEditingLevel->AddComposition<YTE::Composition>(camName,
-                                                                               GetRunningEngine(),
-                                                                               camName,
-                                                                               mEditingLevel);
+    mEditorCamera = mEditingLevel->AddComposition<YTE::Composition>(camName,
+                                                                    GetRunningEngine(),
+                                                                    camName,
+                                                                    mEditingLevel);
 
-    if (camera->ShouldSerialize())
+    if (mEditorCamera->ShouldSerialize())
     {
-      camera->ToggleSerialize();
+      mEditorCamera->ToggleSerialize();
     }
 
     // add the camera component to the camera object
-    camera->AddComponent(YTE::Transform::GetStaticType());
-    camera->AddComponent(YTE::Orientation::GetStaticType());
-    camera->AddComponent(YTE::Camera::GetStaticType());
-    camera->AddComponent(YTE::FlybyCamera::GetStaticType());
-    camera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
+    mEditorCamera->AddComponent(YTE::Transform::GetStaticType());
+    mEditorCamera->AddComponent(YTE::Orientation::GetStaticType());
+    mEditorCamera->AddComponent(YTE::Camera::GetStaticType());
+    mEditorCamera->AddComponent(YTE::FlybyCamera::GetStaticType());
+    mEditorCamera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
 
-    camera->GetComponent<YTE::Camera>()->SetCameraAsActive();
+    mEditorCamera->GetComponent<YTE::Camera>()->SetCameraAsActive();
 
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();
@@ -646,6 +647,11 @@ namespace YTEditor
   Preferences* MainWindow::GetPreferences()
   {
     return &mPreferences;
+  }
+
+  YTE::Composition * MainWindow::GetEditorCamera()
+  {
+    return mEditorCamera;
   }
 
   // process serialized preferences file
