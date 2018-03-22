@@ -66,7 +66,7 @@ namespace YTE
     //void SetActiveNode(DialogueNodeEvent *aEvent);
     //void ResponseCallback(DialogueResponseEvent *aEvent);
 		void ActivateNode();
-		DialogueNode *GetChild(int pos) { return mChildren[pos]; };
+		DialogueNode *GetChild(int pos) { if (mChildren.size() > 0) return mChildren[pos]; };
 		void SetChildren(int aCount, DialogueNode *aChild, ...);
 		NodeType GetNodeType() { return mType; };
 		DialogueDataType GetNodeData() { return mData; };

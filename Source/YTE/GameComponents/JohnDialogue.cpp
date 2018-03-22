@@ -136,10 +136,6 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-		mQuestVec;
-		mActiveQuest;
-		mActiveConvo;
-		mActiveNode;
 		DialogueNode::NodeType type = mActiveNode->GetNodeType();
 			// For anims and sounds we wont hear back from the director so send an event to ourselves to begin
 		if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
