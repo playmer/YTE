@@ -155,6 +155,11 @@ namespace YTE
 
   void FlybyCamera::KeyboardPersist(KeyboardEvent *aEvent)
   {
+    if (false == mMouseHeld)
+    {
+      return;
+    }
+
     // WASD Controls are flipped, because the camera looks down the -Z axis.
     switch (aEvent->Key)
     {
