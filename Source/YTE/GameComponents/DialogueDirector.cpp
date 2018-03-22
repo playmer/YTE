@@ -261,9 +261,9 @@ namespace YTE
 				// If there are more strings in this node
 			if (mCurNodeDataIndex < mCurNodeData.size() - 1)
 			{
+				++mCurNodeDataIndex;
 				UIUpdateContent content(mCurNodeData[mCurNodeDataIndex]);
 				mCharacterDialogue->SendEvent(Events::UIUpdateContent, &content);
-				++mCurNodeDataIndex;
 			}
 				// If this is the last string in the node
 			else if (mCurNodeDataIndex == mCurNodeData.size() - 1)
