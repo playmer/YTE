@@ -23,6 +23,7 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
+#include "YTE/GameComponents/CameraBoom.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/GameComponents/Menu/RootMenu.hpp"
@@ -97,6 +98,7 @@ namespace YTE
     helper.CreateComponentFactory<InputInterpreter>();
     helper.CreateComponentFactory<AddComponentToEngine>();
     helper.CreateComponentFactory<CameraAnchor>();
+    helper.CreateComponentFactory<CameraBoom>();
     helper.CreateComponentFactory<CameraController>();
 
     helper.CreateComponentFactory<MenuController>();

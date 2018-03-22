@@ -24,44 +24,20 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  CameraController::CameraController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  CameraController::CameraController(Composition *aOwner, Space *aSpace, RSValue *)
     : Component(aOwner, aSpace)
     , mTransform(nullptr)
-    , mOrientation(nullptr)
-    , mRotationAngle(0.0f)
-    , mBoatTransform(nullptr)
-    , mBoatOrientation(nullptr)
-    , mCameraComponent(nullptr)
     , mAnchorTransform(nullptr)
     , mFlybyComponent(nullptr)
   {
-    YTEUnusedArgument(aProperties);
-    //will probably have some props
   }
 
   void CameraController::Initialize()
   {
     mTransform = mOwner->GetComponent<Transform>();
 
-    //mSpace->YTERegister(Events::LogicUpdate, this, &CameraController::OnLogicUpdate);
     mSpace->YTERegister(Events::AttachCamera, this, &CameraController::OnAttachCamera);
     mSpace->YTERegister(Events::DebugSwitch, this, &CameraController::OnDebugSwitch);
-    //mSpace->YTERegister(Events::AnchorUpdate, this, &CameraController::OnAnchorUpdate);
-    /*mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraController::RotateCamera);
-    mSpace->YTERegister(Events::DirectCameraEvent, this, &CameraController::OnDirectCamera);
-    mSpace->YTERegister(Events::DialogueExit, this, &CameraController::OnDialogueExit);
-    
-    mTransform = mOwner->GetComponent<Transform>();
-    mOrientation = mOwner->GetComponent<Orientation>();
-    mCameraComponent = mOwner->GetComponent<Camera>();
-    
-    Composition *boat = mOwner->GetParent();
-    mBoatTransform = boat->GetComponent<Transform>();
-    mBoatOrientation = boat->GetComponent<Orientation>();
-
-    mTransform->SetWorldTranslation(mBoatTransform->GetWorldTranslation() + glm::vec3(0.0f, 5.0f, 0.0f));
-    mTransform->SetWorldRotation(glm::vec3(0.f));
-    RotateOnBoom(mBoatTransform->GetWorldTranslation());*/
   }
 
   void CameraController::OnAttachCamera(AttachCamera *aEvent)

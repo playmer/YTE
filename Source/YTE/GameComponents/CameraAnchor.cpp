@@ -10,9 +10,6 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Physics/Transform.hpp"
-#include "YTE/Physics/Orientation.hpp"
-
 #include "YTE/GameComponents/CameraAnchor.hpp"
 
 namespace YTE
@@ -24,8 +21,7 @@ namespace YTE
   {
     YTERegisterType(CameraAnchor);
 
-    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
-                                             { TypeId<Orientation>() } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
@@ -45,6 +41,7 @@ namespace YTE
   void CameraAnchor::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
+    //mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraAnchor::RotateCamera);
   }
 
   void CameraAnchor::Start()
@@ -71,7 +68,6 @@ namespace YTE
 
   void CameraAnchor::RotateCamera(CameraRotateEvent *aEvent)
   {
-    //aEvent->StickDirection
   }
 
   void CameraAnchor::OnDirectCamera(DirectCameraEvent *aEvent)

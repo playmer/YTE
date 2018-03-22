@@ -11,6 +11,8 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
+#include "YTE/Physics/Transform.hpp"
+
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
 namespace YTE
@@ -46,6 +48,8 @@ namespace YTE
     void OnDialogueExit(DialogueExit *aEvent);
 
   private:
+    float mRotScale;
+
     bool mIsActive;
   };
 }

@@ -28,6 +28,7 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
+#include "YTE/GameComponents/CameraBoom.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
 #include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/GameComponents/Menu/RootMenu.hpp"
@@ -112,6 +113,7 @@ namespace YTE
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraAnchor>();
+    InitializeType<CameraBoom>();
     InitializeType<CameraController>();
     InitializeType<MenuController>();
     InitializeType<RootMenu>();

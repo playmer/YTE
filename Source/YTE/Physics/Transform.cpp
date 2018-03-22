@@ -277,11 +277,18 @@ namespace YTE
   }
 
 
-  void Transform::Rotate(glm::vec3 aAxis, float aAngle)
+  void Transform::RotateAboutLocalAxis(glm::vec3 aAxis, float aAngle)
   {
     auto rotation = YTE::AroundAxis(aAxis, aAngle);
 
     SetRotation(mRotation * rotation);
+  }
+
+  void Transform::RotateAboutWorldAxis(const glm::vec3& aAxis, float aAngle)
+  {
+    auto rotation = YTE::AroundAxis(aAxis, aAngle);
+
+    SetRotation(rotation * mRotation);
   }
 
   void Transform::RotateTowardPoint(const glm::vec3& aTargetPoint, const glm::vec3& aUpVector)
