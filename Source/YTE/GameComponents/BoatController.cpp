@@ -160,8 +160,8 @@ namespace YTE
   {
 		StopBoatImmediately();
 
-		mTransform->SetWorldTranslation(aEvent->DockAnchorPos.x, mTransform->GetWorldTranslation().y, aEvent->DockAnchorPos.z);
-		mTransform->RotateToward(aEvent->DockDirection, mOrientation->GetUpVector());
+		//mTransform->SetWorldTranslation(aEvent->DockAnchorPos.x, mTransform->GetWorldTranslation().y, aEvent->DockAnchorPos.z);
+		//mTransform->RotateToward(aEvent->DockDirection, mOrientation->GetUpVector());
 
 		if (mSoundEmitter)
 		{

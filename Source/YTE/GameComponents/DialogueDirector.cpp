@@ -145,6 +145,8 @@ namespace YTE
 
   void DialogueDirector::OnDialogueNodeReady(DialogueNodeReady *aEvent)
   {
+			// clear the data from the last node
+		mCurNodeData.clear();
 			// copy the node data, some nodes have multiple lines
 		for (std::string i : aEvent->ContentMessages)
 		{
