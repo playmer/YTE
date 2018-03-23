@@ -24,31 +24,16 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+	class Conversation;
   /////////////////////////////////////////////////////////////////////////////////////
   // Data Structure Classes
   /////////////////////////////////////////////////////////////////////////////////////
-  class Conversation
-  {
-  public:
-		enum class State { Available, Completed, EarlyExit};
-		Conversation() {};
-    Conversation(std::vector<DialogueNode> *aNodes);
-
-		DialogueNode *GetRoot() { return &mNodeVec[0]; };
-		Conversation::State GetState() { return mState; };
-		void SetState(Conversation::State aState) { mState = aState; };
-  private:
-		std::vector<DialogueNode> mNodeVec;
-		Conversation::State mState;
-  };
-
   class Quest
   {
   public:
     enum class State { Available, InProgress, Completed };
-    enum class Name { Introduction, GuessChew, Ingredients, Cayenne };
-    Quest() {};
-    Quest(Quest::Name aName, std::vector<Conversation> *aConvos);
+    enum class Name { Introduction, Fetch, Explore, Dialogue };
+    Quest(Quest::Name aName);
 
     Quest::Name GetName() { return mName; };
 		std::vector<Conversation> *GetConversations() { return &mConversationVec; };
@@ -58,9 +43,26 @@ namespace YTE
     Quest::Name mName;
     Quest::State mState;
 		bool mConditionMet;
-
     std::vector<Conversation> mConversationVec;
   };
+
+	class Conversation
+	{
+	public:
+		enum class State { Available, Completed, EarlyExit };
+		enum class Name { Hello, NoProgress, Completed, PostQuest };
+		Conversation(Conversation::Name aName, Quest::Name aQuest);
+		//Conversation(std::vector<DialogueNode> *aNodes);
+
+			// Root is the last element in the vector due to bottom up construction
+		DialogueNode *GetRoot() { return &mNodeVec.back(); };
+		Conversation::State GetState() { return mState; };
+		void SetState(Conversation::State aState) { mState = aState; };
+	private:
+		Conversation::Name mName;
+		Conversation::State mState;
+		std::vector<DialogueNode> mNodeVec;
+	};
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Component

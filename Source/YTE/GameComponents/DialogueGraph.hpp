@@ -24,14 +24,8 @@ namespace YTE
   YTEDeclareEvent(DialogueNodeReady);
   YTEDeclareEvent(DialogueNodeConfirm);
 
-	YTEDeclareEvent(AdvanceConversation);
-
-	class AdvanceConversation : public Event
-	{
-	public:
-		YTEDeclareType(AdvanceConversation);
-		AdvanceConversation() {  };
-	};
+	class DialogueNodeReady;
+	class DialogueNodeConfirm;
 
   namespace AnimationNames 
   {
@@ -41,6 +35,10 @@ namespace YTE
     static std::string WalkFull = "WalkFull_2017.fbx";
     static std::string Walk1 = "WalkPart1.fbx";
     static std::string Walk2 = "WalkPart2.fbx";
+		static std::string Sad = "Sad_Loop.fbx";
+		static std::string Idle = "Idle_Loop.fbx";
+		static std::string Happy = "Happy_Loop.fbx";
+		static std::string Angry = "Angry_Loop.fbx";
   }
   /*
   namespace SoundNames
@@ -48,36 +46,35 @@ namespace YTE
     static std::string SailingStart = "Sailing_Start";
   }
   */
+
 #define DialogueDataType std::vector<std::string>
 #define DialogueData(name, ...) DialogueDataType name{ __VA_ARGS__ }
-  class DialogueNodeConfirm;
-
+#define DialogueNodeChildType std::vector<DialogueNode*>
+#define DialogueNodeChildren(...) DialogueNodeChildType{ __VA_ARGS__ }
 
   class DialogueNode
   {
   public:
 		YTEDeclareType(DialogueNode);
     enum class NodeType { Anim, Input, Text, Sound };
-      // Ctor that uses multiple const char* as variadic args
-    //DialogueNode(NodeType aType, DialogueNode *aChildren, int aStringCount, ...);
-      // Ctor that uses DialogueData Ctor, more readable use this one
-		DialogueNode() {};
-    DialogueNode(NodeType aType, DialogueDataType *aData, int aId);
-    //void SetActiveNode(DialogueNodeEvent *aEvent);
-    //void ResponseCallback(DialogueResponseEvent *aEvent);
+
+    DialogueNode(NodeType aType, DialogueDataType aData, int aId);
+		//DialogueNode& operator=(const DialogueNode& aNode) = default;
+		//DialogueNode(DialogueNode&& aNode);
+
 		void ActivateNode();
 		DialogueNode *GetChild(int pos);
-		void SetChildren(int aCount, DialogueNode *aChild, ...);
+		//void SetChildren(int aCount, DialogueNode *aChild, ...);
+		void SetChildren(std::vector<DialogueNode*>&& aChildren);
 		NodeType GetNodeType() { return mType; };
 		DialogueDataType GetNodeData() { return mData; };
 
 	private:
     NodeType mType;
-    std::vector<DialogueNode*> mChildren;
     int mId;
-    DialogueDataType mData;
-    
     void (DialogueNode::*mNodeLogic)();
+    DialogueDataType mData;
+    std::vector<DialogueNode*> mChildren;
 
     void PlayAnim();
     void GiveOptions();
@@ -85,78 +82,27 @@ namespace YTE
     void PlaySound();
   };
 
-  class DialogueNodeReady : public Event
-  {
-  public:
-    YTEDeclareType(DialogueNodeReady);
-    DialogueNodeReady(std::vector<std::string> aNewMessage) {
-      for (auto s : aNewMessage)
-      {
-        ContentMessages.push_back(s);
-      }
-    }
-    std::vector<std::string> ContentMessages;
-    DialogueNode::NodeType DialogueType;
-  };
+	class DialogueNodeReady : public Event
+	{
+	public:
+		YTEDeclareType(DialogueNodeReady);
+		DialogueNodeReady(std::vector<std::string> aNewMessage) {
+			for (auto s : aNewMessage)
+			{
+				ContentMessages.push_back(s);
+			}
+		}
+		std::vector<std::string> ContentMessages;
+		DialogueNode::NodeType DialogueType;
+	};
 
-  class DialogueNodeConfirm : public Event
-  {
-  public:
-    YTEDeclareType(DialogueNodeConfirm);
-    DialogueNodeConfirm(int aSelection) { Selection = aSelection; }
+	class DialogueNodeConfirm : public Event
+	{
+	public:
+		YTEDeclareType(DialogueNodeConfirm);
+		DialogueNodeConfirm(int aSelection) { Selection = aSelection; }
 
-    int Selection;
-  };
+		int Selection;
+	};
 }//end yte
 #endif
-
- /*
- YTEDeclareEvent(DialogueResponseEvent);
-
- YTEDeclareEvent(DialoguePrintText);
- YTEDeclareEvent(DialoguePlayAnim);
- YTEDeclareEvent(DialogueGetInput);
-
-
- 
-
-
- class DialogueResponseEvent : public Event
- {
- public:
- YTEDeclareType(DialogueResponseEvent);
- DialogueResponseEvent() {  };
-
- int ResponseNumber;
- };
-
-
- class DialoguePrintText : public Event
- {
- public:
- YTEDeclareType(DialoguePrintText);
- DialoguePrintText() {  };
-
- std::vector<std::string> Data;
- };
-
-
- class DialoguePlayAnim : public Event
- {
- public:
- YTEDeclareType(DialoguePlayAnim);
- DialoguePlayAnim() {  };
-
- std::vector<std::string> Data;
- };
-
-
- class DialogueGetInput : public Event
- {
- public:
- YTEDeclareType(DialogueGetInput);
- DialogueGetInput() {  };
-
- std::vector<std::string> Data;
- };
- */

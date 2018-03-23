@@ -18,16 +18,137 @@ namespace YTE
 
 /******************************************************************************
   Conversation
-		assumes the first element of the vector is the root
 ******************************************************************************/
-  Conversation::Conversation(std::vector<DialogueNode> *aNodes)
-		: mState(Conversation::State::Available)
-  {
-		for (DialogueNode i : *aNodes)
+	Conversation::Conversation(Conversation::Name aName, Quest::Name aQuest)
+		: mName(aName), mState(Conversation::State::Available)
+	{
+		switch (aQuest)
 		{
-			mNodeVec.push_back(i);
+			case Quest::Name::Introduction:
+			{
+				switch (aName)
+				{
+					case Conversation::Name::Hello:
+					{
+						// LEVEL G
+						DialogueData(dataG0, "John: Nice to meet you though.", "John: Hopefully we bump into each other again");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG0, 0);
+
+						// LEVEL F
+						DialogueData(dataF0, AnimationNames::Idle);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataF0, 0);
+
+						// LEVEL E
+						DialogueData(dataE0, "John: ...but I'm all out now, sorry.");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
+
+						// LEVEL D
+						DialogueData(dataD0, AnimationNames::Sad);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0);
+
+						// LEVEL C
+						DialogueData(dataC0, "John: Today I was serving Gazpacho...");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
+
+						// LEVEL B
+						DialogueData(dataB0, "Smells great!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, "John: Welcome to my pop up restaurant, Que Delicioso.");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, AnimationNames::WaveInit);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0);
+						
+						/*
+								G0 - F0 - E0 - D0 - C0 - B0 - A0 - root
+						*/
+						enum { G0, F0, E0, D0, C0, B0, A0, R0};
+						mNodeVec[G0].SetChildren(DialogueNodeChildType{});
+						mNodeVec[F0].SetChildren(DialogueNodeChildType{&mNodeVec[G0]});
+						mNodeVec[E0].SetChildren(DialogueNodeChildType{&mNodeVec[F0]});
+						mNodeVec[D0].SetChildren(DialogueNodeChildType{&mNodeVec[E0]});
+						mNodeVec[C0].SetChildren(DialogueNodeChildType{&mNodeVec[D0]});
+						mNodeVec[B0].SetChildren(DialogueNodeChildType{&mNodeVec[C0]});
+						mNodeVec[A0].SetChildren(DialogueNodeChildType{&mNodeVec[B0]});
+						mNodeVec[R0].SetChildren(DialogueNodeChildType{&mNodeVec[A0]});
+						break;
+					}
+					case Conversation::Name::PostQuest:
+					{
+					}
+				}
+			}
+			case Quest::Name::Fetch:
+			{
+				switch (aName)
+				{
+					case Conversation::Name::Hello:
+					{
+
+					}
+					case Conversation::Name::NoProgress:
+					{
+
+					}
+					case Conversation::Name::Completed:
+					{
+
+					}
+					case Conversation::Name::PostQuest:
+					{
+
+					}
+				}
+			}
+			case Quest::Name::Explore:
+			{
+				switch (aName)
+				{
+					case Conversation::Name::Hello:
+					{
+
+					}
+					case Conversation::Name::NoProgress:
+					{
+
+					}
+					case Conversation::Name::Completed:
+					{
+
+					}
+					case Conversation::Name::PostQuest:
+					{
+
+					}
+				}
+			}
+			case Quest::Name::Dialogue:
+			{
+				switch (aName)
+				{
+					case Conversation::Name::Hello:
+					{
+
+					}
+					case Conversation::Name::NoProgress:
+					{
+
+					}
+					case Conversation::Name::Completed:
+					{
+
+					}
+					case Conversation::Name::PostQuest:
+					{
+
+					}
+				}
+			}
 		}
-  }
+	}
 
 /******************************************************************************
   Quest
@@ -42,12 +163,31 @@ namespace YTE
       Intro is a unique first quest.
 			Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
-  Quest::Quest(Quest::Name aName, std::vector<Conversation> *aConvos)
+  Quest::Quest(Quest::Name aName)
     : mName(aName), mState(Quest::State::Available), mConditionMet(false)
   {
-		for (Conversation i : *aConvos)
+		switch (aName)
 		{
-			mConversationVec.push_back(i);
+			case Quest::Name::Introduction:
+			{
+				mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::Introduction);
+				break;
+			}
+			case Quest::Name::Fetch:
+			{
+
+				break;
+			}
+			case Quest::Name::Explore:
+			{
+
+				break;
+			}
+			case Quest::Name::Dialogue:
+			{
+
+				break;
+			}
 		}
   }
 
@@ -59,56 +199,7 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-		/*
-		root
-		|
-		A0
-		|
-		B0
-		|  \
-		C0  C1
-		|  /
-		D0
-		*/
-
-		// LEVEL D
-		DialogueData(dataD0, "TEMP Go here, find this");
-		DialogueNode nodeD0(DialogueNode::NodeType::Text, &dataD0, 0);
-
-		// LEVEL C
-		DialogueData(dataC0, "Perfect timing, my fish is still in the oven", "I need you to go fetch my missing ingredients");
-		DialogueNode nodeC0(DialogueNode::NodeType::Text, &dataC0, 0);
-
-		DialogueData(dataC1, "Suuuure...", "Well while you're here, I need you to fetch my missing ingredients");
-		DialogueNode nodeC1(DialogueNode::NodeType::Text, &dataC1, 1);
-
-		// LEVEL B
-		DialogueData(dataB0, "Oh I'm not ordering, I'm here to help", "Friendship!");
-		DialogueNode nodeB0(DialogueNode::NodeType::Input, &dataB0, 0);
-
-		// LEVEL A
-		DialogueData(dataA0, "HOT BEHIND!", "Just one second I'm finishing this meal", "Okay what did you want to order?");
-		DialogueNode nodeA0(DialogueNode::NodeType::Text, &dataA0, 0);
-
-		// LEVEL ROOT
-		DialogueData(data, AnimationNames::WaveInit);
-		DialogueNode root(DialogueNode::NodeType::Anim, &data, 0);
-
-		std::vector<DialogueNode> *nodes = new std::vector<DialogueNode>{ root, nodeA0, nodeB0, nodeC0, nodeC1, nodeD0 };
-		nodes->at(0).SetChildren(1, &nodes->at(1));
-		nodes->at(1).SetChildren(1, &nodes->at(2));
-		nodes->at(2).SetChildren(2, &nodes->at(3), &nodes->at(4));
-		nodes->at(3).SetChildren(1, &nodes->at(5));
-		nodes->at(4).SetChildren(1, &nodes->at(5));
-		nodes->at(5).SetChildren(0, nullptr);
-			// construct the convos
-		Conversation c0(nodes);
-			// add them to a vector to pass to quest
-		std::vector<Conversation> *convos = new std::vector<Conversation>;
-		convos->push_back(c0);
-			// construct the quest with the convo vector ptr
-    Quest intro(Quest::Name::Introduction, convos);
-    mQuestVec.push_back(intro);
+		mQuestVec.emplace_back(Quest::Name::Introduction);
 		
 		mActiveQuest = &mQuestVec[0];
 		mActiveConvo = &mActiveQuest->GetConversations()->at(0);
@@ -117,18 +208,22 @@ namespace YTE
 
   void JohnDialogue::RegisterJohn(CollisionStarted *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-		mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-		mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+		if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+		{
+			mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+			mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+			mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+		}
   }
 
   void JohnDialogue::DeregisterJohn(CollisionEnded *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-		mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-		mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+		if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+		{
+			mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+			mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+			mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+		}
   }
 
   void JohnDialogue::Initialize()
@@ -179,14 +274,24 @@ namespace YTE
 		if (mActiveNode != nullptr)
 		{
 			DialogueNode::NodeType type = mActiveNode->GetNodeType();
-			if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
+			while (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
 			{
-				// Anims and Sounds always have 1 child
-				DialogueNodeConfirm next(0);
-				mSpace->SendEvent(Events::DialogueNodeConfirm, &next);
+					mActiveNode->ActivateNode();
+					mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+					if (mActiveNode != nullptr)
+					{
+						type = mActiveNode->GetNodeType();
+					}
+					else
+					{
+						DialogueExit diagExit;
+						mSpace->SendEvent(Events::DialogueExit, &diagExit);
+						mActiveConvo->SetState(Conversation::State::Completed);
+						return;
+					}
 			}
 			// For input and text we rely on the director responding
-			else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
+			if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
 			{
 				DialogueNodeReady next(mActiveNode->GetNodeData());
 				next.DialogueType = type;
