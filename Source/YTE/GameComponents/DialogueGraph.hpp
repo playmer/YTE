@@ -49,8 +49,8 @@ namespace YTE
 
 #define DialogueDataType std::vector<std::string>
 #define DialogueData(name, ...) DialogueDataType name{ __VA_ARGS__ }
-#define DialogueNodeChildType std::vector<DialogueNode*>
-#define DialogueNodeChildren(...) DialogueNodeChildType{ __VA_ARGS__ }
+#define DialogueNodeChildren std::vector<DialogueNode*>
+//#define DialogueNodeChildren(...) DialogueNodeChildType{ __VA_ARGS__ }
 
   class DialogueNode
   {

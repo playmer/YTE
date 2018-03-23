@@ -63,23 +63,44 @@ namespace YTE
 						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0);
 						
 						/*
-								G0 - F0 - E0 - D0 - C0 - B0 - A0 - root
+						G0 - F0 - E0 - D0 - C0 - B0 - A0 - R0
 						*/
 						enum { G0, F0, E0, D0, C0, B0, A0, R0};
-						mNodeVec[G0].SetChildren(DialogueNodeChildType{});
-						mNodeVec[F0].SetChildren(DialogueNodeChildType{&mNodeVec[G0]});
-						mNodeVec[E0].SetChildren(DialogueNodeChildType{&mNodeVec[F0]});
-						mNodeVec[D0].SetChildren(DialogueNodeChildType{&mNodeVec[E0]});
-						mNodeVec[C0].SetChildren(DialogueNodeChildType{&mNodeVec[D0]});
-						mNodeVec[B0].SetChildren(DialogueNodeChildType{&mNodeVec[C0]});
-						mNodeVec[A0].SetChildren(DialogueNodeChildType{&mNodeVec[B0]});
-						mNodeVec[R0].SetChildren(DialogueNodeChildType{&mNodeVec[A0]});
+						mNodeVec[G0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[F0].SetChildren(DialogueNodeChildren{&mNodeVec[G0]});
+						mNodeVec[E0].SetChildren(DialogueNodeChildren{&mNodeVec[F0]});
+						mNodeVec[D0].SetChildren(DialogueNodeChildren{&mNodeVec[E0]});
+						mNodeVec[C0].SetChildren(DialogueNodeChildren{&mNodeVec[D0]});
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{&mNodeVec[C0]});
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{&mNodeVec[B0]});
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{&mNodeVec[A0]});
 						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
+						// LEVEL B
+						DialogueData(dataB0, "You too!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, "John: Have a great day");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, AnimationNames::WaveInit);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0);
+
+						/*
+						B0 - A0 - R0
+						*/
+						enum { B0, A0, R0 };
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{ });
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
+						break;
 					}
 				}
+				break;
 			}
 			case Quest::Name::Fetch:
 			{
@@ -87,21 +108,73 @@ namespace YTE
 				{
 					case Conversation::Name::Hello:
 					{
+						// LEVEL E
+						DialogueData(dataE0, "John: Can you go out and look for them?");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
+						DialogueData(dataE1, "John: I knew I could count on you!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE1, 1);
+						DialogueData(dataE2, "John: Thanks!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE2, 2);
 
+						// LEVEL D
+						DialogueData(dataD0, AnimationNames::Sad);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0);
+						DialogueData(dataD1, AnimationNames::Happy);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD1, 1);
+						DialogueData(dataD2, AnimationNames::Happy);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD2, 2);
+
+						// LEVEL C
+						DialogueData(dataC0, "Oh no!", "Your sous chef is on the job!", "Sure thing");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataC0, 0);
+
+						// LEVEL B
+						DialogueData(dataB0, "John: ...but they haven't shown up yet");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, AnimationNames::Angry);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: Perfect timing!", "John: I'm expecting a delivery of ingredients...");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+
+						/*
+						E0 - D0 - C0 - B0 - A0 - R0
+						E1 - D1 -|
+						E2 - D2 -|
+						*/
+						enum { E0, E1, E2, D0, D1, D2, C0, B0, A0, R0 };
+						mNodeVec[E0].SetChildren(DialogueNodeChildren{ });
+						mNodeVec[E1].SetChildren(DialogueNodeChildren{ });
+						mNodeVec[E2].SetChildren(DialogueNodeChildren{ });
+						mNodeVec[D0].SetChildren(DialogueNodeChildren{ &mNodeVec[E0] });
+						mNodeVec[D1].SetChildren(DialogueNodeChildren{ &mNodeVec[E1] });
+						mNodeVec[D2].SetChildren(DialogueNodeChildren{ &mNodeVec[E2] });
+						mNodeVec[C0].SetChildren(DialogueNodeChildren{ &mNodeVec[D0], &mNodeVec[D1], &mNodeVec[D2] });
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{ &mNodeVec[C0] });
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
+						break;
 					}
 					case Conversation::Name::NoProgress:
 					{
 
+						break;
 					}
 					case Conversation::Name::Completed:
 					{
 
+						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
 
+						break;
 					}
 				}
+				break;
 			}
 			case Quest::Name::Explore:
 			{
@@ -109,21 +182,22 @@ namespace YTE
 				{
 					case Conversation::Name::Hello:
 					{
-
+						break;
 					}
 					case Conversation::Name::NoProgress:
 					{
-
+						break;
 					}
 					case Conversation::Name::Completed:
 					{
-
+						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
-
+						break;
 					}
 				}
+				break;
 			}
 			case Quest::Name::Dialogue:
 			{
@@ -131,21 +205,22 @@ namespace YTE
 				{
 					case Conversation::Name::Hello:
 					{
-
+						break;
 					}
 					case Conversation::Name::NoProgress:
 					{
-
+						break;
 					}
 					case Conversation::Name::Completed:
 					{
-
+						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
-
+						break;
 					}
 				}
+				break;
 			}
 		}
 	}
@@ -171,6 +246,7 @@ namespace YTE
 			case Quest::Name::Introduction:
 			{
 				mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::Introduction);
+				mConversationVec.emplace_back(Conversation::Name::PostQuest, Quest::Name::Introduction);
 				break;
 			}
 			case Quest::Name::Fetch:
