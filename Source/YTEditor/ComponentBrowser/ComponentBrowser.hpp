@@ -48,7 +48,7 @@ namespace YTEditor
 
     ArchetypeTools* GetArchetypeTools();
 
-    MainWindow * GetMainWindow();
+    MainWindow* GetMainWindow();
 
   private:
 

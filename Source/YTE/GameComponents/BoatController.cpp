@@ -278,8 +278,6 @@ namespace YTE
           mCharacterAnimator->SetCurrentAnimTime(stickTurn);
         }
       }
-      // update character animation : current stick rotation
-
     }
     else
     {
@@ -366,6 +364,10 @@ namespace YTE
     }
 
     mStartedTurning = false;
+  }
+  float BoatController::GetCurrentSpeed() const
+  {
+    return mCurrSpeed;
   }
   ////////////////////////////////////////////////////////////////////////////////////
 

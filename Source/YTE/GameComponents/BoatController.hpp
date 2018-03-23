@@ -65,6 +65,8 @@ namespace YTE
     void SetWindForce(float& aForce) { mWindForce = aForce; }
     /////////////////////////////////////////////////////////////////////////////////
 
+    float GetCurrentSpeed() const;
+
   private:
     Transform *mTransform;
     Orientation *mOrientation;

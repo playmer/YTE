@@ -38,6 +38,8 @@ namespace YTE
 
     ParticleEmitter(ParticleEmitter&&) = default;
 
+    void CreateMesh();
+
     void Initialize() override;
 
     void Update(LogicUpdate* aEvent);
@@ -82,11 +84,16 @@ namespace YTE
     bool GetUseGravity();
     void SetUseGravity(bool aUseGravity);
 
+    float GetGravityValue();
+    void SetGravityValue(float aGravityVal);
+
   private:
-    
+
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
 
     YTE::Renderer *mRenderer;
+
+    Mesh *mMesh;
 
     std::string mTextureName; //
 
@@ -95,9 +102,10 @@ namespace YTE
 
     glm::vec3 mInitVelocity;
     glm::vec3 mVelocityVariance;
-    
+
     double mLifetime;
     double mLifetimeVariance;
+    double mTimer;
 
     glm::vec4 mColor;
     glm::vec3 mParticleScale;
@@ -106,6 +114,7 @@ namespace YTE
     glm::vec3 mEmitterScale;
 
     bool mUseGravity;
+    float mGravityValue;
 
     float mEmitRate;
     float mEmitCount;
@@ -116,6 +125,6 @@ namespace YTE
 
     int RandomInt(int aMin, int aMax);
     float Variance();
-    
+
   };
 }

@@ -20,7 +20,7 @@ namespace YTE
     YTERegisterType(ParticleEmitter);
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+    std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
@@ -75,11 +75,16 @@ namespace YTE
     YTEBindProperty(&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity, "Use Gravity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&ParticleEmitter::GetGravityValue, &ParticleEmitter::SetGravityValue, "Gravity Scalar")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
 
   ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mRenderer{ nullptr }
     , mTextureName("")
     , mPosition()
     , mPositionOffset()
@@ -94,6 +99,7 @@ namespace YTE
     , mEmitRate(0.0f)
     , mEmitCount(0.0f)
     , mUseGravity(false)
+    , mGravityValue(1.0f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -106,12 +112,14 @@ namespace YTE
     mOwner->YTERegister(Events::PositionChanged, this, &ParticleEmitter::OnTransformChanged);
 
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mTimer = mEmitRate;
+    CreateMesh();
   }
 
   bool RemovePred(const std::pair<Particle, std::unique_ptr<InstantiatedModel>> &boi)
   {
     if (boi.first.mLife <= 0.0f) return true;
-  
+
     return false;
   }
 
@@ -124,16 +132,14 @@ namespace YTE
     // erase the dead bois
     mParticles.erase(
       std::remove_if(mParticles.begin(),
-                     mParticles.end(),
-                     RemovePred
+        mParticles.end(),
+        RemovePred
       ),
       mParticles.end()
     );
 
-    static double timer = mEmitRate;
-
     // time to make some new particle bois
-    if (timer <= 0.0f)
+    if (mTimer <= 0.0f)
     {
       // create those bois
       for (int i = 0; i < mEmitCount; ++i)
@@ -142,12 +148,12 @@ namespace YTE
       }
 
       // reset the countdown
-      timer = mEmitRate;
+      mTimer = mEmitRate;
     }
     else
     {
       // decrement the timer
-      timer -= dt;
+      mTimer -= dt;
     }
 
     // update all the bois ;)
@@ -157,14 +163,18 @@ namespace YTE
       Particle &particle = particleIt.first;
 
       //std::cout << fmt::format("{}\n", particle.mPosition.x);
-    
+
       particle.mLife -= dt;
       particle.mPosition += particle.mVelocity * static_cast<float>(dt);
 
       if (mUseGravity)
       {
-        particle.mPosition.y -= static_cast<float>((mLifetime - particle.mLife) * dt);
+        particle.mPosition.y -= mGravityValue * static_cast<float>((mLifetime - particle.mLife) * dt);
       }
+
+      float rotVar = Variance() * dt;
+
+      particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
 
       particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
       particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
@@ -182,6 +192,8 @@ namespace YTE
   void ParticleEmitter::SetTextureName(std::string aName)
   {
     mTextureName = aName;
+
+    CreateMesh();
   }
 
   glm::vec3 ParticleEmitter::GetPositionOffset()
@@ -282,6 +294,7 @@ namespace YTE
   void ParticleEmitter::SetEmitRate(float aEmitRate)
   {
     mEmitRate = aEmitRate;
+    mTimer = mEmitRate;
   }
 
   float ParticleEmitter::GetEmitCount()
@@ -304,8 +317,24 @@ namespace YTE
     mUseGravity = aUseGravity;
   }
 
-  void ParticleEmitter::CreateParticle()
+  float ParticleEmitter::GetGravityValue()
   {
+    return mGravityValue;
+  }
+
+  void ParticleEmitter::SetGravityValue(float aGravityVal)
+  {
+    mGravityValue = aGravityVal;
+  }
+
+
+  void ParticleEmitter::CreateMesh()
+  {
+    if (nullptr == mRenderer)
+    {
+      return;
+    }
+
     if (mTextureName.empty())
     {
       mTextureName = "Mats_Diffuse.png";
@@ -352,12 +381,15 @@ namespace YTE
 
     std::vector<Submesh> submeshes{ submesh };
 
+    mMesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+  }
+
+  void ParticleEmitter::CreateParticle()
+  {
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
-
-    std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mesh);
-
+    std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mMesh);
+    model->SetInstanced(true);
     model->mType = ShaderType::AdditiveBlendShader;
 
     // calculate the random bullshit
@@ -387,7 +419,7 @@ namespace YTE
     particle.mUBO.mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
     particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
     particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, mParticleScale);
-    
+
     mParticles.emplace_back(particle, std::move(model));
   }
 
@@ -409,4 +441,3 @@ namespace YTE
   }
 
 }
-

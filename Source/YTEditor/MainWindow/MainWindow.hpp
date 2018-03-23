@@ -133,6 +133,8 @@ namespace YTEditor
 
     Preferences* GetPreferences();
 
+    YTE::Composition* GetEditorCamera();
+
   private:
 
     Preferences mPreferences;
@@ -144,6 +146,8 @@ namespace YTEditor
 
     YTE::Space *mEditingLevel;
     YTE::Space *mRunningSpace;
+
+    YTE::Composition *mEditorCamera;
 
     QApplication *mApplication;
 

@@ -27,6 +27,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Physics/Orientation.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/Graphics/Model.hpp"
@@ -466,6 +467,24 @@ namespace YTEditor
   void ObjectBrowser::SetInsertSelectionChangedCommand(bool isActive)
   {
     mInsertSelectionChangedCmd = isActive;
+  }
+
+  void ObjectBrowser::MoveToFrontOfCamera(YTE::Composition *aObject)
+  {
+    if (YTE::Transform *transform = aObject->GetComponent<YTE::Transform>())
+    {
+      YTE::Composition *camera = mMainWindow->GetEditorCamera();
+
+      YTE::Transform *camTransform = camera->GetComponent<YTE::Transform>();
+      YTE::Orientation *orientation = camera->GetComponent<YTE::Orientation>();
+
+      if (camTransform && orientation)
+      {
+        glm::vec3 newPos = camTransform->GetWorldTranslation() - 10.0f * orientation->GetForwardVector();
+
+        transform->SetWorldTranslation(newPos);
+      }
+    }
   }
 
   void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)

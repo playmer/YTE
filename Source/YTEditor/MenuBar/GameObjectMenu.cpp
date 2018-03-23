@@ -130,6 +130,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Sprite", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
     
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
     
@@ -189,6 +190,7 @@ namespace YTEditor
     std::string objName = lightType + " Light";
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(objName.c_str(), "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
@@ -228,6 +230,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Audio Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
@@ -251,6 +254,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Audio Listener", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
@@ -312,6 +316,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
@@ -339,6 +344,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
@@ -364,6 +370,7 @@ namespace YTEditor
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(aName.c_str(), "Empty");
     YTE::Composition *obj= item->GetEngineObject();
+    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
