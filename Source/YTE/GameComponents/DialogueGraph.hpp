@@ -24,8 +24,8 @@ namespace YTE
   YTEDeclareEvent(DialogueNodeReady);
   YTEDeclareEvent(DialogueNodeConfirm);
 
-	class DialogueNodeReady;
-	class DialogueNodeConfirm;
+  class DialogueNodeReady;
+  class DialogueNodeConfirm;
 
   namespace AnimationNames 
   {
@@ -35,10 +35,10 @@ namespace YTE
     static std::string WalkFull = "WalkFull_2017.fbx";
     static std::string Walk1 = "WalkPart1.fbx";
     static std::string Walk2 = "WalkPart2.fbx";
-		static std::string Sad = "Sad_Loop.fbx";
-		static std::string Idle = "Idle_Loop.fbx";
-		static std::string Happy = "Happy_Loop.fbx";
-		static std::string Angry = "Angry_Loop.fbx";
+    static std::string Sad = "Sad_Loop.fbx";
+    static std::string Idle = "Idle_Loop.fbx";
+    static std::string Happy = "Happy_Loop.fbx";
+    static std::string Angry = "Angry_Loop.fbx";
   }
   /*
   namespace SoundNames
@@ -55,21 +55,21 @@ namespace YTE
   class DialogueNode
   {
   public:
-		YTEDeclareType(DialogueNode);
+    YTEDeclareType(DialogueNode);
     enum class NodeType { Anim, Input, Text, Sound };
 
     DialogueNode(NodeType aType, DialogueDataType aData, int aId);
-		//DialogueNode& operator=(const DialogueNode& aNode) = default;
-		//DialogueNode(DialogueNode&& aNode);
+    //DialogueNode& operator=(const DialogueNode& aNode) = default;
+    //DialogueNode(DialogueNode&& aNode);
 
-		void ActivateNode();
-		DialogueNode *GetChild(int pos);
-		//void SetChildren(int aCount, DialogueNode *aChild, ...);
-		void SetChildren(std::vector<DialogueNode*>&& aChildren);
-		NodeType GetNodeType() { return mType; };
-		DialogueDataType GetNodeData() { return mData; };
+    void ActivateNode();
+    DialogueNode *GetChild(int pos);
+    //void SetChildren(int aCount, DialogueNode *aChild, ...);
+    void SetChildren(std::vector<DialogueNode*>&& aChildren);
+    NodeType GetNodeType() { return mType; };
+    DialogueDataType GetNodeData() { return mData; };
 
-	private:
+  private:
     NodeType mType;
     int mId;
     void (DialogueNode::*mNodeLogic)();
@@ -82,27 +82,27 @@ namespace YTE
     void PlaySound();
   };
 
-	class DialogueNodeReady : public Event
-	{
-	public:
-		YTEDeclareType(DialogueNodeReady);
-		DialogueNodeReady(std::vector<std::string> aNewMessage) {
-			for (auto s : aNewMessage)
-			{
-				ContentMessages.push_back(s);
-			}
-		}
-		std::vector<std::string> ContentMessages;
-		DialogueNode::NodeType DialogueType;
-	};
+  class DialogueNodeReady : public Event
+  {
+  public:
+    YTEDeclareType(DialogueNodeReady);
+    DialogueNodeReady(std::vector<std::string> aNewMessage) {
+      for (auto s : aNewMessage)
+      {
+        ContentMessages.push_back(s);
+      }
+    }
+    std::vector<std::string> ContentMessages;
+    DialogueNode::NodeType DialogueType;
+  };
 
-	class DialogueNodeConfirm : public Event
-	{
-	public:
-		YTEDeclareType(DialogueNodeConfirm);
-		DialogueNodeConfirm(int aSelection) { Selection = aSelection; }
+  class DialogueNodeConfirm : public Event
+  {
+  public:
+    YTEDeclareType(DialogueNodeConfirm);
+    DialogueNodeConfirm(int aSelection) { Selection = aSelection; }
 
-		int Selection;
-	};
+    int Selection;
+  };
 }//end yte
 #endif

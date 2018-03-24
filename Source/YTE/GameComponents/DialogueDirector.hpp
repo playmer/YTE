@@ -111,9 +111,9 @@ namespace YTE
     Composition* mDialogueOption3;
     Composition* mLastSelected;
 
-		std::vector<std::string> mCurNodeData;
-		DialogueNode::NodeType mCurNodeType;
-		int mCurNodeDataIndex;
+    std::vector<std::string> mCurNodeData;
+    DialogueNode::NodeType mCurNodeType;
+    int mCurNodeDataIndex;
 
     bool mActive;
 

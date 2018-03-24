@@ -24,7 +24,7 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-	class Conversation;
+  class Conversation;
   /////////////////////////////////////////////////////////////////////////////////////
   // Data Structure Classes
   /////////////////////////////////////////////////////////////////////////////////////
@@ -36,33 +36,33 @@ namespace YTE
     Quest(Quest::Name aName);
 
     Quest::Name GetName() { return mName; };
-		std::vector<Conversation> *GetConversations() { return &mConversationVec; };
+    std::vector<Conversation> *GetConversations() { return &mConversationVec; };
     Quest::State GetState() { return mState; };
     void SetState(Quest::State aState) { mState = aState; };
   private:
     Quest::Name mName;
     Quest::State mState;
-		bool mConditionMet;
+    bool mConditionMet;
     std::vector<Conversation> mConversationVec;
   };
 
-	class Conversation
-	{
-	public:
-		enum class State { Available, Completed, EarlyExit };
-		enum class Name { Hello, NoProgress, Completed, PostQuest };
-		Conversation(Conversation::Name aName, Quest::Name aQuest);
-		//Conversation(std::vector<DialogueNode> *aNodes);
+  class Conversation
+  {
+  public:
+    enum class State { Available, Completed, EarlyExit };
+    enum class Name { Hello, NoProgress, Completed, PostQuest };
+    Conversation(Conversation::Name aName, Quest::Name aQuest);
+    //Conversation(std::vector<DialogueNode> *aNodes);
 
-			// Root is the last element in the vector due to bottom up construction
-		DialogueNode *GetRoot() { return &mNodeVec.back(); };
-		Conversation::State GetState() { return mState; };
-		void SetState(Conversation::State aState) { mState = aState; };
-	private:
-		Conversation::Name mName;
-		Conversation::State mState;
-		std::vector<DialogueNode> mNodeVec;
-	};
+      // Root is the last element in the vector due to bottom up construction
+    DialogueNode *GetRoot() { return &mNodeVec.back(); };
+    Conversation::State GetState() { return mState; };
+    void SetState(Conversation::State aState) { mState = aState; };
+  private:
+    Conversation::Name mName;
+    Conversation::State mState;
+    std::vector<DialogueNode> mNodeVec;
+  };
 
   /////////////////////////////////////////////////////////////////////////////////////
   // Component
@@ -73,19 +73,19 @@ namespace YTE
     YTEDeclareType(JohnDialogue);
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-		// this cant be used until we know the location of the node
-		void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
+    // this cant be used until we know the location of the node
+    void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
   private:
     void OnDialogueStart(DialogueStart *aEvent);
-		void OnDialogueExit(DialogueExit *aEvent);
+    void OnDialogueExit(DialogueExit *aEvent);
     void RegisterJohn(CollisionStarted *aEvent);
     void DeregisterJohn(CollisionEnded *aEvent);
-		void OnDialogueContinue(DialogueNodeConfirm *aEvent);
+    void OnDialogueContinue(DialogueNodeConfirm *aEvent);
 
     std::vector<Quest> mQuestVec;
-		Quest *mActiveQuest;
-		Conversation *mActiveConvo;
-		DialogueNode *mActiveNode;
+    Quest *mActiveQuest;
+    Conversation *mActiveConvo;
+    DialogueNode *mActiveNode;
   };
 
 } //end yte
