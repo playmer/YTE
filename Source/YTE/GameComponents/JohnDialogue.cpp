@@ -160,17 +160,53 @@ namespace YTE
 					}
 					case Conversation::Name::NoProgress:
 					{
-
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: What are you still doing here!", "John: I still need to cook the bowls and clean the food", "John: Please hurry!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						R0
+						*/
+						enum { R0 };
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{});
 						break;
 					}
 					case Conversation::Name::Completed:
 					{
+						// LEVEL C
+						DialogueData(dataC0, "John : Just in time too.", "John : You really saved my tail feathers lamb");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
 
+						// LEVEL B
+						DialogueData(dataB0, AnimationNames::Idle);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, "John : Oh thank goodness!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, AnimationNames::Happy);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0);
+						/*
+						C0 - B0 - A0 - R0
+						*/
+						enum { C0, B0, A0, R0 };
+						mNodeVec[C0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{ &mNodeVec[C0] });
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
-
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: Thanks again", "John: Next time lunch is on the house!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						R0
+						*/
+						enum { R0 };
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{});
 						break;
 					}
 				}
@@ -182,18 +218,103 @@ namespace YTE
 				{
 					case Conversation::Name::Hello:
 					{
+						//@@@(JAY): Test Text Nodes that have more than 3 lines
+						// LEVEL I
+						DialogueData(dataI0, "John: In my dream there was a rock formation", "John: And it looked like a fruit!", "John: Go see if you can find this rock formation", "John: That'll jog my memory for the dish");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataI0, 0);
+
+						// LEVEL H
+						DialogueData(dataH0, AnimationNames::Idle);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataH0, 0);
+
+						// LEVEL G
+						DialogueData(dataG0, "John: But I've forgotten the primary ingredient!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG0, 0);
+
+						// LEVEL F
+						DialogueData(dataF0, AnimationNames::Sad);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataF0, 0);
+
+						// LEVEL E
+						DialogueData(dataE0, "John: I had a dream of a new dish");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
+
+						// LEVEL D
+						DialogueData(dataD0, AnimationNames::Idle);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0);
+
+						// LEVEL C
+						DialogueData(dataC0, "What's on the menu?");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataC0, 0);
+
+						// LEVEL B
+						DialogueData(dataB0, "John: NO.");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, AnimationNames::Angry);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: Figs?...", "John: No.", "John: Dates?...");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+
+						/*
+						I0 - H0 - G0 - F0 - E0 - D0 - C0 - B0 - A0 - R0
+						*/
+						enum { I0, H0, G0, F0, E0, D0, C0, B0, A0, R0 };
+						mNodeVec[I0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[H0].SetChildren(DialogueNodeChildren{ &mNodeVec[I0] });
+						mNodeVec[G0].SetChildren(DialogueNodeChildren{ &mNodeVec[H0] });
+						mNodeVec[F0].SetChildren(DialogueNodeChildren{ &mNodeVec[G0] });
+						mNodeVec[E0].SetChildren(DialogueNodeChildren{ &mNodeVec[F0] });
+						mNodeVec[D0].SetChildren(DialogueNodeChildren{ &mNodeVec[E0] });
+						mNodeVec[C0].SetChildren(DialogueNodeChildren{ &mNodeVec[D0] });
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{ &mNodeVec[C0] });
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 					case Conversation::Name::NoProgress:
 					{
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: Pear?", "John: ...", "John: Hahaha, ridiculous!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						R0
+						*/
+						enum { R0 };
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{});
 						break;
 					}
 					case Conversation::Name::Completed:
 					{
+						// LEVEL A
+						DialogueData(dataA0, "John: OF COURSE!", "John: It was so simple", "John: It's all coming back to me!", "John: Where's my knife?");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0);
+
+						// @@@(JAY): Test convos that start with an input node
+						// LEVEL ROOT
+						DialogueData(dataR0, "Found it! It was an apple!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataR0, 0);
+						/*
+						A0 - R0
+						*/
+						enum { A0, R0 };
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: Thank you for your help", "John: But I have tons of prep work to do now");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						R0
+						*/
+						enum { R0 };
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{});
 						break;
 					}
 				}
@@ -205,18 +326,75 @@ namespace YTE
 				{
 					case Conversation::Name::Hello:
 					{
+						// LEVEL B
+						DialogueData(dataB0, "I'm on it!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataB0, 0);
+
+						// LEVEL A
+						DialogueData(dataA0, "John: What to do", "John: Lamb, thank cod!", "John: I have a big review with THE Basil Bouillon", "John: But I don't know what to make", "John: Go talk to him and see if you can't figure out his favorite food");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, "What's cooking?");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataR0, 0);
+						/*
+						B0 - A0 - R0
+						*/
+						enum { B0, A0, R0 };
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{ });
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 					case Conversation::Name::NoProgress:
 					{
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: But please, be discrete.", "John: I don't want him thinking I care TOO much.");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						R0
+						*/
+						enum { R0 };
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ });
 						break;
 					}
 					case Conversation::Name::Completed:
 					{
+						// LEVEL A0
+						DialogueData(dataA0, "John: Anything with tomato?", "John: Hmm...I didn't expect this", "John: Well thank you for your help!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, "Tomato!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataR0, 0);
+						/*
+						A0 - R0
+						*/
+						enum { A0, R0 };
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 					case Conversation::Name::PostQuest:
 					{
+						// LEVEL B0
+						DialogueData(dataB0, "John: That old fish Jiro will be so surprised");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0);
+
+						// LEVEL A0
+						DialogueData(dataA0, AnimationNames::Happy);
+						mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataA0, 0);
+
+						// LEVEL ROOT
+						DialogueData(dataR0, "John: This will get me my third star for sure!");
+						mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
+						/*
+						B0 - A0 - R0
+						*/
+						enum { B0, A0, R0 };
+						mNodeVec[B0].SetChildren(DialogueNodeChildren{});
+						mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+						mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
 						break;
 					}
 				}
@@ -251,17 +429,26 @@ namespace YTE
 			}
 			case Quest::Name::Fetch:
 			{
-
+				mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::Fetch);
+				mConversationVec.emplace_back(Conversation::Name::NoProgress, Quest::Name::Fetch);
+				mConversationVec.emplace_back(Conversation::Name::Completed, Quest::Name::Fetch);
+				mConversationVec.emplace_back(Conversation::Name::PostQuest, Quest::Name::Fetch);
 				break;
 			}
 			case Quest::Name::Explore:
 			{
-
+				mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::Explore);
+				mConversationVec.emplace_back(Conversation::Name::NoProgress, Quest::Name::Explore);
+				mConversationVec.emplace_back(Conversation::Name::Completed, Quest::Name::Explore);
+				mConversationVec.emplace_back(Conversation::Name::PostQuest, Quest::Name::Explore);
 				break;
 			}
 			case Quest::Name::Dialogue:
 			{
-
+				mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::Dialogue);
+				mConversationVec.emplace_back(Conversation::Name::NoProgress, Quest::Name::Dialogue);
+				mConversationVec.emplace_back(Conversation::Name::Completed, Quest::Name::Dialogue);
+				mConversationVec.emplace_back(Conversation::Name::PostQuest, Quest::Name::Dialogue);
 				break;
 			}
 		}
@@ -276,6 +463,9 @@ namespace YTE
     YTEUnusedArgument(aProperties);
 
 		mQuestVec.emplace_back(Quest::Name::Introduction);
+		mQuestVec.emplace_back(Quest::Name::Fetch);
+		mQuestVec.emplace_back(Quest::Name::Explore);
+		mQuestVec.emplace_back(Quest::Name::Dialogue);
 		
 		mActiveQuest = &mQuestVec[0];
 		mActiveConvo = &mActiveQuest->GetConversations()->at(0);
