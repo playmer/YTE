@@ -111,6 +111,10 @@ namespace YTE
     Composition* mDialogueOption3;
     Composition* mLastSelected;
 
+    std::vector<std::string> mCurNodeData;
+    DialogueNode::NodeType mCurNodeType;
+    int mCurNodeDataIndex;
+
     bool mActive;
 
       // @@@NICK: Currently unused, but may be needed to animate characters on dock?

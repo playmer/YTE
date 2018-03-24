@@ -145,13 +145,24 @@ namespace YTE
 
   void DialogueDirector::OnDialogueNodeReady(DialogueNodeReady *aEvent)
   {
-    if (aEvent->DialogueType == DialogueNode::NodeType::Text)
+      // clear the data from the last node
+    mCurNodeData.clear();
+      // copy the node data, some nodes have multiple lines
+    for (std::string line : aEvent->ContentMessages)
+    {
+      mCurNodeData.push_back(line);
+    }
+      // copy the node type to check when we get a confirm event from InputInterpreter
+    mCurNodeType = aEvent->DialogueType;
+    mCurNodeDataIndex = 0;
+
+    if (mCurNodeType == DialogueNode::NodeType::Text)
     {
         // Send an UIUpdateContent event for the opening line
       UIUpdateContent content(aEvent->ContentMessages[0]);
       mCharacterDialogue->SendEvent(Events::UIUpdateContent, &content);
     }
-    else if (aEvent->DialogueType == DialogueNode::NodeType::Input)
+    else if (mCurNodeType == DialogueNode::NodeType::Input)
     {
         // Send an UIUpdateContent event for the opening line
       size_t size = aEvent->ContentMessages.size();
@@ -166,7 +177,7 @@ namespace YTE
           UIUpdateContent content2(aEvent->ContentMessages[1]);
           mDialogueOption2->SendEvent(Events::UIUpdateContent, &content2);
 
-          if (size > 3)
+          if (size > 2)
           {
             UIUpdateContent content3(aEvent->ContentMessages[2]);
             mDialogueOption3->SendEvent(Events::UIUpdateContent, &content3);
@@ -180,6 +191,12 @@ namespace YTE
   {
     if (mActive && !aEvent->EventHandled)
     {
+        // We dont look at selections if its just text, theoretically the elements will be hidden so they wont send select events?
+      if (mCurNodeType == DialogueNode::NodeType::Text)
+      {
+        return;
+      }
+
       aEvent->EventHandled = true;
 
       float stickAngle = glm::acos(glm::dot(glm::vec2(1.f, 0.f), aEvent->StickDirection));
@@ -198,6 +215,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption2;
+
+          UISelectEvent notChosen(false);
+          mDialogueOption1->SendEvent(Events::UISelectEvent, &notChosen);
+          mDialogueOption3->SendEvent(Events::UISelectEvent, &notChosen);
         }
         else if (stickAngle >= (pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
         {
@@ -210,6 +231,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption1;
+
+          UISelectEvent notChosen(false);
+          mDialogueOption2->SendEvent(Events::UISelectEvent, &notChosen);
+          mDialogueOption3->SendEvent(Events::UISelectEvent, &notChosen);
         }
         else if (stickAngle >= (2.0f * pi / 3.0f) && stickAngle < pi)
         {
@@ -222,6 +247,10 @@ namespace YTE
           UISelectEvent select(true);
           mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
           mLastSelected = mDialogueOption3;
+
+          UISelectEvent notChosen(false);
+          mDialogueOption1->SendEvent(Events::UISelectEvent, &notChosen);
+          mDialogueOption2->SendEvent(Events::UISelectEvent, &notChosen);
         }
       }
       else if (stickAngle >= -(pi / 3.0f) && stickAngle < (2.0f * pi / 3.0f))
@@ -239,33 +268,59 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *aEvent)
   {
-    //bool test = mActive;
-    if (mActive && !aEvent->EventHandled)
+    if (mCurNodeType == DialogueNode::NodeType::Text)
     {
-      aEvent->EventHandled = true;
-
-      if (mLastSelected == mDialogueOption1)
+        // If there are more strings in this node
+      if (mCurNodeDataIndex < mCurNodeData.size() - 1)
+      {
+        ++mCurNodeDataIndex;
+        UIUpdateContent content(mCurNodeData[mCurNodeDataIndex]);
+        mCharacterDialogue->SendEvent(Events::UIUpdateContent, &content);
+      }
+        // If this is the last string in the node
+      else if (mCurNodeDataIndex == mCurNodeData.size() - 1)
       {
         DialogueNodeConfirm confirm(0);
         mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
       }
-      else if (mLastSelected == mDialogueOption2)
+    }
+    else if (mCurNodeType == DialogueNode::NodeType::Input)
+    {
+      if (mActive && !aEvent->EventHandled)
       {
-        DialogueNodeConfirm confirm(1);
-        mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
-      }
-      else if (mLastSelected == mDialogueOption3)
-      {
-        DialogueNodeConfirm confirm(2);
-        mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
-      }
+        aEvent->EventHandled = true;
 
-      /*auto emitter = mOwner->GetComponent<WWiseEmitter>();
+        if (mLastSelected == mDialogueOption1)
+        {
+          DialogueNodeConfirm confirm(0);
+          mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+        }
+        else if (mLastSelected == mDialogueOption2)
+        {
+          DialogueNodeConfirm confirm(1);
+          mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+        }
+        else if (mLastSelected == mDialogueOption3)
+        {
+          DialogueNodeConfirm confirm(2);
+          mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
+        }
 
-      if (emitter)
-      {
-        emitter->PlayEvent("UI_Dia_Next");
-      }*/
+        // reset our options
+        UISelectEvent select(false);
+        mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+        mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+        mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
+
+        mLastSelected = nullptr;
+
+        /*auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+        if (emitter)
+        {
+          emitter->PlayEvent("UI_Dia_Next");
+        }*/
+      }
     }
   }
 
@@ -274,6 +329,13 @@ namespace YTE
     if (mActive && !aEvent->EventHandled)
     {
       aEvent->EventHandled = true;
+
+      UISelectEvent select(false);
+      mDialogueOption1->SendEvent(Events::UISelectEvent, &select);
+      mDialogueOption2->SendEvent(Events::UISelectEvent, &select);
+      mDialogueOption3->SendEvent(Events::UISelectEvent, &select);
+
+      mLastSelected = nullptr;
 
       auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
