@@ -22,9 +22,14 @@ namespace YTE
   {
   public:
     YTEDeclareType(CameraBoom);
-    CameraBoom(Composition *aOwner, Space *aSpace, RSValue *);
+    CameraBoom(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
+
+    // Properties /////////////////////////////////////////////////////////////
+    const glm::vec2 GetCameraTurnSpeed() const { return mCamTurnSpeed; }
+    void SetCameraTurnSpeed(const glm::vec2& aTurnSpeed) { mCamTurnSpeed = aTurnSpeed; }
+    ///////////////////////////////////////////////////////////////////////////
 
     void OnLogicUpdate(LogicUpdate *aEvent);
     void OnCameraRotate(CameraRotateEvent *aEvent);
@@ -33,7 +38,9 @@ namespace YTE
     Transform * mTransform;
     Orientation *mOrientation;
 
-    float mRotScale;
-    glm::vec2 mRotDirection;
+    glm::vec2 mCamTurnSpeed;
+
+    float mTurnScale;
+    glm::vec2 mTurnDirection;
   };
 }
