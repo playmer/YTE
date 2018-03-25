@@ -77,7 +77,6 @@ namespace YTE
   {
   public:
     YTEDeclareType(DialogueStart);
-    //Composition *camera;
   };
 
   /////////////////////////////////////////////////////////////////////////////////////
@@ -91,17 +90,6 @@ namespace YTE
     DialogueDirector(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
-    // Properties /////////////////////////////////////////////////////////////////////
-    //const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
-    //void SetCamAnchor(const glm::vec3& aCamAnchor) { mCameraAnchorPosition = aCamAnchor; }
-
-    /*const glm::vec3& GetPlayerMark() { return mPlayerMark; }
-    void SetPlayerMark(const glm::vec3& aMark) { mPlayerMark = aMark; }
-
-    const glm::vec3& GetCharMark() { return mCharacterMark; }
-    void SetCharMark(const glm::vec3& aMark) { mCharacterMark = aMark; }*/
-    ///////////////////////////////////////////////////////////////////////////////////
-
     void OnRequestDialogueStart(RequestDialogueStart *);
     void OnDialogueNodeReady(DialogueNodeReady *aEvent);
     void OnDialogueSelect(DialogueSelect *aEvent);
@@ -114,28 +102,11 @@ namespace YTE
     Space *mDialogueSpace;
     Composition *mCameraAnchor;
 
-    //glm::vec3 mDockAnchorPosition;
-    //
-    //  // @@@TODO(Isaac): Can probably just send these to the dialogue UI space...each element can
-    //  //                 check itself if it needs to update/what it should display
-    //Composition* mCharacterDialogue;
-    //Composition* mDialogueOption1;
-    //Composition* mDialogueOption2;
-    //Composition* mDialogueOption3;
-    //Composition* mLastSelected;
-
     std::vector<std::string> mCurNodeData;
     DialogueNode::NodeType mCurNodeType;
     int mCurNodeDataIndex;
 
     int mLastSelectionIndex;
     int mMaxSelectionIndex;
-
-    //bool mActive;
-
-      // @@@NICK: Currently unused, but may be needed to animate characters on dock?
-      // Set the models to hit their "mark" during the RequestDialogueStart handler
-    /*glm::vec3 mPlayerMark;
-    glm::vec3 mCharacterMark;*/
   };
 }

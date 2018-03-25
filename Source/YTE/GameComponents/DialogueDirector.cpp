@@ -35,19 +35,6 @@ namespace YTE
   YTEDefineType(DialogueDirector)
   {
     YTERegisterType(DialogueDirector);
-
-    /*YTEBindProperty(&GetPlayerMark, &SetPlayerMark, "PlayerMark")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-
-    YTEBindProperty(&GetCharMark, &SetCharMark, "CharacterMark")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();*/
-
-    //std::vector<std::vector<Type*>> deps =
-    //{
-    //};
-    //GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
 
@@ -75,19 +62,6 @@ namespace YTE
         break;
       }
     }
-
-    //mDockAnchorPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
-    //mCameraAnchorPosition = mOwner->FindFirstCompositionByName("CameraAnchor")->GetComponent<Transform>()->GetWorldTranslation();
-
-    /*mCharacterDialogue = mOwner->FindFirstCompositionByName("DiaCharacter");
-    mDialogueOption1 = mOwner->FindFirstCompositionByName("DiaPlayer1");
-    mDialogueOption2 = mOwner->FindFirstCompositionByName("DiaPlayer2");
-    mDialogueOption3 = mOwner->FindFirstCompositionByName("DiaPlayer3");*/
-    
-      // @@@JAY
-      // @@@NICK: Uncomment these if you have a child object representing the character mark points
-    //mCameraAnchorPosition = mOwner->FindFirstCompositionByName("PlayerMark")->GetComponent<Transform>()->GetWorldTranslation();
-    //mCameraAnchorPosition = mOwner->FindFirstCompositionByName("CharacterMark")->GetComponent<Transform>()->GetWorldTranslation();
 
     mOwner->YTERegister(Events::CollisionStarted, this, &DialogueDirector::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &DialogueDirector::OnCollisionEnd);
@@ -152,24 +126,6 @@ namespace YTE
         UIFocusSwitchEvent passiveFocus(false);
         mDialogueSpace->SendEvent(Events::UIFocusSwitchEvent, &passiveFocus);
       }
-
-      /*if (size > 0)
-      {
-        UIUpdateContent content(aEvent->ContentMessages[0]);
-        mDialogueOption1->SendEvent(Events::UIUpdateContent, &content);
-
-        if (size > 1)
-        {
-          UIUpdateContent content2(aEvent->ContentMessages[1]);
-          mDialogueOption2->SendEvent(Events::UIUpdateContent, &content2);
-
-          if (size > 2)
-          {
-            UIUpdateContent content3(aEvent->ContentMessages[2]);
-            mDialogueOption3->SendEvent(Events::UIUpdateContent, &content3);
-          }
-        }
-      }*/
     }
   }
 
@@ -285,7 +241,6 @@ namespace YTE
       mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
       mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
       mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
-      //mActive = true;
     }
   }
 
@@ -298,7 +253,6 @@ namespace YTE
       mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
       mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
       mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
-      //mActive = false;
     }
   }
 
