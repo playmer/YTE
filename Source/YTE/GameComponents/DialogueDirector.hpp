@@ -82,14 +82,14 @@ namespace YTE
     void Update(LogicUpdate *aEvent);
 
     // Properties /////////////////////////////////////////////////////////////////////
-    const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
-    void SetCamAnchor(const glm::vec3& aCamAnchor) { mCameraAnchorPosition = aCamAnchor; }
+    //const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
+    //void SetCamAnchor(const glm::vec3& aCamAnchor) { mCameraAnchorPosition = aCamAnchor; }
 
-    const glm::vec3& GetPlayerMark() { return mPlayerMark; }
+    /*const glm::vec3& GetPlayerMark() { return mPlayerMark; }
     void SetPlayerMark(const glm::vec3& aMark) { mPlayerMark = aMark; }
 
     const glm::vec3& GetCharMark() { return mCharacterMark; }
-    void SetCharMark(const glm::vec3& aMark) { mCharacterMark = aMark; }
+    void SetCharMark(const glm::vec3& aMark) { mCharacterMark = aMark; }*/
     ///////////////////////////////////////////////////////////////////////////////////
 
     void OnRequestDialogueStart(RequestDialogueStart *aEvent);
@@ -102,24 +102,28 @@ namespace YTE
     void OnCollisionEnd(CollisionEnded *aEvent);
 
   private:
-    glm::vec3 mDockAnchorPosition;
-    glm::vec3 mCameraAnchorPosition;
-    
-    Composition* mCharacterDialogue;
-    Composition* mDialogueOption1;
-    Composition* mDialogueOption2;
-    Composition* mDialogueOption3;
-    Composition* mLastSelected;
+    Space *mDialogueSpace;
+    Composition *mCameraAnchor;
 
-    std::vector<std::string> mCurNodeData;
-    DialogueNode::NodeType mCurNodeType;
-    int mCurNodeDataIndex;
+    //glm::vec3 mDockAnchorPosition;
+    //
+    //  // @@@TODO(Isaac): Can probably just send these to the dialogue UI space...each element can
+    //  //                 check itself if it needs to update/what it should display
+    //Composition* mCharacterDialogue;
+    //Composition* mDialogueOption1;
+    //Composition* mDialogueOption2;
+    //Composition* mDialogueOption3;
+    //Composition* mLastSelected;
+
+    //std::vector<std::string> mCurNodeData;
+    //DialogueNode::NodeType mCurNodeType;
+    //int mCurNodeDataIndex;
 
     bool mActive;
 
       // @@@NICK: Currently unused, but may be needed to animate characters on dock?
       // Set the models to hit their "mark" during the RequestDialogueStart handler
-    glm::vec3 mPlayerMark;
-    glm::vec3 mCharacterMark;
+    /*glm::vec3 mPlayerMark;
+    glm::vec3 mCharacterMark;*/
   };
 }

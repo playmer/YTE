@@ -238,8 +238,8 @@ namespace YTE
             break;
           case XboxButtons::A:
           {
-            RequestDialogueStart dock;
-            mOwner->SendEvent(Events::RequestDialogueStart, &dock);
+            RequestDialogueStart startDialogue;
+            mOwner->SendEvent(Events::RequestDialogueStart, &startDialogue);
             break;
           }
           case XboxButtons::B:

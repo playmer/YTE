@@ -25,15 +25,15 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&GetIsActive, &SetIsActive, "IsActive")
+    YTEBindProperty(&GetIsDefault, &SetIsDefault, "IsDefault")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
-      .SetDocumentation("Flag for specifying if the current game camera should attach to this anchor or not");
+      .SetDocumentation("Flag for setting the default anchor -- that is, if no anchors are active, enable this one");
   }
 
   CameraAnchor::CameraAnchor(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mIsActive(false)
+    , mIsDefault(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -41,7 +41,7 @@ namespace YTE
   void CameraAnchor::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
-    //mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraAnchor::RotateCamera);
+    mOwner->YTERegister(Events::DirectCameraEvent, this, &CameraAnchor::OnDirectCamera);
   }
 
   void CameraAnchor::Start()
@@ -56,7 +56,7 @@ namespace YTE
 
   void CameraAnchor::OnStart(LogicUpdate*)
   {
-    if (mIsActive)
+    if (mIsDefault)
     {
       AttachCamera attach(mOwner);
 
@@ -66,17 +66,18 @@ namespace YTE
     mSpace->YTEDeregister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
   }
 
-  void CameraAnchor::RotateCamera(CameraRotateEvent *aEvent)
-  {
-  }
-
   void CameraAnchor::OnDirectCamera(DirectCameraEvent *aEvent)
   {
-
+    AttachCamera attach(mOwner);
+    mSpace->SendEvent(Events::AttachCamera, &attach);
   }
 
   void CameraAnchor::OnDialogueExit(DialogueExit *aEvent)
   {
-
+    if (mIsDefault)
+    {
+      AttachCamera attach(mOwner);
+      mSpace->SendEvent(Events::AttachCamera, &attach);
+    }
   }
 }
