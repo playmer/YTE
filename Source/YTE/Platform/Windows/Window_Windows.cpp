@@ -696,6 +696,12 @@ namespace YTE
     return !self->mFocus;
   }
 
+  bool Window::IsFocused()
+  {
+    auto self = mData.Get<WindowData>();
+    return self->mFocus;
+  }
+
   u32 Window::GetHeight()
   {
     auto self = mData.Get<WindowData>();

@@ -66,6 +66,7 @@ namespace YTE
 
     bool IsMinimized();
     bool IsNotFocused();
+    bool IsFocused();
 
     void SetExtent(u32 aHeight, u32 aWidth);
 

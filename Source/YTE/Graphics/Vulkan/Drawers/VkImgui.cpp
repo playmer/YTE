@@ -21,9 +21,6 @@
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 
-
-#include "YTE/Platform/DeviceEnums.hpp"
-
 //bool ImGui_ImplGlfwVulkan_CreateFontsTexture(VkCommandBuffer command_buffer)
 //{
 //  ImGuiIO& io = ImGui::GetIO();
@@ -200,115 +197,6 @@
 
 namespace YTE
 {
-
-  void ImGui_Implementation_NewFrame()
-  {
-    ImGuiIO& io = ImGui::GetIO();
-    
-    // Setup display size (every frame to accommodate for window resizing)
-    int w, h;
-    int display_w, display_h;
-    glfwGetWindowSize(g_Window, &w, &h);
-    glfwGetFramebufferSize(g_Window, &display_w, &display_h);
-    io.DisplaySize = ImVec2((float)w, (float)h);
-    io.DisplayFramebufferScale = ImVec2(w > 0 ? ((float)display_w / w) : 0, h > 0 ? ((float)display_h / h) : 0);
-    
-    // Setup time step
-    double current_time = glfwGetTime();
-    io.DeltaTime = g_Time > 0.0 ? (float)(current_time - g_Time) : (float)(1.0f / 60.0f);
-    g_Time = current_time;
-    
-    // Setup inputs
-    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-    if (glfwGetWindowAttrib(g_Window, GLFW_FOCUSED))
-    {
-      double mouse_x, mouse_y;
-      glfwGetCursorPos(g_Window, &mouse_x, &mouse_y);
-      io.MousePos = ImVec2((float)mouse_x, (float)mouse_y);
-    }
-    else
-    {
-      io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-    }
-    
-    for (int i = 0; i < 3; i++)
-    {
-      io.MouseDown[i] = g_MouseJustPressed[i] || glfwGetMouseButton(g_Window, i) != 0;    // If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
-      g_MouseJustPressed[i] = false;
-    }
-    
-    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
-    if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
-    {
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    }
-    else
-    {
-      glfwSetCursor(g_Window, g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-    
-    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
-    ImGui::NewFrame();
-  }
-
-
-
-
-
-
-
-  bool ImGui_Initialization()
-  {
-    ImGuiIO& io = ImGui::GetIO();
-
-    io.KeyMap[ImGuiKey_Tab]        = enum_cast(Keys::Tab);
-    io.KeyMap[ImGuiKey_LeftArrow]  = enum_cast(Keys::Left);
-    io.KeyMap[ImGuiKey_RightArrow] = enum_cast(Keys::Right);
-    io.KeyMap[ImGuiKey_UpArrow]    = enum_cast(Keys::Up);
-    io.KeyMap[ImGuiKey_DownArrow]  = enum_cast(Keys::Down);
-    io.KeyMap[ImGuiKey_PageUp]     = enum_cast(Keys::PageUp);
-    io.KeyMap[ImGuiKey_PageDown]   = enum_cast(Keys::PageDown);
-    io.KeyMap[ImGuiKey_Home]       = enum_cast(Keys::Home);
-    io.KeyMap[ImGuiKey_End]        = enum_cast(Keys::End);
-    io.KeyMap[ImGuiKey_Insert]     = enum_cast(Keys::Insert);
-    io.KeyMap[ImGuiKey_Delete]     = enum_cast(Keys::Delete);
-    io.KeyMap[ImGuiKey_Backspace]  = enum_cast(Keys::Backspace);
-    io.KeyMap[ImGuiKey_Space]      = enum_cast(Keys::Space);
-    io.KeyMap[ImGuiKey_Enter]      = enum_cast(Keys::Return);
-    io.KeyMap[ImGuiKey_Escape]     = enum_cast(Keys::Escape);
-    io.KeyMap[ImGuiKey_A]          = enum_cast(Keys::A);
-    io.KeyMap[ImGuiKey_C]          = enum_cast(Keys::C);
-    io.KeyMap[ImGuiKey_V]          = enum_cast(Keys::V);
-    io.KeyMap[ImGuiKey_X]          = enum_cast(Keys::X);
-    io.KeyMap[ImGuiKey_Y]          = enum_cast(Keys::Y);
-    io.KeyMap[ImGuiKey_Z]          = enum_cast(Keys::Z);
-
-
-    //TODO:
-    //io.SetClipboardTextFn = ImGui_ImplGlfwVulkan_SetClipboardText;
-    //io.GetClipboardTextFn = ImGui_ImplGlfwVulkan_GetClipboardText;
-    //io.ClipboardUserData = g_Window;
-    //#ifdef _WIN32
-    //  io.ImeWindowHandle = glfwGetWin32Window(g_Window);
-    //#endif
-
-    // TODO
-    // Load cursors
-    // FIXME: GLFW doesn't expose suitable cursors for ResizeAll, ResizeNESW, ResizeNWSE. We revert to arrow cursor for those.
-    //g_MouseCursors[ImGuiMouseCursor_Arrow]      = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_TextInput]  = glfwCreateStandardCursor(GLFW_IBEAM_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_ResizeAll]  = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_ResizeNS]   = glfwCreateStandardCursor(GLFW_VRESIZE_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_ResizeEW]   = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-    //g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
-
-    return true;
-  }
-
-
 
 
 
