@@ -6,6 +6,9 @@
 
 #include "YTE/Graphics/GraphicsView.hpp"
 
+#include "YTE/Platform/Keyboard.hpp"
+#include "YTE/Platform/Mouse.hpp"
+
 namespace YTE
 {
   class ImguiContext : public Component
@@ -20,6 +23,11 @@ namespace YTE
     void PhysicsInitialize() override;
     void Initialize() override;
     void Start() override;
+
+    void MouseScrollCallback(MouseWheelEvent *aEvent);
+    void KeyPressCallback(KeyboardEvent *aEvent);
+    void KeyReleaseCallback(KeyboardEvent *aEvent);
+    void CharacterTypedCallback(KeyboardEvent *aEvent);
 
     void ImguiUpdate(LogicUpdate *aUpdate);
 
@@ -401,7 +409,11 @@ namespace YTE
     void          SetClipboardText(const char* text);
 
   private:
+    static const char* GetClipboardTextImplementation(void *aSelf);
+    static void SetClipboardTextImplementation(void *aSelf, const char* text);
+
     ImGuiContext *mContext;
     GraphicsView *mView;
+    std::string mClipboard;
   };
 }

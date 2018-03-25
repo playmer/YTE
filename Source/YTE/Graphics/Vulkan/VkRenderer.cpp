@@ -321,17 +321,17 @@ namespace YTE
     GetSurface(aView->GetWindow())->RegisterView(aView);
   }
 
-  void VkRenderer::RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->RegisterView(aView, aDrawerType, aCombination);
   }
 
-  void VkRenderer::SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->SetViewDrawingType(aView, aDrawerType, aCombination);
   }
 
-  void VkRenderer::SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->SetViewCombinationType(aView, aCombination);
   }

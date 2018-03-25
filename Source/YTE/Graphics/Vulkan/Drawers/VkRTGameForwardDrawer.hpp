@@ -23,14 +23,14 @@ namespace YTE
                           std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                           ViewData* aView,
                           std::string aName = "",
-                          YTEDrawerTypeCombination aCombination = YTEDrawerTypeCombination::DefaultCombination);
+                          DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     VkRTGameForwardDrawer(VkRenderedSurface *aSurface,
                           vk::Format aColorFormat,
                           vk::Format aDepthFormat,
                           std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                           std::string aName = "",
-                          YTEDrawerTypeCombination aCombination = YTEDrawerTypeCombination::DefaultCombination);
+                          DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     virtual ~VkRTGameForwardDrawer() override;
 

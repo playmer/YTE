@@ -498,7 +498,7 @@ namespace YTE
 
     for (int i = 0; i < mParent->mRenderTargetData.size(); ++i)
     {
-      std::pair<std::string, YTEDrawerTypeCombination> pair;
+      std::pair<std::string, DrawerTypeCombination> pair;
       pair.first = mParent->mRenderTargetData[i]->mName;
       pair.second = mParent->mRenderTargetData[i]->mCombinationType;
       samplerTypes.push_back(pair.first);
@@ -938,12 +938,12 @@ namespace YTE
       ss << fmt::format("  // {}\n", samplerData[i].first);
       switch (samplerData[i].second)
       {
-        case YTEDrawerTypeCombination::AdditiveBlend:
+        case DrawerTypeCombination::AdditiveBlend:
         {
           ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::AlphaBlend:
+        case DrawerTypeCombination::AlphaBlend:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
@@ -955,12 +955,12 @@ namespace YTE
                             samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::MultiplicativeBlend:
+        case DrawerTypeCombination::MultiplicativeBlend:
         {
           ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::Opaque:
+        case DrawerTypeCombination::Opaque:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
@@ -970,13 +970,13 @@ namespace YTE
                             samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::DoNotInclude:
+        case DrawerTypeCombination::DoNotInclude:
         {
           ss << fmt::format("  // Not Included\n");
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", samplerData[i].first, samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::DefaultCombination: // alpha blend
+        case DrawerTypeCombination::DefaultCombination: // alpha blend
         default:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);

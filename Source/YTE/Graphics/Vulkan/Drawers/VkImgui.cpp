@@ -10,9 +10,6 @@
 
 #include <imgui.h>
 
-// GLFW
-
-
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
@@ -224,7 +221,7 @@ namespace YTE
                                std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                ViewData* aView,
                                std::string aName,
-                               YTEDrawerTypeCombination aCombinationType)
+                               DrawerTypeCombination aCombinationType)
     : VkRenderTarget(aSurface,
                      aColorFormat,
                      aDepthFormat,
@@ -241,7 +238,7 @@ namespace YTE
                                                vk::Format aDepthFormat,
                                                std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                                std::string aName,
-                                               YTEDrawerTypeCombination aCombinationType)
+                                               DrawerTypeCombination aCombinationType)
     : VkRenderTarget(aSurface,
                      aColorFormat,
                      aDepthFormat,

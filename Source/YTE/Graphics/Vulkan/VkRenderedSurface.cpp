@@ -8,6 +8,7 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
@@ -354,12 +355,12 @@ namespace YTE
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)
   {
-    RegisterView(aView, YTEDrawerTypes::DefaultDrawer, YTEDrawerTypeCombination::DefaultCombination);
+    RegisterView(aView, DrawerTypes::DefaultDrawer, DrawerTypeCombination::DefaultCombination);
   }
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView,
-                                       YTEDrawerTypes aDrawerType,
-                                       YTEDrawerTypeCombination aCombination)
+                                       DrawerTypes aDrawerType,
+                                       DrawerTypeCombination aCombination)
   {
     auto it = mViewData.find(aView);
 
@@ -411,8 +412,8 @@ namespace YTE
   }
 
   void VkRenderedSurface::SetViewDrawingType(GraphicsView *aView,
-                                             YTEDrawerTypes aDrawerType,
-                                             YTEDrawerTypeCombination aCombination)
+                                             DrawerTypes aDrawerType,
+                                             DrawerTypeCombination aCombination)
   {
     auto& view = GetViewData(aView);
     view.mRenderTarget.reset();
@@ -433,7 +434,7 @@ namespace YTE
   }
 
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
-                                                    YTEDrawerTypeCombination aCombination)
+                                                    DrawerTypeCombination aCombination)
   {
     auto& view = GetViewData(aView);
     view.mRenderTarget->SetCombinationType(aCombination);
@@ -721,13 +722,13 @@ namespace YTE
   }
 
 
-  std::unique_ptr<VkRenderTarget> VkRenderedSurface::CreateRenderTarget(YTEDrawerTypes aDrawerType, 
+  std::unique_ptr<VkRenderTarget> VkRenderedSurface::CreateRenderTarget(DrawerTypes aDrawerType, 
                                                                         ViewData *view,
-                                                                        YTEDrawerTypeCombination aCombination)
+                                                                        DrawerTypeCombination aCombination)
   {
     switch (aDrawerType)
     {
-      case YTEDrawerTypes::GameForwardDrawer:
+      case DrawerTypes::GameForwardDrawer:
       {
         return std::move(std::make_unique<VkRTGameForwardDrawer>(this,
                                                                  mColorFormat,
@@ -737,7 +738,17 @@ namespace YTE
                                                                  aCombination));
         break;
       }
-      case YTEDrawerTypes::DefaultDrawer:
+      case DrawerTypes::ImguiDrawer:
+      {
+        return std::move(std::make_unique<VkImguiDrawer>(this,
+                                                         mColorFormat,
+                                                         mDepthFormat,
+                                                         mSurface,
+                                                         view->mName,
+                                                         aCombination));
+        break;
+      }
+      case DrawerTypes::DefaultDrawer:
       default:
       {
         return std::move(std::make_unique<VkRTGameForwardDrawer>(this, 

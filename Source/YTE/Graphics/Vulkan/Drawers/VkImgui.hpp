@@ -41,14 +41,14 @@ namespace YTE
                   std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                   ViewData* aView,
                   std::string aName = "",
-                  YTEDrawerTypeCombination aCombination = YTEDrawerTypeCombination::DefaultCombination);
+                  DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     VkImguiDrawer(VkRenderedSurface *aSurface,
                   vk::Format aColorFormat,
                   vk::Format aDepthFormat,
                   std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                   std::string aName = "",
-                  YTEDrawerTypeCombination aCombination = YTEDrawerTypeCombination::DefaultCombination);
+                  DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     virtual ~VkImguiDrawer() override;
 

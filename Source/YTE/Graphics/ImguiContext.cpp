@@ -18,55 +18,6 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  void ImguiContext::ImguiUpdate(LogicUpdate *aUpdate)
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGuiIO& io = ImGui::GetIO();
-
-    auto window = mView->GetWindow();
-    auto &mouse = window->mMouse;
-
-    // Setup display size (every frame to accommodate for window resizing)
-    io.DisplaySize = ImVec2((float)window->GetWidth(), 
-                            (float)window->GetHeight());
-
-    // Setup time step
-    io.DeltaTime = aUpdate->Dt > 0.0 ? (float)(aUpdate->Dt) : (float)(1.0f / 60.0f);
-
-    // Setup inputs
-    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-    if (window->IsFocused())
-    {
-      auto position = mouse.GetCursorPosition();
-      io.MousePos = ImVec2((float)position.x, (float)position.y);
-    }
-    else
-    {
-      io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-    }
-
-    //Mouse buttons : left, right, middle
-    io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
-    io.MouseDown[1] = mouse.IsButtonDown(MouseButtons::Right);
-    io.MouseDown[2] = mouse.IsButtonDown(MouseButtons::Middle);
-    
-
-    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
-    if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
-    {
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    }
-    else
-    {
-      glfwSetCursor(g_Window, g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
-
-    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
-    ImGui::NewFrame();
-  }
-
   ImguiContext::~ImguiContext()
   {
     ImGui::DestroyContext(mContext);
@@ -77,10 +28,32 @@ namespace YTE
     mContext = ImGui::CreateContext();
   }
 
+  const char* ImguiContext::GetClipboardTextImplementation(void *aSelf)
+  {
+    auto self = static_cast<ImguiContext*>(aSelf);
+    self->mClipboard = ::YTE::GetClipboardText();
+
+    return self->mClipboard.c_str();
+  }
+
+  void ImguiContext::SetClipboardTextImplementation(void *aSelf, const char* text)
+  {
+    auto self = static_cast<ImguiContext*>(aSelf);
+    self->mClipboard = text;
+    ::YTE::SetClipboardText(self->mClipboard);
+  }
+
   void ImguiContext::Start()
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
+
+    auto window = mView->GetWindow();
+
+    window->mMouse.YTERegister(Events::MouseScroll, this, ImguiContext::MouseScrollCallback);
+    window->mKeyboard.YTERegister(Events::KeyPress, this, ImguiContext::KeyPressCallback);
+    window->mKeyboard.YTERegister(Events::KeyRelease, this, ImguiContext::KeyReleaseCallback);
+    window->mKeyboard.YTERegister(Events::CharacterTyped, this, ImguiContext::CharacterTypedCallback);
 
     io.KeyMap[ImGuiKey_Tab] = enum_cast(Keys::Tab);
     io.KeyMap[ImGuiKey_LeftArrow] = enum_cast(Keys::Left);
@@ -104,14 +77,9 @@ namespace YTE
     io.KeyMap[ImGuiKey_Y] = enum_cast(Keys::Y);
     io.KeyMap[ImGuiKey_Z] = enum_cast(Keys::Z);
 
-
-    //TODO:
-    //io.SetClipboardTextFn = ImGui_ImplGlfwVulkan_SetClipboardText;
-    //io.GetClipboardTextFn = ImGui_ImplGlfwVulkan_GetClipboardText;
-    //io.ClipboardUserData = g_Window;
-    //#ifdef _WIN32
-    //  io.ImeWindowHandle = glfwGetWin32Window(g_Window);
-    //#endif
+    io.SetClipboardTextFn = SetClipboardTextImplementation;
+    io.GetClipboardTextFn = GetClipboardTextImplementation;
+    io.ClipboardUserData = this;
 
     // TODO
     // Load cursors
@@ -123,6 +91,109 @@ namespace YTE
     //g_MouseCursors[ImGuiMouseCursor_ResizeEW]   = glfwCreateStandardCursor(GLFW_HRESIZE_CURSOR);
     //g_MouseCursors[ImGuiMouseCursor_ResizeNESW] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
     //g_MouseCursors[ImGuiMouseCursor_ResizeNWSE] = glfwCreateStandardCursor(GLFW_ARROW_CURSOR);
+
+    mView->SetDrawerType("ImguiDrawer");
+  }
+
+
+  void ImguiContext::ImguiUpdate(LogicUpdate *aUpdate)
+  {
+    ImGui::SetCurrentContext(mContext);
+    ImGuiIO& io = ImGui::GetIO();
+
+    auto window = mView->GetWindow();
+    auto &mouse = window->mMouse;
+
+    // Setup display size (every frame to accommodate for window resizing)
+    io.DisplaySize = ImVec2((float)window->GetWidth(),
+                            (float)window->GetHeight());
+
+    // Setup time step
+    io.DeltaTime = aUpdate->Dt > 0.0 ? (float)(aUpdate->Dt) : (float)(1.0f / 60.0f);
+
+    // Setup inputs
+    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
+    if (window->IsFocused())
+    {
+      auto position = mouse.GetCursorPosition();
+      io.MousePos = ImVec2((float)position.x, (float)position.y);
+    }
+    else
+    {
+      io.MousePos = ImVec2(-std::numeric_limits<float>::max(), 
+                           -std::numeric_limits<float>::max());
+    }
+
+    //Mouse buttons : left, right, middle
+    io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
+    io.MouseDown[1] = mouse.IsButtonDown(MouseButtons::Right);
+    io.MouseDown[2] = mouse.IsButtonDown(MouseButtons::Middle);
+
+    io.ImeWindowHandle = window->GetWindowId();
+
+
+    // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
+    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+    if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
+    {
+      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    }
+    else
+    {
+      glfwSetCursor(g_Window, g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
+      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
+    ImGui::NewFrame();
+  }
+
+  void ImguiContext::MouseScrollCallback(MouseWheelEvent *aEvent)
+  {
+    ImGui::SetCurrentContext(mContext);
+    ImGuiIO& io = ImGui::GetIO();
+    io.MouseWheelH += (float)aEvent->ScrollMovement.x;
+    io.MouseWheel += (float)aEvent->ScrollMovement.y;
+  }
+
+  void ImguiContext::KeyPressCallback(KeyboardEvent *aEvent)
+  {
+    ImGui::SetCurrentContext(mContext);
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[enum_cast(aEvent->Key)] = true;
+    
+    io.KeyCtrl  = io.KeysDown[enum_cast(Keys::Control)];
+    io.KeyShift = io.KeysDown[enum_cast(Keys::Shift)];
+    io.KeyAlt   = io.KeysDown[enum_cast(Keys::Alt)];
+
+    //TODO:
+    //io.KeySuper = io.KeysDown[enum_cast(Keys::)];
+  }
+
+  void ImguiContext::KeyReleaseCallback(KeyboardEvent *aEvent)
+  {
+    ImGui::SetCurrentContext(mContext);
+    ImGuiIO& io = ImGui::GetIO();
+    io.KeysDown[enum_cast(aEvent->Key)] = false;
+
+    io.KeyCtrl = io.KeysDown[enum_cast(Keys::Control)];
+    io.KeyShift = io.KeysDown[enum_cast(Keys::Shift)];
+    io.KeyAlt = io.KeysDown[enum_cast(Keys::Alt)];
+
+    //TODO:
+    //io.KeySuper = io.KeysDown[enum_cast(Keys::)];
+  }
+
+  //void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c)
+  //{
+  //  ImGuiIO& io = ImGui::GetIO();
+  //  if (c > 0 && c < 0x10000)
+  //    io.AddInputCharacter((unsigned short)c);
+  //}
+  void ImguiContext::CharacterTypedCallback(KeyboardEvent *aEvent)
+  {
+    ImGui::SetCurrentContext(mContext);
+
   }
 
   void ImguiContext::ShowDemoWindow(bool* p_open)

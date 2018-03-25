@@ -11,6 +11,10 @@
 #ifdef YTE_Windows
 
 #include <stdint.h>
+#include <iostream>
+#include <string>
+#include <locale>
+#include <codecvt>
 
 #include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
 #include <Winuser.h>
@@ -48,6 +52,47 @@ namespace YTE
     bool state = GetAsyncKeyState(static_cast<int>(key)) & 0x8000;
 
     return state;
+  }
+
+
+  // Reference: https://www.codeproject.com/Articles/42/All-you-ever-wanted-to-know-about-the-Clipboard
+  std::string GetClipboardText()
+  {
+    std::string toReturn;
+
+    //open the clipboard
+    if (OpenClipboard(nullptr))
+    {
+      HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+      std::u16string wstr = (char16_t*)GlobalLock(hData);
+      GlobalUnlock(hData);
+      CloseClipboard();
+
+      // UTF-16/char16_t to UTF-8
+      std::string u8_conv = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(wstr);
+    }
+
+    return toReturn;
+  }
+
+  void SetClipboardText(std::string &aText)
+  {
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>> converter;
+    std::wstring wstr = converter.from_bytes(aText);
+
+    if (OpenClipboard(nullptr))
+    {
+      HGLOBAL clipbuffer;
+      char *buffer;
+      EmptyClipboard();
+
+      clipbuffer = GlobalAlloc(GMEM_DDESHARE, (sizeof(std::wstring::value_type) * wstr.size()) + 1);
+      buffer = (char*)GlobalLock(clipbuffer);
+      strcpy(buffer, LPCSTR(wstr.size()));
+      GlobalUnlock(clipbuffer);
+      SetClipboardData(CF_UNICODETEXT, clipbuffer);
+      CloseClipboard();
+    }
   }
 }
 #endif

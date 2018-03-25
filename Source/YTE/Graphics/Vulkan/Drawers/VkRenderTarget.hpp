@@ -44,7 +44,7 @@ namespace YTE
       std::vector<Attachment> mAttachments;
       std::vector<size_t> mColorAttachments;
       std::string mName;
-      YTEDrawerTypeCombination mCombinationType;
+      DrawerTypeCombination mCombinationType;
       float mOrder;
 
       bool operator<(RenderTargetData& rhs)
@@ -66,14 +66,14 @@ namespace YTE
                    std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                    ViewData* aView,
                    std::string aName,
-                   YTEDrawerTypeCombination aCombination);
+                   DrawerTypeCombination aCombination);
 
     VkRenderTarget(VkRenderedSurface *aSurface,
                    vk::Format aColorFormat,
                    vk::Format aDepthFormat,
                    std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                    std::string aName,
-                   YTEDrawerTypeCombination aCombination);
+                   DrawerTypeCombination aCombination);
 
     virtual ~VkRenderTarget();
 
@@ -113,7 +113,7 @@ namespace YTE
       mData.mOrder = aOrder;
     }
 
-    void SetCombinationType(YTEDrawerTypeCombination aCombination)
+    void SetCombinationType(DrawerTypeCombination aCombination)
     {
       mData.mCombinationType = aCombination;
     }

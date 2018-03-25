@@ -112,9 +112,9 @@ namespace YTE
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);
-    void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination);
+    void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination);
     void DeregisterView(GraphicsView *aView);
     void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 
@@ -220,9 +220,9 @@ namespace YTE
 
   private:
     void RenderFrameForSurface();
-    std::unique_ptr<VkRenderTarget> CreateRenderTarget(YTEDrawerTypes aDrawerType,
+    std::unique_ptr<VkRenderTarget> CreateRenderTarget(DrawerTypes aDrawerType,
                                                        ViewData *view,
-                                                       YTEDrawerTypeCombination aCombination);
+                                                       DrawerTypeCombination aCombination);
     
     Window *mWindow;
     VkRenderer *mRenderer;

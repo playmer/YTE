@@ -133,21 +133,21 @@ namespace YTE
     YTEUnusedArgument(aView);
   }
 
-  void Renderer::RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void Renderer::RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aDrawerType);
     YTEUnusedArgument(aCombination);
   }
 
-  void Renderer::SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void Renderer::SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aDrawerType);
     YTEUnusedArgument(aCombination);
   }
 
-  void Renderer::SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination)
+  void Renderer::SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination)
   {
     YTEUnusedArgument(aView);
     YTEUnusedArgument(aCombination);

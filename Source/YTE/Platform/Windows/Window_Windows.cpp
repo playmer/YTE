@@ -456,6 +456,13 @@ namespace YTE
     mData.ConstructAndGet<WindowData>();
   }
 
+  void* Window::GetWindowId()
+  {
+    auto self = mData.Get<WindowData>();
+
+    return self->mWindowHandle;
+  }
+
   void Window::SetWindowId(void *aId)
   {
     auto self = mData.Get<WindowData>();

@@ -83,6 +83,7 @@ namespace YTE
     void SetCursorVisibility(bool aShow);
 
     void SetWindowId(void *aId);
+    void* GetWindowId();
 
     ~Window();
 

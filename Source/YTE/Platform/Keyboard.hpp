@@ -37,6 +37,9 @@ namespace YTE
   uint64_t TranslateFromOurToOSKey(Keys aOsKey);
   void SurveyKeyboard(bool *aKeyboard);
 
+  std::string GetClipboardText();
+  void SetClipboardText(std::string &aText);
+
   // Checks key with OS.
   bool CheckKey(Keys aKey);
 

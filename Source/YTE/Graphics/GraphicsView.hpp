@@ -11,13 +11,14 @@
 
 namespace YTE
 {
-  enum class YTEDrawerTypes
+  enum class DrawerTypes
   {
     DefaultDrawer,
-    GameForwardDrawer
+    GameForwardDrawer,
+    ImguiDrawer
   };
 
-  enum class YTEDrawerTypeCombination
+  enum class DrawerTypeCombination
   {
     DoNotInclude,
     DefaultCombination,
@@ -85,9 +86,10 @@ namespace YTE
     void KeyPressed(KeyboardEvent *aUpdate);
 
     std::string GetDrawerCombinationType();
-    std::string GetDrawerType();
     void SetDrawerCombinationType(std::string aCombination);
+    std::string GetDrawerType();
     void SetDrawerType(std::string aType);
+
 
     void SetSuperSampling(i32 aSuperSampling);
 
@@ -98,8 +100,8 @@ namespace YTE
 
   private:
     Camera *mActiveCamera;
-    YTEDrawerTypeCombination mDrawerCombination;
-    YTEDrawerTypes mDrawerType;
+    DrawerTypeCombination mDrawerCombination;
+    DrawerTypes mDrawerType;
     Window *mWindow;
     Renderer *mRenderer;
     std::string mWindowName;

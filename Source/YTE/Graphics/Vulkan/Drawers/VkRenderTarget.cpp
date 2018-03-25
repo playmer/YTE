@@ -26,7 +26,7 @@ namespace YTE
                                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                  ViewData* aView,
                                  std::string aName,
-                                 YTEDrawerTypeCombination aCombination)
+                                 DrawerTypeCombination aCombination)
     : mSurface(aSurface)
     , mColorFormat(aColorFormat)
     , mDepthFormat(aDepthFormat)
@@ -48,7 +48,7 @@ namespace YTE
                                  vk::Format aDepthFormat,
                                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                  std::string aName,
-                                 YTEDrawerTypeCombination aCombination)
+                                 DrawerTypeCombination aCombination)
     : mSurface(aSurface)
     , mColorFormat(aColorFormat)
     , mDepthFormat(aDepthFormat)
