@@ -87,7 +87,6 @@ namespace YTE
   {
   public:
     YTEDeclareType(RequestDialogueStart);
-    bool EventHandled = false;
   };
 
   class DialogueSelect : public Event
@@ -95,21 +94,18 @@ namespace YTE
   public:
     YTEDeclareType(DialogueSelect);
     glm::vec2 StickDirection;
-    bool EventHandled = false;
   };
 
   class DialogueConfirm : public Event
   {
   public:
     YTEDeclareType(DialogueConfirm);
-    bool EventHandled = false;
   };
 
   class DialogueExit : public Event
   {
   public:
     YTEDeclareType(DialogueExit);
-    bool EventHandled = false;
   };
 
   class MenuStart : public Event

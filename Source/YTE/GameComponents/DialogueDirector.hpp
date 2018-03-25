@@ -25,7 +25,7 @@ namespace YTE
   // Events
   /////////////////////////////////////////////////////////////////////////////////////
   YTEDeclareEvent(UISelectEvent);
-  YTEDeclareEvent(UIConfirmEvent);
+  YTEDeclareEvent(UIFocusSwitchEvent);
   YTEDeclareEvent(UIDisplayEvent);
   YTEDeclareEvent(UIUpdateContent);
 
@@ -34,14 +34,16 @@ namespace YTE
   {
   public:
     YTEDeclareType(UISelectEvent);
-    UISelectEvent(bool aShouldSelect) { SelectOrDeselect = aShouldSelect; }
-    bool SelectOrDeselect;
+    UISelectEvent(int aSelection) { SelectionIndex = aSelection; }
+    int SelectionIndex;
   };
 
-  class UIConfirmEvent : public Event
+  class UIFocusSwitchEvent : public Event
   {
   public:
-    YTEDeclareType(UIConfirmEvent);
+    YTEDeclareType(UIFocusSwitchEvent);
+    UIFocusSwitchEvent(bool aIsPassiveFocused) { IsPassiveFocused = aIsPassiveFocused; }
+    bool IsPassiveFocused = false;
   };
 
   class UIDisplayEvent : public Event
@@ -49,14 +51,23 @@ namespace YTE
   public:
     YTEDeclareType(UIDisplayEvent);
     UIDisplayEvent(bool aShouldDisplay) { ShouldDisplay = aShouldDisplay; }
+
     bool ShouldDisplay;
+    int DisplayIndex = -1;
   };
 
   class UIUpdateContent : public Event
   {
   public:
     YTEDeclareType(UIUpdateContent);
-    UIUpdateContent(const std::string& aNewMessage) { ContentMessage = aNewMessage; }
+    UIUpdateContent(bool aIsPassive, const std::string& aNewMessage) 
+    { 
+      IsPassive = aIsPassive;
+      ContentMessage = aNewMessage; 
+    }
+
+    bool IsPassive;
+    int SelectionIndex = -1;
     std::string ContentMessage;
   };
   
@@ -79,7 +90,6 @@ namespace YTE
     YTEDeclareType(DialogueDirector);
     DialogueDirector(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-    void Update(LogicUpdate *aEvent);
 
     // Properties /////////////////////////////////////////////////////////////////////
     //const glm::vec3& GetCamAnchor() { return mCameraAnchorPosition; }
@@ -92,12 +102,11 @@ namespace YTE
     void SetCharMark(const glm::vec3& aMark) { mCharacterMark = aMark; }*/
     ///////////////////////////////////////////////////////////////////////////////////
 
-    void OnRequestDialogueStart(RequestDialogueStart *aEvent);
+    void OnRequestDialogueStart(RequestDialogueStart *);
     void OnDialogueNodeReady(DialogueNodeReady *aEvent);
     void OnDialogueSelect(DialogueSelect *aEvent);
-    void OnDialogueConfirm(DialogueConfirm *aEvent);
-    void OnDialogueExit(DialogueExit *aEvent);
-    void OnCollisionPersist(CollisionPersisted *aEvent);
+    void OnDialogueConfirm(DialogueConfirm *);
+    void OnDialogueExit(DialogueExit *);
     void OnCollisionStart(CollisionStarted *aEvent);
     void OnCollisionEnd(CollisionEnded *aEvent);
 
@@ -115,11 +124,14 @@ namespace YTE
     //Composition* mDialogueOption3;
     //Composition* mLastSelected;
 
-    //std::vector<std::string> mCurNodeData;
-    //DialogueNode::NodeType mCurNodeType;
-    //int mCurNodeDataIndex;
+    std::vector<std::string> mCurNodeData;
+    DialogueNode::NodeType mCurNodeType;
+    int mCurNodeDataIndex;
 
-    bool mActive;
+    int mLastSelectionIndex;
+    int mMaxSelectionIndex;
+
+    //bool mActive;
 
       // @@@NICK: Currently unused, but may be needed to animate characters on dock?
       // Set the models to hit their "mark" during the RequestDialogueStart handler

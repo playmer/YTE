@@ -32,7 +32,7 @@ namespace YTE
     void SetScaleFactor(const float aScaleFactor) { mScaleFactor = aScaleFactor; }
     ////////////////////////////////////////////////////////
 
-    void OnStart(LogicUpdate *aEvent);
+    void OnStart(LogicUpdate *);
     void OnButtonHover(MenuElementHover* aEvent);
     void OnButtonDeHover(MenuElementDeHover* aEvent);
 

@@ -500,6 +500,8 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
       // if we exited early just start the conversation over
     if (mActiveConvo->GetState() == Conversation::State::EarlyExit)
     {
@@ -530,6 +532,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mActiveConvo->SetState(Conversation::State::EarlyExit);
   }
 

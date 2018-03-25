@@ -158,6 +158,8 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     StopBoatImmediately();
 
     if (mSoundEmitter)

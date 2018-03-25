@@ -43,8 +43,8 @@ namespace YTE
     void SetIsDefault(const bool aIsDefault) { mIsDefault = aIsDefault; }
     ///////////////////////////////////////////////////////////////////////////////////
 
-    void OnDirectCamera(DirectCameraEvent *aEvent);
-    void OnDialogueExit(DialogueExit *aEvent);
+    void OnDirectCamera(DirectCameraEvent *);
+    void OnDialogueExit(DialogueExit *);
 
   private:
     bool mIsDefault;

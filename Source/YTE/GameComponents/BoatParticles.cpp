@@ -97,6 +97,8 @@ namespace YTE
 
   void BoatParticles::Update(LogicUpdate *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     float boatSpeed = mBoatController->GetCurrentSpeed();
 
     if (boatSpeed < 0.2f)
@@ -111,7 +113,7 @@ namespace YTE
       emitCount = 45;
     }
 
-    float emitRate = 0.00001f; //1.0001f - 2.0f * (boatSpeed / mBoatController->GetMaxSailSpeed());
+    //float emitRate = 0.00001f; //1.0001f - 2.0f * (boatSpeed / mBoatController->GetMaxSailSpeed());
 
     glm::vec3 forward = 0.5f * mOrientation->GetForwardVector();
     glm::vec3 right = mOrientation->GetRightVector();

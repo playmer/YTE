@@ -13,81 +13,160 @@
 
 namespace YTE
 {
+  static std::vector<std::string> PopulateDropDownList(Component *)
+  {
+    return ContentTypeStrings;
+  }
+
   YTEDefineType(DialogueElement)
   {
     YTERegisterType(DialogueElement);
 
-    YTEBindProperty(&GetCanDeselect, &SetCanDeselect, "CanBeDeselected")
+    YTEBindProperty(&GetContentType, &SetContentType, "ContentType")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+    YTEBindProperty(&GetSelectionIndex, &SetSelectionIndex, "SelectinIndex")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
 
-
   DialogueElement::DialogueElement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mMySprite(nullptr)
+    , mChildSprite(nullptr)
+    , mTextContent(nullptr)
+    , mContentType(ContentType::Passive)
+    , mSelectionIndex(0)
+    , mIsDisplayed(false)
   {
-    mCanDeselect = false;
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void DialogueElement::Initialize()
   {
-    mTransform = mOwner->GetComponent<Transform>();
-    mText = mOwner->FindFirstCompositionByName("Text")->GetComponent<SpriteText>();
+    //mTransform = mOwner->GetComponent<Transform>();
+    //mText = mOwner->FindFirstCompositionByName("Text")->GetComponent<SpriteText>();
 
-    mInitialPos = mTransform->GetWorldTranslation();
-    mSelectString = mText->GetText();
+    //mInitialPos = mTransform->GetWorldTranslation();
+    //mSelectString = mText->GetText();
 
       // Initialize to not being displayed;
     //mTransform->SetWorldTranslation(0.f, -60.f, 0.f);
 
-    mOwner->YTERegister(Events::UIDisplayEvent, this, &DialogueElement::OnDisplayEvent);
-    mOwner->YTERegister(Events::UIUpdateContent, this, &DialogueElement::OnContentUpdate);
-    mOwner->YTERegister(Events::UISelectEvent, this, &DialogueElement::OnSelectEvent);
-    mOwner->YTERegister(Events::UIConfirmEvent, this, &DialogueElement::OnConfirmEvent);
+    mMySprite = mOwner->GetComponent<Sprite>();
+
+    auto children = mOwner->GetCompositions()->All();
+    for (auto &child : children)
+    {
+      auto spriteTextComponent = child.second->GetComponent<SpriteText>();
+      if (spriteTextComponent != nullptr)
+      {
+        mTextContent = spriteTextComponent;
+      }
+
+      auto spriteComponent = child.second->GetComponent<Sprite>();
+      if (spriteComponent != nullptr)
+      {
+        mChildSprite = spriteComponent;
+      }
+    }
+
+    mSpace->YTERegister(Events::LogicUpdate, this, &DialogueElement::OnStart);
+    mSpace->YTERegister(Events::UIUpdateContent, this, &DialogueElement::OnContentUpdate);
+
+    if (mContentType == ContentType::Passive)
+    {
+      mSelectionIndex = 0;
+      mSpace->YTERegister(Events::UIDisplayEvent, this, &DialogueElement::OnDisplayEvent);
+      mSpace->YTERegister(Events::UIFocusSwitchEvent, this, &DialogueElement::OnFocusSwitch);
+    }
+    else if (mContentType == ContentType::Active)
+    {
+      mSpace->YTERegister(Events::UISelectEvent, this, &DialogueElement::OnSelectEvent);
+    }
   }
 
-  void DialogueElement::OnDisplayEvent(UIDisplayEvent *aEvent)
+  void DialogueElement::OnStart(LogicUpdate*)
   {
-    if (aEvent->ShouldDisplay)
-    {
-      if (mCanDeselect)
-      {
-        mText->SetText(mDeselectString);
-      }
-      else
-      {
-        mText->SetText(mSelectString);
-      }
-
-     // mTransform->SetWorldTranslation(mInitialPos);
-    }
-    else
-    {
-      //mTransform->SetWorldTranslation(glm::vec3(0.f, -60.f, 0.f));
-    }
+    UpdateVisibility(false);
+    mSpace->YTEDeregister(Events::LogicUpdate, this, &DialogueElement::OnStart);
   }
 
   void DialogueElement::OnContentUpdate(UIUpdateContent *aEvent)
   {
-    mSelectString = aEvent->ContentMessage;
-    mText->SetText(mSelectString);
+    if (aEvent->IsPassive && mContentType == ContentType::Passive)
+    {
+      mTextContent->SetText(aEvent->ContentMessage);
+    }
+    else if (!aEvent->IsPassive && mContentType == ContentType::Active)
+    {
+      if (aEvent->SelectionIndex == mSelectionIndex)
+      {
+        mTextContent->SetText(aEvent->ContentMessage);
+      }
+    }
+  }
+
+  void DialogueElement::OnFocusSwitch(UIFocusSwitchEvent *aEvent)
+  {
+    if (mChildSprite != nullptr)
+    {
+      if (aEvent->IsPassiveFocused)
+      {
+        mChildSprite->SetVisibility(true);
+      }
+      else
+      {
+        mChildSprite->SetVisibility(false);
+      }
+    }
+  }
+
+  void DialogueElement::OnDisplayEvent(UIDisplayEvent *aEvent)
+  {
+    if (aEvent->ShouldDisplay != mIsDisplayed)
+    {
+      UpdateVisibility(aEvent->ShouldDisplay);
+    }
   }
 
   void DialogueElement::OnSelectEvent(UISelectEvent *aEvent)
   {
-    if (aEvent->SelectOrDeselect)
+    if (aEvent->SelectionIndex == mSelectionIndex)
     {
-      mText->SetText(mSelectString);
+      if (!mIsDisplayed)
+      {
+        UpdateVisibility(true);
+      }
     }
-    else if (mCanDeselect)
+    else
     {
-      mText->SetText(mDeselectString);
+      if (mIsDisplayed)
+      {
+        UpdateVisibility(false);
+      }
     }
   }
 
-  void DialogueElement::OnConfirmEvent(UIConfirmEvent *aEvent)
+  void DialogueElement::UpdateVisibility(bool aBecomeVisible)
   {
-    YTEUnusedArgument(aEvent);
+    mIsDisplayed = aBecomeVisible;
+
+    if (mMySprite)
+    {
+      mMySprite->SetVisibility(aBecomeVisible);
+    }
+
+    if (mChildSprite)
+    {
+      mChildSprite->SetVisibility(aBecomeVisible);
+    }
+
+    if (mTextContent)
+    {
+      mTextContent->SetVisibility(aBecomeVisible);
+    }
   }
 }

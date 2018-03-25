@@ -42,6 +42,11 @@ namespace YTE
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
     mOwner->YTERegister(Events::DirectCameraEvent, this, &CameraAnchor::OnDirectCamera);
+
+    if (mIsDefault)
+    {
+      mSpace->YTERegister(Events::DialogueExit, this, &CameraAnchor::OnDialogueExit);
+    }
   }
 
   void CameraAnchor::Start()
@@ -66,18 +71,15 @@ namespace YTE
     mSpace->YTEDeregister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
   }
 
-  void CameraAnchor::OnDirectCamera(DirectCameraEvent *aEvent)
+  void CameraAnchor::OnDirectCamera(DirectCameraEvent *)
   {
     AttachCamera attach(mOwner);
     mSpace->SendEvent(Events::AttachCamera, &attach);
   }
 
-  void CameraAnchor::OnDialogueExit(DialogueExit *aEvent)
+  void CameraAnchor::OnDialogueExit(DialogueExit *)
   {
-    if (mIsDefault)
-    {
-      AttachCamera attach(mOwner);
-      mSpace->SendEvent(Events::AttachCamera, &attach);
-    }
+    AttachCamera attach(mOwner);
+    mSpace->SendEvent(Events::AttachCamera, &attach);
   }
 }
