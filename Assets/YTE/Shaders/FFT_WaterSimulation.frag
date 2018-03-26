@@ -211,7 +211,7 @@ float noise(vec2 st) {
 
 vec3 CalculateNoise(vec2 aUV)
 {
-    float t = Illumination.mTime * 0.125;
+    float t = Illumination.mTime * 0.05;
     vec2 st1 = vec2(aUV.x + t, aUV.y);
     vec2 st2 = vec2(aUV.x + t, aUV.y + t);
     vec2 st3 = vec2(aUV.x, aUV.y + t);
@@ -230,6 +230,8 @@ vec3 CalculateNoise(vec2 aUV)
     color += vec3( noise(pos4)*.5+.5 );
 
     return color * 0.25;
+    color = color * 0.25f;
+    return (color * 2.0f) - 1.0f;
 }
 
 
@@ -392,26 +394,27 @@ vec4 Foam(vec4 aOriginalColor, float aNormalX, vec2 aUV)
   //       make max and min heights modifyable
   //       make intensity modifyable
 
-  float baseHeight = 0.0f;
-  float minHeight = -1.0f;
-  float maxHeight = 2.0f;
-  float intensityFoam = 5.0f;
-  float intensityValley = 1.0f;
-  vec4 foamColor = vec4(0.75f, 0.75f, 1.0f, 1.0f);
-  //vec4 foamColor = texture(specularSampler, aUV);
-  vec4 valleyColor = vec4(0.25f, 0.25f, 0.5f, 0.5f);
+  float baseHeight = 0.7f;
+  float minHeight = -2.0f;
+  float maxHeight = 1.75f;
+  float intensityFoam = 2.0f;
+  float intensityValley = 5.0f;
+  //vec4 foamColor = vec4(0.75f, 0.75f, 1.0f, 1.0f);
+  vec4 foamColor = texture(specularSampler, aUV);
+  //vec4 valleyColor = vec4(0.1f, 0.1f, 0.5f, 1.0f);
+  vec4 valleyColor = vec4(aOriginalColor.xyz * 0.75f, 1.0f);
 
   // foam
   // h - baseHeight / MaxHeight - baseHeight
-  if (aNormalX > 0.0f)
+  if (inPositionWorld.y >= baseHeight)
   {
     float mixamount = saturate((saturate((inPositionWorld.y - baseHeight) / (maxHeight - baseHeight)) * aNormalX) * intensityFoam);
-    aOriginalColor = mix(aOriginalColor,foamColor, mixamount);
+    aOriginalColor = mix(aOriginalColor, foamColor, mixamount);
   }
   else
   {
-    float mixamount = (-saturate((inPositionWorld.y - baseHeight) / (minHeight -baseHeight)) * aNormalX) * intensityValley;
-    aOriginalColor = mix(aOriginalColor,-valleyColor, mixamount);
+    float mixamount = (saturate((baseHeight - inPositionWorld.y) / (baseHeight - minHeight)) * aNormalX) * intensityValley;
+    aOriginalColor = mix(aOriginalColor, valleyColor, mixamount);
   }
 
   return aOriginalColor;
@@ -453,7 +456,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
   // normal
   lightData.mNormalTexture   = aNormal;
   //lightData.mNormalTexture = aNormal;
-  //lightData.mDiffTexture  = Foam(lightData.mDiffTexture, lightData.mNormalTexture.x, uv);
+  lightData.mDiffTexture  = Foam(lightData.mDiffTexture, lightData.mNormalTexture.x, uv);
 
   // emissive
   lightData.mEmisMat = SubmeshMaterial.mEmissive * ModelMaterial.mEmissive;
@@ -527,7 +530,9 @@ void main()
     vec2 uv = inTextureCoordinates.xy;
     vec3 normal = normalize(inNormal) + n;
     normal = normalize(normal);
-    //uv += n.xy;
+    uv.x += n.x * 0.05f;
+    uv.y -= n.y * 0.05f;
+    n = n * 0.95f;
     outFragColor = Phong(vec4(normal, 0.0f), posView, posWorld, uv, n);
   }
 }
