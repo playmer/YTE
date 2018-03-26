@@ -1079,7 +1079,7 @@ namespace YTE
           mGraphicsView,
           mRenderer,
           "tempWater.png",
-          "Foam.png",
+          "foam.png",
           "copywritePerlinNoiseTextureNormal.png");
     }
   }
