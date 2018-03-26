@@ -136,9 +136,9 @@ namespace YTE
       mMouseDelta = screenCoordinates - mMouseInitialPosition;
       mMouse->SetCursorPosition(mMouseInitialPosition);
 
-      std::cout << fmt::format("Mouse: x: {}, y: {} \n",
-                               mMouseDelta.x,
-                               mMouseDelta.y);
+      //std::cout << fmt::format("Mouse: x: {}, y: {} \n",
+      //                         mMouseDelta.x,
+      //                         mMouseDelta.y);
     }
   }
 

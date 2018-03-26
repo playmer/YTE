@@ -276,8 +276,8 @@ namespace YTE
         mComputationalVertices[vertex].mHTilde0 = glm::vec3(ht0.mReal, ht0.mImaginary, 0.0f);
         mComputationalVertices[vertex].mHTilde0mkConjugate = glm::vec3(ht0conj.mReal,
                                                                        ht0conj.mImaginary, 0.0f);
-        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize / 2) - 1);
-        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize / 2) - 1);
+        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize / 2));
+        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize / 2));
 
         // sets positions, and uses the length parameter to space out the grid in 3D space
         // x - (gridSize / 2.0f) = the physical position of the vertex without length expansion
@@ -1079,7 +1079,7 @@ namespace YTE
           mGraphicsView,
           mRenderer,
           "tempWater.png",
-          "copywriteFoamTextureSpecular.png",
+          "Foam.png",
           "copywritePerlinNoiseTextureNormal.png");
     }
   }
