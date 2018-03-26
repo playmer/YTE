@@ -9,6 +9,7 @@
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -152,6 +153,11 @@ namespace YTE
   std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
   {
     return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
+  }
+
+  std::unique_ptr<InstantiatedInfluenceMap> VkRenderer::CreateWaterInfluenceMap(GraphicsView* aView)
+  {
+    return static_unique_pointer_cast<InstantiatedInfluenceMap>(GetSurface(aView->GetWindow())->CreateWaterInfluenceMap(aView));
   }
 
   // Textures

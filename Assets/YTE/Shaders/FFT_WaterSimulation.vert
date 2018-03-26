@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_BONES 64
+#define MAX_INFLUENCEMAPS 128
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -22,6 +23,15 @@ layout (location = 7) in vec3 inBoneWeights;
 layout (location = 8) in vec2 inBoneWeights2;
 layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
+
+
+
+struct WaterInformation
+{
+  vec4 mColor;
+  vec3 mCenter;
+  float mRadius;
+}
 
 
 
@@ -81,6 +91,14 @@ layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
   bool mHasAnimations;
 } Animation;
 
+
+// ========================
+// Water Buffer
+layout (binding = UBO_WATER_BINDING) uniform UBOWater
+{
+  WaterInformation mInfluenceMaps[MAX_INFLUENCEMAPS];
+  uint mNumberOfInfluences;
+}
 
 
 ///////////////////////////////////////////////////////////////////////////////

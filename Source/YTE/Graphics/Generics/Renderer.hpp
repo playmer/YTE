@@ -36,6 +36,7 @@ namespace YTE
                                    std::vector<Submesh> &aSubmeshes,
 			                             bool aForceUpdate = false);
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
+    virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);
     virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination);

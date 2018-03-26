@@ -5,6 +5,7 @@
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
+#include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
 
 
 #include "YTE/Graphics/Generics/Renderer.hpp"
@@ -64,6 +65,12 @@ namespace YTE
   }
 
   std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
+  {
+    YTEUnusedArgument(aView);
+    return nullptr;
+  }
+
+  std::unique_ptr<InstantiatedInfluenceMap> Renderer::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     YTEUnusedArgument(aView);
     return nullptr;
