@@ -42,8 +42,7 @@ namespace YTE
     ~SpriteText();
 
     void Initialize() override;
-    void CreateSpriteText();
-
+    
     // PROPERTIES /////////////////////////////////////////
     std::string GetText()
     {
@@ -90,7 +89,10 @@ namespace YTE
     }
     ////////////////////////////////////////////////////////
 
+    void CreateSpriteText();
     void CreateTransform();
+
+    void OnStart(LogicUpdate *);
     void TransformUpdate(TransformChanged *aEvent);
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override

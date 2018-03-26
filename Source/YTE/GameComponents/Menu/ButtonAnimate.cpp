@@ -41,7 +41,7 @@ namespace YTE
     mOwner->YTERegister(Events::MenuElementDeHover, this, &ButtonAnimate::OnButtonDeHover);
   }
 
-  void ButtonAnimate::OnStart(LogicUpdate *aEvent)
+  void ButtonAnimate::OnStart(LogicUpdate *)
   {
     mNeutralScale = mMyTransform->GetScale();
     mSpace->YTEDeregister(Events::LogicUpdate, this, &ButtonAnimate::OnStart);

@@ -39,17 +39,14 @@ namespace YTE
     void OnStart(LogicUpdate*);
 
     // Properties /////////////////////////////////////////////////////////////////////
-    const bool GetIsActive() { return mIsActive; }
-    void SetIsActive(const bool aIsActive) { mIsActive = aIsActive; }
+    const bool GetIsDefault() { return mIsDefault; }
+    void SetIsDefault(const bool aIsDefault) { mIsDefault = aIsDefault; }
     ///////////////////////////////////////////////////////////////////////////////////
 
-    void RotateCamera(CameraRotateEvent *aEvent);
-    void OnDirectCamera(DirectCameraEvent *aEvent);
-    void OnDialogueExit(DialogueExit *aEvent);
+    void OnDirectCamera(DirectCameraEvent *);
+    void OnDialogueExit(DialogueExit *);
 
   private:
-    float mRotScale;
-
-    bool mIsActive;
+    bool mIsDefault;
   };
 }

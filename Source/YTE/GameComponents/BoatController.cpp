@@ -158,10 +158,9 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    StopBoatImmediately();
+    YTEUnusedArgument(aEvent);
 
-    //mTransform->SetWorldTranslation(aEvent->DockAnchorPos.x, mTransform->GetWorldTranslation().y, aEvent->DockAnchorPos.z);
-    //mTransform->RotateToward(aEvent->DockDirection, mOrientation->GetUpVector());
+    StopBoatImmediately();
 
     if (mSoundEmitter)
     {

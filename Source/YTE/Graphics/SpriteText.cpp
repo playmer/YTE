@@ -92,9 +92,11 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
+    mSpace->YTERegister(Events::LogicUpdate, this, &SpriteText::OnStart);
+
     mOwner->YTERegister(Events::PositionChanged, this, &SpriteText::TransformUpdate);
     mOwner->YTERegister(Events::RotationChanged, this, &SpriteText::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &SpriteText::TransformUpdate);
+    //mOwner->YTERegister(Events::ScaleChanged, this, &SpriteText::TransformUpdate);
 
     CreateSpriteText();
   }
@@ -186,7 +188,13 @@ namespace YTE
 
     mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), mTransform->GetWorldTranslation());
     mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetWorldRotation());
-    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetWorldScale());
+    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, glm::vec3(1.0f));
+  }
+
+  void SpriteText::OnStart(LogicUpdate *)
+  {
+    mTransform->SetWorldScale(glm::vec3(1.0f));
+    mSpace->YTEDeregister(Events::LogicUpdate, this, &SpriteText::OnStart);
   }
 
   void SpriteText::TransformUpdate(TransformChanged *aEvent)

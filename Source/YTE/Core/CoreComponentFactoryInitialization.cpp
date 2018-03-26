@@ -21,6 +21,7 @@
 #include "YTE/GameComponents/Dialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/DialogueElement.hpp"
+#include "YTE/GameComponents/DialogueElementDefault.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
@@ -114,6 +115,7 @@ namespace YTE
     helper.CreateComponentFactory<Dialogue>();
     helper.CreateComponentFactory<DialogueDirector>();
     helper.CreateComponentFactory<DialogueElement>();
+    helper.CreateComponentFactory<DialogueElementDefault>();
     helper.CreateComponentFactory<Zone>();
     helper.CreateComponentFactory<Island>();
     helper.CreateComponentFactory<TestingComponent>();

@@ -12,6 +12,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueDirector.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueElement.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/DialogueElementDefault.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/BoatPhysicsMath.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.cpp
@@ -41,6 +42,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueDirector.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueElement.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/DialogueElementDefault.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/BoatPhysicsMath.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/ModifyBoatMesh.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.hpp
