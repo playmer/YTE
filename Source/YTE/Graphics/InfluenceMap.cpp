@@ -28,8 +28,7 @@ namespace YTE
       .AddAttribute<EditableColor>();
 
     YTEBindProperty(&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw, "DebugDraw")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<EditorProperty>();
 
     YTEBindProperty(&InfluenceMap::GetIntensity, &InfluenceMap::SetIntensity, "Intensity")
       .AddAttribute<EditorProperty>()
