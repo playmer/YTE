@@ -1058,6 +1058,41 @@ namespace YTE
     auto vert = mVertices[index];
     point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
 
+
+    // influence maps [ MUST COPY THE SHADER LOGIC ]
+    auto manager = static_cast<VkRenderer*>(mRenderer)->GetAllWaterInfluenceMaps(mGraphicsView);
+    auto& data = manager->mWaterInformationData;
+
+    float HeightInfluence = 1.0f;
+
+    for (int i = 0; i < data.mNumberOfInfluences; ++i)
+    {
+      UBOWaterInfluenceMap& map = data.mInformation[i];
+
+      if (map.mIntensity >= 0.0f)
+      {
+        glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
+        float vtcLen = glm::length(vertToCenter);
+
+        if (vtcLen <= map.mRadius)
+        {
+          // influence 
+          // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
+          float influenceAmount = vtcLen / map.mRadius;
+
+          // 0 will make the height be the base height
+          // 1 will not change the height
+          HeightInfluence *= (influenceAmount * (1.0f - map.mIntensity));
+        }
+      }
+    }
+
+    float yPos = point.y;
+    yPos -= data.mBaseHeight;
+    yPos *= HeightInfluence;
+    yPos += data.mBaseHeight;
+    point.y = yPos;
+
     return glm::vec3(point.x, point.y, point.z);
   }
 
