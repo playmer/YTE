@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/GameComponents/QuestLogic.hpp" /* to identify collision with boat */
 
 namespace YTE
 {
@@ -20,22 +21,30 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    // Create all the postcards, by character then quest
+      // this is what determines the player's quest order
     mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Introduction);
-    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Introduction);
-    mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Introduction);
-
-    mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Explore);
-    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Explore);
-    mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Explore);
-
     mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Fetch);
-    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Fetch);
+
+    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Introduction);
+    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Explore);
+
+    mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Introduction);
     mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Fetch);
 
     mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Dialogue);
+    mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Explore);
     mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Dialogue);
+    mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Explore);
+    mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Fetch);
     mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Dialogue);
+  }
+
+  void NoticeBoard::Initialize()
+  {
+    mOwner->YTERegister(Events::CollisionStarted, this, &NoticeBoard::OnCollisionStarted);
+    mOwner->YTERegister(Events::CollisionEnded, this, &NoticeBoard::OnCollisionEnded);
+    mSpace->YTERegister(Events::NoticeBoardHookup, this, &NoticeBoard::OnNoticeBoardHookup);
+    mAssignedPostcard = nullptr;
   }
 
   void NoticeBoard::OnCollisionStarted(CollisionStarted *aEvent)
@@ -54,37 +63,23 @@ namespace YTE
     }
   }
 
-  void NoticeBoard::Initialize()
+  void NoticeBoard::OnNoticeBoardHookup(NoticeBoardHookup *aEvent)
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &NoticeBoard::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &NoticeBoard::OnCollisionEnded);
-    mSpace->YTERegister(Events::ActiveQuestBroadcast, this, &NoticeBoard::OnActiveQuestBroadcast);
-    mAssignedPostcard = nullptr;
-  }
-
-  void NoticeBoard::OnActiveQuestBroadcast(ActiveQuestBroadcast *aEvent)
-  {
-    Quest::CharacterName character = aEvent->mActiveQuest->GetCharacter();
-    if (mActiveQuestMap[character] != nullptr)
+    Quest **handle = aEvent->mActiveQuestHandle;
+    Quest::CharacterName character = (*handle)->GetCharacter();
+    switch (character)
     {
-      mActiveQuestMap[character] = aEvent->mActiveQuest;
-    }
-    else
-    {
-      switch (character)
+      case Quest::CharacterName::John:
       {
-        case Quest::CharacterName::John:
-        {
-          mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::John, aEvent->mActiveQuest));
-        }
-        case Quest::CharacterName::Daisy:
-        {
-          mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Daisy, aEvent->mActiveQuest));
-        }
-        case Quest::CharacterName::Basil:
-        {
-          mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Basil, aEvent->mActiveQuest));
-        }
+        mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::John, aEvent->mActiveQuestHandle));
+      }
+      case Quest::CharacterName::Daisy:
+      {
+        mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Daisy, aEvent->mActiveQuestHandle));
+      }
+      case Quest::CharacterName::Basil:
+      {
+        mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Basil, aEvent->mActiveQuestHandle));
       }
     }
   }
@@ -93,15 +88,17 @@ namespace YTE
   {
     if (mAssignedPostcard != nullptr)
     {
-      Quest::State curPostcardState = mActiveQuestMap.at(mAssignedPostcard->GetCharacter())->GetState();
-      if (curPostcardState == Quest::State::Completed)
+      Quest *curQuest = *(mActiveQuestMap.at(mAssignedPostcard->GetCharacter()));
+      Quest::State curState = curQuest->GetState();
+
+      if (curState == Quest::State::Completed)
       {
         // assign next postcard
         ++mAssignedPostcard;
         if (mAssignedPostcard != mPostcardVec.end()._Ptr)
         {
-          AssignPostcard postcard(mAssignedPostcard);
-          mSpace->SendEvent(Events::AssignPostcard, &postcard);
+          QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());
+          mSpace->SendEvent(Events::QuestStart, &quest);
         }
       }
     }
@@ -109,8 +106,8 @@ namespace YTE
     {
       // assign first postcard
       mAssignedPostcard = &mPostcardVec[0];
-      AssignPostcard postcard(mAssignedPostcard);
-      mSpace->SendEvent(Events::AssignPostcard, &postcard);
+      QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());
+      mSpace->SendEvent(Events::QuestStart, &quest);
     }
   }
 }//end yte

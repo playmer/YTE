@@ -21,11 +21,21 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/BoxCollider.hpp"
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
-#include "YTE/GameComponents/QuestLogic.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp"
+
 
 namespace YTE
 {
-
+  class Postcard
+  {
+  public:
+    Postcard(Quest::CharacterName aCharacterName, Quest::Name aQuestName) : mCharacterName(aCharacterName), mQuestName(aQuestName) {};
+    Quest::CharacterName GetCharacter() { return mCharacterName; };
+    Quest::Name GetQuest() { return mQuestName; };
+  private:
+    Quest::CharacterName mCharacterName;
+    Quest::Name mQuestName;
+  };
 
   class NoticeBoard : public Component
   {
@@ -37,11 +47,11 @@ namespace YTE
     void OnCollisionStarted(CollisionStarted *aEvent);
     void OnCollisionEnded(CollisionEnded *aEvent);
     void OnRequestNoticeBoardStart(RequestNoticeBoardStart *aEvent);
-    void OnActiveQuestBroadcast(ActiveQuestBroadcast *aEvent);
+    void OnNoticeBoardHookup(NoticeBoardHookup *aEvent);
   private:
     std::vector<Postcard> mPostcardVec;
     Postcard *mAssignedPostcard;
-    std::map<Quest::CharacterName, Quest*> mActiveQuestMap;
+    std::map<Quest::CharacterName, Quest**> mActiveQuestMap;
   };
 }//end yte
 #endif

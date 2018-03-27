@@ -25,13 +25,17 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 namespace YTE
 {
   class Quest; /* forward decl for event */
-  YTEDeclareEvent(ActiveQuestBroadcast);
-  class ActiveQuestBroadcast : public Event
+
+  YTEDeclareEvent(NoticeBoardHookup);
+  YTEDeclareEvent(UpdateActiveQuestState);
+  YTEDeclareEvent(QuestStart);
+
+  class NoticeBoardHookup : public Event
   {
   public:
-    YTEDeclareType(ActiveQuestBroadcast);
-    ActiveQuestBroadcast(Quest *aQuest) : mActiveQuest(aQuest) {};
-    Quest *mActiveQuest;
+    YTEDeclareType(NoticeBoardHookup);
+    NoticeBoardHookup(Quest **aQuest) : mActiveQuestHandle(aQuest) {};
+    Quest **mActiveQuestHandle;
   };
 
   class Conversation; /* forward decl for Quest class */
@@ -42,7 +46,7 @@ namespace YTE
   {
   public:
     enum class State { NotActive, Received, Briefed, Accomplished, Completed, TurnedIn };
-    enum class Name { Introduction, Fetch, Explore, Dialogue };
+    enum class Name { Introduction, Fetch, Explore, Dialogue, NotActive };
     enum class CharacterName { John, Daisy, Basil };
     Quest(Quest::Name aName);
 
@@ -76,6 +80,24 @@ namespace YTE
     std::vector<DialogueNode> mNodeVec;
   };
 
+  class UpdateActiveQuestState : public Event
+  {
+  public:
+    YTEDeclareType(UpdateActiveQuestState);
+    UpdateActiveQuestState(Quest::CharacterName aCharacter, Quest::State aState) : mCharacter(aCharacter), mState(aState) {};
+    Quest::CharacterName mCharacter;
+    Quest::State mState;
+  };
+
+  class QuestStart : public Event
+  {
+  public:
+    YTEDeclareType(QuestStart);
+    QuestStart(Quest::CharacterName aCharacter, Quest::Name aQuest) : mCharacter(aCharacter), mQuest(aQuest) {};
+    Quest::CharacterName mCharacter;
+    Quest::Name mQuest;
+  };
+
   /////////////////////////////////////////////////////////////////////////////////////
   // Component
   /////////////////////////////////////////////////////////////////////////////////////
@@ -94,12 +116,14 @@ namespace YTE
     void OnDialogueStart(DialogueStart *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);
+    void OnQuestStart(QuestStart *aEvent);
+    void OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent);
 
-    std::vector<Quest> mQuestVec;
+    std::vector<Quest> mQuestVec; // maybe this shoulda been const or something, how do i distinguish members that need to change from members that should never change
     Quest *mActiveQuest;
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;
+    Quest::CharacterName mName = Quest::CharacterName::John;
   };
-
 } //end yte
 #endif

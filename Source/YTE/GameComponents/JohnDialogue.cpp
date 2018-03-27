@@ -14,9 +14,15 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineEvent(ActiveQuestBroadcast);
+  YTEDefineEvent(NoticeBoardHookup);
+  YTEDefineEvent(QuestStart);
+  YTEDefineEvent(UpdateActiveQuestState);
+
+  YTEDefineType(NoticeBoardHookup) { YTERegisterType(NoticeBoardHookup); }
+  YTEDefineType(QuestStart) { YTERegisterType(QuestStart); }
+  YTEDefineType(UpdateActiveQuestState) { YTERegisterType(UpdateActiveQuestState); }
+
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
-  YTEDefineType(ActiveQuestBroadcast) { YTERegisterType(ActiveQuestBroadcast); }
 
 /******************************************************************************
   Conversation
@@ -402,6 +408,44 @@ namespace YTE
         }
         break;
       }
+      case Quest::Name::NotActive:
+      {
+          // Since we know NotActive quests will only have a Hello Conversation
+        // LEVEL E0
+        DialogueData(dataE0, "John: See you next time.");
+        mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
+
+        // LEVEL D0
+        DialogueData(dataD0, AnimationNames::WaveInit);
+        mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0);
+
+        // LEVEL C0
+        DialogueData(dataC0, "John: You just missed the lunch rush.", "John: Thanks for coming out though!");
+        mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
+
+        // LEVEL B0
+        DialogueData(dataB0, AnimationNames::Idle);
+        mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataB0, 0);
+
+        // LEVEL A0
+        DialogueData(dataA0, "John: Welcome back lamb!");
+        mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
+
+        // LEVEL ROOT
+        DialogueData(dataR0, AnimationNames::Happy);
+        mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0);
+        /*
+        E0 - D0 - C0 - B0 - A0 - R0
+        */
+        enum { E0, D0, C0, B0, A0, R0 };
+        mNodeVec[E0].SetChildren(DialogueNodeChildren{});
+        mNodeVec[D0].SetChildren(DialogueNodeChildren{ &mNodeVec[E0] });
+        mNodeVec[C0].SetChildren(DialogueNodeChildren{ &mNodeVec[D0] });
+        mNodeVec[B0].SetChildren(DialogueNodeChildren{ &mNodeVec[C0] });
+        mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+        mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
+        break;
+      }
     }
   }
 
@@ -453,6 +497,10 @@ namespace YTE
         mConversationVec.emplace_back(Conversation::Name::PostQuest, Quest::Name::Dialogue);
         break;
       }
+      case Quest::Name::NotActive:
+      {
+        mConversationVec.emplace_back(Conversation::Name::Hello, Quest::Name::NotActive);
+      }
     }
   }
 
@@ -468,10 +516,19 @@ namespace YTE
     mQuestVec.emplace_back(Quest::Name::Fetch);
     mQuestVec.emplace_back(Quest::Name::Explore);
     mQuestVec.emplace_back(Quest::Name::Dialogue);
+    mQuestVec.emplace_back(Quest::Name::NotActive);
     
     mActiveQuest = &mQuestVec[0];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
     mActiveNode = mActiveConvo->GetRoot();
+  }
+
+  void JohnDialogue::Initialize()
+  {
+    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterJohn);
+    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterJohn);
+    mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
+    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
   }
 
   void JohnDialogue::RegisterJohn(CollisionStarted *aEvent)
@@ -494,17 +551,11 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::Initialize()
-  {
-    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterJohn);
-    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterJohn);
-  }
-
   void JohnDialogue::Start()
   {
       // Send to the space a ptr to the activequest for the noticeboard
-    ActiveQuestBroadcast firstQuest(mActiveQuest);
-    mSpace->SendEvent(Events::ActiveQuestBroadcast, &firstQuest);
+    NoticeBoardHookup firstQuest(&mActiveQuest);
+    mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
   }
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
@@ -583,4 +634,31 @@ namespace YTE
       mActiveConvo->SetState(Conversation::State::Completed);
     }
   }
+
+  void JohnDialogue::OnQuestStart(QuestStart *aEvent)
+  {
+    if (aEvent->mCharacter == mName)
+    {
+      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
+      mActiveConvo = &mActiveQuest->GetConversations()->at(0);
+      mActiveNode = mActiveConvo->GetRoot();
+    }
+    else
+    {
+      mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
+      mActiveConvo = &mActiveQuest->GetConversations()->at(0);
+      mActiveNode = mActiveConvo->GetRoot();
+    }
+  }
+
+  void JohnDialogue::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)
+  {
+    if (aEvent->mCharacter == mName)
+    {
+      mActiveQuest->SetState(aEvent->mState);
+      ++mActiveConvo;
+      mActiveNode = mActiveConvo->GetRoot();
+    }
+  }
+
 } //end yte
