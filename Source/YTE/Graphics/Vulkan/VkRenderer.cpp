@@ -373,5 +373,11 @@ namespace YTE
   {
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
+
+  VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
+  {
+    return &GetSurface(aView->GetWindow())->GetViewData(aView).mWaterInfluenceMapManager;
+  }
+
 }
 

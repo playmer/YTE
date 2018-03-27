@@ -31,8 +31,6 @@ namespace YTE
                                                   vk::MemoryPropertyFlagBits::eDeviceLocal,
                                                   allocator);
 
-    mWaterInformationData.mActive = 0.0f; // false
-
     mMaps.reserve(YTE_Graphics_WaterInformationCount);
 
     for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
@@ -69,7 +67,6 @@ namespace YTE
 
     mUpdateRequired = true;
     mWaterInformationData.mNumberOfInfluences = 0;
-    mWaterInformationData.mActive = 0.0f; // false
   }
 
   void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
@@ -91,11 +88,6 @@ namespace YTE
       DebugObjection(true, "Water Influence Map Manager is full, no new maps can be added, you may safely continue, no map was added");
     }
 
-    if (mWaterInformationData.mNumberOfInfluences == 0)
-    {
-      mWaterInformationData.mActive = 10.0f; // true
-    }
-
     mMaps.push_back(aMap);
 
     aMap->SetIndex(mWaterInformationData.mNumberOfInfluences);
@@ -109,11 +101,6 @@ namespace YTE
     {
       DebugObjection(true , "Water Influence Map Manager is full, no new maps can be added, you may safely continue, no map was added");
       return nullptr;
-    }
-
-    if (mWaterInformationData.mNumberOfInfluences == 0)
-    {
-      mWaterInformationData.mActive = 10.0f; // true
     }
 
     auto map = std::make_unique<VkInstantiatedInfluenceMap>(mSurface, this, mGraphicsView);
@@ -144,11 +131,6 @@ namespace YTE
     mMaps.pop_back();
     mWaterInformationData.mNumberOfInfluences -= 1;
 
-    if (mWaterInformationData.mNumberOfInfluences == 0)
-    {
-      mWaterInformationData.mActive = 0.0f; // false
-    }
-
     mUpdateRequired = true;
   }
 
@@ -164,7 +146,7 @@ namespace YTE
     }
 #endif
 
-    mWaterInformationData.mMaps[aIndex] = aMapValue;
+    mWaterInformationData.mInformation[aIndex] = aMapValue;
     mUpdateRequired = true;
   }
 }

@@ -14,6 +14,7 @@
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Platform/Keyboard.hpp"
@@ -42,13 +43,17 @@ namespace YTE
     // Getter / Setter
     /////////////////////////////////
     void SetMapSourceInformation(UBOWaterInfluenceMap &aMap);
-    void SetCenter(glm::vec3& aCenter);
     void SetRadius(float aRadius);
     void SetColor(glm::vec3& aColor);
+    void SetDebugDraw(bool aDraw);
 
-    glm::vec3 GetCenter() const;
     glm::vec3 GetColor() const;
     float GetRadius() const;
+    bool GetDebugDraw() const
+    {
+      return mDebugDraw;
+    }
+
 
   private:
     void Create();
@@ -63,6 +68,8 @@ namespace YTE
     UBOWaterInfluenceMap mMapTemp;
     bool mUseTemp;
     bool mSetTransform;
+    std::unique_ptr<LineDrawer> mDrawer;
+    bool mDebugDraw;
   };
 }
 

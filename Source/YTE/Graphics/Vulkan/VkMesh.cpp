@@ -379,7 +379,7 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Water Buffer for the Vertex Shader
-    vkhlf::DescriptorBufferInfo uboWater{ surface->GetUBOWaterInformationBuffer(aView), 0, sizeof(UBOWaterInformationMan) };
+    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOWaterInformationMan) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers

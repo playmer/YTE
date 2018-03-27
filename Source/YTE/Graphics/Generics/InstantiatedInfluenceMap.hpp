@@ -33,7 +33,7 @@ namespace YTE
       mDataChanged = true;
     }
 
-    void SetCenter(glm::vec3 &aCenter)
+    void SetCenter(glm::vec3 aCenter)
     {
       mInfluenceMapUBOData.mCenter = aCenter;
       mDataChanged = true;

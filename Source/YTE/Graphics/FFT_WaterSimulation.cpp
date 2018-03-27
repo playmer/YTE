@@ -22,6 +22,8 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -962,6 +964,9 @@ namespace YTE
     {
       mInstantiatedHeightmap[i]->GetInstantiatedModel()->UpdateUBOModel(mInstancingMatrices[i]);
     }
+
+    VkRenderer* vkrender = static_cast<VkRenderer*>(mRenderer);
+    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView).mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
   }
 
 

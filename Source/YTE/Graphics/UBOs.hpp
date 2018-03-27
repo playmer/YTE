@@ -123,6 +123,8 @@ namespace YTE
   {
     UBOWaterInfluenceMap mInformation[YTE_Graphics_WaterInformationCount];
     unsigned int mNumberOfInfluences = 0;
+    float mBaseHeight;
+    glm::vec2 mPadding;
   };
 
 

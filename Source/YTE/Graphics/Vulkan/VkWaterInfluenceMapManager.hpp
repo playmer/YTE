@@ -40,6 +40,11 @@ namespace YTE
 
     void UpdateMapValue(unsigned int aIndex, UBOWaterInfluenceMap &aMapValue);
 
+    void SetBaseHeight(float aHeight)
+    {
+      mWaterInformationData.mBaseHeight = aHeight;
+    }
+
     std::shared_ptr<vkhlf::Buffer> GetUBOMapBuffer()
     {
       return mBuffer;

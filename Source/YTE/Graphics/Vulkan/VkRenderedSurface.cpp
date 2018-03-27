@@ -287,7 +287,7 @@ namespace YTE
   std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
-    auto map = GetViewData(aView).mWaterInfluenceMapManager.CreateInfluenceMap();
+    auto map = GetViewData(aView).mWaterInfluenceMapManager.CreateMap();
     return std::move(map);
   }
 

@@ -70,6 +70,8 @@ namespace YTE
     void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     VkRenderedSurface* GetSurface(Window *aWindow);
 
+    VkWaterInfluenceMapManager* GetAllWaterInfluenceMaps(GraphicsView *aView);
+
     Engine* GetEngine() const
     {
       return mEngine;

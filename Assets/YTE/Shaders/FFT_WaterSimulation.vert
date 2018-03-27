@@ -25,13 +25,21 @@ layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
 
-
+///////////////////////////////////////////////////////////////////////////////
+// Structures
 struct WaterInformation
 {
   vec4 mColor;
   vec3 mCenter;
   float mRadius;
-}
+};
+
+
+struct InfluenceMappedData
+{
+  vec3 mPos;
+  vec4 mColor;
+};
 
 
 
@@ -98,7 +106,9 @@ layout (binding = UBO_WATER_BINDING) uniform UBOWater
 {
   WaterInformation mInfluenceMaps[MAX_INFLUENCEMAPS];
   uint mNumberOfInfluences;
-}
+  float mBaseHeight;
+  vec2 mPadding;
+} WaterInfo;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -208,6 +218,54 @@ vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
 
 
 // ======================
+// InfluenceMapping:
+// Finds the color and positional influences of the world
+InfluenceMappedData InfluenceMapping(vec3 position)
+{
+  InfluenceMappedData imd;
+  imd.mPos = position;
+  imd.mColor = vec4(1,1,1,1);
+
+  vec4 ColorInfluence = vec4(1,1,1,1);
+  float HeightInfluence = 1.0f;
+
+  for (int i = 0; i < WaterInfo.mNumberOfInfluences; ++i)
+  {
+    WaterInformation map = WaterInfo.mInfluenceMaps[i];
+
+    vec2 vertToCenter = imd.mPos.xz - map.mCenter.xz;
+    float vtcLen = length(vertToCenter);
+
+    if (vtcLen <= map.mRadius)
+    {
+      // influence
+      ColorInfluence *= map.mColor;
+
+      // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
+      float influenceAmount = vtcLen / map.mRadius;
+      influenceAmount *= 0.0f;
+      
+      // 0 will make the height be the base height
+      // 1 will not change the height
+      HeightInfluence *= influenceAmount;
+    }
+  }
+
+  float yPos = imd.mPos.y;
+  yPos -= WaterInfo.mBaseHeight;
+  yPos *= HeightInfluence;
+  yPos += WaterInfo.mBaseHeight;
+  imd.mPos.y = yPos;
+
+  imd.mColor *= ColorInfluence;
+
+  return imd;
+}
+
+
+
+
+// ======================
 // Main:
 // Entry point of shader
 void main() 
@@ -216,13 +274,15 @@ void main()
   mat4 boneTransform = Animate();
 
   // remaining output for fragment shader
-  outColor = inColor;
   outTextureCoordinates = inTextureCoordinates.xy;
   outViewMatrix = View.mViewMatrix;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 
-  outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
+  InfluenceMappedData imd = InfluenceMapping(outPositionWorld);
+  outColor = vec3(imd.mColor);
+
+  outPosition = CalculateViewPosition(View.mViewMatrix, vec4(imd.mPos, 1.0f));
 
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,
