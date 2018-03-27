@@ -22,6 +22,8 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -419,6 +421,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Render()
   {
+    YTEProfileFunction();
+
     // evaluate the current position for the waves
     WaveGeneration();
     UpdateHeightmap();
@@ -559,6 +563,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::WaveGeneration()
   {
+    YTEProfileFunction();
+
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
     {
@@ -593,9 +599,11 @@ namespace YTE
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
-        mH_Tilde[vertex] = Calc_hTilde(x, z);
-        mH_TildeSlopeX[vertex] = mH_Tilde[vertex] * complex(0, k.x);    
-        mH_TildeSlopeZ[vertex] = mH_Tilde[vertex] * complex(0, k.y); 
+        auto &h_Tilde = mH_Tilde[vertex];
+
+        h_Tilde = Calc_hTilde(x, z);
+        mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
+        mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
 
         if (floatNotZero(kLen))
         {
@@ -604,8 +612,8 @@ namespace YTE
         }
         else
         {
-          mH_TildeDX[vertex] = mH_Tilde[vertex] * complex(0, -(k.x) / kLen);
-          mH_TildeDZ[vertex] = mH_Tilde[vertex] * complex(0, -(k.y) / kLen);
+          mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
+          mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
         }
       }
     }
@@ -624,11 +632,14 @@ namespace YTE
         int tilde = z * mGridSize + x; // accessor to the h_tilde
         int vertex = z * mGridSizePlus1 + x; // accessor to the vertex
 
+        auto &computationalVertex = mComputationalVertices[vertex];
+        auto &vertexAtMainIndex = mVertices[vertex];
+
         if (z >= mGridSize || x >= mGridSize)
         {
           // update draw list
-          mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
-          mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
+          vertexAtMainIndex.mPosition = computationalVertex.mPosition;
+          vertexAtMainIndex.mNormal = computationalVertex.mNormal;
           continue;
         }
 
@@ -637,57 +648,68 @@ namespace YTE
         mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        mComputationalVertices[vertex].mPosition.y = (mH_Tilde[tilde].mReal);
+        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal);
 
         if (UseNoDisplacement)
         {
           // FROM CONNOR
           // they do not use displacement at all, so no DX, no DZ, no position x and z updating, only position y updating
-          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x;
-          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z;
+          computationalVertex.mPosition.x = computationalVertex.mOriginalPosition.x;
+          computationalVertex.mPosition.z = computationalVertex.mOriginalPosition.z;
           // END FROM CONNOR
         }
         else
         {
+          auto &hTildeDX = mH_TildeDX[tilde];
+          auto &hTildeDZ = mH_TildeDZ[tilde];
+
           // displacement update
-          mH_TildeDX[tilde] *= sign;
-          mH_TildeDZ[tilde] *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
-          mComputationalVertices[vertex].mPosition.x = mComputationalVertices[vertex].mOriginalPosition.x +
-            mH_TildeDX[tilde].mReal * -1.0f;
-          mComputationalVertices[vertex].mPosition.z = mComputationalVertices[vertex].mOriginalPosition.z +
-            mH_TildeDZ[tilde].mReal * -1.0f;
+          hTildeDX *= sign;
+          hTildeDZ *= sign;  // stupid lambda is being used in this statement as the -1.0f!!
+          computationalVertex.mPosition.x = computationalVertex.mOriginalPosition.x +
+            hTildeDX.mReal * -1.0f;
+          computationalVertex.mPosition.z = computationalVertex.mOriginalPosition.z +
+            hTildeDZ.mReal * -1.0f;
         }
 
 
         // normal update
-        mH_TildeSlopeX[tilde] *= sign;
-        mH_TildeSlopeZ[tilde] *= sign;
-        mComputationalVertices[vertex].mNormal = glm::normalize(glm::vec3(-(mH_TildeSlopeX[tilde].mReal),
-                                                           1.0f,
-                                                           -(mH_TildeSlopeZ[tilde].mReal)));
+        auto &hTildeSlopeX = mH_TildeSlopeX[tilde];
+        auto &hTildeSlopeZ = mH_TildeSlopeZ[tilde];
+        hTildeSlopeX *= sign;
+        hTildeSlopeZ *= sign;
+        computationalVertex.mNormal = glm::normalize(glm::vec3(-(hTildeSlopeX.mReal),
+                                                               1.0f,
+                                                               -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, complex_kfft& aH_TildeDX, complex_kfft& aH_TildeDZ, int aIndex)
+        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, 
+                                                   complex_kfft& aH_TildeDX, 
+                                                   complex_kfft& aH_TildeDZ, 
+                                                   int aIndex)
         {
-          aVertices[aIndex].mPosition.y = aVertices[vertex].mPosition.y;
+          auto &vertexAtIndex = aVertices[aIndex];
+          auto &vertexAtVertex = aVertices[vertex];
+
+          vertexAtIndex.mPosition.y = vertexAtVertex.mPosition.y;
 
           if (useNoDis)
           {
             // FROM CONNOR
             // dont use displacement
-            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x;
-            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z;
+            vertexAtIndex.mPosition.x = vertexAtIndex.mOriginalPosition.x;
+            vertexAtIndex.mPosition.z = vertexAtIndex.mOriginalPosition.z;
             // END FROM CONNOR
           }
           else
           {
-            aVertices[aIndex].mPosition.x = aVertices[aIndex].mOriginalPosition.x +
+            vertexAtIndex.mPosition.x = vertexAtIndex.mOriginalPosition.x +
                                             aH_TildeDX[tilde].mReal * -1.0f;
-            aVertices[aIndex].mPosition.z = aVertices[aIndex].mOriginalPosition.z +
+            vertexAtIndex.mPosition.z = vertexAtIndex.mOriginalPosition.z +
                                             aH_TildeDZ[tilde].mReal * -1.0f;
           }
 
-          aVertices[aIndex].mNormal = aVertices[vertex].mNormal;
+          vertexAtIndex.mNormal = vertexAtVertex.mNormal;
         };
 
         // tilling
@@ -713,8 +735,8 @@ namespace YTE
 
 
         // update draw list
-        mVertices[vertex].mPosition = mComputationalVertices[vertex].mPosition;
-        mVertices[vertex].mNormal = mComputationalVertices[vertex].mNormal;
+        vertexAtMainIndex.mPosition = computationalVertex.mPosition;
+        vertexAtMainIndex.mNormal = computationalVertex.mNormal;
       }
     }
   }
@@ -962,12 +984,17 @@ namespace YTE
     {
       mInstantiatedHeightmap[i]->GetInstantiatedModel()->UpdateUBOModel(mInstancingMatrices[i]);
     }
+
+    VkRenderer* vkrender = static_cast<VkRenderer*>(mRenderer);
+    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView).mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
   }
 
 
   // ------------------------------------
   void FFT_WaterSimulation::Update(LogicUpdate* aEvent)
   {
+    YTEProfileFunction();
+
     if (mResetNeeded)
     {
       Reset();
@@ -982,6 +1009,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::EditorUpdate(LogicUpdate* aEvent)
   {
+    YTEProfileFunction();
+
     if (!mSpace->GetEngine()->IsEditor())
     {
       return;
@@ -1029,8 +1058,10 @@ namespace YTE
     int x_coord = static_cast<int>(std::round(point.x)) % mGridSize;
     int z_coord = static_cast<int>(std::round(point.z)) % mGridSize;
 
+#ifndef NDEBUG
     x_coord += mGridSize / 2;
     z_coord += mGridSize / 2;
+#endif
 
     while (x_coord < 0)
     {
@@ -1050,6 +1081,60 @@ namespace YTE
 
     auto vert = mVertices[index];
     point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
+
+
+    // influence maps [ MUST COPY THE SHADER LOGIC ]
+    auto manager = static_cast<VkRenderer*>(mRenderer)->GetAllWaterInfluenceMaps(mGraphicsView);
+    auto& data = manager->mWaterInformationData;
+
+    float HeightInfluence = 1.0f;
+
+    for (unsigned i = 0; i < data.mNumberOfInfluences; ++i)
+    {
+      UBOWaterInfluenceMap& map = data.mInformation[i];
+      glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
+      float vtcLen = glm::length(vertToCenter);
+
+      if (map.mActive > 0)
+      {
+        if (vtcLen <= map.mRadius)
+        {
+          // influence 
+          // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
+          float influenceAmount = vtcLen / map.mRadius;
+
+          if (map.mWaveIntensity >= 0.0f)
+          {
+            
+            // 0 will make the height be the base height
+            // 1 will not change the height
+            if (0 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+            }
+            else if (1 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= ((influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            else if (2 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= ((influenceAmount * influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            else if (3 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= (log2(influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            //HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+          }  
+        }
+      }
+    }
+
+    float yPos = point.y;
+    yPos -= data.mBaseHeight;
+    yPos *= HeightInfluence;
+    yPos += data.mBaseHeight;
+    point.y = yPos;
 
     return glm::vec3(point.x, point.y, point.z);
   }
@@ -1100,6 +1185,8 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::UpdateHeightmap()
   {
+    YTEProfileFunction();
+
     // update
     mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mIndices);
   }

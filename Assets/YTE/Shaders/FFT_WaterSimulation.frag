@@ -396,9 +396,9 @@ vec4 Foam(vec4 aOriginalColor, float aNormalX, vec2 aUV)
 
   float baseHeight = 0.7f;
   float minHeight = -2.0f;
-  float maxHeight = 1.75f;
-  float intensityFoam = 2.0f;
-  float intensityValley = 5.0f;
+  float maxHeight = 3.0f;
+  float intensityFoam = 4.0f;
+  float intensityValley = 6.0f;
   //vec4 foamColor = vec4(0.75f, 0.75f, 1.0f, 1.0f);
   vec4 foamColor = texture(specularSampler, aUV);
   //vec4 valleyColor = vec4(0.1f, 0.1f, 0.5f, 1.0f);
@@ -447,7 +447,7 @@ LightingData SampleTextures(vec2 aUV, inout vec4 aNormal, vec4 aViewVec)
 
   // diffuse
   lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  lightData.mDiffTexture  = texture(diffuseSampler, uv) * lightData.mDiffMat;
+  lightData.mDiffTexture  = texture(diffuseSampler, uv) * lightData.mDiffMat + vec4(inColor, 1.0f);
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;

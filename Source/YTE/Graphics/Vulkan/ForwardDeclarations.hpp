@@ -14,9 +14,11 @@ namespace YTE
   class SwapChainSupportDetails;
   class VkInstantiatedModel;
   class VkInstantiatedLight;
+  class VkInstantiatedInfluenceMap;
   class VkInstantiatedSprite;
   class VkInternals;
   class VkLightManager;
+  class VkWaterInfluenceMapManager;
   class VkMesh;
   class VkRenderer;
   class VkRenderedSurface;

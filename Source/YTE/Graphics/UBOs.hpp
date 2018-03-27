@@ -12,6 +12,7 @@
 #include "YTE/Math/Constants.hpp"
 
 #define YTE_Graphics_LightCount 64
+#define YTE_Graphics_WaterInformationCount 128
 
 namespace YTE
 {
@@ -107,6 +108,28 @@ namespace YTE
   {
     glm::mat4 mBones[BoneConstants::MaxBones];
     bool mHasAnimation;    // 0 is false, 1 is true
+  };
+
+
+  struct UBOWaterInfluenceMap
+  {
+    glm::vec3 mColor;
+    float mColorIntensity;
+    glm::vec3 mCenter;
+    float mRadius;
+    float mWaveIntensity;
+    unsigned int mColorInfluenceFunction;
+    unsigned int mWaveInfluenceFunction;
+    unsigned int mActive;
+  };
+
+
+  struct UBOWaterInformationMan
+  {
+    UBOWaterInfluenceMap mInformation[YTE_Graphics_WaterInformationCount];
+    unsigned int mNumberOfInfluences = 0;
+    float mBaseHeight;
+    glm::vec2 mPadding;
   };
 
 

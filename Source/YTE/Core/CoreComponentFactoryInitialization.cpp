@@ -53,6 +53,7 @@
 #include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
+#include "YTE/Graphics/InfluenceMap.hpp"
 
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/BoxCollider.hpp"
@@ -133,6 +134,7 @@ namespace YTE
     helper.CreateComponentFactory<Animator>();
     helper.CreateComponentFactory<FFT_WaterSimulation>();
     helper.CreateComponentFactory<TempDiffuseColoringComponent>();
+    helper.CreateComponentFactory<InfluenceMap>();
 
     //helper.CreateComponentFactory<Collider>();
     helper.CreateComponentFactory<BoxCollider>();

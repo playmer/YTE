@@ -139,6 +139,7 @@ namespace YTE
 
   void Light::Update(LogicUpdate* aEvent)
   {
+    YTEProfileFunction();
     YTEUnusedArgument(aEvent);
 
     if (mTransform && mSetTransform == false)

@@ -10,9 +10,11 @@
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkLightManager.hpp"
+#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -282,6 +284,13 @@ namespace YTE
     return std::move(light);
   }
 
+  std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
+  {
+    mDataUpdateRequired = true;
+    auto map = GetViewData(aView).mWaterInfluenceMapManager.CreateMap();
+    return std::move(map);
+  }
+
 
   std::shared_ptr<vkhlf::CommandPool>& VkRenderedSurface::GetCommandPool()
   {
@@ -380,6 +389,7 @@ namespace YTE
       view.mViewUBO = buffer;
       view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
+      view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
       view.mViewOrder = aView->GetOrder(); // default

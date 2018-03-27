@@ -16,6 +16,7 @@
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 #include "YTE/Graphics/Vulkan/VkLightManager.hpp"
+#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderToScreen.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
 #include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
@@ -53,6 +54,7 @@ namespace YTE
     UBOView mViewUBOData;
     UBOIllumination mIlluminationUBOData;
     VkLightManager mLightManager;
+    VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
@@ -92,6 +94,7 @@ namespace YTE
                            GraphicsView* aView);
 
     std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
+    std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
 
     void ReloadAllShaders();
@@ -177,6 +180,11 @@ namespace YTE
     VkLightManager* GetLightManager(GraphicsView *aView)
     {
       return &GetViewData(aView).mLightManager;
+    }
+
+    VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
+    {
+      return &GetViewData(aView).mWaterInfluenceMapManager;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)

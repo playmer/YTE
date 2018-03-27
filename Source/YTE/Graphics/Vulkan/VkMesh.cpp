@@ -233,6 +233,14 @@ namespace YTE
     mDescriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
     ++uniformBuffers;
 
+    // Water Information Buffer for Fragment shader.
+    dslbs.emplace_back(++binding,
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_WATER_BINDING {}", binding));
+    ++uniformBuffers;
+
 
     // Descriptions for the textures we support based on which maps we found above:
     //   Diffuse
@@ -369,6 +377,10 @@ namespace YTE
     // Illumination Buffer for the Fragment Shader
     vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
+
+    // Water Buffer for the Vertex Shader
+    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOWaterInformationMan) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers
     auto addTS = [&wdss, &binding, &ds](VkTexture *aData,

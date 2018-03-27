@@ -11,6 +11,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
 	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.cpp
@@ -20,6 +21,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedHeightmap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedInfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.cpp
@@ -28,9 +30,11 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedInfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkWaterInfluenceMapManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.cpp
@@ -52,6 +56,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.hpp
 	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.hpp
@@ -64,6 +69,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Generics/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedHeightmap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedInfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.hpp
@@ -76,9 +82,11 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkCommandBufferEventBuffer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkFunctionLoader.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedInfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkWaterInfluenceMapManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.hpp
