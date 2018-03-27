@@ -119,7 +119,7 @@ namespace YTE
     void OnQuestStart(QuestStart *aEvent);
     void OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent);
 
-    std::vector<Quest> mQuestVec; // maybe this shoulda been const or something, how do i distinguish members that need to change from members that should never change
+    std::vector<Quest> mQuestVec; // maybe this shoulda been const or something, how do i distinguish members that need to change from members that should never change (Data vs Accessor)
     Quest *mActiveQuest;
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;

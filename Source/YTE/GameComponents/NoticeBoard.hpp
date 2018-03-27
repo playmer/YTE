@@ -21,7 +21,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/BoxCollider.hpp"
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp" /* Quest, QuestStart */
 
 
 namespace YTE

@@ -24,6 +24,4 @@ namespace YTE
   void QuestLogic::Initialize()
   {
   }
-
-
 }//end yte

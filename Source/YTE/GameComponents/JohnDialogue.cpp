@@ -651,6 +651,7 @@ namespace YTE
     }
   }
 
+    // sent by QuestLogic to change the quest state
   void JohnDialogue::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)
   {
     if (aEvent->mCharacter == mName)

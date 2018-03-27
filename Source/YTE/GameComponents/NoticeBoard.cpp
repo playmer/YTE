@@ -52,6 +52,7 @@ namespace YTE
     if (aEvent->OtherObject->GetComponent<QuestLogic>() != nullptr)
     {
       mSpace->YTERegister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
+      aEvent->OtherObject->GetComponent<QuestLogic>()->HookupPostcardHandle(&mAssignedPostcard);
     }
   }
 
@@ -104,6 +105,9 @@ namespace YTE
     }
     else
     {
+      // first postcard = just set the quest to the next state (Received)
+      // other postcards = set current postcard from completed to turned in, iterate quest
+
       // assign first postcard
       mAssignedPostcard = &mPostcardVec[0];
       QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());

@@ -47,6 +47,7 @@
 #include "YTE/GameComponents/DialogueGraph.hpp"
 #include "YTE/GameComponents/QuestLogic.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -138,6 +139,7 @@ namespace YTE
 		InitializeType<DialogueNode>();
     InitializeType<QuestLogic>();
     InitializeType<NoticeBoard>();
+    InitializeType<QuestProgressionTrigger>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();
