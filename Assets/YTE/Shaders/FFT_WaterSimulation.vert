@@ -30,9 +30,13 @@ layout (location = 10) in ivec2 inBoneIDs2;
 struct WaterInformation
 {
   vec3 mColor;
-  float mIntensity;
+  float mColorIntensity;
   vec3 mCenter;
   float mRadius;
+  float mWaveIntensity;
+  uint mColorInfluenceFunction;
+  uint mWaveInfluenceFunction;
+  uint mActive;
 };
 
 
@@ -41,6 +45,15 @@ struct InfluenceMappedData
   vec3 mPos;
   vec3 mColor;
 };
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Constants
+const uint InfluenceType_Linear = 0;
+const uint InfluenceType_Squared = 1;
+const uint InfluenceType_Cubic = 2;
+const uint InfluenceType_Logarithmic = 3;
 
 
 
@@ -248,31 +261,70 @@ InfluenceMappedData InfluenceMapping(vec3 position)
   imd.mPos = position;
   imd.mColor = vec3(1,1,1);
 
-  vec3 ColorInfluence = vec3(1,1,1);
+  vec3 ColorInfluence = vec3(0,0,0);
   float HeightInfluence = 1.0f;
 
   for (int i = 0; i < WaterInfo.mNumberOfInfluences; ++i)
   {
     WaterInformation map = WaterInfo.mInfluenceMaps[i];
+    vec2 vertToCenter = imd.mPos.xz - map.mCenter.xz;
+    float vtcLen = length(vertToCenter);
 
-    if (map.mIntensity >= 0.0f)
+    if (map.mActive > 0)
     {
-      vec2 vertToCenter = imd.mPos.xz - map.mCenter.xz;
-      float vtcLen = length(vertToCenter);
-  
       if (vtcLen <= map.mRadius)
       {
         // influence 
         // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
         float influenceAmount = vtcLen / map.mRadius;
-        //influenceAmount *= 0.0f;
-        
-        //ColorInfluence *= map.mColor * (1.0f - influenceAmount);
-        ColorInfluence = mix(ColorInfluence, map.mColor, 1.0f - influenceAmount);
 
-        // 0 will make the height be the base height
-        // 1 will not change the height
-        HeightInfluence *= (influenceAmount * (1.0f - map.mIntensity));
+        // color
+        if (map.mColorIntensity >= 0.0f)
+        {
+          float colInf = 1.0f - influenceAmount;
+
+          if (InfluenceType_Linear == map.mColorInfluenceFunction)
+          {
+            ColorInfluence = mix(ColorInfluence, map.mColor * map.mColorIntensity, colInf);
+          }
+          else if (InfluenceType_Squared == map.mColorInfluenceFunction)
+          {
+            ColorInfluence = mix(ColorInfluence, map.mColor * map.mColorIntensity, colInf * colInf);
+          }
+          else if (InfluenceType_Cubic == map.mColorInfluenceFunction)
+          {
+            ColorInfluence = mix(ColorInfluence, map.mColor * map.mColorIntensity, colInf * colInf * colInf);
+          }
+          else if (InfluenceType_Logarithmic == map.mColorInfluenceFunction)
+          {
+            ColorInfluence = mix(ColorInfluence, map.mColor * map.mColorIntensity, log2(colInf));
+          }
+          //ColorInfluence = mix(ColorInfluence, map.mColor * map.mColorIntensity, 1.0f - influenceAmount);
+        }
+
+        // wave height
+        if (map.mWaveIntensity >= 0.0f)
+        {
+          // 0 will make the height be the base height
+          // 1 will not change the height
+          if (InfluenceType_Linear == map.mWaveInfluenceFunction)
+          {
+            HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+          }
+          else if (InfluenceType_Squared == map.mWaveInfluenceFunction)
+          {
+            HeightInfluence *= ((influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+          }
+          else if (InfluenceType_Cubic == map.mWaveInfluenceFunction)
+          {
+            HeightInfluence *= ((influenceAmount * influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+          }
+          else if (InfluenceType_Logarithmic == map.mWaveInfluenceFunction)
+          {
+            HeightInfluence *= (log2(influenceAmount) * (1.0f - map.mWaveIntensity));
+          }
+          //HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+        }
       }
     }
   }

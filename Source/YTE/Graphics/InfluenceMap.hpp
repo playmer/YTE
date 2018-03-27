@@ -46,11 +46,19 @@ namespace YTE
     void SetRadius(float aRadius);
     void SetColor(glm::vec3& aColor);
     void SetDebugDraw(bool aDraw);
-    void SetIntensity(float aIntensity);
+    void SetColorIntensity(float aIntensity);
+    void SetWaveIntensity(float aIntensity);
+    void SetActive(bool aActive);
+    void SetColorInfluenceFunction(std::string aFunction);
+    void SetWaveInfluenceFunction(std::string aFunction);
 
     glm::vec3 GetColor() const;
     float GetRadius() const;
-    float GetIntensity() const;
+    float GetColorIntensity() const;
+    float GetWaveIntensity() const;
+    bool GetActive() const;
+    std::string GetColorInfluenceFunction() const;
+    std::string GetWaveInfluenceFunction() const;
     bool GetDebugDraw() const
     {
       return mDebugDraw;

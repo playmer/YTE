@@ -1092,21 +1092,40 @@ namespace YTE
     for (unsigned i = 0; i < data.mNumberOfInfluences; ++i)
     {
       UBOWaterInfluenceMap& map = data.mInformation[i];
+      glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
+      float vtcLen = glm::length(vertToCenter);
 
-      if (map.mIntensity >= 0.0f)
+      if (map.mActive > 0)
       {
-        glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
-        float vtcLen = glm::length(vertToCenter);
-
         if (vtcLen <= map.mRadius)
         {
           // influence 
           // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
           float influenceAmount = vtcLen / map.mRadius;
 
-          // 0 will make the height be the base height
-          // 1 will not change the height
-          HeightInfluence *= (influenceAmount * (1.0f - map.mIntensity));
+          if (map.mWaveIntensity >= 0.0f)
+          {
+            
+            // 0 will make the height be the base height
+            // 1 will not change the height
+            if (0 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+            }
+            else if (1 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= ((influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            else if (2 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= ((influenceAmount * influenceAmount * influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            else if (3 == map.mWaveInfluenceFunction)
+            {
+              HeightInfluence *= (log2(influenceAmount) * (1.0f - map.mWaveIntensity));
+            }
+            //HeightInfluence *= (influenceAmount * (1.0f - map.mWaveIntensity));
+          }  
         }
       }
     }

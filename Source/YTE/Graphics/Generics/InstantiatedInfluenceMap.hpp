@@ -45,9 +45,40 @@ namespace YTE
       mDataChanged = true;
     }
 
-    void SetIntensity(float aIntensity)
+    void SetColorIntensity(float aIntensity)
     {
-      mInfluenceMapUBOData.mIntensity = aIntensity;
+      mInfluenceMapUBOData.mColorIntensity = aIntensity;
+      mDataChanged = true;
+    }
+
+    void SetWaveIntensity(float aIntensity)
+    {
+      mInfluenceMapUBOData.mWaveIntensity = aIntensity;
+      mDataChanged = true;
+    }
+
+    void SetActive(bool aActive)
+    {
+      if (aActive)
+      {
+        mInfluenceMapUBOData.mActive = 100;
+      }
+      else
+      {
+        mInfluenceMapUBOData.mActive = 0;
+      }
+      mDataChanged = true;
+    }
+
+    void SetWaveInfluenceFunction(unsigned int aFunction)
+    {
+      mInfluenceMapUBOData.mWaveInfluenceFunction = aFunction;
+      mDataChanged = true;
+    }
+
+    void SetColorInfluenceFunction(unsigned int aFunction)
+    {
+      mInfluenceMapUBOData.mColorInfluenceFunction = aFunction;
       mDataChanged = true;
     }
 
@@ -68,9 +99,33 @@ namespace YTE
       return mInfluenceMapUBOData.mColor;
     }
 
-    float GetIntensity()
+    float GetColorIntensity()
     {
-      return mInfluenceMapUBOData.mIntensity;
+      return mInfluenceMapUBOData.mColorIntensity;
+    }
+
+    float GetWaveIntensity()
+    {
+      return mInfluenceMapUBOData.mWaveIntensity;
+    }
+
+    bool GetActive()
+    {
+      if (mInfluenceMapUBOData.mActive > 0)
+      {
+        return true;
+      }
+      return false;
+    }
+
+    unsigned int GetWaveInfluenceFunction()
+    {
+      return mInfluenceMapUBOData.mWaveInfluenceFunction;
+    }
+
+    unsigned int GetColorInfluenceFunction()
+    {
+      return mInfluenceMapUBOData.mColorInfluenceFunction;
     }
 
 

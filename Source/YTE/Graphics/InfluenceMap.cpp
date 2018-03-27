@@ -13,6 +13,14 @@
 
 namespace YTE
 {
+  static std::vector<std::string> PopulateDropDownList(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
+
+    std::vector<std::string> result{ "Linear", "Squared", "Cubic", "Logarithmic" };
+    return result;
+  }
+
   YTEDefineType(InfluenceMap)
   {
     YTERegisterType(InfluenceMap);
@@ -30,9 +38,27 @@ namespace YTE
     YTEBindProperty(&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw, "DebugDraw")
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&InfluenceMap::GetIntensity, &InfluenceMap::SetIntensity, "Intensity")
+    YTEBindProperty(&InfluenceMap::GetColorIntensity, &InfluenceMap::SetColorIntensity, "ColorIntensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&InfluenceMap::GetWaveIntensity, &InfluenceMap::SetWaveIntensity, "Wave Intensity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&InfluenceMap::GetActive, &InfluenceMap::SetActive, "Active")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&InfluenceMap::GetColorInfluenceFunction, &InfluenceMap::SetColorInfluenceFunction, "ColorInfluenceFunction")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
+
+    YTEBindProperty(&InfluenceMap::GetWaveInfluenceFunction, &InfluenceMap::SetWaveInfluenceFunction, "WaveInfluenceFunction")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
   }
 
 
@@ -197,15 +223,120 @@ namespace YTE
 
 
  
-  void InfluenceMap::SetIntensity(float aIntensity)
+  void InfluenceMap::SetColorIntensity(float aIntensity)
   {
     if (mInstantiatedInfluenceMap)
     {
-      mInstantiatedInfluenceMap->SetIntensity(aIntensity);
+      mInstantiatedInfluenceMap->SetColorIntensity(aIntensity);
     }
     else
     {
-      mMapTemp.mIntensity = aIntensity;
+      mMapTemp.mColorIntensity = aIntensity;
+      mUseTemp = true;
+    }
+  }
+
+
+  void InfluenceMap::SetWaveIntensity(float aIntensity)
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      mInstantiatedInfluenceMap->SetWaveIntensity(aIntensity);
+    }
+    else
+    {
+      mMapTemp.mWaveIntensity = aIntensity;
+      mUseTemp = true;
+    }
+  }
+
+
+
+  void InfluenceMap::SetActive(bool aActive)
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      mInstantiatedInfluenceMap->SetActive(aActive);
+    }
+    else
+    {
+      mMapTemp.mActive = aActive;
+      mUseTemp = true;
+    }
+  }
+
+
+
+  void InfluenceMap::SetColorInfluenceFunction(std::string aFunction)
+  {
+    unsigned int fn = 0;
+
+    if ("Linear" == aFunction)
+    {
+      fn = 0;
+    }
+    else if ("Squared" == aFunction)
+    {
+      fn = 1;
+    }
+    else if ("Cubic" == aFunction)
+    {
+      fn = 2;
+    }
+    else if ("Logarithmic" == aFunction)
+    {
+      fn = 3;
+    }
+    else
+    {
+      fn = 0;
+    }
+
+    if (mInstantiatedInfluenceMap)
+    {
+      mInstantiatedInfluenceMap->SetColorInfluenceFunction(fn);
+    }
+    else
+    {
+      mMapTemp.mColorInfluenceFunction = fn;
+      mUseTemp = true;
+    }
+  }
+
+
+
+  void InfluenceMap::SetWaveInfluenceFunction(std::string aFunction)
+  {
+    unsigned int fn = 0;
+
+    if ("Linear" == aFunction)
+    {
+      fn = 0;
+    }
+    else if ("Squared" == aFunction)
+    {
+      fn = 1;
+    }
+    else if ("Cubic" == aFunction)
+    {
+      fn = 2;
+    }
+    else if ("Logarithmic" == aFunction)
+    {
+      fn = 3;
+    }
+    else
+    {
+      fn = 0;
+    }
+
+    if (mInstantiatedInfluenceMap)
+    {
+      mInstantiatedInfluenceMap->SetWaveInfluenceFunction(fn);
+    }
+    else
+    {
+      mMapTemp.mWaveInfluenceFunction = fn;
       mUseTemp = true;
     }
   }
@@ -251,14 +382,103 @@ namespace YTE
   }
 
 
-  float InfluenceMap::GetIntensity() const
+  float InfluenceMap::GetColorIntensity() const
   {
     if (mInstantiatedInfluenceMap)
     {
-      return mInstantiatedInfluenceMap->GetIntensity();
+      return mInstantiatedInfluenceMap->GetColorIntensity();
     }
     return 0.0f;
   }
+
+
+  float InfluenceMap::GetWaveIntensity() const
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      return mInstantiatedInfluenceMap->GetWaveIntensity();
+    }
+    return  0.0f;
+  }
+
+
+  bool InfluenceMap::GetActive() const
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      return mInstantiatedInfluenceMap->GetActive();
+    }
+    return false;
+  }
+
+
+  std::string InfluenceMap::GetColorInfluenceFunction() const
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      unsigned int fn = mInstantiatedInfluenceMap->GetColorInfluenceFunction();
+
+      switch (fn)
+      {
+        case 0:
+        {
+          return "Linear";
+        }
+        case 1:
+        {
+          return "Squared";
+        }
+        case 2:
+        {
+          return "Cubic";
+        }
+        case 3:
+        {
+          return "Logarithmic";
+        }
+        default:
+        {
+          return "Linear";
+        }
+      }
+    }
+    return "EMPTY";
+  }
+
+
+  std::string InfluenceMap::GetWaveInfluenceFunction() const
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      unsigned int fn = mInstantiatedInfluenceMap->GetWaveInfluenceFunction();
+
+      switch (fn)
+      {
+        case 0:
+        {
+          return "Linear";
+        }
+        case 1:
+        {
+          return "Squared";
+        }
+        case 2:
+        {
+          return "Cubic";
+        }
+        case 3:
+        {
+          return "Logarithmic";
+        }
+        default:
+        {
+          return "Linear";
+        }
+      }
+    }
+    return "EMPTY";
+  }
+
 
 
   glm::vec3 InfluenceMap::GetColor() const

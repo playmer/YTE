@@ -114,9 +114,13 @@ namespace YTE
   struct UBOWaterInfluenceMap
   {
     glm::vec3 mColor;
-    float mIntensity;
+    float mColorIntensity;
     glm::vec3 mCenter;
     float mRadius;
+    float mWaveIntensity;
+    unsigned int mColorInfluenceFunction;
+    unsigned int mWaveInfluenceFunction;
+    unsigned int mActive;
   };
 
 
