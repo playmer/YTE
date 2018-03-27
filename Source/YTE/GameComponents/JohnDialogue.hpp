@@ -24,25 +24,37 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  class Conversation;
+  class Quest; /* forward decl for event */
+  YTEDeclareEvent(ActiveQuestBroadcast);
+  class ActiveQuestBroadcast : public Event
+  {
+  public:
+    YTEDeclareType(ActiveQuestBroadcast);
+    ActiveQuestBroadcast(Quest *aQuest) : mActiveQuest(aQuest) {};
+    Quest *mActiveQuest;
+  };
+
+  class Conversation; /* forward decl for Quest class */
   /////////////////////////////////////////////////////////////////////////////////////
   // Data Structure Classes
   /////////////////////////////////////////////////////////////////////////////////////
   class Quest
   {
   public:
-    enum class State { Available, InProgress, Completed };
+    enum class State { NotActive, Received, Briefed, Accomplished, Completed, TurnedIn };
     enum class Name { Introduction, Fetch, Explore, Dialogue };
+    enum class CharacterName { John, Daisy, Basil };
     Quest(Quest::Name aName);
 
     Quest::Name GetName() { return mName; };
+    Quest::CharacterName GetCharacter() { return mCharacter; };
     std::vector<Conversation> *GetConversations() { return &mConversationVec; };
     Quest::State GetState() { return mState; };
     void SetState(Quest::State aState) { mState = aState; };
   private:
     Quest::Name mName;
     Quest::State mState;
-    bool mConditionMet;
+    CharacterName mCharacter;
     std::vector<Conversation> mConversationVec;
   };
 
@@ -73,13 +85,14 @@ namespace YTE
     YTEDeclareType(JohnDialogue);
     JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void Start() override;
     // this cant be used until we know the location of the node
     void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
   private:
-    void OnDialogueStart(DialogueStart *aEvent);
-    void OnDialogueExit(DialogueExit *aEvent);
     void RegisterJohn(CollisionStarted *aEvent);
     void DeregisterJohn(CollisionEnded *aEvent);
+    void OnDialogueStart(DialogueStart *aEvent);
+    void OnDialogueExit(DialogueExit *aEvent);
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);
 
     std::vector<Quest> mQuestVec;

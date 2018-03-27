@@ -45,6 +45,8 @@
 #include "YTE/GameComponents/TestingComponent.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/DialogueGraph.hpp"
+#include "YTE/GameComponents/QuestLogic.hpp"
+#include "YTE/GameComponents/NoticeBoard.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -134,6 +136,8 @@ namespace YTE
     InitializeType<TestingComponent>();
     InitializeType<JohnDialogue>();
 		InitializeType<DialogueNode>();
+    InitializeType<QuestLogic>();
+    InitializeType<NoticeBoard>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

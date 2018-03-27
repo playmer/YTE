@@ -49,6 +49,7 @@ namespace YTE
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
   YTEDeclareEvent(DebugSwitch);
+  YTEDeclareEvent(RequestNoticeBoardStart);
   YTEDeclareEvent(HudElementToggled);
 
   class CameraRotateEvent : public Event
@@ -169,10 +170,16 @@ namespace YTE
     bool EnableDebug;
   };
 
+  class RequestNoticeBoardStart : public Event
+  {
+  public:
+    YTEDeclareType(RequestNoticeBoardStart);
+  };
   class HudElementToggled : public Event
   {
   public:
     enum class Element {Compass, Map, Postcard};
+
 
     YTEDeclareType(HudElementToggled);
     HudElementToggled(Element aElement) { mElement = aElement; }

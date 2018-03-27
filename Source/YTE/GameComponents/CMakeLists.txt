@@ -30,6 +30,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.cpp
 #  PUBLIC    
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -61,4 +63,6 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.hpp
 )

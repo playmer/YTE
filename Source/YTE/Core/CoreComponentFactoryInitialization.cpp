@@ -39,6 +39,8 @@
 #include "YTE/GameComponents/Island.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/QuestLogic.hpp"
+#include "YTE/GameComponents/NoticeBoard.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -123,6 +125,8 @@ namespace YTE
     helper.CreateComponentFactory<Island>();
     helper.CreateComponentFactory<TestingComponent>();
     helper.CreateComponentFactory<JohnDialogue>();
+    helper.CreateComponentFactory<QuestLogic>();
+    helper.CreateComponentFactory<NoticeBoard>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();

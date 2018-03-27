@@ -14,7 +14,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDefineEvent(ActiveQuestBroadcast);
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
+  YTEDefineType(ActiveQuestBroadcast) { YTERegisterType(ActiveQuestBroadcast); }
 
 /******************************************************************************
   Conversation
@@ -417,7 +419,7 @@ namespace YTE
       Every other quest has a strict structure { Hello, InProgress, TurnIn, Complete }
 ******************************************************************************/
   Quest::Quest(Quest::Name aName)
-    : mName(aName), mState(Quest::State::Available), mConditionMet(false)
+    : mName(aName), mState(Quest::State::NotActive), mCharacter(CharacterName::John)
   {
     switch (aName)
     {
@@ -455,7 +457,7 @@ namespace YTE
   }
 
 /******************************************************************************
-  Dialogue Component
+  JohnDialogue Component
 ******************************************************************************/
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -496,6 +498,13 @@ namespace YTE
   {
     mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterJohn);
     mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterJohn);
+  }
+
+  void JohnDialogue::Start()
+  {
+      // Send to the space a ptr to the activequest for the noticeboard
+    ActiveQuestBroadcast firstQuest(mActiveQuest);
+    mSpace->SendEvent(Events::ActiveQuestBroadcast, &firstQuest);
   }
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
