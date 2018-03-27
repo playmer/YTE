@@ -30,6 +30,10 @@ namespace YTE
     YTEBindProperty(&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw, "DebugDraw")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&InfluenceMap::GetIntensity, &InfluenceMap::SetIntensity, "Intensity")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
 
@@ -73,15 +77,6 @@ namespace YTE
     mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), mGraphicsView->GetRenderer(), mGraphicsView);
     mConstructing = false;
     Create();
-  }
-
-  static glm::vec3 GetDirectionFromTransform(Transform *aTransform)
-  {
-    glm::quat rotation = aTransform->GetWorldRotation();
-
-    glm::vec3 forward{ 0.0, -1.0, 0.0f };
-
-    return rotation * forward;
   }
 
 
@@ -169,10 +164,49 @@ namespace YTE
     if (mInstantiatedInfluenceMap)
     {
       mInstantiatedInfluenceMap->SetColor(aColor);
+      if (mDebugDraw)
+      {
+        // corners
+        glm::vec3 bl, br, tl, tr;
+
+        bl.x = mInstantiatedInfluenceMap->GetCenter().x - mInstantiatedInfluenceMap->GetRadius();
+        br.x = mInstantiatedInfluenceMap->GetCenter().x + mInstantiatedInfluenceMap->GetRadius();
+        tl.x = bl.x;
+        tr.x = br.x;
+
+        bl.z = mInstantiatedInfluenceMap->GetCenter().z - mInstantiatedInfluenceMap->GetRadius();
+        tl.z = mInstantiatedInfluenceMap->GetCenter().z + mInstantiatedInfluenceMap->GetRadius();
+        tr.z = tl.z;
+        br.z = bl.z;
+
+        tl.y = bl.y = tr.y = br.y = mInstantiatedInfluenceMap->GetCenter().y;
+
+        mDrawer->Start();
+        mDrawer->AddLine(tl, bl, mInstantiatedInfluenceMap->GetColor());
+        mDrawer->AddLine(bl, br, mInstantiatedInfluenceMap->GetColor());
+        mDrawer->AddLine(br, tr, mInstantiatedInfluenceMap->GetColor());
+        mDrawer->AddLine(tr, tl, mInstantiatedInfluenceMap->GetColor());
+        mDrawer->End();
+      }
     }
     else
     {
-      mMapTemp.mColor = glm::vec4(aColor, 1.0f);
+      mMapTemp.mColor = aColor;
+      mUseTemp = true;
+    }
+  }
+
+
+ 
+  void InfluenceMap::SetIntensity(float aIntensity)
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      mInstantiatedInfluenceMap->SetIntensity(aIntensity);
+    }
+    else
+    {
+      mMapTemp.mIntensity = aIntensity;
       mUseTemp = true;
     }
   }
@@ -215,6 +249,16 @@ namespace YTE
       mMapTemp.mRadius = aRadius;
       mUseTemp = true;
     }
+  }
+
+
+  float InfluenceMap::GetIntensity() const
+  {
+    if (mInstantiatedInfluenceMap)
+    {
+      return mInstantiatedInfluenceMap->GetIntensity();
+    }
+    return 0.0f;
   }
 
 

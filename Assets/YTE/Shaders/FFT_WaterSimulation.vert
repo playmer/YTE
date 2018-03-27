@@ -29,7 +29,8 @@ layout (location = 10) in ivec2 inBoneIDs2;
 // Structures
 struct WaterInformation
 {
-  vec4 mColor;
+  vec3 mColor;
+  float mIntensity;
   vec3 mCenter;
   float mRadius;
 };
@@ -38,7 +39,7 @@ struct WaterInformation
 struct InfluenceMappedData
 {
   vec3 mPos;
-  vec4 mColor;
+  vec3 mColor;
 };
 
 
@@ -143,6 +144,27 @@ out gl_PerVertex
 
 
 // ======================
+// Saturate:
+// Clamps a given value to the interval [0-1]
+vec4 saturate(vec4 aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+vec3 saturate(vec3 aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+vec2 saturate(vec2 aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+float saturate(float aValue)
+{
+  return clamp(aValue, 0.0f, 1.0f);
+}
+
+
+// ======================
 // Animate:
 // outputs a transform matrix for the shader to use with position of the vertex
 mat4 Animate()
@@ -224,30 +246,34 @@ InfluenceMappedData InfluenceMapping(vec3 position)
 {
   InfluenceMappedData imd;
   imd.mPos = position;
-  imd.mColor = vec4(1,1,1,1);
+  imd.mColor = vec3(1,1,1);
 
-  vec4 ColorInfluence = vec4(1,1,1,1);
+  vec3 ColorInfluence = vec3(1,1,1);
   float HeightInfluence = 1.0f;
 
   for (int i = 0; i < WaterInfo.mNumberOfInfluences; ++i)
   {
     WaterInformation map = WaterInfo.mInfluenceMaps[i];
 
-    vec2 vertToCenter = imd.mPos.xz - map.mCenter.xz;
-    float vtcLen = length(vertToCenter);
-
-    if (vtcLen <= map.mRadius)
+    if (map.mIntensity >= 0.0f)
     {
-      // influence
-      ColorInfluence *= map.mColor;
+      vec2 vertToCenter = imd.mPos.xz - map.mCenter.xz;
+      float vtcLen = length(vertToCenter);
+  
+      if (vtcLen <= map.mRadius)
+      {
+        // influence 
+        // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
+        float influenceAmount = vtcLen / map.mRadius;
+        //influenceAmount *= 0.0f;
+        
+        //ColorInfluence *= map.mColor * (1.0f - influenceAmount);
+        ColorInfluence = mix(ColorInfluence, map.mColor, 1.0f - influenceAmount);
 
-      // converts the length to a value of 0 being the center, and 1 being the radius distance from the center
-      float influenceAmount = vtcLen / map.mRadius;
-      influenceAmount *= 0.0f;
-      
-      // 0 will make the height be the base height
-      // 1 will not change the height
-      HeightInfluence *= influenceAmount;
+        // 0 will make the height be the base height
+        // 1 will not change the height
+        HeightInfluence *= (influenceAmount * (1.0f - map.mIntensity));
+      }
     }
   }
 
@@ -280,7 +306,8 @@ void main()
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
 
   InfluenceMappedData imd = InfluenceMapping(outPositionWorld);
-  outColor = vec3(imd.mColor);
+  outPositionWorld = imd.mPos;
+  outColor = imd.mColor;
 
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(imd.mPos, 1.0f));
 

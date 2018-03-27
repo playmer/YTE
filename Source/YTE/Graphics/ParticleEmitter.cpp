@@ -172,7 +172,7 @@ namespace YTE
         particle.mPosition.y -= mGravityValue * static_cast<float>((mLifetime - particle.mLife) * dt);
       }
 
-      float rotVar = Variance() * dt;
+      float rotVar = Variance() * static_cast<float>(dt);
 
       particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
 

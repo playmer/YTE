@@ -41,9 +41,16 @@ namespace YTE
 
     void SetColor(glm::vec3 &aColor)
     {
-      mInfluenceMapUBOData.mColor = glm::vec4(aColor, 1.0f);
+      mInfluenceMapUBOData.mColor = aColor;
       mDataChanged = true;
     }
+
+    void SetIntensity(float aIntensity)
+    {
+      mInfluenceMapUBOData.mIntensity = aIntensity;
+      mDataChanged = true;
+    }
+
 
 
     float GetRadius()
@@ -58,7 +65,12 @@ namespace YTE
 
     glm::vec3 GetColor()
     {
-      return glm::vec3(mInfluenceMapUBOData.mColor);
+      return mInfluenceMapUBOData.mColor;
+    }
+
+    float GetIntensity()
+    {
+      return mInfluenceMapUBOData.mIntensity;
     }
 
 

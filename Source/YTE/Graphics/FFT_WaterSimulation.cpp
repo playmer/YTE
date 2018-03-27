@@ -1034,8 +1034,10 @@ namespace YTE
     int x_coord = static_cast<int>(std::round(point.x)) % mGridSize;
     int z_coord = static_cast<int>(std::round(point.z)) % mGridSize;
 
+#ifndef NDEBUG
     x_coord += mGridSize / 2;
     z_coord += mGridSize / 2;
+#endif
 
     while (x_coord < 0)
     {

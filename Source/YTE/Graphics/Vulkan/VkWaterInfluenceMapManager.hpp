@@ -50,9 +50,10 @@ namespace YTE
       return mBuffer;
     }
 
+    UBOWaterInformationMan mWaterInformationData;
+
   private:
     std::vector<VkInstantiatedInfluenceMap*> mMaps;
-    UBOWaterInformationMan mWaterInformationData;
     std::shared_ptr<vkhlf::Buffer> mBuffer;
     VkRenderedSurface* mSurface;
     GraphicsView* mGraphicsView;

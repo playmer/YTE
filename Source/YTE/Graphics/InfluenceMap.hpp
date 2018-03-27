@@ -46,9 +46,11 @@ namespace YTE
     void SetRadius(float aRadius);
     void SetColor(glm::vec3& aColor);
     void SetDebugDraw(bool aDraw);
+    void SetIntensity(float aIntensity);
 
     glm::vec3 GetColor() const;
     float GetRadius() const;
+    float GetIntensity() const;
     bool GetDebugDraw() const
     {
       return mDebugDraw;
