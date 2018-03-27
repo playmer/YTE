@@ -1089,7 +1089,7 @@ namespace YTE
 
     float HeightInfluence = 1.0f;
 
-    for (int i = 0; i < data.mNumberOfInfluences; ++i)
+    for (unsigned i = 0; i < data.mNumberOfInfluences; ++i)
     {
       UBOWaterInfluenceMap& map = data.mInformation[i];
 
