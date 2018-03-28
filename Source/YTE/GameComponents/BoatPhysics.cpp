@@ -20,10 +20,9 @@ namespace YTE
     YTERegisterType(BoatPhysics);
 
     std::vector<std::vector<Type*>> deps = { 
-      { TypeId<Model>() },
-      { TypeId<RigidBody>() } 
+      { TypeId<Model>() } 
     };
-
+    
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
     
   }
@@ -39,9 +38,9 @@ namespace YTE
   void BoatPhysics::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatPhysics::Update);
-    mBoatRB = mOwner->GetParent()->GetComponent<RigidBody>();
-    mBoatTransform = mOwner->GetParent()->GetComponent<Transform>();
-    mBoatOrientation = mOwner->GetParent()->GetComponent<Orientation>();
+    mBoatRB = mOwner->GetComponent<RigidBody>();
+    mBoatTransform = mOwner->GetComponent<Transform>();
+    mBoatOrientation = mOwner->GetComponent<Orientation>();
 
     mTransform = mOwner->GetComponent<Transform>();
     mModel = mOwner->GetComponent<Model>();
@@ -61,7 +60,6 @@ namespace YTE
 
     modifyBoatMesh.GenerateUnderwaterMesh(waterSim, (float)aLogicUpdate->Dt);
 
-
     glm::vec3 under, over;
     if (modifyBoatMesh.UnderwaterTriangleData().size() > 0)
     {
@@ -79,51 +77,70 @@ namespace YTE
     glm::vec3 total;
     (void)aSim;
     (void)dt;
-    //float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, 
-    //                                                  glm::length(mBoatRB->GetVelocity()), 
-    //                                                  modifyBoatMesh.CalculateUnderwaterLength());
+    float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, 
+                                                      glm::length(mBoatRB->GetVelocity()), 
+                                                      modifyBoatMesh.CalculateUnderwaterLength());
     auto slammingForceData = modifyBoatMesh.SlammingData();
     CalculateSlammingVelocities(slammingForceData);
-    //float boatArea = modifyBoatMesh.BoatArea();
-    //float boatMass = mBoatRB->GetMass();
+    float boatArea = modifyBoatMesh.BoatArea();
+    float boatMass = mBoatRB->GetMass();
 
     auto indexOfOriginalTriangle = modifyBoatMesh.IndexOfOrigTris();
     auto underwaterTriangleData = modifyBoatMesh.UnderwaterTriangleData();
+
+    bool inWater = false;
+
     for (int i = 0; i < underwaterTriangleData.size(); ++i)
     {
       TriangleData triangleData = underwaterTriangleData[i];
       glm::vec3 forceToAdd;
       forceToAdd += BoatPhysicsMath::BuoyancyForce(waterDensity, mBoatRB->GetGravity().y, triangleData);
-      //forceToAdd += BoatPhysicsMath::ViscousWaterResistanceForce(waterDensity, triangleData, Cf);
-      //forceToAdd += BoatPhysicsMath::PressureDragForce(triangleData);
+      forceToAdd += BoatPhysicsMath::ViscousWaterResistanceForce(waterDensity, triangleData, Cf);
+      forceToAdd += BoatPhysicsMath::PressureDragForce(triangleData);
       int originalTriangleIndex = indexOfOriginalTriangle[i];
       SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
-      //
-      //forceToAdd += BoatPhysicsMath::SlammingForce(slammingData, triangleData, boatArea, boatMass, dt);
-    
+      
+      forceToAdd += BoatPhysicsMath::SlammingForce(slammingData, triangleData, boatArea, boatMass, dt);
       total += forceToAdd;
+    
       // Add the forces to the boat
-      //boatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
-      mBoatRB->ApplyForce(forceToAdd, glm::vec3(0.0f));
+      mBoatRB->ApplyForce(forceToAdd, triangleData.center - mBoatTransform->GetWorldTranslation());
+
+      if (forceToAdd.y > 0)
+      {
+        inWater = true;
+      }
     }
 
-    auto velocity = mBoatRB->GetVelocity();
+    //auto velocity = mBoatRB->GetVelocity();
+    //
+    //float velY = velocity.y;
+    //
+    //if (velY > 0)
+    //{
+    //  velY *= 0.8f;
+    //}
+    //
+    //mBoatRB->SetVelocity(velocity.x, velY, velocity.z);
 
-    float velY = velocity.y;
-    velY *= 0.8f;
-    mBoatRB->SetVelocity(velocity.x, velY, velocity.z);
+    //auto angVel = mBoatRB->GetAngularVelocity();
+    //
+    //if (angVel.x > 0.0f)
+    //{
+    //  angVel.x = 0.0f;
+    //}
+    //
+    //if (angVel.y > 0.0f)
+    //{
+    //  angVel.y = 0.0f;
+    //}
+    //
+    //if (angVel.z > 0.0f)
+    //{
+    //  angVel.z = 0.0f;
+    //}
 
-    //auto trans = mTransform->GetWorldTranslation();
-    //
-    //auto height = aSim->GetHeight(trans.x, trans.z);
-    //
-    //float heightDiff = trans.y - height.y;
-    //
-    //float bF = 1270.0f * 10.0f * heightDiff;
-    //
-    //glm::vec3 force(0.0f, bF, 0.0f);
-    //
-    //mBoatRB->ApplyForce(force, glm::vec3(0.0f));
+    //mBoatRB->GetBody()->setAngularVelocity(btVector3(angVel.x, angVel.y, angVel.z));
 
     return total;
   }
@@ -172,9 +189,7 @@ namespace YTE
 
       slammingForceData[i].velocity = BoatPhysicsMath::GetTriangleVelocity(mBoatRB, mTransform, center);
     }
-    
   }
-
 }
 
 
