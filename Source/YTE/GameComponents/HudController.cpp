@@ -61,6 +61,15 @@ namespace YTE
       mCompassSprite->SetVisibility(false);
     }
 
+    // get compass object and its sprite
+    mCompassCircle = mSpace->FindFirstCompositionByName("CompassCircle");
+
+    if (mCompassCircle)
+    {
+      mCompassCircleSprite = mCompassCircle->GetComponent<Sprite>();
+      mCompassCircleSprite->SetVisibility(false);
+    }
+
     // get compass needle and its sprite
     mCompassNeedle = mSpace->FindFirstCompositionByName("CompassNeedle");
 
@@ -115,6 +124,12 @@ namespace YTE
           bool compassNeedleVisible = mCompassNeedleSprite->GetVisibility();
           mCompassNeedleSprite->SetVisibility(!compassNeedleVisible);
         }
+
+        if (mCompassCircleSprite)
+        {
+          bool compassCircleVisible = mCompassCircleSprite->GetVisibility();
+          mCompassCircleSprite->SetVisibility(!compassCircleVisible);
+        }
         break;
       }
     }
@@ -135,7 +150,7 @@ namespace YTE
       rotY = 180 + (180 - rotY);
     }
 
-    glm::vec3 needleRot(0.0f, 0.0f, rotY);
+    glm::vec3 needleRot(0.0f, 0.0f, (rotY - 90));
 
     if (mCompassNeedleTransform)
     {

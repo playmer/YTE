@@ -42,9 +42,11 @@ namespace YTE
     Composition *mCompass;
     Sprite *mCompassSprite;
 
+    Composition *mCompassCircle;
+    Sprite *mCompassCircleSprite;
+
     Composition *mCompassNeedle;
     Sprite *mCompassNeedleSprite;
     Transform *mCompassNeedleTransform;
-
   };
 }

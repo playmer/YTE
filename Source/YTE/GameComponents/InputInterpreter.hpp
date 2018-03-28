@@ -83,9 +83,6 @@ namespace YTE
   {
   public:
     YTEDeclareType(BoatDockEvent);
-    BoatDockEvent(const glm::vec3& aAnchorPos, const glm::vec3& aDockDir) { DockAnchorPos = aAnchorPos; DockDirection = aDockDir; }
-    glm::vec3 DockAnchorPos;
-    glm::vec3 DockDirection;
   };
 
   class BoatRotation : public Event
