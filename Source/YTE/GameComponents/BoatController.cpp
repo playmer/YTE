@@ -346,11 +346,14 @@ namespace YTE
 
     if (mIsSailUp)
     {
-      mRigidBody->ApplyForce(mWindForce * (mOrientation->GetForwardVector()), glm::vec3(0));
+      glm::vec3 forward = mOrientation->GetForwardVector();
+      forward.y = 0.0f;
+
+      mRigidBody->ApplyForce(mWindForce * (forward), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
-        mRigidBody->ApplyForce(mWindForce * -mOrientation->GetForwardVector(), glm::vec3(0));
+        mRigidBody->ApplyForce(mWindForce * -forward, glm::vec3(0));
       }
     }
     else

@@ -101,24 +101,23 @@ namespace YTE
       SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
       
       forceToAdd += BoatPhysicsMath::SlammingForce(slammingData, triangleData, boatArea, boatMass, dt);
-      total += forceToAdd;
+
+      if (forceToAdd.y > 250.0f)
+      {
+        forceToAdd.y = 250.0f;
+      }
     
       // Add the forces to the boat
       mBoatRB->ApplyForce(forceToAdd, triangleData.center - mBoatTransform->GetWorldTranslation());
-
-      if (forceToAdd.y > 0)
-      {
-        inWater = true;
-      }
     }
 
     //auto velocity = mBoatRB->GetVelocity();
     //
     //float velY = velocity.y;
     //
-    //if (velY > 0)
+    //if (velY > 5.0f)
     //{
-    //  velY *= 0.8f;
+    //  velY = 0.0f;
     //}
     //
     //mBoatRB->SetVelocity(velocity.x, velY, velocity.z);
