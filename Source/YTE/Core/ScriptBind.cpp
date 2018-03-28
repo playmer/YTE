@@ -27,6 +27,7 @@
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/DialogueElement.hpp"
 #include "YTE/GameComponents/DialogueElementDefault.hpp"
+#include "YTE/GameComponents/HudController.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/AddComponentToEngine.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
@@ -115,6 +116,7 @@ namespace YTE
     InitializeType<DialogueDirector>();
     InitializeType<DialogueElement>();
     InitializeType<DialogueElementDefault>();
+    InitializeType<HudController>();
     InitializeType<InputInterpreter>();
     InitializeType<AddComponentToEngine>();
     InitializeType<CameraAnchor>();

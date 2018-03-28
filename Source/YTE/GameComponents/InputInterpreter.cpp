@@ -31,6 +31,7 @@ namespace YTE
   YTEDefineEvent(SailStateChanged);
   YTEDefineEvent(BoatTurnEvent);
   YTEDefineEvent(BoatDockEvent);
+  YTEDefineEvent(BoatRotation);
 
   // Camera Events
   YTEDefineEvent(CameraRotateEvent);
@@ -38,6 +39,9 @@ namespace YTE
 
   // Debug Events
   YTEDefineEvent(DebugSwitch);
+
+  // Hud Events
+  YTEDefineEvent(HudElementToggled);
 
   YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
@@ -50,9 +54,11 @@ namespace YTE
   YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
+  YTEDefineType(BoatRotation) { YTERegisterType(BoatRotation); }
   YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
   YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
   YTEDefineType(DebugSwitch) { YTERegisterType(DebugSwitch); }
+  YTEDefineType(HudElementToggled) { YTERegisterType(HudElementToggled); }
 
   YTEDefineType(InputInterpreter)
   {
@@ -73,6 +79,7 @@ namespace YTE
     mContext = InputContext::Sailing;
 
     mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
+    mHudSpace = mSpace->AddChildSpace("MSR_HUD");
 
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 
@@ -231,11 +238,23 @@ namespace YTE
           case XboxButtons::DPAD_Down:
             break;
           case XboxButtons::DPAD_Up:
+          {
+            HudElementToggled postcard(HudElementToggled::Element::Postcard);
+            mHudSpace->SendEvent(Events::HudElementToggled, &postcard);
             break;
+          }
           case XboxButtons::DPAD_Left:
+          {
+            HudElementToggled map(HudElementToggled::Element::Map);
+            mHudSpace->SendEvent(Events::HudElementToggled, &map);
             break;
+          }
           case XboxButtons::DPAD_Right:
+          {
+            HudElementToggled compass(HudElementToggled::Element::Compass);
+            mHudSpace->SendEvent(Events::HudElementToggled, &compass);
             break;
+          }
           case XboxButtons::A:
           {
             RequestDialogueStart startDialogue;
