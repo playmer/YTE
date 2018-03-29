@@ -518,7 +518,7 @@ namespace YTE
     mQuestVec.emplace_back(Quest::Name::Dialogue);
     mQuestVec.emplace_back(Quest::Name::NotActive);
     
-    mActiveQuest = &mQuestVec[0];
+    mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
     mActiveNode = mActiveConvo->GetRoot();
   }
@@ -592,8 +592,25 @@ namespace YTE
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
-    mActiveConvo->SetState(Conversation::State::EarlyExit);
+    if (aEvent->isEarlyExit)
+    {
+      mActiveConvo->SetState(Conversation::State::EarlyExit);
+    }
+    else
+    {
+      if (mActiveQuest->GetState() == Quest::State::Received)
+      {
+        mActiveConvo->SetState(Conversation::State::Completed);
+        UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+      }
+      if (mActiveQuest->GetState() == Quest::State::Completed)
+      {
+        mActiveConvo->SetState(Conversation::State::Completed);
+        UpdateActiveQuestState completed(mName, Quest::State::Completed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
+      }
+    }
   }
 
   void JohnDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
@@ -615,7 +632,6 @@ namespace YTE
           {
             DialogueExit diagExit;
             mSpace->SendEvent(Events::DialogueExit, &diagExit);
-            mActiveConvo->SetState(Conversation::State::Completed);
             return;
           }
       }
@@ -631,7 +647,6 @@ namespace YTE
     {
       DialogueExit diagExit;
       mSpace->SendEvent(Events::DialogueExit, &diagExit);
-      mActiveConvo->SetState(Conversation::State::Completed);
     }
   }
 
@@ -640,25 +655,38 @@ namespace YTE
     if (aEvent->mCharacter == mName)
     {
       mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
-      mActiveConvo = &mActiveQuest->GetConversations()->at(0);
-      mActiveNode = mActiveConvo->GetRoot();
     }
     else
     {
       mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
-      mActiveConvo = &mActiveQuest->GetConversations()->at(0);
-      mActiveNode = mActiveConvo->GetRoot();
     }
+    UpdateActiveQuestState received(mName, Quest::State::Received);
+    mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
+      
+    mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::Hello];
+    mActiveNode = mActiveConvo->GetRoot();
   }
 
-    // sent by QuestLogic to change the quest state
   void JohnDialogue::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)
   {
     if (aEvent->mCharacter == mName)
     {
       mActiveQuest->SetState(aEvent->mState);
-      ++mActiveConvo;
-      mActiveNode = mActiveConvo->GetRoot();
+      if (aEvent->mState == Quest::State::Briefed)
+      {
+        mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::NoProgress];
+        mActiveNode = mActiveConvo->GetRoot();
+      }
+      if (aEvent->mState == Quest::State::Accomplished)
+      {
+        mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::Completed];
+        mActiveNode = mActiveConvo->GetRoot();
+      }
+      if (aEvent->mState == Quest::State::Completed)
+      {
+        mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::PostQuest];
+        mActiveNode = mActiveConvo->GetRoot();
+      }
     }
   }
 

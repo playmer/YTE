@@ -56,8 +56,9 @@ namespace YTE
     Quest::State GetState() { return mState; };
     void SetState(Quest::State aState) { mState = aState; };
   private:
-    Quest::Name mName;
     Quest::State mState;
+
+    Quest::Name mName;
     CharacterName mCharacter;
     std::vector<Conversation> mConversationVec;
   };
@@ -75,8 +76,9 @@ namespace YTE
     Conversation::State GetState() { return mState; };
     void SetState(Conversation::State aState) { mState = aState; };
   private:
-    Conversation::Name mName;
     Conversation::State mState;
+
+    Conversation::Name mName;
     std::vector<DialogueNode> mNodeVec;
   };
 

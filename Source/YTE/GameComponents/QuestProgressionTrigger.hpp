@@ -28,10 +28,9 @@ namespace YTE
     QuestProgressionTrigger(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
-    int GetTriggerType() { return mIsCollisionTrigger; }
-    void SetTriggerType(int& aTriggerType) { mIsCollisionTrigger = aTriggerType; }
+    bool IsCollisionTrigger() { return mIsCollisionTrigger; }
+    void SetTriggerType(bool& aTriggerType) { mIsCollisionTrigger = aTriggerType; }
 
-    void OnCollisionStarted(CollisionStarted *aEvent);
   private:
     bool mIsCollisionTrigger;
   };

@@ -5,7 +5,7 @@
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-03-25
 \brief
-    This component handles the logic for changing the dialogues and quest states
+    This component handles the logic for changing the quest states
 
 All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
@@ -30,6 +30,8 @@ namespace YTE
 
     void HookupPostcardHandle(Postcard **aHandle) { mPostcardHandle = aHandle; };
     Postcard *GetPostcard() { return *mPostcardHandle; };
+
+    void OnCollisionStarted(CollisionStarted *aEvent);
   private:
     Postcard **mPostcardHandle;
   };
