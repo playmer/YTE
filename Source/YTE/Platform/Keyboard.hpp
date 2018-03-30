@@ -23,6 +23,7 @@ namespace YTE
   YTEDeclareEvent(KeyPress);
   YTEDeclareEvent(KeyRelease);
   YTEDeclareEvent(KeyPersist);
+  YTEDeclareEvent(CharacterTyped);
 
   class KeyboardEvent : public Event
   {
@@ -30,6 +31,7 @@ namespace YTE
     YTEDeclareType(KeyboardEvent);
 
     Keys Key;
+    u32 CharacterTyped;
     Keyboard *Keyboard;
   };
 

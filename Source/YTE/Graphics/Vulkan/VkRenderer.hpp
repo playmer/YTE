@@ -10,6 +10,7 @@
 
 #include <unordered_map>
 
+#include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -35,6 +36,14 @@ namespace YTE
     std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
     VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    VkTexture* CreateTexture(std::string aName,
+                             std::vector<u8> aData,
+                             TextureType aType,
+                             u32 aWidth,
+                             u32 aHeight,
+                             u32 aMipLevels,
+                             u32 aLayerCount,
+                             vk::ImageViewType aVulkanType);
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;

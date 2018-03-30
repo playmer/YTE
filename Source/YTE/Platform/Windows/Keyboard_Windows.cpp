@@ -55,6 +55,20 @@ namespace YTE
   }
 
 
+
+  static inline std::string toUTF8(std::wstring aSource)
+  {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
+    return convert.to_bytes(aSource);
+  }
+
+  static inline std::wstring toUTF16(std::string aSource)
+  {
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
+    return convert.from_bytes(aSource);
+  }
+
+
   // Reference: https://www.codeproject.com/Articles/42/All-you-ever-wanted-to-know-about-the-Clipboard
   std::string GetClipboardText()
   {
@@ -64,21 +78,21 @@ namespace YTE
     if (OpenClipboard(nullptr))
     {
       HANDLE hData = GetClipboardData(CF_UNICODETEXT);
-      std::u16string wstr = (char16_t*)GlobalLock(hData);
+      std::wstring wstr = (wchar_t*)GlobalLock(hData);
       GlobalUnlock(hData);
       CloseClipboard();
 
       // UTF-16/char16_t to UTF-8
-      std::string u8_conv = std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t>{}.to_bytes(wstr);
+      std::string u8_conv = toUTF8(wstr);
     }
 
     return toReturn;
   }
 
+
   void SetClipboardText(std::string &aText)
   {
-    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>> converter;
-    std::wstring wstr = converter.from_bytes(aText);
+    auto text = toUTF16(aText);
 
     if (OpenClipboard(nullptr))
     {
@@ -86,9 +100,11 @@ namespace YTE
       char *buffer;
       EmptyClipboard();
 
-      clipbuffer = GlobalAlloc(GMEM_DDESHARE, (sizeof(std::wstring::value_type) * wstr.size()) + 1);
+      size_t bufferSize = (sizeof(std::wstring::value_type) * text.size()) + 1;
+    
+      clipbuffer = GlobalAlloc(GMEM_DDESHARE, bufferSize);
       buffer = (char*)GlobalLock(clipbuffer);
-      strcpy(buffer, LPCSTR(wstr.size()));
+      memcpy(buffer, text.data(), bufferSize);
       GlobalUnlock(clipbuffer);
       SetClipboardData(CF_UNICODETEXT, clipbuffer);
       CloseClipboard();

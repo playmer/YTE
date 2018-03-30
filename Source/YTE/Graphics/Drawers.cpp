@@ -110,10 +110,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void LineDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }
@@ -238,10 +235,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void TriangleDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }
@@ -337,10 +331,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void CurveDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }

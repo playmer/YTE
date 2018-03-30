@@ -184,6 +184,42 @@ namespace YTE
     return texturePtr;
   }
 
+
+  VkTexture* VkRenderer::CreateTexture(std::string aName,
+                                       std::vector<u8> aData,
+                                       TextureType aType,
+                                       u32 aWidth,
+                                       u32 aHeight,
+                                       u32 aMipLevels,
+                                       u32 aLayerCount,
+                                       vk::ImageViewType aVulkanType)
+  {
+    auto textureIt = mTextures.find(aName);
+    VkTexture *texturePtr{ nullptr };
+
+    if (textureIt == mTextures.end())
+    {
+      auto texture = std::make_unique<VkTexture>(aData,
+                                                 aType,
+                                                 aWidth,
+                                                 aHeight,
+                                                 aMipLevels,
+                                                 aLayerCount,
+                                                 this,
+                                                 aVulkanType);
+
+      texturePtr = texture.get();
+      mTextures[aName] = std::move(texture);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      texturePtr = textureIt->second.get();
+    }
+
+    return texturePtr;
+  }
+
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
@@ -277,7 +313,7 @@ namespace YTE
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Blue);
+    YTEProfileFunction();
 
     if (mDataUpdateRequired)
     {

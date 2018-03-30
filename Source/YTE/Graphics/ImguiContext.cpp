@@ -50,10 +50,10 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
-    window->mMouse.YTERegister(Events::MouseScroll, this, ImguiContext::MouseScrollCallback);
-    window->mKeyboard.YTERegister(Events::KeyPress, this, ImguiContext::KeyPressCallback);
-    window->mKeyboard.YTERegister(Events::KeyRelease, this, ImguiContext::KeyReleaseCallback);
-    window->mKeyboard.YTERegister(Events::CharacterTyped, this, ImguiContext::CharacterTypedCallback);
+    window->mMouse.YTERegister(Events::MouseScroll, this, &ImguiContext::MouseScrollCallback);
+    window->mKeyboard.YTERegister(Events::KeyPress, this, &ImguiContext::KeyPressCallback);
+    window->mKeyboard.YTERegister(Events::KeyRelease, this, &ImguiContext::KeyReleaseCallback);
+    window->mKeyboard.YTERegister(Events::CharacterTyped, this, &ImguiContext::CharacterTypedCallback);
 
     io.KeyMap[ImGuiKey_Tab] = enum_cast(Keys::Tab);
     io.KeyMap[ImGuiKey_LeftArrow] = enum_cast(Keys::Left);
@@ -131,18 +131,18 @@ namespace YTE
 
     io.ImeWindowHandle = window->GetWindowId();
 
-
+    // TODO:
     // Update OS/hardware mouse cursor if imgui isn't drawing a software cursor
-    ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
-    if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
-    {
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-    }
-    else
-    {
-      glfwSetCursor(g_Window, g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
-      glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    }
+    //ImGuiMouseCursor cursor = ImGui::GetMouseCursor();
+    //if (io.MouseDrawCursor || cursor == ImGuiMouseCursor_None)
+    //{
+    //  glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    //}
+    //else
+    //{
+    //  glfwSetCursor(g_Window, g_MouseCursors[cursor] ? g_MouseCursors[cursor] : g_MouseCursors[ImGuiMouseCursor_Arrow]);
+    //  glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    //}
 
     // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
     ImGui::NewFrame();
@@ -184,22 +184,12 @@ namespace YTE
     //io.KeySuper = io.KeysDown[enum_cast(Keys::)];
   }
 
-  //void ImGui_ImplGlfw_CharCallback(GLFWwindow*, unsigned int c)
-  //{
-  //  ImGuiIO& io = ImGui::GetIO();
-  //  if (c > 0 && c < 0x10000)
-  //    io.AddInputCharacter((unsigned short)c);
-  //}
   void ImguiContext::CharacterTypedCallback(KeyboardEvent *aEvent)
   {
     ImGui::SetCurrentContext(mContext);
 
-  }
-
-  void ImguiContext::ShowDemoWindow(bool* p_open)
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGui::ShowDemoWindow(p_open);
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddInputCharacter((ImWchar)aEvent->CharacterTyped);
   }
 
   void ImguiContext::ShowMetricsWindow(bool* p_open)
@@ -208,37 +198,11 @@ namespace YTE
     ImGui::ShowMetricsWindow(p_open);
   }
 
-  void ImguiContext::ShowStyleEditor(ImGuiStyle* ref)
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGui::ShowStyleEditor(ref);
-  }
-
-  bool ImguiContext::ShowStyleSelector(const char* label)
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGui::ShowStyleSelector(label);
-  }
-
-  void ImguiContext::ShowFontSelector(const char* label)
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGui::ShowFontSelector(label);
-  }
-
-  void ImguiContext::ShowUserGuide()
-  {
-    ImGui::SetCurrentContext(mContext);
-    ImGui::ShowUserGuide();
-  }
-
   const char* ImguiContext::GetVersion()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetVersion();
+    return ImGui::GetVersion();
   }
-
-
 
   void ImguiContext::StyleColorsDark(ImGuiStyle* dst)
   {
@@ -263,7 +227,7 @@ namespace YTE
   bool ImguiContext::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Begin(name, p_open, flags);
+    return ImGui::Begin(name, p_open, flags);
   }
 
   void ImguiContext::End()
@@ -275,13 +239,13 @@ namespace YTE
   bool ImguiContext::BeginChild(const char* str_id, const ImVec2& size, bool border, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginChild(str_id, size, border, flags);
+    return ImGui::BeginChild(str_id, size, border, flags);
   }
 
   bool ImguiContext::BeginChild(ImGuiID id, const ImVec2& size, bool border, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginChild(id, size, border, flags);
+    return ImGui::BeginChild(id, size, border, flags);
   }
 
   void ImguiContext::EndChild()
@@ -293,79 +257,79 @@ namespace YTE
   ImVec2 ImguiContext::GetContentRegionMax()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetContentRegionMax();
+    return ImGui::GetContentRegionMax();
   }
 
   ImVec2 ImguiContext::GetContentRegionAvail()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetContentRegionAvail();
+    return ImGui::GetContentRegionAvail();
   }
 
   float ImguiContext::GetContentRegionAvailWidth()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetContentRegionAvailWidth();
+    return ImGui::GetContentRegionAvailWidth();
   }
 
   ImVec2 ImguiContext::GetWindowContentRegionMin()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowContentRegionMin();
+    return ImGui::GetWindowContentRegionMin();
   }
 
   ImVec2 ImguiContext::GetWindowContentRegionMax()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowContentRegionMax();
+    return ImGui::GetWindowContentRegionMax();
   }
 
   float ImguiContext::GetWindowContentRegionWidth()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowContentRegionWidth();
+    return ImGui::GetWindowContentRegionWidth();
   }
 
   ImDrawList* ImguiContext::GetWindowDrawList()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowDrawList();
+    return ImGui::GetWindowDrawList();
   }
 
   ImVec2 ImguiContext::GetWindowPos()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowPos();
+    return ImGui::GetWindowPos();
   }
 
   ImVec2 ImguiContext::GetWindowSize()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowSize();
+    return ImGui::GetWindowSize();
   }
 
   float ImguiContext::GetWindowWidth()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowWidth();
+    return ImGui::GetWindowWidth();
   }
 
   float ImguiContext::GetWindowHeight()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetWindowHeight();
+    return ImGui::GetWindowHeight();
   }
 
   bool ImguiContext::IsWindowCollapsed()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsWindowCollapsed();
+    return ImGui::IsWindowCollapsed();
   }
 
   bool ImguiContext::IsWindowAppearing()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsWindowAppearing();
+    return ImGui::IsWindowAppearing();
   }
 
   void ImguiContext::SetWindowFontScale(float scale)
@@ -469,25 +433,25 @@ namespace YTE
   float ImguiContext::GetScrollX()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetScrollX();
+    return ImGui::GetScrollX();
   }
 
   float ImguiContext::GetScrollY()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetScrollY();
+    return ImGui::GetScrollY();
   }
 
   float ImguiContext::GetScrollMaxX()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetScrollMaxX();
+    return ImGui::GetScrollMaxX();
   }
 
   float ImguiContext::GetScrollMaxY()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetScrollMaxY();
+    return ImGui::GetScrollMaxY();
   }
 
   void ImguiContext::SetScrollX(float scroll_x)
@@ -523,7 +487,7 @@ namespace YTE
   ImGuiStorage* ImguiContext::GetStateStorage()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetStateStorage();
+    return ImGui::GetStateStorage();
   }
 
 
@@ -579,43 +543,43 @@ namespace YTE
   const ImVec4& ImguiContext::GetStyleColorVec4(ImGuiCol idx)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetStyleColorVec4(idx);
+    return ImGui::GetStyleColorVec4(idx);
   }
 
   ImFont* ImguiContext::GetFont()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFont();
+    return ImGui::GetFont();
   }
 
   float ImguiContext::GetFontSize()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFontSize();
+    return ImGui::GetFontSize();
   }
 
   ImVec2 ImguiContext::GetFontTexUvWhitePixel()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFontTexUvWhitePixel();
+    return ImGui::GetFontTexUvWhitePixel();
   }
 
   ImU32 ImguiContext::GetColorU32(ImGuiCol idx, float alpha_mul)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColorU32(idx, alpha_mul);
+    return ImGui::GetColorU32(idx, alpha_mul);
   }
 
   ImU32 ImguiContext::GetColorU32(const ImVec4& col)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColorU32(col);
+    return ImGui::GetColorU32(col);
   }
 
   ImU32 ImguiContext::GetColorU32(ImU32 col)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColorU32(col);
+    return ImGui::GetColorU32(col);
   }
 
 
@@ -635,7 +599,7 @@ namespace YTE
   float ImguiContext::CalcItemWidth()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::CalcItemWidth();
+    return ImGui::CalcItemWidth();
   }
 
   void ImguiContext::PushTextWrapPos(float wrap_pos_x)
@@ -733,19 +697,19 @@ namespace YTE
   ImVec2 ImguiContext::GetCursorPos()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetCursorPos();
+    return ImGui::GetCursorPos();
   }
 
   float ImguiContext::GetCursorPosX()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetCursorPosX();
+    return ImGui::GetCursorPosX();
   }
 
   float ImguiContext::GetCursorPosY()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetCursorPosY();
+    return ImGui::GetCursorPosY();
   }
 
   void ImguiContext::SetCursorPos(const ImVec2& local_pos)
@@ -769,13 +733,13 @@ namespace YTE
   ImVec2 ImguiContext::GetCursorStartPos()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetCursorStartPos();
+    return ImGui::GetCursorStartPos();
   }
 
   ImVec2 ImguiContext::GetCursorScreenPos()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetCursorScreenPos();
+    return ImGui::GetCursorScreenPos();
   }
 
   void ImguiContext::SetCursorScreenPos(const ImVec2& pos)
@@ -793,25 +757,25 @@ namespace YTE
   float ImguiContext::GetTextLineHeight()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetTextLineHeight();
+    return ImGui::GetTextLineHeight();
   }
 
   float ImguiContext::GetTextLineHeightWithSpacing()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetTextLineHeightWithSpacing();
+    return ImGui::GetTextLineHeightWithSpacing();
   }
 
   float ImguiContext::GetFrameHeight()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFrameHeight();
+    return ImGui::GetFrameHeight();
   }
 
   float ImguiContext::GetFrameHeightWithSpacing()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFrameHeightWithSpacing();
+    return ImGui::GetFrameHeightWithSpacing();
   }
 
 
@@ -832,13 +796,13 @@ namespace YTE
   int ImguiContext::GetColumnIndex()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColumnIndex();
+    return ImGui::GetColumnIndex();
   }
 
   float ImguiContext::GetColumnWidth(int column_index)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColumnWidth(column_index);
+    return ImGui::GetColumnWidth(column_index);
   }
 
   void ImguiContext::SetColumnWidth(int column_index, float width)
@@ -850,7 +814,7 @@ namespace YTE
   float ImguiContext::GetColumnOffset(int column_index)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColumnOffset(column_index);
+    return ImGui::GetColumnOffset(column_index);
   }
 
   void ImguiContext::SetColumnOffset(int column_index, float offset_x)
@@ -862,7 +826,7 @@ namespace YTE
   int ImguiContext::GetColumnsCount()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetColumnsCount();
+    return ImGui::GetColumnsCount();
   }
 
 
@@ -902,19 +866,19 @@ namespace YTE
   ImGuiID ImguiContext::GetID(const char* str_id)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetID(str_id);
+    return ImGui::GetID(str_id);
   }
 
   ImGuiID ImguiContext::GetID(const char* str_id_begin, const char* str_id_end)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetID(str_id_begin, str_id_end);
+    return ImGui::GetID(str_id_begin, str_id_end);
   }
 
   ImGuiID ImguiContext::GetID(const void* ptr_id)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetID(ptr_id);
+    return ImGui::GetID(ptr_id);
   }
 
 
@@ -1026,25 +990,25 @@ namespace YTE
   bool ImguiContext::Button(const char* label, const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Button(label, size);
+    return ImGui::Button(label, size);
   }
 
   bool ImguiContext::SmallButton(const char* label)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SmallButton(label);
+    return ImGui::SmallButton(label);
   }
 
   bool ImguiContext::ArrowButton(const char* str_id, ImGuiDir dir)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ArrowButton(str_id, dir);
+    return ImGui::ArrowButton(str_id, dir);
   }
 
   bool ImguiContext::InvisibleButton(const char* str_id, const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InvisibleButton(str_id, size);
+    return ImGui::InvisibleButton(str_id, size);
   }
 
   void ImguiContext::Image(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, const ImVec4& tint_col, const ImVec4& border_col)
@@ -1056,31 +1020,31 @@ namespace YTE
   bool ImguiContext::ImageButton(ImTextureID user_texture_id, const ImVec2& size, const ImVec2& uv0, const ImVec2& uv1, int frame_padding, const ImVec4& bg_col, const ImVec4& tint_col)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col);
+    return ImGui::ImageButton(user_texture_id, size, uv0, uv1, frame_padding, bg_col, tint_col);
   }
 
   bool ImguiContext::Checkbox(const char* label, bool* v)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Checkbox(label, v);
+    return ImGui::Checkbox(label, v);
   }
 
   bool ImguiContext::CheckboxFlags(const char* label, unsigned int* flags, unsigned int flags_value)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::CheckboxFlags(label, flags, flags_value);
+    return ImGui::CheckboxFlags(label, flags, flags_value);
   }
 
   bool ImguiContext::RadioButton(const char* label, bool active)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::RadioButton(label, active);
+    return ImGui::RadioButton(label, active);
   }
 
   bool ImguiContext::RadioButton(const char* label, int* v, int v_button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::RadioButton(label, v, v_button);
+    return ImGui::RadioButton(label, v, v_button);
   }
 
   void ImguiContext::PlotLines(const char* label, const float* values, int values_count, int values_offset, const char* overlay_text, float scale_min, float scale_max, ImVec2 graph_size, int stride)
@@ -1120,7 +1084,7 @@ namespace YTE
   bool ImguiContext::BeginCombo(const char* label, const char* preview_value, ImGuiComboFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginCombo(label, preview_value, flags);
+    return ImGui::BeginCombo(label, preview_value, flags);
   }
 
   void ImguiContext::EndCombo()
@@ -1132,19 +1096,19 @@ namespace YTE
   bool ImguiContext::Combo(const char* label, int* current_item, const char* const items[], int items_count, int popup_max_height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Combo(label, current_item, items, items_count, popup_max_height_in_items);
+    return ImGui::Combo(label, current_item, items, items_count, popup_max_height_in_items);
   }
 
   bool ImguiContext::Combo(const char* label, int* current_item, const char* items_separated_by_zeros, int popup_max_height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Combo(label, current_item, items_separated_by_zeros, popup_max_height_in_items);
+    return ImGui::Combo(label, current_item, items_separated_by_zeros, popup_max_height_in_items);
   }
 
   bool ImguiContext::Combo(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int popup_max_height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Combo(label, current_item, items_getter, data, items_count, popup_max_height_in_items);
+    return ImGui::Combo(label, current_item, items_getter, data, items_count, popup_max_height_in_items);
   }
 
 
@@ -1154,61 +1118,61 @@ namespace YTE
   bool ImguiContext::DragFloat(const char* label, float* v, float v_speed, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragFloat(label, v, v_speed, v_min, v_max, display_format, power);
+    return ImGui::DragFloat(label, v, v_speed, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::DragFloat2(const char* label, float v[2], float v_speed, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragFloat2(label, v, v_speed, v_min, v_max, display_format, power);
+    return ImGui::DragFloat2(label, v, v_speed, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::DragFloat3(const char* label, float v[3], float v_speed, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragFloat3(label, v, v_speed, v_min, v_max, display_format, power);
+    return ImGui::DragFloat3(label, v, v_speed, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::DragFloat4(const char* label, float v[4], float v_speed, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragFloat4(label, v, v_speed, v_min, v_max, display_format, power);
+    return ImGui::DragFloat4(label, v, v_speed, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::DragFloatRange2(const char* label, float* v_current_min, float* v_current_max, float v_speed, float v_min, float v_max, const char* display_format, const char* display_format_max, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max, power);
+    return ImGui::DragFloatRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max, power);
   }
 
   bool ImguiContext::DragInt(const char* label, int* v, float v_speed, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragInt(label, v, v_speed, v_min, v_max, display_format);
+    return ImGui::DragInt(label, v, v_speed, v_min, v_max, display_format);
   }
 
   bool ImguiContext::DragInt2(const char* label, int v[2], float v_speed, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragInt2(label, v, v_speed, v_min, v_max, display_format);
+    return ImGui::DragInt2(label, v, v_speed, v_min, v_max, display_format);
   }
 
   bool ImguiContext::DragInt3(const char* label, int v[3], float v_speed, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragInt3(label, v, v_speed, v_min, v_max, display_format);
+    return ImGui::DragInt3(label, v, v_speed, v_min, v_max, display_format);
   }
 
   bool ImguiContext::DragInt4(const char* label, int v[4], float v_speed, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragInt4(label, v, v_speed, v_min, v_max, display_format);
+    return ImGui::DragInt4(label, v, v_speed, v_min, v_max, display_format);
   }
 
   bool ImguiContext::DragIntRange2(const char* label, int* v_current_min, int* v_current_max, float v_speed, int v_min, int v_max, const char* display_format, const char* display_format_max)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max);
+    return ImGui::DragIntRange2(label, v_current_min, v_current_max, v_speed, v_min, v_max, display_format, display_format_max);
   }
 
 
@@ -1216,61 +1180,61 @@ namespace YTE
   bool ImguiContext::InputText(const char* label, char* buf, size_t buf_size, ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputText(label, buf, buf_size, flags, callback, user_data);
+    return ImGui::InputText(label, buf, buf_size, flags, callback, user_data);
   }
 
   bool ImguiContext::InputTextMultiline(const char* label, char* buf, size_t buf_size, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiTextEditCallback callback, void* user_data)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputTextMultiline(label, buf, buf_size, size, flags, callback, user_data);
+    return ImGui::InputTextMultiline(label, buf, buf_size, size, flags, callback, user_data);
   }
 
   bool ImguiContext::InputFloat(const char* label, float* v, float step, float step_fast, int decimal_precision, ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputFloat(label, v, step, step_fast, decimal_precision, extra_flags);
+    return ImGui::InputFloat(label, v, step, step_fast, decimal_precision, extra_flags);
   }
 
   bool ImguiContext::InputFloat2(const char* label, float v[2], int decimal_precision, ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputFloat2(label, v, decimal_precision, extra_flags);
+    return ImGui::InputFloat2(label, v, decimal_precision, extra_flags);
   }
 
   bool ImguiContext::InputFloat3(const char* label, float v[3], int decimal_precision, ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputFloat3(label, v, decimal_precision, extra_flags);
+    return ImGui::InputFloat3(label, v, decimal_precision, extra_flags);
   }
 
   bool ImguiContext::InputFloat4(const char* label, float v[4], int decimal_precision, ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputFloat4(label, v, decimal_precision, extra_flags);
+    return ImGui::InputFloat4(label, v, decimal_precision, extra_flags);
   }
 
   bool ImguiContext::InputInt(const char* label, int* v, int step, int step_fast, ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputInt(label, v, step, step_fast, extra_flags);
+    return ImGui::InputInt(label, v, step, step_fast, extra_flags);
   }
 
   bool ImguiContext::InputInt2(const char* label, int v[2], ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputInt2(label, v, extra_flags);
+    return ImGui::InputInt2(label, v, extra_flags);
   }
 
   bool ImguiContext::InputInt3(const char* label, int v[3], ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputInt3(label, v, extra_flags);
+    return ImGui::InputInt3(label, v, extra_flags);
   }
 
   bool ImguiContext::InputInt4(const char* label, int v[4], ImGuiInputTextFlags extra_flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::InputInt4(label, v, extra_flags);
+    return ImGui::InputInt4(label, v, extra_flags);
   }
 
 
@@ -1278,67 +1242,67 @@ namespace YTE
   bool ImguiContext::SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderFloat(label, v, v_min, v_max, display_format, power);
+    return ImGui::SliderFloat(label, v, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::SliderFloat2(const char* label, float v[2], float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderFloat2(label, v, v_min, v_max, display_format, power);
+    return ImGui::SliderFloat2(label, v, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::SliderFloat3(const char* label, float v[3], float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderFloat3(label, v, v_min, v_max, display_format, power);
+    return ImGui::SliderFloat3(label, v, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::SliderFloat4(const char* label, float v[4], float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderFloat4(label, v, v_min, v_max, display_format, power);
+    return ImGui::SliderFloat4(label, v, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::SliderAngle(const char* label, float* v_rad, float v_degrees_min, float v_degrees_max)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderAngle(label, v_rad, v_degrees_min, v_degrees_max);
+    return ImGui::SliderAngle(label, v_rad, v_degrees_min, v_degrees_max);
   }
 
   bool ImguiContext::SliderInt(const char* label, int* v, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderInt(label, v, v_min, v_max, display_format);
+    return ImGui::SliderInt(label, v, v_min, v_max, display_format);
   }
 
   bool ImguiContext::SliderInt2(const char* label, int v[2], int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderInt2(label, v, v_min, v_max, display_format);
+    return ImGui::SliderInt2(label, v, v_min, v_max, display_format);
   }
 
   bool ImguiContext::SliderInt3(const char* label, int v[3], int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderInt3(label, v, v_min, v_max, display_format);
+    return ImGui::SliderInt3(label, v, v_min, v_max, display_format);
   }
 
   bool ImguiContext::SliderInt4(const char* label, int v[4], int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SliderInt4(label, v, v_min, v_max, display_format);
+    return ImGui::SliderInt4(label, v, v_min, v_max, display_format);
   }
 
   bool ImguiContext::VSliderFloat(const char* label, const ImVec2& size, float* v, float v_min, float v_max, const char* display_format, float power)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::VSliderFloat(label, size, v, v_min, v_max, display_format, power);
+    return ImGui::VSliderFloat(label, size, v, v_min, v_max, display_format, power);
   }
 
   bool ImguiContext::VSliderInt(const char* label, const ImVec2& size, int* v, int v_min, int v_max, const char* display_format)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::VSliderInt(label, size, v, v_min, v_max, display_format);
+    return ImGui::VSliderInt(label, size, v, v_min, v_max, display_format);
   }
 
 
@@ -1347,31 +1311,31 @@ namespace YTE
   bool ImguiContext::ColorEdit3(const char* label, float col[3], ImGuiColorEditFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorEdit3(label, col, flags);
+    return ImGui::ColorEdit3(label, col, flags);
   }
 
   bool ImguiContext::ColorEdit4(const char* label, float col[4], ImGuiColorEditFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorEdit4(label, col, flags);
+    return ImGui::ColorEdit4(label, col, flags);
   }
 
   bool ImguiContext::ColorPicker3(const char* label, float col[3], ImGuiColorEditFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorPicker3(label, col, flags);
+    return ImGui::ColorPicker3(label, col, flags);
   }
 
   bool ImguiContext::ColorPicker4(const char* label, float col[4], ImGuiColorEditFlags flags, const float* ref_col)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorPicker4(label, col, flags, ref_col);
+    return ImGui::ColorPicker4(label, col, flags, ref_col);
   }
 
   bool ImguiContext::ColorButton(const char* desc_id, const ImVec4& col, ImGuiColorEditFlags flags, ImVec2 size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorButton(desc_id, col, flags, size);
+    return ImGui::ColorButton(desc_id, col, flags, size);
   }
 
   void ImguiContext::SetColorEditOptions(ImGuiColorEditFlags flags)
@@ -1385,7 +1349,7 @@ namespace YTE
   bool ImguiContext::TreeNode(const char* label)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNode(label);
+    return ImGui::TreeNode(label);
   }
 
   bool ImguiContext::TreeNode(const char* str_id, const char* fmt, ...)
@@ -1394,7 +1358,7 @@ namespace YTE
     va_start(variadicArguments, fmt);
 
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNode(str_id, fmt, variadicArguments);
+    return ImGui::TreeNode(str_id, fmt, variadicArguments);
   }
 
   bool ImguiContext::TreeNode(const void* ptr_id, const char* fmt, ...)
@@ -1403,25 +1367,25 @@ namespace YTE
     va_start(variadicArguments, fmt);
 
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNode(ptr_id, fmt, variadicArguments);
+    return ImGui::TreeNode(ptr_id, fmt, variadicArguments);
   }
 
   bool ImguiContext::TreeNodeV(const char* str_id, const char* fmt, va_list args)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeV(str_id, fmt, args);
+    return ImGui::TreeNodeV(str_id, fmt, args);
   }
 
   bool ImguiContext::TreeNodeV(const void* ptr_id, const char* fmt, va_list args)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeV(ptr_id, fmt, args);
+    return ImGui::TreeNodeV(ptr_id, fmt, args);
   }
 
   bool ImguiContext::TreeNodeEx(const char* label, ImGuiTreeNodeFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeEx(label, flags);
+    return ImGui::TreeNodeEx(label, flags);
   }
 
   bool ImguiContext::TreeNodeEx(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, ...)
@@ -1430,7 +1394,7 @@ namespace YTE
     va_start(variadicArguments, fmt);
 
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeEx(str_id, flags, fmt, variadicArguments);
+    return ImGui::TreeNodeEx(str_id, flags, fmt, variadicArguments);
   }
 
   bool ImguiContext::TreeNodeEx(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, ...)
@@ -1439,19 +1403,19 @@ namespace YTE
     va_start(variadicArguments, fmt);
 
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeEx(ptr_id, flags, fmt, variadicArguments);
+    return ImGui::TreeNodeEx(ptr_id, flags, fmt, variadicArguments);
   }
 
   bool ImguiContext::TreeNodeExV(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeExV(str_id, flags, fmt, args);
+    return ImGui::TreeNodeExV(str_id, flags, fmt, args);
   }
 
   bool ImguiContext::TreeNodeExV(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::TreeNodeExV(ptr_id, flags, fmt, args);
+    return ImGui::TreeNodeExV(ptr_id, flags, fmt, args);
   }
 
   void ImguiContext::TreePush(const char* str_id)
@@ -1481,7 +1445,7 @@ namespace YTE
   float ImguiContext::GetTreeNodeToLabelSpacing()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetTreeNodeToLabelSpacing();
+    return ImGui::GetTreeNodeToLabelSpacing();
   }
 
   void ImguiContext::SetNextTreeNodeOpen(bool is_open, ImGuiCond cond)
@@ -1493,13 +1457,13 @@ namespace YTE
   bool ImguiContext::CollapsingHeader(const char* label, ImGuiTreeNodeFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::CollapsingHeader(label, flags);
+    return ImGui::CollapsingHeader(label, flags);
   }
 
   bool ImguiContext::CollapsingHeader(const char* label, bool* p_open, ImGuiTreeNodeFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::CollapsingHeader(label, p_open, flags);
+    return ImGui::CollapsingHeader(label, p_open, flags);
   }
 
 
@@ -1507,37 +1471,37 @@ namespace YTE
   bool ImguiContext::Selectable(const char* label, bool selected, ImGuiSelectableFlags flags, const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Selectable(label, selected, flags, size);
+    return ImGui::Selectable(label, selected, flags, size);
   }
 
   bool ImguiContext::Selectable(const char* label, bool* p_selected, ImGuiSelectableFlags flags, const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::Selectable(label, p_selected, flags, size);
+    return ImGui::Selectable(label, p_selected, flags, size);
   }
 
   bool ImguiContext::ListBox(const char* label, int* current_item, const char* const items[], int items_count, int height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ListBox(label, current_item, items, items_count, height_in_items);
+    return ImGui::ListBox(label, current_item, items, items_count, height_in_items);
   }
 
   bool ImguiContext::ListBox(const char* label, int* current_item, bool(*items_getter)(void* data, int idx, const char** out_text), void* data, int items_count, int height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ListBox(label, current_item, items_getter, data, items_count, height_in_items);
+    return ImGui::ListBox(label, current_item, items_getter, data, items_count, height_in_items);
   }
 
   bool ImguiContext::ListBoxHeader(const char* label, const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ListBoxHeader(label, size);
+    return ImGui::ListBoxHeader(label, size);
   }
 
   bool ImguiContext::ListBoxHeader(const char* label, int items_count, int height_in_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ListBoxHeader(label, items_count, height_in_items);
+    return ImGui::ListBoxHeader(label, items_count, height_in_items);
   }
 
   void ImguiContext::ListBoxFooter()
@@ -1574,11 +1538,14 @@ namespace YTE
 
 
 
-  //void ImguiContext::SetTooltip(const char* fmt, ...)
-  //{
-  //  ImGui::SetCurrentContext(mContext);
-  //  ImGui::SetTooltip(fmt, ...);
-  //}
+  void ImguiContext::SetTooltip(const char* fmt, ...)
+  {
+    va_list variadicArguments;
+    va_start(variadicArguments, fmt);
+
+    ImGui::SetCurrentContext(mContext);
+    ImGui::SetTooltip(fmt, variadicArguments);
+  }
 
   void ImguiContext::SetTooltipV(const char* fmt, va_list args)
   {
@@ -1603,7 +1570,7 @@ namespace YTE
   bool ImguiContext::BeginMainMenuBar()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginMainMenuBar();
+    return ImGui::BeginMainMenuBar();
   }
 
   void ImguiContext::EndMainMenuBar()
@@ -1615,7 +1582,7 @@ namespace YTE
   bool ImguiContext::BeginMenuBar()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginMenuBar();
+    return ImGui::BeginMenuBar();
   }
 
   void ImguiContext::EndMenuBar()
@@ -1627,7 +1594,7 @@ namespace YTE
   bool ImguiContext::BeginMenu(const char* label, bool enabled)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginMenu(label, enabled);
+    return ImGui::BeginMenu(label, enabled);
   }
 
   void ImguiContext::EndMenu()
@@ -1639,13 +1606,13 @@ namespace YTE
   bool ImguiContext::MenuItem(const char* label, const char* shortcut, bool selected, bool enabled)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::MenuItem(label, shortcut, selected, enabled);
+    return ImGui::MenuItem(label, shortcut, selected, enabled);
   }
 
   bool ImguiContext::MenuItem(const char* label, const char* shortcut, bool* p_selected, bool enabled)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::MenuItem(label, shortcut, p_selected, enabled);
+    return ImGui::MenuItem(label, shortcut, p_selected, enabled);
   }
 
 
@@ -1659,31 +1626,31 @@ namespace YTE
   bool ImguiContext::BeginPopup(const char* str_id, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginPopup(str_id, flags);
+    return ImGui::BeginPopup(str_id, flags);
   }
 
   bool ImguiContext::BeginPopupContextItem(const char* str_id, int mouse_button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginPopupContextItem(str_id, mouse_button);
+    return ImGui::BeginPopupContextItem(str_id, mouse_button);
   }
 
   bool ImguiContext::BeginPopupContextWindow(const char* str_id, int mouse_button, bool also_over_items)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginPopupContextWindow(str_id, mouse_button, also_over_items);
+    return ImGui::BeginPopupContextWindow(str_id, mouse_button, also_over_items);
   }
 
   bool ImguiContext::BeginPopupContextVoid(const char* str_id, int mouse_button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginPopupContextVoid(str_id, mouse_button);
+    return ImGui::BeginPopupContextVoid(str_id, mouse_button);
   }
 
   bool ImguiContext::BeginPopupModal(const char* name, bool* p_open, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginPopupModal(name, p_open, flags);
+    return ImGui::BeginPopupModal(name, p_open, flags);
   }
 
   void ImguiContext::EndPopup()
@@ -1695,13 +1662,13 @@ namespace YTE
   bool ImguiContext::OpenPopupOnItemClick(const char* str_id, int mouse_button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::OpenPopupOnItemClick(str_id, mouse_button);
+    return ImGui::OpenPopupOnItemClick(str_id, mouse_button);
   }
 
   bool ImguiContext::IsPopupOpen(const char* str_id)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsPopupOpen(str_id);
+    return ImGui::IsPopupOpen(str_id);
   }
 
   void ImguiContext::CloseCurrentPopup()
@@ -1754,13 +1721,13 @@ namespace YTE
   bool ImguiContext::BeginDragDropSource(ImGuiDragDropFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginDragDropSource(flags);
+    return ImGui::BeginDragDropSource(flags);
   }
 
   bool ImguiContext::SetDragDropPayload(const char* type, const void* data, size_t size, ImGuiCond cond)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::SetDragDropPayload(type, data, size, cond);
+    return ImGui::SetDragDropPayload(type, data, size, cond);
   }
 
   void ImguiContext::EndDragDropSource()
@@ -1772,13 +1739,13 @@ namespace YTE
   bool ImguiContext::BeginDragDropTarget()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginDragDropTarget();
+    return ImGui::BeginDragDropTarget();
   }
 
   const ImGuiPayload* ImguiContext::AcceptDragDropPayload(const char* type, ImGuiDragDropFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::AcceptDragDropPayload(type, flags);
+    return ImGui::AcceptDragDropPayload(type, flags);
   }
 
   void ImguiContext::EndDragDropTarget()
@@ -1817,67 +1784,67 @@ namespace YTE
   bool ImguiContext::IsItemHovered(ImGuiHoveredFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsItemHovered(flags);
+    return ImGui::IsItemHovered(flags);
   }
 
   bool ImguiContext::IsItemActive()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsItemActive();
+    return ImGui::IsItemActive();
   }
 
   bool ImguiContext::IsItemFocused()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsItemFocused();
+    return ImGui::IsItemFocused();
   }
 
   bool ImguiContext::IsItemClicked(int mouse_button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsItemClicked(mouse_button);
+    return ImGui::IsItemClicked(mouse_button);
   }
 
   bool ImguiContext::IsItemVisible()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsItemVisible();
+    return ImGui::IsItemVisible();
   }
 
   bool ImguiContext::IsAnyItemHovered()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsAnyItemHovered();
+    return ImGui::IsAnyItemHovered();
   }
 
   bool ImguiContext::IsAnyItemActive()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsAnyItemActive();
+    return ImGui::IsAnyItemActive();
   }
 
   bool ImguiContext::IsAnyItemFocused()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsAnyItemFocused();
+    return ImGui::IsAnyItemFocused();
   }
 
   ImVec2 ImguiContext::GetItemRectMin()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetItemRectMin();
+    return ImGui::GetItemRectMin();
   }
 
   ImVec2 ImguiContext::GetItemRectMax()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetItemRectMax();
+    return ImGui::GetItemRectMax();
   }
 
   ImVec2 ImguiContext::GetItemRectSize()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetItemRectSize();
+    return ImGui::GetItemRectSize();
   }
 
   void ImguiContext::SetItemAllowOverlap()
@@ -1889,61 +1856,61 @@ namespace YTE
   bool ImguiContext::IsWindowFocused(ImGuiFocusedFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsWindowFocused(flags);
+    return ImGui::IsWindowFocused(flags);
   }
 
   bool ImguiContext::IsWindowHovered(ImGuiHoveredFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsWindowHovered(flags);
+    return ImGui::IsWindowHovered(flags);
   }
 
   bool ImguiContext::IsRectVisible(const ImVec2& size)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsRectVisible(size);
+    return ImGui::IsRectVisible(size);
   }
 
   bool ImguiContext::IsRectVisible(const ImVec2& rect_min, const ImVec2& rect_max)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsRectVisible(rect_min, rect_max);
+    return ImGui::IsRectVisible(rect_min, rect_max);
   }
 
   float ImguiContext::GetTime()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetTime();
+    return ImGui::GetTime();
   }
 
   int ImguiContext::GetFrameCount()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetFrameCount();
+    return ImGui::GetFrameCount();
   }
 
   ImDrawList* ImguiContext::GetOverlayDrawList()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetOverlayDrawList();
+    return ImGui::GetOverlayDrawList();
   }
 
   ImDrawListSharedData* ImguiContext::GetDrawListSharedData()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetDrawListSharedData();
+    return ImGui::GetDrawListSharedData();
   }
 
   const char* ImguiContext::GetStyleColorName(ImGuiCol idx)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetStyleColorName(idx);
+    return ImGui::GetStyleColorName(idx);
   }
 
   ImVec2 ImguiContext::CalcTextSize(const char* text, const char* text_end, bool hide_text_after_double_hash, float wrap_width)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::CalcTextSize(text, text_end, hide_text_after_double_hash, wrap_width);
+    return ImGui::CalcTextSize(text, text_end, hide_text_after_double_hash, wrap_width);
   }
 
   void ImguiContext::CalcListClipping(int items_count, float items_height, int* out_items_display_start, int* out_items_display_end)
@@ -1956,7 +1923,7 @@ namespace YTE
   bool ImguiContext::BeginChildFrame(ImGuiID id, const ImVec2& size, ImGuiWindowFlags flags)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::BeginChildFrame(id, size, flags);
+    return ImGui::BeginChildFrame(id, size, flags);
   }
 
   void ImguiContext::EndChildFrame()
@@ -1969,13 +1936,13 @@ namespace YTE
   ImVec4 ImguiContext::ColorConvertU32ToFloat4(ImU32 in)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorConvertU32ToFloat4(in);
+    return ImGui::ColorConvertU32ToFloat4(in);
   }
 
   ImU32 ImguiContext::ColorConvertFloat4ToU32(const ImVec4& in)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ColorConvertFloat4ToU32(in);
+    return ImGui::ColorConvertFloat4ToU32(in);
   }
 
   void ImguiContext::ColorConvertRGBtoHSV(float r, float g, float b, float& out_h, float& out_s, float& out_v)
@@ -1994,109 +1961,109 @@ namespace YTE
   int ImguiContext::GetKeyIndex(ImGuiKey imgui_key)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetKeyIndex(imgui_key);
+    return ImGui::GetKeyIndex(imgui_key);
   }
 
   bool ImguiContext::IsKeyDown(int user_key_index)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsKeyDown(user_key_index);
+    return ImGui::IsKeyDown(user_key_index);
   }
 
   bool ImguiContext::IsKeyPressed(int user_key_index, bool repeat)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsKeyPressed(user_key_index, repeat);
+    return ImGui::IsKeyPressed(user_key_index, repeat);
   }
 
   bool ImguiContext::IsKeyReleased(int user_key_index)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsKeyReleased(user_key_index);
+    return ImGui::IsKeyReleased(user_key_index);
   }
 
   int ImguiContext::GetKeyPressedAmount(int key_index, float repeat_delay, float rate)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetKeyPressedAmount(key_index, repeat_delay, rate);
+    return ImGui::GetKeyPressedAmount(key_index, repeat_delay, rate);
   }
 
   bool ImguiContext::IsMouseDown(int button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseDown(button);
+    return ImGui::IsMouseDown(button);
   }
 
   bool ImguiContext::IsAnyMouseDown()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsAnyMouseDown();
+    return ImGui::IsAnyMouseDown();
   }
 
   bool ImguiContext::IsMouseClicked(int button, bool repeat)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseClicked(button, repeat);
+    return ImGui::IsMouseClicked(button, repeat);
   }
 
   bool ImguiContext::IsMouseDoubleClicked(int button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseDoubleClicked(button);
+    return ImGui::IsMouseDoubleClicked(button);
   }
 
   bool ImguiContext::IsMouseReleased(int button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseReleased(button);
+    return ImGui::IsMouseReleased(button);
   }
 
   bool ImguiContext::IsMouseDragging(int button, float lock_threshold)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseDragging(button, lock_threshold);
+    return ImGui::IsMouseDragging(button, lock_threshold);
   }
 
   bool ImguiContext::IsMouseHoveringRect(const ImVec2& r_min, const ImVec2& r_max, bool clip)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMouseHoveringRect(r_min, r_max, clip);
+    return ImGui::IsMouseHoveringRect(r_min, r_max, clip);
   }
 
   bool ImguiContext::IsMousePosValid(const ImVec2* mouse_pos)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::IsMousePosValid(mouse_pos);
+    return ImGui::IsMousePosValid(mouse_pos);
   }
 
   ImVec2 ImguiContext::GetMousePos()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetMousePos();
+    return ImGui::GetMousePos();
   }
 
   ImVec2 ImguiContext::GetMousePosOnOpeningCurrentPopup()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetMousePosOnOpeningCurrentPopup();
+    return ImGui::GetMousePosOnOpeningCurrentPopup();
   }
 
   ImVec2 ImguiContext::GetMouseDragDelta(int button, float lock_threshold)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetMouseDragDelta(button, lock_threshold);
+    return ImGui::GetMouseDragDelta(button, lock_threshold);
   }
 
   void ImguiContext::ResetMouseDragDelta(int button)
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::ResetMouseDragDelta(button);
+    return ImGui::ResetMouseDragDelta(button);
   }
 
   ImGuiMouseCursor ImguiContext::GetMouseCursor()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetMouseCursor();
+    return ImGui::GetMouseCursor();
   }
 
   void ImguiContext::SetMouseCursor(ImGuiMouseCursor type)
@@ -2120,7 +2087,7 @@ namespace YTE
   const char* ImguiContext::GetClipboardText()
   {
     ImGui::SetCurrentContext(mContext);
-    ImGui::GetClipboardText();
+    return ImGui::GetClipboardText();
   }
 
   void ImguiContext::SetClipboardText(const char* text)

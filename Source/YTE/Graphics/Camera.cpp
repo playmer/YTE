@@ -251,7 +251,7 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Red);
+    YTEProfileFunction();
 
     if (this == mGraphicsView->GetActiveCamera())
     {

@@ -27,6 +27,7 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
+#include "YTE/Graphics/ImGuiContext.hpp"
 
 namespace YTE
 {
@@ -50,25 +51,26 @@ namespace YTE
                   std::string aName = "",
                   DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
+    void Initialize();
+
     virtual ~VkImguiDrawer() override;
 
-    void GetRenderData();
+    void PreFrameUpdate(LogicUpdate *aUpdate);
 
-    virtual void RenderFull(const vk::Extent2D& aExtent,
-                            std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes) override;
-    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
-    void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                const vk::Extent2D& extent,
-                std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
-    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
+    void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>> &aMeshes) override;
+    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
-    ImGuiContext *mContext{ nullptr };
+    ImguiContext *mContext{ nullptr };
     Submesh mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     GraphicsView *mView;
     SubMeshPipelineData *mPipelineData;
     VkSubmesh *mVkSubmesh;
     VkShader *mShader;
+    std::string mModelName;
+    std::string mTextureName;
   };
 }
 

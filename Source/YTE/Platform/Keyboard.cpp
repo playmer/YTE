@@ -15,6 +15,7 @@ namespace YTE
   YTEDefineEvent(KeyPress);
   YTEDefineEvent(KeyRelease);
   YTEDefineEvent(KeyPersist);
+  YTEDefineEvent(CharacterTyped);
 
   YTEDefineType(KeyboardEvent)
   {

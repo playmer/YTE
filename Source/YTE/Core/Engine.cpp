@@ -27,6 +27,7 @@ namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
+  YTEDefineEvent(PreFrameUpdate);
   YTEDefineEvent(FrameUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
   YTEDefineEvent(DebugDrawUpdate);
@@ -89,7 +90,7 @@ namespace YTE
       }
     }
 
-    YTEProfileFunction(profiler::colors::Magenta);
+    YTEProfileFunction();
 
     namespace fs = std::experimental::filesystem;
     
@@ -247,7 +248,7 @@ namespace YTE
   // Updates the Space to the current frame.
   void Engine::Update()
   {
-    YTEProfileFunction(profiler::colors::Blue);
+    YTEProfileFunction();
     using namespace std::chrono;
     duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
@@ -285,7 +286,8 @@ namespace YTE
     {
       return;
     }
-    
+
+    SendEvent(Events::PreFrameUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
 

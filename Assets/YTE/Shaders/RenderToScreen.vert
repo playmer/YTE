@@ -9,7 +9,7 @@
 layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec3 inColor;
+layout (location = 3) in vec4 inColor;
 layout (location = 4) in vec3 inTangent;
 layout (location = 5) in vec3 inBinormal;
 layout (location = 6) in vec3 inBitangent;
@@ -59,7 +59,7 @@ out gl_PerVertex
 void main() 
 {
   // remaining output for fragment shader
-  outColor = vec4(inColor, 1.0f);
+  outColor = vec4(inColor.xyz, 1.0f);
   outTextureCoordinates = inTextureCoordinates.xy;
 
   // Initial Position Update

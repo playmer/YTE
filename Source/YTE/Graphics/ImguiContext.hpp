@@ -19,8 +19,6 @@ namespace YTE
     ImguiContext(Composition *aOwner, Space *aSpace);
     ~ImguiContext() override;
 
-    void NativeInitialize() override;
-    void PhysicsInitialize() override;
     void Initialize() override;
     void Start() override;
 
@@ -32,12 +30,7 @@ namespace YTE
     void ImguiUpdate(LogicUpdate *aUpdate);
 
     // Demo, Debug, Informations
-    void          ShowDemoWindow(bool* p_open = NULL);        // create demo/test window (previously called ShowTestWindow). demonstrate most ImGui features. call this to learn about the library! try to make it always available in your application!
     void          ShowMetricsWindow(bool* p_open = NULL);     // create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.
-    void          ShowStyleEditor(ImGuiStyle* ref = NULL);    // add style editor block (not a window). you can pass in a reference ImGuiStyle structure to compare to, revert to and save to (else it uses the default style)
-    bool          ShowStyleSelector(const char* label);
-    void          ShowFontSelector(const char* label);
-    void          ShowUserGuide();                            // add basic help/info block (not a window): how to manipulate ImGui as a end-user (mouse/keyboard controls).
     const char*   GetVersion();
 
     // Styles
@@ -295,8 +288,8 @@ namespace YTE
     void          Value(const char* prefix, float v, const char* float_format = NULL);
 
     // Tooltips
-    //void          SetTooltip(const char* fmt, ...) IM_FMTARGS(1);                     // set text tooltip under mouse-cursor, typically use with ImGui::IsItemHovered(). overidde any previous call to SetTooltip().
-    void          SetTooltipV(const char* fmt, va_list args) IM_FMTLIST(1);
+    void          SetTooltip(const char* fmt, ...); // set text tooltip under mouse-cursor, typically use with ImGui::IsItemHovered(). overidde any previous call to SetTooltip().
+    void          SetTooltipV(const char* fmt, va_list args);
     void          BeginTooltip();                                                     // begin/append a tooltip window. to create full-featured tooltip (with any kind of contents).
     void          EndTooltip();
 
@@ -407,6 +400,11 @@ namespace YTE
                                                                                               // Clipboard Utilities (also see the LogToClipboard() function to capture or output text data to the clipboard)
     const char*   GetClipboardText();
     void          SetClipboardText(const char* text);
+
+    void SetCurrentContext()
+    {
+      ImGui::SetCurrentContext(mContext);
+    }
 
   private:
     static const char* GetClipboardTextImplementation(void *aSelf);

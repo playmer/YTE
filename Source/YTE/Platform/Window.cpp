@@ -61,7 +61,7 @@ namespace YTE
 
   void Window::Update()
   {
-    YTEProfileFunction(profiler::colors::Blue);
+    YTEProfileFunction();
     PlatformUpdate();
 
     // We want to handle the situation where the mouse is 

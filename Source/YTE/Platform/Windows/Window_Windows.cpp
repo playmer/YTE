@@ -249,43 +249,75 @@ namespace YTE
 
     // Mouse Button was pressed.
     case WM_LBUTTONDOWN:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Left, true, PositionFromLParam(aLParam));
       break;
+    }
     case WM_RBUTTONDOWN:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Right, true, PositionFromLParam(aLParam));
       break;
+    }
     case WM_MBUTTONDOWN:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Middle, true, PositionFromLParam(aLParam));
       break;
+    }
     case WM_XBUTTONDOWN:
+    {
       aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), true, PositionFromLParam(aLParam));
       break;
+    }
 
       // Mouse Button was released.
     case WM_LBUTTONUP:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Left, false, PositionFromLParam(aLParam));
       break;
+    }
     case WM_RBUTTONUP:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Right, false, PositionFromLParam(aLParam));
       break;
+    }
     case WM_MBUTTONUP:
+    {
       aWindow->mMouse.UpdateButton(MouseButtons::Middle, false, PositionFromLParam(aLParam));
       break;
+    }
     case WM_XBUTTONUP:
+    {
       aWindow->mMouse.UpdateButton(XButtonFromWParam(aWParam), false, PositionFromLParam(aLParam));
       break;
+    }
+
+    // A key has been typed
+    case WM_SYSDEADCHAR:
+    case WM_SYSCHAR:
+    case WM_DEADCHAR:
+    case WM_CHAR:
+    {
+      KeyboardEvent event;
+      event.CharacterTyped = aWParam;
+      event.Keyboard = &aWindow->mKeyboard;
+      event.Keyboard->SendEvent(Events::CharacterTyped, &event);
+    }
 
       // A key has been pressed.
     case WM_KEYDOWN:
     case WM_SYSKEYDOWN:
+    {
       aWindow->mKeyboard.UpdateKey(TranslateFromOsToOurKey(aWParam), true);
       break;
+    }
 
       // A key has been released.
     case WM_KEYUP:
     case WM_SYSKEYUP:
+    {
       aWindow->mKeyboard.UpdateKey(TranslateFromOsToOurKey(aWParam), false);
       break;
+    }
 
       // Should do mouse trapping
       // Only activates when mouse is over window.

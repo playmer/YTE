@@ -513,7 +513,7 @@ namespace YTE
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Red);
+    YTEProfileFunction();
     YTEUnusedArgument(aEvent);
     // Get the index of the next available swapchain image:
     mRenderToScreen->FrameUpdate();

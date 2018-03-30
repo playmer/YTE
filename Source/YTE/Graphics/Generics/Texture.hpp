@@ -30,12 +30,26 @@ namespace YTE
     Texture(std::string &aFile);
     Texture(const char *aFile);
 
+    Texture(std::vector<u8> aData, 
+            TextureType aType, 
+            u32 aWidth, 
+            u32 aHeight, 
+            u32 aMipLevels, 
+            u32 aLayerCount)
+      : mWidth{aWidth}
+      , mHeight(aHeight)
+      , mMipLevels(aMipLevels)
+      , mLayerCount(aLayerCount)
+      , mData{ std::move(aData) }
+      , mType{aType}
+    {
+
+    }
+
     virtual ~Texture()
     {
       
     }
-
-
 
     u32 mWidth;
     u32 mHeight;

@@ -136,7 +136,6 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 // Samplers
 layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
 
-
 layout (location = 0) in vec4 inDiffuse;
 layout (location = 1) in vec2 inTextureCoordinates;
 

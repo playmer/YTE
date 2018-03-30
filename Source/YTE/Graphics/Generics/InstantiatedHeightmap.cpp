@@ -104,8 +104,6 @@ namespace YTE
     submesh.mVertexBuffer = aVertices;
     submesh.mIndexBuffer = aIndices;
 
-    submesh.mUBOMaterial = mStartingMaterial;
-    submesh.mMaterialName = "__HeightmapMaterial";
     submesh.mDiffuseMap = mDiffuseTName;
     submesh.mSpecularMap = mSpecularTName;
     submesh.mNormalMap = mNormalTName;

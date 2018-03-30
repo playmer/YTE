@@ -19,10 +19,21 @@ namespace YTE
   public:
     YTEDeclareType(VkTexture);
 
+    VkTexture(std::vector<u8> aData,
+              TextureType aType,
+              u32 aWidth,
+              u32 aHeight,
+              u32 aMipLevels,
+              u32 aLayerCount,
+              VkRenderer *aRenderer,
+              vk::ImageViewType aVulkanType);
+
     VkTexture(std::string &aFile,
               VkRenderer *aRenderer,
               vk::ImageViewType aType);
     ~VkTexture() override;
+
+    void Initialize();
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
 
@@ -33,6 +44,7 @@ namespace YTE
     vk::DeviceMemory mDeviceMemory;
     vk::DescriptorImageInfo mDescriptor;
     VkRenderer *mRenderer;
+    vk::ImageViewType mVulkanType;
   };
 }
 
