@@ -105,7 +105,7 @@ namespace YTE
       mSailingStop   = soundSystem->GetSoundIDFromString("Sailing_Stop");
     }
 
-    mSoundEmitter->PlayEvent(mSailingStart);
+    //mSoundEmitter->PlayEvent(mSailingStart);
 
     /* Event Registration */
     mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
@@ -158,7 +158,7 @@ namespace YTE
 
   void BoatController::Deinitialize()
   {
-    mSoundEmitter->PlayEvent(mSailingStop);
+    //mSoundEmitter->PlayEvent(mSailingStop);
   }
 
   /******************************************************************************/

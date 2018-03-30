@@ -7,6 +7,7 @@
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/Collider.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {

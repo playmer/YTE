@@ -21,7 +21,7 @@ namespace YTE
   Zone::Zone(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    Deserialize(aProperties);
   }
 
   void Zone::Initialize()

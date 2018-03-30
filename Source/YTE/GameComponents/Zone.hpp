@@ -17,7 +17,7 @@ namespace YTE
     void Initialize() override;
     std::string GetZoneName() { return mZoneName; };
     void SetZoneName(std::string aName) { mZoneName = aName; };
-    std::string GetZoneType() { return mZoneType };
+    std::string GetZoneType() { return mZoneType; };
     void SetZoneType(const std::string& aType) { mZoneType = aType; };
     //void OnCollisionPersist(CollisionPersisted *aEvent);
     //void OnCollisionStart(CollisionStarted *aEvent);

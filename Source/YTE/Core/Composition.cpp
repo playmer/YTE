@@ -340,7 +340,7 @@ namespace YTE
 
   void Composition::Deinitialize(InitializeEvent * aEvent)
   {
-    if (mShouldIntialize == false)
+    if (!mIsInitialized)
     {
       return;
     }
