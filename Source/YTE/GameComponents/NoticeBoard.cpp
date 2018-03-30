@@ -66,12 +66,14 @@ namespace YTE
 
   void NoticeBoard::OnNoticeBoardHookup(NoticeBoardHookup *aEvent)
   {
+    std::cout << "hooking up notice board" << std::endl;
     Quest **handle = aEvent->mActiveQuestHandle;
     Quest::CharacterName character = (*handle)->GetCharacter();
     switch (character)
     {
       case Quest::CharacterName::John:
       {
+        std::cout << "SUP JOHN" << std::endl;
         mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::John, aEvent->mActiveQuestHandle));
       }
       case Quest::CharacterName::Daisy:
@@ -87,13 +89,16 @@ namespace YTE
 
   void NoticeBoard::OnRequestNoticeBoardStart(RequestNoticeBoardStart *aEvent)
   {
+    std::cout << "Requesting a noticeboard to start" << std::endl;
     if (mAssignedPostcard != nullptr)
     {
+      std::cout << "There is a postcard" << std::endl;
       Quest *curQuest = *(mActiveQuestMap.at(mAssignedPostcard->GetCharacter()));
       Quest::State curState = curQuest->GetState();
 
       if (curState == Quest::State::Completed)
       {
+        std::cout << "State is completed" << std::endl;
         // assign next postcard
         ++mAssignedPostcard;
         if (mAssignedPostcard != mPostcardVec.end()._Ptr)
@@ -105,6 +110,7 @@ namespace YTE
     }
     else
     {
+      std::cout << "There is no postcard" << std::endl;
       // assign first postcard
       mAssignedPostcard = &mPostcardVec[0];
       QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());

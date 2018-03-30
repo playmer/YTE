@@ -652,8 +652,10 @@ namespace YTE
 
   void JohnDialogue::OnQuestStart(QuestStart *aEvent)
   {
+    std::cout << "Starting Quest" << std::endl;
     if (aEvent->mCharacter == mName)
     {
+      std::cout << "character matches" << std::endl;
       mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
     }
     else
