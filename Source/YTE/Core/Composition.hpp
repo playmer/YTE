@@ -34,6 +34,7 @@ namespace YTE
   YTEDeclareEvent(PhysicsInitialize);
   YTEDeclareEvent(Initialize);
   YTEDeclareEvent(Start);
+  YTEDeclareEvent(Deinitialize);
 
   class InitializeEvent : public Event
   {
@@ -89,6 +90,7 @@ namespace YTE
     virtual void NativeInitialize(InitializeEvent *aEvent);
     void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);
+    virtual void Deinitialize(InitializeEvent *aEvent);
     virtual void Start(InitializeEvent *aEvent);
     void DeletionUpdate(LogicUpdate *aUpdate);
 

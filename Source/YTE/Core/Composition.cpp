@@ -22,6 +22,7 @@ namespace YTE
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
   YTEDefineEvent(Start);
+  YTEDefineEvent(Deinitialize);
 
   YTEDefineType(InitializeEvent)
   {
@@ -113,6 +114,7 @@ namespace YTE
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
       parent->YTERegister(Events::Start, this, &Composition::Start);
+      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
     }
   };
 
@@ -137,6 +139,7 @@ namespace YTE
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
       parent->YTERegister(Events::Start, this, &Composition::Start);
+      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
     }
   };
 
@@ -335,7 +338,65 @@ namespace YTE
     }
   }
 
+  void Composition::Deinitialize(InitializeEvent * aEvent)
+  {
+    if (mShouldIntialize == false)
+    {
+      return;
+    }
 
+    Composition *collision = mEngine->StoreCompositionGUID(this);
+
+    while (collision)
+    {
+      if (collision == this)
+      {
+        break;
+      }
+      else
+      {
+        mGUID = GlobalUniqueIdentifier();
+        collision = mEngine->StoreCompositionGUID(this);
+      }
+    }
+
+    auto order = GetDependencyOrder(this);
+
+    // If our order is compromised, we just Start in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
+    {
+      for (auto &component : mComponents)
+      {
+        if (aEvent->CheckRunInEditor &&
+          nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component.second->Deinitialize();
+      }
+    }
+    else
+    {
+      for (auto it = order.rbegin(); it != order.rend(); ++it)
+      {
+        auto& type = *it;
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+          nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component->Deinitialize();
+      }
+    }
+
+    SendEvent(Events::Deinitialize, aEvent);
+  }
 
   void Composition::Start(InitializeEvent *aEvent)
   {
@@ -1184,6 +1245,8 @@ namespace YTE
 
     if (iter != mCompositions.end())
     {
+      InitializeEvent deinit;
+      SendEvent(Events::Deinitialize, &deinit);
       mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
       mCompositions.Erase(iter);
     }

@@ -45,8 +45,8 @@ namespace YTE
   public:
     YTEDeclareType(BoatController);
     BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~BoatController();
     void Initialize() override;
+    void Deinitialize() override;
     void ChangeSail(SailStateChanged *aEvent);
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);

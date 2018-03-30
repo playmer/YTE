@@ -34,6 +34,7 @@ namespace YTE
     virtual void PhysicsInitialize() { };
     virtual void Initialize() { };
     virtual void Start() { };
+    virtual void Deinitialize() { };
 
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }

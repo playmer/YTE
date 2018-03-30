@@ -78,11 +78,6 @@ namespace YTE
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
-  BoatController::~BoatController()
-  {
-    mSoundEmitter->PlayEvent(mSailingStop);
-  }
-
   void BoatController::Initialize()
   {
     /* Member Init */
@@ -160,6 +155,12 @@ namespace YTE
     }
 
   }
+
+  void BoatController::Deinitialize()
+  {
+    mSoundEmitter->PlayEvent(mSailingStop);
+  }
+
   /******************************************************************************/
   /*
     Event Callbacks
