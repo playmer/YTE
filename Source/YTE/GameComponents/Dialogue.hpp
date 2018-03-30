@@ -35,5 +35,9 @@ namespace YTE
 
     Composition *mSprite;
 
+    u64 mDiaStart;
+    u64 mDiaNext;
+    u64 mDiaEnd;
+
   };
 } // End YTE namespace

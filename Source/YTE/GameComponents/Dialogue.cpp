@@ -39,6 +39,15 @@ namespace YTE
     //mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
     //mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
 
+    auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      mDiaStart = soundSystem->GetSoundIDFromString("UI_Dia_Start");
+      mDiaNext = soundSystem->GetSoundIDFromString("UI_Dia_Next");
+      mDiaEnd = soundSystem->GetSoundIDFromString("UI_Dia_End");
+    }
+
 
     mSprite = mOwner->FindFirstCompositionByName("DialogueBoi");
     auto transform = mSprite->GetComponent<Transform>();
@@ -104,7 +113,7 @@ namespace YTE
 
     if (emitter)
     {
-      emitter->PlayEvent("UI_Dia_Start");
+      emitter->PlayEvent(mDiaStart);
     }
 
     mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
@@ -122,7 +131,7 @@ namespace YTE
 
     if (emitter)
     {
-      emitter->PlayEvent("UI_Dia_Next");
+      emitter->PlayEvent(mDiaNext);
     }
   }
 
@@ -138,7 +147,7 @@ namespace YTE
 
     if (emitter)
     {
-      emitter->PlayEvent("UI_Dia_End");
+      emitter->PlayEvent(mDiaEnd);
     }
 
     mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);

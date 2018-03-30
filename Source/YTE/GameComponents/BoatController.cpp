@@ -201,8 +201,11 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      mSoundEmitter->PlayEvent(mSoundBoatTurn);
-      mPlayingTurnSound = true;
+      if (mCurrRotSpeed > mMaxTurnSpeed * 0.75f)
+      {
+        mSoundEmitter->PlayEvent(mSoundBoatTurn);
+        mPlayingTurnSound = true;
+      }
     }
 
       // Dead-zone check and apply response curves
