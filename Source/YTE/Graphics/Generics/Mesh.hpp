@@ -255,9 +255,6 @@ namespace YTE
 
     Dimension mDimension;
 
-    size_t mVertexBufferSize = 0;
-    size_t mIndexBufferSize = 0;
-
     std::string mName;
     std::string mMaterialName;
     std::string mShaderSetName;

@@ -265,9 +265,6 @@ namespace YTE
       2, 3, 0
     };
 
-    mSubmesh.mVertexBufferSize = mSubmesh.mVertexBuffer.size() * sizeof(Vertex);
-    mSubmesh.mIndexBufferSize = mSubmesh.mIndexBuffer.size() * sizeof(u32);
-
     std::vector<Submesh> submeshes{ mSubmesh };
 
     auto view = mSpace->GetComponent<GraphicsView>();

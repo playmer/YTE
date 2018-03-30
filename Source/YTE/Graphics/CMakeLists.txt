@@ -14,9 +14,9 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.cpp
-	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Sprite.cpp
-	${CMAKE_CURRENT_LIST_DIR}/SpriteText.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/SpriteText.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.cpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedHeightmap.cpp
@@ -27,6 +27,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkImgui.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.cpp
@@ -59,9 +60,9 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Model.hpp
-	${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ParticleEmitter.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Sprite.hpp
-	${CMAKE_CURRENT_LIST_DIR}/SpriteText.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/SpriteText.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.hpp
     ${CMAKE_CURRENT_LIST_DIR}/UBOs.hpp
@@ -75,6 +76,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkImgui.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vulkan/ForwardDeclarations.hpp

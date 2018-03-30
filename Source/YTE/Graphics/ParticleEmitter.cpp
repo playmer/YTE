@@ -376,9 +376,6 @@ namespace YTE
 
     submesh.mIndexBuffer = std::move(mIndices);
 
-    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-    submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
-
     std::vector<Submesh> submeshes{ submesh };
 
     mMesh = mRenderer->CreateSimpleMesh(meshName, submeshes);

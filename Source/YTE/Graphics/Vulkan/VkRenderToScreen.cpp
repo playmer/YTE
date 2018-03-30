@@ -432,22 +432,22 @@ namespace YTE
     v1.mPosition = glm::vec3(1.0f, 1.0f, 0.0f);
     v1.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v1.mTextureCoordinates = glm::vec3(1.0f, 1.0f, 0.0f);
-    v1.mColor = glm::vec3(1.0f, 0.0f, 0.0f);
+    v1.mColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
     v2.mPosition = glm::vec3(0.0f, 1.0f, 0.0f);
     v2.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v2.mTextureCoordinates = glm::vec3(0.0f, 1.0f, 0.0f);
-    v2.mColor = glm::vec3(0.0f, 1.0f, 0.0f);
+    v2.mColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 
     v3.mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     v3.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v3.mTextureCoordinates = glm::vec3(0.0f, 0.0f, 0.0f);
-    v3.mColor = glm::vec3(0.0f, 0.0f, 1.0f);
+    v3.mColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
     v4.mPosition = glm::vec3(1.0f, 0.0f, 0.0f);
     v4.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v4.mTextureCoordinates = glm::vec3(1.0f, 0.0f, 0.0f);
-    v4.mColor = glm::vec3(1.0f, 0.0f, 1.0f);
+    v4.mColor = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
     mIndices.push_back(2);
     mIndices.push_back(1);
@@ -528,17 +528,17 @@ namespace YTE
 
 
     descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32A32Sfloat); //glm::vec3 mColor;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
 
     std::string defines;
 

@@ -58,6 +58,7 @@ namespace YTE
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
+    GraphicsView *mView;
     float mViewOrder;
   };
 

@@ -57,6 +57,7 @@ target_link_libraries(YTE
     BulletSoftBody
     LinearMath
     crn
+    imgui
     glslang
     fmt    
     KissFFT

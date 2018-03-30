@@ -52,7 +52,6 @@ namespace YTE
 
   VkRTGameForwardDrawer::~VkRTGameForwardDrawer()
   {
-    //VkRenderTarget::~VkRenderTarget();
   }
 
   void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)

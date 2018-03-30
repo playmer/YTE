@@ -386,6 +386,7 @@ namespace YTE
       auto &view = emplaced.first->second;
 
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
+      view.mView = aView;
       view.mViewUBO = buffer;
       view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
@@ -410,8 +411,8 @@ namespace YTE
   }
 
   void VkRenderedSurface::SetViewDrawingType(GraphicsView *aView,
-                                                YTEDrawerTypes aDrawerType,
-                                                YTEDrawerTypeCombination aCombination)
+                                             YTEDrawerTypes aDrawerType,
+                                             YTEDrawerTypeCombination aCombination)
   {
     auto& view = GetViewData(aView);
     view.mRenderTarget.reset();

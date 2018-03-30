@@ -286,7 +286,7 @@ namespace YTE
         pTexCoord->z };
 
       auto normal = AssimpToGLM(pNormal);
-      auto color = AssimpToGLM(&pColor);
+      auto color = glm::vec4{ AssimpToGLM(&pColor), 1.0f };
       auto tangent = AssimpToGLM(pTangent);
       auto binormal = glm::cross(tangent, normal);
       auto bitangent = AssimpToGLM(pBiTangent);
@@ -359,9 +359,6 @@ namespace YTE
       mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
       mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
     }
-
-    mVertexBufferSize = mVertexBuffer.size() * sizeof(Vertex);
-    mIndexBufferSize = mIndexBuffer.size() * sizeof(u32);
   }
 
 

@@ -35,8 +35,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -81,7 +79,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
     vert.mPosition = aPoint2;
@@ -99,10 +97,10 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aFromColor;
+    vert.mColor = glm::vec4{ aFromColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
-    vert.mColor = aToColor;
+    vert.mColor = glm::vec4{ aToColor, 1.0f };
     vert.mPosition = aPoint2;
     submesh.mVertexBuffer.emplace_back(vert);
     submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
@@ -160,8 +158,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -226,7 +222,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
     vert.mPosition = aPoint2;
@@ -290,8 +286,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -333,7 +327,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint;
     submesh.mVertexBuffer.emplace_back(vert);
     submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
