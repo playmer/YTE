@@ -1047,16 +1047,16 @@ namespace YTE
     point = world2Instance * point;
 
     //auto& map = mInstantiatedHeightmap[0];
-    int x_coord = static_cast<int>(std::round(point.x)) % mGridSizePlus1;
-    int z_coord = static_cast<int>(std::round(point.z)) % mGridSizePlus1;
+    int x_coord = static_cast<int>(std::round(point.x)) % mGridSize;
+    int z_coord = static_cast<int>(std::round(point.z)) % mGridSize;
 
     while (x_coord < 0)
     {
-      x_coord += mGridSizePlus1;
+      x_coord += mGridSize;
     }
     while (z_coord < 0)
     {
-      z_coord += mGridSizePlus1;
+      z_coord += mGridSize;
     }
 
     unsigned int index = z_coord * mGridSizePlus1 + x_coord;
