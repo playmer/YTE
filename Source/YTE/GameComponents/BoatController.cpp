@@ -78,6 +78,11 @@ namespace YTE
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
+  BoatController::~BoatController()
+  {
+    mSoundEmitter->PlayEvent(mSailingStop);
+  }
+
   void BoatController::Initialize()
   {
     /* Member Init */
@@ -101,7 +106,11 @@ namespace YTE
       mSoundSailDown = soundSystem->GetSoundIDFromString("SFX_Sail_Down");
       mSoundBumpDock = soundSystem->GetSoundIDFromString("SFX_Boat_Bump");
       mSoundBoatTurn = soundSystem->GetSoundIDFromString("SFX_Boat_Turn");
+      mSailingStart  = soundSystem->GetSoundIDFromString("Sailing_Start");
+      mSailingStop   = soundSystem->GetSoundIDFromString("Sailing_Stop");
     }
+
+    mSoundEmitter->PlayEvent(mSailingStart);
 
     /* Event Registration */
     mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
