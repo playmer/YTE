@@ -109,10 +109,12 @@ namespace YTE
         {
           bool mapVisible = mMapSprite->GetVisibility();
           mMapSprite->SetVisibility(!mapVisible);
-
-          (mapVisible)
-            ? mSoundEmitter->PlayEvent(mSailMapClose)
-            : mSoundEmitter->PlayEvent(mSailMapOpen);
+          if (mSoundEmitter)
+          {
+            (mapVisible)
+              ? mSoundEmitter->PlayEvent(mSailMapClose)
+              : mSoundEmitter->PlayEvent(mSailMapOpen);
+          }
         }
         break;
       }
@@ -133,9 +135,13 @@ namespace YTE
         {
           bool compassVisible = mCompassSprite->GetVisibility();
           mCompassSprite->SetVisibility(!compassVisible);
-          (compassVisible)
-            ? mSoundEmitter->PlayEvent(mCompassClose)
-            : mSoundEmitter->PlayEvent(mCompassOpen);
+
+          if (mSoundEmitter)
+          {
+            (compassVisible)
+              ? mSoundEmitter->PlayEvent(mCompassClose)
+              : mSoundEmitter->PlayEvent(mCompassOpen);
+          }
             
         }
 

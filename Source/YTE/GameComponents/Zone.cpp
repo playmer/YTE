@@ -12,6 +12,10 @@ namespace YTE
     YTEBindProperty(&Zone::GetZoneName, &Zone::SetZoneName, "Zone Name")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&Zone::GetZoneType, &Zone::SetZoneType, "Zone Type")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
   Zone::Zone(Composition *aOwner, Space *aSpace, RSValue *aProperties)

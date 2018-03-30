@@ -24,7 +24,11 @@ namespace YTE
     WWiseEmitter *mSoundEmitter;
     Collider *mBoatCollider;
     GhostBody *mBoatBody;
+    WWiseSystem *mSoundSystem;
     glm::vec3 mBoatPosition;
+
+    u64 mIslandEnter;
+    u64 mIslandLeave;
 
     bool mFlag;
 
