@@ -10,6 +10,7 @@
 #include "YTE/GameComponents/HudController.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Physics/Transform.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -81,6 +82,17 @@ namespace YTE
       mCompassNeedleTransform = mCompassNeedle->GetComponent<Transform>();
     }
 
+    auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      mCompassClose = soundSystem->GetSoundIDFromString("UI_SailCompass_Close");
+      mCompassOpen =  soundSystem->GetSoundIDFromString("UI_SailCompass_Open");
+      mSailMapClose = soundSystem->GetSoundIDFromString("UI_SailMap_Close");
+      mSailMapOpen =  soundSystem->GetSoundIDFromString("UI_SailMap_Open");
+    }
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+
     // register for user toggling hud elements
     mSpace->YTERegister(Events::HudElementToggled, this, &HudController::OnElementToggled);
 
@@ -97,6 +109,10 @@ namespace YTE
         {
           bool mapVisible = mMapSprite->GetVisibility();
           mMapSprite->SetVisibility(!mapVisible);
+
+          (mapVisible)
+            ? mSoundEmitter->PlayEvent(mSailMapClose)
+            : mSoundEmitter->PlayEvent(mSailMapOpen);
         }
         break;
       }
@@ -117,6 +133,10 @@ namespace YTE
         {
           bool compassVisible = mCompassSprite->GetVisibility();
           mCompassSprite->SetVisibility(!compassVisible);
+          (compassVisible)
+            ? mSoundEmitter->PlayEvent(mCompassClose)
+            : mSoundEmitter->PlayEvent(mCompassOpen);
+            
         }
 
         if (mCompassNeedleSprite)
