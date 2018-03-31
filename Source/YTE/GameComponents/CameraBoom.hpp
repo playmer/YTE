@@ -31,7 +31,9 @@ namespace YTE
     void SetCameraTurnSpeed(const glm::vec2& aTurnSpeed) { mCamTurnSpeed = aTurnSpeed; }
     ///////////////////////////////////////////////////////////////////////////
 
+    void OnStart(LogicUpdate *);
     void OnLogicUpdate(LogicUpdate *aEvent);
+    void OnParentRotated(TransformChanged *aEvent);
     void OnCameraRotate(CameraRotateEvent *aEvent);
 
   private:
@@ -40,7 +42,9 @@ namespace YTE
 
     glm::vec2 mCamTurnSpeed;
 
+    bool mIsTurning;
     float mTurnScale;
     glm::vec2 mTurnDirection;
+    glm::quat mLastGoodRotation;
   };
 }

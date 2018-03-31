@@ -34,8 +34,10 @@ namespace YTE
     , mTransform(nullptr)
     , mOrientation(nullptr)
     , mCamTurnSpeed(glm::vec2(-4.0f, -2.0f))
+    , mIsTurning(false)
     , mTurnScale(0.0f)
     , mTurnDirection(glm::vec2(0.0f))
+    , mLastGoodRotation(glm::quat())
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -43,17 +45,50 @@ namespace YTE
   void CameraBoom::Initialize()
   {
     mTransform = mOwner->GetComponent<Transform>();
+    mOrientation = mOwner->GetComponent<Orientation>();
 
+    mSpace->YTERegister(Events::LogicUpdate, this, &CameraBoom::OnStart);
     mSpace->YTERegister(Events::LogicUpdate, this, &CameraBoom::OnLogicUpdate);
+    mOwner->GetOwner()->YTERegister(Events::RotationChanged, this, &CameraBoom::OnParentRotated);
     mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraBoom::OnCameraRotate);
+  }
+
+  void CameraBoom::OnStart(LogicUpdate*)
+  {
+    mLastGoodRotation = mTransform->GetRotation();
+    mSpace->YTEDeregister(Events::LogicUpdate, this, &CameraBoom::OnStart);
   }
 
   void CameraBoom::OnLogicUpdate(LogicUpdate *aEvent)
   {
-    float floatDt = static_cast<float>(aEvent->Dt);
+    if (mIsTurning)
+    {
+      float floatDt = static_cast<float>(aEvent->Dt);
 
-    mTransform->RotateAboutWorldAxis(glm::vec3(0.0f, 1.0f, 0.0f), mTurnScale * mCamTurnSpeed.x * floatDt * mTurnDirection.x);
-    mTransform->RotateAboutLocalAxis(glm::vec3(1.0f, 0.0f, 0.0f), mTurnScale * mCamTurnSpeed.y * floatDt * mTurnDirection.y);
+      mTransform->RotateAboutWorldAxis(glm::vec3(0.0f, 1.0f, 0.0f), mTurnScale * mCamTurnSpeed.x * floatDt * mTurnDirection.x);
+
+      float angleBetween = glm::degrees(glm::acos(glm::dot(mOrientation->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f))));
+      
+      if ((mTurnDirection.y > 0.0f && angleBetween > 70.0f) || 
+          (mTurnDirection.y <= 0.0f && angleBetween < 145.0f))
+      {
+        mTransform->RotateAboutLocalAxis(glm::vec3(1.0f, 0.0f, 0.0f), mTurnScale * mCamTurnSpeed.y * floatDt * mTurnDirection.y);
+      }
+
+      mLastGoodRotation = mTransform->GetRotation();
+    }
+  }
+
+  void CameraBoom::OnParentRotated(TransformChanged *aEvent)
+  {
+    if (!mIsTurning)
+    {
+      mLastGoodRotation = mTransform->GetRotation();
+    }
+    else
+    {
+      mTransform->SetRotation(mLastGoodRotation);
+    }
   }
 
   void CameraBoom::OnCameraRotate(CameraRotateEvent *aEvent)
@@ -65,6 +100,8 @@ namespace YTE
 
     if (length > 0.01f)
     {
+      mIsTurning = true;
+
       float startVal = 0.0f;
       float change = 1.0f / 0.5f;
       float duration = 1.0f;
@@ -88,6 +125,7 @@ namespace YTE
     else
     {
       mTurnScale = 0.0f;
+      mIsTurning = false;
     }
   }
 }
