@@ -70,7 +70,7 @@ namespace YTE
       float angleBetween = glm::degrees(glm::acos(glm::dot(mOrientation->GetForwardVector(), glm::vec3(0.0f, 1.0f, 0.0f))));
       
       if ((mTurnDirection.y > 0.0f && angleBetween > 70.0f) || 
-          (mTurnDirection.y <= 0.0f && angleBetween < 145.0f))
+          (mTurnDirection.y < 0.0f && angleBetween < 145.0f))
       {
         mTransform->RotateAboutLocalAxis(glm::vec3(1.0f, 0.0f, 0.0f), mTurnScale * mCamTurnSpeed.y * floatDt * mTurnDirection.y);
       }
