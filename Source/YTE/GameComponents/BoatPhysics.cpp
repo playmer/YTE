@@ -95,16 +95,16 @@ namespace YTE
       TriangleData triangleData = underwaterTriangleData[i];
       glm::vec3 forceToAdd;
       forceToAdd += BoatPhysicsMath::BuoyancyForce(waterDensity, mBoatRB->GetGravity().y, triangleData);
-      forceToAdd += BoatPhysicsMath::ViscousWaterResistanceForce(waterDensity, triangleData, Cf);
+      //forceToAdd += BoatPhysicsMath::ViscousWaterResistanceForce(waterDensity, triangleData, Cf);
       forceToAdd += BoatPhysicsMath::PressureDragForce(triangleData);
       int originalTriangleIndex = indexOfOriginalTriangle[i];
       SlammingForceData slammingData = slammingForceData[originalTriangleIndex];
       
       forceToAdd += BoatPhysicsMath::SlammingForce(slammingData, triangleData, boatArea, boatMass, dt);
 
-      if (forceToAdd.y > 250.0f)
+      if (forceToAdd.y > 100.0f)
       {
-        forceToAdd.y = 250.0f;
+        forceToAdd.y = 100.0f;
       }
     
       // Add the forces to the boat
