@@ -7,7 +7,7 @@
 namespace YTE
 {
 
-  const float BoatPhysicsMath::cRhoOcean = 12.70f;
+  const float BoatPhysicsMath::cRhoOcean = 127.0f;
   const float BoatPhysicsMath::cRhoAir = 1.225f;
 
   glm::vec3 BoatPhysicsMath::GetTriangleVelocity(RigidBody* boatRB, Transform* boatTrans, glm::vec3 triCenter)
@@ -36,10 +36,10 @@ namespace YTE
     bF.x = 0.0f;
     bF.z = 0.0f;
     
-    //if (bF.y < 0.1f)
-    //{
-    //  bF.y = 0.0f;
-    //}
+    if (bF.y < 0.01f)
+    {
+      bF.y = 0.0f;
+    }
 
     return bF;
   }

@@ -187,13 +187,6 @@ namespace YTE
       mKFFTConfig[i] = NULL;
     }
 
-#ifdef NDEBUG
-
-#else
-    mGridSize = DefaultGridSize / 2;
-    mGridSizePlus1 = mGridSize + 1;
-#endif
-
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
     mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
@@ -286,8 +279,11 @@ namespace YTE
         // (vertexDistance / gridSize) = the length expansion or reduction
         // multiply together to find the grid position
         // note that y has no adjustments
-        glm::vec3 pos(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)), 0.0f,
-                      ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
+        //glm::vec3 pos(((x - (mGridSize / 2.0f)) * (mVertexDistanceX / mGridSize)), 0.0f,
+        //              ((z - (mGridSize / 2.0f)) * (mVertexDistanceZ / mGridSize)));
+
+        glm::vec3 pos(x * (mVertexDistanceX / mGridSize), 0.0f, z * (mVertexDistanceZ / mGridSize));
+        
         mComputationalVertices[vertex].mPosition = mComputationalVertices[vertex].mOriginalPosition = pos;
 
         // initial normal is just the basic normal
@@ -861,14 +857,7 @@ namespace YTE
   // ------------------------------------
   int FFT_WaterSimulation::GetGridSize()
   {
-    if constexpr (CompilerOptions::Debug())
-    {
-      return mGridSize;
-    }
-    else
-    {
-      return mGridSize * 2;
-    }
+    return mGridSize;
   }
 
 
@@ -1061,11 +1050,6 @@ namespace YTE
     int x_coord = static_cast<int>(std::round(point.x)) % mGridSize;
     int z_coord = static_cast<int>(std::round(point.z)) % mGridSize;
 
-#ifndef NDEBUG
-    x_coord += mGridSize / 2;
-    z_coord += mGridSize / 2;
-#endif
-
     while (x_coord < 0)
     {
       x_coord += mGridSize;
@@ -1075,7 +1059,7 @@ namespace YTE
       z_coord += mGridSize;
     }
 
-    unsigned int index = z_coord * mGridSize + x_coord;
+    unsigned int index = z_coord * mGridSizePlus1 + x_coord;
 
     while (index > mVertices.size())
     {
@@ -1083,8 +1067,8 @@ namespace YTE
     }
 
     auto vert = mVertices[index];
-    point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
 
+    point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
 
     // influence maps [ MUST COPY THE SHADER LOGIC ]
     auto manager = static_cast<VkRenderer*>(mRenderer)->GetAllWaterInfluenceMaps(mGraphicsView);
