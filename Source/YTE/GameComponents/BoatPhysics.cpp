@@ -108,7 +108,7 @@ namespace YTE
       }
     
       // Add the forces to the boat
-      mBoatRB->ApplyForce(forceToAdd, triangleData.center - mBoatTransform->GetWorldTranslation());
+      mBoatRB->ApplyForce(forceToAdd, triangleData.center - mBoatTransform->GetWorldTranslation() - 0.35f * mBoatOrientation->GetForwardVector());
     }
 
     //auto velocity = mBoatRB->GetVelocity();
