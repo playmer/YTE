@@ -188,7 +188,7 @@ namespace YTE
   public:
     // settors
     void SetGravitationalPull(float aGravitationalPull);
-    void SetGirdSize(int aGridSize);
+    void SetGridSize(int aGridSize);
     void SetWaveHeight(float aWaveHeight);
     void SetWindFactor(glm::vec2 aWindFactor);
     void SetVertexDistance(glm::vec2 aDistance);

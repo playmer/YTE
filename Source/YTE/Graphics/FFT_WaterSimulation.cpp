@@ -81,7 +81,7 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the gravitational pull on the waves in the y (up) direction. This requires a reset");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGirdSize, "Complexity")
+    YTEBindProperty(&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGridSize, "Complexity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the size of the size of the N*N gird used to calculate the water. This requires a reset");
@@ -782,7 +782,7 @@ namespace YTE
 
 
   // ------------------------------------
-  void FFT_WaterSimulation::SetGirdSize(int aGridSize)
+  void FFT_WaterSimulation::SetGridSize(int aGridSize)
   {
     if (aGridSize != 2 && aGridSize != 4 && aGridSize != 8 && aGridSize != 16 && aGridSize != 32 &&
         aGridSize != 64 && aGridSize != 128 && aGridSize != 256 && aGridSize != 512 && aGridSize != 1024)
@@ -861,11 +861,14 @@ namespace YTE
   // ------------------------------------
   int FFT_WaterSimulation::GetGridSize()
   {
-#ifdef NDEBUG
-    return mGridSize;
-#else
-    return mGridSize * 2;
-#endif
+    if constexpr (CompilerOptions::Debug())
+    {
+      return mGridSize;
+    }
+    else
+    {
+      return mGridSize * 2;
+    }
   }
 
 
