@@ -73,6 +73,10 @@ namespace YTE
     glm::vec3 max = boatVertices[0];
     glm::vec3 min = boatVertices[0];
 
+    lineDrawer->Start();
+
+    glm::vec3 prevHeight(0.0f);
+
     for (int i = 0; i < boatVertices.size(); ++i)
     {
       glm::vec4 gPos = m2w * glm::vec4(boatVertices[i], 1);
@@ -85,8 +89,13 @@ namespace YTE
 
       glm::vec3 height = aSim->GetHeight(gPos.x, gPos.z);
 
+      lineDrawer->AddLine(prevHeight, height);
+      prevHeight = height;
+
       allDistancesToWater[i] = gPos.y - height.y;
     }
+
+    lineDrawer->End();
 
     underwaterLength = glm::distance(max, min);
 
