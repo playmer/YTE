@@ -79,7 +79,7 @@ namespace YTE
     }
   }
 
-  void CameraBoom::OnParentRotated(TransformChanged *aEvent)
+  void CameraBoom::OnParentRotated(TransformChanged *)
   {
     if (!mIsTurning)
     {

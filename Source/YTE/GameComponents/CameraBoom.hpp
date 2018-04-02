@@ -33,7 +33,7 @@ namespace YTE
 
     void OnStart(LogicUpdate *);
     void OnLogicUpdate(LogicUpdate *aEvent);
-    void OnParentRotated(TransformChanged *aEvent);
+    void OnParentRotated(TransformChanged *);
     void OnCameraRotate(CameraRotateEvent *aEvent);
 
   private:
