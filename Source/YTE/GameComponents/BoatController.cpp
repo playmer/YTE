@@ -328,7 +328,7 @@ namespace YTE
         mCurrRotSpeed += static_cast<float>(mTurnAccFactor * aEvent->Dt);
       }
 
-      mRigidBody->ApplyForce(mCurrRotSpeed * mTurnVec, mOrientation->GetForwardVector());
+      mRigidBody->ApplyForce((mCurrSpeed + 0.1f) * mCurrRotSpeed * mTurnVec, mOrientation->GetForwardVector());
       //mRigidBody->ApplyForce(mTurnVec, glm::vec3(0, 1, 0));
     }
     /*else
