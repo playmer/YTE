@@ -108,7 +108,7 @@ namespace YTE
 
     auto parent = GetParent();
 
-    if (nullptr != parent)
+    if (nullptr != parent && this != parent)
     {
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
@@ -133,7 +133,7 @@ namespace YTE
 
     auto parent = GetParent();
 
-    if (nullptr != parent)
+    if (nullptr != parent && this != parent)
     {
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
@@ -1246,7 +1246,7 @@ namespace YTE
     if (iter != mCompositions.end())
     {
       InitializeEvent deinit;
-      SendEvent(Events::Deinitialize, &deinit);
+      aComposition->Deinitialize(&deinit);
       mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
       mCompositions.Erase(iter);
     }

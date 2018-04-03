@@ -54,7 +54,7 @@ namespace YTE
 
 
   Space::Space(Engine *aEngine, RSValue *aProperties)
-    : Composition(aEngine, this)
+    : Composition(aEngine, this, aEngine)
     , mLevelToLoad(nullptr)
   {
     if (false == mEngine->IsEditor())
