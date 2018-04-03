@@ -127,6 +127,7 @@ namespace YTE
   {
     YTEProfileFunction(profiler::colors::Red);
     YTEUnusedArgument(aEvent);
+    return;
     double dt = GetSpace()->GetEngine()->GetDt();
 
     // erase the dead bois
