@@ -148,6 +148,7 @@ namespace YTEditor
     YTE::Space *mRunningSpace;
 
     YTE::Composition *mEditorCamera;
+    YTE::Composition *mImguiLayer;
 
     QApplication *mApplication;
 

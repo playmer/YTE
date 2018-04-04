@@ -10,7 +10,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.cpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/ImguiContext.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/ImguiLayer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.cpp
@@ -57,7 +57,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/FFT_WaterSimulation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/ImguiContext.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ImguiLayer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Light.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Material.hpp

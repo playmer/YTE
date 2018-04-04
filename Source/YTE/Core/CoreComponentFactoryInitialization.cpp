@@ -45,6 +45,7 @@
 #include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/ImguiLayer.hpp"
 #include "YTE/Graphics/Light.hpp"
 #include "YTE/Graphics/Material.hpp"
 #include "YTE/Graphics/Model.hpp"
@@ -128,6 +129,7 @@ namespace YTE
     helper.CreateComponentFactory<FacialAnimator>();
     helper.CreateComponentFactory<FlybyCamera>();
     helper.CreateComponentFactory<GraphicsView>();
+    helper.CreateComponentFactory<ImguiLayer>();
     helper.CreateComponentFactory<Light>();
     helper.CreateComponentFactory<Material>();
     helper.CreateComponentFactory<Model>();

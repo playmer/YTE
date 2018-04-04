@@ -130,10 +130,10 @@ namespace YTE
       return;
     }
 
-    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
-
     auto engine = mSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
 
     auto it = engine->GetWindows().find(mWindowName);
 
@@ -141,11 +141,10 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
-
-    mConstructing = false;
     mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
 
     SetClearColor(mClearColor);
+    mConstructing = false;
   }
 
 
@@ -219,6 +218,16 @@ namespace YTE
   {
     ViewChanged event;
     event.View = this;
+
+    if (mConstructing && nullptr == mWindow)
+    {
+      event.Window = aWindow;
+      mWindow = aWindow;
+      NativeInitialize();
+      SendEvent(Events::SurfaceGained, &event);
+      return;
+    }
+
     event.Window = nullptr;
 
     if (false == mConstructing)
@@ -301,6 +310,10 @@ namespace YTE
     else if (mDrawerType == DrawerTypes::DefaultDrawer)
     {
       return "DefaultDrawer";
+    }
+    else if (mDrawerType == DrawerTypes::ImguiDrawer)
+    {
+      return "ImguiDrawer";
     }
     else
     {

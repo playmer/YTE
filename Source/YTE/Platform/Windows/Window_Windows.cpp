@@ -298,7 +298,7 @@ namespace YTE
     case WM_CHAR:
     {
       KeyboardEvent event;
-      event.CharacterTyped = aWParam;
+      event.CharacterTyped = static_cast<u32>(aWParam);
       event.Keyboard = &aWindow->mKeyboard;
       event.Keyboard->SendEvent(Events::CharacterTyped, &event);
     }

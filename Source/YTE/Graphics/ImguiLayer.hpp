@@ -11,13 +11,13 @@
 
 namespace YTE
 {
-  class ImguiContext : public Component
+  class ImguiLayer : public Component
   {
   public:
-    YTEDeclareType(ImguiContext);
+    YTEDeclareType(ImguiLayer);
 
-    ImguiContext(Composition *aOwner, Space *aSpace);
-    ~ImguiContext() override;
+    ImguiLayer(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    ~ImguiLayer() override;
 
     void Initialize() override;
     void Start() override;

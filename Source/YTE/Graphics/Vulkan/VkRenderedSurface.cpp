@@ -734,7 +734,7 @@ namespace YTE
                                                                  mColorFormat,
                                                                  mDepthFormat,
                                                                  mSurface,
-                                                                 view->mName,
+                                                                 view,
                                                                  aCombination));
         break;
       }
@@ -744,7 +744,7 @@ namespace YTE
                                                          mColorFormat,
                                                          mDepthFormat,
                                                          mSurface,
-                                                         view->mName,
+                                                         view,
                                                          aCombination));
         break;
       }
@@ -755,7 +755,7 @@ namespace YTE
                                                                  mColorFormat,
                                                                  mDepthFormat,
                                                                  mSurface,
-                                                                 view->mName,
+                                                                 view,
                                                                  aCombination));
         break;
       }

@@ -27,7 +27,7 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
-#include "YTE/Graphics/ImGuiContext.hpp"
+#include "YTE/Graphics/ImguiLayer.hpp"
 
 namespace YTE
 {
@@ -41,14 +41,6 @@ namespace YTE
                   vk::Format aDepthFormat,
                   std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                   ViewData* aView,
-                  std::string aName = "",
-                  DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
-
-    VkImguiDrawer(VkRenderedSurface *aSurface,
-                  vk::Format aColorFormat,
-                  vk::Format aDepthFormat,
-                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                  std::string aName = "",
                   DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     void Initialize();
@@ -62,7 +54,7 @@ namespace YTE
     void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
     void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
-    ImguiContext *mContext{ nullptr };
+    ImguiLayer *mContext{ nullptr };
     Submesh mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     GraphicsView *mView;

@@ -1123,6 +1123,16 @@ namespace YTE
     {
       auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
 
+      if (nullptr == addFactory)
+      {
+        mEngine->Log(LogType::Warning,
+                     fmt::format("A factory of the type named {} could not be found. \n"
+                                 "Perhaps it needs to be added to CoreComponentFactoryInitialization",
+                                 aType->GetName()));
+
+        return nullptr;
+      }
+
       auto component = addFactory->MakeComponent(this, mSpace, aProperties);
       toReturn = component.get();
 

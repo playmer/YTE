@@ -33,30 +33,13 @@ namespace YTE
                                vk::Format aDepthFormat,
                                std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                ViewData* aView,
-                               std::string aName,
                                DrawerTypeCombination aCombinationType)
     : VkRenderTarget(aSurface,
                      aColorFormat,
                      aDepthFormat,
                      aVulkanSurface,
                      aView,
-                     "VkImguiDrawer_" + aName,
-                     aCombinationType)
-  {
-    Initialize();
-  }
-
-  VkImguiDrawer::VkImguiDrawer(VkRenderedSurface *aSurface,
-                               vk::Format aColorFormat,
-                               vk::Format aDepthFormat,
-                               std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                               std::string aName,
-                               DrawerTypeCombination aCombinationType)
-    : VkRenderTarget(aSurface,
-                     aColorFormat,
-                     aDepthFormat,
-                     aVulkanSurface,
-                     "VkImguiDrawer_" + aName,
+                     "VkImguiDrawer_" + aView->mName,
                      aCombinationType)
   {
     Initialize();
@@ -70,7 +53,7 @@ namespace YTE
   {
     auto owner = mParentViewData->mView->GetOwner();
     auto guidString = owner->GetGUID().ToString();;
-    mContext = owner->GetComponent<ImguiContext>();
+    mContext = owner->GetComponent<ImguiLayer>();
 
     mModelName = fmt::format("Imgui_Model_{}", guidString);
     mTextureName = fmt::format("Imgui_Texture_{}", guidString);
@@ -103,6 +86,7 @@ namespace YTE
     YTEUnusedArgument(aUpdate);
 
     mContext->SetCurrentContext();
+    ImGui::Render();
     auto drawData = ImGui::GetDrawData();
 
     mSubmesh.mDiffuseMap = mTextureName;

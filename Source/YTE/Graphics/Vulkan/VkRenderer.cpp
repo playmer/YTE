@@ -305,7 +305,7 @@ namespace YTE
 
     vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
 
-    for (auto& surface : mSurfaces)
+    for (auto &surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
     }
@@ -329,7 +329,7 @@ namespace YTE
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    for (auto& surface : mSurfaces)
+    for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
     }

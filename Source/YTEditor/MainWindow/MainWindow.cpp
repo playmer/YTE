@@ -50,6 +50,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/ImguiLayer.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -349,9 +350,28 @@ namespace YTEditor
     mEditorCamera->AddComponent(YTE::Orientation::GetStaticType());
     mEditorCamera->AddComponent(YTE::Camera::GetStaticType());
     mEditorCamera->AddComponent(YTE::FlybyCamera::GetStaticType());
-    mEditorCamera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
 
+    mEditorCamera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
     mEditorCamera->GetComponent<YTE::Camera>()->SetCameraAsActive();
+    /////////////////////////////////////////////////////////////////////////////
+
+    // Add the imgui layer to the level.
+    YTE::String imguiName{ "ImguiEditorLayer" };
+    mImguiLayer = mEditingLevel->AddComposition<YTE::Composition>(imguiName,
+                                                                  GetRunningEngine(),
+                                                                  imguiName,
+                                                                  mEditingLevel);
+
+    if (mImguiLayer->ShouldSerialize())
+    {
+      mImguiLayer->ToggleSerialize();
+    }
+
+    mImguiLayer->AddComponent(YTE::GraphicsView::GetStaticType());
+    auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
+    view->ChangeWindow(GetLevelWindow().mWindow);
+
+    mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();
