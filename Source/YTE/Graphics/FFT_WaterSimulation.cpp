@@ -1203,7 +1203,7 @@ namespace YTE
       return models;
     }
 
-    return { nullptr };
+    return { };
   }
 
   
