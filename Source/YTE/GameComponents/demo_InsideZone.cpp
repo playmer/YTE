@@ -36,6 +36,7 @@ namespace YTE
       mIslandLeave  = mSoundSystem->GetSoundIDFromString("Islands_Leave");
       mSailingStart = mSoundSystem->GetSoundIDFromString("Sailing_Start");
       mSailingStop  = mSoundSystem->GetSoundIDFromString("Sailing_Stop");
+      mSoundSystem->SetRTPC("Dock_Distance", 100);
     }
   }
 
@@ -93,6 +94,7 @@ namespace YTE
       mSoundEmitter->PlayEvent(mIslandLeave);
       // play ocean sound
       mSoundEmitter->PlayEvent(mSailingStart);
+      mCurrentZone = "";
     }
   }
 
@@ -106,9 +108,13 @@ namespace YTE
       if (zoneType == "Island")
       {
         auto zoneName = zone->GetZoneName();
-        mSoundSystem->SetState("Current_Island", zoneName);
-        mSoundEmitter->PlayEvent(mIslandEnter);
-        mSoundEmitter->PlayEvent(mSailingStop);
+        if (zoneName != mCurrentZone)
+        {
+          mSoundSystem->SetState("Current_Island", zoneName);
+          mCurrentZone = zoneName;
+          mSoundEmitter->PlayEvent(mIslandEnter);
+          mSoundEmitter->PlayEvent(mSailingStop);
+        }
       }
 
     }

@@ -34,6 +34,8 @@ namespace YTE
     u64 mSailingStart;
     u64 mSailingStop;
 
+    std::string mCurrentZone;
+
     bool mFlag;
 
   };

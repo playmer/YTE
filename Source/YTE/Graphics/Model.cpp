@@ -93,6 +93,9 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
+    YTEBindProperty(&Model::GetVisibility, &Model::SetVisibility, "Visibility")
+      .AddAttribute<Serializable>();
+
     //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
