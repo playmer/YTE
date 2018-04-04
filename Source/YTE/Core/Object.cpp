@@ -330,24 +330,31 @@ namespace YTE
     RSValue toReturn;
     toReturn.SetObject();
 
-    auto &fields = aType->GetFields();
-    auto &properties = aType->GetProperties();
+    auto type = aType;
 
-    SerializeByFieldOrProperties(fields, toReturn, aAllocator, aSelf, aType);
-    SerializeByFieldOrProperties(properties, toReturn, aAllocator, aSelf, aType);
-
-    
-    if (auto listerAttribute = aType->GetAttribute<EditorHeaderList>(); 
-        nullptr != listerAttribute)
+    while (type)
     {
-      auto array = listerAttribute->Serialize(aAllocator, aSelf);
+      auto &fields = type->GetFields();
+      auto &properties = type->GetProperties();
 
-      RSValue arrayName;
-      arrayName.SetString(listerAttribute->GetName().c_str(),
-                          static_cast<RSSizeType>(listerAttribute->GetName().size()),
-                          aAllocator);
+      SerializeByFieldOrProperties(fields, toReturn, aAllocator, aSelf, type);
+      SerializeByFieldOrProperties(properties, toReturn, aAllocator, aSelf, type);
 
-      toReturn.AddMember(arrayName, array, aAllocator);
+
+      if (auto listerAttribute = type->GetAttribute<EditorHeaderList>();
+      nullptr != listerAttribute)
+      {
+        auto array = listerAttribute->Serialize(aAllocator, aSelf);
+
+        RSValue arrayName;
+        arrayName.SetString(listerAttribute->GetName().c_str(),
+                            static_cast<RSSizeType>(listerAttribute->GetName().size()),
+                            aAllocator);
+
+        toReturn.AddMember(arrayName, array, aAllocator);
+      }
+
+      type = type->GetBaseType();
     }
 
     return toReturn;
