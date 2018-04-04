@@ -15,6 +15,8 @@
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
 
+#include "YTE/WWise/WWiseEmitter.hpp"
+
 namespace YTE
 {
   class Sprite;
@@ -48,5 +50,11 @@ namespace YTE
     Composition *mCompassNeedle;
     Sprite *mCompassNeedleSprite;
     Transform *mCompassNeedleTransform;
+    WWiseEmitter *mSoundEmitter;
+
+    u64 mCompassOpen;
+    u64 mCompassClose;
+    u64 mSailMapOpen;
+    u64 mSailMapClose;
   };
 }

@@ -4,7 +4,6 @@
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
 
-
 namespace YTE
 {
 
@@ -29,41 +28,60 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionPersisted, this, &demo_InsideZone::OnCollisionPersist);
     mOwner->YTERegister(Events::CollisionStarted, this, &demo_InsideZone::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &demo_InsideZone::OnCollisionEnd);
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (mSoundSystem)
+    {
+      mIslandEnter  = mSoundSystem->GetSoundIDFromString("Islands_Enter");
+      mIslandLeave  = mSoundSystem->GetSoundIDFromString("Islands_Leave");
+      mSailingStart = mSoundSystem->GetSoundIDFromString("Sailing_Start");
+      mSailingStop  = mSoundSystem->GetSoundIDFromString("Sailing_Stop");
+      mSoundSystem->SetRTPC("Dock_Distance", 100);
+    }
+  }
+
+  void demo_InsideZone::Deinitialize()
+  {
+    mSoundEmitter->PlayEvent(mIslandLeave);
   }
 
   void demo_InsideZone::OnCollisionPersist(CollisionPersisted *aEvent)
   {
+    auto zone = aEvent->OtherObject->GetComponent<Zone>();
+
+    if (!zone)
+    {
+      return;
+    }
+
+    auto zoneType = zone->GetZoneType();
+    if (zoneType != "Dock")
+    {
+      return;
+    }
+
     // make sure our boat position is up to date
     mBoatPosition = mOwner->GetComponent<Transform>()->GetTranslation();
-    // get the map of compositions on this zone
-    YTE::CompositionMap &compMap = *aEvent->OtherObject->GetCompositions();
-    // if our map isnt empty
-    if (compMap.size() > size_t(0.0f))
+    auto dockPos = aEvent->OtherObject->GetComponent<Transform>()->GetTranslation();
+    
+    auto dist = glm::length2(dockPos - mBoatPosition); // maybe this should just be regular length?
+    dist = glm::clamp(dist, 0.0f, 100.0f);
+
+    auto zoneName = zone->GetZoneName();
+    if (zoneName != "Dock_Distance")
     {
-      float minDist = 0.0f;
-      auto closestIsland = compMap.begin()->second.get();
-      for (auto &cmp : compMap)
-      {
-        auto islandCmp = cmp.second.get();
-        glm::vec3 islandPos = islandCmp->GetComponent<Transform>()->GetWorldTranslation();
-        float dist = glm::length2(islandPos - mBoatPosition);
-        // if we dont have a min, indicated by 0, or we found a closer island set it as the closest
-        if (minDist == 0.0f || dist < minDist)
-        {
-          minDist = dist;
-          closestIsland = cmp.second.get();
-        }
-      }
-      // change the volume of the island sound using the minDist
-      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Island_Distance", minDist);
+      mSoundSystem->SetRTPC("Dock_Distance", dist);
+    }
 
-      if (minDist < 100.0f && mFlag)
-      {
-        //closestIsland->GetComponent<Island>().mCharacterCalloutString;
-        mSoundEmitter->PlayEvent("Dia_All_CallOut");
+    // change the volume of the island sound using the minDist
+    mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC(zoneName, dist);
 
-        mFlag = false;
-      }
+    if (dist < 100.0f && mFlag)
+    {
+      //closestIsland->GetComponent<Island>().mCharacterCalloutString;
+      mSoundEmitter->PlayEvent("Dia_All_CallOut");
+
+      mFlag = false;
     }
   }
 
@@ -73,18 +91,10 @@ namespace YTE
 
     if (zone)
     {
-      if (zone->GetOwner()->GetName() == "PicanteIsles")
-      {
-        mSoundEmitter->PlayEvent("TD01_Leave");
-      }
-      else if (zone->GetOwner()->GetName() == "RainyRuins")
-      {
-        mSoundEmitter->PlayEvent("TD03_Leave");
-        mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Rain", 0.0f);
-        mSoundEmitter->PlayEvent("A_Rain_Stop");
-      }
-
+      mSoundEmitter->PlayEvent(mIslandLeave);
       // play ocean sound
+      mSoundEmitter->PlayEvent(mSailingStart);
+      mCurrentZone = "";
     }
   }
 
@@ -94,18 +104,19 @@ namespace YTE
 
     if (zone)
     {
-      if (zone->GetOwner()->GetName() == "PicanteIsles")
+      auto zoneType = zone->GetZoneType();
+      if (zoneType == "Island")
       {
-        // play picanteisles music event
-        mSoundEmitter->PlayEvent("TD01_Enter");
+        auto zoneName = zone->GetZoneName();
+        if (zoneName != mCurrentZone)
+        {
+          mSoundSystem->SetState("Current_Island", zoneName);
+          mCurrentZone = zoneName;
+          mSoundEmitter->PlayEvent(mIslandEnter);
+          mSoundEmitter->PlayEvent(mSailingStop);
+        }
       }
-      else if (zone->GetOwner()->GetName() == "RainyRuins")
-      {
-        // play rainyruins music event
-        mSoundEmitter->PlayEvent("TD03_Enter");
-        mSoundEmitter->PlayEvent("A_Rain_Start");
-        mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC("Rain", 30.0f);
-      }
+
     }
   }
 

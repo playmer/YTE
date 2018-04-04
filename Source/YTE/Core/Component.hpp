@@ -6,8 +6,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Component_Component_h
-#define YTE_Component_Component_h
+#ifndef YTE_Core_Component_hpp
+#define YTE_Core_Component_hpp
 
 #include <memory>
 
@@ -34,11 +34,16 @@ namespace YTE
     virtual void PhysicsInitialize() { };
     virtual void Initialize() { };
     virtual void Start() { };
+    virtual void Deinitialize() { };
 
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }
 
-    virtual void Deserialize(RSValue*) {};
+    void Deserialize(RSValue* aProperties) override
+    {
+      DeserializeByType(aProperties, this, GetStaticType());
+    };
+
     RSValue Serialize(RSAllocator &aAllocator) override;
 
     virtual void Remove();

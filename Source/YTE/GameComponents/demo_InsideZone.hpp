@@ -7,6 +7,7 @@
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/Collider.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
 namespace YTE
 {
@@ -17,6 +18,7 @@ namespace YTE
     YTEDeclareType(demo_InsideZone);
     demo_InsideZone(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void Deinitialize() override;
     void OnCollisionPersist(CollisionPersisted *aEvent);
     void OnCollisionStart(CollisionStarted *aEvent);
     void OnCollisionEnd(CollisionEnded *aEvent);
@@ -24,7 +26,15 @@ namespace YTE
     WWiseEmitter *mSoundEmitter;
     Collider *mBoatCollider;
     GhostBody *mBoatBody;
+    WWiseSystem *mSoundSystem;
     glm::vec3 mBoatPosition;
+
+    u64 mIslandEnter;
+    u64 mIslandLeave;
+    u64 mSailingStart;
+    u64 mSailingStop;
+
+    std::string mCurrentZone;
 
     bool mFlag;
 

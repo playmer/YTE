@@ -11,8 +11,6 @@
 
 #include <cmath>
 
-#pragma optimize("", off)
-
 namespace YTE
 {
   YTEDefineType(BoatPhysics)

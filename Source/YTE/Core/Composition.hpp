@@ -14,8 +14,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Composition_hpp
-#define YTE_Composition_hpp
+#ifndef YTE_Core_Composition_hpp
+#define YTE_Core_Composition_hpp
 
 #include <memory>
 #include <set>
@@ -34,6 +34,7 @@ namespace YTE
   YTEDeclareEvent(PhysicsInitialize);
   YTEDeclareEvent(Initialize);
   YTEDeclareEvent(Start);
+  YTEDeclareEvent(Deinitialize);
 
   class InitializeEvent : public Event
   {
@@ -89,6 +90,7 @@ namespace YTE
     virtual void NativeInitialize(InitializeEvent *aEvent);
     void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);
+    virtual void Deinitialize(InitializeEvent *aEvent);
     virtual void Start(InitializeEvent *aEvent);
     void DeletionUpdate(LogicUpdate *aUpdate);
 

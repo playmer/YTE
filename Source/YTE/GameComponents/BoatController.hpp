@@ -46,6 +46,7 @@ namespace YTE
     YTEDeclareType(BoatController);
     BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void Deinitialize() override;
     void ChangeSail(SailStateChanged *aEvent);
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);
@@ -98,6 +99,8 @@ namespace YTE
     u64 mSoundSailDown;
     u64 mSoundBumpDock;
     u64 mSoundBoatTurn;
+    u64 mSailingStart;
+    u64 mSailingStop;
 
     Animator *mAnimator;
     Animator *mSailsAnimator;

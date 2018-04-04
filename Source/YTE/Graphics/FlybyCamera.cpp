@@ -194,6 +194,7 @@ namespace YTE
         mMovementDirection.y += 1.0f;
         break;
       }
+      case Keys::C:
       case Keys::Q:
       case Keys::Control:
       {

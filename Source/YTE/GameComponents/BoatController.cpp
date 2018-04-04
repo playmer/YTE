@@ -101,7 +101,11 @@ namespace YTE
       mSoundSailDown = soundSystem->GetSoundIDFromString("SFX_Sail_Down");
       mSoundBumpDock = soundSystem->GetSoundIDFromString("SFX_Boat_Bump");
       mSoundBoatTurn = soundSystem->GetSoundIDFromString("SFX_Boat_Turn");
+      mSailingStart  = soundSystem->GetSoundIDFromString("Sailing_Start");
+      mSailingStop   = soundSystem->GetSoundIDFromString("Sailing_Stop");
     }
+
+    mSoundEmitter->PlayEvent(mSailingStart);
 
     /* Event Registration */
     mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
@@ -151,6 +155,12 @@ namespace YTE
     }
 
   }
+
+  void BoatController::Deinitialize()
+  {
+    mSoundEmitter->PlayEvent(mSailingStop);
+  }
+
   /******************************************************************************/
   /*
     Event Callbacks
@@ -201,8 +211,11 @@ namespace YTE
     mStartedTurning = true;
     if (!mPlayingTurnSound)
     {
-      mSoundEmitter->PlayEvent(mSoundBoatTurn);
-      mPlayingTurnSound = true;
+      if (mCurrRotSpeed > mMaxTurnSpeed * 0.75f)
+      {
+        mSoundEmitter->PlayEvent(mSoundBoatTurn);
+        mPlayingTurnSound = true;
+      }
     }
 
       // Dead-zone check and apply response curves
