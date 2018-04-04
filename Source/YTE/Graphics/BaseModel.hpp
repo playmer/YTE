@@ -19,7 +19,7 @@ namespace YTE
 
     virtual std::vector<InstantiatedModel*> GetInstantiatedModel()
     {
-      return { nullptr };
+      return { };
     }
 
     void SetVisibility(bool aVisibility)

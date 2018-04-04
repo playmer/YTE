@@ -14,8 +14,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Composition_hpp
-#define YTE_Composition_hpp
+#ifndef YTE_Core_Composition_hpp
+#define YTE_Core_Composition_hpp
 
 #include <memory>
 #include <set>

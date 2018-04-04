@@ -6,8 +6,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Component_Component_h
-#define YTE_Component_Component_h
+#ifndef YTE_Core_Component_hpp
+#define YTE_Core_Component_hpp
 
 #include <memory>
 
@@ -39,7 +39,7 @@ namespace YTE
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }
 
-    virtual void Deserialize(RSValue* aProperties) 
+    void Deserialize(RSValue* aProperties) override
     {
       DeserializeByType(aProperties, this, GetStaticType());
     };
