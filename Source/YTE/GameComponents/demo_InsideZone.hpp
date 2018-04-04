@@ -18,6 +18,7 @@ namespace YTE
     YTEDeclareType(demo_InsideZone);
     demo_InsideZone(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void Deinitialize() override;
     void OnCollisionPersist(CollisionPersisted *aEvent);
     void OnCollisionStart(CollisionStarted *aEvent);
     void OnCollisionEnd(CollisionEnded *aEvent);
@@ -30,6 +31,8 @@ namespace YTE
 
     u64 mIslandEnter;
     u64 mIslandLeave;
+    u64 mSailingStart;
+    u64 mSailingStop;
 
     bool mFlag;
 

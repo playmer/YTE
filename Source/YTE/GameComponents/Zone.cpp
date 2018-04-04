@@ -9,11 +9,11 @@ namespace YTE
   {
     YTERegisterType(Zone);
 
-    YTEBindProperty(&Zone::GetZoneName, &Zone::SetZoneName, "Zone Name")
+    YTEBindProperty(&Zone::GetZoneName, &Zone::SetZoneName, "ZoneName")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&Zone::GetZoneType, &Zone::SetZoneType, "Zone Type")
+    YTEBindProperty(&Zone::GetZoneType, &Zone::SetZoneType, "ZoneType")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -21,7 +21,7 @@ namespace YTE
   Zone::Zone(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    Deserialize(aProperties);
+    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Zone::Initialize()

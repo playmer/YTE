@@ -39,7 +39,11 @@ namespace YTE
     Space* GetSpace() { return mSpace; }
     Composition* GetOwner() { return mOwner; }
 
-    virtual void Deserialize(RSValue*) {};
+    virtual void Deserialize(RSValue* aProperties) 
+    {
+      DeserializeByType(aProperties, this, GetStaticType());
+    };
+
     RSValue Serialize(RSAllocator &aAllocator) override;
 
     virtual void Remove();

@@ -4,7 +4,6 @@
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
 
-
 namespace YTE
 {
 
@@ -29,13 +28,20 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionPersisted, this, &demo_InsideZone::OnCollisionPersist);
     mOwner->YTERegister(Events::CollisionStarted, this, &demo_InsideZone::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &demo_InsideZone::OnCollisionEnd);
-    mSoundSystem = mOwner->GetSpace()->GetComponent<WWiseSystem>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     if (mSoundSystem)
     {
-      mIslandEnter = mSoundSystem->GetSoundIDFromString("Islands_Enter");
-      mIslandLeave = mSoundSystem->GetSoundIDFromString("Islands_Leave");
+      mIslandEnter  = mSoundSystem->GetSoundIDFromString("Islands_Enter");
+      mIslandLeave  = mSoundSystem->GetSoundIDFromString("Islands_Leave");
+      mSailingStart = mSoundSystem->GetSoundIDFromString("Sailing_Start");
+      mSailingStop  = mSoundSystem->GetSoundIDFromString("Sailing_Stop");
     }
+  }
+
+  void demo_InsideZone::Deinitialize()
+  {
+    mSoundEmitter->PlayEvent(mIslandLeave);
   }
 
   void demo_InsideZone::OnCollisionPersist(CollisionPersisted *aEvent)
@@ -86,6 +92,7 @@ namespace YTE
     {
       mSoundEmitter->PlayEvent(mIslandLeave);
       // play ocean sound
+      mSoundEmitter->PlayEvent(mSailingStart);
     }
   }
 
@@ -101,6 +108,7 @@ namespace YTE
         auto zoneName = zone->GetZoneName();
         mSoundSystem->SetState("Current_Island", zoneName);
         mSoundEmitter->PlayEvent(mIslandEnter);
+        mSoundEmitter->PlayEvent(mSailingStop);
       }
 
     }

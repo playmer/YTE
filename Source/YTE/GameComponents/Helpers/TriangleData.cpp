@@ -2,8 +2,6 @@
 #include "glm/gtx/vector_angle.hpp"
 #include "YTE/GameComponents/Helpers/BoatPhysicsMath.hpp"
 
-#pragma optimize("", off)
-
 namespace YTE
 {
   TriangleData::TriangleData(glm::vec3 aP1, glm::vec3 aP2, glm::vec3 aP3m, RigidBody* boatRB, Transform* boatTrans, FFT_WaterSimulation* aSim, float timeSinceStart) : p1(aP1)
