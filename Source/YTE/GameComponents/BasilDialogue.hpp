@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   JohnDialogue.hpp
+\file   BasilDialogue.hpp
 \author Jonathan Ackerman
 \par    email : jonathan.ackerman\@digipen.edu
 \date   2018 - 02 - 27
@@ -13,8 +13,8 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Gameplay_JohnDialogue_hpp
-#define YTE_Gameplay_JohnDialogue_hpp
+#ifndef YTE_Gameplay_BasilDialogue_hpp
+#define YTE_Gameplay_BasilDialogue_hpp
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
@@ -25,11 +25,11 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  class JohnDialogue : public Component
+  class BasilDialogue : public Component
   {
   public:
-    YTEDeclareType(JohnDialogue);
-    JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTEDeclareType(BasilDialogue);
+    BasilDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
     void Start() override;
     // this cant be used until we know the location of the node
@@ -48,7 +48,7 @@ namespace YTE
     Quest *mActiveQuest;
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;
-    Quest::CharacterName mName = Quest::CharacterName::John;
+    Quest::CharacterName mName = Quest::CharacterName::Basil;
   };
 } //end yte
 #endif

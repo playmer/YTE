@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   JohnDialogue.hpp
+\file   DaisyDialogue.hpp
 \author Jonathan Ackerman
 \par    email : jonathan.ackerman\@digipen.edu
 \date   2018 - 02 - 27
@@ -13,23 +13,23 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Gameplay_JohnDialogue_hpp
-#define YTE_Gameplay_JohnDialogue_hpp
+#ifndef YTE_Gameplay_DaisyDialogue_hpp
+#define YTE_Gameplay_DaisyDialogue_hpp
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
-#include "YTE/GameComponents/Quest.hpp"
+#include "YTE/GameComponents/Quest.hpp"             /* Quest, QuestStart, UpdateActiveQuestState */
 
 namespace YTE
 {
-  class JohnDialogue : public Component
+  class DaisyDialogue : public Component
   {
   public:
-    YTEDeclareType(JohnDialogue);
-    JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTEDeclareType(DaisyDialogue);
+    DaisyDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
     void Start() override;
     // this cant be used until we know the location of the node
@@ -48,7 +48,7 @@ namespace YTE
     Quest *mActiveQuest;
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;
-    Quest::CharacterName mName = Quest::CharacterName::John;
+    Quest::CharacterName mName = Quest::CharacterName::Daisy;
   };
 } //end yte
 #endif

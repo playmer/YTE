@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   JohnDialogue.cpp
+\file   BasilDialogue.cpp
 \author Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-02-27
@@ -9,62 +9,62 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/BasilDialogue.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
 {
-  YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
+  YTEDefineType(BasilDialogue) { YTERegisterType(BasilDialogue); }
 
-  JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  BasilDialogue::BasilDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
     YTEUnusedArgument(aProperties);
-    // im the dumbest, should make class abstract, use mName instead of this dumb
-    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::John);
+
+    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Basil);
     
     mActiveQuest = &mQuestVec[(int)Quest::Name::Introduction];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
     mActiveNode = mActiveConvo->GetRoot();
   }
 
-  void JohnDialogue::Initialize()
+  void BasilDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterDialogue);
-    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterDialogue);
-    mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+    mOwner->YTERegister(Events::CollisionStarted, this, &BasilDialogue::RegisterDialogue);
+    mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::DeregisterDialogue);
+    mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
+    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
 
     // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
   }
 
-  void JohnDialogue::RegisterDialogue(CollisionStarted *aEvent)
+  void BasilDialogue::RegisterDialogue(CollisionStarted *aEvent)
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-      mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-      mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+      mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
+      mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
+      mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
     }
   }
 
-  void JohnDialogue::DeregisterDialogue(CollisionEnded *aEvent)
+  void BasilDialogue::DeregisterDialogue(CollisionEnded *aEvent)
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-      mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-      mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+      mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
+      mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
+      mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
     }
   }
 
-  void JohnDialogue::Start()
+  void BasilDialogue::Start()
   {
     /*
     std::cout << std::endl << "SENDING notice board hookup" << std::endl;
@@ -74,7 +74,7 @@ namespace YTE
     */
   }
 
-  void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
+  void BasilDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
     YTEUnusedArgument(aEvent);
 
@@ -95,7 +95,7 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
+  void BasilDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
 
@@ -131,7 +131,7 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
+  void BasilDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
   {
     mActiveNode->ActivateNode();
     mActiveNode = mActiveNode->GetChild(aEvent->Selection);
@@ -168,7 +168,7 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnQuestStart(QuestStart *aEvent)
+  void BasilDialogue::OnQuestStart(QuestStart *aEvent)
   {
     if (aEvent->mCharacter == mName)
     {
@@ -184,7 +184,7 @@ namespace YTE
     mActiveNode = mActiveConvo->GetRoot();
   }
 
-  void JohnDialogue::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)
+  void BasilDialogue::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)
   {
     if (aEvent->mCharacter == mName)
     {

@@ -224,13 +224,6 @@ namespace YTE
             mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
             break;
           }
-          case XboxButtons::B:
-          {
-            DialogueExit diagExit;
-            diagExit.isEarlyExit = true;
-            mOwner->SendEvent(Events::DialogueExit, &diagExit);
-            break;
-          }
         }
         break;
       }

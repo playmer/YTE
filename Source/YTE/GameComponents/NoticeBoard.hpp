@@ -20,12 +20,22 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Physics/BoxCollider.hpp"
 
-#include "YTE/GameComponents/InputInterpreter.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp" /* Quest, QuestStart */
+#include "YTE/GameComponents/InputInterpreter.hpp"  /* RequestNoticeBoardStart */
+#include "YTE/GameComponents/Quest.hpp"             /* Quest, QuestStart */
 
 
 namespace YTE
 {
+  YTEDeclareEvent(NoticeBoardHookup); 
+
+  class NoticeBoardHookup : public Event
+  {
+  public:
+    YTEDeclareType(NoticeBoardHookup);
+    NoticeBoardHookup(Quest **aQuest) : mActiveQuestHandle(aQuest) {};
+    Quest **mActiveQuestHandle;
+  };
+
   class Postcard
   {
   public:

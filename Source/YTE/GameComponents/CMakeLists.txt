@@ -29,10 +29,15 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/DaisyDialogue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/BasilDialogue.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/JohnTutorial.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/JohnMovement.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.cpp
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestProgressionTrigger.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Quest.cpp
 #  PUBLIC    
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -63,8 +68,13 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/DaisyDialogue.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/BasilDialogue.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/JohnTutorial.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/JohnMovement.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.hpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.hpp
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.hpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestProgressionTrigger.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Quest.hpp
 )
