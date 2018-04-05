@@ -104,6 +104,8 @@ namespace YTE
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
         // next tutorial
+        // set quest state to completed?
+        // do i send updatequeststate?
       }
       else
       {
