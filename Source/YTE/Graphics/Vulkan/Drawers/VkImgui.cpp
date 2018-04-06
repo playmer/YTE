@@ -88,15 +88,17 @@ namespace YTE
     YTEUnusedArgument(aUpdate);
 
     mContext->SetCurrentContext();
+    auto &submesh = mContext->GetSubmesh();
+
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
 
-    mSubmesh.mDiffuseMap = mTextureName;
-    mSubmesh.mDiffuseType = TextureViewType::e2D;
-    mSubmesh.mShaderSetName = imguiStr;
+    submesh.mDiffuseMap = mTextureName;
+    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mShaderSetName = imguiStr;
 
-    mSubmesh.mVertexBuffer.clear();
-    mSubmesh.mIndexBuffer.clear();
+    submesh.mVertexBuffer.clear();
+    submesh.mIndexBuffer.clear();
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
@@ -111,28 +113,30 @@ namespace YTE
         vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
         vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
         vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
-        mSubmesh.mVertexBuffer.emplace_back(vert);
+        submesh.mVertexBuffer.emplace_back(vert);
       }
 
       for (int i = 0; i < cmd_list->IdxBuffer.Size; i += 3)
       {
-        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 2]);
-        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 1]);
-        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 0]);
+        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 2]);
+        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 1]);
+        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 0]);
       }
     }
 
-    if (mSubmesh.mVertexBuffer.empty())
+    auto &instantiatedModel = mContext->GetInstantiatedModel();
+
+    if (submesh.mVertexBuffer.empty())
     {
-      mInstantiatedModel.reset();
+      instantiatedModel.reset();
       return;
     }
 
-    std::vector<Submesh> submeshes{ mSubmesh };
+    std::vector<Submesh> submeshes{ submesh };
 
     auto renderer = mSurface->GetRenderer();
     auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
-    mInstantiatedModel = renderer->CreateModel(mView, mesh);
+    instantiatedModel = renderer->CreateModel(mView, mesh);
 
     UBOModel modelUBO;
 
@@ -149,15 +153,15 @@ namespace YTE
                              (int)translate.x, (int)translate.y);
 
     modelUBO.mModelMatrix = glm::translate(glm::scale(glm::mat4{}, scale), translate);
-    mInstantiatedModel->UpdateUBOModel(modelUBO);
+    mContext->GetInstantiatedModel()->UpdateUBOModel(modelUBO);
 
-    auto vkmesh = static_cast<VkMesh*>(mInstantiatedModel->GetMesh());
+    auto vkmesh = static_cast<VkMesh*>(instantiatedModel->GetMesh());
 
     // We get the sub meshes that use the current shader, then draw them.
     auto range = vkmesh->mSubmeshes.equal_range(imguiStr);
 
     mVkSubmesh = range.first->second.get();
-    auto model = static_cast<VkInstantiatedModel*>(mInstantiatedModel.get());
+    auto model = static_cast<VkInstantiatedModel*>(instantiatedModel.get());
     mPipelineData = &(model->mPipelineData.at(mVkSubmesh));
 
     for (auto &shader : mParentViewData->mShaders)
@@ -203,12 +207,12 @@ namespace YTE
     aCBO->setScissor(0, scissor);
     aCBO->setLineWidth(1.0f);
 
-    if (nullptr == mInstantiatedModel)
+    if (nullptr == mContext->GetInstantiatedModel())
     {
       return;
     }
     
-    auto model = static_cast<VkInstantiatedModel*>(mInstantiatedModel.get());
+    auto model = static_cast<VkInstantiatedModel*>(mContext->GetInstantiatedModel().get());
 
 
     aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,

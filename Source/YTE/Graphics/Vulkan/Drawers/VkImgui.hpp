@@ -55,8 +55,6 @@ namespace YTE
     void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
     ImguiLayer *mContext{ nullptr };
-    Submesh mSubmesh;
-    std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     GraphicsView *mView;
     SubMeshPipelineData *mPipelineData;
     VkSubmesh *mVkSubmesh;

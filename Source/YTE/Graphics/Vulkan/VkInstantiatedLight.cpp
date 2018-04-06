@@ -46,7 +46,7 @@ namespace YTE
     auto view = aEvent->View;
     mSurface = static_cast<VkRenderer*>(view->GetRenderer())->GetSurface(view->GetWindow());
 
-    mManager = &(mSurface->GetViewData(view).mLightManager);
+    mManager = &(mSurface->GetViewData(view)->mLightManager);
     mManager->AddLight(this);
     mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedLight::GraphicsDataUpdateVk);
     mDataChanged = true;

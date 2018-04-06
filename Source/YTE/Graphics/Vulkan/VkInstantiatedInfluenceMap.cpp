@@ -46,7 +46,7 @@ namespace YTE
     auto view = aEvent->View;
     mSurface = static_cast<VkRenderer*>(view->GetRenderer())->GetSurface(view->GetWindow());
 
-    mManager = &(mSurface->GetViewData(view).mWaterInfluenceMapManager);
+    mManager = &(mSurface->GetViewData(view)->mWaterInfluenceMapManager);
     mManager->AddMap(this);
     mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedInfluenceMap::GraphicsDataUpdateVk);
     mDataChanged = true;

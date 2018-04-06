@@ -4,6 +4,8 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
 #include "YTE/Platform/Keyboard.hpp"
@@ -406,10 +408,22 @@ namespace YTE
       ImGui::SetCurrentContext(mContext);
     }
 
+    Submesh& GetSubmesh()
+    {
+      return mSubmesh;
+    }
+
+    std::unique_ptr<InstantiatedModel>& GetInstantiatedModel()
+    {
+      return mInstantiatedModel;
+    }
+
   private:
     static const char* GetClipboardTextImplementation(void *aSelf);
     static void SetClipboardTextImplementation(void *aSelf, const char* text);
 
+    Submesh mSubmesh;
+    std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     ImGuiContext *mContext;
     GraphicsView *mView;
     std::string mClipboard;
