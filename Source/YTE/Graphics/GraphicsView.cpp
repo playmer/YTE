@@ -14,7 +14,8 @@ namespace YTE
     std::vector<std::string> result
     {
       "DefaultDrawer",
-      "GameForwardDrawer"
+      "GameForwardDrawer",
+      "ImguiDrawer"
     };
     return result;
   }
@@ -97,6 +98,10 @@ namespace YTE
     if (it != engine->GetWindows().end())
     {
       mWindow = it->second.get();
+    }
+    else
+    {
+      mWindow = mOwner->GetEngine()->GetWindow();
     }
   }
 

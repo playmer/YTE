@@ -60,6 +60,8 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
+    mOwner->GetEngine()->YTERegister(Events::PreLogicUpdate, this, &ImguiLayer::ImguiUpdate);
+    
     window->mMouse.YTERegister(Events::MouseScroll, this, &ImguiLayer::MouseScrollCallback);
     window->mKeyboard.YTERegister(Events::KeyPress, this, &ImguiLayer::KeyPressCallback);
     window->mKeyboard.YTERegister(Events::KeyRelease, this, &ImguiLayer::KeyReleaseCallback);
@@ -110,8 +112,6 @@ namespace YTE
   {
     ImGui::SetCurrentContext(mContext);
 
-    ShowMetricsWindow();
-
     ImGuiIO& io = ImGui::GetIO();
 
     auto window = mView->GetWindow();
@@ -126,16 +126,22 @@ namespace YTE
 
     // Setup inputs
     // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-    if (window->IsFocused())
-    {
-      auto position = mouse.GetCursorPosition();
-      io.MousePos = ImVec2((float)position.x, (float)position.y);
-    }
-    else
-    {
-      io.MousePos = ImVec2(-std::numeric_limits<float>::max(), 
-                           -std::numeric_limits<float>::max());
-    }
+    //if (window->IsFocused())
+    //{
+    //}
+    //else
+    //{
+    //  io.MousePos = ImVec2(-std::numeric_limits<float>::max(), 
+    //                       -std::numeric_limits<float>::max());
+    //}
+
+
+    auto position = mouse.GetCursorPosition();
+    io.MousePos = ImVec2((float)position.x, (float)position.y);
+
+    //std::cout << fmt::format("Mouse: {}, {}; Window: {}, {} \n", 
+    //                         (float)position.x, (float)position.y,
+    //                         io.DisplaySize.x, io.DisplaySize.y);
 
     //Mouse buttons : left, right, middle
     io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
@@ -157,8 +163,13 @@ namespace YTE
     //  glfwSetInputMode(g_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     //}
 
-    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard flag that you can use to dispatch inputs (or not) to your application.
+    // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard 
+    // flag that you can use to dispatch inputs (or not) to your application.
     ImGui::NewFrame();
+
+
+
+    ShowMetricsWindow();
   }
 
   void ImguiLayer::MouseScrollCallback(MouseWheelEvent *aEvent)

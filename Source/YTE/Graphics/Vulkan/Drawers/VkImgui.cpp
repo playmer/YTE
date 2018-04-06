@@ -42,6 +42,7 @@ namespace YTE
                      "VkImguiDrawer_" + aView->mName,
                      aCombinationType)
   {
+    VkRenderTarget::Initialize();
     Initialize();
   }
 
@@ -51,7 +52,8 @@ namespace YTE
 
   void VkImguiDrawer::Initialize()
   {
-    auto owner = mParentViewData->mView->GetOwner();
+    mView = mParentViewData->mView;
+    auto owner = mView->GetOwner();
     auto guidString = owner->GetGUID().ToString();;
     mContext = owner->GetComponent<ImguiLayer>();
 
@@ -109,12 +111,21 @@ namespace YTE
         vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
         vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
         vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
+        mSubmesh.mVertexBuffer.emplace_back(vert);
       }
 
-      for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
+      for (int i = 0; i < cmd_list->IdxBuffer.Size; i += 3)
       {
-        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i]);
+        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 2]);
+        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 1]);
+        mSubmesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 0]);
       }
+    }
+
+    if (mSubmesh.mVertexBuffer.empty())
+    {
+      mInstantiatedModel.reset();
+      return;
     }
 
     std::vector<Submesh> submeshes{ mSubmesh };
@@ -129,7 +140,13 @@ namespace YTE
     auto height = mView->GetWindow()->GetHeight();
 
     glm::vec3 scale{ 2.f / width, 2.f / height, 0.f };
-    glm::vec3 translate{ -1.f, 1.f, 0.f };
+    //glm::vec3 translate{ -1.f, 1.f, 0.f };
+
+    auto xOffset = -(width / 2.f);
+    glm::vec3 translate{ -(width / 2.f), height / 2.f, 0.f };
+
+    std::cout << fmt::format("Window: {}, {} \n", 
+                             (int)translate.x, (int)translate.y);
 
     modelUBO.mModelMatrix = glm::translate(glm::scale(glm::mat4{}, scale), translate);
     mInstantiatedModel->UpdateUBOModel(modelUBO);
@@ -185,6 +202,11 @@ namespace YTE
     vk::Rect2D scissor{ { 0, 0 }, mData.mExtent };
     aCBO->setScissor(0, scissor);
     aCBO->setLineWidth(1.0f);
+
+    if (nullptr == mInstantiatedModel)
+    {
+      return;
+    }
     
     auto model = static_cast<VkInstantiatedModel*>(mInstantiatedModel.get());
 
@@ -235,13 +257,13 @@ namespace YTE
         }
         else
         {
-          vk::Rect2D scissorInner;
-          scissorInner.offset.x = (int32_t)(pcmd->ClipRect.x) > 0 ? (int32_t)(pcmd->ClipRect.x) : 0;
-          scissorInner.offset.y = (int32_t)(pcmd->ClipRect.y) > 0 ? (int32_t)(pcmd->ClipRect.y) : 0;
-          scissorInner.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
-          scissorInner.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y + 1); // FIXME: Why +1 here?
-
-          aCBO->setScissor(0, scissorInner);
+          //vk::Rect2D scissorInner;
+          //scissorInner.offset.x = (int32_t)(pcmd->ClipRect.x) > 0 ? (int32_t)(pcmd->ClipRect.x) : 0;
+          //scissorInner.offset.y = (int32_t)(pcmd->ClipRect.y) > 0 ? (int32_t)(pcmd->ClipRect.y) : 0;
+          //scissorInner.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
+          //scissorInner.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y + 1); // FIXME: Why +1 here?
+          //
+          //aCBO->setScissor(0, scissorInner);
           aCBO->drawIndexed(static_cast<u32>(pcmd->ElemCount),
                             1,
                             idx_offset,

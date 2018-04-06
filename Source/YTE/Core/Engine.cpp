@@ -27,6 +27,7 @@ namespace YTE
 {
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
+  YTEDefineEvent(PreLogicUpdate);
   YTEDefineEvent(PreFrameUpdate);
   YTEDefineEvent(FrameUpdate);
   YTEDefineEvent(BeginDebugDrawUpdate);
@@ -277,7 +278,8 @@ namespace YTE
     GetComponent<WWiseSystem>()->Update(mDt);
   
     mGamepadSystem.Update(mDt);
-  
+
+    SendEvent(Events::PreLogicUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
 
     // If we're told to shut down then our windows might be invalidated

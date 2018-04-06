@@ -151,7 +151,7 @@ namespace YTEditor
 
   void MainWindow::UpdateEngine()
   {
-    if (mRunningEngine != nullptr)
+    if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
       mRunningEngine->Update();
     }
@@ -369,6 +369,8 @@ namespace YTEditor
 
     mImguiLayer->AddComponent(YTE::GraphicsView::GetStaticType());
     auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
+    view->SetOrder(100.f);
+    view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
     view->ChangeWindow(GetLevelWindow().mWindow);
 
     mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());

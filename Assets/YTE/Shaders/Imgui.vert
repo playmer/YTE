@@ -87,12 +87,12 @@ out gl_PerVertex
 // Entry point of shader
 void main() 
 {
-  outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
-  outDiffuse = Model.mDiffuseColor;
+  outTextureCoordinates = vec2(inTextureCoordinates.x, inTextureCoordinates.y);
+  outDiffuse = inColor;
   
   // TODO: Make scale actually use the window size.
-  vec2 scale(2.0f / 1080, 2.0f / 1920);
-  vec2 translate(-1.f, 1.f);
+  vec2 scale = vec2(2.0f / 1080, 2.0f / 1920);
+  vec2 translate = vec2(-1.f, 1.f);
   gl_Position = Model.mModelMatrix     *
                 vec4(inPosition, 1.0f);
 }
