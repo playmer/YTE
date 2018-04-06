@@ -86,6 +86,7 @@ namespace YTE
   void VkImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
   {
     YTEUnusedArgument(aUpdate);
+    YTEProfileFunction();
 
     mContext->SetCurrentContext();
     auto &submesh = mContext->GetSubmesh();
@@ -102,6 +103,8 @@ namespace YTE
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
+      YTEProfileBlock("VkImgui CommandList Building");
+
       const ImDrawList* cmd_list = drawData->CmdLists[n];
 
       for (int i = 0; i < cmd_list->VtxBuffer.Size; ++i)
@@ -144,13 +147,7 @@ namespace YTE
     auto height = mView->GetWindow()->GetHeight();
 
     glm::vec3 scale{ 2.f / width, 2.f / height, 0.f };
-    //glm::vec3 translate{ -1.f, 1.f, 0.f };
-
-    auto xOffset = -(width / 2.f);
-    glm::vec3 translate{ -(width / 2.f), height / 2.f, 0.f };
-
-    std::cout << fmt::format("Window: {}, {} \n", 
-                             (int)translate.x, (int)translate.y);
+    glm::vec3 translate{ -(width / 2.f), -(height / 2.f), 0.f };
 
     modelUBO.mModelMatrix = glm::translate(glm::scale(glm::mat4{}, scale), translate);
     mContext->GetInstantiatedModel()->UpdateUBOModel(modelUBO);
@@ -212,9 +209,6 @@ namespace YTE
       return;
     }
     
-    auto model = static_cast<VkInstantiatedModel*>(mContext->GetInstantiatedModel().get());
-
-
     aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
                        mShader->mTriangles);
 
@@ -232,32 +226,19 @@ namespace YTE
                           0,
                           vk::IndexType::eUint32);
 
-    //glm::vec2 scale{ 2.0f / width, 2.0f / height };
-    //
-    //aCBO->pushConstants<glm::vec2>(mPipelineData->mPipelineLayout,
-    //                               vk::ShaderStageFlagBits::eVertex,
-    //                               0,
-    //                               scale);
-    //
-    //
-    //glm::vec2 translate{ -1.0f, 1.0f };
-    //aCBO->pushConstants<glm::vec2>(mPipelineData->mPipelineLayout,
-    //                               vk::ShaderStageFlagBits::eVertex,
-    //                               0,
-    //                               translate);
-    
     // Render the command lists:
     int vtx_offset = 0;
     int idx_offset = 0;
-    for (int n = 0; n < drawData->CmdListsCount; n++)
+
+    for (int n = 0; n < drawData->CmdListsCount; ++n)
     {
-      const ImDrawList* cmd_list = drawData->CmdLists[n];
-      for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
+      ImDrawList const *commandList = drawData->CmdLists[n];
+
+      for (auto &commandBuffer : commandList->CmdBuffer)
       {
-        const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-        if (pcmd->UserCallback)
+        if (commandBuffer.UserCallback)
         {
-          pcmd->UserCallback(cmd_list, pcmd);
+          commandBuffer.UserCallback(commandList, &commandBuffer);
         }
         else
         {
@@ -268,15 +249,17 @@ namespace YTE
           //scissorInner.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y + 1); // FIXME: Why +1 here?
           //
           //aCBO->setScissor(0, scissorInner);
-          aCBO->drawIndexed(static_cast<u32>(pcmd->ElemCount),
+          aCBO->drawIndexed(static_cast<u32>(commandBuffer.ElemCount),
                             1,
                             idx_offset,
                             vtx_offset,
                             0);
         }
-        idx_offset += pcmd->ElemCount;
+
+        idx_offset += commandBuffer.ElemCount;
       }
-      vtx_offset += cmd_list->VtxBuffer.Size;
+
+      vtx_offset += commandList->VtxBuffer.Size;
     }
   }
 

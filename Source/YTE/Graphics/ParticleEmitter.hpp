@@ -88,8 +88,10 @@ namespace YTE
     void SetGravityValue(float aGravityVal);
 
   private:
-
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
+    std::vector<std::unique_ptr<InstantiatedModel>> mFreeParticles;
+    std::vector<float> mVarianceBuffer;
+    size_t mVarianceIndex;
 
     YTE::Renderer *mRenderer;
 

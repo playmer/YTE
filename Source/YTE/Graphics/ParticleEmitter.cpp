@@ -84,22 +84,23 @@ namespace YTE
 
   ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mVarianceIndex{0}
     , mRenderer{ nullptr }
-    , mTextureName("")
-    , mPosition()
-    , mPositionOffset()
-    , mInitVelocity(0.0f, 1.0f, 0.0f)
-    , mVelocityVariance()
-    , mLifetime(3.0f)
-    , mLifetimeVariance(0.0f)
-    , mColor(1.0f, 1.0f, 1.0f, 1.0f)
-    , mParticleScale(0.1f, 0.1f, 0.1f)
-    , mParticleScaleVariance()
-    , mEmitterScale()
-    , mEmitRate(0.0f)
-    , mEmitCount(0.0f)
-    , mUseGravity(false)
-    , mGravityValue(1.0f)
+    , mTextureName{ "" }
+    , mPosition{}
+    , mPositionOffset{}
+    , mInitVelocity{0.0f, 1.0f, 0.0f}
+    , mVelocityVariance{}
+    , mLifetime{3.0f}
+    , mLifetimeVariance{0.0f}
+    , mColor{1.0f, 1.0f, 1.0f, 1.0f}
+    , mParticleScale{0.1f, 0.1f, 0.1f}
+    , mParticleScaleVariance{}
+    , mEmitterScale{}
+    , mEmitRate{0.0f}
+    , mEmitCount{0.0f}
+    , mUseGravity{false}
+    , mGravityValue{1.0f}
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -114,13 +115,11 @@ namespace YTE
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mTimer = mEmitRate;
     CreateMesh();
-  }
 
-  bool RemovePred(const std::pair<Particle, std::unique_ptr<InstantiatedModel>> &boi)
-  {
-    if (boi.first.mLife <= 0.0f) return true;
-
-    return false;
+    for (size_t i = 0; i < 4000; ++i)
+    {
+      mVarianceBuffer.emplace_back((static_cast<float>(rand() % 200) / 100.0f) - 1.0f);
+    }
   }
 
   void ParticleEmitter::Update(LogicUpdate *aEvent)
@@ -129,19 +128,12 @@ namespace YTE
     YTEUnusedArgument(aEvent);
     double dt = GetSpace()->GetEngine()->GetDt();
 
-    // erase the dead bois
-    mParticles.erase(
-      std::remove_if(mParticles.begin(),
-        mParticles.end(),
-        RemovePred
-      ),
-      mParticles.end()
-    );
+    mTimer -= dt;
 
-    // time to make some new particle bois
+    // time to make some new particles
     if (mTimer <= 0.0f)
     {
-      // create those bois
+      // create the required particles
       for (int i = 0; i < mEmitCount; ++i)
       {
         CreateParticle();
@@ -150,19 +142,23 @@ namespace YTE
       // reset the countdown
       mTimer = mEmitRate;
     }
-    else
+
+    // update the particles
+    for (auto it = mParticles.begin(); it < mParticles.end(); ++it)
     {
-      // decrement the timer
-      mTimer -= dt;
-    }
+      while (it < mParticles.end() && it->first.mLife <= 0.0f)
+      {
+        it->second->SetVisibility(false);
+        mFreeParticles.emplace_back(std::move(it->second));
+        it = mParticles.erase(it);
+      }
 
-    // update all the bois ;)
+      if (it == mParticles.end())
+      {
+        break;
+      }
 
-    for (auto &particleIt : mParticles)
-    {
-      Particle &particle = particleIt.first;
-
-      //std::cout << fmt::format("{}\n", particle.mPosition.x);
+      Particle &particle = it->first;
 
       particle.mLife -= dt;
       particle.mPosition += particle.mVelocity * static_cast<float>(dt);
@@ -180,7 +176,7 @@ namespace YTE
       particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
       particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
 
-      particleIt.second->UpdateUBOModel(particle.mUBO);
+      it->second->UpdateUBOModel(particle.mUBO);
     }
   }
 
@@ -379,15 +375,27 @@ namespace YTE
     std::vector<Submesh> submeshes{ submesh };
 
     mMesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+
+    mFreeParticles.clear();
   }
 
   void ParticleEmitter::CreateParticle()
   {
     auto view = mSpace->GetComponent<GraphicsView>();
+    std::unique_ptr<InstantiatedModel> model;
 
-    std::unique_ptr<InstantiatedModel> model = mRenderer->CreateModel(view, mMesh);
-    model->SetInstanced(true);
-    model->mType = ShaderType::AdditiveBlendShader;
+    if (mFreeParticles.empty())
+    {
+      model = mRenderer->CreateModel(view, mMesh);
+      model->SetInstanced(true);
+      model->mType = ShaderType::AdditiveBlendShader;
+    }
+    else
+    {
+      model = std::move(mFreeParticles.back());
+      mFreeParticles.pop_back();
+      model->SetVisibility(true);
+    }
 
     // calculate the random bullshit
     glm::vec3 velVar;
@@ -425,16 +433,12 @@ namespace YTE
     mPosition = aEvent->WorldPosition;
   }
 
-  int ParticleEmitter::RandomInt(int aMin, int aMax)
-  {
-    int range = aMax - aMin;
-
-    return rand() % range + aMin;
-  }
-
   float ParticleEmitter::Variance()
   {
-    return (static_cast<float>(rand() % 200) / 100.0f) - 1.0f;
+    mVarianceIndex = (mVarianceIndex == (mVarianceBuffer.size() - 1)) ? 0 : ++mVarianceIndex;
+    return mVarianceBuffer[mVarianceIndex];
+
+    //return (static_cast<float>(rand() % 200) / 100.0f) - 1.0f;
   }
 
 }
