@@ -149,4 +149,9 @@ layout (location = 0) out vec4 outFragColor;
 void main()
 {
   outFragColor = inDiffuse *  texture(diffuseSampler, inTextureCoordinates.st);
+
+  if (outFragColor.w <= 0.001f)
+  {
+    discard;
+  }
 }

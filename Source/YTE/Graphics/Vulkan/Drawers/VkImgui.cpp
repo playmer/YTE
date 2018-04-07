@@ -242,13 +242,13 @@ namespace YTE
         }
         else
         {
-          //vk::Rect2D scissorInner;
-          //scissorInner.offset.x = (int32_t)(pcmd->ClipRect.x) > 0 ? (int32_t)(pcmd->ClipRect.x) : 0;
-          //scissorInner.offset.y = (int32_t)(pcmd->ClipRect.y) > 0 ? (int32_t)(pcmd->ClipRect.y) : 0;
-          //scissorInner.extent.width = (uint32_t)(pcmd->ClipRect.z - pcmd->ClipRect.x);
-          //scissorInner.extent.height = (uint32_t)(pcmd->ClipRect.w - pcmd->ClipRect.y + 1); // FIXME: Why +1 here?
-          //
-          //aCBO->setScissor(0, scissorInner);
+          vk::Rect2D scissorInner;
+          scissorInner.offset.x = (int32_t)(commandBuffer.ClipRect.x) > 0 ? (int32_t)(commandBuffer.ClipRect.x) : 0;
+          scissorInner.offset.y = (int32_t)(commandBuffer.ClipRect.y) > 0 ? (int32_t)(commandBuffer.ClipRect.y) : 0;
+          scissorInner.extent.width = (uint32_t)(commandBuffer.ClipRect.z - commandBuffer.ClipRect.x);
+          scissorInner.extent.height = (uint32_t)(commandBuffer.ClipRect.w - commandBuffer.ClipRect.y + 1); // FIXME: Why +1 here?
+          
+          aCBO->setScissor(0, scissorInner);
           aCBO->drawIndexed(static_cast<u32>(commandBuffer.ElemCount),
                             1,
                             idx_offset,
