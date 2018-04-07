@@ -22,7 +22,7 @@ namespace YTE
   ImguiLayer::ImguiLayer(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component{aOwner, aSpace}
   {
-
+    YTEUnusedArgument(aProperties);
   }
 
   ImguiLayer::~ImguiLayer()
@@ -56,6 +56,8 @@ namespace YTE
   void ImguiLayer::Start()
   {
     ImGui::SetCurrentContext(mContext);
+    StyleColorsDark();
+
     ImGuiIO& io = ImGui::GetIO();
 
     auto window = mView->GetWindow();
@@ -152,8 +154,7 @@ namespace YTE
     // Start the frame. This call will update the io.WantCaptureMouse, io.WantCaptureKeyboard 
     // flag that you can use to dispatch inputs (or not) to your application.
     ImGui::NewFrame();
-
-
+    ImGuizmo::BeginFrame();
 
     ShowMetricsWindow();
   }
@@ -209,26 +210,31 @@ namespace YTE
   /////////////////////////////////////////////////////////////////////////
   void ImguiLayer::SetDrawlist()
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::SetDrawlist();
   }
 
   void ImguiLayer::BeginFrame()
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::BeginFrame();
   }
 
   bool ImguiLayer::IsOver()
   {
+    ImGui::SetCurrentContext(mContext);
     return ImGuizmo::IsOver();
   }
 
   bool ImguiLayer::IsUsing()
   {
+    ImGui::SetCurrentContext(mContext);
     return ImGuizmo::IsUsing();
   }
 
   void ImguiLayer::Enable(bool enable)
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::Enable(enable);
   }
 
@@ -237,6 +243,7 @@ namespace YTE
                                                float *rotation, 
                                                float *scale)
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::DecomposeMatrixToComponents(matrix,
                                           translation,
                                           rotation,
@@ -248,6 +255,7 @@ namespace YTE
                                                  const float *scale, 
                                                  float *matrix)
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::RecomposeMatrixFromComponents(translation,
                                             rotation,
                                             scale,
@@ -256,12 +264,14 @@ namespace YTE
 
   void ImguiLayer::SetRect(float x, float y, float width, float height)
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::SetRect(x, y, width, height);
   }
 
   void ImguiLayer::DrawCube(const float *view, const float *projection, float *matrix)
   {
-    DrawCube(view, projection, matrix);
+    ImGui::SetCurrentContext(mContext);
+    ImGuizmo::DrawCube(view, projection, matrix);
   }
 
   void ImguiLayer::Manipulate(const float *view, 
@@ -274,6 +284,7 @@ namespace YTE
                               float *localBounds, 
                               float *boundsSnap)
   {
+    ImGui::SetCurrentContext(mContext);
     ImGuizmo::Manipulate(view, 
                          projection, 
                          operation, 
@@ -288,6 +299,18 @@ namespace YTE
   /////////////////////////////////////////////////////////////////////////
   // ImGui
   /////////////////////////////////////////////////////////////////////////
+  ImGuiIO& ImguiLayer::GetIO()
+  {
+    ImGui::SetCurrentContext(mContext);
+    return ImGui::GetIO();
+  }
+
+  ImGuiStyle& ImguiLayer::GetStyle()
+  {
+    ImGui::SetCurrentContext(mContext);
+    return ImGui::GetStyle();
+  }
+
   void ImguiLayer::ShowMetricsWindow(bool* p_open)
   {
     ImGui::SetCurrentContext(mContext);

@@ -9,6 +9,7 @@
 
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
+#include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
 
 namespace YTEditor
@@ -90,7 +91,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Select);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Select);
     }
   }
 
@@ -99,7 +100,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Translate);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
     }
   }
 
@@ -108,7 +109,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Rotate);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
     }
   }
 
@@ -117,7 +118,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Scale);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
     }
   }
 

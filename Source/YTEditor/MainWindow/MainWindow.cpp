@@ -62,6 +62,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/GameWindow/GameToolbar.hpp"
+#include "YTEditor/Gizmos/Gizmo.hpp"
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/FileViewer/FileViewer.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
@@ -83,20 +84,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
   MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
-    : QMainWindow()
-    , mRunningEngine(aEngine)
-    , mApplication(aQApp)
-    , mObjectBrowser(nullptr)
-    , mComponentBrowser(nullptr)
-    , mOutputConsole(nullptr)
-    , mRunningSpaceName("")
-    , mRunningLevelName("")
-    , mRunningSpace(nullptr)
-    , mUndoRedo(new UndoRedo())
-    , mRunningWindow(nullptr)
-    , mFileMenu(nullptr)
-    , mGameObjectMenu(nullptr)
-    , mEditorCamera(nullptr)
+    : QMainWindow{}
+    , mRunningEngine{ aEngine }
+    , mApplication{ aQApp }
+    , mObjectBrowser{ nullptr }
+    , mComponentBrowser{ nullptr }
+    , mOutputConsole{ nullptr }
+    , mRunningSpaceName{ "" }
+    , mRunningLevelName{ "" }
+    , mRunningSpace{ nullptr }
+    , mUndoRedo{ new UndoRedo() }
+    , mGizmo{ nullptr }
+    , mRunningWindow{ nullptr }
+    , mFileMenu{ nullptr }
+    , mGameObjectMenu{ nullptr }
+    , mEditorCamera{ nullptr }
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -343,6 +345,7 @@ namespace YTEditor
       GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
     }
 
+    CreateGizmo(mEditingLevel);
   }
 
   void MainWindow::SaveCurrentLevel()
@@ -462,6 +465,33 @@ namespace YTEditor
   QApplication* MainWindow::GetApplication()
   {
     return mApplication;
+  }
+  Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
+  {
+    auto gizmo = RemakeGizmo();
+
+    // get the window 
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    gizmo->SetOperation(Gizmo::Operation::Select);
+
+    return gizmo;
+  }
+
+  Gizmo* MainWindow::RemakeGizmo()
+  {
+    // get the window 
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+
+    mGizmo = std::make_unique<Gizmo>(this, 
+                                     mImguiLayer->GetComponent<YTE::ImguiLayer>(),
+                                     mEditorCamera->GetComponent<YTE::Camera>());
+
+    return mGizmo.get();
+  }
+
+  void MainWindow::DeleteGizmo()
+  {
+    mGizmo.reset();
   }
 
   Gizmo* MainWindow::GetGizmo()

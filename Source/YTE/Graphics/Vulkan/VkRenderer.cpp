@@ -222,7 +222,7 @@ namespace YTE
 
   Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
   {
-    vk::ImageViewType type;
+    vk::ImageViewType type{ vk::ImageViewType::e2D };
 
     switch (aType)
     {
@@ -247,7 +247,7 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType)
   {
-    vk::ImageViewType type;
+    vk::ImageViewType type{ vk::ImageViewType::e2D };
 
     switch (aType)
     {

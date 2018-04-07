@@ -83,6 +83,10 @@ namespace YTE
     void          ShowMetricsWindow(bool* p_open = NULL);     // create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.
     const char*   GetVersion();
 
+    // Main
+    ImGuiIO&      GetIO();
+    ImGuiStyle&   GetStyle();
+
     // Styles
     void          StyleColorsDark(ImGuiStyle* dst = NULL);    // New, recommended style
     void          StyleColorsClassic(ImGuiStyle* dst = NULL); // Classic imgui style (default)

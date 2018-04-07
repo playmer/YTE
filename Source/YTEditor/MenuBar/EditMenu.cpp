@@ -35,20 +35,10 @@ namespace YTEditor
     addAction(redoAct);
     connect(redoAct, &QAction::triggered, this, &EditMenu::Redo);
     redoAct->setToolTip("Ctrl+Y");
-
-    QAction *refreshGizmoAct = new QAction("Refresh Gizmo");
-    addAction(refreshGizmoAct);
-    connect(refreshGizmoAct, &QAction::triggered, this, &EditMenu::RefreshGizmo);
-    refreshGizmoAct->setToolTip("Ctrl+R");
   }
 
   EditMenu::~EditMenu()
   {
-  }
-
-  void EditMenu::RefreshGizmo()
-  {
-    mMainWindow->GetGizmo()->RefreshAxesInPhysicsHandler();
   }
 
   void EditMenu::Undo()

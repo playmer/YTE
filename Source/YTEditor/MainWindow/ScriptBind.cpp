@@ -11,9 +11,6 @@ namespace YTEditor
   void InitializeYTEditorTypes()
   {
     YTE::InitializeType<YTEditor::LogHandler>();
-    YTE::InitializeType<YTEditor::Translate>();
-    YTE::InitializeType<YTEditor::Scale>();
-    YTE::InitializeType<YTEditor::Rotate>();
   }
 }
 

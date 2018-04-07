@@ -519,4 +519,19 @@ namespace YTE
 
     mOwner->SendEvent(aEvent, &newTransform);
   }
+
+
+  glm::mat4 Transform::GetTransformMatrix()
+  {
+    auto matrix = glm::translate(glm::mat4(1.0f), mWorldTranslation);
+    matrix = matrix * glm::toMat4(mWorldRotation);
+    matrix = glm::scale(matrix, mWorldScale);
+
+    return matrix;
+  }
+
+  void Transform::SetTransformMatrix(glm::mat4 &aMatrix)
+  {
+
+  }
 }
