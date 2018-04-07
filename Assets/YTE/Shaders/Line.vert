@@ -98,7 +98,7 @@ out gl_PerVertex
 // Entry point of shader
 void main() 
 {
-  outDiffuse = vec4(inColor, 1.0f);
+  outDiffuse = inColor;
 
   // Unsure if this needs to be vec3/mat3 here.
   //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
