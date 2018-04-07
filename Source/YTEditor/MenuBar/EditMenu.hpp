@@ -31,7 +31,7 @@ namespace YTEditor
 
   private:
 
-    MainWindow * mMainWindow;
+    MainWindow *mMainWindow;
 
     void Undo();
     void Redo();

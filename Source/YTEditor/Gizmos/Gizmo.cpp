@@ -22,7 +22,7 @@ namespace YTEditor
     , mLayer{aLayer}
     , mOperation{ Operation::Select }
   {
-    aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::FrameUpdate, this, &Gizmo::Update);
+    aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::LogicUpdate, this, &Gizmo::Update);
   }
 
   void Gizmo::Update(YTE::LogicUpdate *aEvent)
@@ -34,7 +34,16 @@ namespace YTEditor
 
       auto cameraUBO = mCamera->ConstructUBOView();
       auto view = glm::value_ptr(cameraUBO.mViewMatrix);
-      auto projection = glm::value_ptr(cameraUBO.mProjectionMatrix);
+
+      // matrix does perspective divide and flips vulkan y axis
+      const glm::mat4 clip(1.0f, 0.0f, 0.0f, 0.0f,
+                           0.0f, -1.0f, 0.0f, 0.0f,
+                           0.0f, 0.0f, 0.5f, 0.0f,
+                           0.0f, 0.0f, 0.5f, 1.0f);
+
+      auto flippedProjection = glm::inverse(clip) * cameraUBO.mProjectionMatrix;
+
+      auto projection = glm::value_ptr(flippedProjection);
 
       auto compositionMatrix = mCurrentComposition->GetTransformMatrix();
       auto matrix = glm::value_ptr(compositionMatrix);
@@ -50,17 +59,29 @@ namespace YTEditor
 
       ImGuizmo::MODE mode = ImGuizmo::MODE::WORLD;
 
-      //mLayer->SetDrawlist();
-      //
-      //mLayer->Manipulate(view,          // const float *view, 
-      //                   projection,    // const float *projection, 
-      //                   operation,      // OPERATION operation, 
-      //                   mode,          // MODE mode, 
-      //                   matrix,        // float *matrix, 
-      //                   nullptr,       // float *deltaMatrix = 0, 
-      //                   nullptr,       // float *snap = 0, 
-      //                   nullptr,       // float *localBounds = NULL, 
-      //                   nullptr);      // float *boundsSnap = NULL
+      mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
+      mLayer->SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
+
+      //mLayer->PushStyleVar(ImGuiStyleVar_Alpha, 0.0f);
+      mLayer->Begin("GL Editor",
+                    nullptr, 
+                    ImGuiWindowFlags_NoResize |
+                    ImGuiWindowFlags_NoMove |
+                    ImGuiWindowFlags_NoCollapse |
+                    ImGuiWindowFlags_NoTitleBar);
+
+      mLayer->SetDrawlist();
+      
+      mLayer->Manipulate(view,          // const float *view, 
+                         projection,    // const float *projection, 
+                         operation,     // OPERATION operation, 
+                         mode,          // MODE mode, 
+                         matrix,        // float *matrix, 
+                         nullptr,       // float *deltaMatrix = 0, 
+                         nullptr,       // float *snap = 0, 
+                         nullptr,       // float *localBounds = NULL, 
+                         nullptr);      // float *boundsSnap = NULL
+      mLayer->End();
     }
   }
 
