@@ -10,7 +10,6 @@
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
 #include "YTEditor/Gizmos/GizmoToolbar.hpp"
-#include "YTEditor/Gizmos/Gizmo.hpp"
 
 namespace YTEditor
 {

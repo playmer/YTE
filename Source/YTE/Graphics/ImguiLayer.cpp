@@ -124,24 +124,10 @@ namespace YTE
     // Setup time step
     io.DeltaTime = aUpdate->Dt > 0.0 ? (float)(aUpdate->Dt) : (float)(1.0f / 60.0f);
 
-    // Setup inputs
-    // (we already got mouse wheel, keyboard keys & characters from glfw callbacks polled in glfwPollEvents())
-    //if (window->IsFocused())
-    //{
-    //}
-    //else
-    //{
-    //  io.MousePos = ImVec2(-std::numeric_limits<float>::max(), 
-    //                       -std::numeric_limits<float>::max());
-    //}
-
-
+    // TODO: Technically we should only do this when the window is focused, but
+    //       we don't currently know that for windows in the editor.
     auto position = mouse.GetCursorPosition();
     io.MousePos = ImVec2((float)position.x, (float)position.y);
-
-    //std::cout << fmt::format("Mouse: {}, {}; Window: {}, {} \n", 
-    //                         (float)position.x, (float)position.y,
-    //                         io.DisplaySize.x, io.DisplaySize.y);
 
     //Mouse buttons : left, right, middle
     io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
@@ -216,6 +202,92 @@ namespace YTE
     io.AddInputCharacter((ImWchar)aEvent->CharacterTyped);
   }
 
+
+
+  /////////////////////////////////////////////////////////////////////////
+  // ImGuizmo
+  /////////////////////////////////////////////////////////////////////////
+  void ImguiLayer::SetDrawlist()
+  {
+    ImGuizmo::SetDrawlist();
+  }
+
+  void ImguiLayer::BeginFrame()
+  {
+    ImGuizmo::BeginFrame();
+  }
+
+  bool ImguiLayer::IsOver()
+  {
+    return ImGuizmo::IsOver();
+  }
+
+  bool ImguiLayer::IsUsing()
+  {
+    return ImGuizmo::IsUsing();
+  }
+
+  void ImguiLayer::Enable(bool enable)
+  {
+    ImGuizmo::Enable(enable);
+  }
+
+  void ImguiLayer::DecomposeMatrixToComponents(const float *matrix, 
+                                               float *translation, 
+                                               float *rotation, 
+                                               float *scale)
+  {
+    ImGuizmo::DecomposeMatrixToComponents(matrix,
+                                          translation,
+                                          rotation,
+                                          scale);
+  }
+
+  void ImguiLayer::RecomposeMatrixFromComponents(const float *translation, 
+                                                 const float *rotation, 
+                                                 const float *scale, 
+                                                 float *matrix)
+  {
+    ImGuizmo::RecomposeMatrixFromComponents(translation,
+                                            rotation,
+                                            scale,
+                                            matrix);
+  }
+
+  void ImguiLayer::SetRect(float x, float y, float width, float height)
+  {
+    ImGuizmo::SetRect(x, y, width, height);
+  }
+
+  void ImguiLayer::DrawCube(const float *view, const float *projection, float *matrix)
+  {
+    DrawCube(view, projection, matrix);
+  }
+
+  void ImguiLayer::Manipulate(const float *view, 
+                              const float *projection, 
+                              ImGuizmo::OPERATION operation, 
+                              ImGuizmo::MODE mode, 
+                              float *matrix, 
+                              float *deltaMatrix, 
+                              float *snap, 
+                              float *localBounds, 
+                              float *boundsSnap)
+  {
+    ImGuizmo::Manipulate(view, 
+                         projection, 
+                         operation, 
+                         mode, 
+                         matrix, 
+                         deltaMatrix, 
+                         snap, 
+                         localBounds, 
+                         boundsSnap);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // ImGui
+  /////////////////////////////////////////////////////////////////////////
   void ImguiLayer::ShowMetricsWindow(bool* p_open)
   {
     ImGui::SetCurrentContext(mContext);

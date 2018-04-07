@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "ImGuizmo.h"
 
 #include "YTE/Core/Component.hpp"
 
@@ -31,6 +32,53 @@ namespace YTE
 
     void ImguiUpdate(LogicUpdate *aUpdate);
 
+
+
+
+    /////////////////////////////////////////////////////////////////////////
+    // ImGuizmo
+    /////////////////////////////////////////////////////////////////////////
+    // call inside your own window and before Manipulate() in order to draw gizmo to that window.
+    void SetDrawlist();
+
+    // call BeginFrame right after ImGui_XXXX_NewFrame();
+    void BeginFrame();
+
+    // return true if mouse cursor is over any gizmo control (axis, plan or screen component)
+    bool IsOver();
+
+    // return true if mouse IsOver or if the gizmo is in moving state
+    bool IsUsing();
+
+    // enable/disable the gizmo. Stay in the state until next call to Enable.
+    // gizmo is rendered with gray half transparent color when disabled
+    void Enable(bool enable);
+
+    // helper functions for manualy editing translation/rotation/scale with an input float
+    // translation, rotation and scale float points to 3 floats each
+    // Angles are in degrees (more suitable for human editing)
+    // example:
+    // float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+    // ImGuizmo::DecomposeMatrixToComponents(gizmoMatrix.m16, matrixTranslation, matrixRotation, matrixScale);
+    // ImGui::InputFloat3("Tr", matrixTranslation, 3);
+    // ImGui::InputFloat3("Rt", matrixRotation, 3);
+    // ImGui::InputFloat3("Sc", matrixScale, 3);
+    // ImGuizmo::RecomposeMatrixFromComponents(matrixTranslation, matrixRotation, matrixScale, gizmoMatrix.m16);
+    //
+    // These functions have some numerical stability issues for now. Use with caution.
+    void DecomposeMatrixToComponents(const float *matrix, float *translation, float *rotation, float *scale);
+    void RecomposeMatrixFromComponents(const float *translation, const float *rotation, const float *scale, float *matrix);
+
+    void SetRect(float x, float y, float width, float height);
+
+    // Render a cube with face color corresponding to face normal. Usefull for debug/tests
+    void DrawCube(const float *view, const float *projection, float *matrix);
+
+    void Manipulate(const float *view, const float *projection, ImGuizmo::OPERATION operation, ImGuizmo::MODE mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
+
+    /////////////////////////////////////////////////////////////////////////
+    // ImGui
+    /////////////////////////////////////////////////////////////////////////
     // Demo, Debug, Informations
     void          ShowMetricsWindow(bool* p_open = NULL);     // create metrics window. display ImGui internals: draw commands (with individual draw calls and vertices), window list, basic internal state, etc.
     const char*   GetVersion();
