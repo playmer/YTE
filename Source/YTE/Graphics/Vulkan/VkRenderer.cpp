@@ -187,7 +187,7 @@ namespace YTE
 
   VkTexture* VkRenderer::CreateTexture(std::string aName,
                                        std::vector<u8> aData,
-                                       TextureType aType,
+                                       TextureLayout aType,
                                        u32 aWidth,
                                        u32 aHeight,
                                        u32 aMipLevels,
@@ -219,6 +219,62 @@ namespace YTE
 
     return texturePtr;
   }
+
+  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  {
+    vk::ImageViewType type;
+
+    switch (aType)
+    {
+      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    }
+
+    return CreateTexture(aFilename, type);
+  }
+
+  Texture* VkRenderer::CreateTexture(std::string aName,
+                                   std::vector<u8> aData,
+                                   TextureLayout aLayout,
+                                   u32 aWidth,
+                                   u32 aHeight,
+                                   u32 aMipLevels,
+                                   u32 aLayerCount,
+                                   TextureType aType)
+  {
+    vk::ImageViewType type;
+
+    switch (aType)
+    {
+      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    }
+
+    return CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+  }
+
+  Texture* VkRenderer::GetTexture(std::string &aFilename)
+  {
+    auto textureIt = mTextures.find(aFilename);
+
+    if (textureIt != mTextures.end())
+    {
+      return textureIt->second.get();
+    }
+
+    return nullptr;
+  }
+
 
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)

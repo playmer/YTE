@@ -55,6 +55,41 @@ namespace YTE
     YTEUnusedArgument(aModel);
   }
 
+  Texture* Renderer::CreateTexture(std::string &aFilename, TextureType aType)
+  {
+    YTEUnusedArgument(aFilename);
+    YTEUnusedArgument(aType);
+
+    return nullptr;
+  }
+
+  Texture* Renderer::CreateTexture(std::string aName,
+                                   std::vector<u8> aData,
+                                   TextureLayout aLayout,
+                                   u32 aWidth,
+                                   u32 aHeight,
+                                   u32 aMipLevels,
+                                   u32 aLayerCount,
+                                   TextureType aType)
+  {
+    YTEUnusedArgument(aName);
+    YTEUnusedArgument(aData);
+    YTEUnusedArgument(aLayout);
+    YTEUnusedArgument(aWidth);
+    YTEUnusedArgument(aHeight);
+    YTEUnusedArgument(aMipLevels);
+    YTEUnusedArgument(aLayerCount);
+    YTEUnusedArgument(aType);
+
+    return nullptr;
+  }
+
+  Texture* Renderer::GetTexture(std::string &aFilename)
+  {
+    YTEUnusedArgument(aFilename);
+    return nullptr;
+  }
+
   Mesh* Renderer::CreateSimpleMesh(std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
   {
     YTEUnusedArgument(aName);

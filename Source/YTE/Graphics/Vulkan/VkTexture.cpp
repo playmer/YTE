@@ -28,7 +28,7 @@ namespace YTE
 
 
   VkTexture::VkTexture(std::vector<u8> aData,
-                       TextureType aType,
+                       TextureLayout aType,
                        u32 aWidth,
                        u32 aHeight,
                        u32 aMipLevels,
@@ -61,17 +61,17 @@ namespace YTE
 
     switch (mType)
     {
-      case TextureType::DXT1_sRGB:
+      case TextureLayout::DXT1_sRGB:
       {
         format = vk::Format::eBc1RgbaSrgbBlock;
         break;
       }
-      case TextureType::DXT5_sRGB:
+      case TextureLayout::DXT5_sRGB:
       {
         format = vk::Format::eBc3UnormBlock;
         break;
       }
-      case TextureType::RGBA:
+      case TextureLayout::RGBA:
       {
         format = vk::Format::eR8G8B8A8Unorm;
         break;
@@ -167,11 +167,11 @@ namespace YTE
 
     switch (mType)
     {
-      case TextureType::DXT1_sRGB:
+      case TextureLayout::DXT1_sRGB:
       {
         break;
       }
-      case TextureType::DXT5_sRGB:
+      case TextureLayout::DXT5_sRGB:
       {
         // Adapted from: https://stackoverflow.com/questions/36138217/unable-to-create-image-from-compressed-texture-data-s3tc
         constexpr u32 blockSize{ 16 };
@@ -191,7 +191,7 @@ namespace YTE
 
         break;
       }
-      case TextureType::RGBA:
+      case TextureLayout::RGBA:
       default:
       {
         for (size_t y = 0; y < height; y++)

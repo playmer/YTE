@@ -71,7 +71,7 @@ namespace YTE
 
     mSurface->GetRenderer()->CreateTexture(mTextureName,
                                            std::vector<u8>{pixels, pixels + uploadSize},
-                                           TextureType::RGBA,
+                                           TextureLayout::RGBA,
                                            width,
                                            height,
                                            0,

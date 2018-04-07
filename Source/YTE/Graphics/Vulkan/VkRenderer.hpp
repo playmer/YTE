@@ -38,12 +38,25 @@ namespace YTE
     VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
     VkTexture* CreateTexture(std::string aName,
                              std::vector<u8> aData,
-                             TextureType aType,
+                             TextureLayout aType,
                              u32 aWidth,
                              u32 aHeight,
                              u32 aMipLevels,
                              u32 aLayerCount,
                              vk::ImageViewType aVulkanType);
+
+
+    Texture* CreateTexture(std::string &aFilename, TextureType aType) override;
+    Texture* CreateTexture(std::string aName,
+                           std::vector<u8> aData,
+                           TextureLayout aLayout,
+                           u32 aWidth,
+                           u32 aHeight,
+                           u32 aMipLevels,
+                           u32 aLayerCount,
+                           TextureType aType) override;
+
+    Texture* GetTexture(std::string &aFilename) override;
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;

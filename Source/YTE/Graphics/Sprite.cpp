@@ -217,6 +217,8 @@ namespace YTE
       return;
     }
 
+    auto texture = mRenderer->CreateTexture(mTextureName, TextureType::e2D);
+
     std::string meshName = "__Sprite";
     meshName += mTextureName;
     meshName += mOwner->GetGUID().ToString();

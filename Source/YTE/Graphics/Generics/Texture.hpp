@@ -12,12 +12,22 @@
 
 namespace YTE
 {
-  // Type of texture we are using
-  enum class TextureType
+  enum class TextureLayout
   {
     RGBA,
     DXT1_sRGB,
     DXT5_sRGB
+  };
+
+  enum class TextureType
+  {
+    e1D,
+    e2D,
+    e3D,
+    eCube,
+    e1DArray,
+    e2DArray,
+    eCubeArray
   };
 
 
@@ -31,7 +41,7 @@ namespace YTE
     Texture(const char *aFile);
 
     Texture(std::vector<u8> aData, 
-            TextureType aType, 
+            TextureLayout aType, 
             u32 aWidth, 
             u32 aHeight, 
             u32 aMipLevels, 
@@ -61,7 +71,7 @@ namespace YTE
     std::string mTexturePath;
     std::string mTextureFileName;
 
-    TextureType mType;
+    TextureLayout mType;
 
 
 

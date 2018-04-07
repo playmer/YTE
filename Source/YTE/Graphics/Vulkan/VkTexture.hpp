@@ -20,7 +20,7 @@ namespace YTE
     YTEDeclareType(VkTexture);
 
     VkTexture(std::vector<u8> aData,
-              TextureType aType,
+              TextureLayout aType,
               u32 aWidth,
               u32 aHeight,
               u32 aMipLevels,
