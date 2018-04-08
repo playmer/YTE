@@ -49,6 +49,7 @@ namespace YTE
     mModel = mOwner->GetComponent<Model>();
     mAnimator = mOwner->GetComponent<Animator>();
 
+    mModel->GetMesh()->ResetTextureCoordinates();
     RefreshInitialBufffers();
 
     auto animations = mAnimator->GetAnimations();

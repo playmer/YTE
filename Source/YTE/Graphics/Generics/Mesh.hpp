@@ -114,7 +114,6 @@ namespace YTE
   };
 
 
-
   // contains bones
   class Skeleton
   {
@@ -149,9 +148,6 @@ namespace YTE
         return false; // bone not added, too many bones on vertex
       }
     };
-    
-
-
 
     bool Initialize(const aiScene* aScene);
 
@@ -186,7 +182,6 @@ namespace YTE
     {
       return &mBones;
     }
-
 
   private:
     void PreTransform(const aiScene* aScene);
@@ -241,8 +236,12 @@ namespace YTE
       return tri;
     }
 
+    void ResetTextureCoordinates();
+
     std::vector<Vertex> mVertexBuffer;
     std::vector<u32> mIndexBuffer;
+
+    std::vector<glm::vec3> mInitialTextureCoordinates;
 
     UBOMaterial mUBOMaterial;
 
@@ -294,6 +293,8 @@ namespace YTE
 
     void SetBackfaceCulling(bool aCulling);
     virtual void RecreateShader() {}
+
+    void ResetTextureCoordinates();
 
     std::string mName;
     std::vector<Submesh> mParts;

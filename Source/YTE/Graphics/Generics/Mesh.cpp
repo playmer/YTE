@@ -334,6 +334,7 @@ namespace YTE
         boneIDs,
         boneIDs2);
 
+      mInitialTextureCoordinates.emplace_back(textureCoordinates);
 
       mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
       mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
@@ -364,6 +365,13 @@ namespace YTE
     mIndexBufferSize = mIndexBuffer.size() * sizeof(u32);
   }
 
+  void Submesh::ResetTextureCoordinates()
+  {
+    for (int i = 0; i < mVertexBuffer.size(); i++)
+    {
+      mVertexBuffer[i].mTextureCoordinates = mInitialTextureCoordinates[i];
+    }
+  }
 
 
   ColliderMesh::ColliderMesh(const aiMesh* aMesh)
@@ -545,8 +553,6 @@ namespace YTE
 
   }
 
-
-
   bool Mesh::CanAnimate()
   {
     return mSkeleton.HasBones();
@@ -562,6 +568,14 @@ namespace YTE
     for (auto &sub : mParts)
     {
       sub.mCullBackFaces = aCulling;
+    }
+  }
+
+  void Mesh::ResetTextureCoordinates()
+  {
+    for (auto& submesh : GetSubmeshes())
+    {
+      submesh.ResetTextureCoordinates();
     }
   }
 
