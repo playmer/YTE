@@ -143,7 +143,7 @@ namespace YTE
     // recursive step
     VisitNodes(aScene->mRootNode, identity);
 
-    mDefaultOffsets.mHasAnimation = 1.0f;
+    mDefaultOffsets.mHasAnimation = 1;
     for (uint32_t i = 0; i < mNumBones; ++i)
     {
       mDefaultOffsets.mBones[i] = AssimpToGLM(mBoneData[i].mFinalTransformation);

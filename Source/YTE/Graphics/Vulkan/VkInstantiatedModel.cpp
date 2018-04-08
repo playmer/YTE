@@ -17,6 +17,8 @@ namespace YTE
     YTERegisterType(VkInstantiatedModel);
   }
 
+  UBOAnimation VkInstantiatedModel::cAnimation;
+
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
                                            VkRenderedSurface *aSurface,
                                            GraphicsView *aView)
@@ -106,9 +108,8 @@ namespace YTE
                                          nullptr,
                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
                                          allocator);
-    UBOAnimation animation;
 
-    UpdateUBOAnimation(&animation);
+    UpdateUBOAnimation(&cAnimation);
 
     UBOMaterial modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
