@@ -40,6 +40,7 @@ namespace YTEditor
     mSwitchAxesMode = new ToolbarButton(this, iconPath);
     mSwitchAxesMode->SetIsUncheckable(true);
     mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);
+    mSwitchAxesMode->setToolTip("Switches from world to local axes for gizmos.");
 
     AddButton(mSelect);
     AddButton(mTranslate);
