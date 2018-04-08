@@ -68,6 +68,8 @@ namespace YTE
     , mAnimator(nullptr)
     , mSailsAnimator(nullptr)
     , mMainsailAnimator(nullptr)
+    , mTargetRotationAmount(0.0f)
+    , mCurrentRotationAmount(0.0f)
   {
 
     mMaxSailSpeed = 25.0f;
@@ -217,6 +219,8 @@ namespace YTE
         mPlayingTurnSound = true;
       }
     }
+
+    mTargetRotationAmount = 20.0f * aEvent->StickDirection.x;
 
       // Dead-zone check and apply response curves
     float length = glm::length(aEvent->StickDirection);
@@ -381,6 +385,22 @@ namespace YTE
     mStartedTurning = false;
 
 
+    // update boat rotation
+
+    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
+    mCurrentRotationAmount += aEvent->Dt * rotDiff;
+
+    float angle = aEvent->Dt * rotDiff;
+    if (abs(angle) > 0.00001f)
+    {
+      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), aEvent->Dt * rotDiff);
+    }
+
+    //mRigidBody->ApplyForce(mCurrentRotationAmount * mOrientation->GetRightVector(), glm::vec3(0, 1, 0));
+
+
+    //std::cout << rot.x << ", " << rot.y << ", " << rot.z << std::endl;
+    
     // send boat rotation event for compass needle
     BoatRotation boatRotEvent;
     boatRotEvent.BoatForward = mOrientation->GetForwardVector();
