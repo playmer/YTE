@@ -19,8 +19,9 @@ namespace YTEditor
   Gizmo::Gizmo(MainWindow *aMainWindow, YTE::ImguiLayer *aLayer, YTE::Camera *aCamera)
     : mMainWindow{ aMainWindow }
     , mCamera{ aCamera }
-    , mLayer{aLayer}
+    , mLayer{ aLayer }
     , mOperation{ Operation::Select }
+    , mMode{ Mode::World }
   {
     aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::LogicUpdate, this, &Gizmo::Update);
     mLayer->Enable(true);
@@ -59,6 +60,11 @@ namespace YTEditor
       }
 
       ImGuizmo::MODE mode = ImGuizmo::MODE::WORLD;
+      
+      if (mMode == Mode::Local)
+      {
+        mode = ImGuizmo::MODE::LOCAL;
+      }
 
       mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
       mLayer->SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
@@ -124,5 +130,10 @@ namespace YTEditor
   Gizmo::Operation Gizmo::GetOperation()
   {
     return mOperation;
+  }
+
+  void Gizmo::SetMode(Mode aMode)
+  {
+    mMode = aMode;
   }
 }

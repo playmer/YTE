@@ -43,6 +43,8 @@ namespace YTEditor
     void SetOperation(Operation aMode);
     Operation GetOperation();
 
+    void SetMode(Mode aMode);
+
   protected:
     MainWindow *mMainWindow;
     YTE::Camera *mCamera;

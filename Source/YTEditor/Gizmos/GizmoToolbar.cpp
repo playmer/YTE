@@ -36,10 +36,16 @@ namespace YTEditor
     mScale = new ToolbarButton(this, iconPath);
     mScale->connect(mScale, &QPushButton::toggled, this, &GizmoToolbar::ScaleToggled);
 
+    iconPath = (assetsDir.generic_string() + "switchAxes.png").c_str();
+    mSwitchAxesMode = new ToolbarButton(this, iconPath);
+    mSwitchAxesMode->SetIsUncheckable(true);
+    mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);
+
     AddButton(mSelect);
     AddButton(mTranslate);
     AddButton(mRotate);
     AddButton(mScale);
+    AddButton(mSwitchAxesMode);
   }
 
   void GizmoToolbar::SetMode(int aMode)
@@ -119,6 +125,20 @@ namespace YTEditor
     {
       // set the gizmo mode to select
       mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
+    }
+  }
+
+  void GizmoToolbar::SwitchAxesModeToggled(bool checked)
+  {
+    // if checked, it should be in local?
+    if (checked)
+    {
+      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::Local);
+    }
+    // otherwise, in world axes
+    else
+    {
+      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::World);
     }
   }
 

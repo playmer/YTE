@@ -36,6 +36,9 @@ namespace YTEditor
 
     ToolbarButton *mScale;
     void ScaleToggled(bool checked);
+
+    ToolbarButton *mSwitchAxesMode;
+    void SwitchAxesModeToggled(bool checked);
   };
 
 }
