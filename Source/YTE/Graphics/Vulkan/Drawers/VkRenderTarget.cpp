@@ -37,6 +37,7 @@ namespace YTE
     mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
+    mData.mOrder = aView->mView->GetOrder();
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
   }

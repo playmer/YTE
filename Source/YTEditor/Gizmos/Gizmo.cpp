@@ -23,6 +23,7 @@ namespace YTEditor
     , mOperation{ Operation::Select }
   {
     aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::LogicUpdate, this, &Gizmo::Update);
+    mLayer->Enable(true);
   }
 
   void Gizmo::Update(YTE::LogicUpdate *aEvent)
@@ -61,17 +62,7 @@ namespace YTEditor
 
       mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
       mLayer->SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
-
-      //mLayer->PushStyleVar(ImGuiStyleVar_Alpha, 0.0f);
-      mLayer->Begin("GL Editor",
-                    nullptr, 
-                    ImGuiWindowFlags_NoResize |
-                    ImGuiWindowFlags_NoMove |
-                    ImGuiWindowFlags_NoCollapse |
-                    ImGuiWindowFlags_NoTitleBar);
-
-      mLayer->SetDrawlist();
-      
+            
       mLayer->Manipulate(view,          // const float *view, 
                          projection,    // const float *projection, 
                          operation,     // OPERATION operation, 
@@ -81,7 +72,34 @@ namespace YTEditor
                          nullptr,       // float *snap = 0, 
                          nullptr,       // float *localBounds = NULL, 
                          nullptr);      // float *boundsSnap = NULL
-      mLayer->End();
+
+
+      glm::vec3 translation;
+      glm::vec3 rotation;
+      glm::vec3 scale;
+      ImGuizmo::DecomposeMatrixToComponents(matrix, 
+                                            glm::value_ptr(translation),
+                                            glm::value_ptr(rotation),
+                                            glm::value_ptr(scale));
+
+      switch (mOperation)
+      {
+        case Operation::Translate:
+        { 
+          mCurrentComposition->SetWorldTranslation(translation);
+          break;
+        }
+        case Operation::Scale:
+        {
+          mCurrentComposition->SetWorldScale(scale);
+          break;
+        }
+        case Operation::Rotate:
+        { 
+          mCurrentComposition->SetWorldRotation(rotation);
+          break;
+        }
+      }
     }
   }
 

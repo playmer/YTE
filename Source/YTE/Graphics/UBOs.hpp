@@ -107,7 +107,7 @@ namespace YTE
   struct UBOAnimation
   {
     glm::mat4 mBones[BoneConstants::MaxBones];
-    bool mHasAnimation;    // 0 is false, 1 is true
+    bool mHasAnimation = false;    // 0 is false, 1 is true
   };
 
 

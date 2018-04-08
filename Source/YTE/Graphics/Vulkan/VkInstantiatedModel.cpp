@@ -106,8 +106,9 @@ namespace YTE
                                          nullptr,
                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
                                          allocator);
+    UBOAnimation animation;
 
-
+    UpdateUBOAnimation(&animation);
 
     UBOMaterial modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
