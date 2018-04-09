@@ -51,6 +51,8 @@
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 #include "YTE/GameComponents/JohnMovement.hpp"
+#include "YTE/GameComponents/DaisyMovement.hpp"
+#include "YTE/GameComponents/BasilMovement.hpp"
 #include "YTE/GameComponents/JohnTutorial.hpp"
 #include "YTE/GameComponents/DaisyTutorial.hpp"
 #include "YTE/GameComponents/BasilTutorial.hpp"
@@ -150,6 +152,8 @@ namespace YTE
     InitializeType<NoticeBoard>();
     InitializeType<QuestProgressionTrigger>();
     InitializeType<JohnMovement>();
+    InitializeType<DaisyMovement>();
+    InitializeType<BasilMovement>();
     InitializeType<JohnTutorial>();
     InitializeType<DaisyTutorial>();
     InitializeType<BasilTutorial>();

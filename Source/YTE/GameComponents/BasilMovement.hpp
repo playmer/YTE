@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   JohnMovement.hpp
+\file   BasilMovement.hpp
 \author Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-03-25
@@ -12,19 +12,19 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #pragma once
-#ifndef YTE_Gameplay_JohnMovement_hpp
-#define YTE_Gameplay_JohnMovement_hpp
+#ifndef YTE_Gameplay_BasilMovement_hpp
+#define YTE_Gameplay_BasilMovement_hpp
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
 
 namespace YTE
 {
-  class JohnMovement : public Component
+  class BasilMovement : public Component
   {
   public:
-    YTEDeclareType(JohnMovement);
-    JohnMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTEDeclareType(BasilMovement);
+    BasilMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
     void Start() override;
 

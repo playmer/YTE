@@ -35,6 +35,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/DaisyTutorial.cpp
   ${CMAKE_CURRENT_LIST_DIR}/BasilTutorial.cpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnMovement.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/DaisyMovement.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/BasilMovement.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.cpp
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.cpp
@@ -76,6 +78,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/DaisyTutorial.hpp
   ${CMAKE_CURRENT_LIST_DIR}/BasilTutorial.hpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnMovement.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/DaisyMovement.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/BasilMovement.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueGraph.hpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestLogic.hpp
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.hpp

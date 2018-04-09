@@ -41,8 +41,8 @@ namespace YTE
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
 
     // Send to the space a ptr to the activequest for the noticeboard
-    NoticeBoardHookup firstQuest(&mActiveQuest);
-    mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+    //NoticeBoardHookup firstQuest(&mActiveQuest);
+    //mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
   }
 
   void BasilDialogue::RegisterDialogue()
@@ -83,12 +83,10 @@ namespace YTE
 
   void BasilDialogue::Start()
   {
-    /*
     std::cout << std::endl << "SENDING notice board hookup" << std::endl;
       // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
-    */
   }
 
   void BasilDialogue::OnDialogueStart(DialogueStart *aEvent)

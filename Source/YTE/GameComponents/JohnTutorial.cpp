@@ -38,9 +38,9 @@ namespace YTE
 
   void JohnTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
-    auto john = mOwner->GetCompositions()->FindFirst("john")->second->GetComponent<JohnDialogue>();
-    auto basil = mOwner->GetCompositions()->FindFirst("basil")->second->GetComponent<BasilDialogue>();
-    auto daisy = mOwner->GetCompositions()->FindFirst("daisy")->second->GetComponent<DaisyDialogue>();
+    auto john = mOwner->GetComponent<JohnDialogue>();
+    auto basil = mOwner->GetComponent<BasilDialogue>();
+    auto daisy = mOwner->GetComponent<DaisyDialogue>();
     if (aEvent->mCharacter == mName)
     {
       // register and send the event to start the dialogue

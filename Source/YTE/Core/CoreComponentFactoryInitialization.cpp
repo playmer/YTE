@@ -45,6 +45,8 @@
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 #include "YTE/GameComponents/JohnMovement.hpp"
+#include "YTE/GameComponents/DaisyMovement.hpp"
+#include "YTE/GameComponents/BasilMovement.hpp"
 #include "YTE/GameComponents/JohnTutorial.hpp"
 #include "YTE/GameComponents/DaisyTutorial.hpp"
 #include "YTE/GameComponents/BasilTutorial.hpp"
@@ -138,6 +140,8 @@ namespace YTE
     helper.CreateComponentFactory<NoticeBoard>();
     helper.CreateComponentFactory<QuestProgressionTrigger>();
     helper.CreateComponentFactory<JohnMovement>();
+    helper.CreateComponentFactory<DaisyMovement>();
+    helper.CreateComponentFactory<BasilMovement>();
     helper.CreateComponentFactory<JohnTutorial>();
     helper.CreateComponentFactory<DaisyTutorial>();
     helper.CreateComponentFactory<BasilTutorial>();

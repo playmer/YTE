@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   JohnMovement.cpp
+\file   DaisyMovement.cpp
 \author Jonathan Ackerman
 \par    email: jonathan.ackerman\@digipen.edu
 \date   2018-03-25
@@ -9,36 +9,38 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "YTE/GameComponents/JohnMovement.hpp"
+#include "YTE/GameComponents/DaisyMovement.hpp"
+#include "YTE/GameComponents/DaisyDialogue.hpp"
 #include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
-  YTEDefineType(JohnMovement) { YTERegisterType(JohnMovement); }
+  YTEDefineType(DaisyMovement) { YTERegisterType(DaisyMovement); }
 
-  JohnMovement::JohnMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  DaisyMovement::DaisyMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
     YTEUnusedArgument(aProperties);
 
     mStartPos = glm::vec3(161, 0, 55);
-    mDocks.emplace_back(260, 1, 375);
+    mDocks.emplace_back(260, 1, 425);
     mDockIndex = 0;
   }
 
-  void JohnMovement::Initialize()
+  void DaisyMovement::Initialize()
   {
-    mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    mSpace->YTERegister(Events::QuestStart, this, &DaisyMovement::OnQuestStart);
   }
 
-  void JohnMovement::Start()
+  void DaisyMovement::Start()
   {
     mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
   }
 
-  void JohnMovement::OnQuestStart(QuestStart *aEvent)
+  void DaisyMovement::OnQuestStart(QuestStart *aEvent)
   {
-    if (aEvent->mCharacter == mOwner->GetComponent<JohnDialogue>()->GetName())
+    if (aEvent->mCharacter == mOwner->GetComponent<DaisyDialogue>()->GetName())
     {
       mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
       ++mDockIndex;
