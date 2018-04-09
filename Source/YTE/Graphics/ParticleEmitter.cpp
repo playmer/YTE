@@ -101,6 +101,7 @@ namespace YTE
     , mEmitCount{0.0f}
     , mUseGravity{false}
     , mGravityValue{1.0f}
+    , mCameraTransform{nullptr}
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -108,6 +109,11 @@ namespace YTE
   void ParticleEmitter::Initialize()
   {
     GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
+
+    if (Composition *camera = GetSpace()->FindFirstCompositionByName("Camera"))
+    {
+      mCameraTransform = camera->GetComponent<Transform>();
+    }
 
     mPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
     mOwner->YTERegister(Events::PositionChanged, this, &ParticleEmitter::OnTransformChanged);
@@ -170,7 +176,11 @@ namespace YTE
 
       float rotVar = Variance() * static_cast<float>(dt);
 
-      particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
+      glm::quat camRot = mCameraTransform->GetWorldRotation();
+
+      particle.mRotation = camRot;
+
+      //particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
 
       particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
       particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
@@ -440,5 +450,4 @@ namespace YTE
 
     //return (static_cast<float>(rand() % 200) / 100.0f) - 1.0f;
   }
-
 }
