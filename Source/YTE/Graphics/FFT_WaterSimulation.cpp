@@ -33,7 +33,7 @@
 
 #include <iomanip>
 
-#define DefaultGridSize 128
+#define DefaultGridSize 32
 
 // switch entirely over to the mGridSizePlus1 system. I need this to work for tiling
 
@@ -807,6 +807,8 @@ namespace YTE
     }
 
     mResetNeeded = true;
+    mGridSize = DefaultGridSize;
+    mGridSizePlus1 = DefaultGridSize + 1;
   }
   
 

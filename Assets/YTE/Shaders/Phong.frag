@@ -7,7 +7,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
-#define MAX_LIGHTS 64
+#define MAX_LIGHTS 16
 #define M_PI 3.1415926535897932384626433832795
 const uint MatFlag_IsGizmo    = 1 << 0;
 const uint MatFlag_IsSelected = 1 << 1;
