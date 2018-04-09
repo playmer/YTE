@@ -130,5 +130,7 @@ namespace YTE
     int RandomInt(int aMin, int aMax);
     float Variance();
 
+    GraphicsView *mGraphicsView;
+
   };
 }

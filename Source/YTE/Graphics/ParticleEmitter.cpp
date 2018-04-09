@@ -110,6 +110,8 @@ namespace YTE
   {
     GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
 
+    mGraphicsView = mSpace->GetComponent<GraphicsView>();
+
     if (Composition *camera = GetSpace()->FindFirstCompositionByName("Camera"))
     {
       mCameraTransform = camera->GetComponent<Transform>();
@@ -136,18 +138,7 @@ namespace YTE
 
     mTimer -= dt;
 
-    // time to make some new particles
-    if (mTimer <= 0.0f)
-    {
-      // create the required particles
-      for (int i = 0; i < mEmitCount; ++i)
-      {
-        CreateParticle();
-      }
-
-      // reset the countdown
-      mTimer = mEmitRate;
-    }
+    glm::quat camRot = mCameraTransform->GetWorldRotation();
 
     // update the particles
     for (auto it = mParticles.begin(); it < mParticles.end(); ++it)
@@ -174,10 +165,6 @@ namespace YTE
         particle.mPosition.y -= mGravityValue * static_cast<float>((mLifetime - particle.mLife) * dt);
       }
 
-      float rotVar = Variance() * static_cast<float>(dt);
-
-      glm::quat camRot = mCameraTransform->GetWorldRotation();
-
       particle.mRotation = camRot;
 
       //particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
@@ -187,6 +174,19 @@ namespace YTE
       particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
 
       it->second->UpdateUBOModel(particle.mUBO);
+    }
+
+    // time to make some new particles
+    if (mTimer <= 0.0f)
+    {
+      // create the required particles
+      for (int i = 0; i < mEmitCount; ++i)
+      {
+        CreateParticle();
+      }
+
+      // reset the countdown
+      mTimer = mEmitRate;
     }
   }
 
@@ -391,12 +391,11 @@ namespace YTE
 
   void ParticleEmitter::CreateParticle()
   {
-    auto view = mSpace->GetComponent<GraphicsView>();
     std::unique_ptr<InstantiatedModel> model;
 
     if (mFreeParticles.empty())
     {
-      model = mRenderer->CreateModel(view, mMesh);
+      model = mRenderer->CreateModel(mGraphicsView, mMesh);
       model->SetInstanced(true);
       model->mType = ShaderType::AdditiveBlendShader;
     }
@@ -407,29 +406,28 @@ namespace YTE
       model->SetVisibility(true);
     }
 
+    float randomX = Variance();
+    float randomY = Variance();
+    float randomZ = Variance();
+
     // calculate the random bullshit
     glm::vec3 velVar;
-    velVar.x = Variance() * mVelocityVariance.x;
-    velVar.y = Variance() * mVelocityVariance.y;
-    velVar.z = Variance() * mVelocityVariance.z;
-
-    glm::vec3 scaleVar;
-    scaleVar.x = Variance() * mParticleScaleVariance.x;
-    scaleVar.y = Variance() * mParticleScaleVariance.y;
-    scaleVar.z = Variance() * mParticleScaleVariance.z;
+    velVar.x = randomX * mVelocityVariance.x;
+    velVar.y = randomY * mVelocityVariance.y;
+    velVar.z = randomZ * mVelocityVariance.z;
 
     // position randomness to cover whole emitter area
     glm::vec3 posDist;
-    posDist.x = Variance() * mEmitterScale.x;
-    posDist.y = Variance() * mEmitterScale.y;
-    posDist.z = Variance() * mEmitterScale.z;
+    posDist.x = randomX * mEmitterScale.x;
+    posDist.y = randomY * mEmitterScale.y;
+    posDist.z = randomZ * mEmitterScale.z;
 
     Particle particle;
     particle.mPosition = mPosition + mPositionOffset + posDist;
-    particle.mScale = mParticleScale + scaleVar;
+    particle.mScale = mParticleScale;
     particle.mColor = mColor;
     particle.mVelocity = mInitVelocity + velVar;
-    particle.mLife = mLifetime + Variance() * mLifetimeVariance;
+    particle.mLife = mLifetime + randomX * mLifetimeVariance;
 
     particle.mUBO.mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
     particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
