@@ -150,7 +150,7 @@ namespace YTE
     modelUBO.mModelMatrix = glm::translate(glm::scale(glm::mat4{}, scale), translate);
     mContext->GetInstantiatedModel()->UpdateUBOModel(modelUBO);
 
-    auto vkmesh = static_cast<VkMesh*>(instantiatedModel->GetMesh());
+    auto vkmesh = static_cast<VkInstantiatedModel*>(instantiatedModel.get())->GetVkMesh();
 
     // We get the sub meshes that use the current shader, then draw them.
     auto range = vkmesh->mSubmeshes.equal_range(imguiStr);

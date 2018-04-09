@@ -206,21 +206,44 @@ namespace YTE
     YTEUnusedArgument(aView);
   }
 
+
+  Texture* Renderer::GetBaseTexture(std::string &aFilename)
+  {
+    mBaseMeshFutureMutex.lock_shared();
+    auto it = mBaseTextures.find(aFilename);
+
+    if (it != mBaseTextures.end())
+    {
+    }
+    else
+    {
+
+    }
+  }
+
   void Renderer::RequestMesh(std::string &aMeshFile)
   {
-    auto it = mMeshes.find(aMeshFile);
+    std::shared_lock<std::shared_mutex> lock(mBaseMeshMutex);
 
-    if (it != mMeshes.end())
+    auto it = mBaseMeshes.find(aMeshFile);
+
+    if (it != mBaseMeshes.end())
     {
       // Not in the finished map, check the futures
+      mBaseMeshFutureMutex.lock_shared();
 
       auto it2 = mMeshFutures.find(aMeshFile);
 
       if (it2 != mMeshFutures.end())
       {
         // Not in the futures map, add it.
-
+        mBaseMeshFutureMutex.unlock_shared();
+        mBaseMeshFutureMutex.lock();
         auto &meshFuture = mMeshFutures[aMeshFile];
+        mBaseMeshFutureMutex.unlock();
+        mBaseMeshFutureMutex.lock_shared();
+
+        meshFuture.first.mName = aMeshFile;
 
         meshFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
                                                                                   &(meshFuture.first),
@@ -228,24 +251,34 @@ namespace YTE
 
         meshFuture.second = meshFuture.first.mPromise.get_future();
       }
+
+      mBaseMeshFutureMutex.unlock_shared();
     }
   }
 
   void Renderer::RequestTexture(std::string &aFilename)
   {
-    auto it = mTextures.find(aFilename);
+    std::shared_lock<std::shared_mutex> lock(mBaseTextureMutex);
 
-    if (it != mTextures.end())
+    auto it = mBaseTextures.find(aFilename);
+
+    if (it != mBaseTextures.end())
     {
       // Not in the finished map, check the futures
+      mBaseTextureFutureMutex.lock_shared();
 
       auto it2 = mTextureFutures.find(aFilename);
 
       if (it2 != mTextureFutures.end())
       {
         // Not in the futures map, add it.
-
+        mBaseTextureFutureMutex.unlock_shared();
+        mBaseTextureFutureMutex.lock();
         auto &textureFuture = mTextureFutures[aFilename];
+        mBaseTextureFutureMutex.unlock();
+        mBaseTextureFutureMutex.lock_shared();
+
+        textureFuture.first.mName = aFilename;
 
         textureFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
                                                                                      &(textureFuture.first),
@@ -253,14 +286,9 @@ namespace YTE
 
         textureFuture.second = textureFuture.first.mPromise.get_future();
       }
+
+      mBaseTextureFutureMutex.unlock_shared();
     }
-  }
-
-
-  Renderer::MeshThreadData::MeshThreadData(std::string &aName)
-    : mName{ aName }
-  {
-
   }
 
   Any Renderer::MeshThreadData::MakeMesh(JobHandle&)
@@ -272,13 +300,7 @@ namespace YTE
   {
 
   }
-
-  Renderer::TextureThreadData::TextureThreadData(std::string &aName)
-    : mName{ aName }
-  {
-
-  }
-
+  
   Any Renderer::TextureThreadData::MakeTexture(JobHandle&)
   {
     mPromise.set_value(std::make_unique<Texture>(mName));

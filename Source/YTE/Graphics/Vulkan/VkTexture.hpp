@@ -14,7 +14,7 @@
 
 namespace YTE
 {
-  class VkTexture : EventHandler
+  class VkTexture : public EventHandler
   {
   public:
     YTEDeclareType(VkTexture);
