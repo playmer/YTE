@@ -30,19 +30,37 @@ namespace YTE
 
   void DaisyTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
-    auto john = mOwner->GetComponent<JohnDialogue>();
-    auto basil = mOwner->GetComponent<BasilDialogue>();//send events now
     auto daisy = mOwner->GetComponent<DaisyDialogue>();
+    auto basil = mSpace->FindFirstCompositionByName("basil");
+    auto john = mSpace->FindFirstCompositionByName("john");
     if (aEvent->mCharacter == mName)
     {
-      if (daisy)
+      if (daisy && john && basil)
       {
+        basil->GetComponent<BasilDialogue>()->DeregisterDialogue();
+        john->GetComponent<JohnDialogue>()->DeregisterDialogue();
         daisy->RegisterDialogue();
-        john->DeregisterDialogue();
-        basil->DeregisterDialogue();
 
-        DialogueStart diaStart;
-        mSpace->SendEvent(Events::DialogueStart, &diaStart);
+        /*
+        basil->GetComponent<BasilDialogue>()->DeregisterDialogue();
+        auto basilDirector = basil->GetComponent<DialogueDirector>();
+        if (basilDirector)
+        {
+          basil->RemoveComponent(basilDirector);
+        }
+
+        john->GetComponent<JohnDialogue>()->DeregisterDialogue();
+        auto johnDirector = john->GetComponent<DialogueDirector>();
+        if (johnDirector)
+        {
+          john->RemoveComponent(johnDirector);
+        }
+
+        daisy->RegisterDialogue();
+        mOwner->AddComponent<DialogueDirector>();
+        */
+        RequestDialogueStart nextDialogue;
+        mSpace->SendEvent(Events::RequestDialogueStart, &nextDialogue);
       }
     }
   }

@@ -29,7 +29,7 @@ namespace YTE
 
   void DaisyMovement::Initialize()
   {
-    mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
     mSpace->YTERegister(Events::QuestStart, this, &DaisyMovement::OnQuestStart);
   }
 

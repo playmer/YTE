@@ -209,7 +209,7 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
-        /*Dont come here
+        /*NAH FAm
         if (aEvent->mState == Quest::State::Briefed)
         {
           mActiveConvo = &mActiveQuest->GetConversations()->at(1);

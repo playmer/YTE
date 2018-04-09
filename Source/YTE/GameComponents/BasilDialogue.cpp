@@ -10,7 +10,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/BasilDialogue.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp" /* TutorialUpdate */
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
@@ -212,11 +211,13 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
+        /*No sir
         if (aEvent->mState == Quest::State::Completed)
         {
           mActiveConvo = &mActiveQuest->GetConversations()->at(1);
           mActiveNode = mActiveConvo->GetRoot();
         }
+        */
       }
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {

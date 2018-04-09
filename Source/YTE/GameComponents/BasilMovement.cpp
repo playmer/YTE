@@ -29,7 +29,7 @@ namespace YTE
 
   void BasilMovement::Initialize()
   {
-    mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
     mSpace->YTERegister(Events::QuestStart, this, &BasilMovement::OnQuestStart);
   }
 
