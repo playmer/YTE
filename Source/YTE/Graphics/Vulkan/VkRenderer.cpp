@@ -161,12 +161,14 @@ namespace YTE
   // Textures
   VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
+    auto baseTexture =GetBaseTexture(aFilename);
+
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
 
     if (textureIt == mTextures.end())
     {
-      auto texture = std::make_unique<VkTexture>(aFilename,
+      auto texture = std::make_unique<VkTexture>(baseTexture,
                                                  this,
                                                  aType);
 
@@ -267,6 +269,8 @@ namespace YTE
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
+    auto baseMesh = GetBaseMesh(aFilename);
+
     auto meshIt = mMeshes.find(aFilename);
 
     VkMesh *meshPtr{ nullptr };
@@ -274,7 +278,8 @@ namespace YTE
     if (meshIt == mMeshes.end())
     {
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(this,
+      auto mesh = std::make_unique<VkMesh>(baseMesh,
+                                           this,
                                            aFilename);
 
       meshPtr = mesh.get();

@@ -157,7 +157,8 @@ namespace YTE
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aMesh, this, aView);
+
+    auto model = std::make_unique<VkInstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(model->GetVkMesh())].push_back(model.get());
     return std::move(model);
