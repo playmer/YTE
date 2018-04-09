@@ -55,8 +55,6 @@ namespace YTE
                            u32 aMipLevels,
                            u32 aLayerCount,
                            TextureType aType) override;
-
-    Texture* GetTexture(std::string &aFilename) override;
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;

@@ -82,8 +82,8 @@ namespace YTE
 
       Any MakeMesh(JobHandle&);
 
+      Renderer *mRenderer;
       std::string mName;
-      std::promise<std::unique_ptr<Mesh>> mPromise;
       JobHandle mHandle;
     };
 
@@ -93,8 +93,8 @@ namespace YTE
 
       Any MakeTexture(JobHandle&);
 
+      Renderer *mRenderer;
       std::string mName;
-      std::promise<std::unique_ptr<Texture>> mPromise;
       JobHandle mHandle;
     };
 
@@ -102,13 +102,13 @@ namespace YTE
     Texture* GetBaseTexture(std::string &aFilename);
 
   private:
-    std::unordered_map<std::string, std::pair<MeshThreadData, std::future<std::unique_ptr<Mesh>>>> mMeshFutures;
-    std::shared_mutex mBaseMeshFutureMutex;
+    std::unordered_map<std::string, MeshThreadData> mMeshThreadDatas;
+    std::shared_mutex mBaseMeshThreadMutex;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
     std::shared_mutex mBaseMeshMutex;
 
-    std::unordered_map<std::string, std::pair<TextureThreadData, std::future<std::unique_ptr<Texture>>>> mTextureFutures;
-    std::shared_mutex mBaseTextureFutureMutex;
+    std::unordered_map<std::string, TextureThreadData> mTextureThreadDatas;
+    std::shared_mutex mBaseTextureThreadMutex;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
     std::shared_mutex mBaseTextureMutex;
 

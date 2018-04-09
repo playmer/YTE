@@ -265,19 +265,6 @@ namespace YTE
     return texture->mTexture;
   }
 
-  Texture* VkRenderer::GetTexture(std::string &aFilename)
-  {
-    auto textureIt = mTextures.find(aFilename);
-
-    if (textureIt != mTextures.end())
-    {
-      return textureIt->second->mTexture;
-    }
-
-    return nullptr;
-  }
-
-
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
