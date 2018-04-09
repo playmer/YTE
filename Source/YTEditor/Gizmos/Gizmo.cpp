@@ -22,6 +22,7 @@ namespace YTEditor
     , mLayer{ aLayer }
     , mOperation{ Operation::Select }
     , mMode{ Mode::World }
+    , mCurrentComposition{ nullptr }
   {
     aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::LogicUpdate, this, &Gizmo::Update);
     mLayer->Enable(true);
