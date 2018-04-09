@@ -220,7 +220,7 @@ namespace YTE
       }
     }
 
-    mTargetRotationAmount = 0.35 * aEvent->StickDirection.x;
+    mTargetRotationAmount = 0.35f * aEvent->StickDirection.x;
 
       // Dead-zone check and apply response curves
     float length = glm::length(aEvent->StickDirection);
@@ -366,14 +366,14 @@ namespace YTE
 
     if (mIsSailUp)
     {
-      glm::vec3 forward = mOrientation->GetForwardVector();
-      forward.y = 0.0f;
+      glm::vec3 tempForward = mOrientation->GetForwardVector();
+      tempForward.y = 0.0f;
 
-      mRigidBody->ApplyForce(mWindForce * (forward), glm::vec3(0));
+      mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
-        mRigidBody->ApplyForce(mWindForce * -forward, glm::vec3(0));
+        mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
       }
     }
     else
@@ -390,7 +390,7 @@ namespace YTE
 
     // update boat rotation
     float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
-    float angle = 3.0f * aEvent->Dt * rotDiff;
+    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
     
     mCurrentRotationAmount += angle;
 
