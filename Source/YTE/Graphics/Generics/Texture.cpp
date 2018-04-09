@@ -98,7 +98,7 @@ namespace YTE
       memcpy(mData.data(), loadedFile, size);
       stbi_image_free(loadedFile),
 
-      mType = TextureType::RGBA;
+      mType = TextureLayout::RGBA;
     }
     else if (type == L".crn")
     {
@@ -140,12 +140,12 @@ namespace YTE
       {
         case cCRNFmtDXT1:
         {
-          mType = TextureType::DXT1_sRGB;
+          mType = TextureLayout::DXT1_sRGB;
           break;
         }
         case cCRNFmtDXT5:
         {
-          mType = TextureType::DXT5_sRGB;
+          mType = TextureLayout::DXT5_sRGB;
           break;
         }
       }

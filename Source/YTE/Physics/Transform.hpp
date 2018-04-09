@@ -155,6 +155,9 @@ namespace YTE
       return mInformPhysics;
     }
 
+    glm::mat4 GetTransformMatrix();
+    void SetTransformMatrix(glm::mat4 &aMatrix);
+
   private:
     glm::vec3 GetAccumulatedParentTranslation();
     glm::vec3 GetAccumulatedParentScale();

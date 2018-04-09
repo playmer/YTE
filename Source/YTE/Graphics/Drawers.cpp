@@ -35,8 +35,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -81,7 +79,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
     vert.mPosition = aPoint2;
@@ -99,10 +97,10 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aFromColor;
+    vert.mColor = glm::vec4{ aFromColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
-    vert.mColor = aToColor;
+    vert.mColor = glm::vec4{ aToColor, 1.0f };
     vert.mPosition = aPoint2;
     submesh.mVertexBuffer.emplace_back(vert);
     submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
@@ -112,10 +110,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void LineDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }
@@ -160,8 +155,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -226,7 +219,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
     vert.mPosition = aPoint2;
@@ -242,10 +235,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void TriangleDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }
@@ -290,8 +280,6 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBufferSize = 0;
-    submesh.mIndexBufferSize = 0;
     submesh.mVertexBuffer.clear();
     submesh.mIndexBuffer.clear();
   }
@@ -333,7 +321,7 @@ namespace YTE
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = aColor;
+    vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint;
     submesh.mVertexBuffer.emplace_back(vert);
     submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
@@ -343,10 +331,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void CurveDrawer::End()
   {
-    mSubmeshes[0].mVertexBufferSize = mSubmeshes[0].mVertexBuffer.size() * sizeof(Vertex);
-    mSubmeshes[0].mIndexBufferSize = mSubmeshes[0].mIndexBuffer.size() * sizeof(u32);
-
-    if (0 == mSubmeshes[0].mVertexBufferSize)
+    if (mSubmeshes[0].mVertexBuffer.empty())
     {
       return;
     }

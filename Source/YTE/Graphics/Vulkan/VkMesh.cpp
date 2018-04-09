@@ -143,7 +143,8 @@ namespace YTE
     auto device = mRenderer->mDevice;
 
     // Create Vertex, Index, and Material buffers.
-    mVertexBuffer = device->createBuffer(mSubmesh->mVertexBufferSize,
+    auto vertexBufferSize = static_cast<u32>(mSubmesh->mVertexBuffer.size() * sizeof(Vertex));
+    mVertexBuffer = device->createBuffer(vertexBufferSize,
                                          vk::BufferUsageFlagBits::eTransferDst |
                                          vk::BufferUsageFlagBits::eVertexBuffer,
                                          vk::SharingMode::eExclusive,
@@ -151,7 +152,8 @@ namespace YTE
                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
                                          allocator);
 
-    mIndexBuffer = device->createBuffer(mSubmesh->mIndexBufferSize,
+    auto indexBufferSize = static_cast<u32>(mSubmesh->mIndexBuffer.size() * sizeof(u32));
+    mIndexBuffer = device->createBuffer(indexBufferSize,
                                         vk::BufferUsageFlagBits::eTransferDst |
                                         vk::BufferUsageFlagBits::eIndexBuffer,
                                         vk::SharingMode::eExclusive,
@@ -254,18 +256,19 @@ namespace YTE
                          nullptr);
       mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
     }
+
     mDescriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
-    mDescriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
-    mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
-    mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
+    mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mColor;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
+    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    mDescriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
 
     if (mMesh->GetInstanced())
     {

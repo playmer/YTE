@@ -106,8 +106,17 @@ namespace YTE
 
   struct UBOAnimation
   {
+    UBOAnimation()
+    {
+      glm::mat4 identity{1.0f};
+      for (auto i = 0; i < BoneConstants::MaxBones; ++i)
+      {
+        mBones[i] = identity;
+      }
+    }
+
     glm::mat4 mBones[BoneConstants::MaxBones];
-    bool mHasAnimation;    // 0 is false, 1 is true
+    u32 mHasAnimation = 0;    // 0 is false, 1 is true
   };
 
 

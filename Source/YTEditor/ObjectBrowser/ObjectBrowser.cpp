@@ -250,25 +250,6 @@ namespace YTEditor
           giz->SnapToCurrentObject();
         }
       }
-
-      Gizmo *giz = mMainWindow->GetGizmo();
-
-      if (giz)
-      {
-        if (prevObj)
-        {
-          // deregister the gizmo from listening to the previous object
-          prevObj->GetEngineObject()->YTEDeregister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-          prevObj->GetEngineObject()->YTEDeregister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-        }
-
-        if (currObj)
-        {
-          // register the gizmo to listen to transform changes from newly selected object
-          currObj->GetEngineObject()->YTERegister(YTE::Events::PositionChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-          currObj->GetEngineObject()->YTERegister(YTE::Events::RotationChanged, giz, &Gizmo::SelectedObjectTransformChanged);
-        }
-      }
     }
   }
 

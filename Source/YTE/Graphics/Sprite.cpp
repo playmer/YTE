@@ -217,6 +217,8 @@ namespace YTE
       return;
     }
 
+    auto texture = mRenderer->CreateTexture(mTextureName, TextureType::e2D);
+
     std::string meshName = "__Sprite";
     meshName += mTextureName;
     meshName += mOwner->GetGUID().ToString();
@@ -264,9 +266,6 @@ namespace YTE
       0, 1, 2,
       2, 3, 0
     };
-
-    mSubmesh.mVertexBufferSize = mSubmesh.mVertexBuffer.size() * sizeof(Vertex);
-    mSubmesh.mIndexBufferSize = mSubmesh.mIndexBuffer.size() * sizeof(u32);
 
     std::vector<Submesh> submeshes{ mSubmesh };
 

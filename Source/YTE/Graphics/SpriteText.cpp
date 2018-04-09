@@ -163,9 +163,6 @@ namespace YTE
       submesh.mIndexBuffer.push_back(lastIndex + 2);
       submesh.mIndexBuffer.push_back(lastIndex + 3);
 
-      submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-      submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
-
       submeshes.emplace_back(submesh);
       lastIndex += 4;
     }

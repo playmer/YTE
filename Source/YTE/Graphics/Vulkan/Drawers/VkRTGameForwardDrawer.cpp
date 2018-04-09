@@ -21,30 +21,13 @@ namespace YTE
                                                vk::Format aDepthFormat,
                                                std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                                ViewData* aView,
-                                               std::string aName,
-                                               YTEDrawerTypeCombination aCombinationType)
+                                               DrawerTypeCombination aCombinationType)
     : VkRenderTarget(aSurface, 
                      aColorFormat,
                      aDepthFormat,
                      aVulkanSurface,
                      aView,
-                     "VkRTGameForwardDrawer_" + aName,
-                     aCombinationType)
-  {
-    Initialize();
-  }
-
-  VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,
-                                               vk::Format aColorFormat,
-                                               vk::Format aDepthFormat,
-                                               std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                                               std::string aName,
-                                               YTEDrawerTypeCombination aCombinationType)
-    : VkRenderTarget(aSurface,
-                     aColorFormat,
-                     aDepthFormat,
-                     aVulkanSurface, 
-                     "VkRTGameForwardDrawer_" + aName,
+                     "VkRTGameForwardDrawer_" + aView->mName,
                      aCombinationType)
   {
     Initialize();
@@ -52,7 +35,6 @@ namespace YTE
 
   VkRTGameForwardDrawer::~VkRTGameForwardDrawer()
   {
-    //VkRenderTarget::~VkRenderTarget();
   }
 
   void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)

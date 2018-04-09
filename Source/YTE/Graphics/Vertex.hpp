@@ -3,8 +3,8 @@
 //////////////////////////////////////////////
 #pragma once
 
-#ifndef YTE_Vertex_hpp
-#define YTE_Vertex_hpp
+#ifndef YTE_Graphics_Vertex_hpp
+#define YTE_Graphics_Vertex_hpp
 
 #include <vector>
 
@@ -19,7 +19,7 @@ namespace YTE
     glm::vec3 mPosition;
     glm::vec3 mTextureCoordinates;
     glm::vec3 mNormal;
-    glm::vec3 mColor;
+    glm::vec4 mColor;
     glm::vec3 mTangent;
     glm::vec3 mBinormal;
     glm::vec3 mBitangent;
@@ -31,7 +31,7 @@ namespace YTE
     Vertex(glm::vec3 &aPosition,
            glm::vec3 &aTextureCoordinates,
            glm::vec3 &aNormal,
-           glm::vec3 &aColor,
+           glm::vec4 &aColor,
            glm::vec3 &aTangent,
            glm::vec3 &aBinormal,
            glm::vec3 &aBitangent,

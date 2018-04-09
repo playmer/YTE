@@ -50,6 +50,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/ImguiLayer.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -83,22 +84,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
   MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
-    : QMainWindow()
-    , mRunningEngine(aEngine)
-    , mApplication(aQApp)
-    , mObjectBrowser(nullptr)
-    , mComponentBrowser(nullptr)
-    , mOutputConsole(nullptr)
-    , mRunningSpaceName("")
-    , mRunningLevelName("")
-    , mRunningSpace(nullptr)
-    , mUndoRedo(new UndoRedo())
-    , mGizmo(nullptr)
-    , mRunningWindow(nullptr)
-    , mFileMenu(nullptr)
-    , mGameObjectMenu(nullptr)
-    , mGizmoScaleFactor(1.0f)
-    , mEditorCamera(nullptr)
+    : QMainWindow{}
+    , mRunningEngine{ aEngine }
+    , mApplication{ aQApp }
+    , mObjectBrowser{ nullptr }
+    , mComponentBrowser{ nullptr }
+    , mOutputConsole{ nullptr }
+    , mRunningSpaceName{ "" }
+    , mRunningLevelName{ "" }
+    , mRunningSpace{ nullptr }
+    , mUndoRedo{ new UndoRedo() }
+    , mGizmo{ nullptr }
+    , mRunningWindow{ nullptr }
+    , mFileMenu{ nullptr }
+    , mGameObjectMenu{ nullptr }
+    , mEditorCamera{ nullptr }
   {
     DebugObjection(!aEngine,
       "Critical Error in YTEditorMainWindow constructor.\n "
@@ -135,8 +135,6 @@ namespace YTEditor
 
     LoadCurrentLevelInfo();
 
-    CreateGizmo(mEditingLevel);
-
     auto self = this;
     QTimer::singleShot(0, [self]()
     {
@@ -150,7 +148,7 @@ namespace YTEditor
 
   void MainWindow::UpdateEngine()
   {
-    if (mRunningEngine != nullptr)
+    if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
       mRunningEngine->Update();
     }
@@ -176,56 +174,6 @@ namespace YTEditor
       }
     }
 
-    // scale gizmo w.r.t camera's distance from object
-    if (mGizmo)
-    {
-      auto currentObj = GetObjectBrowser().GetCurrentObject();
-      
-      if (currentObj)
-      {
-        auto objTransform = currentObj->GetComponent<YTE::Transform>();
-        
-        if (objTransform)
-        {
-          glm::vec3 objPos = objTransform->GetWorldTranslation();
-
-          auto view = mEditingLevel->GetComponent<YTE::GraphicsView>();
-          auto cameraComponent = view->GetActiveCamera();
-          auto cameraObject = cameraComponent->GetOwner();
-          auto cameraTransform = cameraObject->GetComponent<YTE::Transform>();
-          glm::vec3 camPos = cameraTransform->GetWorldTranslation();
-
-          glm::vec3 dirVec = camPos - objPos;
-          float dist = length(dirVec) / 12.0f;
-
-          if (dist < 1.0f)
-          {
-            dist = 1.0f;
-          }
-
-          glm::vec3 gizmoScale = mGizmoScaleFactor * glm::vec3(dist, dist, dist);
-
-          mGizmo->mGizmoObj->GetComponent<YTE::Transform>()->SetScale(gizmoScale);
-        }
-      }
-    }
-
-
-    //YTE::Composition *currObj = GetObjectBrowser().GetCurrentObject();
-    //
-    //if (currObj)
-    //{
-    //  // get the transform of the currently selected object
-    //  YTE::Transform *transform = currObj->GetComponent<YTE::Transform>();
-    //
-    //  if (transform)
-    //  {
-    //    // set the gizmo to the same position as the current object
-    //    glm::vec3 pos = transform->GetWorldTranslation();
-    //    YTE::Transform *gizmoTransform = mGizmo->mGizmoObj->GetComponent<YTE::Transform>();
-    //    gizmoTransform->SetWorldTranslation(pos);
-    //  }
-    //}
   }
 
   YTE::Space* MainWindow::GetEditingLevel()
@@ -349,9 +297,30 @@ namespace YTEditor
     mEditorCamera->AddComponent(YTE::Orientation::GetStaticType());
     mEditorCamera->AddComponent(YTE::Camera::GetStaticType());
     mEditorCamera->AddComponent(YTE::FlybyCamera::GetStaticType());
-    mEditorCamera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
 
+    mEditorCamera->GetComponent<YTE::Transform>()->SetWorldTranslation({ 0.0f, 0.0f, 5.0f });
     mEditorCamera->GetComponent<YTE::Camera>()->SetCameraAsActive();
+    /////////////////////////////////////////////////////////////////////////////
+
+    // Add the imgui layer to the level.
+    YTE::String imguiName{ "ImguiEditorLayer" };
+    mImguiLayer = mEditingLevel->AddComposition<YTE::Composition>(imguiName,
+                                                                  GetRunningEngine(),
+                                                                  imguiName,
+                                                                  mEditingLevel);
+
+    if (mImguiLayer->ShouldSerialize())
+    {
+      mImguiLayer->ToggleSerialize();
+    }
+
+    mImguiLayer->AddComponent(YTE::GraphicsView::GetStaticType());
+    auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
+    view->SetOrder(100.f);
+    view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
+    view->ChangeWindow(GetLevelWindow().mWindow);
+
+    mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
     // Get all compositions on the main session (should be levels)
     YTE::CompositionMap *objMap = lvl->GetCompositions();
@@ -363,12 +332,6 @@ namespace YTEditor
       YTE::String objName = cmp->second.get()->GetName();
 
       YTE::Composition *engineObj = cmp->second.get();
-
-      // temp hardcode to not add Gizmo to object browser
-      if (objName == "Gizmo")
-      {
-        continue;
-      }
 
       // Store the name and composition pointer in the object browser
       ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
@@ -382,6 +345,7 @@ namespace YTEditor
       GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
     }
 
+    CreateGizmo(mEditingLevel);
   }
 
   void MainWindow::SaveCurrentLevel()
@@ -502,6 +466,33 @@ namespace YTEditor
   {
     return mApplication;
   }
+  Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
+  {
+    auto gizmo = RemakeGizmo();
+
+    // get the window 
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    gizmo->SetOperation(Gizmo::Operation::Select);
+
+    return gizmo;
+  }
+
+  Gizmo* MainWindow::RemakeGizmo()
+  {
+    // get the window 
+    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+
+    mGizmo = std::make_unique<Gizmo>(this, 
+                                     mImguiLayer->GetComponent<YTE::ImguiLayer>(),
+                                     mEditorCamera->GetComponent<YTE::Camera>());
+
+    return mGizmo.get();
+  }
+
+  void MainWindow::DeleteGizmo()
+  {
+    mGizmo.reset();
+  }
 
   Gizmo* MainWindow::GetGizmo()
   {
@@ -531,25 +522,11 @@ namespace YTEditor
       {
         SaveCurrentLevel();
       }
-      else if (aEvent->key() == Qt::Key_G)
-      {
-        GetGizmo()->RefreshAxesInPhysicsHandler();
-      }
 
       if (mouse.IsButtonDown(YTE::MouseButtons::Right) == false)
       {
-        // increase gizmo scale factor
-        if (aEvent->key() == Qt::Key_E)
-        {
-          mGizmoScaleFactor += 0.02f;
-        }
-        // decrease gizmo scale factor
-        else if (aEvent->key() == Qt::Key_Q)
-        {
-          mGizmoScaleFactor -= 0.02f;
-        }
         // duplicate current object
-        else if (aEvent->key() == Qt::Key_D)
+        if (aEvent->key() == Qt::Key_D)
         {
           GetObjectBrowser().DuplicateCurrentlySelected();
         }
@@ -602,42 +579,6 @@ namespace YTEditor
     return *mPhysicsHandler;
   }
 
-  Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
-  {
-    auto gizmo = RemakeGizmo();
-
-    // get the window
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
-    gizmo->SetRenderingWindow(yteWin);
-
-    gizmo->mGizmoObj = aSpace->AddCompositionAtPosition("Gizmo",
-      "Gizmo",
-      glm::vec3(0.0f, 0.0f, 0.0f));
-    gizmo->SetMode(Gizmo::Select);
-
-    if (gizmo->mGizmoObj->ShouldSerialize())
-    {
-      gizmo->mGizmoObj->ToggleSerialize();
-    }
-
-    return gizmo;
-  }
-
-  Gizmo* MainWindow::RemakeGizmo()
-  {
-    // get the window
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
-
-    mGizmo = std::make_unique<Gizmo>(this);
-    mGizmo->SetRenderingWindow(yteWin);
-
-    return mGizmo.get();
-  }
-
-  void MainWindow::DeleteGizmo()
-  {
-    mGizmo.reset();
-  }
 
   GizmoToolbar* MainWindow::GetGizmoToolbar()
   {

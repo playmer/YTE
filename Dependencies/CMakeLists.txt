@@ -1,13 +1,9 @@
 add_subdirectory(crunch)
-add_subdirectory(kiss_fft)
 add_subdirectory(fmt)
+add_subdirectory(kiss_fft)
 #add_subdirectory(LuaJIT)
 add_subdirectory(stb)
-
-# Turn off/configure various parts of assimp.
-option(BUILD_SHARED_LIBS "Build package with shared libraries." OFF)
-option(ASSIMP_BUILD_ASSIMP_TOOLS "If the supplementary tools for Assimp are built in addition to the library." OFF)
-option(ASSIMP_BUILD_TESTS "If the test suite for Assimp is built in addition to the library." OFF)
+add_subdirectory(imgui)
 
 add_subdirectory(assimp)
 
@@ -55,6 +51,8 @@ add_subdirectory(VkHLF)
 # Get WWise
 FindWWise(WWise_SoundEngine)
 
+target_compile_options(crn                   PRIVATE ${disableWarning})
+target_compile_options(fmt                   PRIVATE ${disableWarning})
 # Turn the warnings off on our dependencies.
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
   if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
@@ -80,7 +78,8 @@ target_compile_options(BulletDynamics        PRIVATE ${disableWarning})
 target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning}) 
 target_compile_options(BulletSoftBody        PRIVATE ${disableWarning}) 
 target_compile_options(LinearMath            PRIVATE ${disableWarning}) 
-target_compile_options(crn                   PRIVATE ${disableWarning})
+target_compile_options(crn                   PRIVATE ${disableWarning}) 
+target_compile_options(imgui                   PRIVATE ${disableWarning})
 target_compile_options(fmt                   PRIVATE ${disableWarning})
 target_compile_options(STB                   PRIVATE ${disableWarning})
 target_compile_options(VkHLF                 PRIVATE ${disableWarning})
@@ -107,6 +106,7 @@ set_target_properties(assimp
                       LinearMath
                       crn
                       fmt
+                      imgui
                       KissFFT
                       #LuaJIT
                       STB

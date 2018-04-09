@@ -432,22 +432,22 @@ namespace YTE
     v1.mPosition = glm::vec3(1.0f, 1.0f, 0.0f);
     v1.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v1.mTextureCoordinates = glm::vec3(1.0f, 1.0f, 0.0f);
-    v1.mColor = glm::vec3(1.0f, 0.0f, 0.0f);
+    v1.mColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
     v2.mPosition = glm::vec3(0.0f, 1.0f, 0.0f);
     v2.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v2.mTextureCoordinates = glm::vec3(0.0f, 1.0f, 0.0f);
-    v2.mColor = glm::vec3(0.0f, 1.0f, 0.0f);
+    v2.mColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 
     v3.mPosition = glm::vec3(0.0f, 0.0f, 0.0f);
     v3.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v3.mTextureCoordinates = glm::vec3(0.0f, 0.0f, 0.0f);
-    v3.mColor = glm::vec3(0.0f, 0.0f, 1.0f);
+    v3.mColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 
     v4.mPosition = glm::vec3(1.0f, 0.0f, 0.0f);
     v4.mNormal = glm::vec3(0.0f, 0.0f, 1.0f);
     v4.mTextureCoordinates = glm::vec3(1.0f, 0.0f, 0.0f);
-    v4.mColor = glm::vec3(1.0f, 0.0f, 1.0f);
+    v4.mColor = glm::vec4(1.0f, 0.0f, 1.0f, 1.0f);
 
     mIndices.push_back(2);
     mIndices.push_back(1);
@@ -498,7 +498,7 @@ namespace YTE
 
     for (int i = 0; i < mParent->mRenderTargetData.size(); ++i)
     {
-      std::pair<std::string, YTEDrawerTypeCombination> pair;
+      std::pair<std::string, DrawerTypeCombination> pair;
       pair.first = mParent->mRenderTargetData[i]->mName;
       pair.second = mParent->mRenderTargetData[i]->mCombinationType;
       samplerTypes.push_back(pair.first);
@@ -528,17 +528,17 @@ namespace YTE
 
 
     descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat); //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);    //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);  //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec3 mColor;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
 
     std::string defines;
 
@@ -938,12 +938,12 @@ namespace YTE
       ss << fmt::format("  // {}\n", samplerData[i].first);
       switch (samplerData[i].second)
       {
-        case YTEDrawerTypeCombination::AdditiveBlend:
+        case DrawerTypeCombination::AdditiveBlend:
         {
           ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::AlphaBlend:
+        case DrawerTypeCombination::AlphaBlend:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
@@ -955,12 +955,12 @@ namespace YTE
                             samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::MultiplicativeBlend:
+        case DrawerTypeCombination::MultiplicativeBlend:
         {
           ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::Opaque:
+        case DrawerTypeCombination::Opaque:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
@@ -970,13 +970,13 @@ namespace YTE
                             samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::DoNotInclude:
+        case DrawerTypeCombination::DoNotInclude:
         {
           ss << fmt::format("  // Not Included\n");
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", samplerData[i].first, samplerData[i].first);
           break;
         }
-        case YTEDrawerTypeCombination::DefaultCombination: // alpha blend
+        case DrawerTypeCombination::DefaultCombination: // alpha blend
         default:
         {
           ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);

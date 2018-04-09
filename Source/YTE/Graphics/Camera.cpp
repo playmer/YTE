@@ -124,17 +124,18 @@ namespace YTE
   Camera::Camera(Composition *aOwner,
                  Space *aSpace,
                  RSValue *aProperties)
-    : Component(aOwner, aSpace)
-    , mEngine(nullptr)
-    , mCameraTransform(nullptr)
-    , mCameraOrientation(nullptr)
-    , mFieldOfViewY(glm::radians(45.0f))
-    , mNearPlane(0.1f)
-    , mFarPlane(20000.f)
-    , mUseOrthographicProj(false)
-    , mDt(0.0f)
-    , mConstructing(true)
-    , mChanged(true)
+    : Component{ aOwner, aSpace }
+    , mEngine{ nullptr }
+    , mGraphicsView{ nullptr }
+    , mCameraTransform{ nullptr }
+    , mCameraOrientation{ nullptr }
+    , mFieldOfViewY{ glm::radians(45.0f) }
+    , mNearPlane{ 0.1f }
+    , mFarPlane{ 20000.f }
+    , mUseOrthographicProj{ false }
+    , mDt{ 0.0f }
+    , mConstructing{ true }
+    , mChanged{ true }
   { 
     DeserializeByType(aProperties, this, GetStaticType()); 
  
@@ -251,7 +252,7 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Red);
+    YTEProfileFunction();
 
     if (this == mGraphicsView->GetActiveCamera())
     {

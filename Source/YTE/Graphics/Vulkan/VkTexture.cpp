@@ -26,20 +26,33 @@ namespace YTE
     YTERegisterType(VkTexture);
   }
 
+
+  VkTexture::VkTexture(std::vector<u8> aData,
+                       TextureLayout aType,
+                       u32 aWidth,
+                       u32 aHeight,
+                       u32 aMipLevels,
+                       u32 aLayerCount,
+                       VkRenderer *aRenderer,
+                       vk::ImageViewType aVulkanType)
+    : Texture{ aData, aType, aWidth, aHeight, aMipLevels, aLayerCount }
+    , mRenderer(aRenderer)
+    , mVulkanType(aVulkanType)
+  {
+    Initialize();
+  }
+
   VkTexture::VkTexture(std::string &aFile, VkRenderer *aRenderer, vk::ImageViewType aType)
     : Texture(aFile)
     , mRenderer(aRenderer)
+    , mVulkanType(aType)
+  {
+    Initialize();
+  }
+
+  void VkTexture::Initialize()
   {
     auto device = mRenderer->mDevice;
-
-    fs::path file{ mTexturePath };
-
-    std::string textureName{ file.stem().string() };
-
-    //TODO (Josh): Make Crunch work.
-    //file = L"Crunch" / file.filename().concat(L".crn");
-    file = L"Originals" / file.filename();
-    std::string fileStr{ file.string() };
 
     auto allocator = mRenderer->mAllocators[AllocatorTypes::Texture];
 
@@ -48,17 +61,17 @@ namespace YTE
 
     switch (mType)
     {
-      case TextureType::DXT1_sRGB:
+      case TextureLayout::DXT1_sRGB:
       {
         format = vk::Format::eBc1RgbaSrgbBlock;
         break;
       }
-      case TextureType::DXT5_sRGB:
+      case TextureLayout::DXT5_sRGB:
       {
         format = vk::Format::eBc3UnormBlock;
         break;
       }
-      case TextureType::RGBA:
+      case TextureLayout::RGBA:
       {
         format = vk::Format::eR8G8B8A8Unorm;
         break;
@@ -103,14 +116,14 @@ namespace YTE
 
     u32 layers = 1;
 
-    if (vk::ImageViewType::eCube == aType)
+    if (vk::ImageViewType::eCube == mVulkanType)
     {
       layers = 6;
     }
 
     vk::ImageSubresourceRange subresourceRange = { vk::ImageAspectFlagBits::eColor, 0, 1, 0, layers };
 
-    mImageView = mImage->createImageView(aType, format, components, subresourceRange);
+    mImageView = mImage->createImageView(mVulkanType, format, components, subresourceRange);
 
     // 2. init sampler
     mSampler = device->createSampler(vk::Filter::eLinear,
@@ -154,11 +167,11 @@ namespace YTE
 
     switch (mType)
     {
-      case TextureType::DXT1_sRGB:
+      case TextureLayout::DXT1_sRGB:
       {
         break;
       }
-      case TextureType::DXT5_sRGB:
+      case TextureLayout::DXT5_sRGB:
       {
         // Adapted from: https://stackoverflow.com/questions/36138217/unable-to-create-image-from-compressed-texture-data-s3tc
         constexpr u32 blockSize{ 16 };
@@ -178,7 +191,7 @@ namespace YTE
 
         break;
       }
-      case TextureType::RGBA:
+      case TextureLayout::RGBA:
       default:
       {
         for (size_t y = 0; y < height; y++)

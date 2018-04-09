@@ -162,37 +162,27 @@ namespace YTEditor
 
       mPickedDistance = (YTE::OurVec3ToBt(pickedTrans->GetWorldTranslation()) - rayFrom).length();
       
-      if (obj->GetName() == "X_Axis" || obj->GetName() == "Y_Axis" || obj->GetName() == "Z_Axis")
+      mCurrentObj = obj;
+
+      auto& browser = mMainWindow->GetObjectBrowser();
+      auto item = browser.FindItemByComposition(mCurrentObj);
+
+      // TODO(Evan/Nick): change to setSelectedItem for drag select in future
+      browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+
+      auto model = mCurrentObj->GetComponent<YTE::Model>();
+
+      if (model)
       {
-        mIsGizmoActive = true;
-        
-        // pass the mouse event to the gizmo
-        mMainWindow->GetGizmo()->OnMousePressed(aEvent, mSpace, obj, mPickedDistance);
-      }
-      else
-      {
-        mCurrentObj = obj;
+        auto instanceModel = model->GetInstantiatedModel();
 
-        auto& browser = mMainWindow->GetObjectBrowser();
-        auto item = browser.FindItemByComposition(mCurrentObj);
-
-        // TODO(Evan/Nick): change to setSelectedItem for drag select in future
-        browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
-
-        auto model = mCurrentObj->GetComponent<YTE::Model>();
-
-        if (model)
+        if (instanceModel.size())
         {
-          auto instanceModel = model->GetInstantiatedModel();
-
-          if (instanceModel.size())
+          for (auto &mesh : instanceModel)
           {
-            for (auto &mesh : instanceModel)
-            {
-              auto material = mesh->GetUBOMaterialData();
-              material.mFlags |= 1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2;
-              mesh->UpdateUBOMaterial(&material);
-            }
+            auto material = mesh->GetUBOMaterialData();
+            material.mFlags |= 1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2;
+            mesh->UpdateUBOMaterial(&material);
           }
         }
       }
@@ -226,24 +216,11 @@ namespace YTEditor
 
   void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent *aEvent)
   {
-    if (mIsHittingObject)
-    {
-      if (mIsGizmoActive)
-      {
-        // pass the mouse event to the gizmo
-        mMainWindow->GetGizmo()->OnMousePersist(aEvent, mSpace, mPickedDistance);
-      }
-    }
   }
 
   void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
-
-    if (mIsHittingObject && mIsGizmoActive)
-    {
-      mMainWindow->GetGizmo()->OnMouseRelease(aEvent);
-    }
 
     mIsHittingObject = false;
     mIsGizmoActive = false;

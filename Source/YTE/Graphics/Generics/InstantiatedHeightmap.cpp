@@ -104,9 +104,6 @@ namespace YTE
     submesh.mVertexBuffer = aVertices;
     submesh.mIndexBuffer = aIndices;
 
-    submesh.mVertexBufferSize = submesh.mVertexBuffer.size() * sizeof(Vertex);
-    submesh.mIndexBufferSize = submesh.mIndexBuffer.size() * sizeof(u32);
-
     submesh.mDiffuseMap = mDiffuseTName;
     submesh.mSpecularMap = mSpecularTName;
     submesh.mNormalMap = mNormalTName;

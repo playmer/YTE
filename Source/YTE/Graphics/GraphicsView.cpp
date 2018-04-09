@@ -14,7 +14,8 @@ namespace YTE
     std::vector<std::string> result
     {
       "DefaultDrawer",
-      "GameForwardDrawer"
+      "GameForwardDrawer",
+      "ImguiDrawer"
     };
     return result;
   }
@@ -78,8 +79,8 @@ namespace YTE
                              RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mActiveCamera(nullptr)
-    , mDrawerCombination(YTEDrawerTypeCombination::DefaultCombination)
-    , mDrawerType(YTEDrawerTypes::DefaultDrawer)
+    , mDrawerCombination(DrawerTypeCombination::DefaultCombination)
+    , mDrawerType(DrawerTypes::DefaultDrawer)
     , mWindow(nullptr)
     , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
     , mSuperSampling(1)
@@ -97,6 +98,10 @@ namespace YTE
     if (it != engine->GetWindows().end())
     {
       mWindow = it->second.get();
+    }
+    else
+    {
+      mWindow = mOwner->GetEngine()->GetWindow();
     }
   }
 
@@ -130,10 +135,10 @@ namespace YTE
       return;
     }
 
-    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
-
     auto engine = mSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
 
     auto it = engine->GetWindows().find(mWindowName);
 
@@ -141,11 +146,10 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
-
-    mConstructing = false;
     mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
 
     SetClearColor(mClearColor);
+    mConstructing = false;
   }
 
 
@@ -219,6 +223,16 @@ namespace YTE
   {
     ViewChanged event;
     event.View = this;
+
+    if (mConstructing && nullptr == mWindow)
+    {
+      event.Window = aWindow;
+      mWindow = aWindow;
+      NativeInitialize();
+      SendEvent(Events::SurfaceGained, &event);
+      return;
+    }
+
     event.Window = nullptr;
 
     if (false == mConstructing)
@@ -262,27 +276,27 @@ namespace YTE
 
   std::string GraphicsView::GetDrawerCombinationType()
   {
-    if (mDrawerCombination == YTEDrawerTypeCombination::AdditiveBlend)
+    if (mDrawerCombination == DrawerTypeCombination::AdditiveBlend)
     {
       return "AdditiveBlend";
     }
-    else if (mDrawerCombination == YTEDrawerTypeCombination::AlphaBlend)
+    else if (mDrawerCombination == DrawerTypeCombination::AlphaBlend)
     {
       return "AlphaBlend";
     }
-    else if (mDrawerCombination == YTEDrawerTypeCombination::Opaque)
+    else if (mDrawerCombination == DrawerTypeCombination::Opaque)
     {
       return "Opaque";
     }
-    else if (mDrawerCombination == YTEDrawerTypeCombination::MultiplicativeBlend)
+    else if (mDrawerCombination == DrawerTypeCombination::MultiplicativeBlend)
     {
       return "MultiplicativeBlend";
     }
-    else if (mDrawerCombination == YTEDrawerTypeCombination::DefaultCombination)
+    else if (mDrawerCombination == DrawerTypeCombination::DefaultCombination)
     {
       return "DefaultCombination";
     }
-    else if (mDrawerCombination == YTEDrawerTypeCombination::DoNotInclude)
+    else if (mDrawerCombination == DrawerTypeCombination::DoNotInclude)
     {
       return "DoNotInclude";
     }
@@ -294,13 +308,17 @@ namespace YTE
 
   std::string GraphicsView::GetDrawerType()
   {
-    if (mDrawerType == YTEDrawerTypes::GameForwardDrawer)
+    if (mDrawerType == DrawerTypes::GameForwardDrawer)
     {
       return "GameForwardDrawer";
     }
-    else if (mDrawerType == YTEDrawerTypes::DefaultDrawer)
+    else if (mDrawerType == DrawerTypes::DefaultDrawer)
     {
       return "DefaultDrawer";
+    }
+    else if (mDrawerType == DrawerTypes::ImguiDrawer)
+    {
+      return "ImguiDrawer";
     }
     else
     {
@@ -310,35 +328,35 @@ namespace YTE
 
   void GraphicsView::SetDrawerCombinationType(std::string aCombination)
   {
-    YTEDrawerTypeCombination dc;
+    DrawerTypeCombination dc;
 
     if (false == (aCombination != "AdditiveBlend"))
     {
-      dc = YTEDrawerTypeCombination::AdditiveBlend;
+      dc = DrawerTypeCombination::AdditiveBlend;
     }
     else if (false == (aCombination != "AlphaBlend"))
     {
-      dc = YTEDrawerTypeCombination::AlphaBlend;
+      dc = DrawerTypeCombination::AlphaBlend;
     }
     else if (false == (aCombination != "Opaque"))
     {
-      dc = YTEDrawerTypeCombination::Opaque;
+      dc = DrawerTypeCombination::Opaque;
     }
     else if (false == (aCombination != "MultiplicativeBlend"))
     {
-      dc = YTEDrawerTypeCombination::MultiplicativeBlend;
+      dc = DrawerTypeCombination::MultiplicativeBlend;
     }
     else if (false == (aCombination != "DefaultCombination"))
     {
-      dc = YTEDrawerTypeCombination::DefaultCombination;
+      dc = DrawerTypeCombination::DefaultCombination;
     }
     else if (false == (aCombination != "DoNotInclude"))
     {
-      dc = YTEDrawerTypeCombination::DoNotInclude;
+      dc = DrawerTypeCombination::DoNotInclude;
     }
     else
     {
-      dc = YTEDrawerTypeCombination::AlphaBlend;
+      dc = DrawerTypeCombination::AlphaBlend;
     }
 
     if (dc == mDrawerCombination)
@@ -358,19 +376,23 @@ namespace YTE
 
   void GraphicsView::SetDrawerType(std::string aType)
   {
-    YTEDrawerTypes dt;
+    DrawerTypes dt;
 
     if (false == (aType != "GameForwardDrawer"))
     {
-      dt = YTEDrawerTypes::GameForwardDrawer;
+      dt = DrawerTypes::GameForwardDrawer;
     }
     else if (false == (aType != "DefaultDrawer"))
     {
-      dt = YTEDrawerTypes::GameForwardDrawer;
+      dt = DrawerTypes::GameForwardDrawer;
+    }
+    else if (false == (aType != "ImguiDrawer"))
+    {
+      dt = DrawerTypes::ImguiDrawer;
     }
     else
     {
-      dt = YTEDrawerTypes::GameForwardDrawer;
+      dt = DrawerTypes::GameForwardDrawer;
     }
 
     if (dt == mDrawerType)

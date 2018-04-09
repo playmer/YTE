@@ -139,7 +139,7 @@ namespace YTE
         return mShaderData;
       }
 
-      std::vector<std::pair<std::string, YTEDrawerTypeCombination>>& GetSamplerData()
+      std::vector<std::pair<std::string, DrawerTypeCombination>>& GetSamplerData()
       {
         return mSamplers;
       }
@@ -159,7 +159,7 @@ namespace YTE
       std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
       //std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
       u32 mIndexCount;
-      std::vector<std::pair<std::string, YTEDrawerTypeCombination>> mSamplers;
+      std::vector<std::pair<std::string, DrawerTypeCombination>> mSamplers;
     };
 
 

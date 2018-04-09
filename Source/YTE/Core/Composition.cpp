@@ -18,6 +18,8 @@
 
 namespace YTE
 {
+  std::vector<Type*> GetDependencyOrder(Composition *aComposition);
+
   YTEDefineEvent(NativeInitialize);
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
@@ -155,6 +157,29 @@ namespace YTE
 
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }
+
+
+    // Destructing the components in order
+    auto order = GetDependencyOrder(this);
+
+    // If our order is compromised, we just clear the vector in whatever 
+    // order the containter decides to clear in Ideally we fix the 
+    // GetDependencyOrder algorithm so this never occurs.
+    if (order.size() != mComponents.size())
+    {
+      mComponents.Clear();
+    }
+    else
+    {
+      for (auto typeIt = order.rbegin(); typeIt < order.rend(); ++typeIt)
+      {
+        auto component = mComponents.Find(*typeIt);
+        if (component != mComponents.end())
+        {
+          component->second.reset();
+        }
+      }
+    }
   };
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)
@@ -166,8 +191,6 @@ namespace YTE
       mComponents.ChangeKey(iterator, aEvent->aNewType);
     }
   }
-
-  std::vector<Type*> GetDependencyOrder(Composition *aComposition);
 
   void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
@@ -1117,6 +1140,16 @@ namespace YTE
     if (iterator == mComponents.end())
     {
       auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+
+      if (nullptr == addFactory)
+      {
+        mEngine->Log(LogType::Warning,
+                     fmt::format("A factory of the type named {} could not be found. \n"
+                                 "Perhaps it needs to be added to CoreComponentFactoryInitialization",
+                                 aType->GetName()));
+
+        return nullptr;
+      }
 
       auto component = addFactory->MakeComponent(this, mSpace, aProperties);
       toReturn = component.get();

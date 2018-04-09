@@ -9,8 +9,8 @@
 
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 
-#include "YTEditor/Gizmos/GizmoToolbar.hpp"
 #include "YTEditor/Gizmos/Gizmo.hpp"
+#include "YTEditor/Gizmos/GizmoToolbar.hpp"
 
 namespace YTEditor
 {
@@ -36,10 +36,18 @@ namespace YTEditor
     mScale = new ToolbarButton(this, iconPath);
     mScale->connect(mScale, &QPushButton::toggled, this, &GizmoToolbar::ScaleToggled);
 
+    iconPath = (assetsDir.generic_string() + "switchAxes.png").c_str();
+    mSwitchAxesMode = new ToolbarButton(this, iconPath);
+    mSwitchAxesMode->SetIsUncheckable(true);
+    mSwitchAxesMode->SetIsResettable(false);
+    mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);
+    mSwitchAxesMode->setToolTip("Switches from world to local axes for gizmos.");
+
     AddButton(mSelect);
     AddButton(mTranslate);
     AddButton(mRotate);
     AddButton(mScale);
+    AddButton(mSwitchAxesMode);
   }
 
   void GizmoToolbar::SetMode(int aMode)
@@ -91,7 +99,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Select);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Select);
     }
   }
 
@@ -100,7 +108,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Translate);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
     }
   }
 
@@ -109,7 +117,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Rotate);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
     }
   }
 
@@ -118,7 +126,21 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Scale);
+      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
+    }
+  }
+
+  void GizmoToolbar::SwitchAxesModeToggled(bool checked)
+  {
+    // if checked, it should be in local?
+    if (checked)
+    {
+      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::Local);
+    }
+    // otherwise, in world axes
+    else
+    {
+      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::World);
     }
   }
 

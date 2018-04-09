@@ -978,7 +978,7 @@ namespace YTE
     }
 
     VkRenderer* vkrender = static_cast<VkRenderer*>(mRenderer);
-    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView).mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
+    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView)->mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
   }
 
 

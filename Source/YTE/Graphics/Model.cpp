@@ -351,13 +351,7 @@ namespace YTE
       return;
     }
 
-    glm::vec3 tr = mTransform->GetWorldTranslation();
-
-    mUBOModel.mModelMatrix = glm::translate(glm::mat4(1.0f), tr);
-
-    mUBOModel.mModelMatrix = mUBOModel.mModelMatrix * glm::toMat4(mTransform->GetWorldRotation());
-
-    mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetWorldScale());
+    mUBOModel.mModelMatrix = mTransform->GetTransformMatrix();
   }
 
 }

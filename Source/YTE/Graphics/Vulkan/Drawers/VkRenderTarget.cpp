@@ -26,7 +26,7 @@ namespace YTE
                                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                  ViewData* aView,
                                  std::string aName,
-                                 YTEDrawerTypeCombination aCombination)
+                                 DrawerTypeCombination aCombination)
     : mSurface(aSurface)
     , mColorFormat(aColorFormat)
     , mDepthFormat(aDepthFormat)
@@ -37,6 +37,7 @@ namespace YTE
     mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
+    mData.mOrder = aView->mView->GetOrder();
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
   }
@@ -48,7 +49,7 @@ namespace YTE
                                  vk::Format aDepthFormat,
                                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
                                  std::string aName,
-                                 YTEDrawerTypeCombination aCombination)
+                                 DrawerTypeCombination aCombination)
     : mSurface(aSurface)
     , mColorFormat(aColorFormat)
     , mDepthFormat(aDepthFormat)

@@ -42,7 +42,10 @@ namespace YTE
   struct ViewData
   {
   public:
-    ViewData() = default;
+    ViewData()
+    {
+
+    }
 
     // Buffers
     std::shared_ptr<vkhlf::Buffer> mViewUBO;
@@ -58,6 +61,7 @@ namespace YTE
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
+    GraphicsView *mView;
     float mViewOrder;
   };
 
@@ -111,9 +115,9 @@ namespace YTE
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);
-    void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination);
+    void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination);
     void DeregisterView(GraphicsView *aView);
     void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 
@@ -141,17 +145,17 @@ namespace YTE
 
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass(GraphicsView *aView)
     {
-      return GetViewData(aView).mRenderTarget->GetRenderPass();
+      return GetViewData(aView)->mRenderTarget->GetRenderPass();
     }
 
     std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer(GraphicsView *aView)
     {
-      return GetViewData(aView).mViewUBO;
+      return GetViewData(aView)->mViewUBO;
     }
 
     std::shared_ptr<vkhlf::Buffer>& GetUBOIlluminationBuffer(GraphicsView *aView)
     {
-      return GetViewData(aView).mIlluminationUBO;
+      return GetViewData(aView)->mIlluminationUBO;
     }
 
     std::shared_ptr<vkhlf::CommandPool>& GetCommandPool();
@@ -169,27 +173,27 @@ namespace YTE
 
     glm::vec4 GetClearColor(GraphicsView *aView)
     {
-      return GetViewData(aView).mClearColor;
+      return GetViewData(aView)->mClearColor;
     }
 
     void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
     {
-      GetViewData(aView).mClearColor = aColor;
+      GetViewData(aView)->mClearColor = aColor;
     }
 
     VkLightManager* GetLightManager(GraphicsView *aView)
     {
-      return &GetViewData(aView).mLightManager;
+      return &GetViewData(aView)->mLightManager;
     }
 
     VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
     {
-      return &GetViewData(aView).mWaterInfluenceMapManager;
+      return &GetViewData(aView)->mWaterInfluenceMapManager;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)
     {
-      return GetViewData(aView).mInstantiatedModels[aMesh];
+      return GetViewData(aView)->mInstantiatedModels[aMesh];
     }
 
     std::map<GraphicsView*, ViewData>& GetViews()
@@ -197,9 +201,16 @@ namespace YTE
       return mViewData;
     }
 
-    ViewData& GetViewData(GraphicsView *aView)
+    ViewData* GetViewData(GraphicsView *aView)
     {
-      return mViewData[aView];
+      auto it = mViewData.find(aView);
+
+      if (it != mViewData.end())
+      {
+        return &(it->second);
+      }
+
+      return nullptr;
     }
 
     vk::Extent2D GetExtent()
@@ -209,7 +220,7 @@ namespace YTE
 
     VkRenderTarget* GetRenderTarget(GraphicsView* aView)
     {
-      return GetViewData(aView).mRenderTarget.get();
+      return GetViewData(aView)->mRenderTarget.get();
     }
 
     std::shared_ptr<vkhlf::CommandBuffer> const& GetRenderingCBOB()
@@ -219,9 +230,9 @@ namespace YTE
 
   private:
     void RenderFrameForSurface();
-    std::unique_ptr<VkRenderTarget> CreateRenderTarget(YTEDrawerTypes aDrawerType,
+    std::unique_ptr<VkRenderTarget> CreateRenderTarget(DrawerTypes aDrawerType,
                                                        ViewData *view,
-                                                       YTEDrawerTypeCombination aCombination);
+                                                       DrawerTypeCombination aCombination);
     
     Window *mWindow;
     VkRenderer *mRenderer;

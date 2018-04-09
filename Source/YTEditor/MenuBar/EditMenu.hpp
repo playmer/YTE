@@ -31,9 +31,7 @@ namespace YTEditor
 
   private:
 
-    MainWindow * mMainWindow;
-
-    void RefreshGizmo();
+    MainWindow *mMainWindow;
 
     void Undo();
     void Redo();

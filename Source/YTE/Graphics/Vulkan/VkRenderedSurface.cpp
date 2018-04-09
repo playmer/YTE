@@ -8,6 +8,7 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
@@ -111,7 +112,7 @@ namespace YTE
   
   void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
-    GetViewData(aView).mViewUBOData = aUBOView;
+    GetViewData(aView)->mViewUBOData = aUBOView;
     ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
     //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
     this->YTERegister(Events::GraphicsDataUpdateVk,
@@ -124,7 +125,7 @@ namespace YTE
 
   void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
   {
-    GetViewData(aView).mIlluminationUBOData = aIllumination;
+    GetViewData(aView)->mIlluminationUBOData = aIllumination;
     this->YTERegister(Events::GraphicsDataUpdateVk, this,
                       &VkRenderedSurface::GraphicsDataUpdateVkEvent);
   }
@@ -148,7 +149,7 @@ namespace YTE
   {
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
-    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
@@ -157,14 +158,14 @@ namespace YTE
   {
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aMesh, this, aView);
-    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
     return std::move(model);
   }
 
   void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
   {
-    auto &instantiatedModels = GetViewData(aModel->mView).mInstantiatedModels;
+    auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(aModel->GetMesh())].push_back(aModel);
   }
 
@@ -186,7 +187,7 @@ namespace YTE
       return;
     }
 
-    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
     auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
 
@@ -207,7 +208,7 @@ namespace YTE
       return;
     }
 
-    auto &instantiatedModels = GetViewData(aView).mInstantiatedModels;
+    auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
     auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
 
@@ -231,7 +232,7 @@ namespace YTE
   {
     auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
     VkShader *shaderPtr{ nullptr };
-    ViewData* view = &GetViewData(aView);
+    ViewData *view = GetViewData(aView);
     auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
     // if view doesnt have shader, but surface does
@@ -280,14 +281,14 @@ namespace YTE
   std::unique_ptr<VkInstantiatedLight> VkRenderedSurface::CreateLight(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
-    auto light = GetViewData(aView).mLightManager.CreateLight();
+    auto light = GetViewData(aView)->mLightManager.CreateLight();
     return std::move(light);
   }
 
   std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
-    auto map = GetViewData(aView).mWaterInfluenceMapManager.CreateMap();
+    auto map = GetViewData(aView)->mWaterInfluenceMapManager.CreateMap();
     return std::move(map);
   }
 
@@ -354,12 +355,12 @@ namespace YTE
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)
   {
-    RegisterView(aView, YTEDrawerTypes::DefaultDrawer, YTEDrawerTypeCombination::DefaultCombination);
+    RegisterView(aView, DrawerTypes::DefaultDrawer, DrawerTypeCombination::DefaultCombination);
   }
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView,
-                                       YTEDrawerTypes aDrawerType,
-                                       YTEDrawerTypeCombination aCombination)
+                                       DrawerTypes aDrawerType,
+                                       DrawerTypeCombination aCombination)
   {
     auto it = mViewData.find(aView);
 
@@ -386,6 +387,7 @@ namespace YTE
       auto &view = emplaced.first->second;
 
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
+      view.mView = aView;
       view.mViewUBO = buffer;
       view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
@@ -410,13 +412,13 @@ namespace YTE
   }
 
   void VkRenderedSurface::SetViewDrawingType(GraphicsView *aView,
-                                                YTEDrawerTypes aDrawerType,
-                                                YTEDrawerTypeCombination aCombination)
+                                             DrawerTypes aDrawerType,
+                                             DrawerTypeCombination aCombination)
   {
-    auto& view = GetViewData(aView);
-    view.mRenderTarget.reset();
-    view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
-    view.mRenderTarget->SetView(&view);
+    auto view = GetViewData(aView);
+    view->mRenderTarget.reset();
+    view->mRenderTarget = CreateRenderTarget(aDrawerType, view, aCombination);
+    view->mRenderTarget->SetView(view);
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
@@ -432,11 +434,11 @@ namespace YTE
   }
 
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
-                                                    YTEDrawerTypeCombination aCombination)
+                                                    DrawerTypeCombination aCombination)
   {
-    auto& view = GetViewData(aView);
-    view.mRenderTarget->SetCombinationType(aCombination);
-    view.mRenderTarget->SetView(&view);
+    auto view = GetViewData(aView);
+    view->mRenderTarget->SetCombinationType(aCombination);
+    view->mRenderTarget->SetView(view);
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
@@ -511,7 +513,7 @@ namespace YTE
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Red);
+    YTEProfileFunction();
     YTEUnusedArgument(aEvent);
     // Get the index of the next available swapchain image:
     mRenderToScreen->FrameUpdate();
@@ -720,30 +722,40 @@ namespace YTE
   }
 
 
-  std::unique_ptr<VkRenderTarget> VkRenderedSurface::CreateRenderTarget(YTEDrawerTypes aDrawerType, 
+  std::unique_ptr<VkRenderTarget> VkRenderedSurface::CreateRenderTarget(DrawerTypes aDrawerType, 
                                                                         ViewData *view,
-                                                                        YTEDrawerTypeCombination aCombination)
+                                                                        DrawerTypeCombination aCombination)
   {
     switch (aDrawerType)
     {
-      case YTEDrawerTypes::GameForwardDrawer:
+      case DrawerTypes::GameForwardDrawer:
       {
         return std::move(std::make_unique<VkRTGameForwardDrawer>(this,
                                                                  mColorFormat,
                                                                  mDepthFormat,
                                                                  mSurface,
-                                                                 view->mName,
+                                                                 view,
                                                                  aCombination));
         break;
       }
-      case YTEDrawerTypes::DefaultDrawer:
+      case DrawerTypes::ImguiDrawer:
+      {
+        return std::move(std::make_unique<VkImguiDrawer>(this,
+                                                         mColorFormat,
+                                                         mDepthFormat,
+                                                         mSurface,
+                                                         view,
+                                                         aCombination));
+        break;
+      }
+      case DrawerTypes::DefaultDrawer:
       default:
       {
         return std::move(std::make_unique<VkRTGameForwardDrawer>(this, 
                                                                  mColorFormat,
                                                                  mDepthFormat,
                                                                  mSurface,
-                                                                 view->mName,
+                                                                 view,
                                                                  aCombination));
         break;
       }

@@ -10,6 +10,7 @@
 
 #include <unordered_map>
 
+#include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -35,6 +36,27 @@ namespace YTE
     std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
     VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    VkTexture* CreateTexture(std::string aName,
+                             std::vector<u8> aData,
+                             TextureLayout aType,
+                             u32 aWidth,
+                             u32 aHeight,
+                             u32 aMipLevels,
+                             u32 aLayerCount,
+                             vk::ImageViewType aVulkanType);
+
+
+    Texture* CreateTexture(std::string &aFilename, TextureType aType) override;
+    Texture* CreateTexture(std::string aName,
+                           std::vector<u8> aData,
+                           TextureLayout aLayout,
+                           u32 aWidth,
+                           u32 aHeight,
+                           u32 aMipLevels,
+                           u32 aLayerCount,
+                           TextureType aType) override;
+
+    Texture* GetTexture(std::string &aFilename) override;
         
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
@@ -57,9 +79,9 @@ namespace YTE
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
-    void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination) override;
-    void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination) override;
-    void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination) override;
+    void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination) override;
+    void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination) override;
+    void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination) override;
     void DeregisterView(GraphicsView *aView) override;
     void ViewOrderChanged(GraphicsView *aView, float aNewOrder) override;
 

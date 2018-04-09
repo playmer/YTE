@@ -12,6 +12,7 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
@@ -32,6 +33,18 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
     virtual void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel);
 
+    virtual Texture* CreateTexture(std::string &aFilename, TextureType aType);
+    virtual Texture* CreateTexture(std::string aName,
+                                   std::vector<u8> aData,
+                                   TextureLayout aLayout,
+                                   u32 aWidth,
+                                   u32 aHeight,
+                                   u32 aMipLevels,
+                                   u32 aLayerCount,
+                                   TextureType aType);
+
+    virtual Texture* GetTexture(std::string &aFilename);
+
     virtual Mesh* CreateSimpleMesh(std::string &aName,
                                    std::vector<Submesh> &aSubmeshes,
 			                             bool aForceUpdate = false);
@@ -49,9 +62,9 @@ namespace YTE
 
     virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);
-    virtual void RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    virtual void SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination);
-    virtual void SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination);
+    virtual void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    virtual void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    virtual void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination);
     virtual void DeregisterView(GraphicsView *aView);
     virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 

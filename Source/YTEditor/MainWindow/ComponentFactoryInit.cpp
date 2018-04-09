@@ -9,9 +9,5 @@ namespace YTEditor
   void ComponentFactoryInitialization(YTE::Engine * aEngine, YTE::FactoryMap &currComponentFactories)
   {
     YTE::ComponentFactoryHelper helper(aEngine, &currComponentFactories);
-
-    helper.CreateComponentFactory<Translate>();
-    helper.CreateComponentFactory<Scale>();
-    helper.CreateComponentFactory<Rotate>();
   }
 }

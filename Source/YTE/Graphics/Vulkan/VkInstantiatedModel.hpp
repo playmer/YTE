@@ -64,6 +64,8 @@ namespace YTE
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;
     bool mLoadUBOMaterial;
+
+    static UBOAnimation cAnimation;
   };
 }
 

@@ -184,6 +184,98 @@ namespace YTE
     return texturePtr;
   }
 
+
+  VkTexture* VkRenderer::CreateTexture(std::string aName,
+                                       std::vector<u8> aData,
+                                       TextureLayout aType,
+                                       u32 aWidth,
+                                       u32 aHeight,
+                                       u32 aMipLevels,
+                                       u32 aLayerCount,
+                                       vk::ImageViewType aVulkanType)
+  {
+    auto textureIt = mTextures.find(aName);
+    VkTexture *texturePtr{ nullptr };
+
+    if (textureIt == mTextures.end())
+    {
+      auto texture = std::make_unique<VkTexture>(aData,
+                                                 aType,
+                                                 aWidth,
+                                                 aHeight,
+                                                 aMipLevels,
+                                                 aLayerCount,
+                                                 this,
+                                                 aVulkanType);
+
+      texturePtr = texture.get();
+      mTextures[aName] = std::move(texture);
+      mDataUpdateRequired = true;
+    }
+    else
+    {
+      texturePtr = textureIt->second.get();
+    }
+
+    return texturePtr;
+  }
+
+  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  {
+    vk::ImageViewType type{ vk::ImageViewType::e2D };
+
+    switch (aType)
+    {
+      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    }
+
+    return CreateTexture(aFilename, type);
+  }
+
+  Texture* VkRenderer::CreateTexture(std::string aName,
+                                   std::vector<u8> aData,
+                                   TextureLayout aLayout,
+                                   u32 aWidth,
+                                   u32 aHeight,
+                                   u32 aMipLevels,
+                                   u32 aLayerCount,
+                                   TextureType aType)
+  {
+    vk::ImageViewType type{ vk::ImageViewType::e2D };
+
+    switch (aType)
+    {
+      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    }
+
+    return CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+  }
+
+  Texture* VkRenderer::GetTexture(std::string &aFilename)
+  {
+    auto textureIt = mTextures.find(aFilename);
+
+    if (textureIt != mTextures.end())
+    {
+      return textureIt->second.get();
+    }
+
+    return nullptr;
+  }
+
+
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
@@ -269,7 +361,7 @@ namespace YTE
 
     vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
 
-    for (auto& surface : mSurfaces)
+    for (auto &surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
     }
@@ -277,7 +369,7 @@ namespace YTE
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction(profiler::colors::Blue);
+    YTEProfileFunction();
 
     if (mDataUpdateRequired)
     {
@@ -293,7 +385,7 @@ namespace YTE
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    for (auto& surface : mSurfaces)
+    for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
     }
@@ -321,17 +413,17 @@ namespace YTE
     GetSurface(aView->GetWindow())->RegisterView(aView);
   }
 
-  void VkRenderer::RegisterView(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->RegisterView(aView, aDrawerType, aCombination);
   }
 
-  void VkRenderer::SetViewDrawingType(GraphicsView *aView, YTEDrawerTypes aDrawerType, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->SetViewDrawingType(aView, aDrawerType, aCombination);
   }
 
-  void VkRenderer::SetViewCombinationType(GraphicsView *aView, YTEDrawerTypeCombination aCombination)
+  void VkRenderer::SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination)
   {
     GetSurface(aView->GetWindow())->SetViewCombinationType(aView, aCombination);
   }
@@ -376,7 +468,7 @@ namespace YTE
 
   VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
   {
-    return &GetSurface(aView->GetWindow())->GetViewData(aView).mWaterInfluenceMapManager;
+    return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
   }
 
 }

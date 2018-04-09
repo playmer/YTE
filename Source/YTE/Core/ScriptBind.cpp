@@ -66,6 +66,7 @@
 #include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/ImguiLayer.hpp"
 #include "YTE/Graphics/Light.hpp"
 #include "YTE/Graphics/Material.hpp"
 #include "YTE/Graphics/Model.hpp"
@@ -190,6 +191,7 @@ namespace YTE
     InitializeType<FlybyCamera>();
     InitializeType<GraphicsSystem>();
     InitializeType<GraphicsView>();
+    InitializeType<ImguiLayer>();
     InitializeType<Material>();
     InitializeType<MaterialRepresentation>();
     InitializeType<Model>();

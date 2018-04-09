@@ -151,9 +151,6 @@ namespace YTE
       }
     }
 
-    sphere.mVertexBufferSize = sphere.mVertexBuffer.size() * sizeof(Vertex);
-    sphere.mIndexBufferSize = sphere.mIndexBuffer.size() * sizeof(u32);
-
     sphere.mDiffuseMap = aTextureName;
     sphere.mDiffuseType = TextureViewType::e2D;
     sphere.mShaderSetName = "Skybox";

@@ -43,8 +43,8 @@
 
 #if YTE_CAN_PROFILE 
   #define YTEProfileName(aName) EASY_BLOCK(aName)
-  #define YTEProfileFunction(aColor) EASY_FUNCTION(aColor)
-  #define YTEProfileBlock(aColor, aName) EASY_BLOCK(aName, aColor)
+  #define YTEProfileFunction() EASY_FUNCTION(profiler::colors::Red)
+  #define YTEProfileBlock(aName) EASY_BLOCK(aName, profiler::colors::Red)
 #else
   namespace profiler
   {
@@ -54,7 +54,7 @@
 
   #define YTEProfileName(aName)
   #define YTEProfileFunction(aColor)
-  #define YTEProfileBlock(aColor, aName)
+  #define YTEProfileBlock(aName)
 #endif
 
 namespace YTE
