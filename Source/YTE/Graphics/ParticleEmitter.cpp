@@ -169,9 +169,14 @@ namespace YTE
 
       //particle.mRotation *= glm::quat(glm::eulerAngles(particle.mRotation) + glm::vec3(0, rotVar, 0));
 
-      particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
-      particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
-      particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
+      //particle.mUBO.mModelMatrix = glm::translate(glm::mat4(1.0f), particle.mPosition);
+      //particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
+      //particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, particle.mScale);
+
+      particle.mUBO.mModelMatrix = glm::scale(glm::toMat4(particle.mRotation), particle.mScale);
+      particle.mUBO.mModelMatrix[3][0] = particle.mPosition.x;
+      particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
+      particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
       it->second->UpdateUBOModel(particle.mUBO);
     }
@@ -429,9 +434,14 @@ namespace YTE
     particle.mVelocity = mInitVelocity + velVar;
     particle.mLife = mLifetime + randomX * mLifetimeVariance;
 
-    particle.mUBO.mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
-    particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
-    particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, mParticleScale);
+    //particle.mUBO.mModelMatrix = glm::translate(glm::mat4(), particle.mPosition);
+    //particle.mUBO.mModelMatrix = particle.mUBO.mModelMatrix * glm::toMat4(particle.mRotation);
+    //particle.mUBO.mModelMatrix = glm::scale(particle.mUBO.mModelMatrix, mParticleScale);
+
+    particle.mUBO.mModelMatrix = glm::scale(glm::toMat4(particle.mRotation), particle.mScale);
+    particle.mUBO.mModelMatrix[3][0] = particle.mPosition.x;
+    particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
+    particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
     mParticles.emplace_back(particle, std::move(model));
   }
