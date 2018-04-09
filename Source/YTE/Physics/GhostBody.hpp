@@ -31,6 +31,8 @@ namespace YTE
 
     void PhysicsInitialize() override;
 
+    void TransformEvent(TransformChanged *aEvent);
+
     btGhostObject* GetBody() { return mGhostBody.get(); };
 
   private:

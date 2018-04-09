@@ -15,6 +15,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDefineEvent(RequestNoticeBoardStart);
   // Dialogue Events
   YTEDefineEvent(RequestDialogueStart);
   YTEDefineEvent(DialogueSelect);
@@ -44,6 +45,7 @@ namespace YTE
   YTEDefineEvent(HudElementToggled);
 
   YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
+  YTEDefineType(RequestNoticeBoardStart) { YTERegisterType(RequestNoticeBoardStart); }
   YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
   YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
   YTEDefineType(DialogueExit) { YTERegisterType(DialogueExit); }
@@ -222,12 +224,6 @@ namespace YTE
             mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
             break;
           }
-          case XboxButtons::B:
-          {
-            DialogueExit diagExit;
-            mOwner->SendEvent(Events::DialogueExit, &diagExit);
-            break;
-          }
         }
         break;
       }
@@ -257,8 +253,10 @@ namespace YTE
           }
           case XboxButtons::A:
           {
-            RequestDialogueStart startDialogue;
-            mOwner->SendEvent(Events::RequestDialogueStart, &startDialogue);
+            RequestDialogueStart dock;
+            mOwner->SendEvent(Events::RequestDialogueStart, &dock);
+            RequestNoticeBoardStart notice;
+            mOwner->SendEvent(Events::RequestNoticeBoardStart, &notice);
             break;
           }
           case XboxButtons::B:

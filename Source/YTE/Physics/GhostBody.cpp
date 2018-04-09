@@ -82,5 +82,15 @@ namespace YTE
     world->addCollisionObject(mGhostBody.get());
 
     mIsInitialized = true;
+
+    mOwner->YTERegister(Events::PositionChanged, this, &GhostBody::TransformEvent);
+  }
+
+  void GhostBody::TransformEvent(TransformChanged *aEvent)
+  {
+    btTransform translationAndRotation;
+    translationAndRotation.setOrigin(OurVec3ToBt(aEvent->WorldPosition));
+    translationAndRotation.setRotation(OurQuatToBt(aEvent->WorldRotation));
+    mGhostBody->setWorldTransform(translationAndRotation);
   }
 }

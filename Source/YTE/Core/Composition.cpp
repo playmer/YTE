@@ -400,11 +400,6 @@ namespace YTE
 
   void Composition::Start(InitializeEvent *aEvent)
   {
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)

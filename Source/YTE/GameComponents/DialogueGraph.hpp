@@ -37,7 +37,7 @@ namespace YTE
     static std::string Walk2 = "WalkPart2.fbx";
     static std::string Sad = "Sad_Loop.fbx";
     static std::string Idle = "Idle_Loop.fbx";
-    static std::string Happy = "Happy_Loop.fbx";
+    static std::string Happy = "Joy_Loop.fbx";
     static std::string Angry = "Angry_Loop.fbx";
   }
   /*
