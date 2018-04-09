@@ -9,6 +9,7 @@
 #define YTE_Graphics_Generics_Renderer_hpp
 
 #include <future>
+#include <shared_mutex>
 
 #include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
@@ -46,8 +47,6 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType);
 
-    virtual Texture* GetTexture(std::string &aFilename);
-
     virtual Mesh* CreateSimpleMesh(std::string &aName,
                                    std::vector<Submesh> &aSubmeshes,
 			                             bool aForceUpdate = false);
@@ -78,7 +77,7 @@ namespace YTE
 
     struct MeshThreadData
     {
-      MeshThreadData(std::string &aName);
+      MeshThreadData();
       ~MeshThreadData();
 
       Any MakeMesh(JobHandle&);
@@ -90,8 +89,6 @@ namespace YTE
 
     struct TextureThreadData
     {
-      TextureThreadData(std::string &aName);
-
       ~TextureThreadData();
 
       Any MakeTexture(JobHandle&);
@@ -101,10 +98,19 @@ namespace YTE
       JobHandle mHandle;
     };
 
+    Mesh* GetBaseMesh(std::string &aFilename);
+    Texture* GetBaseTexture(std::string &aFilename);
+
+  private:
     std::unordered_map<std::string, std::pair<MeshThreadData, std::future<std::unique_ptr<Mesh>>>> mMeshFutures;
+    std::shared_mutex mBaseMeshFutureMutex;
+    std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
+    std::shared_mutex mBaseMeshMutex;
+
     std::unordered_map<std::string, std::pair<TextureThreadData, std::future<std::unique_ptr<Texture>>>> mTextureFutures;
-    std::unordered_map<std::string, std::unique_ptr<Mesh>> mMeshes;
-    std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+    std::shared_mutex mBaseTextureFutureMutex;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
+    std::shared_mutex mBaseTextureMutex;
 
     JobSystem *mJobSystem;
   };

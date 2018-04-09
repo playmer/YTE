@@ -109,7 +109,7 @@ namespace YTE
     VkRenderer *mRenderer;
   };
 
-  class VkMesh : EventHandler
+  class VkMesh : public EventHandler
   {
   public:
     YTEDeclareType(VkMesh);
