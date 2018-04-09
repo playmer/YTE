@@ -119,11 +119,9 @@ namespace YTE
         submesh.mVertexBuffer.emplace_back(vert);
       }
 
-      for (int i = 0; i < cmd_list->IdxBuffer.Size; i += 3)
+      for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
       {
-        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 2]);
-        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 1]);
-        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i + 0]);
+        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i]);
       }
     }
 
