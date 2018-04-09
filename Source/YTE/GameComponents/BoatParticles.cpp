@@ -139,7 +139,7 @@ namespace YTE
     mSideLeftEmitter->SetVelocityVariance(variance);
 
     // front
-    mFrontEmitter->SetInitVelocity(boatSpeed * forward);
+    mFrontEmitter->SetInitVelocity(boatSpeed * (1.3f * forward + glm::vec3(0.0f, 0.1f, 0.0f)));
     mFrontEmitter->SetVelocityVariance(variance);
 
     // back
