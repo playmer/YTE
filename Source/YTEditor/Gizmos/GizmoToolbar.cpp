@@ -39,6 +39,7 @@ namespace YTEditor
     iconPath = (assetsDir.generic_string() + "switchAxes.png").c_str();
     mSwitchAxesMode = new ToolbarButton(this, iconPath);
     mSwitchAxesMode->SetIsUncheckable(true);
+    mSwitchAxesMode->SetIsResettable(false);
     mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);
     mSwitchAxesMode->setToolTip("Switches from world to local axes for gizmos.");
 

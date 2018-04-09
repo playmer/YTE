@@ -12,6 +12,7 @@ namespace YTEditor
     : QPushButton(aToolbar)
     , mToolbar(aToolbar)
     , mIsResetter(true)
+    , mIsResettable(true)
     , mIsUncheckable(false)
   {
     setCheckable(true);
@@ -27,7 +28,7 @@ namespace YTEditor
 
       for (ToolbarButton *b : buttons)
       {
-        if (b != this)
+        if (b != this && b->mIsResettable)
         {
           b->setChecked(false);
         }
@@ -43,6 +44,11 @@ namespace YTEditor
   void ToolbarButton::SetIsUncheckable(bool isUncheckable)
   {
     mIsUncheckable = isUncheckable;
+  }
+
+  void ToolbarButton::SetIsResettable(bool isResettable)
+  {
+    mIsResettable = isResettable;
   }
 
 
@@ -66,7 +72,7 @@ namespace YTEditor
 
       for (ToolbarButton *b : buttons)
       {
-        if (b != this)
+        if (b != this && b->mIsResettable)
         {
           b->setChecked(false);
         }
