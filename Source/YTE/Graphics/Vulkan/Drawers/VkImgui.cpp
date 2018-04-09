@@ -210,7 +210,7 @@ namespace YTE
     }
     
     aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
-                       mShader->mTriangles);
+                       mShader->mShaderNoCull);
 
     aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                              mPipelineData->mPipelineLayout,

@@ -33,7 +33,6 @@ namespace YTEditor
     if ((Operation::Select != mOperation) && (nullptr != mCurrentComposition))
     {
       ImGuiIO& io = mLayer->GetIO();
-      mLayer->SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
       auto cameraUBO = mCamera->ConstructUBOView();
       auto view = glm::value_ptr(cameraUBO.mViewMatrix);
@@ -69,7 +68,9 @@ namespace YTEditor
 
       mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
       mLayer->SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
-            
+
+      mLayer->SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+
       mLayer->Manipulate(view,          // const float *view, 
                          projection,    // const float *projection, 
                          operation,     // OPERATION operation, 
