@@ -35,9 +35,12 @@ namespace YTE
     // this cant be used until we know the location of the node
     void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
     Quest::CharacterName GetName() { return mName; };
+
+    void RegisterDialogue();
+    void DeregisterDialogue();
   private:
-    void RegisterDialogue(CollisionStarted *aEvent);
-    void DeregisterDialogue(CollisionEnded *aEvent);
+    void OnCollisionStarted(CollisionStarted *aEvent);
+    void OnCollisionEnded(CollisionEnded *aEvent);
     void OnDialogueStart(DialogueStart *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);

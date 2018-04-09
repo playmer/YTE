@@ -52,6 +52,8 @@
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 #include "YTE/GameComponents/JohnMovement.hpp"
 #include "YTE/GameComponents/JohnTutorial.hpp"
+#include "YTE/GameComponents/DaisyTutorial.hpp"
+#include "YTE/GameComponents/BasilTutorial.hpp"
 #include "YTE/GameComponents/Quest.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
@@ -149,6 +151,8 @@ namespace YTE
     InitializeType<QuestProgressionTrigger>();
     InitializeType<JohnMovement>();
     InitializeType<JohnTutorial>();
+    InitializeType<DaisyTutorial>();
+    InitializeType<BasilTutorial>();
     InitializeType<Quest>();
     InitializeType<Conversation>();
 

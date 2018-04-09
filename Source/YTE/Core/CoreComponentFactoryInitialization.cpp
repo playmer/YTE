@@ -46,6 +46,8 @@
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 #include "YTE/GameComponents/JohnMovement.hpp"
 #include "YTE/GameComponents/JohnTutorial.hpp"
+#include "YTE/GameComponents/DaisyTutorial.hpp"
+#include "YTE/GameComponents/BasilTutorial.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -137,6 +139,8 @@ namespace YTE
     helper.CreateComponentFactory<QuestProgressionTrigger>();
     helper.CreateComponentFactory<JohnMovement>();
     helper.CreateComponentFactory<JohnTutorial>();
+    helper.CreateComponentFactory<DaisyTutorial>();
+    helper.CreateComponentFactory<BasilTutorial>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();

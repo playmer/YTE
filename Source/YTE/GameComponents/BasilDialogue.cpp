@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/BasilDialogue.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp" /* TutorialUpdate */
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
@@ -34,8 +35,8 @@ namespace YTE
 
   void BasilDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &BasilDialogue::RegisterDialogue);
-    mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::DeregisterDialogue);
+    mOwner->YTERegister(Events::CollisionStarted, this, &BasilDialogue::OnCollisionStarted);
+    mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
 
@@ -44,23 +45,39 @@ namespace YTE
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
   }
 
-  void BasilDialogue::RegisterDialogue(CollisionStarted *aEvent)
+  void BasilDialogue::RegisterDialogue()
   {
-    if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+    mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
+    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
+    mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
+  }
+
+  void BasilDialogue::DeregisterDialogue()
+  {
+    mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
+    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
+    mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
+  }
+
+  void BasilDialogue::OnCollisionStarted(CollisionStarted *aEvent)
+  {
+    if (mActiveQuest->GetName() != Quest::Name::Introduction)
     {
-      mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-      mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-      mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
+      if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+      {
+        RegisterDialogue();
+      }
     }
   }
 
-  void BasilDialogue::DeregisterDialogue(CollisionEnded *aEvent)
+  void BasilDialogue::OnCollisionEnded(CollisionEnded *aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+    if (mActiveQuest->GetName() != Quest::Name::Introduction)
     {
-      mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-      mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-      mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
+      if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+      {
+        DeregisterDialogue();
+      }
     }
   }
 
@@ -103,11 +120,17 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        // next tutorial
+        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+
+        mActiveConvo = &mActiveQuest->GetConversations()->at(1);
+        mActiveNode = mActiveConvo->GetRoot();
       }
       else
       {
-        // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
+        TutorialUpdate nextTutorial(Quest::CharacterName::John);
+        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard i think
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)

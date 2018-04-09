@@ -25,11 +25,11 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
       // these are gonna be a tutorial, not postcards
-    //mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Introduction);
     //mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Introduction);
     //mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Introduction);
 
       // this is what determines the player's quest order
+    mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Introduction); // this is our tutorial postcard
     mPostcardVec.emplace_back(Quest::CharacterName::John, Quest::Name::Fetch);
     mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Explore);
     mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Fetch);
@@ -46,7 +46,7 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionStarted, this, &NoticeBoard::OnCollisionStarted);
     mOwner->YTERegister(Events::CollisionEnded, this, &NoticeBoard::OnCollisionEnded);
     mSpace->YTERegister(Events::NoticeBoardHookup, this, &NoticeBoard::OnNoticeBoardHookup);
-    mAssignedPostcard = nullptr;
+    mAssignedPostcard = &mPostcardVec[0];
   }
 
   void NoticeBoard::OnCollisionStarted(CollisionStarted *aEvent)

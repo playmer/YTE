@@ -25,6 +25,16 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(TutorialUpdate);
+
+  class TutorialUpdate : public Event
+  {
+  public:
+    YTEDeclareType(TutorialUpdate);
+    TutorialUpdate(Quest::CharacterName aCharacter) : mCharacter(aCharacter) {};
+    Quest::CharacterName mCharacter;
+  };
+
   class JohnDialogue : public Component
   {
   public:
@@ -35,9 +45,13 @@ namespace YTE
     // this cant be used until we know the location of the node
     void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
     Quest::CharacterName GetName() { return mName; };
+
+    // its over for me, this is the end, how did i end up here, probz cause im fucking stupid and should just end it all, the ultimate sacrifice for the betterment of humanity
+    void RegisterDialogue();
+    void DeregisterDialogue();
   private:
-    void RegisterDialogue(CollisionStarted *aEvent);
-    void DeregisterDialogue(CollisionEnded *aEvent);
+    void OnCollisionStarted(CollisionStarted *aEvent);
+    void OnCollisionEnded(CollisionEnded *aEvent);
     void OnDialogueStart(DialogueStart *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);

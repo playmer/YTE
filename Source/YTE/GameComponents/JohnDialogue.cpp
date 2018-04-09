@@ -14,6 +14,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDefineEvent(TutorialUpdate);
+  YTEDefineType(TutorialUpdate) { YTERegisterType(TutorialUpdate); }
+
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -34,50 +37,59 @@ namespace YTE
 
   void JohnDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::RegisterDialogue);
-    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::DeregisterDialogue);
+    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::OnCollisionStarted);
+    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
 
     // Send to the space a ptr to the activequest for the noticeboard
-    NoticeBoardHookup firstQuest(&mActiveQuest);
-    mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+   // NoticeBoardHookup firstQuest(&mActiveQuest);
+   // mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
   }
 
-  void JohnDialogue::RegisterDialogue(CollisionStarted *aEvent)
+  // this is super bad but i need to call this by hand in the tutorial
+  void JohnDialogue::RegisterDialogue()
+  {
+    mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+    mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+  }
+  
+  // this is super bad but i need to call this by hand in the tutorial
+  void JohnDialogue::DeregisterDialogue()
+  {
+    mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
+    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
+    mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+  }
+
+  void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-      mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-      mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+      RegisterDialogue();
     }
   }
 
-  void JohnDialogue::DeregisterDialogue(CollisionEnded *aEvent)
+  void JohnDialogue::OnCollisionEnded(CollisionEnded *aEvent)
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-      mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-      mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+      DeregisterDialogue();
     }
   }
 
   void JohnDialogue::Start()
   {
-    /*
     std::cout << std::endl << "SENDING notice board hookup" << std::endl;
       // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
-    */
   }
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
     YTEUnusedArgument(aEvent);
-
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
     if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
@@ -103,13 +115,17 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        // next tutorial
-        // set quest state to completed?
-        // do i send updatequeststate?
+        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+
+        mActiveConvo = &mActiveQuest->GetConversations()->at(1);
+        mActiveNode = mActiveConvo->GetRoot();
       }
       else
       {
+        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard i think
         // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
+        mActiveNode = mActiveConvo->GetRoot(); // for now just repeat john's last convo to prevent crash
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
@@ -193,11 +209,13 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
-        if (aEvent->mState == Quest::State::Completed)
+        /*Dont come here
+        if (aEvent->mState == Quest::State::Briefed)
         {
           mActiveConvo = &mActiveQuest->GetConversations()->at(1);
           mActiveNode = mActiveConvo->GetRoot();
         }
+        */
       }
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
