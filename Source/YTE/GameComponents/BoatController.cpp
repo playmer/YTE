@@ -68,6 +68,8 @@ namespace YTE
     , mAnimator(nullptr)
     , mSailsAnimator(nullptr)
     , mMainsailAnimator(nullptr)
+    , mTargetRotationAmount(0.0f)
+    , mCurrentRotationAmount(0.0f)
   {
 
     mMaxSailSpeed = 25.0f;
@@ -218,6 +220,8 @@ namespace YTE
       }
     }
 
+    mTargetRotationAmount = 0.35f * aEvent->StickDirection.x;
+
       // Dead-zone check and apply response curves
     float length = glm::length(aEvent->StickDirection);
 
@@ -245,15 +249,18 @@ namespace YTE
         Quad::piecewiseEaseOut::Ease(turnScale, vertOffset, change, absX, duration);
       }
 
+      glm::vec3 right = mOrientation->GetRightVector();
+      right.y = 0.0f;
+
         // Can check zero here because we've already passed the dead-zone check
       if (aEvent->StickDirection.x >= 0.0f)
       {
-        mTurnVec = turnScale * mOrientation->GetRightVector();
+        mTurnVec = turnScale * right;
 
         if (mAnimator)
         {
           double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = (((turnScale + 1.0) / 2.0) * maxTime);
+          double stickTurn = (((-turnScale + 1.0) / 2.0) * maxTime);
 
             // update boat animation : current stick rotation
           mAnimator->SetCurrentAnimTime(stickTurn);
@@ -262,7 +269,7 @@ namespace YTE
         if (mCharacterAnimator)
         {
           double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = (((turnScale + 1.0) / 2.0) * maxTime);
+          double stickTurn = (((-turnScale + 1.0) / 2.0) * maxTime);
 
             // update boat animation : current stick rotation
           mCharacterAnimator->SetCurrentAnimTime(stickTurn);
@@ -270,12 +277,12 @@ namespace YTE
       }
       else
       {
-        mTurnVec = -turnScale * mOrientation->GetRightVector();
+        mTurnVec = -turnScale * right;
 
         if (mAnimator)
         {
           double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = ((-turnScale + 1.0) * maxTime) / 2.0;
+          double stickTurn = ((turnScale + 1.0) * maxTime) / 2.0;
 
           // update boat animation : current stick rotation
           mAnimator->SetCurrentAnimTime(stickTurn);
@@ -284,7 +291,7 @@ namespace YTE
         if (mCharacterAnimator)
         {
           double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = ((-turnScale + 1.0) * maxTime) / 2.0;
+          double stickTurn = ((turnScale + 1.0) * maxTime) / 2.0;
 
           // update boat animation : current stick rotation
           mCharacterAnimator->SetCurrentAnimTime(stickTurn);
@@ -359,14 +366,14 @@ namespace YTE
 
     if (mIsSailUp)
     {
-      glm::vec3 forward = mOrientation->GetForwardVector();
-      forward.y = 0.0f;
+      glm::vec3 tempForward = mOrientation->GetForwardVector();
+      tempForward.y = 0.0f;
 
-      mRigidBody->ApplyForce(mWindForce * (forward), glm::vec3(0));
+      mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
-        mRigidBody->ApplyForce(mWindForce * -forward, glm::vec3(0));
+        mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
       }
     }
     else
@@ -380,6 +387,17 @@ namespace YTE
 
     mStartedTurning = false;
 
+
+    // update boat rotation
+    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
+    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
+    
+    mCurrentRotationAmount += angle;
+
+    if (abs(angle) > 0.00001f)
+    {
+      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
+    }
 
     // send boat rotation event for compass needle
     BoatRotation boatRotEvent;

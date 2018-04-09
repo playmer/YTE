@@ -109,6 +109,9 @@ namespace YTE
 
     float mTurnAmount;
 
+    float mTargetRotationAmount;
+    float mCurrentRotationAmount;
+
     void StopBoatImmediately();
   };
 } 
