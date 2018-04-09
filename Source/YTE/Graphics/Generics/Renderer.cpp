@@ -204,29 +204,33 @@ namespace YTE
         meshFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
                                                                                   &(meshFuture.first),
                                                                                   &MeshThreadData::MakeMesh));
+
+        meshFuture.second = meshFuture.first.mPromise.get_future();
       }
     }
   }
 
   void Renderer::RequestTexture(std::string &aFilename)
   {
-    auto it = mMeshes.find(aFilename);
+    auto it = mTextures.find(aFilename);
 
-    if (it != mMeshes.end())
+    if (it != mTextures.end())
     {
       // Not in the finished map, check the futures
 
-      auto it2 = mMeshFutures.find(aFilename);
+      auto it2 = mTextureFutures.find(aFilename);
 
-      if (it2 != mMeshFutures.end())
+      if (it2 != mTextureFutures.end())
       {
         // Not in the futures map, add it.
 
-        auto &textureFuture = mMeshFutures[aFilename];
+        auto &textureFuture = mTextureFutures[aFilename];
 
         textureFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
                                                                                      &(textureFuture.first),
                                                                                      &TextureThreadData::MakeTexture));
+
+        textureFuture.second = textureFuture.first.mPromise.get_future();
       }
     }
   }
