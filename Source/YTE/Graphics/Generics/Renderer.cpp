@@ -6,6 +6,8 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
+#include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 
 #include "YTE/Graphics/Generics/Renderer.hpp"
@@ -181,5 +183,84 @@ namespace YTE
   void Renderer::ResetView(GraphicsView *aView)
   {
     UnusedArguments(aView);
+  }
+
+  void Renderer::RequestMesh(std::string &aMeshFile)
+  {
+    auto it = mMeshes.find(aMeshFile);
+
+    if (it != mMeshes.end())
+    {
+      // Not in the finished map, check the futures
+
+      auto it2 = mMeshFutures.find(aMeshFile);
+
+      if (it2 != mMeshFutures.end())
+      {
+        // Not in the futures map, add it.
+
+        auto &meshFuture = mMeshFutures[aMeshFile];
+
+        meshFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
+                                                                                  &(meshFuture.first),
+                                                                                  &MeshThreadData::MakeMesh));
+      }
+    }
+  }
+
+  void Renderer::RequestTexture(std::string &aFilename)
+  {
+    auto it = mMeshes.find(aFilename);
+
+    if (it != mMeshes.end())
+    {
+      // Not in the finished map, check the futures
+
+      auto it2 = mMeshFutures.find(aFilename);
+
+      if (it2 != mMeshFutures.end())
+      {
+        // Not in the futures map, add it.
+
+        auto &textureFuture = mMeshFutures[aFilename];
+
+        textureFuture.first.mHandle = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
+                                                                                     &(textureFuture.first),
+                                                                                     &TextureThreadData::MakeTexture));
+      }
+    }
+  }
+
+
+  Renderer::MeshThreadData::MeshThreadData(std::string &aName)
+    : mName{ aName }
+  {
+
+  }
+
+  Any Renderer::MeshThreadData::MakeMesh(JobHandle&)
+  {
+    mPromise.set_value(std::make_unique<Mesh>(mName));
+  }
+
+  Renderer::MeshThreadData::~MeshThreadData()
+  {
+
+  }
+
+  Renderer::TextureThreadData::TextureThreadData(std::string &aName)
+    : mName{ aName }
+  {
+
+  }
+
+  Any Renderer::TextureThreadData::MakeTexture(JobHandle&)
+  {
+    mPromise.set_value(std::make_unique<Texture>(mName));
+  }
+
+  Renderer::TextureThreadData::~TextureThreadData()
+  {
+
   }
 }

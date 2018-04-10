@@ -14,24 +14,16 @@
 
 namespace YTE
 {
-  class VkTexture : public Texture
+  class VkTexture : EventHandler
   {
   public:
     YTEDeclareType(VkTexture);
 
-    VkTexture(std::vector<u8> aData,
-              TextureLayout aType,
-              u32 aWidth,
-              u32 aHeight,
-              u32 aMipLevels,
-              u32 aLayerCount,
+    VkTexture(Texture *aTexture,
               VkRenderer *aRenderer,
               vk::ImageViewType aVulkanType);
 
-    VkTexture(std::string &aFile,
-              VkRenderer *aRenderer,
-              vk::ImageViewType aType);
-    ~VkTexture() override;
+    ~VkTexture();
 
     void Initialize();
 
@@ -45,6 +37,8 @@ namespace YTE
     vk::DescriptorImageInfo mDescriptor;
     VkRenderer *mRenderer;
     vk::ImageViewType mVulkanType;
+
+    Texture *mTexture;
   };
 }
 
