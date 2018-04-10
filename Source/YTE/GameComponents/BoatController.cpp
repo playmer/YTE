@@ -91,6 +91,7 @@ namespace YTE
     mIsDocked = false;
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     mRigidBody->SetDamping(0.9f, 0.9f);
 
@@ -403,6 +404,9 @@ namespace YTE
     {
       mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
     }
+
+    float ratio = 100.0f / mMaxSailSpeed;
+    mSoundSystem->SetRTPC("Boat_Velocity", ratio * mCurrSpeed);
 
     // send boat rotation event for compass needle
     BoatRotation boatRotEvent;

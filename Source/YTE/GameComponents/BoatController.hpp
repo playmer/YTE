@@ -113,6 +113,8 @@ namespace YTE
     float mCurrentRotationAmount;
 
     void StopBoatImmediately();
+
+    WWiseSystem *mSoundSystem;
   };
 } 
 
