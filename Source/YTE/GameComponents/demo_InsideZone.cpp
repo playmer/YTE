@@ -93,8 +93,6 @@ namespace YTE
     {
       mSoundEmitter->PlayEvent(mIslandLeave);
       // play ocean sound
-      mSoundEmitter->PlayEvent(mSailingStart);
-      mCurrentZone = "";
     }
   }
 
@@ -113,7 +111,6 @@ namespace YTE
           mSoundSystem->SetState("Current_Island", zoneName);
           mCurrentZone = zoneName;
           mSoundEmitter->PlayEvent(mIslandEnter);
-          mSoundEmitter->PlayEvent(mSailingStop);
         }
       }
 
