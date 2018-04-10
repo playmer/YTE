@@ -135,6 +135,11 @@ namespace YTEditor
 
     YTE::Composition* GetEditorCamera();
 
+    YTE::Composition* GetImguiLayer()
+    {
+      return mImguiLayer;
+    }
+
   private:
 
     Preferences mPreferences;

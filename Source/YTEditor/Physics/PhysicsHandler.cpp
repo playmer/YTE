@@ -124,6 +124,20 @@ namespace YTEditor
 
   void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
   {
+    auto imguiLayerComposition = mMainWindow->GetImguiLayer();
+    
+    if (imguiLayerComposition)
+    {
+      auto imguiLayer = imguiLayerComposition->GetComponent<YTE::ImguiLayer>();
+
+      auto io = imguiLayer->GetIO();
+
+      if (imguiLayer->IsOver() || io.WantCaptureMouse)
+      {
+        return;
+      }
+    }
+
     if (aEvent->Button != YTE::MouseButtons::Left)
     {
       return;
