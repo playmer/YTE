@@ -49,6 +49,7 @@ namespace YTE
     // its over for me, this is the end, how did i end up here, probz cause im fucking stupid and should just end it all, the ultimate sacrifice for the betterment of humanity
     void RegisterDialogue();
     void DeregisterDialogue();
+    void PlayLine();
   private:
     void OnCollisionStarted(CollisionStarted *aEvent);
     void OnCollisionEnded(CollisionEnded *aEvent);
@@ -63,6 +64,12 @@ namespace YTE
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;
     Quest::CharacterName mName = Quest::CharacterName::John;
+
+    WWiseEmitter *mSoundEmitter;
+    WWiseSystem *mSoundSystem;
+    std::vector<std::vector<u64> > mDialogueConvos;
+    std::vector<std::vector<u64> >::iterator mConvosIter;
+    std::vector<u64>::iterator mLinesIter;
   };
 } //end yte
 #endif
