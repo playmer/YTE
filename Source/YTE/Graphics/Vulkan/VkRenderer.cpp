@@ -143,8 +143,6 @@ namespace YTE
     return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aView->GetWindow())->CreateModel(aView, aMesh));
   }
 
-
-
   void VkRenderer::DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel)
   {
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
@@ -235,7 +233,8 @@ namespace YTE
       case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
     }
 
-    return CreateTexture(aFilename, type);
+    auto texture = CreateTexture(aFilename, type);
+    return texture->mTexture;
   }
 
   Texture* VkRenderer::CreateTexture(std::string aName,
@@ -260,7 +259,9 @@ namespace YTE
       case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
     }
 
-    return CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+
+    return texture->mTexture;
   }
 
   Texture* VkRenderer::GetTexture(std::string &aFilename)
@@ -269,7 +270,7 @@ namespace YTE
 
     if (textureIt != mTextures.end())
     {
-      return textureIt->second.get();
+      return textureIt->second->mTexture;
     }
 
     return nullptr;
@@ -327,7 +328,7 @@ namespace YTE
       meshPtr = meshIt->second.get();
     }
 
-    return meshPtr;
+    return meshPtr->mMesh;
   }
 
 

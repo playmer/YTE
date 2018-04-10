@@ -109,18 +109,14 @@ namespace YTE
     VkRenderer *mRenderer;
   };
 
-  class VkMesh : public Mesh
+  class VkMesh : EventHandler
   {
   public:
     YTEDeclareType(VkMesh);
 
-    VkMesh(VkRenderer *aRenderer,
-           std::string &aFile,
-           CreateInfo *aCreateInfo = nullptr);
-
-    VkMesh(VkRenderer *aRenderer,
-           std::string &aFile,
-           std::vector<Submesh> &aSubmeshes);
+    VkMesh(Mesh *aMesh,
+           VkRenderer *aRenderer,
+           std::string &aFile);
 
     ~VkMesh();
     
@@ -129,8 +125,8 @@ namespace YTE
     void RemoveOffset(VkInstantiatedModel *aModel);
     void RequestOffset(VkInstantiatedModel *aModel);
 
-    virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices) override;
-    virtual void UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
+    void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices);
+    void UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
 
     u32 GetOffset(VkInstantiatedModel *aModel)
     {
@@ -140,7 +136,7 @@ namespace YTE
     void SetInstanced(bool aInstanced);
     bool GetInstanced()
     {
-      return mInstanced;
+      return mMesh->mInstanced;
     }
 
     void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
@@ -148,6 +144,7 @@ namespace YTE
     std::unordered_multimap<std::string, std::unique_ptr<VkSubmesh>> mSubmeshes;
     InstanceManager mInstanceManager;
     VkRenderer *mRenderer;
+    Mesh *mMesh;
   };
 }
 

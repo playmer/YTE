@@ -8,6 +8,9 @@
 #ifndef YTE_Graphics_Generics_Renderer_hpp
 #define YTE_Graphics_Generics_Renderer_hpp
 
+#include <future>
+
+#include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
@@ -69,6 +72,41 @@ namespace YTE
     virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 
     virtual void ResetView(GraphicsView *aView);
+
+    void RequestMesh(std::string &aMeshFile);
+    void RequestTexture(std::string &aFilename);
+
+    struct MeshThreadData
+    {
+      MeshThreadData(std::string &aName);
+      ~MeshThreadData();
+
+      Any MakeMesh(JobHandle&);
+
+      std::string mName;
+      std::promise<std::unique_ptr<Mesh>> mPromise;
+      JobHandle mHandle;
+    };
+
+    struct TextureThreadData
+    {
+      TextureThreadData(std::string &aName);
+
+      ~TextureThreadData();
+
+      Any MakeTexture(JobHandle&);
+
+      std::string mName;
+      std::promise<std::unique_ptr<Texture>> mPromise;
+      JobHandle mHandle;
+    };
+
+    std::unordered_map<std::string, std::pair<MeshThreadData, std::future<std::unique_ptr<Mesh>>>> mMeshFutures;
+    std::unordered_map<std::string, std::pair<TextureThreadData, std::future<std::unique_ptr<Texture>>>> mTextureFutures;
+    std::unordered_map<std::string, std::unique_ptr<Mesh>> mMeshes;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> mTextures;
+
+    JobSystem *mJobSystem;
   };
 }
 

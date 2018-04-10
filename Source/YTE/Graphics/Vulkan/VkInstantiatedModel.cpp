@@ -22,31 +22,33 @@ namespace YTE
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
                                            VkRenderedSurface *aSurface,
                                            GraphicsView *aView)
-    : InstantiatedModel()
-    , mSurface(aSurface)
-    , mView(aView)
-    , mLoadUBOAnimation(false)
-    , mLoadUBOModel(false)
-    , mLoadUBOMaterial(false)
+    : InstantiatedModel{}
+    , mSurface{aSurface}
+    , mView{ aView }
+    , mLoadUBOAnimation{ false }
+    , mLoadUBOModel{ false }
+    , mLoadUBOMaterial{ false }
   {
-    mMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
+    mVkMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
+    mMesh = mVkMesh->mMesh;
     Create();
 
     mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
     mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
   }
 
-  VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, 
+  VkInstantiatedModel::VkInstantiatedModel(VkMesh *aMesh, 
                                            VkRenderedSurface *aSurface,
                                            GraphicsView *aView)
-    : InstantiatedModel()
-    , mSurface(aSurface)
-    , mView(aView)
-    , mLoadUBOAnimation(false)
-    , mLoadUBOModel(false)
-    , mLoadUBOMaterial(false)
+    : InstantiatedModel{}
+    , mSurface{ aSurface }
+    , mView{ aView }
+    , mLoadUBOAnimation{false}
+    , mLoadUBOModel{ false }
+    , mLoadUBOMaterial{ false }
+    , mVkMesh{aMesh}
   {
-    mMesh = static_cast<VkMesh*>(aMesh);
+    mMesh = aMesh->mMesh;
     Create();
 
     mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
@@ -74,12 +76,10 @@ namespace YTE
 
   void VkInstantiatedModel::Create()
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
     auto &device = mSurface->GetDevice();
 
-    if (false == mesh->GetInstanced())
+    if (false == mVkMesh->GetInstanced())
     {
       // create UBO Per Model buffer
       mUBOModel = device->createBuffer(sizeof(UBOModel),
@@ -136,7 +136,7 @@ namespace YTE
 
 
     // create descriptor sets
-    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
     {
       auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
                                               vk::BufferUsageFlagBits::eTransferDst |
@@ -158,11 +158,10 @@ namespace YTE
 
   void VkInstantiatedModel::CreateShader()
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
     mPipelineData.clear();
 
     // create descriptor sets
-    for (auto[submesh, i] : enumerate(mesh->mSubmeshes))
+    for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
     {
       submesh->second->CreateShader(mView);
 
@@ -243,35 +242,29 @@ namespace YTE
 
   bool VkInstantiatedModel::GetInstanced()
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
-    return mesh->GetInstanced();
+    return mVkMesh->GetInstanced();
   }
 
   void VkInstantiatedModel::SetInstanced(bool aInstanced)
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
-    if (mesh->CanAnimate())
+    if (mMesh->CanAnimate())
     {
       printf("Currently don't support animating, instanced meshes.");
       return;
     }
 
-    if (mesh->GetInstanced() == aInstanced)
+    if (mVkMesh->GetInstanced() == aInstanced)
     {
       return;
     }
 
 
-    mesh->SetInstanced(mMesh);
+    mVkMesh->SetInstanced(mMesh);
   }
 
 
   void VkInstantiatedModel::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk *aEvent)
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
     mSurface->YTEDeregister(Events::GraphicsDataUpdateVk,
                             this,
                             &VkInstantiatedModel::GraphicsDataUpdateVk);
@@ -299,11 +292,11 @@ namespace YTE
 
     if (mLoadUBOModel)
     {
-      if (mesh->GetInstanced())
+      if (mVkMesh->GetInstanced())
       {
         Instance instance(mUBOModelData);
 
-        mesh->mInstanceManager.InstanceBuffer()->update<Instance>(mesh->GetOffset(this), instance, update);
+        mVkMesh->mInstanceManager.InstanceBuffer()->update<Instance>(mVkMesh->GetOffset(this), instance, update);
       }
       else
       {

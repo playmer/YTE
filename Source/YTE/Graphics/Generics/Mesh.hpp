@@ -298,12 +298,10 @@ namespace YTE
     std::vector<ColliderMesh> mColliderParts;
     Skeleton mSkeleton;
     Dimension mDimension;
+    bool mInstanced;
 
   private:
     void CreateCollider(const aiScene* aScene);
-
-  protected:
-    bool mInstanced;
   };
 }
 

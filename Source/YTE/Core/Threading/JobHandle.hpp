@@ -14,6 +14,7 @@ namespace YTE
   {
     friend class Job;
   public:
+    JobHandle() {};
     JobHandle(Job* aJob);
     bool HasParentHandle() const;
     JobHandle GetParentHandle();

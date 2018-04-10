@@ -27,25 +27,12 @@ namespace YTE
   }
 
 
-  VkTexture::VkTexture(std::vector<u8> aData,
-                       TextureLayout aType,
-                       u32 aWidth,
-                       u32 aHeight,
-                       u32 aMipLevels,
-                       u32 aLayerCount,
+  VkTexture::VkTexture(Texture *aTexture,
                        VkRenderer *aRenderer,
                        vk::ImageViewType aVulkanType)
-    : Texture{ aData, aType, aWidth, aHeight, aMipLevels, aLayerCount }
-    , mRenderer(aRenderer)
-    , mVulkanType(aVulkanType)
-  {
-    Initialize();
-  }
-
-  VkTexture::VkTexture(std::string &aFile, VkRenderer *aRenderer, vk::ImageViewType aType)
-    : Texture(aFile)
-    , mRenderer(aRenderer)
-    , mVulkanType(aType)
+    : mRenderer{ aRenderer }
+    , mVulkanType{ aVulkanType }
+    , mTexture{ aTexture }
   {
     Initialize();
   }
@@ -59,7 +46,7 @@ namespace YTE
     // 1. init image
     vk::Format format;
 
-    switch (mType)
+    switch (mTexture->mType)
     {
       case TextureLayout::DXT1_sRGB:
       {
@@ -82,7 +69,7 @@ namespace YTE
       }
     }
 
-    vk::FormatProperties imageFormatProperties =
+    vk::FormatProperties imageFormatProperties = 
       mRenderer->GetVkInternals()->GetPhysicalDevice()->getFormatProperties(format);
 
     DebugObjection(false == ((imageFormatProperties.linearTilingFeatures &
@@ -91,7 +78,7 @@ namespace YTE
                              vk::FormatFeatureFlagBits::eSampledImage)),
                    "Texture Format doesnt support system");
 
-    vk::Extent3D imageExtent{ mWidth, mHeight, 1 };
+    vk::Extent3D imageExtent{ mTexture->mWidth, mTexture->mHeight, 1 };
 
     mImage = device->createImage({},
                                  vk::ImageType::e2D,
@@ -156,16 +143,16 @@ namespace YTE
     auto update = aEvent->mCBO;
     // create a temporary upload image and fill it with pixel data. 
     // The destructor of MappedImage will put the transfer into the command buffer.
-    vkhlf::MappedImage mi(mImage, update, 0, mData.size());
+    vkhlf::MappedImage mi(mImage, update, 0, mTexture->mData.size());
     vk::SubresourceLayout layout = mi.getSubresourceLayout(vk::ImageAspectFlagBits::eColor, 0, 0);
     uint8_t *data = reinterpret_cast<uint8_t*>(mi.getPointer());
 
-    auto height = mHeight;
-    auto width = mWidth;
+    auto height = mTexture->mHeight;
+    auto width = mTexture->mWidth;
 
-    auto pixels = mData.data();
+    auto pixels = mTexture->mData.data();
 
-    switch (mType)
+    switch (mTexture->mType)
     {
       case TextureLayout::DXT1_sRGB:
       {

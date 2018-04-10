@@ -25,7 +25,7 @@ namespace YTE
     YTEDeclareType(VkInstantiatedModel);
 
     VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface, GraphicsView *aView);
-    VkInstantiatedModel(Mesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
+    VkInstantiatedModel(VkMesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
     ~VkInstantiatedModel() override;
 
     void Create();
@@ -60,10 +60,16 @@ namespace YTE
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
 
+    VkMesh* GetVkMesh()
+    {
+      return mVkMesh;
+    }
+
   private:
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;
     bool mLoadUBOMaterial;
+    VkMesh *mVkMesh;
 
     static UBOAnimation cAnimation;
   };
