@@ -90,6 +90,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+    mSpace->YTERegister(Events::DialogueConfirm, this, &JohnDialogue::OnDialogueConfirm);
   }
   
   // this is super bad but i need to call this by hand in the tutorial
@@ -98,6 +99,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+    mSpace->YTEDeregister(Events::DialogueConfirm, this, &JohnDialogue::OnDialogueConfirm);
   }
 
   void JohnDialogue::PlayLine()
@@ -164,6 +166,8 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
 
+    ++mConvosIter;
+
     if (mActiveQuest->GetName() == Quest::Name::Introduction)
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
@@ -171,7 +175,6 @@ namespace YTE
         TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
-        ++mConvosIter;
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
       }
@@ -235,11 +238,6 @@ namespace YTE
       // For input and text we rely on the director responding
       if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
       {
-        if (type == DialogueNode::NodeType::Text)
-        {
-          PlayLine();
-        }
-
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
@@ -305,6 +303,14 @@ namespace YTE
           mActiveNode = mActiveConvo->GetRoot();
         }
       }
+    }
+  }
+
+  void JohnDialogue::OnDialogueConfirm(DialogueConfirm *)
+  {
+    if (mActiveNode->GetNodeType() == DialogueNode::NodeType::Text)
+    {
+      PlayLine();
     }
   }
 } //end yte
