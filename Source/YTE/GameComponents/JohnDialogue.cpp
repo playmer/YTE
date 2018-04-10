@@ -11,6 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include <AK/SoundEngine/Common/AkDynamicDialogue.h>
 
 namespace YTE
 {
@@ -21,6 +22,8 @@ namespace YTE
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mSoundEmitter(nullptr)
+    , mSoundSytem(nullptr)
   {
     YTEUnusedArgument(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
@@ -42,9 +45,10 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
 
-    // Send to the space a ptr to the activequest for the noticeboard
-   // NoticeBoardHookup firstQuest(&mActiveQuest);
-   // mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+    if (mSoundSystem)
+      mSoundDialogueJohn = mSoundSystem->GetSoundIDFromString("ChefJohn");
   }
 
   // this is super bad but i need to call this by hand in the tutorial
@@ -61,6 +65,44 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+  }
+
+  const char **JohnDialogue::StatesToStrings()
+  {
+    const char *ret[3];
+    if (mActiveQuest->GetName() == Quest::Name::Fetch)
+    {
+      ret[0] = DynamicDialogueArgs::Quest::Fetch;
+    }
+    else if (mActiveQuest->GetName() == Quest::Name::Explore)
+    {
+      ret[0] = DynamicDialogueArgs::Quest::Explore;
+    }
+    else if (mActiveQuest->GetName() == Quest::Name::Dialogue)
+    {
+      ret[0] = DynamicDialogueArgs::Quest::Dialogue;
+    }
+    else if (mActiveQuest->GetName() == Quest::Name::NotActive)
+    {
+      ret[0] = DynamicDialogueArgs::Quest::NotActive;
+    }
+
+    if (mActiveConvo->GetName() == Conversation::Name::Hello)
+    {
+      ret[1] = DynamicDialogueArgs::Conversation::Hello;
+    }
+    else if (mActiveConvo->GetName() == Conversation::Name::NoProgress)
+    {
+      ret[1] = DynamicDialogueArgs::Conversation::NoProgress;
+    }
+    else if (mActiveConvo->GetName() == Conversation::Name::Completed)
+    {
+      ret[1] = DynamicDialogueArgs::Conversation::Completed;
+    }
+    else if (mActiveConvo->GetName() == Conversation::Name::PostQuest)
+    {
+      ret[1] = DynamicDialogueArgs::Conversation::PostQuest;
+    }
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -101,6 +143,11 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      if (type == DialogueNode::NodeType::Text)
+      {
+        AK::SoundEngine::DynamicDialogue::ResolveDialogueEvent(mSoundDialogueJohn, );
+      }
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
