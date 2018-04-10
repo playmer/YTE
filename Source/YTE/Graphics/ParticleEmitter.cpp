@@ -402,7 +402,7 @@ namespace YTE
     {
       model = mRenderer->CreateModel(mGraphicsView, mMesh);
       model->SetInstanced(true);
-      model->mType = ShaderType::AdditiveBlendShader;
+      model->mType = ShaderType::ShaderNoCull;
     }
     else
     {

@@ -1150,7 +1150,7 @@ namespace YTE
           mShaderSetName,
           mGraphicsView,
           mRenderer,
-          "tempWater.png",
+          "water.png",
           "foam.png",
           "copywritePerlinNoiseTextureNormal.png");
     }

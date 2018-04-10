@@ -122,29 +122,29 @@ namespace YTE
 
     // front right
     glm::vec3 weightedRight = mFrontWeight * right;
-    mFrontRightEmitter->SetInitVelocity(boatSpeed * (forward + weightedRight + glm::vec3(0.0f, 0.1f, 0.0f)));
+    mFrontRightEmitter->SetInitVelocity(boatSpeed * (forward + weightedRight + glm::vec3(0.0f, 0.5f, 0.0f)));
     mFrontRightEmitter->SetVelocityVariance(variance);
 
     // front left
-    mFrontLeftEmitter->SetInitVelocity(boatSpeed * (forward - weightedRight + glm::vec3(0.0f, 0.1f, 0.0f)));
+    mFrontLeftEmitter->SetInitVelocity(boatSpeed * (forward - weightedRight + glm::vec3(0.0f, 0.5f, 0.0f)));
     mFrontLeftEmitter->SetVelocityVariance(variance);
 
     // side right
     glm::vec3 weightedSide = mSideWeight * right;
-    mSideRightEmitter->SetInitVelocity(boatSpeed * (forward + weightedSide + glm::vec3(0.0f, 0.05f, 0.0f)));
+    mSideRightEmitter->SetInitVelocity(boatSpeed * (forward + weightedSide + glm::vec3(0.0f, 0.3f, 0.0f)));
     mSideRightEmitter->SetVelocityVariance(variance);
 
     // side left
-    mSideLeftEmitter->SetInitVelocity(boatSpeed * (forward - weightedSide + glm::vec3(0.0f, 0.05f, 0.0f)));
+    mSideLeftEmitter->SetInitVelocity(boatSpeed * (forward - weightedSide + glm::vec3(0.0f, 0.3f, 0.0f)));
     mSideLeftEmitter->SetVelocityVariance(variance);
 
     // front
-    mFrontEmitter->SetInitVelocity(boatSpeed * (1.3f * forward + glm::vec3(0.0f, 0.1f, 0.0f)));
+    mFrontEmitter->SetInitVelocity(boatSpeed * (1.3f * forward + glm::vec3(0.0f, 0.3f, 0.0f)));
     mFrontEmitter->SetVelocityVariance(variance);
 
     // back
     mBackEmitter->SetInitVelocity(glm::vec3(0));
-    mBackEmitter->SetVelocityVariance(variance);
+    //mBackEmitter->SetVelocityVariance(variance);
   }
 
   float BoatParticles::GetVarianceScalar() const
