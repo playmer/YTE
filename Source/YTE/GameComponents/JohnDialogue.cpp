@@ -141,6 +141,12 @@ namespace YTE
         UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
       }
+      // briefed just gets repeated
+      if (mActiveQuest->GetState() == Quest::State::Briefed)
+      {
+        UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+      }
       if (mActiveQuest->GetState() == Quest::State::Completed)
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
