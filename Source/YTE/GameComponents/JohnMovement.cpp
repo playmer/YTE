@@ -34,7 +34,7 @@ namespace YTE
   void JohnMovement::Start()
   {
    // mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
-    mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    //mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
   }
 
   void JohnMovement::OnQuestStart(QuestStart *aEvent)

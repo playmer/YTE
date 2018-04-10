@@ -35,7 +35,7 @@ namespace YTE
 
   void DaisyMovement::Start()
   {
-    mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
   }
 
   void DaisyMovement::OnQuestStart(QuestStart *aEvent)

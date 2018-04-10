@@ -35,7 +35,7 @@ namespace YTE
 
   void BasilMovement::Start()
   {
-    mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
   }
 
   void BasilMovement::OnQuestStart(QuestStart *aEvent)
