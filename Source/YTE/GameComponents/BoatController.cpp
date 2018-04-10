@@ -91,6 +91,7 @@ namespace YTE
     mIsDocked = false;
     mStartedTurning = false;
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     mRigidBody->SetDamping(0.9f, 0.9f);
 
@@ -251,6 +252,7 @@ namespace YTE
 
       glm::vec3 right = mOrientation->GetRightVector();
       right.y = 0.0f;
+      right /= right.length();
 
         // Can check zero here because we've already passed the dead-zone check
       if (aEvent->StickDirection.x >= 0.0f)
@@ -340,6 +342,13 @@ namespace YTE
       mMainsailAnimator->SetCurrentAnimTime(mainsailFrame);
     }
 
+    glm::vec3 vel = mRigidBody->GetVelocity();
+
+    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
+
+    auto forward = mOrientation->GetForwardVector();
+    mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
+
 
     if (mStartedTurning)
     {
@@ -357,23 +366,15 @@ namespace YTE
         mRigidBody->ApplyForce(-mTurnVec, glm::vec3(0, 1, 0));
     }*/
 
-    glm::vec3 vel = mRigidBody->GetVelocity();
-
-    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
-
-    auto forward = mOrientation->GetForwardVector();
-    mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
-
     if (mIsSailUp)
     {
       glm::vec3 tempForward = mOrientation->GetForwardVector();
       tempForward.y = 0.0f;
 
-      mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
-
-      if (mCurrSpeed > mMaxSailSpeed)
+      if (mCurrSpeed < mMaxSailSpeed)
       {
-        mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
+        mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
+        //mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
       }
     }
     else
@@ -398,6 +399,10 @@ namespace YTE
     {
       mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
     }
+
+    float ratio = 100.0f / mMaxSailSpeed;
+
+    mSoundSystem->SetRTPC("Boat_Velocity", ratio * mCurrSpeed);
 
     // send boat rotation event for compass needle
     BoatRotation boatRotEvent;

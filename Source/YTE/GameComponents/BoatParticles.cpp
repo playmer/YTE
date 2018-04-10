@@ -106,11 +106,11 @@ namespace YTE
       boatSpeed = 0.0f;
     }
 
-    int emitCount = 15 * static_cast<int>(boatSpeed);
+    int emitCount = 10 * static_cast<int>(boatSpeed);
     
-    if (emitCount > 45)
+    if (emitCount > 20)
     {
-      emitCount = 45;
+      emitCount = 20;
     }
 
     //float emitRate = 0.00001f; //1.0001f - 2.0f * (boatSpeed / mBoatController->GetMaxSailSpeed());
@@ -139,7 +139,7 @@ namespace YTE
     mSideLeftEmitter->SetVelocityVariance(variance);
 
     // front
-    mFrontEmitter->SetInitVelocity(boatSpeed * (1.3f * forward + glm::vec3(0.0f, 0.1f, 0.0f)));
+    mFrontEmitter->SetInitVelocity(boatSpeed * (2.5f * forward + glm::vec3(0.0f, 0.2f, 0.0f)));
     mFrontEmitter->SetVelocityVariance(variance);
 
     // back

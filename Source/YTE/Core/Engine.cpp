@@ -236,7 +236,7 @@ namespace YTE
     {
       auto space = static_cast<Space*>(composition.second.get());
       space->Load();
-      space->Initialize();
+      //space->Initialize();
     }
 
     mShouldIntialize = false;
