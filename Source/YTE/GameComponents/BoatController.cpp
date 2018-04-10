@@ -359,9 +359,12 @@ namespace YTE
 
     glm::vec3 vel = mRigidBody->GetVelocity();
 
-    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
-
     auto forward = mOrientation->GetForwardVector();
+
+    glm::vec3 speedVec = (glm::dot(vel, forward) / glm::dot(forward, forward)) * forward;
+
+    mCurrSpeed = glm::sqrt((speedVec.x * speedVec.x) + (speedVec.z * speedVec.z));
+
     mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
 
     if (mIsSailUp)
@@ -369,11 +372,14 @@ namespace YTE
       glm::vec3 tempForward = mOrientation->GetForwardVector();
       tempForward.y = 0.0f;
 
-      mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
         mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
+      }
+      else
+      {
+        mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
       }
     }
     else
@@ -386,7 +392,6 @@ namespace YTE
     }
 
     mStartedTurning = false;
-
 
     // update boat rotation
     float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;

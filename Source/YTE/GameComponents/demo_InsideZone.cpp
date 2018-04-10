@@ -68,7 +68,7 @@ namespace YTE
     dist = glm::clamp(dist, 0.0f, 100.0f);
 
     auto zoneName = zone->GetZoneName();
-    if (zoneName != "Dock_Distance")
+    if (zoneName == "Dock_Distance")
     {
       mSoundSystem->SetRTPC("Dock_Distance", dist);
     }
