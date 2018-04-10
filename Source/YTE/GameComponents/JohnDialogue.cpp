@@ -21,6 +21,8 @@ namespace YTE
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mSoundEmitter(nullptr)
+    , mSoundSystem(nullptr)
   {
     YTEUnusedArgument(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
@@ -42,9 +44,44 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
 
-    // Send to the space a ptr to the activequest for the noticeboard
-   // NoticeBoardHookup firstQuest(&mActiveQuest);
-   // mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+    if (mSoundSystem)
+    {
+      // INTRO::HELLO
+      mDialogueConvos.emplace_back( std::vector<u64> 
+      {
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2"),
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3"),
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5")
+      });
+      // INTRO::POSTQUEST                                                             
+      mDialogueConvos.emplace_back( std::vector<u64>
+      {
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1") 
+      });
+      // FETCH::HELLO                                                                 
+      mDialogueConvos.emplace_back( std::vector<u64>
+      {
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_1"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_2"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_3"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_4"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_5"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_H_6")
+      });
+      // FETCH::NOPROGRESS            
+      mDialogueConvos.emplace_back( std::vector<u64>
+      {
+        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2"),
+        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3")
+      });
+      mConvosIter = mDialogueConvos.begin();
+      mLinesIter = mConvosIter->begin();
+    }
   }
 
   // this is super bad but i need to call this by hand in the tutorial
@@ -61,6 +98,18 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
+  }
+
+  void JohnDialogue::PlayLine()
+  {
+    if (mConvosIter != mDialogueConvos.end())
+    {
+      if (mLinesIter != mConvosIter->end())
+      {
+        mSoundEmitter->PlayEvent(*mLinesIter);
+        ++mLinesIter;
+      }
+    }
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -81,7 +130,6 @@ namespace YTE
 
   void JohnDialogue::Start()
   {
-    std::cout << std::endl << "SENDING notice board hookup" << std::endl;
       // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
@@ -101,6 +149,11 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      if (type == DialogueNode::NodeType::Text)
+      {
+        PlayLine();
+      }
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
@@ -118,6 +171,7 @@ namespace YTE
         TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
+        ++mConvosIter;
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
       }
@@ -126,6 +180,7 @@ namespace YTE
         mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard i think
         // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
         mActiveNode = mActiveConvo->GetRoot(); // for now just repeat john's last convo to prevent crash
+        mLinesIter = mConvosIter->begin();
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
@@ -180,6 +235,11 @@ namespace YTE
       // For input and text we rely on the director responding
       if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
       {
+        if (type == DialogueNode::NodeType::Text)
+        {
+          PlayLine();
+        }
+
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
