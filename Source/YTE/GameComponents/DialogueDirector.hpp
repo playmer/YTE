@@ -29,7 +29,6 @@ namespace YTE
   YTEDeclareEvent(UIDisplayEvent);
   YTEDeclareEvent(UIUpdateContent);
 
-
   class UISelectEvent : public Event
   {
   public:
@@ -77,6 +76,14 @@ namespace YTE
   {
   public:
     YTEDeclareType(DialogueStart);
+  };
+
+  YTEDeclareEvent(PlaySoundEvent);
+
+  class PlaySoundEvent : public Event
+  {
+  public:
+    YTEDeclareType(PlaySoundEvent);
   };
 
   /////////////////////////////////////////////////////////////////////////////////////

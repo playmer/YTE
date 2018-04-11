@@ -49,35 +49,33 @@ namespace YTE
     if (mSoundSystem)
     {
       // INTRO::HELLO
-      mDialogueConvos.emplace_back( std::vector<u64> 
+      mDialogueConvos.emplace_back(std::map<std::string, u64> 
       {
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5")
+        std::make_pair("CJ_NQ_H_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")),
+        std::make_pair("CJ_NQ_H_2", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2")),
+        std::make_pair("CJ_NQ_H_3", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3")),
+        std::make_pair("CJ_NQ_H_4", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4")),
+        std::make_pair("CJ_NQ_H_5", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5"))
       });
       // INTRO::POSTQUEST                                                             
-      mDialogueConvos.emplace_back( std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1") 
+        std::make_pair("CJ_NQ_G_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1"))
       });
       // FETCH::HELLO                                                                 
-      mDialogueConvos.emplace_back( std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_3"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_4"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_5"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_6")
+        std::make_pair("CJ_FI_H_1", mSoundSystem->GetSoundIDFromString("CJ_FI_H_1")),
+        std::make_pair("CJ_FI_H_2", mSoundSystem->GetSoundIDFromString("CJ_FI_H_2")),
+        std::make_pair("CJ_FI_H_3", mSoundSystem->GetSoundIDFromString("CJ_FI_H_3")),
+        std::make_pair("CJ_FI_H_4", mSoundSystem->GetSoundIDFromString("CJ_FI_H_4"))
       });
       // FETCH::NOPROGRESS            
-      mDialogueConvos.emplace_back( std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3")
+        std::make_pair("CJ_FI_NP_1", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1")),
+        std::make_pair("CJ_FI_NP_2", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2")),
+        std::make_pair("CJ_FI_NP_3", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3"))
       });
       mConvosIter = mDialogueConvos.begin();
       mLinesIter = mConvosIter->begin();
@@ -90,7 +88,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::DialogueConfirm, this, &JohnDialogue::OnDialogueConfirm);
+    mSpace->YTERegister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
   }
   
   // this is super bad but i need to call this by hand in the tutorial
@@ -99,19 +97,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::DialogueConfirm, this, &JohnDialogue::OnDialogueConfirm);
-  }
-
-  void JohnDialogue::PlayLine()
-  {
-    if (mConvosIter != mDialogueConvos.end())
-    {
-      if (mLinesIter != mConvosIter->end())
-      {
-        mSoundEmitter->PlayEvent(*mLinesIter);
-        ++mLinesIter;
-      }
-    }
+    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -151,11 +137,6 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
-      if (type == DialogueNode::NodeType::Text)
-      {
-        PlayLine();
-      }
-
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
@@ -166,8 +147,6 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
 
-    ++mConvosIter;
-
     if (mActiveQuest->GetName() == Quest::Name::Introduction)
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
@@ -177,6 +156,9 @@ namespace YTE
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
+        // end me, just do it.
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
       else
       {
@@ -188,7 +170,7 @@ namespace YTE
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
     {
-        // NotActive just resets
+        // NotActive just resets, doesnt matter what state we pass it
       UpdateActiveQuestState received(mName, Quest::State::Received);
       mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
     }
@@ -198,17 +180,25 @@ namespace YTE
       {
         UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
       // briefed just gets repeated
       if (mActiveQuest->GetState() == Quest::State::Briefed)
       {
         UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+
+        mLinesIter = mConvosIter->begin();
       }
       if (mActiveQuest->GetState() == Quest::State::Completed)
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
+
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
     }
   }
@@ -257,10 +247,15 @@ namespace YTE
       mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
       UpdateActiveQuestState received(mName, Quest::State::Received);
       mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
+
+      ++mConvosIter;
+      mLinesIter = mConvosIter->begin();
     }
     else
     {
       mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
+      UpdateActiveQuestState notactive(mName, Quest::State::NotActive);
+      mSpace->SendEvent(Events::UpdateActiveQuestState, &notactive);
     }
     mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::Hello];
     mActiveNode = mActiveConvo->GetRoot();
@@ -284,6 +279,8 @@ namespace YTE
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
+        mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
+        mLinesIter = mConvosIter->begin();
       }
       else
       {
@@ -306,11 +303,17 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnDialogueConfirm(DialogueConfirm *)
+  void JohnDialogue::OnPlaySoundEvent(PlaySoundEvent *)
   {
-    if (mActiveNode->GetNodeType() == DialogueNode::NodeType::Text)
+    if (mConvosIter != mDialogueConvos.end())
     {
-      PlayLine();
+      if (mLinesIter != mConvosIter->end())
+      {
+        mSoundEmitter->PlayEvent(mLinesIter->second);
+        std::cout << mLinesIter->first << std::endl;
+        ++mLinesIter;
+      }
     }
   }
+
 } //end yte
