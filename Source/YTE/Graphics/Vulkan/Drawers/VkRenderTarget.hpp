@@ -64,7 +64,7 @@ namespace YTE
                    vk::Format aColorFormat,
                    vk::Format aDepthFormat,
                    std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                   ViewData* aView,
+                   ViewData *aView,
                    std::string aName,
                    DrawerTypeCombination aCombination);
 

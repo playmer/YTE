@@ -221,6 +221,7 @@ namespace YTE
                                    disableDepthStencil,
                                    noColorBlend,
                                    additiveColorBlend,
+                                   additiveColorBlend,
                                    dynamic,
                                    aLayout,
                                    aName,
@@ -233,6 +234,8 @@ namespace YTE
 
   void VkShader::Load(VkCreatePipelineDataSet& aInfo)
   {
+    auto &renderPass = mView->mRenderTarget->GetRenderPass();
+
     mTriangles = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
                                                                aInfo.mFlags,
                                                                { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
@@ -246,7 +249,7 @@ namespace YTE
                                                                aInfo.mNoColorBlend,
                                                                aInfo.mDynamicState,
                                                                aInfo.mPipelineLayout,
-                                                               mView->mRenderTarget->GetRenderPass());
+                                                               renderPass);
 
     aInfo.mRasterizationNoCull.setPolygonMode(vk::PolygonMode::eLine);
     mWireframe = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
@@ -262,7 +265,7 @@ namespace YTE
                                                                aInfo.mNoColorBlend,
                                                                aInfo.mDynamicState,
                                                                aInfo.mPipelineLayout,
-                                                               mView->mRenderTarget->GetRenderPass());
+                                                               renderPass);
 
     aInfo.mRasterizationNoCull.setPolygonMode(vk::PolygonMode::eFill);
 
@@ -281,7 +284,7 @@ namespace YTE
                                                            aInfo.mNoColorBlend,
                                                            aInfo.mDynamicState,
                                                            aInfo.mPipelineLayout,
-                                                           mView->mRenderTarget->GetRenderPass());
+                                                           renderPass);
 
     aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eLineStrip);
 
@@ -298,7 +301,7 @@ namespace YTE
                                                             aInfo.mNoColorBlend,
                                                             aInfo.mDynamicState,
                                                             aInfo.mPipelineLayout,
-                                                            mView->mRenderTarget->GetRenderPass());
+                                                            renderPass);
 
     aInfo.mAssembly.setTopology(vk::PrimitiveTopology::eTriangleList);
 
@@ -315,8 +318,23 @@ namespace YTE
                                                                   aInfo.mNoColorBlend,
                                                                   aInfo.mDynamicState,
                                                                   aInfo.mPipelineLayout,
-                                                                  mView->mRenderTarget->GetRenderPass());
+                                                                  renderPass);
                        
+
+    mAlphaBlendShader = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
+                                                                      aInfo.mFlags,
+                                                                      { *aInfo.mVertexStage.get(), *aInfo.mFragmentStage.get() },
+                                                                      aInfo.mVertexInput,
+                                                                      aInfo.mAssembly,
+                                                                      aInfo.mTessalationState,
+                                                                      aInfo.mViewport,
+                                                                      aInfo.mRasterizationNoCull,
+                                                                      aInfo.mMultiSample,
+                                                                      aInfo.mDisableDepthStencil,
+                                                                      aInfo.mAlphaColorBlend,
+                                                                      aInfo.mDynamicState,
+                                                                      aInfo.mPipelineLayout,
+                                                                      renderPass);
 
     mAdditiveBlendShader = mSurface->GetDevice()->createGraphicsPipeline(aInfo.mPipelineCache,
                                                                          aInfo.mFlags,
@@ -331,7 +349,7 @@ namespace YTE
                                                                          aInfo.mAdditiveColorBlend,
                                                                          aInfo.mDynamicState,
                                                                          aInfo.mPipelineLayout,
-                                                                         mView->mRenderTarget->GetRenderPass());
+                                                                         renderPass);
   }
 
 

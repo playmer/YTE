@@ -30,6 +30,7 @@ namespace YTE
                             vk::PipelineDepthStencilStateCreateInfo aEnableDepthStencil,
                             vk::PipelineDepthStencilStateCreateInfo aDisableDepthStencil,
                             vkhlf::PipelineColorBlendStateCreateInfo aNoColorBlend,
+                            vkhlf::PipelineColorBlendStateCreateInfo aAlphaColorBlend,
                             vkhlf::PipelineColorBlendStateCreateInfo aAdditiveColorBlend,
                             vkhlf::PipelineDynamicStateCreateInfo aDynamicState,
                             std::shared_ptr<vkhlf::PipelineLayout> aPipelineLayout,
@@ -52,6 +53,7 @@ namespace YTE
       , mEnableDepthStencil(aEnableDepthStencil)
       , mDisableDepthStencil(aDisableDepthStencil)
       , mNoColorBlend(aNoColorBlend)
+      , mAlphaColorBlend(aAlphaColorBlend)
       , mAdditiveColorBlend(aAdditiveColorBlend)
       , mDynamicState(aDynamicState)
       , mPipelineLayout(aPipelineLayout)
@@ -91,6 +93,7 @@ namespace YTE
     vk::PipelineDepthStencilStateCreateInfo mEnableDepthStencil;
     vk::PipelineDepthStencilStateCreateInfo mDisableDepthStencil;
     vkhlf::PipelineColorBlendStateCreateInfo mNoColorBlend = { false, vk::LogicOp::eAnd, {}, {} };
+    vkhlf::PipelineColorBlendStateCreateInfo mAlphaColorBlend = { false, vk::LogicOp::eAnd,{},{} };
     vkhlf::PipelineColorBlendStateCreateInfo mAdditiveColorBlend = { false, vk::LogicOp::eAnd, {}, {} };
     vkhlf::PipelineDynamicStateCreateInfo mDynamicState = { {} };
     std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout = nullptr;
@@ -126,6 +129,7 @@ namespace YTE
     std::shared_ptr<vkhlf::Pipeline> mLines;
     std::shared_ptr<vkhlf::Pipeline> mCurves;
     std::shared_ptr<vkhlf::Pipeline> mShaderNoCull;
+    std::shared_ptr<vkhlf::Pipeline> mAlphaBlendShader;
     std::shared_ptr<vkhlf::Pipeline> mAdditiveBlendShader;
     VkRenderedSurface *mSurface;
     ViewData* mView;
