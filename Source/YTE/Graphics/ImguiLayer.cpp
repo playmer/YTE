@@ -33,6 +33,9 @@ namespace YTE
   void ImguiLayer::Initialize()
   {
     mContext = ImGui::CreateContext();
+    ImGuiIO& io = GetIO();
+    io.IniFilename = nullptr;
+
     mView = mOwner->GetComponent<GraphicsView>();
     mView->SetDrawerCombinationType("AlphaBlend");
     mView->SetDrawerType("ImguiDrawer");
