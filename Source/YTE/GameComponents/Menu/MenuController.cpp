@@ -31,6 +31,10 @@ namespace YTE
     YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&GetNumElements, &SetNumElements, "NumMenuElements")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
   MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
@@ -46,7 +50,7 @@ namespace YTE
   {
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mMenuElements = mOwner->GetCompositions();
-    mNumElements = static_cast<int>(mMenuElements->size());
+    //mNumElements = static_cast<int>(mMenuElements->size());
 
     mMySprite = mOwner->GetComponent<Sprite>();
 
@@ -57,6 +61,7 @@ namespace YTE
     {
       mSoundPause = soundSystem->GetSoundIDFromString("UI_Menu_Pause");
       mSoundUnpause = soundSystem->GetSoundIDFromString("UI_Menu_Unpause");
+      mSoundMenuBack = soundSystem->GetSoundIDFromString("UI_Menu_Back");
       mSoundElementNext = soundSystem->GetSoundIDFromString("UI_Menu_Up");
       mSoundElementPrev = soundSystem->GetSoundIDFromString("UI_Menu_Down");
       mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
@@ -140,11 +145,6 @@ namespace YTE
       mIsDisplayed = false;
       UpdateVisibility();
 
-      if (aEvent->PlaySound)
-      {
-        mSoundEmitter->PlayEvent(mSoundUnpause);
-      }
-
       if (mMenuElements->size() != 0)
       {
         MenuElementDeHover deHoverEvent;
@@ -162,6 +162,11 @@ namespace YTE
           // Opens the parent menu
         if (mParentMenu)
         {
+          if (aEvent->PlaySound)
+          {
+            mSoundEmitter->PlayEvent(mSoundMenuBack);
+          }
+
           MenuStart menuStart;
           mParentMenu->SendEvent(Events::MenuStart, &menuStart);
         }
@@ -169,11 +174,21 @@ namespace YTE
           // Return context to the game if there aren't any parent menus to open
         else
         {
+          if (aEvent->PlaySound)
+          {
+            mSoundEmitter->PlayEvent(mSoundUnpause);
+          }
+
           aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
         }
       }
       else
       {
+        if (aEvent->PlaySound)
+        {
+          mSoundEmitter->PlayEvent(mSoundUnpause);
+        }
+
         aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
       }
     }

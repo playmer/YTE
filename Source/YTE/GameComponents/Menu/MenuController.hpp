@@ -55,6 +55,9 @@ namespace YTE
     // PROPERTIES /////////////////////////////////////////
     bool GetDisplayed() { return mIsDisplayed; }
     void SetDisplayed(bool aDisplay) { mIsDisplayed = aDisplay; }
+
+    int GetNumElements() { return mNumElements; }
+    void SetNumElements(int aNumElements) { mNumElements = aNumElements; }
     ///////////////////////////////////////////////////////
     void OnChildrenInitialized(LogicUpdate *aEvent);
 
@@ -76,6 +79,7 @@ namespace YTE
 
     u64 mSoundPause;
     u64 mSoundUnpause;
+    u64 mSoundMenuBack;
     u64 mSoundElementNext;
     u64 mSoundElementPrev;
     u64 mSoundElementSelect;
