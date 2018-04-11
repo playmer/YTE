@@ -40,6 +40,7 @@ namespace YTE
 
     MenuStart menuStart;
     menuStart.PlaySound = false;
+    menuStart.ResetCursor = true;
     menuStart.ParentMenu = mOwner->GetParent();
 
     // @@@TODO: Relies on object hierarchy to work, menus that are related must share the same parent
