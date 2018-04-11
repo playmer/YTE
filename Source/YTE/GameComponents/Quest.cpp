@@ -115,9 +115,9 @@ namespace YTE
               DialogueData(dataE0, "John: Can you go out and look for them?");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
               DialogueData(dataE1, "John: I knew I could count on you!");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE1, 1);
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE1, 0);
               DialogueData(dataE2, "John: Thanks!");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE2, 2);
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE2, 0);
 
               // LEVEL D
               DialogueData(dataD0, AnimationNames::Sad);
@@ -906,7 +906,7 @@ namespace YTE
           DialogueData(dataC0, "Basil: Yes a bib, you think I'd risk getting sauce on this suit!");
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
           DialogueData(dataC1, "Basil: My thoughts precisely!");
-          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC1, 1);
+          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC1, 0);
 
           // LEVEL B
           DialogueData(dataB0, AnimationNames::Angry);
@@ -957,7 +957,7 @@ namespace YTE
           DialogueData(dataC0, "Basil: It's a new genre I call Messy-Delicious");
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
           DialogueData(dataC1, "Basil: Well, I...You...", "Basil: You're allergic! Yeah, that's it.");
-          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC1, 0);
+          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC1, 1);
 
           // LEVEL B
           DialogueData(dataB0, "Must be a really messy dish huh?", "Can I have some?");

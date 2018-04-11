@@ -18,6 +18,8 @@ namespace YTE
 
   DaisyDialogue::DaisyDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mSoundEmitter(nullptr)
+    , mSoundSystem(nullptr)
   {
     YTEUnusedArgument(aProperties);
 
@@ -39,9 +41,43 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &DaisyDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &DaisyDialogue::OnUpdateActiveQuestState);
 
-    // Send to the space a ptr to the activequest for the noticeboard
-    //NoticeBoardHookup firstQuest(&mActiveQuest);
-    //mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+    mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
+    mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+    if (mSoundSystem)
+    {
+      // INTRO::HELLO
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_NQ_H_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")),
+        std::make_pair("CJ_NQ_H_2", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2")),
+        std::make_pair("CJ_NQ_H_3", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3")),
+        std::make_pair("CJ_NQ_H_4", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4")),
+        std::make_pair("CJ_NQ_H_5", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5"))
+      });
+      // INTRO::POSTQUEST                                                             
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_NQ_G_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1")),
+        std::make_pair("CJ_NQ_G_2", mSoundSystem->GetSoundIDFromString("CJ_NQ_G_2"))
+      });
+      // FETCH::HELLO                                                                 
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_FI_H_1", mSoundSystem->GetSoundIDFromString("CJ_FI_H_1")),
+        std::make_pair("CJ_FI_H_2", mSoundSystem->GetSoundIDFromString("CJ_FI_H_2")),
+        std::make_pair("CJ_FI_H_3", mSoundSystem->GetSoundIDFromString("CJ_FI_H_3")),
+        std::make_pair("CJ_FI_H_4", mSoundSystem->GetSoundIDFromString("CJ_FI_H_4"))
+      });
+      // FETCH::NOPROGRESS            
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_FI_NP_1", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1")),
+        std::make_pair("CJ_FI_NP_2", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2")),
+        std::make_pair("CJ_FI_NP_3", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3"))
+      });
+      mConvosIter = mDialogueConvos.begin();
+      mLinesIter = mConvosIter->begin();
+    }
   }
 
   void DaisyDialogue::RegisterDialogue()
@@ -49,6 +85,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
+    mSpace->YTERegister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
   }
 
   void DaisyDialogue::DeregisterDialogue()
@@ -56,6 +93,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
+    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
   }
 
   void DaisyDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -82,7 +120,6 @@ namespace YTE
 
   void DaisyDialogue::Start()
   {
-    std::cout << std::endl << "SENDING notice board hookup" << std::endl;
       // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
@@ -122,12 +159,15 @@ namespace YTE
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
+
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
       else
       {
         TutorialUpdate nextTutorial(Quest::CharacterName::Basil);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
-        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard i think
+        mActiveQuest->SetState(Quest::State::Completed);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
@@ -142,17 +182,25 @@ namespace YTE
       {
         UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
       // briefed just gets repeated
       if (mActiveQuest->GetState() == Quest::State::Briefed)
       {
         UpdateActiveQuestState briefed(mName, Quest::State::Briefed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &briefed);
+
+        mLinesIter = mConvosIter->begin();
       }
       if (mActiveQuest->GetState() == Quest::State::Completed)
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
+
+        ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
       }
     }
   }
@@ -201,10 +249,15 @@ namespace YTE
       mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
       UpdateActiveQuestState received(mName, Quest::State::Received);
       mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
+
+      ++mConvosIter;
+      mLinesIter = mConvosIter->begin();
     }
     else
     {
       mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
+      UpdateActiveQuestState notactive(mName, Quest::State::NotActive);
+      mSpace->SendEvent(Events::UpdateActiveQuestState, &notactive);
     }
     mActiveConvo = &( *( mActiveQuest->GetConversations() ) )[(int)Conversation::Name::Hello];
     mActiveNode = mActiveConvo->GetRoot();
@@ -228,6 +281,8 @@ namespace YTE
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
+        mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
+        mLinesIter = mConvosIter->begin();
       }
       else
       {
@@ -249,4 +304,18 @@ namespace YTE
       }
     }
   }
+
+  void DaisyDialogue::OnPlaySoundEvent(PlaySoundEvent *)
+  {
+    if (mConvosIter != mDialogueConvos.end())
+    {
+      if (mLinesIter != mConvosIter->end())
+      {
+        mSoundEmitter->PlayEvent(mLinesIter->second);
+        std::cout << mLinesIter->first << std::endl;
+        ++mLinesIter;
+      }
+    }
+  }
+
 } //end yte

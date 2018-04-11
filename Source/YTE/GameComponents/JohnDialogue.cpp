@@ -213,7 +213,7 @@ namespace YTE
       while (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
       {
           mActiveNode->ActivateNode();
-          mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+          mActiveNode = mActiveNode->GetChild(0);
           if (mActiveNode != nullptr)
           {
             type = mActiveNode->GetNodeType();

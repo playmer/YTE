@@ -47,12 +47,19 @@ namespace YTE
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);
     void OnQuestStart(QuestStart *aEvent);
     void OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent);
+    void OnPlaySoundEvent(PlaySoundEvent *);
 
     std::vector<Quest> mQuestVec;
     Quest *mActiveQuest;
     Conversation *mActiveConvo;
     DialogueNode *mActiveNode;
     Quest::CharacterName mName = Quest::CharacterName::Daisy;
+
+    WWiseEmitter *mSoundEmitter;
+    WWiseSystem *mSoundSystem;
+    std::vector<std::map<std::string, u64> > mDialogueConvos;
+    std::vector<std::map<std::string, u64> >::iterator mConvosIter;
+    std::map<std::string, u64>::iterator mLinesIter;
   };
 } //end yte
 #endif
