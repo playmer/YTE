@@ -26,6 +26,9 @@ namespace YTE
   YTEDefineEvent(UIDisplayEvent);
   YTEDefineEvent(UIUpdateContent);
 
+  YTEDefineEvent(PlaySoundEvent);
+  YTEDefineType(PlaySoundEvent) { YTERegisterType(PlaySoundEvent); }
+
   YTEDefineType(UISelectEvent) { YTERegisterType(UISelectEvent); }
   YTEDefineType(UIFocusSwitchEvent) { YTERegisterType(UIFocusSwitchEvent); }
   YTEDefineType(UIDisplayEvent) { YTERegisterType(UIDisplayEvent); }
@@ -99,6 +102,9 @@ namespace YTE
 
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
+      PlaySoundEvent triggerSound;
+      mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
+
       UIUpdateContent content(true, aEvent->ContentMessages[0]);
       mDialogueSpace->SendEvent(Events::UIUpdateContent, &content);
 
@@ -181,6 +187,9 @@ namespace YTE
         // If there are more strings in this node
       if (mCurNodeDataIndex < mCurNodeData.size() - 1)
       {
+        PlaySoundEvent triggerSound;
+        mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
+
         ++mCurNodeDataIndex;
         UIUpdateContent content(true, mCurNodeData[mCurNodeDataIndex]);
         mDialogueSpace->SendEvent(Events::UIUpdateContent, &content);
