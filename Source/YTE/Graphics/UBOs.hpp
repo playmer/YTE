@@ -11,8 +11,8 @@
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Math/Constants.hpp"
 
-#define YTE_Graphics_LightCount 64
-#define YTE_Graphics_WaterInformationCount 128
+#define YTE_Graphics_LightCount 16
+#define YTE_Graphics_WaterInformationCount 16
 
 namespace YTE
 {
