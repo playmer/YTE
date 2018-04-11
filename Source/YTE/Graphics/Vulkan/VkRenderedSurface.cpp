@@ -316,6 +316,11 @@ namespace YTE
 
     auto extent = supportDetails.Capabilities().currentExtent;
 
+    if (0 == extent.width || 0 == extent.height)
+    {
+      return;
+    }
+
     // resize all render targets (and swapchain)
     mRenderToScreen->Resize(extent);
 
@@ -515,6 +520,12 @@ namespace YTE
   {
     YTEProfileFunction();
     YTEUnusedArgument(aEvent);
+
+    if (mWindow->IsMinimized())
+    {
+      return;
+    }
+
     // Get the index of the next available swapchain image:
     mRenderToScreen->FrameUpdate();
     RenderFrameForSurface();
