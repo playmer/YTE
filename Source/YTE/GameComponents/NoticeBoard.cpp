@@ -108,5 +108,10 @@ namespace YTE
         }
       }
     }
+    else
+    {
+      int temp = 0;
+      temp++;
+    }
   }
 }//end yte

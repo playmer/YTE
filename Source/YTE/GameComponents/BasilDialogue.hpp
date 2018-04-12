@@ -21,7 +21,6 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/JohnDialogue.hpp" /* TutorialUpdate */
 #include "YTE/GameComponents/BoatController.hpp"
-#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/Quest.hpp"
 
 namespace YTE
@@ -63,10 +62,10 @@ namespace YTE
 
     WWiseEmitter *mSoundEmitter;
     WWiseSystem *mSoundSystem;
-    std::vector<std::map<std::string, u64> > mDialogueConvos;
-    std::vector<std::map<std::string, u64> >::iterator mConvosIter;    
-    std::vector<std::map<std::string, u64> >::iterator mPrevConvoIter;
-    std::map<std::string, u64>::iterator mLinesIter;
+    std::vector<std::vector<u64> > mDialogueConvos;
+    std::vector<std::vector<u64> >::iterator mConvosIter;
+    std::vector<std::vector<u64> >::iterator mPrevConvoIter;
+    std::vector<u64>::iterator mLinesIter;
   };
 } //end yte
 #endif
