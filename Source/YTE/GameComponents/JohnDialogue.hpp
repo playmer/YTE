@@ -20,7 +20,6 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/GameComponents/BoatController.hpp"
-#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/Quest.hpp"
 
 namespace YTE
@@ -61,6 +60,9 @@ namespace YTE
     YTEDeclareType(SpawnProgressionDialogue);
     //woah boy this is gonna get weird
   };
+
+  class DialogueStart;
+  class PlaySoundEvent;
 
   class JohnDialogue : public Component
   {

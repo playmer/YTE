@@ -26,6 +26,9 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  class DialogueStart;
+  class PlaySoundEvent;
+
   class BasilDialogue : public Component
   {
   public:

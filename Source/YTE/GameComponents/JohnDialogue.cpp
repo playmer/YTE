@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE

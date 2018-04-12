@@ -21,11 +21,13 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/JohnDialogue.hpp" /* TutorialUpdate */
 #include "YTE/GameComponents/BoatController.hpp"
-#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/Quest.hpp"             /* Quest, QuestStart, UpdateActiveQuestState */
 
 namespace YTE
 {
+  class DialogueStart;
+  class PlaySoundEvent;
+
   class DaisyDialogue : public Component
   {
   public:
