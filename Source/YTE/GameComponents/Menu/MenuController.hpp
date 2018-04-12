@@ -67,9 +67,12 @@ namespace YTE
     void OnMenuConfirm(MenuConfirm *aEvent);
     void OnMenuElementChange(MenuElementChange *aEvent);
 
+    InputInterpreter* GetContextSwitcher() const { return mContextSwitcher; }
+
   private:
     WWiseEmitter* mSoundEmitter;
     Composition* mParentMenu = nullptr;
+    InputInterpreter* mContextSwitcher = nullptr;
 
     Sprite* mMySprite;
 

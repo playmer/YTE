@@ -37,11 +37,18 @@ namespace YTE
       .AddAttribute<EditorProperty>();
   }
 
-  MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
+  MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) 
+    : Component(aOwner, aSpace)
+    , mSoundEmitter(nullptr)
+    , mParentMenu(nullptr)
+    , mContextSwitcher(nullptr)
+    , mMySprite(nullptr)
+    , mCurrMenuElement(0)
+    , mNumElements(0)
+    , mMenuElements(nullptr)
+    , mIsDisplayed(false)
+    , mConstructing(true)
   {
-    mCurrMenuElement = 0;
-    mIsDisplayed = false;
-
     DeserializeByType(aProperties, this, GetStaticType());
     mConstructing = false;
   }
@@ -96,6 +103,11 @@ namespace YTE
       mCurrMenuElement = 0;
     }
 
+    if (aEvent->ContextSwitcher)
+    {
+      mContextSwitcher = aEvent->ContextSwitcher;
+    }
+
     mIsDisplayed = true;
     UpdateVisibility();
 
@@ -142,6 +154,7 @@ namespace YTE
   {
     if (mIsDisplayed && !aEvent->Handled)
     {
+      aEvent->Handled = true;
       mIsDisplayed = false;
       UpdateVisibility();
 
@@ -155,32 +168,15 @@ namespace YTE
       }
 
         // Pop up to the owning menu
-      if (!aEvent->ShouldExitAll)
+      if (!aEvent->ShouldExitAll && mParentMenu)
       {
-        aEvent->Handled = true;
-
-          // Opens the parent menu
-        if (mParentMenu)
+        if (aEvent->PlaySound)
         {
-          if (aEvent->PlaySound)
-          {
-            mSoundEmitter->PlayEvent(mSoundMenuBack);
-          }
-
-          MenuStart menuStart;
-          mParentMenu->SendEvent(Events::MenuStart, &menuStart);
+          mSoundEmitter->PlayEvent(mSoundMenuBack);
         }
 
-          // Return context to the game if there aren't any parent menus to open
-        else
-        {
-          if (aEvent->PlaySound)
-          {
-            mSoundEmitter->PlayEvent(mSoundUnpause);
-          }
-
-          aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
-        }
+        MenuStart menuStart;
+        mParentMenu->SendEvent(Events::MenuStart, &menuStart);
       }
       else
       {
@@ -189,7 +185,7 @@ namespace YTE
           mSoundEmitter->PlayEvent(mSoundUnpause);
         }
 
-        aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
+        mContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
       }
     }
   }

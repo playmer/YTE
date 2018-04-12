@@ -23,7 +23,9 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ExitMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
@@ -66,7 +68,9 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ExitMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp

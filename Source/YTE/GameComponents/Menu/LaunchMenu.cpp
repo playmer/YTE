@@ -42,6 +42,7 @@ namespace YTE
     menuStart.PlaySound = false;
     menuStart.ResetCursor = true;
     menuStart.ParentMenu = mOwner->GetParent();
+    menuStart.ContextSwitcher = menuStart.ParentMenu->GetComponent<MenuController>()->GetContextSwitcher();
 
     // @@@TODO: Relies on object hierarchy to work, menus that are related must share the same parent
     //          This is okay for now, as all menus must be parented to the game camera anyway, however, this

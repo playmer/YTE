@@ -272,6 +272,7 @@ namespace YTE
 
             MenuStart menuStart;
             menuStart.PlaySound = true;
+            menuStart.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
@@ -298,7 +299,6 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
@@ -316,7 +316,6 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
@@ -430,6 +429,7 @@ namespace YTE
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
+            menuStart.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
             mSpace->SendEvent(Events::MenuStart, &menuStart);
 
@@ -476,7 +476,6 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
@@ -495,7 +494,6 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;

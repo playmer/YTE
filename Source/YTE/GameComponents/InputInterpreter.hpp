@@ -126,6 +126,7 @@ namespace YTE
     Composition* ParentMenu = nullptr;
     bool PlaySound = false;
     bool ResetCursor = false;
+    InputInterpreter* ContextSwitcher = nullptr;
   };
 
   class MenuConfirm : public Event
@@ -147,7 +148,6 @@ namespace YTE
     bool ShouldExitAll;
     bool PlaySound = false;
     bool Handled = false;
-    InputInterpreter* ContextSwitcher;
   };
 
   class MenuElementChange : public Event
