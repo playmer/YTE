@@ -10,11 +10,18 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/QuestLogic.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 
 namespace YTE
 {
+  YTEDefineEvent(ProgressionItemEvent);
+  YTEDefineEvent(ProgressionLocationEvent);
+  YTEDefineEvent(ProgressionDialogueEvent);
+
+  YTEDefineType(ProgressionItemEvent) { YTERegisterType(ProgressionItemEvent); }
+  YTEDefineType(ProgressionLocationEvent) { YTERegisterType(ProgressionLocationEvent); }
+  YTEDefineType(ProgressionDialogueEvent) { YTERegisterType(ProgressionDialogueEvent); }
+
   YTEDefineType(QuestLogic) { YTERegisterType(QuestLogic); }
 
   QuestLogic::QuestLogic(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -25,20 +32,45 @@ namespace YTE
 
   void QuestLogic::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &QuestLogic::OnCollisionStarted);
+    mSpace->YTERegister(Events::SpawnProgressionItem, this, &QuestLogic::OnSpawnProgressionItem);
+    mSpace->YTERegister(Events::SpawnProgressionLocation, this, &QuestLogic::OnSpawnProgressionLocation);
+    mSpace->YTERegister(Events::SpawnProgressionDialogue, this, &QuestLogic::OnSpawnProgressionDialogue);
+
+    mSpace->YTERegister(Events::ProgressionItemEvent, this, &QuestLogic::OnProgressionItemEvent);
+    mSpace->YTERegister(Events::ProgressionLocationEvent, this, &QuestLogic::OnProgressionLocationEvent);
+    mSpace->YTERegister(Events::ProgressionDialogueEvent, this, &QuestLogic::OnProgressionDialogueEvent);
   }
 
-  void QuestLogic::OnCollisionStarted(CollisionStarted *aEvent)
+  void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)
   {
-    QuestProgressionTrigger *progression = aEvent->OtherObject->GetComponent<QuestProgressionTrigger>();
-    if (progression != nullptr)
-    {
-      if (progression->IsCollisionTrigger())
-      {
-        UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
-        mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
-      }
-    }
+    UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
+    mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
+
+  void QuestLogic::OnProgressionLocationEvent(ProgressionLocationEvent *aEvent)
+  {
+
+  }
+
+  void QuestLogic::OnProgressionDialogueEvent(ProgressionDialogueEvent *aEvent)
+  {
+
+  }
+
+  void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
+  {
+    mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(0, 0, 0));
+  }
+
+  void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
+  {
+
+  }
+
+  void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
+  {
+
+  }
+
 
 }//end yte

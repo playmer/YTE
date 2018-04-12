@@ -35,6 +35,33 @@ namespace YTE
     Quest::CharacterName mCharacter;
   };
 
+  YTEDeclareEvent(SpawnProgressionItem);
+
+  class SpawnProgressionItem : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionItem);
+    //maybe model name too?
+  };
+
+  YTEDeclareEvent(SpawnProgressionLocation);
+
+  class SpawnProgressionLocation : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionLocation);
+    //maybe location too?
+  };
+
+  YTEDeclareEvent(SpawnProgressionDialogue);
+
+  class SpawnProgressionDialogue : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionDialogue);
+    //woah boy this is gonna get weird
+  };
+
   class JohnDialogue : public Component
   {
   public:

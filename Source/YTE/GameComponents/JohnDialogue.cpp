@@ -17,6 +17,14 @@ namespace YTE
   YTEDefineEvent(TutorialUpdate);
   YTEDefineType(TutorialUpdate) { YTERegisterType(TutorialUpdate); }
 
+  YTEDefineEvent(SpawnProgressionItem);
+  YTEDefineEvent(SpawnProgressionLocation);
+  YTEDefineEvent(SpawnProgressionDialogue);
+
+  YTEDefineType(SpawnProgressionItem) { YTERegisterType(SpawnProgressionItem); }
+  YTEDefineType(SpawnProgressionLocation) { YTERegisterType(SpawnProgressionLocation); }
+  YTEDefineType(SpawnProgressionDialogue) { YTERegisterType(SpawnProgressionDialogue); }
+
   YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -183,6 +191,22 @@ namespace YTE
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+
+        if (mActiveQuest->GetName() == Quest::Name::Fetch)
+        {
+          SpawnProgressionItem spawnItem;
+          mSpace->SendEvent(Events::SpawnProgressionItem, &spawnItem);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Explore)
+        {
+          SpawnProgressionLocation spawnLocation;
+          mSpace->SendEvent(Events::SpawnProgressionLocation, &spawnLocation);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Dialogue)
+        {
+          SpawnProgressionDialogue spawnTalk;
+          mSpace->SendEvent(Events::SpawnProgressionDialogue, &spawnTalk);
+        }
       }
       // briefed just gets repeated
       if (mActiveQuest->GetState() == Quest::State::Briefed)
