@@ -252,6 +252,7 @@ namespace YTE
 
       glm::vec3 right = mOrientation->GetRightVector();
       right.y = 0.0f;
+      right = glm::normalize(right);
 
         // Can check zero here because we've already passed the dead-zone check
       if (aEvent->StickDirection.x >= 0.0f)
@@ -341,6 +342,16 @@ namespace YTE
       mMainsailAnimator->SetCurrentAnimTime(mainsailFrame);
     }
 
+    // update boat rotation
+    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
+    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
+    
+    mCurrentRotationAmount += angle;
+    
+    if (abs(angle) > 0.00001f)
+    {
+      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
+    }
 
     if (mStartedTurning)
     {
@@ -362,9 +373,11 @@ namespace YTE
 
     auto forward = mOrientation->GetForwardVector();
 
-    glm::vec3 speedVec = (glm::dot(vel, forward) / glm::dot(forward, forward)) * forward;
+    //glm::vec3 speedVec = (glm::dot(vel, forward) / glm::dot(forward, forward)) * forward;
+    //mCurrSpeed = glm::sqrt((speedVec.x * speedVec.x) + (speedVec.z * speedVec.z));
 
-    mCurrSpeed = glm::sqrt((speedVec.x * speedVec.x) + (speedVec.z * speedVec.z));
+    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
+
 
     mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
 
@@ -373,14 +386,11 @@ namespace YTE
       glm::vec3 tempForward = mOrientation->GetForwardVector();
       tempForward.y = 0.0f;
 
+      mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
 
       if (mCurrSpeed > mMaxSailSpeed)
       {
         mRigidBody->ApplyForce(mWindForce * -tempForward, glm::vec3(0));
-      }
-      else
-      {
-        mRigidBody->ApplyForce(mWindForce * (tempForward), glm::vec3(0));
       }
     }
     else
@@ -393,17 +403,6 @@ namespace YTE
     }
 
     mStartedTurning = false;
-
-    // update boat rotation
-    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
-    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
-    
-    mCurrentRotationAmount += angle;
-
-    if (abs(angle) > 0.00001f)
-    {
-      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
-    }
 
     float ratio = 100.0f / mMaxSailSpeed;
     mSoundSystem->SetRTPC("Boat_Velocity", ratio * mCurrSpeed);

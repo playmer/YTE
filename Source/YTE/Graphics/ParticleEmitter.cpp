@@ -172,6 +172,8 @@ namespace YTE
       particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
       particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
+      particle.mUBO.mDiffuseColor.a = particle.mLife / mLifetime;
+
       it->second->UpdateUBOModel(particle.mUBO);
     }
 
@@ -396,7 +398,7 @@ namespace YTE
     {
       model = mRenderer->CreateModel(mGraphicsView, mMesh);
       model->SetInstanced(true);
-      model->mType = ShaderType::ShaderNoCull;
+      model->mType = ShaderType::AdditiveBlendShader;
     }
     else
     {

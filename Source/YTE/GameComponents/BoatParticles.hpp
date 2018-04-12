@@ -51,6 +51,9 @@ namespace YTE
 
     ParticleEmitter *mFrontRightEmitter;
     ParticleEmitter *mFrontLeftEmitter;
+
+    ParticleEmitter *mFrontRightShooter;
+    ParticleEmitter *mFrontLeftShooter;
     
     ParticleEmitter *mSideRightEmitter;
     ParticleEmitter *mSideLeftEmitter;
