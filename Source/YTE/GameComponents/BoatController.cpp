@@ -342,17 +342,6 @@ namespace YTE
       mMainsailAnimator->SetCurrentAnimTime(mainsailFrame);
     }
 
-    // update boat rotation
-    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
-    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
-    
-    mCurrentRotationAmount += angle;
-    
-    if (abs(angle) > 0.00001f)
-    {
-      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
-    }
-
     if (mStartedTurning)
     {
       if (mCurrRotSpeed < mMaxTurnSpeed)
@@ -368,18 +357,6 @@ namespace YTE
       if (mTransform->GetRotation().x != 0.0f)
         mRigidBody->ApplyForce(-mTurnVec, glm::vec3(0, 1, 0));
     }*/
-
-    glm::vec3 vel = mRigidBody->GetVelocity();
-
-    auto forward = mOrientation->GetForwardVector();
-
-    //glm::vec3 speedVec = (glm::dot(vel, forward) / glm::dot(forward, forward)) * forward;
-    //mCurrSpeed = glm::sqrt((speedVec.x * speedVec.x) + (speedVec.z * speedVec.z));
-
-    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
-
-
-    mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
 
     if (mIsSailUp)
     {
@@ -397,10 +374,37 @@ namespace YTE
     {
       if (mCurrSpeed < 0.1f)
       {
-        mRigidBody->SetVelocity(0, vel.y, 0);
+        mRigidBody->SetVelocity(0, 0, 0);
         //mRigidBody->SetGravity(glm::vec3(0));
       }
     }
+
+    // update boat rotation
+    float rotDiff = mTargetRotationAmount - mCurrentRotationAmount;
+    float angle = 3.0f * static_cast<float>(aEvent->Dt) * rotDiff;
+
+    mCurrentRotationAmount += angle;
+
+    if (abs(angle) > 0.00001f)
+    {
+      //mTransform->SetInformPhysics(false);
+      //mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
+      //mTransform->SetInformPhysics(true);
+
+      mRigidBody->ApplyForce(100.0f * abs(angle) * mTurnVec, mOrientation->GetUpVector());
+    }
+
+    glm::vec3 vel = mRigidBody->GetVelocity();
+
+    auto forward = mOrientation->GetForwardVector();
+
+    //glm::vec3 speedVec = (glm::dot(vel, forward) / glm::dot(forward, forward)) * forward;
+    //mCurrSpeed = glm::sqrt((speedVec.x * speedVec.x) + (speedVec.z * speedVec.z));
+
+    mCurrSpeed = glm::sqrt((vel.x * vel.x) + (vel.z * vel.z));
+
+    mRigidBody->SetVelocity(mCurrSpeed * forward.x, vel.y, mCurrSpeed * forward.z);
+
 
     mStartedTurning = false;
 
