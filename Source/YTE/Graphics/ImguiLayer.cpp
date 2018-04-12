@@ -275,12 +275,13 @@ namespace YTE
     ImGuizmo::DrawCube(view, projection, matrix);
   }
 
-  void ImguiLayer::Manipulate(const float *view, 
-                              const float *projection, 
-                              ImGuizmo::OPERATION operation, 
-                              ImGuizmo::MODE mode, 
-                              float *matrix, 
-                              float *deltaMatrix, 
+  void ImguiLayer::Manipulate(const float *view,
+                              const float *projection,
+                              ImGuizmo::OPERATION operation,
+                              ImGuizmo::MODE mode,
+                              float *matrix,
+                              float *deltaMatrix,
+                              float *deltaRotation,
                               float *snap, 
                               float *localBounds, 
                               float *boundsSnap)
@@ -292,6 +293,7 @@ namespace YTE
                          mode, 
                          matrix, 
                          deltaMatrix, 
+                         deltaRotation,
                          snap, 
                          localBounds, 
                          boundsSnap);

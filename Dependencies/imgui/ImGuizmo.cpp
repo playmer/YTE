@@ -1593,7 +1593,7 @@ namespace ImGuizmo
       }
    }
 
-   static void HandleRotation(float *matrix, float *deltaMatrix, int& type, float *snap)
+   static void HandleRotation(float *matrix, float *deltaMatrix, float *deltaQuat, int& type, float *snap)
    {
       ImGuiIO& io = ImGui::GetIO();
       bool applyRotationLocaly = gContext.mMode == LOCAL;
@@ -1650,7 +1650,8 @@ namespace ImGuizmo
          rotationAxisLocalSpace.Normalize();
 
          matrix_t deltaRotation;
-         deltaRotation.RotationAxis(rotationAxisLocalSpace, gContext.mRotationAngle - gContext.mRotationAngleOrigin);
+         float deltaAngle = gContext.mRotationAngle - gContext.mRotationAngleOrigin;
+         deltaRotation.RotationAxis(rotationAxisLocalSpace, deltaAngle);
          gContext.mRotationAngleOrigin = gContext.mRotationAngle;
 
          matrix_t scaleOrigin;
@@ -1678,6 +1679,14 @@ namespace ImGuizmo
             gContext.mbUsing = false;
 
          type = gContext.mCurrentOperation;
+
+         if (deltaRotation)
+         {
+           deltaRotation[0] = rotationAxisLocalSpace.x * sinf(deltaAngle / 2.0f);
+           deltaRotation[1] = rotationAxisLocalSpace.y * sinf(deltaAngle / 2.0f);
+           deltaRotation[2] = rotationAxisLocalSpace.z * sinf(deltaAngle / 2.0f);
+           deltaRotation[3] = cosf(deltaAngle / 2.0f);
+         }
       }
    }
 
@@ -1724,7 +1733,7 @@ namespace ImGuizmo
       mat.v.position.Set(translation[0], translation[1], translation[2], 1.f);
    }
 
-   void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix, float *snap, float *localBounds, float *boundsSnap)
+   void Manipulate(const float *view, const float *projection, OPERATION operation, MODE mode, float *matrix, float *deltaMatrix, float *deltaQuat, float *snap, float *localBounds, float *boundsSnap)
    {
       ComputeContext(view, projection, matrix, mode);
 
@@ -1747,7 +1756,7 @@ namespace ImGuizmo
               switch (operation)
               {
               case ROTATE:
-                  HandleRotation(matrix, deltaMatrix, type, snap);
+                  HandleRotation(matrix, deltaMatrix, deltaQuat, type, snap);
                   break;
               case TRANSLATE:
                   HandleTranslation(matrix, deltaMatrix, type, snap);
