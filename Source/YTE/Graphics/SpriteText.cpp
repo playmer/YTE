@@ -176,6 +176,8 @@ namespace YTE
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     mInstantiatedSprite->SetVisibility(mVisibility);
+
+    mInstantiatedSprite->mType = ShaderType::AlphaBlendShader;
   }
 
   void SpriteText::CreateTransform()
@@ -201,7 +203,9 @@ namespace YTE
     CreateTransform();
 
     if (mInstantiatedSprite)
+    {
       mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    }
   }
 
   void SpriteText::PrepareFont()
