@@ -14,6 +14,28 @@
 
 namespace YTE
 {
+  static std::vector<std::string> PopulateDropDownList(Component *aComponent)
+  {
+    YTEUnusedArgument(aComponent);
+
+    std::wstring wStrPath = YTE::cWorkingDirectory;
+
+    filesystem::path fsPath = Path::GetGamePath().String();
+
+    filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
+
+    std::vector<std::string> result;
+
+    for (auto & p : filesystem::directory_iterator(finalPath))
+    {
+      std::string str = p.path().filename().generic_string();
+
+      result.push_back(str);
+    }
+
+    return result;
+  }
+
 
   YTEDefineType(ParticleEmitter)
   {
@@ -26,7 +48,8 @@ namespace YTE
 
     YTEBindProperty(&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName, "Texture Name")
       .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
     YTEBindProperty(&ParticleEmitter::GetPositionOffset, &ParticleEmitter::SetPositionOffset, "Position Offset")
       .AddAttribute<Serializable>()
@@ -434,6 +457,8 @@ namespace YTE
     particle.mUBO.mModelMatrix[3][0] = particle.mPosition.x;
     particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
     particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
+
+    model->UpdateUBOModel(particle.mUBO);
 
     mParticles.emplace_back(particle, std::move(model));
   }

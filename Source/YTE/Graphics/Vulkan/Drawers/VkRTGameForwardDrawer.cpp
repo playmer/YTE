@@ -137,6 +137,12 @@ namespace YTE
                 toEmplaceInto = &mAdditiveBlendShader;
                 break;
               }
+              case ShaderType::AlphaBlendShader:
+              {
+                toUseToDraw = &shader.second->mAlphaBlendShader;
+                toEmplaceInto = &mAlphaBlendShader;
+                break;
+              }
               default:
               {
                 assert(false);
@@ -148,6 +154,7 @@ namespace YTE
                                         submesh->mIndexBuffer,
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
+                                        model->GetUBOModelData().mModelMatrix,
                                         static_cast<u32>(submesh->mIndexCount),
                                         model->mLineWidth);
           }
@@ -164,12 +171,12 @@ namespace YTE
 
       for (auto &drawCall : aShaders)
       {
-        if (lastPipeline != &drawCall.mPipeline)
+        if (lastPipeline != drawCall.mPipeline)
         {
           aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
-                             drawCall.mPipeline);
+                             *drawCall.mPipeline);
 
-          lastPipeline = &drawCall.mPipeline;
+          lastPipeline = drawCall.mPipeline;
         }
 
         if (lastLineWidth != drawCall.mLineWidth)
@@ -179,17 +186,17 @@ namespace YTE
         }
 
         aCBO->bindVertexBuffer(0,
-                               drawCall.mVertexBuffer,
+                               *drawCall.mVertexBuffer,
                                0);
 
-        aCBO->bindIndexBuffer(drawCall.mIndexBuffer,
+        aCBO->bindIndexBuffer(*drawCall.mIndexBuffer,
                               0,
                               vk::IndexType::eUint32);
 
         aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                 drawCall.mPipelineLayout,
+                                 *drawCall.mPipelineLayout,
                                  0,
-                                 drawCall.mDescriptorSet,
+                                 *drawCall.mDescriptorSet,
                                  nullptr);
         aCBO->drawIndexed(static_cast<u32>(drawCall.mIndexCount),
                           1,
@@ -201,11 +208,36 @@ namespace YTE
       aShaders.clear();
     };
 
+
+    {
+      YTEProfileBlock("Sorting Alpha");
+
+      auto toClipSpace = mParentViewData->mViewUBOData.mProjectionMatrix *
+                         mParentViewData->mViewUBOData.mViewMatrix;
+
+      glm::vec4 origin{ 0.f,0.f,0.f,1.f };
+      for (auto &data : mAlphaBlendShader)
+      {
+        auto position = toClipSpace * (*data.mModelMatrix) * origin;
+        data.mDepth = position.z;
+      }
+
+      std::sort(mAlphaBlendShader.begin(), 
+                mAlphaBlendShader.end(), 
+                [](DrawData const &aLeft, DrawData const &aRight)
+      {
+        return aLeft.mDepth > aRight.mDepth;
+      });
+    }
+
     runPipelines(aCBO, mTriangles);
     runPipelines(aCBO, mLines);
     runPipelines(aCBO, mCurves);
     runPipelines(aCBO, mShaderNoCull);
     runPipelines(aCBO, mAdditiveBlendShader);
+
+
+    runPipelines(aCBO, mAlphaBlendShader);
   }
 
   void VkRTGameForwardDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)

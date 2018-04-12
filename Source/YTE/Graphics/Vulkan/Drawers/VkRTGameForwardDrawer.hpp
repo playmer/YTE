@@ -40,26 +40,30 @@ namespace YTE
                std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
                std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
+               glm::mat4 &aModelMatrix,
                u32 aIndexCount,
                float aLineWidth)
-        : mPipeline{aPipeline}
-        , mVertexBuffer{aVertexBuffer}
-        , mIndexBuffer{aIndexBuffer}
-        , mPipelineLayout{aPipelineLayout}
-        , mDescriptorSet{aDescriptorSet}
+        : mPipeline{ &aPipeline}
+        , mVertexBuffer{ &aVertexBuffer}
+        , mIndexBuffer{ &aIndexBuffer}
+        , mPipelineLayout{ &aPipelineLayout}
+        , mDescriptorSet{ &aDescriptorSet }
+        , mModelMatrix{ &aModelMatrix }
         , mIndexCount{aIndexCount}
         , mLineWidth(aLineWidth)
       {
 
       }
 
-      std::shared_ptr<vkhlf::Pipeline> &mPipeline;
-      std::shared_ptr<vkhlf::Buffer> &mVertexBuffer;
-      std::shared_ptr<vkhlf::Buffer> &mIndexBuffer;
-      std::shared_ptr<vkhlf::PipelineLayout> &mPipelineLayout;
-      std::shared_ptr<vkhlf::DescriptorSet> &mDescriptorSet;
+      std::shared_ptr<vkhlf::Pipeline> *mPipeline;
+      std::shared_ptr<vkhlf::Buffer> *mVertexBuffer;
+      std::shared_ptr<vkhlf::Buffer> *mIndexBuffer;
+      std::shared_ptr<vkhlf::PipelineLayout> *mPipelineLayout;
+      std::shared_ptr<vkhlf::DescriptorSet> *mDescriptorSet;
+      glm::mat4 *mModelMatrix;
       u32 mIndexCount;
       float mLineWidth;
+      float mDepth;
     };
 
     std::vector<DrawData> mTriangles;
@@ -67,6 +71,7 @@ namespace YTE
     std::vector<DrawData> mCurves;
     std::vector<DrawData> mShaderNoCull;
     std::vector<DrawData> mAdditiveBlendShader;
+    std::vector<DrawData> mAlphaBlendShader;
   };
 }
 

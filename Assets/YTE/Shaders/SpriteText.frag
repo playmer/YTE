@@ -162,6 +162,8 @@ void main()
     {
       discard;
     }
+    
+    //outFragColor.w = texture(diffuseSampler, inTextureCoordinates).w;
   }
   else
   {
@@ -170,6 +172,8 @@ void main()
     {
       discard;
     }
+    
+    //outFragColor.w = texture(diffuseSampler, inTextureCoordinates).w;
   }
   //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }

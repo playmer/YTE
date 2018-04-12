@@ -124,6 +124,12 @@ namespace YTE
 
     float sizeFactor = mFontSize / mFontInfo.mSize;
 
+    submesh.mDiffuseMap = mTextureName;
+    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mShaderSetName = "SpriteText";
+
+    submesh.mCullBackFaces = false;
+
     for (auto c : mText)
     {
       Vertex vert0;
@@ -133,23 +139,24 @@ namespace YTE
 
       stbtt_aligned_quad quad;
 
-      stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, c - mFontInfo.mFirstChar, &offsetX, &offsetY, &quad, 1);
+      stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), 
+                          mFontInfo.mAtlasWidth, 
+                          mFontInfo.mAtlasHeight, 
+                          c - mFontInfo.mFirstChar, 
+                          &offsetX, 
+                          &offsetY, 
+                          &quad, 
+                          1);
 
         // Save vertex attributes
-      vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };             // Bottom-left
+      vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };  // Bottom-left
+      vert1.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y1, 0.0 };  // Bottom-right
+      vert2.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y0, 0.0 };  // Top-right
+      vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };  // Top-left
       vert0.mTextureCoordinates = { quad.s0, 1.0f - quad.t1, 0.0f };  // Bottom-left (UVs)
-      vert1.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y1, 0.0 };             // Bottom-right
       vert1.mTextureCoordinates = { quad.s1, 1.0f - quad.t1, 0.0f };  // Bottom-right (UVs)
-      vert2.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y0, 0.0 };             // Top-right
       vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
-      vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };             // Top-left
       vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
-
-      submesh.mDiffuseMap = mTextureName;
-      submesh.mDiffuseType = TextureViewType::e2D;
-      submesh.mShaderSetName = "SpriteText";
-
-      submesh.mCullBackFaces = false;
 
       submesh.mVertexBuffer.emplace_back(vert0);
       submesh.mVertexBuffer.emplace_back(vert1);
@@ -163,9 +170,10 @@ namespace YTE
       submesh.mIndexBuffer.push_back(lastIndex + 2);
       submesh.mIndexBuffer.push_back(lastIndex + 3);
 
-      submeshes.emplace_back(submesh);
       lastIndex += 4;
     }
+
+    submeshes.emplace_back(submesh);
 
     auto view = mSpace->GetComponent<GraphicsView>();
 
@@ -176,6 +184,8 @@ namespace YTE
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     mInstantiatedSprite->SetVisibility(mVisibility);
+
+    mInstantiatedSprite->mType = ShaderType::AlphaBlendShader;
   }
 
   void SpriteText::CreateTransform()
@@ -201,7 +211,9 @@ namespace YTE
     CreateTransform();
 
     if (mInstantiatedSprite)
+    {
       mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    }
   }
 
   void SpriteText::PrepareFont()

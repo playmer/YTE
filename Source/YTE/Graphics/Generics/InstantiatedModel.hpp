@@ -24,6 +24,7 @@ namespace YTE
     Curves,
     Wireframe,
     ShaderNoCull,
+    AlphaBlendShader,
     AdditiveBlendShader,
   };
 
@@ -86,7 +87,7 @@ namespace YTE
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
-    UBOModel GetUBOModelData()
+    UBOModel& GetUBOModelData()
     {
       return mUBOModelData;
     }
