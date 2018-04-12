@@ -58,7 +58,8 @@ namespace YTE
     WWiseEmitter *mSoundEmitter;
     WWiseSystem *mSoundSystem;
     std::vector<std::map<std::string, u64> > mDialogueConvos;
-    std::vector<std::map<std::string, u64> >::iterator mConvosIter;
+    std::vector<std::map<std::string, u64> >::iterator mConvosIter;    
+    std::vector<std::map<std::string, u64> >::iterator mPrevConvoIter;
     std::map<std::string, u64>::iterator mLinesIter;
   };
 } //end yte

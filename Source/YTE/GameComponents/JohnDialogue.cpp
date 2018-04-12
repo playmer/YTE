@@ -290,12 +290,15 @@ namespace YTE
   {
     if (aEvent->mCharacter == mName)
     {
-      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
-      UpdateActiveQuestState received(mName, Quest::State::Received);
-      mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
-
+      if (mActiveQuest->GetName() == Quest::Name::NotActive)
+      {
+        mConvosIter = mPrevConvoIter;
+      }
       ++mConvosIter;
       mLinesIter = mConvosIter->begin();
+
+      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
+      mActiveQuest->SetState(Quest::State::Received);
     }
     else
     {
@@ -314,17 +317,11 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
-        /*NAH FAm
-        if (aEvent->mState == Quest::State::Briefed)
-        {
-          mActiveConvo = &mActiveQuest->GetConversations()->at(1);
-          mActiveNode = mActiveConvo->GetRoot();
-        }
-        */
       }
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
+        mPrevConvoIter = mConvosIter; // save our place for sound cues
         mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
         mLinesIter = mConvosIter->begin();
       }

@@ -274,12 +274,11 @@ namespace YTE
       {
         mConvosIter = mPrevConvoIter;
       }
-      ++mConvosIter;
+      ++mConvosIter; //doesnt work if you skipped any convos
       mLinesIter = mConvosIter->begin();
 
       mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
       mActiveQuest->SetState(Quest::State::Received);
-
     }
     else
     {
@@ -298,13 +297,6 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
-        /*Remember when people used to say "rejected!"
-        if (aEvent->mState == Quest::State::Completed)
-        {
-          mActiveConvo = &mActiveQuest->GetConversations()->at(1);
-          mActiveNode = mActiveConvo->GetRoot();
-        }
-        */
       }
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
