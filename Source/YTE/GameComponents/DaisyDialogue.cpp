@@ -76,6 +76,7 @@ namespace YTE
         std::make_pair("CJ_FI_NP_3", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3"))
       });
       mConvosIter = mDialogueConvos.begin();
+      mPrevConvoIter = mConvosIter;
       mLinesIter = mConvosIter->begin();
     }
   }
@@ -185,6 +186,21 @@ namespace YTE
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+        if (mActiveQuest->GetName() == Quest::Name::Fetch)
+        {
+          SpawnProgressionItem spawnItem;
+          mSpace->SendEvent(Events::SpawnProgressionItem, &spawnItem);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Explore)
+        {
+          SpawnProgressionLocation spawnLocation;
+          mSpace->SendEvent(Events::SpawnProgressionLocation, &spawnLocation);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Dialogue)
+        {
+          SpawnProgressionDialogue spawnTalk;
+          mSpace->SendEvent(Events::SpawnProgressionDialogue, &spawnTalk);
+        }
       }
       // briefed just gets repeated
       if (mActiveQuest->GetState() == Quest::State::Briefed)
@@ -194,12 +210,20 @@ namespace YTE
 
         mLinesIter = mConvosIter->begin();
       }
-      if (mActiveQuest->GetState() == Quest::State::Completed)
+      if (mActiveQuest->GetState() == Quest::State::Accomplished)
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
 
         ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
+      }
+      // post quest gets repeated
+      if (mActiveQuest->GetState() == Quest::State::Completed)
+      {
+        UpdateActiveQuestState complete(mName, Quest::State::Completed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &complete);
+
         mLinesIter = mConvosIter->begin();
       }
     }
@@ -215,7 +239,7 @@ namespace YTE
       while (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
       {
           mActiveNode->ActivateNode();
-          mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+          mActiveNode = mActiveNode->GetChild(0);
           if (mActiveNode != nullptr)
           {
             type = mActiveNode->GetNodeType();
@@ -246,12 +270,16 @@ namespace YTE
   {
     if (aEvent->mCharacter == mName)
     {
-      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
-      UpdateActiveQuestState received(mName, Quest::State::Received);
-      mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
-
+      if (mActiveQuest->GetName() == Quest::Name::NotActive)
+      {
+        mConvosIter = mPrevConvoIter;
+      }
       ++mConvosIter;
       mLinesIter = mConvosIter->begin();
+
+      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
+      mActiveQuest->SetState(Quest::State::Received);
+
     }
     else
     {
@@ -281,6 +309,7 @@ namespace YTE
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
+        mPrevConvoIter = mConvosIter; // save our place for sound cues
         mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
         mLinesIter = mConvosIter->begin();
       }
@@ -295,6 +324,10 @@ namespace YTE
         {
           mActiveConvo = &(*(mActiveQuest->GetConversations()))[(int)Conversation::Name::Completed];
           mActiveNode = mActiveConvo->GetRoot();
+
+          // because normally we move these by exiting convos, but here its from progression
+          ++mConvosIter;
+          mLinesIter = mConvosIter->begin();
         }
         if (aEvent->mState == Quest::State::Completed)
         {

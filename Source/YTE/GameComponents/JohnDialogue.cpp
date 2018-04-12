@@ -70,6 +70,7 @@ namespace YTE
       {
         std::make_pair("CJ_NQ_G_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1"))
       });
+
       // FETCH::HELLO                                                                 
       mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
@@ -85,6 +86,20 @@ namespace YTE
         std::make_pair("CJ_FI_NP_2", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2")),
         std::make_pair("CJ_FI_NP_3", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3"))
       });
+      // FETCH::COMPLETE                                                                 
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_FI_C_1", mSoundSystem->GetSoundIDFromString("CJ_FI_C_1")),
+        std::make_pair("CJ_FI_C_2", mSoundSystem->GetSoundIDFromString("CJ_FI_C_2")),
+        std::make_pair("CJ_FI_C_3", mSoundSystem->GetSoundIDFromString("CJ_FI_C_3"))
+      });
+      // FETCH::POSTQUEST            
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_FI_G_1", mSoundSystem->GetSoundIDFromString("CJ_FI_G_1")),
+        std::make_pair("CJ_FI_G_2", mSoundSystem->GetSoundIDFromString("CJ_FI_G_2"))
+      });
+
       mConvosIter = mDialogueConvos.begin();
       mLinesIter = mConvosIter->begin();
     }
@@ -170,7 +185,7 @@ namespace YTE
       }
       else
       {
-        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard i think
+        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard
         // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
         mActiveNode = mActiveConvo->GetRoot(); // for now just repeat john's last convo to prevent crash
         mLinesIter = mConvosIter->begin();
@@ -191,7 +206,6 @@ namespace YTE
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
-
         if (mActiveQuest->GetName() == Quest::Name::Fetch)
         {
           SpawnProgressionItem spawnItem;
@@ -216,12 +230,20 @@ namespace YTE
 
         mLinesIter = mConvosIter->begin();
       }
-      if (mActiveQuest->GetState() == Quest::State::Completed)
+      if (mActiveQuest->GetState() == Quest::State::Accomplished)
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
 
         ++mConvosIter;
+        mLinesIter = mConvosIter->begin();
+      }
+      // post quest gets repeated
+      if (mActiveQuest->GetState() == Quest::State::Completed)
+      {
+        UpdateActiveQuestState complete(mName, Quest::State::Completed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &complete);
+
         mLinesIter = mConvosIter->begin();
       }
     }
@@ -317,6 +339,10 @@ namespace YTE
         {
           mActiveConvo = &(*(mActiveQuest->GetConversations()))[(int)Conversation::Name::Completed];
           mActiveNode = mActiveConvo->GetRoot();
+
+          // because normally we move these by exiting convos, but here its from progression
+          ++mConvosIter;
+          mLinesIter = mConvosIter->begin();
         }
         if (aEvent->mState == Quest::State::Completed)
         {
