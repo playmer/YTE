@@ -49,6 +49,7 @@
 #include "YTE/GameComponents/DialogueGraph.hpp"
 #include "YTE/GameComponents/QuestLogic.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/GameComponents/OceanCreatureSpawn.hpp"
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
 #include "YTE/GameComponents/JohnMovement.hpp"
 #include "YTE/GameComponents/DaisyMovement.hpp"
@@ -151,6 +152,7 @@ namespace YTE
 		InitializeType<DialogueNode>();
     InitializeType<QuestLogic>();
     InitializeType<NoticeBoard>();
+    InitializeType<OceanCreatureSpawn>();
     InitializeType<QuestProgressionTrigger>();
     InitializeType<JohnMovement>();
     InitializeType<DaisyMovement>();

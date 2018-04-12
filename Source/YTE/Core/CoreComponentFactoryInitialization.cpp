@@ -33,6 +33,7 @@
 #include "YTE/GameComponents/Menu/LaunchMenu.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
+#include "YTE/GameComponents/OceanCreatureSpawn.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -139,6 +140,7 @@ namespace YTE
     helper.CreateComponentFactory<BasilDialogue>();
     helper.CreateComponentFactory<QuestLogic>();
     helper.CreateComponentFactory<NoticeBoard>();
+    helper.CreateComponentFactory<OceanCreatureSpawn>();
     helper.CreateComponentFactory<QuestProgressionTrigger>();
     helper.CreateComponentFactory<JohnMovement>();
     helper.CreateComponentFactory<DaisyMovement>();
