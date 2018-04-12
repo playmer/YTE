@@ -144,6 +144,7 @@ namespace YTE
                                                                stencilOpState,
                                                                0.0f,
                                                                0.0f);
+
     vk::PipelineDepthStencilStateCreateInfo disableDepthStencil({},
                                                                 true,
                                                                 true,
@@ -155,7 +156,7 @@ namespace YTE
                                                                 0.0f,
                                                                 0.0f);
 
-    vk::PipelineColorBlendAttachmentState noColorBlendAttachment(false,                                 // enable
+    vk::PipelineColorBlendAttachmentState noColorBlendAttachment(false,                                 // enableBlend
                                                                  vk::BlendFactor::eSrcColor,            // SrcColorBlendFactor
                                                                  vk::BlendFactor::eOne,                 // DstColorBlendFactor
                                                                  vk::BlendOp::eAdd,                     // ColorBlendOp
@@ -166,7 +167,7 @@ namespace YTE
                                                                  vk::ColorComponentFlagBits::eG |
                                                                  vk::ColorComponentFlagBits::eB |
                                                                  vk::ColorComponentFlagBits::eA);
-    vk::PipelineColorBlendAttachmentState additiveColorBlendAttachment(true,                                  // enable
+    vk::PipelineColorBlendAttachmentState additiveColorBlendAttachment(true,                                  // enableBlend
                                                                        vk::BlendFactor::eOne,                 // SrcColorBlendFactor
                                                                        vk::BlendFactor::eOne,                 // DstColorBlendFactor
                                                                        vk::BlendOp::eAdd,                     // ColorBlendOp
@@ -176,15 +177,16 @@ namespace YTE
                                                                        vk::ColorComponentFlagBits::eR |       // ColorWriteMask
                                                                        vk::ColorComponentFlagBits::eG |       
                                                                        vk::ColorComponentFlagBits::eB |       
-                                                                       vk::ColorComponentFlagBits::eA);       
-    vk::PipelineColorBlendAttachmentState alphaColorBlendAttachment(true,                                  // enable
-                                                                    vk::BlendFactor::eSrcAlpha,            // SrcColorBlendFactor
-                                                                    vk::BlendFactor::eOneMinusSrcAlpha,    // DstColorBlendFactor
-                                                                    vk::BlendOp::eAdd,                     // ColorBlendOp
-                                                                    vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
-                                                                    vk::BlendFactor::eZero,                // DstAlphaBlendFactor
-                                                                    vk::BlendOp::eAdd,                     // AlphaBlendOp
-                                                                    vk::ColorComponentFlagBits::eR |       // ColorWriteMask
+                                                                       vk::ColorComponentFlagBits::eA);
+    
+    vk::PipelineColorBlendAttachmentState alphaColorBlendAttachment(true,                               // enableBlend
+                                                                    vk::BlendFactor::eSrcAlpha,         // SrcColorBlendFactor
+                                                                    vk::BlendFactor::eOneMinusSrcAlpha, // DstColorBlendFactor
+                                                                    vk::BlendOp::eAdd,                  // ColorBlendOp
+                                                                    vk::BlendFactor::eSrcAlpha,         // SrcAlphaBlendFactor
+                                                                    vk::BlendFactor::eOneMinusSrcAlpha, // DstAlphaBlendFactor
+                                                                    vk::BlendOp::eAdd,                  // AlphaBlendOp
+                                                                    vk::ColorComponentFlagBits::eR |    // ColorWriteMask
                                                                     vk::ColorComponentFlagBits::eG |
                                                                     vk::ColorComponentFlagBits::eB |
                                                                     vk::ColorComponentFlagBits::eA);
@@ -198,9 +200,9 @@ namespace YTE
                                                                 additiveColorBlendAttachment,
                                                                 { 1.0f, 1.0f, 1.0f, 1.0f });
     vkhlf::PipelineColorBlendStateCreateInfo alphaColorBlend(false,
-                                                             vk::LogicOp::eNoOp,
+                                                             vk::LogicOp::eClear,
                                                              alphaColorBlendAttachment,
-                                                             { 1.0f, 1.0f, 1.0f, 1.0f });
+                                                             { 0.0f, 0.0f, 0.0f, 0.0f });
 
     vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
                                                     vk::DynamicState::eScissor,
@@ -220,7 +222,7 @@ namespace YTE
                                    enableDepthStencil,
                                    disableDepthStencil,
                                    noColorBlend,
-                                   additiveColorBlend,
+                                   alphaColorBlend,
                                    additiveColorBlend,
                                    dynamic,
                                    aLayout,
@@ -330,7 +332,7 @@ namespace YTE
                                                                       aInfo.mViewport,
                                                                       aInfo.mRasterizationNoCull,
                                                                       aInfo.mMultiSample,
-                                                                      aInfo.mDisableDepthStencil,
+                                                                      aInfo.mEnableDepthStencil,
                                                                       aInfo.mAlphaColorBlend,
                                                                       aInfo.mDynamicState,
                                                                       aInfo.mPipelineLayout,

@@ -226,7 +226,7 @@ namespace YTE
                 mAlphaBlendShader.end(), 
                 [](DrawData const &aLeft, DrawData const &aRight)
       {
-        return aLeft.mDepth < aRight.mDepth;
+        return aLeft.mDepth > aRight.mDepth;
       });
     }
 
