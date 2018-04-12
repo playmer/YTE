@@ -287,6 +287,11 @@ namespace YTE
     }
     else
     {
+      if (mActiveQuest->GetName() == Quest::Name::Introduction)
+      {
+        mIntroDone = true;
+        mActiveQuest->SetState(Quest::State::TurnedIn);
+      }
       mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
       UpdateActiveQuestState notactive(mName, Quest::State::NotActive);
       mSpace->SendEvent(Events::UpdateActiveQuestState, &notactive);

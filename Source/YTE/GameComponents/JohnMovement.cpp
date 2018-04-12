@@ -39,7 +39,7 @@ namespace YTE
 
   void JohnMovement::OnQuestStart(QuestStart *aEvent)
   {
-    if (aEvent->mCharacter == mOwner->GetComponent<JohnDialogue>()->GetName())
+    if (aEvent->mCharacter == Quest::CharacterName::John)
     {
       mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
       ++mDockIndex;

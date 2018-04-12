@@ -36,9 +36,15 @@ namespace YTE
     // this cant be used until we know the location of the node
     void SetActiveNode(DialogueNode *aNode) { mActiveNode = aNode; };
     Quest::CharacterName GetName() { return mName; };
+    Quest *GetActiveQuest() { return mActiveQuest; };
 
     void RegisterDialogue();
     void DeregisterDialogue();
+
+    // this is dumb, but since the movement and dialogue listen for the same event,
+    // its not deterministic which will execute first, and movement logic depends on coming first
+    // thus i use this flag as a way to tell the movement that dialogue came first (if it does)
+    bool mIntroDone = false; // actually its possible i should just move setting state to movement idk too tired
   private:
     void OnCollisionStarted(CollisionStarted *aEvent);
     void OnCollisionEnded(CollisionEnded *aEvent);
