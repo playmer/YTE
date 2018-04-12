@@ -38,6 +38,7 @@
 #include "YTE/GameComponents/Menu/LaunchMenu.hpp"
 #include "YTE/GameComponents/Menu/ExitMenu.hpp"
 #include "YTE/GameComponents/Menu/LaunchLevel.hpp"
+#include "YTE/GameComponents/Menu/LaunchGame.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
@@ -142,6 +143,7 @@ namespace YTE
     InitializeType<LaunchMenu>();
     InitializeType<ExitMenu>();
     InitializeType<LaunchLevel>();
+    InitializeType<LaunchGame>();
     InitializeType<Button>();
     InitializeType<ButtonAnimate>();
     InitializeType<SampleAction>();

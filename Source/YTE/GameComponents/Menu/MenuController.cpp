@@ -32,6 +32,10 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
+    YTEBindProperty(&GetCanClose, &SetCanClose, "CanClose")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
     YTEBindProperty(&GetNumElements, &SetNumElements, "NumMenuElements")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
@@ -47,6 +51,7 @@ namespace YTE
     , mNumElements(0)
     , mMenuElements(nullptr)
     , mIsDisplayed(false)
+    , mCanClose(true)
     , mConstructing(true)
   {
     DeserializeByType(aProperties, this, GetStaticType());
@@ -79,7 +84,11 @@ namespace YTE
     mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
     mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
 
-    mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    if (mCanClose)
+    {  
+      mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    }
+
     mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
     mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
   }
@@ -220,21 +229,24 @@ namespace YTE
   {
     if (mIsDisplayed && mMenuElements->size() != 0)
     {
-      MenuElementDeHover deHoverEvent;
-
       auto currElement = mMenuElements->begin() + mCurrMenuElement;
 
-      currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+      if (aEvent->ChangeDirection != MenuElementChange::Direction::Init)
+      {
+        MenuElementDeHover deHoverEvent;
 
-      if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
-      {
-        mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
-        mSoundEmitter->PlayEvent(mSoundElementPrev);
-      }
-      else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
-      {
-        mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
-        mSoundEmitter->PlayEvent(mSoundElementNext);
+        currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+
+        if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
+        {
+          mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
+          mSoundEmitter->PlayEvent(mSoundElementPrev);
+        }
+        else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
+        {
+          mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
+          mSoundEmitter->PlayEvent(mSoundElementNext);
+        }
       }
 
       MenuElementHover hoverEvent;

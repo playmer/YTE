@@ -153,7 +153,7 @@ namespace YTE
   class MenuElementChange : public Event
   {
   public:
-    enum class Direction {Previous, Next, COUNT};
+    enum class Direction {Init, Previous, Next, COUNT};
 
     YTEDeclareType(MenuElementChange);
     MenuElementChange(Direction aChangeDirection) { ChangeDirection = aChangeDirection; }
@@ -201,6 +201,7 @@ namespace YTE
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
+    void OnPostStart(LogicUpdate*);
     void OnLogicUpdate(LogicUpdate *aEvent);
 
     void OnStickEvent(XboxStickEvent *aEvent);
@@ -227,6 +228,7 @@ namespace YTE
 
     InputContext mContext;
 
+    bool mDoneOnce;
     bool mIsRightTriggerDown;
     bool mIsLeftTriggerDown;
 

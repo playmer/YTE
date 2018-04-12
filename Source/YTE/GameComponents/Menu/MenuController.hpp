@@ -56,6 +56,9 @@ namespace YTE
     bool GetDisplayed() { return mIsDisplayed; }
     void SetDisplayed(bool aDisplay) { mIsDisplayed = aDisplay; }
 
+    bool GetCanClose() { return mCanClose; }
+    void SetCanClose(bool aCanClose) { mCanClose = aCanClose; }
+
     int GetNumElements() { return mNumElements; }
     void SetNumElements(int aNumElements) { mNumElements = aNumElements; }
     ///////////////////////////////////////////////////////
@@ -88,6 +91,7 @@ namespace YTE
     u64 mSoundElementSelect;
 
     bool mIsDisplayed;
+    bool mCanClose;
 
     bool mConstructing;
 

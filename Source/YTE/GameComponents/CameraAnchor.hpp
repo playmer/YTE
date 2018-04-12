@@ -14,6 +14,7 @@
 #include "YTE/Physics/Transform.hpp"
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
+#include "YTE/GameComponents/Menu/LaunchGame.hpp"
 
 namespace YTE
 {
@@ -45,6 +46,7 @@ namespace YTE
 
     void OnDirectCamera(DirectCameraEvent *);
     void OnDialogueExit(DialogueExit *);
+    void OnStartGame(StartGame *);
 
   private:
     bool mIsDefault;

@@ -26,6 +26,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ExitMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.cpp 
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
@@ -71,6 +72,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ExitMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
