@@ -84,6 +84,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(PlaySoundEvent);
+    int Selection; // bad name but copying DialogueNodeConfirm name
   };
 
   /////////////////////////////////////////////////////////////////////////////////////

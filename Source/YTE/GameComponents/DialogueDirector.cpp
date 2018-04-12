@@ -103,6 +103,7 @@ namespace YTE
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
       PlaySoundEvent triggerSound;
+      triggerSound.Selection = aEvent->Selection;
       mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
 
       UIUpdateContent content(true, aEvent->ContentMessages[0]);
@@ -188,6 +189,7 @@ namespace YTE
       if (mCurNodeDataIndex < mCurNodeData.size() - 1)
       {
         PlaySoundEvent triggerSound;
+        triggerSound.Selection = -1;
         mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
 
         ++mCurNodeDataIndex;

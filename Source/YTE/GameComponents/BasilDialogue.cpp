@@ -75,9 +75,7 @@ namespace YTE
       // FETCH::NOPROGRESS            
       mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        std::make_pair("BB_FB_NP_1", mSoundSystem->GetSoundIDFromString("BB_FB_NP_1")),
-        std::make_pair("BB_FB_NP_2", mSoundSystem->GetSoundIDFromString("BB_FB_NP_2")),
-        std::make_pair("BB_FB_NP_3", mSoundSystem->GetSoundIDFromString("BB_FB_NP_3"))
+        std::make_pair("BB_FB_NP_1", mSoundSystem->GetSoundIDFromString("BB_FB_NP_1"))
       });
       mConvosIter = mDialogueConvos.begin();
       mLinesIter = mConvosIter->begin();
@@ -220,7 +218,7 @@ namespace YTE
       while (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
       {
           mActiveNode->ActivateNode();
-          mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+          mActiveNode = mActiveNode->GetChild(0);
           if (mActiveNode != nullptr)
           {
             type = mActiveNode->GetNodeType();
@@ -237,6 +235,7 @@ namespace YTE
       {
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
+        next.Selection = aEvent->Selection;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
       }
     }

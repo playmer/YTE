@@ -70,6 +70,7 @@ namespace YTE
     std::vector<std::map<std::string, u64> > mDialogueConvos;
     std::vector<std::map<std::string, u64> >::iterator mConvosIter;
     std::map<std::string, u64>::iterator mLinesIter;
+    int mConvoLineOffset = 0;
   };
 } //end yte
 #endif

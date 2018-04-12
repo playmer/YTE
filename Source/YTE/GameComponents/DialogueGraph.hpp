@@ -94,6 +94,7 @@ namespace YTE
     }
     std::vector<std::string> ContentMessages;
     DialogueNode::NodeType DialogueType;
+    int Selection = 0;
   };
 
   class DialogueNodeConfirm : public Event

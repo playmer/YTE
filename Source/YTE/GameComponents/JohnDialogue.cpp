@@ -137,6 +137,12 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      if (type == DialogueNode::NodeType::Input && mActiveNode->GetNodeData().size() > 1)
+      {
+        // how many lines we will skip in the sound array, -1 b/c 
+        mConvoLineOffset += mActiveNode->GetNodeData().size() - 1;
+      }
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
@@ -230,6 +236,7 @@ namespace YTE
       {
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
+        next.Selection = aEvent->Selection;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
       }
     }
@@ -303,7 +310,7 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnPlaySoundEvent(PlaySoundEvent *)
+  void JohnDialogue::OnPlaySoundEvent(PlaySoundEvent *aEvent)
   {
     if (mConvosIter != mDialogueConvos.end())
     {
@@ -311,7 +318,23 @@ namespace YTE
       {
         mSoundEmitter->PlayEvent(mLinesIter->second);
         std::cout << mLinesIter->first << std::endl;
-        ++mLinesIter;
+        if (aEvent->Selection > 0)
+        {
+          int i = 0;
+          for (; i <= aEvent->Selection; ++i) 
+          {
+            ++mLinesIter;
+          }
+          mConvoLineOffset += i;
+        }
+        else
+        {
+          int i = 0;
+          for (; i <= mConvoLineOffset; ++i)
+          {
+            ++mLinesIter;
+          }
+        }
       }
     }
   }
