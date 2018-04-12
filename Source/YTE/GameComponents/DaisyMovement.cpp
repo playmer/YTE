@@ -33,20 +33,28 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &DaisyMovement::OnQuestStart);
   }
 
-  void DaisyMovement::Start()
+  void DaisyMovement::MoveToNextDock()
   {
-    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
+    ++mDockIndex;
+    if (mDockIndex > mDocks.size() - 1)
+    {
+      mDockIndex = 0;
+    }
   }
 
   void DaisyMovement::OnQuestStart(QuestStart *aEvent)
   {
-    if (aEvent->mCharacter == mOwner->GetComponent<DaisyDialogue>()->GetName())
+    if (aEvent->mCharacter == Quest::CharacterName::Daisy)
     {
-      mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
-      ++mDockIndex;
-      if (mDockIndex > mDocks.size() - 1)
+      MoveToNextDock();
+    }
+    else
+    {
+      auto dialogue = mOwner->GetComponent<DaisyDialogue>();
+      if (dialogue->mIntroDone || dialogue->GetActiveQuest()->GetName() == Quest::Name::Introduction)
       {
-        mDockIndex = 0;
+        MoveToNextDock();
       }
     }
   }

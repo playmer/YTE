@@ -19,8 +19,7 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/GameComponents/BoatController.hpp" /* inputinterpret's DialogueConfirm */
-#include "YTE/GameComponents/DialogueDirector.hpp"
+#include "YTE/GameComponents/BoatController.hpp"
 #include "YTE/GameComponents/Quest.hpp"
 
 namespace YTE
@@ -34,6 +33,36 @@ namespace YTE
     TutorialUpdate(Quest::CharacterName aCharacter) : mCharacter(aCharacter) {};
     Quest::CharacterName mCharacter;
   };
+
+  YTEDeclareEvent(SpawnProgressionItem);
+
+  class SpawnProgressionItem : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionItem);
+    //maybe model name too?
+  };
+
+  YTEDeclareEvent(SpawnProgressionLocation);
+
+  class SpawnProgressionLocation : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionLocation);
+    //maybe location too?
+  };
+
+  YTEDeclareEvent(SpawnProgressionDialogue);
+
+  class SpawnProgressionDialogue : public Event
+  {
+  public:
+    YTEDeclareType(SpawnProgressionDialogue);
+    //woah boy this is gonna get weird
+  };
+
+  class DialogueStart;
+  class PlaySoundEvent;
 
   class JohnDialogue : public Component
   {
@@ -67,9 +96,11 @@ namespace YTE
 
     WWiseEmitter *mSoundEmitter;
     WWiseSystem *mSoundSystem;
-    std::vector<std::map<std::string, u64> > mDialogueConvos;
-    std::vector<std::map<std::string, u64> >::iterator mConvosIter;
-    std::map<std::string, u64>::iterator mLinesIter;
+    // remember to make this vec<map<int, u64> > for branching lookups
+    std::vector<std::vector<u64> > mDialogueConvos;
+    std::vector<std::vector<u64> >::iterator mConvosIter;
+    std::vector<std::vector<u64> >::iterator mPrevConvoIter;
+    std::vector<u64>::iterator mLinesIter;
   };
 } //end yte
 #endif

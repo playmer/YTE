@@ -7,14 +7,16 @@
 */
 /******************************************************************************/
 
-#include "YTE/GameComponents/CameraAnchor.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 
 #include "YTE/Physics/Transform.hpp"
 
-
-#include "YTE/GameComponents/DialogueDirector.hpp"
+#include "YTE/GameComponents/CameraAnchor.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/DaisyDialogue.hpp"
+#include "YTE/GameComponents/BasilDialogue.hpp"
 
 namespace YTE
 {
@@ -243,25 +245,33 @@ namespace YTE
 
   void DialogueDirector::OnCollisionStart(CollisionStarted * aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<BoatController>())
+    if (!mIsRegistered)
     {
-      mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-      mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-      mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-      mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-      mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+      if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+      {
+        mIsRegistered = true;
+        mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+        mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
+        mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
+        mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
+        mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+      }
     }
   }
 
   void DialogueDirector::OnCollisionEnd(CollisionEnded * aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<BoatController>())
+    if (mIsRegistered)
     {
-      mSpace->YTEDeregister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-      mSpace->YTEDeregister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-      mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-      mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-      mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+      if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+      {
+        mIsRegistered = false;
+        mSpace->YTEDeregister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+        mSpace->YTEDeregister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
+        mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
+        mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
+        mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+      }
     }
   }
 

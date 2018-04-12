@@ -33,20 +33,28 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &BasilMovement::OnQuestStart);
   }
 
-  void BasilMovement::Start()
+  void BasilMovement::MoveToNextDock()
   {
-    //mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
+    mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
+    ++mDockIndex;
+    if (mDockIndex > mDocks.size() - 1)
+    {
+      mDockIndex = 0;
+    }
   }
 
   void BasilMovement::OnQuestStart(QuestStart *aEvent)
   {
-    if (aEvent->mCharacter == mOwner->GetComponent<BasilDialogue>()->GetName())
+    if (aEvent->mCharacter == Quest::CharacterName::Basil)
     {
-      mOwner->GetComponent<Transform>()->SetTranslation(mDocks[mDockIndex]);
-      ++mDockIndex;
-      if (mDockIndex > mDocks.size() - 1)
+      MoveToNextDock();
+    }
+    else
+    {
+      auto dialogue = mOwner->GetComponent<BasilDialogue>();
+      if (dialogue->mIntroDone || dialogue->GetActiveQuest()->GetName() == Quest::Name::Introduction)
       {
-        mDockIndex = 0;
+        MoveToNextDock();
       }
     }
   }

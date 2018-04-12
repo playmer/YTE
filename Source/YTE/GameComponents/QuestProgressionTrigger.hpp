@@ -17,7 +17,11 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #define YTE_Gameplay_QuestProgressionTrigger_hpp
 
 #include "YTE/Core/Composition.hpp"
-#include "YTE/Physics/BoxCollider.hpp"
+
+#include "YTE/Physics/SphereCollider.hpp"
+
+#include "YTE/GameComponents/Quest.hpp"
+#include "YTE/GameComponents/QuestLogic.hpp"
 
 namespace YTE
 {
@@ -28,11 +32,8 @@ namespace YTE
     QuestProgressionTrigger(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
-    bool IsCollisionTrigger() { return mIsCollisionTrigger; }
-    void SetTriggerType(bool& aTriggerType) { mIsCollisionTrigger = aTriggerType; }
-
+    void OnCollisionStarted(CollisionStarted *aEvent);
   private:
-    bool mIsCollisionTrigger;
   };
 }//end yte
 #endif

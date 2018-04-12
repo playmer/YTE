@@ -14,7 +14,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
-#include "YTE/GameComponents/BoatController.hpp"
+#include "YTE/GameComponents/BoatController.hpp" /* Colliders, */
 #include "YTE/GameComponents/DialogueGraph.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
@@ -115,5 +115,7 @@ namespace YTE
 
     int mLastSelectionIndex;
     int mMaxSelectionIndex;
+
+    bool mIsRegistered = false;
   };
 }

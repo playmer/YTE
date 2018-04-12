@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/BasilDialogue.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
@@ -46,40 +47,132 @@ namespace YTE
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
     if (mSoundSystem)
     {
-      // INTRO::HELLO
-      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      // INTRO /////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::vector<u64>
       {
-        std::make_pair("BB_NQ_H_1", mSoundSystem->GetSoundIDFromString("BB_NQ_H_1")),
-        std::make_pair("BB_NQ_H_2", mSoundSystem->GetSoundIDFromString("BB_NQ_H_2")),
-        std::make_pair("BB_NQ_H_3", mSoundSystem->GetSoundIDFromString("BB_NQ_H_3")),
-        std::make_pair("BB_NQ_H_4", mSoundSystem->GetSoundIDFromString("BB_NQ_H_4")),
-        std::make_pair("BB_NQ_H_5", mSoundSystem->GetSoundIDFromString("BB_NQ_H_5")),
-        std::make_pair("BB_NQ_H_6", mSoundSystem->GetSoundIDFromString("BB_NQ_H_6")),
-        std::make_pair("BB_NQ_H_7", mSoundSystem->GetSoundIDFromString("BB_NQ_H_7")),
-        std::make_pair("BB_NQ_H_8", mSoundSystem->GetSoundIDFromString("BB_NQ_H_8"))
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5")
       });
-      // INTRO::POSTQUEST                                                             
-      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      // G                                                             
+      mDialogueConvos.emplace_back(std::vector<u64>
       {
-        std::make_pair("BB_NQ_G_1", mSoundSystem->GetSoundIDFromString("BB_NQ_G_1")),
-        std::make_pair("BB_NQ_G_2", mSoundSystem->GetSoundIDFromString("BB_NQ_G_2"))
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1"),
+        mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1")
       });
-      // FETCH::HELLO                                                                 
-      mDialogueConvos.emplace_back(std::map<std::string, u64>
+
+      // FI ////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::vector<u64>
       {
-        std::make_pair("BB_FB_H_1", mSoundSystem->GetSoundIDFromString("BB_FB_H_1")),
-        std::make_pair("BB_FB_H_2", mSoundSystem->GetSoundIDFromString("BB_FB_H_2")),
-        std::make_pair("BB_FB_H_3", mSoundSystem->GetSoundIDFromString("BB_FB_H_3")),
-        std::make_pair("BB_FB_H_4", mSoundSystem->GetSoundIDFromString("BB_FB_H_4"))
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
       });
-      // FETCH::NOPROGRESS            
-      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      // NP           
+      mDialogueConvos.emplace_back(std::vector<u64>
       {
-        std::make_pair("BB_FB_NP_1", mSoundSystem->GetSoundIDFromString("BB_FB_NP_1")),
-        std::make_pair("BB_FB_NP_2", mSoundSystem->GetSoundIDFromString("BB_FB_NP_2")),
-        std::make_pair("BB_FB_NP_3", mSoundSystem->GetSoundIDFromString("BB_FB_NP_3"))
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
       });
+      // C                                                              
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // G
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+
+      // MeP //////////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // NP           
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // C                                                              
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // G
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+
+      // GC //////////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // NP           
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // C                                                              
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+      // G
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+
+      // NQ //////////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::vector<u64>
+      {
+         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
+           mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+      });
+
       mConvosIter = mDialogueConvos.begin();
+      mPrevConvoIter = mConvosIter;
       mLinesIter = mConvosIter->begin();
     }
   }
@@ -190,6 +283,21 @@ namespace YTE
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+        if (mActiveQuest->GetName() == Quest::Name::Fetch)
+        {
+          SpawnProgressionItem spawnItem;
+          mSpace->SendEvent(Events::SpawnProgressionItem, &spawnItem);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Explore)
+        {
+          SpawnProgressionLocation spawnLocation;
+          mSpace->SendEvent(Events::SpawnProgressionLocation, &spawnLocation);
+        }
+        else if (mActiveQuest->GetName() == Quest::Name::Dialogue)
+        {
+          SpawnProgressionDialogue spawnTalk;
+          mSpace->SendEvent(Events::SpawnProgressionDialogue, &spawnTalk);
+        }
       }
       // briefed just gets repeated
       if (mActiveQuest->GetState() == Quest::State::Briefed)
@@ -207,6 +315,14 @@ namespace YTE
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
       }
+      // post quest gets repeated
+      if (mActiveQuest->GetState() == Quest::State::Completed)
+      {
+        UpdateActiveQuestState complete(mName, Quest::State::Completed);
+        mSpace->SendEvent(Events::UpdateActiveQuestState, &complete);
+
+        mLinesIter = mConvosIter->begin();
+      }
     }
   }
 
@@ -220,7 +336,7 @@ namespace YTE
       while (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
       {
           mActiveNode->ActivateNode();
-          mActiveNode = mActiveNode->GetChild(aEvent->Selection);
+          mActiveNode = mActiveNode->GetChild(0);
           if (mActiveNode != nullptr)
           {
             type = mActiveNode->GetNodeType();
@@ -251,15 +367,23 @@ namespace YTE
   {
     if (aEvent->mCharacter == mName)
     {
-      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
-      UpdateActiveQuestState received(mName, Quest::State::Received);
-      mSpace->SendEvent(Events::UpdateActiveQuestState, &received);
-
-      ++mConvosIter;
+      if (mActiveQuest->GetName() == Quest::Name::NotActive)
+      {
+        mConvosIter = mPrevConvoIter;
+      }
+      ++mConvosIter; //doesnt work if you skipped any convos
       mLinesIter = mConvosIter->begin();
+
+      mActiveQuest = &mQuestVec[(int)aEvent->mQuest];
+      mActiveQuest->SetState(Quest::State::Received);
     }
     else
     {
+      if (mActiveQuest->GetName() == Quest::Name::Introduction)
+      {
+        mIntroDone = true;
+        mActiveQuest->SetState(Quest::State::TurnedIn);
+      }
       mActiveQuest = &mQuestVec[(int)Quest::Name::NotActive];
       UpdateActiveQuestState notactive(mName, Quest::State::NotActive);
       mSpace->SendEvent(Events::UpdateActiveQuestState, &notactive);
@@ -275,17 +399,11 @@ namespace YTE
       mActiveQuest->SetState(aEvent->mState);
       if (mActiveQuest->GetName() == Quest::Name::Introduction)
       {
-        /*No sir
-        if (aEvent->mState == Quest::State::Completed)
-        {
-          mActiveConvo = &mActiveQuest->GetConversations()->at(1);
-          mActiveNode = mActiveConvo->GetRoot();
-        }
-        */
       }
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
+        mPrevConvoIter = mConvosIter; // save our place for sound cues
         mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
         mLinesIter = mConvosIter->begin();
       }
@@ -300,6 +418,10 @@ namespace YTE
         {
           mActiveConvo = &(*(mActiveQuest->GetConversations()))[(int)Conversation::Name::Completed];
           mActiveNode = mActiveConvo->GetRoot();
+
+          // because normally we move these by exiting convos, but here its from progression
+          ++mConvosIter;
+          mLinesIter = mConvosIter->begin();
         }
         if (aEvent->mState == Quest::State::Completed)
         {
@@ -316,8 +438,7 @@ namespace YTE
     {
       if (mLinesIter != mConvosIter->end())
       {
-        mSoundEmitter->PlayEvent(mLinesIter->second);
-        std::cout << mLinesIter->first << std::endl;
+        mSoundEmitter->PlayEvent(*mLinesIter);
         ++mLinesIter;
       }
     }

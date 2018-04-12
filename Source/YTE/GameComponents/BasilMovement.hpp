@@ -26,9 +26,9 @@ namespace YTE
     YTEDeclareType(BasilMovement);
     BasilMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
-    void Start() override;
 
     void OnQuestStart(QuestStart *aEvent);
+    void MoveToNextDock();
   private:
     std::vector<glm::vec3> mDocks;
     glm::vec3 mStartPos;

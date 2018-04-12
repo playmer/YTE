@@ -98,6 +98,7 @@ namespace YTE
 
       if (curState == Quest::State::Completed)
       {
+        curQuest->SetState(Quest::State::TurnedIn);
         // assign next postcard
         ++mAssignedPostcard;
         if (mAssignedPostcard != mPostcardVec.end()._Ptr)
@@ -109,10 +110,8 @@ namespace YTE
     }
     else
     {
-      // assign first postcard
-      mAssignedPostcard = &mPostcardVec[0];
-      QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());
-      mSpace->SendEvent(Events::QuestStart, &quest);
+      int temp = 0;
+      temp++;
     }
   }
 }//end yte

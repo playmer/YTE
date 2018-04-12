@@ -1128,7 +1128,7 @@ namespace YTE
         case Conversation::Name::NoProgress:
         {
           // LEVEL B0
-          DialogueData(dataB0, "Basil: But it's the job I suppose");
+          DialogueData(dataB0, "Monsieur Bouillon: But it's the job I suppose");
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0);
 
           // LEVEL A0
@@ -1136,7 +1136,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataA0, 0);
 
           // LEVEL ROOT
-          DialogueData(dataR0, "Basil: To be honest I can't stand the taste");
+          DialogueData(dataR0, "Monsieur Bouillon: To be honest I can't stand the taste");
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
           /*
           B0 - A0 - R0

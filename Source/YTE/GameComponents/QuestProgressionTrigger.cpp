@@ -18,12 +18,20 @@ namespace YTE
   QuestProgressionTrigger::QuestProgressionTrigger(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEBindProperty(&QuestProgressionTrigger::IsCollisionTrigger, &QuestProgressionTrigger::SetTriggerType, "IsCollisionTrigger")
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
   }
 
   void QuestProgressionTrigger::Initialize()
   {
+    mOwner->YTERegister(Events::CollisionStarted, this, &QuestProgressionTrigger::OnCollisionStarted);
+  }
+
+  void QuestProgressionTrigger::OnCollisionStarted(CollisionStarted *aEvent)
+  {
+    if (aEvent->OtherObject->GetComponent<QuestLogic>() != nullptr)
+    {
+      ProgressionItemEvent item;
+      mSpace->SendEvent(Events::ProgressionItemEvent, &item);
+      mOwner->GetParent()->RemoveComposition(mOwner);
+    }
   }
 }//end yte
