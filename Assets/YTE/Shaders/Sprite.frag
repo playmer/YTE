@@ -158,7 +158,7 @@ void main()
 {
   if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates);// * inDiffuse * vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse * vec4(1.0f, 1.0f, 0.0f, 1.0f);
 
     if (outFragColor.w <= 0.001f)
     {
@@ -169,7 +169,7 @@ void main()
   }
   else
   {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates);// * inDiffuse;
+    outFragColor = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
     
     if (outFragColor.w <= 0.001f)
     {
@@ -178,5 +178,4 @@ void main()
 
     outFragColor.w = texture(diffuseSampler, inTextureCoordinates).w;
   }
-  //outFragColor = vec4(inTextureCoordinates.y, 0.0f, 0.0f, 1.0f);
 }

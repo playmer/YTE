@@ -458,6 +458,8 @@ namespace YTE
     particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
     particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
+    model->UpdateUBOModel(particle.mUBO);
+
     mParticles.emplace_back(particle, std::move(model));
   }
 
