@@ -1680,12 +1680,18 @@ namespace ImGuizmo
 
          type = gContext.mCurrentOperation;
 
-         if (deltaRotation)
+         if (deltaQuat)
          {
-           deltaRotation[0] = rotationAxisLocalSpace.x * sinf(deltaAngle / 2.0f);
-           deltaRotation[1] = rotationAxisLocalSpace.y * sinf(deltaAngle / 2.0f);
-           deltaRotation[2] = rotationAxisLocalSpace.z * sinf(deltaAngle / 2.0f);
-           deltaRotation[3] = cosf(deltaAngle / 2.0f);
+           deltaQuat[0] = rotationAxisLocalSpace.x * sinf(deltaAngle / 2.0f);
+           deltaQuat[1] = rotationAxisLocalSpace.y * sinf(deltaAngle / 2.0f);
+           deltaQuat[2] = rotationAxisLocalSpace.z * sinf(deltaAngle / 2.0f);
+           deltaQuat[3] = cosf(deltaAngle / 2.0f);
+
+           printf("x: %f, y: %f, z: %f, angle: %f\n",
+                  rotationAxisLocalSpace.x,
+                  rotationAxisLocalSpace.y,
+                  rotationAxisLocalSpace.z,
+                  deltaAngle);
          }
       }
    }

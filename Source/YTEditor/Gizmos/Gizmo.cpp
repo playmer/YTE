@@ -66,8 +66,6 @@ namespace YTEditor
         mode = ImGuizmo::MODE::LOCAL;
       }
 
-      auto originalRotation = mCurrentComposition->GetWorldRotation();
-
       glm::quat deltaRotation;
 
       mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
@@ -109,7 +107,17 @@ namespace YTEditor
         }
         case Operation::Rotate:
         { 
-          mCurrentComposition->SetWorldRotation(deltaRotation * originalRotation);
+          if (Mode::Local == mMode)
+          {
+            auto originalRotation = mCurrentComposition->GetRotation();
+            mCurrentComposition->SetRotation(originalRotation * deltaRotation);
+          }
+          else
+          {
+            auto originalRotation = mCurrentComposition->GetWorldRotation();
+            mCurrentComposition->SetWorldRotation(deltaRotation * originalRotation);
+          }
+
           break;
         }
       }
