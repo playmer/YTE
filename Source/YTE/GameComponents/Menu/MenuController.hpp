@@ -55,6 +55,12 @@ namespace YTE
     // PROPERTIES /////////////////////////////////////////
     bool GetDisplayed() { return mIsDisplayed; }
     void SetDisplayed(bool aDisplay) { mIsDisplayed = aDisplay; }
+
+    bool GetCanClose() { return mCanClose; }
+    void SetCanClose(bool aCanClose) { mCanClose = aCanClose; }
+
+    int GetNumElements() { return mNumElements; }
+    void SetNumElements(int aNumElements) { mNumElements = aNumElements; }
     ///////////////////////////////////////////////////////
     void OnChildrenInitialized(LogicUpdate *aEvent);
 
@@ -64,9 +70,12 @@ namespace YTE
     void OnMenuConfirm(MenuConfirm *aEvent);
     void OnMenuElementChange(MenuElementChange *aEvent);
 
+    InputInterpreter* GetContextSwitcher() const { return mContextSwitcher; }
+
   private:
     WWiseEmitter* mSoundEmitter;
     Composition* mParentMenu = nullptr;
+    InputInterpreter* mContextSwitcher = nullptr;
 
     Sprite* mMySprite;
 
@@ -76,11 +85,13 @@ namespace YTE
 
     u64 mSoundPause;
     u64 mSoundUnpause;
+    u64 mSoundMenuBack;
     u64 mSoundElementNext;
     u64 mSoundElementPrev;
     u64 mSoundElementSelect;
 
     bool mIsDisplayed;
+    bool mCanClose;
 
     bool mConstructing;
 

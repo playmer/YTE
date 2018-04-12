@@ -68,7 +68,12 @@ namespace YTE
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Component(aOwner, aSpace), mGamepad(nullptr), mIsRightTriggerDown(false), mIsLeftTriggerDown(false), mConstructing(true)
+    : Component(aOwner, aSpace)
+    , mGamepad(nullptr)
+    , mDoneOnce(false)
+    , mIsRightTriggerDown(false)
+    , mIsLeftTriggerDown(false)
+    , mConstructing(true)
   {
     DeserializeByType(aProperties, this, GetStaticType());
     mConstructing = false;
@@ -78,7 +83,7 @@ namespace YTE
   {
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
     mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
-    mContext = InputContext::Sailing;
+    mContext = InputContext::Menu;
 
     mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
     mHudSpace = mSpace->AddChildSpace("MSR_HUD");
@@ -109,6 +114,21 @@ namespace YTE
       Event Callbacks
   */
   /******************************************************************************/
+  void InputInterpreter::OnPostStart(LogicUpdate*)
+  {
+    mDoneOnce = true;
+
+    DirectCameraEvent setupMainMenuCam;
+
+    mSpace->FindFirstCompositionByName("MainMenuCamAnchor")->SendEvent(Events::DirectCameraEvent, &setupMainMenuCam);
+
+    MenuElementChange hoverFirstButton(MenuElementChange::Direction::Init);
+
+    mMenuSpace->SendEvent(Events::MenuElementChange, &hoverFirstButton);
+
+    mSpace->YTEDeregister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
+  }
+
   void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -138,6 +158,11 @@ namespace YTE
 
         mIsLeftTriggerDown = true;
       }
+    }
+    
+    if (!mDoneOnce)
+    {
+      mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
     }
   }
 
@@ -272,6 +297,7 @@ namespace YTE
 
             MenuStart menuStart;
             menuStart.PlaySound = true;
+            menuStart.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
 
             mContext = InputContext::Menu;
@@ -298,10 +324,9 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
-            mContext = InputContext::Sailing;
+            //mContext = InputContext::Sailing;
             break;
           }
 
@@ -316,7 +341,6 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;
@@ -430,6 +454,7 @@ namespace YTE
           {
             MenuStart menuStart;
             menuStart.PlaySound = true;
+            menuStart.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuStart, &menuStart);
             mSpace->SendEvent(Events::MenuStart, &menuStart);
 
@@ -476,7 +501,6 @@ namespace YTE
           {
             MenuExit menuExit(true);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             mContext = InputContext::Sailing;
@@ -495,7 +519,6 @@ namespace YTE
           {
             MenuExit menuExit(false);
             menuExit.PlaySound = true;
-            menuExit.ContextSwitcher = this;
             mMenuSpace->SendEvent(Events::MenuExit, &menuExit);
 
             break;

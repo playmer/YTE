@@ -126,6 +126,7 @@ namespace YTE
     Composition* ParentMenu = nullptr;
     bool PlaySound = false;
     bool ResetCursor = false;
+    InputInterpreter* ContextSwitcher = nullptr;
   };
 
   class MenuConfirm : public Event
@@ -147,13 +148,12 @@ namespace YTE
     bool ShouldExitAll;
     bool PlaySound = false;
     bool Handled = false;
-    InputInterpreter* ContextSwitcher;
   };
 
   class MenuElementChange : public Event
   {
   public:
-    enum class Direction {Previous, Next, COUNT};
+    enum class Direction {Init, Previous, Next, COUNT};
 
     YTEDeclareType(MenuElementChange);
     MenuElementChange(Direction aChangeDirection) { ChangeDirection = aChangeDirection; }
@@ -201,6 +201,7 @@ namespace YTE
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
+    void OnPostStart(LogicUpdate*);
     void OnLogicUpdate(LogicUpdate *aEvent);
 
     void OnStickEvent(XboxStickEvent *aEvent);
@@ -227,6 +228,7 @@ namespace YTE
 
     InputContext mContext;
 
+    bool mDoneOnce;
     bool mIsRightTriggerDown;
     bool mIsLeftTriggerDown;
 

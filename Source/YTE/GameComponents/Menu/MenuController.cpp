@@ -31,13 +31,29 @@ namespace YTE
     YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&GetCanClose, &SetCanClose, "CanClose")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
+    YTEBindProperty(&GetNumElements, &SetNumElements, "NumMenuElements")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
   }
 
-  MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
+  MenuController::MenuController(Composition* aOwner, Space* aSpace, RSValue* aProperties) 
+    : Component(aOwner, aSpace)
+    , mSoundEmitter(nullptr)
+    , mParentMenu(nullptr)
+    , mContextSwitcher(nullptr)
+    , mMySprite(nullptr)
+    , mCurrMenuElement(0)
+    , mNumElements(0)
+    , mMenuElements(nullptr)
+    , mIsDisplayed(false)
+    , mCanClose(true)
+    , mConstructing(true)
   {
-    mCurrMenuElement = 0;
-    mIsDisplayed = false;
-
     DeserializeByType(aProperties, this, GetStaticType());
     mConstructing = false;
   }
@@ -46,7 +62,7 @@ namespace YTE
   {
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mMenuElements = mOwner->GetCompositions();
-    mNumElements = static_cast<int>(mMenuElements->size());
+    //mNumElements = static_cast<int>(mMenuElements->size());
 
     mMySprite = mOwner->GetComponent<Sprite>();
 
@@ -57,6 +73,7 @@ namespace YTE
     {
       mSoundPause = soundSystem->GetSoundIDFromString("UI_Menu_Pause");
       mSoundUnpause = soundSystem->GetSoundIDFromString("UI_Menu_Unpause");
+      mSoundMenuBack = soundSystem->GetSoundIDFromString("UI_Menu_Back");
       mSoundElementNext = soundSystem->GetSoundIDFromString("UI_Menu_Up");
       mSoundElementPrev = soundSystem->GetSoundIDFromString("UI_Menu_Down");
       mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
@@ -67,7 +84,11 @@ namespace YTE
     mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
     mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
 
-    mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    if (mCanClose)
+    {  
+      mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+    }
+
     mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
     mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
   }
@@ -89,6 +110,11 @@ namespace YTE
     if (aEvent->ResetCursor)
     {
       mCurrMenuElement = 0;
+    }
+
+    if (aEvent->ContextSwitcher)
+    {
+      mContextSwitcher = aEvent->ContextSwitcher;
     }
 
     mIsDisplayed = true;
@@ -137,13 +163,9 @@ namespace YTE
   {
     if (mIsDisplayed && !aEvent->Handled)
     {
+      aEvent->Handled = true;
       mIsDisplayed = false;
       UpdateVisibility();
-
-      if (aEvent->PlaySound)
-      {
-        mSoundEmitter->PlayEvent(mSoundUnpause);
-      }
 
       if (mMenuElements->size() != 0)
       {
@@ -155,26 +177,24 @@ namespace YTE
       }
 
         // Pop up to the owning menu
-      if (!aEvent->ShouldExitAll)
+      if (!aEvent->ShouldExitAll && mParentMenu)
       {
-        aEvent->Handled = true;
-
-          // Opens the parent menu
-        if (mParentMenu)
+        if (aEvent->PlaySound)
         {
-          MenuStart menuStart;
-          mParentMenu->SendEvent(Events::MenuStart, &menuStart);
+          mSoundEmitter->PlayEvent(mSoundMenuBack);
         }
 
-          // Return context to the game if there aren't any parent menus to open
-        else
-        {
-          aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
-        }
+        MenuStart menuStart;
+        mParentMenu->SendEvent(Events::MenuStart, &menuStart);
       }
       else
       {
-        aEvent->ContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
+        if (aEvent->PlaySound)
+        {
+          mSoundEmitter->PlayEvent(mSoundUnpause);
+        }
+
+        mContextSwitcher->SetInputContext(InputInterpreter::InputContext::Sailing);
       }
     }
   }
@@ -209,21 +229,24 @@ namespace YTE
   {
     if (mIsDisplayed && mMenuElements->size() != 0)
     {
-      MenuElementDeHover deHoverEvent;
-
       auto currElement = mMenuElements->begin() + mCurrMenuElement;
 
-      currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+      if (aEvent->ChangeDirection != MenuElementChange::Direction::Init)
+      {
+        MenuElementDeHover deHoverEvent;
 
-      if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
-      {
-        mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
-        mSoundEmitter->PlayEvent(mSoundElementPrev);
-      }
-      else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
-      {
-        mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
-        mSoundEmitter->PlayEvent(mSoundElementNext);
+        currElement->second->SendEvent(Events::MenuElementDeHover, &deHoverEvent);
+
+        if (aEvent->ChangeDirection == MenuElementChange::Direction::Previous)
+        {
+          mCurrMenuElement = (mCurrMenuElement <= 0) ? (mNumElements - 1) : (mCurrMenuElement - 1);
+          mSoundEmitter->PlayEvent(mSoundElementPrev);
+        }
+        else if (aEvent->ChangeDirection == MenuElementChange::Direction::Next)
+        {
+          mCurrMenuElement = (mCurrMenuElement + 1) % mNumElements;
+          mSoundEmitter->PlayEvent(mSoundElementNext);
+        }
       }
 
       MenuElementHover hoverEvent;
