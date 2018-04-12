@@ -110,12 +110,14 @@ namespace YTEditor
           if (Mode::Local == mMode)
           {
             auto originalRotation = mCurrentComposition->GetRotation();
-            mCurrentComposition->SetRotation(originalRotation * deltaRotation);
+            auto result = originalRotation * deltaRotation;
+            mCurrentComposition->SetRotation(result);
           }
           else
           {
-            auto originalRotation = mCurrentComposition->GetWorldRotation();
-            mCurrentComposition->SetWorldRotation(deltaRotation * originalRotation);
+            auto originalRotation = mCurrentComposition->GetRotation();
+            auto result = deltaRotation * originalRotation;
+            mCurrentComposition->SetRotation(result);
           }
 
           break;
