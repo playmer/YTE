@@ -44,6 +44,8 @@ set(LLVM_USE_CRT_MINSIZEREL "MD")
 set(LLVM_USE_CRT_RELEASE "MD")
 set(LLVM_USE_CRT_RELWITHDEBINFO "MD")
 
+set(SKIP_GLSLANG_INSTALL ON)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
 add_subdirectory(VkHLF) 
