@@ -18,6 +18,11 @@ namespace YTE
   { 
     YTERegisterType(JohnMovement); 
 
+    // dock index
+    YTEBindProperty(&JohnMovement::GetDockIndex, &JohnMovement::SetDockIndex, "Dock Index")
+      .AddAttribute<Serializable>()
+      .AddAttribute<EditorProperty>();
+
     // character positions
     YTEBindProperty(&JohnMovement::GetDockOnePos, &JohnMovement::SetDockOnePos, "Dock One Position")
       .AddAttribute<Serializable>()
@@ -73,23 +78,23 @@ namespace YTE
 
   JohnMovement::JohnMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mDockOnePos(glm::vec3())
-    , mDockTwoPos(glm::vec3())
-    , mDockThreePos(glm::vec3())
-    , mCharRotationOne(glm::vec3())
-    , mCharRotationTwo(glm::vec3())
-    , mCharRotationThree(glm::vec3())
-    , mBoatOffsetOne(glm::vec3())
-    , mBoatOffsetTwo(glm::vec3())
-    , mBoatOffsetThree(glm::vec3())
-    , mBoatRotationOne(glm::vec3())
-    , mBoatRotationTwo(glm::vec3())
-    , mBoatRotationThree(glm::vec3())
+    , mDockOnePos(glm::vec3(0))
+    , mDockTwoPos(glm::vec3(0))
+    , mDockThreePos(glm::vec3(0))
+    , mCharRotationOne(glm::vec3(0))
+    , mCharRotationTwo(glm::vec3(0))
+    , mCharRotationThree(glm::vec3(0))
+    , mBoatOffsetOne(glm::vec3(0))
+    , mBoatOffsetTwo(glm::vec3(0))
+    , mBoatOffsetThree(glm::vec3(0))
+    , mBoatRotationOne(glm::vec3(0))
+    , mBoatRotationTwo(glm::vec3(0))
+    , mBoatRotationThree(glm::vec3(0))
+    , mDockIndex(0)
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
     mStartPos = glm::vec3(161, 0, 55);
-    mDockIndex = 0;
   }
 
   void JohnMovement::Initialize()
@@ -126,10 +131,10 @@ namespace YTE
       Transform *charTrans = mOwner->GetComponent<Transform>();
 
       // set position of character
-      charTrans->SetTranslation(mDocks[mDockIndex]);
+      charTrans->SetWorldTranslation(mDocks[mDockIndex]);
 
       // set rotation of character
-      charTrans->SetRotation(mCharRotations[mDockIndex]);
+      charTrans->SetWorldRotation(mCharRotations[mDockIndex]);
 
       Composition *boat = mOwner->FindFirstCompositionByName("boat");
       Transform *boatTrans = boat->GetComponent<Transform>();
@@ -146,6 +151,16 @@ namespace YTE
         mDockIndex = 0;
       }
     }
+  }
+
+  int JohnMovement::GetDockIndex() const
+  {
+    return mDockIndex;
+  }
+
+  void JohnMovement::SetDockIndex(int index)
+  {
+    mDockIndex = index;
   }
 
   // character positions

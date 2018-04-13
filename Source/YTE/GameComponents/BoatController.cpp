@@ -350,7 +350,7 @@ namespace YTE
     
     if (abs(angle) > 0.00001f)
     {
-      mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
+      //mTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), angle);
     }
 
     if (mStartedTurning)

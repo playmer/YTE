@@ -30,6 +30,9 @@ namespace YTE
 
     void OnQuestStart(QuestStart *aEvent);
 
+    int GetDockIndex() const;
+    void SetDockIndex(int index);
+
     // dock positions
     glm::vec3 GetDockOnePos() const;
     void SetDockOnePos(glm::vec3 aPos);
