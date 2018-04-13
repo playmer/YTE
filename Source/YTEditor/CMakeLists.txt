@@ -126,6 +126,9 @@ YTE_Source_Group(YTEditor_Root YTEditor)
 
 YTE_Target_Set_LTCG(YTEditor)
 
+# Have to do /LTCG here because it appears as though setting this property resets it.
+set_target_properties(YTEditor PROPERTIES LINK_FLAGS_PUBLISH "/SUBSYSTEM:WINDOWS /LTCG")
+
 if ("${INSTALL_YTEDITOR}" STREQUAL "1")
   message(STATUS "YTEditor Install Target Enabled")
   Install(TARGETS YTEditor
