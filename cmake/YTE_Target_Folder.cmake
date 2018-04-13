@@ -46,6 +46,63 @@ macro(YTE_Cleanup_Orphan_Targets aFolder)
   endforeach()
 endmacro(YTE_Cleanup_Orphan_Targets)
 
+
+function(YTE_Target_Set_LTCG_Recursive aTarget)
+  get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+  foreach(linkLibrary ${targetLinkLibraries})
+    if (TARGET ${linkLibrary})
+      get_target_property(targetType ${linkLibrary} TYPE)
+
+      if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+        get_target_property(importedTarget ${linkLibrary} IMPORTED)
+
+        if (importedTarget)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS $<$<CONFIG:Release>:/GL>)
+          #set_target_properties(${linkLibrary} PROPERTIES LINK_FLAGS $<$<CONFIG:Release>:/LTCG>)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS $<$<CONFIG:Publish>:/GL>)
+          #set_target_properties(${linkLibrary} PROPERTIES LINK_FLAGS $<$<CONFIG:Publish>:/LTCG>)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS_PUBLISH /GL)
+          target_compile_options(${linkLibrary} PRIVATE $<$<CONFIG:Publish>:/GL>)
+          set_target_properties(${linkLibrary} PROPERTIES STATIC_LIBRARY_FLAGS_PUBLISH /LTCG)
+        endif()
+      endif ()
+
+      YTE_Target_Set_LTCG(${linkLibrary})
+    endif()
+  endforeach()
+endfunction(YTE_Target_Set_LTCG_Recursive)
+
+function(YTE_Target_Set_LTCG aTarget)
+  #set_target_properties(${aTarget} PROPERTIES COMPILE_FLAGS $<$<CONFIG:Release>:/GL>)
+  #set_target_properties(${aTarget} PROPERTIES LINK_FLAGS $<$<CONFIG:Release>:/LTCG>)
+  #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS_PUBLISH /GL)
+  target_compile_options(${aTarget} PRIVATE $<$<CONFIG:Publish>:/GL>)
+  set_target_properties(${aTarget} PROPERTIES LINK_FLAGS_PUBLISH /LTCG)
+
+  get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+  foreach(linkLibrary ${targetLinkLibraries})
+    if (TARGET ${linkLibrary})
+      get_target_property(targetType ${linkLibrary} TYPE)
+
+      if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+        get_target_property(importedTarget ${linkLibrary} IMPORTED)
+
+        if (NOT importedTarget)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS $<$<CONFIG:Release>:/GL>)
+          #set_target_properties(${linkLibrary} PROPERTIES LINK_FLAGS $<$<CONFIG:Release>:/LTCG>)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS $<$<CONFIG:Publish>:/GL>)
+          #set_target_properties(${linkLibrary} PROPERTIES LINK_FLAGS $<$<CONFIG:Publish>:/LTCG>)
+          #set_target_properties(${linkLibrary} PROPERTIES COMPILE_FLAGS_PUBLISH /GL)
+          target_compile_options(${linkLibrary} PRIVATE $<$<CONFIG:Publish>:/GL>)
+          set_target_properties(${linkLibrary} PROPERTIES STATIC_LIBRARY_FLAGS_PUBLISH /LTCG)
+        endif()
+      endif ()
+
+      YTE_Target_Set_LTCG_Recursive(${linkLibrary})
+    endif()
+  endforeach()
+endfunction(YTE_Target_Set_LTCG)
+
 function(YTE_Target_Set_Outputs aTarget aLibraryDirectory aBinaryDirectory)
   set_target_properties(${aTarget}
                         PROPERTIES

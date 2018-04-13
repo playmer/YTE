@@ -34,6 +34,7 @@ include(${CMake_Include}/AddFile.cmake)
 include(${CMake_Include}/FindDependency.cmake)
 include(${CMake_Include}/YTE_Source_Group.cmake)
 include(${CMake_Include}/YTE_Target_Precompiled_Headers.cmake)
+include(${CMake_Include}/YTE_Target_Folder.cmake)
 
 
 ################################################################################

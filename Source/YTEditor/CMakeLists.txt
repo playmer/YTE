@@ -124,6 +124,8 @@ target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
 
+YTE_Target_Set_LTCG(YTEditor)
+
 if ("${INSTALL_YTEDITOR}" STREQUAL "1")
   message(STATUS "YTEditor Install Target Enabled")
   Install(TARGETS YTEditor
