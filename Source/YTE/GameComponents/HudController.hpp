@@ -33,6 +33,9 @@ namespace YTE
     void OnElementToggled(HudElementToggled *aElement);
     void OnBoatRotation(BoatRotation *aRotation);
 
+    void OnMenuStart(MenuStart *aEvent);
+    void OnMenuExit(MenuExit *aEvent);
+
   private:
 
     Composition *mMap;
@@ -51,6 +54,19 @@ namespace YTE
     Sprite *mCompassNeedleSprite;
     Transform *mCompassNeedleTransform;
     WWiseEmitter *mSoundEmitter;
+
+    // dpad and icons
+    Composition *mDPad;
+    Sprite *mDPadSprite;
+
+    Composition *mMapIcon;
+    Sprite *mMapIconSprite;
+
+    Composition *mPostcardIcon;
+    Sprite *mPostcardIconSprite;
+
+    Composition *mCompassIcon;
+    Sprite *mCompassIconSprite;
 
     u64 mCompassOpen;
     u64 mCompassClose;

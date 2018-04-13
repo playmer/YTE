@@ -7,6 +7,7 @@
 */
 /******************************************************************************/
 
+#include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/HudController.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -82,6 +83,42 @@ namespace YTE
       mCompassNeedleTransform = mCompassNeedle->GetComponent<Transform>();
     }
 
+
+    // dpad and icons
+
+    if (mDPad = mSpace->FindFirstCompositionByName("DPad"))
+    {
+      if (mDPadSprite = mDPad->GetComponent<Sprite>())
+      {
+        mDPadSprite->SetVisibility(false);
+      }
+    }
+
+    if (mMapIcon = mSpace->FindFirstCompositionByName("Icon_Map"))
+    {
+      if (mMapIconSprite = mMapIcon->GetComponent<Sprite>())
+      {
+        mMapIconSprite->SetVisibility(false);
+      }
+    }
+
+    if (mPostcardIcon = mSpace->FindFirstCompositionByName("Icon_Postcard"))
+    {
+      if (mPostcardIconSprite = mPostcardIcon->GetComponent<Sprite>())
+      {
+        mPostcardIconSprite->SetVisibility(false);
+      }
+    }
+
+    if (mCompassIcon = mSpace->FindFirstCompositionByName("Icon_Compass"))
+    {
+      if (mCompassIconSprite = mCompassIcon->GetComponent<Sprite>())
+      {
+        mCompassIconSprite->SetVisibility(false);
+      }
+    }
+
+
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     if (soundSystem)
@@ -95,6 +132,9 @@ namespace YTE
 
     // register for user toggling hud elements
     mSpace->YTERegister(Events::HudElementToggled, this, &HudController::OnElementToggled);
+
+    mSpace->YTERegister(Events::MenuStart, this, &HudController::OnMenuStart);
+    mSpace->YTERegister(Events::MenuExit, this, &HudController::OnMenuExit);
 
     mSpace->GetOwner()->YTERegister(Events::BoatRotation, this, &HudController::OnBoatRotation);
   }
@@ -181,6 +221,57 @@ namespace YTE
     if (mCompassNeedleTransform)
     {
       mCompassNeedleTransform->SetWorldRotation(needleRot);
+    }
+  }
+  void HudController::OnMenuStart(MenuStart *aEvent)
+  {
+    mMapSprite->SetVisibility(false);
+    mPostcardSprite->SetVisibility(false);
+    mCompassSprite->SetVisibility(false);
+    mCompassCircleSprite->SetVisibility(false);
+    mCompassNeedleSprite->SetVisibility(false);
+    mMapSprite->SetVisibility(false);
+
+    if (mDPadSprite)
+    {
+      mDPadSprite->SetVisibility(false);
+    }
+
+    if (mMapIconSprite)
+    {
+      mMapIconSprite->SetVisibility(false);
+    }
+
+    if (mPostcardIconSprite)
+    {
+      mPostcardIconSprite->SetVisibility(false);
+    }
+
+    if (mCompassIconSprite)
+    {
+      mCompassIconSprite->SetVisibility(false);
+    }
+  }
+  void HudController::OnMenuExit(MenuExit *aEvent)
+  {
+    if (mDPadSprite)
+    {
+      mDPadSprite->SetVisibility(true);
+    }
+
+    if (mMapIconSprite)
+    {
+      mMapIconSprite->SetVisibility(true);
+    }
+
+    if (mPostcardIconSprite)
+    {
+      mPostcardIconSprite->SetVisibility(true);
+    }
+
+    if (mCompassIconSprite)
+    {
+      mCompassIconSprite->SetVisibility(true);
     }
   }
 }

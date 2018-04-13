@@ -42,6 +42,9 @@ namespace YTE
 
     StartGame startGame;
     Space *parentSpace = static_cast<Space*>(mSpace->GetOwner());
+    Composition *hudSpace = parentSpace->FindFirstCompositionByName("MSR_HUD");
+
+    hudSpace->SendEvent(Events::MenuExit, &leaveMainMenu);
 
     parentSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
     parentSpace->SendEvent(Events::StartGame, &startGame);
