@@ -14,6 +14,7 @@
 #include "YTE/Core/Component.hpp"
 
 #include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -25,6 +26,8 @@ namespace YTE
     MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void PhysicsInitialize() override;
+
+    void ScaleUpdate(TransformChanged *aEvent);
 
   private:
     UniquePointer<btBvhTriangleMeshShape> mTriangleMeshShape;

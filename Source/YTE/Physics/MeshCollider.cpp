@@ -92,4 +92,13 @@ namespace YTE
     mCollider->setWorldTransform(bulletTransform);
     mCollider->setUserPointer(mOwner);
   }
+
+
+  void MeshCollider::ScaleUpdate(TransformChanged *aEvent)
+  {
+    if (mTriangleMeshShape)
+    {
+      mTriangleMeshShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+    }
+  }
 }

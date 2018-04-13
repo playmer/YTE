@@ -39,6 +39,8 @@ namespace YTE
     void setDebugMode(int debugMode) override;
     int getDebugMode() const  override { return mDebugMode; }
     
+    void clearLines() override;
+
   private:
     TriangleDrawer mTriangleDrawer;
     LineDrawer mLineDrawer;

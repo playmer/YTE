@@ -57,12 +57,15 @@ namespace YTE
   YTEDefineType(Collider)
   {
     YTERegisterType(Collider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   Collider::Collider(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-
   }
 
   glm::vec3 Collider::GetTranslation() const

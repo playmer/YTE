@@ -59,6 +59,7 @@ namespace YTE
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mDebugDraw(false)
   {
     YTEUnusedArgument(aProperties);
 
@@ -108,30 +109,17 @@ namespace YTE
   {
     mDebugDraw = !mDebugDraw;
 
-      // Register for events.
-    if (mDebugDraw == false)
-    {
-      //TODO (Josh): Reimplement the debug drawing functionality.
-      //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->YTERegister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->YTERegister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
-      //system->YTERegister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
+    std::cout << std::boolalpha << mDebugDraw << "\n";
 
-      auto debugMode = mDebugDrawer->getDebugMode();
-      debugMode |= 0 << DebugDrawer::DBG_NoDebug;
-      mDebugDrawer->setDebugMode(debugMode);
+      // Register for events.
+    if (mDebugDraw)
+    {
+      mOwner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
     }
     else
     {
-      //TODO (Josh): Reimplement the debug drawing functionality.
-      //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->YTEDeregister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->YTEDeregister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
-      //system->YTEDeregister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
-
-      auto debugMode = mDebugDrawer->getDebugMode();
-      debugMode &= ~(1 << DebugDrawer::DBG_NoDebug);
-      mDebugDrawer->setDebugMode(debugMode);
+      mOwner->GetEngine()->YTEDeregister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mDebugDrawer->clearLines();
     }
   }
 
@@ -145,19 +133,19 @@ namespace YTE
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mDebugDrawer->Begin();
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
+    mDebugDrawer->Begin();
     mDynamicsWorld->debugDrawWorld();
+    mDebugDrawer->End();
   }
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mDebugDrawer->End();
   }
 
   void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
