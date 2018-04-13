@@ -120,7 +120,10 @@ namespace YTE
 
     DirectCameraEvent setupMainMenuCam;
 
-    mSpace->FindFirstCompositionByName("MainMenuCamAnchor")->SendEvent(Events::DirectCameraEvent, &setupMainMenuCam);
+    if (auto camAnchor = mSpace->FindFirstCompositionByName("MainMenuCamAnchor"))
+    {
+      camAnchor->SendEvent(Events::DirectCameraEvent, &setupMainMenuCam);
+    }
 
     MenuElementChange hoverFirstButton(MenuElementChange::Direction::Init);
 
