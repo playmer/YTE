@@ -74,7 +74,16 @@ namespace YTE
     // Render a cube with face color corresponding to face normal. Usefull for debug/tests
     void DrawCube(const float *view, const float *projection, float *matrix);
 
-    void Manipulate(const float *view, const float *projection, ImGuizmo::OPERATION operation, ImGuizmo::MODE mode, float *matrix, float *deltaMatrix = 0, float *snap = 0, float *localBounds = NULL, float *boundsSnap = NULL);
+    void Manipulate(const float *view,
+                    const float *projection,
+                    ImGuizmo::OPERATION operation,
+                    ImGuizmo::MODE mode,
+                    float *matrix,
+                    float *deltaMatrix = nullptr,
+                    float *deltaRotation = nullptr,
+                    float *snap = nullptr,
+                    float *localBounds = nullptr,
+                    float *boundsSnap = nullptr);
 
     /////////////////////////////////////////////////////////////////////////
     // ImGui

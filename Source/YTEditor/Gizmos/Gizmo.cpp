@@ -66,6 +66,8 @@ namespace YTEditor
         mode = ImGuizmo::MODE::LOCAL;
       }
 
+      glm::quat deltaRotation;
+
       mLayer->SetNextWindowPos(ImVec2(.0f, .0f));
       mLayer->SetNextWindowSize(ImVec2(io.DisplaySize.x, io.DisplaySize.y));
 
@@ -76,7 +78,8 @@ namespace YTEditor
                          operation,     // OPERATION operation, 
                          mode,          // MODE mode, 
                          matrix,        // float *matrix, 
-                         nullptr,       // float *deltaMatrix = 0, 
+                         nullptr,       // float *deltaMatrix = 0,
+                         glm::value_ptr(deltaRotation),
                          nullptr,       // float *snap = 0, 
                          nullptr,       // float *localBounds = NULL, 
                          nullptr);      // float *boundsSnap = NULL
@@ -104,7 +107,19 @@ namespace YTEditor
         }
         case Operation::Rotate:
         { 
-          mCurrentComposition->SetWorldRotation(rotation);
+          if (Mode::Local == mMode)
+          {
+            auto originalRotation = mCurrentComposition->GetRotation();
+            auto result = originalRotation * deltaRotation;
+            mCurrentComposition->SetRotation(result);
+          }
+          else
+          {
+            auto originalRotation = mCurrentComposition->GetRotation();
+            auto result = deltaRotation * originalRotation;
+            mCurrentComposition->SetRotation(result);
+          }
+
           break;
         }
       }

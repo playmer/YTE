@@ -53,7 +53,7 @@
   }
 
   #define YTEProfileName(aName)
-  #define YTEProfileFunction(aColor)
+  #define YTEProfileFunction()
   #define YTEProfileBlock(aName)
 #endif
 
