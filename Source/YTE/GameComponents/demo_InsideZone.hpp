@@ -8,6 +8,9 @@
 #include "YTE/Physics/Collider.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
+#include "YTE/GameComponents/Zone.hpp"
+
+#include <unordered_set>
 
 namespace YTE
 {
@@ -33,6 +36,7 @@ namespace YTE
     u64 mIslandLeave;
     u64 mSailingStart;
     u64 mSailingStop;
+    std::unordered_set<Zone*> mCollidingIslands;
 
     std::string mCurrentZone;
 

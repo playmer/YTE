@@ -26,7 +26,7 @@ namespace YTE
 
   void Zone::Initialize()
   {
-    mZoneCollider = mOwner->GetComponent<BoxCollider>();
+    mZoneCollider = mOwner->GetComponent<CylinderCollider>();
     mZoneBody = mOwner->GetComponent<GhostBody>();
   }
 

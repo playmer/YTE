@@ -5,7 +5,7 @@
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Physics/GhostBody.hpp"
-#include "YTE/Physics/BoxCollider.hpp"
+#include "YTE/Physics/CylinderCollider.hpp"
 
 namespace YTE
 {
@@ -23,7 +23,7 @@ namespace YTE
     //void OnCollisionStart(CollisionStarted *aEvent);
     //void OnCollisionEnd(CollisionEnded *aEvent);
   private:
-    BoxCollider *mZoneCollider;
+    CylinderCollider *mZoneCollider;
     GhostBody *mZoneBody;
     std::string mZoneName;
     std::string mZoneType;

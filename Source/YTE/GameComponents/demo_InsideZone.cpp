@@ -91,8 +91,17 @@ namespace YTE
 
     if (zone)
     {
-      mSoundEmitter->PlayEvent(mIslandLeave);
-      // play ocean sound
+      auto it = mCollidingIslands.find(zone);
+      if (it != mCollidingIslands.end())
+      {
+        mCollidingIslands.erase(it);
+      }
+
+      if (mCollidingIslands.empty())
+      {
+        mSoundEmitter->PlayEvent(mIslandLeave);
+        mCurrentZone = "";
+      }
     }
   }
 
@@ -112,6 +121,7 @@ namespace YTE
           mCurrentZone = zoneName;
           mSoundEmitter->PlayEvent(mIslandEnter);
         }
+        mCollidingIslands.insert(zone);
       }
 
     }
