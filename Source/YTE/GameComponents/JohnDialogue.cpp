@@ -61,16 +61,16 @@ namespace YTE
       // H
       mDialogueConvos.emplace_back(std::vector<u64> 
       {
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"),
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_H_5")
+        mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+        mSoundSystem->GetSoundIDFromString("CJ_I_H_2"),
+        mSoundSystem->GetSoundIDFromString("CJ_I_H_3"),
+        mSoundSystem->GetSoundIDFromString("CJ_I_H_4"),
+        mSoundSystem->GetSoundIDFromString("CJ_I_H_5")
       });
       // G                                                             
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_NQ_G_1")
+        mSoundSystem->GetSoundIDFromString("CJ_I_G_1")
       });
 
       // FI ////////////////////////////
@@ -108,77 +108,77 @@ namespace YTE
       // H
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // NP           
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // C                                                              
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // G
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
 
       // GC //////////////////////////////////
       // H
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // NP           
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // C                                                              
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
       // G
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
 
       // NQ //////////////////////////////////
       // H
       mDialogueConvos.emplace_back(std::vector<u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
+         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
       });
 
       mConvosIter = mDialogueConvos.begin();
