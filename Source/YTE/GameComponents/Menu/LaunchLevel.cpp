@@ -37,7 +37,10 @@ namespace YTE
 
   void LaunchLevel::OnElementTrigger(MenuElementTrigger *)
   {
-    String levelToLoad{ mLevelToLaunch.c_str() };
-    static_cast<Space*>(mSpace->GetOwner())->LoadLevel(levelToLoad);
+    if (!mSpace->GetEngine()->IsEditor())
+    {
+      String levelToLoad{ mLevelToLaunch.c_str() };
+      static_cast<Space*>(mSpace->GetOwner())->LoadLevel(levelToLoad);
+    }
   }
 }

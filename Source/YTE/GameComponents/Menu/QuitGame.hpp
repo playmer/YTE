@@ -1,7 +1,7 @@
 /******************************************************************************/
 /*!
 * \author Isaac Dayton
-* \date   2018/04/11
+* \date   2018/04/13
 *
 * \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
 */
@@ -13,35 +13,23 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/Menu/MenuController.hpp"
 
 namespace YTE
 {
-  YTEDeclareEvent(StartGame);
-
-  class StartGame : public Event
+  class QuitGame : public Component
   {
   public:
-    YTEDeclareType(StartGame);
-  };
-
-  class LaunchGame : public Component
-  {
-  public:
-    YTEDeclareType(LaunchGame);
-    LaunchGame(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTEDeclareType(QuitGame);
+    QuitGame(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
 
     // PROPERTIES /////////////////////////////////////////
     ////////////////////////////////////////////////////////
 
-    void OnLogicUpdate(LogicUpdate*);
     void OnElementTrigger(MenuElementTrigger *);
 
   private:
-    float mFadeValue;
-    bool mFadeFinished;
   };
 }
