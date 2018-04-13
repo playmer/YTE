@@ -52,6 +52,8 @@ namespace YTE
     void DockBoat(BoatDockEvent *aEvent);
     void Update(LogicUpdate *aEvent);
 
+	void OnDebugPlaySound(DebugPlaySound *aEvent);
+
     // PROPERTIES ///////////////////////////////////////////////////////////////////
     float GetMaxSailSpeed() { return mMaxSailSpeed; }
     void SetMaxSailSpeed(float& aMaxSpeed) { mMaxSailSpeed = aMaxSpeed; }

@@ -39,7 +39,7 @@ namespace YTE
             case Conversation::Name::Hello:
             {
               // LEVEL G
-              DialogueData(dataG0, "John: Nice to meet you though.", "John: Hopefully we bump into each other again");
+              DialogueData(dataG0, "John: Nice to meet you, though.", "John: I hope we bump into each other again!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG0, 0);
 
               // LEVEL F
@@ -55,7 +55,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0);
 
               // LEVEL C
-              DialogueData(dataC0, "John: Today I was serving Gazpacho...");
+              DialogueData(dataC0, "John: Today, I was serving Gazpacho...");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
 
               // LEVEL B
@@ -63,7 +63,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataB0, 0);
 
               // LEVEL A
-              DialogueData(dataA0, "John: Welcome to my pop up restaurant, Que Delicioso.");
+              DialogueData(dataA0, "John: Welcome to my pop up restaurant, Que Delicioso!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
 
               // LEVEL ROOT
@@ -88,7 +88,7 @@ namespace YTE
             case Conversation::Name::PostQuest:
             {
               // LEVEL A
-              DialogueData(dataA0, "John: Have a great day");
+              DialogueData(dataA0, "John: Have a great day!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
 
               // LEVEL ROOT
@@ -128,11 +128,11 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD2, 2);
 
               // LEVEL C
-              DialogueData(dataC0, "Oh no!", "Your sous chef is on the job!", "Sure thing");
+              DialogueData(dataC0, "Oh no!", "Your sous chef is on the job!", "Sure thing!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataC0, 0);
 
               // LEVEL B
-              DialogueData(dataB0, "John: ...but they haven't shown up yet");
+              DialogueData(dataB0, "John: ...but they haven't shown up yet.");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0);
 
               // LEVEL A
@@ -164,7 +164,7 @@ namespace YTE
             case Conversation::Name::NoProgress:
             {
               // LEVEL ROOT
-              DialogueData(dataR0, "John: What are you still doing here!", "John: I still need to cook the bowls and clean the food", "John: Please hurry!");
+              DialogueData(dataR0, "John: What are you still doing here!", "John: I still need to cook the bowls and clean the food!", "John: Please hurry!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
               /*
               R0
@@ -176,7 +176,7 @@ namespace YTE
             case Conversation::Name::Completed:
             {
               // LEVEL C
-              DialogueData(dataC0, "John : Just in time too.", "John : You really saved my tail feathers lamb");
+              DialogueData(dataC0, "John : Just in time, too.", "John : You really saved my tail feathers, lamb!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataC0, 0);
 
               // LEVEL B
@@ -184,7 +184,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataB0, 0);
 
               // LEVEL A
-              DialogueData(dataA0, "John : Oh thank goodness!");
+              DialogueData(dataA0, "John : Oh, thank goodness!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0);
 
               // LEVEL ROOT
@@ -203,7 +203,7 @@ namespace YTE
             case Conversation::Name::PostQuest:
             {
               // LEVEL ROOT
-              DialogueData(dataR0, "John: Thanks again", "John: Next time lunch is on the house!");
+              DialogueData(dataR0, "John: Thanks again.", "John: Next time, lunch is on the house!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
               /*
               R0
@@ -223,7 +223,7 @@ namespace YTE
             {
               //@@@(JAY): Test Text Nodes that have more than 3 lines
               // LEVEL I
-              DialogueData(dataI0, "John: In my dream there was a rock formation", "John: And it looked like a fruit!", "John: Go see if you can find this rock formation", "John: That'll jog my memory for the dish");
+              DialogueData(dataI0, "John: In my dream, there was a rock formation...", "John: ...and it looked like a fruit!", "John: Go see if you can find this rock formation.", "John: That'll jog my memory for the dish!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataI0, 0);
 
               // LEVEL H
@@ -231,7 +231,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataH0, 0);
 
               // LEVEL G
-              DialogueData(dataG0, "John: But I've forgotten the primary ingredient!");
+              DialogueData(dataG0, "John: ...but, I've forgotten the primary ingredient!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG0, 0);
 
               // LEVEL F
@@ -239,7 +239,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataF0, 0);
 
               // LEVEL E
-              DialogueData(dataE0, "John: I had a dream of a new dish");
+              DialogueData(dataE0, "John: I had a dream of a new dish...");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0);
 
               // LEVEL D
@@ -293,7 +293,7 @@ namespace YTE
             case Conversation::Name::Completed:
             {
               // LEVEL A
-              DialogueData(dataA0, "John: OF COURSE!", "John: It was so simple", "John: It's all coming back to me!", "John: Where's my knife?");
+              DialogueData(dataA0, "John: OF COURSE!", "John: It was so simple!", "John: It's all coming back to me!", "John: Where's my knife?");
               mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0);
 
               // @@@(JAY): Test convos that start with an input node
@@ -311,7 +311,7 @@ namespace YTE
             case Conversation::Name::PostQuest:
             {
               // LEVEL ROOT
-              DialogueData(dataR0, "John: Thank you for your help", "John: But I have tons of prep work to do now");
+              DialogueData(dataR0, "John: Thank you for your help.", "John: I have tons of prep work to do now!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0);
               /*
               R0

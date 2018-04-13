@@ -116,6 +116,8 @@ namespace YTE
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
 
+	mSpace->YTERegister(Events::DebugPlaySound, this, &BoatController::OnDebugPlaySound);
+
     mAnimator = mOwner->GetComponent<Animator>();
     
     if (Composition *sails = mOwner->FindFirstCompositionByName("Sails"))
@@ -412,6 +414,20 @@ namespace YTE
     boatRotEvent.BoatForward = mOrientation->GetForwardVector();
     mSpace->SendEvent(Events::BoatRotation, &boatRotEvent);
   }
+
+  void BoatController::OnDebugPlaySound(DebugPlaySound *aEvent)
+  {
+	if (aEvent->ShouldPlay)
+	{
+	  mSoundSystem->SetState("Current_Island", aEvent->SoundToPlay);
+	  mSoundEmitter->PlayEvent("Islands_Enter");
+	}
+	else
+	{
+	  mSoundEmitter->PlayEvent("Islands_Leave");
+	}
+  }
+
   float BoatController::GetCurrentSpeed() const
   {
     return mCurrSpeed;

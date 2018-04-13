@@ -40,6 +40,7 @@ namespace YTE
 
   // Debug Events
   YTEDefineEvent(DebugSwitch);
+  YTEDefineEvent(DebugPlaySound);
 
   // Hud Events
   YTEDefineEvent(HudElementToggled);
@@ -60,6 +61,7 @@ namespace YTE
   YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
   YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
   YTEDefineType(DebugSwitch) { YTERegisterType(DebugSwitch); }
+  YTEDefineType(DebugPlaySound) { YTERegisterType(DebugPlaySound); }
   YTEDefineType(HudElementToggled) { YTERegisterType(HudElementToggled); }
 
   YTEDefineType(InputInterpreter)
@@ -492,8 +494,41 @@ namespace YTE
 
             break;
           }
+
+		  case Keys::N7:
+		  {
+			DebugPlaySound playEvent(true, "Majestic");
+			mOwner->SendEvent(Events::DebugPlaySound, &playEvent);
+
+			break;
+		  }
+
+		  case Keys::N8:
+		  {
+			DebugPlaySound playEvent(true, "Ominous");
+			mOwner->SendEvent(Events::DebugPlaySound, &playEvent);
+
+			break;
+		  }
+
+		  case Keys::N9:
+		  {
+			DebugPlaySound playEvent(true, "Tropical");
+			mOwner->SendEvent(Events::DebugPlaySound, &playEvent);
+
+			break;
+		  }
+
+		  case Keys::N0:
+		  {
+			DebugPlaySound playEvent(false, "");
+			mOwner->SendEvent(Events::DebugPlaySound, &playEvent);
+
+			break;
+		  }
         }
         break;
+
       }
 
       case InputContext::Menu:

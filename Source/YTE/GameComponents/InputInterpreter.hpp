@@ -51,6 +51,7 @@ namespace YTE
   YTEDeclareEvent(DebugSwitch);
   YTEDeclareEvent(RequestNoticeBoardStart);
   YTEDeclareEvent(HudElementToggled);
+  YTEDeclareEvent(DebugPlaySound);
 
   class CameraRotateEvent : public Event
   {
@@ -168,6 +169,16 @@ namespace YTE
     DebugSwitch(bool aEnableDebug) { EnableDebug = aEnableDebug; }
 
     bool EnableDebug;
+  };
+
+  class DebugPlaySound : public Event
+  {
+  public:
+	  YTEDeclareType(DebugPlaySound);
+	  DebugPlaySound(bool aShouldPlay, const std::string& aSoundToPlay) { ShouldPlay = aShouldPlay; SoundToPlay = aSoundToPlay; }
+
+	  bool ShouldPlay;
+	  std::string SoundToPlay;
   };
 
   class RequestNoticeBoardStart : public Event
