@@ -44,11 +44,11 @@ namespace YTE
     static std::string WalkFull = "WalkFull_2017.fbx";
     static std::string Walk1 = "WalkPart1.fbx";
     static std::string Walk2 = "WalkPart2.fbx";
-    static std::string Sad = "Sad.fbx";
-    static std::string Idle = "Idle.fbx";
-    static std::string Happy = "Joy.fbx";
-    static std::string Angry = "Angry.fbx";
-    static std::string Wave = "Wave.fbx";
+    static std::string Sad = "Sad";
+    static std::string Idle = "Idle";
+    static std::string Happy = "Joy";
+    static std::string Angry = "Angry";
+    static std::string Wave = "Wave";
   }
   /*
   namespace SoundNames

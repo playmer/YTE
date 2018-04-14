@@ -56,6 +56,7 @@ namespace YTE
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
 
     mAnimator = mOwner->GetComponent<Animator>();
+    mAnimator->SetDefaultAnimation("Idle.fbx");
 
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
@@ -452,10 +453,8 @@ namespace YTE
   void JohnDialogue::OnPlayAnimationEvent(PlayAnimationEvent *aEvent)
   {
     std::string anim = aEvent->animationName;
-    
-    std::cout << anim << std::endl;
 
-    //mAnimator->PlayAnimation(anim);
+    mAnimator->PlayAnimationSet(anim);
   }
 
 } //end yte

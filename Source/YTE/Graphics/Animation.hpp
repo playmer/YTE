@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Animation_hpp
 #define YTE_Graphics_Animation_hpp
 
+#include <queue>
+
 #include "assimp/types.h"
 #include "assimp/vector3.h"
 
@@ -121,7 +123,9 @@ namespace YTE
 
     void Update(LogicUpdate* aEvent);
 
-    void PlayAnimation(std::string aAnimation);
+    void PlayAnimationSet(std::string aAnimation);
+
+    void AddNextAnimation(std::string aAnimation);
 
     void SetDefaultAnimation(std::string aAnimation);
     void SetCurrentAnimation(std::string aAnimation);
@@ -146,12 +150,11 @@ namespace YTE
 
     Animation *mDefaultAnimation;
     Animation *mCurrentAnimation;
-    Animation *mNextAnimation;
+    
+    std::queue<Animation*> mNextAnimations;
 
     std::map<std::string, Animation*> mAnimations;
   };
-
-
 }
 
 #endif

@@ -56,6 +56,7 @@ namespace YTE
     void OnQuestStart(QuestStart *aEvent);
     void OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent);
     void OnPlaySoundEvent(PlaySoundEvent *);
+    void OnPlayAnimationEvent(PlayAnimationEvent *aEvent);
 
     std::vector<Quest> mQuestVec;
     Quest *mActiveQuest;
@@ -69,6 +70,8 @@ namespace YTE
     std::vector<std::vector<u64> >::iterator mConvosIter;
     std::vector<std::vector<u64> >::iterator mPrevConvoIter;
     std::vector<u64>::iterator mLinesIter;
+
+    Animator *mAnimator;
   };
 } //end yte
 #endif
