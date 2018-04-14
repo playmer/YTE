@@ -41,10 +41,10 @@ namespace YTE
     auto translation = transform->GetTranslation();
     auto scale = transform->GetScale();
     auto rotation = transform->GetRotation();
-    auto bulletRot = btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-    auto bulletTransform = btTransform(bulletRot, btVector3(translation.x, translation.y, translation.z));
+    auto bulletTransform = btTransform(OurQuatToBt(rotation), OurVec3ToBt(translation));
 
-    mCylinderShape = std::make_unique<btCylinderShape>(OurVec3ToBt(scale));
+    mCylinderShape = std::make_unique<btCylinderShape>(btVector3(1.f, 1.f, 1.f));
+    mCylinderShape->setLocalScaling(OurVec3ToBt(scale));
 
     mCollider = std::make_unique<btCollisionObject>();
     mCollider->setCollisionShape(mCylinderShape.get());
@@ -55,7 +55,8 @@ namespace YTE
   {
     if (mCylinderShape)
     {
-      mCylinderShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+      auto scale = aEvent->WorldScale;
+      mCylinderShape->setLocalScaling(OurVec3ToBt(scale));
     }
   }
 }
