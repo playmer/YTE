@@ -170,21 +170,22 @@ namespace YTE
       auto *objB = manifold->getBody1();
       
       // Get each body's composition pointer
-      Composition *compA = static_cast<Composition*>(objA->getUserPointer());
-      Composition *compB = static_cast<Composition*>(objB->getUserPointer());
+      Composition *compositionA = static_cast<Composition*>(objA->getUserPointer());
+      Composition *compositionB = static_cast<Composition*>(objB->getUserPointer());
 
       int numContacts = manifold->getNumContacts();
       for (int j = 0; j < numContacts; j++)
       {
         btManifoldPoint& pt = manifold->getContactPoint(j);
 
+        // The objects have collided.
         if (pt.getDistance() < 0.f)
         {
           // Process the event for Entity A
-          DispatchContactEvent(compA, compB, manifold);
+          DispatchContactEvent(compositionA, compositionB, manifold);
 
           // Process the event for Entity B
-          DispatchContactEvent(compB, compA, manifold);
+          DispatchContactEvent(compositionB, compositionA, manifold);
         }
       }
     }
