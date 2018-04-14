@@ -24,11 +24,11 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Basil, mSpace);
     
     mActiveQuest = &mQuestVec[(int)Quest::Name::Introduction];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);

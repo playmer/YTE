@@ -59,7 +59,8 @@ namespace YTE
     ParticleEmitter *mSideLeftEmitter;
 
     ParticleEmitter *mFrontEmitter;
-    ParticleEmitter *mBackEmitter;
+    ParticleEmitter *mBackEmitterLeft;
+    ParticleEmitter *mBackEmitterRight;
 
     float mVarianceScalar;
     float mFrontWeight;

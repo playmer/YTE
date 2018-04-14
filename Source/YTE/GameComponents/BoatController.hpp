@@ -73,9 +73,11 @@ namespace YTE
     Orientation *mOrientation;
     RigidBody *mRigidBody;
     BoxCollider *mCollider;
-    ParticleEmitter *mParticleEmitter;
     WWiseEmitter *mSoundEmitter;
     Composition *mNearbyDock; // be careful with this lambs
+
+    Transform *mBackLeftEmitterTransform;
+    Transform *mBackRightEmitterTransform;
 
     float mMaxSailSpeed;
     float mMaxTurnSpeed;

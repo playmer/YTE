@@ -24,6 +24,15 @@ namespace YTE
   YTEDeclareEvent(DialogueNodeReady);
   YTEDeclareEvent(DialogueNodeConfirm);
 
+  YTEDeclareEvent(PlayAnimationEvent);
+
+  class PlayAnimationEvent : public Event
+  {
+  public:
+    YTEDeclareType(PlayAnimationEvent);
+    std::string animationName;
+  };
+
   class DialogueNodeReady;
   class DialogueNodeConfirm;
 
@@ -35,10 +44,10 @@ namespace YTE
     static std::string WalkFull = "WalkFull_2017.fbx";
     static std::string Walk1 = "WalkPart1.fbx";
     static std::string Walk2 = "WalkPart2.fbx";
-    static std::string Sad = "Sad_Loop.fbx";
-    static std::string Idle = "Idle_Loop.fbx";
-    static std::string Happy = "Joy_Loop.fbx";
-    static std::string Angry = "Angry_Loop.fbx";
+    static std::string Sad = "Sad.fbx";
+    static std::string Idle = "Idle.fbx";
+    static std::string Happy = "Joy.fbx";
+    static std::string Angry = "Angry.fbx";
   }
   /*
   namespace SoundNames
@@ -58,7 +67,7 @@ namespace YTE
     YTEDeclareType(DialogueNode);
     enum class NodeType { Anim, Input, Text, Sound };
 
-    DialogueNode(NodeType aType, DialogueDataType aData, int aId);
+    DialogueNode(NodeType aType, DialogueDataType aData, int aId, Space *space);
     //DialogueNode& operator=(const DialogueNode& aNode) = default;
     //DialogueNode(DialogueNode&& aNode);
 
@@ -75,6 +84,8 @@ namespace YTE
     void (DialogueNode::*mNodeLogic)();
     DialogueDataType mData;
     std::vector<DialogueNode*> mChildren;
+
+    Space *mSpace;
 
     void PlayAnim();
     void GiveOptions();
