@@ -468,6 +468,16 @@ namespace YTE
     }
   }
 
+  void Animator::PlayAnimationSet(std::string aAnimation)
+  {
+    std::string initFile;
+    std::string loopFile;
+    std::string exitFile;
+
+
+
+  }
+
   void Animator::PlayAnimation(std::string aAnimation)
   {
     auto it = mAnimations.find(aAnimation);

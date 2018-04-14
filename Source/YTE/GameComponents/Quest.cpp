@@ -67,7 +67,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
               // LEVEL ROOT
-              DialogueData(dataR0, AnimationNames::WaveInit);
+              DialogueData(dataR0, AnimationNames::Wave);
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
 
               /*
@@ -92,7 +92,7 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
               // LEVEL ROOT
-              DialogueData(dataR0, AnimationNames::WaveInit);
+              DialogueData(dataR0, AnimationNames::Wave);
               mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
               /*
               A0 - R0
@@ -411,7 +411,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0, mSpace);
 
           // LEVEL D0
-          DialogueData(dataD0, AnimationNames::WaveInit);
+          DialogueData(dataD0, AnimationNames::Wave);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0, mSpace);
 
           // LEVEL C0
@@ -466,7 +466,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, AnimationNames::WaveInit);
+          DialogueData(dataR0, AnimationNames::Wave);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
 
           /*
@@ -494,7 +494,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, AnimationNames::WaveInit);
+          DialogueData(dataR0, AnimationNames::Wave);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
           /*
           C0 - B0 - A0 - R0
@@ -860,7 +860,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, AnimationNames::WaveInit);
+          DialogueData(dataR0, AnimationNames::Wave);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
 
           /*
@@ -883,7 +883,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, AnimationNames::WaveInit);
+          DialogueData(dataR0, AnimationNames::Wave);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
           /*
           A0 - R0

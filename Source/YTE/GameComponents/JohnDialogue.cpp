@@ -207,6 +207,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
     mSpace->YTEDeregister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
+    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)

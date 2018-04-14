@@ -48,6 +48,7 @@ namespace YTE
     static std::string Idle = "Idle.fbx";
     static std::string Happy = "Joy.fbx";
     static std::string Angry = "Angry.fbx";
+    static std::string Wave = "Wave.fbx";
   }
   /*
   namespace SoundNames
