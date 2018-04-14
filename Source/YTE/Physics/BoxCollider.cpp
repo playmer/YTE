@@ -23,6 +23,10 @@ namespace YTE
   {
     YTERegisterType(BoxCollider);
 
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     //YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();

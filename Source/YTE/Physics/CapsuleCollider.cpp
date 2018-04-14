@@ -23,6 +23,11 @@ namespace YTE
   YTEDefineType(CapsuleCollider)
   {
     YTERegisterType(CapsuleCollider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()

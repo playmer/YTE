@@ -115,13 +115,20 @@ namespace YTE
       if (zoneType == "Island")
       {
         auto zoneName = zone->GetZoneName();
+
+        mOwner->GetEngine()->Log(LogType::Information, fmt::format("{}", zoneName));
+
         if (zoneName != mCurrentZone)
         {
           mSoundSystem->SetState("Current_Island", zoneName);
           mCurrentZone = zoneName;
           mSoundEmitter->PlayEvent(mIslandEnter);
         }
-        mCollidingIslands.insert(zone);
+
+        if(zoneName == mCurrentZone)
+        {
+          mCollidingIslands.insert(zone);
+        }
       }
 
     }

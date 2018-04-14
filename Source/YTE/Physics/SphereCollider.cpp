@@ -23,6 +23,11 @@ namespace YTE
   YTEDefineType(SphereCollider)
   {
     YTERegisterType(SphereCollider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();

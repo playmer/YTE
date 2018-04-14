@@ -22,6 +22,10 @@ namespace YTE
   YTEDefineType(CylinderCollider)
   {
     YTERegisterType(CylinderCollider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

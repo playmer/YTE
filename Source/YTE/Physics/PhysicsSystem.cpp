@@ -160,26 +160,33 @@ namespace YTE
   }
 
   void PhysicsSystem::DispatchCollisionEvents(void)
-  {
-    auto *dispatcher = mDynamicsWorld->getDispatcher( );
-    int numManifolds = dispatcher->getNumManifolds( );
-      
+  {      
+    auto numManifolds = mDispatcher->getNumManifolds();
     for (int i = 0; i < numManifolds; ++i)
     {
-      auto *manifold = dispatcher->getManifoldByIndexInternal( i );
+      auto *manifold = mDispatcher->getManifoldByIndexInternal(i);
       
-      auto *objA = manifold->getBody0( );
-      auto *objB = manifold->getBody1( );
+      auto *objA = manifold->getBody0();
+      auto *objB = manifold->getBody1();
       
       // Get each body's composition pointer
-      Composition *compA = static_cast<Composition*>(objA->getUserPointer()),
-                        *compB = static_cast<Composition*>(objB->getUserPointer());
-        
-      // Process the event for Entity A
-      DispatchContactEvent(compA, compB, manifold );
-      
-      // Process the event for Entity B
-      DispatchContactEvent(compB, compA, manifold );
+      Composition *compA = static_cast<Composition*>(objA->getUserPointer());
+      Composition *compB = static_cast<Composition*>(objB->getUserPointer());
+
+      int numContacts = manifold->getNumContacts();
+      for (int j = 0; j < numContacts; j++)
+      {
+        btManifoldPoint& pt = manifold->getContactPoint(j);
+
+        if (pt.getDistance() < 0.f)
+        {
+          // Process the event for Entity A
+          DispatchContactEvent(compA, compB, manifold);
+
+          // Process the event for Entity B
+          DispatchContactEvent(compB, compA, manifold);
+        }
+      }
     }
   }
 

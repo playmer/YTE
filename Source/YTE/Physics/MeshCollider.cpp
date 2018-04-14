@@ -27,10 +27,7 @@ namespace YTE
   {
     YTERegisterType(MeshCollider);
 
-    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
-                                             { TypeId<RigidBody>(),
-                                               TypeId<CollisionBody>(), 
-                                               TypeId<GhostBody>(), } };
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }

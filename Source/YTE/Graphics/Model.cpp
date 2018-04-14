@@ -126,7 +126,7 @@ namespace YTE
 
 
 
-  void Model::Initialize()
+  void Model::NativeInitialize()
   {
     mEngine = mSpace->GetEngine();
     mRenderer = mSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
