@@ -13,6 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/DialogueGraph.hpp"
+#include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/Graphics/Animation.hpp"
 
 namespace YTE
@@ -34,6 +35,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mSoundEmitter(nullptr)
     , mSoundSystem(nullptr)
+    , mCameraAnchor(nullptr)
   {
     YTEUnusedArgument(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
@@ -54,6 +56,17 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+
+    auto children = mOwner->GetCompositions()->All();
+
+    for (auto &child : children)
+    {
+      if (child.second->GetComponent<CameraAnchor>() != nullptr)
+      {
+        mCameraAnchor = child.second.get();
+        break;
+      }
+    }
 
     mAnimator = mOwner->GetComponent<Animator>();
     mAnimator->SetDefaultAnimation("Idle.fbx");
@@ -250,6 +263,7 @@ namespace YTE
     {
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
+      next.DialogueCameraAnchor = mCameraAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
   }
@@ -364,6 +378,7 @@ namespace YTE
       {
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
+        next.DialogueCameraAnchor = mCameraAnchor;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
       }
     }

@@ -104,7 +104,7 @@ namespace YTE
     std::vector<u64>::iterator mLinesIter;
 
     Animator *mAnimator;
-
+    Composition *mCameraAnchor;
   };
 } //end yte
 #endif

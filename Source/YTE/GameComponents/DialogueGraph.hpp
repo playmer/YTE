@@ -106,6 +106,7 @@ namespace YTE
     }
     std::vector<std::string> ContentMessages;
     DialogueNode::NodeType DialogueType;
+    Composition *DialogueCameraAnchor = nullptr;
   };
 
   class DialogueNodeConfirm : public Event
