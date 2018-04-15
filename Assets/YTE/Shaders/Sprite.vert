@@ -84,8 +84,14 @@ layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vertex Shader Outputs | Fragment Shader Inputs
-layout (location = 0) out vec2 outTextureCoordinates;
-layout (location = 1) out vec4 outDiffuse;
+layout (location = 0) out vec3 outColor;
+layout (location = 1) out vec2 outTextureCoordinates;
+layout (location = 2) out vec3 outNormal;
+layout (location = 3) out vec4 outPosition;
+layout (location = 4) out vec3 outPositionWorld;
+layout (location = 5) out vec4 outDiffuse;
+layout (location = 6) out mat4 outViewMatrix; // 6 - 9
+
 
 // ========================
 // Positional Output of Vertex
@@ -94,22 +100,83 @@ out gl_PerVertex
     vec4 gl_Position;
 };
 
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Functions
+// ======================
+// CalculateNormal:
+// Calculates the normal used for this vertex
+// takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
+vec3 CalculateNormal(mat4 aModelMat, vec3 aNormal)
+{
+  return normalize(mat3(transpose(inverse(aModelMat))) * aNormal);
+}
+
+// ======================
+// CalculateWorldPosition:
+// Calculates the position used for this vertex in world space
+// takes the model matrix, animation matrix, and the local position value to calculate with
+vec3 CalculateWorldPosition(mat4 aModelMat, vec4 aPosition)
+{
+  return vec3(aModelMat * aPosition);
+}
+
+// ======================
+// CalculateViewPosition:
+// Calculates the position used for this vertex in view space
+// takes the view matrix and the world position value to calculate with
+vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
+{
+  return aViewMat * aPosition;
+}
+
+// ======================
+// CalculatePosition:
+// Position the vertex for the fragment shader and GPU
+// takes the projection matrix, and the view position value to calculate with
+void CalculatePosition(mat4 aProjMat, vec4 aPos)
+{
+  // Initial Position Update
+  gl_Position = aProjMat        * 
+                aPos;
+
+  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
+  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
+}
+
+
 // ======================
 // Main:
 // Entry point of shader
 void main() 
 {
+  // remaining output for fragment shader
+  outColor = inColor.xyz;
   outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
   outDiffuse = Model.mDiffuseColor;
+  outViewMatrix = View.mViewMatrix;
+
+  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, vec4(inPosition, 1.0f));
+  outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
+  outNormal = CalculateNormal(Model.mModelMatrix,
+                              inNormal);
+  CalculatePosition(View.mProjectionMatrix,
+                    outPosition);
 
   // Unsure if this needs to be vec3/mat3 here.
   //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
   //gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
 
-  gl_Position = View.mProjectionMatrix * 
-                View.mViewMatrix       *
-                Model.mModelMatrix     *
-                vec4(inPosition, 1.0f);
+  //gl_Position = View.mProjectionMatrix * 
+  //              View.mViewMatrix       *
+  //              Model.mModelMatrix     *
+  //              vec4(inPosition, 1.0f);
 
 
   // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
