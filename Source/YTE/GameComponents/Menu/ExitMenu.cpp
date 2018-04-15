@@ -43,5 +43,3 @@ namespace YTE
     mOwner->GetSpace()->SendEvent(Events::MenuExit, &menuExit);
   }
 }
-
-

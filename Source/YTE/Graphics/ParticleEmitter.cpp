@@ -421,7 +421,7 @@ namespace YTE
     {
       model = mRenderer->CreateModel(mGraphicsView, mMesh);
       model->SetInstanced(true);
-      model->mType = ShaderType::AdditiveBlendShader;
+      model->mType = ShaderType::AlphaBlendShader;
     }
     else
     {
@@ -445,11 +445,11 @@ namespace YTE
     posDist.x = randomX * mEmitterScale.x;
     posDist.y = randomY * mEmitterScale.y;
     posDist.z = randomZ * mEmitterScale.z;
-
+    
     Particle particle;
     particle.mPosition = mPosition + mPositionOffset + posDist;
     particle.mScale = mParticleScale;
-    particle.mColor = mColor;
+    particle.mUBO.mDiffuseColor = mColor;
     particle.mVelocity = mInitVelocity + velVar;
     particle.mLife = mLifetime + randomX * mLifetimeVariance;
 

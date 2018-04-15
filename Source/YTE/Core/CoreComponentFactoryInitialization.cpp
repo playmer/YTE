@@ -34,6 +34,7 @@
 #include "YTE/GameComponents/Menu/ExitMenu.hpp"
 #include "YTE/GameComponents/Menu/LaunchLevel.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
+#include "YTE/GameComponents/Menu/QuitGame.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
@@ -127,6 +128,7 @@ namespace YTE
     helper.CreateComponentFactory<ExitMenu>();
     helper.CreateComponentFactory<LaunchLevel>();
     helper.CreateComponentFactory<LaunchGame>();
+    helper.CreateComponentFactory<QuitGame>();
     helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<ButtonAnimate>();
 

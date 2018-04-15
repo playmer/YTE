@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/DaisyDialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/Graphics/Animation.hpp"
 
 namespace YTE
 {
@@ -24,11 +25,11 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Daisy);
-    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Daisy);
-    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Daisy);
-    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Daisy);
-    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Daisy);
+    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Daisy, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Daisy, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Daisy, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Daisy, mSpace);
+    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Daisy, mSpace);
     
     mActiveQuest = &mQuestVec[(int)Quest::Name::Introduction];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
@@ -41,6 +42,9 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &DaisyDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &DaisyDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &DaisyDialogue::OnUpdateActiveQuestState);
+
+    mAnimator = mOwner->GetComponent<Animator>();
+    mAnimator->SetDefaultAnimation("Idle.fbx");
 
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
@@ -171,6 +175,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
     mSpace->YTERegister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
+    mSpace->YTERegister(Events::PlayAnimationEvent, this, &DaisyDialogue::OnPlayAnimationEvent);
   }
 
   void DaisyDialogue::DeregisterDialogue()
@@ -179,6 +184,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
     mSpace->YTEDeregister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
+    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &DaisyDialogue::OnPlayAnimationEvent);
   }
 
   void DaisyDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -429,6 +435,13 @@ namespace YTE
         ++mLinesIter;
       }
     }
+  }
+
+  void DaisyDialogue::OnPlayAnimationEvent(PlayAnimationEvent *aEvent)
+  {
+    std::string anim = aEvent->animationName;
+
+    mAnimator->PlayAnimationSet(anim);
   }
 
 } //end yte

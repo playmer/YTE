@@ -93,6 +93,16 @@ namespace YTE
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
+    if (auto backLeft = mOwner->FindFirstCompositionByName("BackEmitterLeft"))
+    {
+      mBackLeftEmitterTransform = backLeft->GetComponent<Transform>();
+    }
+
+    if (auto backRight = mOwner->FindFirstCompositionByName("BackEmitterRight"))
+    {
+      mBackRightEmitterTransform = backRight->GetComponent<Transform>();
+    }
+
     mRigidBody->SetDamping(0.9f, 0.9f);
 
       // Cache ids for all sounds used by this component
@@ -226,6 +236,9 @@ namespace YTE
       // Dead-zone check and apply response curves
     float length = glm::length(aEvent->StickDirection);
 
+    double stickTurn = 0.0f;
+    double maxTime = mAnimator->GetMaxTime();
+
     if (length > 0.01f)
     {
       float absX = glm::abs(aEvent->StickDirection.x);
@@ -258,21 +271,17 @@ namespace YTE
       if (aEvent->StickDirection.x >= 0.0f)
       {
         mTurnVec = turnScale * right;
+        
+        stickTurn = (((-turnScale + 1.0) / 2.0) * maxTime);
 
         if (mAnimator)
         {
-          double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = (((-turnScale + 1.0) / 2.0) * maxTime);
-
-            // update boat animation : current stick rotation
+          // update boat animation : current stick rotation
           mAnimator->SetCurrentAnimTime(stickTurn);
         }
 
         if (mCharacterAnimator)
         {
-          double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = (((-turnScale + 1.0) / 2.0) * maxTime);
-
             // update boat animation : current stick rotation
           mCharacterAnimator->SetCurrentAnimTime(stickTurn);
         }
@@ -280,21 +289,18 @@ namespace YTE
       else
       {
         mTurnVec = -turnScale * right;
+        
+        double maxTime = mAnimator->GetMaxTime();
+        stickTurn = ((turnScale + 1.0) * maxTime) / 2.0;
 
         if (mAnimator)
         {
-          double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = ((turnScale + 1.0) * maxTime) / 2.0;
-
           // update boat animation : current stick rotation
           mAnimator->SetCurrentAnimTime(stickTurn);
         }
 
         if (mCharacterAnimator)
         {
-          double maxTime = mAnimator->GetMaxTime();
-          double stickTurn = ((turnScale + 1.0) * maxTime) / 2.0;
-
           // update boat animation : current stick rotation
           mCharacterAnimator->SetCurrentAnimTime(stickTurn);
         }
@@ -305,19 +311,38 @@ namespace YTE
       mCurrRotSpeed = 0.f;
       mPlayingTurnSound = false;
 
+      stickTurn = 0.5 * maxTime;
+
       if (mAnimator)
       {
-        double maxTime = mAnimator->GetMaxTime();
-        //double stickTurn = ((turnScale /*aEvent->StickDirection.x + 1.0 */)* maxTime);// / 2.0;
-        mAnimator->SetCurrentAnimTime(0.5 * maxTime);
+        mAnimator->SetCurrentAnimTime(stickTurn);
       }
 
       if (mCharacterAnimator)
       {
-        double maxTime = mAnimator->GetMaxTime();
-        //double stickTurn = ((turnScale /*aEvent->StickDirection.x + 1.0*/)* maxTime);// / 2.0;
-        mCharacterAnimator->SetCurrentAnimTime(0.5 * maxTime);
+        mCharacterAnimator->SetCurrentAnimTime(stickTurn);
       }
+    }
+
+    glm::vec3 rightVec = mOrientation->GetRightVector();
+
+    glm::vec3 tillerPos = -4.5f * mOrientation->GetForwardVector();
+
+    float emitterTurnOffset = 0.1f * (stickTurn - 0.5 * maxTime);
+    
+    glm::vec3 emitterOffset = emitterTurnOffset * rightVec;
+
+    // update boat trail particle emitter positions
+    if (mBackLeftEmitterTransform)
+    {
+      glm::vec3 leftEmitPos = tillerPos - emitterOffset - 0.1f * rightVec;
+      mBackLeftEmitterTransform->SetTranslation(leftEmitPos.x, leftEmitPos.y + 0.2966f, leftEmitPos.z);
+    }
+
+    if (mBackRightEmitterTransform)
+    {
+      glm::vec3 rightEmitPos = tillerPos - emitterOffset + 0.1f * rightVec;
+      mBackRightEmitterTransform->SetTranslation(rightEmitPos.x, rightEmitPos.y + 0.2966f, rightEmitPos.z);
     }
   }
 

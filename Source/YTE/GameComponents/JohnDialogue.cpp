@@ -12,6 +12,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/GameComponents/DialogueGraph.hpp"
+#include "YTE/Graphics/Animation.hpp"
 
 namespace YTE
 {
@@ -35,11 +37,11 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
-    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::John);
-    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::John);
+    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::John, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::John, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::John, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::John, mSpace);
+    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::John, mSpace);
     
     mActiveQuest = &mQuestVec[(int)Quest::Name::Introduction];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
@@ -52,6 +54,9 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+
+    mAnimator = mOwner->GetComponent<Animator>();
+    mAnimator->SetDefaultAnimation("Idle.fbx");
 
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
@@ -193,6 +198,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
     mSpace->YTERegister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
+    mSpace->YTERegister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
   }
   
   // this is super bad but i need to call this by hand in the tutorial
@@ -202,6 +208,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
     mSpace->YTEDeregister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
+    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -441,6 +448,13 @@ namespace YTE
         ++mLinesIter;
       }
     }
+  }
+
+  void JohnDialogue::OnPlayAnimationEvent(PlayAnimationEvent *aEvent)
+  {
+    std::string anim = aEvent->animationName;
+
+    mAnimator->PlayAnimationSet(anim);
   }
 
 } //end yte

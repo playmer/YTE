@@ -373,7 +373,6 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mDefaultAnimation(nullptr)
     , mCurrentAnimation(nullptr)
-    , mNextAnimation(nullptr)
   {
     DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
@@ -413,10 +412,10 @@ namespace YTE
   {
     if (!mCurrentAnimation)
     {
-      if (mNextAnimation)
+      if (!mNextAnimations.empty())
       {
-        mCurrentAnimation = mNextAnimation;
-        mNextAnimation = nullptr;
+        mCurrentAnimation = mNextAnimations.front();
+        mNextAnimations.pop();
       }
       else if (mDefaultAnimation)
       {
@@ -468,17 +467,29 @@ namespace YTE
     }
   }
 
-  void Animator::PlayAnimation(std::string aAnimation)
+  void Animator::PlayAnimationSet(std::string aAnimation)
+  {
+    std::string initFile = aAnimation + "_Init.fbx";
+    std::string loopFile = aAnimation + "_Loop.fbx";
+    std::string exitFile = aAnimation + "_Exit.fbx";
+
+    AddNextAnimation(initFile);
+    AddNextAnimation(loopFile);
+    AddNextAnimation(exitFile);
+  }
+
+  void Animator::AddNextAnimation(std::string aAnimation)
   {
     auto it = mAnimations.find(aAnimation);
 
     // animation doesn't exist on this animator component
     if (it == mAnimations.end())
     {
+      std::cout << aAnimation << " not found\n";
       return;
     }
 
-    mNextAnimation = it->second;
+    mNextAnimations.push(it->second);
   }
 
   void Animator::SetDefaultAnimation(std::string aAnimation)

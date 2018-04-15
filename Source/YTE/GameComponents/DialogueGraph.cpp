@@ -21,6 +21,14 @@ namespace YTE
   YTEDefineType(DialogueNodeReady) { YTERegisterType(DialogueNodeReady); }
   YTEDefineType(DialogueNodeConfirm) { YTERegisterType(DialogueNodeConfirm); }
 
+  YTEDefineEvent(PlayAnimationEvent);
+  
+  YTEDefineType(PlayAnimationEvent) 
+  { 
+    YTERegisterType(PlayAnimationEvent); 
+    YTEBindField(&PlayAnimationEvent::animationName, "animationName", PropertyBinding::GetSet);
+  }
+
   /*
   DialogueNode::DialogueNode(DialogueNode&& aNode)
     : mType(std::move(aNode.mType)), mId(std::move(aNode.mId)), mNodeLogic(std::move(aNode.mNodeLogic)), mData(std::move(aNode.mData)), mChildren(std::move(aNode.mChildren))
@@ -28,8 +36,8 @@ namespace YTE
   }
   */
 
-  DialogueNode::DialogueNode(NodeType aType, DialogueDataType aData, int aId)
-    : mType(aType), mData(std::move(aData)), mId(aId)
+  DialogueNode::DialogueNode(NodeType aType, DialogueDataType aData, int aId, Space *space)
+    : mType(aType), mData(std::move(aData)), mId(aId), mSpace(space)
   {
     switch (aType)
     {
@@ -90,13 +98,16 @@ namespace YTE
 
   void DialogueNode::ActivateNode()
   {
-    mNodeLogic;
+    (this->*mNodeLogic)();
   }
 
   // Functors
   void DialogueNode::PlayAnim()
   {
-    //mOwner->GetComponent<Animator>();
+    PlayAnimationEvent animEvent;
+    animEvent.animationName = mData[0];
+
+    mSpace->SendEvent(Events::PlayAnimationEvent, &animEvent);
   }
   void DialogueNode::GiveOptions()
   {

@@ -34,7 +34,7 @@ namespace YTE
     enum class CharacterName { John, Daisy, Basil };
 
     YTEDeclareType(Quest);
-    Quest(Quest::Name aName, Quest::CharacterName aCharacter);
+    Quest(Quest::Name aName, Quest::CharacterName aCharacter, Space *aSpace);
 
     Quest::Name GetName() { return mName; };
     Quest::CharacterName GetCharacter() { return mCharacter; };
@@ -43,6 +43,8 @@ namespace YTE
     void SetState(Quest::State aState) { mState = aState; };
   private:
     Quest::State mState;
+
+    Space *mSpace;
 
     Quest::Name mName;
     CharacterName mCharacter;
@@ -56,7 +58,7 @@ namespace YTE
     enum class Name { Hello, NoProgress, Completed, PostQuest };
 
     YTEDeclareType(Conversation);
-    Conversation(Conversation::Name aName, Quest::Name aQuest, Quest::CharacterName aCharacter);
+    Conversation(Conversation::Name aName, Quest::Name aQuest, Quest::CharacterName aCharacter, Space *space);
 
     // Root is the last element in the vector due to bottom up construction
     DialogueNode *GetRoot() { return &mNodeVec.back(); };
@@ -68,6 +70,8 @@ namespace YTE
 
     Conversation::Name mName;
     std::vector<DialogueNode> mNodeVec;
+
+    Space *mSpace;
   };
 
   class UpdateActiveQuestState : public Event

@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BasilDialogue.hpp"
 #include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
+#include "YTE/Graphics/Animation.hpp"
 
 namespace YTE
 {
@@ -21,14 +22,15 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mSoundEmitter(nullptr)
     , mSoundSystem(nullptr)
+    , mAnimator(nullptr)
   {
     YTEUnusedArgument(aProperties);
 
-    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Basil);
-    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Basil);
+    mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Explore, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::Dialogue, Quest::CharacterName::Basil, mSpace);
+    mQuestVec.emplace_back(Quest::Name::NotActive, Quest::CharacterName::Basil, mSpace);
     
     mActiveQuest = &mQuestVec[(int)Quest::Name::Introduction];
     mActiveConvo = &mActiveQuest->GetConversations()->at(0);
@@ -42,6 +44,8 @@ namespace YTE
     mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
 
+    mAnimator = mOwner->GetComponent<Animator>();
+    mAnimator->SetDefaultAnimation("Idle.fbx");
 
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
@@ -183,6 +187,7 @@ namespace YTE
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
     mSpace->YTERegister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
+    mSpace->YTERegister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
   }
 
   void BasilDialogue::DeregisterDialogue()
@@ -191,6 +196,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
     mSpace->YTEDeregister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
+    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
   }
 
   void BasilDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -442,6 +448,13 @@ namespace YTE
         ++mLinesIter;
       }
     }
+  }
+
+  void BasilDialogue::OnPlayAnimationEvent(PlayAnimationEvent *aEvent)
+  {
+    std::string anim = aEvent->animationName;
+
+    mAnimator->PlayAnimationSet(anim);
   }
 
 } //end yte
