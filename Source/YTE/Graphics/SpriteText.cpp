@@ -47,6 +47,30 @@ namespace YTE
     return result;
   }
 
+  static std::vector<std::string> PopulateAlignXDropDownList(Component *)
+  {
+    std::vector<std::string> result;
+
+    for (int i = 0; i < AlignmentX::COUNT; ++i)
+    {
+      result.push_back(AlignmentX::Names[i]);
+    }
+
+    return result;
+  }
+
+  static std::vector<std::string> PopulateAlignYDropDownList(Component *)
+  {
+    std::vector<std::string> result;
+
+    for (int i = 0; i < AlignmentY::COUNT; ++i)
+    {
+      result.push_back(AlignmentY::Names[i]);
+    }
+
+    return result;
+  }
+
   YTEDefineType(SpriteText)
   {
     YTERegisterType(SpriteText);
@@ -68,10 +92,22 @@ namespace YTE
     YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX, "AlignX")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateAlignXDropDownList);
+
+    YTEBindProperty(&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY, "AlignY")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .AddAttribute<DropDownStrings>(PopulateAlignYDropDownList);
   }
 
   SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : BaseModel{ aOwner, aSpace, aProperties }
+    , mAlignX(AlignmentX::Left)
+    , mAlignY(AlignmentY::Center)
     , mConstructing(true)
   {
     mFontSize = 1.f;
@@ -130,7 +166,8 @@ namespace YTE
 
     submesh.mCullBackFaces = false;
 
-    for (auto c : mText)
+    float maxHeight = 0.0f;
+    for (auto &c : mText)
     {
       Vertex vert0;
       Vertex vert1;
@@ -147,6 +184,9 @@ namespace YTE
                           &offsetY, 
                           &quad, 
                           1);
+
+      float height = sizeFactor * glm::abs(quad.y1 - quad.y0);
+      maxHeight = height > maxHeight ? height : maxHeight;
 
         // Save vertex attributes
       vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };  // Bottom-left
@@ -171,6 +211,35 @@ namespace YTE
       submesh.mIndexBuffer.push_back(lastIndex + 3);
 
       lastIndex += 4;
+    }
+
+    float maxWidth = (submesh.mVertexBuffer.empty())
+      ? 0.0f
+      : (submesh.mVertexBuffer.end() - 2)->mPosition.x - submesh.mVertexBuffer.begin()->mPosition.x;
+    
+    for (auto &verts : submesh.mVertexBuffer)
+    {
+        // Without any modification, text is bottom-left aligned
+      switch (mAlignX)
+      {
+        case AlignmentX::Center:
+          verts.mPosition.x -= (maxWidth / 2.0f);
+          break;
+        case AlignmentX::Right:
+          verts.mPosition.x -= maxWidth;
+          break;
+      }
+      
+      switch (mAlignY)
+      {
+        case AlignmentY::Center:
+          verts.mPosition.y -= (maxHeight / 2.0f);
+          break;
+        case AlignmentY::Top:
+          verts.mPosition.y -= maxHeight;
+          break;
+      }
+      
     }
 
     submeshes.emplace_back(submesh);
@@ -247,7 +316,7 @@ namespace YTE
       // If the font texture does not already exist on disk, save it to disk for lookup
     size_t extensionPos = mFontName.size() - 4;
     std::string texName = mFontName;
-    texName.replace(extensionPos, 4, ".png");
+    texName.replace(extensionPos, 6, "64.png");
 
     filesystem::path outPath = Path::GetGamePath().String();
     outPath = outPath.parent_path() / "Textures/Originals" / texName;
