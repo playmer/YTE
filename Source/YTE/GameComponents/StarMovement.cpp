@@ -26,6 +26,7 @@ namespace YTE
     , mStarTransform(nullptr)
     , mNoticeBoardTransform(nullptr)
     , mCurrentAnchor(CurrentAnchor::None)
+    , mTimer(0.0)
   {
     YTEUnusedArgument(aProperties);
   }
@@ -70,12 +71,20 @@ namespace YTE
       return;
     }
 
+    float rotAngle = 3.0f * aEvent->Dt;
+    mStarTransform->RotateAboutLocalAxis(glm::vec3(0, 1, 0), rotAngle);
+
+    mTimer += 4.0 * aEvent->Dt;
+
+    float yOffset = 0.75f * static_cast<float>(sin(mTimer));
+    glm::vec3 yOffsetVector = glm::vec3(0, 10 + yOffset, 0);
+
     if (mCurrentAnchor == CurrentAnchor::John)
     {
       if (mJohnTransform)
       {
         glm::vec3 johnPos = mJohnTransform->GetWorldTranslation();
-        johnPos += glm::vec3(0, 8, 0);
+        johnPos += yOffsetVector;
 
         mStarTransform->SetWorldTranslation(johnPos);
       }
@@ -85,7 +94,7 @@ namespace YTE
       if (mDaisyTransform)
       {
         glm::vec3 daisyPos = mDaisyTransform->GetWorldTranslation();
-        daisyPos += glm::vec3(0, 8, 0);
+        daisyPos += yOffsetVector;
 
         mStarTransform->SetWorldTranslation(daisyPos);
       }
@@ -95,7 +104,7 @@ namespace YTE
       if (mBasilTransform)
       {
         glm::vec3 basilPos = mBasilTransform->GetWorldTranslation();
-        basilPos += glm::vec3(0, 8, 0);
+        basilPos += yOffsetVector;
 
         mStarTransform->SetWorldTranslation(basilPos);
       }
@@ -105,15 +114,11 @@ namespace YTE
       if (mNoticeBoardTransform)
       {
         glm::vec3 nbPos = mNoticeBoardTransform->GetWorldTranslation();
-        nbPos += glm::vec3(0, 8, 0);
+        nbPos += yOffsetVector;
 
         mStarTransform->SetWorldTranslation(nbPos);
       }
     }
-    
-    glm::vec3 rot = mStarTransform->GetRotationAsEuler();
-    rot.x += 10.0f * aEvent->Dt;
-    mStarTransform->SetRotation(rot);
   }
 
   void StarMovement::OnQuestStart(QuestStart *aEvent)
