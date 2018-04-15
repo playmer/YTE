@@ -26,13 +26,25 @@ namespace YTE
 {
   struct Font
   {
-    const float mSize = 40;
-    const int mAtlasWidth = 512;
-    const int mAtlasHeight = 512;
+    const float mSize = 64;
+    const int mAtlasWidth = 1024;
+    const int mAtlasHeight = 1024;
     const int mFirstChar = ' ';
     const int mCharCount = '~' - ' ';
     std::unique_ptr<stbtt_packedchar[]> mCharInfo;
   };
+
+  namespace AlignmentX
+  {
+    enum Type { Left, Center, Right, COUNT };
+    static std::string Names[] = { "Left", "Center", "Right" };
+  }
+
+  namespace AlignmentY
+  {
+    enum Type { Top, Center, Bottom, COUNT };
+    static std::string Names[] = { "Top", "Center", "Bottom" };
+  }
 
   class SpriteText : public BaseModel
   {
@@ -87,6 +99,34 @@ namespace YTE
       if (!mConstructing)
         CreateSpriteText();
     }
+
+    const std::string& GetAlignmentX() const { return AlignmentX::Names[mAlignX]; }
+    void SetAlignmentX(const std::string& aAlignment)
+    {
+      for (int i = 0; i < AlignmentX::COUNT; ++i)
+      {
+        if (AlignmentX::Names[i].compare(aAlignment) == 0)
+        {
+          mAlignX = AlignmentX::Type(i);
+        }
+      }
+
+      CreateSpriteText();
+    }
+
+    const std::string& GetAlignmentY() const { return AlignmentY::Names[mAlignY]; }
+    void SetAlignmentY(const std::string& aAlignment)
+    {
+      for (int i = 0; i < AlignmentY::COUNT; ++i)
+      {
+        if (AlignmentY::Names[i].compare(aAlignment) == 0)
+        {
+          mAlignY = AlignmentY::Type(i);
+        }
+      }
+
+      CreateSpriteText();
+    }
     ////////////////////////////////////////////////////////
 
     void CreateSpriteText();
@@ -116,6 +156,8 @@ namespace YTE
     std::string mText;
     std::string mFontName;
     std::string mTextureName;
+    AlignmentX::Type mAlignX;
+    AlignmentY::Type mAlignY;
     float mFontSize;
 
     Font mFontInfo;

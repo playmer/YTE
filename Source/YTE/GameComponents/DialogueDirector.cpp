@@ -74,12 +74,6 @@ namespace YTE
 
   void DialogueDirector::OnRequestDialogueStart(RequestDialogueStart *)
   {
-    if (mCameraAnchor)
-    {
-      DirectCameraEvent directCam;
-      mCameraAnchor->SendEvent(Events::DirectCameraEvent, &directCam);
-    }
-
     BoatDockEvent dockEvent;
     mSpace->SendEvent(Events::BoatDockEvent, &dockEvent);
 
@@ -91,6 +85,17 @@ namespace YTE
 
   void DialogueDirector::OnDialogueNodeReady(DialogueNodeReady *aEvent)
   {
+    if (mCameraAnchor != aEvent->DialogueCameraAnchor)
+    {
+      mCameraAnchor = aEvent->DialogueCameraAnchor;
+    }
+
+    if (mCameraAnchor)
+    {
+      DirectCameraEvent directCam;
+      mCameraAnchor->SendEvent(Events::DirectCameraEvent, &directCam);
+    }
+
       // clear the data from the last node
     mCurNodeData.clear();
       // copy the node data, some nodes have multiple lines
