@@ -298,6 +298,7 @@ namespace YTE
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    mInstantiatedSprite->UpdateUBOMaterial(&modelMaterial);
     mInstantiatedSprite->SetVisibility(mVisibility);
   }
 }

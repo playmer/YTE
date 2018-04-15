@@ -407,7 +407,7 @@ void main()
 
   if (Lights.mActive < 0.5f)
   {
-    vec4 color = texture(diffuseSampler, inTextureCoordinates) * inDiffuse;
+    vec4 color = texture(diffuseSampler, inTextureCoordinates) * ModelMaterial.mDiffuse;
     outFragColor = color;
 
     if (outFragColor.w <= 0.001f)
@@ -415,13 +415,13 @@ void main()
       discard;
     }
     
-    outFragColor.w = color.w;
+    //outFragColor.w = color.w;
   }
   else
   {
     vec4 color = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), 
                        inTextureCoordinates.xy) *
-                 inDiffuse;
+                 ModelMaterial.mDiffuse;
   
     outFragColor = color;
     
@@ -430,8 +430,7 @@ void main()
       discard;
     }
     
-    outFragColor.w = color.w * 0.5f;
-    outFragColor.w = 1.0f;
+    //outFragColor.w = color.w;
   }
 
   //outFragColor = vec4(1.0f,1.0f,1.0f,1.0f);
