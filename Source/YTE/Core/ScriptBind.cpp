@@ -57,6 +57,7 @@
 #include "YTE/GameComponents/JohnMovement.hpp"
 #include "YTE/GameComponents/DaisyMovement.hpp"
 #include "YTE/GameComponents/BasilMovement.hpp"
+#include "YTE/GameComponents/StarMovement.hpp"
 #include "YTE/GameComponents/JohnTutorial.hpp"
 #include "YTE/GameComponents/DaisyTutorial.hpp"
 #include "YTE/GameComponents/BasilTutorial.hpp"
@@ -163,6 +164,7 @@ namespace YTE
     InitializeType<JohnMovement>();
     InitializeType<DaisyMovement>();
     InitializeType<BasilMovement>();
+    InitializeType<StarMovement>();
     InitializeType<JohnTutorial>();
     InitializeType<DaisyTutorial>();
     InitializeType<BasilTutorial>();

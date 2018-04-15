@@ -31,6 +31,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/StarMovement.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.cpp
   ${CMAKE_CURRENT_LIST_DIR}/DaisyDialogue.cpp
@@ -78,6 +79,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/StarMovement.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/JohnDialogue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DaisyDialogue.hpp
