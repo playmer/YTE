@@ -33,6 +33,9 @@ namespace YTE
     float GetJumpDistance() const;
     void SetJumpDistance(float aDistance);
 
+    float GetSleepTime() const;
+    void SetSleepTime(float aTime);
+
   private:
     Transform *mCameraTransform;
 

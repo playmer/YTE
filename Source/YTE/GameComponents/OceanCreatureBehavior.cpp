@@ -25,6 +25,10 @@ namespace YTE
     YTEBindProperty(&OceanCreatureBehavior::GetJumpDistance, &OceanCreatureBehavior::SetJumpDistance, "Jump Distance")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&OceanCreatureBehavior::GetSleepTime, &OceanCreatureBehavior::SetSleepTime, "Sleep Time")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   OceanCreatureBehavior::OceanCreatureBehavior(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -35,8 +39,7 @@ namespace YTE
     , mTimer(0.0)
     , mFlipRotation(false)
     , mJumpDistance(20.0f)
-    , mSleepTimer(0.0)
-    , mSleepTimerMax(30.0)
+    , mSleepTime(30.0)
     , mState(State::Waiting)
   {
     DeserializeByType(aProperties, this, GetStaticType());
@@ -113,7 +116,7 @@ namespace YTE
         // update rotation
         mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), mTimer);
 
-        if (mTimer > 2.0)
+        if (abs(mTimer) > 4.0)
         {
           mTimer = 0.0;
           mState = State::Sleeping;
@@ -147,11 +150,22 @@ namespace YTE
 
   float OceanCreatureBehavior::GetJumpDistance() const
   {
-    return 0.0f;
+    return mJumpDistance;
   }
 
   void OceanCreatureBehavior::SetJumpDistance(float aDistance)
   {
+    mJumpDistance = aDistance;
+  }
+
+  float OceanCreatureBehavior::GetSleepTime() const
+  {
+    return mSleepTime;
+  }
+
+  void OceanCreatureBehavior::SetSleepTime(float aTime)
+  {
+    mSleepTime = aTime;
   }
 
 } //end yte
