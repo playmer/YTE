@@ -59,6 +59,7 @@ namespace YTE
 
   PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mDebugDraw(false)
   {
     YTEUnusedArgument(aProperties);
 
@@ -108,30 +109,17 @@ namespace YTE
   {
     mDebugDraw = !mDebugDraw;
 
-      // Register for events.
-    if (mDebugDraw == false)
-    {
-      //TODO (Josh): Reimplement the debug drawing functionality.
-      //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->YTERegister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->YTERegister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
-      //system->YTERegister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
+    std::cout << std::boolalpha << mDebugDraw << "\n";
 
-      auto debugMode = mDebugDrawer->getDebugMode();
-      debugMode |= 0 << DebugDrawer::DBG_NoDebug;
-      mDebugDrawer->setDebugMode(debugMode);
+      // Register for events.
+    if (mDebugDraw)
+    {
+      mOwner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
     }
     else
     {
-      //TODO (Josh): Reimplement the debug drawing functionality.
-      //auto system = mOwner->GetUniverse()->GetComponent<Graphics::GraphicsSystem>();
-      //system->YTEDeregister(Events::BeginDebugDrawUpdate, this, &PhysicsSystem::BeginDebugDrawUpdate);
-      //system->YTEDeregister(Events::DebugDrawUpdate, this, &PhysicsSystem::DebugDrawUpdate);
-      //system->YTEDeregister(Events::EndDebugDrawUpdate, this, &PhysicsSystem::EndDebugDrawUpdate);
-
-      auto debugMode = mDebugDrawer->getDebugMode();
-      debugMode &= ~(1 << DebugDrawer::DBG_NoDebug);
-      mDebugDrawer->setDebugMode(debugMode);
+      mOwner->GetEngine()->YTEDeregister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mDebugDrawer->clearLines();
     }
   }
 
@@ -145,19 +133,19 @@ namespace YTE
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mDebugDrawer->Begin();
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
+    mDebugDrawer->Begin();
     mDynamicsWorld->debugDrawWorld();
+    mDebugDrawer->End();
   }
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mDebugDrawer->End();
   }
 
   void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
@@ -172,26 +160,34 @@ namespace YTE
   }
 
   void PhysicsSystem::DispatchCollisionEvents(void)
-  {
-    auto *dispatcher = mDynamicsWorld->getDispatcher( );
-    int numManifolds = dispatcher->getNumManifolds( );
-      
+  {      
+    auto numManifolds = mDispatcher->getNumManifolds();
     for (int i = 0; i < numManifolds; ++i)
     {
-      auto *manifold = dispatcher->getManifoldByIndexInternal( i );
+      auto *manifold = mDispatcher->getManifoldByIndexInternal(i);
       
-      auto *objA = manifold->getBody0( );
-      auto *objB = manifold->getBody1( );
+      auto *objA = manifold->getBody0();
+      auto *objB = manifold->getBody1();
       
       // Get each body's composition pointer
-      Composition *compA = static_cast<Composition*>(objA->getUserPointer()),
-                        *compB = static_cast<Composition*>(objB->getUserPointer());
-        
-      // Process the event for Entity A
-      DispatchContactEvent(compA, compB, manifold );
-      
-      // Process the event for Entity B
-      DispatchContactEvent(compB, compA, manifold );
+      Composition *compositionA = static_cast<Composition*>(objA->getUserPointer());
+      Composition *compositionB = static_cast<Composition*>(objB->getUserPointer());
+
+      int numContacts = manifold->getNumContacts();
+      for (int j = 0; j < numContacts; j++)
+      {
+        btManifoldPoint& pt = manifold->getContactPoint(j);
+
+        // The objects have collided.
+        if (pt.getDistance() < 0.f)
+        {
+          // Process the event for Entity A
+          DispatchContactEvent(compositionA, compositionB, manifold);
+
+          // Process the event for Entity B
+          DispatchContactEvent(compositionB, compositionA, manifold);
+        }
+      }
     }
   }
 

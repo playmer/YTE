@@ -14,6 +14,7 @@
 #include "YTE/Core/Component.hpp"
 
 #include "YTE/Physics/Collider.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -32,6 +33,8 @@ namespace YTE
     void SetRadius(float aRadius);
     void SetOffset(const glm::vec3& aOffset);
     void SetOffset(float aX, float aY, float aZ);
+
+    void ScaleUpdate(TransformChanged *aEvent);
 
   private:
     UniquePointer<btSphereShape> mSphereShape;

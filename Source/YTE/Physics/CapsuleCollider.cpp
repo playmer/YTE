@@ -23,6 +23,11 @@ namespace YTE
   YTEDefineType(CapsuleCollider)
   {
     YTERegisterType(CapsuleCollider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
@@ -35,7 +40,7 @@ namespace YTE
   }
 
   CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Collider(aOwner, aSpace), mRadius(0.0f), mHeight(0.0f)
+    : Collider(aOwner, aSpace), mRadius(1.0f), mHeight(1.0f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -50,10 +55,19 @@ namespace YTE
     auto bulletTransform = btTransform(bulletRot, btVector3(translation.x, translation.y, translation.z));
 
     mCapsuleShape = std::make_unique<btCapsuleShape>(mRadius, mHeight);
+    mCapsuleShape->setLocalScaling(OurVec3ToBt(scale));
 
     mCollider = std::make_unique<btCollisionObject>();
     mCollider->setCollisionShape(mCapsuleShape.get());
     mCollider->setWorldTransform(bulletTransform);
     mCollider->setUserPointer(mOwner);
+  }
+
+  void CapsuleCollider::ScaleUpdate(TransformChanged *aEvent)
+  {
+    if (mCapsuleShape)
+    {
+      mCapsuleShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+    }
   }
 }

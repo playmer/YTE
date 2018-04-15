@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
@@ -555,7 +556,21 @@ namespace YTE
 
         break;
       }
+    }
 
+    switch (aEvent->Key)
+    {
+      case Keys::F3:
+      {
+        auto physicsSys = mSpace->GetComponent<PhysicsSystem>();
+
+        if (physicsSys)
+        {
+          physicsSys->ToggleDebugDraw();
+        }
+
+        break;
+      }
     }
   }
 

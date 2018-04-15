@@ -11,6 +11,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/CollisionBody.hpp"
 #include "YTE/Physics/GhostBody.hpp"
 #include "YTE/Physics/RigidBody.hpp"
@@ -22,6 +23,11 @@ namespace YTE
   YTEDefineType(SphereCollider)
   {
     YTERegisterType(SphereCollider);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
@@ -104,5 +110,13 @@ namespace YTE
     auto offset = glm::vec3(aX, aY, aZ);
 
     SetOffset(offset);
+  }
+
+  void SphereCollider::ScaleUpdate(TransformChanged *aEvent)
+  {
+    if (mSphereShape)
+    {
+      mSphereShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+    }
   }
 }

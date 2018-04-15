@@ -101,6 +101,12 @@ namespace YTE
     YTEUnusedArgument(aLifeTime);
     YTEUnusedArgument(aColor);
   };
+
+  void DebugDrawer::clearLines()
+  {
+    Begin();
+    End();
+  }
 }
 
 // TODO (Josh): Fix enum binding
