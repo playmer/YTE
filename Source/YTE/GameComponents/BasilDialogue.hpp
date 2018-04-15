@@ -52,7 +52,7 @@ namespace YTE
     void OnDialogueContinue(DialogueNodeConfirm *aEvent);
     void OnQuestStart(QuestStart *aEvent);
     void OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent);
-    void OnPlaySoundEvent(PlaySoundEvent *);
+    void OnPlaySoundEvent(PlaySoundEvent *aEvent);
     void OnPlayAnimationEvent(PlayAnimationEvent *aEvent);
 
     std::vector<Quest> mQuestVec;
@@ -63,10 +63,13 @@ namespace YTE
 
     WWiseEmitter *mSoundEmitter;
     WWiseSystem *mSoundSystem;
-    std::vector<std::vector<u64> > mDialogueConvos;
-    std::vector<std::vector<u64> >::iterator mConvosIter;
-    std::vector<std::vector<u64> >::iterator mPrevConvoIter;
-    std::vector<u64>::iterator mLinesIter;
+    std::vector<std::map<std::string, u64> > mDialogueConvos;
+    std::vector<std::map<std::string, u64> >::iterator mConvosIter;
+    std::vector<std::map<std::string, u64> >::iterator mPrevConvoIter;
+    std::map<std::string, u64>::iterator mLinesIter;
+    int mSoundBranchAccumulator = 0;
+    int mSoundOptionChosen = 0;
+    int mSoundCueCounter = 0;
 
     Animator *mAnimator;
     Composition *mCameraAnchor;

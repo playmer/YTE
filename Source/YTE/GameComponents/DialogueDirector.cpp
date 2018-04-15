@@ -124,7 +124,7 @@ namespace YTE
 
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
-      PlaySoundEvent triggerSound;
+      PlaySoundEvent triggerSound(0, 0, true);
       mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
 
       UIUpdateContent content(true, aEvent->ContentMessages[0]);
@@ -209,7 +209,7 @@ namespace YTE
         // If there are more strings in this node
       if (mCurNodeDataIndex < mCurNodeData.size() - 1)
       {
-        PlaySoundEvent triggerSound;
+        PlaySoundEvent triggerSound(0, 0, true);
         mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
 
         ++mCurNodeDataIndex;
@@ -227,6 +227,10 @@ namespace YTE
     {
       if (mLastSelectionIndex > -1)
       {
+        // this just passes info to the Dialogue for how we are traversing the sound vec
+        PlaySoundEvent triggerSound((int)mCurNodeData.size(), mLastSelectionIndex, false);
+        mSpace->SendEvent(Events::PlaySoundEvent, &triggerSound);
+
         DialogueNodeConfirm confirm(mLastSelectionIndex);
         mSpace->SendEvent(Events::DialogueNodeConfirm, &confirm);
 

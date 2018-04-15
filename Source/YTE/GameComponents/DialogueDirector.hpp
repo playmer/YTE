@@ -80,10 +80,15 @@ namespace YTE
 
   YTEDeclareEvent(PlaySoundEvent);
 
+  /* PlaySoundEvent(int aSize, int aOption, bool aIsText) */
   class PlaySoundEvent : public Event
   {
   public:
     YTEDeclareType(PlaySoundEvent);
+    PlaySoundEvent(int aSize, int aOption, bool aIsText) : size(aSize), option(aOption), isText(aIsText) {};
+    int size;
+    int option;
+    bool isText;
   };
 
   /////////////////////////////////////////////////////////////////////////////////////

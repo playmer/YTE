@@ -83,129 +83,131 @@ namespace YTE
     {
       // INTRO /////////////////////////////
       // H
-      mDialogueConvos.emplace_back(std::vector<u64> 
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_I_H_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_I_H_3"),
-        mSoundSystem->GetSoundIDFromString("CJ_I_H_4"),
-        mSoundSystem->GetSoundIDFromString("CJ_I_H_5")
+        std::make_pair("CJ_I_H_1", mSoundSystem->GetSoundIDFromString("CJ_I_H_1")),
+        std::make_pair("CJ_I_H_2", mSoundSystem->GetSoundIDFromString("CJ_I_H_2")),
+        std::make_pair("CJ_I_H_3", mSoundSystem->GetSoundIDFromString("CJ_I_H_3")),
+        std::make_pair("CJ_I_H_4", mSoundSystem->GetSoundIDFromString("CJ_I_H_4")), 
+        std::make_pair("CJ_I_H_5", mSoundSystem->GetSoundIDFromString("CJ_I_H_5"))
       });
       // G                                                             
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_I_G_1")
+        std::make_pair("CJ_I_G_1", mSoundSystem->GetSoundIDFromString("CJ_I_G_1"))
       });
 
       // FI ////////////////////////////
       // H
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_3"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_4"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_H_5")
+        std::make_pair("CJ_FI_H_1", mSoundSystem->GetSoundIDFromString("CJ_FI_H_1")),
+        std::make_pair("CJ_FI_H_2", mSoundSystem->GetSoundIDFromString("CJ_FI_H_2")),
+        std::make_pair("CJ_FI_H_3", mSoundSystem->GetSoundIDFromString("CJ_FI_H_3")),
+        std::make_pair("CJ_FI_H_4", mSoundSystem->GetSoundIDFromString("CJ_FI_H_4")),
+        std::make_pair("CJ_FI_H_5", mSoundSystem->GetSoundIDFromString("CJ_FI_H_5")),
+        std::make_pair("CJ_FI_H_6", mSoundSystem->GetSoundIDFromString("CJ_FI_H_6"))
       });
       // NP           
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3")
+        std::make_pair("CJ_FI_NP_1", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_1")),
+        std::make_pair("CJ_FI_NP_2", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_2")),
+        std::make_pair("CJ_FI_NP_3", mSoundSystem->GetSoundIDFromString("CJ_FI_NP_3"))
       });
       // C                                                              
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_C_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_C_2"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_C_3")
+        std::make_pair("CJ_FI_C_1", mSoundSystem->GetSoundIDFromString("CJ_FI_C_1")),
+        std::make_pair("CJ_FI_C_2", mSoundSystem->GetSoundIDFromString("CJ_FI_C_2")),
+        std::make_pair("CJ_FI_C_3", mSoundSystem->GetSoundIDFromString("CJ_FI_C_3"))
       });
       // G
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-        mSoundSystem->GetSoundIDFromString("CJ_FI_G_1"),
-        mSoundSystem->GetSoundIDFromString("CJ_FI_G_2")
-      });
-
-      // MeP //////////////////////////////////
-      // H
-      mDialogueConvos.emplace_back(std::vector<u64>
-      {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
-      });
-      // NP           
-      mDialogueConvos.emplace_back(std::vector<u64>
-      {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
-      });
-      // C                                                              
-      mDialogueConvos.emplace_back(std::vector<u64>
-      {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
-      });
-      // G
-      mDialogueConvos.emplace_back(std::vector<u64>
-      {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+        std::make_pair("CJ_FI_G_1", mSoundSystem->GetSoundIDFromString("CJ_FI_G_1")),
+        std::make_pair("CJ_FI_G_2", mSoundSystem->GetSoundIDFromString("CJ_FI_G_2"))
       });
 
       // GC //////////////////////////////////
       // H
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+         std::make_pair("CJ_GC_H_1", mSoundSystem->GetSoundIDFromString("CJ_GC_H_1")),
+         std::make_pair("CJ_GC_H_2", mSoundSystem->GetSoundIDFromString("CJ_GC_H_2")),
+         std::make_pair("CJ_GC_H_3", mSoundSystem->GetSoundIDFromString("CJ_GC_H_3")),
+         std::make_pair("CJ_GC_H_4", mSoundSystem->GetSoundIDFromString("CJ_GC_H_4")),
+         std::make_pair("CJ_GC_H_5", mSoundSystem->GetSoundIDFromString("CJ_GC_H_5"))
       });
       // NP           
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+         std::make_pair("CJ_GC_NP_1", mSoundSystem->GetSoundIDFromString("CJ_GC_NP_1")),
+         std::make_pair("CJ_GC_NP_2", mSoundSystem->GetSoundIDFromString("CJ_GC_NP_2"))
       });
       // C                                                              
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+         std::make_pair("CJ_GC_C_1", mSoundSystem->GetSoundIDFromString("CJ_GC_C_1")),
+         std::make_pair("CJ_GC_C_2", mSoundSystem->GetSoundIDFromString("CJ_GC_C_2")),
+         std::make_pair("CJ_GC_C_3", mSoundSystem->GetSoundIDFromString("CJ_GC_C_3"))
       });
       // G
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+         std::make_pair("CJ_GC_G_1", mSoundSystem->GetSoundIDFromString("CJ_GC_G_1")),
+         std::make_pair("CJ_GC_G_2", mSoundSystem->GetSoundIDFromString("CJ_GC_G_2"))
+      });
+
+      // MeP //////////////////////////////////
+      // H
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_MeP_H_1", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_1")),
+        std::make_pair("CJ_MeP_H_2", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_2")),
+        std::make_pair("CJ_MeP_H_3", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_3")),
+        std::make_pair("CJ_MeP_H_4", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_4")),
+        std::make_pair("CJ_MeP_H_5", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_5")),
+        std::make_pair("CJ_MeP_H_6", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_6")),
+        std::make_pair("CJ_MeP_H_7", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_7")),
+        std::make_pair("CJ_MeP_H_8", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_8")),
+        std::make_pair("CJ_MeP_H_9", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_9")),
+        std::make_pair("CJ_MeP_H_10", mSoundSystem->GetSoundIDFromString("CJ_MeP_H_10"))
+      });
+      // NP           
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_MeP_NP_1", mSoundSystem->GetSoundIDFromString("CJ_MeP_NP_1")),
+        std::make_pair("CJ_MeP_NP_2", mSoundSystem->GetSoundIDFromString("CJ_MeP_NP_2")),
+        std::make_pair("CJ_MeP_NP_3", mSoundSystem->GetSoundIDFromString("CJ_MeP_NP_3"))
+      });
+      // C                                                              
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+        std::make_pair("CJ_MeP_C_1", mSoundSystem->GetSoundIDFromString("CJ_MeP_C_1")),
+        std::make_pair("CJ_MeP_C_2", mSoundSystem->GetSoundIDFromString("CJ_MeP_C_2")),
+        std::make_pair("CJ_MeP_C_3", mSoundSystem->GetSoundIDFromString("CJ_MeP_C_3")),
+        std::make_pair("CJ_MeP_C_4", mSoundSystem->GetSoundIDFromString("CJ_MeP_C_4"))
+      });
+      // G
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
+      {
+         std::make_pair("CJ_MeP_G_1", mSoundSystem->GetSoundIDFromString("CJ_MeP_G_1")),
+         std::make_pair("CJ_MeP_G_2", mSoundSystem->GetSoundIDFromString("CJ_MeP_G_2"))
       });
 
       // NQ //////////////////////////////////
       // H
-      mDialogueConvos.emplace_back(std::vector<u64>
+      mDialogueConvos.emplace_back(std::map<std::string, u64>
       {
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1"),
-         mSoundSystem->GetSoundIDFromString("CJ_I_H_1")
+         std::make_pair("CJ_NQ_H_1", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_1")),
+         std::make_pair("CJ_NQ_H_2", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_2")),
+         std::make_pair("CJ_NQ_H_3", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_3")),
+         std::make_pair("CJ_NQ_H_4", mSoundSystem->GetSoundIDFromString("CJ_NQ_H_4"))
       });
 
       mConvosIter = mDialogueConvos.begin();
+      mPrevConvoIter = mConvosIter;
       mLinesIter = mConvosIter->begin();
     }
   }
@@ -278,6 +280,7 @@ namespace YTE
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
+    mSoundBranchAccumulator = 0; // reset the conversation skip number
 
     if (mActiveQuest->GetName() == Quest::Name::Introduction)
     {
@@ -432,8 +435,13 @@ namespace YTE
       else if (mActiveQuest->GetName() == Quest::Name::NotActive)
       {
         mActiveNode = mActiveConvo->GetRoot();
-        mPrevConvoIter = mConvosIter; // save our place for sound cues
-        mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
+        // if we are already in the NotActive quest, we dont want to do this
+        if (mConvosIter != mDialogueConvos.end() - 1)
+        {
+          mPrevConvoIter = mConvosIter; // save our place for sound cues
+          mConvosIter = mDialogueConvos.end() - 1; // NotActive quest will always come last, and only has a Hello convo
+        }
+        // we do need to reset the audio tho
         mLinesIter = mConvosIter->begin();
       }
       else
@@ -461,13 +469,42 @@ namespace YTE
     }
   }
 
-  void JohnDialogue::OnPlaySoundEvent(PlaySoundEvent *)
+  void JohnDialogue::OnPlaySoundEvent(PlaySoundEvent *aEvent)
   {
-    if (mConvosIter != mDialogueConvos.end())
+    if (mActiveQuest->GetName() == Quest::Name::Fetch && mActiveConvo->GetName() == Conversation::Name::Hello)
     {
-      if (mLinesIter != mConvosIter->end())
+      // if its an Input node
+      if (!aEvent->isText)
       {
-        mSoundEmitter->PlayEvent(*mLinesIter);
+        // store how many sounds we will skip from now on
+        mSoundBranchAccumulator = aEvent->size - 1;
+        // go to the chosen sound option
+        for (int i = 0; i < aEvent->option; ++i)
+        {
+          ++mLinesIter;
+        }
+        return;
+      }
+
+      if (mConvosIter != mDialogueConvos.end())
+      {
+        if (mLinesIter != mConvosIter->end())
+        {
+          std::cout << mLinesIter->first << std::endl;
+          mSoundEmitter->PlayEvent(mLinesIter->second);
+          for (int i = 0; i <= mSoundBranchAccumulator; ++i)
+          {
+            ++mLinesIter;
+          }
+        }
+      }
+    }
+    else
+    {
+      if (aEvent->isText)
+      {
+        std::cout << mLinesIter->first << std::endl;
+        mSoundEmitter->PlayEvent(mLinesIter->second);
         ++mLinesIter;
       }
     }
