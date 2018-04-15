@@ -47,7 +47,7 @@ namespace YTE
     auto scale = transform->GetScale();
     auto rotation = transform->GetRotation();
     auto bulletRot = OurQuatToBt(rotation);
-    auto bulletTransform = btTransform(bulletRot, btVector3(translation.x, translation.y, translation.z));
+    auto bulletTransform = btTransform(bulletRot, OurVec3ToBt(translation));
     
 
     Mesh *mesh{ nullptr };
