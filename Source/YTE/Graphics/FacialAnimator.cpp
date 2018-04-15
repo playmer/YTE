@@ -161,6 +161,8 @@ namespace YTE
         mInitialMouthVertexBuffer = submesh.mVertexBuffer;
       }
     }
+
+    instModel->mType = ShaderType::AlphaBlendShader;
   }
 
   FaceFrame* FacialAnimator::FindEyeFrame(FaceAnim *anim, double time)
