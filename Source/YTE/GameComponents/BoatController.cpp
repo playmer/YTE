@@ -61,7 +61,6 @@ namespace YTE
 
   BoatController::BoatController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
-    , mNearbyDock(nullptr)
     , mPlayingTurnSound(false)
     , mCurrSpeed(0.f)
     , mCurrRotSpeed(0.f)
@@ -124,6 +123,7 @@ namespace YTE
     mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
     mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
     mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
+    mSpace->YTERegister(Events::DialogueExit, this, &BoatController::OnDialogueExit);
     mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
 
     mAnimator = mOwner->GetComponent<Animator>();
@@ -138,7 +138,7 @@ namespace YTE
       mMainsailAnimator = mainsail->GetComponent<Animator>();
     }
 
-    if (Composition *character= mOwner->FindFirstCompositionByName("MainCharacter"))
+    if (Composition *character = mOwner->FindFirstCompositionByName("MainCharacter"))
     {
       mCharacterAnimator = character->GetComponent<Animator>();
     }
@@ -189,6 +189,9 @@ namespace YTE
     {
       mSoundEmitter->PlayEvent(mSoundBumpDock);
     }
+
+    mCharacterAnimator->SetDefaultAnimation("Idle.fbx");
+    mCharacterAnimator->SetCurrentAnimation("Idle.fbx");
   }
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)
@@ -344,6 +347,14 @@ namespace YTE
       glm::vec3 rightEmitPos = tillerPos - emitterOffset + 0.1f * rightVec;
       mBackRightEmitterTransform->SetTranslation(rightEmitPos.x, rightEmitPos.y + 0.2966f, rightEmitPos.z);
     }
+  }
+
+  void BoatController::OnDialogueExit(DialogueExit *)
+  {
+    mCharacterAnimator->SetDefaultAnimation("MC_Boat_Turn.fbx");
+    mCharacterAnimator->SetCurrentAnimation("MC_Boat_Turn.fbx");
+
+    mRigidBody->SetDamping(0.f, 0.9f);
   }
 
   void BoatController::Update(LogicUpdate *aEvent)

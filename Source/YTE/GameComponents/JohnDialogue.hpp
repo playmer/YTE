@@ -105,6 +105,7 @@ namespace YTE
 
     Animator *mAnimator;
     Composition *mCameraAnchor;
+    Transform *mLambAnchor;
   };
 } //end yte
 #endif

@@ -25,6 +25,7 @@ namespace YTE
     , mSoundSystem(nullptr)
     , mAnimator(nullptr)
     , mCameraAnchor(nullptr)
+    , mLambAnchor(nullptr)
   {
     YTEUnusedArgument(aProperties);
 
@@ -45,6 +46,11 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
+
+    if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
+    {
+      mLambAnchor = lambAnchor->GetComponent<Transform>();
+    }
 
     auto children = mOwner->GetCompositions()->All();
 
@@ -259,6 +265,7 @@ namespace YTE
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       next.DialogueCameraAnchor = mCameraAnchor;
+      next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
   }
@@ -374,6 +381,7 @@ namespace YTE
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
         next.DialogueCameraAnchor = mCameraAnchor;
+        next.DialogueLambAnchor = mLambAnchor;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
       }
     }

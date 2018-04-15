@@ -36,6 +36,7 @@ namespace YTE
     , mSoundEmitter(nullptr)
     , mSoundSystem(nullptr)
     , mCameraAnchor(nullptr)
+    , mLambAnchor(nullptr)
   {
     YTEUnusedArgument(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
@@ -56,6 +57,11 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
     mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
     mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+
+    if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
+    {
+      mLambAnchor = lambAnchor->GetComponent<Transform>();
+    }
 
     auto children = mOwner->GetCompositions()->All();
 
@@ -264,6 +270,7 @@ namespace YTE
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       next.DialogueCameraAnchor = mCameraAnchor;
+      next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
   }
@@ -379,6 +386,7 @@ namespace YTE
         DialogueNodeReady next(mActiveNode->GetNodeData());
         next.DialogueType = type;
         next.DialogueCameraAnchor = mCameraAnchor;
+        next.DialogueLambAnchor = mLambAnchor;
         mSpace->SendEvent(Events::DialogueNodeReady, &next);
       }
     }
