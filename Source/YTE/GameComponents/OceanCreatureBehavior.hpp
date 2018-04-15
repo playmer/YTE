@@ -30,16 +30,35 @@ namespace YTE
     bool GetFlipRotation() const;
     void SetFlipRotation(bool aFlip);
 
+    float GetJumpDistance() const;
+    void SetJumpDistance(float aDistance);
+
+    float GetSleepTime() const;
+    void SetSleepTime(float aTime);
+
   private:
+    Transform *mCameraTransform;
+
     Transform *mParentTransform;
     Transform *mBoatTransform;
 
     bool mFlipRotation;
 
     bool mStartJump;
-    bool mIsJumping;
+
+    enum State
+    {
+      Sleeping,
+      Jumping,
+      Waiting
+    };
+
+    State mState;
 
     double mTimer;
+    double mSleepTime;
+
+    float mJumpDistance;
 
   };
 } //end yte

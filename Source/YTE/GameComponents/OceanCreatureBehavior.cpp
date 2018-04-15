@@ -21,6 +21,14 @@ namespace YTE
     YTEBindProperty(&OceanCreatureBehavior::GetFlipRotation, &OceanCreatureBehavior::SetFlipRotation, "Flip Rotation")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&OceanCreatureBehavior::GetJumpDistance, &OceanCreatureBehavior::SetJumpDistance, "Jump Distance")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
+
+    YTEBindProperty(&OceanCreatureBehavior::GetSleepTime, &OceanCreatureBehavior::SetSleepTime, "Sleep Time")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   OceanCreatureBehavior::OceanCreatureBehavior(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -30,6 +38,9 @@ namespace YTE
     , mStartJump(false)
     , mTimer(0.0)
     , mFlipRotation(false)
+    , mJumpDistance(20.0f)
+    , mSleepTime(30.0)
+    , mState(State::Waiting)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -37,6 +48,11 @@ namespace YTE
   void OceanCreatureBehavior::Initialize()
   {
     mSpace->YTERegister(Events::LogicUpdate, this, &OceanCreatureBehavior::Update);
+
+    if (Composition *camera = GetSpace()->FindFirstCompositionByName("Camera"))
+    {
+      mCameraTransform = camera->GetComponent<Transform>();
+    }
 
     if (Composition *boat = mSpace->FindFirstCompositionByName("Boat"))
     {
@@ -60,7 +76,7 @@ namespace YTE
 
     float dist = diff.length();
 
-    if (dist > 1)
+    if (dist > mJumpDistance)
     {
       mStartJump = true;
     }
@@ -69,33 +85,56 @@ namespace YTE
       mStartJump = false;
     }
 
-    if (mStartJump && !mIsJumping)
+    switch (mState)
     {
-      mIsJumping = true;
-
-      // set initial rotation
-      mParentTransform->SetWorldRotation(glm::vec3(0));
-    }
-
-    if (mIsJumping)
-    {
-      float rotAngle = 2.0f * aEvent->Dt;
-
-      if (mFlipRotation)
+      case State::Waiting:
       {
-        rotAngle = -rotAngle;
+        if (mStartJump)
+        {
+          // set initial rotation
+          mParentTransform->SetWorldRotation(glm::vec3(0));
+          
+          mState = State::Jumping;
+        }
+
+        break;
       }
 
-      // update rotation
-      mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), rotAngle);
-      
-      mTimer += aEvent->Dt;
-    }
+      case State::Jumping:
+      {
+        mParentTransform->SetWorldRotation(mCameraTransform->GetWorldRotation());
 
-    if (mTimer > 2.0)
-    {
-      mIsJumping = false;
-      mTimer = 0.0;
+        float rotAngle = 2.0f * aEvent->Dt;
+
+        if (mFlipRotation)
+        {
+          rotAngle = -rotAngle;
+        }
+
+        mTimer += rotAngle;
+
+        // update rotation
+        mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), mTimer);
+
+        if (abs(mTimer) > 4.0)
+        {
+          mTimer = 0.0;
+          mState = State::Sleeping;
+        }
+        break;
+      }
+
+      case State::Sleeping:
+      {
+        mTimer += aEvent->Dt;
+
+        if (mTimer > mSleepTime)
+        {
+          mTimer = 0.0;
+          mState = State::Waiting;
+        }
+        break;
+      }
     }
   }
 
@@ -107,6 +146,26 @@ namespace YTE
   void OceanCreatureBehavior::SetFlipRotation(bool aFlip)
   {
     mFlipRotation = aFlip;
+  }
+
+  float OceanCreatureBehavior::GetJumpDistance() const
+  {
+    return mJumpDistance;
+  }
+
+  void OceanCreatureBehavior::SetJumpDistance(float aDistance)
+  {
+    mJumpDistance = aDistance;
+  }
+
+  float OceanCreatureBehavior::GetSleepTime() const
+  {
+    return mSleepTime;
+  }
+
+  void OceanCreatureBehavior::SetSleepTime(float aTime)
+  {
+    mSleepTime = aTime;
   }
 
 } //end yte
