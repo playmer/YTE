@@ -47,6 +47,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.cpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestProgressionTrigger.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Quest.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/OceanCreatureBehavior.cpp
 #  PUBLIC    
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -95,4 +96,5 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/NoticeBoard.hpp
   ${CMAKE_CURRENT_LIST_DIR}/QuestProgressionTrigger.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Quest.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/OceanCreatureBehavior.hpp
 )

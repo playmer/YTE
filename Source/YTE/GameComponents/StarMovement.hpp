@@ -45,6 +45,8 @@ namespace YTE
     Transform *mDaisyTransform;
     Transform *mBasilTransform;
 
+    double mTimer;
+
     enum CurrentAnchor
     {
       John,

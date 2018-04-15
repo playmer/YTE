@@ -55,6 +55,7 @@
 #include "YTE/GameComponents/JohnTutorial.hpp"
 #include "YTE/GameComponents/DaisyTutorial.hpp"
 #include "YTE/GameComponents/BasilTutorial.hpp"
+#include "YTE/GameComponents/OceanCreatureBehavior.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -156,6 +157,7 @@ namespace YTE
     helper.CreateComponentFactory<JohnTutorial>();
     helper.CreateComponentFactory<DaisyTutorial>();
     helper.CreateComponentFactory<BasilTutorial>();
+    helper.CreateComponentFactory<OceanCreatureBehavior>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();
