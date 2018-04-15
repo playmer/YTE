@@ -106,6 +106,7 @@ namespace YTE
 
   SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : BaseModel{ aOwner, aSpace, aProperties }
+    , mFontName("calibri.ttf")
     , mAlignX(AlignmentX::Left)
     , mAlignY(AlignmentY::Center)
     , mConstructing(true)
@@ -134,6 +135,7 @@ namespace YTE
     mOwner->YTERegister(Events::RotationChanged, this, &SpriteText::TransformUpdate);
     //mOwner->YTERegister(Events::ScaleChanged, this, &SpriteText::TransformUpdate);
 
+    PrepareFont();
     CreateSpriteText();
   }
 
