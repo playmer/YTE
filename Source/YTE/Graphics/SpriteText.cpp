@@ -102,6 +102,11 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignYDropDownList);
+
+    YTEBindProperty(&SpriteText::GetLineLength, &SpriteText::SetLineLength, "MaxLineLength")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>()
+      .SetDocumentation("The max length of a single line (in world units) for word-wrapping. 0.0 disables word-wrapping");
   }
 
   SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -110,6 +115,7 @@ namespace YTE
     , mFontName("calibri.ttf")
     , mAlignX(AlignmentX::Center)
     , mAlignY(AlignmentY::Center)
+    , mLineLength(0.0f)
     , mConstructing(true)
   {
     mFontSize = 1.f;
@@ -174,8 +180,18 @@ namespace YTE
 
     submesh.mCullBackFaces = false;
 
-    float maxHeight = 0.0f;
-    for (auto &c : mText)
+      // Reset our bounding volume to initial values when new text is created
+    mBoundingBox.xMin = FLT_MAX;
+    mBoundingBox.xMax = -FLT_MAX;
+    mBoundingBox.yMin = FLT_MAX;
+    mBoundingBox.yMax = -FLT_MAX;
+
+    float maxCharHeight = 0.0f;
+    float currMaxX = -FLT_MAX;  // The xMax for the current line
+
+    int i = 0;
+    int cursor = 0;
+    while (mText[i])
     {
       Vertex vert0;
       Vertex vert1;
@@ -187,20 +203,57 @@ namespace YTE
       stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), 
                           mFontInfo.mAtlasWidth, 
                           mFontInfo.mAtlasHeight, 
-                          c - mFontInfo.mFirstChar, 
+                          mText[i] - mFontInfo.mFirstChar, 
                           &offsetX, 
                           &offsetY, 
                           &quad, 
                           1);
 
-      float height = sizeFactor * glm::abs(quad.y1 - quad.y0);
-      maxHeight = height > maxHeight ? height : maxHeight;
+        // Mark the last ' ' we found (for word-wrap)
+      if (mText[i] == ' ')
+      {
+        cursor = i + 1;
+      }
+
+      float left = sizeFactor * quad.x0;
+      float right = sizeFactor * quad.x1;
+      float top = sizeFactor * -quad.y0;
+      float bottom = sizeFactor * -quad.y1;
+
+      if (offsetY == 0.0f && (top - bottom) > maxCharHeight)
+      {
+        maxCharHeight = (top - bottom);
+      }
+
+        // Update text bounding volume (used for alignment)
+      if (left < mBoundingBox.xMin)
+      {
+        mBoundingBox.xMin = left;
+      }
+      if (right > mBoundingBox.xMax)
+      {
+        mBoundingBox.xMax = right;
+      }
+      if (bottom < mBoundingBox.yMin)
+      {
+        mBoundingBox.yMin = bottom;
+      }
+      if (top > mBoundingBox.yMax)
+      {
+        mBoundingBox.yMax = top;
+      }
+
+        // Update current line maximum (used for wrapping)
+      if (right > currMaxX)
+      {
+        currMaxX = right;
+      }
 
         // Save vertex attributes
-      vert0.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y1, 0.0 };  // Bottom-left
-      vert1.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y1, 0.0 };  // Bottom-right
-      vert2.mPosition = { sizeFactor * quad.x1, sizeFactor * -quad.y0, 0.0 };  // Top-right
-      vert3.mPosition = { sizeFactor * quad.x0, sizeFactor * -quad.y0, 0.0 };  // Top-left
+      vert0.mPosition = { left, bottom , 0.0 };  // Bottom-left
+      vert1.mPosition = { right, bottom, 0.0 };  // Bottom-right
+      vert2.mPosition = { right, top, 0.0 };  // Top-right
+      vert3.mPosition = { left, top, 0.0 };  // Top-left
       vert0.mTextureCoordinates = { quad.s0, 1.0f - quad.t1, 0.0f };  // Bottom-left (UVs)
       vert1.mTextureCoordinates = { quad.s1, 1.0f - quad.t1, 0.0f };  // Bottom-right (UVs)
       vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
@@ -219,33 +272,77 @@ namespace YTE
       submesh.mIndexBuffer.push_back(lastIndex + 3);
 
       lastIndex += 4;
+      ++i;
+
+        // Word wrap after characters have been placed (graphically)
+      if (mLineLength != 0.0f && (currMaxX - mBoundingBox.xMin) >= mLineLength)
+      {
+        int vertCursor = lastIndex - (4 * (i - cursor));
+        float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
+
+          // If we happen to land exactly on a space (i.e., there are no overlapping characters)
+          // Just crlf
+        if (cursor == i)
+        {
+          offsetX = 0.0f;
+          currMaxX = -FLT_MAX;
+        }
+
+          // Otherwise, move any dangling characters to the next line (so the line ends with a ' ')
+        else
+        {
+          while (cursor < i)
+          {
+            submesh.mVertexBuffer[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexBuffer[vertCursor + 1].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexBuffer[vertCursor + 2].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexBuffer[vertCursor + 3].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+
+            vertCursor += 4;
+            ++cursor;
+          }
+
+          offsetX = (submesh.mVertexBuffer[vertCursor - 2].mPosition.x / sizeFactor) - sizeFactor;
+          currMaxX = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+        }
+
+        offsetY += mFontInfo.mSize;
+      }
     }
 
-    float maxWidth = (submesh.mVertexBuffer.empty())
-      ? 0.0f
-      : (submesh.mVertexBuffer.end() - 2)->mPosition.x - submesh.mVertexBuffer.begin()->mPosition.x;
-    
+      // Apply alignment
     for (auto &verts : submesh.mVertexBuffer)
     {
-        // Without any modification, text is bottom-left aligned
+        // Offsets the text to account for leaving the anchor at the bottom-left of the first row
+      verts.mPosition.y -= maxCharHeight;
+
+        // Before this switch, text is top-left aligned
       switch (mAlignX)
       {
         case AlignmentX::Center:
-          verts.mPosition.x -= (maxWidth / 2.0f);
+        {
+          verts.mPosition.x -= ((mBoundingBox.xMax - mBoundingBox.xMin) / 2.0f);
           break;
+        }
         case AlignmentX::Right:
-          verts.mPosition.x -= maxWidth;
+        {
+          verts.mPosition.x -= (mBoundingBox.xMax - mBoundingBox.xMin);
           break;
+        }
       }
       
       switch (mAlignY)
       {
         case AlignmentY::Center:
-          verts.mPosition.y -= (maxHeight / 2.0f);
+        {
+          verts.mPosition.y += ((mBoundingBox.yMax - mBoundingBox.yMin) / 2.0f);
           break;
-        case AlignmentY::Top:
-          verts.mPosition.y -= maxHeight;
+        }
+        case AlignmentY::Bottom:
+        {
+          verts.mPosition.y += (mBoundingBox.yMax - mBoundingBox.yMin);
           break;
+        }
       }
       
     }

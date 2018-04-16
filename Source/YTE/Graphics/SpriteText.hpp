@@ -48,6 +48,14 @@ namespace YTE
 
   class SpriteText : public BaseModel
   {
+    struct BoundingBox
+    {
+      float xMin = FLT_MAX;
+      float xMax = -FLT_MAX;
+      float yMin = FLT_MAX;
+      float yMax = -FLT_MAX;
+    };
+
   public:
     YTEDeclareType(SpriteText);
     SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties);
@@ -105,13 +113,12 @@ namespace YTE
     {
       for (int i = 0; i < AlignmentX::COUNT; ++i)
       {
-        if (AlignmentX::Names[i].compare(aAlignment) == 0)
+        if (AlignmentX::Names[i].compare(aAlignment) == 0 && mAlignX != AlignmentX::Type(i))
         {
           mAlignX = AlignmentX::Type(i);
+          CreateSpriteText();
         }
       }
-
-      CreateSpriteText();
     }
 
     const std::string& GetAlignmentY() const { return AlignmentY::Names[mAlignY]; }
@@ -119,12 +126,18 @@ namespace YTE
     {
       for (int i = 0; i < AlignmentY::COUNT; ++i)
       {
-        if (AlignmentY::Names[i].compare(aAlignment) == 0)
+        if (AlignmentY::Names[i].compare(aAlignment) == 0 && mAlignY != AlignmentY::Type(i))
         {
           mAlignY = AlignmentY::Type(i);
+          CreateSpriteText();
         }
       }
+    }
 
+    float GetLineLength() const { return mLineLength; }
+    void SetLineLength(float aLineLength) 
+    { 
+      mLineLength = aLineLength;
       CreateSpriteText();
     }
     ////////////////////////////////////////////////////////
@@ -159,8 +172,10 @@ namespace YTE
     AlignmentX::Type mAlignX;
     AlignmentY::Type mAlignY;
     float mFontSize;
+    float mLineLength;
 
     Font mFontInfo;
+    BoundingBox mBoundingBox;
 
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
     bool mConstructing;
