@@ -230,12 +230,16 @@ namespace YTE
 
     vert0.mPosition = { -0.5, -0.5, 0.0 };
     vert0.mTextureCoordinates = { 0.0f, 0.0f, 0.0f };
+    vert0.mNormal = { 0.0f, 0.0f, 1.0f };
     vert1.mPosition = { 0.5, -0.5, 0.0 };
     vert1.mTextureCoordinates = { 1.0f, 0.0f, 0.0f };
+    vert1.mNormal = { 0.0f, 0.0f, 1.0f };
     vert2.mPosition = { 0.5, 0.5, 0.0 };
     vert2.mTextureCoordinates = { 1.0f, 1.0f, 0.0f };
+    vert2.mNormal = { 0.0f, 0.0f, 1.0f };
     vert3.mPosition = { -0.5, 0.5, 0.0 };
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
+    vert3.mNormal = { 0.0f, 0.0f, 1.0f };
 
     if (mAnimating)
     {
@@ -247,6 +251,20 @@ namespace YTE
       vert2.mTextureCoordinates = { xWidth, 1.0f,           0.0f };
       vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
     }
+
+    std::string defaultTexture{ "white.png" };
+
+    
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+    mSubmesh.mUBOMaterial = modelMaterial;
+
+    mSubmesh.mSpecularMap = defaultTexture;
+    mSubmesh.mSpecularType = TextureViewType::e2D;
 
     mSubmesh.mDiffuseMap = mTextureName;
     mSubmesh.mDiffuseType = TextureViewType::e2D;
@@ -280,6 +298,7 @@ namespace YTE
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
+    mInstantiatedSprite->UpdateUBOMaterial(&modelMaterial);
     mInstantiatedSprite->SetVisibility(mVisibility);
   }
 }

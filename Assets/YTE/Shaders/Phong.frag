@@ -330,12 +330,14 @@ LightingData SampleMaterialsAndTextures(vec2 aUV, inout vec4 aNormal)
 
   // diffuse
   lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  lightData.mDiffTexture  = texture(diffuseSampler, aUV) * lightData.mDiffMat;
+  lightData.mDiffTexture  = texture(diffuseSampler, aUV);
 
-  if (lightData.mDiffTexture.w <= 0.001f)
+  if (lightData.mDiffTexture.w <= 0.5f)
   {
     discard;
   }
+
+  lightData.mDiffTexture = lightData.mDiffTexture * lightData.mDiffMat;
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
@@ -409,11 +411,7 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 // Entry Point of Shader
 void main()
 {
-  if ((ModelMaterial.mFlags & MatFlag_IsGizmo) > 0)
-  {
-    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
-  }
-  else if (Lights.mActive < 0.5f)
+  if (Lights.mActive < 0.5f)
   {
     outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
   }

@@ -163,6 +163,13 @@ namespace YTE
 
     glm::quat camRot = mCameraTransform->GetWorldRotation();
 
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+
     // update the particles
     for (auto it = mParticles.begin(); it < mParticles.end(); ++it)
     {
@@ -195,9 +202,10 @@ namespace YTE
       particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
       particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
-      particle.mUBO.mDiffuseColor.a = particle.mLife / mLifetime;
+      modelMaterial.mDiffuse.w = particle.mLife / mLifetime;
 
       it->second->UpdateUBOModel(particle.mUBO);
+      it->second->UpdateUBOMaterial(&modelMaterial);
     }
 
     // time to make some new particles
@@ -381,12 +389,25 @@ namespace YTE
 
     vert0.mPosition = { -0.5, -0.5, 0.0 };
     vert0.mTextureCoordinates = { 0.0f, 0.0f, 0.0f };
+    vert0.mNormal = { 0.0f, 0.0f, 1.0f };
     vert1.mPosition = { 0.5, -0.5, 0.0 };
     vert1.mTextureCoordinates = { 1.0f, 0.0f, 0.0f };
+    vert1.mNormal = { 0.0f, 0.0f, 1.0f };
     vert2.mPosition = { 0.5, 0.5, 0.0 };
     vert2.mTextureCoordinates = { 1.0f, 1.0f, 0.0f };
+    vert2.mNormal = { 0.0f, 0.0f, 1.0f };
     vert3.mPosition = { -0.5, 0.5, 0.0 };
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
+    vert3.mNormal = { 0.0f, 0.0f, 1.0f };
+
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+
+    submesh.mUBOMaterial = modelMaterial;
 
     std::vector<u32> mIndices{
       0, 1, 2,
@@ -458,6 +479,16 @@ namespace YTE
     particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
     particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
+    UBOMaterial modelMaterial{};
+    modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
+    modelMaterial.mShininess = 1.0f;
+
+    modelMaterial.mDiffuse.w = particle.mLife / mLifetime;
+
+    model->UpdateUBOMaterial(&modelMaterial);
     model->UpdateUBOModel(particle.mUBO);
 
     mParticles.emplace_back(particle, std::move(model));
