@@ -638,38 +638,42 @@ namespace YTE
   //////////////////////////////////////////
   // Implementation mostly by Chromium (BSD)
   //////////////////////////////////////////
-  void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
+  void Window::SetResolution(u32 aWidth, u32 aHeight)
   {
-    YTEUnusedArgument(aForMetro);
+    if (mEngine->IsEditor())
+    {
+      return;
+    }
 
     auto self = mData.Get<WindowData>();
     ScopedFullscreenVisibility visibility(self->mWindowHandle);
 
-    mFullscreen = aFullscreen;
+    mRequestedWidth = aWidth;
+    mRequestedHeight = aHeight;
 
     if (mFullscreen)
     {
       // Set new window style and size.
       SetWindowLong(self->mWindowHandle,
-        GWL_STYLE,
-        WS_POPUP | WS_VISIBLE);
+                    GWL_STYLE,
+                    WS_POPUP | WS_VISIBLE);
 
       // On expand, if we're given a window_rect, grow to it, otherwise do
       // not resize.
       MONITORINFO monitorInformation;
       monitorInformation.cbSize = sizeof(MONITORINFO);
       GetMonitorInfo(MonitorFromWindow(self->mWindowHandle, MONITOR_DEFAULTTOPRIMARY),
-        &monitorInformation);
+                     &monitorInformation);
 
       RECT window_rect(monitorInformation.rcMonitor);
 
       SetWindowPos(self->mWindowHandle,
-        NULL,
-        monitorInformation.rcMonitor.left,
-        monitorInformation.rcMonitor.top,
-        monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left,
-        monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top,
-        SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+                   NULL,
+                   monitorInformation.rcMonitor.left,
+                   monitorInformation.rcMonitor.top,
+                   monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left,
+                   monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top,
+                   SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     }
     else
     {
@@ -677,11 +681,11 @@ namespace YTE
       // here are ugly, but if SetWindowPos() doesn't redraw, the taskbar won't be
       // repainted.  Better-looking methods welcome.
       SetWindowLong(self->mWindowHandle, GWL_STYLE, CS_HREDRAW |
-        CS_VREDRAW |
-        WS_OVERLAPPED |
-        WS_SYSMENU |
-        WS_MINIMIZEBOX |
-        WS_CAPTION);
+                    CS_VREDRAW |
+                    WS_OVERLAPPED |
+                    WS_SYSMENU |
+                    WS_MINIMIZEBOX |
+                    WS_CAPTION);
 
       // The window was sized to the values we want for the client area.
       // Add the difference between the two to grow the client area correctly,
@@ -698,15 +702,23 @@ namespace YTE
       int differenceY = mRequestedHeight - clientSize.bottom;
 
       SetWindowPos(self->mWindowHandle,
-        NULL,
-        forPosition.left - differenceX / 2,
-        forPosition.top - differenceY / 2,
-        mRequestedWidth,
-        mRequestedHeight,
-        SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+                   NULL,
+                   forPosition.left - differenceX / 2,
+                   forPosition.top - differenceY / 2,
+                   mRequestedWidth,
+                   mRequestedHeight,
+                   SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     }
 
     UpdateWindow(self->mWindowHandle);
+  }
+
+  void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
+  {
+    mFullscreen = aFullscreen;
+
+    // We're not changing the previously requested height and width.
+    SetResolution(mRequestedWidth, mRequestedHeight);
   }
 
   void Window::SetWindowTitle(const char *aString)
@@ -715,7 +727,7 @@ namespace YTE
     SetWindowText(self->mWindowHandle, aString);
   }
 
-  void Window::SetExtent(u32 aHeight, u32 aWidth)
+  void Window::SetExtent(u32 aWidth, u32 aHeight)
   {
     auto self = mData.Get<WindowData>();
 

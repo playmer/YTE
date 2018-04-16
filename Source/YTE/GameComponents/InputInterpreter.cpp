@@ -571,6 +571,32 @@ namespace YTE
 
         break;
       }
+      case Keys::F4:
+      {
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(2160,1440);
+        break;
+      }
+      case Keys::F5:
+      {
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(1920, 1080);
+        break;
+      }
+      case Keys::F6:
+      {
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(1280, 720);
+        break;
+      }
+      case Keys::F7:
+      {
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(1152, 648);
+        break;
+      }
+      case Keys::F8:
+      {
+        auto fullscreen = mSpace->GetComponent<GraphicsView>()->GetWindow()->mFullscreen;
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetFullscreen(!fullscreen, false);
+        break;
+      }
     }
   }
 

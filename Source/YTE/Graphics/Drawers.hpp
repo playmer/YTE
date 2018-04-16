@@ -54,6 +54,8 @@ namespace YTE
       mColor = aColor;
     }
 
+    void SetLineWidth(float aLineWidth);
+
   private:
     Renderer *mRenderer;
     GraphicsView *mView;
@@ -64,6 +66,7 @@ namespace YTE
     std::vector<Submesh> mSubmeshes;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
+    float mLineWidth = 5.0f;
   };
 
   class TriangleDrawer
@@ -96,6 +99,8 @@ namespace YTE
       mColor = aColor;
     }
 
+    void SetLineWidth(float aLineWidth);
+
   private:
     Renderer * mRenderer;
     GraphicsView *mView;
@@ -106,6 +111,8 @@ namespace YTE
     std::vector<Submesh> mSubmeshes;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
+
+    float mLineWidth = 5.0f;
   };
 
 
@@ -139,6 +146,8 @@ namespace YTE
       mColor = aColor;
     }
 
+    void SetLineWidth(float aLineWidth);
+
   private:
     Renderer * mRenderer;
     GraphicsView *mView;
@@ -149,5 +158,6 @@ namespace YTE
     std::vector<Submesh> mSubmeshes;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
+    float mLineWidth = 5.0f;
   };
 }

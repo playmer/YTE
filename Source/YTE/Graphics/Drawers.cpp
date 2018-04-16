@@ -121,7 +121,19 @@ namespace YTE
     mInstantiatedLines->mType = ShaderType::Lines;
     auto data = mInstantiatedLines->GetUBOModelData();
     mInstantiatedLines->UpdateUBOModel(data);
-    mInstantiatedLines->mLineWidth = 5.0f;
+    mInstantiatedLines->mLineWidth = mLineWidth;
+  }
+
+
+
+  void LineDrawer::SetLineWidth(float aLineWidth)
+  {
+    mLineWidth = aLineWidth;
+
+    if (mInstantiatedLines)
+    {
+      mInstantiatedLines->mLineWidth = mLineWidth;
+    }
   }
 
 
@@ -246,7 +258,19 @@ namespace YTE
     mInstantiatedLines->mType = ShaderType::Wireframe;
     auto data = mInstantiatedLines->GetUBOModelData();
     mInstantiatedLines->UpdateUBOModel(data);
-    mInstantiatedLines->mLineWidth = 5.0f;
+    mInstantiatedLines->mLineWidth = mLineWidth;
+  }
+
+
+
+  void TriangleDrawer::SetLineWidth(float aLineWidth)
+  {
+    mLineWidth = aLineWidth;
+
+    if (mInstantiatedLines)
+    {
+      mInstantiatedLines->mLineWidth = mLineWidth;
+    }
   }
 
 
@@ -342,6 +366,17 @@ namespace YTE
     mInstantiatedLines->mType = ShaderType::Curves;
     auto data = mInstantiatedLines->GetUBOModelData();
     mInstantiatedLines->UpdateUBOModel(data);
-    mInstantiatedLines->mLineWidth = 5.0f;
+    mInstantiatedLines->mLineWidth = mLineWidth;
   }
+
+  void CurveDrawer::SetLineWidth(float aLineWidth)
+  {
+    mLineWidth = aLineWidth;
+
+    if (mInstantiatedLines)
+    {
+      mInstantiatedLines->mLineWidth = mLineWidth;
+    }
+  }
+
 }

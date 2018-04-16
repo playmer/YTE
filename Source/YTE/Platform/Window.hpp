@@ -61,6 +61,7 @@ namespace YTE
     Window(Engine *aEngine, RSValue *aProperties);
     Window(Engine *aEngine);
 
+    void SetResolution(u32 aWidth, u32 aHeight);
     void SetFullscreen(bool aFullscreen, bool aMetro);
     void SetWindowTitle(const char *aString);
 
@@ -68,7 +69,7 @@ namespace YTE
     bool IsNotFocused();
     bool IsFocused();
 
-    void SetExtent(u32 aHeight, u32 aWidth);
+    void SetExtent(u32 aWidth, u32 aHeight);
 
     u32 GetHeight();
     u32 GetWidth();

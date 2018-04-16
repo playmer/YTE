@@ -21,7 +21,7 @@ namespace YTE
                  DBG_DrawNormals |
                  DBG_DrawFrames }
   {
-
+    mLineDrawer.SetLineWidth(1.5f);
   }
 
   void DebugDrawer::Begin()

@@ -236,7 +236,7 @@ namespace YTE
 
   void VkRenderToScreen::CreateSwapChain(vk::Extent2D& aExtent)
   {
-    mWindow->SetExtent(aExtent.height, aExtent.width);
+    mWindow->SetExtent(aExtent.width, aExtent.height);
 
     DebugObjection((0 > aExtent.width) || (0 > aExtent.height),
                    "Resizing to a negative x or y direction is not possible");
