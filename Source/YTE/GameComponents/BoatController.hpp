@@ -50,6 +50,7 @@ namespace YTE
     void ChangeSail(SailStateChanged *aEvent);
     void TurnBoat(BoatTurnEvent *aEvent);
     void DockBoat(BoatDockEvent *aEvent);
+    void OnDialogueExit(DialogueExit *);
     void Update(LogicUpdate *aEvent);
 
     // PROPERTIES ///////////////////////////////////////////////////////////////////
@@ -74,7 +75,6 @@ namespace YTE
     RigidBody *mRigidBody;
     BoxCollider *mCollider;
     WWiseEmitter *mSoundEmitter;
-    Composition *mNearbyDock; // be careful with this lambs
 
     Transform *mBackLeftEmitterTransform;
     Transform *mBackRightEmitterTransform;

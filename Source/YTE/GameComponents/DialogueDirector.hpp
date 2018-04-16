@@ -109,6 +109,9 @@ namespace YTE
     Space *mDialogueSpace;
     Composition *mCameraAnchor;
 
+    Transform *mLambTransform;
+    bool mIsLambSet = false;
+
     std::vector<std::string> mCurNodeData;
     DialogueNode::NodeType mCurNodeType;
     int mCurNodeDataIndex;

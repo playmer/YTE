@@ -47,6 +47,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mDialogueSpace(nullptr)
     , mCameraAnchor(nullptr)
+    , mLambTransform(nullptr)
     , mLastSelectionIndex(-1)
     , mMaxSelectionIndex(-1)
   {
@@ -68,6 +69,11 @@ namespace YTE
       }
     }
 
+    if (Composition *lamb = mOwner->FindFirstCompositionByName("MainCharacter"))
+    {
+      mLambTransform = lamb->GetComponent<Transform>();
+    }
+
     mOwner->YTERegister(Events::CollisionStarted, this, &DialogueDirector::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &DialogueDirector::OnCollisionEnd);
   }
@@ -85,15 +91,23 @@ namespace YTE
 
   void DialogueDirector::OnDialogueNodeReady(DialogueNodeReady *aEvent)
   {
+    if (mLambTransform && !mIsLambSet && aEvent->DialogueLambAnchor)
+    {
+      mLambTransform->SetWorldTranslation(aEvent->DialogueLambAnchor->GetWorldTranslation());
+      mLambTransform->SetWorldRotation(aEvent->DialogueLambAnchor->GetWorldRotation());
+
+      mIsLambSet = true;
+    }
+
     if (mCameraAnchor != aEvent->DialogueCameraAnchor)
     {
       mCameraAnchor = aEvent->DialogueCameraAnchor;
-    }
 
-    if (mCameraAnchor)
-    {
-      DirectCameraEvent directCam;
-      mCameraAnchor->SendEvent(Events::DirectCameraEvent, &directCam);
+      if (mCameraAnchor)
+      {
+        DirectCameraEvent directCam;
+        mCameraAnchor->SendEvent(Events::DirectCameraEvent, &directCam);
+      }
     }
 
       // clear the data from the last node
@@ -232,6 +246,16 @@ namespace YTE
 
   void DialogueDirector::OnDialogueExit(DialogueExit *)
   {
+    mCameraAnchor = nullptr;
+
+    if (mLambTransform)
+    {
+      mLambTransform->SetTranslation(0.0f, 0.0f, 0.0f);
+      mLambTransform->SetRotation(0.0f, 0.0f, 0.0f);
+
+      mIsLambSet = false;
+    }
+
     UISelectEvent select(-1);
     mDialogueSpace->SendEvent(Events::UISelectEvent, &select);
 

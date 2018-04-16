@@ -18,6 +18,7 @@ All content(c) 2016 DigiPen(USA) Corporation, all rights reserved.
 #define YTE_Gameplay_DialogueGraph_hpp
 
 #include "YTE/Core/Engine.hpp"
+#include "YTE/Physics/Transform.hpp"
 
 namespace YTE
 {
@@ -107,6 +108,7 @@ namespace YTE
     std::vector<std::string> ContentMessages;
     DialogueNode::NodeType DialogueType;
     Composition *DialogueCameraAnchor = nullptr;
+    Transform *DialogueLambAnchor = nullptr;
   };
 
   class DialogueNodeConfirm : public Event
