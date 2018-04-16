@@ -95,6 +95,7 @@ namespace YTE
     {
       mLambTransform->SetWorldTranslation(aEvent->DialogueLambAnchor->GetWorldTranslation());
       mLambTransform->SetWorldRotation(aEvent->DialogueLambAnchor->GetWorldRotation());
+      mLambTransform->SetScale(1.2f, 1.2f, 1.2f);
 
       mIsLambSet = true;
     }
@@ -252,6 +253,7 @@ namespace YTE
     {
       mLambTransform->SetTranslation(0.0f, 0.0f, 0.0f);
       mLambTransform->SetRotation(0.0f, 0.0f, 0.0f);
+      mLambTransform->SetScale(1.0f, 1.0f, 1.0f);
 
       mIsLambSet = false;
     }

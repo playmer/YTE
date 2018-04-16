@@ -87,51 +87,55 @@ namespace YTE
 
   void demo_InsideZone::OnCollisionEnd(CollisionEnded *aEvent)
   {
-    Zone *zone = aEvent->OtherObject->GetComponent<Zone>();
-
-    if (zone)
+    if (Composition *obj = aEvent->OtherObject)
     {
-      auto it = mCollidingIslands.find(zone);
-      if (it != mCollidingIslands.end())
-      {
-        mCollidingIslands.erase(it);
-      }
+      Zone *zone = obj->GetComponent<Zone>();
 
-      if (mCollidingIslands.empty())
+      if (zone)
       {
-        mSoundEmitter->PlayEvent(mIslandLeave);
-        mCurrentZone = "";
+        auto it = mCollidingIslands.find(zone);
+        if (it != mCollidingIslands.end())
+        {
+          mCollidingIslands.erase(it);
+        }
+
+        if (mCollidingIslands.empty())
+        {
+          mSoundEmitter->PlayEvent(mIslandLeave);
+          mCurrentZone = "";
+        }
       }
     }
   }
 
   void demo_InsideZone::OnCollisionStart(CollisionStarted *aEvent)
   {
-    Zone *zone = aEvent->OtherObject->GetComponent<Zone>();
-
-    if (zone)
+    if (Composition *obj = aEvent->OtherObject)
     {
-      auto zoneType = zone->GetZoneType();
-      if (zoneType == "Island")
+      Zone *zone = obj->GetComponent<Zone>();
+
+      if (zone)
       {
-        auto zoneName = zone->GetZoneName();
-
-        mOwner->GetEngine()->Log(LogType::Information, fmt::format("{}", zoneName));
-
-        if (zoneName != mCurrentZone)
+        auto zoneType = zone->GetZoneType();
+        if (zoneType == "Island")
         {
-          mSoundSystem->SetState("Current_Island", zoneName);
-          mCurrentZone = zoneName;
-          mSoundEmitter->PlayEvent(mIslandEnter);
-        }
+          auto zoneName = zone->GetZoneName();
 
-        if(zoneName == mCurrentZone)
-        {
-          mCollidingIslands.insert(zone);
+          mOwner->GetEngine()->Log(LogType::Information, fmt::format("{}", zoneName));
+
+          if (zoneName != mCurrentZone)
+          {
+            mSoundSystem->SetState("Current_Island", zoneName);
+            mCurrentZone = zoneName;
+            mSoundEmitter->PlayEvent(mIslandEnter);
+          }
+
+          if (zoneName == mCurrentZone)
+          {
+            mCollidingIslands.insert(zone);
+          }
         }
       }
-
     }
   }
-
 }
