@@ -71,7 +71,7 @@ namespace YTE
       return;
     }
 
-    float rotAngle = 3.0f * aEvent->Dt;
+    float rotAngle = 3.0f * static_cast<float>(aEvent->Dt);
     mStarTransform->RotateAboutLocalAxis(glm::vec3(0, 1, 0), rotAngle);
 
     mTimer += 4.0 * aEvent->Dt;

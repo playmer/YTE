@@ -715,6 +715,7 @@ namespace YTE
 
   void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
   {
+    YTEUnusedArgument(aForMetro);
     mFullscreen = aFullscreen;
 
     // We're not changing the previously requested height and width.

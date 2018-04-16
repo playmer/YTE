@@ -33,6 +33,7 @@
 #include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/GameComponents/CameraBoom.hpp"
 #include "YTE/GameComponents/CameraController.hpp"
+#include "YTE/GameComponents/Credits.hpp"
 #include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/GameComponents/Menu/RootMenu.hpp"
 #include "YTE/GameComponents/Menu/LaunchMenu.hpp"
@@ -141,6 +142,7 @@ namespace YTE
     InitializeType<CameraAnchor>();
     InitializeType<CameraBoom>();
     InitializeType<CameraController>();
+    InitializeType<Credits>();
     InitializeType<MenuController>();
     InitializeType<RootMenu>();
     InitializeType<LaunchMenu>();

@@ -15,9 +15,12 @@ namespace YTE
 {
   YTEDefineType(QuestProgressionTrigger) { YTERegisterType(QuestProgressionTrigger); }
 
-  QuestProgressionTrigger::QuestProgressionTrigger(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  QuestProgressionTrigger::QuestProgressionTrigger(Composition *aOwner, 
+                                                   Space *aSpace, 
+                                                   RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
+    YTEUnusedArgument(aProperties);
   }
 
   void QuestProgressionTrigger::Initialize()

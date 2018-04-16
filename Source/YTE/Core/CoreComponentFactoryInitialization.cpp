@@ -37,6 +37,7 @@
 #include "YTE/GameComponents/Menu/QuitGame.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
+#include "YTE/GameComponents/Credits.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -124,6 +125,7 @@ namespace YTE
     helper.CreateComponentFactory<CameraBoom>();
     helper.CreateComponentFactory<CameraController>();
 
+    helper.CreateComponentFactory<Credits>();
     helper.CreateComponentFactory<MenuController>();
     helper.CreateComponentFactory<RootMenu>();
     helper.CreateComponentFactory<LaunchMenu>();

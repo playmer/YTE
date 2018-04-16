@@ -152,6 +152,11 @@ namespace YTE
       return;
     }
 
+    if (mText.empty())
+    {
+      return;
+    }
+
     std::string meshName = "__SpriteText";
     meshName += mOwner->GetGUID().ToString();
 

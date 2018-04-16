@@ -114,6 +114,17 @@ namespace YTE
       return result;
     }
 
+    template<typename tComposition, typename... Arguments>
+    tComposition* AddComposition(Composition *aOwner, String aObjectName, Arguments &&...aArguments)
+    {
+      tComposition *result = static_cast<tComposition*>(AddCompositionInternal(std::make_unique<tComposition>(aArguments...),
+                                                                               nullptr,
+                                                                               aObjectName));
+      result->mOwner = aOwner;
+
+      return result;
+    }
+
     Composition* AddComposition(String aArchetype, String aObjectName);
     Composition* AddComposition(RSValue *aArchetype, String aObjectName);
     Composition* AddCompositionAtPosition(String archetype, String aObjectName, glm::vec3 aPosition);

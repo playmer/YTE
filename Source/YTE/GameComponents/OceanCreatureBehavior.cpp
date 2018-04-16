@@ -74,7 +74,7 @@ namespace YTE
 
     glm::vec3 diff = pos - boatPos;
 
-    float dist = diff.length();
+    float dist = glm::length(diff);
 
     if (dist > mJumpDistance)
     {
@@ -104,7 +104,7 @@ namespace YTE
       {
         mParentTransform->SetWorldRotation(mCameraTransform->GetWorldRotation());
 
-        float rotAngle = 2.0f * aEvent->Dt;
+        float rotAngle = 2.0f * static_cast<float>(aEvent->Dt);
 
         if (mFlipRotation)
         {
@@ -114,7 +114,7 @@ namespace YTE
         mTimer += rotAngle;
 
         // update rotation
-        mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), mTimer);
+        mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), static_cast<float>(mTimer));
 
         if (abs(mTimer) > 4.0)
         {
@@ -160,7 +160,7 @@ namespace YTE
 
   float OceanCreatureBehavior::GetSleepTime() const
   {
-    return mSleepTime;
+    return static_cast<float>(mSleepTime);
   }
 
   void OceanCreatureBehavior::SetSleepTime(float aTime)

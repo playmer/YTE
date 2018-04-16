@@ -529,9 +529,4 @@ namespace YTE
 
     return matrix;
   }
-
-  void Transform::SetTransformMatrix(glm::mat4 &aMatrix)
-  {
-
-  }
 }

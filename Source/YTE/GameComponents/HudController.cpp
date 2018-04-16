@@ -86,33 +86,33 @@ namespace YTE
 
     // dpad and icons
 
-    if (mDPad = mSpace->FindFirstCompositionByName("DPad"))
+    if (mDPad = mSpace->FindFirstCompositionByName("DPad"); mDPad)
     {
-      if (mDPadSprite = mDPad->GetComponent<Sprite>())
+      if (mDPadSprite = mDPad->GetComponent<Sprite>(); mDPadSprite)
       {
         mDPadSprite->SetVisibility(false);
       }
     }
 
-    if (mMapIcon = mSpace->FindFirstCompositionByName("Icon_Map"))
+    if (mMapIcon = mSpace->FindFirstCompositionByName("Icon_Map"); mMapIcon)
     {
-      if (mMapIconSprite = mMapIcon->GetComponent<Sprite>())
+      if (mMapIconSprite = mMapIcon->GetComponent<Sprite>(); mMapIconSprite)
       {
         mMapIconSprite->SetVisibility(false);
       }
     }
 
-    if (mPostcardIcon = mSpace->FindFirstCompositionByName("Icon_Postcard"))
+    if (mPostcardIcon = mSpace->FindFirstCompositionByName("Icon_Postcard"); mPostcardIcon)
     {
-      if (mPostcardIconSprite = mPostcardIcon->GetComponent<Sprite>())
+      if (mPostcardIconSprite = mPostcardIcon->GetComponent<Sprite>(); mPostcardIconSprite)
       {
         mPostcardIconSprite->SetVisibility(false);
       }
     }
 
-    if (mCompassIcon = mSpace->FindFirstCompositionByName("Icon_Compass"))
+    if (mCompassIcon = mSpace->FindFirstCompositionByName("Icon_Compass"); mCompassIcon)
     {
-      if (mCompassIconSprite = mCompassIcon->GetComponent<Sprite>())
+      if (mCompassIconSprite = mCompassIcon->GetComponent<Sprite>(); mCompassIconSprite)
       {
         mCompassIconSprite->SetVisibility(false);
       }
@@ -225,6 +225,8 @@ namespace YTE
   }
   void HudController::OnMenuStart(MenuStart *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     mMapSprite->SetVisibility(false);
     mPostcardSprite->SetVisibility(false);
     mCompassSprite->SetVisibility(false);
@@ -254,6 +256,8 @@ namespace YTE
   }
   void HudController::OnMenuExit(MenuExit *aEvent)
   {
+    YTEUnusedArgument(aEvent);
+
     if (mDPadSprite)
     {
       mDPadSprite->SetVisibility(true);

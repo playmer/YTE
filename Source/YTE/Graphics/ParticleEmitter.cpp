@@ -202,7 +202,7 @@ namespace YTE
       particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
       particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
-      modelMaterial.mDiffuse.w = particle.mLife / mLifetime;
+      modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife / mLifetime);
 
       it->second->UpdateUBOModel(particle.mUBO);
       it->second->UpdateUBOMaterial(&modelMaterial);
@@ -486,7 +486,7 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
 
-    modelMaterial.mDiffuse.w = particle.mLife / mLifetime;
+    modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife / mLifetime);
 
     model->UpdateUBOMaterial(&modelMaterial);
     model->UpdateUBOModel(particle.mUBO);

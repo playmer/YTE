@@ -75,9 +75,11 @@ namespace YTE
     glm::vec3 total;
     (void)aSim;
     (void)dt;
-    float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, 
-                                                      glm::length(mBoatRB->GetVelocity()), 
-                                                      modifyBoatMesh.CalculateUnderwaterLength());
+
+    //float Cf = BoatPhysicsMath::ResistanceCoefficient(waterDensity, 
+    //                                                  glm::length(mBoatRB->GetVelocity()), 
+    //                                                  modifyBoatMesh.CalculateUnderwaterLength());
+
     auto slammingForceData = modifyBoatMesh.SlammingData();
     CalculateSlammingVelocities(slammingForceData);
     float boatArea = modifyBoatMesh.BoatArea();
@@ -85,8 +87,6 @@ namespace YTE
 
     auto indexOfOriginalTriangle = modifyBoatMesh.IndexOfOrigTris();
     auto underwaterTriangleData = modifyBoatMesh.UnderwaterTriangleData();
-
-    bool inWater = false;
 
     for (int i = 0; i < underwaterTriangleData.size(); ++i)
     {

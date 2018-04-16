@@ -31,7 +31,7 @@ namespace YTE
                            RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-
+    YTEUnusedArgument(aProperties);
   }
 
   FlybyCamera::~FlybyCamera()

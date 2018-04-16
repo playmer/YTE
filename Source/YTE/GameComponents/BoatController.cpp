@@ -331,7 +331,7 @@ namespace YTE
 
     glm::vec3 tillerPos = -4.5f * mOrientation->GetForwardVector();
 
-    float emitterTurnOffset = 0.1f * (stickTurn - 0.5 * maxTime);
+    float emitterTurnOffset = static_cast<float>(0.1f * (stickTurn - 0.5 * maxTime));
     
     glm::vec3 emitterOffset = emitterTurnOffset * rightVec;
 

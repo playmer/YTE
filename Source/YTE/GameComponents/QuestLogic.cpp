@@ -43,34 +43,40 @@ namespace YTE
 
   void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnProgressionLocationEvent(ProgressionLocationEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnProgressionDialogueEvent(ProgressionDialogueEvent *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
   }
 
   void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
   }
 
   void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
   {
+    YTEUnusedArgument(aEvent);
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
   }
 
