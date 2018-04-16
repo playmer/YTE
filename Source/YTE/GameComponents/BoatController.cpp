@@ -433,7 +433,7 @@ namespace YTE
     {
       if (mCurrSpeed < 0.1f)
       {
-        mRigidBody->SetVelocity(0, vel.y, 0);
+        mRigidBody->SetVelocity(0, 0, 0);
         //mRigidBody->SetGravity(glm::vec3(0));
       }
     }
