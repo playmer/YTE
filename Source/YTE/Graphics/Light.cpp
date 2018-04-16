@@ -124,12 +124,12 @@ namespace YTE
 
     if (mInstantiatedLight)
     {
-      mInstantiatedLight->SetPosition(mTransform->GetTranslation());
+      mInstantiatedLight->SetPosition(mTransform->GetWorldTranslation());
       mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));
     }
     else
     {
-      mLightTemp.mPosition = mTransform->GetTranslation();
+      mLightTemp.mPosition = mTransform->GetWorldTranslation();
       mLightTemp.mDirection = glm::vec4(GetDirectionFromTransform(mTransform), 0.0f);
       mUseTemp = true;
     }
@@ -148,11 +148,11 @@ namespace YTE
       if (mInstantiatedLight)
       {
         mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));
-        mInstantiatedLight->SetPosition(mTransform->GetTranslation());
+        mInstantiatedLight->SetPosition(mTransform->GetWorldTranslation());
       }
       else
       {
-        mLightTemp.mPosition = mTransform->GetTranslation();
+        mLightTemp.mPosition = mTransform->GetWorldTranslation();
         mLightTemp.mDirection = glm::vec4(GetDirectionFromTransform(mTransform), 0.0f);
         mUseTemp = true;
       }
