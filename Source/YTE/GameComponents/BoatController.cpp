@@ -359,6 +359,16 @@ namespace YTE
 
   void BoatController::Update(LogicUpdate *aEvent)
   {
+    auto pos = mTransform->GetWorldTranslation();
+
+    if (pos.y < 0.35f)
+    {
+      mTransform->SetWorldTranslation(pos.x, 0.4f, pos.z);
+
+      auto rot = mTransform->GetWorldRotationAsEuler();
+      mTransform->SetWorldRotation(0.0f, rot.y, 0.0f);
+    }
+
     // calculate anim key frame
     double sinVal = sin(glm::radians(mTransform->GetWorldRotationAsEuler().y));
 
