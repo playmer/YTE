@@ -113,6 +113,8 @@ namespace YTE
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
     , mBackfaceCulling(true)
+    , mShadingName("")
+    , mUseTemp(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -224,20 +226,31 @@ namespace YTE
       return;
     }
 
-    if (!mInstantiatedModel)
+    if (mInstantiatedModel)
     {
-      return;
+      if (aName == "Standard")
+      {
+        mShadingName = "Standard";
+        mInstantiatedModel->mType = ShaderType::Triangles;
+      }
+      else if (aName == "Additive Blending")
+      {
+        mShadingName = "Additive Blending";
+        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
+      }
     }
+    else
+    {
+      mUseTemp = true;
 
-    if (aName == "Standard")
-    {
-      mShadingName = "Standard";
-      mInstantiatedModel->mType = ShaderType::Triangles;
-    }
-    else if (aName == "Additive Blending")
-    {
-      mShadingName = "Additive Blending";
-      mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
+      if (aName == "Standard")
+      {
+        mShadingName = "Standard";
+      }
+      else if (aName == "Additive Blending")
+      {
+        mShadingName = "Additive Blending";
+      }
     }
   }
 
@@ -289,6 +302,18 @@ namespace YTE
     if (mInstantiatedModel->GetMesh()->CanAnimate())
     {
       mInstantiatedModel->SetDefaultAnimationOffset();
+    }
+
+    if (mUseTemp)
+    {
+      if (mShadingName == "Additive Blending")
+      {
+        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
+      }
+      else if (mShadingName == "Standard")
+      {
+        mInstantiatedModel->mType = ShaderType::Triangles;
+      }
     }
 
     ModelChanged modChange;

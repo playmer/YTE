@@ -45,6 +45,9 @@ namespace YTE
     Transform *mDaisyTransform;
     Transform *mBasilTransform;
 
+    Transform *mLightBeamTransform;
+    Transform *mBoatTransform;
+
     double mTimer;
 
     enum CurrentAnchor

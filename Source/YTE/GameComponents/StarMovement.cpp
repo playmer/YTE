@@ -27,6 +27,8 @@ namespace YTE
     , mNoticeBoardTransform(nullptr)
     , mCurrentAnchor(CurrentAnchor::None)
     , mTimer(0.0)
+    , mLightBeamTransform(nullptr)
+    , mBoatTransform(nullptr)
   {
     YTEUnusedArgument(aProperties);
   }
@@ -61,6 +63,16 @@ namespace YTE
     if (Composition *noticeBoard = mSpace->FindFirstCompositionByName("noticeboard"))
     {
       mNoticeBoardTransform = noticeBoard->GetComponent<Transform>();
+    }
+
+    if (Composition *lightBeam = mOwner->FindFirstCompositionByName("Cylinder"))
+    {
+      mLightBeamTransform = lightBeam->GetComponent<Transform>();
+    }
+
+    if (Composition *boat = mSpace->FindFirstCompositionByName("Boat"))
+    {
+      mBoatTransform = boat->GetComponent<Transform>();
     }
   }
 
@@ -119,20 +131,46 @@ namespace YTE
         mStarTransform->SetWorldTranslation(nbPos);
       }
     }
+
+    glm::vec3 boatPos = mBoatTransform->GetWorldTranslation();
+    glm::vec3 pos = mStarTransform->GetWorldTranslation();
+
+    glm::vec3 dist = boatPos - pos;
+
+    float distF = glm::length(dist);
+    
+    float scale = distF / 1500.0f;
+
+    if (scale > 1.0f)
+    {
+      scale = 1.0f;
+    }
+    else if (scale < 0.1f)
+    {
+      scale = 0.0f;
+      mLightBeamTransform->SetScale(0.0f, 0.0f, 0.0f);
+    }
+    else
+    {
+      mLightBeamTransform->SetScale(scale, 500.0f, scale);
+    }
   }
 
   void StarMovement::OnQuestStart(QuestStart *aEvent)
   {
     if (aEvent->mCharacter == Quest::CharacterName::John)
     {
+      mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
       mCurrentAnchor = CurrentAnchor::John;
     }
     else if (aEvent->mCharacter == Quest::CharacterName::Daisy)
     {
+      mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
       mCurrentAnchor = CurrentAnchor::Daisy;
     }
     else if (aEvent->mCharacter == Quest::CharacterName::Basil)
     {
+      mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
       mCurrentAnchor = CurrentAnchor::Basil;
     }
     
@@ -142,6 +180,7 @@ namespace YTE
   {
     if (aEvent->mState == Quest::State::Completed)
     {
+      mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
       mCurrentAnchor = CurrentAnchor::NoticeBoard;
     }
   }

@@ -126,6 +126,8 @@ namespace YTE
     Engine *mEngine;
 
     bool mBackfaceCulling;
+
+    bool mUseTemp;
   };
 }
 

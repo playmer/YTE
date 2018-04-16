@@ -104,7 +104,7 @@ namespace YTE
       {
         mParentTransform->SetWorldRotation(mCameraTransform->GetWorldRotation());
 
-        float rotAngle = 2.0f * static_cast<float>(aEvent->Dt);
+        float rotAngle = 4.0f * static_cast<float>(aEvent->Dt);
 
         if (mFlipRotation)
         {
@@ -116,7 +116,7 @@ namespace YTE
         // update rotation
         mParentTransform->RotateAboutLocalAxis(glm::vec3(0, 0, 1), static_cast<float>(mTimer));
 
-        if (abs(mTimer) > 4.0)
+        if (abs(mTimer) > 6.0)
         {
           mTimer = 0.0;
           mState = State::Sleeping;
