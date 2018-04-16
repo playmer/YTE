@@ -971,7 +971,8 @@ namespace YTE
           DialogueData(dataR0, AnimationNames::Happy);
           mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataR0, 0, mSpace);
           /*
-          C0 - B0 - A0 - R0
+          D0 - C0 - B0 - A0 - R0
+            |- C1 -|
           */
           enum { D0, C0, C1, B0, A0, R0 };
           mNodeVec[D0].SetChildren(DialogueNodeChildren{ });

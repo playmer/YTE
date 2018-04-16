@@ -75,14 +75,17 @@ namespace YTE
       case Quest::CharacterName::John:
       {
         mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::John, aEvent->mActiveQuestHandle));
+        break;
       }
       case Quest::CharacterName::Daisy:
       {
         mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Daisy, aEvent->mActiveQuestHandle));
+        break;
       }
       case Quest::CharacterName::Basil:
       {
         mActiveQuestMap.emplace(std::make_pair(Quest::CharacterName::Basil, aEvent->mActiveQuestHandle));
+        break;
       }
     }
   }
