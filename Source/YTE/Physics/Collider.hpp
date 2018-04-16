@@ -24,6 +24,12 @@ namespace YTE
   {
   public:
     YTEDeclareType(CollisionEvent);
+
+    CollisionEvent()
+      : OtherObject(nullptr)
+    {
+    }
+
     Composition *OtherObject;
   };
 
@@ -31,6 +37,13 @@ namespace YTE
   {
   public:
     YTEDeclareType(CollisionStarted);
+
+    CollisionStarted()
+      : OtherObject(nullptr)
+      , Object(nullptr)
+    {
+    }
+
     Composition *OtherObject;
     String Name;
     Composition* Object;
@@ -40,6 +53,13 @@ namespace YTE
   {
   public:
     YTEDeclareType(CollisionPersisted);
+
+    CollisionPersisted() 
+      : OtherObject(nullptr)
+      , Object(nullptr)
+    {
+    }
+
     Composition *OtherObject;
 
     String Name;
@@ -50,6 +70,13 @@ namespace YTE
   {
   public:
     YTEDeclareType(CollisionEnded);
+
+    CollisionEnded()
+      : OtherObject(nullptr)
+      , Object(nullptr)
+    {
+    }
+
     Composition *OtherObject;
 
     String Name;

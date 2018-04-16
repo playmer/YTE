@@ -47,41 +47,44 @@ namespace YTE
 
   void demo_InsideZone::OnCollisionPersist(CollisionPersisted *aEvent)
   {
-    auto zone = aEvent->OtherObject->GetComponent<Zone>();
-
-    if (!zone)
+    if (Composition *obj = aEvent->OtherObject)
     {
-      return;
-    }
+      Zone *zone = obj->GetComponent<Zone>();
 
-    auto zoneType = zone->GetZoneType();
-    if (zoneType != "Dock")
-    {
-      return;
-    }
+      if (!zone)
+      {
+        return;
+      }
 
-    // make sure our boat position is up to date
-    mBoatPosition = mOwner->GetComponent<Transform>()->GetTranslation();
-    auto dockPos = aEvent->OtherObject->GetComponent<Transform>()->GetTranslation();
-    
-    auto dist = glm::length2(dockPos - mBoatPosition); // maybe this should just be regular length?
-    dist = glm::clamp(dist, 0.0f, 100.0f);
+      auto zoneType = zone->GetZoneType();
+      if (zoneType != "Dock")
+      {
+        return;
+      }
 
-    auto zoneName = zone->GetZoneName();
-    if (zoneName == "Dock_Distance")
-    {
-      mSoundSystem->SetRTPC("Dock_Distance", dist);
-    }
+      // make sure our boat position is up to date
+      mBoatPosition = mOwner->GetComponent<Transform>()->GetTranslation();
+      auto dockPos = aEvent->OtherObject->GetComponent<Transform>()->GetTranslation();
 
-    // change the volume of the island sound using the minDist
-    mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC(zoneName, dist);
+      auto dist = glm::length2(dockPos - mBoatPosition); // maybe this should just be regular length?
+      dist = glm::clamp(dist, 0.0f, 100.0f);
 
-    if (dist < 100.0f && mFlag)
-    {
-      //closestIsland->GetComponent<Island>().mCharacterCalloutString;
-      mSoundEmitter->PlayEvent("Dia_All_CallOut");
+      auto zoneName = zone->GetZoneName();
+      if (zoneName == "Dock_Distance")
+      {
+        mSoundSystem->SetRTPC("Dock_Distance", dist);
+      }
 
-      mFlag = false;
+      // change the volume of the island sound using the minDist
+      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC(zoneName, dist);
+
+      if (dist < 100.0f && mFlag)
+      {
+        //closestIsland->GetComponent<Island>().mCharacterCalloutString;
+        mSoundEmitter->PlayEvent("Dia_All_CallOut");
+
+        mFlag = false;
+      }
     }
   }
 
