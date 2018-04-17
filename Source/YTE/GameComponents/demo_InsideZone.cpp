@@ -47,45 +47,8 @@ namespace YTE
 
   void demo_InsideZone::OnCollisionPersist(CollisionPersisted *aEvent)
   {
-    if (Composition *obj = aEvent->OtherObject)
-    {
-      Zone *zone = obj->GetComponent<Zone>();
-
-      if (!zone)
-      {
-        return;
-      }
-
-      auto zoneType = zone->GetZoneType();
-      if (zoneType != "Dock")
-      {
-        return;
-      }
-
-      // make sure our boat position is up to date
-      mBoatPosition = mOwner->GetComponent<Transform>()->GetTranslation();
-      auto dockPos = aEvent->OtherObject->GetComponent<Transform>()->GetTranslation();
-
-      auto dist = glm::length2(dockPos - mBoatPosition); // maybe this should just be regular length?
-      dist = glm::clamp(dist, 0.0f, 100.0f);
-
-      auto zoneName = zone->GetZoneName();
-      if (zoneName == "Dock_Distance")
-      {
-        mSoundSystem->SetRTPC("Dock_Distance", dist);
-      }
-
-      // change the volume of the island sound using the minDist
-      mOwner->GetSpace()->GetComponent<WWiseSystem>()->SetRTPC(zoneName, dist);
-
-      if (dist < 100.0f && mFlag)
-      {
-        //closestIsland->GetComponent<Island>().mCharacterCalloutString;
-        mSoundEmitter->PlayEvent("Dia_All_CallOut");
-
-        mFlag = false;
-      }
-    }
+    YTEUnusedArgument(aEvent);
+    return;
   }
 
   void demo_InsideZone::OnCollisionEnd(CollisionEnded *aEvent)
@@ -131,6 +94,16 @@ namespace YTE
           {
             mCollidingCharacters.erase(it);
           }
+
+          if (mCollidingCharacters.empty())
+          {
+            mSoundEmitter->PlayEvent("M_Dock_Leave");
+          }
+        }
+        else
+        {
+          // we be dock
+          mSoundEmitter->PlayEvent("M_Dock_Leave");
         }
       }
     }
@@ -184,8 +157,18 @@ namespace YTE
           {
             auto zoneName = zone->GetZoneName();
             mSoundEmitter->PlayEvent(zoneName);
+
+            if (mCollidingCharacters.empty())
+            {
+              mSoundEmitter->PlayEvent("M_Dock_Enter");
+            }
           }
           mCollidingCharacters.insert(zone);
+        }
+        else
+        {
+          // we be dock
+          mSoundEmitter->PlayEvent("M_Dock_Enter");
         }
       }
     }
