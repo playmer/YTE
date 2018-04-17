@@ -139,11 +139,11 @@ namespace YTE
 
     float distF = glm::length(dist);
     
-    float scale = distF / 1500.0f;
+    float scale = distF / 1000.0f;
 
-    if (scale > 1.0f)
+    if (scale > 3.0f)
     {
-      scale = 1.0f;
+      scale = 3.0f;
     }
     else if (scale < 0.1f)
     {
@@ -154,6 +154,12 @@ namespace YTE
     {
       mLightBeamTransform->SetScale(scale, 500.0f, scale);
     }
+  }
+
+  void StarMovement::SetActive(glm::vec3 aPos)
+  {
+    mStarTransform->SetWorldTranslation(aPos);
+    mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
   }
 
   void StarMovement::OnQuestStart(QuestStart *aEvent)

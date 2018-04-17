@@ -12,6 +12,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BasilTutorial.hpp"
 #include "YTE/GameComponents/BasilDialogue.hpp"
 #include "YTE/GameComponents/DaisyDialogue.hpp"
+#include "YTE/GameComponents/StarMovement.hpp"
 
 namespace YTE
 {
@@ -30,6 +31,11 @@ namespace YTE
 
   void BasilTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      star->GetComponent<StarMovement>()->SetActive(mOwner->GetComponent<Transform>()->GetWorldTranslation() + glm::vec3(0, 8, 0));
+    }
+
     auto basil = mOwner->GetComponent<BasilDialogue>();
     auto john = mSpace->FindFirstCompositionByName("john");
     auto daisy = mSpace->FindFirstCompositionByName("daisy");

@@ -32,6 +32,8 @@ namespace YTE
 
     void Update(LogicUpdate *aEvent);
 
+    void SetActive(glm::vec3 aPos);
+
   private:
     void OnDialogueStart(DialogueStart *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
