@@ -35,6 +35,12 @@ namespace YTE
 
   void LaunchGame::Initialize()
   {
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    if (emitter)
+    {
+      emitter->PlayEvent("Menu_Start");
+    }
+
     mSpace->YTERegister(Events::LogicUpdate, this, &LaunchGame::OnLogicUpdate);
     mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchGame::OnElementTrigger);
   }
@@ -56,6 +62,12 @@ namespace YTE
     leaveMainMenu.PlaySound = false;
     leaveMainMenu.Handled = false;
     mOwner->GetParent()->SendEvent(Events::MenuExit, &leaveMainMenu);
+
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    if (emitter)
+    {
+      emitter->PlayEvent("Menu_Stop");
+    }
 
     auto actionManager = mSpace->GetComponent<ActionManager>();
     ActionSequence fadeOutSeq;
