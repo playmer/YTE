@@ -71,8 +71,6 @@ namespace YTE
       Create();
     }
 
-    void SetShading(std::string aName);
-
     Mesh* GetMesh();
 
     bool GetReload()
@@ -97,17 +95,14 @@ namespace YTE
       return toReturn;
     }
 
-    std::string GetShading()
+    void SetShading(std::string const &aName);
+    std::string const& GetShading()
     {
       return mShadingName;
     }
 
     void SetInstanced(bool mInstanced);
     bool GetInstanced();
-
-
-    bool GetBackfaceCulling();
-    void SetBackfaceCulling(bool aCulling);
 
   private:
     void Create();  // tells renderer to create mesh
@@ -126,8 +121,6 @@ namespace YTE
     Engine *mEngine;
 
     bool mBackfaceCulling;
-
-    bool mUseTemp;
   };
 }
 

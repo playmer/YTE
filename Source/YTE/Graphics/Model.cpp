@@ -60,7 +60,7 @@ namespace YTE
   static std::vector<std::string> PopulateShadingDropDown(Component *aComponent)
   {
     YTEUnusedArgument(aComponent);
-    return { "Standard", "Additive Blending" };
+    return { "Standard", "Additive Blending", "ShaderNoCull", "Alpha Blend" };
   }
 
 
@@ -89,10 +89,6 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Model::GetBackfaceCulling, &Model::SetBackfaceCulling, "Backface Culling")
-      .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
-
     //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
@@ -113,8 +109,6 @@ namespace YTE
     , mInstantiatedModel(nullptr)
     , mConstructing(true)
     , mBackfaceCulling(true)
-    , mShadingName("")
-    , mUseTemp(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -217,40 +211,52 @@ namespace YTE
     }
   }
 
-  
 
-  void Model::SetShading(std::string aName)
+
+  void Model::SetShading(std::string const &aName)
   {
-    if (aName.empty() || aName == mShadingName)
+    if (aName.empty())
     {
       return;
     }
 
-    if (mInstantiatedModel)
+    if (aName == "Standard")
     {
-      if (aName == "Standard")
-      {
-        mShadingName = "Standard";
-        mInstantiatedModel->mType = ShaderType::Triangles;
-      }
-      else if (aName == "Additive Blending")
-      {
-        mShadingName = "Additive Blending";
-        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
-      }
+      mShadingName = "Standard";
     }
-    else
+    else if (aName == "Additive Blending")
     {
-      mUseTemp = true;
+      mShadingName = "Additive Blending";
+    }
+    else if (aName == "ShaderNoCull")
+    {
+      mShadingName = "ShaderNoCull";
+    }
+    else if (aName == "Alpha Blend")
+    {
+      mShadingName = "Alpha Blend";
+    }
 
-      if (aName == "Standard")
-      {
-        mShadingName = "Standard";
-      }
-      else if (aName == "Additive Blending")
-      {
-        mShadingName = "Additive Blending";
-      }
+    if (!mInstantiatedModel)
+    {
+      return;
+    }
+
+    if (aName == "Standard")
+    {
+      mInstantiatedModel->mType = ShaderType::Triangles;
+    }
+    else if (aName == "Additive Blending")
+    {
+      mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
+    }
+    else if (aName == "ShaderNoCull")
+    {
+      mInstantiatedModel->mType = ShaderType::ShaderNoCull;
+    }
+    else if (aName == "Alpha Blend")
+    {
+      mInstantiatedModel->mType = ShaderType::AlphaBlendShader;
     }
   }
 
@@ -280,7 +286,7 @@ namespace YTE
     {
       success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
     }
-    
+
     if (false == success)
     {
       printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
@@ -292,6 +298,11 @@ namespace YTE
 
     mInstantiatedModel = mRenderer->CreateModel(view, mMeshName);
 
+    if (mInstantiatedModel)
+    {
+      SetShading(mShadingName);
+    }
+
     if (mInstantiatedModel && mTransform)
     {
       mUBOModel.mDiffuseColor = mInstantiatedModel->GetUBOModelData().mDiffuseColor;
@@ -302,18 +313,6 @@ namespace YTE
     if (mInstantiatedModel->GetMesh()->CanAnimate())
     {
       mInstantiatedModel->SetDefaultAnimationOffset();
-    }
-
-    if (mUseTemp)
-    {
-      if (mShadingName == "Additive Blending")
-      {
-        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
-      }
-      else if (mShadingName == "Standard")
-      {
-        mInstantiatedModel->mType = ShaderType::Triangles;
-      }
     }
 
     ModelChanged modChange;
@@ -347,28 +346,6 @@ namespace YTE
     }
   }
 
-  bool Model::GetBackfaceCulling()
-  {
-    return mBackfaceCulling;
-  }
-
-  void Model::SetBackfaceCulling(bool aCulling)
-  {
-    mBackfaceCulling = aCulling;
-
-    if (mInstantiatedModel)
-    {
-      if (aCulling)
-      {
-        mInstantiatedModel->mType = ShaderType::AdditiveBlendShader;
-      }
-      else
-      {
-        mInstantiatedModel->mType = ShaderType::ShaderNoCull;
-      }
-    }
-  }
-
   void Model::CreateTransform()
   {
     if (mTransform == nullptr)
@@ -380,4 +357,3 @@ namespace YTE
   }
 
 }
-
