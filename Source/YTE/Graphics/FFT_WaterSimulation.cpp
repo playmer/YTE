@@ -393,11 +393,11 @@ namespace YTE
   void FFT_WaterSimulation::RunKFFT()
   {
     // perform the FFT on the rows of the water
-    auto handle1 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_A));
-    auto handle2 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_B));
-    auto handle3 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_C));
-    auto handle4 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_D));
-    auto handle5 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_E));
+    auto handle1 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_A(handle); });
+    auto handle2 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_B(handle); });
+    auto handle3 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_C(handle); });
+    auto handle4 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_D(handle); });
+    auto handle5 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_E(handle); });
 
     mJobSystem->WaitThisThread(handle1);
     mJobSystem->WaitThisThread(handle2);

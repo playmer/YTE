@@ -18,6 +18,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/StandardLibrary/UnorderedMap.hpp"
 
+#include <functional>
+
 namespace YTE
 {
   class JobSystem : public Component
@@ -33,14 +35,14 @@ namespace YTE
 
     // TODO(Evan): Finish FunctionDelegate to allow lambda support
 
-    JobHandle QueueJobThisThread(Delegate<Any(*)(JobHandle&)>&& aJob)
+    JobHandle QueueJobThisThread(std::function<Any(JobHandle&)>&& aJob)
     {
       Job* newJob = new Job(std::move(aJob));
       QueueJobInternal(newJob);
       return JobHandle(newJob);
     }
 
-    JobHandle QueueJobThisThread(Delegate<Any(*)(JobHandle&)>& aJob, JobHandle& aParentHandle)
+    JobHandle QueueJobThisThread(std::function<Any(JobHandle&)>& aJob, JobHandle& aParentHandle)
     {
       Job* newJob = new Job(std::move(aJob), aParentHandle);
       QueueJobInternal(newJob);
