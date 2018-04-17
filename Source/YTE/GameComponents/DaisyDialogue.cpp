@@ -215,7 +215,8 @@ namespace YTE
       {
         if (mSoundEmitter)
         {
-          mSoundEmitter->PlayEvent("Dia_FD_Start");
+          mSoundEmitter->PlayEvent("UI_Dia_Start");
+          mSoundEmitter->PlayEvent("FD_CallOut");
         }
 
         RegisterDialogue();

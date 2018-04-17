@@ -96,16 +96,33 @@ namespace YTE
 
       if (zone)
       {
-        auto it = mCollidingIslands.find(zone);
-        if (it != mCollidingIslands.end())
+        auto zoneType = zone->GetZoneType();
+        if (zoneType == "Island")
         {
-          mCollidingIslands.erase(it);
-        }
+          auto it = mCollidingIslands.find(zone);
+          if (it != mCollidingIslands.end())
+          {
+            mCollidingIslands.erase(it);
+          }
 
-        if (mCollidingIslands.empty())
+          if (mCollidingIslands.empty())
+          {
+            mSoundEmitter->PlayEvent(mIslandLeave);
+            mCurrentZone = "";
+          }
+        }
+        else if (zoneType == "Environment")
         {
-          mSoundEmitter->PlayEvent(mIslandLeave);
-          mCurrentZone = "";
+          auto it = mCollidingEnvironments.find(zone);
+          if (it != mCollidingEnvironments.end())
+          {
+            mCollidingEnvironments.erase(it);
+          }
+
+          if (mCollidingEnvironments.empty())
+          {
+            mSoundEmitter->PlayEvent("IslandEnv_Stop");
+          }
         }
       }
     }
@@ -137,6 +154,14 @@ namespace YTE
           {
             mCollidingIslands.insert(zone);
           }
+        }
+        else if (zoneType == "Environment")
+        {
+          if (!mCollidingEnvironments.empty())
+          {
+            mSoundEmitter->PlayEvent("IslandEnv_Start");
+          }
+          mCollidingEnvironments.insert(zone);
         }
       }
     }

@@ -206,7 +206,6 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *)
   {
-    // TODO (advancing sound)
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
         // If there are more strings in this node
@@ -242,13 +241,14 @@ namespace YTE
         UISelectEvent select(mLastSelectionIndex);
         mDialogueSpace->SendEvent(Events::UISelectEvent, &select);
       }
+    }
 
-      /*auto emitter = mOwner->GetComponent<WWiseEmitter>();
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
-      if (emitter)
-      {
-        emitter->PlayEvent("UI_Dia_Next");
-      }*/
+    if (emitter)
+    {
+      emitter->PlayEvent("Dia_All_Stop"); // if we are skipping through quickly, stop existing sound
+      emitter->PlayEvent("UI_Dia_Next");
     }
   }
 
@@ -275,7 +275,7 @@ namespace YTE
 
     if (emitter)
     {
-      emitter->PlayEvent("UI_Dia_Exit");
+      emitter->PlayEvent("UI_Dia_End");
     }
 
     mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
