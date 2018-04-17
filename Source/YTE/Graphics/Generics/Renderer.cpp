@@ -201,151 +201,148 @@ namespace YTE
   }
 
 
-  Texture* Renderer::GetBaseTexture(std::string &aFilename)
+  Mesh * Renderer::GetBaseMesh(std::string & aFilename)
   {
-    RequestTexture(aFilename);
+    auto mesh = RequestMesh(aFilename);
+    if (mesh)
+    {
+      return mesh;
+    }
 
     // Check for the job, if there is one, wait for it.
+    std::shared_lock<std::shared_mutex> reqLock(mRequestedMeshesMutex);
+    auto reqIt = mRequestedMeshes.find(aFilename);
+    if (reqIt == mRequestedMeshes.end())
     {
+      reqLock.unlock();
+      return RequestMesh(aFilename);
+    }
+    auto jobHandle = reqIt->second;
+    reqLock.unlock();
 
+    mJobSystem->WaitThisThread(jobHandle);
+    std::unique_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
+    auto baseIt = mBaseMeshes.find(aFilename);
+    if (baseIt == mBaseMeshes.end())
+    {
+      mBaseMeshes[aFilename] = std::move(jobHandle.GetReturn().As<std::unique_ptr<Mesh>>());
+      mesh = mBaseMeshes[aFilename].get();
+    }
+    baseLock.unlock();
+
+    std::unique_lock<std::shared_mutex> reqUniqueLock(mBaseMeshesMutex);
+    reqIt = mRequestedMeshes.find(aFilename);
+    if (reqIt != mRequestedMeshes.end())
+    {
+      mRequestedMeshes.erase(reqIt);
+    }
+    reqUniqueLock.unlock();
+
+    if (mesh)
+    {
+      return mesh;
     }
 
-    // We've waited for the job, the asset should be there.
+    // taking advantage of the fact that this does locking of the base mesh
+    return RequestMesh(aFilename);
+  }
+
+  Texture* Renderer::GetBaseTexture(std::string &aFilename)
+  {
+    auto texture = RequestTexture(aFilename);
+    if (texture)
     {
-      std::shared_lock<std::shared_mutex> lockBaseMesh(mBaseMeshMutex);
-
-      auto it = mBaseTextures.find(aFilename);
-
-      if (it != mBaseTextures.end())
-      {
-        return it->second.get();
-      }
+      return texture;
     }
 
+    // Check for the job, if there is one, wait for it.
+    std::shared_lock<std::shared_mutex> reqLock(mRequestedTexturesMutex);
+    auto reqIt = mRequestedTextures.find(aFilename);
+    if (reqIt == mRequestedTextures.end())
+    {
+      reqLock.unlock();
+      return RequestTexture(aFilename);
+    }
+    auto jobHandle = reqIt->second;
+    reqLock.unlock();
+
+    mJobSystem->WaitThisThread(jobHandle);
+    std::unique_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
+    auto baseIt = mBaseTextures.find(aFilename);
+    if (baseIt == mBaseTextures.end())
+    {
+      mBaseTextures[aFilename] = std::move(jobHandle.GetReturn().As<std::unique_ptr<Texture>>());
+      texture = mBaseTextures[aFilename].get();
+    }
+    baseLock.unlock();
+
+    std::unique_lock<std::shared_mutex> reqUniqueLock(mBaseTexturesMutex);
+    reqIt = mRequestedTextures.find(aFilename);
+    if (reqIt != mRequestedTextures.end())
+    {
+      mRequestedTextures.erase(reqIt);
+    }
+    reqUniqueLock.unlock();
+
+    if (texture)
+    {
+      return texture;
+    }
+
+    // taking advantage of the fact that this does locking of the base texture
+    return RequestTexture(aFilename);
+  }
+
+  Mesh* Renderer::RequestMesh(std::string &aMeshFile)
+  {
+    std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
+    auto baseIt = mBaseMeshes.find(aMeshFile);
+    // if already loaded back out
+    if (baseIt != mBaseMeshes.end())
+    {
+      return baseIt->second.get();
+    }
+    baseLock.unlock();
+
+    std::unique_lock<std::shared_mutex> reqLock(mRequestedMeshesMutex);
+    auto reqIt = mRequestedMeshes.find(aMeshFile);
+    // if already loading back out
+    if (reqIt != mRequestedMeshes.end())
+    {
+      return nullptr;
+    }
+
+    // Not in the futures map, add it.
+    mRequestedMeshes[aMeshFile] = mJobSystem->QueueJobThisThread([aMeshFile](JobHandle& handle)->Any {
+      auto mesh = std::make_unique<Mesh>(aMeshFile);
+      return Any{ mesh };
+    });
     return nullptr;
   }
 
-  void Renderer::RequestMesh(std::string &aMeshFile)
+  Texture* Renderer::RequestTexture(std::string &aFilename)
   {
-    bool tryToAdd = false;
-
+    std::shared_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
+    auto baseIt = mBaseTextures.find(aFilename);
+    // if already loaded back out
+    if (baseIt != mBaseTextures.end())
     {
-      std::shared_lock<std::shared_mutex> lockBaseMesh(mBaseMeshMutex);
+      return baseIt->second.get();
+    }
+    baseLock.unlock();
 
-      auto it = mBaseMeshes.find(aMeshFile);
-
-      if (it == mBaseMeshes.end())
-      {
-        // Not in the finished map, check the futures
-        std::shared_lock<std::shared_mutex> lockBaseMeshThread(mBaseMeshThreadMutex);
-
-        auto it2 = mMeshThreadDatas.find(aMeshFile);
-
-        if (it2 == mMeshThreadDatas.end())
-        {
-          // Not in the futures map, try to add it.
-          tryToAdd = true;
-        }
-      }
+    std::unique_lock<std::shared_mutex> reqLock(mRequestedTexturesMutex);
+    auto reqIt = mRequestedTextures.find(aFilename);
+    // if already loading back out
+    if (reqIt != mRequestedTextures.end())
+    {
+      return nullptr;
     }
 
-    if (tryToAdd)
-    {
-      std::unique_lock<std::shared_mutex> lockBaseMeshThread(mBaseMeshThreadMutex);
-
-      auto it2 = mMeshThreadDatas.find(aMeshFile);
-
-      if (it2 == mMeshThreadDatas.end())
-      {
-        // Not in the futures map, add it.
-        auto &meshFuture = mMeshThreadDatas[aMeshFile];
-
-        meshFuture.mName = aMeshFile;
-        meshFuture.mRenderer = this;
-        meshFuture.mHandle = mJobSystem->QueueJobThisThread([&meshFuture](JobHandle& handle)->Any {
-          return meshFuture.MakeMesh(handle);
-        });
-      }
-    }
-  }
-
-  void Renderer::RequestTexture(std::string &aFilename)
-  {
-    bool tryToAdd = false;
-
-    {
-      std::shared_lock<std::shared_mutex> lockBaseTexture(mBaseTextureMutex);
-
-      auto it = mBaseTextures.find(aFilename);
-
-      if (it == mBaseTextures.end())
-      {
-        // Not in the finished map, check the futures
-        std::shared_lock<std::shared_mutex> lockBaseTextureThread(mBaseTextureThreadMutex);
-
-        auto it2 = mTextureThreadDatas.find(aFilename);
-
-        if (it2 == mTextureThreadDatas.end())
-        {
-          // Not in the futures map, try to add it.
-          tryToAdd = true;
-        }
-      }
-    }
-
-    if (tryToAdd)
-    {
-      std::unique_lock<std::shared_mutex> lockBaseTextureThread(mBaseTextureThreadMutex);
-
-      auto it2 = mTextureThreadDatas.find(aFilename);
-
-      if (it2 == mTextureThreadDatas.end())
-      {
-        // Not in the futures map, add it.
-        auto &textureFuture = mTextureThreadDatas[aFilename];
-
-        textureFuture.mName = aFilename;
-        textureFuture.mRenderer = this;
-        textureFuture.mHandle = mJobSystem->QueueJobThisThread([&textureFuture](JobHandle& handle)->Any {
-          return textureFuture.MakeTexture(handle);
-        });
-      }
-    }
-  }
-
-  Any Renderer::MeshThreadData::MakeMesh(JobHandle&)
-  {
-    auto mesh = std::make_unique<Mesh>(mName);
-
-    std::unique_lock<std::shared_mutex> lockBaseMesh(mRenderer->mBaseMeshMutex);
-    mRenderer->mBaseMeshes[mName] = std::move(mesh);
-
-    std::unique_lock<std::shared_mutex> lockBaseMeshThreadData(mRenderer->mBaseMeshThreadMutex);
-    mRenderer->mMeshThreadDatas.erase(mRenderer->mMeshThreadDatas.find(mName));
-
-    return Any{};
-  }
-
-  Renderer::MeshThreadData::~MeshThreadData()
-  {
-
-  }
-  
-  Any Renderer::TextureThreadData::MakeTexture(JobHandle&)
-  {
-    auto texture = std::make_unique<Texture>(mName);
-
-    std::unique_lock<std::shared_mutex> lockBaseTexture(mRenderer->mBaseTextureMutex);
-    mRenderer->mBaseTextures[mName] = std::move(texture);
-
-    std::unique_lock<std::shared_mutex> lockBaseTextureThreadData(mRenderer->mBaseTextureThreadMutex);
-    mRenderer->mTextureThreadDatas.erase(mRenderer->mTextureThreadDatas.find(mName));
-
-    return Any{};
-  }
-
-  Renderer::TextureThreadData::~TextureThreadData()
-  {
-
-  }
+    // Not in the futures map, add it.
+    mRequestedMeshes[aFilename] = mJobSystem->QueueJobThisThread([aFilename](JobHandle& handle)->Any {
+      auto texture = std::make_unique<Texture>(aFilename);
+      return Any{ texture };
+    });
+    return nullptr;
 }
