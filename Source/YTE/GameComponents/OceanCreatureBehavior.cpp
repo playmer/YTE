@@ -11,6 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/GameComponents/OceanCreatureBehavior.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
 
 namespace YTE
 {
@@ -93,7 +94,13 @@ namespace YTE
         {
           // set initial rotation
           mParentTransform->SetWorldRotation(glm::vec3(0));
-          
+
+          auto emitter = mOwner->GetComponent<WWiseEmitter>();
+          if (emitter)
+          {
+            emitter->PlayEvent("SFX_Ani_Jump");
+          }
+
           mState = State::Jumping;
         }
 
