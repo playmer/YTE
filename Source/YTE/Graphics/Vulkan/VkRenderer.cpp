@@ -200,6 +200,13 @@ namespace YTE
 
     if (textureIt == mTextures.end())
     {
+      //std::vector<u8> aData,
+      //TextureLayout aType,
+      //u32 aWidth,
+      //u32 aHeight,
+      //u32 aMipLevels,
+      //u32 aLayerCount)
+
       auto texture = std::make_unique<VkTexture>(aData,
                                                  aType,
                                                  aWidth,

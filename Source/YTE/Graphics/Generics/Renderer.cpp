@@ -204,7 +204,7 @@ namespace YTE
     auto baseIt = mBaseMeshes.find(aFilename);
     if (baseIt == mBaseMeshes.end())
     {
-      mBaseMeshes[aFilename] = std::move(jobHandle.GetReturn().As<std::unique_ptr<Mesh>>());
+      mBaseMeshes[aFilename] = std::unique_ptr<Mesh>(jobHandle.GetReturn().As<Mesh*>());
       mesh = mBaseMeshes[aFilename].get();
     }
     baseLock.unlock();
@@ -250,7 +250,7 @@ namespace YTE
     auto baseIt = mBaseTextures.find(aFilename);
     if (baseIt == mBaseTextures.end())
     {
-      mBaseTextures[aFilename] = std::move(jobHandle.GetReturn().As<std::unique_ptr<Texture>>());
+      mBaseTextures[aFilename] = std::unique_ptr<Texture>(jobHandle.GetReturn().As<Texture*>());
       texture = mBaseTextures[aFilename].get();
     }
     baseLock.unlock();
@@ -293,7 +293,7 @@ namespace YTE
 
     // Not in the futures map, add it.
     mRequestedMeshes[aMeshFile] = mJobSystem->QueueJobThisThread([aMeshFile](JobHandle& handle)->Any {
-      auto mesh = std::make_unique<Mesh>(aMeshFile);
+      auto mesh = new Mesh(aMeshFile);
       return Any{ mesh };
     });
     return nullptr;
@@ -320,7 +320,7 @@ namespace YTE
 
     // Not in the futures map, add it.
     mRequestedMeshes[aFilename] = mJobSystem->QueueJobThisThread([aFilename](JobHandle& handle)->Any {
-      auto texture = std::make_unique<Texture>(aFilename);
+      auto texture = new Texture(aFilename);
       return Any{ texture };
     });
     return nullptr;
