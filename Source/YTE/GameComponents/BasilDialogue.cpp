@@ -518,7 +518,6 @@ namespace YTE
       {
         if (mLinesIter != mConvosIter->end())
         {
-          std::cout << mLinesIter->first << std::endl;
           mSoundEmitter->PlayEvent(mLinesIter->second);
           for (int i = 0; i <= mSoundBranchAccumulator; ++i)
           {
@@ -548,7 +547,6 @@ namespace YTE
       {
         if (mLinesIter != mConvosIter->end())
         {
-          std::cout << mLinesIter->first << std::endl;
           mSoundEmitter->PlayEvent(mLinesIter->second);
           if (mSoundCueCounter + mSoundOptionChosen == 3)
           {
@@ -567,9 +565,11 @@ namespace YTE
     {
       if (aEvent->isText)
       {
-        std::cout << mLinesIter->first << std::endl;
-        mSoundEmitter->PlayEvent(mLinesIter->second);
-        ++mLinesIter;
+        if (mLinesIter != mConvosIter->end())
+        {
+          mSoundEmitter->PlayEvent(mLinesIter->second);
+          ++mLinesIter;
+        }
       }
     }
   }
