@@ -10,7 +10,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  Job::Job(Delegate<Any(*)(JobHandle&)>&& aDelegate)
+  Job::Job(std::function<Any(JobHandle&)>&& aDelegate)
     : mParentJob(nullptr)
     , mDelegate(std::move(aDelegate))
     , mReturn()
@@ -21,7 +21,7 @@ namespace YTE
     IncrementJobs();
   }
 
-  Job::Job(Delegate<Any(*)(JobHandle&)>&& aDelegate, JobHandle& aParentHandle)
+  Job::Job(std::function<Any(JobHandle&)>&& aDelegate, JobHandle& aParentHandle)
     : mParentJob(aParentHandle.GetJob())
     , mDelegate(std::move(aDelegate))
     , mReturn()
@@ -65,7 +65,7 @@ namespace YTE
   void Job::Invoke()
   {
     JobHandle handle(this);
-    mReturn = mDelegate.Invoke(handle);
+    mReturn = mDelegate(handle);
     DecrementJobs();
   }
 

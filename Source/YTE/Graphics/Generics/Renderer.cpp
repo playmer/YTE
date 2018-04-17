@@ -239,12 +239,11 @@ namespace YTE
         // Not in the futures map, add it.
         auto &meshFuture = mMeshThreadDatas[aMeshFile];
 
-        auto delegate = YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
-                                        &(meshFuture),
-                                        &MeshThreadData::MakeMesh);
         meshFuture.mName = aMeshFile;
         meshFuture.mRenderer = this;
-        meshFuture.mHandle = mJobSystem->QueueJobThisThread(std::move(delegate));
+        meshFuture.mHandle = mJobSystem->QueueJobThisThread([&meshFuture](JobHandle& handle)->Any {
+          return meshFuture.MakeMesh(handle);
+        });
       }
     }
   }
@@ -284,13 +283,11 @@ namespace YTE
         // Not in the futures map, add it.
         auto &textureFuture = mTextureThreadDatas[aFilename];
 
-        auto delegate = YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>,
-                                        &(textureFuture),
-                                        &TextureThreadData::MakeTexture);
-
         textureFuture.mName = aFilename;
         textureFuture.mRenderer = this;
-        textureFuture.mHandle = mJobSystem->QueueJobThisThread(std::move(delegate));
+        textureFuture.mHandle = mJobSystem->QueueJobThisThread([&textureFuture](JobHandle& handle)->Any {
+          return textureFuture.MakeTexture(handle);
+        });
       }
     }
   }
