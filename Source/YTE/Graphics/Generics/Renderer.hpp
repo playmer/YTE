@@ -72,11 +72,11 @@ namespace YTE
 
     virtual void ResetView(GraphicsView *aView);
 
-    Mesh* RequestMesh(std::string &aMeshFile);
-    Texture* RequestTexture(std::string &aFilename);
+    Mesh* RequestMesh(const std::string &aMeshFile);
+    Texture* RequestTexture(const std::string &aFilename);
 
-    Mesh* GetBaseMesh(std::string &aFilename);
-    Texture* GetBaseTexture(std::string &aFilename);
+    Mesh* GetBaseMesh(const std::string &aFilename);
+    Texture* GetBaseTexture(const std::string &aFilename);
 
   private:
     std::unordered_map<std::string, JobHandle> mRequestedMeshes;
