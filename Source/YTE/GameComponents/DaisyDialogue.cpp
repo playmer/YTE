@@ -462,6 +462,11 @@ namespace YTE
           mActiveConvo = &(*(mActiveQuest->GetConversations()))[(int)Conversation::Name::Completed];
           mActiveNode = mActiveConvo->GetRoot();
 
+          if (mSoundEmitter)
+          {
+            mSoundEmitter->PlayEvent("UI_Quest_Completed");
+          }
+
           // because normally we move these by exiting convos, but here its from progression
           ++mConvosIter;
           mLinesIter = mConvosIter->begin();

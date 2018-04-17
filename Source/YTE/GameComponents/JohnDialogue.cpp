@@ -369,6 +369,11 @@ namespace YTE
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
 
+        if (mSoundEmitter)
+        {
+          mSoundEmitter->PlayEvent("UI_Quest_Completed");
+        }
+
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
       }
