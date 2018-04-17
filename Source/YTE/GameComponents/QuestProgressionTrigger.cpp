@@ -19,13 +19,31 @@ namespace YTE
                                                    Space *aSpace, 
                                                    RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mDeleteFlag(false)
+    , mDeleteCounter(0)
   {
     YTEUnusedArgument(aProperties);
   }
 
   void QuestProgressionTrigger::Initialize()
   {
+    mSpace->YTERegister(Events::LogicUpdate, this, &QuestProgressionTrigger::OnLogicUpdate);
     mOwner->YTERegister(Events::CollisionStarted, this, &QuestProgressionTrigger::OnCollisionStarted);
+  }
+
+  void QuestProgressionTrigger::OnLogicUpdate(LogicUpdate *aEvent)
+  {
+    if (mDeleteFlag)
+    {
+      if (mDeleteCounter > 20)
+      {
+        mOwner->GetParent()->RemoveComposition(mOwner);
+      }
+      else
+      {
+        mDeleteCounter++;
+      }
+    }
   }
 
   void QuestProgressionTrigger::OnCollisionStarted(CollisionStarted *aEvent)
@@ -34,7 +52,10 @@ namespace YTE
     {
       ProgressionItemEvent item;
       mSpace->SendEvent(Events::ProgressionItemEvent, &item);
-      mOwner->GetParent()->RemoveComposition(mOwner);
+      //mOwner->GetParent()->RemoveComposition(mOwner);
+
+      mOwner->GetComponent<Transform>()->SetWorldTranslation(0, -200, 0);
+      mDeleteFlag = true;
     }
   }
 }//end yte

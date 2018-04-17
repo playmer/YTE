@@ -15,12 +15,18 @@
 
 namespace YTE
 {
+  YTEDefineEvent(PostcardUpdate);
+
+  YTEDefineType(PostcardUpdate)
+  {
+    YTERegisterType(PostcardUpdate);
+    YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
+  }
 
   YTEDefineType(HudController)
   {
     YTERegisterType(HudController);
   }
-
 
   HudController::HudController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -30,8 +36,20 @@ namespace YTE
     , mPostcardSprite(nullptr)
     , mCompass(nullptr)
     , mCompassSprite(nullptr)
+    , mPostcardTextures{""}
   {
     DeserializeByType(aProperties, this, GetStaticType());
+
+    mPostcardTextures[0] = "Postcard_Tutorial.jpg";
+    mPostcardTextures[1] = "Postcard_1.jpg";
+    mPostcardTextures[2] = "Postcard_2.jpg";
+    mPostcardTextures[3] = "Postcard_3.jpg";
+    mPostcardTextures[4] = "Postcard_4.jpg";
+    mPostcardTextures[5] = "Postcard_5.jpg";
+    mPostcardTextures[6] = "Postcard_6.jpg";
+    mPostcardTextures[7] = "Postcard_7.jpg";
+    mPostcardTextures[8] = "Postcard_8.jpg";
+    mPostcardTextures[9] = "Postcard_9.jpg";
   }
 
   void HudController::Initialize()
@@ -118,7 +136,6 @@ namespace YTE
       }
     }
 
-
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     if (soundSystem)
@@ -137,6 +154,14 @@ namespace YTE
     mSpace->YTERegister(Events::MenuExit, this, &HudController::OnMenuExit);
 
     mSpace->GetOwner()->YTERegister(Events::BoatRotation, this, &HudController::OnBoatRotation);
+    mSpace->GetOwner()->YTERegister(Events::PostcardUpdate, this, &HudController::OnPostcardUpdate);
+
+    // force the game to load all textures so there's no hiccup when we switch in future
+    for (int i = 9; i >= 0; i--)
+    {
+      std::string textureName = mPostcardTextures[i];
+      mPostcardSprite->SetTexture(textureName);
+    }
   }
 
   void HudController::OnElementToggled(HudElementToggled *aElement)
@@ -229,6 +254,7 @@ namespace YTE
       mCompassNeedleTransform->SetWorldRotation(needleRot);
     }
   }
+
   void HudController::OnMenuStart(MenuStart *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -260,6 +286,7 @@ namespace YTE
       mCompassIconSprite->SetVisibility(false);
     }
   }
+
   void HudController::OnMenuExit(MenuExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
@@ -283,5 +310,17 @@ namespace YTE
     {
       mCompassIconSprite->SetVisibility(true);
     }
+  }
+
+  void HudController::OnPostcardUpdate(PostcardUpdate *aEvent)
+  {
+    if (aEvent->Number > 9)
+    {
+      return;
+    }
+
+    std::string textureName = mPostcardTextures[aEvent->Number];
+
+    mPostcardSprite->SetTexture(textureName);
   }
 }

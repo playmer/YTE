@@ -531,9 +531,11 @@ namespace YTE
     {
       if (aEvent->isText)
       {
-        std::cout << mLinesIter->first << std::endl;
-        mSoundEmitter->PlayEvent(mLinesIter->second);
-        ++mLinesIter;
+        if (mLinesIter != mConvosIter->end())
+        {
+          mSoundEmitter->PlayEvent(mLinesIter->second);
+          ++mLinesIter;
+        }
       }
     }
   }
