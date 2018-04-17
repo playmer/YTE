@@ -154,6 +154,15 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
 
+    auto compMap = aEngineObj->GetCompositions();
+
+    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    {
+      YTE::Composition *child = iter->second.get();
+
+      AddTreeItem(child->GetName().c_str(), item, child);
+    }
+
     return item;
   }
 
@@ -175,6 +184,15 @@ namespace YTEditor
     if (aSetAsCurrent)
     {
       this->setCurrentItem(item);
+    }
+
+    auto compMap = aEngineObj->GetCompositions();
+
+    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    {
+      YTE::Composition *child = iter->second.get();
+
+      AddTreeItem(child->GetName().c_str(), item, child);
     }
 
     return item;
@@ -537,6 +555,8 @@ namespace YTEditor
 
   void ObjectBrowser::LoadAllChildObjects(YTE::Composition *aParentObj, ObjectItem *aParentItem)
   {
+    return;
+
     // if the parent object has no children
     if (aParentObj->GetCompositions()->size() == 0)
     {

@@ -372,6 +372,11 @@ namespace YTE
     // calculate anim key frame
     double sinVal = sin(glm::radians(mTransform->GetWorldRotationAsEuler().y));
 
+    if ((sinVal + 1.0) - 0.5)
+    {
+
+    }
+
     if (mSailsAnimator)
     {
       double sailsFrame = ((sinVal + 1) * mSailsAnimator->GetMaxTime()) / 2.0;

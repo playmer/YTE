@@ -93,8 +93,12 @@ namespace YTEditor
       {
         if (parent == "Archetypes")
         {
-          ObjectItem *objItem = mMainWindow->GetObjectBrowser().AddObject(stem.c_str(), stem.c_str());
+          ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
 
+          ObjectItem *objItem = objBrowser.AddObject(stem.c_str(), stem.c_str());
+          objBrowser.MoveToFrontOfCamera(objItem->GetEngineObject());
+
+          /*
           YTE::Transform *transform = objItem->GetEngineObject()->GetComponent<YTE::Transform>();
 
           if (transform)
@@ -107,8 +111,9 @@ namespace YTEditor
             YTE::Orientation *orientation = cameraObject->GetComponent<YTE::Orientation>();
             glm::vec3 forwardVec = orientation->GetForwardVector();
 
-            transform->SetWorldTranslation(camPos + 10.0f * forwardVec);
+            transform->SetWorldTranslation(camPos + 40.0f * forwardVec);
           }
+          */
         }
         else if (parent == "Levels")
         {

@@ -36,6 +36,9 @@ namespace YTE
     float GetSleepTime() const;
     void SetSleepTime(float aTime);
 
+    float GetRotateSpeed() const;
+    void SetRotateSpeed(float aSpeed);
+
   private:
     Transform *mCameraTransform;
 
@@ -45,6 +48,8 @@ namespace YTE
     bool mFlipRotation;
 
     bool mStartJump;
+
+    float mRotateSpeed;
 
     enum State
     {

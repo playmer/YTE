@@ -30,6 +30,10 @@ namespace YTE
     YTEBindProperty(&OceanCreatureBehavior::GetSleepTime, &OceanCreatureBehavior::SetSleepTime, "Sleep Time")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
+
+    YTEBindProperty(&OceanCreatureBehavior::GetRotateSpeed, &OceanCreatureBehavior::SetRotateSpeed, "Rotate Speed")
+      .AddAttribute<EditorProperty>()
+      .AddAttribute<Serializable>();
   }
 
   OceanCreatureBehavior::OceanCreatureBehavior(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -42,6 +46,7 @@ namespace YTE
     , mJumpDistance(20.0f)
     , mSleepTime(30.0)
     , mState(State::Waiting)
+    , mRotateSpeed(4.0f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -111,7 +116,7 @@ namespace YTE
       {
         mParentTransform->SetWorldRotation(mCameraTransform->GetWorldRotation());
 
-        float rotAngle = 4.0f * static_cast<float>(aEvent->Dt);
+        float rotAngle = mRotateSpeed * static_cast<float>(aEvent->Dt);
 
         if (mFlipRotation)
         {
@@ -173,6 +178,16 @@ namespace YTE
   void OceanCreatureBehavior::SetSleepTime(float aTime)
   {
     mSleepTime = aTime;
+  }
+
+  float OceanCreatureBehavior::GetRotateSpeed() const
+  {
+    return mRotateSpeed;
+  }
+
+  void OceanCreatureBehavior::SetRotateSpeed(float aSpeed)
+  {
+    mRotateSpeed = aSpeed;
   }
 
 } //end yte

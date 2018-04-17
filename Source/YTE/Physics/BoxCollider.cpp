@@ -58,7 +58,7 @@ namespace YTE
     auto translation = transform->GetWorldTranslation();
     auto rotation = transform->GetWorldRotation();
     auto bulletRot = OurQuatToBt(rotation);
-    auto scale = transform->GetScale();
+    auto scale = transform->GetWorldScale();
     auto bulletTransform = btTransform(bulletRot, OurVec3ToBt(translation));
 
     mBoxShape = std::make_unique<btBoxShape>(btVector3{.5f,.5f,.5f});
