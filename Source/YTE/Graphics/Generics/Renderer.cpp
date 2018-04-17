@@ -293,6 +293,7 @@ namespace YTE
 
     // Not in the futures map, add it.
     mRequestedMeshes[aMeshFile] = mJobSystem->QueueJobThisThread([aMeshFile](JobHandle& handle)->Any {
+      YTEUnusedArgument(handle);
       auto mesh = new Mesh(aMeshFile);
       return Any{ mesh };
     });
@@ -320,6 +321,7 @@ namespace YTE
 
     // Not in the futures map, add it.
     mRequestedMeshes[aFilename] = mJobSystem->QueueJobThisThread([aFilename](JobHandle& handle)->Any {
+      YTEUnusedArgument(handle);
       auto texture = new Texture(aFilename);
       return Any{ texture };
     });
