@@ -145,13 +145,23 @@ namespace YTE
 
       for (int i = 0; i < size; ++i)
       {
+        if (i == 0)
+        {
+          mLastSelectionIndex = 0;
+
+          UISelectEvent select(mLastSelectionIndex);
+          select.NumOptions = size;
+          mDialogueSpace->SendEvent(Events::UISelectEvent, &select);
+
+          /*UIDisplayEvent display(true);
+          display.DisplayIndex = i;
+          display.NumOptions = size;
+          mDialogueSpace->SendEvent(Events::UIDisplayEvent, &display);*/
+        }
+
         UIUpdateContent content(false, aEvent->ContentMessages[i]);
         content.SelectionIndex = i;
         mDialogueSpace->SendEvent(Events::UIUpdateContent, &content);
-
-        UIDisplayEvent display(true);
-        display.DisplayIndex = i;
-        mDialogueSpace->SendEvent(Events::UIDisplayEvent, &display);
 
         UIFocusSwitchEvent passiveFocus(false);
         mDialogueSpace->SendEvent(Events::UIFocusSwitchEvent, &passiveFocus);
@@ -167,7 +177,16 @@ namespace YTE
       return;
     }
 
-    float stickAngle = glm::acos(glm::dot(glm::vec2(1.f, 0.f), aEvent->StickDirection));
+    if (aEvent->SelectionDirection == DialogueSelect::Direction::Next)
+    {
+      mLastSelectionIndex = (mLastSelectionIndex + 1) % (mMaxSelectionIndex + 1);
+    }
+    else if (aEvent->SelectionDirection == DialogueSelect::Direction::Prev)
+    {
+      mLastSelectionIndex = ((mLastSelectionIndex + mMaxSelectionIndex) % (mMaxSelectionIndex + 1));
+    }
+
+    /*float stickAngle = glm::acos(glm::dot(glm::vec2(1.f, 0.f), aEvent->StickDirection));
     float pi = glm::pi<float>();
     float length = glm::length(aEvent->StickDirection);
 
@@ -198,7 +217,7 @@ namespace YTE
     else
     {
       mLastSelectionIndex = -1;
-    }
+    }*/
 
     UISelectEvent select(mLastSelectionIndex);
     mDialogueSpace->SendEvent(Events::UISelectEvent, &select);

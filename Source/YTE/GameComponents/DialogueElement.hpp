@@ -59,7 +59,9 @@ namespace YTE
 
   private:
     Sprite *mMySprite;
-    Sprite *mChildSprite;
+    Sprite *mAcceptSprite;
+    Sprite *mNextSprite;
+    Sprite *mPrevSprite;
     SpriteText *mTextContent;
 
     ContentType mContentType;

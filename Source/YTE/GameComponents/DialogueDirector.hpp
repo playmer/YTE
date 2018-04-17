@@ -35,6 +35,7 @@ namespace YTE
     YTEDeclareType(UISelectEvent);
     UISelectEvent(int aSelection) { SelectionIndex = aSelection; }
     int SelectionIndex;
+    int NumOptions = 0;
   };
 
   class UIFocusSwitchEvent : public Event
