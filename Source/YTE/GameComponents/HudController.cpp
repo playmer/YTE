@@ -165,6 +165,12 @@ namespace YTE
         {
           bool postcardVisible = mPostcardSprite->GetVisibility();
           mPostcardSprite->SetVisibility(!postcardVisible);
+          if (mSoundEmitter)
+          {
+            (postcardVisible)
+              ? mSoundEmitter->PlayEvent("UI_SailPostcard_Close")
+              : mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+          }
         }
         break;
       }
