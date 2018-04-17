@@ -274,10 +274,10 @@ namespace YTE
   public:
     YTEDeclareType(Mesh);
 
-    Mesh(std::string &aFile,
+    Mesh(const std::string &aFile,
          CreateInfo *aCreateInfo = nullptr);
 
-    Mesh(std::string &aFile,
+    Mesh(const std::string &aFile,
          std::vector<Submesh> &aSubmeshes);
 
     virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices);
