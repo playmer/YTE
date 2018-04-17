@@ -72,45 +72,22 @@ namespace YTE
 
     virtual void ResetView(GraphicsView *aView);
 
-    void RequestMesh(std::string &aMeshFile);
-    void RequestTexture(std::string &aFilename);
-
-    struct MeshThreadData
-    {
-      MeshThreadData();
-      ~MeshThreadData();
-
-      Any MakeMesh(JobHandle&);
-
-      Renderer *mRenderer;
-      std::string mName;
-      JobHandle mHandle;
-    };
-
-    struct TextureThreadData
-    {
-      ~TextureThreadData();
-
-      Any MakeTexture(JobHandle&);
-
-      Renderer *mRenderer;
-      std::string mName;
-      JobHandle mHandle;
-    };
+    Mesh* RequestMesh(std::string &aMeshFile);
+    Texture* RequestTexture(std::string &aFilename);
 
     Mesh* GetBaseMesh(std::string &aFilename);
     Texture* GetBaseTexture(std::string &aFilename);
 
   private:
-    std::unordered_map<std::string, MeshThreadData> mMeshThreadDatas;
-    std::shared_mutex mBaseMeshThreadMutex;
+    std::unordered_map<std::string, JobHandle> mRequestedMeshes;
+    std::shared_mutex mRequestedMeshesMutex;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
-    std::shared_mutex mBaseMeshMutex;
+    std::shared_mutex mBaseMeshesMutex;
 
-    std::unordered_map<std::string, TextureThreadData> mTextureThreadDatas;
-    std::shared_mutex mBaseTextureThreadMutex;
+    std::unordered_map<std::string, JobHandle> mRequestedTextures;
+    std::shared_mutex mRequestedTexturesMutex;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
-    std::shared_mutex mBaseTextureMutex;
+    std::shared_mutex mBaseTexturesMutex;
 
     JobSystem *mJobSystem;
   };
