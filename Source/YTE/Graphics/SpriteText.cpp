@@ -276,12 +276,9 @@ namespace YTE
 
         // Word wrap after characters have been placed (graphically)
       if (mLineLength != 0.0f && (currMaxX - mBoundingBox.xMin) >= mLineLength)
-      {
-        int vertCursor = lastIndex - (4 * (i - cursor));
-        float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
-
+      {       
           // If we happen to land exactly on a space (i.e., there are no overlapping characters)
-          // Just crlf
+          // Just carriage return
         if (cursor == i)
         {
           offsetX = 0.0f;
@@ -291,6 +288,9 @@ namespace YTE
           // Otherwise, move any dangling characters to the next line (so the line ends with a ' ')
         else
         {
+          int vertCursor = lastIndex - (4 * (i - cursor));
+          float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
+
           while (cursor < i)
           {
             submesh.mVertexBuffer[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
@@ -306,6 +306,7 @@ namespace YTE
           currMaxX = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
         }
 
+          // Line feed
         offsetY += mFontInfo.mSize;
       }
     }
