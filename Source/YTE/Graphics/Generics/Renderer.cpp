@@ -324,4 +324,5 @@ namespace YTE
       return Any{ texture };
     });
     return nullptr;
+  }
 }
