@@ -32,8 +32,14 @@ namespace YTE
     QuestProgressionTrigger(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
 
+    void OnLogicUpdate(LogicUpdate *aEvent);
+
     void OnCollisionStarted(CollisionStarted *aEvent);
   private:
+
+    bool mDeleteFlag;
+    int mDeleteCounter;
+
   };
 }//end yte
 #endif

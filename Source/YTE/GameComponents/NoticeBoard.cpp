@@ -12,6 +12,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/QuestLogic.hpp" /* to identify collision with boat */
 
+#include "YTE/GameComponents/HudController.hpp"
+
 namespace YTE
 {
   YTEDefineEvent(NoticeBoardHookup);
@@ -106,7 +108,70 @@ namespace YTE
         ++mAssignedPostcard;
         if (mAssignedPostcard != mPostcardVec.end()._Ptr)
         {
-          QuestStart quest(mAssignedPostcard->GetCharacter(), mAssignedPostcard->GetQuest());
+          Quest::CharacterName charName = mAssignedPostcard->GetCharacter();
+          Quest::Name questName = mAssignedPostcard->GetQuest();
+
+          PostcardUpdate postcardEvent;
+          postcardEvent.Number = 0;
+
+          if (charName == Quest::CharacterName::John)
+          {
+            if (questName == Quest::Name::Fetch)
+            {
+              // quest 1
+              postcardEvent.Number = 0;
+            }
+            else if (questName == Quest::Name::Dialogue)
+            {
+              // quest 4
+              postcardEvent.Number = 3;
+            }
+            else if (questName == Quest::Name::Explore)
+            {
+              // quest 7
+              postcardEvent.Number = 6;
+            }
+          }
+          else if (charName == Quest::CharacterName::Daisy)
+          {
+            if (questName == Quest::Name::Fetch)
+            {
+              // daisy 8
+              postcardEvent.Number = 7;
+            }
+            else if (questName == Quest::Name::Dialogue)
+            {
+              // quest 6
+              postcardEvent.Number = 5;
+            }
+            else if (questName == Quest::Name::Explore)
+            {
+              // quest 2
+              postcardEvent.Number = 1;
+            }
+          }
+          else if (charName == Quest::CharacterName::Basil)
+          {
+            if (questName == Quest::Name::Fetch)
+            {
+              // quest 3
+              postcardEvent.Number = 2;
+            }
+            else if (questName == Quest::Name::Dialogue)
+            {
+              // quest 9
+              postcardEvent.Number = 8;
+            }
+            else if (questName == Quest::Name::Explore)
+            {
+              // quest 5
+              postcardEvent.Number = 4;
+            }
+          }
+
+          mSpace->SendEvent(Events::PostcardUpdate, &postcardEvent);
+
+          QuestStart quest(charName, questName);
           mSpace->SendEvent(Events::QuestStart, &quest);
         }
       }

@@ -22,6 +22,15 @@ namespace YTE
   class Sprite;
   class Transform;
 
+  YTEDeclareEvent(PostcardUpdate);
+  class PostcardUpdate : public Event
+  {
+  public:
+    YTEDeclareType(PostcardUpdate);
+
+    int Number;
+  };
+
   class HudController : public Component
   {
   public:
@@ -35,6 +44,8 @@ namespace YTE
 
     void OnMenuStart(MenuStart *aEvent);
     void OnMenuExit(MenuExit *aEvent);
+
+    void OnPostcardUpdate(PostcardUpdate *aEvent);
 
   private:
 
@@ -67,6 +78,8 @@ namespace YTE
 
     Composition *mCompassIcon;
     Sprite *mCompassIconSprite;
+
+    std::string mPostcardTextures[10];
 
     u64 mCompassOpen;
     u64 mCompassClose;
