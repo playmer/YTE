@@ -60,8 +60,8 @@ namespace YTE
         daisy->RegisterDialogue();
         mOwner->AddComponent<DialogueDirector>();
         */
-        RequestDialogueStart nextDialogue;
-        mSpace->SendEvent(Events::RequestDialogueStart, &nextDialogue);
+        //RequestDialogueStart nextDialogue;
+        //mSpace->SendEvent(Events::RequestDialogueStart, &nextDialogue);
       }
     }
   }

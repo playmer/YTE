@@ -298,13 +298,13 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
-        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
-
         if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
         {
           star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
         }
+
+        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();

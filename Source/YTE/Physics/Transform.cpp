@@ -503,7 +503,7 @@ namespace YTE
 
       if (rigidBody != nullptr)
       {
-        rigidBody->SetPhysicsTransform(mTranslation, mRotation);
+        rigidBody->SetPhysicsTransform(mWorldTranslation, mWorldRotation);
       }
     }
 

@@ -13,6 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BoatController.hpp"
 
 #include "YTE/Core/Actions/Action.hpp"
+#include "YTE/Core/Actions/ActionManager.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/ParticleEmitter.hpp"
@@ -67,8 +68,11 @@ namespace YTE
     , mAnimator(nullptr)
     , mSailsAnimator(nullptr)
     , mMainsailAnimator(nullptr)
+    , mMastAnimator(nullptr)
     , mTargetRotationAmount(0.0f)
     , mCurrentRotationAmount(0.0f)
+    , mSailScale(0)
+    , mSailFinished(true)
   {
 
     mMaxSailSpeed = 25.0f;
@@ -138,6 +142,11 @@ namespace YTE
       mMainsailAnimator = mainsail->GetComponent<Animator>();
     }
 
+    if (Composition *mast = mOwner->FindFirstCompositionByName("Mast"))
+    {
+      mMastAnimator = mast->GetComponent<Animator>();
+    }
+
     if (Composition *character = mOwner->FindFirstCompositionByName("MainCharacter"))
     {
       mCharacterAnimator = character->GetComponent<Animator>();
@@ -159,6 +168,12 @@ namespace YTE
     {
       mMainsailAnimator->SetDefaultAnimation("Boat_Turn.fbx");
       mMainsailAnimator->SetCurrentAnimation("Boat_Turn.fbx");
+    }
+
+    if (mMastAnimator)
+    {
+      mMastAnimator->SetDefaultAnimation("Boat_Turn.fbx");
+      mMastAnimator->SetCurrentAnimation("Boat_Turn.fbx");
     }
 
     if (mCharacterAnimator)
@@ -196,26 +211,44 @@ namespace YTE
 
   void BoatController::ChangeSail(SailStateChanged *aEvent)
   {
+    auto actionManager = mSpace->GetComponent<ActionManager>();
+
     if (aEvent->SailUp)
     {
       if (!mIsSailUp)
       {
+        mSailFinished = false;
+        ActionSequence raiseSail;
+        raiseSail.Add<Quad::easeOut>(mSailScale, 1.0f, 0.5f);
+        raiseSail.Call([this]() {
+          mSailFinished = true;
+          mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(1));
+          mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(1));
+        });
+        actionManager->AddSequence(mOwner, raiseSail);
+
+
         mSoundEmitter->PlayEvent(mSoundSailUp);
         mRigidBody->SetDamping(0.f, 0.9f);
-
-        mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(1.0f));
-        mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(1.0f));
       }
     }
     else
     {
       if (mIsSailUp)
       {
+        mSailFinished = false;
+        ActionSequence lowerSail;
+        lowerSail.Add<Quad::easeOut>(mSailScale, 0.0f, 0.5f);
+        lowerSail.Call([this]() {
+          mSailFinished = true;
+          mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(0));
+          mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(0));
+        });
+        actionManager->AddSequence(mOwner, lowerSail);
+
+
         mSoundEmitter->PlayEvent(mSoundSailDown);
         mRigidBody->SetDamping(0.9f, 0.9f);
-
-        mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(0.0f));
-        mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(0.0f));
       }
     }
 
@@ -361,6 +394,12 @@ namespace YTE
   {
     auto pos = mTransform->GetWorldTranslation();
 
+    if (!mSailFinished)
+    {
+      mOwner->FindFirstCompositionByName("Mainsail")->GetComponent<Transform>()->SetScale(glm::vec3(mSailScale, 1, mSailScale));
+      mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(mSailScale, 1, mSailScale));
+    }
+
     if (pos.y < 0.35f)
     {
       mTransform->SetWorldTranslation(pos.x, 0.4f, pos.z);
@@ -391,6 +430,14 @@ namespace YTE
 
       // update mainsail animation : world rotation y axis
       mMainsailAnimator->SetCurrentAnimTime(mainsailFrame);
+    }
+    
+    if (mMastAnimator)
+    {
+      double mastFrame = ((sinVal + 1) * mMastAnimator->GetMaxTime()) / 2.0;
+
+      // update mast animation : world rotation y axis
+      mMastAnimator->SetCurrentAnimTime(mastFrame);
     }
 
     // update boat rotation

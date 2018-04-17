@@ -107,12 +107,16 @@ namespace YTE
     Animator *mAnimator;
     Animator *mSailsAnimator;
     Animator *mMainsailAnimator;
+    Animator *mMastAnimator;
     Animator *mCharacterAnimator;
 
     float mTurnAmount;
 
     float mTargetRotationAmount;
     float mCurrentRotationAmount;
+
+    float mSailScale;
+    bool mSailFinished;
 
     void StopBoatImmediately();
 
