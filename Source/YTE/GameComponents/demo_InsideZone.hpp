@@ -38,6 +38,7 @@ namespace YTE
     u64 mSailingStop;
     std::unordered_set<Zone*> mCollidingIslands;
     std::unordered_set<Zone*> mCollidingEnvironments;
+    std::unordered_set<Zone*> mCollidingCharacters;
 
     std::string mCurrentZone;
 

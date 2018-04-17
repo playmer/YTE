@@ -124,6 +124,14 @@ namespace YTE
             mSoundEmitter->PlayEvent("IslandEnv_Stop");
           }
         }
+        else if (zoneType == "Character")
+        {
+          auto it = mCollidingCharacters.find(zone);
+          if (it != mCollidingCharacters.end())
+          {
+            mCollidingCharacters.erase(it);
+          }
+        }
       }
     }
   }
@@ -162,6 +170,22 @@ namespace YTE
             mSoundEmitter->PlayEvent("IslandEnv_Start");
           }
           mCollidingEnvironments.insert(zone);
+        }
+        else if (zoneType == "Character")
+        {
+          static bool first = true;
+          if (first)
+          {
+            mCollidingCharacters.insert(zone);
+            first = false;
+          }
+
+          if (mCollidingCharacters.empty())
+          {
+            auto zoneName = zone->GetZoneName();
+            mSoundEmitter->PlayEvent(zoneName);
+          }
+          mCollidingCharacters.insert(zone);
         }
       }
     }
