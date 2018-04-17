@@ -518,10 +518,11 @@ namespace YTE
         if (mLinesIter != mConvosIter->end())
         {
           mSoundEmitter->PlayEvent(mLinesIter->second);
-          for (int i = 0; i <= mSoundBranchAccumulator; ++i)
-          {
-            ++mLinesIter;
-          }
+
+		  // Iteration for the iteration gods. Note the semicolon.
+		  for (int i = 0; 
+			  (i <= mSoundBranchAccumulator) && (mLinesIter != mConvosIter->end()); 
+			  ++i, ++mLinesIter);
         }
       }
     }
