@@ -206,8 +206,15 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *)
   {
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
+      if (emitter)
+      {
+        emitter->PlayEvent("Dia_All_Stop"); // if we are skipping through quickly, stop existing sound
+      }
+
         // If there are more strings in this node
       if (mCurNodeDataIndex < mCurNodeData.size() - 1)
       {
@@ -243,11 +250,8 @@ namespace YTE
       }
     }
 
-    auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
     if (emitter)
     {
-      emitter->PlayEvent("Dia_All_Stop"); // if we are skipping through quickly, stop existing sound
       emitter->PlayEvent("UI_Dia_Next");
     }
   }
