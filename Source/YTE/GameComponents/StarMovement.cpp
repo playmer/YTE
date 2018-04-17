@@ -139,13 +139,13 @@ namespace YTE
 
     float distF = glm::length(dist);
     
-    float scale = distF / 1000.0f;
+    float scale = (distF - 100.0f) / 200.0f;
 
-    if (scale > 3.0f)
+    if (scale > 5.0f)
     {
-      scale = 3.0f;
+      scale = 5.0f;
     }
-    else if (scale < 0.1f)
+    else if (scale < 0.05f)
     {
       scale = 0.0f;
       mLightBeamTransform->SetScale(0.0f, 0.0f, 0.0f);
@@ -160,6 +160,12 @@ namespace YTE
   {
     mStarTransform->SetWorldTranslation(aPos);
     mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
+    mCurrentAnchor = CurrentAnchor::None;
+  }
+
+  void StarMovement::SetAnchor(CurrentAnchor aAnchor)
+  {
+    mCurrentAnchor = aAnchor;
   }
 
   void StarMovement::OnQuestStart(QuestStart *aEvent)
@@ -179,7 +185,6 @@ namespace YTE
       mLightBeamTransform->SetScale(1.0f, 500.0f, 1.0f);
       mCurrentAnchor = CurrentAnchor::Basil;
     }
-    
   }
 
   void StarMovement::OnUpdateActiveQuestState(UpdateActiveQuestState *aEvent)

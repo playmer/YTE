@@ -11,6 +11,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/GameComponents/QuestLogic.hpp"
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
+#include "YTE/GameComponents/StarMovement.hpp"
 
 namespace YTE
 {
@@ -44,40 +45,139 @@ namespace YTE
   void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
+    Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      switch (name)
+      {
+        case Quest::CharacterName::John:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+          break;
+        }
+
+        case Quest::CharacterName::Daisy:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
+          break;
+        }
+
+        case Quest::CharacterName::Basil:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Basil);
+          break;
+        }
+      }
+    }
+
+    UpdateActiveQuestState update(name, Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnProgressionLocationEvent(ProgressionLocationEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
+    Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      switch (name)
+      {
+        case Quest::CharacterName::John:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+          break;
+        }
+
+        case Quest::CharacterName::Daisy:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
+          break;
+        }
+
+        case Quest::CharacterName::Basil:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Basil);
+          break;
+        }
+      }
+    }
+
+    UpdateActiveQuestState update(name, Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnProgressionDialogueEvent(ProgressionDialogueEvent *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    UpdateActiveQuestState update((*mPostcardHandle)->GetCharacter(), Quest::State::Accomplished);
+    Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      switch (name)
+      {
+        case Quest::CharacterName::John:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+          break;
+        }
+
+        case Quest::CharacterName::Daisy:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
+          break;
+        }
+
+        case Quest::CharacterName::Basil:
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Basil);
+          break;
+        }
+      }
+    }
+
+    UpdateActiveQuestState update(name, Quest::State::Accomplished);
     mSpace->SendEvent(Events::UpdateActiveQuestState, &update);
   }
 
   void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
+    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
+    
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      star->GetComponent<StarMovement>()->SetActive(itemPos + glm::vec3(0, 8, 0));
+    }
   }
 
   void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
+    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      star->GetComponent<StarMovement>()->SetActive(itemPos + glm::vec3(0, 8, 0));
+    }
   }
 
   void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    mSpace->AddCompositionAtPosition("ProgressionItem", "item", glm::vec3(290, 0, 450));
+    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      star->GetComponent<StarMovement>()->SetActive(itemPos + glm::vec3(0, 8, 0));
+    }
   }
 
 

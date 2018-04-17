@@ -31,11 +31,6 @@ namespace YTE
 
   void DaisyTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
-    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-    {
-      star->GetComponent<StarMovement>()->SetActive(mOwner->GetComponent<Transform>()->GetWorldTranslation() + glm::vec3(0, 8, 0));
-    }
-
     auto daisy = mOwner->GetComponent<DaisyDialogue>();
     auto basil = mSpace->FindFirstCompositionByName("basil");
     auto john = mSpace->FindFirstCompositionByName("john");

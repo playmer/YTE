@@ -34,6 +34,17 @@ namespace YTE
 
     void SetActive(glm::vec3 aPos);
 
+    enum CurrentAnchor
+    {
+      John,
+      Daisy,
+      Basil,
+      NoticeBoard,
+      None
+    };
+
+    void SetAnchor(CurrentAnchor aAnchor);
+
   private:
     void OnDialogueStart(DialogueStart *aEvent);
     void OnDialogueExit(DialogueExit *aEvent);
@@ -52,14 +63,7 @@ namespace YTE
 
     double mTimer;
 
-    enum CurrentAnchor
-    {
-      John,
-      Daisy,
-      Basil,
-      NoticeBoard,
-      None
-    };
+    
 
     CurrentAnchor mCurrentAnchor;
 

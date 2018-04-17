@@ -31,11 +31,6 @@ namespace YTE
 
   void BasilTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
-    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-    {
-      star->GetComponent<StarMovement>()->SetActive(mOwner->GetComponent<Transform>()->GetWorldTranslation() + glm::vec3(0, 8, 0));
-    }
-
     auto basil = mOwner->GetComponent<BasilDialogue>();
     auto john = mSpace->FindFirstCompositionByName("john");
     auto daisy = mSpace->FindFirstCompositionByName("daisy");

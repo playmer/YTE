@@ -15,6 +15,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/DialogueGraph.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/Graphics/Animation.hpp"
+#include "YTE/GameComponents/StarMovement.hpp"
 
 namespace YTE
 {
@@ -253,6 +254,11 @@ namespace YTE
       // Send to the space a ptr to the activequest for the noticeboard
     NoticeBoardHookup firstQuest(&mActiveQuest);
     mSpace->SendEvent(Events::NoticeBoardHookup, &firstQuest);
+
+    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+    {
+      star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+    }
   }
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
@@ -289,6 +295,11 @@ namespace YTE
         TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
+        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
+        }
+
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
         // end me, just do it.
@@ -297,6 +308,11 @@ namespace YTE
       }
       else
       {
+        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::NoticeBoard);
+        }
+
         mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard
         // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
         mActiveNode = mActiveConvo->GetRoot(); // for now just repeat john's last convo to prevent crash

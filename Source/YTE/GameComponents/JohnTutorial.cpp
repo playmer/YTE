@@ -39,11 +39,6 @@ namespace YTE
 
   void JohnTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
-    if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-    {
-      star->GetComponent<StarMovement>()->SetActive(mOwner->GetComponent<Transform>()->GetWorldTranslation() + glm::vec3(0, 8, 0));
-    }
-
     auto john = mOwner->GetComponent<JohnDialogue>();
     auto basil = mSpace->FindFirstCompositionByName("basil");
     auto daisy = mSpace->FindFirstCompositionByName("daisy");

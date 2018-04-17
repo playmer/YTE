@@ -14,6 +14,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/Graphics/Animation.hpp"
+#include "YTE/GameComponents/StarMovement.hpp"
 
 namespace YTE
 {
@@ -280,6 +281,11 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
+        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
+        }
+
         TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
@@ -291,6 +297,11 @@ namespace YTE
       }
       else
       {
+        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
+        {
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+        }
+
         TutorialUpdate nextTutorial(Quest::CharacterName::John);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
         mActiveQuest->SetState(Quest::State::Completed);
