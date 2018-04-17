@@ -237,6 +237,11 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
+      if (mSoundEmitter)
+      {
+        mSoundEmitter->PlayEvent("Dia_CJ_Start");
+      }
+
       RegisterDialogue();
     }
   }

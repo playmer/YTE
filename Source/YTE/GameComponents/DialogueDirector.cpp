@@ -86,6 +86,8 @@ namespace YTE
     DialogueStart startDialogue;
     mSpace->SendEvent(Events::DialogueStart, &startDialogue);
 
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
     mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Dialogue);
   }
 
@@ -204,6 +206,7 @@ namespace YTE
 
   void DialogueDirector::OnDialogueConfirm(DialogueConfirm *)
   {
+    // TODO (advancing sound)
     if (mCurNodeType == DialogueNode::NodeType::Text)
     {
         // If there are more strings in this node
@@ -272,7 +275,7 @@ namespace YTE
 
     if (emitter)
     {
-      emitter->PlayEvent("UI_Dia_End");
+      emitter->PlayEvent("UI_Dia_Exit");
     }
 
     mSpace->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Sailing);
