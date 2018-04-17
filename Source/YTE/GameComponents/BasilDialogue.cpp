@@ -222,14 +222,19 @@ namespace YTE
 
   void BasilDialogue::OnCollisionStarted(CollisionStarted *aEvent)
   {
-    if (mActiveQuest->GetName() != Quest::Name::Introduction)
+    if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+      // want all the music playing if the overlap
+      if (mSoundEmitter)
+      {
+        mSoundEmitter->PlayEvent("BB_CallOut");
+      }
+
+      if (mActiveQuest->GetName() != Quest::Name::Introduction)
       {
         if (mSoundEmitter)
         {
           mSoundEmitter->PlayEvent("UI_Dia_Start");
-          mSoundEmitter->PlayEvent("BB_CallOut");
         }
 
         RegisterDialogue();
