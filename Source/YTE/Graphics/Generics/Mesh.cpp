@@ -426,7 +426,7 @@ namespace YTE
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
 
-    std::string filename = aFile;
+    std::string filename = aFile; // TODO: don't actually make a copy lol
     std::string meshFile;
 
     // check that the mesh file exists in the game assets folder
