@@ -419,16 +419,17 @@ namespace YTE
     return toReturn;
   }
 
-  Mesh::Mesh(std::string &aFile, CreateInfo *aCreateInfo)
+  Mesh::Mesh(const std::string &aFile, CreateInfo *aCreateInfo)
     : mInstanced(false)
   {
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
 
+    std::string filename = aFile;
     std::string meshFile;
 
     // check that the mesh file exists in the game assets folder
-    bool success = FileCheck(Path::GetGamePath(), "Models", aFile);
+    bool success = FileCheck(Path::GetGamePath(), "Models", filename);
     
     if (success)
     {
@@ -438,7 +439,7 @@ namespace YTE
     else
     {
       // otherwise, it's not in the game assets, so check the engine assets folder
-      success = FileCheck(Path::GetEnginePath(), "Models", aFile);
+      success = FileCheck(Path::GetEnginePath(), "Models", filename);
 
       if (success)
       {
@@ -512,7 +513,7 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  Mesh::Mesh(std::string &aFile,
+  Mesh::Mesh(const std::string &aFile,
              std::vector<Submesh> &aSubmeshes)
     : mInstanced(false)
   {
