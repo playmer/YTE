@@ -291,6 +291,9 @@ namespace YTE
           int vertCursor = lastIndex - (4 * (i - cursor));
           float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
 
+            // Shrink our bounding box to fit the wrapped text
+          mBoundingBox.xMax = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+
           while (cursor < i)
           {
             submesh.mVertexBuffer[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);

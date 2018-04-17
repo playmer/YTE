@@ -27,7 +27,7 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&GetSelectionIndex, &SetSelectionIndex, "SelectinIndex")
+    YTEBindProperty(&GetSelectionIndex, &SetSelectionIndex, "SelectionIndex")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -35,7 +35,9 @@ namespace YTE
   DialogueElement::DialogueElement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mMySprite(nullptr)
-    , mChildSprite(nullptr)
+    , mAcceptSprite(nullptr)
+    , mNextSprite(nullptr)
+    , mPrevSprite(nullptr)
     , mTextContent(nullptr)
     , mContentType(ContentType::Passive)
     , mSelectionIndex(0)
@@ -57,7 +59,24 @@ namespace YTE
 
     mMySprite = mOwner->GetComponent<Sprite>();
 
-    auto children = mOwner->GetCompositions()->All();
+    if (Composition *accept = mOwner->FindFirstCompositionByName("Accept"))
+    {
+      mAcceptSprite = accept->GetComponent<Sprite>();
+    }
+    if (Composition *next = mOwner->FindFirstCompositionByName("Next"))
+    {
+      mNextSprite = next->GetComponent<Sprite>();
+    }
+    if (Composition *prev = mOwner->FindFirstCompositionByName("Prev"))
+    {
+      mPrevSprite = prev->GetComponent<Sprite>();
+    }
+    if (Composition *text = mOwner->FindFirstCompositionByName("Text"))
+    {
+      mTextContent = text->GetComponent<SpriteText>();
+    }
+
+    /*auto children = mOwner->GetCompositions()->All();
     for (auto &child : children)
     {
       auto spriteTextComponent = child.second->GetComponent<SpriteText>();
@@ -71,7 +90,7 @@ namespace YTE
       {
         mChildSprite = spriteComponent;
       }
-    }
+    }*/
 
     mSpace->YTERegister(Events::LogicUpdate, this, &DialogueElement::OnStart);
     mSpace->YTERegister(Events::UIUpdateContent, this, &DialogueElement::OnContentUpdate);
@@ -111,15 +130,15 @@ namespace YTE
 
   void DialogueElement::OnFocusSwitch(UIFocusSwitchEvent *aEvent)
   {
-    if (mChildSprite != nullptr)
+    if (mAcceptSprite != nullptr)
     {
       if (aEvent->IsPassiveFocused)
       {
-        mChildSprite->SetVisibility(true);
+        mAcceptSprite->SetVisibility(true);
       }
       else
       {
-        mChildSprite->SetVisibility(false);
+        mAcceptSprite->SetVisibility(false);
       }
     }
   }
@@ -139,6 +158,12 @@ namespace YTE
       if (!mIsDisplayed)
       {
         UpdateVisibility(true);
+
+        if (aEvent->NumOptions == 1)
+        {
+          mNextSprite->SetVisibility(false);
+          mPrevSprite->SetVisibility(false);
+        }
       }
     }
     else
@@ -159,9 +184,19 @@ namespace YTE
       mMySprite->SetVisibility(aBecomeVisible);
     }
 
-    if (mChildSprite)
+    if (mAcceptSprite)
     {
-      mChildSprite->SetVisibility(aBecomeVisible);
+      mAcceptSprite->SetVisibility(aBecomeVisible);
+    }
+
+    if (mNextSprite)
+    {
+      mNextSprite->SetVisibility(aBecomeVisible);
+    }
+
+    if (mPrevSprite)
+    {
+      mPrevSprite->SetVisibility(aBecomeVisible);
     }
 
     if (mTextContent)

@@ -102,8 +102,12 @@ namespace YTE
   class DialogueSelect : public Event
   {
   public:
+    enum class Direction { Prev, Next, COUNT };
+
     YTEDeclareType(DialogueSelect);
-    glm::vec2 StickDirection;
+    DialogueSelect(Direction aSelectDirect) { SelectionDirection = aSelectDirect; }
+    
+    Direction SelectionDirection;
   };
 
   class DialogueConfirm : public Event

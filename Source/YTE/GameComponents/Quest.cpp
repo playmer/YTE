@@ -111,24 +111,28 @@ namespace YTE
           {
             case Conversation::Name::Hello:
             {
+              // LEVEL G
+              DialogueData(dataG0, "John: I knew I could count on you!");
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG0, 0, mSpace);
+              DialogueData(dataG1, "John: Thanks!");
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataG1, 0, mSpace);
+
+              //Level F
+              DialogueData(dataF0, AnimationNames::Happy);
+              mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataF0, 0, mSpace);
+              DialogueData(dataF1, AnimationNames::Happy);
+              mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataF1, 1, mSpace);
+
               // LEVEL E
-              DialogueData(dataE0, "John: Can you go out and look for them?");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE0, 0, mSpace);
-              DialogueData(dataE1, "John: I knew I could count on you!");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE1, 0, mSpace);
-              DialogueData(dataE2, "John: Thanks!");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataE2, 0, mSpace);
+              DialogueData(dataE0, "Your sous chef is on the job!", "Sure thing!");
+              mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataE0, 0, mSpace);
 
               // LEVEL D
-              DialogueData(dataD0, AnimationNames::Sad);
-              mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD0, 0, mSpace);
-              DialogueData(dataD1, AnimationNames::Happy);
-              mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD1, 1, mSpace);
-              DialogueData(dataD2, AnimationNames::Happy);
-              mNodeVec.emplace_back(DialogueNode::NodeType::Anim, dataD2, 2, mSpace);
+              DialogueData(dataD0, "John: Can you go out and look for them?");
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataD0, 0, mSpace);
 
               // LEVEL C
-              DialogueData(dataC0, "Oh no!", "Your sous chef is on the job!", "Sure thing!");
+              DialogueData(dataC0, "Oh no!");// , "Your sous chef is on the job!", "Sure thing!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataC0, 0, mSpace);
 
               // LEVEL B
@@ -144,18 +148,17 @@ namespace YTE
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0, mSpace);
 
               /*
-              E0 - D0 - C0 - B0 - A0 - R0
-              E1 - D1 -|
-              E2 - D2 -|
+              G0 - F0 - E0 - D0 - C0 - B0 - A0 - R0
+              G1 - F1 -|
               */
-              enum { E0, E1, E2, D0, D1, D2, C0, B0, A0, R0 };
-              mNodeVec[E0].SetChildren(DialogueNodeChildren{});
-              mNodeVec[E1].SetChildren(DialogueNodeChildren{});
-              mNodeVec[E2].SetChildren(DialogueNodeChildren{});
+              enum { G0, G1, F0, F1, E0, D0, C0, B0, A0, R0 };
+              mNodeVec[G0].SetChildren(DialogueNodeChildren{});
+              mNodeVec[G1].SetChildren(DialogueNodeChildren{});
+              mNodeVec[F0].SetChildren(DialogueNodeChildren{ &mNodeVec[G0] });
+              mNodeVec[F1].SetChildren(DialogueNodeChildren{ &mNodeVec[G1] });
+              mNodeVec[E0].SetChildren(DialogueNodeChildren{ &mNodeVec[F0], &mNodeVec[F1] });
               mNodeVec[D0].SetChildren(DialogueNodeChildren{ &mNodeVec[E0] });
-              mNodeVec[D1].SetChildren(DialogueNodeChildren{ &mNodeVec[E1] });
-              mNodeVec[D2].SetChildren(DialogueNodeChildren{ &mNodeVec[E2] });
-              mNodeVec[C0].SetChildren(DialogueNodeChildren{ &mNodeVec[D0], &mNodeVec[D1], &mNodeVec[D2] });
+              mNodeVec[C0].SetChildren(DialogueNodeChildren{ &mNodeVec[D0] });
               mNodeVec[B0].SetChildren(DialogueNodeChildren{ &mNodeVec[C0] });
               mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
               mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
@@ -164,7 +167,7 @@ namespace YTE
             case Conversation::Name::NoProgress:
             {
               // LEVEL ROOT
-              DialogueData(dataR0, "John: What are you still doing here!", "John: I still need to cook the bowls and clean the food!", "John: Please hurry!");
+              DialogueData(dataR0, "John: What are you still doing here! ", "John: I still need to cook the bowls and clean the food! ", "John: Please hurry!");
               mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0, mSpace);
               /*
               R0

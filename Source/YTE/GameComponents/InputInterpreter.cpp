@@ -163,7 +163,34 @@ namespace YTE
         mIsLeftTriggerDown = true;
       }
     }
-    
+
+    else if (mContext == InputContext::Dialogue)
+    {
+      if (mIsRightTriggerDown && mGamepad->GetRightTrigger() < 0.1f)
+      {
+        mIsRightTriggerDown = false;
+      }
+      else if (!mIsRightTriggerDown && mGamepad->GetRightTrigger() > 0.5f)
+      {
+        DialogueSelect select(DialogueSelect::Direction::Next);
+        mSpace->SendEvent(Events::DialogueSelect, &select);
+
+        mIsRightTriggerDown = true;
+      }
+
+      if (mIsLeftTriggerDown && mGamepad->GetLeftTrigger() < 0.1f)
+      {
+        mIsLeftTriggerDown = false;
+      }
+      else if (!mIsLeftTriggerDown && mGamepad->GetLeftTrigger() > 0.5f)
+      {
+        DialogueSelect select(DialogueSelect::Direction::Prev);
+        mSpace->SendEvent(Events::DialogueSelect, &select);
+
+        mIsLeftTriggerDown = true;
+      }
+    }
+
     if (!mDoneOnce)
     {
       mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
@@ -188,7 +215,7 @@ namespace YTE
       }
     }
 
-    else if (mContext == InputContext::Dialogue) 
+    /*else if (mContext == InputContext::Dialogue) 
     {
       if (aEvent->Stick == XboxButtons::LeftStick)
       {
@@ -196,7 +223,7 @@ namespace YTE
         selectEvent.StickDirection = aEvent->StickDirection;
         mOwner->SendEvent(Events::DialogueSelect, &selectEvent);
       }
-    }
+    }*/
   }
 
   void InputInterpreter::OnFlickEvent(XboxFlickEvent *aEvent)
