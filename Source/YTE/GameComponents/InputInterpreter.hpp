@@ -216,7 +216,7 @@ namespace YTE
   class InputInterpreter : public Component
   {
   public:
-    enum class InputContext { Sailing, Dialogue, UI, Menu, Options, Debug, num_contexts };
+    enum class InputContext { Sailing, Dialogue, UI, Menu, Options, Debug, Disabled, num_contexts };
 
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
@@ -246,6 +246,7 @@ namespace YTE
 
     Space *mMenuSpace;
     Space *mHudSpace;
+    Space *mCreditsSpace;
 
     InputContext mContext;
 

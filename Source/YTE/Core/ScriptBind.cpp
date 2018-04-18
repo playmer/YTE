@@ -40,6 +40,7 @@
 #include "YTE/GameComponents/Menu/ExitMenu.hpp"
 #include "YTE/GameComponents/Menu/LaunchLevel.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
+#include "YTE/GameComponents/Menu/LaunchCredits.hpp"
 #include "YTE/GameComponents/Menu/QuitGame.hpp"
 #include "YTE/GameComponents/Menu/ToggleFullscreen.hpp"
 #include "YTE/GameComponents/Menu/ToggleMute.hpp"
@@ -154,6 +155,7 @@ namespace YTE
     InitializeType<ExitMenu>();
     InitializeType<LaunchLevel>();
     InitializeType<LaunchGame>();
+    InitializeType<LaunchCredits>();
     InitializeType<QuitGame>();
     InitializeType<ToggleFullscreen>();
     InitializeType<ToggleMute>();

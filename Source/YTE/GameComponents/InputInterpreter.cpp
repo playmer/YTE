@@ -77,6 +77,10 @@ namespace YTE
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mGamepad(nullptr)
+    , mKeyboard(nullptr)
+    , mMenuSpace(nullptr)
+    , mHudSpace(nullptr)
+    , mCreditsSpace(nullptr)
     , mDoneOnce(false)
     , mIsRightTriggerDown(false)
     , mIsLeftTriggerDown(false)
@@ -94,6 +98,7 @@ namespace YTE
 
     mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
     mHudSpace = mSpace->AddChildSpace("MSR_HUD");
+    mCreditsSpace = mSpace->AddChildSpace("MSR_Credits");
 
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 

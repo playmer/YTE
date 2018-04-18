@@ -28,6 +28,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.cpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchCredits.cpp 
   ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.cpp
@@ -83,6 +84,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchCredits.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.hpp 

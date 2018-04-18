@@ -29,7 +29,7 @@ namespace YTE
     , mMaskTransform(nullptr)
     , mSliderRange()
     , mLastStickX(0.0f)
-    , mFillRatio(0.5f)
+    , mFillRatio(0.99f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }

@@ -4,6 +4,8 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/GameComponents/Menu/LaunchCredits.hpp"
+
 namespace YTE
 {
   class Credits : public Component
@@ -15,6 +17,7 @@ namespace YTE
 
     void Start() override;
 
+    void OnStartCredits(StartCredits *);
     void Update(LogicUpdate *aUpdate);
 
     void CreateLine(char const *aString);
@@ -31,6 +34,10 @@ namespace YTE
     int mCurrentNumber;
     bool mDone;
 
+    bool mFadeFinished;
+    float mFadeValue;
+
+    Composition *mFirstLine;
     Composition *mLastLine;
   };
 }
