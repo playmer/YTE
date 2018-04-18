@@ -57,5 +57,12 @@ namespace YTE
     {
       model->SetVisibility(aEvent->Visibility);
     }
+
+    auto children = mOwner->GetCompositions()->All();
+    for (auto &child : children)
+    {
+      UpdateVisibilityEvent visibilityUpdated(aEvent->Visibility);
+      child.second->SendEvent(Events::UpdateVisibilityEvent, &visibilityUpdated);
+    }
   }
 }

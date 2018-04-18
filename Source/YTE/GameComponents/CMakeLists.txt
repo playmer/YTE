@@ -32,7 +32,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.cpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeResolution.cpp  
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
   ${CMAKE_CURRENT_LIST_DIR}/InheritVisibility.cpp
@@ -88,7 +89,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.hpp 
-  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.hpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeResolution.hpp  
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
   ${CMAKE_CURRENT_LIST_DIR}/InheritVisibility.hpp

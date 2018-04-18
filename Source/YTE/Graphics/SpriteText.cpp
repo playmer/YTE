@@ -14,6 +14,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -359,8 +360,13 @@ namespace YTE
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
+
+    ModelChanged modChange;
+    modChange.Object = mOwner;
+    mOwner->SendEvent(Events::ModelChanged, &modChange);
+
     CreateTransform();
-    mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOModelData().mDiffuseColor;
+    mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOMaterialData().mDiffuse;
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     mInstantiatedSprite->SetVisibility(mVisibility);
 
