@@ -160,7 +160,7 @@ namespace YTE
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
 
-    ShowMetricsWindow();
+    //ShowMetricsWindow();
   }
 
   void ImguiLayer::MouseScrollCallback(MouseWheelEvent *aEvent)
