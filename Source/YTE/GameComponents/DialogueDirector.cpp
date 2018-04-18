@@ -78,6 +78,7 @@ namespace YTE
     mOwner->YTERegister(Events::CollisionEnded, this, &DialogueDirector::OnCollisionEnd);
     mSpace->YTERegister(Events::TutorialUpdate, this, &DialogueDirector::OnTutorialUpdate);
     mSpace->YTERegister(Events::PostcardUpdate, this, &DialogueDirector::OnPostcardUpdate);
+    mSpace->YTERegister(Events::NoticeBoardHookup, this, &DialogueDirector::OnNoticeBoardHookup);
   }
 
   void DialogueDirector::OnRequestDialogueStart(RequestDialogueStart *)
@@ -326,7 +327,8 @@ namespace YTE
             RegisterDirector();
           }
         }
-        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil)
+        // since basil is our last tutorial we have to check when we've gone through the conversation too
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil && (*mBasilQuestHandle)->GetState() != Quest::State::Completed)
         {
           if (aEvent->OtherObject->GetComponent<BasilDialogue>() != nullptr)
           {
@@ -380,6 +382,28 @@ namespace YTE
         {
           DeregisterDirector();
         }
+      }
+    }
+  }
+
+  void DialogueDirector::OnNoticeBoardHookup(NoticeBoardHookup *aEvent)
+  {
+    switch ((*aEvent->mActiveQuestHandle)->GetCharacter())
+    {
+      case Quest::CharacterName::John:
+      {
+        mJohnQuestHandle = aEvent->mActiveQuestHandle;
+        break;
+      }
+      case Quest::CharacterName::Daisy:
+      {
+        mDaisyQuestHandle = aEvent->mActiveQuestHandle;
+        break;
+      }
+      case Quest::CharacterName::Basil:
+      {
+        mBasilQuestHandle = aEvent->mActiveQuestHandle;
+        break;
       }
     }
   }

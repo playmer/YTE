@@ -293,31 +293,29 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-        {
-          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
-        }
-
-        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
-        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+        //TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        //mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+
+        //start the next dialogue
+        RequestDialogueStart autostart;
+        mSpace->SendEvent(Events::RequestDialogueStart, &autostart);
       }
       else
       {
         if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
         {
-          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::John);
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::NoticeBoard);
         }
-
-        TutorialUpdate nextTutorial(Quest::CharacterName::John);
-        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
         mActiveQuest->SetState(Quest::State::Completed);
-        // where does the active node update?
+        DeregisterDialogue();
+        auto director = mSpace->FindFirstCompositionByName("Boat")->GetComponent<DialogueDirector>();
+        director->DeregisterDirector();
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)

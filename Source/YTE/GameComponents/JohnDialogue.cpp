@@ -244,7 +244,19 @@ namespace YTE
         mSoundEmitter->PlayEvent("CJ_CallOut");
       }
 
-      RegisterDialogue();
+      if (mActiveQuest->GetName() == Quest::Name::Introduction)
+      {
+        // we dont want to register again if we finished the intro
+        if (mActiveQuest->GetState() != Quest::State::Completed)
+        {
+          RegisterDialogue();
+        }
+      }
+      // we do want to register if it isnt the intro
+      else
+      {
+        RegisterDialogue();
+      }
     }
   }
 
@@ -252,7 +264,20 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      DeregisterDialogue();
+      //if (mActiveQuest->GetName() == Quest::Name::Introduction && mActiveQuest->GetState() != Quest::State::Completed)
+      //{
+        //BoatDockEvent dockEvent;
+        //mSpace->SendEvent(Events::BoatDockEvent, &dockEvent);
+
+        //DialogueStart part2;
+        //mSpace->SendEvent(Events::DialogueStart, &part2);
+        
+
+      //}
+     // else
+     // {
+        DeregisterDialogue();
+     // }
     }
   }
 
@@ -299,31 +324,29 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-        {
-          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
-        }
-
-        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
-        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+        //TutorialUpdate nextTutorial(Quest::CharacterName::John);
+        //mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
         // end me, just do it.
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+
+        // OPTION 1
+        RequestDialogueStart autostart;
+        mSpace->SendEvent(Events::RequestDialogueStart, &autostart);
       }
       else
       {
         if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
         {
-          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::NoticeBoard);
+          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Daisy);
         }
 
-        mActiveQuest->SetState(Quest::State::Completed); //the notice board looks for this to assign the next postcard
-        // @@@(JAY): here is where we send an event to start the Postcard/Sailing tutorial
-        mActiveNode = mActiveConvo->GetRoot(); // for now just repeat john's last convo to prevent crash
-        mLinesIter = mConvosIter->begin();
+        mActiveQuest->SetState(Quest::State::Completed);
+        TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
