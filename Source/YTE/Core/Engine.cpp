@@ -222,6 +222,7 @@ namespace YTE
 
   void Engine::Initialize(InitializeEvent*)
   {
+    YTEProfileFunction();
     if (mShouldIntialize == false)
     {
       return;

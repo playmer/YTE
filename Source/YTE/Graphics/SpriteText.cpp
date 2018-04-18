@@ -148,6 +148,7 @@ namespace YTE
 
   void SpriteText::CreateSpriteText()
   {
+    YTEProfileFunction();
     if (nullptr != mInstantiatedSprite)
     {
       mInstantiatedSprite.reset();

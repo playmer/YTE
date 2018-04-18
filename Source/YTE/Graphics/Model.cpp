@@ -277,6 +277,7 @@ namespace YTE
 
   void Model::Create()
   {
+    YTEProfileFunction();
     std::string MeshName = RemoveExtension(mMeshName);
     std::string name = mOwner->GetName().c_str();
 

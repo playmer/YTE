@@ -45,6 +45,7 @@ namespace YTE
 
   void Texture::Load(std::string &aFile)
   {
+    YTEProfileFunction();
     fs::path file{ aFile };
 
     std::string textureName{ file.stem().string() };

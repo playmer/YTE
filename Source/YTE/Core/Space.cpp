@@ -78,6 +78,7 @@ namespace YTE
 
   void Space::Initialize()
   {
+    YTEProfileFunction();
     InitializeEvent event;
     event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
@@ -87,6 +88,7 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load()
   {
+    YTEProfileFunction();
     if (mStartingLevel.Empty())
     {
       CreateBlankLevel("NewLevel");
@@ -102,6 +104,7 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load(RSValue *aLevel, bool aInitialize)
   {
+    YTEProfileFunction();
     mCompositions.Clear();
     mComponents.Clear();
       
@@ -125,6 +128,7 @@ namespace YTE
 
   void Space::Initialize(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
     Composition::NativeInitialize(aEvent);
     Composition::PhysicsInitialize(aEvent);
     Composition::Initialize(aEvent);

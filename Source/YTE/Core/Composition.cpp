@@ -195,6 +195,7 @@ namespace YTE
 
   void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
     if (mShouldIntialize == false)
     {
       return;
@@ -239,6 +240,7 @@ namespace YTE
 
   void Composition::PhysicsInitialize(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
     if (mShouldIntialize == false)
     {
       return;
@@ -294,6 +296,7 @@ namespace YTE
 
   void Composition::Initialize(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
     if (mShouldIntialize == false)
     {
       return;
@@ -424,6 +427,7 @@ namespace YTE
 
   void Composition::Start(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
