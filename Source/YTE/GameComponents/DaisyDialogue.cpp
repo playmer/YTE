@@ -279,19 +279,17 @@ namespace YTE
     {
       if (mActiveConvo->GetName() == Conversation::Name::Hello)
       {
-        if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
-        {
-          star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Basil);
-        }
-
-        TutorialUpdate nextTutorial(Quest::CharacterName::Basil);
-        mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
+        //TutorialUpdate nextTutorial(Quest::CharacterName::Daisy);
+        //mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
 
         mActiveConvo = &mActiveQuest->GetConversations()->at(1);
         mActiveNode = mActiveConvo->GetRoot();
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+        // start our next dialogue
+        RequestDialogueStart autostart;
+        mSpace->SendEvent(Events::RequestDialogueStart, &autostart);
       }
       else
       {
@@ -300,9 +298,9 @@ namespace YTE
           star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::Basil);
         }
 
+        mActiveQuest->SetState(Quest::State::Completed);
         TutorialUpdate nextTutorial(Quest::CharacterName::Basil);
         mSpace->SendEvent(Events::TutorialUpdate, &nextTutorial);
-        mActiveQuest->SetState(Quest::State::Completed);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)

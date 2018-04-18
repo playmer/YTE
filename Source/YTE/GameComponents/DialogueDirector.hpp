@@ -17,6 +17,7 @@
 #include "YTE/GameComponents/BoatController.hpp" /* Colliders, */
 #include "YTE/GameComponents/DialogueGraph.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/NoticeBoard.hpp" /* piggybacking off noticeboardhookup */
 #include "YTE/GameComponents/HudController.hpp" /* piggybacking off postcard update to know when tutorial ends */
 
 #include "YTE/Graphics/Camera.hpp"
@@ -114,10 +115,12 @@ namespace YTE
     void OnCollisionEnd(CollisionEnded *aEvent);
     void OnTutorialUpdate(TutorialUpdate *aEvent);
     void OnPostcardUpdate(PostcardUpdate *aEvent);
+    void OnNoticeBoardHookup(NoticeBoardHookup *aEvent);
 
+    // i am the god of this universe, i decree that this one function shall be public, question me and be smitten
+    void DeregisterDirector();
   private:
     void RegisterDirector();
-    void DeregisterDirector();
 
     Space *mDialogueSpace;
     Composition *mCameraAnchor;
@@ -135,5 +138,8 @@ namespace YTE
     bool mIsRegistered = false;
     bool mIsTutorial = true;
     Quest::CharacterName mTutorialRegisteredCharacter = Quest::CharacterName::John;
+    Quest **mJohnQuestHandle;
+    Quest **mDaisyQuestHandle;
+    Quest **mBasilQuestHandle;
   };
 }
