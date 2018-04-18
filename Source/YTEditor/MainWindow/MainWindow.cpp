@@ -459,6 +459,11 @@ namespace YTEditor
 
     mRunningEngine->Update();
 
+    while (false == mainSession->GetFinishedLoading())
+    {
+      mRunningEngine->Update();
+    }
+
     LoadCurrentLevelInfo();
   }
 

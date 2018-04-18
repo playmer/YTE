@@ -306,6 +306,7 @@ namespace YTE
   {
     YTEProfileFunction();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting mesh: {}", aMeshFile));
+    
     std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
     auto baseIt = mBaseMeshes.find(aMeshFile);
     // if already loaded back out

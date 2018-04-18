@@ -79,9 +79,19 @@ namespace YTE
   void Space::Initialize()
   {
     YTEProfileFunction();
+
+    mFinishedLoading = false;
+
     InitializeEvent event;
+    event.EarlyOut = false;
+    event.mLoadingBegin = std::chrono::high_resolution_clock::now();
     event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
+
+    if (false == event.EarlyOut)
+    {
+      mFinishedLoading = true;
+    }
   }
 
   // Loads a level into the current Space. If already loaded, destroys 
@@ -119,6 +129,12 @@ namespace YTE
       
     if (aInitialize)
     {
+      mFinishedSpaceAssetInitialize = false;
+      mFinishedSpaceNativeInitialize = false;
+      mFinishedSpacePhysicsInitialize = false;
+      mFinishedSpaceInitialize = false;
+      mFinishedSpaceStart = false;
+
       Initialize();
     }
       
@@ -129,11 +145,82 @@ namespace YTE
   void Space::Initialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
-    Composition::AssetInitialize(aEvent);
-    Composition::NativeInitialize(aEvent);
-    Composition::PhysicsInitialize(aEvent);
-    Composition::Initialize(aEvent);
-    Composition::Start(aEvent);
+
+    // AssetInitialize
+    if (false == mFinishedSpaceAssetInitialize)
+    {
+      Composition::AssetInitialize(aEvent);
+    }
+
+    if (aEvent->EarlyOut)
+    {
+      return;
+    }
+    else
+    {
+      mFinishedSpaceAssetInitialize = true;
+    }
+
+    // NativeInitialize
+    if (false == mFinishedSpaceNativeInitialize)
+    {
+      Composition::NativeInitialize(aEvent);
+    }
+
+    if (aEvent->EarlyOut)
+    {
+      return;
+    }
+    else
+    {
+      mFinishedSpaceNativeInitialize = true;
+    }
+
+    // PhysicsInitialize
+    if (false == mFinishedSpacePhysicsInitialize)
+    {
+      Composition::PhysicsInitialize(aEvent);
+    }
+
+    if (aEvent->EarlyOut)
+    {
+      return;
+    }
+    else
+    {
+      mFinishedSpacePhysicsInitialize = true;
+    }
+
+    // Initialize
+    if (false == mFinishedSpaceInitialize)
+    {
+      Composition::Initialize(aEvent);
+    }
+
+    if (aEvent->EarlyOut)
+    {
+      return;
+    }
+    else
+    {
+      mFinishedSpaceInitialize = true;
+    }
+
+    // Start
+    if (false == mFinishedSpaceStart)
+    {
+      Composition::Start(aEvent);
+    }
+
+    if (aEvent->EarlyOut)
+    {
+      return;
+    }
+    else
+    {
+      mFinishedSpaceStart = true;
+    }
+
 
     mShouldIntialize = true;
   }
@@ -147,6 +234,10 @@ namespace YTE
       mLevelName = mLoadingName;
       SetName(mLoadingName);
       Load(mLevelToLoad);
+    }
+    else if (false == mFinishedLoading)
+    {
+      Initialize();
     }
 
     SendEvent(Events::DeletionUpdate, aEvent);

@@ -42,6 +42,8 @@ namespace YTE
   public:
     YTEDeclareType(InitializeEvent);
 
+    std::chrono::time_point<std::chrono::high_resolution_clock> mLoadingBegin;
+    bool EarlyOut = false;
     bool CheckRunInEditor = false;
   };
 
@@ -287,6 +289,19 @@ namespace YTE
     Composition *mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
+
+  private:
+    bool mFinishedComponentAssetInitialize;
+    bool mFinishedComponentNativeInitialize;
+    bool mFinishedComponentPhysicsInitialize;
+    bool mFinishedComponentInitialize;
+    bool mFinishedComponentStart;
+
+    bool mFinishedAssetInitialize;
+    bool mFinishedNativeInitialize;
+    bool mFinishedPhysicsInitialize;
+    bool mFinishedInitialize;
+    bool mFinishedStart;
   };
 }
 
