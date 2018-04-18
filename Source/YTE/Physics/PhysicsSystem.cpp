@@ -49,6 +49,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
+    std::vector<std::vector<Type*>> deps = { { TypeId<GraphicsView>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
+
     YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
     YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
     YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));

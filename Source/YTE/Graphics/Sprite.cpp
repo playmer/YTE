@@ -252,9 +252,6 @@ namespace YTE
       vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
     }
 
-    std::string defaultTexture{ "white.png" };
-
-    
     UBOMaterial modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -262,10 +259,7 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
     mSubmesh.mUBOMaterial = modelMaterial;
-
-    mSubmesh.mSpecularMap = defaultTexture;
-    mSubmesh.mSpecularType = TextureViewType::e2D;
-
+    
     mSubmesh.mDiffuseMap = mTextureName;
     mSubmesh.mDiffuseType = TextureViewType::e2D;
     mSubmesh.mShaderSetName = "Sprite";

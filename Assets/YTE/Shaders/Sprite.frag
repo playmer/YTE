@@ -142,7 +142,6 @@ layout (binding = UBO_ILLUMINATION_BINDING) uniform UBOIllumination
 ///////////////////////////////////////////////////////////////////////////////
 // Samplers
 layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
-layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D specularSampler;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -342,7 +341,7 @@ LightingData SampleMaterialsAndTextures(vec2 aUV, inout vec4 aNormal)
 
   // specular
   lightData.mSpecMat = SubmeshMaterial.mSpecular * ModelMaterial.mSpecular;
-  lightData.mSpecTexture = texture(specularSampler, aUV) * lightData.mSpecMat;
+  lightData.mSpecTexture = vec4(1.0f, 1.0f, 1.0f, 1.0f) * lightData.mSpecMat;
   
   lightData.mNormalTexture = aNormal;
 

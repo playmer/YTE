@@ -100,8 +100,8 @@ namespace YTE
     bool Constructed = false;
     bool mShouldBeRenderedTo = false;
 
-    int mRequestedWidth;
-    int mRequestedHeight;
+    int mRequestedWidth = 1920;
+    int mRequestedHeight = 1080;
 
     std::string mSerializedWindowName;
     std::string mSerializedWindowIcon;

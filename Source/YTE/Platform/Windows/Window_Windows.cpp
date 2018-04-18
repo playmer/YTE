@@ -572,7 +572,6 @@ namespace YTE
     auto width = monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left;
     auto height = monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top;
 
-    if (false == mSerializedStartingFullscreen)
     {
       width = mSerializedStartingWidth;
       height = mSerializedStartingHeight;
@@ -662,7 +661,7 @@ namespace YTE
       // not resize.
       MONITORINFO monitorInformation;
       monitorInformation.cbSize = sizeof(MONITORINFO);
-      GetMonitorInfo(MonitorFromWindow(self->mWindowHandle, MONITOR_DEFAULTTOPRIMARY),
+      GetMonitorInfo(MonitorFromWindow(self->mWindowHandle, MONITOR_DEFAULTTONEAREST),
                      &monitorInformation);
 
       RECT window_rect(monitorInformation.rcMonitor);
@@ -783,11 +782,15 @@ namespace YTE
     auto self = mData.Get<WindowData>();
 
     glm::i32vec2 toReturn;
-    RECT rect;
-    if (GetWindowRect(self->mWindowHandle, &rect))
+
+    POINT point;
+    point.x = 0;
+    point.y = 0;
+    
+    if (ClientToScreen(self->mWindowHandle, &point))
     {
-      toReturn.x = rect.left;
-      toReturn.y = rect.top;
+      toReturn.x = point.x;
+      toReturn.y = point.y;
     }
 
     return toReturn;

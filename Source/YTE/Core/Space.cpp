@@ -163,9 +163,7 @@ namespace YTE
     
   // Cleans up anything in the Space.
   Space::~Space() 
-  {  
-    mCompositions.Clear();
-    mComponents.Clear();
+  {
   }
 
   void Space::CreateBlankLevel(const String& aLevelName)

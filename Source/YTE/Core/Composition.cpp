@@ -158,6 +158,7 @@ namespace YTE
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }
 
+    mCompositions.Clear();
 
     // Destructing the components in order
     auto order = GetDependencyOrder(this);
