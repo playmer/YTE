@@ -171,6 +171,21 @@ namespace YTE
   }
 
 
+
+  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
+                                       std::vector<Vertex>& aVertices)
+  {
+    mVkMesh->UpdateVertices(aIndex, aVertices);
+  }
+
+  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
+                                       std::vector<Vertex>& aVertices,
+                                       std::vector<u32>& aIndices)
+  {
+    mVkMesh->UpdateVerticesAndIndices(aIndex, aVertices, aIndices);
+  }
+
+
   // TODO (Josh): Change the name to be more representative. (This is really 
   //              just telling the object to register to be updated)
   void VkInstantiatedModel::UpdateUBOModel()

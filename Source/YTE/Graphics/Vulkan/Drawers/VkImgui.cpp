@@ -90,6 +90,8 @@ namespace YTE
     YTEProfileFunction();
 
     mContext->SetCurrentContext();
+    ImGuiIO& io = ImGui::GetIO();
+
     auto &submesh = mContext->GetSubmesh();
 
     ImGui::Render();

@@ -11,6 +11,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Vertex.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
@@ -43,6 +44,21 @@ namespace YTE
     virtual void SetDefaultAnimationOffset()
     {
       
+    }
+
+    virtual void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices)
+    {
+      YTEUnusedArgument(aIndex);
+      YTEUnusedArgument(aVertices);
+    }
+
+    virtual void UpdateMesh(size_t aIndex, 
+                            std::vector<Vertex>& aVertices, 
+                            std::vector<u32>& aIndices)
+    {
+      YTEUnusedArgument(aIndex);
+      YTEUnusedArgument(aVertices);
+      YTEUnusedArgument(aIndices);
     }
 
     virtual bool GetInstanced()
