@@ -60,6 +60,13 @@ namespace YTE
 
       mOwner->GetComponent<Transform>()->SetWorldTranslation(0, -200, 0);
       mDeleteFlag = true;
+
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      if (emitter)
+      {
+        emitter->PlayEvent("UI_Quest_Progress");
+      }
     }
   }
 }//end yte

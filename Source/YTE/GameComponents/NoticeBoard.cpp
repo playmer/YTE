@@ -186,6 +186,13 @@ namespace YTE
 
           QuestStart quest(charName, questName);
           mSpace->SendEvent(Events::QuestStart, &quest);
+
+          auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+          if (emitter)
+          {
+            emitter->PlayEvent("UI_Quest_Offered");
+          }
         }
       }
     }

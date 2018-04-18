@@ -62,9 +62,12 @@ namespace YTE
 
     CreateHeader("Game Professors");
     CreateLine("Christopher Orth");
-    CreateLine("Christopher Orth");
-    CreateLine("Christopher Orth");
-    CreateLine("Christopher Orth");
+    CreateLine("Jo Cronk");
+    CreateLine("Brigitte Samson");
+    CreateLine("Zahra Haghiri");
+    CreateLine("Lawrence Schwedler");
+    CreateLine("Bryan Schmidt");
+    CreateLine("Steven Saulls");
 
     CreateHeader("Producer");
     CreateLine("Nicholas Ammann");
@@ -77,9 +80,6 @@ namespace YTE
 
     CreateHeader("Technical Director");
     CreateLine("Joshua T. Fisher");
-
-    CreateHeader("Composer and Sound Designer");
-    CreateLine("Kathy Strebel");
 
     CreateHeader("Art Team");
     CreateLine("Trevor Barrett");
@@ -99,7 +99,7 @@ namespace YTE
     CreateLine("Joshua T. Fisher");
     CreateLine("Andrew Griffin");
 
-    CreateHeader("Sound Team");
+    CreateHeader("Composer and Sound Designer");
     CreateLine("Kathy Strebel");
 
     CreateHeader("Voice Actors");
@@ -107,16 +107,24 @@ namespace YTE
     CreateLine("Basil Bouillon - Charlie Wells");
     CreateLine("Chef John - Dustin Williams");
 
+    CreateHeader("Instrumentalists");
+    CreateLine("Guitar - Dustin Williams");
+    CreateLine("Tenor Saxophone - Drake Parker");
+    CreateLine("Flute - Kathy Strebel");
+
+
     CreateHeader("Thanks To The Following Programs/Libraries");
     CreateLine("Assimp");
     CreateLine("Bullet Physics");
     CreateLine("crunch");
+    CreateLine("Cubase");
     CreateLine("easy_profiler");
     CreateLine("fmt");
     CreateLine("glm");
     CreateLine("ImGui");
     CreateLine("ImGuizmo");
     CreateLine("KissFFT");
+    CreateLine("Native Instruments");
     CreateLine("Qt");
     CreateLine("RenderDoc");
     CreateLine("WWise");

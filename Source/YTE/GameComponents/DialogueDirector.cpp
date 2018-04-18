@@ -189,6 +189,13 @@ namespace YTE
       mLastSelectionIndex = ((mLastSelectionIndex + mMaxSelectionIndex) % (mMaxSelectionIndex + 1));
     }
 
+    auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+    if (emitter)
+    {
+      emitter->PlayEvent("UI_Dia_Next"); // if we are skipping through quickly, stop existing sound
+    }
+
     /*float stickAngle = glm::acos(glm::dot(glm::vec2(1.f, 0.f), aEvent->StickDirection));
     float pi = glm::pi<float>();
     float length = glm::length(aEvent->StickDirection);
