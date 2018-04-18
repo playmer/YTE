@@ -162,13 +162,13 @@ namespace YTE
   // Textures
   VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
-    auto baseTexture = GetBaseTexture(aFilename);
-
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
 
     if (textureIt == mTextures.end())
     {
+      auto baseTexture = GetBaseTexture(aFilename);
+
       auto texture = std::make_unique<VkTexture>(baseTexture,
                                                  this,
                                                  aType);
@@ -317,6 +317,13 @@ namespace YTE
                                              aSubmeshes);
 
       mBaseMeshesMutex.lock();
+      auto it = mBaseMeshes.find(aName);
+
+      if (it != mBaseMeshes.end())
+      {
+        mBaseMeshes.erase(it);
+      }
+
       auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
       auto baseMeshPtr = ret.first->second.get();
       mBaseMeshesMutex.unlock();

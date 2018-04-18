@@ -78,7 +78,7 @@ namespace YTE
                                            1,
                                            vk::ImageViewType::e2D);
 
-    //owner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &VkImguiDrawer::PreFrameUpdate);
+    owner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &VkImguiDrawer::PreFrameUpdate);
   }
 
   static const std::string imguiStr{ "Imgui" };
@@ -89,6 +89,8 @@ namespace YTE
     YTEProfileFunction();
 
     mContext->SetCurrentContext();
+    ImGuiIO& io = ImGui::GetIO();
+
     auto &submesh = mContext->GetSubmesh();
 
     ImGui::Render();

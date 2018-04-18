@@ -33,6 +33,9 @@ namespace YTE
     void SurfaceLostEvent(ViewChanged *aEvent);
     void SurfaceGainedEvent(ViewChanged *aEvent);
 
+    void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
+    void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
+
     void UpdateUBOModel() override;
     void UpdateUBOModel(UBOModel &aUBO) override;
     void UpdateUBOAnimation(UBOAnimation *aUBO) override;
