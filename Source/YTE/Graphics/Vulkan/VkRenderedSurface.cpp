@@ -522,7 +522,7 @@ namespace YTE
     YTEProfileFunction();
     YTEUnusedArgument(aEvent);
 
-    if (mWindow->IsMinimized())
+    if (mWindow->IsMinimized() || mViewData.empty())
     {
       return;
     }

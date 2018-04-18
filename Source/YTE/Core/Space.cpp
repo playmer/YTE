@@ -76,7 +76,12 @@ namespace YTE
     }
   }
 
-  void Space::Initialize()
+  // Cleans up anything in the Space.
+  Space::~Space()
+  {
+  }
+
+  void Space::Initialize(bool aForceInit)
   {
     YTEProfileFunction();
 
@@ -86,12 +91,30 @@ namespace YTE
     event.EarlyOut = false;
     event.mLoadingBegin = std::chrono::high_resolution_clock::now();
     event.CheckRunInEditor = mIsEditorSpace;
+
+    if (aForceInit)
+    {
+      event.IterativeLoad = false;
+    }
+
     Initialize(&event);
 
     if (false == event.EarlyOut)
     {
       mFinishedLoading = true;
+      runtime_assert(RecursiveInitCheck(this));
     }
+  }
+
+  void Space::Initialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
+
+    Composition::AssetInitialize(aEvent);
+    Composition::NativeInitialize(aEvent);
+    Composition::PhysicsInitialize(aEvent);
+    Composition::Initialize(aEvent);
+    Composition::Start(aEvent);
   }
 
   // Loads a level into the current Space. If already loaded, destroys 
@@ -112,7 +135,7 @@ namespace YTE
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.
-  void Space::Load(RSValue *aLevel, bool aInitialize)
+  void Space::Load(RSValue *aLevel, bool aInitialize, bool aForceInit)
   {
     YTEProfileFunction();
     mCompositions.Clear();
@@ -129,100 +152,22 @@ namespace YTE
       
     if (aInitialize)
     {
-      mFinishedSpaceAssetInitialize = false;
-      mFinishedSpaceNativeInitialize = false;
-      mFinishedSpacePhysicsInitialize = false;
-      mFinishedSpaceInitialize = false;
-      mFinishedSpaceStart = false;
+      mFinishedComponentAssetInitialize = false;
+      mFinishedComponentNativeInitialize = false;
+      mFinishedComponentPhysicsInitialize = false;
+      mFinishedComponentInitialize = false;
+      mFinishedComponentStart = false;
 
-      Initialize();
+      mFinishedAssetInitialize = false;
+      mFinishedNativeInitialize = false;
+      mFinishedPhysicsInitialize = false;
+      mFinishedInitialize = false;
+      mFinishedStart = false;
+
+      Initialize(aForceInit);
     }
       
     mLoading = false;
-  }
-
-
-  void Space::Initialize(InitializeEvent *aEvent)
-  {
-    YTEProfileFunction();
-
-    // AssetInitialize
-    if (false == mFinishedSpaceAssetInitialize)
-    {
-      Composition::AssetInitialize(aEvent);
-    }
-
-    if (aEvent->EarlyOut)
-    {
-      return;
-    }
-    else
-    {
-      mFinishedSpaceAssetInitialize = true;
-    }
-
-    // NativeInitialize
-    if (false == mFinishedSpaceNativeInitialize)
-    {
-      Composition::NativeInitialize(aEvent);
-    }
-
-    if (aEvent->EarlyOut)
-    {
-      return;
-    }
-    else
-    {
-      mFinishedSpaceNativeInitialize = true;
-    }
-
-    // PhysicsInitialize
-    if (false == mFinishedSpacePhysicsInitialize)
-    {
-      Composition::PhysicsInitialize(aEvent);
-    }
-
-    if (aEvent->EarlyOut)
-    {
-      return;
-    }
-    else
-    {
-      mFinishedSpacePhysicsInitialize = true;
-    }
-
-    // Initialize
-    if (false == mFinishedSpaceInitialize)
-    {
-      Composition::Initialize(aEvent);
-    }
-
-    if (aEvent->EarlyOut)
-    {
-      return;
-    }
-    else
-    {
-      mFinishedSpaceInitialize = true;
-    }
-
-    // Start
-    if (false == mFinishedSpaceStart)
-    {
-      Composition::Start(aEvent);
-    }
-
-    if (aEvent->EarlyOut)
-    {
-      return;
-    }
-    else
-    {
-      mFinishedSpaceStart = true;
-    }
-
-
-    mShouldIntialize = true;
   }
 
   // Updates the Space to the current frame.
@@ -242,7 +187,7 @@ namespace YTE
 
     SendEvent(Events::DeletionUpdate, aEvent);
       
-    if (mPaused == false)
+    if (mPaused == false && mFinishedLoading)
     {
       SendEvent(Events::PhysicsUpdate, aEvent);
     }
@@ -251,19 +196,14 @@ namespace YTE
     SendEvent(Events::FrameUpdate, aEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.
-    if (mPaused == false)
+    if (mPaused == false && mFinishedLoading)
     {
       SendEvent(Events::LogicUpdate, aEvent);
     }
   }
-    
-  // Cleans up anything in the Space.
-  Space::~Space() 
-  {
-  }
 
   void Space::CreateBlankLevel(const String& aLevelName)
-{
+  {
     mCompositions.Clear();
     ComponentClear();
 
@@ -324,11 +264,11 @@ namespace YTE
   }
 
 
-  Space* Space::AddChildSpace(String aLevelName)
+  Space* Space::AddChildSpace(String aLevelName, bool aForceLoading)
   {
     auto newSpace = AddComposition<Space>(aLevelName, mEngine, nullptr);
     newSpace->mOwner = this;
-    newSpace->Load(mEngine->GetLevel(aLevelName));
+    newSpace->Load(mEngine->GetLevel(aLevelName), true, aForceLoading);
     auto ourView = GetComponent<GraphicsView>();
     auto newView = newSpace->GetComponent<GraphicsView>();
 

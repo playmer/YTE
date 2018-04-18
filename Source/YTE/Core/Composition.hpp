@@ -43,6 +43,7 @@ namespace YTE
     YTEDeclareType(InitializeEvent);
 
     std::chrono::time_point<std::chrono::high_resolution_clock> mLoadingBegin;
+    bool IterativeLoad = true;
     bool EarlyOut = false;
     bool CheckRunInEditor = false;
   };
@@ -270,6 +271,7 @@ namespace YTE
                                         RSValue *aSerialization, 
                                         String aObjectName);
     bool ParentBeingDeleted();
+    static bool RecursiveInitCheck(Composition *aComposition);
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
@@ -282,15 +284,12 @@ namespace YTE
     String mName;
 
     bool mShouldSerialize;
-    bool mShouldIntialize;
-    bool mIsInitialized;
     bool mBeingDeleted;
 
     Composition *mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
 
-  private:
     bool mFinishedComponentAssetInitialize;
     bool mFinishedComponentNativeInitialize;
     bool mFinishedComponentPhysicsInitialize;
@@ -302,6 +301,8 @@ namespace YTE
     bool mFinishedPhysicsInitialize;
     bool mFinishedInitialize;
     bool mFinishedStart;
+
+  private:
   };
 }
 

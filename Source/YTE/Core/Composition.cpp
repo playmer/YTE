@@ -102,8 +102,6 @@ namespace YTE
     , mOwner{ aOwner }
     , mName{ aName }
     , mShouldSerialize{ true }
-    , mShouldIntialize{ true }
-    , mIsInitialized{ false }
     , mBeingDeleted{ false }
     , mGUID{}
     , mFinishedComponentAssetInitialize{ false }
@@ -138,8 +136,6 @@ namespace YTE
     , mOwner{ aOwner }
     , mName{}
     , mShouldSerialize{ true }
-    , mShouldIntialize{ true }
-    , mIsInitialized{ false }
     , mBeingDeleted{ false }
     , mGUID{}
     , mFinishedComponentAssetInitialize{ false }
@@ -225,24 +221,28 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (aEvent->EarlyOut)
+    if (mFinishedAssetInitialize)
     {
       return;
     }
 
-    using namespace std::chrono;
-    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
-                                                                 aEvent->mLoadingBegin);
-    auto dt = time_span.count();
-    if (mFinishedAssetInitialize || (dt > 32.0f))
+    if (aEvent->IterativeLoad)
     {
-      aEvent->EarlyOut = true;
-      return;
-    }
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
 
-    if (mShouldIntialize == false)
-    {
-      return;
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("AssetInit Dt: %f\n", dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
     }
 
     if (false == mFinishedComponentAssetInitialize)
@@ -296,24 +296,28 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (aEvent->EarlyOut)
+    if (mFinishedNativeInitialize)
     {
       return;
     }
 
-    using namespace std::chrono;
-    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
-                                                                 aEvent->mLoadingBegin);
-    auto dt = time_span.count();
-    if (mFinishedNativeInitialize || (dt > 0.032f))
+    if (aEvent->IterativeLoad)
     {
-      aEvent->EarlyOut = true;
-      return;
-    }
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
 
-    if (mShouldIntialize == false)
-    {
-      return;
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("NativeInit Dt: %f\n", dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
     }
 
     if (false == mFinishedComponentNativeInitialize)
@@ -373,24 +377,28 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (aEvent->EarlyOut)
+    if (mFinishedPhysicsInitialize)
     {
       return;
     }
 
-    using namespace std::chrono;
-    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
-                                                                 aEvent->mLoadingBegin);
-    auto dt = time_span.count();
-    if (mFinishedPhysicsInitialize || (dt > 32.0f))
+    if (aEvent->IterativeLoad)
     {
-      aEvent->EarlyOut = true;
-      return;
-    }
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
 
-    if (mShouldIntialize == false)
-    {
-      return;
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("PhysicsInit Dt: %f\n", dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
     }
 
     if (false == mFinishedComponentPhysicsInitialize)
@@ -454,24 +462,28 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (aEvent->EarlyOut)
+    if (mFinishedInitialize)
     {
       return;
     }
 
-    using namespace std::chrono;
-    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
-                                                                 aEvent->mLoadingBegin);
-    auto dt = time_span.count();
-    if (mFinishedInitialize || (dt > 32.0f))
+    if (aEvent->IterativeLoad)
     {
-      aEvent->EarlyOut = true;
-      return;
-    }
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
 
-    if (mShouldIntialize == false)
-    {
-      return;
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("Initialize Dt: %f\n", dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
     }
 
     if (false == mFinishedComponentInitialize)
@@ -536,9 +548,6 @@ namespace YTE
 
     SendEvent(Events::Initialize, aEvent);
 
-    mShouldIntialize = false;
-    mIsInitialized = true;
-
     if (false == aEvent->EarlyOut)
     {
       mFinishedInitialize = true;
@@ -557,19 +566,28 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (aEvent->EarlyOut)
+    if (mFinishedStart)
     {
       return;
     }
 
-    using namespace std::chrono;
-    duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - 
-                                                                 aEvent->mLoadingBegin);
-    auto dt = time_span.count();
-    if (mFinishedStart || (dt > 32.0f))
+    if (aEvent->IterativeLoad)
     {
-      aEvent->EarlyOut = true;
-      return;
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
+
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("Start Dt: %f\n", dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
     }
 
     if (false == mFinishedComponentStart)
@@ -637,11 +655,6 @@ namespace YTE
 
   void Composition::Deinitialize(InitializeEvent * aEvent)
   {
-    if (!mIsInitialized)
-    {
-      return;
-    }
-
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
@@ -748,7 +761,9 @@ namespace YTE
     return comp;
   }
 
-  Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
+  Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
+                                                   RSValue *aSerialization, 
+                                                   String aObjectName)
   {
     mComposition->mName = aObjectName;
 
@@ -813,6 +828,17 @@ namespace YTE
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     return composition;
@@ -833,6 +859,17 @@ namespace YTE
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     composition->SetArchetypeName(aArchetype);
@@ -864,6 +901,17 @@ namespace YTE
 
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     return composition;
@@ -1351,6 +1399,17 @@ namespace YTE
     component->Initialize();
     component->Start();
 
+    mFinishedComponentAssetInitialize = true;
+    mFinishedComponentNativeInitialize = true;
+    mFinishedComponentPhysicsInitialize = true;
+    mFinishedComponentInitialize = true;
+    mFinishedComponentStart = true;
+    mFinishedAssetInitialize = true;
+    mFinishedNativeInitialize = true;
+    mFinishedPhysicsInitialize = true;
+    mFinishedInitialize = true;
+    mFinishedStart = true;
+
     return component;
   }
 
@@ -1611,5 +1670,26 @@ namespace YTE
     mEngine->StoreCompositionGUID(this);
 
     return collision;
+  }
+
+  bool Composition::RecursiveInitCheck(Composition *aComposition)
+  {
+    for (auto &composition : aComposition->mCompositions)
+    {
+      auto value = RecursiveInitCheck(composition.second.get());
+
+      runtime_assert(value);
+    }
+
+    return aComposition->mFinishedComponentAssetInitialize &&
+           aComposition->mFinishedComponentNativeInitialize &&
+           aComposition->mFinishedComponentPhysicsInitialize &&
+           aComposition->mFinishedComponentInitialize &&
+           aComposition->mFinishedComponentStart &&
+           aComposition->mFinishedAssetInitialize &&
+           aComposition->mFinishedNativeInitialize &&
+           aComposition->mFinishedPhysicsInitialize &&
+           aComposition->mFinishedInitialize &&
+           aComposition->mFinishedStart;
   }
 }
