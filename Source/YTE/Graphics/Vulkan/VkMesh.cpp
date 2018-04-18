@@ -450,8 +450,7 @@ namespace YTE
   }
 
   VkMesh::VkMesh(Mesh *aMesh,
-                 VkRenderer *aRenderer,
-                 std::string &aFile)
+                 VkRenderer *aRenderer)
     : mRenderer{ aRenderer }
     , mMesh{aMesh}
   {

@@ -90,6 +90,31 @@ namespace YTE
 
   }
 
+  void Sprite::AssetInitialize()
+  {
+    mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    if (mTextureName.empty())
+    {
+      return;
+    }
+
+    mRenderer->RequestTexture(mTextureName);
+  }
+
+  void Sprite::Initialize()
+  {
+    mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
+    mTransform = mOwner->GetComponent<Transform>();
+
+    mOwner->YTERegister(Events::PositionChanged, this, &Sprite::TransformUpdate);
+    mOwner->YTERegister(Events::RotationChanged, this, &Sprite::TransformUpdate);
+    mOwner->YTERegister(Events::ScaleChanged, this, &Sprite::TransformUpdate);
+
+    CreateSprite();
+  }
+
+
   void Sprite::Update(LogicUpdate *aUpdate)
   {
     auto delta = mSpeed / mFrames;
@@ -163,20 +188,6 @@ namespace YTE
       mSpace->YTEDeregister(Events::LogicUpdate, this, &Sprite::Update);
     }
   }
-
-  void Sprite::Initialize()
-  {
-    mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
-    mTransform = mOwner->GetComponent<Transform>();
-
-    mOwner->YTERegister(Events::PositionChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Sprite::TransformUpdate);
-
-    CreateSprite();
-  }
-
 
   void Sprite::TransformUpdate(TransformChanged *aEvent)
   {

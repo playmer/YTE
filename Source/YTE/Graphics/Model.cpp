@@ -113,19 +113,39 @@ namespace YTE
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
-
-
   Model::~Model()
   {
     Destroy();
+  }
+
+  void Model::AssetInitialize()
+  {
+    mEngine = mSpace->GetEngine();
+    mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    std::string MeshName = RemoveExtension(mMeshName);
+    std::string name = mOwner->GetName().c_str();
+
+    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+
+    if (false == success)
+    {
+      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+    }
+
+    if (false == success)
+    {
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
+      return;
+    }
+
+    mRenderer->RequestMesh(mMeshName);
   }
 
 
 
   void Model::NativeInitialize()
   {
-    mEngine = mSpace->GetEngine();
-    mRenderer = mSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
 
     mOwner->YTERegister(Events::PositionChanged, this, &Model::TransformUpdate);

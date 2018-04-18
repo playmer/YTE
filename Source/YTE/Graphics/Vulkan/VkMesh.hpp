@@ -115,8 +115,7 @@ namespace YTE
     YTEDeclareType(VkMesh);
 
     VkMesh(Mesh *aMesh,
-           VkRenderer *aRenderer,
-           std::string &aFile);
+           VkRenderer *aRenderer);
 
     ~VkMesh();
     

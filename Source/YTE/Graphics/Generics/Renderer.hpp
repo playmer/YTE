@@ -29,6 +29,7 @@ namespace YTE
   public:
     YTEDeclareType(Renderer);
 
+    Renderer(Engine *aEngine);
     virtual ~Renderer();
     virtual void DeregisterWindowFromDraw(Window *aWindow);
     virtual void RegisterWindowForDraw(Window *aWindow);
@@ -78,7 +79,7 @@ namespace YTE
     Mesh* GetBaseMesh(const std::string &aFilename);
     Texture* GetBaseTexture(const std::string &aFilename);
 
-  private:
+  protected:
     std::unordered_map<std::string, JobHandle> mRequestedMeshes;
     std::shared_mutex mRequestedMeshesMutex;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;

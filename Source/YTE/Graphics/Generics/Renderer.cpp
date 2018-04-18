@@ -3,6 +3,8 @@
 // YTE - Graphics - Generics
 ///////////////////
 
+#include "YTE/Core/Engine.hpp"
+
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
@@ -19,6 +21,11 @@ namespace YTE
     YTERegisterType(Renderer);
   }
 
+
+  Renderer::Renderer(Engine *aEngine)  
+    : mJobSystem{ aEngine->GetComponent<JobSystem>() }
+  {
+  }
 
   Renderer::~Renderer()
   {
@@ -295,6 +302,7 @@ namespace YTE
 
   Mesh* Renderer::RequestMesh(const std::string &aMeshFile)
   {
+    //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting mesh: {}", aMeshFile));
     std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
     auto baseIt = mBaseMeshes.find(aMeshFile);
     // if already loaded back out
@@ -313,9 +321,9 @@ namespace YTE
     }
 
     // Not in the futures map, add it.
-    mRequestedMeshes[aMeshFile] = mJobSystem->QueueJobThisThread([aMeshFile](JobHandle& handle)->Any {
+    mRequestedMeshes[aMeshFile] = mJobSystem->QueueJobThisThread([this ,aMeshFile](JobHandle& handle)->Any {
       YTEUnusedArgument(handle);
-      auto mesh = new Mesh(aMeshFile);
+      auto mesh = new Mesh(this, aMeshFile);
       return Any{ mesh };
     });
     return nullptr;
@@ -323,6 +331,7 @@ namespace YTE
 
   Texture* Renderer::RequestTexture(const std::string &aFilename)
   {
+    //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting texture: {}", aFilename));
     std::shared_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
     auto baseIt = mBaseTextures.find(aFilename);
     // if already loaded back out
@@ -341,7 +350,7 @@ namespace YTE
     }
 
     // Not in the futures map, add it.
-    mRequestedMeshes[aFilename] = mJobSystem->QueueJobThisThread([aFilename](JobHandle& handle)->Any {
+    mRequestedTextures[aFilename] = mJobSystem->QueueJobThisThread([aFilename](JobHandle& handle)->Any {
       YTEUnusedArgument(handle);
       auto texture = new Texture(aFilename);
       return Any{ texture };

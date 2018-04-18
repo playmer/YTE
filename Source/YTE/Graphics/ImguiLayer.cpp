@@ -65,7 +65,7 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
-    mOwner->GetEngine()->YTERegister(Events::PreLogicUpdate, this, &ImguiLayer::ImguiUpdate);
+    //mOwner->GetEngine()->YTERegister(Events::PreLogicUpdate, this, &ImguiLayer::ImguiUpdate);
     
     window->mMouse.YTERegister(Events::MouseScroll, this, &ImguiLayer::MouseScrollCallback);
     window->mKeyboard.YTERegister(Events::KeyPress, this, &ImguiLayer::KeyPressCallback);

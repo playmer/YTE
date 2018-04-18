@@ -33,7 +33,8 @@ namespace YTE
 
 
   VkRenderer::VkRenderer(Engine *aEngine)
-    : mVulkanInternals(std::make_unique<VkInternals>())
+    : Renderer(aEngine)
+    , mVulkanInternals(std::make_unique<VkInternals>())
     , mEngine(aEngine)
   {
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
@@ -161,7 +162,7 @@ namespace YTE
   // Textures
   VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
-    auto baseTexture =GetBaseTexture(aFilename);
+    auto baseTexture = GetBaseTexture(aFilename);
 
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
@@ -199,19 +200,20 @@ namespace YTE
 
     if (textureIt == mTextures.end())
     {
-      //std::vector<u8> aData,
-      //TextureLayout aType,
-      //u32 aWidth,
-      //u32 aHeight,
-      //u32 aMipLevels,
-      //u32 aLayerCount)
+      auto baseTexture = std::make_unique<Texture>(aData, 
+                                                   aType, 
+                                                   aWidth, 
+                                                   aHeight, 
+                                                   aMipLevels, 
+                                                   aLayerCount);
 
-      auto texture = std::make_unique<VkTexture>(aData,
-                                                 aType,
-                                                 aWidth,
-                                                 aHeight,
-                                                 aMipLevels,
-                                                 aLayerCount,
+      mBaseTexturesMutex.lock();
+      auto ret = mBaseTextures.emplace(aName, std::move(baseTexture));
+      auto baseTexturePtr = ret.first->second.get();
+      mBaseTexturesMutex.unlock();
+
+
+      auto texture = std::make_unique<VkTexture>(baseTexturePtr,
                                                  this,
                                                  aVulkanType);
 
@@ -286,8 +288,7 @@ namespace YTE
     {
       // create mesh
       auto mesh = std::make_unique<VkMesh>(baseMesh,
-                                           this,
-                                           aFilename);
+                                           this);
 
       meshPtr = mesh.get();
 
@@ -312,10 +313,16 @@ namespace YTE
 
     if (aForceUpdate || meshIt == mMeshes.end())
     {
+      auto baseMesh = std::make_unique<Mesh>(aName,
+                                             aSubmeshes);
+
+      mBaseMeshesMutex.lock();
+      auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
+      auto baseMeshPtr = ret.first->second.get();
+      mBaseMeshesMutex.unlock();
+
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(this,
-                                           aName,
-                                           aSubmeshes);
+      auto mesh = std::make_unique<VkMesh>(baseMeshPtr, this);
 
       meshPtr = mesh.get();
 
