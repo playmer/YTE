@@ -34,16 +34,18 @@ namespace YTE
   {
     mTransform = mOwner->GetComponent<Transform>();
     mInitialScale = mTransform->GetWorldScale();
+
+    mSpace->GetOwner()->YTERegister(Events::LogicUpdate, this, &PostcardIconPulse::Update);
   }
 
   void PostcardIconPulse::Update(LogicUpdate *aEvent)
   {
     if (mIsPulsing)
     {
-      mTimer += 2.0f * aEvent->Dt;
+      mTimer += 5.0f * aEvent->Dt;
       float sizeScalar = sin(mTimer) + 1.0f;
 
-      sizeScalar *= 0.3f;
+      sizeScalar *= 0.15f;
 
       mTransform->SetWorldScale(((1.0f + sizeScalar) * mInitialScale));
     }
@@ -56,5 +58,6 @@ namespace YTE
   void PostcardIconPulse::SetPulsing(bool aIsPulsing)
   {
     mIsPulsing = aIsPulsing;
+    mTimer = 0.0f;
   }
 }

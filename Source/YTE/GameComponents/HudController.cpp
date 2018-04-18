@@ -248,8 +248,8 @@ namespace YTE
               iconPulse->SetPulsing(false);
             }
 
-            mMapIconSprite->SetVisibility(false);
-            mCompassIconSprite->SetVisibility(false);
+            mMapIconSprite->SetVisibility(true);
+            mCompassIconSprite->SetVisibility(true);
           }
         }
         break;
