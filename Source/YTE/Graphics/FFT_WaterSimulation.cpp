@@ -195,6 +195,17 @@ namespace YTE
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
+  static std::string water{ "water.png" };
+  static std::string foam{ "foam.png" };
+  static std::string perlinNoise{ "copywritePerlinNoiseTextureNormal.png" };
+
+  // ------------------------------------
+  void FFT_WaterSimulation::AssetInitialize()
+  {
+    mRenderer->RequestTexture(water);
+    mRenderer->RequestTexture(foam);
+    mRenderer->RequestTexture(perlinNoise);
+  }
 
   // ------------------------------------
   void FFT_WaterSimulation::Initialize()
@@ -1135,7 +1146,7 @@ namespace YTE
   {
     return mVertices;
   }
-
+  
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
   {
@@ -1153,9 +1164,9 @@ namespace YTE
           mShaderSetName,
           mGraphicsView,
           mRenderer,
-          "water.png",
-          "foam.png",
-          "copywritePerlinNoiseTextureNormal.png");
+          water,
+          foam,
+          perlinNoise);
     }
   }
 

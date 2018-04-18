@@ -38,6 +38,8 @@ namespace YTE
     YTEDeclareType(Model);
     Model(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~Model() override;
+
+    void AssetInitialize() override;
     void NativeInitialize() override;
 
     void Reload();

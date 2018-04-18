@@ -19,6 +19,7 @@ namespace YTE
     Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~Sprite();
 
+    void AssetInitialize() override;
     void Initialize() override;
     void CreateSprite();
 

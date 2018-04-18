@@ -108,10 +108,11 @@ namespace YTE
 
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
+
+    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
     mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this, nullptr));
     mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this, nullptr));
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
 
 
     fs::path archetypesPath = Path::GetGamePath().String();
@@ -267,7 +268,7 @@ namespace YTE
 
     for (auto &window : mWindows)
     {
-      SetFrameRate(*window.second, mDt);
+      //SetFrameRate(*window.second, mDt);
       window.second->Update();
     }
     
@@ -319,9 +320,9 @@ namespace YTE
     if (totalTime >= 0.5)
     {
       // FPS counter to the window name 
-      //std::array<char, 64> buffer;
-      //sprintf_s(buffer.data(), buffer.size(), "FPS: %f", (counter / 0.5));
-      //aWindow.SetWindowTitle(buffer.data());
+      std::array<char, 64> buffer;
+      sprintf_s(buffer.data(), buffer.size(), "FPS: %f", (counter / 0.5));
+      aWindow.SetWindowTitle(buffer.data());
 
       totalTime = 0.0f;
       counter = 0;
@@ -560,7 +561,7 @@ namespace YTE
 
   void Engine::Log(LogType aType, std::string_view aLog)
   {
-    printf("%*s", static_cast<int>(aLog.size()), &(*aLog.begin()));
+    printf("%*s\n", static_cast<int>(aLog.size()), &(*aLog.begin()));
     
     LogEvent event;
     event.Log = aLog;

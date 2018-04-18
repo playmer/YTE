@@ -30,6 +30,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(AssetInitialize);
   YTEDeclareEvent(NativeInitialize);
   YTEDeclareEvent(PhysicsInitialize);
   YTEDeclareEvent(Initialize);
@@ -87,6 +88,7 @@ namespace YTE
 
     virtual void Update(double dt);
 
+    virtual void AssetInitialize(InitializeEvent *aEvent);
     virtual void NativeInitialize(InitializeEvent *aEvent);
     virtual void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);

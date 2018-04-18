@@ -132,9 +132,20 @@ namespace YTE
 
   }
 
-  void SpriteText::NativeInitialize()
+  void SpriteText::AssetInitialize()
   {
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    if (mTextureName.empty())
+    {
+      return;
+    }
+
+    mRenderer->RequestTexture(mTextureName);
+  }
+
+  void SpriteText::NativeInitialize()
+  {
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 

@@ -128,6 +128,7 @@ namespace YTE
   void Space::Initialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
+    Composition::AssetInitialize(aEvent);
     Composition::NativeInitialize(aEvent);
     Composition::PhysicsInitialize(aEvent);
     Composition::Initialize(aEvent);

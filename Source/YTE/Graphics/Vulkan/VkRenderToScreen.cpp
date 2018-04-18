@@ -359,10 +359,10 @@ namespace YTE
 
   void VkRenderToScreen::ReloadShaders(bool aFromSet)
   {
-    if (aFromSet)
-    {
-      mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");
-    }
+    //if (aFromSet)
+    //{
+    //  mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");
+    //}
     mScreenShader.reset();
     mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, true);
     if (mSignedUpForUpdate == false)

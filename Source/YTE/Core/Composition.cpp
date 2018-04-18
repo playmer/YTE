@@ -22,6 +22,7 @@ namespace YTE
 {
   std::vector<Type*> GetDependencyOrder(Composition *aComposition);
 
+  YTEDefineEvent(AssetInitialize);
   YTEDefineEvent(NativeInitialize);
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
@@ -146,6 +147,7 @@ namespace YTE
 
     if (nullptr != parent && this != parent)
     {
+      parent->RegisterEvent<&Composition::AssetInitialize>(Events::AssetInitialize, this);
       parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
       parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
       parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
@@ -204,6 +206,50 @@ namespace YTE
     {
       mComponents.ChangeKey(iterator, aEvent->aNewType);
     }
+  }
+
+  void Composition::AssetInitialize(InitializeEvent *aEvent)
+  {
+    if (mShouldIntialize == false)
+    {
+      return;
+    }
+
+    auto order = GetDependencyOrder(this);
+
+    // If our order is compromised, we just initialize in whatever
+    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+    // algorithm so this never occurs.
+    if (order.size() != mComponents.size())
+    {
+      for (auto &component : mComponents)
+      {
+        if (aEvent->CheckRunInEditor &&
+            nullptr == component.first->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component.second->AssetInitialize();
+      }
+    }
+    else
+    {
+      for (auto &type : order)
+      {
+        auto component = GetComponent(type);
+
+        if (aEvent->CheckRunInEditor &&
+            nullptr == type->GetAttribute<RunInEditor>())
+        {
+          continue;
+        }
+
+        component->AssetInitialize();
+      }
+    }
+
+    SendEvent(Events::AssetInitialize, aEvent);
   }
 
   void Composition::NativeInitialize(InitializeEvent *aEvent)
@@ -480,6 +526,7 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
@@ -499,6 +546,7 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
@@ -521,6 +569,7 @@ namespace YTE
       InitializeEvent event;
 
       // Might need to be after the change of translation.
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
 
@@ -1003,6 +1052,7 @@ namespace YTE
       return component;
     }
 
+    component->AssetInitialize();
     component->NativeInitialize();
     component->PhysicsInitialize();
     component->Initialize();

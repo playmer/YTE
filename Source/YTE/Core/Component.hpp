@@ -30,6 +30,7 @@ namespace YTE
 
     virtual ~Component();
 
+    virtual void AssetInitialize() { };
     virtual void NativeInitialize() { };
     virtual void PhysicsInitialize() { };
     virtual void Initialize() { };

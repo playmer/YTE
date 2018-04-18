@@ -61,6 +61,7 @@ namespace YTE
     SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~SpriteText();
 
+    void AssetInitialize() override;
     void NativeInitialize() override;
     
     // PROPERTIES /////////////////////////////////////////
