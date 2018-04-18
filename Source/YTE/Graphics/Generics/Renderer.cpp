@@ -210,6 +210,7 @@ namespace YTE
 
   Mesh * Renderer::GetBaseMesh(const std::string & aFilename)
   {
+    YTEProfileFunction();
     auto mesh = RequestMesh(aFilename);
     if (mesh)
     {
@@ -256,6 +257,7 @@ namespace YTE
 
   Texture* Renderer::GetBaseTexture(const std::string &aFilename)
   {
+    YTEProfileFunction();
     auto texture = RequestTexture(aFilename);
     if (texture)
     {
@@ -302,6 +304,7 @@ namespace YTE
 
   Mesh* Renderer::RequestMesh(const std::string &aMeshFile)
   {
+    YTEProfileFunction();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting mesh: {}", aMeshFile));
     std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
     auto baseIt = mBaseMeshes.find(aMeshFile);
@@ -331,6 +334,7 @@ namespace YTE
 
   Texture* Renderer::RequestTexture(const std::string &aFilename)
   {
+    YTEProfileFunction();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting texture: {}", aFilename));
     std::shared_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
     auto baseIt = mBaseTextures.find(aFilename);

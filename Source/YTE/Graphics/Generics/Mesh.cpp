@@ -428,6 +428,7 @@ namespace YTE
              const std::string &aFile)
     : mInstanced(false)
   {
+    YTEProfileFunction()
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
 
@@ -519,6 +520,7 @@ namespace YTE
              std::vector<Submesh> &aSubmeshes)
     : mInstanced(false)
   {
+    YTEProfileFunction();
     mName = aFile;
     mParts = aSubmeshes;
 

@@ -30,6 +30,7 @@ namespace YTE
 
   Texture::Texture(const std::string &aFile)
   {
+    YTEProfileFunction();
     std::string name = aFile; // TODO: don't actually make a copy lol
     Load(name);
   }
@@ -38,6 +39,7 @@ namespace YTE
 
   Texture::Texture(const char *aFile)
   {
+    YTEProfileFunction();
     std::string f(aFile);
     Load(f);
   }
