@@ -156,7 +156,7 @@ void main()
   if ((ModelMaterial.mFlags & MatFlag_IsSelected) > 0)
   {
       // Interpret the single channel as only an alpha value
-    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x) * inDiffuse * vec4(1.0f, 1.0f, 0.0f, 1.0f);
+    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x) * ModelMaterial.mDiffuse * inDiffuse * vec4(1.0f, 1.0f, 0.0f, 1.0f);
 
     if (outFragColor.w <= 0.001f)
     {
@@ -167,7 +167,7 @@ void main()
   }
   else
   {
-    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x) * inDiffuse;
+    outFragColor = vec4(1.0f, 1.0f, 1.0f, texture(diffuseSampler, inTextureCoordinates).x) *  ModelMaterial.mDiffuse * inDiffuse;
     if (outFragColor.w <= 0.001f)
     {
       discard;

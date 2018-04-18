@@ -151,13 +151,16 @@ namespace YTE
         instantiatedModel = models.front();
       }
 
+      auto mesh = instantiatedModel->GetMesh();
+
       if (nullptr != instantiatedModel)
       {
-        if (isModel && (instantiatedModel->GetMesh()->mName != mName))
+        if ((isModel && (mesh->mName != mName)) ||
+            (mSubmeshMaterials.size() != mesh->mParts.size()))
         {
           mSubmeshMaterials.clear();
 
-          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          for (auto[submesh, i] : enumerate(mesh->mParts))
           {
             auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
                                                                         this,
@@ -173,7 +176,7 @@ namespace YTE
         }
         else
         {
-          for (auto[submesh, i] : enumerate(instantiatedModel->GetMesh()->mParts))
+          for (auto[submesh, i] : enumerate(mesh->mParts))
           {
             mSubmeshMaterials[i]->SetSubmesh(&(*submesh));
             mSubmeshMaterials[i]->SetIndex(i);
@@ -183,7 +186,7 @@ namespace YTE
           mModelMaterial.UpdateUBO();
         }
 
-        mName = instantiatedModel->GetMesh()->mName;
+        mName = mesh->mName;
       }
     }
   }
