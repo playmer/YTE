@@ -110,11 +110,34 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    Composition::AssetInitialize(aEvent);
-    Composition::NativeInitialize(aEvent);
-    Composition::PhysicsInitialize(aEvent);
-    Composition::Initialize(aEvent);
-    Composition::Start(aEvent);
+    if (false == aEvent->IterativeLoad)
+    {
+      Composition::AssetInitialize(aEvent);
+      Composition::NativeInitialize(aEvent);
+      Composition::PhysicsInitialize(aEvent);
+      Composition::Initialize(aEvent);
+      Composition::Start(aEvent);
+    }
+    else
+    {
+      Composition::AssetInitialize(aEvent);
+      if (mFinishedAssetInitialize)
+      {
+        Composition::NativeInitialize(aEvent);
+      }
+      if (mFinishedNativeInitialize)
+      {
+        Composition::PhysicsInitialize(aEvent);
+      }
+      if (mFinishedPhysicsInitialize)
+      {
+        Composition::Initialize(aEvent);
+      }
+      if (mFinishedInitialize)
+      {
+        Composition::Start(aEvent);
+      }
+    }
   }
 
   // Loads a level into the current Space. If already loaded, destroys 

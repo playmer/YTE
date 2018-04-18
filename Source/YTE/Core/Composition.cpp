@@ -239,7 +239,7 @@ namespace YTE
       auto dt = time_span.count();
       if (dt > 0.032f)
       {
-        printf("AssetInit Dt: %f\n", dt);
+        printf("%s: AssetInit Dt: %f\n", mSpace->GetName().c_str(), dt);
         aEvent->EarlyOut = true;
         return;
       }
@@ -314,7 +314,7 @@ namespace YTE
       auto dt = time_span.count();
       if (dt > 0.032f)
       {
-        printf("NativeInit Dt: %f\n", dt);
+        printf("%s: NativeInit Dt: %f\n", mSpace->GetName().c_str(), dt);
         aEvent->EarlyOut = true;
         return;
       }
@@ -395,7 +395,7 @@ namespace YTE
       auto dt = time_span.count();
       if (dt > 0.032f)
       {
-        printf("PhysicsInit Dt: %f\n", dt);
+        printf("%s: PhysicsInit Dt: %f\n", mSpace->GetName().c_str(), dt);
         aEvent->EarlyOut = true;
         return;
       }
@@ -480,7 +480,7 @@ namespace YTE
       auto dt = time_span.count();
       if (dt > 0.032f)
       {
-        printf("Initialize Dt: %f\n", dt);
+        printf("%s: Initialize Dt: %f\n", mSpace->GetName().c_str(), dt);
         aEvent->EarlyOut = true;
         return;
       }
@@ -584,7 +584,7 @@ namespace YTE
       auto dt = time_span.count();
       if (dt > 0.032f)
       {
-        printf("Start Dt: %f\n", dt);
+        printf("%s: Start Dt: %f\n", mSpace->GetName().c_str(), dt);
         aEvent->EarlyOut = true;
         return;
       }
