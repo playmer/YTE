@@ -51,8 +51,8 @@ namespace YTE
     , mTimer(0.0)
     , mPoofTime(2.0)
     , mMakePoof(false)
-    , mPoofCount(15)
-    , mPoofEmitRate(0.001)
+    , mPoofCount(0)
+    , mPoofEmitRate(1000.0f)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -69,6 +69,11 @@ namespace YTE
     mSpace->YTERegister(Events::LogicUpdate, this, &ProgressionParticles::Update);
 
     mSpace->YTERegister(Events::ProgressionHappened, this, &ProgressionParticles::OnProgressionHappened);
+
+    mPoofCount = 0;
+    mPoofEmitRate = 1000.0f;
+    mProgressionEmitter->SetEmitCount(mPoofCount);
+    mProgressionEmitter->SetEmitRate(mPoofEmitRate);
   }
 
   void ProgressionParticles::Update(LogicUpdate *aEvent)
@@ -77,21 +82,18 @@ namespace YTE
     {
       if (mMakePoof)
       {
-        mProgressionEmitter->SetEmitCount(mPoofCount);
-        mProgressionEmitter->SetEmitRate(mPoofEmitRate);
-      }
-
-      if (mTimer > mPoofTime)
-      {
-        mTimer = 0.0;
-        mMakePoof = false;
-        mProgressionEmitter->SetEmitCount(0);
-        mProgressionEmitter->SetEmitRate(10000.0f);
-      }
-      else
-      {
-        mProgressionEmitter->SetInitVelocity(mRigidBody->GetVelocity());
-        mTimer += aEvent->Dt;
+        if (mTimer > mPoofTime)
+        {
+          mTimer = 0.0;
+          mProgressionEmitter->SetEmitCount(0);
+          mProgressionEmitter->SetEmitRate(10000.0f);
+          mMakePoof = false;
+        }
+        else
+        {
+          mProgressionEmitter->SetInitVelocity(mRigidBody->GetVelocity());
+          mTimer += aEvent->Dt;
+        }
       }
     }
   }
@@ -130,5 +132,7 @@ namespace YTE
   {
     YTEUnusedArgument(aEvent);
     mMakePoof = true;
+    mProgressionEmitter->SetEmitCount(mPoofCount);
+    mProgressionEmitter->SetEmitRate(mPoofEmitRate);
   }
 }

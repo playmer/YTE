@@ -62,7 +62,6 @@ namespace YTE
     double mPoofTime;
     int mPoofCount;
     float mPoofEmitRate;
-
   };
 } 
 
