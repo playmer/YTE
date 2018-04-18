@@ -87,5 +87,7 @@ namespace YTE
     u64 mCompassClose;
     u64 mSailMapOpen;
     u64 mSailMapClose;
+
+    float mOpenPostcardTimer;
   };
 }

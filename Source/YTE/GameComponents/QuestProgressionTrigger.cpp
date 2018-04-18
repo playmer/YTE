@@ -10,6 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTE/GameComponents/QuestProgressionTrigger.hpp"
+#include "YTE/GameComponents/ProgressionParticles.hpp"
 
 namespace YTE
 {
@@ -53,6 +54,9 @@ namespace YTE
       ProgressionItemEvent item;
       mSpace->SendEvent(Events::ProgressionItemEvent, &item);
       //mOwner->GetParent()->RemoveComposition(mOwner);
+
+      ProgressionHappened progEvent;
+      mSpace->SendEvent(Events::ProgressionHappened, &progEvent);
 
       mOwner->GetComponent<Transform>()->SetWorldTranslation(0, -200, 0);
       mDeleteFlag = true;

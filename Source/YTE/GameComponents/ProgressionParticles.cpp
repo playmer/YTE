@@ -21,6 +21,13 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDefineEvent(ProgressionHappened);
+
+  YTEDefineType(ProgressionHappened)
+  {
+    YTERegisterType(ProgressionHappened);
+  }
+
   YTEDefineType(ProgressionParticles)
   {
     YTERegisterType(ProgressionParticles);
@@ -57,9 +64,11 @@ namespace YTE
        mProgressionEmitter = emitterObj->GetComponent<ParticleEmitter>();
     }
 
+    mRigidBody = mOwner->GetComponent<RigidBody>();
+
     mSpace->YTERegister(Events::LogicUpdate, this, &ProgressionParticles::Update);
 
-    mSpace->YTERegister(Events::PostcardUpdate, this, &ProgressionParticles::OnPostcardUpdate);
+    mSpace->YTERegister(Events::ProgressionHappened, this, &ProgressionParticles::OnProgressionHappened);
   }
 
   void ProgressionParticles::Update(LogicUpdate *aEvent)
@@ -81,6 +90,7 @@ namespace YTE
       }
       else
       {
+        mProgressionEmitter->SetInitVelocity(mRigidBody->GetVelocity());
         mTimer += aEvent->Dt;
       }
     }
@@ -116,14 +126,9 @@ namespace YTE
     mPoofEmitRate = aTime;
   }
 
-  void ProgressionParticles::OnPostcardUpdate(PostcardUpdate *aEvent)
+  void ProgressionParticles::OnProgressionHappened(ProgressionHappened * aEvent)
   {
     YTEUnusedArgument(aEvent);
-    MakePoof();
-  }
-
-  void ProgressionParticles::MakePoof()
-  {
     mMakePoof = true;
   }
 }

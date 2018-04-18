@@ -24,6 +24,13 @@ namespace YTE
   class ParticleEmitter;
   class PostcardUpdate;
 
+  YTEDeclareEvent(ProgressionHappened);
+  class ProgressionHappened : public Event
+  {
+  public:
+    YTEDeclareType(ProgressionHappened);
+  };
+
   class ProgressionParticles : public Component
   {
   public:
@@ -41,12 +48,11 @@ namespace YTE
     float GetPoofEmitRate() const;
     void SetPoofEmitRate(float aTime);
 
-    void OnPostcardUpdate(PostcardUpdate *aEvent);
-
-    void MakePoof();
+    void OnProgressionHappened(ProgressionHappened *aEvent);
 
   private:
     ParticleEmitter *mProgressionEmitter;
+    RigidBody *mRigidBody;
 
     double mTimer;
 

@@ -13,6 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/QuestLogic.hpp" /* to identify collision with boat */
 
 #include "YTE/GameComponents/HudController.hpp"
+#include "YTE/GameComponents/ProgressionParticles.hpp"
 
 namespace YTE
 {
@@ -170,6 +171,10 @@ namespace YTE
           }
 
           mSpace->SendEvent(Events::PostcardUpdate, &postcardEvent);
+
+          // make a particles poof
+          ProgressionHappened progEvent;
+          mSpace->SendEvent(Events::ProgressionHappened, &progEvent);
 
           QuestStart quest(charName, questName);
           mSpace->SendEvent(Events::QuestStart, &quest);
