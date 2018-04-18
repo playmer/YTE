@@ -297,7 +297,7 @@ namespace YTE
             {
               // LEVEL A
               DialogueData(dataA0, "John: OF COURSE!", "John: It was so simple!", "John: It's all coming back to me!", "John: Where's my knife?");
-              mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0, mSpace);
+              mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
               // @@@(JAY): Test convos that start with an input node
               // LEVEL ROOT
@@ -1153,23 +1153,18 @@ namespace YTE
         }
         case Conversation::Name::Completed:
         {
-          // LEVEL B
-          DialogueData(dataB0, "Monsieur Bouillon: Please, call me Basil.", "Basil: Oh dear. Well, I can't say I'll miss that trend.", "Basil: Thank you, dearest lamb.", "Basil: Should you ever join the culinary industry, you have a friend in me.");
-          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0, mSpace);
-
           // LEVEL A
-          DialogueData(dataA0, "Sorry, Monsieur Bouillon.");
-          mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0, mSpace);
+          DialogueData(dataA0, "Monsieur Bouillon: Please, call me Basil.", "Basil: Oh dear. Well, I can't say I'll miss that trend.", "Basil: Thank you, dearest lamb.", "Basil: Should you ever join the culinary industry, you have a friend in me.");
+          mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, "Madame Daisy says horseradish season is over.");
+          DialogueData(dataR0, "Madame Daisy says horseradish season is over. Sorry, Monsieur Bouillon.");
           mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataR0, 0, mSpace);
           /*
           B0 - A0 - R0
           */
-          enum { B0, A0, R0 };
-          mNodeVec[B0].SetChildren(DialogueNodeChildren{ });
-          mNodeVec[A0].SetChildren(DialogueNodeChildren{ &mNodeVec[B0] });
+          enum { A0, R0 };
+          mNodeVec[A0].SetChildren(DialogueNodeChildren{ });
           mNodeVec[R0].SetChildren(DialogueNodeChildren{ &mNodeVec[A0] });
           break;
         }
