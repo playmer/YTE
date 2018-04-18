@@ -129,8 +129,8 @@ namespace YTE
   void ProgressionParticles::OnProgressionHappened(ProgressionHappened * aEvent)
   {
     YTEUnusedArgument(aEvent);
-    //mMakePoof = true;
-    //mProgressionEmitter->SetEmitCount(mPoofCount);
-    //mProgressionEmitter->SetEmitRate(mPoofEmitRate);
+    mMakePoof = true;
+    mProgressionEmitter->SetEmitCount(mPoofCount);
+    mProgressionEmitter->SetEmitRate(mPoofEmitRate);
   }
 }

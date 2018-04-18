@@ -10,6 +10,7 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/HudController.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
+#include "YTE/GameComponents/PostcardIconPulse.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
@@ -229,6 +230,27 @@ namespace YTE
               ? mSoundEmitter->PlayEvent("UI_SailPostcard_Close")
               : mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
           }
+
+          if (!postcardVisible)
+          {
+            if (auto iconPulse = mPostcardIcon->GetComponent<PostcardIconPulse>(); iconPulse)
+            {
+              iconPulse->SetPulsing(true);
+            }
+
+            mMapIconSprite->SetVisibility(false);
+            mCompassIconSprite->SetVisibility(false);
+          }
+          else
+          {
+            if (auto iconPulse = mPostcardIcon->GetComponent<PostcardIconPulse>(); iconPulse)
+            {
+              iconPulse->SetPulsing(false);
+            }
+
+            mMapIconSprite->SetVisibility(true);
+            mCompassIconSprite->SetVisibility(true);
+          }
         }
         break;
       }
@@ -246,7 +268,6 @@ namespace YTE
               ? mSoundEmitter->PlayEvent(mCompassClose)
               : mSoundEmitter->PlayEvent(mCompassOpen);
           }
-            
         }
 
         if (mCompassNeedleSprite)

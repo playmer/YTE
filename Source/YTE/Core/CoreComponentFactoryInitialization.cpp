@@ -64,6 +64,7 @@
 #include "YTE/GameComponents/BasilTutorial.hpp"
 #include "YTE/GameComponents/OceanCreatureBehavior.hpp"
 #include "YTE/GameComponents/ProgressionParticles.hpp"
+#include "YTE/GameComponents/PostcardIconPulse.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -174,6 +175,7 @@ namespace YTE
     helper.CreateComponentFactory<BasilTutorial>();
     helper.CreateComponentFactory<OceanCreatureBehavior>();
     helper.CreateComponentFactory<ProgressionParticles>();
+    helper.CreateComponentFactory<PostcardIconPulse>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();

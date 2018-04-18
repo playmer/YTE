@@ -13,6 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
 {
@@ -706,6 +707,22 @@ namespace YTE
       {
         auto fullscreen = mSpace->GetComponent<GraphicsView>()->GetWindow()->mFullscreen;
         mSpace->GetComponent<GraphicsView>()->GetWindow()->SetFullscreen(!fullscreen, false);
+        break;
+      }
+      // hotkey for triggering ending
+      case Keys::F9:
+      {
+        DebugSwitch setDebug(true);
+        mOwner->SendEvent(Events::DebugSwitch, &setDebug);
+
+        if (auto noticeBoard = mOwner->FindFirstCompositionByName("noticeboard"); noticeBoard)
+        {
+          if (NoticeBoard *noticeCmp = noticeBoard->GetComponent<NoticeBoard>(); noticeCmp)
+          {
+            noticeCmp->TriggerEndingSequence();
+          }
+        }
+
         break;
       }
     }

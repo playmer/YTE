@@ -23,7 +23,6 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/InputInterpreter.hpp"  /* RequestNoticeBoardStart */
 #include "YTE/GameComponents/Quest.hpp"             /* Quest, QuestStart */
 
-
 namespace YTE
 {
   YTEDeclareEvent(NoticeBoardHookup); 
@@ -53,15 +52,45 @@ namespace YTE
     YTEDeclareType(NoticeBoard);
     NoticeBoard(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     void Initialize() override;
+    void Update(LogicUpdate *aEvent);
 
     void OnCollisionStarted(CollisionStarted *aEvent);
     void OnCollisionEnded(CollisionEnded *aEvent);
     void OnRequestNoticeBoardStart(RequestNoticeBoardStart *aEvent);
     void OnNoticeBoardHookup(NoticeBoardHookup *aEvent);
+
+    void TriggerEndingSequence();
+
   private:
     std::vector<Postcard> mPostcardVec;
     Postcard *mAssignedPostcard;
     std::map<Quest::CharacterName, Quest**> mActiveQuestMap;
+
+    bool mEndSequencePlaying;
+    float mCameraPosition;
+    float mCameraRotation;
+    float mCameraRotationPrev;
+
+    glm::vec3 mCurrentCamPos;
+    glm::vec3 mCurrentCamRot;
+
+    glm::vec3 mTargetCamPos;
+    glm::vec3 mTargetCamRot;
+
+    Transform *mCameraTransform;
+    glm::vec3 mCameraInitPos;
+    glm::vec3 mCameraInitRot;
+
+    float mFakeLerp;
+
+    Composition *mEndJohn;
+    Composition *mEndDaisy;
+    Composition *mEndBasil;
+    Composition *mEndLamb;
+
+    Composition *mEndChefBoat;
+    Composition *mEndDaisyBoat;
+
   };
 }//end yte
 #endif
