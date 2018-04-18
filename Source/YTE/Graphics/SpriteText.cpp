@@ -130,7 +130,7 @@ namespace YTE
 
   }
 
-  void SpriteText::Initialize()
+  void SpriteText::NativeInitialize()
   {
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();

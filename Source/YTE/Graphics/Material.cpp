@@ -133,6 +133,13 @@ namespace YTE
   {
     auto model = aEvent->Object->GetDerivedComponent<BaseModel>();
 
+    bool isModel{ false };
+
+    if (model->GetType()->IsA<Model>())
+    {
+      isModel = true;
+    }
+
     if (nullptr != model)
     {
       InstantiatedModel *instantiatedModel{ nullptr };
@@ -146,7 +153,7 @@ namespace YTE
 
       if (nullptr != instantiatedModel)
       {
-        if (instantiatedModel->GetMesh()->mName != mName)
+        if (isModel && (instantiatedModel->GetMesh()->mName != mName))
         {
           mSubmeshMaterials.clear();
 

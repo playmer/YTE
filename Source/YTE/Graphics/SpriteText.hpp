@@ -61,7 +61,7 @@ namespace YTE
     SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~SpriteText();
 
-    void Initialize() override;
+    void NativeInitialize() override;
     
     // PROPERTIES /////////////////////////////////////////
     std::string GetText()
