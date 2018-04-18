@@ -44,7 +44,7 @@ namespace YTE
         daisy->RegisterDialogue();
 
         DialoguePossible diagEvent;
-        diagEvent.isPossible = false;
+        diagEvent.isPossible = true;
         mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
 
         /*
