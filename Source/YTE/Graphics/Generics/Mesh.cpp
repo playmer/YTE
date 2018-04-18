@@ -183,6 +183,8 @@ namespace YTE
                    Skeleton* aSkeleton,
                    uint32_t aBoneStartingVertexOffset)
   {
+    YTEProfileFunction();
+
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
       pColor);
@@ -429,7 +431,7 @@ namespace YTE
              const std::string &aFile)
     : mInstanced(false)
   {
-    YTEProfileFunction()
+    YTEProfileFunction();
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
 

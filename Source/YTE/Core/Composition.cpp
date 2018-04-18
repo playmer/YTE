@@ -210,6 +210,8 @@ namespace YTE
 
   void Composition::AssetInitialize(InitializeEvent *aEvent)
   {
+    YTEProfileFunction();
+
     if (mShouldIntialize == false)
     {
       return;
