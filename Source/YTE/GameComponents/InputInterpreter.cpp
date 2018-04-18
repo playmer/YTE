@@ -31,6 +31,7 @@ namespace YTE
 
   // Option Events
   YTEDefineEvent(OptionsStickEvent);
+  YTEDefineEvent(OptionsFlickEvent);
   YTEDefineEvent(OptionsConfirmEvent);
 
   // Boat Events
@@ -59,6 +60,7 @@ namespace YTE
   YTEDefineType(MenuExit) { YTERegisterType(MenuExit); }
   YTEDefineType(MenuElementChange) { YTERegisterType(MenuElementChange); }
   YTEDefineType(OptionsStickEvent) { YTERegisterType(OptionsStickEvent); }
+  YTEDefineType(OptionsFlickEvent) { YTERegisterType(OptionsFlickEvent); }
   YTEDefineType(OptionsConfirmEvent) { YTERegisterType(OptionsConfirmEvent); }
   YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
@@ -270,6 +272,31 @@ namespace YTE
             MenuElementChange menuPrev(MenuElementChange::Direction::Previous);
 
             mMenuSpace->SendEvent(Events::MenuElementChange, &menuPrev);
+          }
+        }
+      }
+    }
+
+    else if (mContext == InputContext::Options)
+    {
+      if (aEvent->FlickedStick == XboxButtons::LeftStick)
+      {
+        glm::vec2 flickDir = aEvent->FlickDirection;
+
+        // Check dead-zone
+        if (glm::length(flickDir) > 0.1f)
+        {
+            // Check forward region
+          if (flickDir.x > 0.0f)
+          {
+            OptionsFlickEvent stickEvent(glm::vec2(1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsFlickEvent, &stickEvent);
+          }
+
+          else
+          {
+            OptionsFlickEvent stickEvent(glm::vec2(-1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsFlickEvent, &stickEvent);
           }
         }
       }
@@ -599,6 +626,40 @@ namespace YTE
           {
             MenuElementChange menuNext(MenuElementChange::Direction::Next);
             mMenuSpace->SendEvent(Events::MenuElementChange, &menuNext);
+
+            break;
+          }
+        }
+
+        break;
+      }
+
+      case InputContext::Options:
+      {
+        switch (aEvent->Key)
+        {
+          case Keys::Return:
+          {
+            OptionsConfirmEvent confirm;
+            mMenuSpace->SendEvent(Events::OptionsConfirmEvent, &confirm);
+
+            break;
+          }
+
+          case Keys::A:
+          case Keys::Left:
+          {
+            OptionsStickEvent stickEvent(glm::vec2(-1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
+
+            break;
+          }
+
+          case Keys::D:
+          case Keys::Right:
+          {
+            OptionsStickEvent stickEvent(glm::vec2(1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
 
             break;
           }

@@ -45,6 +45,7 @@
 #include "YTE/GameComponents/Menu/ToggleFullscreen.hpp"
 #include "YTE/GameComponents/Menu/ToggleMute.hpp"
 #include "YTE/GameComponents/Menu/ChangeVolume.hpp"
+#include "YTE/GameComponents/Menu/ChangeResolution.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/InheritVisibility.hpp"
@@ -160,6 +161,7 @@ namespace YTE
     InitializeType<ToggleFullscreen>();
     InitializeType<ToggleMute>();
     InitializeType<ChangeVolume>();
+    InitializeType<ChangeResolution>();
     InitializeType<Button>();
     InitializeType<ButtonAnimate>();
     InitializeType<InheritVisibility>();

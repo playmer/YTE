@@ -49,6 +49,7 @@ namespace YTE
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
   YTEDeclareEvent(OptionsStickEvent);
+  YTEDeclareEvent(OptionsFlickEvent);
   YTEDeclareEvent(OptionsConfirmEvent);
   YTEDeclareEvent(DebugSwitch);
   YTEDeclareEvent(RequestNoticeBoardStart);
@@ -172,6 +173,15 @@ namespace YTE
   public:
     YTEDeclareType(OptionsStickEvent);
     OptionsStickEvent(const glm::vec2& aStickDirection) { StickDirection = aStickDirection; }
+
+    glm::vec2 StickDirection;
+  };
+
+  class OptionsFlickEvent : public Event
+  {
+  public:
+    YTEDeclareType(OptionsFlickEvent);
+    OptionsFlickEvent(const glm::vec2& aStickDirection) { StickDirection = aStickDirection; }
 
     glm::vec2 StickDirection;
   };
