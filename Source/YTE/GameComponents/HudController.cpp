@@ -322,5 +322,15 @@ namespace YTE
     std::string textureName = mPostcardTextures[aEvent->Number];
 
     mPostcardSprite->SetTexture(textureName);
+
+    OpenPostcard();
+  }
+
+  void HudController::OpenPostcard()
+  {
+    if (mPostcardSprite)
+    {
+      mPostcardSprite->SetVisibility(true);
+    }
   }
 }

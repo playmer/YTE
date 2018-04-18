@@ -47,6 +47,8 @@ namespace YTE
 
     void OnPostcardUpdate(PostcardUpdate *aEvent);
 
+    void OpenPostcard();
+
   private:
 
     Composition *mMap;
