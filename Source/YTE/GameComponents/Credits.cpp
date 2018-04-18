@@ -134,6 +134,10 @@ namespace YTE
     CreateHeader("In Memory Of");
     CreateLine("Thomas C. Fisher");
 
+    mY -= initialMovement;
+
+    CreateLine("All content (c) 2018 DigiPen (USA) Corporation, all rights reserved.");
+
     mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
     mSpace->YTERegister(Events::StartCredits, this, &Credits::OnStartCredits);
   }
@@ -151,7 +155,7 @@ namespace YTE
     auto actionManager = mSpace->GetComponent<ActionManager>();
     ActionSequence fadeOutSeq;
     
-    fadeOutSeq.Add<Quad::easeInOut>(mFadeValue, 1.0f, 0.5f);
+    fadeOutSeq.Add<Quad::easeInOut>(mFadeValue, 1.1f, 0.5f);
 
     fadeOutSeq.Call([this]() {
       mFirstLine->GetComponent<SpriteText>()->SetVisibility(true);
@@ -204,7 +208,7 @@ namespace YTE
           ActionSequence fadeInSeq;
           mFadeFinished = false;
 
-          fadeInSeq.Add<Quad::easeInOut>(mFadeValue, 0.0f, 0.5f);
+          fadeInSeq.Add<Quad::easeInOut>(mFadeValue, -0.1f, 0.5f);
 
           fadeInSeq.Call([this]() {
             mSpace->GetParent()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Menu);
