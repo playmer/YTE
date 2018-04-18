@@ -309,17 +309,80 @@ namespace YTE
 
   void DialogueDirector::OnCollisionStart(CollisionStarted * aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+    if (!mIsRegistered)
     {
-      RegisterDirector();
+      if (mIsTutorial)
+      {
+        if (mTutorialRegisteredCharacter == Quest::CharacterName::John)
+        {
+          if (aEvent->OtherObject->GetComponent<JohnDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Daisy)
+        {
+          if (aEvent->OtherObject->GetComponent<DaisyDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+        // since basil is our last tutorial we have to check when we've gone through the conversation too
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil && (*mBasilQuestHandle)->GetState() != Quest::State::Completed)
+        {
+          if (aEvent->OtherObject->GetComponent<BasilDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+      }
+      // if we arent in tutorial we dont have to worry about multi collision
+      else
+      {
+        if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+        {
+          RegisterDirector();
+        }
+      }
     }
   }
 
   void DialogueDirector::OnCollisionEnd(CollisionEnded * aEvent)
   {
-    if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+    if (mIsRegistered)
     {
-      DeregisterDirector();
+      if (mIsTutorial)
+      {
+        if (mTutorialRegisteredCharacter == Quest::CharacterName::John)
+        {
+          if (aEvent->OtherObject->GetComponent<JohnDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Daisy)
+        {
+          if (aEvent->OtherObject->GetComponent<DaisyDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil)
+        {
+          if (aEvent->OtherObject->GetComponent<BasilDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+      }
+      // if we arent in the tutorial we dont need to worry brub
+      else
+      {
+        if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+        {
+          DeregisterDirector();
+        }
+      }
     }
   }
 
