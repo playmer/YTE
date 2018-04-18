@@ -40,7 +40,8 @@ namespace YTE
   {
   public:
     YTEDeclareType(SpawnProgressionItem);
-    //maybe model name too?
+    SpawnProgressionItem(Quest::CharacterName aCharacter) : character(aCharacter) {};
+    Quest::CharacterName character;
   };
 
   YTEDeclareEvent(SpawnProgressionLocation);
@@ -49,7 +50,8 @@ namespace YTE
   {
   public:
     YTEDeclareType(SpawnProgressionLocation);
-    //maybe location too?
+    SpawnProgressionLocation(Quest::CharacterName aCharacter) : character(aCharacter) {};
+    Quest::CharacterName character;
   };
 
   YTEDeclareEvent(SpawnProgressionDialogue);
@@ -58,7 +60,8 @@ namespace YTE
   {
   public:
     YTEDeclareType(SpawnProgressionDialogue);
-    //woah boy this is gonna get weird
+    SpawnProgressionDialogue(Quest::CharacterName aCharacter) : character(aCharacter) {};
+    Quest::CharacterName character;
   };
 
   class DialogueStart;

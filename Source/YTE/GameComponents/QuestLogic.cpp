@@ -144,7 +144,27 @@ namespace YTE
   void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    glm::vec3 itemPos;
+
+    switch (aEvent->character)
+    {
+      case Quest::CharacterName::John:
+      {
+        itemPos = glm::vec3(481, 3, 540);
+        break;
+      }
+      case Quest::CharacterName::Daisy:
+      {
+        itemPos = glm::vec3(232, 3, 262);
+        break;
+      }
+      case Quest::CharacterName::Basil:
+      {
+        itemPos = glm::vec3(292, 3, 667);
+        break;
+      }
+    }
 
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
     
@@ -157,7 +177,27 @@ namespace YTE
   void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    glm::vec3 itemPos;
+
+    switch (aEvent->character)
+    {
+      case Quest::CharacterName::John:
+      {
+        itemPos = glm::vec3(293, 3, 271);
+        break;
+      }
+      case Quest::CharacterName::Daisy:
+      {
+        itemPos = glm::vec3(630, 3, 72);
+        break;
+      }
+      case Quest::CharacterName::Basil:
+      {
+        itemPos = glm::vec3(502, 3, 911);
+        break;
+      }
+    }
 
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
 
@@ -170,7 +210,27 @@ namespace YTE
   void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
   {
     YTEUnusedArgument(aEvent);
-    glm::vec3 itemPos = glm::vec3(290, 3, 450);
+
+    glm::vec3 itemPos;
+
+    switch (aEvent->character)
+    {
+      case Quest::CharacterName::John:
+      {
+        itemPos = glm::vec3(-60, 3, 436);
+        break;
+      }
+      case Quest::CharacterName::Daisy:
+      {
+        itemPos = glm::vec3(710, 3, 612);
+        break;
+      }
+      case Quest::CharacterName::Basil:
+      {
+        itemPos = glm::vec3(-10, 3, 303);
+        break;
+      }
+    }
 
     mSpace->AddCompositionAtPosition("ProgressionItem", "item", itemPos);
 
