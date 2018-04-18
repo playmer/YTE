@@ -73,4 +73,5 @@ namespace YTE
     std::vector<std::vector<Type*>> mTypes;
   };
 }
+
 #endif

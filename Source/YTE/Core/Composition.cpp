@@ -212,52 +212,6 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component.second->AssetInitialize();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component->AssetInitialize();
-      }
-    }
-
-    SendEvent(Events::AssetInitialize, aEvent);
-  }
-
-  void Composition::NativeInitialize(InitializeEvent *aEvent)
-  {
-    YTEProfileFunction();
-
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
@@ -288,7 +242,35 @@ namespace YTE
         continue;
       }
 
-      component->NativeInitialize();
+      component->AssetInitialize();
+    }
+
+    SendEvent(Events::AssetInitialize, aEvent);
+  }
+
+  void Composition::NativeInitialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
+    
+    if (mShouldIntialize == false)
+    {
+      return;
+    }
+
+    for (auto &type : mDependencyOrder)
+    {
+      auto component = GetComponent(type);
+
+      if (aEvent->CheckRunInEditor &&
+          nullptr == type->GetAttribute<RunInEditor>())
+      {
+        continue;
+      }
+
+      {
+        YTEProfileBlock(type->GetName().c_str());
+        component->NativeInitialize();
+      }
     }
 
     SendEvent(Events::NativeInitialize, aEvent);
@@ -349,7 +331,10 @@ namespace YTE
         continue;
       }
 
-      component->Initialize();
+      {
+        YTEProfileBlock(type->GetName().c_str());
+        component->Initialize();
+      }
     }
 
     SendEvent(Events::Initialize, aEvent);
@@ -386,7 +371,10 @@ namespace YTE
         continue;
       }
 
-      component->Deinitialize();
+      {
+        YTEProfileBlock(type->GetName().c_str());
+        component->Deinitialize();
+      }
     }
 
     SendEvent(Events::Deinitialize, aEvent);
@@ -406,7 +394,10 @@ namespace YTE
         continue;
       }
 
-      component->Start();
+      {
+        YTEProfileBlock(type->GetName().c_str());
+        component->Start();
+      }
     }
 
     SendEvent(Events::Start, aEvent);
@@ -488,13 +479,13 @@ namespace YTE
       }
 
       DebugObjection(nullptr == archetype,
-        "Archetype given is not an object for the object of the name: %s.\n",
-        aObjectName.c_str());
+                     "Archetype given is not an object for the object of the name: %s.\n",
+                     aObjectName.c_str());
 
       if (nullptr == archetype)
       {
         printf("No archetype provided for the object of the name %s.\n",
-          aObjectName.c_str());
+               aObjectName.c_str());
         return nullptr;
       }
 
@@ -505,7 +496,7 @@ namespace YTE
   }
 
 
-  Composition* Composition::AddComposition(RSValue *aSerialization, 
+  Composition* Composition::AddComposition(RSValue* aSerialization, 
                                            String aObjectName)
   {
     // If a Composition is just below the Space, we currently guarantee their mOwner is
