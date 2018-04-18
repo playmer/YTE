@@ -15,6 +15,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/CameraAnchor.hpp"
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/GameComponents/StarMovement.hpp"
+#include "YTE/GameComponents/ProgressionParticles.hpp"
 
 namespace YTE
 {
@@ -347,6 +348,14 @@ namespace YTE
       {
         UpdateActiveQuestState completed(mName, Quest::State::Completed);
         mSpace->SendEvent(Events::UpdateActiveQuestState, &completed);
+
+        if (mSoundEmitter)
+        {
+          mSoundEmitter->PlayEvent("UI_Quest_Completed");
+        }
+
+        ProgressionHappened progEvent;
+        mSpace->SendEvent(Events::ProgressionHappened, &progEvent);
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();

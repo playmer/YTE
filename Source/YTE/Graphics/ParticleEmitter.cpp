@@ -201,8 +201,7 @@ namespace YTE
       particle.mUBO.mModelMatrix[3][0] = particle.mPosition.x;
       particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
       particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
-
-      modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife / mLifetime);
+      modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife + 0.5f * mLifetime / mLifetime);
 
       it->second->UpdateUBOModel(particle.mUBO);
       it->second->UpdateUBOMaterial(&modelMaterial);

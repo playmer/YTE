@@ -47,6 +47,8 @@ namespace YTE
 
     void OnPostcardUpdate(PostcardUpdate *aEvent);
 
+    void OpenPostcard();
+
   private:
 
     Composition *mMap;
@@ -85,5 +87,7 @@ namespace YTE
     u64 mCompassClose;
     u64 mSailMapOpen;
     u64 mSailMapClose;
+
+    float mOpenPostcardTimer;
   };
 }

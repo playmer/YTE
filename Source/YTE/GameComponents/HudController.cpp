@@ -13,6 +13,9 @@
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
 
+#include "YTE/Core/Actions/Action.hpp"
+#include "YTE/Core/Actions/ActionManager.hpp"
+
 namespace YTE
 {
   YTEDefineEvent(PostcardUpdate);
@@ -37,6 +40,7 @@ namespace YTE
     , mCompass(nullptr)
     , mCompassSprite(nullptr)
     , mPostcardTextures{""}
+    , mOpenPostcardTimer(0.0)
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -322,5 +326,25 @@ namespace YTE
     std::string textureName = mPostcardTextures[aEvent->Number];
 
     mPostcardSprite->SetTexture(textureName);
+
+    OpenPostcard();
+  }
+
+  void HudController::OpenPostcard()
+  {
+    if (mPostcardSprite)
+    {
+      auto actionManager = mSpace->GetComponent<ActionManager>();
+
+      ActionSequence openPostcard;
+      openPostcard.Add<Linear::easeNone>(mOpenPostcardTimer, 1.0f, 1.0f);
+      openPostcard.Call([this]() {
+        mPostcardSprite->SetVisibility(true);
+        mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+      });
+      actionManager->AddSequence(mOwner, openPostcard);
+
+      mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+    }
   }
 }

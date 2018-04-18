@@ -64,6 +64,7 @@
 #include "YTE/GameComponents/BasilTutorial.hpp"
 #include "YTE/GameComponents/Quest.hpp"
 #include "YTE/GameComponents/OceanCreatureBehavior.hpp"
+#include "YTE/GameComponents/ProgressionParticles.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -174,6 +175,7 @@ namespace YTE
     InitializeType<Quest>();
     InitializeType<Conversation>();
     InitializeType<OceanCreatureBehavior>();
+    InitializeType<ProgressionParticles>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();
