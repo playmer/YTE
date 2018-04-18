@@ -15,7 +15,6 @@
 
 #include "rapidjson/document.h"
 
-
 namespace YTE
 {
   std::vector<Type*> GetDependencyOrder(Composition *aComposition);
@@ -1677,8 +1676,6 @@ namespace YTE
     for (auto &composition : aComposition->mCompositions)
     {
       auto value = RecursiveInitCheck(composition.second.get());
-
-      runtime_assert(value);
     }
 
     return aComposition->mFinishedComponentAssetInitialize &&
