@@ -28,9 +28,14 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.cpp 
-  ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.cpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchCredits.cpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.cpp 
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/InheritVisibility.cpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.cpp
   ${CMAKE_CURRENT_LIST_DIR}/StarMovement.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.cpp
@@ -79,9 +84,14 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Menu/RootMenu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchLevel.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchGame.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.hpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchCredits.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/QuitGame.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleFullscreen.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ToggleMute.hpp 
+  ${CMAKE_CURRENT_LIST_DIR}/Menu/ChangeVolume.hpp 
   ${CMAKE_CURRENT_LIST_DIR}/Menu/Button.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/ButtonAnimate.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/InheritVisibility.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SampleAction.hpp
   ${CMAKE_CURRENT_LIST_DIR}/StarMovement.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Zone.hpp

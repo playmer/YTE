@@ -1,5 +1,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
+#include "YTE/Core/Actions/Action.hpp"
+#include "YTE/Core/Actions/ActionManager.hpp"
 
 #include "YTE/GameComponents/Credits.hpp"
 
@@ -27,6 +29,9 @@ namespace YTE
     , mY{0.f}
     , mCurrentNumber{0}
     , mDone{false}
+    , mFadeFinished(false)
+    , mFadeValue(0.0f)
+    , mFirstLine(nullptr)
     , mLastLine{nullptr}
   {
     YTEUnusedArgument(aProperties);
@@ -47,6 +52,7 @@ namespace YTE
       }
     }
 
+    
     CreateLineInternal("LambPlanet", 800.f);
     mY -= initialMovement;
 
@@ -128,45 +134,101 @@ namespace YTE
     CreateHeader("In Memory Of");
     CreateLine("Thomas C. Fisher");
 
+    mY -= initialMovement;
+
+    CreateLine("All content (c) 2018 DigiPen (USA) Corporation, all rights reserved.");
+
+    mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
+    mSpace->YTERegister(Events::StartCredits, this, &Credits::OnStartCredits);
+  }
+
+  void Credits::OnStartCredits(StartCredits *)
+  {
+    mOwner->GetComponent<Transform>()->SetWorldTranslation(0.0f, 0.0f, 0.0f);
+    mDone = false;
+    mDelay = 0.5f;
+
+    mFadeFinished = false;
+    mSpace->GetParent()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Disabled);
     mSpace->YTERegister(Events::LogicUpdate, this, &Credits::Update);
+
+    auto actionManager = mSpace->GetComponent<ActionManager>();
+    ActionSequence fadeOutSeq;
+    
+    fadeOutSeq.Add<Quad::easeInOut>(mFadeValue, 1.1f, 0.5f);
+
+    fadeOutSeq.Call([this]() {
+      mFirstLine->GetComponent<SpriteText>()->SetVisibility(true);
+      mFadeFinished = true;
+    });
+
+    actionManager->AddSequence(mOwner, fadeOutSeq);
   }
 
   void Credits::Update(LogicUpdate *aUpdate)
   {
-    mDelay -= static_cast<float>(aUpdate->Dt);
-
-    if (0.f < mDelay)
+    if (mFadeFinished)
     {
-      return;
+      mDelay -= static_cast<float>(aUpdate->Dt);
+
+      if (0.f < mDelay)
+      {
+        return;
+      }
+
+      auto transform = mOwner->GetComponent<Transform>();
+      auto translation = transform->GetWorldTranslation();
+      translation.y += static_cast<float>(200.0000 * aUpdate->Dt);
+
+      transform->SetWorldTranslation(translation);
+
+      if (mLastLine)
+      {
+        float height = 1080.f;
+        auto view = mSpace->GetComponent<GraphicsView>();
+
+        if (view)
+        {
+          auto window = view->GetWindow();
+
+          if (window)
+          {
+            height = static_cast<float>(window->GetHeight());
+          }
+        }
+
+        auto spriteTransform = mLastLine->GetComponent<Transform>();
+        auto spriteTranslation = spriteTransform->GetWorldTranslation();
+
+        if (height < spriteTranslation.y)
+        {
+          mDone = true;
+
+          auto actionManager = mSpace->GetComponent<ActionManager>();
+          ActionSequence fadeInSeq;
+          mFadeFinished = false;
+
+          fadeInSeq.Add<Quad::easeInOut>(mFadeValue, -0.1f, 0.5f);
+
+          fadeInSeq.Call([this]() {
+            mSpace->GetParent()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Menu);
+            mSpace->YTEDeregister(Events::LogicUpdate, this, &Credits::Update);
+          });
+
+          actionManager->AddSequence(mOwner, fadeInSeq);
+        }
+      }
     }
 
-    auto transform = mOwner->GetComponent<Transform>();
-    auto translation = transform->GetWorldTranslation();
-    translation.y += static_cast<float>(200.0000 * aUpdate->Dt);
-
-    transform->SetWorldTranslation(translation);
-
-    if (mLastLine)
+    else
     {
-      float height = 1080.f;
       auto view = mSpace->GetComponent<GraphicsView>();
 
       if (view)
       {
-        auto window = view->GetWindow();
+        auto clearColor = view->GetClearColor();
 
-        if (window)
-        {
-          height = static_cast<float>(window->GetHeight());
-        }
-      }
-
-      auto spriteTransform = mLastLine->GetComponent<Transform>();
-      auto spriteTranslation = spriteTransform->GetWorldTranslation();
-
-      if (height < spriteTranslation.y)
-      {
-        mDone = true;
+        view->SetClearColor(glm::vec4(clearColor.x, clearColor.y, clearColor.z, mFadeValue));
       }
     }
   }
@@ -210,6 +272,11 @@ namespace YTE
     spriteText->SetAlignmentX(cAlignment);
     spriteText->SetFontSize(aFontSize);
     spriteText->SetText(text);
+
+    if (!mFirstLine)
+    {
+      mFirstLine = textComposition;
+    }
 
     mLastLine = textComposition;
   }

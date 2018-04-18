@@ -2,6 +2,9 @@
 
 namespace YTE
 {
+  YTEDefineEvent(UpdateVisibilityEvent);
+  YTEDefineType(UpdateVisibilityEvent) { YTERegisterType(UpdateVisibilityEvent); }
+
   YTEDefineType(BaseModel)
   {
     YTERegisterType(BaseModel);

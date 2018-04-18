@@ -29,6 +29,10 @@ namespace YTE
   YTEDefineEvent(MenuExit);
   YTEDefineEvent(MenuElementChange);
 
+  // Option Events
+  YTEDefineEvent(OptionsStickEvent);
+  YTEDefineEvent(OptionsConfirmEvent);
+
   // Boat Events
   YTEDefineEvent(SailStateChanged);
   YTEDefineEvent(BoatTurnEvent);
@@ -54,6 +58,8 @@ namespace YTE
   YTEDefineType(MenuConfirm) { YTERegisterType(MenuConfirm); }
   YTEDefineType(MenuExit) { YTERegisterType(MenuExit); }
   YTEDefineType(MenuElementChange) { YTERegisterType(MenuElementChange); }
+  YTEDefineType(OptionsStickEvent) { YTERegisterType(OptionsStickEvent); }
+  YTEDefineType(OptionsConfirmEvent) { YTERegisterType(OptionsConfirmEvent); }
   YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
@@ -71,6 +77,10 @@ namespace YTE
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mGamepad(nullptr)
+    , mKeyboard(nullptr)
+    , mMenuSpace(nullptr)
+    , mHudSpace(nullptr)
+    , mCreditsSpace(nullptr)
     , mDoneOnce(false)
     , mIsRightTriggerDown(false)
     , mIsLeftTriggerDown(false)
@@ -88,6 +98,7 @@ namespace YTE
 
     mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
     mHudSpace = mSpace->AddChildSpace("MSR_HUD");
+    mCreditsSpace = mSpace->AddChildSpace("MSR_Credits");
 
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 
@@ -215,15 +226,14 @@ namespace YTE
       }
     }
 
-    /*else if (mContext == InputContext::Dialogue) 
+    else if (mContext == InputContext::Options)
     {
       if (aEvent->Stick == XboxButtons::LeftStick)
       {
-        DialogueSelect selectEvent;
-        selectEvent.StickDirection = aEvent->StickDirection;
-        mOwner->SendEvent(Events::DialogueSelect, &selectEvent);
+        OptionsStickEvent stickEvent(aEvent->StickDirection);
+        mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
       }
-    }*/
+    }
   }
 
   void InputInterpreter::OnFlickEvent(XboxFlickEvent *aEvent)
@@ -402,6 +412,19 @@ namespace YTE
         break;
       }
 
+      case InputContext::Options:
+      {
+        switch (aEvent->Button)
+        {
+          case XboxButtons::A:
+          {
+            OptionsConfirmEvent confirm;
+            mMenuSpace->SendEvent(Events::OptionsConfirmEvent, &confirm);
+
+            break;
+          }
+        }
+      }
     }
   }
 
