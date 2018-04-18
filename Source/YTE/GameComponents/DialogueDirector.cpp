@@ -14,9 +14,9 @@
 #include "YTE/Physics/Transform.hpp"
 
 #include "YTE/GameComponents/CameraAnchor.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/DaisyDialogue.hpp"
 #include "YTE/GameComponents/BasilDialogue.hpp"
+#include "YTE/GameComponents/QuestLogic.hpp"
 
 namespace YTE
 {
@@ -76,6 +76,8 @@ namespace YTE
 
     mOwner->YTERegister(Events::CollisionStarted, this, &DialogueDirector::OnCollisionStart);
     mOwner->YTERegister(Events::CollisionEnded, this, &DialogueDirector::OnCollisionEnd);
+    mSpace->YTERegister(Events::TutorialUpdate, this, &DialogueDirector::OnTutorialUpdate);
+    mSpace->YTERegister(Events::PostcardUpdate, this, &DialogueDirector::OnPostcardUpdate);
   }
 
   void DialogueDirector::OnRequestDialogueStart(RequestDialogueStart *)
@@ -308,14 +310,37 @@ namespace YTE
   {
     if (!mIsRegistered)
     {
-      if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+      if (mIsTutorial)
       {
-        mIsRegistered = true;
-        mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-        mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-        mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-        mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-        mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+        if (mTutorialRegisteredCharacter == Quest::CharacterName::John)
+        {
+          if (aEvent->OtherObject->GetComponent<JohnDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Daisy)
+        {
+          if (aEvent->OtherObject->GetComponent<DaisyDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil)
+        {
+          if (aEvent->OtherObject->GetComponent<BasilDialogue>() != nullptr)
+          {
+            RegisterDirector();
+          }
+        }
+      }
+      // if we arent in tutorial we dont have to worry about multi collision
+      else
+      {
+        if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+        {
+          RegisterDirector();
+        }
       }
     }
   }
@@ -324,16 +349,70 @@ namespace YTE
   {
     if (mIsRegistered)
     {
-      if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+      if (mIsTutorial)
       {
-        mIsRegistered = false;
-        mSpace->YTEDeregister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-        mSpace->YTEDeregister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-        mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-        mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-        mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+        if (mTutorialRegisteredCharacter == Quest::CharacterName::John)
+        {
+          if (aEvent->OtherObject->GetComponent<JohnDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Daisy)
+        {
+          if (aEvent->OtherObject->GetComponent<DaisyDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+        else if (mTutorialRegisteredCharacter == Quest::CharacterName::Basil)
+        {
+          if (aEvent->OtherObject->GetComponent<BasilDialogue>() != nullptr)
+          {
+            DeregisterDirector();
+          }
+        }
+      }
+      // if we arent in the tutorial we dont need to worry brub
+      else
+      {
+        if (aEvent->OtherObject->GetComponent<JohnDialogue>() || aEvent->OtherObject->GetComponent<DaisyDialogue>() || aEvent->OtherObject->GetComponent<BasilDialogue>())
+        {
+          DeregisterDirector();
+        }
       }
     }
+  }
+
+  void DialogueDirector::OnTutorialUpdate(TutorialUpdate *aEvent)
+  {
+    mTutorialRegisteredCharacter = aEvent->mCharacter;
+  }
+
+  // lol check em
+  void DialogueDirector::OnPostcardUpdate(PostcardUpdate *aEvent)
+  {
+    mIsTutorial = false;
+  }
+
+  void DialogueDirector::RegisterDirector()
+  {
+    mIsRegistered = true;
+    mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+    mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
+    mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
+    mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
+    mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+  }
+
+  void DialogueDirector::DeregisterDirector()
+  {
+    mIsRegistered = false;
+    mSpace->YTEDeregister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
+    mSpace->YTEDeregister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
+    mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
+    mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
+    mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
   }
 
 }
