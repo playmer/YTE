@@ -208,6 +208,14 @@ namespace YTE
                                                    aLayerCount);
 
       mBaseTexturesMutex.lock();
+
+      auto it = mBaseTextures.find(aName);
+
+      if (it != mBaseTextures.end())
+      {
+        mBaseTextures.erase(it);
+      }
+
       auto ret = mBaseTextures.emplace(aName, std::move(baseTexture));
       auto baseTexturePtr = ret.first->second.get();
       mBaseTexturesMutex.unlock();
