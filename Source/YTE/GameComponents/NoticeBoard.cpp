@@ -58,6 +58,10 @@ namespace YTE
     {
       mSpace->YTERegister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
       aEvent->OtherObject->GetComponent<QuestLogic>()->HookupPostcardHandle(&mAssignedPostcard);
+
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = true;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
     }
   }
 
@@ -66,6 +70,10 @@ namespace YTE
     if (aEvent->OtherObject->GetComponent<QuestLogic>() != nullptr)
     {
       mSpace->YTEDeregister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
+
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
     }
   }
 

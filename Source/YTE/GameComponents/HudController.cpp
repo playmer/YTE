@@ -9,6 +9,7 @@
 
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/HudController.hpp"
+#include "YTE/GameComponents/Menu/LaunchGame.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
@@ -26,6 +27,14 @@ namespace YTE
     YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
   }
 
+  YTEDefineEvent(DialoguePossible);
+
+  YTEDefineType(DialoguePossible)
+  {
+    YTERegisterType(DialoguePossible);
+    YTEBindField(&DialoguePossible::isPossible, "isPossible", PropertyBinding::GetSet);
+  }
+
   YTEDefineType(HudController)
   {
     YTERegisterType(HudController);
@@ -39,8 +48,16 @@ namespace YTE
     , mPostcardSprite(nullptr)
     , mCompass(nullptr)
     , mCompassSprite(nullptr)
-    , mPostcardTextures{""}
+    , mPostcardTextures{ "" }
     , mOpenPostcardTimer(0.0)
+    , mRightTrigger(nullptr)
+    , mRightTriggerSprite(nullptr)
+    , mLeftTrigger(nullptr)
+    , mLeftTriggerSprite(nullptr)
+    , mAButton(nullptr)
+    , mAButtonSprite(nullptr)
+    , mRightTriggerTutorialOver(false)
+    , mLeftTriggerTutorialOver(false)
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -59,45 +76,35 @@ namespace YTE
   void HudController::Initialize()
   {
     // get map object and its sprite
-    mMap = mSpace->FindFirstCompositionByName("Map");
-
-    if (mMap)
+    if (mMap = mSpace->FindFirstCompositionByName("Map"); mMap)
     {
       mMapSprite = mMap->GetComponent<Sprite>();
       mMapSprite->SetVisibility(false);
     }
 
     // get postcard object and its sprite
-    mPostcard = mSpace->FindFirstCompositionByName("Postcard");
-
-    if (mPostcard)
+    if (mPostcard = mSpace->FindFirstCompositionByName("Postcard"); mPostcard)
     {
       mPostcardSprite = mPostcard->GetComponent<Sprite>();
       mPostcardSprite->SetVisibility(false);
     }
 
     // get compass object and its sprite
-    mCompass = mSpace->FindFirstCompositionByName("Compass");
-
-    if (mCompass)
+    if (mCompass = mSpace->FindFirstCompositionByName("Compass");  mCompass)
     {
       mCompassSprite = mCompass->GetComponent<Sprite>();
       mCompassSprite->SetVisibility(false);
     }
 
     // get compass object and its sprite
-    mCompassCircle = mSpace->FindFirstCompositionByName("CompassCircle");
-
-    if (mCompassCircle)
+    if (mCompassCircle = mSpace->FindFirstCompositionByName("CompassCircle"); mCompassCircle)
     {
       mCompassCircleSprite = mCompassCircle->GetComponent<Sprite>();
       mCompassCircleSprite->SetVisibility(false);
     }
 
     // get compass needle and its sprite
-    mCompassNeedle = mSpace->FindFirstCompositionByName("CompassNeedle");
-
-    if (mCompassNeedle)
+    if (mCompassNeedle = mSpace->FindFirstCompositionByName("CompassNeedle"); mCompassNeedle)
     {
       mCompassNeedleSprite = mCompassNeedle->GetComponent<Sprite>();
       mCompassNeedleSprite->SetVisibility(false);
@@ -140,6 +147,25 @@ namespace YTE
       }
     }
 
+    // control prompts
+    if (mRightTrigger = mSpace->FindFirstCompositionByName("RightTrigger"); mRightTrigger)
+    {
+      mRightTriggerSprite = mRightTrigger->GetComponent<Sprite>();
+      mRightTriggerSprite->SetVisibility(false);
+    }
+
+    if (mLeftTrigger = mSpace->FindFirstCompositionByName("LeftTrigger"); mLeftTrigger)
+    {
+      mLeftTriggerSprite = mLeftTrigger->GetComponent<Sprite>();
+      mLeftTriggerSprite->SetVisibility(false);
+    }
+
+    if (mAButton = mSpace->FindFirstCompositionByName("AButton"); mAButton)
+    {
+      mAButtonSprite = mAButton->GetComponent<Sprite>();
+      mAButtonSprite->SetVisibility(false);
+    }
+
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     if (soundSystem)
@@ -159,6 +185,9 @@ namespace YTE
 
     mSpace->GetOwner()->YTERegister(Events::BoatRotation, this, &HudController::OnBoatRotation);
     mSpace->GetOwner()->YTERegister(Events::PostcardUpdate, this, &HudController::OnPostcardUpdate);
+    mSpace->GetOwner()->YTERegister(Events::StartGame, this, &HudController::OnStartGame);
+    mSpace->GetOwner()->YTERegister(Events::SailStateChanged, this, &HudController::OnSailChanged);
+    mSpace->GetOwner()->YTERegister(Events::DialoguePossible, this, &HudController::OnDialoguePossible);
 
     // force the game to load all textures so there's no hiccup when we switch in future
     for (int i = 9; i >= 0; i--)
@@ -262,39 +291,92 @@ namespace YTE
   void HudController::OnMenuStart(MenuStart *aEvent)
   {
     YTEUnusedArgument(aEvent);
-
-    mMapSprite->SetVisibility(false);
-    mPostcardSprite->SetVisibility(false);
-    mCompassSprite->SetVisibility(false);
-    mCompassCircleSprite->SetVisibility(false);
-    mCompassNeedleSprite->SetVisibility(false);
-    mMapSprite->SetVisibility(false);
-
-    if (mDPadSprite)
-    {
-      mDPadSprite->SetVisibility(false);
-    }
-
-    if (mMapIconSprite)
-    {
-      mMapIconSprite->SetVisibility(false);
-    }
-
-    if (mPostcardIconSprite)
-    {
-      mPostcardIconSprite->SetVisibility(false);
-    }
-
-    if (mCompassIconSprite)
-    {
-      mCompassIconSprite->SetVisibility(false);
-    }
+    HideHud();
   }
 
   void HudController::OnMenuExit(MenuExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
+    ShowHud();
+  }
 
+  void HudController::OnPostcardUpdate(PostcardUpdate *aEvent)
+  {
+    if (aEvent->Number > 9)
+    {
+      return;
+    }
+
+    std::string textureName = mPostcardTextures[aEvent->Number];
+
+    mPostcardSprite->SetTexture(textureName);
+
+    OpenPostcard();
+  }
+
+  void HudController::OnStartGame(StartGame *aEvent)
+  {
+    ShowHud();
+    
+    // show right trigger to prompt user to move
+    if (mRightTriggerSprite)
+    {
+      mRightTriggerSprite->SetVisibility(true);
+    }
+  }
+
+  void HudController::OnSailChanged(SailStateChanged *aEvent)
+  {
+    if (aEvent->SailUp && !mRightTriggerTutorialOver)
+    {
+      mRightTriggerTutorialOver = true;
+      mRightTriggerSprite->SetVisibility(false);
+      mLeftTriggerSprite->SetVisibility(true);
+    }
+    else if (!aEvent->SailUp && !mLeftTriggerTutorialOver)
+    {
+      mLeftTriggerSprite->SetVisibility(false);
+      mLeftTriggerTutorialOver = true;
+    }
+  }
+
+  void HudController::OnDialoguePossible(DialoguePossible *aEvent)
+  {
+    if (mAButtonSprite)
+    {
+      if (aEvent->isPossible)
+      {
+        mAButtonSprite->SetVisibility(true);
+      }
+      else
+      {
+        mAButtonSprite->SetVisibility(false);
+      }
+    }
+  }
+
+  void HudController::OpenPostcard()
+  {
+    if (mPostcardSprite)
+    {
+      auto actionManager = mSpace->GetComponent<ActionManager>();
+
+      ActionSequence openPostcard;
+      openPostcard.Add<Linear::easeNone>(mOpenPostcardTimer, 1.0f, 1.0f);
+      openPostcard.Call([this]() {
+        mPostcardSprite->SetVisibility(true);
+        mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+        
+        SailStateChanged setSailUp(false);
+        mSpace->GetOwner()->SendEvent(Events::SailStateChanged, &setSailUp);
+      });
+      actionManager->AddSequence(mOwner, openPostcard);
+
+      mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+    }
+  }
+  void HudController::ShowHud()
+  {
     if (mDPadSprite)
     {
       mDPadSprite->SetVisibility(true);
@@ -316,35 +398,36 @@ namespace YTE
     }
   }
 
-  void HudController::OnPostcardUpdate(PostcardUpdate *aEvent)
+  void HudController::HideHud()
   {
-    if (aEvent->Number > 9)
+    mMapSprite->SetVisibility(false);
+    mPostcardSprite->SetVisibility(false);
+    mCompassSprite->SetVisibility(false);
+    mCompassCircleSprite->SetVisibility(false);
+    mCompassNeedleSprite->SetVisibility(false);
+    mMapSprite->SetVisibility(false);
+    mLeftTriggerSprite->SetVisibility(false);
+    mRightTriggerSprite->SetVisibility(false);
+    mAButtonSprite->SetVisibility(false);
+
+    if (mDPadSprite)
     {
-      return;
+      mDPadSprite->SetVisibility(false);
     }
 
-    std::string textureName = mPostcardTextures[aEvent->Number];
-
-    mPostcardSprite->SetTexture(textureName);
-
-    OpenPostcard();
-  }
-
-  void HudController::OpenPostcard()
-  {
-    if (mPostcardSprite)
+    if (mMapIconSprite)
     {
-      auto actionManager = mSpace->GetComponent<ActionManager>();
+      mMapIconSprite->SetVisibility(false);
+    }
 
-      ActionSequence openPostcard;
-      openPostcard.Add<Linear::easeNone>(mOpenPostcardTimer, 1.0f, 1.0f);
-      openPostcard.Call([this]() {
-        mPostcardSprite->SetVisibility(true);
-        mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
-      });
-      actionManager->AddSequence(mOwner, openPostcard);
+    if (mPostcardIconSprite)
+    {
+      mPostcardIconSprite->SetVisibility(false);
+    }
 
-      mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+    if (mCompassIconSprite)
+    {
+      mCompassIconSprite->SetVisibility(false);
     }
   }
 }

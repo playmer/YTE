@@ -70,10 +70,8 @@ namespace YTE
 
     mSpace->YTERegister(Events::ProgressionHappened, this, &ProgressionParticles::OnProgressionHappened);
 
-    mPoofCount = 0;
-    mPoofEmitRate = 1000.0f;
-    mProgressionEmitter->SetEmitCount(mPoofCount);
-    mProgressionEmitter->SetEmitRate(mPoofEmitRate);
+    mProgressionEmitter->SetEmitCount(0);
+    mProgressionEmitter->SetEmitRate(1000.0f);
   }
 
   void ProgressionParticles::Update(LogicUpdate *aEvent)
