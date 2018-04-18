@@ -71,6 +71,8 @@ namespace YTE
     int mSoundOptionChosen = 0;
     int mSoundCueCounter = 0;
 
+    bool mIsRegistered = false;
+
     Animator *mAnimator;
     Composition *mCameraAnchor;
     Transform *mLambAnchor;

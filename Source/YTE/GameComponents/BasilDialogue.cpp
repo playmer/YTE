@@ -205,6 +205,7 @@ namespace YTE
 
   void BasilDialogue::RegisterDialogue()
   {
+    mIsRegistered = true;
     mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
@@ -214,6 +215,7 @@ namespace YTE
 
   void BasilDialogue::DeregisterDialogue()
   {
+    mIsRegistered = false;
     mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
@@ -225,10 +227,6 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      DialoguePossible diagEvent;
-      diagEvent.isPossible = true;
-      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
-
       // want all the music playing if the overlap
       if (mSoundEmitter)
       {
@@ -243,6 +241,19 @@ namespace YTE
         }
 
         RegisterDialogue();
+
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = true;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+      }
+      else
+      {
+        if (mIsRegistered)
+        {
+          DialoguePossible diagEvent;
+          diagEvent.isPossible = true;
+          mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+        }
       }
     }
   }
@@ -284,16 +295,16 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       next.DialogueCameraAnchor = mCameraAnchor;
       next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
-
-    DialoguePossible diagEvent;
-    diagEvent.isPossible = false;
-    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
   }
 
   void BasilDialogue::OnDialogueExit(DialogueExit *aEvent)
@@ -328,10 +339,16 @@ namespace YTE
         {
           star->GetComponent<StarMovement>()->SetAnchor(StarMovement::CurrentAnchor::NoticeBoard);
         }
+
         mActiveQuest->SetState(Quest::State::Completed);
         DeregisterDialogue();
+
         auto director = mSpace->FindFirstCompositionByName("Boat")->GetComponent<DialogueDirector>();
         director->DeregisterDirector();
+
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = false;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)
@@ -402,6 +419,10 @@ namespace YTE
 
   void BasilDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
   {
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = false;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
     mActiveNode->ActivateNode();
     mActiveNode = mActiveNode->GetChild(aEvent->Selection);
     if (mActiveNode != nullptr)

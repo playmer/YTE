@@ -59,9 +59,14 @@ namespace YTE
       mSpace->YTERegister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
       aEvent->OtherObject->GetComponent<QuestLogic>()->HookupPostcardHandle(&mAssignedPostcard);
 
-      DialoguePossible diagEvent;
-      diagEvent.isPossible = true;
-      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+      Quest::CharacterName character = mAssignedPostcard->GetCharacter();
+      Quest *quest = *(mActiveQuestMap.at(character));
+      if (quest->GetState() == Quest::State::Completed)
+      {
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = true;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+      }
     }
   }
 
@@ -193,6 +198,10 @@ namespace YTE
           {
             emitter->PlayEvent("UI_Quest_Offered");
           }
+
+          DialoguePossible diagEvent;
+          diagEvent.isPossible = false;
+          mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
         }
       }
     }

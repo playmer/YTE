@@ -73,10 +73,12 @@ namespace YTE
     int mSoundCueCounter = 0;
     int mSoundOptionChosen = 0;
 
+    bool mIsRegistered = false; // set by tutorialcomponent
 
     Animator *mAnimator;
     Composition *mCameraAnchor;
     Transform *mLambAnchor;
+
   };
 } //end yte
 #endif

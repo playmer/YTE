@@ -53,7 +53,7 @@ namespace YTE
         john->RegisterDialogue();
 
         DialoguePossible diagEvent;
-        diagEvent.isPossible = true;
+        diagEvent.isPossible = false;
         mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
 
         /*

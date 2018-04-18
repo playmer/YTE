@@ -239,10 +239,6 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      DialoguePossible diagEvent;
-      diagEvent.isPossible = true;
-      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
-
       if (mSoundEmitter)
       {
         mSoundEmitter->PlayEvent("UI_Dia_Start");
@@ -255,12 +251,21 @@ namespace YTE
         if (mActiveQuest->GetState() != Quest::State::Completed)
         {
           RegisterDialogue();
+
+          DialoguePossible diagEvent;
+          diagEvent.isPossible = true;
+          mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
         }
       }
       // we do want to register if it isnt the intro
       else
       {
         RegisterDialogue();
+
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = true;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       }
     }
   }
@@ -269,24 +274,11 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
+      DeregisterDialogue();
+
       DialoguePossible diagEvent;
       diagEvent.isPossible = false;
       mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
-
-      //if (mActiveQuest->GetName() == Quest::Name::Introduction && mActiveQuest->GetState() != Quest::State::Completed)
-      //{
-        //BoatDockEvent dockEvent;
-        //mSpace->SendEvent(Events::BoatDockEvent, &dockEvent);
-
-        //DialogueStart part2;
-        //mSpace->SendEvent(Events::DialogueStart, &part2);
-        
-
-      //}
-     // else
-     // {
-        DeregisterDialogue();
-     // }
     }
   }
 
@@ -316,16 +308,16 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       next.DialogueCameraAnchor = mCameraAnchor;
       next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
-
-    DialoguePossible diagEvent;
-    diagEvent.isPossible = false;
-    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
   }
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
@@ -350,7 +342,6 @@ namespace YTE
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
 
-        // OPTION 1
         RequestDialogueStart autostart;
         mSpace->SendEvent(Events::RequestDialogueStart, &autostart);
       }
@@ -434,6 +425,10 @@ namespace YTE
 
   void JohnDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
   {
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = false;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
     mActiveNode->ActivateNode();
     mActiveNode = mActiveNode->GetChild(aEvent->Selection);
     if (mActiveNode != nullptr)
