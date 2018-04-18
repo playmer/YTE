@@ -270,7 +270,10 @@ namespace YTE
           continue;
         }
 
-        component.second->NativeInitialize();
+        {
+          YTEProfileBlock(component.first->GetName().c_str());
+          component.second->NativeInitialize();
+        }
       }
     }
     else
@@ -285,7 +288,10 @@ namespace YTE
           continue;
         }
 
-        component->NativeInitialize();
+        {
+          YTEProfileBlock(type->GetName().c_str());
+          component->NativeInitialize();
+        }
       }
     }
 
@@ -386,7 +392,10 @@ namespace YTE
           continue;
         }
 
-        component.second->Initialize();
+        {
+          YTEProfileBlock(component.first->GetName().c_str());
+          component.second->Initialize();
+        }
       }
     }
     else
@@ -401,7 +410,10 @@ namespace YTE
           continue;
         }
 
-        component->Initialize();
+        {
+          YTEProfileBlock(type->GetName().c_str());
+          component->Initialize();
+        }
       }
     }
 
