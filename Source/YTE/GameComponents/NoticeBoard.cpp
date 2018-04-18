@@ -12,6 +12,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Actions/Action.hpp"
 #include "YTE/Core/Actions/ActionManager.hpp"
 
+#include "YTE/Graphics/Animation.hpp"
+#include "YTE/Graphics/Model.hpp"
+
 #include "YTE/GameComponents/NoticeBoard.hpp"
 #include "YTE/GameComponents/QuestLogic.hpp" /* to identify collision with boat */
 
@@ -72,6 +75,13 @@ namespace YTE
     {
       mCameraTransform = camera->GetComponent<Transform>();
     }
+
+    mEndJohn = mSpace->FindFirstCompositionByName("EndingJohn");
+    mEndDaisy = mSpace->FindFirstCompositionByName("EndingDaisy");
+    mEndBasil = mSpace->FindFirstCompositionByName("EndingBasil");
+    mEndLamb = mSpace->FindFirstCompositionByName("EndingLamb");
+    mEndChefBoat = mSpace->FindFirstCompositionByName("EndingChefBoat");
+    mEndDaisyBoat = mSpace->FindFirstCompositionByName("EndingGardenerBoat");
   }
 
   void NoticeBoard::Update(LogicUpdate *aEvent)
@@ -206,6 +216,27 @@ namespace YTE
     anchor2.Add<Linear::easeNone>(mCurrentCamRot.y, mTargetCamRot.y, 5.0f);
     anchor2.Add<Linear::easeNone>(mCurrentCamRot.z, mTargetCamRot.z, 5.0f);
 
+    anchor2.Call([this]() {
+
+      mEndJohn->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
+      mEndDaisy->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
+      mEndBasil->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
+      mEndLamb->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
+
+      mEndJohn->GetComponent<Animator>()->SetCurrentAnimation("Idle.fbx");
+      mEndDaisy->GetComponent<Animator>()->SetCurrentAnimation("Idle.fbx");
+      mEndBasil->GetComponent<Animator>()->SetCurrentAnimation("Idle.fbx");
+      mEndLamb->GetComponent<Animator>()->SetCurrentAnimation("Idle.fbx");
+
+      mEndJohn->GetComponent<Model>()->SetVisibility(true);
+      mEndDaisy->GetComponent<Model>()->SetVisibility(true);
+      mEndBasil->GetComponent<Model>()->SetVisibility(true);
+      mEndLamb->GetComponent<Model>()->SetVisibility(true);
+      
+      mEndChefBoat->GetComponent<Model>()->SetVisibility(true);
+      mEndDaisyBoat->GetComponent<Model>()->SetVisibility(true);
+    });
+
 
     mTargetCamPos = camAnch3_transform->GetWorldTranslation();
     mTargetCamRot = camAnch3_transform->GetWorldRotationAsEuler();
@@ -295,9 +326,39 @@ namespace YTE
     anchor10.Add<Linear::easeNone>(mCurrentCamRot.x, mTargetCamRot.x, 3.0f);
     anchor10.Add<Linear::easeNone>(mCurrentCamRot.y, mTargetCamRot.y, 3.0f);
     anchor10.Add<Linear::easeNone>(mCurrentCamRot.z, mTargetCamRot.z, 3.0f);
+
     
     ActionGroup fakeFinalAction;
     fakeFinalAction.Add<Linear::easeNone>(mFakeLerp, 10.0f, 10.0f);
+    fakeFinalAction.Call([this]() {
+      mEndJohn->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
+      mEndDaisy->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
+      mEndBasil->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
+      mEndLamb->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
+      
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+    });
+
+    ActionGroup fakeFinalAction2;
+    fakeFinalAction2.Add<Linear::easeNone>(mFakeLerp, 20.0f, 10.0f);
 
     ActionGroup finalAction;
     finalAction.Add<Linear::easeNone>(mFakeLerp, 50.0f, 10.0f);
@@ -324,6 +385,7 @@ namespace YTE
     actionSequence.AddGroup(anchor9);
     actionSequence.AddGroup(anchor10);
     actionSequence.AddGroup(fakeFinalAction);
+    actionSequence.AddGroup(fakeFinalAction2);
     actionSequence.AddGroup(finalAction);
 
     actionManager->AddSequence(mOwner, actionSequence);

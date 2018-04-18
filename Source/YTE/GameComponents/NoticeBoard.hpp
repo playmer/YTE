@@ -82,6 +82,15 @@ namespace YTE
     glm::vec3 mCameraInitRot;
 
     float mFakeLerp;
+
+    Composition *mEndJohn;
+    Composition *mEndDaisy;
+    Composition *mEndBasil;
+    Composition *mEndLamb;
+
+    Composition *mEndChefBoat;
+    Composition *mEndDaisyBoat;
+
   };
 }//end yte
 #endif
