@@ -192,6 +192,7 @@ namespace YTE
 
   void DaisyDialogue::RegisterDialogue()
   {
+    mIsRegistered = true;
     mSpace->YTERegister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
     mSpace->YTERegister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTERegister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
@@ -201,6 +202,7 @@ namespace YTE
 
   void DaisyDialogue::DeregisterDialogue()
   {
+    mIsRegistered = false;
     mSpace->YTEDeregister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
     mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
     mSpace->YTEDeregister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
@@ -212,10 +214,6 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      DialoguePossible diagEvent;
-      diagEvent.isPossible = true;
-      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
-
       // want all the music playing if the overlap
       if (mSoundEmitter)
       {
@@ -230,6 +228,19 @@ namespace YTE
         }
 
         RegisterDialogue();
+
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = true;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+      }
+      else
+      {
+        if (mIsRegistered)
+        {
+          DialoguePossible diagEvent;
+          diagEvent.isPossible = true;
+          mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+        }
       }
     }
   }
@@ -271,16 +282,16 @@ namespace YTE
       // For input and text we rely on the director responding
     else if (type == DialogueNode::NodeType::Input || type == DialogueNode::NodeType::Text)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       DialogueNodeReady next(mActiveNode->GetNodeData());
       next.DialogueType = type;
       next.DialogueCameraAnchor = mCameraAnchor;
       next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
-
-    DialoguePossible diagEvent;
-    diagEvent.isPossible = false;
-    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
   }
 
   void DaisyDialogue::OnDialogueExit(DialogueExit *aEvent)
@@ -303,6 +314,7 @@ namespace YTE
 
         ++mConvosIter;
         mLinesIter = mConvosIter->begin();
+
         // start our next dialogue
         RequestDialogueStart autostart;
         mSpace->SendEvent(Events::RequestDialogueStart, &autostart);
@@ -387,6 +399,10 @@ namespace YTE
 
   void DaisyDialogue::OnDialogueContinue(DialogueNodeConfirm *aEvent)
   {
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = false;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
     mActiveNode->ActivateNode();
     mActiveNode = mActiveNode->GetChild(aEvent->Selection);
     if (mActiveNode != nullptr)
