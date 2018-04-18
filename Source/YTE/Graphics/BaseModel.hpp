@@ -10,6 +10,18 @@
 
 namespace YTE
 {
+  YTEDeclareEvent(UpdateVisibilityEvent);
+
+  class UpdateVisibilityEvent : public Event
+  {
+  public:
+    YTEDeclareType(UpdateVisibilityEvent);
+
+    UpdateVisibilityEvent(bool aVisibility) { Visibility = aVisibility; }
+
+    bool Visibility;
+  };
+
   class BaseModel : public Component
   {
   public:

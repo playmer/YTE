@@ -35,8 +35,12 @@
 #include "YTE/GameComponents/Menu/LaunchLevel.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
 #include "YTE/GameComponents/Menu/QuitGame.hpp"
+#include "YTE/GameComponents/Menu/ToggleFullscreen.hpp"
+#include "YTE/GameComponents/Menu/ToggleMute.hpp"
+#include "YTE/GameComponents/Menu/ChangeVolume.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
+#include "YTE/GameComponents/InheritVisibility.hpp"
 #include "YTE/GameComponents/Credits.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
@@ -134,9 +138,13 @@ namespace YTE
     helper.CreateComponentFactory<LaunchLevel>();
     helper.CreateComponentFactory<LaunchGame>();
     helper.CreateComponentFactory<QuitGame>();
+    helper.CreateComponentFactory<ToggleFullscreen>();
+    helper.CreateComponentFactory<ToggleMute>();
+    helper.CreateComponentFactory<ChangeVolume>();
     helper.CreateComponentFactory<Button>();
     helper.CreateComponentFactory<ButtonAnimate>();
 
+    helper.CreateComponentFactory<InheritVisibility>();
     helper.CreateComponentFactory<SampleAction>();
     helper.CreateComponentFactory<demo_InsideZone>();
     helper.CreateComponentFactory<Dialogue>();

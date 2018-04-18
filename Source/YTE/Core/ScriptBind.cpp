@@ -41,8 +41,12 @@
 #include "YTE/GameComponents/Menu/LaunchLevel.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
 #include "YTE/GameComponents/Menu/QuitGame.hpp"
+#include "YTE/GameComponents/Menu/ToggleFullscreen.hpp"
+#include "YTE/GameComponents/Menu/ToggleMute.hpp"
+#include "YTE/GameComponents/Menu/ChangeVolume.hpp"
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
+#include "YTE/GameComponents/InheritVisibility.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -151,8 +155,12 @@ namespace YTE
     InitializeType<LaunchLevel>();
     InitializeType<LaunchGame>();
     InitializeType<QuitGame>();
+    InitializeType<ToggleFullscreen>();
+    InitializeType<ToggleMute>();
+    InitializeType<ChangeVolume>();
     InitializeType<Button>();
     InitializeType<ButtonAnimate>();
+    InitializeType<InheritVisibility>();
     InitializeType<SampleAction>();
     InitializeType<demo_InsideZone>();
     InitializeType<Zone>();

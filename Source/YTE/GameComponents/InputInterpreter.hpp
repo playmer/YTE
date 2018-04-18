@@ -48,6 +48,8 @@ namespace YTE
   YTEDeclareEvent(MenuConfirm);
   YTEDeclareEvent(MenuExit);
   YTEDeclareEvent(MenuElementChange);
+  YTEDeclareEvent(OptionsStickEvent);
+  YTEDeclareEvent(OptionsConfirmEvent);
   YTEDeclareEvent(DebugSwitch);
   YTEDeclareEvent(RequestNoticeBoardStart);
   YTEDeclareEvent(HudElementToggled);
@@ -165,6 +167,21 @@ namespace YTE
     Direction ChangeDirection;
   };
 
+  class OptionsStickEvent : public Event
+  {
+  public:
+    YTEDeclareType(OptionsStickEvent);
+    OptionsStickEvent(const glm::vec2& aStickDirection) { StickDirection = aStickDirection; }
+
+    glm::vec2 StickDirection;
+  };
+
+  class OptionsConfirmEvent : public Event
+  {
+  public:
+    YTEDeclareType(OptionsConfirmEvent);
+  };
+
   class DebugSwitch : public Event
   {
   public:
@@ -199,7 +216,7 @@ namespace YTE
   class InputInterpreter : public Component
   {
   public:
-    enum class InputContext { Sailing, Dialogue, UI, Menu, Debug, num_contexts };
+    enum class InputContext { Sailing, Dialogue, UI, Menu, Options, Debug, num_contexts };
 
     YTEDeclareType(InputInterpreter);
     InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties);

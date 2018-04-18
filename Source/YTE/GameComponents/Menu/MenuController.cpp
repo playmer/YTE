@@ -10,6 +10,8 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
+#include "YTE/Graphics/SpriteText.hpp"
+
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/GameComponents/Menu/MenuController.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
@@ -267,12 +269,17 @@ namespace YTE
 
     for (auto &child : children)
     {
-      Sprite* childSprite = child.second->GetComponent<Sprite>();
-
-      if (childSprite != nullptr)
+      UpdateVisibilityEvent visibility(mIsDisplayed);
+      child.second->SendEvent(Events::UpdateVisibilityEvent, &visibility);
+      /*if (Sprite* childSprite = child.second->GetComponent<Sprite>())
       {
         childSprite->SetVisibility(mIsDisplayed);
       }
+      
+      else if (SpriteText* childText = child.second->GetComponent<SpriteText>())
+      {
+        childText->SetVisibility(mIsDisplayed);
+      }*/
     }
   }
 }
