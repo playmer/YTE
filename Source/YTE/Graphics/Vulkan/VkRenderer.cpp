@@ -339,9 +339,16 @@ namespace YTE
       // create mesh
       auto mesh = std::make_unique<VkMesh>(baseMeshPtr, this);
 
-      meshPtr = mesh.get();
+      auto it2 = mMeshes.find(aName);
 
-      mMeshes[aName] = std::move(mesh);
+      if (it2 != mMeshes.end())
+      {
+        mMeshes.erase(it2);
+      }
+
+      auto ret2 = mMeshes.emplace(aName, std::move(mesh));
+      meshPtr = ret2.first->second.get();
+
       mDataUpdateRequired = true;
     }
     else
