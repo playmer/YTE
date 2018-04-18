@@ -368,17 +368,17 @@ namespace YTE
         mLinesIter = mConvosIter->begin();
         if (mActiveQuest->GetName() == Quest::Name::Fetch)
         {
-          SpawnProgressionItem spawnItem;
+          SpawnProgressionItem spawnItem(mName);
           mSpace->SendEvent(Events::SpawnProgressionItem, &spawnItem);
         }
         else if (mActiveQuest->GetName() == Quest::Name::Explore)
         {
-          SpawnProgressionLocation spawnLocation;
+          SpawnProgressionLocation spawnLocation(mName);
           mSpace->SendEvent(Events::SpawnProgressionLocation, &spawnLocation);
         }
         else if (mActiveQuest->GetName() == Quest::Name::Dialogue)
         {
-          SpawnProgressionDialogue spawnTalk;
+          SpawnProgressionDialogue spawnTalk(mName);
           mSpace->SendEvent(Events::SpawnProgressionDialogue, &spawnTalk);
         }
       }
