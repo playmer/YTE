@@ -16,6 +16,8 @@
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/GameComponents/BoatController.hpp" /* Colliders, */
 #include "YTE/GameComponents/DialogueGraph.hpp"
+#include "YTE/GameComponents/JohnDialogue.hpp"
+#include "YTE/GameComponents/HudController.hpp" /* piggybacking off postcard update to know when tutorial ends */
 
 #include "YTE/Graphics/Camera.hpp"
 
@@ -110,8 +112,13 @@ namespace YTE
     void OnDialogueExit(DialogueExit *);
     void OnCollisionStart(CollisionStarted *aEvent);
     void OnCollisionEnd(CollisionEnded *aEvent);
+    void OnTutorialUpdate(TutorialUpdate *aEvent);
+    void OnPostcardUpdate(PostcardUpdate *aEvent);
 
   private:
+    void RegisterDirector();
+    void DeregisterDirector();
+
     Space *mDialogueSpace;
     Composition *mCameraAnchor;
 
@@ -126,5 +133,7 @@ namespace YTE
     int mMaxSelectionIndex;
 
     bool mIsRegistered = false;
+    bool mIsTutorial = true;
+    Quest::CharacterName mTutorialRegisteredCharacter = Quest::CharacterName::John;
   };
 }
