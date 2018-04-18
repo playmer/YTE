@@ -17,6 +17,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/GameComponents/StarMovement.hpp"
 #include "YTE/GameComponents/ProgressionParticles.hpp"
+#include "YTE/GameComponents/HudController.hpp"
 
 namespace YTE
 {
@@ -238,6 +239,10 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = true;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       if (mSoundEmitter)
       {
         mSoundEmitter->PlayEvent("UI_Dia_Start");
@@ -264,6 +269,10 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       //if (mActiveQuest->GetName() == Quest::Name::Introduction && mActiveQuest->GetState() != Quest::State::Completed)
       //{
         //BoatDockEvent dockEvent;
@@ -313,12 +322,20 @@ namespace YTE
       next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
+
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = false;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
   }
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mSoundBranchAccumulator = 0; // reset the conversation skip number
+
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = true;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
 
     if (mActiveQuest->GetName() == Quest::Name::Introduction)
     {

@@ -14,6 +14,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/BasilDialogue.hpp"
 #include "YTE/GameComponents/DaisyDialogue.hpp"
 #include "YTE/GameComponents/StarMovement.hpp"
+#include "YTE/GameComponents/HudController.hpp"
 
 namespace YTE
 {
@@ -50,6 +51,10 @@ namespace YTE
         basil->GetComponent<BasilDialogue>()->DeregisterDialogue();
         daisy->GetComponent<DaisyDialogue>()->DeregisterDialogue();
         john->RegisterDialogue();
+
+        DialoguePossible diagEvent;
+        diagEvent.isPossible = true;
+        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
 
         /*
         basil->GetComponent<BasilDialogue>()->DeregisterDialogue();

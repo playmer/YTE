@@ -212,6 +212,10 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = true;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+
       // want all the music playing if the overlap
       if (mSoundEmitter)
       {
@@ -232,12 +236,16 @@ namespace YTE
 
   void DaisyDialogue::OnCollisionEnded(CollisionEnded *aEvent)
   {
-    if (mActiveQuest->GetName() != Quest::Name::Introduction)
+    if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
     {
-      if (aEvent->OtherObject->GetComponent<BoatController>() != nullptr)
+      if (mActiveQuest->GetName() != Quest::Name::Introduction)
       {
         DeregisterDialogue();
       }
+
+      DialoguePossible diagEvent;
+      diagEvent.isPossible = false;
+      mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
     }
   }
 
@@ -269,11 +277,19 @@ namespace YTE
       next.DialogueLambAnchor = mLambAnchor;
       mSpace->SendEvent(Events::DialogueNodeReady, &next);
     }
+
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = false;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
   }
 
   void DaisyDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
     YTEUnusedArgument(aEvent);
+
+    DialoguePossible diagEvent;
+    diagEvent.isPossible = true;
+    mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
 
     if (mActiveQuest->GetName() == Quest::Name::Introduction)
     {

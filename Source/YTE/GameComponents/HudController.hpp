@@ -21,6 +21,7 @@ namespace YTE
 {
   class Sprite;
   class Transform;
+  class StartGame;
 
   YTEDeclareEvent(PostcardUpdate);
   class PostcardUpdate : public Event
@@ -29,6 +30,15 @@ namespace YTE
     YTEDeclareType(PostcardUpdate);
 
     int Number;
+  };
+
+  YTEDeclareEvent(DialoguePossible);
+  class DialoguePossible : public Event
+  {
+  public:
+    YTEDeclareType(DialoguePossible);
+
+    bool isPossible;
   };
 
   class HudController : public Component
@@ -46,8 +56,14 @@ namespace YTE
     void OnMenuExit(MenuExit *aEvent);
 
     void OnPostcardUpdate(PostcardUpdate *aEvent);
+    void OnStartGame(StartGame *aEvent);
+    void OnSailChanged(SailStateChanged *aEvent);
+    void OnDialoguePossible(DialoguePossible *aEvent);
 
     void OpenPostcard();
+
+    void ShowHud();
+    void HideHud();
 
   private:
 
@@ -81,6 +97,15 @@ namespace YTE
     Composition *mCompassIcon;
     Sprite *mCompassIconSprite;
 
+    Composition *mRightTrigger;
+    Sprite *mRightTriggerSprite;
+
+    Composition *mLeftTrigger;
+    Sprite *mLeftTriggerSprite;
+
+    Composition *mAButton;
+    Sprite *mAButtonSprite;
+
     std::string mPostcardTextures[10];
 
     u64 mCompassOpen;
@@ -89,5 +114,8 @@ namespace YTE
     u64 mSailMapClose;
 
     float mOpenPostcardTimer;
+
+    bool mRightTriggerTutorialOver;
+    bool mLeftTriggerTutorialOver;
   };
 }
