@@ -387,6 +387,7 @@ namespace YTE
   void DialogueDirector::OnTutorialUpdate(TutorialUpdate *aEvent)
   {
     mTutorialRegisteredCharacter = aEvent->mCharacter;
+    DeregisterDirector();
   }
 
   // lol check em
