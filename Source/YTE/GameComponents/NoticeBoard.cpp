@@ -115,7 +115,12 @@ namespace YTE
       Quest *curQuest = *(mActiveQuestMap.at(mAssignedPostcard->GetCharacter()));
       Quest::State curState = curQuest->GetState();
 
-      if (curState == Quest::State::Completed)
+      // game is finished, trigger the ending
+      if (mAssignedPostcard == &*(--mPostcardVec.end()) && curState == Quest::State::Completed)
+      {
+
+      }
+      else if (curState == Quest::State::Completed)
       {
         curQuest->SetState(Quest::State::TurnedIn);
         // assign next postcard
