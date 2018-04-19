@@ -27,6 +27,8 @@ namespace YTE
 {
   YTEDeclareEvent(NoticeBoardHookup); 
 
+  class Credits;
+
   class NoticeBoardHookup : public Event
   {
   public:
@@ -80,6 +82,9 @@ namespace YTE
     Transform *mCameraTransform;
     glm::vec3 mCameraInitPos;
     glm::vec3 mCameraInitRot;
+
+    Composition *mCreditsSpace;
+    Credits *mCredits;
 
     float mFakeLerp;
 

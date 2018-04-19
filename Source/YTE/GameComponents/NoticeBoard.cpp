@@ -21,6 +21,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/GameComponents/HudController.hpp"
 #include "YTE/GameComponents/ProgressionParticles.hpp"
 
+#include "YTE/GameComponents/Credits.hpp"
+
 #include "YTE/GameComponents/Menu/LaunchCredits.hpp"
 
 namespace YTE
@@ -90,6 +92,11 @@ namespace YTE
 
     mEndChefBoat->GetComponent<Model>()->SetVisibility(false);
     mEndDaisyBoat->GetComponent<Model>()->SetVisibility(false);
+
+    if (mCreditsSpace = mSpace->FindFirstCompositionByName("MSR_Credits"); mCreditsSpace)
+    {
+      mCredits = mCreditsSpace->FindFirstCompositionByName("Credits")->GetComponent<Credits>();
+    }
   }
 
   void NoticeBoard::Update(LogicUpdate *aEvent)
@@ -105,6 +112,21 @@ namespace YTE
       //mCameraTransform->RotateAboutLocalAxis(glm::vec3(1, 0, 0), angle);
       //
       //mCameraRotationPrev = mCameraRotation;
+
+      if (mCredits && mCredits->GetDone())
+      {
+        String lvl = "presentationLevel";
+
+        mSpace->LoadLevel(lvl);
+
+        auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+        if (emitter)
+        {
+          emitter->PlayEvent("M_Dock_Leave");
+          emitter->PlayEvent("Islands_Leave");
+        }
+      }
     }
   }
 
@@ -412,37 +434,24 @@ namespace YTE
 
     finalAction.Call([this]() {
       
-      StartCredits startCredits;
-
-      auto creditSpace = mSpace->FindFirstCompositionByName("MSR_Credits");
-
-      if (creditSpace)
+      if (mCreditsSpace)
       {
-        creditSpace->SendEvent(Events::StartCredits, &startCredits);
+        StartCredits startCredits;
+        mCreditsSpace->SendEvent(Events::StartCredits, &startCredits);
       }
     });
 
-    ActionGroup switchBuffer;
-    switchBuffer.Add<Linear::easeNone>(mFakeLerp, 20.0f, 47.0f);
-
-    ActionGroup switchToMainMenu;
-    switchToMainMenu.Add<Linear::easeNone>(mFakeLerp, 80.0f, 1.0f);
-
-    switchToMainMenu.Call([this]() {
-
-      String lvl = "presentationLevel";
-
-      mSpace->LoadLevel(lvl);
-
-      auto emitter = mOwner->GetComponent<WWiseEmitter>();
-
-      if (emitter)
-      {
-        emitter->PlayEvent("M_Dock_Leave");
-        emitter->PlayEvent("Islands_Leave");
-      }
-
-    });
+    //ActionGroup switchBuffer;
+    //switchBuffer.Add<Linear::easeNone>(mFakeLerp, 20.0f, 47.0f);
+    //
+    //ActionGroup switchToMainMenu;
+    //switchToMainMenu.Add<Linear::easeNone>(mFakeLerp, 80.0f, 1.0f);
+    //
+    //switchToMainMenu.Call([this]() {
+    //
+    //  
+    //
+    //});
 
     actionSequence.AddGroup(anchor2);
     actionSequence.AddGroup(anchor3);
@@ -456,8 +465,8 @@ namespace YTE
     actionSequence.AddGroup(fakeFinalAction);
     actionSequence.AddGroup(fakeFinalAction2);
     actionSequence.AddGroup(finalAction);
-    actionSequence.AddGroup(switchBuffer);
-    actionSequence.AddGroup(switchToMainMenu);
+    //actionSequence.AddGroup(switchBuffer);
+    //actionSequence.AddGroup(switchToMainMenu);
 
     actionManager->AddSequence(mOwner, actionSequence);
   }

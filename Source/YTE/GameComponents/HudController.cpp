@@ -11,6 +11,7 @@
 #include "YTE/GameComponents/HudController.hpp"
 #include "YTE/GameComponents/Menu/LaunchGame.hpp"
 #include "YTE/GameComponents/PostcardIconPulse.hpp"
+#include "YTE/GameComponents/DialogueDirector.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
@@ -197,6 +198,8 @@ namespace YTE
     mSpace->GetOwner()->YTERegister(Events::SailStateChanged, this, &HudController::OnSailChanged);
     mSpace->GetOwner()->YTERegister(Events::DialoguePossible, this, &HudController::OnDialoguePossible);
     mSpace->GetOwner()->YTERegister(Events::HideHudEvent, this, &HudController::OnHideHud);
+    mSpace->GetOwner()->YTERegister(Events::DialogueStart, this, &HudController::OnDialogueStart);
+    mSpace->GetOwner()->YTERegister(Events::DialogueExit, this, &HudController::OnDialogueExit);
 
     // force the game to load all textures so there's no hiccup when we switch in future
     for (int i = 9; i >= 0; i--)
@@ -384,6 +387,16 @@ namespace YTE
     }
   }
 
+  void HudController::OnDialogueStart(DialogueStart *aEvent)
+  {
+    HideHud();
+  }
+
+  void HudController::OnDialogueExit(DialogueExit *aEvent)
+  {
+    ShowHud();
+  }
+
   void HudController::OnHideHud(HideHudEvent *aEvent)
   {
     HideHud();
@@ -407,6 +420,14 @@ namespace YTE
       actionManager->AddSequence(mOwner, openPostcard);
 
       mSoundEmitter->PlayEvent("UI_SailPostcard_Open");
+
+      if (auto iconPulse = mPostcardIcon->GetComponent<PostcardIconPulse>(); iconPulse)
+      {
+        iconPulse->SetPulsing(true);
+      }
+
+      mMapIconSprite->SetVisibility(false);
+      mCompassIconSprite->SetVisibility(false);
     }
   }
   void HudController::ShowHud()

@@ -9,11 +9,12 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include "YTE/Core/Engine.hpp"
+
 #include "YTE/GameComponents/PostcardIconPulse.hpp"
 
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTE/Core/Engine.cpp"
 
 namespace YTE
 {
@@ -43,7 +44,7 @@ namespace YTE
     if (mIsPulsing)
     {
       mTimer += 5.0f * aEvent->Dt;
-      float sizeScalar = sin(mTimer) + 1.0f;
+      float sizeScalar = static_cast<float>(sin(mTimer) + 1.0f);
 
       sizeScalar *= 0.15f;
 

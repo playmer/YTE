@@ -22,6 +22,9 @@ namespace YTE
   class Sprite;
   class Transform;
   class StartGame;
+  
+  class DialogueStart;
+  class DialogueExit;
 
   YTEDeclareEvent(PostcardUpdate);
   class PostcardUpdate : public Event
@@ -67,6 +70,8 @@ namespace YTE
     void OnStartGame(StartGame *aEvent);
     void OnSailChanged(SailStateChanged *aEvent);
     void OnDialoguePossible(DialoguePossible *aEvent);
+    void OnDialogueStart(DialogueStart *aEvent);
+    void OnDialogueExit(DialogueExit *aEvent);
 
     void OpenPostcard();
 

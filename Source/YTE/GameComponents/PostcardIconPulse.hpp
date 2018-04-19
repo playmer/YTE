@@ -22,6 +22,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  class LogicUpdate;
+
   class PostcardIconPulse : public Component
   {
   public:

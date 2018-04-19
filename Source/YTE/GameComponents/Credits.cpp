@@ -261,6 +261,11 @@ namespace YTE
     mY -= 100.f;
   }
 
+  bool Credits::GetDone()
+  {
+    return mDone;
+  }
+
   void Credits::CreateLine(char const *aString)
   {
     CreateLineInternal(aString, 400.0f);
