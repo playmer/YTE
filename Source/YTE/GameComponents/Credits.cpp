@@ -26,11 +26,12 @@ namespace YTE
   Credits::Credits(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
     , mDelay{0.5f}
-    , mY{0.f}
+    , mY{200.f}
     , mCurrentNumber{0}
     , mDone{false}
     , mFadeFinished(false)
     , mFadeValue(0.0f)
+    , mBlackoutView(nullptr)
     , mFirstLine(nullptr)
     , mLastLine{nullptr}
   {
@@ -39,6 +40,14 @@ namespace YTE
 
   void Credits::Start()
   {
+    mBlackoutView = mSpace->AddChildSpace("MSR_Blackout")->GetComponent<GraphicsView>();
+    mMyView = mSpace->GetComponent<GraphicsView>();
+
+    if (mMyView)
+    {
+      mMyView->SetOrder(-1.0f);
+    }
+
     float initialMovement = 400.f;
     auto view = mSpace->GetComponent<GraphicsView>();
 
@@ -52,19 +61,42 @@ namespace YTE
       }
     }
 
-    
+
+    CreateLineInternal("DigiPen Institute of Technology", 800.f);
+    mY -= 25;
+
+    CreateLineInternal("Presents", 400.f);
+    CreateLineInternal("A Josh's Farm Production", 600.f);
+    mY -= 25;
+
     CreateLineInternal("LambPlanet", 800.f);
+    mY -= 50;
+
+    CreateLineInternal("www.digipen.edu", 200.f);
+    CreateLine("All content (c) 2018 DigiPen (USA) Corporation, all rights reserved.");
     mY -= initialMovement;
 
 
     CreateHeader("President of the School");
     CreateLine("Claude Comair");
 
+    CreateHeader("Executives");
+    CreateLine("John Bauer");
+    CreateLine("Jason Chu");
+    CreateLine("Michele Comair");
+    CreateLine("Prasanna Ghali");
+    CreateLine("Melvin Gonsalvez");
+    CreateLine("Angela Kugler");
+    CreateLine("Xin Li");
+    CreateLine("Meighan McKelvey");
+    CreateLine("Samir Abu Samra");
+    CreateLine("Raymond Yan");
+
     CreateHeader("Game Professors");
-    CreateLine("Christopher Orth");
     CreateLine("Jo Cronk");
+    CreateLine("Zahra Haghiri");;
+    CreateLine("Christopher Orth");
     CreateLine("Brigitte Samson");
-    CreateLine("Zahra Haghiri");
     CreateLine("Lawrence Schwedler");
     CreateLine("Bryan Schmidt");
     CreateLine("Steven Saulls");
@@ -112,9 +144,9 @@ namespace YTE
     CreateLine("Tenor Saxophone - Drake Parker");
     CreateLine("Flute - Kathy Strebel");
 
-
     CreateHeader("Thanks To The Following Programs/Libraries");
     CreateLine("Assimp");
+    CreateLine("Audacity");
     CreateLine("Bullet Physics");
     CreateLine("crunch");
     CreateLine("Cubase");
@@ -132,20 +164,24 @@ namespace YTE
     CreateLine("VkHLF");
 
     CreateHeader("Special Thanks");
+    CreateLine("Lars Aarhus");
+    CreateLine("Barnabas Bede");
     CreateLine("Nathan Carlson");
+    CreateLine("Dearest Floom");
+    CreateLine("Connor Deakin");
     CreateLine("Aaron Kitchen");
     CreateLine("Austin Jensen");
     CreateLine("Matthew Oakes");
     CreateLine("Miles Marchant");
     CreateLine("Trevor Sundberg");
+    CreateLine("Chris Underwood");
 
     CreateHeader("In Memory Of");
     CreateLine("Thomas C. Fisher");
 
     mY -= initialMovement;
 
-    CreateLine("All content (c) 2018 DigiPen (USA) Corporation, all rights reserved.");
-    CreateLine("Powered by Wwise (c) 2006 – 2018 Audiokinetic Inc. All rights reserved.");
+    CreateLine("Powered by Wwise (c) 2006 - 2018 Audiokinetic Inc. All rights reserved.");
 
     CreateHeader("Additional Copyrights");
     CreateLine("Assimp Copyright (c) 2006-2018, assimp team. All rights reserved.");
@@ -157,7 +193,7 @@ namespace YTE
     CreateLine("KissFFT Copyright (c) 2003-2018 Mark Borgerding");
     CreateLine("VkHLF Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.");
 
-    mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
+    //mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
     mSpace->YTERegister(Events::StartCredits, this, &Credits::OnStartCredits);
   }
 
@@ -177,7 +213,8 @@ namespace YTE
     fadeOutSeq.Add<Quad::easeInOut>(mFadeValue, 1.1f, 0.5f);
 
     fadeOutSeq.Call([this]() {
-      mFirstLine->GetComponent<SpriteText>()->SetVisibility(true);
+      //mFirstLine->GetComponent<SpriteText>()->SetVisibility(true);
+      mMyView->SetOrder(2.0f);
       mFadeFinished = true;
     });
 
@@ -241,13 +278,11 @@ namespace YTE
 
     else
     {
-      auto view = mSpace->GetComponent<GraphicsView>();
-
-      if (view)
+      if (mBlackoutView)
       {
-        auto clearColor = view->GetClearColor();
+        auto clearColor = mBlackoutView->GetClearColor();
 
-        view->SetClearColor(glm::vec4(clearColor.x, clearColor.y, clearColor.z, mFadeValue));
+        mBlackoutView->SetClearColor(glm::vec4(clearColor.x, clearColor.y, clearColor.z, mFadeValue));
       }
     }
   }
