@@ -27,6 +27,7 @@ namespace YTE
     // PROPERTIES /////////////////////////////////////////
     ////////////////////////////////////////////////////////
 
+    void OnFrameUpdate(LogicUpdate *);
     void OnLogicUpdate(LogicUpdate *);
 
   private:
@@ -38,5 +39,6 @@ namespace YTE
     Sprite *mControllerWarning;
 
     Space *mBlackoutLevel;
+    GraphicsView *mView;
   };
 }

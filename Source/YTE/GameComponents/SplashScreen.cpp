@@ -33,12 +33,14 @@ namespace YTE
     , mTeamLogo(nullptr)
     , mControllerWarning(nullptr)
     , mBlackoutLevel(nullptr)
+    , mView(nullptr)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void SplashScreen::Initialize()
   {
+    mView = mSpace->GetComponent<GraphicsView>();
     mBlackoutLevel = mSpace->AddChildSpace("MSR_Blackout");
 
     if (Composition *dp = mSpace->FindFirstCompositionByName("DigipenSplash"))
@@ -54,6 +56,7 @@ namespace YTE
       mControllerWarning = controller->GetComponent<Sprite>();
     }
 
+    mSpace->YTERegister(Events::FrameUpdate, this, &SplashScreen::OnFrameUpdate);
     mSpace->YTERegister(Events::LogicUpdate, this, &SplashScreen::OnLogicUpdate);
   }
 
@@ -108,6 +111,22 @@ namespace YTE
     manager->AddSequence(mOwner, splashSeq);
 
     mReadyToExecute = true;
+  }
+
+  void SplashScreen::OnFrameUpdate(LogicUpdate *)
+  {
+    auto window = mView->GetWindow();
+    if (window)
+    {
+      if (window->IsFocused())
+      {
+        window->SetCursorVisibility(false);
+      }
+      else
+      {
+        window->SetCursorVisibility(true);
+      }
+    }
   }
 
   void SplashScreen::OnLogicUpdate(LogicUpdate *)

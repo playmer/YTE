@@ -51,6 +51,7 @@ namespace YTE
   YTEDeclareEvent(OptionsStickEvent);
   YTEDeclareEvent(OptionsFlickEvent);
   YTEDeclareEvent(OptionsConfirmEvent);
+  YTEDeclareEvent(MuteBypass);
   YTEDeclareEvent(DebugSwitch);
   YTEDeclareEvent(RequestNoticeBoardStart);
   YTEDeclareEvent(HudElementToggled);
@@ -192,6 +193,12 @@ namespace YTE
     YTEDeclareType(OptionsConfirmEvent);
   };
 
+  class MuteBypass : public Event
+  {
+  public:
+    YTEDeclareType(MuteBypass);
+  };
+
   class DebugSwitch : public Event
   {
   public:
@@ -233,6 +240,7 @@ namespace YTE
     void Initialize() override;
 
     void OnPostStart(LogicUpdate*);
+    void OnFrameUpdate(LogicUpdate*);
     void OnLogicUpdate(LogicUpdate *aEvent);
 
     void OnStickEvent(XboxStickEvent *aEvent);
@@ -251,6 +259,7 @@ namespace YTE
     ////////////////////////////////////////////////////////////////////
 
   private:
+    GraphicsView *mView;
     XboxController *mGamepad;
     Keyboard *mKeyboard;
 

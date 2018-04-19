@@ -42,6 +42,7 @@ namespace YTE
 
     mOwner->YTERegister(Events::MenuElementTrigger, this, &ToggleMute::OnElementTrigger);
     mOwner->YTERegister(Events::UpdateVisibilityEvent, this, &ToggleMute::OnParentVisibilityUpdated);
+    mSpace->YTERegister(Events::MuteBypass, this, &ToggleMute::OnMuteBypass);
   }
 
   void ToggleMute::OnElementTrigger(MenuElementTrigger *)
@@ -73,5 +74,13 @@ namespace YTE
     {
       mCheckSprite->SetVisibility(false);
     }
+  }
+
+  void ToggleMute::OnMuteBypass(MuteBypass *)
+  {
+    MenuElementTrigger lmao;
+    this->OnElementTrigger(&lmao);
+
+    mCheckSprite->SetVisibility(false);
   }
 }

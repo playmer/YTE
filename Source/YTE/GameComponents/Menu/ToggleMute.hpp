@@ -32,6 +32,7 @@ namespace YTE
 
     void OnElementTrigger(MenuElementTrigger *);
     void OnParentVisibilityUpdated(UpdateVisibilityEvent *aEvent);
+    void OnMuteBypass(MuteBypass *);
 
   private:
     Sprite *mCheckSprite;

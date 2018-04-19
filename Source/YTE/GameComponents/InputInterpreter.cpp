@@ -13,6 +13,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/GameComponents/InputInterpreter.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 #include "YTE/GameComponents/NoticeBoard.hpp"
 
 namespace YTE
@@ -34,6 +35,7 @@ namespace YTE
   YTEDefineEvent(OptionsStickEvent);
   YTEDefineEvent(OptionsFlickEvent);
   YTEDefineEvent(OptionsConfirmEvent);
+  YTEDefineEvent(MuteBypass);
 
   // Boat Events
   YTEDefineEvent(SailStateChanged);
@@ -63,6 +65,7 @@ namespace YTE
   YTEDefineType(OptionsStickEvent) { YTERegisterType(OptionsStickEvent); }
   YTEDefineType(OptionsFlickEvent) { YTERegisterType(OptionsFlickEvent); }
   YTEDefineType(OptionsConfirmEvent) { YTERegisterType(OptionsConfirmEvent); }
+  YTEDefineType(MuteBypass) { YTERegisterType(MuteBypass); }
   YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
   YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
   YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
@@ -79,6 +82,7 @@ namespace YTE
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
+    , mView(nullptr)
     , mGamepad(nullptr)
     , mKeyboard(nullptr)
     , mMenuSpace(nullptr)
@@ -95,14 +99,16 @@ namespace YTE
 
   void InputInterpreter::Initialize()
   {
+    mView = mSpace->GetComponent<GraphicsView>();
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
-    mKeyboard = &mSpace->GetComponent<GraphicsView>()->GetWindow()->mKeyboard;
+    mKeyboard = &mView->GetWindow()->mKeyboard;
     mContext = InputContext::Menu;
 
     mMenuSpace = mSpace->AddChildSpace("MSR_Menus");
     mHudSpace = mSpace->AddChildSpace("MSR_HUD");
     mCreditsSpace = mSpace->AddChildSpace("MSR_Credits");
 
+    mSpace->YTERegister(Events::FrameUpdate, this, &InputInterpreter::OnFrameUpdate);
     mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
 
     mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
@@ -145,6 +151,22 @@ namespace YTE
     mMenuSpace->SendEvent(Events::MenuElementChange, &hoverFirstButton);
 
     mSpace->YTEDeregister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
+  }
+
+  void InputInterpreter::OnFrameUpdate(LogicUpdate *aEvent)
+  {
+    auto window = mView->GetWindow();
+    if (window)
+    {
+      if (window->IsFocused())
+      {
+        window->SetCursorVisibility(false);
+      }
+      else
+      {
+        window->SetCursorVisibility(true);
+      }
+    }
   }
 
   void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
@@ -523,6 +545,37 @@ namespace YTE
 
       case InputContext::Dialogue:
       {
+        switch (aEvent->Key)
+        {
+          case Keys::Return:
+          {
+            DialogueConfirm diagConfirm;
+            mOwner->SendEvent(Events::DialogueConfirm, &diagConfirm);
+            break;
+          }
+
+          case Keys::D:
+          case Keys::Right:
+          {
+            DialogueSelect select(DialogueSelect::Direction::Next);
+            mSpace->SendEvent(Events::DialogueSelect, &select);
+
+            mIsRightTriggerDown = true;
+
+            break;
+          }
+
+          case Keys::A:
+          case Keys::Left:
+          {
+            DialogueSelect select(DialogueSelect::Direction::Prev);
+            mSpace->SendEvent(Events::DialogueSelect, &select);
+
+            mIsRightTriggerDown = true;
+
+            break;
+          }
+        }
         break;
       }
       case InputContext::Sailing:
@@ -653,6 +706,9 @@ namespace YTE
             OptionsStickEvent stickEvent(glm::vec2(-1.0f, 0.0f));
             mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
 
+            OptionsFlickEvent flickEvent(glm::vec2(-1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsFlickEvent, &flickEvent);
+
             break;
           }
 
@@ -661,6 +717,9 @@ namespace YTE
           {
             OptionsStickEvent stickEvent(glm::vec2(1.0f, 0.0f));
             mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
+
+            OptionsFlickEvent flickEvent(glm::vec2(1.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsFlickEvent, &flickEvent);
 
             break;
           }
@@ -672,6 +731,14 @@ namespace YTE
 
     switch (aEvent->Key)
     {
+      case Keys::M:
+      {
+        MuteBypass mute;
+        mMenuSpace->SendEvent(Events::MuteBypass, &mute);
+
+        break;
+      }
+
       case Keys::F3:
       {
         auto physicsSys = mSpace->GetComponent<PhysicsSystem>();
@@ -703,7 +770,7 @@ namespace YTE
         mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(1152, 648);
         break;
       }
-      case Keys::F8:
+      case Keys::F11:
       {
         auto fullscreen = mSpace->GetComponent<GraphicsView>()->GetWindow()->mFullscreen;
         mSpace->GetComponent<GraphicsView>()->GetWindow()->SetFullscreen(!fullscreen, false);
@@ -757,6 +824,23 @@ namespace YTE
           MenuConfirm menuConfirm(true);
           mMenuSpace->SendEvent(Events::MenuConfirm, &menuConfirm);
           break;
+        }
+      }
+
+      case InputContext::Options:
+      {
+        switch (aEvent->Key)
+        {
+          case Keys::A:
+          case Keys::Left:
+          case Keys::D:
+          case Keys::Right:
+          {
+            OptionsStickEvent stickEvent(glm::vec2(0.0f, 0.0f));
+            mMenuSpace->SendEvent(Events::OptionsStickEvent, &stickEvent);
+
+            break;
+          }
         }
       }
     }
