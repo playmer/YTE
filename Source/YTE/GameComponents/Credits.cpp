@@ -145,6 +145,17 @@ namespace YTE
     mY -= initialMovement;
 
     CreateLine("All content (c) 2018 DigiPen (USA) Corporation, all rights reserved.");
+    CreateLine("Powered by Wwise (c) 2006 – 2018 Audiokinetic Inc. All rights reserved.");
+
+    CreateHeader("Additional Copyrights");
+    CreateLine("Assimp Copyright (c) 2006-2018, assimp team. All rights reserved.");
+    CreateLine("fmt Copyright (c) 2012 - 2018, Victor Zverovich. All rights reserved.");
+    CreateLine("crunch Copyright (c) 2010-2018 Richard Geldreich, Jr. and Binomial LLC");
+    CreateLine("glm Copyright (c) 2005 - 2018 G-Truc Creation");
+    CreateLine("ImGui Copyright (c) 2014-2018 Omar Cornut");
+    CreateLine("ImGuizmo Copyright(c) 2018 Cedric Guillemet");
+    CreateLine("KissFFT Copyright (c) 2003-2018 Mark Borgerding");
+    CreateLine("VkHLF Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.");
 
     mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
     mSpace->YTERegister(Events::StartCredits, this, &Credits::OnStartCredits);

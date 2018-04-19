@@ -526,6 +526,11 @@ namespace YTE
       return;
     }
 
+    if (mViewData.size() == 0)
+    {
+      return;
+    }
+
     // Get the index of the next available swapchain image:
     mRenderToScreen->FrameUpdate();
     RenderFrameForSurface();
@@ -627,11 +632,6 @@ namespace YTE
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    if (mViewData.size() == 0)
-    {
-      return;
-    }
-
     mRenderer->mGraphicsQueue->waitIdle();
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
