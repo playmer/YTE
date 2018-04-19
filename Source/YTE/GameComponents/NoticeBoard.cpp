@@ -235,6 +235,17 @@ namespace YTE
       
       mEndChefBoat->GetComponent<Model>()->SetVisibility(true);
       mEndDaisyBoat->GetComponent<Model>()->SetVisibility(true);
+
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      if (emitter)
+      {
+        emitter->PlayEvent("Islands_Enter");
+        emitter->PlayEvent("M_Dock_Enter");
+        emitter->PlayEvent("M_Dasiy");
+        emitter->PlayEvent("M_Basil");
+        emitter->PlayEvent("M_John");
+      }
     });
 
 
@@ -329,7 +340,7 @@ namespace YTE
 
     
     ActionGroup fakeFinalAction;
-    fakeFinalAction.Add<Linear::easeNone>(mFakeLerp, 10.0f, 10.0f);
+    fakeFinalAction.Add<Linear::easeNone>(mFakeLerp, 10.0f, 3.0f);
     fakeFinalAction.Call([this]() {
       mEndJohn->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
       mEndDaisy->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
@@ -355,13 +366,38 @@ namespace YTE
       mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
       mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
       mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+
+      mEndJohn->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndDaisy->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndBasil->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
+      mEndLamb->GetComponent<Animator>()->AddNextAnimation("Wave_Loop.fbx");
     });
 
     ActionGroup fakeFinalAction2;
-    fakeFinalAction2.Add<Linear::easeNone>(mFakeLerp, 20.0f, 10.0f);
+    fakeFinalAction2.Add<Linear::easeNone>(mFakeLerp, 20.0f, 2.0f);
 
     ActionGroup finalAction;
-    finalAction.Add<Linear::easeNone>(mFakeLerp, 50.0f, 10.0f);
+    finalAction.Add<Linear::easeNone>(mFakeLerp, 50.0f, 2.0f);
 
     finalAction.Call([this]() {
       
