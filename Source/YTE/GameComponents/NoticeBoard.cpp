@@ -82,6 +82,14 @@ namespace YTE
     mEndLamb = mSpace->FindFirstCompositionByName("EndingLamb");
     mEndChefBoat = mSpace->FindFirstCompositionByName("EndingChefBoat");
     mEndDaisyBoat = mSpace->FindFirstCompositionByName("EndingGardenerBoat");
+
+    mEndJohn->GetComponent<Model>()->SetVisibility(false);
+    mEndDaisy->GetComponent<Model>()->SetVisibility(false);
+    mEndBasil->GetComponent<Model>()->SetVisibility(false);
+    mEndLamb->GetComponent<Model>()->SetVisibility(false);
+
+    mEndChefBoat->GetComponent<Model>()->SetVisibility(false);
+    mEndDaisyBoat->GetComponent<Model>()->SetVisibility(false);
   }
 
   void NoticeBoard::Update(LogicUpdate *aEvent)
@@ -394,7 +402,7 @@ namespace YTE
     });
 
     ActionGroup fakeFinalAction2;
-    fakeFinalAction2.Add<Linear::easeNone>(mFakeLerp, 20.0f, 2.0f);
+    fakeFinalAction2.Add<Linear::easeNone>(mFakeLerp, 20.0f, 4.0f);
 
     ActionGroup finalAction;
     finalAction.Add<Linear::easeNone>(mFakeLerp, 50.0f, 2.0f);
@@ -411,6 +419,28 @@ namespace YTE
       }
     });
 
+    ActionGroup switchBuffer;
+    switchBuffer.Add<Linear::easeNone>(mFakeLerp, 20.0f, 47.0f);
+
+    ActionGroup switchToMainMenu;
+    switchToMainMenu.Add<Linear::easeNone>(mFakeLerp, 80.0f, 1.0f);
+
+    switchToMainMenu.Call([this]() {
+
+      String lvl = "presentationLevel";
+
+      mSpace->LoadLevel(lvl);
+
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      if (emitter)
+      {
+        emitter->PlayEvent("M_Dock_Leave");
+        emitter->PlayEvent("Islands_Leave");
+      }
+
+    });
+
     actionSequence.AddGroup(anchor2);
     actionSequence.AddGroup(anchor3);
     actionSequence.AddGroup(anchor4);
@@ -423,6 +453,8 @@ namespace YTE
     actionSequence.AddGroup(fakeFinalAction);
     actionSequence.AddGroup(fakeFinalAction2);
     actionSequence.AddGroup(finalAction);
+    actionSequence.AddGroup(switchBuffer);
+    actionSequence.AddGroup(switchToMainMenu);
 
     actionManager->AddSequence(mOwner, actionSequence);
   }
