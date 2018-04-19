@@ -477,7 +477,13 @@ namespace YTE
 
     if (mAssignedPostcard != nullptr)
     {
-      Quest *curQuest = *(mActiveQuestMap.at(mAssignedPostcard->GetCharacter()));
+      Quest::CharacterName character = mAssignedPostcard->GetCharacter();
+      Quest **handle = mActiveQuestMap.at(character);
+      if (handle == nullptr)
+        return;
+      Quest *curQuest = *handle;
+      if (curQuest == nullptr)
+        return;
       Quest::State curState = curQuest->GetState();
 
       // game is finished, trigger the ending
@@ -486,6 +492,7 @@ namespace YTE
           curState == Quest::State::Completed)
       {
         TriggerEndingSequence();
+        mAssignedPostcard = nullptr;
       }
       else if (curState == Quest::State::Completed)
       {
@@ -581,11 +588,6 @@ namespace YTE
           mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
         }
       }
-    }
-    else
-    {
-      int temp = 0;
-      temp++;
     }
   }
 }//end yte
