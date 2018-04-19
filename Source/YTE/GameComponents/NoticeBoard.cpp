@@ -254,6 +254,9 @@ namespace YTE
         emitter->PlayEvent("M_Basil");
         emitter->PlayEvent("M_John");
       }
+
+      HideHudEvent hideEvent;
+      mSpace->SendEvent(Events::HideHudEvent, &hideEvent);
     });
 
 

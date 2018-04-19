@@ -28,6 +28,13 @@ namespace YTE
     YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
   }
 
+  YTEDefineEvent(HideHudEvent);
+
+  YTEDefineType(HideHudEvent)
+  {
+    YTERegisterType(HideHudEvent);
+  }
+
   YTEDefineEvent(DialoguePossible);
 
   YTEDefineType(DialoguePossible)
@@ -189,6 +196,7 @@ namespace YTE
     mSpace->GetOwner()->YTERegister(Events::StartGame, this, &HudController::OnStartGame);
     mSpace->GetOwner()->YTERegister(Events::SailStateChanged, this, &HudController::OnSailChanged);
     mSpace->GetOwner()->YTERegister(Events::DialoguePossible, this, &HudController::OnDialoguePossible);
+    mSpace->GetOwner()->YTERegister(Events::HideHudEvent, this, &HudController::OnHideHud);
 
     // force the game to load all textures so there's no hiccup when we switch in future
     for (int i = 9; i >= 0; i--)
@@ -374,6 +382,11 @@ namespace YTE
         mAButtonSprite->SetVisibility(false);
       }
     }
+  }
+
+  void HudController::OnHideHud(HideHudEvent *aEvent)
+  {
+    HideHud();
   }
 
   void HudController::OpenPostcard()

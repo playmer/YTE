@@ -32,6 +32,13 @@ namespace YTE
     int Number;
   };
 
+  YTEDeclareEvent(HideHudEvent);
+  class HideHudEvent : public Event
+  {
+  public:
+    YTEDeclareType(HideHudEvent);
+  };
+
   YTEDeclareEvent(DialoguePossible);
   class DialoguePossible : public Event
   {
@@ -55,6 +62,7 @@ namespace YTE
     void OnMenuStart(MenuStart *aEvent);
     void OnMenuExit(MenuExit *aEvent);
 
+    void OnHideHud(HideHudEvent *aEvent);
     void OnPostcardUpdate(PostcardUpdate *aEvent);
     void OnStartGame(StartGame *aEvent);
     void OnSailChanged(SailStateChanged *aEvent);
