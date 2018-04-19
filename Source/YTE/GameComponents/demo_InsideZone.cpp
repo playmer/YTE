@@ -146,13 +146,6 @@ namespace YTE
         }
         else if (zoneType == "Character")
         {
-          static bool first = true;
-          if (first)
-          {
-            mCollidingCharacters.insert(zone);
-            first = false;
-          }
-
           if (mCollidingCharacters.empty())
           {
             auto zoneName = zone->GetZoneName();
