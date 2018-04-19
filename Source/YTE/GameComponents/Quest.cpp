@@ -922,7 +922,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, "Basil: Young lamb!", "Basil: The pleasure is yours to see me again.", "Basil: Be a lamb and acquire my bib.", "Basil: I seem to have dropped it somewhere nearby.");
+          DialogueData(dataR0, "Basil: Young lamb!", "Basil: The pleasure is yours to see me again.", "Basil: Be a lamb and acquire my bib. ", "Basil: I seem to have dropped it somewhere nearby.");
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataR0, 0, mSpace);
 
           /*

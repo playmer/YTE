@@ -400,9 +400,11 @@ namespace YTE
       mOwner->FindFirstCompositionByName("Sails")->GetComponent<Transform>()->SetScale(glm::vec3(mSailScale, 1, mSailScale));
     }
 
-    if (pos.y < 0.35f)
+    if (pos.y < 0.35f || pos.y > 0.45f)
     {
       mTransform->SetWorldTranslation(pos.x, 0.4f, pos.z);
+      glm::vec3 vel = mRigidBody->GetVelocity();
+      mRigidBody->SetVelocity(vel.x, 0.0f, vel.z);
 
       auto rot = mTransform->GetWorldRotationAsEuler();
       mTransform->SetWorldRotation(0.0f, rot.y, 0.0f);
@@ -410,11 +412,6 @@ namespace YTE
 
     // calculate anim key frame
     double sinVal = sin(glm::radians(mTransform->GetWorldRotationAsEuler().y));
-
-    if ((sinVal + 1.0) - 0.5)
-    {
-
-    }
 
     if (mSailsAnimator)
     {

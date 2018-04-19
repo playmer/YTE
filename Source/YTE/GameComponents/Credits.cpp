@@ -214,7 +214,7 @@ namespace YTE
 
     fadeOutSeq.Call([this]() {
       //mFirstLine->GetComponent<SpriteText>()->SetVisibility(true);
-      mMyView->SetOrder(2.0f);
+      mMyView->SetOrder(3.0f);
       mFadeFinished = true;
     });
 
