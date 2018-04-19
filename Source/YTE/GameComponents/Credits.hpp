@@ -37,6 +37,8 @@ namespace YTE
     bool mFadeFinished;
     float mFadeValue;
 
+    GraphicsView *mBlackoutView;
+    GraphicsView *mMyView;
     Composition *mFirstLine;
     Composition *mLastLine;
   };
