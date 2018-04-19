@@ -30,6 +30,8 @@
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTE/WWise//WWiseSystem.hpp"
@@ -124,15 +126,16 @@ namespace YTE
       assert(!"Could not initialize the Music Engine.");
     }
 
-    #ifndef AK_OPTIMIZED
-    // Initialize communications (not in release build!)
-    AkCommSettings commSettings;
-    AK::Comm::GetDefaultInitSettings(commSettings);
-    if (AK::Comm::Init(commSettings) != AK_Success)
-    {
-      assert(!"Could not initialize communication.");
-    }
-    #endif // AK_OPTIMIZED
+	if constexpr(CompilerOptions::Debug())
+	{
+      AkCommSettings commSettings;
+      AK::Comm::GetDefaultInitSettings(commSettings);
+
+      if (AK::Comm::Init(commSettings) != AK_Success)
+      {
+        assert(!"Could not initialize communication.");
+      }
+	}
 
     LoadAllBanks();
 
