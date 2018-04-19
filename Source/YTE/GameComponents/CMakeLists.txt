@@ -18,6 +18,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/SlammingForceData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Helpers/TriangleData.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Credits.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SplashScreen.cpp
   ${CMAKE_CURRENT_LIST_DIR}/HudController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
@@ -67,6 +68,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/CameraBoom.hpp   
   ${CMAKE_CURRENT_LIST_DIR}/CameraController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Credits.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/SplashScreen.hpp
   ${CMAKE_CURRENT_LIST_DIR}/demo_InsideZone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Dialogue.hpp
   ${CMAKE_CURRENT_LIST_DIR}/DialogueDirector.hpp
