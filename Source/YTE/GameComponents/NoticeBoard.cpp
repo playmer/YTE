@@ -294,11 +294,7 @@ namespace YTE
 
       if (emitter)
       {
-        emitter->PlayEvent("Islands_Enter");
-        emitter->PlayEvent("M_Dock_Enter");
-        emitter->PlayEvent("M_Dasiy");
-        emitter->PlayEvent("M_Basil");
-        emitter->PlayEvent("M_John");
+        emitter->PlayEvent("EndSequence_Start");
       }
 
       HideHudEvent hideEvent;
@@ -399,6 +395,12 @@ namespace YTE
     ActionGroup fakeFinalAction;
     fakeFinalAction.Add<Linear::easeNone>(mFakeLerp, 10.0f, 3.0f);
     fakeFinalAction.Call([this]() {
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      if (emitter)
+      {
+        emitter->PlayEvent("Dia_All_CallOut");
+      }
       mEndJohn->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
       mEndDaisy->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
       mEndBasil->GetComponent<Animator>()->SetCurrentAnimation("Wave_Init.fbx");
@@ -457,7 +459,12 @@ namespace YTE
     finalAction.Add<Linear::easeNone>(mFakeLerp, 50.0f, 2.0f);
 
     finalAction.Call([this]() {
-      
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+      if (emitter)
+      {
+        emitter->PlayEvent("EndSequence_End");
+      }
+
       if (mCreditsSpace)
       {
         StartCredits startCredits;
