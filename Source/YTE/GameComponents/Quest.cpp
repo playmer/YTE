@@ -1158,7 +1158,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataA0, 0, mSpace);
 
           // LEVEL ROOT
-          DialogueData(dataR0, "Madame Daisy says horseradish season is over. Sorry, Monsieur Bouillon.");
+          DialogueData(dataR0, "Horseradish season is over...I'm sorry!");
           mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataR0, 0, mSpace);
           /*
           B0 - A0 - R0

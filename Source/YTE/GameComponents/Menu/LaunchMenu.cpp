@@ -24,7 +24,9 @@ namespace YTE
       .SetDocumentation("Menu that will be launched by triggering this menu element");
   }
 
-  LaunchMenu::LaunchMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace)
+  LaunchMenu::LaunchMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) 
+    : Component(aOwner, aSpace)
+    , mMenuToLaunch("")
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }

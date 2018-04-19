@@ -34,5 +34,6 @@ namespace YTE
 
   private:
     std::string mMenuToLaunch;
+    bool mShouldClose;
   };
 }
