@@ -98,8 +98,11 @@ namespace YTE
     splashSeq.Add<Quad::easeInOut>(mFadeValue, 1.0f, 0.5f);
 
     splashSeq.Call([this]() {
-      String level{ "presentationLevel" };
-      mSpace->LoadLevel(level);
+      if (!mSpace->GetEngine()->IsEditor())
+      {
+        String level{ "presentationLevel" };
+        mSpace->LoadLevel(level);
+      }
     });
 
     manager->AddSequence(mOwner, splashSeq);
