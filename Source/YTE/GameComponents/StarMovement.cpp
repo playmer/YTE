@@ -139,7 +139,7 @@ namespace YTE
 
     float distF = glm::length(dist);
     
-    float scale = (distF - 100.0f) / 200.0f;
+    float scale = (distF - 80.0f) / 200.0f;
 
     if (scale > 5.0f)
     {
