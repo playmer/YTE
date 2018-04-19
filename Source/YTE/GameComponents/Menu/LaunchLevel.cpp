@@ -41,6 +41,14 @@ namespace YTE
     {
       String levelToLoad{ mLevelToLaunch.c_str() };
       static_cast<Space*>(mSpace->GetOwner())->LoadLevel(levelToLoad);
+
+      auto emitter = mOwner->GetComponent<WWiseEmitter>();
+
+      if (emitter)
+      {
+        emitter->PlayEvent("M_Dock_Leave");
+        emitter->PlayEvent("Islands_Leave");
+      }
     }
   }
 }
