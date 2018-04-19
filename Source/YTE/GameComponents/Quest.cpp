@@ -523,7 +523,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataI0, 0, mSpace);
 
           // LEVEL H
-          DialogueData(dataH0, "Without a sprout!");
+          DialogueData(dataH0, "Without a sprout! ");
           mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataH0, 0, mSpace);
 
           // LEVEL G
@@ -1017,7 +1017,7 @@ namespace YTE
           mNodeVec.emplace_back(DialogueNode::NodeType::Text, dataB0, 0, mSpace);
 
           // LEVEL A
-          DialogueData(dataA0, "You're not looking too haute!");
+          DialogueData(dataA0, "You're not looking too haute! ");
           mNodeVec.emplace_back(DialogueNode::NodeType::Input, dataA0, 0, mSpace);
 
           // LEVEL ROOT
