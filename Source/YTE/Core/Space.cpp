@@ -106,7 +106,7 @@ namespace YTE
   {
     YTEProfileFunction();
     mCompositions.Clear();
-    mComponents.Clear();
+    ComponentClear();
       
     if (nullptr != aLevel)
     {
@@ -173,7 +173,7 @@ namespace YTE
   void Space::CreateBlankLevel(const String& aLevelName)
 {
     mCompositions.Clear();
-    mComponents.Clear();
+    ComponentClear();
 
     mLevelName = aLevelName;
 
@@ -252,32 +252,32 @@ namespace YTE
   // TODO (Josh): Abstract or move to another handler.
   void Space::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
   {
-    if ((mFocusHandled == false) && (aEvent->Focused == false) && !mEngine->GetWindow()->IsMinimized())
-    {
-      //std::cout << "Set mPriorToMinimize" << std::endl;
-      mPriorToMinimize = mPaused;
-      mPaused = true;
-      mFocusHandled = true;
-    }
-    else if ((aEvent->Focused == true) && !mEngine->GetWindow()->IsMinimized())
-    {
-      mPaused = mPriorToMinimize;
-      mFocusHandled = false;
-    }
+    //if ((mFocusHandled == false) && (aEvent->Focused == false) && !mEngine->GetWindow()->IsMinimized())
+    //{
+    //  //std::cout << "Set mPriorToMinimize" << std::endl;
+    //  mPriorToMinimize = mPaused;
+    //  mPaused = true;
+    //  mFocusHandled = true;
+    //}
+    //else if ((aEvent->Focused == true) && !mEngine->GetWindow()->IsMinimized())
+    //{
+    //  mPaused = mPriorToMinimize;
+    //  mFocusHandled = false;
+    //}
   }
 
   void Space::WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent)
   {
-    if (aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
-    {
-      //std::cout << "Set mPriorToMinimize" << std::endl;
-      mPriorToMinimize = mPaused;
-      mPaused = true;
-    }
-    else if (!aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
-    {
-      mPaused = mPriorToMinimize;
-      mFocusHandled = false;
-    }
+    //if (aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
+    //{
+    //  //std::cout << "Set mPriorToMinimize" << std::endl;
+    //  mPriorToMinimize = mPaused;
+    //  mPaused = true;
+    //}
+    //else if (!aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
+    //{
+    //  mPaused = mPriorToMinimize;
+    //  mFocusHandled = false;
+    //}
   }
 } // End yte namespace

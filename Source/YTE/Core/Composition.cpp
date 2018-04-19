@@ -159,7 +159,12 @@ namespace YTE
     }
 
     mCompositions.Clear();
+    ComponentClear();
+  };
 
+
+  void Composition::ComponentClear()
+  {
     // Destructing the components in order
     auto order = GetDependencyOrder(this);
 
@@ -177,11 +182,11 @@ namespace YTE
         auto component = mComponents.Find(*typeIt);
         if (component != mComponents.end())
         {
-          component->second.reset();
+          mComponents.Erase(component);
         }
       }
     }
-  };
+  }
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)
   {

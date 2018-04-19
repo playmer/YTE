@@ -255,6 +255,7 @@ namespace YTE
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
   protected:
+    void ComponentClear();
     std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
                                   BoundType *aTypeToCheck);
 
