@@ -26,13 +26,14 @@ namespace YTE
     ButtonAnimate(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
     void Initialize() override;
+    void Start() override;
 
     // PROPERTIES //////////////////////////////////////////
     const float GetScaleFactor() const { return mScaleFactor; }
     void SetScaleFactor(const float aScaleFactor) { mScaleFactor = aScaleFactor; }
     ////////////////////////////////////////////////////////
 
-    void OnStart(LogicUpdate *);
+    //void OnStart(LogicUpdate *);
     void OnButtonHover(MenuElementHover* aEvent);
     void OnButtonDeHover(MenuElementDeHover* aEvent);
 

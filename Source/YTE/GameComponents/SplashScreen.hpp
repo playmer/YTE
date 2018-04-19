@@ -40,5 +40,7 @@ namespace YTE
 
     Space *mBlackoutLevel;
     GraphicsView *mView;
+
+    WWiseEmitter *mEmitter;
   };
 }

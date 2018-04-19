@@ -14,15 +14,20 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Sprite.hpp"
 
-#include "YTE/GameComponents/SplashScreen.hpp"
+#include "YTE/WWise/WWiseEmitter.hpp"
+#include "YTE/WWise/WWiseSystem.hpp"
 
-#pragma optimize("",off)
+#include "YTE/GameComponents/SplashScreen.hpp"
 
 namespace YTE
 {
   YTEDefineType(SplashScreen)
   {
     YTERegisterType(SplashScreen);
+
+    std::vector<std::vector<Type*>> deps = { { TypeId<WWiseEmitter>() } };
+
+    GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
   SplashScreen::SplashScreen(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -34,12 +39,22 @@ namespace YTE
     , mControllerWarning(nullptr)
     , mBlackoutLevel(nullptr)
     , mView(nullptr)
+    , mEmitter(nullptr)
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void SplashScreen::Initialize()
   {
+    auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
+
+    if (soundSystem)
+    {
+      soundSystem->SetRTPC("MasterVolume", 100.0f);
+    }
+
+    mEmitter = mOwner->GetComponent<WWiseEmitter>();
+
     mView = mSpace->GetComponent<GraphicsView>();
     mBlackoutLevel = mSpace->AddChildSpace("MSR_Blackout");
 
@@ -88,6 +103,14 @@ namespace YTE
     });
 
     splashSeq.Add<Quad::easeInOut>(mFadeValue, 0.0f, 0.5f);
+
+    splashSeq.Call([this]() {
+      if (mEmitter)
+      {
+        mEmitter->PlayEvent("UI_Intro_TeamSplash");
+      }
+    });
+
     splashSeq.Delay(2.0f);
     splashSeq.Add<Quad::easeInOut>(mFadeValue, 1.0f, 0.5f);
 
@@ -103,6 +126,11 @@ namespace YTE
     splashSeq.Call([this]() {
       if (!mSpace->GetEngine()->IsEditor())
       {
+        if (mEmitter)
+        {
+          mEmitter->PlayEvent("Menu_Start");
+        }
+
         String level{ "presentationLevel" };
         mSpace->LoadLevel(level);
       }
