@@ -248,6 +248,30 @@ namespace YTE
 
     anchor2.Call([this]() {
 
+      auto basil = mSpace->FindFirstCompositionByName("basil");
+      basil->GetComponent<Model>()->SetVisibility(false);
+      basil->FindFirstCompositionByName("boat")->GetComponent<Model>()->SetVisibility(false);
+
+      auto john = mSpace->FindFirstCompositionByName("john");
+      john->GetComponent<Model>()->SetVisibility(false);
+      john->FindFirstCompositionByName("boat")->GetComponent<Model>()->SetVisibility(false);
+
+      auto daisy = mSpace->FindFirstCompositionByName("daisy");
+      daisy->GetComponent<Model>()->SetVisibility(false);
+      daisy->FindFirstCompositionByName("boat")->GetComponent<Model>()->SetVisibility(false);
+
+      auto star = mSpace->FindFirstCompositionByName("FeedbackStar");
+      star->GetComponent<Model>()->SetVisibility(false);
+      star->FindFirstCompositionByName("Cylinder")->GetComponent<Model>()->SetVisibility(false);
+
+      auto boat = mSpace->FindFirstCompositionByName("Boat");
+      boat->GetComponent<Model>()->SetVisibility(false);
+      boat->FindFirstCompositionByName("Mainsail")->GetComponent<Model>()->SetVisibility(false);
+      boat->FindFirstCompositionByName("Sails")->GetComponent<Model>()->SetVisibility(false);
+      boat->FindFirstCompositionByName("Mast")->GetComponent<Model>()->SetVisibility(false);
+      boat->FindFirstCompositionByName("MainCharacter")->GetComponent<Model>()->SetVisibility(false);
+
+
       mEndJohn->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
       mEndDaisy->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
       mEndBasil->GetComponent<Animator>()->SetDefaultAnimation("Idle.fbx");
@@ -441,17 +465,6 @@ namespace YTE
       }
     });
 
-    //ActionGroup switchBuffer;
-    //switchBuffer.Add<Linear::easeNone>(mFakeLerp, 20.0f, 47.0f);
-    //
-    //ActionGroup switchToMainMenu;
-    //switchToMainMenu.Add<Linear::easeNone>(mFakeLerp, 80.0f, 1.0f);
-    //
-    //switchToMainMenu.Call([this]() {
-    //
-    //  
-    //
-    //});
 
     actionSequence.AddGroup(anchor2);
     actionSequence.AddGroup(anchor3);
@@ -465,8 +478,6 @@ namespace YTE
     actionSequence.AddGroup(fakeFinalAction);
     actionSequence.AddGroup(fakeFinalAction2);
     actionSequence.AddGroup(finalAction);
-    //actionSequence.AddGroup(switchBuffer);
-    //actionSequence.AddGroup(switchToMainMenu);
 
     actionManager->AddSequence(mOwner, actionSequence);
   }
