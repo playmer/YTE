@@ -44,6 +44,7 @@
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/InheritVisibility.hpp"
 #include "YTE/GameComponents/Credits.hpp"
+#include "YTE/GameComponents/SteppingStone.hpp"
 #include "YTE/GameComponents/SplashScreen.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
@@ -168,6 +169,7 @@ namespace YTE
     helper.CreateComponentFactory<QuestLogic>();
     helper.CreateComponentFactory<NoticeBoard>();
     helper.CreateComponentFactory<QuestProgressionTrigger>();
+    helper.CreateComponentFactory<SteppingStone>();
     helper.CreateComponentFactory<JohnMovement>();
     helper.CreateComponentFactory<DaisyMovement>();
     helper.CreateComponentFactory<BasilMovement>();

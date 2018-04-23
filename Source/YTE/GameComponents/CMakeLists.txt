@@ -22,6 +22,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/HudController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/SteppingStone.cpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.cpp
@@ -81,6 +82,7 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/HudController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/InputInterpreter.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Island.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/SteppingStone.hpp
   ${CMAKE_CURRENT_LIST_DIR}/TestingComponent.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/MenuController.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu/LaunchMenu.hpp

@@ -54,6 +54,7 @@
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Zone.hpp"
 #include "YTE/GameComponents/Island.hpp"
+#include "YTE/GameComponents/SteppingStone.hpp"
 #include "YTE/GameComponents/TestingComponent.hpp"
 #include "YTE/GameComponents/JohnDialogue.hpp"
 #include "YTE/GameComponents/DaisyDialogue.hpp"
@@ -188,6 +189,7 @@ namespace YTE
     InitializeType<DaisyTutorial>();
     InitializeType<BasilTutorial>();
     InitializeType<Quest>();
+    InitializeType<SteppingStone>();
     InitializeType<Conversation>();
     InitializeType<OceanCreatureBehavior>();
     InitializeType<ProgressionParticles>();

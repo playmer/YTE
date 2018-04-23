@@ -1194,7 +1194,7 @@ namespace YTE
       parent = mSpace;
     }
 
-    if (this == parent || parent == nullptr)
+    if ((this != mEngine) && (this == parent || parent == nullptr))
     {
       parent = mEngine;
     }
@@ -1257,7 +1257,7 @@ namespace YTE
   {
     for (Composition *parent = GetParent();
          nullptr != parent;
-         parent = GetParent())
+         parent = parent->GetParent())
     {
       if (true == parent->mBeingDeleted)
       {
