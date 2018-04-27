@@ -22,6 +22,7 @@ namespace YTE
 
   private:
     void AllocateObjects();
+    void ResetColors();
 
     std::vector<glm::vec3> mColors;
     std::vector<std::vector<Composition*>> mSprites;
@@ -30,6 +31,9 @@ namespace YTE
     ImguiLayer *mLayer;
     int mK;
     int mN;
+
+    float mTimeToChange;
+    float mTimeTracker;
 
     std::random_device r;
     std::default_random_engine e{ r() };
