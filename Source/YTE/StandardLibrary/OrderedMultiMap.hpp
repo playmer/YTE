@@ -266,7 +266,7 @@ namespace YTE
       return end();
     }
 
-    typename size_type size() const { return mData.size(); }
+    size_type size() const { return mData.size(); }
 
   protected:
     template <typename KeyPossibleType, typename StoredType>
