@@ -35,7 +35,9 @@ namespace YTE
     , mSpriteOwner{ nullptr }
     , mLayer{ nullptr }
     , mK{ 4 }
-    , mN{ 4 }
+    , mN{ 2 }
+    , mTimeToChange{ 0.75 }
+    , mTimeTracker{ 0.75 }
     , e{ r() }
   {
     YTEUnusedArgument(aProperties);
@@ -72,6 +74,20 @@ namespace YTE
   {
     return ((a % b) + b) % b;
   }
+  
+  void SteppingStone::ResetColors()
+  {
+    for (auto &spriteVec : mSprites)
+    {
+      for (auto &sprite : spriteVec)
+      {
+        auto material = sprite->GetComponent<Material>();
+
+        auto colorIndex = randomSizeT(0, mColors.size() - 1, e);
+        material->GetModelMaterial().SetDiffuse(mColors[colorIndex]);
+      }
+    }
+  }
 
   void SteppingStone::Update(LogicUpdate *aUpdate)
   {
@@ -79,6 +95,8 @@ namespace YTE
     mLayer->Begin("Stepping Stone");
     mLayer->InputInt("K", &mK);
     mLayer->InputInt("N", &mN);
+    mLayer->InputFloat("Seconds to Change", &mTimeToChange);
+    auto reset = mLayer->Button("Reset");
     mLayer->End();
 
     if ((mColors.size() != mK) ||
@@ -87,55 +105,81 @@ namespace YTE
       AllocateObjects();
     }
 
+    if (reset)
+    {
+      ResetColors();
+    }
+
+    mTimeTracker -= static_cast<float>(aUpdate->Dt);
+
+    if (0 > mTimeTracker)
+    {
+      mTimeTracker = mTimeToChange;
+    }
+    else
+    {
+      return;
+    }
+
     auto x = randomSizeT(0, mN - 1, e);
     auto y = randomSizeT(0, mN - 1, e);
 
-    i64 i;
-    i64 j;
+    i64 iOffset;
+    i64 jOffset;
 
     bool weGood = false;
     do
     {
-      i = 0;
-      j = 0;
+      iOffset = 0;
+      jOffset = 0;
 
       auto xAxis = randomSizeT(0, 2, e);
       auto yAxis = randomSizeT(0, 2, e);
 
       if (0 == xAxis)
       {
-        --i;
+        --iOffset;
       }
       else if (2 == xAxis)
       {
-        ++i;
+        ++iOffset;
       }
 
       if (0 == yAxis)
       {
-        --j;
+        --jOffset;
       }
       else if (2 == yAxis)
       {
-        ++j;
+        ++jOffset;
       }
 
-      if (i != 0 || j != 0)
+      if (iOffset != 0 || jOffset != 0)
       {
         weGood = true;
       }
 
     } while (false == weGood);
 
-    i += x;
-    j += y;
+    iOffset += x;
+    jOffset += y;
 
-    i = Mod(i, mN);
-    j = Mod(j, mN);
+    auto i = Mod(iOffset, mN);
+    auto j = Mod(jOffset, mN);
 
     auto diffuse = mSprites[j][i]->GetComponent<Material>()->GetModelMaterial().GetDiffuse();
 
     mSprites[y][x]->GetComponent<Material>()->GetModelMaterial().SetDiffuse(diffuse);
+
+    //static int blah = 0;
+    //printf("%d, px: %d, py: %d, nx`: %d, ny`: %d, nx: %d, ny: %d\n",
+    //       ++blah,
+    //       x,
+    //       y,
+    //       iOffset,
+    //       jOffset,
+    //       i,
+    //       j);
   }
 
   static std::string cTexture{ "white.png" };
