@@ -16,36 +16,36 @@ namespace YTE
 
   YTEDefineType(Window)
   {
-    YTERegisterType(Window);
-    YTEBindField(&Window::mKeyboard, "Keyboard", PropertyBinding::GetSet);
-    YTEBindField(&Window::mMouse, "Mouse", PropertyBinding::GetSet);
-
-    YTEBindFunction(&Window::SetFullscreen, YTENoOverload, "SetFullscreen", YTEParameterNames("aFullscreen", "aForMetro")).Description()
-      = "Either switches to fullscreen or unfullscreen.";
-    YTEBindFunction(&Window::SetCursorVisibility, YTENoOverload, "SetCursorVisibility", YTEParameterNames("aShow")).Description()
-      = "Turns the visibility of the mouse cursor on and off";
-
-    YTEBindField(&Window::mSerializedWindowName, "SerializedWindowName", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedWindowIcon, "SerializedWindowIcon", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedCursorIcon, "SerializedCursorIcon", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingWidth, "SerializedStartingWidth", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingHeight, "SerializedStartingHeight", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingFullscreen, "SerializedStartingFullscreen", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedShouldBeRenderedTo, "SerializedShouldBeRenderedTo", PropertyBinding::GetSet)
-      .AddAttribute<Serializable>()
-      .AddAttribute<EditorProperty>();
+    //YTERegisterType(Window);
+    //YTEBindField(&Window::mKeyboard, "Keyboard", PropertyBinding::GetSet);
+    //YTEBindField(&Window::mMouse, "Mouse", PropertyBinding::GetSet);
+    //
+    //YTEBindFunction(&Window::SetFullscreen, YTENoOverload, "SetFullscreen", YTEParameterNames("aFullscreen", "aForMetro")).Description()
+    //  = "Either switches to fullscreen or unfullscreen.";
+    //YTEBindFunction(&Window::SetCursorVisibility, YTENoOverload, "SetCursorVisibility", YTEParameterNames("aShow")).Description()
+    //  = "Turns the visibility of the mouse cursor on and off";
+    //
+    //YTEBindField(&Window::mSerializedWindowName, "SerializedWindowName", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedWindowIcon, "SerializedWindowIcon", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedCursorIcon, "SerializedCursorIcon", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedStartingWidth, "SerializedStartingWidth", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedStartingHeight, "SerializedStartingHeight", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedStartingFullscreen, "SerializedStartingFullscreen", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
+    //YTEBindField(&Window::mSerializedShouldBeRenderedTo, "SerializedShouldBeRenderedTo", PropertyBinding::GetSet)
+    //  .AddAttribute<Serializable>()
+    //  .AddAttribute<EditorProperty>();
   }
 
   bool BeyondExtent(glm::i32vec2 aWindowSize, glm::i32vec2 aMousePosition)

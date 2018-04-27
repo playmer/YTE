@@ -207,16 +207,14 @@ namespace YTE
     }
   };
 
-  template <typename Return, typename Enable = void>
+  template <typename Return>
   struct Binding {};
 
-
   ///////////////////////////////////////////////////////////////////////////////
-  // Free Functions
+  // Free/Static Functions
   ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
   template <typename Return, typename... Arguments>
-  struct Binding<Return(*)(Arguments...), typename std::enable_if<std::is_void<Return>::value == false>::type >
+  struct Binding<Return(*)(Arguments...)>
   {
     using FunctionSignature = Return(*)(Arguments...);
     using CallingType = Any(*)(std::vector<Any>&);
@@ -230,41 +228,17 @@ namespace YTE
       YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = BoundFunc(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
-    }
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), nullptr, true);
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-  };
-
-  //Returns void
-  template <typename Return, typename... Arguments>
-  struct Binding<Return(*)(Arguments...), typename std::enable_if<std::is_void<Return>::value>::type >
-  {
-    using FunctionSignature = Return(*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      size_t i = 0;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      BoundFunc(aArguments.at(i++).As<Arguments>()...);
-      return Any();
+      if constexpr(std::is_void<Return>::value)
+      {
+        BoundFunc(aArguments.at(i++).As<Arguments>()...);
+        return Any{};
+      }
+      else
+      {
+        Return capture = BoundFunc(aArguments.at(i++).As<Arguments>()...);
+        Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
+        return toReturn;
+      }
     }
 
     static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
@@ -292,9 +266,8 @@ namespace YTE
   ///////////////////////////////////////////////////////////////////////////////
   // Member Functions
   ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
   template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...), typename std::enable_if<std::is_void<Return>::value == false>::type>
+  struct Binding<Return(ObjectType::*)(Arguments...)>
   {
     using FunctionSignature = Return(ObjectType::*)(Arguments...);
     using CallingType = Any(*)(std::vector<Any>&);
@@ -310,57 +283,17 @@ namespace YTE
       YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
-    }
-
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-  };
-
-  // Returns Void
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...), typename std::enable_if<std::is_void<Return>::value>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-
-      return Any();
+      if constexpr(std::is_void<Return>::value)
+      {
+        (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
+        return Any{};
+      }
+      else
+      {
+        Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
+        Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
+        return toReturn;
+      }
     }
 
     static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
@@ -391,9 +324,8 @@ namespace YTE
   ///////////////////////////////////////////////////////////////////////////////
   // Const Member Functions
   ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
   template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...) const, typename std::enable_if<std::is_void<Return>::value == false>::type>
+  struct Binding<Return(ObjectType::*)(Arguments...) const>
   {
     using FunctionSignature = Return(ObjectType::*)(Arguments...) const;
     using CallingType = Any(*)(std::vector<Any>&);
@@ -409,57 +341,18 @@ namespace YTE
       YTEUnusedArgument(aArguments);
       YTEUnusedArgument(i);
 
-      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
-    }
 
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-  };
-
-  //Returns void
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...) const, typename std::enable_if<std::is_void<Return>::value>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...) const;
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-
-      return Any();
+      if constexpr(std::is_void<Return>::value)
+      {
+        (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
+        return Any{};
+      }
+      else
+      {
+        Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
+        Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
+        return toReturn;
+      }
     }
 
     static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
@@ -507,9 +400,9 @@ namespace YTE
     auto function = Binding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
     function->SetParameterNames(aParameterNames);
     function->SetOwningType(aType);
-
+    
     auto ptr = aType->AddFunction(std::move(function));
-
+    
     return *ptr;
   }
 }

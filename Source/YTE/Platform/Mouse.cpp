@@ -41,14 +41,14 @@ namespace YTE
 
   YTEDefineType(Mouse)
   {
-    YTERegisterType(Mouse);
-    YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed right now.";
-    YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed last frame.";
-
-    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description()
-      = "Gets the current cursor position in screen coordinates.";
+    //YTERegisterType(Mouse);
+    //YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
+    //  = "Finds if the given button is pressed right now.";
+    //YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
+    //  = "Finds if the given button is pressed last frame.";
+    //
+    //YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description()
+    //  = "Gets the current cursor position in screen coordinates.";
   }
 
   Mouse::Mouse()
