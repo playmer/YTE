@@ -12,7 +12,7 @@ namespace YTE
 {
   YTEDefineType(FlybyCamera)
   {
-    YTERegisterType(FlybyCamera);
+    RegisterType<FlybyCamera>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 

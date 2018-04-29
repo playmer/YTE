@@ -14,15 +14,14 @@ namespace YTE
 {
   YTEDefineType(GamepadSystem)
   {
-    YTERegisterType(GamepadSystem);
-    auto func = Binding<decltype(&GamepadSystem::GetXboxController)>:: template BindFunction<&GamepadSystem::GetXboxController>("GetXboxController");
-    //auto size = CountFunctionArguments<decltype(&GamepadSystem::GetXboxController)>::template Size();
+    RegisterType<GamepadSystem>();
 
     //YTEBindFunction(&GamepadSystem::GetXboxController, YTENoOverload, "GetXboxController", YTEParameterNames("aController")).Description()
     //  = "Gets you the given controller. Warning: Controller may not be plugged in/active.";
   }
 
-  GamepadSystem::GamepadSystem() : mChecking(true) 
+  GamepadSystem::GamepadSystem()
+    : mChecking{ true }
   {
     for (uint8_t i = 0; i < 4; ++i)
     {

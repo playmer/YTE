@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(LaunchMenu)
   {
-    YTERegisterType(LaunchMenu);
+    RegisterType<LaunchMenu>();
 
     YTEBindProperty(&GetMenuToLaunch, &SetMenuToLaunch, "Menu To Launch")
       .AddAttribute<Serializable>()

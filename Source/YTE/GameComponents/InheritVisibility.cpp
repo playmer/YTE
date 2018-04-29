@@ -20,7 +20,7 @@ namespace YTE
 {
   YTEDefineType(InheritVisibility)
   {
-    YTERegisterType(InheritVisibility);
+    RegisterType<InheritVisibility>();
 
     std::vector<std::vector<Type*>> deps = {
       { TypeId<Model>(),

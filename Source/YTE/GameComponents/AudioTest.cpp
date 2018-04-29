@@ -39,7 +39,7 @@ namespace YTE
 
     YTEDefineType(AudioTest)
     {
-        YTERegisterType(AudioTest);
+        RegisterType<AudioTest>();
 
         std::vector<std::vector<Type*>> deps = 
         { 

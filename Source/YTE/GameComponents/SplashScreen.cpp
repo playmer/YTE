@@ -23,7 +23,7 @@ namespace YTE
 {
   YTEDefineType(SplashScreen)
   {
-    YTERegisterType(SplashScreen);
+    RegisterType<SplashScreen>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<WWiseEmitter>() } };
 

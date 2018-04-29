@@ -23,7 +23,7 @@ namespace YTE
 {
   YTEDefineType(Texture)
   {
-    YTERegisterType(Texture);
+    RegisterType<Texture>();
   }
 
 

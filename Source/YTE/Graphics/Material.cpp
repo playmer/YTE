@@ -11,7 +11,7 @@ namespace YTE
 {
   YTEDefineType(MaterialRepresentation)
   {
-    YTERegisterType(MaterialRepresentation);
+    RegisterType<MaterialRepresentation>();
 
     YTEBindProperty(&GetDiffuse, &SetDiffuse, "Diffuse")
       .AddAttribute<EditorProperty>()
@@ -91,7 +91,7 @@ namespace YTE
 
   YTEDefineType(Material)
   {
-    YTERegisterType(Material);
+    RegisterType<Material>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     GetStaticType()->AddAttribute<EditorHeaderList>(&Material::SubmeshMaterialDeserializer,

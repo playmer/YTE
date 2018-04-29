@@ -30,7 +30,7 @@ namespace YTEditor
 {
   YTEDefineType(LogHandler)
   {
-    YTERegisterType(LogHandler);
+    YTE::RegisterType<LogHandler>();
   }
 
   LogHandler::LogHandler(OutputConsole *aConsole)

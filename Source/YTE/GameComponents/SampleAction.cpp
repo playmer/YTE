@@ -5,7 +5,7 @@ namespace YTE
 {
   YTEDefineType(SampleAction)
   {
-    YTERegisterType(SampleAction);
+    RegisterType<SampleAction>();
   }
 
   SampleAction::SampleAction(Composition *aOwner, Space * aSpace, RSValue *aProperties)

@@ -13,7 +13,7 @@ namespace YTE
 {
   YTEDefineType(VkRTGameForwardDrawer)
   {
-    YTERegisterType(VkRTGameForwardDrawer);
+    RegisterType<VkRTGameForwardDrawer>();
   }
 
   VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,

@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(ButtonAnimate)
   {
-    YTERegisterType(ButtonAnimate);
+    RegisterType<ButtonAnimate>();
 
     YTEBindProperty(&GetScaleFactor, &SetScaleFactor, "ScaleFactor")
       .AddAttribute<Serializable>()

@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(QuitGame)
   {
-    YTERegisterType(QuitGame);
+    RegisterType<QuitGame>();
   }
 
   QuitGame::QuitGame(Composition* aOwner, Space* aSpace, RSValue* aProperties)

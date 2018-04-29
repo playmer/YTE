@@ -9,7 +9,7 @@ namespace YTE
 {
   YTEDefineType(InstantiatedInfluenceMap)
   {
-    YTERegisterType(InstantiatedInfluenceMap);
+    RegisterType<InstantiatedInfluenceMap>();
   }
 
 

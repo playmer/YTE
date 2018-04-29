@@ -21,27 +21,27 @@ namespace YTE
 
   YTEDefineType(MouseWheelEvent)
   {
-    YTERegisterType(MouseWheelEvent);
+    RegisterType<MouseWheelEvent>();
     YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
     YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseButtonEvent)
   {
-    YTERegisterType(MouseButtonEvent);
+    RegisterType<MouseButtonEvent>();
     YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
     YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseMoveEvent)
   {
-    YTERegisterType(MouseMoveEvent);
+    RegisterType<MouseMoveEvent>();
     YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
   }
 
   YTEDefineType(Mouse)
   {
-    //YTERegisterType(Mouse);
+    RegisterType<Mouse>();
     //YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
     //  = "Finds if the given button is pressed right now.";
     //YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()

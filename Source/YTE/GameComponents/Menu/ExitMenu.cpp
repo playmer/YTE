@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(ExitMenu)
   {
-    YTERegisterType(ExitMenu);
+    RegisterType<ExitMenu>();
 
     YTEBindProperty(&GetShouldCloseAll, &SetShouldCloseAll, "ShouldCloseAll")
       .AddAttribute<Serializable>()

@@ -18,7 +18,7 @@ namespace YTE
 {
   YTEDefineType(ToggleFullscreen)
   {
-    YTERegisterType(ToggleFullscreen);
+    RegisterType<ToggleFullscreen>();
   }
 
   ToggleFullscreen::ToggleFullscreen(Composition* aOwner, Space* aSpace, RSValue* aProperties)

@@ -18,7 +18,7 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 

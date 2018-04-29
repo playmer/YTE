@@ -13,7 +13,7 @@ namespace YTE
 {
   YTEDefineType(TestComponent)
   {
-    YTERegisterType(TestComponent);
+    RegisterType<TestComponent>();
   }
 
   TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)

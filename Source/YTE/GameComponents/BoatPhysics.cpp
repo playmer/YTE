@@ -15,7 +15,7 @@ namespace YTE
 {
   YTEDefineType(BoatPhysics)
   {
-    YTERegisterType(BoatPhysics);
+    RegisterType<BoatPhysics>();
 
     std::vector<std::vector<Type*>> deps = { 
       { TypeId<Model>() } 

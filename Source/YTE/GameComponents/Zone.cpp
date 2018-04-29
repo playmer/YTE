@@ -7,7 +7,7 @@ namespace YTE
 
   YTEDefineType(Zone)
   {
-    YTERegisterType(Zone);
+    RegisterType<Zone>();
 
     YTEBindProperty(&Zone::GetZoneName, &Zone::SetZoneName, "ZoneName")
       .AddAttribute<Serializable>()

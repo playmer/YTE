@@ -53,31 +53,31 @@ namespace YTE
   // Hud Events
   YTEDefineEvent(HudElementToggled);
 
-  YTEDefineType(RequestDialogueStart) { YTERegisterType(RequestDialogueStart); }
-  YTEDefineType(RequestNoticeBoardStart) { YTERegisterType(RequestNoticeBoardStart); }
-  YTEDefineType(DialogueSelect) { YTERegisterType(DialogueSelect); }
-  YTEDefineType(DialogueConfirm) { YTERegisterType(DialogueConfirm); }
-  YTEDefineType(DialogueExit) { YTERegisterType(DialogueExit); }
-  YTEDefineType(MenuStart) { YTERegisterType(MenuStart); }
-  YTEDefineType(MenuConfirm) { YTERegisterType(MenuConfirm); }
-  YTEDefineType(MenuExit) { YTERegisterType(MenuExit); }
-  YTEDefineType(MenuElementChange) { YTERegisterType(MenuElementChange); }
-  YTEDefineType(OptionsStickEvent) { YTERegisterType(OptionsStickEvent); }
-  YTEDefineType(OptionsFlickEvent) { YTERegisterType(OptionsFlickEvent); }
-  YTEDefineType(OptionsConfirmEvent) { YTERegisterType(OptionsConfirmEvent); }
-  YTEDefineType(MuteBypass) { YTERegisterType(MuteBypass); }
-  YTEDefineType(SailStateChanged) { YTERegisterType(SailStateChanged); }
-  YTEDefineType(BoatTurnEvent) { YTERegisterType(BoatTurnEvent); }
-  YTEDefineType(BoatDockEvent) { YTERegisterType(BoatDockEvent); }
-  YTEDefineType(BoatRotation) { YTERegisterType(BoatRotation); }
-  YTEDefineType(CameraRotateEvent) { YTERegisterType(CameraRotateEvent); }
-  YTEDefineType(DirectCameraEvent) { YTERegisterType(DirectCameraEvent); }
-  YTEDefineType(DebugSwitch) { YTERegisterType(DebugSwitch); }
-  YTEDefineType(HudElementToggled) { YTERegisterType(HudElementToggled); }
+  YTEDefineType(RequestDialogueStart)    { RegisterType<RequestDialogueStart>(); }
+  YTEDefineType(RequestNoticeBoardStart) { RegisterType<RequestNoticeBoardStart>(); }
+  YTEDefineType(DialogueSelect)          { RegisterType<DialogueSelect>(); }
+  YTEDefineType(DialogueConfirm)         { RegisterType<DialogueConfirm>(); }
+  YTEDefineType(DialogueExit)            { RegisterType<DialogueExit>(); }
+  YTEDefineType(MenuStart)               { RegisterType<MenuStart>(); }
+  YTEDefineType(MenuConfirm)             { RegisterType<MenuConfirm>(); }
+  YTEDefineType(MenuExit)                { RegisterType<MenuExit>(); }
+  YTEDefineType(MenuElementChange)       { RegisterType<MenuElementChange>(); }
+  YTEDefineType(OptionsStickEvent)       { RegisterType<OptionsStickEvent>(); }
+  YTEDefineType(OptionsFlickEvent)       { RegisterType<OptionsFlickEvent>(); }
+  YTEDefineType(OptionsConfirmEvent)     { RegisterType<OptionsConfirmEvent>(); }
+  YTEDefineType(MuteBypass)              { RegisterType<MuteBypass>(); }
+  YTEDefineType(SailStateChanged)        { RegisterType<SailStateChanged>(); }
+  YTEDefineType(BoatTurnEvent)           { RegisterType<BoatTurnEvent>(); }
+  YTEDefineType(BoatDockEvent)           { RegisterType<BoatDockEvent>(); }
+  YTEDefineType(BoatRotation)            { RegisterType<BoatRotation>(); }
+  YTEDefineType(CameraRotateEvent)       { RegisterType<CameraRotateEvent>(); }
+  YTEDefineType(DirectCameraEvent)       { RegisterType<DirectCameraEvent>(); }
+  YTEDefineType(DebugSwitch)             { RegisterType<DebugSwitch>(); }
+  YTEDefineType(HudElementToggled)       { RegisterType<HudElementToggled>(); }
 
   YTEDefineType(InputInterpreter)
   {
-    YTERegisterType(InputInterpreter);
+    RegisterType<InputInterpreter>();
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -153,7 +153,7 @@ namespace YTE
     mSpace->YTEDeregister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
   }
 
-  void InputInterpreter::OnFrameUpdate(LogicUpdate *aEvent)
+  void InputInterpreter::OnFrameUpdate(LogicUpdate *)
   {
     auto window = mView->GetWindow();
     if (window)

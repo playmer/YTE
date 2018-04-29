@@ -24,7 +24,7 @@ namespace YTE
 
   YTEDefineType(ModelChanged)
   {
-    YTERegisterType(ModelChanged);
+    RegisterType<ModelChanged>();
     YTEBindField(&ModelChanged::Object, "Object", PropertyBinding::Get);
   }
 
@@ -67,7 +67,7 @@ namespace YTE
 
   YTEDefineType(Model)
   {
-    YTERegisterType(Model);
+    RegisterType<Model>();
 
     GetStaticType()->AddAttribute<RunInEditor>();
 

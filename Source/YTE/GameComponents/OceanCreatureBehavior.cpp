@@ -17,7 +17,7 @@ namespace YTE
 {
   YTEDefineType(OceanCreatureBehavior) 
   { 
-    YTERegisterType(OceanCreatureBehavior); 
+    RegisterType<OceanCreatureBehavior>();
   
     YTEBindProperty(&OceanCreatureBehavior::GetFlipRotation, &OceanCreatureBehavior::SetFlipRotation, "Flip Rotation")
       .AddAttribute<EditorProperty>()

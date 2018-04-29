@@ -18,7 +18,7 @@ namespace YTE
 {
   YTEDefineType(ChangeResolution)
   {
-    YTERegisterType(ChangeResolution);
+    RegisterType<ChangeResolution>();
   }
 
   ChangeResolution::ChangeResolution(Composition* aOwner, Space* aSpace, RSValue* aProperties)

@@ -14,7 +14,7 @@ namespace YTE
 {
   YTEDefineType(Renderer)
   {
-    YTERegisterType(Renderer);
+    RegisterType<Renderer>();
   }
 
 

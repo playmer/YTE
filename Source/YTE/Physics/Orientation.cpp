@@ -19,7 +19,7 @@ namespace YTE
 
   YTEDefineType(OrientationChanged)
   {
-    YTERegisterType(OrientationChanged);
+    RegisterType<OrientationChanged>();
     YTEBindField(&OrientationChanged::Orientation, "Orientation", PropertyBinding::Get);
     YTEBindField(&OrientationChanged::ForwardVector, "ForwardVector", PropertyBinding::Get);
     YTEBindField(&OrientationChanged::RightVector, "RightVector", PropertyBinding::Get);
@@ -28,7 +28,7 @@ namespace YTE
 
   YTEDefineType(Orientation)
   {
-    YTERegisterType(Orientation);
+    RegisterType<Orientation>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };

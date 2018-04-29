@@ -17,7 +17,7 @@ namespace YTE
 {
   YTEDefineType(CameraBoom)
   {
-    YTERegisterType(CameraBoom);
+    RegisterType<CameraBoom>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
                                              { TypeId<Orientation>() } };

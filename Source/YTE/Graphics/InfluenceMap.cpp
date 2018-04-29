@@ -23,7 +23,7 @@ namespace YTE
 
   YTEDefineType(InfluenceMap)
   {
-    YTERegisterType(InfluenceMap);
+    RegisterType<InfluenceMap>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&InfluenceMap::GetRadius, &InfluenceMap::SetRadius, "Radius")

@@ -4,12 +4,12 @@ namespace YTE
 {
   YTEDefineType(Event)
   {
-    YTERegisterType(Event);
+    RegisterType<Event>();
   }
 
   YTEDefineType(EventHandler)
   {
-    YTERegisterType(EventHandler);
+    RegisterType<EventHandler>();
   }
 
 

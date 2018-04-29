@@ -55,7 +55,7 @@ namespace YTE
 {
   YTEDefineType(FFT_WaterSimulation)
   {
-    YTERegisterType(FFT_WaterSimulation);
+    RegisterType<FFT_WaterSimulation>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };

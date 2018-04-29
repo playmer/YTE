@@ -11,7 +11,7 @@ namespace YTE
 {
   YTEDefineType(InstantiatedModel)
   {
-    YTERegisterType(InstantiatedModel);
+    RegisterType<InstantiatedModel>();
   }
 
 

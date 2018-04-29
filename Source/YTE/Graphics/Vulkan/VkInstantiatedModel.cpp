@@ -14,7 +14,7 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedModel)
   {
-    YTERegisterType(VkInstantiatedModel);
+    RegisterType<VkInstantiatedModel>();
   }
 
   UBOAnimation VkInstantiatedModel::cAnimation;

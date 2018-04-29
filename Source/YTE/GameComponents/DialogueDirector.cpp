@@ -21,7 +21,10 @@
 namespace YTE
 {
   YTEDefineEvent(DialogueStart);
-  YTEDefineType(DialogueStart) { YTERegisterType(DialogueStart); }
+  YTEDefineType(DialogueStart)
+  {
+    RegisterType<DialogueStart>();
+  }
 
   YTEDefineEvent(UISelectEvent);
   YTEDefineEvent(UIFocusSwitchEvent);
@@ -29,17 +32,17 @@ namespace YTE
   YTEDefineEvent(UIUpdateContent);
 
   YTEDefineEvent(PlaySoundEvent);
-  YTEDefineType(PlaySoundEvent) { YTERegisterType(PlaySoundEvent); }
+  YTEDefineType(PlaySoundEvent) { RegisterType<PlaySoundEvent>();  }
 
-  YTEDefineType(UISelectEvent) { YTERegisterType(UISelectEvent); }
-  YTEDefineType(UIFocusSwitchEvent) { YTERegisterType(UIFocusSwitchEvent); }
-  YTEDefineType(UIDisplayEvent) { YTERegisterType(UIDisplayEvent); }
-  YTEDefineType(UIUpdateContent) { YTERegisterType(UIUpdateContent); }
+  YTEDefineType(UISelectEvent) { RegisterType<UISelectEvent>(); }
+  YTEDefineType(UIFocusSwitchEvent) { RegisterType<UIFocusSwitchEvent>(); }
+  YTEDefineType(UIDisplayEvent) { RegisterType<UIDisplayEvent>(); }
+  YTEDefineType(UIUpdateContent) { RegisterType<UIUpdateContent>(); }
 
 
   YTEDefineType(DialogueDirector)
   {
-    YTERegisterType(DialogueDirector);
+    RegisterType<DialogueDirector>();
   }
 
 
@@ -422,7 +425,7 @@ namespace YTE
   }
 
   // lol check em
-  void DialogueDirector::OnPostcardUpdate(PostcardUpdate *aEvent)
+  void DialogueDirector::OnPostcardUpdate(PostcardUpdate *)
   {
     mIsTutorial = false;
   }

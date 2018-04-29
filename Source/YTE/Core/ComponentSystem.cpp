@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(ComponentSystem)
   {
-    YTERegisterType(ComponentSystem);
+    RegisterType<ComponentSystem>();
 
   }
 

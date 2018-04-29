@@ -112,7 +112,7 @@ namespace YTE
 // TODO (Josh): Fix enum binding
 YTEDefineExternalType(btIDebugDraw::DebugDrawModes)
 {
-  YTERegisterType(btIDebugDraw::DebugDrawModes);
+  RegisterType<btIDebugDraw::DebugDrawModes>();
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP, "DisableBulletLCP");
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawAabb, "DrawAabb");
 //  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits, "DrawConstraintLimits");

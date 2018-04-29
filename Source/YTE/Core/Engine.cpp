@@ -42,20 +42,20 @@ namespace YTE
 
   YTEDefineType(LogicUpdate)
   {
-    YTERegisterType(LogicUpdate);
+    RegisterType<LogicUpdate>();
     YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
   {
-    YTERegisterType(BoundTypeChanged);
+    RegisterType<BoundTypeChanged>();
     YTEBindField(&BoundTypeChanged::aOldType, "OldType", PropertyBinding::GetSet);
     YTEBindField(&BoundTypeChanged::aNewType, "NewType", PropertyBinding::GetSet);
   }
 
   YTEDefineType(Engine)
   {
-    YTERegisterType(Engine);
+    RegisterType<Engine>();
     YTEBindFunction(&Engine::EndExecution, YTENoOverload, "EndExecution", YTENoNames).Description()
       = "End the execution of the program before the beginning of the next frame.";
     YTEBindProperty(&Engine::GetGamepadSystem, YTENoSetter, "GamepadSystem");

@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(AddComponentToEngine)
   {
-    YTERegisterType(AddComponentToEngine);
+    RegisterType<AddComponentToEngine>();
   }
 
   AddComponentToEngine::AddComponentToEngine(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -28,7 +28,7 @@ namespace YTE
 {
   YTEDefineType(RayCollisionInfo)
   {
-    YTERegisterType(RayCollisionInfo);
+    RegisterType<RayCollisionInfo>();
     YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
@@ -45,7 +45,7 @@ namespace YTE
 
   YTEDefineType(PhysicsSystem)
   {
-    YTERegisterType(PhysicsSystem);
+    RegisterType<PhysicsSystem>();
 
     GetStaticType()->AddAttribute<RunInEditor>();
 

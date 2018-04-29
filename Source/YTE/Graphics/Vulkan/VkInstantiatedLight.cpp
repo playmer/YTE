@@ -13,7 +13,7 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedLight)
   {
-    YTERegisterType(VkInstantiatedLight);
+    RegisterType<VkInstantiatedLight>();
   }
 
 

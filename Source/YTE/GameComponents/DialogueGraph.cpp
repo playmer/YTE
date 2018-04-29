@@ -13,19 +13,19 @@ All content (c) 2018 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(DialogueNode) { YTERegisterType(DialogueNode); }
+  YTEDefineType(DialogueNode) { RegisterType<DialogueNode>(); }
 
   YTEDefineEvent(DialogueNodeReady);
   YTEDefineEvent(DialogueNodeConfirm);
 
-  YTEDefineType(DialogueNodeReady) { YTERegisterType(DialogueNodeReady); }
-  YTEDefineType(DialogueNodeConfirm) { YTERegisterType(DialogueNodeConfirm); }
+  YTEDefineType(DialogueNodeReady)   { RegisterType<DialogueNodeReady>(); }
+  YTEDefineType(DialogueNodeConfirm) { RegisterType<DialogueNodeConfirm>(); }
 
   YTEDefineEvent(PlayAnimationEvent);
   
   YTEDefineType(PlayAnimationEvent) 
   { 
-    YTERegisterType(PlayAnimationEvent); 
+    RegisterType<PlayAnimationEvent>(); 
     YTEBindField(&PlayAnimationEvent::animationName, "animationName", PropertyBinding::GetSet);
   }
 

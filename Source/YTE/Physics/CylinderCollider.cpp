@@ -21,7 +21,7 @@ namespace YTE
 {
   YTEDefineType(CylinderCollider)
   {
-    YTERegisterType(CylinderCollider);
+    RegisterType<CylinderCollider>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

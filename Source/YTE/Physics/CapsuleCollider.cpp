@@ -22,7 +22,7 @@ namespace YTE
 {
   YTEDefineType(CapsuleCollider)
   {
-    YTERegisterType(CapsuleCollider);
+    RegisterType<CapsuleCollider>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

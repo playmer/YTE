@@ -18,7 +18,7 @@ namespace YTE
 
   YTEDefineType(XboxFlickEvent)
   {
-    YTERegisterType(XboxFlickEvent);
+    RegisterType<XboxFlickEvent>();
     YTEBindField(&XboxFlickEvent::FlickDirection, "FlickDirection", PropertyBinding::Get);
     YTEBindField(&XboxFlickEvent::FlickedStick, "FlickedStick", PropertyBinding::Get);
     YTEBindField(&XboxFlickEvent::Controller, "Controller", PropertyBinding::Get);
@@ -26,7 +26,7 @@ namespace YTE
   
   YTEDefineType(XboxStickEvent)
   {
-    YTERegisterType(XboxStickEvent);
+    RegisterType<XboxStickEvent>();
     YTEBindField(&XboxStickEvent::StickDirection, "StickDirection", PropertyBinding::Get);
     YTEBindField(&XboxStickEvent::Stick, "Stick", PropertyBinding::Get);
     YTEBindField(&XboxStickEvent::Controller, "Controller", PropertyBinding::Get);
@@ -34,7 +34,7 @@ namespace YTE
 
   YTEDefineType(XboxButtonEvent)
   {
-    YTERegisterType(XboxButtonEvent);
+    RegisterType<XboxButtonEvent>();
     YTEBindField(&XboxButtonEvent::Button, "Button", PropertyBinding::GetSet);
     YTEBindField(&XboxButtonEvent::Controller, "Controller", PropertyBinding::GetSet);
   }
@@ -42,22 +42,22 @@ namespace YTE
 
   YTEDefineType(XboxController)
   {
-    //YTERegisterType(XboxController);
-    //YTEBindProperty(&XboxController::GetId, YTENoSetter, "Id");
-    //YTEBindProperty(&XboxController::GetLeftStick, YTENoSetter, "LeftStick");
-    //YTEBindProperty(&XboxController::GetRightStick, YTENoSetter, "RightStick");
-    //YTEBindProperty(&XboxController::GetLeftTrigger, YTENoSetter, "LeftTrigger");
-    //YTEBindProperty(&XboxController::GetRightTrigger, YTENoSetter, "RightTrigger");
-    //YTEBindProperty(&XboxController::Active, YTENoSetter, "Active");
-    //
+    RegisterType<XboxController>();
+    YTEBindProperty(&XboxController::GetId, YTENoSetter, "Id");
+    YTEBindProperty(&XboxController::GetLeftStick, YTENoSetter, "LeftStick");
+    YTEBindProperty(&XboxController::GetRightStick, YTENoSetter, "RightStick");
+    YTEBindProperty(&XboxController::GetLeftTrigger, YTENoSetter, "LeftTrigger");
+    YTEBindProperty(&XboxController::GetRightTrigger, YTENoSetter, "RightTrigger");
+    YTEBindProperty(&XboxController::Active, YTENoSetter, "Active");
+    
     //YTEBindFunction(&XboxController::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
     //  = "Finds if the given button is pressed right now.";
     //YTEBindFunction(&XboxController::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
     //  = "Finds if the given button is pressed last frame.";
-    ////YTEBindFunction(&XboxController::Vibrate, YTENoOverload, "Vibrate", "aLeftSpeed, aRightSpeed").Description()
-    ////  = "Sets the controllers motors to vibrate via the specified amounts.";
-    //YTEBindFunction(&XboxController::VibrateForTime, YTENoOverload, "VibrateForTime", YTEParameterNames("aLeftSpeed", "aRightSpeed", "aTime")).Description()
-    //  = "The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.";
+    YTEBindFunction(&XboxController::Vibrate, YTENoOverload, "Vibrate", YTEParameterNames("aLeftSpeed", "aRightSpeed")).Description()
+      = "Sets the controllers motors to vibrate via the specified amounts.";
+    YTEBindFunction(&XboxController::VibrateForTime, YTENoOverload, "VibrateForTime", YTEParameterNames("aLeftSpeed", "aRightSpeed", "aTime")).Description()
+      = "The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.";
   }
 
   ///////////////////////////////////////

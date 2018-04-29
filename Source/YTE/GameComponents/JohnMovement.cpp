@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(JohnMovement) 
   { 
-    YTERegisterType(JohnMovement); 
+    RegisterType<JohnMovement>();
 
     // dock index
     YTEBindProperty(&JohnMovement::GetDockIndex, &JohnMovement::SetDockIndex, "Dock Index")

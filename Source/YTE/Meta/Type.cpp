@@ -1,3 +1,5 @@
+
+#include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Type.hpp"
 
 namespace YTE
@@ -6,13 +8,13 @@ namespace YTE
 
   YTEDefineType(DocumentedObject)
   {
-    YTERegisterType(DocumentedObject);
+    RegisterType<DocumentedObject>();
     YTEBindProperty(&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation, "Documentation");
   }
 
   YTEDefineType(Type)
   {
-    YTERegisterType(Type);
+    RegisterType<Type>();
 
     YTEBindStaticOrFreeFunction(Type, &Type::GetGlobalType, YTENoOverload, "GetGlobalType", YTEParameterNames("aName"));
 
@@ -164,24 +166,9 @@ namespace YTE
     return toReturn;
   }
 
-  YTEDefineType(Function)
-  {
-    YTERegisterType(Function);
-
-    YTEBindProperty(&Function::GetOwningType, YTENoSetter, "OwningType")
-      .Description() = "Type that owns this Function.";
-    YTEBindProperty(&Function::GetName, YTENoSetter, "Name")
-      .Description() = "Name of the property.";
-    YTEBindProperty(&Function::GetReturnType, YTENoSetter, "ReturnType")
-      .Description() = "The return type of the function.";
-    YTEBindProperty(&Function::IsStaticOrFree, YTENoSetter, "StaticOrFree")
-      .Description() = "Lets you know if this function is a static or free function, as in not a member function.";
-  }
-
-
   YTEDefineType(Property)
   {
-    YTERegisterType(Property);
+    RegisterType<Property>();
 
     YTEBindProperty(&Property::GetOwningType, YTENoSetter, "OwningType")
       .Description() = "Type that owns this Property.";
@@ -244,82 +231,82 @@ namespace YTE
 
   YTEDefineType(Field)
   {
-    YTERegisterType(Field);
+    RegisterType<Field>();
   }
 
   YTEDefineExternalType(YTE::String)
   {
-    YTERegisterType(YTE::String);
+    RegisterType<YTE::String>();
   }
 }
 
 
 YTEDefineExternalType(YTE::s8)
 {
-  YTERegisterType(YTE::s8);
+  RegisterType<YTE::s8>();
 }
 
 YTEDefineExternalType(YTE::i8)
 {
-  YTERegisterType(YTE::i8);
+  RegisterType<YTE::i8>();
 }
 
 YTEDefineExternalType(YTE::i16)
 {
-  YTERegisterType(YTE::i16);
+  RegisterType<YTE::i16>();
 }
 
 YTEDefineExternalType(YTE::i32)
 {
-  YTERegisterType(YTE::i32);
+  RegisterType<YTE::i32>();
 }
 
 YTEDefineExternalType(YTE::i64)
 {
-  YTERegisterType(YTE::i64);
+  RegisterType<YTE::i64>();
 }
 
 YTEDefineExternalType(YTE::u8)
 {
-  YTERegisterType(YTE::u8);
+  RegisterType<YTE::u8>();
 }
 
 YTEDefineExternalType(YTE::u16)
 {
-  YTERegisterType(YTE::u16);
+  RegisterType<YTE::u16>();
 }
 
 YTEDefineExternalType(YTE::u32)
 {
-  YTERegisterType(YTE::u32);
+  RegisterType<YTE::u32>();
 }
 
 YTEDefineExternalType(YTE::u64)
 {
-  YTERegisterType(YTE::u64);
+  RegisterType<YTE::u64>();
 }
 
 YTEDefineExternalType(void)
 {
-  YTERegisterType(void);
+  RegisterType<void>();
 }
 
 YTEDefineExternalType(bool)
 {
-  YTERegisterType(bool);
+  RegisterType<bool>();
 }
 
 YTEDefineExternalType(float)
 {
-  YTERegisterType(float);
+  RegisterType<float>();
 }
 
 YTEDefineExternalType(double)
 {
-  YTERegisterType(double);
+  RegisterType<double>();
 }
 
 YTEDefineExternalType(std::string)
 {
-  YTERegisterType(std::string);
+  RegisterType<std::string>();
 }

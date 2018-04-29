@@ -4,7 +4,7 @@
 #include <qlineedit.h>
 
 #include "YTE/Core/Component.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"

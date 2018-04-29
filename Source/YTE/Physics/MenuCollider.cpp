@@ -17,7 +17,7 @@ namespace YTE
 {
   YTEDefineType(MenuCollider)
   {
-    YTERegisterType(MenuCollider);
+    RegisterType<MenuCollider>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

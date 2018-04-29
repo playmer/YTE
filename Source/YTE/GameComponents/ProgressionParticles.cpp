@@ -25,12 +25,12 @@ namespace YTE
 
   YTEDefineType(ProgressionHappened)
   {
-    YTERegisterType(ProgressionHappened);
+    RegisterType<ProgressionHappened>();
   }
 
   YTEDefineType(ProgressionParticles)
   {
-    YTERegisterType(ProgressionParticles);
+    RegisterType<ProgressionParticles>();
 
     YTEBindProperty(&ProgressionParticles::GetPoofTime, &ProgressionParticles::SetPoofTime, "Poof Time")
       .AddAttribute<Serializable>()
@@ -126,11 +126,11 @@ namespace YTE
     mPoofEmitRate = aTime;
   }
 
-  void ProgressionParticles::OnProgressionHappened(ProgressionHappened * aEvent)
+  void ProgressionParticles::OnProgressionHappened(ProgressionHappened *aEvent)
   {
     YTEUnusedArgument(aEvent);
     mMakePoof = true;
-    mProgressionEmitter->SetEmitCount(mPoofCount);
+    mProgressionEmitter->SetEmitCount(static_cast<float>(mPoofCount));
     mProgressionEmitter->SetEmitRate(mPoofEmitRate);
   }
 }

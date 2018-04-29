@@ -15,7 +15,7 @@
 
 #include "YTE/Graphics/Drawers.hpp"
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 namespace YTE
 {

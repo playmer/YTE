@@ -14,7 +14,7 @@ namespace YTE
 {
   YTEDefineType(JobSystem)
   {
-    YTERegisterType(JobSystem);
+    RegisterType<JobSystem>();
   }
 
 

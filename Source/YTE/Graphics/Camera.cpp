@@ -72,7 +72,7 @@ namespace YTE
 {
   YTEDefineType(Camera) 
   { 
-    YTERegisterType(Camera);
+    RegisterType<Camera>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 

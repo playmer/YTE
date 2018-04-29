@@ -21,7 +21,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Graphics/Animation.hpp"
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Attribute.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"

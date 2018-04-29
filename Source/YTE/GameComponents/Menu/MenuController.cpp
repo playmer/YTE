@@ -22,13 +22,24 @@ namespace YTE
   YTEDefineEvent(MenuElementTrigger);
   YTEDefineEvent(MenuElementDeHover);
 
-  YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
-  YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
-  YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementHover)
+  {
+    RegisterType<MenuElementHover>();
+  }
+  
+  YTEDefineType(MenuElementTrigger) 
+  { 
+    RegisterType<MenuElementTrigger>();
+  }
+  
+  YTEDefineType(MenuElementDeHover)
+  {
+    RegisterType<MenuElementHover>();
+  }
 
   YTEDefineType(MenuController)
   {
-    YTERegisterType(MenuController);
+    RegisterType<MenuController>();
 
     YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
       .AddAttribute<Serializable>()

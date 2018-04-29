@@ -25,7 +25,7 @@ namespace YTE
 
   YTEDefineType(PostcardUpdate)
   {
-    YTERegisterType(PostcardUpdate);
+    RegisterType<PostcardUpdate>();
     YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
   }
 
@@ -33,20 +33,20 @@ namespace YTE
 
   YTEDefineType(HideHudEvent)
   {
-    YTERegisterType(HideHudEvent);
+    RegisterType<HideHudEvent>();
   }
 
   YTEDefineEvent(DialoguePossible);
 
   YTEDefineType(DialoguePossible)
   {
-    YTERegisterType(DialoguePossible);
+    RegisterType<DialoguePossible>();
     YTEBindField(&DialoguePossible::isPossible, "isPossible", PropertyBinding::GetSet);
   }
 
   YTEDefineType(HudController)
   {
-    YTERegisterType(HudController);
+    RegisterType<HudController>();
   }
 
   HudController::HudController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -346,7 +346,7 @@ namespace YTE
     OpenPostcard();
   }
 
-  void HudController::OnStartGame(StartGame *aEvent)
+  void HudController::OnStartGame(StartGame *)
   {
     ShowHud();
     
@@ -387,17 +387,17 @@ namespace YTE
     }
   }
 
-  void HudController::OnDialogueStart(DialogueStart *aEvent)
+  void HudController::OnDialogueStart(DialogueStart *)
   {
     HideHud();
   }
 
-  void HudController::OnDialogueExit(DialogueExit *aEvent)
+  void HudController::OnDialogueExit(DialogueExit *)
   {
     ShowHud();
   }
 
-  void HudController::OnHideHud(HideHudEvent *aEvent)
+  void HudController::OnHideHud(HideHudEvent *)
   {
     HideHud();
   }

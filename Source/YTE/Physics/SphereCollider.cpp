@@ -22,7 +22,7 @@ namespace YTE
 {
   YTEDefineType(SphereCollider)
   {
-    YTERegisterType(SphereCollider);
+    RegisterType<SphereCollider>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

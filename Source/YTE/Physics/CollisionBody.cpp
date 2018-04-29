@@ -20,7 +20,7 @@ namespace YTE
 {
   YTEDefineType(CollisionBody)
   {
-    YTERegisterType(CollisionBody);
+    RegisterType<CollisionBody>();
   }
   
   CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)

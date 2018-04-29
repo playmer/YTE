@@ -18,11 +18,14 @@
 namespace YTE
 {
   YTEDefineEvent(StartCredits);
-  YTEDefineType(StartCredits) { YTERegisterType(StartCredits); }
+  YTEDefineType(StartCredits)
+  {
+    RegisterType<StartCredits>();
+  }
 
   YTEDefineType(LaunchCredits)
   {
-    YTERegisterType(LaunchCredits);
+    RegisterType<LaunchCredits>();
   }
 
   LaunchCredits::LaunchCredits(Composition* aOwner, Space* aSpace, RSValue* aProperties)

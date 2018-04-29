@@ -13,7 +13,7 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedInfluenceMap)
   {
-    YTERegisterType(VkInstantiatedInfluenceMap);
+    RegisterType<VkInstantiatedInfluenceMap>();
   }
 
 

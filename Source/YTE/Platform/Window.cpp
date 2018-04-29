@@ -16,7 +16,7 @@ namespace YTE
 
   YTEDefineType(Window)
   {
-    //YTERegisterType(Window);
+    //RegisterType<Window);
     //YTEBindField(&Window::mKeyboard, "Keyboard", PropertyBinding::GetSet);
     //YTEBindField(&Window::mMouse, "Mouse", PropertyBinding::GetSet);
     //

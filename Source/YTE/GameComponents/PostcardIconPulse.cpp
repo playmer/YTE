@@ -20,7 +20,7 @@ namespace YTE
 {
   YTEDefineType(PostcardIconPulse)
   {
-    YTERegisterType(PostcardIconPulse);
+    RegisterType<PostcardIconPulse>();
   }
 
   PostcardIconPulse::PostcardIconPulse(Composition *aOwner, Space *aSpace, RSValue *aProperties)

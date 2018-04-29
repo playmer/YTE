@@ -20,7 +20,7 @@ namespace YTE
 
   YTEDefineType(DialogueElement)
   {
-    YTERegisterType(DialogueElement);
+    RegisterType<DialogueElement>();
 
     YTEBindProperty(&GetContentType, &SetContentType, "ContentType")
       .AddAttribute<EditorProperty>()

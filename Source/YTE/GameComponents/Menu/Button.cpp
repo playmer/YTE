@@ -38,7 +38,7 @@ namespace YTE
 
   YTEDefineType(Button)
   {
-    YTERegisterType(Button);
+    RegisterType<Button>();
 
     YTEBindProperty(&Button::GetHover, &Button::SetHover, "HoverSprite")
       .AddAttribute<EditorProperty>()

@@ -13,7 +13,7 @@ YTE Enums
 *******************************************************************************/
 YTEDefineExternalType(YTE::ControllerId)
 {
-  YTERegisterType(YTE::ControllerId);
+  RegisterType<YTE::ControllerId>();
 
 //  YTEBindEnumValue(ControllerId::Xbox_P1, "Xbox_P1");
 //  YTEBindEnumValue(ControllerId::Xbox_P2, "Xbox_P2");
@@ -25,7 +25,7 @@ YTEDefineExternalType(YTE::ControllerId)
 
 YTEDefineExternalType(YTE::XboxButtons)
 {
-  YTERegisterType(YTE::XboxButtons);
+  RegisterType<YTE::XboxButtons>();
 //
 //  YTEBindEnumValue(XboxButtons::DPAD_Up, "DPAD_Up");
 //  YTEBindEnumValue(XboxButtons::DPAD_Down, "DPAD_Down");
@@ -59,7 +59,7 @@ constexpr typename std::underlying_type<tEnumType>::type GetNativeType()
 
 YTEDefineExternalType(YTE::MouseButtons)
 {
-  YTERegisterType(YTE::MouseButtons);
+  RegisterType<YTE::MouseButtons>();
 
   //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
   //                                            GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>)>::template Size();
@@ -90,7 +90,7 @@ YTEDefineExternalType(YTE::MouseButtons)
 
 YTEDefineExternalType(YTE::Keys)
 {
-  YTERegisterType(YTE::Keys);
+  RegisterType<YTE::Keys>();
 
 //  YTEBindEnumValue(Keys::Mouse_Left, "Mouse_Left");
 //  YTEBindEnumValue(Keys::Mouse_Right, "Mouse_Right");

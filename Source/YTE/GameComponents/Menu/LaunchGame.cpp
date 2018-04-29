@@ -18,11 +18,14 @@
 namespace YTE
 {
   YTEDefineEvent(StartGame);
-  YTEDefineType(StartGame) { YTERegisterType(StartGame); }
+  YTEDefineType(StartGame)
+  { 
+    RegisterType<StartGame>();
+  }
 
   YTEDefineType(LaunchGame)
   {
-    YTERegisterType(LaunchGame);
+    RegisterType<LaunchGame>();
   }
 
   LaunchGame::LaunchGame(Composition* aOwner, Space* aSpace, RSValue* aProperties)

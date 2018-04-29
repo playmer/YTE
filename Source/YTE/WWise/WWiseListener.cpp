@@ -23,7 +23,7 @@ namespace YTE
 {
   YTEDefineType(WWiseListener)
   {
-    YTERegisterType(WWiseListener);
+    RegisterType<WWiseListener>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
                                              { TypeId<Orientation>() } };

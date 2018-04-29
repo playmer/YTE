@@ -15,7 +15,7 @@ namespace YTE
 {
   YTEDefineType(Object)
   {
-    YTERegisterType(Object);
+    RegisterType<Object>();
   }
 
   Property* Object::GetProperty(const std::string &aName, Type *aType)

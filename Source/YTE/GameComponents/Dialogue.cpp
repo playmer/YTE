@@ -11,7 +11,7 @@ namespace YTE
 {
   YTEDefineType(Dialogue)
   {
-    YTERegisterType(Dialogue);
+    RegisterType<Dialogue>();
 
     //std::vector<std::vector<Type*>> deps =
     //{

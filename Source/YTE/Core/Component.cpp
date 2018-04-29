@@ -12,7 +12,7 @@ namespace YTE
 {
   YTEDefineType(Component)
   {
-    YTERegisterType(Component);
+    RegisterType<Component>();
 
     YTEBindFunction(&Component::Remove, YTENoOverload, "Remove", YTENoNames).Description()
       = "Removes the component from its owner. This is delayed until the next frame.";
@@ -96,7 +96,7 @@ namespace YTE
 
   YTEDefineType(ComponentDependencies)
   {
-    YTERegisterType(ComponentDependencies);
+    RegisterType<ComponentDependencies>();
   }
 
   ComponentDependencies::ComponentDependencies(DocumentedObject *aObject,

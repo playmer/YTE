@@ -10,7 +10,7 @@ namespace YTE
 {
   YTEDefineType(TempDiffuseColoringComponent)
   {
-    YTERegisterType(TempDiffuseColoringComponent);
+    RegisterType<TempDiffuseColoringComponent>();
 
     YTEBindProperty(&TempDiffuseColoringComponent::GetDiffuseColor, &TempDiffuseColoringComponent::SetDiffuseColor, "Diffuse Color")
       .AddAttribute<EditorProperty>()

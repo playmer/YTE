@@ -16,7 +16,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(StarMovement) { YTERegisterType(StarMovement); }
+  YTEDefineType(StarMovement) { RegisterType<StarMovement>(); }
 
   StarMovement::StarMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

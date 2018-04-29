@@ -19,7 +19,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(BasilDialogue) { YTERegisterType(BasilDialogue); }
+  YTEDefineType(BasilDialogue) { RegisterType<BasilDialogue>(); }
 
   BasilDialogue::BasilDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -346,9 +346,9 @@ namespace YTE
         auto director = mSpace->FindFirstCompositionByName("Boat")->GetComponent<DialogueDirector>();
         director->DeregisterDirector();
 
-        DialoguePossible diagEvent;
+        DialoguePossible diagEventNested;
         diagEvent.isPossible = false;
-        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+        mSpace->SendEvent(Events::DialoguePossible, &diagEventNested);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)

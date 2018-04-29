@@ -31,7 +31,7 @@ namespace YTE
 {
   YTEDefineType(BoatController)
   {
-    YTERegisterType(BoatController);
+    RegisterType<BoatController>();
 
 
     YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "MaxSailSpeed")

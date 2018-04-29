@@ -11,7 +11,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <array>
 #include <list>
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 namespace YTE
 {

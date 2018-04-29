@@ -9,7 +9,7 @@ namespace YTE
 
   YTEDefineType(demo_InsideZone)
   {
-    YTERegisterType(demo_InsideZone);
+    RegisterType<demo_InsideZone>();
   }
 
   demo_InsideZone::demo_InsideZone(Composition *aOwner, Space *aSpace, RSValue *aProperties)

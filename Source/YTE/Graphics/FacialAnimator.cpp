@@ -25,7 +25,7 @@ namespace YTE
 {
   YTEDefineType(FacialAnimator)
   {
-    YTERegisterType(FacialAnimator);
+    RegisterType<FacialAnimator>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 

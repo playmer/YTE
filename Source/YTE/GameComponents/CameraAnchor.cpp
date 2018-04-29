@@ -15,11 +15,11 @@
 namespace YTE
 {
   YTEDefineEvent(AttachCamera);
-  YTEDefineType(AttachCamera) { YTERegisterType(AttachCamera); }
+  YTEDefineType(AttachCamera) { RegisterType<AttachCamera>(); }
 
   YTEDefineType(CameraAnchor)
   {
-    YTERegisterType(CameraAnchor);
+    RegisterType<CameraAnchor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

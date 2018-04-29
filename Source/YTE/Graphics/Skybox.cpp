@@ -43,7 +43,7 @@ namespace YTE
 
   YTEDefineType(Skybox)
   {
-    YTERegisterType(Skybox);
+    RegisterType<Skybox>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&Skybox::GetTexture, &Skybox::SetTexture, "Texture")

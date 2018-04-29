@@ -24,7 +24,7 @@ namespace YTE
 {
   YTEDefineType(RigidBody)
   {
-    YTERegisterType(RigidBody);
+    RegisterType<RigidBody>();
     YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();

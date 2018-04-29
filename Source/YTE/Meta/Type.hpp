@@ -90,11 +90,6 @@ void Name::InitializeType()
     return tValue;
   }
 
-
-#define YTERegisterType(aType) \
-  ::YTE::Type::AddGlobalType(::YTE::TypeId<aType>()->GetName(), ::YTE::TypeId<aType>()); \
-  YTEBindStaticOrFreeFunction(aType, &::YTE::TypeId<aType>, YTENoOverload, "GetStaticType", YTENoNames)
-
 #define YTEBindEnumValue(aEnumValue, aEnumName)    \
   ::YTE::BindFunction<decltype(GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>),    \
                       GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>,              \

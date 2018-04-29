@@ -24,7 +24,7 @@ namespace YTE
 {
   YTEDefineType(WWiseEmitter)
   {
-    YTERegisterType(WWiseEmitter);
+    RegisterType<WWiseEmitter>();
     
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 

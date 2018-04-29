@@ -41,7 +41,7 @@ namespace YTE
 
   YTEDefineType(GraphicsView)
   {
-    YTERegisterType(GraphicsView);
+    RegisterType<GraphicsView>();
 
     GetStaticType()->AddAttribute<RunInEditor>();
 

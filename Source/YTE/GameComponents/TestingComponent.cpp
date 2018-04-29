@@ -15,7 +15,7 @@ namespace YTE
 {
   YTEDefineType(TestingComponent)
   {
-    YTERegisterType(TestingComponent);
+    RegisterType<TestingComponent>();
 
     YTEBindProperty(&TestingComponent::GetCurrentAnimation, &TestingComponent::SetCurrentAnimation, "Current Animation")
       .AddAttribute<EditorProperty>()

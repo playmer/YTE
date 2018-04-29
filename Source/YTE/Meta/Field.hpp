@@ -1,6 +1,7 @@
 #pragma once
 
 #include "YTE/Meta/Property.hpp"
+#include "YTE/StandardLibrary/Any.hpp"
 #include "YTE/StandardLibrary/TypeTraits.hpp"
 
 namespace YTE
@@ -73,17 +74,17 @@ namespace YTE
 
     if (PropertyBinding::Get == aBinding || PropertyBinding::GetSet == aBinding)
     {
-      getter = Binding<FieldType(ObjectType::*)()>::BindPassedFunction("Getter", Field::Getter<FieldPointerType, aFieldPointer>);
+      getter = Detail::Meta::FunctionBinding<FieldType(ObjectType::*)()>::BindPassedFunction("Getter", Field::Getter<FieldPointerType, aFieldPointer>);
     }
 
     if (PropertyBinding::Set == aBinding || PropertyBinding::GetSet == aBinding)
     {
-      setter = Binding<void(ObjectType::*)(FieldType)>::BindPassedFunction("Setter", Field::Setter<FieldPointerType, aFieldPointer>);
+      setter = Detail::Meta::FunctionBinding<void(ObjectType::*)(FieldType)>::BindPassedFunction("Setter", Field::Setter<FieldPointerType, aFieldPointer>);
     }
 
     auto field = std::make_unique<Field>(aName, std::move(getter), std::move(setter));
 
-    auto type = TypeId<typename DecomposeFieldPointer<FieldPointerType>::FieldType>();
+    auto type = TypeId<FieldType>();
 
     field->SetPropertyType(type);
     field->SetOffset(Field::GetOffset<FieldPointerType, aFieldPointer>());

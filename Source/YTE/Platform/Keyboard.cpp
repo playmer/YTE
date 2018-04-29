@@ -19,13 +19,13 @@ namespace YTE
 
   YTEDefineType(KeyboardEvent)
   {
-    YTERegisterType(KeyboardEvent);
+    RegisterType<KeyboardEvent>();
     YTEBindField(&KeyboardEvent::Key, "Key", PropertyBinding::Get);
   }
 
   YTEDefineType(Keyboard)
   {
-    //YTERegisterType(Keyboard);
+    //RegisterType<Keyboard);
     //YTEBindFunction(&Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey")).Description()
     //  = "Finds if the given button is pressed right now.";
     //YTEBindFunction(&Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey")).Description()

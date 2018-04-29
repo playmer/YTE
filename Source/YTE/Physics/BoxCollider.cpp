@@ -21,7 +21,7 @@ namespace YTE
 {
   YTEDefineType(BoxCollider)
   {
-    YTERegisterType(BoxCollider);
+    RegisterType<BoxCollider>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

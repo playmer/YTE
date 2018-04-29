@@ -29,9 +29,9 @@ namespace YTE
 {
   YTEDefineEvent(NoticeBoardHookup);
 
-  YTEDefineType(NoticeBoardHookup) { YTERegisterType(NoticeBoardHookup); }
+  YTEDefineType(NoticeBoardHookup) { RegisterType<NoticeBoardHookup>(); }
 
-  YTEDefineType(NoticeBoard) { YTERegisterType(NoticeBoard); }
+  YTEDefineType(NoticeBoard) { RegisterType<NoticeBoard>(); }
 
   NoticeBoard::NoticeBoard(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -99,7 +99,7 @@ namespace YTE
     }
   }
 
-  void NoticeBoard::Update(LogicUpdate *aEvent)
+  void NoticeBoard::Update(LogicUpdate *)
   {
     // just for lerping the camera at the end
     if (mEndSequencePlaying && mCameraTransform)

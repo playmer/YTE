@@ -18,7 +18,7 @@ namespace YTE
 {
   YTEDefineType(VkRenderToScreen)
   {
-    YTERegisterType(VkRenderToScreen);
+    RegisterType<VkRenderToScreen>();
   }
 
 

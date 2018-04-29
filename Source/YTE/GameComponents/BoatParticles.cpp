@@ -22,7 +22,7 @@ namespace YTE
 {
   YTEDefineType(BoatParticles)
   {
-    YTERegisterType(BoatParticles);
+    RegisterType<BoatParticles>();
 
     YTEBindProperty(&BoatParticles::GetVarianceScalar, &BoatParticles::SetVarianceScalar, "VarianceScalar")
       .AddAttribute<Serializable>()

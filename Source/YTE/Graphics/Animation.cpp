@@ -24,7 +24,7 @@ namespace YTE
 
   YTEDefineType(KeyFrameChanged)
   {
-    YTERegisterType(KeyFrameChanged);
+    RegisterType<KeyFrameChanged>();
     YTEBindField(&KeyFrameChanged::animation, "animation", PropertyBinding::Get);
     YTEBindField(&KeyFrameChanged::time, "time", PropertyBinding::Get);
   }
@@ -33,7 +33,7 @@ namespace YTE
 
   YTEDefineType(AnimationAdded)
   {
-    YTERegisterType(AnimationAdded);
+    RegisterType<AnimationAdded>();
     YTEBindField(&AnimationAdded::animation, "animation", PropertyBinding::Get);
   }
 
@@ -41,14 +41,14 @@ namespace YTE
 
   YTEDefineType(AnimationRemoved)
   {
-    YTERegisterType(AnimationRemoved);
+    RegisterType<AnimationRemoved>();
     YTEBindField(&AnimationRemoved::animation, "animation", PropertyBinding::Get);
   }
 
 
   YTEDefineType(Animation)
   {
-    YTERegisterType(Animation);
+    RegisterType<Animation>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
@@ -357,7 +357,7 @@ namespace YTE
 
   YTEDefineType(Animator)
   {
-    YTERegisterType(Animator);
+    RegisterType<Animator>();
 
     GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
                                                     &Serializer,

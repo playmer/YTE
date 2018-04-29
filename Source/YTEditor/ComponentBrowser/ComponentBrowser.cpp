@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qscrollarea.h>
 #include <qscrollbar.h>
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ScriptBind.hpp"

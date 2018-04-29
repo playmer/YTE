@@ -17,7 +17,7 @@ namespace YTE
 {
   YTEDefineType(BasilMovement)
   {
-    YTERegisterType(BasilMovement);
+    RegisterType<BasilMovement>();
 
     // dock index
     YTEBindProperty(&BasilMovement::GetDockIndex, &BasilMovement::SetDockIndex, "Dock Index")

@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(LaunchLevel)
   {
-    YTERegisterType(LaunchLevel);
+    RegisterType<LaunchLevel>();
 
     YTEBindProperty(&GetLevelToLaunch, &SetLevelToLaunch, "LevelToLaunch")
       .AddAttribute<Serializable>()

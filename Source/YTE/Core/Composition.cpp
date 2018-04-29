@@ -28,7 +28,7 @@ namespace YTE
 
   YTEDefineType(InitializeEvent)
   {
-    YTERegisterType(InitializeEvent);
+    RegisterType<InitializeEvent>();
 
     YTEBindField(&InitializeEvent::CheckRunInEditor, "CheckRunInEditor", PropertyBinding::Get);
   }
@@ -37,7 +37,7 @@ namespace YTE
 
   YTEDefineType(CompositionAdded)
   {
-    YTERegisterType(CompositionAdded);
+    RegisterType<CompositionAdded>();
 
     YTEBindField(&CompositionAdded::mComposition, "Composition", PropertyBinding::Get);
   }
@@ -46,7 +46,7 @@ namespace YTE
 
   YTEDefineType(CompositionRemoved)
   {
-    YTERegisterType(CompositionRemoved);
+    RegisterType<CompositionRemoved>();
 
     YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
   }
@@ -55,7 +55,7 @@ namespace YTE
 
   YTEDefineType(ParentChanged)
   {
-    YTERegisterType(ParentChanged);
+    RegisterType<ParentChanged>();
 
     YTEBindField(&ParentChanged::mOldParent, "Old Parent", PropertyBinding::Get);
     YTEBindField(&ParentChanged::mNewParent, "New Parent", PropertyBinding::Get);
@@ -63,12 +63,12 @@ namespace YTE
 
   YTEDefineExternalType(CompositionMap::range)
   {
-    YTERegisterType(CompositionMap::range);
+    RegisterType<CompositionMap::range>();
   }
 
   YTEDefineType(Composition)
   {
-    YTERegisterType(Composition);
+    RegisterType<Composition>();
 
     YTEBindFunction(&Composition::Remove, YTENoOverload, "Remove", YTENoNames).Description()
       = "Removes the composition from it's owner. This is delayed until the next frame.";

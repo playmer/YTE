@@ -18,7 +18,7 @@ namespace YTE
 {
   YTEDefineType(ToggleMute)
   {
-    YTERegisterType(ToggleMute);
+    RegisterType<ToggleMute>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<WWiseEmitter>() } };
 

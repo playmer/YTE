@@ -39,7 +39,7 @@ namespace YTE
 
   YTEDefineType(Sprite)
   {
-    YTERegisterType(Sprite);
+    RegisterType<Sprite>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&Sprite::GetTexture, &Sprite::SetTexture, "Texture")
@@ -218,7 +218,7 @@ namespace YTE
       return;
     }
 
-    auto texture = mRenderer->CreateTexture(mTextureName, TextureType::e2D);
+    auto texture = mRenderer->GetTexture(mTextureName);
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;

@@ -74,7 +74,7 @@ namespace YTE
 
   YTEDefineType(SpriteText)
   {
-    YTERegisterType(SpriteText);
+    RegisterType<SpriteText>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };

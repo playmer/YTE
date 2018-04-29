@@ -3,7 +3,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTE/Graphics/Model.hpp"
 

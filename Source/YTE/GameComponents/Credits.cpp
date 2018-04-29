@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(Credits)
   {
-    YTERegisterType(Credits);
+    RegisterType<Credits>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

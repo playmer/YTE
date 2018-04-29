@@ -27,7 +27,7 @@
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTE/Platform/DialogBox.hpp"
 

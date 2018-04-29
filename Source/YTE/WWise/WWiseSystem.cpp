@@ -41,7 +41,7 @@ namespace YTE
 {
   YTEDefineType(WWiseSystem)
   {
-    YTERegisterType(WWiseSystem);
+    RegisterType<WWiseSystem>();
 
     YTEBindProperty(&WWiseSystem::GetMute, &WWiseSystem::SetMute, "Mute");
     YTEBindFunction(&WWiseSystem::SetRTPC, (void (WWiseSystem::*) (u64, float)), "SetRTPC", YTEParameterNames("aRTPC", "aValue"));

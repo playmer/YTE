@@ -11,7 +11,7 @@ namespace YTE
 
   YTEDefineType(LineDrawer)
   {
-    YTERegisterType(LineDrawer);
+    RegisterType<LineDrawer>();
   }
 
   LineDrawer::LineDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView)
@@ -143,7 +143,7 @@ namespace YTE
   /////////////////////////////////////////////////////////////////////////////////////////////////
   YTEDefineType(TriangleDrawer)
   {
-    YTERegisterType(TriangleDrawer);
+    RegisterType<TriangleDrawer>();
   }
 
   TriangleDrawer::TriangleDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView)
@@ -280,7 +280,7 @@ namespace YTE
 
   YTEDefineType(CurveDrawer)
   {
-    YTERegisterType(CurveDrawer);
+    RegisterType<CurveDrawer>();
   }
 
   CurveDrawer::CurveDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView)

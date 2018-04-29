@@ -28,7 +28,7 @@ namespace YTE
 
   YTEDefineType(TransformChanged)
   {
-    YTERegisterType(TransformChanged);
+    RegisterType<TransformChanged>();
     YTEBindField(&TransformChanged::Position, "Position", PropertyBinding::Get);
     YTEBindField(&TransformChanged::Rotation, "Rotation", PropertyBinding::Get);
     YTEBindField(&TransformChanged::Scale, "Scale", PropertyBinding::Get);
@@ -61,7 +61,7 @@ namespace YTE
 
   YTEDefineType(Transform)
   {
-    YTERegisterType(Transform);
+    RegisterType<Transform>();
     GetStaticType()->AddAttribute<RunInEditor>();
 
     YTEBindProperty(&Transform::GetTranslation, &Transform::SetTranslationProperty, "Translation")
