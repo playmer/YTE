@@ -42,7 +42,7 @@ namespace YTEditor
     ObjectBrowser(MainWindow* aMainWindow, QWidget* aParent = nullptr);
     ~ObjectBrowser();
 
-    void ClearObjectBrowser();
+    void ClearObjectList();
 
     ObjectItem* AddObject(char const*aCompositionName,
                           char const*aArchetypeName,

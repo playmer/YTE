@@ -22,11 +22,12 @@ namespace YTEditor
   {
   public:
     FileMenu(MainWindow *aMainWindow);
+    
+    void SaveLevel();
 
   private:
     void NewLevel();
     void OpenLevel();
-    void SaveLevel();
     void SaveLevelAs();
 
     void OpenFile();

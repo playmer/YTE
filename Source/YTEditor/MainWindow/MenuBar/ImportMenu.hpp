@@ -16,21 +16,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <filesystem>
 
-#include <qmenu.h>
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTEditor
 {
+  class OutputConsole;
 
-  class MainWindow;
-
-  class ImportMenu : public QMenu
+  class ImportMenu : public Menu
   {
   public:
 
     ImportMenu(MainWindow *aMainWindow);
-    ~ImportMenu();
 
   private:
+
+    OutputConsole *mConsole;
 
     using path = std::experimental::filesystem::path;
 
@@ -102,8 +102,6 @@ namespace YTEditor
     void ImportTexture();
     void ImportAnimation();
     void ImportModel();
-
-    MainWindow * mMainWindow;
 
   };
 

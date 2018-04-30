@@ -31,29 +31,16 @@ namespace YTEditor
 {
 
   LevelMenu::LevelMenu(MainWindow *aMainWindow)
-    : QMenu("Level"),
-    mMainWindow(aMainWindow)
+    : Menu("Level", aMainWindow)
+    , mObjectBrowser(&aMainWindow->GetObjectBrowser())
+    , mComponentTree(aMainWindow->GetComponentBrowser().GetComponentTree())
   {
-    addMenu(MakeCurrentLevelMenu());
-    addMenu(MakeSpaceMenu());
-    addMenu(MakeEngineMenu());
-    addMenu(MakeSetLightingMenu());
-    addAction(MakeSelectCameraAct());
-  }
-
-  LevelMenu::~LevelMenu()
-  {
-  }
-
-  QMenu* LevelMenu::MakeCurrentLevelMenu()
-  {
-    QMenu *menu = new QMenu("Current Level");
-
-    QAction *reloadAct = new QAction("Reload");
-    menu->addAction(reloadAct);
-    connect(reloadAct, &QAction::triggered, this, &LevelMenu::ReloadCurrentLevel);
-
-    return menu;
+    AddAction<LevelMenu>("Reload Level", &LevelMenu::SelectEngine, this);
+    AddAction<LevelMenu>("Select Space", &LevelMenu::SelectSpace, this);
+    AddAction<LevelMenu>("Select Engine", &LevelMenu::SelectEngine, this);
+    AddAction<LevelMenu>("Select Camera", &LevelMenu::SelectCamera, this);
+    
+    AddMenu(MakeSetLightingMenu());
   }
 
   void LevelMenu::ReloadCurrentLevel()
@@ -63,10 +50,10 @@ namespace YTEditor
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
-    mMainWindow->GetObjectBrowser().ClearObjectBrowser();
+    mObjectBrowser->ClearObjectList();
 
     // Set the name to the new level
-    mMainWindow->GetObjectBrowser().setHeaderLabel(lvl->GetName().c_str());
+    mObjectBrowser->setHeaderLabel(lvl->GetName().c_str());
     /////////////////////////////////////////////////////////////////////////////
 
     // Iterate through all the objects in the map / on the level
@@ -75,29 +62,14 @@ namespace YTEditor
       // Get the name of the object
       auto objName = component->GetName();
 
-      auto &objectBrowser = mMainWindow->GetObjectBrowser();
-
       // Store the name and composition pointer in the object browser
-      ObjectItem *topItem = objectBrowser.AddExistingComposition(objName.c_str(),
-                                                                 component.get());
+      ObjectItem *topItem = mObjectBrowser->AddExistingComposition(objName.c_str(), component);
 
       if (topItem)
       {
-        objectBrowser.LoadAllChildObjects(component.get(), topItem);
+        mObjectBrowser->LoadAllChildObjects(cmp.second.get(), topItem);
       }
-
     }
-  }
-
-  QMenu* LevelMenu::MakeSpaceMenu()
-  {
-    QMenu *menu = new QMenu("Space");
-
-    QAction *selectAct = new QAction("Select");
-    menu->addAction(selectAct);
-    connect(selectAct, &QAction::triggered, this, &LevelMenu::SelectSpace);
-
-    return menu;
   }
 
   void LevelMenu::SelectSpace()
@@ -105,19 +77,11 @@ namespace YTEditor
     // Get the space that represents the main session
     YTE::Space *lvl = mMainWindow->GetEditingLevel();
 
-    auto &objectBrowser = mMainWindow->GetObjectBrowser();
-    auto objItem = objectBrowser.AddExistingComposition(mMainWindow->GetRunningLevelName().c_str(), lvl);
+    auto objItem = mObjectBrowser->AddExistingComposition(mMainWindow->GetRunningLevelName().c_str(), lvl);
 
-    objectBrowser.setCurrentItem(objItem);
+    mObjectBrowser->setCurrentItem(objItem);
 
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(lvl);
-  }
-
-  QAction* LevelMenu::MakeSelectCameraAct()
-  {
-    QAction *action = new QAction("Select Camera");
-    connect(action, &QAction::triggered, this, &LevelMenu::SelectCamera);
-    return action;
+    mComponentTree->LoadGameObject(lvl);
   }
 
   void LevelMenu::SelectCamera()
@@ -126,18 +90,7 @@ namespace YTEditor
     auto cameraComponent = view->GetActiveCamera();
     auto cameraObject = cameraComponent->GetOwner();
 
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cameraObject);
-  }
-
-  QMenu* LevelMenu::MakeEngineMenu()
-  {
-    QMenu *menu = new QMenu("Engine");
-
-    QAction *selectAct = new QAction("Select");
-    menu->addAction(selectAct);
-    connect(selectAct, &QAction::triggered, this, &LevelMenu::SelectEngine);
-
-    return menu;
+    mComponentTree->LoadGameObject(cameraObject);
   }
 
   void LevelMenu::SelectEngine()
@@ -145,23 +98,17 @@ namespace YTEditor
     // Get all the compositions on the engine
     YTE::Composition *engine = mMainWindow->GetRunningEngine();
 
-    auto &objBrowser = mMainWindow->GetObjectBrowser();
-    objBrowser.SelectNoItem();
+    mObjectBrowser->SelectNoItem();
 
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(engine);
+    mComponentTree->LoadGameObject(engine);
   }
 
-  QMenu* LevelMenu::MakeSetLightingMenu()
+  Menu* LevelMenu::MakeSetLightingMenu()
   {
-    QMenu *menu = new QMenu("Lighting");
+    Menu *menu = new Menu("Lighting", mMainWindow);
 
-    QAction *lightsOn = new QAction("All Lights On");
-    menu->addAction(lightsOn);
-    connect(lightsOn, &QAction::triggered, this, &LevelMenu::TurnLightsOn);
-
-    QAction *lightsOff = new QAction("All Lights Off");
-    menu->addAction(lightsOff);
-    connect(lightsOff, &QAction::triggered, this, &LevelMenu::TurnLightsOff);
+    menu->AddAction<LevelMenu>("All Lights On", &LevelMenu::TurnLightsOn, this);
+    menu->AddAction<LevelMenu>("All Lights Off", &LevelMenu::TurnLightsOff, this);
 
     return menu;
   }
@@ -187,5 +134,4 @@ namespace YTEditor
 
     renderer->SetLights(false);
   }
-
 }

@@ -26,32 +26,22 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
   WindowsMenu::WindowsMenu(MainWindow * aMainWindow)
-    : QMenu("Windows"), mMainWindow(aMainWindow)
+    : Menu("Windows", aMainWindow)
   {
-    addMenu(MakeObjectBrowserMenu());
-    addMenu(MakeComponentBrowserMenu());
-    addMenu(MakeOutputConsoleMenu());
-    addMenu(MakeMaterialViewerMenu());
-    addMenu(MakeFileViewerMenu());
-    addMenu(MakeWWiseViewerMenu());
+    AddMenu(MakeObjectBrowserMenu());
+    AddMenu(MakeComponentBrowserMenu());
+    AddMenu(MakeOutputConsoleMenu());
+    AddMenu(MakeMaterialViewerMenu());
+    AddMenu(MakeFileViewerMenu());
+    AddMenu(MakeWWiseViewerMenu());
   }
 
-  WindowsMenu::~WindowsMenu()
+  Menu* WindowsMenu::MakeObjectBrowserMenu()
   {
-  }
+    Menu *menu = new Menu("Object Browser", mMainWindow);
 
-
-  QMenu* WindowsMenu::MakeObjectBrowserMenu()
-  {
-    QMenu *menu = new QMenu("Object Browser");
-
-    QAction *openAct = new QAction("Open");
-    menu->addAction(openAct);
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenObjectBrowser);
-
-    QAction *closeAct = new QAction("Exit");
-    menu->addAction(closeAct);
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseObjectBrowser);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenObjectBrowser, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseObjectBrowser, this);
 
     return menu;
   }
@@ -66,17 +56,12 @@ namespace YTEditor
     mMainWindow->GetObjectBrowserDock()->hide();
   }
 
-  QMenu* WindowsMenu::MakeComponentBrowserMenu()
+  Menu* WindowsMenu::MakeComponentBrowserMenu()
   {
-    QMenu *menu = new QMenu("Component Browser");
+    Menu *menu = new Menu("Component Browser", mMainWindow);
 
-    QAction *openAct = new QAction("Open");
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenComponentBrowser);
-    menu->addAction(openAct);
-
-    QAction *closeAct = new QAction("Exit");
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseComponentBrowser);
-    menu->addAction(closeAct);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenComponentBrowser, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseComponentBrowser, this);
 
     return menu;
   }
@@ -91,17 +76,12 @@ namespace YTEditor
     mMainWindow->GetComponentBrowserDock()->hide();
   }
 
-  QMenu* WindowsMenu::MakeOutputConsoleMenu()
+  Menu* WindowsMenu::MakeOutputConsoleMenu()
   {
-    QMenu* menu = new QMenu("Output Console");
+    Menu* menu = new Menu("Output Console", mMainWindow);
 
-    QAction *openAct = new QAction("Open");
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenOutputConsole);
-    menu->addAction(openAct);
-
-    QAction *closeAct = new QAction("Exit");
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseOutputConsole);
-    menu->addAction(closeAct);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenOutputConsole, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseOutputConsole, this);
 
     return menu;
   }
@@ -116,17 +96,12 @@ namespace YTEditor
     mMainWindow->GetOutputConsoleDock()->hide();
   }
 
-  QMenu* WindowsMenu::MakeMaterialViewerMenu()
+  Menu* WindowsMenu::MakeMaterialViewerMenu()
   {
-    QMenu *menu = new QMenu("Material Viewer");
+    Menu *menu = new Menu("Material Viewer", mMainWindow);
 
-    QAction *openAct = new QAction("Open");
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenMaterialViewer);
-    menu->addAction(openAct);
-
-    QAction *closeAct = new QAction("Exit");
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseMaterialViewer);
-    menu->addAction(closeAct);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenMaterialViewer, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseMaterialViewer, this);
 
     return menu;
   }
@@ -141,17 +116,12 @@ namespace YTEditor
     mMainWindow->GetMaterialViewerDock()->hide();
   }
 
-  QMenu* WindowsMenu::MakeFileViewerMenu()
+  Menu* WindowsMenu::MakeFileViewerMenu()
   {
-    QMenu *menu = new QMenu("File Viewer");
+    Menu *menu = new Menu("File Viewer", mMainWindow);
 
-    QAction *openAct = new QAction("Open");
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenFileViewer);
-    menu->addAction(openAct);
-
-    QAction *closeAct = new QAction("Exit");
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseFileViewer);
-    menu->addAction(closeAct);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenFileViewer, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseFileViewer, this);
 
     return menu;
   }
@@ -166,17 +136,12 @@ namespace YTEditor
     mMainWindow->GetFileViewerDock()->hide();
   }
 
-  QMenu* WindowsMenu::MakeWWiseViewerMenu()
+  Menu* WindowsMenu::MakeWWiseViewerMenu()
   {
-    QMenu *menu = new QMenu("WWise Viewer");
+    Menu *menu = new Menu("WWise Viewer", mMainWindow);
 
-    QAction *openAct = new QAction("Open");
-    connect(openAct, &QAction::triggered, this, &WindowsMenu::OpenWWiseViewer);
-    menu->addAction(openAct);
-
-    QAction *closeAct = new QAction("Exit");
-    connect(closeAct, &QAction::triggered, this, &WindowsMenu::CloseWWiseViewer);
-    menu->addAction(closeAct);
+    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenWWiseViewer, this);
+    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseWWiseViewer, this);
 
     return menu;
   }
@@ -190,5 +155,4 @@ namespace YTEditor
   {
     mMainWindow->GetWWiseWidgetDock()->hide();
   }
-
 }

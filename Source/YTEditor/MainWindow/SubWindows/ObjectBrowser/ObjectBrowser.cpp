@@ -77,7 +77,7 @@ namespace YTEditor
   {
   }
 
-  void ObjectBrowser::ClearObjectBrowser()
+  void ObjectBrowser::ClearObjectList()
   {
     this->clear();
   }

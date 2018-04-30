@@ -105,8 +105,10 @@ namespace YTEditor
     LoadPreferences(std::move(aPrefFile));
     SetWindowSettings();
     ConstructToolbar();
-    ConstructMenuBar();
     ConstructSubWidgets();
+
+    // menu bar must be constructed after subwidgets b/c of cached pointers
+    ConstructMenuBar();
 
     // Get all the compositions on the engine
     auto& engineMap = mRunningEngine->GetCompositions();
@@ -271,7 +273,7 @@ namespace YTEditor
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
-    GetObjectBrowser().ClearObjectBrowser();
+    GetObjectBrowser().ClearObjectList();
 
     // Set the name to the new level
     GetObjectBrowser().setHeaderLabel(lvl->GetName().c_str());
@@ -770,7 +772,7 @@ namespace YTEditor
     menuBar->addMenu(new LevelMenu(this));
     menuBar->addMenu(new ImportMenu(this));
 
-    this->setMenuBar(menuBar);
+    setMenuBar(menuBar);
   }
 
   void MainWindow::closeEvent(QCloseEvent *event)

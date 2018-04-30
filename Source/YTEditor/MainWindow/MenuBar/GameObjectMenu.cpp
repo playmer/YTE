@@ -37,19 +37,20 @@ namespace YTEditor
 {
   GameObjectMenu::GameObjectMenu(MainWindow *aMainWindow)
     : Menu("Game Object", aMainWindow)
+    , mObjectBrowser(&mMainWindow->GetObjectBrowser())
     , mComponentBrowser(&aMainWindow->GetComponentBrowser())
     , mComponentTree(mComponentBrowser->GetComponentTree())
   {
-    AddAction<GameObjectMenu>("Empty Object", &GameObjectMenu::CreateEmptyObject);
+    AddAction<GameObjectMenu>("Empty Object", &GameObjectMenu::CreateEmptyObject, this);
 
     AddMenu(Make3DObjectMenu());
     AddMenu(Make2DObjectMenu());
     AddMenu(MakeLightMenu());
     AddMenu(MakeAudioMenu());
 
-    AddAction<GameObjectMenu>("Particle Emitter", &GameObjectMenu::CreateParticleSystem);
+    AddAction<GameObjectMenu>("Particle Emitter", &GameObjectMenu::CreateParticleSystem, this);
 
-    AddAction<GameObjectMenu>("Game Camera", &GameObjectMenu::CreateCamera);
+    AddAction<GameObjectMenu>("Game Camera", &GameObjectMenu::CreateCamera, this);
   }
 
   void GameObjectMenu::CreateEmptyObject()
@@ -179,8 +180,8 @@ namespace YTEditor
   {
     Menu *menu = new Menu("Audio", mMainWindow);
 
-    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener);
-    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener);
+    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener, this);
+    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener, this);
 
     return menu;
   }
@@ -233,9 +234,9 @@ namespace YTEditor
   {
     Menu *menu = new Menu("UI", mMainWindow);
 
-    menu->AddAction<GameObjectMenu>("Text", &GameObjectMenu::CreateText);
-    menu->AddAction<GameObjectMenu>("Image", &GameObjectMenu::CreateImage);
-    menu->AddAction<GameObjectMenu>("Button", &GameObjectMenu::CreateButton);
+    menu->AddAction<GameObjectMenu>("Text", &GameObjectMenu::CreateText, this);
+    menu->AddAction<GameObjectMenu>("Image", &GameObjectMenu::CreateImage, this);
+    menu->AddAction<GameObjectMenu>("Button", &GameObjectMenu::CreateButton, this);
 
     return menu;
   }

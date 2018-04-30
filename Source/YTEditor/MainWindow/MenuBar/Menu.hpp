@@ -27,7 +27,7 @@ namespace YTEditor
     Menu(const char* aHeader, MainWindow *aMainWindow);
 
     template<typename T>
-    void AddAction(const char *aHeader, void (T::*aFn)(), Menu *aMenu = this, const char *aTooltip = "");
+    void AddAction(const char *aHeader, void (T::*aFn)(), Menu *aMenu, const char *aTooltip = "");
     
     void AddMenu(Menu *aMenu);
   
@@ -36,7 +36,7 @@ namespace YTEditor
   };
 
   template<typename T>
-  void Menu::AddAction(const char *aHeader, void(T::*aFn)(), Menu *aMenu = this, const char *aTooltip)
+  void Menu::AddAction(const char *aHeader, void(T::*aFn)(), Menu *aMenu, const char *aTooltip)
   {
     QAction *action = new QAction(aHeader);
     addAction(action);

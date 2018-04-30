@@ -14,39 +14,38 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qmenu.h>
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTEditor
 {
+  class ObjectBrowser;
+  class ComponentTree;
 
-  class MainWindow;
-
-  class LevelMenu : public QMenu
+  class LevelMenu : public Menu
   {
   public:
-
     LevelMenu(MainWindow *aMainWindow);
-    ~LevelMenu();
 
   private:
 
-    QMenu* MakeCurrentLevelMenu();
+    ObjectBrowser *mObjectBrowser;
+    ComponentTree *mComponentTree;
+
+    Menu* MakeCurrentLevelMenu();
     void ReloadCurrentLevel();
 
-    QMenu* MakeSpaceMenu();
+    Menu* MakeSpaceMenu();
     void SelectSpace();
 
     QAction* MakeSelectCameraAct();
     void SelectCamera();
 
-    QMenu* MakeEngineMenu();
+    Menu* MakeEngineMenu();
     void SelectEngine();
 
-    QMenu* MakeSetLightingMenu();
+    Menu* MakeSetLightingMenu();
     void TurnLightsOn();
     void TurnLightsOff();
-
-    MainWindow *mMainWindow;
 
   };
 }

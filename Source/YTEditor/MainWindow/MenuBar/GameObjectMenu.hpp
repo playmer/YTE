@@ -25,8 +25,9 @@ namespace YTE
 
 namespace YTEditor
 {
-
-  class MainWindow;
+  class ObjectBrowser;
+  class ComponentBrowser;
+  class ComponentTree;
 
   class GameObjectMenu : public Menu
   {
@@ -67,10 +68,8 @@ namespace YTEditor
     void CreateImage();
     void CreateButton();
 
-    QAction * MakeParticleSystemAction();
     void CreateParticleSystem();
 
-    QAction * MakeCameraAction();
     void CreateCamera();
 
   };

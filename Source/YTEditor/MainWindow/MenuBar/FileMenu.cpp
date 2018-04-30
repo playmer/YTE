@@ -40,20 +40,20 @@ namespace YTEditor
     : Menu("File", aMainWindow)
   {
     // add menu options for creating, saving, and opening levels
-    AddAction<FileMenu>("New Level", &FileMenu::NewLevel);
-    AddAction<FileMenu>("Open Level", &FileMenu::OpenLevel);
+    AddAction<FileMenu>("New Level", &FileMenu::NewLevel, this);
+    AddAction<FileMenu>("Open Level", &FileMenu::OpenLevel, this);
     AddAction<FileMenu>("Save Level", &FileMenu::SaveLevel, this, "Ctrl+S");
     AddAction<FileMenu>("Save Level As", &FileMenu::SaveLevelAs, this, "Ctrl+Alt+S");
 
     addSeparator();
 
     // menu option for opening a file of any type
-    AddAction<FileMenu>("Open File", &FileMenu::OpenFile);
+    AddAction<FileMenu>("Open File", &FileMenu::OpenFile, this);
 
     addSeparator();
 
     // menu option for closing the editor
-    AddAction<FileMenu>("Exit Editor", &FileMenu::ExitEditor);
+    AddAction<FileMenu>("Exit Editor", &FileMenu::ExitEditor, this);
   }
 
   void FileMenu::NewLevel()

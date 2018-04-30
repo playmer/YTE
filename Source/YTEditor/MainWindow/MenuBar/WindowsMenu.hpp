@@ -15,51 +15,45 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qmenu.h>
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTEditor
 {
-
-  class MainWindow;
-
-  class WindowsMenu : public QMenu
+  class WindowsMenu : public Menu
   {
   public:
 
     WindowsMenu(MainWindow * aMainWindow);
-    ~WindowsMenu();
 
   private:
 
-    MainWindow * mMainWindow;
-
-    QMenu *mObjectBrowserMenu;
-    QMenu* MakeObjectBrowserMenu();
+    Menu *mObjectBrowserMenu;
+    Menu* MakeObjectBrowserMenu();
     void OpenObjectBrowser();
     void CloseObjectBrowser();
 
-    QMenu *mComponentBrowserMenu;
-    QMenu* MakeComponentBrowserMenu();
+    Menu *mComponentBrowserMenu;
+    Menu* MakeComponentBrowserMenu();
     void OpenComponentBrowser();
     void CloseComponentBrowser();
 
-    QMenu *mOutputConsoleMenu;
-    QMenu* MakeOutputConsoleMenu();
+    Menu *mOutputConsoleMenu;
+    Menu* MakeOutputConsoleMenu();
     void OpenOutputConsole();
     void CloseOutputConsole();
 
-    QMenu *mMaterialViewerMenu;
-    QMenu* MakeMaterialViewerMenu();
+    Menu *mMaterialViewerMenu;
+    Menu* MakeMaterialViewerMenu();
     void OpenMaterialViewer();
     void CloseMaterialViewer();
 
-    QMenu *mFileViewerMenu;
-    QMenu* MakeFileViewerMenu();
+    Menu *mFileViewerMenu;
+    Menu* MakeFileViewerMenu();
     void OpenFileViewer();
     void CloseFileViewer();
 
-    QMenu *mWWiseViewerMenu;
-    QMenu* MakeWWiseViewerMenu();
+    Menu *mWWiseViewerMenu;
+    Menu* MakeWWiseViewerMenu();
     void OpenWWiseViewer();
     void CloseWWiseViewer();
 
