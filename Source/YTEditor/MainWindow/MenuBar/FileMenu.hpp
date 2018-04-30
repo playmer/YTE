@@ -14,30 +14,24 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qmenu.h>
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTEditor
 {
-  class MainWindow;
-
-  class FileMenu : public QMenu
+  class FileMenu : public Menu
   {
   public:
-
     FileMenu(MainWindow *aMainWindow);
-    ~FileMenu();
-
-    void NewLevel();
-    void SaveLevel();
-    void SaveLevelAs();
-    void ExitEditor();
 
   private:
-
-    MainWindow *mMainWindow;
-
+    void NewLevel();
     void OpenLevel();
+    void SaveLevel();
+    void SaveLevelAs();
+
     void OpenFile();
+
+    void ExitEditor();
   };
 
 }

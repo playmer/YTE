@@ -16,8 +16,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 
 #include <qapplication>
-#include <qfiledialog>
 #include <qdesktopservices>
+#include <qfiledialog>
 #include <qmessagebox>
 
 #include "YTE/Core/AssetLoader.hpp"
@@ -29,7 +29,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
-
 #include "YTEditor/MainWindow/SubWindows/GameWindow/GameWindow.hpp"
 #include "YTEditor/MainWindow/SubWindows/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
@@ -37,108 +36,48 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-
-  FileMenu::FileMenu(MainWindow * aMainWindow)
-    : QMenu("File"), mMainWindow(aMainWindow)
+  FileMenu::FileMenu(MainWindow *aMainWindow)
+    : Menu("File", aMainWindow)
   {
-    setToolTipsVisible(true);
-
-    QAction * newLevelAct = new QAction("New Level");
-    addAction(newLevelAct);
-    connect(newLevelAct, &QAction::triggered, this, &FileMenu::NewLevel);
-
-    QAction * openLevelAct = new QAction("Open Level");
-    addAction(openLevelAct);
-    connect(openLevelAct, &QAction::triggered, this, &FileMenu::OpenLevel);
-    //openLevelAct->setToolTip("Ctrl+O");
-
-    QAction * saveLevelAct = new QAction("Save Level");
-    addAction(saveLevelAct);
-    connect(saveLevelAct, &QAction::triggered, this, &FileMenu::SaveLevel);
-    saveLevelAct->setToolTip("Ctrl+S");
-
-    QAction * saveLevelAsAct = new QAction("Save Level As");
-    addAction(saveLevelAsAct);
-    connect(saveLevelAsAct, &QAction::triggered, this, &FileMenu::SaveLevelAs);
-    saveLevelAsAct->setToolTip("Ctrl+Alt+S");
+    // add menu options for creating, saving, and opening levels
+    AddAction<FileMenu>("New Level", &FileMenu::NewLevel);
+    AddAction<FileMenu>("Open Level", &FileMenu::OpenLevel);
+    AddAction<FileMenu>("Save Level", &FileMenu::SaveLevel, this, "Ctrl+S");
+    AddAction<FileMenu>("Save Level As", &FileMenu::SaveLevelAs, this, "Ctrl+Alt+S");
 
     addSeparator();
 
-    QAction * openFileAct = new QAction("Open File");
-    addAction(openFileAct);
-    connect(openFileAct, &QAction::triggered, this, &FileMenu::OpenFile);
+    // menu option for opening a file of any type
+    AddAction<FileMenu>("Open File", &FileMenu::OpenFile);
 
     addSeparator();
 
-    QAction * exitEditorAct = new QAction("Exit Editor");
-    addAction(exitEditorAct);
-    connect(exitEditorAct, &QAction::triggered, this, &FileMenu::ExitEditor);
-  }
-
-  FileMenu::~FileMenu()
-  {
+    // menu option for closing the editor
+    AddAction<FileMenu>("Exit Editor", &FileMenu::ExitEditor);
   }
 
   void FileMenu::NewLevel()
   {
-    //namespace fs = std::experimental::filesystem;
-    //fs::path workingDir{ YTE::Path::GetGamePath().String() };
-    //fs::path assetsDir{ workingDir.parent_path() };
-    //
-    //QFileDialog dialog;
-    //
-    //dialog.setWindowFilePath(QString(assetsDir.generic_string().c_str()));
-    //dialog.setFileMode(QFileDialog::AnyFile);
-    //QString strFile = dialog.getSaveFileName(nullptr, "Create New File");
-    //
-    //QFile file(strFile);
-    //file.open(QIODevice::WriteOnly);
-    //
-    //
-    //file.close();
-    //
-    //mMainWindow->LoadLevel(strFile.toStdString());
-
-    //YTE::Engine *engine = mMainWindow->GetRunningEngine();
-    //
-    //// current level name 
-    //YTE::String &lvlName = mMainWindow->GetRunningSpaceName();
-    //
-    //// get the current level
-    //YTE::Composition *currLvl = engine->FindFirstCompositionByName(lvlName);
-    //
-    //engine->RemoveComposition(currLvl);
-    //
-    //
-    //YTE::String newLevelName{ "NewLevel" };
-    //
-    //// add an empty composition to represent the new level
-    //YTE::Space *newLevel = engine->AddComposition<YTE::Space>(newLevelName, engine, nullptr);
-    //
-    //YTE::String camName{ "Camera" };
-    //
-    //// add the camera object to the new level
-    //YTE::Composition *camera = newLevel->AddComposition<YTE::Composition>(camName, engine, camName, newLevel);
-    //
-    //// add the camera component to the camera object
-    //camera->AddComponent(YTE::Camera::GetStaticType());
-
-    //mMainWindow->GetRunningEngine()->Update();
-    //mMainWindow->LoadCurrentLevelInfo();
-
+    // delete the gizmo in the current level
     mMainWindow->DeleteGizmo();
+
+    // create a new empty level
     mMainWindow->CreateBlankLevel("NewLevel");
+
+    // create a new gizmo and add it to the new level
     mMainWindow->CreateGizmo(mMainWindow->GetEditingLevel());
   }
 
   void FileMenu::OpenLevel()
   {
+    // get the path of the assets folder
     std::string gamePath = YTE::Path::GetGamePath().String();
 
     // Construct a file dialog for selecting the correct file
     QString fileName = QFileDialog::getOpenFileName(this,
       tr("Open Level"), QString(gamePath.c_str()) + "Levels/", tr("Level Files (*.json)"));
 
+    // make sure the user selected a file
     if (fileName == "")
     {
       return;
@@ -157,24 +96,31 @@ namespace YTEditor
     YTE::String yteFile = YTE::String();
     yteFile = file_without_extension;
 
+    // delete gizmo from the current level
     mMainWindow->DeleteGizmo();
 
+    // load the selected level
     mMainWindow->LoadLevel(file_without_extension);
 
-    auto space = mMainWindow->GetEditingLevel();
-
-    mMainWindow->CreateGizmo(static_cast<YTE::Space*>(space));
+    // create a new gizmo and add it to the new level
+    mMainWindow->CreateGizmo(mMainWindow->GetEditingLevel());
   }
 
   void FileMenu::SaveLevel()
   {
-    auto spaceComp = mMainWindow->GetEditingLevel();
+    // get current level
+    YTE::Space *currLevel = mMainWindow->GetEditingLevel();
 
-    static_cast<YTE::Space*>(spaceComp)->SaveLevel(mMainWindow->GetRunningLevelName());
+    // get name of current level
+    YTE::String lvlName = mMainWindow->GetRunningLevelName();
+
+    // save current level
+    currLevel->SaveLevel(lvlName);
   }
 
   void FileMenu::SaveLevelAs()
   {
+    // get path to assets folder
     std::string gamePath = YTE::Path::GetGamePath().String();
 
     // Construct a file dialog for selecting the correct file
@@ -183,6 +129,7 @@ namespace YTEditor
                                                     QString(gamePath.c_str()) + "Levels/",
                                                     tr("Level Files (*.json)"));
     
+    // make sure the user selected a file
     if (fileName == "")
     {
       return;
@@ -198,14 +145,18 @@ namespace YTEditor
     std::string base_filename = path.substr(path.find_last_of("/\\") + 1);
     size_t p = base_filename.find_last_of('.');
     std::string file_without_extension = base_filename.substr(0, p);
-    YTE::String yteFile = YTE::String();
-    yteFile = file_without_extension;
+    
+    // new name of the level
+    YTE::String yteFilename = file_without_extension;
 
-    auto spaceComp = mMainWindow->GetEditingLevel();
+    // get current level
+    YTE::Space *currLevel = mMainWindow->GetEditingLevel();
 
-    spaceComp->SetName(yteFile);
+    // set name of current level
+    currLevel->SetName(yteFilename);
 
-    static_cast<YTE::Space*>(spaceComp)->SaveLevel(yteFile);
+    // save current level
+    currLevel->SaveLevel(yteFilename);
   }
 
   void FileMenu::OpenFile()
@@ -214,11 +165,19 @@ namespace YTEditor
     QString fileName = QFileDialog::getOpenFileName(this,
       tr("Open File"), QDir::currentPath(), tr("All Files (*.*)"));
 
+    // make sure the user selected a file
+    if (fileName == "")
+    {
+      return;
+    }
+
+    // open the selected file using the default program for the user's computer
     QDesktopServices::openUrl(QUrl("file:///" + fileName, QUrl::TolerantMode));
   }
 
   void FileMenu::ExitEditor()
   {
+    // close the editor
     mMainWindow->close();
   }
 }

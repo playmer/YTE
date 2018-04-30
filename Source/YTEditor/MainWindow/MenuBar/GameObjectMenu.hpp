@@ -16,7 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Meta/ForwardDeclarations.hpp"
 
-#include <qmenu.h>
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTE
 {
@@ -28,42 +28,41 @@ namespace YTEditor
 
   class MainWindow;
 
-  class GameObjectMenu : public QMenu
+  class GameObjectMenu : public Menu
   {
   public:
-
     GameObjectMenu(MainWindow *aMainWindow);
-    ~GameObjectMenu();
 
     YTE::Composition* MakeObject(std::string aName, std::string meshName);
 
   private:
+    
+    ObjectBrowser *mObjectBrowser;
+    ComponentBrowser *mComponentBrowser;
+    ComponentTree *mComponentTree;
 
-    MainWindow * mMainWindow;
-
-    QAction * MakeEmptyObjectAction();
     void CreateEmptyObject();
 
-    QMenu * Make3DObjectMenu();
+    Menu* Make3DObjectMenu();
     void CreateCube();
     void CreateSphere();
     void CreateCylinder();
     void CreatePlane();
 
-    QMenu * Make2DObjectMenu();
+    Menu* Make2DObjectMenu();
     void CreateSprite();
 
-    QMenu * MakeLightMenu();
+    Menu* MakeLightMenu();
     void CreatePointLight();
     void CreateDirectionalLight();
     void CreateSpotlight();
     YTE::Composition* MakeLight(std::string lightType);
 
-    QMenu * MakeAudioMenu();
+    Menu* MakeAudioMenu();
     void CreateAudioEmitter();
     void CreateAudioListener();
 
-    QMenu * MakeUIMenu();
+    Menu* MakeUIMenu();
     void CreateText();
     void CreateImage();
     void CreateButton();
@@ -73,7 +72,6 @@ namespace YTEditor
 
     QAction * MakeCameraAction();
     void CreateCamera();
-
 
   };
 

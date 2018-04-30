@@ -12,27 +12,19 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/MenuBar/EditMenu.hpp"
-#include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
+#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
 
 namespace YTEditor
 {
-
-  EditMenu::EditMenu(MainWindow *aMainWindow)
-    : Menu("Edit", aMainWindow)
+  Menu::Menu(const char* aHeader, MainWindow *aMainWindow)
+  : QMenu(aHeader), mMainWindow(aMainWindow)
   {
-    AddAction<EditMenu>("Undo", &EditMenu::Undo, this, "Ctrl+Z");
-    AddAction<EditMenu>("Redo", &EditMenu::Redo, this, "Ctrl+Y");
+    setToolTipsVisible(true);
   }
 
-  void EditMenu::Undo()
+  void Menu::AddMenu(Menu * aMenu)
   {
+    addMenu(aMenu);
   }
-
-  void EditMenu::Redo()
-  {
-  }
-
 }

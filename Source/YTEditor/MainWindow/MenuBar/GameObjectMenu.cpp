@@ -35,54 +35,36 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  GameObjectMenu::GameObjectMenu(MainWindow * aMainWindow)
-    : QMenu("Game Object"), mMainWindow(aMainWindow)
+  GameObjectMenu::GameObjectMenu(MainWindow *aMainWindow)
+    : Menu("Game Object", aMainWindow)
+    , mComponentBrowser(&aMainWindow->GetComponentBrowser())
+    , mComponentTree(mComponentBrowser->GetComponentTree())
   {
-    addAction(MakeEmptyObjectAction());
-    addMenu(Make3DObjectMenu());
-    addMenu(Make2DObjectMenu());
-    addMenu(MakeLightMenu());
-    addMenu(MakeAudioMenu());
-    //addMenu(MakeUIMenu());
-    addAction(MakeParticleSystemAction());
-    addAction(MakeCameraAction());
-  }
+    AddAction<GameObjectMenu>("Empty Object", &GameObjectMenu::CreateEmptyObject);
 
-  GameObjectMenu::~GameObjectMenu()
-  {
-  }
+    AddMenu(Make3DObjectMenu());
+    AddMenu(Make2DObjectMenu());
+    AddMenu(MakeLightMenu());
+    AddMenu(MakeAudioMenu());
 
-  QAction* GameObjectMenu::MakeEmptyObjectAction()
-  {
-    QAction *emptyObjAct = new QAction("Empty Object");
-    connect(emptyObjAct, &QAction::triggered, this, &GameObjectMenu::CreateEmptyObject);
-    return emptyObjAct;
+    AddAction<GameObjectMenu>("Particle Emitter", &GameObjectMenu::CreateParticleSystem);
+
+    AddAction<GameObjectMenu>("Game Camera", &GameObjectMenu::CreateCamera);
   }
 
   void GameObjectMenu::CreateEmptyObject()
   {
-    mMainWindow->GetObjectBrowser().AddObject("EmptyObject", "Empty");
+    mObjectBrowser->AddObject("EmptyObject", "Empty");
   }
 
-  QMenu* GameObjectMenu::Make3DObjectMenu()
+  Menu* GameObjectMenu::Make3DObjectMenu()
   {
-    QMenu *menu = new QMenu("3D Object");
+    Menu *menu = new Menu("3D Object", mMainWindow);
 
-    QAction *cubeAct = new QAction("Cube");
-    menu->addAction(cubeAct);
-    connect(cubeAct, &QAction::triggered, this, &GameObjectMenu::CreateCube);
-
-    QAction *sphereAct = new QAction("Sphere");
-    menu->addAction(sphereAct);
-    connect(sphereAct, &QAction::triggered, this, &GameObjectMenu::CreateSphere);
-
-    QAction *cylinderAct = new QAction("Cylinder");
-    menu->addAction(cylinderAct);
-    connect(cylinderAct, &QAction::triggered, this, &GameObjectMenu::CreateCylinder);
-
-    QAction *planeAct = new QAction("Plane");
-    menu->addAction(planeAct);
-    connect(planeAct, &QAction::triggered, this, &GameObjectMenu::CreatePlane);
+    menu->AddAction<GameObjectMenu>("Cube", &GameObjectMenu::CreateCube, this);
+    menu->AddAction<GameObjectMenu>("Sphere", &GameObjectMenu::CreateSphere, this);
+    menu->AddAction<GameObjectMenu>("Cylinder", &GameObjectMenu::CreateCylinder, this);
+    menu->AddAction<GameObjectMenu>("Plane", &GameObjectMenu::CreatePlane, this);
 
     return menu;
   }
@@ -90,75 +72,63 @@ namespace YTEditor
   void GameObjectMenu::CreateCube()
   {
     YTE::Composition *cube = MakeObject("Cube", "cube.fbx");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cube);
+    mComponentTree->LoadGameObject(cube);
   }
 
   void GameObjectMenu::CreateSphere()
   {
     YTE::Composition *sphere = MakeObject("Sphere", "sphere.fbx");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(sphere);
+    mComponentTree->LoadGameObject(sphere);
   }
 
   void GameObjectMenu::CreateCylinder()
   {
     YTE::Composition *cylinder = MakeObject("Cylinder", "cylinder.fbx");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(cylinder);
+    mComponentTree->LoadGameObject(cylinder);
   }
 
   void GameObjectMenu::CreatePlane()
   {
     YTE::Composition *plane = MakeObject("Plane", "plane.fbx");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(plane);
+    mComponentTree->LoadGameObject(plane);
   }
 
-  QMenu* GameObjectMenu::Make2DObjectMenu()
+  Menu* GameObjectMenu::Make2DObjectMenu()
   {
-    QMenu *menu = new QMenu("2D Object");
+    Menu *menu = new Menu("2D Object", mMainWindow);
 
-    QAction * spriteAct = new QAction("Sprite");
-    menu->addAction(spriteAct);
-    connect(spriteAct, &QAction::triggered, this, &GameObjectMenu::CreateSprite);
+    menu->AddAction<GameObjectMenu>("Sprite", &GameObjectMenu::CreateSprite, this);
 
     return menu;
   }
 
   void GameObjectMenu::CreateSprite()
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Sprite", "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject("Sprite", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-    
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
     
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
     
     YTE::BoundType* spriteType = YTE::Sprite::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(spriteType);
+    ComponentWidget *compWidget = mComponentTree->AddComponent(spriteType);
     
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
     
     mMainWindow->GetGizmo()->SnapToCurrentObject();
 
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(obj);
+    mComponentTree->LoadGameObject(obj);
   }
 
-  QMenu* GameObjectMenu::MakeLightMenu()
+  Menu* GameObjectMenu::MakeLightMenu()
   {
-    QMenu * menu = new QMenu("Light");
+    Menu *menu = new Menu("Light", mMainWindow);
 
-    QAction *pointLightAct = new QAction("Point Light");
-    menu->addAction(pointLightAct);
-    connect(pointLightAct, &QAction::triggered, this, &GameObjectMenu::CreatePointLight);
-
-    QAction *directionalLightAct = new QAction("Directional Light");
-    menu->addAction(directionalLightAct);
-    connect(directionalLightAct, &QAction::triggered, this, &GameObjectMenu::CreateDirectionalLight);
-
-    QAction *spotlightAct = new QAction("Spotlight");
-    menu->addAction(spotlightAct);
-    connect(spotlightAct, &QAction::triggered, this, &GameObjectMenu::CreateSpotlight);
+    menu->AddAction<GameObjectMenu>("Point Light", &GameObjectMenu::CreatePointLight, this);
+    menu->AddAction<GameObjectMenu>("Directional Light", &GameObjectMenu::CreateDirectionalLight, this);
+    menu->AddAction<GameObjectMenu>("Spotlight", &GameObjectMenu::CreateSpotlight, this);
 
     return menu;
   }
@@ -166,35 +136,33 @@ namespace YTEditor
   void GameObjectMenu::CreatePointLight()
   {
     YTE::Composition* pointLight = MakeLight("Point");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(pointLight);
+    mComponentTree->LoadGameObject(pointLight);
   }
 
   void GameObjectMenu::CreateDirectionalLight()
   {
     YTE::Composition* dirLight = MakeLight("Directional");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(dirLight);
+    mComponentTree->LoadGameObject(dirLight);
   }
 
   void GameObjectMenu::CreateSpotlight()
   {
     YTE::Composition* spotlight = MakeLight("Spot");
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(spotlight);
+    mComponentTree->LoadGameObject(spotlight);
   }
 
   YTE::Composition* GameObjectMenu::MakeLight(std::string lightType)
   {
     std::string objName = lightType + " Light";
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(objName.c_str(), "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject(objName.c_str(), "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     YTE::BoundType* light = YTE::Light::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(light);
+    ComponentWidget *compWidget = mComponentTree->AddComponent(light);
 
     YTE::Light *lightComponent = static_cast<YTE::Light*>(compWidget->GetEngineComponent());
     lightComponent->SetLightType(lightType);
@@ -207,84 +175,67 @@ namespace YTEditor
     return obj;
   }
 
-  QMenu* GameObjectMenu::MakeAudioMenu()
+  Menu* GameObjectMenu::MakeAudioMenu()
   {
-    QMenu *menu = new QMenu("Audio");
+    Menu *menu = new Menu("Audio", mMainWindow);
 
-    QAction *audioEmitterAct = new QAction("Audio Emitter");
-    menu->addAction(audioEmitterAct);
-    connect(audioEmitterAct, &QAction::triggered, this, &GameObjectMenu::CreateAudioEmitter);
-
-    QAction *audioListenerAct = new QAction("Audio Listener");
-    menu->addAction(audioListenerAct);
-    connect(audioListenerAct, &QAction::triggered, this, &GameObjectMenu::CreateAudioListener);
+    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener);
+    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener);
 
     return menu;
   }
 
   void GameObjectMenu::CreateAudioEmitter()
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Audio Emitter", "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject("Audio Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
-    compTree->AddComponent(orientation);
+    mComponentTree->AddComponent(orientation);
 
     YTE::BoundType* emitterType = YTE::WWiseEmitter::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(emitterType);
+    mComponentTree->AddComponent(emitterType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
 
     mMainWindow->GetGizmo()->SnapToCurrentObject();
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(obj);
+    mComponentTree->LoadGameObject(obj);
   }
 
   void GameObjectMenu::CreateAudioListener()
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Audio Listener", "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject("Audio Listener", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
-    compTree->AddComponent(orientation);
+    mComponentTree->AddComponent(orientation);
 
     YTE::BoundType* listenerType = YTE::WWiseListener::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(listenerType);
+    mComponentTree->AddComponent(listenerType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
 
     mMainWindow->GetGizmo()->SnapToCurrentObject();
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(obj);
+    mComponentTree->LoadGameObject(obj);
   }
 
-  QMenu* GameObjectMenu::MakeUIMenu()
+  Menu* GameObjectMenu::MakeUIMenu()
   {
-    QMenu * menu = new QMenu("UI");
+    Menu *menu = new Menu("UI", mMainWindow);
 
-    QAction *textAct = new QAction("Text");
-    menu->addAction(textAct);
-    connect(textAct, &QAction::triggered, this, &GameObjectMenu::CreateText);
-
-    QAction *imageAct = new QAction("Image");
-    menu->addAction(imageAct);
-    connect(imageAct, &QAction::triggered, this, &GameObjectMenu::CreateImage);
-
-    QAction *buttonAct = new QAction("Button");
-    menu->addAction(buttonAct);
-    connect(buttonAct, &QAction::triggered, this, &GameObjectMenu::CreateButton);
+    menu->AddAction<GameObjectMenu>("Text", &GameObjectMenu::CreateText);
+    menu->AddAction<GameObjectMenu>("Image", &GameObjectMenu::CreateImage);
+    menu->AddAction<GameObjectMenu>("Button", &GameObjectMenu::CreateButton);
 
     return menu;
   }
@@ -301,86 +252,65 @@ namespace YTEditor
   {
   }
 
-  QAction* GameObjectMenu::MakeParticleSystemAction()
-  {
-    QAction * particleAct = new QAction("Particle Emitter");
-    connect(particleAct, &QAction::triggered, this, &GameObjectMenu::CreateParticleSystem);
-    return particleAct;
-  }
 
   void GameObjectMenu::CreateParticleSystem()
   {
     ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     YTE::BoundType* particleType = YTE::ParticleEmitter::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(particleType);
+    mComponentTree->AddComponent(particleType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
 
     mMainWindow->GetGizmo()->SnapToCurrentObject();
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(obj);
-  }
-
-  QAction* GameObjectMenu::MakeCameraAction()
-  {
-    QAction *cameraAct = new QAction("Game Camera");
-    connect(cameraAct, &QAction::triggered, this, &GameObjectMenu::CreateCamera);
-    return cameraAct;
+    mComponentTree->LoadGameObject(obj);
   }
 
   void GameObjectMenu::CreateCamera()
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Particle Emitter", "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     YTE::BoundType* transform = YTE::Transform::GetStaticType();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
-    compTree->AddComponent(orientation);
+    mComponentTree->AddComponent(orientation);
 
     YTE::BoundType* particleType = YTE::Camera::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(particleType);
-
-    YTE::Camera *cameraComponent = static_cast<YTE::Camera*>(compWidget->GetEngineComponent());
+    mComponentTree->AddComponent(particleType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
 
     mMainWindow->GetGizmo()->SnapToCurrentObject();
-    mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(obj);
+    mComponentTree->LoadGameObject(obj);
   }
 
   YTE::Composition* GameObjectMenu::MakeObject(std::string aName, std::string meshName)
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject(aName.c_str(), "Empty");
+    ObjectItem *item = mObjectBrowser->AddObject(aName.c_str(), "Empty");
     YTE::Composition *obj= item->GetEngineObject();
-    mMainWindow->GetObjectBrowser().MoveToFrontOfCamera(obj);
-
-    ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
+    mObjectBrowser->MoveToFrontOfCamera(obj);
 
     // add transform
     YTE::BoundType* transform = YTE::TypeId<YTE::Transform>();
-    compTree->AddComponent(transform);
+    mComponentTree->AddComponent(transform);
 
     // add model
     YTE::BoundType* modelType = YTE::TypeId<YTE::Model>();
-    ComponentWidget *compWidget = compTree->AddComponent(modelType);
+    ComponentWidget *compWidget = mComponentTree->AddComponent(modelType);
 
     YTE::Model *modelComponent = static_cast<YTE::Model*>(compWidget->GetEngineComponent());
-
     modelComponent->SetMesh(meshName);
+
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
 
@@ -388,5 +318,4 @@ namespace YTEditor
 
     return obj;
   }
-
 }

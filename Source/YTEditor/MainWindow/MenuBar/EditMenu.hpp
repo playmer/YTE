@@ -18,12 +18,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  class MainWindow;
-
   class EditMenu : public QMenu
   {
   public:
-
     EditMenu(MainWindow *aMainWindow);
     ~EditMenu();
 
