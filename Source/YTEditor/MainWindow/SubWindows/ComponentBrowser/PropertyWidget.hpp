@@ -326,10 +326,10 @@ namespace YTEditor
     glm::vec2 value;
 
     LineEdit *w0 = static_cast<LineEdit*>(mWidgets[0]);
-    value[0] = w0->text().toFloat();
+    value.x = w0->text().toFloat();
 
     LineEdit *w1 = static_cast<LineEdit*>(mWidgets[1]);
-    value[1] = w1->text().toFloat();
+    value.y = w1->text().toFloat();
 
     return value;
   }
@@ -348,13 +348,13 @@ namespace YTEditor
     else
     {
       LineEdit *w0 = static_cast<LineEdit*>(mWidgets[0]);
-      value[0] = w0->text().toFloat();
+      value.x = w0->text().toFloat();
 
       LineEdit *w1 = static_cast<LineEdit*>(mWidgets[1]);
-      value[1] = w1->text().toFloat();
+      value.y = w1->text().toFloat();
 
       LineEdit *w2 = static_cast<LineEdit*>(mWidgets[2]);
-      value[2] = w2->text().toFloat();
+      value.z = w2->text().toFloat();
     }
 
     return value;
@@ -373,16 +373,16 @@ namespace YTEditor
     else
     {
       LineEdit *w0 = static_cast<LineEdit*>(mWidgets[0]);
-      value[0] = w0->text().toFloat();
+      value.x = w0->text().toFloat();
 
       LineEdit *w1 = static_cast<LineEdit*>(mWidgets[1]);
-      value[1] = w1->text().toFloat();
+      value.y = w1->text().toFloat();
 
       LineEdit *w2 = static_cast<LineEdit*>(mWidgets[2]);
-      value[2] = w2->text().toFloat();
+      value.z = w2->text().toFloat();
 
       LineEdit *w3 = static_cast<LineEdit*>(mWidgets[3]);
-      value[3] = w3->text().toFloat();
+      value.w = w3->text().toFloat();
     }
 
     return value;
@@ -404,7 +404,6 @@ namespace YTEditor
   inline void PropertyWidget<T>::SetValue(T aVal)
   {
   }
-
 
   template<>
   inline void PropertyWidget<float>::SetValue(float aVal)
@@ -505,8 +504,15 @@ namespace YTEditor
   }
 
   template<>
-  inline void PropertyWidget<glm::quat>::SetValue(glm::quat)
+  inline void PropertyWidget<glm::quat>::SetValue(glm::quat aVal)
   {
+    for (size_t i = 0; i < mWidgets.size(); ++i)
+    {
+      LineEdit * widg = static_cast<LineEdit*>(mWidgets[i]);
+      char buff[100] = { '\0' };
+      sprintf_s(buff, "%.4f", aVal[i]);
+      widg->setText(buff);
+    }
   }
 
   template<>
