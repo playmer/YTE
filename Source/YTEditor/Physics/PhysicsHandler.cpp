@@ -11,12 +11,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTEditor/Gizmos/Gizmo.hpp"
-#include "YTEditor/Gizmos/Translate.hpp"
-#include "YTEditor/Gizmos/Scale.hpp"
-#include "YTEditor/Gizmos/Rotate.hpp"
+#include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/Physics/PhysicsHandler.hpp"
 
 

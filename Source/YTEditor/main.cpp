@@ -22,24 +22,21 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/Utilities.hpp"
-
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
-
 #include "YTE/Physics/PhysicsSystem.hpp"
-
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/GameWindow/GameWindow.hpp"
 #include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
 #include "YTEditor/MainWindow/ScriptBind.hpp"
-#include "YTEditor/MenuBar/FileMenu.hpp"
-#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/SubWindows/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
 
 
 // Helper function

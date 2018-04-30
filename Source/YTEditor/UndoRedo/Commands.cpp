@@ -16,14 +16,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
-
-#include "YTEditor/ComponentBrowser/ArchetypeTools.hpp"
-#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ArchetypeTools.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/UndoRedo/Commands.hpp"
 
 

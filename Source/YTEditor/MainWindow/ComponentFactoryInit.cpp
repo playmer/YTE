@@ -1,7 +1,4 @@
 
-#include "YTEditor/Gizmos/Translate.hpp"
-#include "YTEditor/Gizmos/Scale.hpp"
-#include "YTEditor/Gizmos/Rotate.hpp"
 #include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
 
 namespace YTEditor
