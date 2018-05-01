@@ -24,6 +24,12 @@
   #endif
 #endif
 
+#if defined(YTE_Windows) && defined(YTE_Internal)
+  #define YTE_Shared __declspec( dllexport )
+#elif defined(YTE_Windows)
+  #define YTE_Shared __declspec( dllimport )
+#endif
+
 namespace YTE
 {
   struct PlatformInformation

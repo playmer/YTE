@@ -1,4 +1,4 @@
-add_library(YTE "")
+add_library(YTE SHARED "")
 
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
@@ -94,3 +94,5 @@ target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_DEBUG=0>)
 
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_RELEASE=0>)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_RELEASE=1>)
+
+target_compile_definitions(YTE PRIVATE YTE_Internal=1)

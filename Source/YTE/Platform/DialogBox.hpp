@@ -25,7 +25,7 @@ namespace YTE
     ErrorOccured = 113
   };
 
-  DebugErrorDialog CreateDebugErrorDialog(const char *aFormatString, ...);
+  YTE_Shared DebugErrorDialog CreateDebugErrorDialog(const char *aFormatString, ...);
 
   //inline DebugErrorDialog CreateDebugErrorDialog(YTE::String aString)
   //{

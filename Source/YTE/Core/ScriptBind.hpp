@@ -14,7 +14,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  void InitializeYTETypes();
+  YTE_Shared void InitializeYTETypes();
 }
 
 #endif

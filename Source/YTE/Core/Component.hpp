@@ -45,15 +45,15 @@ namespace YTE
       DeserializeByType(aProperties, this, GetStaticType());
     };
 
-    RSValue Serialize(RSAllocator &aAllocator) override;
+    YTE_Shared RSValue Serialize(RSAllocator &aAllocator) override;
 
-    virtual void Remove();
-    virtual RSValue RemoveSerialized();
+    YTE_Shared virtual void Remove();
+    YTE_Shared virtual RSValue RemoveSerialized();
 
-    void DebugBreak();
+    YTE_Shared void DebugBreak();
 
-    GlobalUniqueIdentifier& GetGUID();
-    bool SetGUID(GlobalUniqueIdentifier aGUID);
+    YTE_Shared GlobalUniqueIdentifier& GetGUID();
+    YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
   protected:
     Composition *mOwner;
@@ -67,8 +67,8 @@ namespace YTE
   public:
     YTEDeclareType(ComponentDependencies);
 
-    ComponentDependencies(DocumentedObject *aObject,
-                          std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());
+    YTE_Shared ComponentDependencies(DocumentedObject *aObject,
+                                     std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());
 
     std::vector<std::vector<Type*>> mTypes;
   };

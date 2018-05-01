@@ -45,7 +45,7 @@ namespace YTE
     FactoryMap *mComponentFactories;
   };
 
-  void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories);
+  YTE_Shared void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &currComponentFactories);
 }
 
 #endif
