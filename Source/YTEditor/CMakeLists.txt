@@ -6,6 +6,7 @@
 set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
+                   YTEditorMeta.hpp
                    ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
@@ -121,6 +122,8 @@ find_package(Qt5Widgets)
 target_link_libraries(YTEditor YTE Qt5::Widgets)
 
 target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
+
+target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
 
