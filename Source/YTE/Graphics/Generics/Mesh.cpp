@@ -6,6 +6,10 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "assimp/types.h"
+#include "assimp/vector3.h"
+
+#include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -16,13 +20,38 @@
 
 namespace YTE
 {
+  static glm::vec3 AssimpToGLM(const aiVector3D *aVector)
+  {
+    return { aVector->x, aVector->y ,aVector->z };
+  }
+
+  static glm::vec3 AssimpToGLM(const aiColor3D *aVector)
+  {
+    return { aVector->r, aVector->g ,aVector->b };
+  }
+
+  static glm::quat AssimpToGLM(const aiQuaternion *aQuat)
+  {
+    glm::quat quaternion;
+
+    quaternion.x = aQuat->x;
+    quaternion.y = aQuat->y;
+    quaternion.z = aQuat->z;
+    quaternion.w = aQuat->w;
+
+    return quaternion;
+  }
+
+  static glm::mat4 AssimpToGLM(const aiMatrix4x4 &aMatrix)
+  {
+    return glm::transpose(glm::make_mat4(&aMatrix.a1));
+  }
+
   YTEDefineType(Mesh)
   {
     RegisterType<Mesh>();
     TypeBuilder<Mesh> builder;
   }
-  
-
 
   bool Skeleton::Initialize(const aiScene* aScene)
   {
@@ -290,8 +319,8 @@ namespace YTE
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
       auto textureCoordinates = glm::vec3{ pTexCoord->x,
-        1.0f - pTexCoord->y,
-        pTexCoord->z };
+                                           1.0f - pTexCoord->y,
+                                           pTexCoord->z };
 
       auto normal = AssimpToGLM(pNormal);
       auto color = glm::vec4{ AssimpToGLM(&pColor), 1.0f };

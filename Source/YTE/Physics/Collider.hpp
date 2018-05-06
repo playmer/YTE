@@ -90,16 +90,16 @@ namespace YTE
   public:
     YTEDeclareType(Collider);
 
-    Collider(Composition *aOwner, Space *aSpace);
+    YTE_Shared Collider(Composition *aOwner, Space *aSpace);
 
-    virtual void PhysicsInitialize() override { };
+    YTE_Shared virtual void PhysicsInitialize() override { };
 
-    glm::vec3 GetTranslation() const;
+    YTE_Shared glm::vec3 GetTranslation() const;
       
-    glm::quat GetRotation() const;
+    YTE_Shared glm::quat GetRotation() const;
 
-    void SetTranslation(float aX, float aY, float aZ);
-    void SetRotation(const glm::quat& aRotation);
+    YTE_Shared void SetTranslation(float aX, float aY, float aZ);
+    YTE_Shared void SetRotation(const glm::quat& aRotation);
 
     btCollisionObject* GetCollider() { return mCollider.get(); }
   protected:

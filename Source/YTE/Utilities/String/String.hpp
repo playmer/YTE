@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <cstring>
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 namespace YTE
 {
   class String;
@@ -25,8 +27,8 @@ namespace YTE
       //////////////////////////////
       // Helpers
       //////////////////////////////
-      void AddReference();
-      void ReleaseReference();
+      YTE_Shared void AddReference();
+      YTE_Shared void ReleaseReference();
 
       ///////////////////////////////////////
       // Fields
@@ -44,31 +46,31 @@ namespace YTE
     //////////////////////////////
     // Constructors
     //////////////////////////////
-    String(const char *aString);
-    String(const char *aString, size_t aSize);
-    String(const std::string &aString);
-    String(const String &aString);
-    String(String &&aString);
-    String(StringNode *aStringNode);
-    String();
+    YTE_Shared String(const char *aString);
+    YTE_Shared String(const char *aString, size_t aSize);
+    YTE_Shared String(const std::string &aString);
+    YTE_Shared String(const String &aString);
+    YTE_Shared String(String &&aString);
+    YTE_Shared String(StringNode *aStringNode);
+    YTE_Shared String();
 
     //////////////////////////////
     // Overloads
     //////////////////////////////
-    bool operator==(StringRef aString) const;
-    bool operator!=(StringRef aString) const;
-    char operator[](size_t aIndex);
-    String& operator=(const String &aString);
-    bool operator<(const char *aString) const;
-    bool operator<(const std::string &aString) const;
-    bool operator<(const String &aString) const;
-    bool operator>(const char *aString) const;
-    bool operator>(const std::string &aString) const;
-    bool operator>(const String &aString) const;
-    bool operator==(const char *aString) const;
-    bool operator==(const std::string &aString) const;
+    YTE_Shared bool operator==(StringRef aString) const;
+    YTE_Shared bool operator!=(StringRef aString) const;
+    YTE_Shared char operator[](size_t aIndex);
+    YTE_Shared String& operator=(const String &aString);
+    YTE_Shared bool operator<(const char *aString) const;
+    YTE_Shared bool operator<(const std::string &aString) const;
+    YTE_Shared bool operator<(const String &aString) const;
+    YTE_Shared bool operator>(const char *aString) const;
+    YTE_Shared bool operator>(const std::string &aString) const;
+    YTE_Shared bool operator>(const String &aString) const;
+    YTE_Shared bool operator==(const char *aString) const;
+    YTE_Shared bool operator==(const std::string &aString) const;
 
-    friend std::ostream & operator<<(std::ostream & aStream, const String &aString);
+    YTE_Shared friend std::ostream & operator<<(std::ostream & aStream, const String &aString);
 
     //////////////////////////////
     // Helpers
@@ -85,12 +87,12 @@ namespace YTE
 
 
       // Modified HashString from Zero
-    static size_t HashString(const char* aString, size_t aLength);
-    static StringNode* AllocateNode(const char *aString, size_t aSize);
-    void Assign(StringNode *aNode);
+    YTE_Shared static size_t HashString(const char* aString, size_t aLength);
+    YTE_Shared static StringNode* AllocateNode(const char *aString, size_t aSize);
+    YTE_Shared void Assign(StringNode *aNode);
 
-    friend bool operator <(const char *lfs, const YTE::String &rhs);
-    friend bool operator <(const std::string &lfs, const YTE::String &rhs);
+    YTE_Shared friend bool operator <(const char *lfs, const YTE::String &rhs);
+    YTE_Shared friend bool operator <(const std::string &lfs, const YTE::String &rhs);
 
   private:
     ///////////////////////////////////////

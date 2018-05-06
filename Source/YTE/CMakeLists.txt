@@ -44,7 +44,6 @@ endif()
 
 target_link_libraries(YTE
   PUBLIC
-    assimp
     Bullet2FileLoader
     Bullet3Collision
     Bullet3Common
@@ -57,13 +56,15 @@ target_link_libraries(YTE
     BulletSoftBody
     LinearMath
     crn
+    fmt
     imgui
+    VkHLF
+  PRIVATE
+    assimp
     glslang
-    fmt    
     KissFFT
     #LuaJIT
     STB
-    VkHLF
 ) 
 
 
@@ -85,6 +86,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   )
 endif()
 
+target_compile_definitions(YTE PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GLM_FORCE_DEPTH_ZERO_TO_ONE)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)

@@ -47,8 +47,6 @@ option(ENABLE_TESTING "Allow building of tests and looking for gmock" OFF)
 option(ENABLE_HLSL "Enables HLSL input support" OFF)
 option(BUILD_TESTING "Enables testing" OFF)
 
-set(USE_MSVC_RUNTIME_LIBRARY_DLL OFF)
-
 set(LLVM_USE_CRT_DEBUG "MDd")
 set(LLVM_USE_CRT_MINSIZEREL "MD")
 set(LLVM_USE_CRT_RELEASE "MD")

@@ -16,7 +16,7 @@
 #include <unordered_map>
 
 #if YTE_CAN_PROFILE
-#include <easy/profiler.h>
+  #include <easy/profiler.h>
 #endif
 
 #include "glm/glm.hpp"

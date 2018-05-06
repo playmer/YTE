@@ -25,10 +25,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  #define YTEDeclareEvent(aName)      \
-  namespace Events                    \
-  {                                   \
-      extern const std::string aName; \
+  #define YTEDeclareEvent(aName)                 \
+  namespace Events                               \
+  {                                              \
+      YTE_Shared extern const std::string aName; \
   }
 
   #define YTEDefineEvent(aName)         \
@@ -236,7 +236,7 @@ namespace YTE
                        std::hash<std::string>, 
                        StdStringRefWrapperEquality> mEventLists;
 
-    static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
+    YTE_Shared static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
   };
 }
 

@@ -20,9 +20,9 @@ namespace YTE
   { 
   public:
     YTEDeclareType(Camera); 
-    Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    void Initialize() override; 
-    UBOView ConstructUBOView();
+    YTE_Shared Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared void Initialize() override; 
+    YTE_Shared UBOView ConstructUBOView();
  
     Window* GetWindow()
     { 
@@ -32,11 +32,11 @@ namespace YTE
     ///////////////////////////////////////
     // Events
     ///////////////////////////////////////
-    void OrientationEvent(OrientationChanged *aEvent);
-    void TransformEvent(TransformChanged *aEvent);
-    void Update(LogicUpdate* aEvent);
-    void RendererResize(WindowResize *aEvent);
-    void SurfaceGainedEvent(ViewChanged *aEvent);
+    YTE_Shared void OrientationEvent(OrientationChanged *aEvent);
+    YTE_Shared void TransformEvent(TransformChanged *aEvent);
+    YTE_Shared void Update(LogicUpdate* aEvent);
+    YTE_Shared void RendererResize(WindowResize *aEvent);
+    YTE_Shared void SurfaceGainedEvent(ViewChanged *aEvent);
 
 
     ///////////////////////////////////////
@@ -129,7 +129,7 @@ namespace YTE
       mUseOrthographicProj = aUseOrtho;
     }
 
-    void SetCameraAsActive();
+    YTE_Shared void SetCameraAsActive();
 
   private: 
     // YTE

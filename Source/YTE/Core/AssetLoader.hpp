@@ -17,28 +17,28 @@ namespace YTE
       std::string mPath;
 
     public:
-      non_member const Path& SetGamePath(std::string aPath);
-      non_member const Path& SetEnginePath(std::string aPath);
+      YTE_Shared non_member const Path& SetGamePath(std::string aPath);
+      YTE_Shared non_member const Path& SetEnginePath(std::string aPath);
 
-      non_member const Path& GetGamePath();
-      non_member const Path& GetEnginePath();
+      YTE_Shared non_member const Path& GetGamePath();
+      YTE_Shared non_member const Path& GetEnginePath();
 
-      non_member std::string GetArchetypePath(const Path& aPath, const std::string &aName);
-      non_member std::string GetLevelPath(const Path& aPath, const std::string &aName);
-      non_member std::string GetShaderPath(const Path& aPath, const std::string &aName);
-      non_member std::string GetModelPath(const Path& aPath, const std::string &aName);
-      non_member std::string GetAnimationPath(const Path& aPath, const std::string &aName);
-      non_member std::string GetTexturePath(const Path& aPath, const std::string &aName);
-      non_member std::string GetWWisePath(const Path& aPath, const std::string &aName);
-      non_member std::string GetTextPath(const Path& aPath, const std::string &aName);
-      non_member std::string GetTextsDirectory(const Path& aPath);
+      YTE_Shared non_member std::string GetArchetypePath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetLevelPath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetShaderPath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetModelPath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetAnimationPath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetTexturePath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetWWisePath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetTextPath(const Path& aPath, const std::string &aName);
+      YTE_Shared non_member std::string GetTextsDirectory(const Path& aPath);
 
-      const std::string& String() const;
+      YTE_Shared const std::string& String() const;
 
       friend class AssetLoader;
       friend struct PathHelper;
-      friend bool operator!=(const Path& aLeft, const Path& aRight);
-      friend bool operator==(const Path& aLeft, const Path& aRight);
+      YTE_Shared friend bool operator!=(const Path& aLeft, const Path& aRight);
+      YTE_Shared friend bool operator==(const Path& aLeft, const Path& aRight);
   };
 
   
@@ -48,8 +48,8 @@ namespace YTE
     private:
       std::array<std::map<std::string, std::shared_ptr<Asset>>, EnumCast(Asset::Type::_Count)>  mAssets;
     public:
-      std::shared_ptr<Asset> LoadAsset(Asset::Type aType, const Path& aDirectory, std::string aFileNamee);
-      bool UnloadAsset(std::shared_ptr<Asset> aAsset);
+      YTE_Shared std::shared_ptr<Asset> LoadAsset(Asset::Type aType, const Path& aDirectory, std::string aFileNamee);
+      YTE_Shared bool UnloadAsset(std::shared_ptr<Asset> aAsset);
   };
   
 }

@@ -9,6 +9,8 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 
@@ -20,6 +22,33 @@
 
 namespace YTE
 {
+  static glm::vec3 ToGLM(const aiVector3D *aVector)
+  {
+    return { aVector->x, aVector->y ,aVector->z };
+  }
+
+  static glm::vec3 ToGLM(const aiColor3D *aVector)
+  {
+    return { aVector->r, aVector->g ,aVector->b };
+  }
+
+  static glm::quat ToGLM(const aiQuaternion *aQuat)
+  {
+    glm::quat quaternion;
+
+    quaternion.x = aQuat->x;
+    quaternion.y = aQuat->y;
+    quaternion.z = aQuat->z;
+    quaternion.w = aQuat->w;
+
+    return quaternion;
+  }
+
+  static glm::mat4 ToGLM(const aiMatrix4x4 &aMatrix)
+  {
+    return glm::transpose(glm::make_mat4(&aMatrix.a1));
+  }
+
   YTEDefineEvent(KeyFrameChanged);
 
   YTEDefineType(KeyFrameChanged)

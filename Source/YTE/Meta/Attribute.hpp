@@ -18,7 +18,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(Serializable);
-    Serializable(DocumentedObject *aObject);
+    YTE_Shared Serializable(DocumentedObject *aObject);
   };
 
   class RunInEditor : public Attribute
@@ -39,7 +39,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(EditorProperty);
-    EditorProperty(DocumentedObject *aObject, bool aVisible = true);
+    YTE_Shared EditorProperty(DocumentedObject *aObject, bool aVisible = true);
 
     bool mVisible;
   };
@@ -50,9 +50,9 @@ namespace YTE
   {
   public:
     YTEDeclareType(DropDownStrings);
-    DropDownStrings(DocumentedObject *aObject, StrGettor aStrGettor);
+    YTE_Shared DropDownStrings(DocumentedObject *aObject, StrGettor aStrGettor);
 
-    StrGettor GetStringGettor();
+    YTE_Shared StrGettor GetStringGettor();
 
   private:
     StrGettor mStringGettor;
@@ -69,9 +69,9 @@ namespace YTE
   {
   public:
     YTEDeclareType(EditorHeader);
-    EditorHeader(DocumentedObject *aObject, std::string aName);
+    YTE_Shared EditorHeader(DocumentedObject *aObject, std::string aName);
 
-    std::string GetName();
+    YTE_Shared std::string GetName();
 
   private:
     std::string mName;
@@ -89,11 +89,11 @@ namespace YTE
                      Lister aLister, 
                      std::string aName);
 
-    std::vector<std::pair<Object*, std::string>> GetList(Object *aObject);
-    RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
-    void Deserialize(RSValue &aValue, Object *aOwner);
+    YTE_Shared std::vector<std::pair<Object*, std::string>> GetList(Object *aObject);
+    YTE_Shared RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
+    YTE_Shared void Deserialize(RSValue &aValue, Object *aOwner);
 
-    std::string GetName();
+    YTE_Shared std::string GetName();
 
   private:
     Lister mLister;
@@ -109,17 +109,17 @@ namespace YTE
   {
   public:
     YTEDeclareType(RedirectObject);
-    RedirectObject(DocumentedObject *aObject,
-                   Deserializer aDeserializer, 
-                   Serializer aSerializer, 
-                   Getter aLister, 
-                   std::string aName);
+    YTE_Shared RedirectObject(DocumentedObject *aObject,
+                              Deserializer aDeserializer, 
+                              Serializer aSerializer, 
+                              Getter aLister, 
+                              std::string aName);
 
-    std::pair<Object*, std::string> GetObjectPtr(Object *aObject);
-    RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
-    void Deserialize(RSValue &aValue, Object *aOwner);
+    YTE_Shared std::pair<Object*, std::string> GetObjectPtr(Object *aObject);
+    YTE_Shared RSValue Serialize(RSAllocator &aAllocator, Object *aOwner);
+    YTE_Shared void Deserialize(RSValue &aValue, Object *aOwner);
 
-    std::string GetName();
+    YTE_Shared std::string GetName();
 
   private:
     Getter mGetter;

@@ -36,17 +36,17 @@ namespace YTE
   public:
     YTEDeclareType(Orientation);
 
-    Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    void Initialize() override;
-    void OnRotationChanged(TransformChanged *aEvent);
+    YTE_Shared void Initialize() override;
+    YTE_Shared void OnRotationChanged(TransformChanged *aEvent);
 
-    glm::vec3 GetForwardVector() const;
-    glm::vec3 GetRightVector() const;
-    glm::vec3 GetUpVector() const;
+    YTE_Shared glm::vec3 GetForwardVector() const;
+    YTE_Shared glm::vec3 GetRightVector() const;
+    YTE_Shared glm::vec3 GetUpVector() const;
 
-    void LookAt(glm::vec3 const &aDirection);
-    void LookAtPoint(glm::vec3 const &aPoint);
+    YTE_Shared void LookAt(glm::vec3 const &aDirection);
+    YTE_Shared void LookAtPoint(glm::vec3 const &aPoint);
 
   private:
     glm::vec3 mForwardVector;

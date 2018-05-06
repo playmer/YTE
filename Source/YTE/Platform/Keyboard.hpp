@@ -8,8 +8,8 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Platform_Keyboard_h
-#define YTE_Platform_Keyboard_h
+#ifndef YTE_Platform_Keyboard_hpp
+#define YTE_Platform_Keyboard_hpp
 
 #include <stdint.h>
 
@@ -35,30 +35,30 @@ namespace YTE
     Keyboard *Keyboard;
   };
 
-  Keys TranslateFromOsToOurKey(uint64_t aOsKey);
-  uint64_t TranslateFromOurToOSKey(Keys aOsKey);
-  void SurveyKeyboard(bool *aKeyboard);
+  YTE_Shared Keys TranslateFromOsToOurKey(uint64_t aOsKey);
+  YTE_Shared uint64_t TranslateFromOurToOSKey(Keys aOsKey);
+  YTE_Shared void SurveyKeyboard(bool *aKeyboard);
 
-  std::string GetClipboardText();
-  void SetClipboardText(std::string &aText);
+  YTE_Shared std::string GetClipboardText();
+  YTE_Shared void SetClipboardText(std::string &aText);
 
   // Checks key with OS.
-  bool CheckKey(Keys aKey);
+  YTE_Shared bool CheckKey(Keys aKey);
 
   class Keyboard : public EventHandler
   {
   public:
     YTEDeclareType(Keyboard);
 
-    Keyboard();
+    YTE_Shared Keyboard();
 
-    void Update();
-    void UpdateKey(Keys aKey, bool aDown);
-    void ForceAllKeysUp();
+    YTE_Shared void Update();
+    YTE_Shared void UpdateKey(Keys aKey, bool aDown);
+    YTE_Shared void ForceAllKeysUp();
 
-    bool IsKeyPressed(Keys aKey);
-    bool IsKeyDown(Keys aKey);
-    bool WasKeyDown(Keys aKey);
+    YTE_Shared bool IsKeyPressed(Keys aKey);
+    YTE_Shared bool IsKeyDown(Keys aKey);
+    YTE_Shared bool WasKeyDown(Keys aKey);
 
     bool *mKeysPrevious;
     bool *mKeysCurrent;

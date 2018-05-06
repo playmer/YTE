@@ -282,7 +282,7 @@ void Name::InitializeType()
 
     Type(Type&) = delete;
 
-    ~Type();
+    YTE_Shared ~Type();
 
     const std::string& Name()  const { return mName; }
     size_t             Hash() const { return mHash; }
@@ -386,8 +386,8 @@ void Name::InitializeType()
       return mFields.FindAll(name);
     }
 
-    bool IsA(Type *aType);
-    bool IsA(Type *aType, Type *aTypeToStopAt);
+    YTE_Shared bool IsA(Type *aType);
+    YTE_Shared bool IsA(Type *aType, Type *aTypeToStopAt);
 
     template<typename tType>
     bool IsA()
@@ -462,7 +462,7 @@ void Name::InitializeType()
     Type* mBaseType;
     Type* mEnumOf;
 
-    static std::unordered_map<std::string, Type*> sGlobalTypes;
+    YTE_Shared static std::unordered_map<std::string, Type*> sGlobalTypes;
   };
 
 

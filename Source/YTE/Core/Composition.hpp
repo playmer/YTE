@@ -1,3 +1,4 @@
+
 /******************************************************************************/
 /*!
 \file   Composition.hpp
@@ -83,12 +84,12 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine* aEngine, String const& aName, Space* aSpace, Composition* aOwner = nullptr);
-    Composition(Engine* aEngine, Space* aSpace, Composition* aOwner = nullptr);
+    YTE_Shared Composition(Engine* aEngine, String const& aName, Space* aSpace, Composition* aOwner = nullptr);
+    YTE_Shared Composition(Engine* aEngine, Space* aSpace, Composition* aOwner = nullptr);
 
-    ~Composition();
+    YTE_Shared ~Composition();
 
-    virtual void Update(double dt);
+    YTE_Shared virtual void Update(double dt);
 
     YTE_Shared virtual void AssetInitialize(InitializeEvent* aEvent);
     YTE_Shared virtual void NativeInitialize(InitializeEvent* aEvent);
@@ -256,20 +257,21 @@ namespace YTE
     }
 
   protected:
-    void Create();
+    YTE_Shared void Create();
 
-    StringComponentFactory* GetFactoryFromEngine(Type* aType);
-    void ComponentClear();
-    std::string CheckDependencies(std::set<Type*> aTypesAvailible,
-                                  Type* aTypeToCheck);
+    YTE_Shared StringComponentFactory* GetFactoryFromEngine(Type* aType);
 
-    void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
-    void RemoveComponentInternal(ComponentMap::iterator& aComponent);
-    Composition* AddCompositionInternal(String aArchetype, String aObjectName);
-    Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
-                                        RSValue* aSerialization, 
-                                        String aObjectName);
-    bool ParentBeingDeleted();
+    YTE_Shared void ComponentClear();
+    YTE_Shared std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
+                                             BoundType* aTypeToCheck);
+
+    YTE_Shared void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
+    YTE_Shared void RemoveComponentInternal(ComponentMap::iterator& aComponent);
+    YTE_Shared Composition* AddCompositionInternal(String aArchetype, String aObjectName);
+    YTE_Shared Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
+                                                   RSValue* aSerialization, 
+                                                   String aObjectName);
+    YTE_Shared bool ParentBeingDeleted();
 
     CompositionMap mCompositions;
     ComponentMap mComponents;

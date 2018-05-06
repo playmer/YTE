@@ -22,11 +22,11 @@ namespace YTE
   public:
     YTEDeclareType(GamepadSystem);
       
-    GamepadSystem();
+    YTE_Shared GamepadSystem();
 
-    void Update(double aDt);
-    void CheckForControllers(bool aChecking) { mChecking = aChecking; };
-    XboxController* GetXboxController(ControllerId aId);
+    YTE_Shared void Update(double aDt);
+    YTE_Shared void CheckForControllers(bool aChecking) { mChecking = aChecking; };
+    YTE_Shared XboxController* GetXboxController(ControllerId aId);
 
   private:
     void UpdateXboxControllers(double aDt);

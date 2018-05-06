@@ -67,15 +67,15 @@ namespace YTE
   public:
     YTEDeclareType(XboxController);
 
-    XboxController(); 
-    ~XboxController();
+    YTE_Shared XboxController();
+    YTE_Shared ~XboxController();
 
-    void UpdateState(XboxControllerState *state, double aDt);
-    void Vibrate(float aLeftSpeed, float aRightSpeed);
-    void VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime);
+    YTE_Shared void UpdateState(XboxControllerState *state, double aDt);
+    YTE_Shared void Vibrate(float aLeftSpeed, float aRightSpeed);
+    YTE_Shared void VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime);
 
-    bool IsButtonDown(XboxButtons aButton);
-    bool WasButtonDown(XboxButtons aButton);
+    YTE_Shared bool IsButtonDown(XboxButtons aButton);
+    YTE_Shared bool WasButtonDown(XboxButtons aButton);
     inline bool Active() { return mActive; };
     inline glm::vec2 GetLeftStick() { return mLeftStick; };
     inline glm::vec2 GetRightStick() { return mRightStick; };

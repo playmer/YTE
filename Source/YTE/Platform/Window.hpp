@@ -49,47 +49,47 @@ namespace YTE
     bool Minimized;
   };
 
-  bool SetCursorView(bool aShow);
+  YTE_Shared bool SetCursorView(bool aShow);
 
   class Window : public EventHandler
   {
   public:
     YTEDeclareType(Window);
 
-    static i64 MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow);
+    YTE_Shared static i64 MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow);
 
-    Window(Engine *aEngine, RSValue *aProperties);
-    Window(Engine *aEngine);
+    YTE_Shared Window(Engine *aEngine, RSValue *aProperties);
+    YTE_Shared Window(Engine *aEngine);
 
-    void SetResolution(u32 aWidth, u32 aHeight);
-    void SetFullscreen(bool aFullscreen, bool aMetro);
-    void SetWindowTitle(const char *aString);
+    YTE_Shared void SetResolution(u32 aWidth, u32 aHeight);
+    YTE_Shared void SetFullscreen(bool aFullscreen, bool aMetro);
+    YTE_Shared void SetWindowTitle(const char *aString);
 
-    bool IsMinimized();
-    bool IsNotFocused();
-    bool IsFocused();
+    YTE_Shared bool IsMinimized();
+    YTE_Shared bool IsNotFocused();
+    YTE_Shared bool IsFocused();
 
-    void SetExtent(u32 aWidth, u32 aHeight);
+    YTE_Shared void SetExtent(u32 aWidth, u32 aHeight);
 
-    u32 GetHeight();
-    u32 GetWidth();
+    YTE_Shared u32 GetHeight();
+    YTE_Shared u32 GetWidth();
 
-    void SetHeight(u32 aHeight);
-    void SetWidth(u32 aWidth);
+    YTE_Shared void SetHeight(u32 aHeight);
+    YTE_Shared void SetWidth(u32 aWidth);
 
-    glm::i32vec2 GetPosition();
+    YTE_Shared glm::i32vec2 GetPosition();
 
-    std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
+    YTE_Shared std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
 
-    void SetCursorVisibility(bool aShow);
+    YTE_Shared void SetCursorVisibility(bool aShow);
 
-    void SetWindowId(void *aId);
-    void* GetWindowId();
+    YTE_Shared void SetWindowId(void *aId);
+    YTE_Shared void* GetWindowId();
 
-    ~Window();
+    YTE_Shared ~Window();
 
-    void PlatformUpdate();
-    void Update();
+    YTE_Shared void PlatformUpdate();
+    YTE_Shared void Update();
 
     Keyboard mKeyboard;
     Mouse mMouse;
