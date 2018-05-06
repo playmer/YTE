@@ -30,6 +30,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  YTEDeclareEvent(AssetInitialize);
   YTEDeclareEvent(NativeInitialize);
   YTEDeclareEvent(PhysicsInitialize);
   YTEDeclareEvent(Initialize);
@@ -41,6 +42,9 @@ namespace YTE
   public:
     YTEDeclareType(InitializeEvent);
 
+    std::chrono::time_point<std::chrono::high_resolution_clock> mLoadingBegin;
+    bool IterativeLoad = true;
+    bool EarlyOut = false;
     bool CheckRunInEditor = false;
   };
 
@@ -87,6 +91,7 @@ namespace YTE
 
     virtual void Update(double dt);
 
+    virtual void AssetInitialize(InitializeEvent *aEvent);
     virtual void NativeInitialize(InitializeEvent *aEvent);
     void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);
@@ -266,6 +271,7 @@ namespace YTE
                                         RSValue *aSerialization, 
                                         String aObjectName);
     bool ParentBeingDeleted();
+    static bool RecursiveInitCheck(Composition *aComposition);
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
@@ -278,13 +284,25 @@ namespace YTE
     String mName;
 
     bool mShouldSerialize;
-    bool mShouldIntialize;
-    bool mIsInitialized;
     bool mBeingDeleted;
 
     Composition *mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
+
+    bool mFinishedComponentAssetInitialize;
+    bool mFinishedComponentNativeInitialize;
+    bool mFinishedComponentPhysicsInitialize;
+    bool mFinishedComponentInitialize;
+    bool mFinishedComponentStart;
+
+    bool mFinishedAssetInitialize;
+    bool mFinishedNativeInitialize;
+    bool mFinishedPhysicsInitialize;
+    bool mFinishedInitialize;
+    bool mFinishedStart;
+
+  private:
   };
 }
 

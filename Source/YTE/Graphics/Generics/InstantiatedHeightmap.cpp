@@ -77,14 +77,11 @@ namespace YTE
     mesh->UpdateVertices(0, aVertices);
   }
 
-
   void InstantiatedHeightmap::UpdateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     // update the model
-    auto mesh = mModel->GetMesh();
-    mesh->UpdateVerticesAndIndices(0, aVertices, aIndices);
+    mModel->UpdateMesh(0, aVertices, aIndices);
   }
-
 
   void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName)
   {

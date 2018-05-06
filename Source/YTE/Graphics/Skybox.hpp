@@ -17,7 +17,8 @@ namespace YTE
     Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties);
     ~Skybox();
 
-    void Initialize() override;
+    void AssetInitialize() override;
+    void NativeInitialize() override;
     void CreateSkybox();
 
     std::string GetTexture()

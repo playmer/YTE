@@ -33,7 +33,8 @@ namespace YTE
 
 
   VkRenderer::VkRenderer(Engine *aEngine)
-    : mVulkanInternals(std::make_unique<VkInternals>())
+    : Renderer(aEngine)
+    , mVulkanInternals(std::make_unique<VkInternals>())
     , mEngine(aEngine)
   {
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
@@ -143,8 +144,6 @@ namespace YTE
     return static_unique_pointer_cast<InstantiatedModel>(GetSurface(aView->GetWindow())->CreateModel(aView, aMesh));
   }
 
-
-
   void VkRenderer::DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel)
   {
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
@@ -168,7 +167,9 @@ namespace YTE
 
     if (textureIt == mTextures.end())
     {
-      auto texture = std::make_unique<VkTexture>(aFilename,
+      auto baseTexture = GetBaseTexture(aFilename);
+
+      auto texture = std::make_unique<VkTexture>(baseTexture,
                                                  this,
                                                  aType);
 
@@ -199,12 +200,28 @@ namespace YTE
 
     if (textureIt == mTextures.end())
     {
-      auto texture = std::make_unique<VkTexture>(aData,
-                                                 aType,
-                                                 aWidth,
-                                                 aHeight,
-                                                 aMipLevels,
-                                                 aLayerCount,
+      auto baseTexture = std::make_unique<Texture>(aData, 
+                                                   aType, 
+                                                   aWidth, 
+                                                   aHeight, 
+                                                   aMipLevels, 
+                                                   aLayerCount);
+
+      mBaseTexturesMutex.lock();
+
+      auto it = mBaseTextures.find(aName);
+
+      if (it != mBaseTextures.end())
+      {
+        mBaseTextures.erase(it);
+      }
+
+      auto ret = mBaseTextures.emplace(aName, std::move(baseTexture));
+      auto baseTexturePtr = ret.first->second.get();
+      mBaseTexturesMutex.unlock();
+
+
+      auto texture = std::make_unique<VkTexture>(baseTexturePtr,
                                                  this,
                                                  aVulkanType);
 
@@ -235,7 +252,8 @@ namespace YTE
       case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
     }
 
-    return CreateTexture(aFilename, type);
+    auto texture = CreateTexture(aFilename, type);
+    return texture->mTexture;
   }
 
   Texture* VkRenderer::CreateTexture(std::string aName,
@@ -260,25 +278,16 @@ namespace YTE
       case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
     }
 
-    return CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+
+    return texture->mTexture;
   }
-
-  Texture* VkRenderer::GetTexture(std::string &aFilename)
-  {
-    auto textureIt = mTextures.find(aFilename);
-
-    if (textureIt != mTextures.end())
-    {
-      return textureIt->second.get();
-    }
-
-    return nullptr;
-  }
-
 
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
+    auto baseMesh = GetBaseMesh(aFilename);
+
     auto meshIt = mMeshes.find(aFilename);
 
     VkMesh *meshPtr{ nullptr };
@@ -286,8 +295,8 @@ namespace YTE
     if (meshIt == mMeshes.end())
     {
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(this,
-                                           aFilename);
+      auto mesh = std::make_unique<VkMesh>(baseMesh,
+                                           this);
 
       meshPtr = mesh.get();
 
@@ -312,14 +321,34 @@ namespace YTE
 
     if (aForceUpdate || meshIt == mMeshes.end())
     {
+      auto baseMesh = std::make_unique<Mesh>(aName,
+                                             aSubmeshes);
+
+      mBaseMeshesMutex.lock();
+      auto it = mBaseMeshes.find(aName);
+
+      if (it != mBaseMeshes.end())
+      {
+        mBaseMeshes.erase(it);
+      }
+
+      auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
+      auto baseMeshPtr = ret.first->second.get();
+      mBaseMeshesMutex.unlock();
+
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(this,
-                                           aName,
-                                           aSubmeshes);
+      auto mesh = std::make_unique<VkMesh>(baseMeshPtr, this);
 
-      meshPtr = mesh.get();
+      auto it2 = mMeshes.find(aName);
 
-      mMeshes[aName] = std::move(mesh);
+      if (it2 != mMeshes.end())
+      {
+        mMeshes.erase(it2);
+      }
+
+      auto ret2 = mMeshes.emplace(aName, std::move(mesh));
+      meshPtr = ret2.first->second.get();
+
       mDataUpdateRequired = true;
     }
     else
@@ -327,7 +356,7 @@ namespace YTE
       meshPtr = meshIt->second.get();
     }
 
-    return meshPtr;
+    return meshPtr->mMesh;
   }
 
 

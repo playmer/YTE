@@ -449,31 +449,14 @@ namespace YTE
     YTERegisterType(VkMesh);
   }
 
-  VkMesh::VkMesh(VkRenderer *aRenderer,
-                 std::string &aFile,
-                 CreateInfo *aCreateInfo)
-    : Mesh(aFile, aCreateInfo)
-    , mRenderer{ aRenderer }
+  VkMesh::VkMesh(Mesh *aMesh,
+                 VkRenderer *aRenderer)
+    : mRenderer{ aRenderer }
+    , mMesh{aMesh}
   {
-    for (unsigned i = 0; i < mParts.size(); ++i)
+    for (unsigned i = 0; i < aMesh->mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
-      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
-    }
-
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
-  }
-
-
-  VkMesh::VkMesh(VkRenderer *aRenderer,
-                 std::string &aFile,
-                 std::vector<Submesh> &aSubmeshes)
-    : Mesh(aFile, aSubmeshes)
-    , mRenderer{aRenderer}
-  {
-    for (unsigned i = 0; i < mParts.size(); ++i)
-    {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
+      auto submesh = std::make_unique<VkSubmesh>(this, &aMesh->mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
@@ -482,14 +465,14 @@ namespace YTE
 
   void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
-    Mesh::UpdateVertices(aSubmeshIndex, aVertices);
+    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
 
     mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }
 
   void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    Mesh::UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
     mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
   }

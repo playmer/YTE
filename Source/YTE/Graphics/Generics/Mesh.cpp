@@ -8,9 +8,11 @@
 #include "assimp/scene.h"
 
 #include "YTE/Core/AssetLoader.hpp"
-#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
+
+#include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {
@@ -174,11 +176,14 @@ namespace YTE
 
 
 
-  Submesh::Submesh(const aiScene *aScene,
+  Submesh::Submesh(Renderer *aRenderer,
+                   const aiScene *aScene,
                    const aiMesh *aMesh,
                    Skeleton* aSkeleton,
                    uint32_t aBoneStartingVertexOffset)
   {
+    YTEProfileFunction();
+
     aiColor3D pColor(0.f, 0.f, 0.f);
     aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
       pColor);
@@ -242,21 +247,23 @@ namespace YTE
     if (0 != diffuse.length)
     {
       mDiffuseMap = diffuse.C_Str();
+      aRenderer->RequestTexture(mDiffuseMap);
     }
 
     if (0 != specular.length)
     {
       mSpecularMap = specular.C_Str();
+      aRenderer->RequestTexture(mSpecularMap);
     }
 
     if (0 != normals.length)
     {
       mNormalMap = normals.C_Str();
       mUBOMaterial.mUsesNormalTexture = 1; // true
+      aRenderer->RequestTexture(mNormalMap);
     }
 
     mShaderSetName = "Phong";
-
 
     // get the vertex data with bones (if provided)
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
@@ -419,16 +426,19 @@ namespace YTE
     return toReturn;
   }
 
-  Mesh::Mesh(std::string &aFile, CreateInfo *aCreateInfo)
+  Mesh::Mesh(Renderer *aRenderer,
+             const std::string &aFile)
     : mInstanced(false)
   {
+    YTEProfileFunction();
     Assimp::Importer Importer;
     Assimp::Importer ImporterCol;
 
+    std::string filename = aFile; // TODO: don't actually make a copy lol
     std::string meshFile;
 
     // check that the mesh file exists in the game assets folder
-    bool success = FileCheck(Path::GetGamePath(), "Models", aFile);
+    bool success = FileCheck(Path::GetGamePath(), "Models", filename);
     
     if (success)
     {
@@ -438,7 +448,7 @@ namespace YTE
     else
     {
       // otherwise, it's not in the game assets, so check the engine assets folder
-      success = FileCheck(Path::GetEnginePath(), "Models", aFile);
+      success = FileCheck(Path::GetEnginePath(), "Models", filename);
 
       if (success)
       {
@@ -477,14 +487,6 @@ namespace YTE
       glm::vec2 uvscale(1.0f);
       glm::vec3 center(0.0f);
 
-      if (aCreateInfo)
-      {
-        scale = aCreateInfo->mScale;
-        uvscale = aCreateInfo->mUVscale;
-        center = aCreateInfo->mCenter;
-      }
-
-
       auto pMeshScene = pScene;
       if (!hasBones)
       {
@@ -494,7 +496,7 @@ namespace YTE
       mParts.clear();
       mParts.reserve(pMeshScene->mNumMeshes);
 
-      printf("Mesh FileName: %s\n", aFile.c_str());
+      //printf("Mesh FileName: %s\n", aFile.c_str());
 
       uint32_t numMeshes = pMeshScene->mNumMeshes;
 
@@ -502,7 +504,11 @@ namespace YTE
       uint32_t startingVertex = 0;
       for (unsigned int i = 0; i < numMeshes; i++)
       {
-        mParts.emplace_back(pMeshScene, pMeshScene->mMeshes[i], &mSkeleton, startingVertex);
+        mParts.emplace_back(aRenderer, 
+                            pMeshScene, 
+                            pMeshScene->mMeshes[i], 
+                            &mSkeleton, 
+                            startingVertex);
         startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
       }
 
@@ -512,17 +518,16 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  Mesh::Mesh(std::string &aFile,
+  Mesh::Mesh(const std::string &aFile,
              std::vector<Submesh> &aSubmeshes)
     : mInstanced(false)
   {
+    YTEProfileFunction();
     mName = aFile;
     mParts = aSubmeshes;
 
     mDimension = CalculateDimensions(mParts);
   }
-
-
 
   void Mesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
   {

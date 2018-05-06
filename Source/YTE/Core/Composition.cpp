@@ -15,11 +15,11 @@
 
 #include "rapidjson/document.h"
 
-
 namespace YTE
 {
   std::vector<Type*> GetDependencyOrder(Composition *aComposition);
 
+  YTEDefineEvent(AssetInitialize);
   YTEDefineEvent(NativeInitialize);
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
@@ -96,15 +96,23 @@ namespace YTE
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName(aName)
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{ aName }
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
+    , mFinishedComponentAssetInitialize{ false }
+    , mFinishedComponentNativeInitialize{ false }
+    , mFinishedComponentPhysicsInitialize{ false }
+    , mFinishedComponentInitialize{ false }
+    , mFinishedComponentStart{ false }
+    , mFinishedAssetInitialize{ false }
+    , mFinishedNativeInitialize{ false }
+    , mFinishedPhysicsInitialize{ false }
+    , mFinishedInitialize{ false }
+    , mFinishedStart{ false }
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
 
@@ -112,6 +120,7 @@ namespace YTE
 
     if (nullptr != parent && this != parent)
     {
+      parent->YTERegister(Events::AssetInitialize, this, &Composition::AssetInitialize);
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
@@ -121,15 +130,23 @@ namespace YTE
   };
 
   Composition::Composition(Engine *aEngine, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName()
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{}
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
+    , mFinishedComponentAssetInitialize{ false }
+    , mFinishedComponentNativeInitialize{ false }
+    , mFinishedComponentPhysicsInitialize{ false }
+    , mFinishedComponentInitialize{ false }
+    , mFinishedComponentStart{ false }
+    , mFinishedAssetInitialize{ false }
+    , mFinishedNativeInitialize{ false }
+    , mFinishedPhysicsInitialize{ false }
+    , mFinishedInitialize{ false }
+    , mFinishedStart{ false }
   {
     mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
 
@@ -137,6 +154,7 @@ namespace YTE
 
     if (nullptr != parent && this != parent)
     {
+      parent->YTERegister(Events::AssetInitialize, this, &Composition::AssetInitialize);
       parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
       parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
       parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
@@ -169,7 +187,7 @@ namespace YTE
     auto order = GetDependencyOrder(this);
 
     // If our order is compromised, we just clear the vector in whatever 
-    // order the containter decides to clear in Ideally we fix the 
+    // order the container decides to clear in Ideally we fix the 
     // GetDependencyOrder algorithm so this never occurs.
     if (order.size() != mComponents.size())
     {
@@ -198,185 +216,444 @@ namespace YTE
     }
   }
 
-  void Composition::NativeInitialize(InitializeEvent *aEvent)
+  void Composition::AssetInitialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
-    if (mShouldIntialize == false)
+
+    if (mFinishedAssetInitialize)
     {
       return;
     }
 
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
+    if (aEvent->IterativeLoad)
     {
-      for (auto &component : mComponents)
+      if (aEvent->EarlyOut)
       {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
+        return;
+      }
 
-        component.second->NativeInitialize();
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("%s: AssetInit Dt: %f\n", mSpace->GetName().c_str(), dt);
+        aEvent->EarlyOut = true;
+        return;
       }
     }
-    else
+
+    if (false == mFinishedComponentAssetInitialize)
     {
-      for (auto &type : order)
+      auto order = GetDependencyOrder(this);
+
+      // If our order is compromised, we just initialize in whatever
+      // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+      // algorithm so this never occurs.
+      if (order.size() != mComponents.size())
       {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
+        for (auto &component : mComponents)
         {
-          continue;
-        }
+          if (aEvent->CheckRunInEditor &&
+              nullptr == component.first->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
 
-        component->NativeInitialize();
+          component.second->AssetInitialize();
+        }
       }
+      else
+      {
+        for (auto &type : order)
+        {
+          auto component = GetComponent(type);
+
+          if (aEvent->CheckRunInEditor &&
+              nullptr == type->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          component->AssetInitialize();
+        }
+      }
+
+      mFinishedComponentAssetInitialize = true;
+    }
+
+    SendEvent(Events::AssetInitialize, aEvent);
+
+    if (false == aEvent->EarlyOut)
+    {
+      mFinishedAssetInitialize = true;
+    }
+  }
+
+  void Composition::NativeInitialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
+
+    if (mFinishedNativeInitialize)
+    {
+      return;
+    }
+
+    if (aEvent->IterativeLoad)
+    {
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
+
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("%s: NativeInit Dt: %f\n", mSpace->GetName().c_str(), dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
+    }
+
+    if (false == mFinishedComponentNativeInitialize)
+    {
+      auto order = GetDependencyOrder(this);
+
+      // If our order is compromised, we just initialize in whatever
+      // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+      // algorithm so this never occurs.
+      if (order.size() != mComponents.size())
+      {
+        for (auto &component : mComponents)
+        {
+          if (aEvent->CheckRunInEditor &&
+              nullptr == component.first->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          {
+            YTEProfileBlock(component.first->GetName().c_str());
+            component.second->NativeInitialize();
+          }
+        }
+      }
+      else
+      {
+        for (auto &type : order)
+        {
+          auto component = GetComponent(type);
+
+          if (aEvent->CheckRunInEditor &&
+              nullptr == type->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          {
+            YTEProfileBlock(type->GetName().c_str());
+            component->NativeInitialize();
+          }
+        }
+      }
+
+      mFinishedComponentNativeInitialize = true;
     }
 
     SendEvent(Events::NativeInitialize, aEvent);
+
+    if (false == aEvent->EarlyOut)
+    {
+      mFinishedNativeInitialize = true;
+    }
   }
 
   void Composition::PhysicsInitialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
-    if (mShouldIntialize == false)
+
+    if (mFinishedPhysicsInitialize)
     {
       return;
     }
 
-    auto collider = GetColliderFromObject(this);
-    if (collider != nullptr) collider->PhysicsInitialize();
-    auto ghostBody = GetComponent<GhostBody>();
-    if (ghostBody != nullptr) ghostBody->PhysicsInitialize();
-    auto collisionBody = GetComponent<CollisionBody>();
-    if (collisionBody != nullptr) collisionBody->PhysicsInitialize();
-    auto rigidBody = GetComponent<RigidBody>();
-    if (rigidBody != nullptr) rigidBody->PhysicsInitialize();
-    //auto transform = GetComponent<Transform>();
-    //if (transform != nullptr) transform->PhysicsInitialize();
-    
-    auto order = GetDependencyOrder(this);
+    if (aEvent->IterativeLoad)
+    {
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
 
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    //if (order.size() != mComponents.size())
-    //{
-    //  for (auto &component : mComponents)
-    //  {
-    //    if (aEvent->CheckRunInEditor &&
-    //        nullptr == component.first->GetAttribute<RunInEditor>())
-    //    {
-    //      continue;
-    //    }
-    //
-    //    component.second->PhysicsInitialize();
-    //  }
-    //}
-    //else
-    //{
-    //  for (auto &type : order)
-    //  {
-    //    auto component = GetComponent(type);
-    //    
-    //    if (aEvent->CheckRunInEditor &&
-    //        nullptr == type->GetAttribute<RunInEditor>())
-    //    {
-    //      continue;
-    //    }
-    //    
-    //    component->PhysicsInitialize();
-    //  }
-    //}
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("%s: PhysicsInit Dt: %f\n", mSpace->GetName().c_str(), dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
+    }
+
+    if (false == mFinishedComponentPhysicsInitialize)
+    {
+      auto collider = GetColliderFromObject(this);
+      if (collider != nullptr) collider->PhysicsInitialize();
+      auto ghostBody = GetComponent<GhostBody>();
+      if (ghostBody != nullptr) ghostBody->PhysicsInitialize();
+      auto collisionBody = GetComponent<CollisionBody>();
+      if (collisionBody != nullptr) collisionBody->PhysicsInitialize();
+      auto rigidBody = GetComponent<RigidBody>();
+      if (rigidBody != nullptr) rigidBody->PhysicsInitialize();
+      //auto transform = GetComponent<Transform>();
+      //if (transform != nullptr) transform->PhysicsInitialize();
+
+      auto order = GetDependencyOrder(this);
+
+      // If our order is compromised, we just initialize in whatever
+      // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+      // algorithm so this never occurs.
+      //if (order.size() != mComponents.size())
+      //{
+      //  for (auto &component : mComponents)
+      //  {
+      //    if (aEvent->CheckRunInEditor &&
+      //        nullptr == component.first->GetAttribute<RunInEditor>())
+      //    {
+      //      continue;
+      //    }
+      //
+      //    component.second->PhysicsInitialize();
+      //  }
+      //}
+      //else
+      //{
+      //  for (auto &type : order)
+      //  {
+      //    auto component = GetComponent(type);
+      //    
+      //    if (aEvent->CheckRunInEditor &&
+      //        nullptr == type->GetAttribute<RunInEditor>())
+      //    {
+      //      continue;
+      //    }
+      //    
+      //    component->PhysicsInitialize();
+      //  }
+      //}
+      mFinishedComponentPhysicsInitialize = true;
+    }
 
     SendEvent(Events::PhysicsInitialize, aEvent);
+
+    if (false == aEvent->EarlyOut)
+    {
+      mFinishedPhysicsInitialize = true;
+    }
   }
 
   void Composition::Initialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
-    if (mShouldIntialize == false)
+
+    if (mFinishedInitialize)
     {
       return;
     }
 
-    Composition *collision = mEngine->StoreCompositionGUID(this);
-
-    while (collision)
+    if (aEvent->IterativeLoad)
     {
-      if (collision == this)
+      if (aEvent->EarlyOut)
       {
-        break;
+        return;
+      }
+
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("%s: Initialize Dt: %f\n", mSpace->GetName().c_str(), dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
+    }
+
+    if (false == mFinishedComponentInitialize)
+    {
+      Composition *collision = mEngine->StoreCompositionGUID(this);
+
+      while (collision)
+      {
+        if (collision == this)
+        {
+          break;
+        }
+        else
+        {
+          mGUID = GlobalUniqueIdentifier();
+          collision = mEngine->StoreCompositionGUID(this);
+        }
+      }
+
+      auto order = GetDependencyOrder(this);
+
+      // If our order is compromised, we just initialize in whatever
+      // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+      // algorithm so this never occurs.
+      if (order.size() != mComponents.size())
+      {
+        for (auto &component : mComponents)
+        {
+          if (aEvent->CheckRunInEditor &&
+              nullptr == component.first->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          {
+            YTEProfileBlock(component.first->GetName().c_str());
+            component.second->Initialize();
+          }
+        }
       }
       else
       {
-        mGUID = GlobalUniqueIdentifier();
-        collision = mEngine->StoreCompositionGUID(this);
-      }
-    }
-
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
+        for (auto &type : order)
         {
-          continue;
+          auto component = GetComponent(type);
+
+          if (aEvent->CheckRunInEditor &&
+              nullptr == type->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          {
+            YTEProfileBlock(type->GetName().c_str());
+            component->Initialize();
+          }
         }
-
-        component.second->Initialize();
       }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
 
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component->Initialize();
-      }
+      mFinishedComponentInitialize = true;
     }
 
     SendEvent(Events::Initialize, aEvent);
 
-    mShouldIntialize = false;
-    mIsInitialized = true;
-
-    CompositionAdded event;
-    event.mComposition = this;
-
-    if (GetType() != Space::GetStaticType())
+    if (false == aEvent->EarlyOut)
     {
-      mSpace->SendEvent(Events::CompositionAdded, &event);
+      mFinishedInitialize = true;
+
+      CompositionAdded event;
+      event.mComposition = this;
+
+      if (GetType() != Space::GetStaticType())
+      {
+        mSpace->SendEvent(Events::CompositionAdded, &event);
+      }
     }
   }
 
-  void Composition::Deinitialize(InitializeEvent * aEvent)
+  void Composition::Start(InitializeEvent *aEvent)
   {
-    if (!mIsInitialized)
+    YTEProfileFunction();
+
+    if (mFinishedStart)
     {
       return;
     }
 
+    if (aEvent->IterativeLoad)
+    {
+      if (aEvent->EarlyOut)
+      {
+        return;
+      }
+
+      using namespace std::chrono;
+      duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() -
+                                                                   aEvent->mLoadingBegin);
+      auto dt = time_span.count();
+      if (dt > 0.032f)
+      {
+        printf("%s: Start Dt: %f\n", mSpace->GetName().c_str(), dt);
+        aEvent->EarlyOut = true;
+        return;
+      }
+    }
+
+    if (false == mFinishedComponentStart)
+    {
+      Composition *collision = mEngine->StoreCompositionGUID(this);
+
+      while (collision)
+      {
+        if (collision == this)
+        {
+          break;
+        }
+        else
+        {
+          mGUID = GlobalUniqueIdentifier();
+          collision = mEngine->StoreCompositionGUID(this);
+        }
+      }
+
+      auto order = GetDependencyOrder(this);
+
+      // If our order is compromised, we just Start in whatever
+      // order the Type* are sorted. Ideally we fix the GetDependencyOrder
+      // algorithm so this never occurs.
+      if (order.size() != mComponents.size())
+      {
+        for (auto &component : mComponents)
+        {
+          if (aEvent->CheckRunInEditor &&
+              nullptr == component.first->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          component.second->Start();
+        }
+      }
+      else
+      {
+        for (auto &type : order)
+        {
+          auto component = GetComponent(type);
+
+          if (aEvent->CheckRunInEditor &&
+              nullptr == type->GetAttribute<RunInEditor>())
+          {
+            continue;
+          }
+
+          component->Start();
+        }
+      }
+
+      mFinishedComponentStart = true;
+    }
+
+    SendEvent(Events::Start, aEvent);
+
+    if (false == aEvent->EarlyOut)
+    {
+      mFinishedStart = true;
+    }
+  }
+
+
+  void Composition::Deinitialize(InitializeEvent * aEvent)
+  {
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
     while (collision)
@@ -429,62 +706,6 @@ namespace YTE
 
     SendEvent(Events::Deinitialize, aEvent);
   }
-
-  void Composition::Start(InitializeEvent *aEvent)
-  {
-    YTEProfileFunction();
-    Composition *collision = mEngine->StoreCompositionGUID(this);
-
-    while (collision)
-    {
-      if (collision == this)
-      {
-        break;
-      }
-      else
-      {
-        mGUID = GlobalUniqueIdentifier();
-        collision = mEngine->StoreCompositionGUID(this);
-      }
-    }
-
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just Start in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component.second->Start();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component->Start();
-      }
-    }
-
-    SendEvent(Events::Start, aEvent);
-  }
-
 
   void Composition::Update(double dt)
   {
@@ -539,7 +760,9 @@ namespace YTE
     return comp;
   }
 
-  Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
+  Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
+                                                   RSValue *aSerialization, 
+                                                   String aObjectName)
   {
     mComposition->mName = aObjectName;
 
@@ -599,10 +822,22 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     return composition;
@@ -618,10 +853,22 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     composition->SetArchetypeName(aArchetype);
@@ -640,6 +887,7 @@ namespace YTE
       InitializeEvent event;
 
       // Might need to be after the change of translation.
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
 
@@ -652,6 +900,17 @@ namespace YTE
 
       composition->Initialize(&event);
       composition->Start(&event);
+
+      composition->mFinishedComponentAssetInitialize = true;
+      composition->mFinishedComponentNativeInitialize = true;
+      composition->mFinishedComponentPhysicsInitialize = true;
+      composition->mFinishedComponentInitialize = true;
+      composition->mFinishedComponentStart = true;
+      composition->mFinishedAssetInitialize = true;
+      composition->mFinishedNativeInitialize = true;
+      composition->mFinishedPhysicsInitialize = true;
+      composition->mFinishedInitialize = true;
+      composition->mFinishedStart = true;
     }
 
     return composition;
@@ -1133,10 +1392,22 @@ namespace YTE
       return component;
     }
 
+    component->AssetInitialize();
     component->NativeInitialize();
     component->PhysicsInitialize();
     component->Initialize();
     component->Start();
+
+    mFinishedComponentAssetInitialize = true;
+    mFinishedComponentNativeInitialize = true;
+    mFinishedComponentPhysicsInitialize = true;
+    mFinishedComponentInitialize = true;
+    mFinishedComponentStart = true;
+    mFinishedAssetInitialize = true;
+    mFinishedNativeInitialize = true;
+    mFinishedPhysicsInitialize = true;
+    mFinishedInitialize = true;
+    mFinishedStart = true;
 
     return component;
   }
@@ -1398,5 +1669,24 @@ namespace YTE
     mEngine->StoreCompositionGUID(this);
 
     return collision;
+  }
+
+  bool Composition::RecursiveInitCheck(Composition *aComposition)
+  {
+    for (auto &composition : aComposition->mCompositions)
+    {
+      auto value = RecursiveInitCheck(composition.second.get());
+    }
+
+    return aComposition->mFinishedComponentAssetInitialize &&
+           aComposition->mFinishedComponentNativeInitialize &&
+           aComposition->mFinishedComponentPhysicsInitialize &&
+           aComposition->mFinishedComponentInitialize &&
+           aComposition->mFinishedComponentStart &&
+           aComposition->mFinishedAssetInitialize &&
+           aComposition->mFinishedNativeInitialize &&
+           aComposition->mFinishedPhysicsInitialize &&
+           aComposition->mFinishedInitialize &&
+           aComposition->mFinishedStart;
   }
 }

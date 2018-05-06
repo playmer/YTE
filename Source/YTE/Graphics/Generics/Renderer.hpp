@@ -8,6 +8,11 @@
 #ifndef YTE_Graphics_Generics_Renderer_hpp
 #define YTE_Graphics_Generics_Renderer_hpp
 
+#include <future>
+#include <shared_mutex>
+#include <unordered_set>
+
+#include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
@@ -25,6 +30,7 @@ namespace YTE
   public:
     YTEDeclareType(Renderer);
 
+    Renderer(Engine *aEngine);
     virtual ~Renderer();
     virtual void DeregisterWindowFromDraw(Window *aWindow);
     virtual void RegisterWindowForDraw(Window *aWindow);
@@ -42,8 +48,6 @@ namespace YTE
                                    u32 aMipLevels,
                                    u32 aLayerCount,
                                    TextureType aType);
-
-    virtual Texture* GetTexture(std::string &aFilename);
 
     virtual Mesh* CreateSimpleMesh(std::string &aName,
                                    std::vector<Submesh> &aSubmeshes,
@@ -69,6 +73,26 @@ namespace YTE
     virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 
     virtual void ResetView(GraphicsView *aView);
+
+    Mesh* RequestMesh(const std::string &aMeshFile);
+    Texture* RequestTexture(const std::string &aFilename);
+
+    Mesh* GetBaseMesh(const std::string &aFilename);
+    Texture* GetBaseTexture(const std::string &aFilename);
+
+  protected:
+    std::unordered_map<std::string, JobHandle> mRequestedMeshes;
+    std::shared_mutex mRequestedMeshesMutex;
+    std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
+    std::shared_mutex mBaseMeshesMutex;
+
+    std::unordered_map<std::string, JobHandle> mRequestedTextures;
+    std::shared_mutex mRequestedTexturesMutex;
+    std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
+    std::shared_mutex mBaseTexturesMutex;
+
+    std::unordered_set<std::string> mRequests;
+    JobSystem *mJobSystem;
   };
 }
 

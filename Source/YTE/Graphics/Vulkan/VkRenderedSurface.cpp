@@ -150,23 +150,24 @@ namespace YTE
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
+    instantiatedModels[static_cast<VkMesh*>(model->GetVkMesh())].push_back(model.get());
     return std::move(model);
   }
 
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aMesh, this, aView);
+
+    auto model = std::make_unique<VkInstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(model->GetMesh())].push_back(model.get());
+    instantiatedModels[static_cast<VkMesh*>(model->GetVkMesh())].push_back(model.get());
     return std::move(model);
   }
 
   void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
   {
     auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(aModel->GetMesh())].push_back(aModel);
+    instantiatedModels[static_cast<VkMesh*>(aModel->GetVkMesh())].push_back(aModel);
   }
 
   std::shared_ptr<vkhlf::Device>& VkRenderedSurface::GetDevice()
@@ -189,7 +190,7 @@ namespace YTE
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
-    auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
+    auto mesh = instantiatedModels.find(aModel->GetVkMesh());
 
     if (mesh != instantiatedModels.end())
     {
@@ -210,15 +211,15 @@ namespace YTE
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
-    auto mesh = instantiatedModels.find(static_cast<VkMesh*>(aModel->GetMesh()));
+    auto mesh = instantiatedModels.find(aModel->GetVkMesh());
 
     if (mesh != instantiatedModels.end())
     {
       // Remove this instance from the map.
       mesh->second.erase(std::remove(mesh->second.begin(),
-        mesh->second.end(),
-        aModel),
-        mesh->second.end());
+                                     mesh->second.end(),
+                                     aModel),
+                         mesh->second.end());
 
       instantiatedModels.erase(mesh);
     }
@@ -521,7 +522,7 @@ namespace YTE
     YTEProfileFunction();
     YTEUnusedArgument(aEvent);
 
-    if (mWindow->IsMinimized())
+    if (mWindow->IsMinimized() || mViewData.empty())
     {
       return;
     }

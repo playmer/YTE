@@ -24,18 +24,18 @@ namespace YTE
   
     Space(Engine *aEngine, RSValue *aProperties);
     void Load();
-    void Load(RSValue *aLevel, bool aInitialize = true);
+    void Load(RSValue *aLevel, bool aInitialize = true, bool aForceInit = false);
     void Update(LogicUpdate *aEvent);
     ~Space();
 
     void Initialize(InitializeEvent *aEvent) override;
-    void Initialize();
+    void Initialize(bool aForceInit = false);
         
     void CreateBlankLevel(const String& aLevelName);
     void LoadLevel(String &level, bool aCheckRunInEditor = false);
     void SaveLevel(String &aLevelName);
 
-    Space* AddChildSpace(String aLevelName);
+    Space* AddChildSpace(String aLevelName, bool aForceLoading = false);
   
     bool IsPaused() const { return mPaused; };
     void SetPaused(bool aPause) { mPaused = aPause; };
@@ -46,6 +46,12 @@ namespace YTE
     void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
+
+    bool GetFinishedLoading()
+    {
+      return mFinishedLoading;
+    }
+
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
@@ -54,6 +60,8 @@ namespace YTE
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
     bool mIsEditorSpace = false;
+
+    bool mFinishedLoading = true;
 
     bool mLoading = true;
     bool mCheckRunInEditor = false;

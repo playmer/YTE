@@ -37,7 +37,7 @@ namespace YTE
   public:
     YTEDeclareType(Texture);
 
-    Texture(std::string &aFile);
+    Texture(const std::string &aFile);
     Texture(const char *aFile);
 
     Texture(std::vector<u8> aData, 

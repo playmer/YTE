@@ -19,6 +19,7 @@ namespace YTE
   class Light;
   class Model;
   class ModelChanged;
+  class Renderer;
   class ParticleEmitter;
   class SimpleModel;
   class Sprite;

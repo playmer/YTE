@@ -50,6 +50,8 @@
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/InheritVisibility.hpp"
+#include "YTE/GameComponents/LoadingScreen.hpp"
+#include "YTE/GameComponents/MakeLoadingScreen.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
 #include "YTE/GameComponents/demo_InsideZone.hpp"
 #include "YTE/GameComponents/Zone.hpp"
@@ -160,6 +162,8 @@ namespace YTE
     InitializeType<LaunchLevel>();
     InitializeType<LaunchGame>();
     InitializeType<LaunchCredits>();
+    InitializeType<LoadingScreen>();
+    InitializeType<MakeLoadingScreen>();
     InitializeType<QuitGame>();
     InitializeType<ToggleFullscreen>();
     InitializeType<ToggleMute>();
