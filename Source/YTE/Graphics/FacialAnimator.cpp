@@ -55,9 +55,9 @@ namespace YTE
 
     auto animations = mAnimator->GetAnimations();
 
-    for (auto &anim : animations)
+    for (auto [key, animation] : animations)
     {
-      mFaceAnimations.insert_or_assign(anim.first, new FaceAnim(anim.first, anim.second->GetAnimation()->mTicksPerSecond));
+      mFaceAnimations[key] = std::make_unique<FaceAnim>(key, animation->GetTicksPerSecond());
     }
     
     mOwner->RegisterEvent<&FacialAnimator::OnModelChanged>(Events::ModelChanged, this);
@@ -77,7 +77,7 @@ namespace YTE
     // get initial buffers
     InstantiatedModel *instModel = mModel->GetInstantiatedModel()[0];
     
-    FaceAnim *anim = mFaceAnimations[aEvent->animation];
+    FaceAnim *anim = mFaceAnimations[aEvent->animation].get();
 
     Mesh *mesh = instModel->GetMesh();
 
@@ -125,7 +125,7 @@ namespace YTE
   void FacialAnimator::OnAnimationAdded(AnimationAdded *event)
   {
     std::string anim = event->animation;
-    mFaceAnimations.insert_or_assign(anim, new FaceAnim(anim, event->ticksPerSecond));
+    mFaceAnimations[anim] = std::make_unique<FaceAnim>(anim, event->ticksPerSecond);
   }
 
   void FacialAnimator::OnAnimationRemoved(AnimationRemoved *event)

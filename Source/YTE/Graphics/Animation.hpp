@@ -87,11 +87,20 @@ namespace YTE
     double mElapsedTime;
 
     void ReadAnimation(aiNode *aNode, glm::mat4 const& aParentTransform);
+    void Animate();
 
-    aiScene* GetScene();
-    aiAnimation* GetAnimation();
     UBOAnimation* GetUBOAnim();
     Skeleton* GetSkeleton();
+
+    double GetTicksPerSecond()
+    {
+      return mTicksPerSecond;
+    }
+
+    double GetDuration()
+    {
+      return mDuration;
+    }
 
   private:
     aiScene *mScene;
@@ -102,6 +111,12 @@ namespace YTE
 
     // from mesh, has the bone offsets
     Skeleton* mMeshSkeleton;
+
+    // Duration of the animation in ticks.
+    double mDuration;
+
+    // Ticks per second. 0 if not specified in the imported file.
+    double mTicksPerSecond;
   };
 
 

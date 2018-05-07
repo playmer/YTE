@@ -282,6 +282,8 @@ namespace YTE
     mElapsedTime = 0.0;
 
     mSpeed = 1.0f;
+    mTicksPerSecond = mAnimation->mTicksPerSecond;
+    mDuration = mAnimation->mDuration;
   }
 
   void Animation::Initialize(Model *aModel, Engine *aEngine)
@@ -334,9 +336,10 @@ namespace YTE
     mPlayOverTime = aPlayOverTime;
   }
 
-  aiAnimation* Animation::GetAnimation()
+  void Animation::Animate()
   {
-    return mAnimation;
+    glm::mat4 identity;
+    ReadAnimation(mScene->mRootNode, identity);
   }
 
   void Animation::ReadAnimation(aiNode *aNode, glm::mat4 const& aParentTransform)
@@ -356,7 +359,7 @@ namespace YTE
 
       if (duration != 0.0f)
       {
-        mAnimation->mDuration = duration;
+        mDuration = duration;
       }
 
       // Get interpolated matrices between current and next frame
@@ -395,11 +398,6 @@ namespace YTE
   UBOAnimation* Animation::GetUBOAnim()
   {
     return &mUBOAnimationData;
-  }
-
-  aiScene* Animation::GetScene()
-  {
-    return mScene;
   }
 
   YTEDefineType(Animator)
@@ -479,10 +477,10 @@ namespace YTE
     {
       mCurrentAnimation->mElapsedTime += aEvent->Dt * mCurrentAnimation->mSpeed;
 
-      mCurrentAnimation->mCurrentAnimationTime = fmodf(static_cast<float>(mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond),
-        static_cast<float>(mCurrentAnimation->GetAnimation()->mDuration));
+      mCurrentAnimation->mCurrentAnimationTime = fmodf(static_cast<float>(mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetTicksPerSecond()),
+                                                       static_cast<float>(mCurrentAnimation->GetDuration()));
 
-      if (mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond > mCurrentAnimation->GetAnimation()->mDuration)
+      if (mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetTicksPerSecond() > mCurrentAnimation->GetDuration())
       {
         mCurrentAnimation->mCurrentAnimationTime = 0.0;
         mCurrentAnimation->mElapsedTime = 0.0;
@@ -502,8 +500,7 @@ namespace YTE
 
     if (mCurrentAnimation)
     {
-      glm::mat4 identity;
-      mCurrentAnimation->ReadAnimation(mCurrentAnimation->GetScene()->mRootNode, identity);
+      mCurrentAnimation->Animate();
 
       for (int i = 0; i < mCurrentAnimation->GetSkeleton()->GetBoneData().size(); ++i)
       {
@@ -617,7 +614,7 @@ namespace YTE
 
     AnimationAdded animAdd;
     animAdd.animation = anim->mName;
-    animAdd.ticksPerSecond = anim->GetAnimation()->mTicksPerSecond;
+    animAdd.ticksPerSecond = anim->GetTicksPerSecond();
     mOwner->SendEvent(Events::AnimationAdded, &animAdd);
 
     return anim;
