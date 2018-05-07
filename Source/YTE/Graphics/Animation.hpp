@@ -86,7 +86,7 @@ namespace YTE
     bool mPlayOverTime;
     double mElapsedTime;
 
-    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
+    void ReadAnimation(aiNode *aNode, glm::mat4 const& aParentTransform);
 
     aiScene* GetScene();
     aiAnimation* GetAnimation();
@@ -99,11 +99,6 @@ namespace YTE
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
-
-    aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
-    aiMatrix4x4 RotationInterpolation(const aiNodeAnim *aNode);
-    aiMatrix4x4 TranslationInterpolation(const aiNodeAnim *aNode);
-    const aiNodeAnim* FindNodeAnimation(const char *aName);
 
     // from mesh, has the bone offsets
     Skeleton* mMeshSkeleton;

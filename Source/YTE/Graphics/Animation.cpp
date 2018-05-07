@@ -8,6 +8,8 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "assimp/types.h"
+#include "assimp/vector3.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -22,17 +24,20 @@
 
 namespace YTE
 {
-  static glm::vec3 ToGLM(const aiVector3D *aVector)
+  static inline
+  glm::vec3 ToGlm(const aiVector3D *aVector)
   {
     return { aVector->x, aVector->y ,aVector->z };
   }
 
-  static glm::vec3 ToGLM(const aiColor3D *aVector)
+  static inline
+  glm::vec3 ToGlm(const aiColor3D *aVector)
   {
     return { aVector->r, aVector->g ,aVector->b };
   }
 
-  static glm::quat ToGLM(const aiQuaternion *aQuat)
+  static inline
+  glm::quat ToGlm(const aiQuaternion *aQuat)
   {
     glm::quat quaternion;
 
@@ -44,10 +49,152 @@ namespace YTE
     return quaternion;
   }
 
-  static glm::mat4 ToGLM(const aiMatrix4x4 &aMatrix)
+  static inline
+  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
   {
     return glm::transpose(glm::make_mat4(&aMatrix.a1));
   }
+
+  static inline
+  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
+  {
+    auto transposed = glm::transpose(aMatrix);
+    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
+  }
+
+
+  static inline 
+  glm::mat4 ScaleInterpolation(double aAnimationTime, const aiNodeAnim* aNode)
+  {
+    aiVector3D scale;
+    if (aNode->mNumScalingKeys == 1)
+    {
+      scale = aNode->mScalingKeys[0].mValue;
+    }
+    else
+    {
+      auto startFrame = aNode->mScalingKeys[0];
+
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
+      {
+        if (aAnimationTime < (float)aNode->mScalingKeys[i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      aiVectorKey frame = aNode->mScalingKeys[index];
+      aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      const aiVector3D& start = frame.mValue;
+      const aiVector3D& end = nextFrame.mValue;
+
+      scale = (start + delta * (end - start));
+    }
+
+    aiMatrix4x4 mat;
+    aiMatrix4x4::Scaling(scale, mat);
+    return ToGlm(mat);
+  }
+
+  static inline
+  glm::mat4 RotationInterpolation(double aAnimationTime, const aiNodeAnim* aNode)
+  {
+    aiQuaternion rot;
+
+    if (aNode->mNumRotationKeys == 1)
+    {
+      rot = aNode->mRotationKeys[0].mValue;
+    }
+    else
+    {
+      auto startFrame = aNode->mRotationKeys[0];
+
+      // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
+      {
+        if (aAnimationTime < (float)aNode->mRotationKeys[i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      aiQuatKey frame = aNode->mRotationKeys[index];
+      aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      const aiQuaternion& start = frame.mValue;
+      const aiQuaternion& end = nextFrame.mValue;
+
+      aiQuaternion::Interpolate(rot, start, end, delta);
+      rot.Normalize();
+    }
+
+    return ToGlm(aiMatrix4x4(rot.GetMatrix()));
+  }
+
+  static inline
+  glm::mat4 TranslationInterpolation(double aAnimationTime, const aiNodeAnim *aNode)
+  {
+    aiVector3D trans;
+    if (aNode->mNumPositionKeys == 1)
+    {
+      trans = aNode->mPositionKeys[0].mValue;
+    }
+    else
+    {
+      auto startFrame = aNode->mPositionKeys[0];
+
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
+      {
+        if (aAnimationTime < (float)aNode->mPositionKeys[i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      aiVectorKey frame = aNode->mPositionKeys[index];
+      aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      const aiVector3D& start = frame.mValue;
+      const aiVector3D& end = nextFrame.mValue;
+
+      trans = (start + delta * (end - start));
+    }
+
+    aiMatrix4x4 mat;
+    aiMatrix4x4::Translation(trans, mat);
+    return ToGlm(mat);
+  }
+
+  const aiNodeAnim* FindNodeAnimation(aiAnimation *aAnimation, const char *aName)
+  {
+    for (uint32_t i = 0; i < aAnimation->mNumChannels; ++i)
+    {
+      const aiNodeAnim *anim = aAnimation->mChannels[i];
+
+      if (!strcmp(anim->mNodeName.data, aName))
+      {
+        return anim;
+      }
+    }
+    return nullptr;
+  }
+
+
+
+
 
   YTEDefineEvent(KeyFrameChanged);
 
@@ -192,11 +339,11 @@ namespace YTE
     return mAnimation;
   }
 
-  void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
+  void Animation::ReadAnimation(aiNode *aNode, glm::mat4 const& aParentTransform)
   {
-    aiMatrix4x4 NodeTransformation(aNode->mTransformation);
+    glm::mat4 nodeTransformation(ToGlm(aNode->mTransformation));
 
-    const aiNodeAnim* pNodeAnim = FindNodeAnimation(aNode->mName.data);
+    const aiNodeAnim* pNodeAnim = FindNodeAnimation(mAnimation, aNode->mName.data);
 
     if (pNodeAnim)
     {
@@ -213,30 +360,30 @@ namespace YTE
       }
 
       // Get interpolated matrices between current and next frame
-      aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
-      aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);
-      aiMatrix4x4 matTranslation = TranslationInterpolation(pNodeAnim);
+      auto matScale = ScaleInterpolation(mCurrentAnimationTime, pNodeAnim);
+      auto matRotation = RotationInterpolation(mCurrentAnimationTime, pNodeAnim);
+      auto matTranslation = TranslationInterpolation(mCurrentAnimationTime, pNodeAnim);
 
-      NodeTransformation = matTranslation * matRotation * matScale;
+      nodeTransformation = matTranslation * matRotation * matScale;
     }
 
-    aiMatrix4x4 GlobalTransformation = aParentTransform * NodeTransformation;
+    glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
 
-    auto* bones = mMeshSkeleton->GetBones();
+    auto bones = mMeshSkeleton->GetBones();
     auto bone = bones->find(aNode->mName.data);
     if (bone != bones->end())
     {
       uint32_t BoneIndex = bone->second;
-      mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation =
+      mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation = 
         mMeshSkeleton->GetGlobalInverseTransform() *
-        GlobalTransformation *
+        globalTransformation *
         mMeshSkeleton->GetBoneData()[BoneIndex].mOffset;
     }
 
     // visit the rest of the bone children
     for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
     {
-      ReadAnimation(aNode->mChildren[i], GlobalTransformation);
+      ReadAnimation(aNode->mChildren[i], globalTransformation);
     }
   }
 
@@ -254,139 +401,6 @@ namespace YTE
   {
     return mScene;
   }
-
-
-  aiMatrix4x4 Animation::ScaleInterpolation(const aiNodeAnim* aNode)
-  {
-    aiVector3D scale;
-    if (aNode->mNumScalingKeys == 1)
-    {
-      scale = aNode->mScalingKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mScalingKeys[0];
-
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiVectorKey frame = aNode->mScalingKeys[index];
-      aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiVector3D& start = frame.mValue;
-      const aiVector3D& end = nextFrame.mValue;
-
-      scale = (start + delta * (end - start));
-    }
-
-    aiMatrix4x4 mat;
-    aiMatrix4x4::Scaling(scale, mat);
-    return mat;
-  }
-
-
-
-  aiMatrix4x4 Animation::RotationInterpolation(const aiNodeAnim* aNode)
-  {
-    aiQuaternion rot;
-
-    if (aNode->mNumRotationKeys == 1)
-    {
-      rot = aNode->mRotationKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mRotationKeys[0];
-
-      // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiQuatKey frame = aNode->mRotationKeys[index];
-      aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiQuaternion& start = frame.mValue;
-      const aiQuaternion& end = nextFrame.mValue;
-
-      aiQuaternion::Interpolate(rot, start, end, delta);
-      rot.Normalize();
-    }
-
-    return aiMatrix4x4(rot.GetMatrix());
-  }
-
-
-
-  aiMatrix4x4 Animation::TranslationInterpolation(const aiNodeAnim *aNode)
-  {
-    aiVector3D trans;
-    if (aNode->mNumPositionKeys == 1)
-    {
-      trans = aNode->mPositionKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mPositionKeys[0];
-
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiVectorKey frame = aNode->mPositionKeys[index];
-      aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiVector3D& start = frame.mValue;
-      const aiVector3D& end = nextFrame.mValue;
-
-      trans = (start + delta * (end - start));
-    }
-
-    aiMatrix4x4 mat;
-    aiMatrix4x4::Translation(trans, mat);
-    return mat;
-  }
-
-  const aiNodeAnim* Animation::FindNodeAnimation(const char *aName)
-  {
-    for (uint32_t i = 0; i < mAnimation->mNumChannels; ++i)
-    {
-      const aiNodeAnim *anim = mAnimation->mChannels[i];
-
-      if (!strcmp(anim->mNodeName.data, aName))
-      {
-        return anim;
-      }
-    }
-    return nullptr;
-  }
-
-
 
   YTEDefineType(Animator)
   {
@@ -488,12 +502,12 @@ namespace YTE
 
     if (mCurrentAnimation)
     {
-      aiMatrix4x4 identity = aiMatrix4x4();
+      glm::mat4 identity;
       mCurrentAnimation->ReadAnimation(mCurrentAnimation->GetScene()->mRootNode, identity);
 
       for (int i = 0; i < mCurrentAnimation->GetSkeleton()->GetBoneData().size(); ++i)
       {
-        mCurrentAnimation->GetUBOAnim()->mBones[i] = ToGLM(mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation);
+        mCurrentAnimation->GetUBOAnim()->mBones[i] = mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation;
       }
 
       // cause update to graphics card

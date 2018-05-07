@@ -20,17 +20,20 @@
 
 namespace YTE
 {
-  static glm::vec3 AssimpToGLM(const aiVector3D *aVector)
+  static inline
+  glm::vec3 ToGlm(const aiVector3D *aVector)
   {
     return { aVector->x, aVector->y ,aVector->z };
   }
 
-  static glm::vec3 AssimpToGLM(const aiColor3D *aVector)
+  static inline
+  glm::vec3 ToGlm(const aiColor3D *aVector)
   {
     return { aVector->r, aVector->g ,aVector->b };
   }
 
-  static glm::quat AssimpToGLM(const aiQuaternion *aQuat)
+  static inline
+  glm::quat ToGlm(const aiQuaternion *aQuat)
   {
     glm::quat quaternion;
 
@@ -42,10 +45,19 @@ namespace YTE
     return quaternion;
   }
 
-  static glm::mat4 AssimpToGLM(const aiMatrix4x4 &aMatrix)
+  static inline
+  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
   {
     return glm::transpose(glm::make_mat4(&aMatrix.a1));
   }
+
+  static inline
+  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
+  {
+    auto transposed = glm::transpose(aMatrix);
+    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
+  }
+
 
   YTEDefineType(Mesh)
   {
@@ -70,8 +82,8 @@ namespace YTE
 
     mNumBones = 0;
 
-    mGlobalInverseTransform = aScene->mRootNode->mTransformation;
-    mGlobalInverseTransform.Inverse();
+    auto globalInverse = aScene->mRootNode->mTransformation;
+    mGlobalInverseTransform = ToGlm(globalInverse.Inverse());
 
     bool bonesFound = false;
     uint32_t startingVertex = 0;
@@ -117,7 +129,7 @@ namespace YTE
         index = mNumBones;
         ++mNumBones;
         mBones[boneName] = index;
-        mBoneData.emplace_back(bone->mOffsetMatrix);
+        mBoneData.emplace_back(ToGlm(bone->mOffsetMatrix));
       }
       else
       {
@@ -170,7 +182,7 @@ namespace YTE
   void Skeleton::PreTransform(const aiScene* aScene)
   {
     // setup parent transforms
-    aiMatrix4x4 identity = aiMatrix4x4();
+    glm::mat4 identity;
 
     // recursive step
     VisitNodes(aScene->mRootNode, identity);
@@ -178,24 +190,25 @@ namespace YTE
     mDefaultOffsets.mHasAnimation = 1;
     for (uint32_t i = 0; i < mNumBones; ++i)
     {
-      mDefaultOffsets.mBones[i] = AssimpToGLM(mBoneData[i].mFinalTransformation);
+      mDefaultOffsets.mBones[i] = mBoneData[i].mFinalTransformation;
     }
   }
 
 
 
-  void Skeleton::VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform)
+  void Skeleton::VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform)
   {
     std::string nodeName(aNode->mName.data);
-    aiMatrix4x4 globalTrans = aParentTransform * aNode->mTransformation;
+    glm::mat4 globalTrans = aParentTransform * ToGlm(aNode->mTransformation);
 
     auto index = mBones.find(nodeName);
 
     if (index != mBones.end())
     {
-      mBoneData[index->second].mFinalTransformation = mGlobalInverseTransform *
-                                                      globalTrans *
-                                                      mBoneData[index->second].mOffset;
+      mBoneData[index->second].mFinalTransformation = 
+        mGlobalInverseTransform *
+        globalTrans *
+        mBoneData[index->second].mOffset;
     }
 
     for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
@@ -238,12 +251,12 @@ namespace YTE
     material->Get(AI_MATKEY_COLOR_TRANSPARENT, Transparent);
     material->Get(AI_MATKEY_COLOR_REFLECTIVE, Reflective);
 
-    mUBOMaterial.mDiffuse = glm::vec4(AssimpToGLM(&Diffuse), 1.0f);
-    mUBOMaterial.mAmbient = glm::vec4(AssimpToGLM(&Ambient), 1.0f);
-    mUBOMaterial.mSpecular = glm::vec4(AssimpToGLM(&Specular), 1.0f);
-    mUBOMaterial.mEmissive = glm::vec4(AssimpToGLM(&Emissive), 1.0f);
-    mUBOMaterial.mTransparent = glm::vec4(AssimpToGLM(&Transparent), 1.0f);
-    mUBOMaterial.mReflective = glm::vec4(AssimpToGLM(&Reflective), 1.0f);
+    mUBOMaterial.mDiffuse = glm::vec4(ToGlm(&Diffuse), 1.0f);
+    mUBOMaterial.mAmbient = glm::vec4(ToGlm(&Ambient), 1.0f);
+    mUBOMaterial.mSpecular = glm::vec4(ToGlm(&Specular), 1.0f);
+    mUBOMaterial.mEmissive = glm::vec4(ToGlm(&Emissive), 1.0f);
+    mUBOMaterial.mTransparent = glm::vec4(ToGlm(&Transparent), 1.0f);
+    mUBOMaterial.mReflective = glm::vec4(ToGlm(&Reflective), 1.0f);
     mUBOMaterial.mFlags = 0;
 
     material->Get(AI_MATKEY_NAME, name);
@@ -315,18 +328,18 @@ namespace YTE
         pBiTangent = aMesh->mBitangents + j;
       }
 
-      auto position = AssimpToGLM(pPos);
+      auto position = ToGlm(pPos);
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
       auto textureCoordinates = glm::vec3{ pTexCoord->x,
                                            1.0f - pTexCoord->y,
                                            pTexCoord->z };
 
-      auto normal = AssimpToGLM(pNormal);
-      auto color = glm::vec4{ AssimpToGLM(&pColor), 1.0f };
-      auto tangent = AssimpToGLM(pTangent);
+      auto normal = ToGlm(pNormal);
+      auto color = glm::vec4{ ToGlm(&pColor), 1.0f };
+      auto tangent = ToGlm(pTangent);
       auto binormal = glm::cross(tangent, normal);
-      auto bitangent = AssimpToGLM(pBiTangent);
+      auto bitangent = ToGlm(pBiTangent);
 
       glm::vec3 boneWeights;
       glm::vec2 boneWeights2;
@@ -414,7 +427,7 @@ namespace YTE
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
     {
       const aiVector3D *pColPos = aMesh->mVertices + j;
-      auto colPosition = AssimpToGLM(pColPos);
+      auto colPosition = ToGlm(pColPos);
       mColliderVertexBuffer.emplace_back(colPosition);
     }
 

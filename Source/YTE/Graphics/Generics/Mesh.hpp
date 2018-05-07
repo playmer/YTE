@@ -63,17 +63,17 @@ namespace YTE
   {
     BoneData()
     {
-      mOffset = aiMatrix4x4();
-      mFinalTransformation = aiMatrix4x4();
+      mOffset = glm::mat4{};
+      mFinalTransformation = glm::mat4{};
     }
 
-    BoneData(aiMatrix4x4 aOffset) : mOffset(aOffset)
+    BoneData(glm::mat4 const& aOffset) : mOffset(aOffset)
     {
-      mFinalTransformation = aiMatrix4x4();
+      mFinalTransformation = glm::mat4{};
     }
 
-    aiMatrix4x4 mOffset;
-    aiMatrix4x4 mFinalTransformation;
+    glm::mat4 mOffset;
+    glm::mat4 mFinalTransformation;
   };
 
 
@@ -136,7 +136,7 @@ namespace YTE
       return &mDefaultOffsets;
     }
 
-    aiMatrix4x4& GetGlobalInverseTransform()
+    glm::mat4& GetGlobalInverseTransform()
     {
       return mGlobalInverseTransform;
     }
@@ -148,12 +148,12 @@ namespace YTE
 
   private:
     void PreTransform(const aiScene* aScene);
-    void VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform);
+    void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
 
     std::unordered_map<std::string, uint32_t> mBones;
     std::vector<BoneData> mBoneData;
     uint32_t mNumBones;
-    aiMatrix4x4 mGlobalInverseTransform;
+    glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
     UBOAnimation mDefaultOffsets;
 #ifdef _DEBUG
