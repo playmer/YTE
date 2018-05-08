@@ -28,8 +28,8 @@ namespace YTE
 
   void QuestProgressionTrigger::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &QuestProgressionTrigger::OnLogicUpdate);
-    mOwner->YTERegister(Events::CollisionStarted, this, &QuestProgressionTrigger::OnCollisionStarted);
+    mSpace->RegisterEvent<&QuestProgressionTrigger::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&QuestProgressionTrigger::OnCollisionStarted>(Events::CollisionStarted, this);
   }
 
   void QuestProgressionTrigger::OnLogicUpdate(LogicUpdate *)

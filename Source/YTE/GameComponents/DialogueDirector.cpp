@@ -77,11 +77,11 @@ namespace YTE
       mLambTransform = lamb->GetComponent<Transform>();
     }
 
-    mOwner->YTERegister(Events::CollisionStarted, this, &DialogueDirector::OnCollisionStart);
-    mOwner->YTERegister(Events::CollisionEnded, this, &DialogueDirector::OnCollisionEnd);
-    mSpace->YTERegister(Events::TutorialUpdate, this, &DialogueDirector::OnTutorialUpdate);
-    mSpace->YTERegister(Events::PostcardUpdate, this, &DialogueDirector::OnPostcardUpdate);
-    mSpace->YTERegister(Events::NoticeBoardHookup, this, &DialogueDirector::OnNoticeBoardHookup);
+    mOwner->RegisterEvent<&DialogueDirector::OnCollisionStart>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&DialogueDirector::OnCollisionEnd>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnTutorialUpdate>(Events::TutorialUpdate, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnPostcardUpdate>(Events::PostcardUpdate, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnNoticeBoardHookup>(Events::NoticeBoardHookup, this);
   }
 
   void DialogueDirector::OnRequestDialogueStart(RequestDialogueStart *)
@@ -433,21 +433,21 @@ namespace YTE
   void DialogueDirector::RegisterDirector()
   {
     mIsRegistered = true;
-    mSpace->YTERegister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-    mSpace->YTERegister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-    mSpace->YTERegister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-    mSpace->YTERegister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+    mSpace->RegisterEvent<&DialogueDirector::OnRequestDialogueStart>(Events::RequestDialogueStart, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnDialogueNodeReady>(Events::DialogueNodeReady, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnDialogueSelect>(Events::DialogueSelect, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnDialogueConfirm>(Events::DialogueConfirm, this);
+    mSpace->RegisterEvent<&DialogueDirector::OnDialogueExit>(Events::DialogueExit, this);
   }
 
   void DialogueDirector::DeregisterDirector()
   {
     mIsRegistered = false;
-    mSpace->YTEDeregister(Events::RequestDialogueStart, this, &DialogueDirector::OnRequestDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeReady, this, &DialogueDirector::OnDialogueNodeReady);
-    mSpace->YTEDeregister(Events::DialogueSelect, this, &DialogueDirector::OnDialogueSelect);
-    mSpace->YTEDeregister(Events::DialogueConfirm, this, &DialogueDirector::OnDialogueConfirm);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &DialogueDirector::OnDialogueExit);
+    mSpace->DeregisterEvent<&DialogueDirector::OnRequestDialogueStart>(Events::RequestDialogueStart,  this);
+    mSpace->DeregisterEvent<&DialogueDirector::OnDialogueNodeReady>(Events::DialogueNodeReady,  this);
+    mSpace->DeregisterEvent<&DialogueDirector::OnDialogueSelect>(Events::DialogueSelect,  this);
+    mSpace->DeregisterEvent<&DialogueDirector::OnDialogueConfirm>(Events::DialogueConfirm,  this);
+    mSpace->DeregisterEvent<&DialogueDirector::OnDialogueExit>(Events::DialogueExit,  this);
   }
 
 }

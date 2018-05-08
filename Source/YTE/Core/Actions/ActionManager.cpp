@@ -24,8 +24,8 @@ namespace YTE
 
   void ActionManager::Initialize()
   {
-    mOwner->YTERegister(Events::LogicUpdate, this, &ActionManager::Update);
-    GetSpace()->YTERegister(Events::CompositionRemoved, this, &ActionManager::OnCompositionRemoved);
+    mOwner->RegisterEvent<&ActionManager::Update>(Events::LogicUpdate, this);
+    GetSpace()->RegisterEvent<&ActionManager::OnCompositionRemoved>(Events::CompositionRemoved, this);
   }
 
   void ActionManager::Update(LogicUpdate *aUpdate)

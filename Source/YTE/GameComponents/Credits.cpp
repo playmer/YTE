@@ -194,7 +194,7 @@ namespace YTE
     CreateLine("VkHLF Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.");
 
     //mFirstLine->GetComponent<SpriteText>()->SetVisibility(false);
-    mSpace->YTERegister(Events::StartCredits, this, &Credits::OnStartCredits);
+    mSpace->RegisterEvent<&Credits::OnStartCredits>(Events::StartCredits, this);
   }
 
   void Credits::OnStartCredits(StartCredits *)
@@ -205,7 +205,7 @@ namespace YTE
 
     mFadeFinished = false;
     mSpace->GetParent()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Disabled);
-    mSpace->YTERegister(Events::LogicUpdate, this, &Credits::Update);
+    mSpace->RegisterEvent<&Credits::Update>(Events::LogicUpdate, this);
 
     auto actionManager = mSpace->GetComponent<ActionManager>();
     ActionSequence fadeOutSeq;
@@ -268,7 +268,7 @@ namespace YTE
 
           fadeInSeq.Call([this]() {
             mSpace->GetParent()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Menu);
-            mSpace->YTEDeregister(Events::LogicUpdate, this, &Credits::Update);
+            mSpace->DeregisterEvent<&Credits::Update>(Events::LogicUpdate,  this);
           });
 
           actionManager->AddSequence(mOwner, fadeInSeq);

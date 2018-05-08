@@ -33,7 +33,7 @@ namespace YTE
 
   void ExitMenu::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ExitMenu::OnElementTrigger);
+    mOwner->RegisterEvent<&ExitMenu::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void ExitMenu::OnElementTrigger(MenuElementTrigger *)

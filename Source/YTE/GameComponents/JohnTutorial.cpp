@@ -35,7 +35,7 @@ namespace YTE
     mSpace->SendEvent(Events::RequestDialogueStart, &tutorialStart);
     // DialogueDirector will send BoatDockEvent to stop boat, play a sound
     // DD will then send DialogueStart to the space and set input context to Dialogue
-    mSpace->YTERegister(Events::TutorialUpdate, this, &JohnTutorial::OnTutorialUpdate);
+    mSpace->RegisterEvent<&JohnTutorial::OnTutorialUpdate>(Events::TutorialUpdate, this);
   }
 
   void JohnTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)

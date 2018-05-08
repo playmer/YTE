@@ -93,10 +93,10 @@ namespace YTE
 
   void InfluenceMap::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &InfluenceMap::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &InfluenceMap::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &InfluenceMap::TransformUpdate);
-    mEngine->YTERegister(Events::LogicUpdate, this, &InfluenceMap::Update);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::ScaleChanged, this);
+    mEngine->RegisterEvent<&InfluenceMap::Update>(Events::LogicUpdate, this);
 
     mTransform = mOwner->GetComponent<Transform>(); 
     mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), mGraphicsView->GetRenderer(), mGraphicsView);
@@ -154,7 +154,7 @@ namespace YTE
 
     if (mTransform && mSetTransform == false)
     {
-      mEngine->YTEDeregister(Events::LogicUpdate, this, &InfluenceMap::Update);
+      mEngine->DeregisterEvent<&InfluenceMap::Update>(Events::LogicUpdate,  this);
       if (mInstantiatedInfluenceMap)
       {
         mInstantiatedInfluenceMap->SetCenter(mTransform->GetTranslation());

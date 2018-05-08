@@ -56,10 +56,10 @@ namespace YTE
 
   void JohnDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
-    mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+    mOwner->RegisterEvent<&JohnDialogue::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&JohnDialogue::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
     {
@@ -218,21 +218,21 @@ namespace YTE
   // this is super bad but i need to call this by hand in the tutorial
   void JohnDialogue::RegisterDialogue()
   {
-    mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-    mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
-    mSpace->YTERegister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent, this);
   }
   
   // this is super bad but i need to call this by hand in the tutorial
   void JohnDialogue::DeregisterDialogue()
   {
-    mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
-    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueStart>(Events::DialogueStart,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueExit>(Events::DialogueExit,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent,  this);
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)

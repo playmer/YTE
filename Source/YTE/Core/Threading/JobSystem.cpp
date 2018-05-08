@@ -42,7 +42,7 @@ namespace YTE
 
   void JobSystem::Initialize()
   {
-    mOwner->YTERegister(Events::FrameUpdate, this, &JobSystem::Update);
+    mOwner->RegisterEvent<&JobSystem::Update>(Events::FrameUpdate, this);
     size_t workerCount = std::thread::hardware_concurrency();
     std::vector<Worker*> workers;
 

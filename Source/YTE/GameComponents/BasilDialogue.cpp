@@ -44,10 +44,10 @@ namespace YTE
 
   void BasilDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &BasilDialogue::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::OnCollisionEnded);
-    mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
+    mOwner->RegisterEvent<&BasilDialogue::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&BasilDialogue::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
     {
@@ -206,21 +206,21 @@ namespace YTE
   void BasilDialogue::RegisterDialogue()
   {
     mIsRegistered = true;
-    mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-    mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
-    mSpace->YTERegister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent, this);
   }
 
   void BasilDialogue::DeregisterDialogue()
   {
     mIsRegistered = false;
-    mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
-    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueStart>(Events::DialogueStart,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueExit>(Events::DialogueExit,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent,  this);
   }
 
   void BasilDialogue::OnCollisionStarted(CollisionStarted *aEvent)

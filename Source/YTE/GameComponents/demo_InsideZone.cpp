@@ -25,9 +25,9 @@ namespace YTE
     mBoatCollider = mOwner->GetComponent<Collider>();
     mBoatBody = mOwner->GetComponent<GhostBody>();
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
-    mOwner->YTERegister(Events::CollisionPersisted, this, &demo_InsideZone::OnCollisionPersist);
-    mOwner->YTERegister(Events::CollisionStarted, this, &demo_InsideZone::OnCollisionStart);
-    mOwner->YTERegister(Events::CollisionEnded, this, &demo_InsideZone::OnCollisionEnd);
+    mOwner->RegisterEvent<&demo_InsideZone::OnCollisionPersist>(Events::CollisionPersisted, this);
+    mOwner->RegisterEvent<&demo_InsideZone::OnCollisionStart>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&demo_InsideZone::OnCollisionEnd>(Events::CollisionEnded, this);
     mSoundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
     if (mSoundSystem)

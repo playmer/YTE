@@ -67,7 +67,7 @@ namespace YTE
   {
     YTEUnusedArgument(aProperties);
 
-    mSpace->YTERegister(Events::PhysicsUpdate, this, &PhysicsSystem::OnPhysicsUpdate);
+    mSpace->RegisterEvent<&PhysicsSystem::OnPhysicsUpdate>(Events::PhysicsUpdate, this);
 
       // collision configuration contains default setup for memory , collision setup . Advanced
       // users can create their own configuration .
@@ -118,11 +118,11 @@ namespace YTE
       // Register for events.
     if (mDebugDraw)
     {
-      mOwner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mOwner->GetEngine()->RegisterEvent<&PhysicsSystem::DebugDrawUpdate>(Events::PreFrameUpdate, this);
     }
     else
     {
-      mOwner->GetEngine()->YTEDeregister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mOwner->GetEngine()->DeregisterEvent<&PhysicsSystem::DebugDrawUpdate>(Events::PreFrameUpdate,  this);
       mDebugDrawer->clearLines();
     }
   }

@@ -115,13 +115,13 @@ namespace YTE
     mBoatRotations.emplace_back(mBoatRotationTwo);
     mBoatRotations.emplace_back(mBoatRotationThree);
 
-    mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    mSpace->RegisterEvent<&JohnMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void JohnMovement::Start()
   {
    // mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
-    //mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    //mSpace->RegisterEvent<&JohnMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void JohnMovement::OnQuestStart(QuestStart *aEvent)

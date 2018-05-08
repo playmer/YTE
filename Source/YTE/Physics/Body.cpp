@@ -23,7 +23,7 @@ namespace YTE
   Body::Body(Composition *aOwner, Space *aSpace, RSValue *)
     : Component(aOwner, aSpace)
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &Body::OnLogicUpdate);
+    mSpace->RegisterEvent<&Body::OnLogicUpdate>(Events::LogicUpdate, this);
   };
 
   Body::~Body()

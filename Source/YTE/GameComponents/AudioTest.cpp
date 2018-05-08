@@ -72,7 +72,7 @@ namespace YTE
         GraphicsView *view = space->GetComponent<GraphicsView>();
         Window *window = view->GetWindow();
 
-        window->mKeyboard.YTERegister(Events::KeyPress, this, &AudioTest::Play);
+        window->mKeyboard.RegisterEvent<&AudioTest::Play>(Events::KeyPress, this);
     }
 
     void AudioTest::Play(KeyboardEvent *aEvent)

@@ -109,12 +109,12 @@ namespace YTE
   {
     auto parent{ mOwner->GetOwner() };
 
-    mOwner->YTERegister(Events::ParentChanged, this, &Transform::ParentObjectChanged);
+    mOwner->RegisterEvent<&Transform::ParentObjectChanged>(Events::ParentChanged, this);
     if (parent)
     {
-      parent->YTERegister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
-      parent->YTERegister(Events::ScaleChanged, this, &Transform::ParentScaleChanged);
-      parent->YTERegister(Events::RotationChanged, this, &Transform::ParentRotationChanged);
+      parent->RegisterEvent<&Transform::ParentPositionChanged>(Events::PositionChanged, this);
+      parent->RegisterEvent<&Transform::ParentScaleChanged>(Events::ScaleChanged, this);
+      parent->RegisterEvent<&Transform::ParentRotationChanged>(Events::RotationChanged, this);
     }
   }
 
@@ -143,16 +143,16 @@ namespace YTE
 
     if (oldParent)
     {
-      oldParent->YTEDeregister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
-      oldParent->YTEDeregister(Events::ScaleChanged, this, &Transform::ParentScaleChanged);
-      oldParent->YTEDeregister(Events::RotationChanged, this, &Transform::ParentRotationChanged);
+      oldParent->DeregisterEvent<&Transform::ParentPositionChanged>(Events::PositionChanged,  this);
+      oldParent->DeregisterEvent<&Transform::ParentScaleChanged>(Events::ScaleChanged,  this);
+      oldParent->DeregisterEvent<&Transform::ParentRotationChanged>(Events::RotationChanged,  this);
     }
 
     if (newParent)
     {
-      newParent->YTERegister(Events::PositionChanged, this, &Transform::ParentPositionChanged);
-      newParent->YTERegister(Events::ScaleChanged, this, &Transform::ParentScaleChanged);
-      newParent->YTERegister(Events::RotationChanged, this, &Transform::ParentRotationChanged);
+      newParent->RegisterEvent<&Transform::ParentPositionChanged>(Events::PositionChanged, this);
+      newParent->RegisterEvent<&Transform::ParentScaleChanged>(Events::ScaleChanged, this);
+      newParent->RegisterEvent<&Transform::ParentRotationChanged>(Events::RotationChanged, this);
     }
 
     // set translation

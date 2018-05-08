@@ -53,7 +53,7 @@ namespace YTE
 
   void OceanCreatureBehavior::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &OceanCreatureBehavior::Update);
+    mSpace->RegisterEvent<&OceanCreatureBehavior::Update>(Events::LogicUpdate, this);
 
     if (Composition *camera = GetSpace()->FindFirstCompositionByName("Camera"))
     {

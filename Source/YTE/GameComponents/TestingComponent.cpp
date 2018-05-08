@@ -33,10 +33,10 @@ namespace YTE
 
   void TestingComponent::Initialize()
   {
-    mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &TestingComponent::Update);
+    mOwner->GetSpace()->RegisterEvent<&TestingComponent::Update>(Events::LogicUpdate, this);
 
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
-    mGamepad->YTERegister(Events::XboxButtonPress, this, &TestingComponent::CheckButtons);
+    mGamepad->RegisterEvent<&TestingComponent::CheckButtons>(Events::XboxButtonPress, this);
 
     mAnimator = mOwner->GetComponent<Animator>();
   }

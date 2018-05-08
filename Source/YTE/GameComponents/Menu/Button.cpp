@@ -65,9 +65,9 @@ namespace YTE
 
   void Button::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementHover, this, &Button::OnButtonHover);
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &Button::OnButtonTrigger);
-    mOwner->YTERegister(Events::MenuElementDeHover, this, &Button::OnButtonDeHover);
+    mOwner->RegisterEvent<&Button::OnButtonHover>(Events::MenuElementHover, this);
+    mOwner->RegisterEvent<&Button::OnButtonTrigger>(Events::MenuElementTrigger, this);
+    mOwner->RegisterEvent<&Button::OnButtonDeHover>(Events::MenuElementDeHover, this);
 
     mCurrentSprite = mOwner->GetComponent<Sprite>();
   }

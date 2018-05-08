@@ -66,9 +66,9 @@ namespace YTE
 
     mRigidBody = mOwner->GetComponent<RigidBody>();
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &ProgressionParticles::Update);
+    mSpace->RegisterEvent<&ProgressionParticles::Update>(Events::LogicUpdate, this);
 
-    mSpace->YTERegister(Events::ProgressionHappened, this, &ProgressionParticles::OnProgressionHappened);
+    mSpace->RegisterEvent<&ProgressionParticles::OnProgressionHappened>(Events::ProgressionHappened, this);
 
     mProgressionEmitter->SetEmitCount(0);
     mProgressionEmitter->SetEmitRate(1000.0f);

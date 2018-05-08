@@ -461,7 +461,7 @@ namespace YTE
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
 
@@ -477,21 +477,21 @@ namespace YTE
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
   void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     Mesh::UpdateVertices(aSubmeshIndex, aVertices);
 
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
   void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     Mesh::UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
   VkMesh::~VkMesh()
@@ -500,7 +500,7 @@ namespace YTE
 
   void VkMesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
   {
-    mRenderer->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkMesh::LoadToVulkan);
+    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
 
     for (auto &submesh : mSubmeshes)
     {

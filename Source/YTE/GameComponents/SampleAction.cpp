@@ -16,7 +16,7 @@ namespace YTE
 
   void SampleAction::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &SampleAction::Update);
+    mSpace->RegisterEvent<&SampleAction::Update>(Events::LogicUpdate, this);
     mValue = 10.0f;
   }
 

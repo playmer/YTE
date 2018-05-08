@@ -40,7 +40,7 @@ namespace YTE
 
   void InheritVisibility::Initialize()
   {
-    mOwner->YTERegister(Events::UpdateVisibilityEvent, this, &InheritVisibility::OnParentVisibilityUpdate);
+    mOwner->RegisterEvent<&InheritVisibility::OnParentVisibilityUpdate>(Events::UpdateVisibilityEvent, this);
   }
 
   void InheritVisibility::OnParentVisibilityUpdate(UpdateVisibilityEvent *aEvent)

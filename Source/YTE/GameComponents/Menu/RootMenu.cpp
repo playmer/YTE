@@ -26,7 +26,7 @@ namespace YTE
 
   void RootMenu::Initialize()
   {
-    mSpace->YTERegister(Events::MenuStart, this, &RootMenu::OnMenuStart);
+    mSpace->RegisterEvent<&RootMenu::OnMenuStart>(Events::MenuStart, this);
   }
 
   void RootMenu::OnMenuStart(MenuStart *aEvent)

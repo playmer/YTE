@@ -92,25 +92,25 @@ namespace YTE
       mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
+    mSpace->RegisterEvent<&MenuController::OnChildrenInitialized>(Events::LogicUpdate, this);
 
-    mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
-    mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
+    mOwner->RegisterEvent<&MenuController::OnMenuStart>(Events::MenuStart, this);
+    mOwner->RegisterEvent<&MenuController::OnDirectMenuExit>(Events::MenuExit, this);
 
     if (mCanClose)
     {  
-      mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+      mSpace->RegisterEvent<&MenuController::OnMenuExit>(Events::MenuExit, this);
     }
 
-    mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
-    mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
+    mSpace->RegisterEvent<&MenuController::OnMenuConfirm>(Events::MenuConfirm, this);
+    mSpace->RegisterEvent<&MenuController::OnMenuElementChange>(Events::MenuElementChange, this);
   }
 
   void MenuController::OnChildrenInitialized(LogicUpdate *aEvent)
   {
     YTEUnusedArgument(aEvent);
     UpdateVisibility();
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
+    mSpace->DeregisterEvent<&MenuController::OnChildrenInitialized>(Events::LogicUpdate,  this);
   }
 
   void MenuController::OnMenuStart(MenuStart *aEvent)

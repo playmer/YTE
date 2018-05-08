@@ -83,7 +83,7 @@ namespace YTE
 
     mIsInitialized = true;
 
-    mOwner->YTERegister(Events::PositionChanged, this, &GhostBody::TransformEvent);
+    mOwner->RegisterEvent<&GhostBody::TransformEvent>(Events::PositionChanged, this);
   }
 
   void GhostBody::TransformEvent(TransformChanged *aEvent)

@@ -33,13 +33,13 @@ namespace YTE
 
   void QuestLogic::Initialize()
   {
-    mSpace->YTERegister(Events::SpawnProgressionItem, this, &QuestLogic::OnSpawnProgressionItem);
-    mSpace->YTERegister(Events::SpawnProgressionLocation, this, &QuestLogic::OnSpawnProgressionLocation);
-    mSpace->YTERegister(Events::SpawnProgressionDialogue, this, &QuestLogic::OnSpawnProgressionDialogue);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionItem>(Events::SpawnProgressionItem, this);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionLocation>(Events::SpawnProgressionLocation, this);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionDialogue>(Events::SpawnProgressionDialogue, this);
 
-    mSpace->YTERegister(Events::ProgressionItemEvent, this, &QuestLogic::OnProgressionItemEvent);
-    mSpace->YTERegister(Events::ProgressionLocationEvent, this, &QuestLogic::OnProgressionLocationEvent);
-    mSpace->YTERegister(Events::ProgressionDialogueEvent, this, &QuestLogic::OnProgressionDialogueEvent);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionItemEvent>(Events::ProgressionItemEvent, this);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionLocationEvent>(Events::ProgressionLocationEvent, this);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionDialogueEvent>(Events::ProgressionDialogueEvent, this);
   }
 
   void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)

@@ -106,17 +106,17 @@ namespace YTE
     , mBeingDeleted(false)
     , mGUID()
   {
-    mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+    mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
     auto parent = GetParent();
 
     if (nullptr != parent && this != parent)
     {
-      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
-      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
-      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
-      parent->YTERegister(Events::Start, this, &Composition::Start);
-      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
+      parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
+      parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
+      parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
+      parent->RegisterEvent<&Composition::Start>(Events::Start, this);
+      parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
     }
   };
 
@@ -131,17 +131,17 @@ namespace YTE
     , mBeingDeleted(false)
     , mGUID()
   {
-    mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+    mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
     auto parent = GetParent();
 
     if (nullptr != parent && this != parent)
     {
-      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
-      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
-      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
-      parent->YTERegister(Events::Start, this, &Composition::Start);
-      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
+      parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
+      parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
+      parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
+      parent->RegisterEvent<&Composition::Start>(Events::Start, this);
+      parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
     }
   };
 
@@ -512,7 +512,7 @@ namespace YTE
     mEngine->mCompositionsToRemove.Erase(compositionRange);
 
     // Stop handling deletions, as we've completed all of them thus far.
-    GetSpaceOrEngine()->YTEDeregister(Events::DeletionUpdate, this, &Composition::BoundTypeChangedHandler);
+    GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
@@ -1292,7 +1292,7 @@ namespace YTE
       mCompositions.Erase(iter);
     }
 
-    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -1309,7 +1309,7 @@ namespace YTE
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
 
-    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void Composition::RemoveComponent(Component *aComponent)

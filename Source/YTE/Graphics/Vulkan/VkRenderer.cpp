@@ -101,10 +101,10 @@ namespace YTE
       }
     }
 
-    mEngine->YTERegister(Events::FrameUpdate, this, &VkRenderer::FrameUpdate);
-    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &VkRenderer::GraphicsDataUpdate);
-    mEngine->YTERegister(Events::AnimationUpdate, this, &VkRenderer::AnimationUpdate);
-    mEngine->YTERegister(Events::PresentFrame, this, &VkRenderer::PresentFrame);
+    mEngine->RegisterEvent<&VkRenderer::FrameUpdate>(Events::FrameUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::AnimationUpdate>(Events::AnimationUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::PresentFrame>(Events::PresentFrame, this);
   }
 
   VkRenderer::~VkRenderer()

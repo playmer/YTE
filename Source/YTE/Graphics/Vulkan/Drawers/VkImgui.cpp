@@ -78,7 +78,7 @@ namespace YTE
                                            1,
                                            vk::ImageViewType::e2D);
 
-    owner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &VkImguiDrawer::PreFrameUpdate);
+    owner->GetEngine()->RegisterEvent<&VkImguiDrawer::PreFrameUpdate>(Events::PreFrameUpdate, this);
   }
 
   static const std::string imguiStr{ "Imgui" };

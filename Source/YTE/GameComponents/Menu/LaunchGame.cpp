@@ -44,8 +44,8 @@ namespace YTE
       //emitter->PlayEvent("Menu_Start");
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &LaunchGame::OnLogicUpdate);
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchGame::OnElementTrigger);
+    mSpace->RegisterEvent<&LaunchGame::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&LaunchGame::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchGame::OnLogicUpdate(LogicUpdate *)

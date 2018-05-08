@@ -27,7 +27,7 @@ namespace YTE
 
   void DaisyTutorial::Initialize()
   {
-    mSpace->YTERegister(Events::TutorialUpdate, this, &DaisyTutorial::OnTutorialUpdate);
+    mSpace->RegisterEvent<&DaisyTutorial::OnTutorialUpdate>(Events::TutorialUpdate, this);
   }
 
   void DaisyTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)

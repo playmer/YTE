@@ -71,8 +71,8 @@ namespace YTE
       mControllerWarning = controller->GetComponent<Sprite>();
     }
 
-    mSpace->YTERegister(Events::FrameUpdate, this, &SplashScreen::OnFrameUpdate);
-    mSpace->YTERegister(Events::LogicUpdate, this, &SplashScreen::OnLogicUpdate);
+    mSpace->RegisterEvent<&SplashScreen::OnFrameUpdate>(Events::FrameUpdate, this);
+    mSpace->RegisterEvent<&SplashScreen::OnLogicUpdate>(Events::LogicUpdate, this);
   }
 
   void SplashScreen::Start()

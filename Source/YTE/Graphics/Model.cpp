@@ -128,9 +128,9 @@ namespace YTE
     mRenderer = mSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Model::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Model::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Model::TransformUpdate);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::ScaleChanged, this);
     mTransform = mOwner->GetComponent<Transform>();
     mConstructing = false;
     Create();

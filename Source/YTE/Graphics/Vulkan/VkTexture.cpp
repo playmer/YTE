@@ -109,7 +109,7 @@ namespace YTE
                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
                                  allocator);
 
-    mRenderer->YTERegister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
+    mRenderer->RegisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
 
 
     vk::ComponentMapping components = { vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA };
@@ -209,6 +209,6 @@ namespace YTE
       }
     }
 
-    mRenderer->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkTexture::LoadToVulkan);
+    mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
   }
 }

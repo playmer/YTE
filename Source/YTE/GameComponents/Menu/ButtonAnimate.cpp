@@ -35,16 +35,16 @@ namespace YTE
   {
     mMyTransform = mOwner->GetComponent<Transform>();
 
-    //mSpace->YTERegister(Events::LogicUpdate, this, &ButtonAnimate::OnStart);
+    //mSpace->RegisterEvent<&ButtonAnimate::OnStart>(Events::LogicUpdate, this);
 
-    mOwner->YTERegister(Events::MenuElementHover, this, &ButtonAnimate::OnButtonHover);
-    mOwner->YTERegister(Events::MenuElementDeHover, this, &ButtonAnimate::OnButtonDeHover);
+    mOwner->RegisterEvent<&ButtonAnimate::OnButtonHover>(Events::MenuElementHover, this);
+    mOwner->RegisterEvent<&ButtonAnimate::OnButtonDeHover>(Events::MenuElementDeHover, this);
   }
 
   void ButtonAnimate::Start()
   {
     mNeutralScale = mMyTransform->GetScale();
-    //mSpace->YTEDeregister(Events::LogicUpdate, this, &ButtonAnimate::OnStart);
+    //mSpace->DeregisterEvent<&ButtonAnimate::OnStart>(Events::LogicUpdate,  this);
   }
 
   void ButtonAnimate::OnButtonHover(MenuElementHover* aEvent)

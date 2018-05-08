@@ -108,17 +108,17 @@ namespace YTE
     mHudSpace = mSpace->AddChildSpace("MSR_HUD");
     mCreditsSpace = mSpace->AddChildSpace("MSR_Credits");
 
-    mSpace->YTERegister(Events::FrameUpdate, this, &InputInterpreter::OnFrameUpdate);
-    mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnLogicUpdate);
+    mSpace->RegisterEvent<&InputInterpreter::OnFrameUpdate>(Events::FrameUpdate, this);
+    mSpace->RegisterEvent<&InputInterpreter::OnLogicUpdate>(Events::LogicUpdate, this);
 
-    mGamepad->YTERegister(Events::XboxStickEvent, this, &InputInterpreter::OnStickEvent);
-    mGamepad->YTERegister(Events::XboxStickFlicked, this, &InputInterpreter::OnFlickEvent);
-    mGamepad->YTERegister(Events::XboxButtonPress, this, &InputInterpreter::OnButtonPress);
-    mGamepad->YTERegister(Events::XboxButtonRelease, this, &InputInterpreter::OnButtonRelease);
+    mGamepad->RegisterEvent<&InputInterpreter::OnStickEvent>(Events::XboxStickEvent, this);
+    mGamepad->RegisterEvent<&InputInterpreter::OnFlickEvent>(Events::XboxStickFlicked, this);
+    mGamepad->RegisterEvent<&InputInterpreter::OnButtonPress>(Events::XboxButtonPress, this);
+    mGamepad->RegisterEvent<&InputInterpreter::OnButtonRelease>(Events::XboxButtonRelease, this);
 
-    mKeyboard->YTERegister(Events::KeyPersist, this, &InputInterpreter::OnKeyPersist);
-    mKeyboard->YTERegister(Events::KeyPress, this, &InputInterpreter::OnKeyPress);
-    mKeyboard->YTERegister(Events::KeyRelease, this, &InputInterpreter::OnKeyRelease);
+    mKeyboard->RegisterEvent<&InputInterpreter::OnKeyPersist>(Events::KeyPersist, this);
+    mKeyboard->RegisterEvent<&InputInterpreter::OnKeyPress>(Events::KeyPress, this);
+    mKeyboard->RegisterEvent<&InputInterpreter::OnKeyRelease>(Events::KeyRelease, this);
   }
 
   void InputInterpreter::SetInputContext(InputInterpreter::InputContext aContext)
@@ -150,7 +150,7 @@ namespace YTE
 
     mMenuSpace->SendEvent(Events::MenuElementChange, &hoverFirstButton);
 
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
+    mSpace->DeregisterEvent<&InputInterpreter::OnPostStart>(Events::LogicUpdate,  this);
   }
 
   void InputInterpreter::OnFrameUpdate(LogicUpdate *)
@@ -229,7 +229,7 @@ namespace YTE
 
     if (!mDoneOnce)
     {
-      mSpace->YTERegister(Events::LogicUpdate, this, &InputInterpreter::OnPostStart);
+      mSpace->RegisterEvent<&InputInterpreter::OnPostStart>(Events::LogicUpdate, this);
     }
   }
 

@@ -146,7 +146,7 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
-    mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
+    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
 
     SetClearColor(mClearColor);
     mConstructing = false;

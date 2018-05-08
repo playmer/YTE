@@ -48,7 +48,7 @@ namespace YTE
 
   void Orientation::Initialize()
   {
-    mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
+    mOwner->RegisterEvent<&Orientation::OnRotationChanged>(Events::RotationChanged, this);
 
     const glm::vec3 forwardReset(0, 0, 1);
     const glm::vec3 rightReset(-1, 0, 0);

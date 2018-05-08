@@ -196,7 +196,7 @@ namespace YTE
     mModel = mOwner->GetComponent<Model>();
     mFFTWater = mOwner->GetComponent<FFT_WaterSimulation>();
 
-    mOwner->YTERegister(Events::ModelChanged, this, &Material::Create);
+    mOwner->RegisterEvent<&Material::Create>(Events::ModelChanged, this);
 
     ModelChanged event;
     event.Object = mOwner;

@@ -38,7 +38,7 @@ namespace YTEditor
   {
     auto engine = mConsole->GetMainWindow()->GetRunningEngine();
 
-    engine->YTERegister(YTE::Events::LogEvent, this, &LogHandler::HandleLog);
+    engine->RegisterEvent<&LogHandler::HandleLog>(YTE::Events::LogEvent, this);
   }
 
   static QColor LogTypeToColor(YTE::LogType aType)

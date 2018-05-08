@@ -92,25 +92,25 @@ namespace YTE
       }
     }*/
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &DialogueElement::OnStart);
-    mSpace->YTERegister(Events::UIUpdateContent, this, &DialogueElement::OnContentUpdate);
+    mSpace->RegisterEvent<&DialogueElement::OnStart>(Events::LogicUpdate, this);
+    mSpace->RegisterEvent<&DialogueElement::OnContentUpdate>(Events::UIUpdateContent, this);
 
     if (mContentType == ContentType::Passive)
     {
       mSelectionIndex = 0;
-      mSpace->YTERegister(Events::UIDisplayEvent, this, &DialogueElement::OnDisplayEvent);
-      mSpace->YTERegister(Events::UIFocusSwitchEvent, this, &DialogueElement::OnFocusSwitch);
+      mSpace->RegisterEvent<&DialogueElement::OnDisplayEvent>(Events::UIDisplayEvent, this);
+      mSpace->RegisterEvent<&DialogueElement::OnFocusSwitch>(Events::UIFocusSwitchEvent, this);
     }
     else if (mContentType == ContentType::Active)
     {
-      mSpace->YTERegister(Events::UISelectEvent, this, &DialogueElement::OnSelectEvent);
+      mSpace->RegisterEvent<&DialogueElement::OnSelectEvent>(Events::UISelectEvent, this);
     }
   }
 
   void DialogueElement::OnStart(LogicUpdate*)
   {
     UpdateVisibility(false);
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &DialogueElement::OnStart);
+    mSpace->DeregisterEvent<&DialogueElement::OnStart>(Events::LogicUpdate,  this);
   }
 
   void DialogueElement::OnContentUpdate(UIUpdateContent *aEvent)

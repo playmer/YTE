@@ -148,11 +148,11 @@ namespace YTE
     mWindow = mGraphicsView->GetWindow();
     mEngine = mSpace->GetEngine();
 
-    mGraphicsView->YTERegister(Events::RendererResize, this, &Camera::RendererResize);
-    mGraphicsView->YTERegister(Events::SurfaceGained, this, &Camera::SurfaceGainedEvent);
-    mSpace->YTERegister(Events::FrameUpdate, this, &Camera::Update);
-    mOwner->YTERegister(Events::PositionChanged, this, &Camera::TransformEvent);
-    mOwner->YTERegister(Events::OrientationChanged, this, &Camera::OrientationEvent);
+    mGraphicsView->RegisterEvent<&Camera::RendererResize>(Events::RendererResize, this);
+    mGraphicsView->RegisterEvent<&Camera::SurfaceGainedEvent>(Events::SurfaceGained, this);
+    mSpace->RegisterEvent<&Camera::Update>(Events::FrameUpdate, this);
+    mOwner->RegisterEvent<&Camera::TransformEvent>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Camera::OrientationEvent>(Events::OrientationChanged, this);
 
     if (nullptr == mGraphicsView->GetActiveCamera())
     {

@@ -27,7 +27,7 @@ namespace YTE
 
   void BasilTutorial::Initialize()
   {
-    mSpace->YTERegister(Events::TutorialUpdate, this, &BasilTutorial::OnTutorialUpdate);
+    mSpace->RegisterEvent<&BasilTutorial::OnTutorialUpdate>(Events::TutorialUpdate, this);
   }
 
   void BasilTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)

@@ -50,7 +50,7 @@ namespace YTE
 
     if (view)
     {
-      view->YTERegister(Events::WWiseListenerChanged, this, &WWiseEmitter::ListenerChanged);
+      view->RegisterEvent<&WWiseEmitter::ListenerChanged>(Events::WWiseListenerChanged, this);
     }
     else
     {
@@ -98,8 +98,8 @@ namespace YTE
 
     if (transform != nullptr)
     {
-      mOwner->YTERegister(Events::PositionChanged, this, &WWiseEmitter::OnPositionChange);
-      mOwner->YTERegister(Events::OrientationChanged, this, &WWiseEmitter::OnOrientationChange);
+      mOwner->RegisterEvent<&WWiseEmitter::OnPositionChange>(Events::PositionChanged, this);
+      mOwner->RegisterEvent<&WWiseEmitter::OnOrientationChange>(Events::OrientationChanged, this);
       mEmitterPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
 
       auto orientation = mOwner->GetComponent<Orientation>();

@@ -39,7 +39,7 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderToScreen::LoadToVulkan);
+    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
     mSignedUpForUpdate = true;
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
@@ -327,7 +327,7 @@ namespace YTE
 
   void VkRenderToScreen::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
   {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk, this, &VkRenderToScreen::LoadToVulkan);
+    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
     mSignedUpForUpdate = false;
 
     if (mScreenQuad)
@@ -350,7 +350,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderToScreen::LoadToVulkan);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
     }
   }
 
@@ -367,7 +367,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderToScreen::LoadToVulkan);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
     }
   }
 
@@ -387,7 +387,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkRenderToScreen::LoadToVulkan);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
     }
   }
 

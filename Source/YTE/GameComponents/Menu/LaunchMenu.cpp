@@ -33,7 +33,7 @@ namespace YTE
 
   void LaunchMenu::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchMenu::OnElementTrigger);
+    mOwner->RegisterEvent<&LaunchMenu::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchMenu::OnElementTrigger(MenuElementTrigger *aEvent)

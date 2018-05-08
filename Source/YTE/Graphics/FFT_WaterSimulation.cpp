@@ -198,11 +198,11 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &FFT_WaterSimulation::TransformEvent);
-    mOwner->YTERegister(Events::ScaleChanged, this, &FFT_WaterSimulation::TransformEvent);
-    mOwner->YTERegister(Events::RotationChanged, this, &FFT_WaterSimulation::TransformEvent);
-    mSpace->GetEngine()->YTERegister(Events::LogicUpdate, this, &FFT_WaterSimulation::EditorUpdate);
-    mSpace->YTERegister(Events::LogicUpdate, this, &FFT_WaterSimulation::Update);
+    mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::ScaleChanged, this);
+    mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::RotationChanged, this);
+    mSpace->GetEngine()->RegisterEvent<&FFT_WaterSimulation::EditorUpdate>(Events::LogicUpdate, this);
+    mSpace->RegisterEvent<&FFT_WaterSimulation::Update>(Events::LogicUpdate, this);
     mTransform = mOwner->GetComponent<Transform>();
 
     auto engine = mOwner->GetEngine();

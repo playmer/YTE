@@ -65,12 +65,12 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
-    mOwner->GetEngine()->YTERegister(Events::PreLogicUpdate, this, &ImguiLayer::ImguiUpdate);
+    mOwner->GetEngine()->RegisterEvent<&ImguiLayer::ImguiUpdate>(Events::PreLogicUpdate, this);
     
-    window->mMouse.YTERegister(Events::MouseScroll, this, &ImguiLayer::MouseScrollCallback);
-    window->mKeyboard.YTERegister(Events::KeyPress, this, &ImguiLayer::KeyPressCallback);
-    window->mKeyboard.YTERegister(Events::KeyRelease, this, &ImguiLayer::KeyReleaseCallback);
-    window->mKeyboard.YTERegister(Events::CharacterTyped, this, &ImguiLayer::CharacterTypedCallback);
+    window->mMouse.RegisterEvent<&ImguiLayer::MouseScrollCallback>(Events::MouseScroll, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::KeyPressCallback>(Events::KeyPress, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::KeyReleaseCallback>(Events::KeyRelease, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::CharacterTypedCallback>(Events::CharacterTyped, this);
 
     io.KeyMap[ImGuiKey_Tab] = enum_cast(Keys::Tab);
     io.KeyMap[ImGuiKey_LeftArrow] = enum_cast(Keys::Left);

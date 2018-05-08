@@ -42,7 +42,7 @@ namespace YTE
       emitter->PlayEvent("Menu_Start");
     }
 
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchCredits::OnElementTrigger);
+    mOwner->RegisterEvent<&LaunchCredits::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchCredits::OnElementTrigger(MenuElementTrigger *)

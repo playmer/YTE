@@ -36,7 +36,7 @@ namespace YTE
     mTransform = mOwner->GetComponent<Transform>();
     mInitialScale = mTransform->GetWorldScale();
 
-    mSpace->GetOwner()->YTERegister(Events::LogicUpdate, this, &PostcardIconPulse::Update);
+    mSpace->GetOwner()->RegisterEvent<&PostcardIconPulse::Update>(Events::LogicUpdate, this);
   }
 
   void PostcardIconPulse::Update(LogicUpdate *aEvent)

@@ -116,7 +116,7 @@ namespace YTE
     mBoatRotations.emplace_back(mBoatRotationTwo);
     mBoatRotations.emplace_back(mBoatRotationThree);
 
-    mSpace->YTERegister(Events::QuestStart, this, &BasilMovement::OnQuestStart);
+    mSpace->RegisterEvent<&BasilMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void BasilMovement::MoveToNextDock()

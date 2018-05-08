@@ -37,22 +37,22 @@ namespace YTE
 
     TypeBuilder<Space> builder;
     
-    builder.Function<decltype(&Space::LoadLevel), &Space::LoadLevel>("LoadLevel")
+    builder.Function<&Space::LoadLevel>("LoadLevel")
       .SetParameterNames("aLevel", "CheckRunInEditor")
       .SetDocumentation("Loads a level within the current space on the next frame. Current level will be torn down.");
     
-    builder.Function<decltype(&Space::SaveLevel), &Space::SaveLevel>("SaveLevel")
+    builder.Function<&Space::SaveLevel>("SaveLevel")
       .SetParameterNames("aLevelName")
       .SetDocumentation("Saves a level to the given file");
     
-    builder.Function<decltype(&Space::Remove), &Space::Remove>("Remove")
+    builder.Function<&Space::Remove>("Remove")
       .SetDocumentation("Saves a level to the given file");
       
-    builder.Property<decltype(&Space::IsPaused), &Space::IsPaused, decltype(&Space::SetPaused), &Space::SetPaused>("Paused")
+    builder.Property<&Space::IsPaused, &Space::SetPaused>("Paused")
       .SetDocumentation("Sets if the space is paused or not.");
-    builder.Property<decltype(&Space::GetEngine), &Space::GetEngine, nullptr_t, NoSetter>("Engine");
+    builder.Property<&Space::GetEngine, NoSetter>("Engine");
     
-    builder.Field<decltype(&Space::mStartingLevel), &Space::mStartingLevel>("StartingLevel", PropertyBinding::GetSet)
+    builder.Field<&Space::mStartingLevel>("StartingLevel", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -64,16 +64,11 @@ namespace YTE
   {
     if (false == mEngine->IsEditor())
     {
-      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, 
-                                        this, 
-                                        &Space::WindowLostOrGainedFocusHandler);
-      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, 
-                                        this, 
-                                        &Space::WindowMinimizedOrRestoredHandler);
+      mEngine->GetWindow()->RegisterEvent<&Space::WindowLostOrGainedFocusHandler>(Events::WindowFocusLostOrGained, this);
+      mEngine->GetWindow()->RegisterEvent<&Space::WindowMinimizedOrRestoredHandler>(Events::WindowMinimizedOrRestored, this);
     }
 
-
-    mEngine->YTERegister(Events::LogicUpdate, this, &Space::Update);
+    mEngine->RegisterEvent<&Space::Update>(Events::LogicUpdate, this);
 
     if (nullptr != aProperties)
     {

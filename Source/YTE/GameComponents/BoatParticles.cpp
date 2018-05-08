@@ -107,7 +107,7 @@ namespace YTE
       mBackEmitterRight = backRight->GetComponent<ParticleEmitter>();
     }
 
-    mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &BoatParticles::Update);
+    mOwner->GetSpace()->RegisterEvent<&BoatParticles::Update>(Events::LogicUpdate, this);
   }
 
   void BoatParticles::Update(LogicUpdate *aEvent)

@@ -35,10 +35,10 @@ namespace YTE
 
   void StarMovement::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &StarMovement::Update);
+    mSpace->RegisterEvent<&StarMovement::Update>(Events::LogicUpdate, this);
 
-    mSpace->YTERegister(Events::QuestStart, this, &StarMovement::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &StarMovement::OnUpdateActiveQuestState);
+    mSpace->RegisterEvent<&StarMovement::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&StarMovement::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *john = mSpace->FindFirstCompositionByName("john"))
     {

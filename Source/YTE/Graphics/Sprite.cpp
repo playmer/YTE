@@ -156,11 +156,11 @@ namespace YTE
 
     if (aAnimating)
     {
-      mSpace->YTERegister(Events::LogicUpdate, this, &Sprite::Update);
+      mSpace->RegisterEvent<&Sprite::Update>(Events::LogicUpdate, this);
     }
     else
     {
-      mSpace->YTEDeregister(Events::LogicUpdate, this, &Sprite::Update);
+      mSpace->DeregisterEvent<&Sprite::Update>(Events::LogicUpdate,  this);
     }
   }
 
@@ -170,9 +170,9 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Sprite::TransformUpdate);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::ScaleChanged, this);
 
     CreateSprite();
   }

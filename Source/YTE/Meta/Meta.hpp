@@ -73,10 +73,12 @@ namespace YTE
       Function * mFunction;
     };
 
-    template <typename FunctionSignature, FunctionSignature aBoundFunction>
-    FunctionBuilder<FunctionSignature> Function(const char *name)
+    template <auto tBoundFunction>
+    FunctionBuilder<decltype(tBoundFunction)> Function(const char *aName)
     {
-      auto function = Detail::Meta::FunctionBinding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
+      using FunctionSignature = decltype(tBoundFunction);
+
+      auto function = Detail::Meta::FunctionBinding<FunctionSignature>:: template BindFunction<tBoundFunction>(aName);
       function->SetOwningType(TypeId<tType>());
 
       auto ptr = TypeId<tType>()->AddFunction(std::move(function));
@@ -84,10 +86,12 @@ namespace YTE
       return FunctionBuilder<FunctionSignature>{ ptr };
     }
 
-    template <typename GetterFunctionSignature, GetterFunctionSignature tGetterFunction,
-      typename SetterFunctionSignature, SetterFunctionSignature tSetterFunction>
-      YTE::Property& Property(const char *aName)
+    template <auto tGetterFunction, auto tSetterFunction>
+    YTE::Property& Property(const char *aName)
     {
+      using GetterFunctionSignature = decltype(tGetterFunction);
+      using SetterFunctionSignature = decltype(tSetterFunction);
+
       std::unique_ptr<YTE::Function> getter;
       std::unique_ptr<YTE::Function> setter;
 
@@ -108,9 +112,10 @@ namespace YTE
       return *ptr;
     }
 
-    template <typename FieldPointerType, FieldPointerType aFieldPointer>
+    template <auto tFieldPointer>
     YTE::Field& Field(char const *aName, PropertyBinding aBinding)
     {
+      using FieldPointerType = decltype(tFieldPointer);
       using FieldType = typename DecomposeFieldPointer<FieldPointerType>::FieldType;
 
       std::unique_ptr<YTE::Function> getter;
@@ -118,12 +123,12 @@ namespace YTE
 
       if (PropertyBinding::Get == aBinding || PropertyBinding::GetSet == aBinding)
       {
-        getter = Detail::Meta::FunctionBinding<FieldType(tType::*)()>::BindPassedFunction("Getter", Field::Getter<FieldPointerType, aFieldPointer>);
+        getter = Detail::Meta::FunctionBinding<FieldType(tType::*)()>::BindPassedFunction("Getter", Field::Getter<FieldPointerType, tFieldPointer>);
       }
 
       if (PropertyBinding::Set == aBinding || PropertyBinding::GetSet == aBinding)
       {
-        setter = Detail::Meta::FunctionBinding<void(tType::*)(FieldType)>::BindPassedFunction("Setter", Field::Setter<FieldPointerType, aFieldPointer>);
+        setter = Detail::Meta::FunctionBinding<void(tType::*)(FieldType)>::BindPassedFunction("Setter", Field::Setter<FieldPointerType, tFieldPointer>);
       }
 
       auto field = std::make_unique<YTE::Field>(aName, std::move(getter), std::move(setter));
@@ -131,7 +136,7 @@ namespace YTE
       auto type = TypeId<typename DecomposeFieldPointer<FieldPointerType>::FieldType>();
 
       field->SetPropertyType(type);
-      field->SetOffset(YTE::Field::GetOffset<FieldPointerType, aFieldPointer>());
+      field->SetOffset(YTE::Field::GetOffset<FieldPointerType, tFieldPointer>());
 
       auto ptr = TypeId<tType>()->AddField(std::move(field));
       return *ptr;
@@ -148,7 +153,7 @@ namespace YTE
     Type::AddGlobalType(type->GetName(), type);
 
     TypeBuilder<tType> builder;
-    builder.Function<decltype(&::YTE::TypeId<tType>), &::YTE::TypeId<tType>>("GetStaticType");
+    builder.Function<&::YTE::TypeId<tType>>("GetStaticType");
   }
 
   inline constexpr nullptr_t NoGetter = nullptr;

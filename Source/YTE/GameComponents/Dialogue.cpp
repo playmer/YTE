@@ -31,13 +31,13 @@ namespace YTE
 
   void Dialogue::Initialize()
   {
-    //mOwner->YTERegister(Events::RequestDialogueStart, this, &Dialogue::OnDialogueStart);
-    //mSpace->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
-    //mSpace->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
+    //mOwner->RegisterEvent<&Dialogue::OnDialogueStart>(Events::RequestDialogueStart, this);
+    //mSpace->RegisterEvent<&Dialogue::OnConfirm>(Events::DialogueConfirm, this);
+    //mSpace->RegisterEvent<&Dialogue::OnExit>(Events::DialogueExit, this);
 
-    //mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
-    //mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
-    //mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionPersist>(Events::CollisionPersisted, this);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionStart>(Events::CollisionStarted, this);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionEnd>(Events::CollisionEnded, this);
 
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 

@@ -131,7 +131,7 @@ namespace YTE
 
   void ParticleEmitter::Initialize()
   {
-    GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
+    GetSpace()->RegisterEvent<&ParticleEmitter::Update>(Events::FrameUpdate, this);
 
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
 
@@ -141,7 +141,7 @@ namespace YTE
     }
 
     mPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
-    mOwner->YTERegister(Events::PositionChanged, this, &ParticleEmitter::OnTransformChanged);
+    mOwner->RegisterEvent<&ParticleEmitter::OnTransformChanged>(Events::PositionChanged, this);
 
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mTimer = mEmitRate;

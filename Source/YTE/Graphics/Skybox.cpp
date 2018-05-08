@@ -71,9 +71,9 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Skybox::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Skybox::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Skybox::TransformUpdate);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::ScaleChanged, this);
 
     CreateSkybox();
     mConstructing = false;

@@ -96,10 +96,10 @@ namespace YTE
 
   void Light::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &Light::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Light::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Light::TransformUpdate);
-    mEngine->YTERegister(Events::LogicUpdate, this, &Light::Update);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::ScaleChanged, this);
+    mEngine->RegisterEvent<&Light::Update>(Events::LogicUpdate, this);
 
     mTransform = mOwner->GetComponent<Transform>(); 
 
@@ -144,7 +144,7 @@ namespace YTE
 
     if (mTransform && mSetTransform == false)
     {
-      mEngine->YTEDeregister(Events::LogicUpdate, this, &Light::Update);
+      mEngine->DeregisterEvent<&Light::Update>(Events::LogicUpdate,  this);
       if (mInstantiatedLight)
       {
         mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));

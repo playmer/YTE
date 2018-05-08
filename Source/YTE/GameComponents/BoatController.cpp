@@ -124,11 +124,11 @@ namespace YTE
     mSoundEmitter->PlayEvent(mSailingStart);
 
     /* Event Registration */
-    mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-    mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
-    mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
-    mSpace->YTERegister(Events::DialogueExit, this, &BoatController::OnDialogueExit);
-    mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+    mSpace->RegisterEvent<&BoatController::ChangeSail>(Events::SailStateChanged, this);
+    mSpace->RegisterEvent<&BoatController::TurnBoat>(Events::BoatTurnEvent, this);
+    mSpace->RegisterEvent<&BoatController::DockBoat>(Events::BoatDockEvent, this);
+    mSpace->RegisterEvent<&BoatController::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&BoatController::Update>(Events::LogicUpdate, this);
 
     mAnimator = mOwner->GetComponent<Animator>();
     

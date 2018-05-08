@@ -49,12 +49,12 @@ namespace YTE
 
     mMouse = &mWindow->mMouse;
 
-    mMouse->YTERegister(Events::MouseMove,    this, &FlybyCamera::MouseMove);
-    mMouse->YTERegister(Events::MousePress,   this, &FlybyCamera::MousePress);
-    mMouse->YTERegister(Events::MouseRelease, this, &FlybyCamera::MouseRelease);
-    mWindow->mKeyboard.YTERegister(Events::KeyPersist, this, &FlybyCamera::KeyboardPersist);
+    mMouse->RegisterEvent<&FlybyCamera::MouseMove>(Events::MouseMove,    this);
+    mMouse->RegisterEvent<&FlybyCamera::MousePress>(Events::MousePress,   this);
+    mMouse->RegisterEvent<&FlybyCamera::MouseRelease>(Events::MouseRelease, this);
+    mWindow->mKeyboard.RegisterEvent<&FlybyCamera::KeyboardPersist>(Events::KeyPersist, this);
 
-    engine->YTERegister(Events::LogicUpdate, this, &FlybyCamera::Update);
+    engine->RegisterEvent<&FlybyCamera::Update>(Events::LogicUpdate, this);
   }
 
   void FlybyCamera::Update(LogicUpdate *aEvent)

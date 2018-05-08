@@ -35,7 +35,7 @@ namespace YTE
 
   void BoatPhysics::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &BoatPhysics::Update);
+    mSpace->RegisterEvent<&BoatPhysics::Update>(Events::LogicUpdate, this);
     mBoatRB = mOwner->GetComponent<RigidBody>();
     mBoatTransform = mOwner->GetComponent<Transform>();
     mBoatOrientation = mOwner->GetComponent<Orientation>();

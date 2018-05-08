@@ -47,15 +47,15 @@ namespace YTE
       }
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &DialogueElementDefault::OnStart);
+    mSpace->RegisterEvent<&DialogueElementDefault::OnStart>(Events::LogicUpdate, this);
 
-    mSpace->YTERegister(Events::UIDisplayEvent, this, &DialogueElementDefault::OnDisplayEvent);
+    mSpace->RegisterEvent<&DialogueElementDefault::OnDisplayEvent>(Events::UIDisplayEvent, this);
   }
 
   void DialogueElementDefault::OnStart(LogicUpdate*)
   {
     UpdateVisibility(false);
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &DialogueElementDefault::OnStart);
+    mSpace->DeregisterEvent<&DialogueElementDefault::OnStart>(Events::LogicUpdate,  this);
   }
 
   void DialogueElementDefault::OnDisplayEvent(UIDisplayEvent *aEvent)
@@ -69,13 +69,13 @@ namespace YTE
       if (aEvent->DisplayIndex == mSelectionIndex)
       {
         UpdateVisibility(true);
-        mSpace->YTERegister(Events::UISelectEvent, this, &DialogueElementDefault::OnSelectEvent);
+        mSpace->RegisterEvent<&DialogueElementDefault::OnSelectEvent>(Events::UISelectEvent, this);
       }
 
       else
       {
         UpdateVisibility(false);
-        mSpace->YTEDeregister(Events::UISelectEvent, this, &DialogueElementDefault::OnSelectEvent);
+        mSpace->DeregisterEvent<&DialogueElementDefault::OnSelectEvent>(Events::UISelectEvent,  this);
       }
     }
   }

@@ -44,12 +44,12 @@ namespace YTE
 
   void Reactive::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &Reactive::OnLogicUpdate);
-    mOwner->YTERegister(Events::CollisionStarted, this, &Reactive::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &Reactive::OnCollisionEnded);
+    mSpace->RegisterEvent<&Reactive::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&Reactive::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&Reactive::OnCollisionEnded>(Events::CollisionEnded, this);
 
-    mSpace->GetEngine()->GetWindow()->mMouse.YTERegister(Events::MousePress, this, &Reactive::OnMousePress);
-    mSpace->GetEngine()->GetWindow()->mMouse.YTERegister(Events::MouseRelease, this, &Reactive::OnMouseRelease);
+    mSpace->GetEngine()->GetWindow()->mMouse.RegisterEvent<&Reactive::OnMousePress>(Events::MousePress, this);
+    mSpace->GetEngine()->GetWindow()->mMouse.RegisterEvent<&Reactive::OnMouseRelease>(Events::MouseRelease, this);
 
     mMenuCollider = mOwner->GetComponent<MenuCollider>();
     mIsMouseEntered = false;

@@ -405,7 +405,7 @@ namespace YTE
       it.second->Initialize(mModel, mEngine);
     }
 
-    mEngine->YTERegister(Events::AnimationUpdate, this, &Animator::Update);
+    mEngine->RegisterEvent<&Animator::Update>(Events::AnimationUpdate, this);
   }
 
   void Animator::Update(LogicUpdate *aEvent)

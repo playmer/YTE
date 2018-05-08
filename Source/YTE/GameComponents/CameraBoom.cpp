@@ -47,16 +47,16 @@ namespace YTE
     mTransform = mOwner->GetComponent<Transform>();
     mOrientation = mOwner->GetComponent<Orientation>();
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &CameraBoom::OnStart);
-    mSpace->YTERegister(Events::LogicUpdate, this, &CameraBoom::OnLogicUpdate);
-    mOwner->GetOwner()->YTERegister(Events::RotationChanged, this, &CameraBoom::OnParentRotated);
-    mSpace->YTERegister(Events::CameraRotateEvent, this, &CameraBoom::OnCameraRotate);
+    mSpace->RegisterEvent<&CameraBoom::OnStart>(Events::LogicUpdate, this);
+    mSpace->RegisterEvent<&CameraBoom::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->GetOwner()->RegisterEvent<&CameraBoom::OnParentRotated>(Events::RotationChanged, this);
+    mSpace->RegisterEvent<&CameraBoom::OnCameraRotate>(Events::CameraRotateEvent, this);
   }
 
   void CameraBoom::OnStart(LogicUpdate*)
   {
     mLastGoodRotation = mTransform->GetRotation();
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &CameraBoom::OnStart);
+    mSpace->DeregisterEvent<&CameraBoom::OnStart>(Events::LogicUpdate,  this);
   }
 
   void CameraBoom::OnLogicUpdate(LogicUpdate *aEvent)
