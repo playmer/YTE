@@ -641,8 +641,3 @@ YTEDeclareExternalType(float)
 YTEDeclareExternalType(double)
 YTEDeclareExternalType(std::string)
 YTEDeclareExternalType(YTE::String)
-
-#include "YTE/Meta/Function.hpp"
-#include "YTE/Meta/Property.hpp"
-#include "YTE/Meta/Field.hpp"
-#include "YTE/Meta/Attribute.hpp"

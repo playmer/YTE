@@ -59,38 +59,4 @@ namespace YTE
   private:
     size_t mOffset;
   };
-
-
-
-
-  template<typename FieldPointerType, FieldPointerType aFieldPointer>
-  static Field& BindField(const char *aName, PropertyBinding aBinding, Type *aType)
-  {
-    using ObjectType = typename DecomposeFieldPointer<FieldPointerType>::ObjectType;
-    using FieldType = typename DecomposeFieldPointer<FieldPointerType>::FieldType;
-
-    std::unique_ptr<Function> getter;
-    std::unique_ptr<Function> setter;
-
-    if (PropertyBinding::Get == aBinding || PropertyBinding::GetSet == aBinding)
-    {
-      getter = Detail::Meta::FunctionBinding<FieldType(ObjectType::*)()>::BindPassedFunction("Getter", Field::Getter<FieldPointerType, aFieldPointer>);
-    }
-
-    if (PropertyBinding::Set == aBinding || PropertyBinding::GetSet == aBinding)
-    {
-      setter = Detail::Meta::FunctionBinding<void(ObjectType::*)(FieldType)>::BindPassedFunction("Setter", Field::Setter<FieldPointerType, aFieldPointer>);
-    }
-
-    auto field = std::make_unique<Field>(aName, std::move(getter), std::move(setter));
-
-    auto type = TypeId<FieldType>();
-
-    field->SetPropertyType(type);
-    field->SetOffset(Field::GetOffset<FieldPointerType, aFieldPointer>());
-    
-    auto ptr = aType->AddField(std::move(field));
-    return *ptr;
-  }
-
 }

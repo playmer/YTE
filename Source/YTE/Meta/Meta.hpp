@@ -102,15 +102,8 @@ namespace YTE
       std::unique_ptr<YTE::Function> getter;
       std::unique_ptr<YTE::Function> setter;
 
-      if constexpr (tGetterFunction)
-      {
-        getter = Detail::Meta::FunctionBinding<GetterFunctionSignature>:: template BindFunction<tGetterFunction>("Getter");
-      }
-
-      if constexpr (tSetterFunction)
-      {
-        setter = Detail::Meta::FunctionBinding<SetterFunctionSignature>:: template BindFunction<tSetterFunction>("Setter");
-      }
+      getter = Detail::Meta::FunctionBinding<GetterFunctionSignature>:: template BindFunction<tGetterFunction>("Getter");
+      setter = Detail::Meta::FunctionBinding<SetterFunctionSignature>:: template BindFunction<tSetterFunction>("Setter");
 
       auto property = std::make_unique<YTE::Property>(aName, std::move(getter), std::move(setter));
 
@@ -130,13 +123,13 @@ namespace YTE
 
       if (isSigned)
       {
-        constexpr i64 value = static_cast<i64>(tEnumValue);
+        constexpr i64 value = (i64)tEnumValue;
 
         enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
       }
       else
       {
-        constexpr u64 value = static_cast<u64>(tEnumValue);
+        constexpr u64 value = (u64)tEnumValue;
 
         enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
       }
@@ -189,7 +182,7 @@ namespace YTE
     Type::AddGlobalType(type->GetName(), type);
 
     TypeBuilder<tType> builder;
-    builder.Function<&::YTE::TypeId<tType>>("GetStaticType");
+    builder.template Function<&::YTE::TypeId<tType>>("GetStaticType");
   }
 
   inline constexpr nullptr_t NoGetter = nullptr;

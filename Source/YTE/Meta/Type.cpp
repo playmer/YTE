@@ -18,8 +18,8 @@ namespace YTE
     RegisterType<Type>();
     TypeBuilder<Type> builder;
 
-    //builder.Function<&Type::GetGlobalType>("GetGlobalType")
-    //  .SetParameterNames("aName");
+    builder.Function<&Type::GetGlobalType>("GetGlobalType")
+      .SetParameterNames("aName");
 
     builder.Property<&Type::Name, NoSetter>( "Name")
       .SetDocumentation("Name of the Type.");
