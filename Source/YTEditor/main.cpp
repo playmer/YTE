@@ -32,11 +32,11 @@
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
 #include "YTEditor/MainWindow/ScriptBind.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/SubWindows/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 // Helper function

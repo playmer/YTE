@@ -8,7 +8,7 @@
 
 #include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/Physics/PhysicsHandler.hpp"
 #include "YTEditor/UndoRedo/Commands.hpp"
 

@@ -39,7 +39,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/ImportMenu.hpp"
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 namespace fs = std::experimental::filesystem;

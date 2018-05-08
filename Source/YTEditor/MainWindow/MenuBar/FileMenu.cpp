@@ -29,9 +29,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
-#include "YTEditor/MainWindow/SubWindows/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/SubWindows/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 namespace YTEditor

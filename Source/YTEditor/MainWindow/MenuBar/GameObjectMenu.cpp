@@ -26,11 +26,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/GameObjectMenu.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
 
 
 namespace YTEditor

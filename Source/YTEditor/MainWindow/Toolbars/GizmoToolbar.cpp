@@ -6,7 +6,7 @@
 
 #include "YTEditor/MainWindow/Gizmo.hpp"
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
 #include "YTEditor/MainWindow/Toolbars/ToolbarButton.hpp"
 

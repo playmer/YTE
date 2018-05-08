@@ -1,7 +1,7 @@
 #include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/MainWindow/ScriptBind.hpp"
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
 {

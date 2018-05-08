@@ -16,11 +16,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/MenuBar/WindowsMenu.hpp"
-#include "YTEditor/MainWindow/SubWindows/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/MainWindow/SubWindows/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
-#include "YTEditor/MainWindow/SubWindows/WWiseViewer/WWiseWidget.hpp"
+#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
 
 
 namespace YTEditor

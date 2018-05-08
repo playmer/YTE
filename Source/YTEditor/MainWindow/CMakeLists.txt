@@ -5,7 +5,7 @@
 ################################################################################
 
 include(${CMAKE_CURRENT_LIST_DIR}/MenuBar/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/SubWindows/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/Widgets/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/Toolbars/CMakeLists.txt)
 
 target_sources(YTEditor

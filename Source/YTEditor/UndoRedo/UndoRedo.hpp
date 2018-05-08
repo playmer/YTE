@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <stack>
 
-#include "YTEditor/MainWindow/SubWindows/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
 {
