@@ -212,28 +212,6 @@ namespace YTE
         }
       };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       template <typename tReturn>
       struct FunctionMaker {};
 
@@ -344,20 +322,5 @@ namespace YTE
         return std::unique_ptr<Function>();
       }
     };
-  }
-
-  template <typename FunctionSignature, FunctionSignature aBoundFunction, size_t aSize = 0>
-  static Function& BindFunction(const char *name, Type *aType, std::initializer_list<const char *> aParameterNames)
-  {
-    static_assert(aSize == CountFunctionArguments<FunctionSignature>::Size() || aSize == 0,
-                  "If passing names of function parameters you must pass either exactly as many names as there are arguments, or 0.");
-
-    auto function = Detail::Meta::FunctionBinding<FunctionSignature>::template BindFunction<aBoundFunction>(name);
-    function->SetParameterNames(aParameterNames);
-    function->SetOwningType(aType);
-
-    auto ptr = aType->AddFunction(std::move(function));
-
-    return *ptr;
   }
 }

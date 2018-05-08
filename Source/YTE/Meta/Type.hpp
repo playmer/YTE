@@ -84,7 +84,7 @@ void Name::InitializeType()
 //    return tValue;
 //  }
 //
-//#define YTEBindEnumValue(aEnumValue, aEnumName)    \
+//#define builder.Enum<aEnumValue>(aEnumName)    \
 //  ::YTE::BindFunction<decltype(GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>),    \
 //                      GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>,              \
 //                      std::initializer_list<const char*>YTENoNames.size()>(aEnumName,                                          \

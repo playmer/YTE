@@ -14,36 +14,36 @@ YTE Enums
 YTEDefineExternalType(YTE::ControllerId)
 {
   RegisterType<YTE::ControllerId>();
-    TypeBuilder<YTE::ControllerId> builder;
+  TypeBuilder<YTE::ControllerId> builder;
 
-//  YTEBindEnumValue(ControllerId::Xbox_P1, "Xbox_P1");
-//  YTEBindEnumValue(ControllerId::Xbox_P2, "Xbox_P2");
-//  YTEBindEnumValue(ControllerId::Xbox_P3, "Xbox_P3");
-//  YTEBindEnumValue(ControllerId::Xbox_P4, "Xbox_P4");
-//  YTEBindEnumValue(ControllerId::Xbox_Controllers_Number, "Xbox_Controllers_Number");
-//  YTEBindEnumValue(ControllerId::Unknown, "Unknown");
+  builder.Enum<ControllerId::Xbox_P1>("Xbox_P1");
+  builder.Enum<ControllerId::Xbox_P2>("Xbox_P2");
+  builder.Enum<ControllerId::Xbox_P3>("Xbox_P3");
+  builder.Enum<ControllerId::Xbox_P4>("Xbox_P4");
+  builder.Enum<ControllerId::Xbox_Controllers_Number>("Xbox_Controllers_Number");
+  builder.Enum<ControllerId::Unknown>("Unknown");
 }
 
 YTEDefineExternalType(YTE::XboxButtons)
 {
   RegisterType<YTE::XboxButtons>();
-    TypeBuilder<YTE::XboxButtons> builder;
-//
-//  YTEBindEnumValue(XboxButtons::DPAD_Up, "DPAD_Up");
-//  YTEBindEnumValue(XboxButtons::DPAD_Down, "DPAD_Down");
-//  YTEBindEnumValue(XboxButtons::DPAD_Left, "DPAD_Left");
-//  YTEBindEnumValue(XboxButtons::DPAD_Right, "DPAD_Right");
-//  YTEBindEnumValue(XboxButtons::Start, "Start");
-//  YTEBindEnumValue(XboxButtons::Back, "Back");
-//  YTEBindEnumValue(XboxButtons::LeftStick, "LeftStick");
-//  YTEBindEnumValue(XboxButtons::RightStick, "RightStick");
-//  YTEBindEnumValue(XboxButtons::LeftShoulder, "LeftShoulder");
-//  YTEBindEnumValue(XboxButtons::RightShoulder, "RightShoulder");
-//  YTEBindEnumValue(XboxButtons::A, "A");
-//  YTEBindEnumValue(XboxButtons::B, "B");
-//  YTEBindEnumValue(XboxButtons::X, "X");
-//  YTEBindEnumValue(XboxButtons::Y, "Y");
-//  YTEBindEnumValue(XboxButtons::Unknown, "Unknown");
+  TypeBuilder<YTE::XboxButtons> builder;
+
+  builder.Enum<XboxButtons::DPAD_Up>("DPAD_Up");
+  builder.Enum<XboxButtons::DPAD_Down>("DPAD_Down");
+  builder.Enum<XboxButtons::DPAD_Left>("DPAD_Left");
+  builder.Enum<XboxButtons::DPAD_Right>("DPAD_Right");
+  builder.Enum<XboxButtons::Start>("Start");
+  builder.Enum<XboxButtons::Back>("Back");
+  builder.Enum<XboxButtons::LeftStick>("LeftStick");
+  builder.Enum<XboxButtons::RightStick>("RightStick");
+  builder.Enum<XboxButtons::LeftShoulder>("LeftShoulder");
+  builder.Enum<XboxButtons::RightShoulder>("RightShoulder");
+  builder.Enum<XboxButtons::A>("A");
+  builder.Enum<XboxButtons::B>("B");
+  builder.Enum<XboxButtons::X>("X");
+  builder.Enum<XboxButtons::Y>("Y");
+  builder.Enum<XboxButtons::Unknown>("Unknown");
 }
 
 
@@ -62,152 +62,133 @@ constexpr typename std::underlying_type<tEnumType>::type GetNativeType()
 YTEDefineExternalType(YTE::MouseButtons)
 {
   RegisterType<YTE::MouseButtons>();
-    TypeBuilder<YTE::MouseButtons> builder;
+  TypeBuilder<YTE::MouseButtons> builder;
 
-  //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
-  //                                            GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>)>::template Size();
-
-  //::YTE::BindFunction<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()), 
-  //                                                 GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>),
-  //                    GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
-  //                                        GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>,
-  //                    std::initializer_list<const char*>YTENoNames.size()>("Left", 
-  //                                                                         ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
-  //                                                                         YTENoNames);
-
-  //::YTE::BindFunction<decltype(&GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>),
-  //                    &GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>,
-  //                    std::initializer_list<const char*>YTENoNames.size()>("Left", 
-  //                                                                         ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
-  //                                                                         YTENoNames);
-
-
-
-  //YTEBindEnumValue(MouseButtons::Left, "Left");
-  //YTEBindEnumValue(MouseButtons::Middle, "Middle");
-  //YTEBindEnumValue(MouseButtons::Right, "Right");
-  //YTEBindEnumValue(MouseButtons::Back, "Back");
-  //YTEBindEnumValue(MouseButtons::Forward, "Forward");
-  //YTEBindEnumValue(MouseButtons::Unknown, "Unknown");
+  builder.Enum<MouseButtons::Left>("Left");
+  builder.Enum<MouseButtons::Middle>("Middle");
+  builder.Enum<MouseButtons::Right>("Right");
+  builder.Enum<MouseButtons::Back>("Back");
+  builder.Enum<MouseButtons::Forward>("Forward");
+  builder.Enum<MouseButtons::Unknown>("Unknown");
 }
 
 YTEDefineExternalType(YTE::Keys)
 {
   RegisterType<YTE::Keys>();
-    TypeBuilder<YTE::Keys> builder;
+  TypeBuilder<YTE::Keys> builder;
 
-//  YTEBindEnumValue(Keys::Mouse_Left, "Mouse_Left");
-//  YTEBindEnumValue(Keys::Mouse_Right, "Mouse_Right");
-//  YTEBindEnumValue(Keys::Mouse_Middle, "Mouse_Middle");
-//  YTEBindEnumValue(Keys::Mouse_Forward, "Mouse_Forward");
-//  YTEBindEnumValue(Keys::Mouse_Back, "Mouse_Back");
-//  YTEBindEnumValue(Keys::A, "A");
-//  YTEBindEnumValue(Keys::B, "B");
-//  YTEBindEnumValue(Keys::C, "C");
-//  YTEBindEnumValue(Keys::D, "D");
-//  YTEBindEnumValue(Keys::E, "E");
-//  YTEBindEnumValue(Keys::F, "F");
-//  YTEBindEnumValue(Keys::G, "G");
-//  YTEBindEnumValue(Keys::H, "H");
-//  YTEBindEnumValue(Keys::I, "I");
-//  YTEBindEnumValue(Keys::J, "J");
-//  YTEBindEnumValue(Keys::K, "K");
-//  YTEBindEnumValue(Keys::L, "L");
-//  YTEBindEnumValue(Keys::M, "M");
-//  YTEBindEnumValue(Keys::N, "N");
-//  YTEBindEnumValue(Keys::O, "O");
-//  YTEBindEnumValue(Keys::P, "P");
-//  YTEBindEnumValue(Keys::Q, "Q");
-//  YTEBindEnumValue(Keys::R, "R");
-//  YTEBindEnumValue(Keys::S, "S");
-//  YTEBindEnumValue(Keys::T, "T");
-//  YTEBindEnumValue(Keys::U, "U");
-//  YTEBindEnumValue(Keys::V, "V");
-//  YTEBindEnumValue(Keys::W, "W");
-//  YTEBindEnumValue(Keys::X, "X");
-//  YTEBindEnumValue(Keys::Y, "Y");
-//  YTEBindEnumValue(Keys::Z, "Z");
-//  YTEBindEnumValue(Keys::N1, "N1");
-//  YTEBindEnumValue(Keys::N2, "N2");
-//  YTEBindEnumValue(Keys::N3, "N3");
-//  YTEBindEnumValue(Keys::N4, "N4");
-//  YTEBindEnumValue(Keys::N5, "N5");
-//  YTEBindEnumValue(Keys::N6, "N6");
-//  YTEBindEnumValue(Keys::N7, "N7");
-//  YTEBindEnumValue(Keys::N8, "N8");
-//  YTEBindEnumValue(Keys::N9, "N9");
-//  YTEBindEnumValue(Keys::N0, "N0");
-//  YTEBindEnumValue(Keys::Return, "Return");
-//  YTEBindEnumValue(Keys::Escape, "Escape");
-//  YTEBindEnumValue(Keys::Backspace, "Backspace");
-//  YTEBindEnumValue(Keys::Tab, "Tab");
-//  YTEBindEnumValue(Keys::Space, "Space");
-//  YTEBindEnumValue(Keys::Minus, "Minus");
-//  YTEBindEnumValue(Keys::Equals, "Equals");
-//  YTEBindEnumValue(Keys::LeftBracket, "LeftBracket");
-//  YTEBindEnumValue(Keys::RightBracket, "RightBracket");
-//  YTEBindEnumValue(Keys::Backslash, "Backslash");
-//  YTEBindEnumValue(Keys::Semicolon, "Semicolon");
-//  YTEBindEnumValue(Keys::Apostrophe, "Apostrophe");
-//  YTEBindEnumValue(Keys::Grave, "Grave");
-//  YTEBindEnumValue(Keys::Comma, "Comma");
-//  YTEBindEnumValue(Keys::Period, "Period");
-//  YTEBindEnumValue(Keys::ForwardSlash, "ForwardSlash");
-//  YTEBindEnumValue(Keys::Capslock, "Capslock");
-//  YTEBindEnumValue(Keys::F1, "F1");
-//  YTEBindEnumValue(Keys::F2, "F2");
-//  YTEBindEnumValue(Keys::F3, "F3");
-//  YTEBindEnumValue(Keys::F4, "F4");
-//  YTEBindEnumValue(Keys::F5, "F5");
-//  YTEBindEnumValue(Keys::F6, "F6");
-//  YTEBindEnumValue(Keys::F7, "F7");
-//  YTEBindEnumValue(Keys::F8, "F8");
-//  YTEBindEnumValue(Keys::F9, "F9");
-//  YTEBindEnumValue(Keys::F10, "F10");
-//  YTEBindEnumValue(Keys::F11, "F11");
-//  YTEBindEnumValue(Keys::F12, "F12");
-//  YTEBindEnumValue(Keys::ScrollLock, "ScrollLock");
-//  YTEBindEnumValue(Keys::Pause, "Pause");
-//  YTEBindEnumValue(Keys::Insert, "Insert");
-//  YTEBindEnumValue(Keys::Home, "Home");
-//  YTEBindEnumValue(Keys::PageUp, "PageUp");
-//  YTEBindEnumValue(Keys::Delete, "Delete");
-//  YTEBindEnumValue(Keys::End, "End");
-//  YTEBindEnumValue(Keys::PageDown, "PageDown");
-//  YTEBindEnumValue(Keys::Right, "Right");
-//  YTEBindEnumValue(Keys::Left, "Left");
-//  YTEBindEnumValue(Keys::Down, "Down");
-//  YTEBindEnumValue(Keys::Up, "Up");
-//  YTEBindEnumValue(Keys::KP_Divide, "KP_Divide");
-//  YTEBindEnumValue(Keys::KP_Multiply, "KP_Multiply");
-//  YTEBindEnumValue(Keys::KP_Minus, "KP_Minus");
-//  YTEBindEnumValue(Keys::KP_Plus, "KP_Plus");
-//  YTEBindEnumValue(Keys::KP_Enter, "KP_Enter");
-//  YTEBindEnumValue(Keys::KP_1, "KP_1");
-//  YTEBindEnumValue(Keys::KP_2, "KP_2");
-//  YTEBindEnumValue(Keys::KP_3, "KP_3");
-//  YTEBindEnumValue(Keys::KP_4, "KP_4");
-//  YTEBindEnumValue(Keys::KP_5, "KP_5");
-//  YTEBindEnumValue(Keys::KP_6, "KP_6");
-//  YTEBindEnumValue(Keys::KP_7, "KP_7");
-//  YTEBindEnumValue(Keys::KP_8, "KP_8");
-//  YTEBindEnumValue(Keys::KP_9, "KP_9");
-//  YTEBindEnumValue(Keys::KP_0, "KP_0");
-//  YTEBindEnumValue(Keys::KP_Period, "KP_Period");
-//  YTEBindEnumValue(Keys::KP_Equals, "KP_Equals");
-//  YTEBindEnumValue(Keys::F13, "F13");
-//  YTEBindEnumValue(Keys::F14, "F14");
-//  YTEBindEnumValue(Keys::F15, "F15");
-//  YTEBindEnumValue(Keys::Mute, "Mute");
-//  YTEBindEnumValue(Keys::VolumeUp, "VolumeUp");
-//  YTEBindEnumValue(Keys::VolumeDown, "VolumeDown");
-//  YTEBindEnumValue(Keys::KP_Comma, "KP_Comma");
-//  YTEBindEnumValue(Keys::LeftControl, "LeftControl");
-//  YTEBindEnumValue(Keys::LeftShift, "LeftShift");
-//  YTEBindEnumValue(Keys::LeftAlt, "LeftAlt");
-//  YTEBindEnumValue(Keys::RightControl, "RightControl");
-//  YTEBindEnumValue(Keys::RightShift, "RightShift");
-//  YTEBindEnumValue(Keys::RightAlt, "RightAlt");
-//  YTEBindEnumValue(Keys::Keys_Number, "Keys_Number");
-//  YTEBindEnumValue(Keys::Unknown, "Unknown");
+  builder.Enum<Keys::Mouse_Left>("Mouse_Left");
+  builder.Enum<Keys::Mouse_Right>("Mouse_Right");
+  builder.Enum<Keys::Mouse_Middle>("Mouse_Middle");
+  builder.Enum<Keys::Mouse_Forward>("Mouse_Forward");
+  builder.Enum<Keys::Mouse_Back>("Mouse_Back");
+  builder.Enum<Keys::A>("A");
+  builder.Enum<Keys::B>("B");
+  builder.Enum<Keys::C>("C");
+  builder.Enum<Keys::D>("D");
+  builder.Enum<Keys::E>("E");
+  builder.Enum<Keys::F>("F");
+  builder.Enum<Keys::G>("G");
+  builder.Enum<Keys::H>("H");
+  builder.Enum<Keys::I>("I");
+  builder.Enum<Keys::J>("J");
+  builder.Enum<Keys::K>("K");
+  builder.Enum<Keys::L>("L");
+  builder.Enum<Keys::M>("M");
+  builder.Enum<Keys::N>("N");
+  builder.Enum<Keys::O>("O");
+  builder.Enum<Keys::P>("P");
+  builder.Enum<Keys::Q>("Q");
+  builder.Enum<Keys::R>("R");
+  builder.Enum<Keys::S>("S");
+  builder.Enum<Keys::T>("T");
+  builder.Enum<Keys::U>("U");
+  builder.Enum<Keys::V>("V");
+  builder.Enum<Keys::W>("W");
+  builder.Enum<Keys::X>("X");
+  builder.Enum<Keys::Y>("Y");
+  builder.Enum<Keys::Z>("Z");
+  builder.Enum<Keys::N1>("N1");
+  builder.Enum<Keys::N2>("N2");
+  builder.Enum<Keys::N3>("N3");
+  builder.Enum<Keys::N4>("N4");
+  builder.Enum<Keys::N5>("N5");
+  builder.Enum<Keys::N6>("N6");
+  builder.Enum<Keys::N7>("N7");
+  builder.Enum<Keys::N8>("N8");
+  builder.Enum<Keys::N9>("N9");
+  builder.Enum<Keys::N0>("N0");
+  builder.Enum<Keys::Return>("Return");
+  builder.Enum<Keys::Escape>("Escape");
+  builder.Enum<Keys::Backspace>("Backspace");
+  builder.Enum<Keys::Tab>("Tab");
+  builder.Enum<Keys::Space>("Space");
+  builder.Enum<Keys::Minus>("Minus");
+  builder.Enum<Keys::Equals>("Equals");
+  builder.Enum<Keys::LeftBracket>("LeftBracket");
+  builder.Enum<Keys::RightBracket>("RightBracket");
+  builder.Enum<Keys::Backslash>("Backslash");
+  builder.Enum<Keys::Semicolon>("Semicolon");
+  builder.Enum<Keys::Apostrophe>("Apostrophe");
+  builder.Enum<Keys::Grave>("Grave");
+  builder.Enum<Keys::Comma>("Comma");
+  builder.Enum<Keys::Period>("Period");
+  builder.Enum<Keys::ForwardSlash>("ForwardSlash");
+  builder.Enum<Keys::Capslock>("Capslock");
+  builder.Enum<Keys::F1>("F1");
+  builder.Enum<Keys::F2>("F2");
+  builder.Enum<Keys::F3>("F3");
+  builder.Enum<Keys::F4>("F4");
+  builder.Enum<Keys::F5>("F5");
+  builder.Enum<Keys::F6>("F6");
+  builder.Enum<Keys::F7>("F7");
+  builder.Enum<Keys::F8>("F8");
+  builder.Enum<Keys::F9>("F9");
+  builder.Enum<Keys::F10>("F10");
+  builder.Enum<Keys::F11>("F11");
+  builder.Enum<Keys::F12>("F12");
+  builder.Enum<Keys::ScrollLock>("ScrollLock");
+  builder.Enum<Keys::Pause>("Pause");
+  builder.Enum<Keys::Insert>("Insert");
+  builder.Enum<Keys::Home>("Home");
+  builder.Enum<Keys::PageUp>("PageUp");
+  builder.Enum<Keys::Delete>("Delete");
+  builder.Enum<Keys::End>("End");
+  builder.Enum<Keys::PageDown>("PageDown");
+  builder.Enum<Keys::Right>("Right");
+  builder.Enum<Keys::Left>("Left");
+  builder.Enum<Keys::Down>("Down");
+  builder.Enum<Keys::Up>("Up");
+  builder.Enum<Keys::KP_Divide>("KP_Divide");
+  builder.Enum<Keys::KP_Multiply>("KP_Multiply");
+  builder.Enum<Keys::KP_Minus>("KP_Minus");
+  builder.Enum<Keys::KP_Plus>("KP_Plus");
+  builder.Enum<Keys::KP_Enter>("KP_Enter");
+  builder.Enum<Keys::KP_1>("KP_1");
+  builder.Enum<Keys::KP_2>("KP_2");
+  builder.Enum<Keys::KP_3>("KP_3");
+  builder.Enum<Keys::KP_4>("KP_4");
+  builder.Enum<Keys::KP_5>("KP_5");
+  builder.Enum<Keys::KP_6>("KP_6");
+  builder.Enum<Keys::KP_7>("KP_7");
+  builder.Enum<Keys::KP_8>("KP_8");
+  builder.Enum<Keys::KP_9>("KP_9");
+  builder.Enum<Keys::KP_0>("KP_0");
+  builder.Enum<Keys::KP_Period>("KP_Period");
+  builder.Enum<Keys::KP_Equals>("KP_Equals");
+  builder.Enum<Keys::F13>("F13");
+  builder.Enum<Keys::F14>("F14");
+  builder.Enum<Keys::F15>("F15");
+  builder.Enum<Keys::Mute>("Mute");
+  builder.Enum<Keys::VolumeUp>("VolumeUp");
+  builder.Enum<Keys::VolumeDown>("VolumeDown");
+  builder.Enum<Keys::KP_Comma>("KP_Comma");
+  builder.Enum<Keys::LeftControl>("LeftControl");
+  builder.Enum<Keys::LeftShift>("LeftShift");
+  builder.Enum<Keys::LeftAlt>("LeftAlt");
+  builder.Enum<Keys::RightControl>("RightControl");
+  builder.Enum<Keys::RightShift>("RightShift");
+  builder.Enum<Keys::RightAlt>("RightAlt");
+  builder.Enum<Keys::Keys_Number>("Keys_Number");
+  builder.Enum<Keys::Unknown>("Unknown");
 }

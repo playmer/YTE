@@ -417,4 +417,10 @@ namespace YTE
   {
     typedef T type;
   };
+
+  template <auto tValue>
+  constexpr decltype(tValue) ReturnValue()
+  {
+    return tValue;
+  }
 }

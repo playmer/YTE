@@ -119,6 +119,35 @@ namespace YTE
       return *ptr;
     }
 
+
+    template <auto tEnumValue>
+    YTE::Property& Enum(char const* aName)
+    {
+      using tEnumType = decltype(tEnumValue);
+      constexpr bool isSigned = std::is_signed_v<tEnumType>;
+
+      std::unique_ptr<YTE::Function> enumGetter;
+
+      if (isSigned)
+      {
+        constexpr i64 value = static_cast<i64>(tEnumValue);
+
+        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+      }
+      else
+      {
+        constexpr u64 value = static_cast<u64>(tEnumValue);
+
+        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+      }
+
+      auto property = std::make_unique<YTE::Property>(aName, std::move(enumGetter), NoSetter);
+
+      auto ptr = TypeId<tType>()->AddProperty(std::move(property));
+
+      return *ptr;
+    }
+
     template <auto tFieldPointer>
     YTE::Field& Field(char const *aName, PropertyBinding aBinding)
     {

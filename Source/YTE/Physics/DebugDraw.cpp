@@ -109,28 +109,28 @@ namespace YTE
   }
 }
 
-// TODO (Josh): Fix enum binding
 YTEDefineExternalType(btIDebugDraw::DebugDrawModes)
 {
   RegisterType<btIDebugDraw::DebugDrawModes>();
-    TypeBuilder<btIDebugDraw::DebugDrawModes> builder;
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP, "DisableBulletLCP");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawAabb, "DrawAabb");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits, "DrawConstraintLimits");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawConstraints, "DrawConstraints");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawContactPoints, "DrawContactPoints");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawFeaturesText, "DrawFeaturesText");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawFrames, "DrawFrames");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawNormals, "DrawNormals");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawText, "DrawText");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_DrawWireframe, "DrawWireframe");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_EnableCCD, "EnableCCD");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_EnableSatComparison, "EnableSatComparison");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_FastWireframe, "FastWireframe");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_NoDeactivation, "NoDeactivation");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_NoHelpText, "NoHelpText");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_ProfileTimings, "ProfileTimings");
-//  YTEBindEnumValue(builder, type, btIDebugDraw::DebugDrawModes::DBG_MAX_DEBUG_DRAW_MODE, "MAX_DEBUG_DRAW_MODE");
+  TypeBuilder<btIDebugDraw::DebugDrawModes> builder;
+
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP>("DisableBulletLCP");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawAabb>("DrawAabb");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits>("DrawConstraintLimits");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraints>("DrawConstraints");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawContactPoints>("DrawContactPoints");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFeaturesText>("DrawFeaturesText");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFrames>("DrawFrames");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawNormals>("DrawNormals");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawText>("DrawText");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawWireframe>("DrawWireframe");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableCCD>("EnableCCD");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableSatComparison>("EnableSatComparison");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_FastWireframe>("FastWireframe");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoDeactivation>("NoDeactivation");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoHelpText>("NoHelpText");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_ProfileTimings>("ProfileTimings");
+  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_MAX_DEBUG_DRAW_MODE>("MAX_DEBUG_DRAW_MODE");
 }
 
 
