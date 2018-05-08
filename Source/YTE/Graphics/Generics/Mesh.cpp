@@ -17,6 +17,7 @@ namespace YTE
   YTEDefineType(Mesh)
   {
     RegisterType<Mesh>();
+    TypeBuilder<Mesh> builder;
   }
   
 

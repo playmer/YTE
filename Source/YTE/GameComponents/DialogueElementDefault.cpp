@@ -16,8 +16,9 @@ namespace YTE
   YTEDefineType(DialogueElementDefault)
   {
     RegisterType<DialogueElementDefault>();
+    TypeBuilder<DialogueElementDefault> builder;
 
-    YTEBindProperty(&GetSelectionIndex, &SetSelectionIndex, "SelectinIndex")
+    builder.Property<&GetSelectionIndex, &SetSelectionIndex>( "SelectinIndex")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

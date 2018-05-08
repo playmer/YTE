@@ -23,24 +23,28 @@ namespace YTE
   YTEDefineType(SphereCollider)
   {
     RegisterType<SphereCollider>();
+    TypeBuilder<SphereCollider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&SphereCollider::GetRadius, &SphereCollider::SetRadius, "Radius")
+    builder.Property<&SphereCollider::GetRadius, &SphereCollider::SetRadius>( "Radius")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindProperty(&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty, "Offset")
+    builder.Property<&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty>( "Offset")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindFunction(&SphereCollider::SetRadius, (void (SphereCollider::*) (float)), "SetRadius", YTEParameterNames("aRadius"))
+    builder.Function<SelectOverload<void (SphereCollider::*) (float),&SphereCollider::SetRadius>()>("SetRadius")
+      .SetParameterNames("aRadius")
       .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
 
-    YTEBindFunction(&SphereCollider::SetOffset, (void (SphereCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
+    builder.Function<SelectOverload<void (SphereCollider::*) (const glm::vec3&),&SphereCollider::SetOffset>()>("SetOffset")
+      .SetParameterNames("aOffset")
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
-    YTEBindFunction(&SphereCollider::SetOffset, (void (SphereCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
+    builder.Function<SelectOverload<void (SphereCollider::*) (float, float, float),&SphereCollider::SetOffset>()>("SetOffset")
+      .SetParameterNames("aX", "aY","aZ")
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }
 

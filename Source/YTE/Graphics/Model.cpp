@@ -25,7 +25,8 @@ namespace YTE
   YTEDefineType(ModelChanged)
   {
     RegisterType<ModelChanged>();
-    YTEBindField(&ModelChanged::Object, "Object", PropertyBinding::Get);
+    TypeBuilder<ModelChanged> builder;
+    builder.Field<&ModelChanged::Object>( "Object", PropertyBinding::Get);
   }
 
 
@@ -68,6 +69,7 @@ namespace YTE
   YTEDefineType(Model)
   {
     RegisterType<Model>();
+    TypeBuilder<Model> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
@@ -75,21 +77,21 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Model::GetMeshName, &Model::SetMeshName, "Mesh")
+    builder.Property<&Model::GetMeshName, &Model::SetMeshName>( "Mesh")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Model::GetShading, &Model::SetShading, "Shading")
+    builder.Property<&Model::GetShading, &Model::SetShading>( "Shading")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateShadingDropDown);
 
-    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
+    builder.Property<&Model::GetReload, &Model::SetReload>( "Reload")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
+    //builder.Property<&Model::GetInstanced, &Model::SetInstanced>( "Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
     //  .SetDocumentation("Will use/not use instancing for this mesh. (Will apply to all Models using this mesh.)");

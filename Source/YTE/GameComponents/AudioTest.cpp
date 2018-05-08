@@ -40,6 +40,7 @@ namespace YTE
     YTEDefineType(AudioTest)
     {
         RegisterType<AudioTest>();
+    TypeBuilder<AudioTest> builder;
 
         std::vector<std::vector<Type*>> deps = 
         { 
@@ -50,7 +51,7 @@ namespace YTE
         GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
 
-        YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")
+        builder.Property<&AudioTest::GetSoundName, &AudioTest::SetSoundName>( "SoundName")
             .AddAttribute<Serializable>()
             .AddAttribute<EditorProperty>()
             .AddAttribute<DropDownStrings>(PopulateDropDownList);

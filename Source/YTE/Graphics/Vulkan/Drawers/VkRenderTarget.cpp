@@ -17,6 +17,7 @@ namespace YTE
   YTEDefineType(VkRenderTarget)
   {
     RegisterType<VkRenderTarget>();
+    TypeBuilder<VkRenderTarget> builder;
   }
 
 

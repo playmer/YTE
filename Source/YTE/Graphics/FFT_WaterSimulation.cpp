@@ -56,92 +56,93 @@ namespace YTE
   YTEDefineType(FFT_WaterSimulation)
   {
     RegisterType<FFT_WaterSimulation>();
+    TypeBuilder<FFT_WaterSimulation> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect, "TimeDilation")
+    builder.Property<&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect>( "TimeDilation")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Adjusts the wave's speed. Can be used to slow or quicken the pace of the algorithm");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetVertexDistance, &FFT_WaterSimulation::SetVertexDistance, "VertexDistance")
+    builder.Property<&FFT_WaterSimulation::GetVertexDistance, &FFT_WaterSimulation::SetVertexDistance>( "VertexDistance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Adjusts the distance between each individual vertex. This will expand or shrink the overall size of the mesh");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetReset, &FFT_WaterSimulation::SetReset, "ResetSimulation")
+    builder.Property<&FFT_WaterSimulation::GetReset, &FFT_WaterSimulation::SetReset>( "ResetSimulation")
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Completely resets the simulation to run from scratch again");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetGravitationalPull, &FFT_WaterSimulation::SetGravitationalPull, "GravitationalPull")
+    builder.Property<&FFT_WaterSimulation::GetGravitationalPull, &FFT_WaterSimulation::SetGravitationalPull>( "GravitationalPull")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the gravitational pull on the waves in the y (up) direction. This requires a reset");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGridSize, "Complexity")
+    builder.Property<&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGridSize>( "Complexity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the size of the size of the N*N gird used to calculate the water. This requires a reset");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetWaveHeight, &FFT_WaterSimulation::SetWaveHeight, "WaveMaximumHeight")
+    builder.Property<&FFT_WaterSimulation::GetWaveHeight, &FFT_WaterSimulation::SetWaveHeight>( "WaveMaximumHeight")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the max wave height the algorithm can achieve. This requires a reset");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetWindFactor, &FFT_WaterSimulation::SetWindFactor, "WindFactor")
+    builder.Property<&FFT_WaterSimulation::GetWindFactor, &FFT_WaterSimulation::SetWindFactor>( "WindFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the wind direction and magnitude. This requires a reset");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetShaderSetName, &FFT_WaterSimulation::SetShaderSetName, "ShaderSetName")
+    builder.Property<&FFT_WaterSimulation::GetShaderSetName, &FFT_WaterSimulation::SetShaderSetName>( "ShaderSetName")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("What shader to use for the object");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetRunWithEngineUpdate, &FFT_WaterSimulation::SetRunWithEngineUpdate, "RunInEditor")
+    builder.Property<&FFT_WaterSimulation::GetRunWithEngineUpdate, &FFT_WaterSimulation::SetRunWithEngineUpdate>( "RunInEditor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Run while in editor");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetRunInSteps, &FFT_WaterSimulation::SetRunInSteps, "DontRunEveryFrame")
+    builder.Property<&FFT_WaterSimulation::GetRunInSteps, &FFT_WaterSimulation::SetRunInSteps>( "DontRunEveryFrame")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Prevents the FFT from running every frame");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetStepCount, &FFT_WaterSimulation::SetStepCount, "RunIn_X_Frames")
+    builder.Property<&FFT_WaterSimulation::GetStepCount, &FFT_WaterSimulation::SetStepCount>( "RunIn_X_Frames")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Runs the FFT every ___ frames");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount, "InstanceCount")
+    builder.Property<&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount>( "InstanceCount")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetUseHTilde, &FFT_WaterSimulation::SetUseHTilde, "UseHTilde")
+    builder.Property<&FFT_WaterSimulation::GetUseHTilde, &FFT_WaterSimulation::SetUseHTilde>( "UseHTilde")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetUsePhillips, &FFT_WaterSimulation::SetUsePhillips, "UsePhillips")
+    builder.Property<&FFT_WaterSimulation::GetUsePhillips, &FFT_WaterSimulation::SetUsePhillips>( "UsePhillips")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetUseNoDisplacement, &FFT_WaterSimulation::SetUseNoDisplacement, "UseNoDisplacement")
+    builder.Property<&FFT_WaterSimulation::GetUseNoDisplacement, &FFT_WaterSimulation::SetUseNoDisplacement>( "UseNoDisplacement")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetUseNewKs, &FFT_WaterSimulation::SetUseNewKs, "UseNewKs")
+    builder.Property<&FFT_WaterSimulation::GetUseNewKs, &FFT_WaterSimulation::SetUseNewKs>( "UseNewKs")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    YTEBindProperty(&FFT_WaterSimulation::GetUseHTildeSubZero, &FFT_WaterSimulation::SetUseHTildeSubZero, "UseHTildeSubZero")
+    builder.Property<&FFT_WaterSimulation::GetUseHTildeSubZero, &FFT_WaterSimulation::SetUseHTildeSubZero>( "UseHTildeSubZero")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");

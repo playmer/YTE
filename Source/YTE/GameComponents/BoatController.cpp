@@ -32,21 +32,22 @@ namespace YTE
   YTEDefineType(BoatController)
   {
     RegisterType<BoatController>();
+    TypeBuilder<BoatController> builder;
 
 
-    YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "MaxSailSpeed")
+    builder.Property<&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed>( "MaxSailSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "MaxTurnSpeed")
+    builder.Property<&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed>( "MaxTurnSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor, "TurnAccelerationFactor")
+    builder.Property<&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor>( "TurnAccelerationFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "WindForce")
+    builder.Property<&BoatController::GetWindForce, &BoatController::SetWindForce>( "WindForce")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 

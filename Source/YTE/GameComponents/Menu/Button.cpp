@@ -39,18 +39,19 @@ namespace YTE
   YTEDefineType(Button)
   {
     RegisterType<Button>();
+    TypeBuilder<Button> builder;
 
-    YTEBindProperty(&Button::GetHover, &Button::SetHover, "HoverSprite")
+    builder.Property<&Button::GetHover, &Button::SetHover>( "HoverSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Button::GetNeutral, &Button::SetNeutral, "NeutralSprite")
+    builder.Property<&Button::GetNeutral, &Button::SetNeutral>( "NeutralSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Button::GetActivated, &Button::SetActivated, "ActivatedSprite")
+    builder.Property<&Button::GetActivated, &Button::SetActivated>( "ActivatedSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);

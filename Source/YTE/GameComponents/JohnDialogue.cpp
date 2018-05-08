@@ -22,17 +22,22 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   YTEDefineEvent(TutorialUpdate);
-  YTEDefineType(TutorialUpdate) { RegisterType<TutorialUpdate>(); }
+  YTEDefineType(TutorialUpdate) { RegisterType<TutorialUpdate>();
+    TypeBuilder<TutorialUpdate> builder; }
 
   YTEDefineEvent(SpawnProgressionItem);
   YTEDefineEvent(SpawnProgressionLocation);
   YTEDefineEvent(SpawnProgressionDialogue);
 
-  YTEDefineType(SpawnProgressionItem) { RegisterType<SpawnProgressionItem>(); }
-  YTEDefineType(SpawnProgressionLocation) { RegisterType<SpawnProgressionLocation>(); }
-  YTEDefineType(SpawnProgressionDialogue) { RegisterType<SpawnProgressionDialogue>(); }
+  YTEDefineType(SpawnProgressionItem) { RegisterType<SpawnProgressionItem>();
+    TypeBuilder<SpawnProgressionItem> builder; }
+  YTEDefineType(SpawnProgressionLocation) { RegisterType<SpawnProgressionLocation>();
+    TypeBuilder<SpawnProgressionLocation> builder; }
+  YTEDefineType(SpawnProgressionDialogue) { RegisterType<SpawnProgressionDialogue>();
+    TypeBuilder<SpawnProgressionDialogue> builder; }
 
-  YTEDefineType(JohnDialogue) { RegisterType<JohnDialogue>(); }
+  YTEDefineType(JohnDialogue) { RegisterType<JohnDialogue>();
+    TypeBuilder<JohnDialogue> builder; }
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

@@ -25,8 +25,9 @@ namespace YTE
   YTEDefineType(KeyFrameChanged)
   {
     RegisterType<KeyFrameChanged>();
-    YTEBindField(&KeyFrameChanged::animation, "animation", PropertyBinding::Get);
-    YTEBindField(&KeyFrameChanged::time, "time", PropertyBinding::Get);
+    TypeBuilder<KeyFrameChanged> builder;
+    builder.Field<&KeyFrameChanged::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::time>( "time", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationAdded);
@@ -34,7 +35,8 @@ namespace YTE
   YTEDefineType(AnimationAdded)
   {
     RegisterType<AnimationAdded>();
-    YTEBindField(&AnimationAdded::animation, "animation", PropertyBinding::Get);
+    TypeBuilder<AnimationAdded> builder;
+    builder.Field<&AnimationAdded::animation>( "animation", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationRemoved);
@@ -42,24 +44,26 @@ namespace YTE
   YTEDefineType(AnimationRemoved)
   {
     RegisterType<AnimationRemoved>();
-    YTEBindField(&AnimationRemoved::animation, "animation", PropertyBinding::Get);
+    TypeBuilder<AnimationRemoved> builder;
+    builder.Field<&AnimationRemoved::animation>( "animation", PropertyBinding::Get);
   }
 
 
   YTEDefineType(Animation)
   {
     RegisterType<Animation>();
+    TypeBuilder<Animation> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed")
+    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>( "Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
 
-    YTEBindProperty(&Animation::GetPlayOverTime, &Animation::SetPlayOverTime, "PlayOverTime")
+    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>( "PlayOverTime")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("True if the animation should play with respect to time.");
@@ -358,6 +362,7 @@ namespace YTE
   YTEDefineType(Animator)
   {
     RegisterType<Animator>();
+    TypeBuilder<Animator> builder;
 
     GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
                                                     &Serializer,

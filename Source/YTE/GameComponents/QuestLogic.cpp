@@ -19,11 +19,15 @@ namespace YTE
   YTEDefineEvent(ProgressionLocationEvent);
   YTEDefineEvent(ProgressionDialogueEvent);
 
-  YTEDefineType(ProgressionItemEvent) { RegisterType<ProgressionItemEvent>(); }
-  YTEDefineType(ProgressionLocationEvent) { RegisterType<ProgressionLocationEvent>(); }
-  YTEDefineType(ProgressionDialogueEvent) { RegisterType<ProgressionDialogueEvent>(); }
+  YTEDefineType(ProgressionItemEvent) { RegisterType<ProgressionItemEvent>();
+    TypeBuilder<ProgressionItemEvent> builder; }
+  YTEDefineType(ProgressionLocationEvent) { RegisterType<ProgressionLocationEvent>();
+    TypeBuilder<ProgressionLocationEvent> builder; }
+  YTEDefineType(ProgressionDialogueEvent) { RegisterType<ProgressionDialogueEvent>();
+    TypeBuilder<ProgressionDialogueEvent> builder; }
 
-  YTEDefineType(QuestLogic) { RegisterType<QuestLogic>(); }
+  YTEDefineType(QuestLogic) { RegisterType<QuestLogic>();
+    TypeBuilder<QuestLogic> builder; }
 
   QuestLogic::QuestLogic(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

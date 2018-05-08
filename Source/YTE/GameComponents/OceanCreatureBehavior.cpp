@@ -18,20 +18,21 @@ namespace YTE
   YTEDefineType(OceanCreatureBehavior) 
   { 
     RegisterType<OceanCreatureBehavior>();
+    TypeBuilder<OceanCreatureBehavior> builder;
   
-    YTEBindProperty(&OceanCreatureBehavior::GetFlipRotation, &OceanCreatureBehavior::SetFlipRotation, "Flip Rotation")
+    builder.Property<&OceanCreatureBehavior::GetFlipRotation, &OceanCreatureBehavior::SetFlipRotation>( "Flip Rotation")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&OceanCreatureBehavior::GetJumpDistance, &OceanCreatureBehavior::SetJumpDistance, "Jump Distance")
+    builder.Property<&OceanCreatureBehavior::GetJumpDistance, &OceanCreatureBehavior::SetJumpDistance>( "Jump Distance")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&OceanCreatureBehavior::GetSleepTime, &OceanCreatureBehavior::SetSleepTime, "Sleep Time")
+    builder.Property<&OceanCreatureBehavior::GetSleepTime, &OceanCreatureBehavior::SetSleepTime>( "Sleep Time")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&OceanCreatureBehavior::GetRotateSpeed, &OceanCreatureBehavior::SetRotateSpeed, "Rotate Speed")
+    builder.Property<&OceanCreatureBehavior::GetRotateSpeed, &OceanCreatureBehavior::SetRotateSpeed>( "Rotate Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

@@ -18,26 +18,31 @@ namespace YTE
   YTEDefineType(MenuCollider)
   {
     RegisterType<MenuCollider>();
+    TypeBuilder<MenuCollider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&MenuCollider::GetSize, &MenuCollider::SetSizeProperty, "Size")
+    builder.Property<&MenuCollider::GetSize, &MenuCollider::SetSizeProperty>( "Size")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindProperty(&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty, "Offset")
+    builder.Property<&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty>( "Offset")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("size"))
+    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&),&MenuCollider::SetSize>()>("SetSize")
+      .SetParameterNames("size")
       .SetDocumentation("Sets the size of the box collider from a Real3");
-    YTEBindFunction(&MenuCollider::SetSize, (void (MenuCollider::*) (float, float, float)), "SetSize", YTEParameterNames("x", "y", "z"))
+    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float),&MenuCollider::SetSize>()>("SetSize")
+      .SetParameterNames("x", "y", "z")
       .SetDocumentation("Sets the size of the box collider from three Reals X, Y, and Z");
 
-    YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("offset"))
+    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&),&MenuCollider::SetOffset>()>("SetOffset")
+      .SetParameterNames("offset")
       .SetDocumentation("Sets the position offset of the box collider from a Real3 of x, y, and z coordinates");
-    YTEBindFunction(&MenuCollider::SetOffset, (void (MenuCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("x", "y", "z"))
+    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float),&MenuCollider::SetOffset>()>("SetOffset")
+      .SetParameterNames("x", "y", "z")
       .SetDocumentation("Sets the position offset of the box collider from three Reals X, Y, and Z");
   }
 

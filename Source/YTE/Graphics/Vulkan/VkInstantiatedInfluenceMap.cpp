@@ -14,6 +14,7 @@ namespace YTE
   YTEDefineType(VkInstantiatedInfluenceMap)
   {
     RegisterType<VkInstantiatedInfluenceMap>();
+    TypeBuilder<VkInstantiatedInfluenceMap> builder;
   }
 
 

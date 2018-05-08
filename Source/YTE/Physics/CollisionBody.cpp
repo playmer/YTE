@@ -21,6 +21,7 @@ namespace YTE
   YTEDefineType(CollisionBody)
   {
     RegisterType<CollisionBody>();
+    TypeBuilder<CollisionBody> builder;
   }
   
   CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)

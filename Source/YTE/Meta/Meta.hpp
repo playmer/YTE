@@ -1,5 +1,6 @@
 #pragma once
 
+#include "YTE/StandardLibrary/TypeTraits.hpp"
 #include "YTE/Meta/Type.hpp"
 #include "YTE/StandardLibrary/Any.hpp"
 #include "YTE/Meta/Function.hpp"
@@ -9,6 +10,12 @@
 
 namespace YTE
 {
+  template <typename tFunctionSignature, tFunctionSignature tBoundFunction>
+  constexpr auto SelectOverload()
+  {
+    return tBoundFunction;
+  }
+
   template <typename tType>
   class TypeBuilder
   {
@@ -24,11 +31,11 @@ namespace YTE
       return mType;
     }
 
-    template <typename FunctionSignature>
+    template <typename tFunctionSignature>
     class FunctionBuilder
     {
       public:
-      FunctionBuilder(Function *aFunction)
+      FunctionBuilder(Function* aFunction)
         : mFunction{ aFunction }
       {
 
@@ -40,10 +47,10 @@ namespace YTE
       }
 
       template <typename... tArguments>
-      FunctionBuilder& SetParameterNames(tArguments &&...aNames)
+      FunctionBuilder& SetParameterNames(tArguments&& ...aNames)
       {
         constexpr size_t passedNames = sizeof...(aNames);
-        constexpr size_t funcNames = CountFunctionArguments<FunctionSignature>::Size();
+        constexpr size_t funcNames = CountFunctionArguments<tFunctionSignature>::Size();
         static_assert(0 != funcNames, "You needn't set the parameter names for this function, as there are no parameters.");
 
         static_assert(passedNames == funcNames,
@@ -54,7 +61,7 @@ namespace YTE
         return *this;
       }
 
-      FunctionBuilder& SetDocumentation(const char *aString)
+      FunctionBuilder& SetDocumentation(char const* aString)
       {
         mFunction->SetDocumentation(aString);
 
@@ -62,7 +69,7 @@ namespace YTE
       }
 
       template <typename tType, typename... tArguments>
-      FunctionBuilder& AddAttribute(tArguments &&...aArguments)
+      FunctionBuilder& AddAttribute(tArguments&& ...aArguments)
       {
         mFunction->AddAttribute<tType>(std::forward<tArguments>(aArguments)...);
 
@@ -74,7 +81,7 @@ namespace YTE
     };
 
     template <auto tBoundFunction>
-    FunctionBuilder<decltype(tBoundFunction)> Function(const char *aName)
+    FunctionBuilder<decltype(tBoundFunction)> Function(char const* aName)
     {
       using FunctionSignature = decltype(tBoundFunction);
 
@@ -87,7 +94,7 @@ namespace YTE
     }
 
     template <auto tGetterFunction, auto tSetterFunction>
-    YTE::Property& Property(const char *aName)
+    YTE::Property& Property(char const* aName)
     {
       using GetterFunctionSignature = decltype(tGetterFunction);
       using SetterFunctionSignature = decltype(tSetterFunction);

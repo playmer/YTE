@@ -17,8 +17,9 @@ namespace YTE
   YTEDefineType(ButtonAnimate)
   {
     RegisterType<ButtonAnimate>();
+    TypeBuilder<ButtonAnimate> builder;
 
-    YTEBindProperty(&GetScaleFactor, &SetScaleFactor, "ScaleFactor")
+    builder.Property<&GetScaleFactor, &SetScaleFactor>( "ScaleFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Factor by which the UI element scales when hovered");

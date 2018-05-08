@@ -26,6 +26,7 @@ namespace YTE
   YTEDefineType(VkImguiDrawer)
   {
     RegisterType<VkImguiDrawer>();
+    TypeBuilder<VkImguiDrawer> builder;
   }
 
   VkImguiDrawer::VkImguiDrawer(VkRenderedSurface *aSurface,

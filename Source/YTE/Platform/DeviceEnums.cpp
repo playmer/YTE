@@ -14,6 +14,7 @@ YTE Enums
 YTEDefineExternalType(YTE::ControllerId)
 {
   RegisterType<YTE::ControllerId>();
+    TypeBuilder<YTE::ControllerId> builder;
 
 //  YTEBindEnumValue(ControllerId::Xbox_P1, "Xbox_P1");
 //  YTEBindEnumValue(ControllerId::Xbox_P2, "Xbox_P2");
@@ -26,6 +27,7 @@ YTEDefineExternalType(YTE::ControllerId)
 YTEDefineExternalType(YTE::XboxButtons)
 {
   RegisterType<YTE::XboxButtons>();
+    TypeBuilder<YTE::XboxButtons> builder;
 //
 //  YTEBindEnumValue(XboxButtons::DPAD_Up, "DPAD_Up");
 //  YTEBindEnumValue(XboxButtons::DPAD_Down, "DPAD_Down");
@@ -60,6 +62,7 @@ constexpr typename std::underlying_type<tEnumType>::type GetNativeType()
 YTEDefineExternalType(YTE::MouseButtons)
 {
   RegisterType<YTE::MouseButtons>();
+    TypeBuilder<YTE::MouseButtons> builder;
 
   //auto size = CountFunctionArguments<decltype(GetEnumAsNativeType<decltype(GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()),
   //                                            GetEnumValueAsUnderlyingType<decltype(MouseButtons::Left), MouseButtons::Left>()>)>::template Size();
@@ -72,11 +75,11 @@ YTEDefineExternalType(YTE::MouseButtons)
   //                                                                         ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
   //                                                                         YTENoNames);
 
-  ::YTE::BindFunction<decltype(&GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>),
-                      &GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>,
-                      std::initializer_list<const char*>YTENoNames.size()>("Left", 
-                                                                           ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
-                                                                           YTENoNames);
+  //::YTE::BindFunction<decltype(&GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>),
+  //                    &GetNativeType<decltype(MouseButtons::Left), MouseButtons::Left>,
+  //                    std::initializer_list<const char*>YTENoNames.size()>("Left", 
+  //                                                                         ::YTE::TypeId<decltype(MouseButtons::Left)>(), 
+  //                                                                         YTENoNames);
 
 
 
@@ -91,6 +94,7 @@ YTEDefineExternalType(YTE::MouseButtons)
 YTEDefineExternalType(YTE::Keys)
 {
   RegisterType<YTE::Keys>();
+    TypeBuilder<YTE::Keys> builder;
 
 //  YTEBindEnumValue(Keys::Mouse_Left, "Mouse_Left");
 //  YTEBindEnumValue(Keys::Mouse_Right, "Mouse_Right");

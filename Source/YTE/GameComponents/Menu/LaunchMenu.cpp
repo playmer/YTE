@@ -17,8 +17,9 @@ namespace YTE
   YTEDefineType(LaunchMenu)
   {
     RegisterType<LaunchMenu>();
+    TypeBuilder<LaunchMenu> builder;
 
-    YTEBindProperty(&GetMenuToLaunch, &SetMenuToLaunch, "Menu To Launch")
+    builder.Property<&GetMenuToLaunch, &SetMenuToLaunch>( "Menu To Launch")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Menu that will be launched by triggering this menu element");

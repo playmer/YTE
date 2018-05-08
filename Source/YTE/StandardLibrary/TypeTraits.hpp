@@ -259,7 +259,7 @@ namespace YTE
     using ObjectType = static_switch <TrueOrFalse(std::is_same<ObjectType1, nullptr_t>::value), ObjectType1, ObjectType2>;
   };
 
-  template <typename Return, typename Arg = Return>
+  template <typename Return>
   struct CountFunctionArguments
   {
 

@@ -22,18 +22,21 @@ namespace YTE
   YTEDefineType(MouseEnter)
   {
     RegisterType<MouseEnter>();
-    YTEBindField(&MouseEnter::Name, "Name", PropertyBinding::Get);
+    TypeBuilder<MouseEnter> builder;
+    builder.Field<&MouseEnter::Name>( "Name", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseExit)
   {
     RegisterType<MouseExit>();
-    YTEBindField(&MouseExit::Name, "Name", PropertyBinding::Get);
+    TypeBuilder<MouseExit> builder;
+    builder.Field<&MouseExit::Name>( "Name", PropertyBinding::Get);
   }
 
   YTEDefineType(Reactive)
   {
     RegisterType<Reactive>();
+    TypeBuilder<Reactive> builder;
   }
 
   Reactive::Reactive(Composition *aOwner, Space *aSpace, RSValue *aProperties)

@@ -75,36 +75,37 @@ namespace YTE
   YTEDefineType(SpriteText)
   {
     RegisterType<SpriteText>();
+    TypeBuilder<SpriteText> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
+    builder.Property<&SpriteText::GetText, &SpriteText::SetText>( "Text")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&SpriteText::GetFont, &SpriteText::SetFont, "Font")
+    builder.Property<&SpriteText::GetFont, &SpriteText::SetFont>( "Font")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
+    builder.Property<&SpriteText::GetFontSize, &SpriteText::SetFontSize>( "FontSize")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX, "AlignX")
+    builder.Property<&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX>( "AlignX")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignXDropDownList);
 
-    YTEBindProperty(&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY, "AlignY")
+    builder.Property<&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY>( "AlignY")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignYDropDownList);
 
-    YTEBindProperty(&SpriteText::GetLineLength, &SpriteText::SetLineLength, "MaxLineLength")
+    builder.Property<&SpriteText::GetLineLength, &SpriteText::SetLineLength>( "MaxLineLength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The max length of a single line (in world units) for word-wrapping. 0.0 disables word-wrapping");

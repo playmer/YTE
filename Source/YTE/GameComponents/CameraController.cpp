@@ -18,6 +18,7 @@ namespace YTE
   YTEDefineType(CameraController)
   {
     RegisterType<CameraController>();
+    TypeBuilder<CameraController> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

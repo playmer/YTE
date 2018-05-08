@@ -5,11 +5,13 @@ namespace YTE
   YTEDefineType(Event)
   {
     RegisterType<Event>();
+    TypeBuilder<Event> builder;
   }
 
   YTEDefineType(EventHandler)
   {
     RegisterType<EventHandler>();
+    TypeBuilder<EventHandler> builder;
   }
 
 

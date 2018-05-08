@@ -20,24 +20,26 @@ namespace YTE
   YTEDefineType(OrientationChanged)
   {
     RegisterType<OrientationChanged>();
-    YTEBindField(&OrientationChanged::Orientation, "Orientation", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::ForwardVector, "ForwardVector", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::RightVector, "RightVector", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::UpVector, "UpVector", PropertyBinding::Get);
+    TypeBuilder<OrientationChanged> builder;
+    builder.Field<&OrientationChanged::Orientation>( "Orientation", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::ForwardVector>( "ForwardVector", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::RightVector>( "RightVector", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::UpVector>( "UpVector", PropertyBinding::Get);
   }
 
   YTEDefineType(Orientation)
   {
     RegisterType<Orientation>();
+    TypeBuilder<Orientation> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Orientation::GetForwardVector, nullptr, "ForwardVector");
-    YTEBindProperty(&Orientation::GetRightVector, nullptr, "RightVector");
-    YTEBindProperty(&Orientation::GetUpVector, nullptr, "UpVector");
+    builder.Property<&Orientation::GetForwardVector, nullptr>( "ForwardVector");
+    builder.Property<&Orientation::GetRightVector, nullptr>( "RightVector");
+    builder.Property<&Orientation::GetUpVector, nullptr>( "UpVector");
   }
 
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)

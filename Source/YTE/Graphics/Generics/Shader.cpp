@@ -12,6 +12,7 @@ namespace YTE
   YTEDefineType(Shader)
   {
     RegisterType<Shader>();
+    TypeBuilder<Shader> builder;
   }
 
 

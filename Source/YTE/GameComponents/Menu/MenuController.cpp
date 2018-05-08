@@ -25,31 +25,35 @@ namespace YTE
   YTEDefineType(MenuElementHover)
   {
     RegisterType<MenuElementHover>();
+    TypeBuilder<MenuElementHover> builder;
   }
   
   YTEDefineType(MenuElementTrigger) 
   { 
     RegisterType<MenuElementTrigger>();
+    TypeBuilder<MenuElementTrigger> builder;
   }
   
   YTEDefineType(MenuElementDeHover)
   {
     RegisterType<MenuElementHover>();
+    TypeBuilder<MenuElementHover> builder;
   }
 
   YTEDefineType(MenuController)
   {
     RegisterType<MenuController>();
+    TypeBuilder<MenuController> builder;
 
-    YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
+    builder.Property<&GetDisplayed, &SetDisplayed>( "IsDisplayed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&GetCanClose, &SetCanClose, "CanClose")
+    builder.Property<&GetCanClose, &SetCanClose>( "CanClose")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&GetNumElements, &SetNumElements, "NumMenuElements")
+    builder.Property<&GetNumElements, &SetNumElements>( "NumMenuElements")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

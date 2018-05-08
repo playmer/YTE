@@ -14,7 +14,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(QuestProgressionTrigger) { RegisterType<QuestProgressionTrigger>(); }
+  YTEDefineType(QuestProgressionTrigger) { RegisterType<QuestProgressionTrigger>();
+    TypeBuilder<QuestProgressionTrigger> builder; }
 
   QuestProgressionTrigger::QuestProgressionTrigger(Composition *aOwner, 
                                                    Space *aSpace, 

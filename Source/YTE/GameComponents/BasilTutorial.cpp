@@ -17,7 +17,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(BasilTutorial) { RegisterType<BasilTutorial>(); }
+  YTEDefineType(BasilTutorial) { RegisterType<BasilTutorial>();
+    TypeBuilder<BasilTutorial> builder; }
 
   BasilTutorial::BasilTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

@@ -15,17 +15,19 @@
 namespace YTE
 {
   YTEDefineEvent(AttachCamera);
-  YTEDefineType(AttachCamera) { RegisterType<AttachCamera>(); }
+  YTEDefineType(AttachCamera) { RegisterType<AttachCamera>();
+    TypeBuilder<AttachCamera> builder; }
 
   YTEDefineType(CameraAnchor)
   {
     RegisterType<CameraAnchor>();
+    TypeBuilder<CameraAnchor> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&GetIsDefault, &SetIsDefault, "IsDefault")
+    builder.Property<&GetIsDefault, &SetIsDefault>( "IsDefault")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Flag for setting the default anchor -- that is, if no anchors are active, enable this one");

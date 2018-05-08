@@ -24,6 +24,7 @@ namespace YTE
   YTEDefineType(VkTexture)
   {
     RegisterType<VkTexture>();
+    TypeBuilder<VkTexture> builder;
   }
 
 

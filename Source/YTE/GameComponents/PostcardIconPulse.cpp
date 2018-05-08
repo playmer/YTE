@@ -21,6 +21,7 @@ namespace YTE
   YTEDefineType(PostcardIconPulse)
   {
     RegisterType<PostcardIconPulse>();
+    TypeBuilder<PostcardIconPulse> builder;
   }
 
   PostcardIconPulse::PostcardIconPulse(Composition *aOwner, Space *aSpace, RSValue *aProperties)

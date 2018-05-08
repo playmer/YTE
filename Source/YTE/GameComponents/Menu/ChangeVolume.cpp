@@ -20,6 +20,7 @@ namespace YTE
   YTEDefineType(ChangeVolume)
   {
     RegisterType<ChangeVolume>();
+    TypeBuilder<ChangeVolume> builder;
   }
 
   ChangeVolume::ChangeVolume(Composition* aOwner, Space* aSpace, RSValue* aProperties)

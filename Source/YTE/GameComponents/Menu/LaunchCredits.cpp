@@ -21,11 +21,13 @@ namespace YTE
   YTEDefineType(StartCredits)
   {
     RegisterType<StartCredits>();
+    TypeBuilder<StartCredits> builder;
   }
 
   YTEDefineType(LaunchCredits)
   {
     RegisterType<LaunchCredits>();
+    TypeBuilder<LaunchCredits> builder;
   }
 
   LaunchCredits::LaunchCredits(Composition* aOwner, Space* aSpace, RSValue* aProperties)

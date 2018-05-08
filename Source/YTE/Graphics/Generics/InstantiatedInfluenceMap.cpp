@@ -10,6 +10,7 @@ namespace YTE
   YTEDefineType(InstantiatedInfluenceMap)
   {
     RegisterType<InstantiatedInfluenceMap>();
+    TypeBuilder<InstantiatedInfluenceMap> builder;
   }
 
 

@@ -10,6 +10,7 @@ namespace YTE
   YTEDefineType(ImguiLayer)
   {
     RegisterType<ImguiLayer>();
+    TypeBuilder<ImguiLayer> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 

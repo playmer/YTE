@@ -16,11 +16,15 @@ namespace YTE
   YTEDefineEvent(UpdateActiveQuestState);
   YTEDefineEvent(QuestStart);
 
-  YTEDefineType(UpdateActiveQuestState) { RegisterType<UpdateActiveQuestState>(); }
-  YTEDefineType(QuestStart) { RegisterType<QuestStart>(); }
+  YTEDefineType(UpdateActiveQuestState) { RegisterType<UpdateActiveQuestState>();
+    TypeBuilder<UpdateActiveQuestState> builder; }
+  YTEDefineType(QuestStart) { RegisterType<QuestStart>();
+    TypeBuilder<QuestStart> builder; }
 
-  YTEDefineType(Quest) { RegisterType<Quest>(); }
-  YTEDefineType(Conversation) { RegisterType<Conversation>(); }
+  YTEDefineType(Quest) { RegisterType<Quest>();
+    TypeBuilder<Quest> builder; }
+  YTEDefineType(Conversation) { RegisterType<Conversation>();
+    TypeBuilder<Conversation> builder; }
 
   /******************************************************************************
   Conversation

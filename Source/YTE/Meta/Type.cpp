@@ -9,25 +9,28 @@ namespace YTE
   YTEDefineType(DocumentedObject)
   {
     RegisterType<DocumentedObject>();
-    YTEBindProperty(&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation, "Documentation");
+    TypeBuilder<DocumentedObject> builder;
+    builder.Property<&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation>( "Documentation");
   }
 
   YTEDefineType(Type)
   {
     RegisterType<Type>();
+    TypeBuilder<Type> builder;
 
-    YTEBindStaticOrFreeFunction(Type, &Type::GetGlobalType, YTENoOverload, "GetGlobalType", YTEParameterNames("aName"));
+    //builder.Function<&Type::GetGlobalType>("GetGlobalType")
+    //  .SetParameterNames("aName");
 
-    YTEBindProperty(&Type::Name, YTENoSetter, "Name")
-      .Description() = "Name of the Type.";
-    YTEBindProperty(&Type::Hash, YTENoSetter, "Hash")
-      .Description() = "Hash of the Type.";
-    YTEBindProperty(&Type::GetAllocatedSize, YTENoSetter, "AllocatedSize")
-      .Description() = "Allocated size of the Type.";
-    YTEBindProperty(&Type::GetStoredSize, YTENoSetter, "StoredSize")
-      .Description() = "Stored size of the Type.";
-    YTEBindProperty(&Type::GetUnqualifiedSize, YTENoSetter, "UnqualifiedSize")
-      .Description() = "Unqualified size of the Type.";
+    builder.Property<&Type::Name, NoSetter>( "Name")
+      .SetDocumentation("Name of the Type.");
+    builder.Property<&Type::Hash, NoSetter>( "Hash")
+      .SetDocumentation("Hash of the Type.");
+    builder.Property<&Type::GetAllocatedSize, NoSetter>( "AllocatedSize")
+      .SetDocumentation("Allocated size of the Type.");
+    builder.Property<&Type::GetStoredSize, NoSetter>( "StoredSize")
+      .SetDocumentation("Stored size of the Type.");
+    builder.Property<&Type::GetUnqualifiedSize, NoSetter>( "UnqualifiedSize")
+      .SetDocumentation("Unqualified size of the Type.");
   }
 
   inline Type::~Type()
@@ -169,17 +172,18 @@ namespace YTE
   YTEDefineType(Property)
   {
     RegisterType<Property>();
+    TypeBuilder<Property> builder;
 
-    YTEBindProperty(&Property::GetOwningType, YTENoSetter, "OwningType")
-      .Description() = "Type that owns this Property.";
-    YTEBindProperty(&Property::GetPropertyType, YTENoSetter, "PropertyType")
-      .Description() = "Type of the Property, what we can get or set.";
-    YTEBindProperty(&Property::GetName, YTENoSetter, "Name")
-      .Description() = "Name of the Property.";
-    YTEBindProperty(&Property::GetGetter, YTENoSetter, "Getter")
-      .Description() = "Getter function of the Property, may be null.";
-    YTEBindProperty(&Property::GetSetter, YTENoSetter, "Setter")
-      .Description() = "Setter function of the Property, may be null.";
+    builder.Property<&Property::GetOwningType, NoSetter>( "OwningType")
+      .SetDocumentation("Type that owns this Property.");
+    builder.Property<&Property::GetPropertyType, NoSetter>( "PropertyType")
+      .SetDocumentation("Type of the Property, what we can get or set.");
+    builder.Property<&Property::GetName, NoSetter>( "Name")
+      .SetDocumentation("Name of the Property.");
+    builder.Property<&Property::GetGetter, NoSetter>( "Getter")
+      .SetDocumentation("Getter function of the Property, may be null.");
+    builder.Property<&Property::GetSetter, NoSetter>( "Setter")
+      .SetDocumentation("Setter function of the Property, may be null.");
   }
 
   Property::Property(const char *aName,
@@ -232,11 +236,13 @@ namespace YTE
   YTEDefineType(Field)
   {
     RegisterType<Field>();
+    TypeBuilder<Field> builder;
   }
 
   YTEDefineExternalType(YTE::String)
   {
     RegisterType<YTE::String>();
+    TypeBuilder<YTE::String> builder;
   }
 }
 
@@ -244,69 +250,83 @@ namespace YTE
 YTEDefineExternalType(YTE::s8)
 {
   RegisterType<YTE::s8>();
+    TypeBuilder<YTE::s8> builder;
 }
 
 YTEDefineExternalType(YTE::i8)
 {
   RegisterType<YTE::i8>();
+    TypeBuilder<YTE::i8> builder;
 }
 
 YTEDefineExternalType(YTE::i16)
 {
   RegisterType<YTE::i16>();
+    TypeBuilder<YTE::i16> builder;
 }
 
 YTEDefineExternalType(YTE::i32)
 {
   RegisterType<YTE::i32>();
+    TypeBuilder<YTE::i32> builder;
 }
 
 YTEDefineExternalType(YTE::i64)
 {
   RegisterType<YTE::i64>();
+    TypeBuilder<YTE::i64> builder;
 }
 
 YTEDefineExternalType(YTE::u8)
 {
   RegisterType<YTE::u8>();
+    TypeBuilder<YTE::u8> builder;
 }
 
 YTEDefineExternalType(YTE::u16)
 {
   RegisterType<YTE::u16>();
+    TypeBuilder<YTE::u16> builder;
 }
 
 YTEDefineExternalType(YTE::u32)
 {
   RegisterType<YTE::u32>();
+    TypeBuilder<YTE::u32> builder;
 }
 
 YTEDefineExternalType(YTE::u64)
 {
   RegisterType<YTE::u64>();
+    TypeBuilder<YTE::u64> builder;
 }
 
 YTEDefineExternalType(void)
 {
   RegisterType<void>();
+    TypeBuilder<void> builder;
 }
 
 YTEDefineExternalType(bool)
 {
   RegisterType<bool>();
+    TypeBuilder<bool> builder;
 }
 
 YTEDefineExternalType(float)
 {
   RegisterType<float>();
+    TypeBuilder<float> builder;
 }
 
 YTEDefineExternalType(double)
 {
   RegisterType<double>();
+    TypeBuilder<double> builder;
 }
 
 YTEDefineExternalType(std::string)
 {
   RegisterType<std::string>();
+    TypeBuilder<std::string> builder;
 }

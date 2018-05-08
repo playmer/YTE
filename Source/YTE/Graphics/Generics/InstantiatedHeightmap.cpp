@@ -19,6 +19,7 @@ namespace YTE
   YTEDefineType(InstantiatedHeightmap)
   {
     RegisterType<InstantiatedHeightmap>();
+    TypeBuilder<InstantiatedHeightmap> builder;
   }
 
 

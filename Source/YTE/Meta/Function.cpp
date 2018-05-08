@@ -6,15 +6,16 @@ namespace YTE
   YTEDefineType(Function)
   {
     RegisterType<Function>();
+    TypeBuilder<Function> builder;
 
-    YTEBindProperty(&Function::GetOwningType, YTENoSetter, "OwningType")
-      .Description() = "Type that owns this Function.";
-    YTEBindProperty(&Function::GetName, YTENoSetter, "Name")
-      .Description() = "Name of the property.";
-    YTEBindProperty(&Function::GetReturnType, YTENoSetter, "ReturnType")
-      .Description() = "The return type of the function.";
-    YTEBindProperty(&Function::IsStaticOrFree, YTENoSetter, "StaticOrFree")
-      .Description() = "Lets you know if this function is a static or free function, as in not a member function.";
+    builder.Property<&Function::GetOwningType, NoSetter>( "OwningType")
+      .SetDocumentation("Type that owns this Function.");
+    builder.Property<&Function::GetName, NoSetter>( "Name")
+      .SetDocumentation("Name of the property.");
+    builder.Property<&Function::GetReturnType, NoSetter>( "ReturnType")
+      .SetDocumentation("The return type of the function.");
+    builder.Property<&Function::IsStaticOrFree, NoSetter>( "StaticOrFree")
+      .SetDocumentation("Lets you know if this function is a static or free function, as in not a member function.");
   }
 
   Function::Parameter::Parameter(Type *aType, const char *aName)

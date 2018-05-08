@@ -26,21 +26,23 @@ namespace YTE
   YTEDefineType(ProgressionHappened)
   {
     RegisterType<ProgressionHappened>();
+    TypeBuilder<ProgressionHappened> builder;
   }
 
   YTEDefineType(ProgressionParticles)
   {
     RegisterType<ProgressionParticles>();
+    TypeBuilder<ProgressionParticles> builder;
 
-    YTEBindProperty(&ProgressionParticles::GetPoofTime, &ProgressionParticles::SetPoofTime, "Poof Time")
+    builder.Property<&ProgressionParticles::GetPoofTime, &ProgressionParticles::SetPoofTime>( "Poof Time")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ProgressionParticles::GetPoofCount, &ProgressionParticles::SetPoofCount, "Poof Count")
+    builder.Property<&ProgressionParticles::GetPoofCount, &ProgressionParticles::SetPoofCount>( "Poof Count")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ProgressionParticles::GetPoofEmitRate, &ProgressionParticles::SetPoofEmitRate, "Poof Emit Rate")
+    builder.Property<&ProgressionParticles::GetPoofEmitRate, &ProgressionParticles::SetPoofEmitRate>( "Poof Emit Rate")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

@@ -15,9 +15,11 @@ namespace YTE
   YTEDefineType(GamepadSystem)
   {
     RegisterType<GamepadSystem>();
+    TypeBuilder<GamepadSystem> builder;
 
-    YTEBindFunction(&GamepadSystem::GetXboxController, YTENoOverload, "GetXboxController", YTEParameterNames("aController")).Description()
-      = "Gets you the given controller. Warning: Controller may not be plugged in/active.";
+    builder.Function<&GamepadSystem::GetXboxController>("GetXboxController")
+      .SetParameterNames("aController")
+      .SetDocumentation("Gets you the given controller. Warning: Controller may not be plugged in/active.");
   }
 
   GamepadSystem::GamepadSystem()

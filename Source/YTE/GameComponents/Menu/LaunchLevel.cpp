@@ -17,8 +17,9 @@ namespace YTE
   YTEDefineType(LaunchLevel)
   {
     RegisterType<LaunchLevel>();
+    TypeBuilder<LaunchLevel> builder;
 
-    YTEBindProperty(&GetLevelToLaunch, &SetLevelToLaunch, "LevelToLaunch")
+    builder.Property<&GetLevelToLaunch, &SetLevelToLaunch>( "LevelToLaunch")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

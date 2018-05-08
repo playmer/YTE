@@ -15,6 +15,7 @@ namespace YTE
   YTEDefineType(JobSystem)
   {
     RegisterType<JobSystem>();
+    TypeBuilder<JobSystem> builder;
   }
 
 

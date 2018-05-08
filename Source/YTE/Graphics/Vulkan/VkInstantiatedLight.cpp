@@ -14,6 +14,7 @@ namespace YTE
   YTEDefineType(VkInstantiatedLight)
   {
     RegisterType<VkInstantiatedLight>();
+    TypeBuilder<VkInstantiatedLight> builder;
   }
 
 

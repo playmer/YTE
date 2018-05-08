@@ -40,31 +40,32 @@ namespace YTE
   YTEDefineType(Sprite)
   {
     RegisterType<Sprite>();
+    TypeBuilder<Sprite> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Sprite::GetTexture, &Sprite::SetTexture, "Texture")
+    builder.Property<&Sprite::GetTexture, &Sprite::SetTexture>( "Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Sprite::GetColumns, &Sprite::SetColumns, "Columns")
+    builder.Property<&Sprite::GetColumns, &Sprite::SetColumns>( "Columns")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetRows, &Sprite::SetRows, "Rows")
+    builder.Property<&Sprite::GetRows, &Sprite::SetRows>( "Rows")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetFrames, &Sprite::SetFrames, "Frames")
+    builder.Property<&Sprite::GetFrames, &Sprite::SetFrames>( "Frames")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetSpeed, &Sprite::SetSpeed, "Speed")
+    builder.Property<&Sprite::GetSpeed, &Sprite::SetSpeed>( "Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("How many seconds it will take for the full animation to run.");
 
-    YTEBindProperty(&Sprite::GetAnimating, &Sprite::SetAnimating, "Animating")
+    builder.Property<&Sprite::GetAnimating, &Sprite::SetAnimating>( "Animating")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

@@ -17,33 +17,36 @@ namespace YTE
   YTEDefineType(Window)
   {
     RegisterType<Window>();
-    YTEBindField(&Window::mKeyboard, "Keyboard", PropertyBinding::GetSet);
-    YTEBindField(&Window::mMouse, "Mouse", PropertyBinding::GetSet);
+    TypeBuilder<Window> builder;
+    builder.Field<&Window::mKeyboard>("Keyboard", PropertyBinding::Get);
+    builder.Field<&Window::mMouse>("Mouse", PropertyBinding::Get);
     
-    YTEBindFunction(&Window::SetFullscreen, YTENoOverload, "SetFullscreen", YTEParameterNames("aFullscreen", "aForMetro")).Description()
-      = "Either switches to fullscreen or unfullscreen.";
-    YTEBindFunction(&Window::SetCursorVisibility, YTENoOverload, "SetCursorVisibility", YTEParameterNames("aShow")).Description()
-      = "Turns the visibility of the mouse cursor on and off";
+    builder.Function<&Window::SetFullscreen>("SetFullscreen")
+      .SetParameterNames("aFullscreen", "aForMetro")
+      .SetDocumentation("Either switches to fullscreen or unfullscreen.");
+    builder.Function<&Window::SetCursorVisibility>( "SetCursorVisibility")
+      .SetParameterNames("aShow")
+      .SetDocumentation("Turns the visibility of the mouse cursor on and off");
     
-    YTEBindField(&Window::mSerializedWindowName, "SerializedWindowName", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedWindowName>("SerializedWindowName", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedWindowIcon, "SerializedWindowIcon", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedWindowIcon>("SerializedWindowIcon", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedCursorIcon, "SerializedCursorIcon", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedCursorIcon>("SerializedCursorIcon", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingWidth, "SerializedStartingWidth", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedStartingWidth>("SerializedStartingWidth", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingHeight, "SerializedStartingHeight", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedStartingHeight>("SerializedStartingHeight", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedStartingFullscreen, "SerializedStartingFullscreen", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedStartingFullscreen>("SerializedStartingFullscreen", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindField(&Window::mSerializedShouldBeRenderedTo, "SerializedShouldBeRenderedTo", PropertyBinding::GetSet)
+    builder.Field<&Window::mSerializedShouldBeRenderedTo>("SerializedShouldBeRenderedTo", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

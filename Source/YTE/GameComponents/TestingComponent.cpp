@@ -16,8 +16,9 @@ namespace YTE
   YTEDefineType(TestingComponent)
   {
     RegisterType<TestingComponent>();
+    TypeBuilder<TestingComponent> builder;
 
-    YTEBindProperty(&TestingComponent::GetCurrentAnimation, &TestingComponent::SetCurrentAnimation, "Current Animation")
+    builder.Property<&TestingComponent::GetCurrentAnimation, &TestingComponent::SetCurrentAnimation>( "Current Animation")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

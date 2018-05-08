@@ -15,6 +15,7 @@ namespace YTE
   YTEDefineType(Renderer)
   {
     RegisterType<Renderer>();
+    TypeBuilder<Renderer> builder;
   }
 
 

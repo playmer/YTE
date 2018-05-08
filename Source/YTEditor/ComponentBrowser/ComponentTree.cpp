@@ -253,7 +253,7 @@ namespace YTEditor
 
     YTE::Type *componentType = aWidget->GetEngineComponent()->GetType();
 
-    YTE::String tip = componentType->Description();
+    std::string const& tip = componentType->GetDocumentation();
 
     aTopItem->setToolTip(0, tip.c_str());
     child->setToolTip(0, tip.c_str());

@@ -13,6 +13,7 @@ namespace YTE
   YTEDefineType(FlybyCamera)
   {
     RegisterType<FlybyCamera>();
+    TypeBuilder<FlybyCamera> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
@@ -20,7 +21,7 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindField(&FlybyCamera::mMovementSpeed, "MovementSpeed", PropertyBinding::GetSet)
+    builder.Field<&FlybyCamera::mMovementSpeed>( "MovementSpeed", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with.");

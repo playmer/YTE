@@ -26,7 +26,8 @@ namespace YTE
   YTEDefineType(PostcardUpdate)
   {
     RegisterType<PostcardUpdate>();
-    YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
+    TypeBuilder<PostcardUpdate> builder;
+    builder.Field<&PostcardUpdate::Number>( "Number", PropertyBinding::GetSet);
   }
 
   YTEDefineEvent(HideHudEvent);
@@ -34,6 +35,7 @@ namespace YTE
   YTEDefineType(HideHudEvent)
   {
     RegisterType<HideHudEvent>();
+    TypeBuilder<HideHudEvent> builder;
   }
 
   YTEDefineEvent(DialoguePossible);
@@ -41,12 +43,14 @@ namespace YTE
   YTEDefineType(DialoguePossible)
   {
     RegisterType<DialoguePossible>();
-    YTEBindField(&DialoguePossible::isPossible, "isPossible", PropertyBinding::GetSet);
+    TypeBuilder<DialoguePossible> builder;
+    builder.Field<&DialoguePossible::isPossible>( "isPossible", PropertyBinding::GetSet);
   }
 
   YTEDefineType(HudController)
   {
     RegisterType<HudController>();
+    TypeBuilder<HudController> builder;
   }
 
   HudController::HudController(Composition *aOwner, Space *aSpace, RSValue *aProperties)

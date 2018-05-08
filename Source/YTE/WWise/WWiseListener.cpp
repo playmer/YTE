@@ -24,6 +24,7 @@ namespace YTE
   YTEDefineType(WWiseListener)
   {
     RegisterType<WWiseListener>();
+    TypeBuilder<WWiseListener> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
                                              { TypeId<Orientation>() } };

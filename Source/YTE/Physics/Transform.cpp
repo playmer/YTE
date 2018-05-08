@@ -29,9 +29,10 @@ namespace YTE
   YTEDefineType(TransformChanged)
   {
     RegisterType<TransformChanged>();
-    YTEBindField(&TransformChanged::Position, "Position", PropertyBinding::Get);
-    YTEBindField(&TransformChanged::Rotation, "Rotation", PropertyBinding::Get);
-    YTEBindField(&TransformChanged::Scale, "Scale", PropertyBinding::Get);
+    TypeBuilder<TransformChanged> builder;
+    builder.Field<&TransformChanged::Position>( "Position", PropertyBinding::Get);
+    builder.Field<&TransformChanged::Rotation>( "Rotation", PropertyBinding::Get);
+    builder.Field<&TransformChanged::Scale>( "Scale", PropertyBinding::Get);
   }
 
   ///synchronizes world transform from user to physics
@@ -62,36 +63,42 @@ namespace YTE
   YTEDefineType(Transform)
   {
     RegisterType<Transform>();
+    TypeBuilder<Transform> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Transform::GetTranslation, &Transform::SetTranslationProperty, "Translation")
+    builder.Property<&Transform::GetTranslation, &Transform::SetTranslationProperty>( "Translation")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&Transform::GetScale, &Transform::SetScaleProperty, "Scale")
+    builder.Property<&Transform::GetScale, &Transform::SetScaleProperty>( "Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    YTEBindProperty(&Transform::GetRotation, &Transform::SetRotationPropertyQuat, "Rotation")
+    builder.Property<&Transform::GetRotation, &Transform::SetRotationPropertyQuat>( "Rotation")
       .AddAttribute<Serializable>();
-    YTEBindProperty(&Transform::GetRotationAsEuler, &Transform::SetRotationProperty, "Rotation")
+    builder.Property<&Transform::GetRotationAsEuler, &Transform::SetRotationProperty>( "Rotation")
       .AddAttribute<EditorProperty>();
 
-    YTEBindFunction(&Transform::SetRotation, (void (Transform::*) (const glm::vec3&)), "SetRotation", YTEParameterNames("eulerAngles"))
-      .Description() = "Sets the local rotation relative to parent from a Real3 of Euler Angles";
-    YTEBindFunction(&Transform::SetRotation, (void (Transform::*) (float, float, float)), "SetRotation", YTEParameterNames("aThetaX", "aThetaY", "aThetaZ"))
-      .Description() = "Sets the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)";
+    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&), &Transform::SetRotation>()>("SetRotation")
+      .SetParameterNames("aEulerAngles")
+      .SetDocumentation("Sets the local rotation relative to parent from a Real3 of Euler Angles");
 
-    YTEBindProperty(&Transform::GetWorldTranslation, &Transform::SetWorldTranslationProperty, "WorldTranslation")
+    builder.Function<SelectOverload<void (Transform::*) (float, float, float),&Transform::SetRotation>()>("SetRotation")
+      .SetParameterNames("aThetaX", "aThetaY", "aThetaZ")
+      .SetDocumentation("Sets the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)");
+
+    builder.Property<&Transform::GetWorldTranslation, &Transform::SetWorldTranslationProperty>( "WorldTranslation")
       .AddAttribute<EditorProperty>(false);
-    YTEBindProperty(&Transform::GetWorldScale, &Transform::SetWorldScaleProperty, "WorldScale")
+    builder.Property<&Transform::GetWorldScale, &Transform::SetWorldScaleProperty>( "WorldScale")
       .AddAttribute<EditorProperty>(false);
-    YTEBindProperty(&Transform::GetWorldRotationAsEuler, &Transform::SetWorldRotationProperty, "WorldRotation")
+    builder.Property<&Transform::GetWorldRotationAsEuler, &Transform::SetWorldRotationProperty>( "WorldRotation")
       .AddAttribute<EditorProperty>(false);
 
-    YTEBindFunction(&Transform::SetWorldRotation, (void (Transform::*) (const glm::vec3&)), "SetWorldRotation", YTEParameterNames("eulerAngles"))
-      .Description() = "SetWorlds the local rotation relative to parent from a Real3 of Euler Angles";
-    YTEBindFunction(&Transform::SetWorldRotation, (void (Transform::*) (float, float, float)), "SetWorldRotation", YTEParameterNames("aThetaX", "aThetaY", "aThetaZ"))
-      .Description() = "SetWorlds the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)";
+    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&),&Transform::SetWorldRotation>()>("SetWorldRotation")
+      .SetParameterNames("aEulerAngles")
+      .SetDocumentation("SetWorlds the local rotation relative to parent from a Real3 of Euler Angles");
+    builder.Function<SelectOverload<void (Transform::*) (float, float, float),&Transform::SetWorldRotation>()>("SetWorldRotation")
+      .SetParameterNames("aThetaX", "aThetaY", "aThetaZ")
+      .SetDocumentation("SetWorlds the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)");
   }
 
   Transform::Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties)

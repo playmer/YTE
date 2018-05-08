@@ -19,6 +19,7 @@ namespace YTE
   YTEDefineType(VkShader)
   {
     RegisterType<VkShader>();
+    TypeBuilder<VkShader> builder;
   }
 
   VkShader::VkShader(VkCreatePipelineDataSet& aInfo, ViewData* aView)

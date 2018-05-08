@@ -49,7 +49,7 @@ namespace YTEditor
       mSetter = aProp.second->GetSetter();
 
       // get property tooltip
-      YTE::String tip = aProp.second->Description();
+      std::string const& tip = aProp.second->GetDocumentation();
 
       // set tooltip for property label
       this->GetLabelWidget()->setToolTip(tip.c_str());

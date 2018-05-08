@@ -17,8 +17,9 @@ namespace YTE
   YTEDefineType(ExitMenu)
   {
     RegisterType<ExitMenu>();
+    TypeBuilder<ExitMenu> builder;
 
-    YTEBindProperty(&GetShouldCloseAll, &SetShouldCloseAll, "ShouldCloseAll")
+    builder.Property<&GetShouldCloseAll, &SetShouldCloseAll>( "ShouldCloseAll")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Whether or not this element should close all menus or only this one");

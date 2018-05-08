@@ -17,6 +17,7 @@ namespace YTE
   YTEDefineType(RootMenu)
   {
     RegisterType<RootMenu>();
+    TypeBuilder<RootMenu> builder;
   }
 
   RootMenu::RootMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace)

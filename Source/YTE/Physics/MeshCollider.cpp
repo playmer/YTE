@@ -26,6 +26,7 @@ namespace YTE
   YTEDefineType(MeshCollider)
   {
     RegisterType<MeshCollider>();
+    TypeBuilder<MeshCollider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

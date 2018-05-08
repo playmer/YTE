@@ -21,11 +21,13 @@ namespace YTE
   YTEDefineType(StartGame)
   { 
     RegisterType<StartGame>();
+    TypeBuilder<StartGame> builder;
   }
 
   YTEDefineType(LaunchGame)
   {
     RegisterType<LaunchGame>();
+    TypeBuilder<LaunchGame> builder;
   }
 
   LaunchGame::LaunchGame(Composition* aOwner, Space* aSpace, RSValue* aProperties)

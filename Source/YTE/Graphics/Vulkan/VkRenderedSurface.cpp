@@ -34,11 +34,13 @@ namespace YTE
   YTEDefineType(GraphicsDataUpdateVk)
   {
     RegisterType<GraphicsDataUpdateVk>();
+    TypeBuilder<GraphicsDataUpdateVk> builder;
   }
 
   YTEDefineType(VkRenderedSurface)
   {
     RegisterType<VkRenderedSurface>();
+    TypeBuilder<VkRenderedSurface> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
   }
 

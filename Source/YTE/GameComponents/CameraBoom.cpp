@@ -18,13 +18,14 @@ namespace YTE
   YTEDefineType(CameraBoom)
   {
     RegisterType<CameraBoom>();
+    TypeBuilder<CameraBoom> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
                                              { TypeId<Orientation>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&GetCameraTurnSpeed, &SetCameraTurnSpeed, "CameraTurnSpeed")
+    builder.Property<&GetCameraTurnSpeed, &SetCameraTurnSpeed>( "CameraTurnSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

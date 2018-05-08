@@ -14,6 +14,7 @@ namespace YTE
   YTEDefineType(VkRTGameForwardDrawer)
   {
     RegisterType<VkRTGameForwardDrawer>();
+    TypeBuilder<VkRTGameForwardDrawer> builder;
   }
 
   VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,

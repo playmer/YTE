@@ -25,6 +25,7 @@ namespace YTE
   YTEDefineType(WWiseEmitter)
   {
     RegisterType<WWiseEmitter>();
+    TypeBuilder<WWiseEmitter> builder;
     
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
@@ -32,13 +33,15 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindField(&WWiseEmitter::mSound, "Sound", PropertyBinding::GetSet)
+    builder.Field<&WWiseEmitter::mSound>("Sound", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindFunction(&WWiseEmitter::Play, YTENoOverload, "Play", YTENoNames);
-    YTEBindFunction(&WWiseEmitter::PlayEvent, (void (WWiseEmitter::*)(const std::string&)), "PlaySound", YTEParameterNames("aSound"));
-    YTEBindFunction(&WWiseEmitter::PlayEvent, (void (WWiseEmitter::*)(u64)), "PlaySound", YTEParameterNames("aSound"));
+    builder.Function<&WWiseEmitter::Play>("Play");
+    builder.Function<SelectOverload<void (WWiseEmitter::*)(const std::string&),&WWiseEmitter::PlayEvent>()>("PlaySound")
+      .SetParameterNames("aSound");
+    builder.Function<SelectOverload<void (WWiseEmitter::*)(u64),&WWiseEmitter::PlayEvent>()>("PlaySound")
+      .SetParameterNames("aSound");
   }
 
   WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)

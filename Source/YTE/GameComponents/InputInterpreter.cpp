@@ -53,31 +53,53 @@ namespace YTE
   // Hud Events
   YTEDefineEvent(HudElementToggled);
 
-  YTEDefineType(RequestDialogueStart)    { RegisterType<RequestDialogueStart>(); }
-  YTEDefineType(RequestNoticeBoardStart) { RegisterType<RequestNoticeBoardStart>(); }
-  YTEDefineType(DialogueSelect)          { RegisterType<DialogueSelect>(); }
-  YTEDefineType(DialogueConfirm)         { RegisterType<DialogueConfirm>(); }
-  YTEDefineType(DialogueExit)            { RegisterType<DialogueExit>(); }
-  YTEDefineType(MenuStart)               { RegisterType<MenuStart>(); }
-  YTEDefineType(MenuConfirm)             { RegisterType<MenuConfirm>(); }
-  YTEDefineType(MenuExit)                { RegisterType<MenuExit>(); }
-  YTEDefineType(MenuElementChange)       { RegisterType<MenuElementChange>(); }
-  YTEDefineType(OptionsStickEvent)       { RegisterType<OptionsStickEvent>(); }
-  YTEDefineType(OptionsFlickEvent)       { RegisterType<OptionsFlickEvent>(); }
-  YTEDefineType(OptionsConfirmEvent)     { RegisterType<OptionsConfirmEvent>(); }
-  YTEDefineType(MuteBypass)              { RegisterType<MuteBypass>(); }
-  YTEDefineType(SailStateChanged)        { RegisterType<SailStateChanged>(); }
-  YTEDefineType(BoatTurnEvent)           { RegisterType<BoatTurnEvent>(); }
-  YTEDefineType(BoatDockEvent)           { RegisterType<BoatDockEvent>(); }
-  YTEDefineType(BoatRotation)            { RegisterType<BoatRotation>(); }
-  YTEDefineType(CameraRotateEvent)       { RegisterType<CameraRotateEvent>(); }
-  YTEDefineType(DirectCameraEvent)       { RegisterType<DirectCameraEvent>(); }
-  YTEDefineType(DebugSwitch)             { RegisterType<DebugSwitch>(); }
-  YTEDefineType(HudElementToggled)       { RegisterType<HudElementToggled>(); }
+  YTEDefineType(RequestDialogueStart)    { RegisterType<RequestDialogueStart>();
+    TypeBuilder<RequestDialogueStart> builder; }
+  YTEDefineType(RequestNoticeBoardStart) { RegisterType<RequestNoticeBoardStart>();
+    TypeBuilder<RequestNoticeBoardStart> builder; }
+  YTEDefineType(DialogueSelect)          { RegisterType<DialogueSelect>();
+    TypeBuilder<DialogueSelect> builder; }
+  YTEDefineType(DialogueConfirm)         { RegisterType<DialogueConfirm>();
+    TypeBuilder<DialogueConfirm> builder; }
+  YTEDefineType(DialogueExit)            { RegisterType<DialogueExit>();
+    TypeBuilder<DialogueExit> builder; }
+  YTEDefineType(MenuStart)               { RegisterType<MenuStart>();
+    TypeBuilder<MenuStart> builder; }
+  YTEDefineType(MenuConfirm)             { RegisterType<MenuConfirm>();
+    TypeBuilder<MenuConfirm> builder; }
+  YTEDefineType(MenuExit)                { RegisterType<MenuExit>();
+    TypeBuilder<MenuExit> builder; }
+  YTEDefineType(MenuElementChange)       { RegisterType<MenuElementChange>();
+    TypeBuilder<MenuElementChange> builder; }
+  YTEDefineType(OptionsStickEvent)       { RegisterType<OptionsStickEvent>();
+    TypeBuilder<OptionsStickEvent> builder; }
+  YTEDefineType(OptionsFlickEvent)       { RegisterType<OptionsFlickEvent>();
+    TypeBuilder<OptionsFlickEvent> builder; }
+  YTEDefineType(OptionsConfirmEvent)     { RegisterType<OptionsConfirmEvent>();
+    TypeBuilder<OptionsConfirmEvent> builder; }
+  YTEDefineType(MuteBypass)              { RegisterType<MuteBypass>();
+    TypeBuilder<MuteBypass> builder; }
+  YTEDefineType(SailStateChanged)        { RegisterType<SailStateChanged>();
+    TypeBuilder<SailStateChanged> builder; }
+  YTEDefineType(BoatTurnEvent)           { RegisterType<BoatTurnEvent>();
+    TypeBuilder<BoatTurnEvent> builder; }
+  YTEDefineType(BoatDockEvent)           { RegisterType<BoatDockEvent>();
+    TypeBuilder<BoatDockEvent> builder; }
+  YTEDefineType(BoatRotation)            { RegisterType<BoatRotation>();
+    TypeBuilder<BoatRotation> builder; }
+  YTEDefineType(CameraRotateEvent)       { RegisterType<CameraRotateEvent>();
+    TypeBuilder<CameraRotateEvent> builder; }
+  YTEDefineType(DirectCameraEvent)       { RegisterType<DirectCameraEvent>();
+    TypeBuilder<DirectCameraEvent> builder; }
+  YTEDefineType(DebugSwitch)             { RegisterType<DebugSwitch>();
+    TypeBuilder<DebugSwitch> builder; }
+  YTEDefineType(HudElementToggled)       { RegisterType<HudElementToggled>();
+    TypeBuilder<HudElementToggled> builder; }
 
   YTEDefineType(InputInterpreter)
   {
     RegisterType<InputInterpreter>();
+    TypeBuilder<InputInterpreter> builder;
   }
 
   InputInterpreter::InputInterpreter(Composition *aOwner, Space *aSpace, RSValue *aProperties)

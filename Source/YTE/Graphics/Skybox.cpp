@@ -44,9 +44,10 @@ namespace YTE
   YTEDefineType(Skybox)
   {
     RegisterType<Skybox>();
+    TypeBuilder<Skybox> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Skybox::GetTexture, &Skybox::SetTexture, "Texture")
+    builder.Property<&Skybox::GetTexture, &Skybox::SetTexture>( "Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);

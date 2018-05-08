@@ -21,13 +21,14 @@ namespace YTE
   YTEDefineType(DialogueElement)
   {
     RegisterType<DialogueElement>();
+    TypeBuilder<DialogueElement> builder;
 
-    YTEBindProperty(&GetContentType, &SetContentType, "ContentType")
+    builder.Property<&GetContentType, &SetContentType>( "ContentType")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&GetSelectionIndex, &SetSelectionIndex, "SelectionIndex")
+    builder.Property<&GetSelectionIndex, &SetSelectionIndex>( "SelectionIndex")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

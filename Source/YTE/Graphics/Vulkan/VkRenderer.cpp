@@ -22,6 +22,7 @@ namespace YTE
   YTEDefineType(VkRenderer)
   {
     RegisterType<VkRenderer>();
+    TypeBuilder<VkRenderer> builder;
   }
 
   template<typename tTo, typename tFrom>

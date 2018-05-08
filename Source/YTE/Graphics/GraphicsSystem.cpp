@@ -26,6 +26,7 @@ namespace YTE
   YTEDefineType(GraphicsSystem)
   {
     RegisterType<GraphicsSystem>();
+    TypeBuilder<GraphicsSystem> builder;
   }
 
 

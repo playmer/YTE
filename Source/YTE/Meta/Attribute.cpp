@@ -6,21 +6,25 @@ namespace YTE
   YTEDefineType(Attribute)
   {
     RegisterType<Attribute>();
+    TypeBuilder<Attribute> builder;
   }
 
   YTEDefineType(Serializable)
   {
     RegisterType<Serializable>();
+    TypeBuilder<Serializable> builder;
   }
 
   YTEDefineType(RunInEditor)
   {
     RegisterType<RunInEditor>();
+    TypeBuilder<RunInEditor> builder;
   }
 
   YTEDefineType(EditableColor)
   {
     RegisterType<EditableColor>();
+    TypeBuilder<EditableColor> builder;
   }
 
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
@@ -72,26 +76,31 @@ namespace YTE
   YTEDefineType(EditorProperty)
   {
     RegisterType<EditorProperty>();
+    TypeBuilder<EditorProperty> builder;
   }
 
   YTEDefineType(DropDownStrings)
   {
     RegisterType<DropDownStrings>();
+    TypeBuilder<DropDownStrings> builder;
   }
 
   YTEDefineType(EditorHeader)
   {
     RegisterType<EditorHeader>();
+    TypeBuilder<EditorHeader> builder;
   }
 
   YTEDefineType(EditorHeaderList)
   {
     RegisterType<EditorHeaderList>();
+    TypeBuilder<EditorHeaderList> builder;
   }
 
   YTEDefineType(RedirectObject)
   {
     RegisterType<RedirectObject>();
+    TypeBuilder<RedirectObject> builder;
   }
 
   EditorProperty::EditorProperty(DocumentedObject *aObject, bool aVisible)

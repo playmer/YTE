@@ -23,16 +23,17 @@ namespace YTE
   YTEDefineType(BoatParticles)
   {
     RegisterType<BoatParticles>();
+    TypeBuilder<BoatParticles> builder;
 
-    YTEBindProperty(&BoatParticles::GetVarianceScalar, &BoatParticles::SetVarianceScalar, "VarianceScalar")
+    builder.Property<&BoatParticles::GetVarianceScalar, &BoatParticles::SetVarianceScalar>( "VarianceScalar")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatParticles::GetFrontWeight, &BoatParticles::SetFrontWeight, "FrontWeight")
+    builder.Property<&BoatParticles::GetFrontWeight, &BoatParticles::SetFrontWeight>( "FrontWeight")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatParticles::GetSideWeight, &BoatParticles::SetSideWeight, "SideWeight")
+    builder.Property<&BoatParticles::GetSideWeight, &BoatParticles::SetSideWeight>( "SideWeight")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 

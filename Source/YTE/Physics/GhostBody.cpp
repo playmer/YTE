@@ -28,6 +28,7 @@ namespace YTE
   YTEDefineType(GhostBody)
   {
     RegisterType<GhostBody>();
+    TypeBuilder<GhostBody> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
                                              { TypeId<BoxCollider>(),

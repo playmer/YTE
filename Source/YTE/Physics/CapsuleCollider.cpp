@@ -23,17 +23,18 @@ namespace YTE
   YTEDefineType(CapsuleCollider)
   {
     RegisterType<CapsuleCollider>();
+    TypeBuilder<CapsuleCollider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindField(&CapsuleCollider::mRadius, "Radius", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mRadius>( "Radius", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindField(&CapsuleCollider::mHeight, "Height", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mHeight>( "Height", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();

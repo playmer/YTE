@@ -22,33 +22,39 @@ namespace YTE
   YTEDefineType(MouseWheelEvent)
   {
     RegisterType<MouseWheelEvent>();
-    YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
-    YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
+    TypeBuilder<MouseWheelEvent> builder;
+    builder.Field<&MouseWheelEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::ScrollMovement>( "ScrollMovement", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseButtonEvent)
   {
     RegisterType<MouseButtonEvent>();
-    YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
-    YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
+    TypeBuilder<MouseButtonEvent> builder;
+    builder.Field<&MouseButtonEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::Button>( "Button", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseMoveEvent)
   {
     RegisterType<MouseMoveEvent>();
-    YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    TypeBuilder<MouseMoveEvent> builder;
+    builder.Field<&MouseMoveEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
   }
 
   YTEDefineType(Mouse)
   {
     RegisterType<Mouse>();
-    YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed right now.";
-    YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed last frame.";
+    TypeBuilder<Mouse> builder;
+    builder.Function<&Mouse::IsButtonDown>("IsButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed right now.");
+    builder.Function<&Mouse::WasButtonDown>("WasButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed last frame.");
     
-    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description()
-      = "Gets the current cursor position in screen coordinates.";
+    builder.Property<&Mouse::GetCursorPosition, NoSetter>("CursorPosition")
+      .SetDocumentation("Gets the current cursor position in screen coordinates.");
   }
 
   Mouse::Mouse()

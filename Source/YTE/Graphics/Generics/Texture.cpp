@@ -24,6 +24,7 @@ namespace YTE
   YTEDefineType(Texture)
   {
     RegisterType<Texture>();
+    TypeBuilder<Texture> builder;
   }
 
 

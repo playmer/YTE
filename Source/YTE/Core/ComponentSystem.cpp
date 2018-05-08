@@ -17,6 +17,7 @@ namespace YTE
   YTEDefineType(ComponentSystem)
   {
     RegisterType<ComponentSystem>();
+    TypeBuilder<ComponentSystem> builder;
 
   }
 

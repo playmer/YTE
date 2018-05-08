@@ -13,11 +13,12 @@ namespace YTE
   YTEDefineType(Component)
   {
     RegisterType<Component>();
+    TypeBuilder<Component> builder;
 
-    YTEBindFunction(&Component::Remove, YTENoOverload, "Remove", YTENoNames).Description()
-      = "Removes the component from its owner. This is delayed until the next frame.";
+    builder.Function<&Component::Remove>("Remove")
+      .SetDocumentation("Removes the component from its owner. This is delayed until the next frame.");
   
-    YTEBindProperty(&Component::GetOwner, YTENoSetter, "Owner");
+    builder.Property<&Component::GetOwner, NoSetter>("Owner");
   }
 
   Component::Component(Composition *aOwner, Space *aSpace)
@@ -97,6 +98,7 @@ namespace YTE
   YTEDefineType(ComponentDependencies)
   {
     RegisterType<ComponentDependencies>();
+    TypeBuilder<ComponentDependencies> builder;
   }
 
   ComponentDependencies::ComponentDependencies(DocumentedObject *aObject,

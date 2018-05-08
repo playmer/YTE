@@ -6,6 +6,7 @@ namespace YTE
   YTEDefineType(SampleAction)
   {
     RegisterType<SampleAction>();
+    TypeBuilder<SampleAction> builder;
   }
 
   SampleAction::SampleAction(Composition *aOwner, Space * aSpace, RSValue *aProperties)

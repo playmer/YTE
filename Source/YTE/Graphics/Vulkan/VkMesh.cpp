@@ -119,6 +119,7 @@ namespace YTE
   YTEDefineType(VkSubmesh)
   {
     RegisterType<VkSubmesh>();
+    TypeBuilder<VkSubmesh> builder;
   }
 
   VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
@@ -447,6 +448,7 @@ namespace YTE
   YTEDefineType(VkMesh)
   {
     RegisterType<VkMesh>();
+    TypeBuilder<VkMesh> builder;
   }
 
   VkMesh::VkMesh(VkRenderer *aRenderer,

@@ -29,34 +29,39 @@ namespace YTE
   YTEDefineType(CollisionEvent)
   {
     RegisterType<CollisionEvent>();
-    YTEBindField(&CollisionEvent::OtherObject, "OtherObject", PropertyBinding::Get);
+    TypeBuilder<CollisionEvent> builder;
+    builder.Field<&CollisionEvent::OtherObject>( "OtherObject", PropertyBinding::Get);
   }
 
 
   YTEDefineType(CollisionStarted)
   {
     RegisterType<CollisionStarted>();
-    YTEBindField(&CollisionStarted::Name, "Name", PropertyBinding::Get);
-    YTEBindField(&CollisionStarted::Object, "Object", PropertyBinding::Get);
+    TypeBuilder<CollisionStarted> builder;
+    builder.Field<&CollisionStarted::Name>( "Name", PropertyBinding::Get);
+    builder.Field<&CollisionStarted::Object>( "Object", PropertyBinding::Get);
   }
 
   YTEDefineType(CollisionPersisted)
   {
     RegisterType<CollisionPersisted>();
-    YTEBindField(&CollisionPersisted::Name, "Name", PropertyBinding::Get);
-    YTEBindField(&CollisionPersisted::Object, "Object", PropertyBinding::Get);
+    TypeBuilder<CollisionPersisted> builder;
+    builder.Field<&CollisionPersisted::Name>( "Name", PropertyBinding::Get);
+    builder.Field<&CollisionPersisted::Object>( "Object", PropertyBinding::Get);
   }
 
   YTEDefineType(CollisionEnded)
   {
     RegisterType<CollisionEnded>();
-    YTEBindField(&CollisionEnded::Name, "Name", PropertyBinding::Get);
-    YTEBindField(&CollisionEnded::Object, "Object", PropertyBinding::Get);
+    TypeBuilder<CollisionEnded> builder;
+    builder.Field<&CollisionEnded::Name>( "Name", PropertyBinding::Get);
+    builder.Field<&CollisionEnded::Object>( "Object", PropertyBinding::Get);
   }
 
   YTEDefineType(Collider)
   {
     RegisterType<Collider>();
+    TypeBuilder<Collider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 

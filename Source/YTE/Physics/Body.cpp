@@ -18,6 +18,7 @@ namespace YTE
   YTEDefineType(Body)
   {
     RegisterType<Body>();
+    TypeBuilder<Body> builder;
   }
     
   Body::Body(Composition *aOwner, Space *aSpace, RSValue *)

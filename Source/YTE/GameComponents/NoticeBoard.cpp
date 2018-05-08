@@ -29,9 +29,11 @@ namespace YTE
 {
   YTEDefineEvent(NoticeBoardHookup);
 
-  YTEDefineType(NoticeBoardHookup) { RegisterType<NoticeBoardHookup>(); }
+  YTEDefineType(NoticeBoardHookup) { RegisterType<NoticeBoardHookup>();
+    TypeBuilder<NoticeBoardHookup> builder; }
 
-  YTEDefineType(NoticeBoard) { RegisterType<NoticeBoard>(); }
+  YTEDefineType(NoticeBoard) { RegisterType<NoticeBoard>();
+    TypeBuilder<NoticeBoard> builder; }
 
   NoticeBoard::NoticeBoard(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

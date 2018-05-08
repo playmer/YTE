@@ -8,6 +8,7 @@ namespace YTE
   YTEDefineType(Island)
   {
     RegisterType<Island>();
+    TypeBuilder<Island> builder;
   }
 
   Island::Island(Composition *aOwner, Space *aSpace, RSValue *aProperties)

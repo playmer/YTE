@@ -14,6 +14,7 @@ namespace YTE
   YTEDefineType(TestComponent)
   {
     RegisterType<TestComponent>();
+    TypeBuilder<TestComponent> builder;
   }
 
   TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)

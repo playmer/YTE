@@ -34,7 +34,6 @@ namespace YTE
   YTEDefineType(Space)
   {
     RegisterType<Space>();
-
     TypeBuilder<Space> builder;
     
     builder.Function<&Space::LoadLevel>("LoadLevel")

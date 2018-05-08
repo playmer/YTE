@@ -19,7 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(BasilDialogue) { RegisterType<BasilDialogue>(); }
+  YTEDefineType(BasilDialogue) { RegisterType<BasilDialogue>();
+    TypeBuilder<BasilDialogue> builder; }
 
   BasilDialogue::BasilDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

@@ -73,6 +73,7 @@ namespace YTE
   YTEDefineType(Camera) 
   { 
     RegisterType<Camera>();
+    TypeBuilder<Camera> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
@@ -80,42 +81,42 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
  
-    YTEBindProperty(&Camera::GetFarPlane, &Camera::SetFarPlane, "FarPlane") 
+    builder.Property<&Camera::GetFarPlane, &Camera::SetFarPlane>( "FarPlane") 
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The far plane the view will be rendered with."); 
  
-    YTEBindProperty(&Camera::GetNearPlane, &Camera::SetNearPlane, "NearPlane") 
+    builder.Property<&Camera::GetNearPlane, &Camera::SetNearPlane>( "NearPlane") 
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with."); 
  
-    YTEBindProperty(&Camera::GetFieldOfViewY, &Camera::SetFieldOfViewY, "FieldOfViewY") 
+    builder.Property<&Camera::GetFieldOfViewY, &Camera::SetFieldOfViewY>( "FieldOfViewY") 
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The field of view (y) the view will be rendered with."); 
 
-    YTEBindProperty(&Camera::GetGlobalIlluminaton, &Camera::SetGlobalIlluminaton, "Global Illumination")
+    builder.Property<&Camera::GetGlobalIlluminaton, &Camera::SetGlobalIlluminaton>( "Global Illumination")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the illumination of the world");
 
-    YTEBindProperty(&Camera::GetFogColor, &Camera::SetFogColor, "Fog Color")
+    builder.Property<&Camera::GetFogColor, &Camera::SetFogColor>( "Fog Color")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the color of the fog");
 
-    YTEBindProperty(&Camera::GetFogPlanes, &Camera::SetFogPlanes, "Fog Near/Far")
+    builder.Property<&Camera::GetFogPlanes, &Camera::SetFogPlanes>( "Fog Near/Far")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts Fog near and far planes (start of fog, full fog)");
 
-    YTEBindProperty(&Camera::GetFogCoeffs, &Camera::SetFogCoeffs, "Fog Coefficients")
+    builder.Property<&Camera::GetFogCoeffs, &Camera::SetFogCoeffs>( "Fog Coefficients")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Adjusts the fog coefficients of the world");
 
-    YTEBindProperty(&Camera::GetUseOrtho, &Camera::SetUseOrtho, "UseOrthographicProjection")
+    builder.Property<&Camera::GetUseOrtho, &Camera::SetUseOrtho>( "UseOrthographicProjection")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Sets whether this camera uses an orthographic projection or a perspective projection. Perspective by default");

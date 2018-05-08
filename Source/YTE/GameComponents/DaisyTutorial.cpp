@@ -17,7 +17,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(DaisyTutorial) { RegisterType<DaisyTutorial>(); }
+  YTEDefineType(DaisyTutorial) { RegisterType<DaisyTutorial>();
+    TypeBuilder<DaisyTutorial> builder; }
 
   DaisyTutorial::DaisyTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

@@ -24,6 +24,7 @@ namespace YTE
   YTEDefineType(DialogueStart)
   {
     RegisterType<DialogueStart>();
+    TypeBuilder<DialogueStart> builder;
   }
 
   YTEDefineEvent(UISelectEvent);
@@ -32,17 +33,23 @@ namespace YTE
   YTEDefineEvent(UIUpdateContent);
 
   YTEDefineEvent(PlaySoundEvent);
-  YTEDefineType(PlaySoundEvent) { RegisterType<PlaySoundEvent>();  }
+  YTEDefineType(PlaySoundEvent) { RegisterType<PlaySoundEvent>();
+    TypeBuilder<PlaySoundEvent> builder;  }
 
-  YTEDefineType(UISelectEvent) { RegisterType<UISelectEvent>(); }
-  YTEDefineType(UIFocusSwitchEvent) { RegisterType<UIFocusSwitchEvent>(); }
-  YTEDefineType(UIDisplayEvent) { RegisterType<UIDisplayEvent>(); }
-  YTEDefineType(UIUpdateContent) { RegisterType<UIUpdateContent>(); }
+  YTEDefineType(UISelectEvent) { RegisterType<UISelectEvent>();
+    TypeBuilder<UISelectEvent> builder; }
+  YTEDefineType(UIFocusSwitchEvent) { RegisterType<UIFocusSwitchEvent>();
+    TypeBuilder<UIFocusSwitchEvent> builder; }
+  YTEDefineType(UIDisplayEvent) { RegisterType<UIDisplayEvent>();
+    TypeBuilder<UIDisplayEvent> builder; }
+  YTEDefineType(UIUpdateContent) { RegisterType<UIUpdateContent>();
+    TypeBuilder<UIUpdateContent> builder; }
 
 
   YTEDefineType(DialogueDirector)
   {
     RegisterType<DialogueDirector>();
+    TypeBuilder<DialogueDirector> builder;
   }
 
 

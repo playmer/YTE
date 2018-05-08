@@ -18,7 +18,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(JohnTutorial) { RegisterType<JohnTutorial>(); }
+  YTEDefineType(JohnTutorial) { RegisterType<JohnTutorial>();
+    TypeBuilder<JohnTutorial> builder; }
 
   JohnTutorial::JohnTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

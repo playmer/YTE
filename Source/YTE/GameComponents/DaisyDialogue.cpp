@@ -19,7 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(DaisyDialogue) { RegisterType<DaisyDialogue>(); }
+  YTEDefineType(DaisyDialogue) { RegisterType<DaisyDialogue>();
+    TypeBuilder<DaisyDialogue> builder; }
 
   DaisyDialogue::DaisyDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)

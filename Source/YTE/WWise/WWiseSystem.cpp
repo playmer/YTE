@@ -94,10 +94,13 @@ namespace YTE
   YTEDefineType(WWiseSystem)
   {
     RegisterType<WWiseSystem>();
+    TypeBuilder<WWiseSystem> builder;
 
-    YTEBindProperty(&WWiseSystem::GetMute, &WWiseSystem::SetMute, "Mute");
-    YTEBindFunction(&WWiseSystem::SetRTPC, (void (WWiseSystem::*) (u64, float)), "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
-    YTEBindFunction(&WWiseSystem::SetRTPC, (void (WWiseSystem::*) (const std::string&, float)), "SetRTPC", YTEParameterNames("aRTPC", "aValue"));
+    builder.Property<&WWiseSystem::GetMute, &WWiseSystem::SetMute>( "Mute");
+    builder.Function<SelectOverload<void (WWiseSystem::*) (u64, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
+      .SetParameterNames("aRTPC", "aValue");
+    builder.Function<SelectOverload<void (WWiseSystem::*) (const std::string&, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
+      .SetParameterNames("aRTPC", "aValue");
   }
 
   // We're using the default Low-Level I/O implementation that's part

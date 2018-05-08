@@ -7,6 +7,7 @@ namespace YTE
   YTEDefineType(ActionManager)
   {
     RegisterType<ActionManager>();
+    TypeBuilder<ActionManager> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
   }

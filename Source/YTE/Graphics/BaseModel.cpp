@@ -3,13 +3,15 @@
 namespace YTE
 {
   YTEDefineEvent(UpdateVisibilityEvent);
-  YTEDefineType(UpdateVisibilityEvent) { RegisterType<UpdateVisibilityEvent>(); }
+  YTEDefineType(UpdateVisibilityEvent) { RegisterType<UpdateVisibilityEvent>();
+    TypeBuilder<UpdateVisibilityEvent> builder; }
 
   YTEDefineType(BaseModel)
   {
     RegisterType<BaseModel>();
+    TypeBuilder<BaseModel> builder;
 
-    YTEBindProperty(&BaseModel::GetVisibility, &BaseModel::SetVisibility, "Visibility")
+    builder.Property<&BaseModel::GetVisibility, &BaseModel::SetVisibility>( "Visibility")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

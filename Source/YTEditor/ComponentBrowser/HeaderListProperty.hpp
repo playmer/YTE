@@ -35,7 +35,7 @@ namespace YTEditor
       , mEngineProp(aProp)
       , mObject(aObject)
     {
-      YTE::String tip = aProp->Description();
+      std::string const& tip = aProp->GetDocumentation();
 
       this->GetLabelWidget()->setToolTip(tip.c_str());
 
