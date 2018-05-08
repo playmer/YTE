@@ -15,7 +15,56 @@
 #include "AK/SoundEngine/Common/IAkStreamMgr.h"
 #include "AK/MusicEngine/Common/AkMusicEngine.h"  // Music Engine
 #include "SoundEngine/Win32/AkFilePackageLowLevelIOBlocking.h"   // Sample low-level I/O implementation
-#include "AK/Plugin/AllPluginsFactories.h"  // Plugins
+
+
+
+///////////////////////////////////////////////////////////////////
+// Plugins
+///////////////////////////////////////////////////////////////////
+#include <AK/AkPlatforms.h>
+#include <AK/SoundEngine/Common/AkTypes.h>
+#include <AK/SoundEngine/Common/IAkPlugin.h>
+
+// Effect plug-ins
+#include "AK/Plugin/AkCompressorFXFactory.h"       // Compressor
+#include "AK/Plugin/AkDelayFXFactory.h"            // Delay
+#include "AK/Plugin/AkMatrixReverbFXFactory.h"     // Matrix reverb
+#include "AK/Plugin/AkMeterFXFactory.h"            // Meter
+#include "AK/Plugin/AkExpanderFXFactory.h"         // Expander
+#include "AK/Plugin/AkParametricEQFXFactory.h"     // Parametric equalizer
+#include "AK/Plugin/AkGainFXFactory.h"             // Gain
+#include "AK/Plugin/AkPeakLimiterFXFactory.h"      // Peak limiter
+#include "AK/Plugin/AkRoomVerbFXFactory.h"         // RoomVerb
+#include "AK/Plugin/AkGuitarDistortionFXFactory.h" // Guitar distortion
+#include "AK/Plugin/AkStereoDelayFXFactory.h"      // Stereo delay
+#include "AK/Plugin/AkPitchShifterFXFactory.h"     // Pitch shifter
+#include "AK/Plugin/AkTimeStretchFXFactory.h"      // Time stretch
+#include "AK/Plugin/AkFlangerFXFactory.h"          // Flanger
+#include "AK/Plugin/AkTremoloFXFactory.h"          // Tremolo
+#include "AK/Plugin/AkHarmonizerFXFactory.h"       // Harmonizer
+#include "AK/Plugin/AkRecorderFXFactory.h"         // Recorder
+
+// Platform specific
+#ifdef AK_PS4
+#include "AK/Plugin/SceAudio3dEngineFactory.h"          // SCE Audio3d
+#endif
+
+// Sources plug-ins
+#include "AK/Plugin/AkSilenceSourceFactory.h"         // Silence generator
+#include "AK/Plugin/AkSineSourceFactory.h"            // Sine wave generator
+#include "AK/Plugin/AkToneSourceFactory.h"            // Tone generator
+#include "AK/Plugin/AkAudioInputSourceFactory.h"      // Audio input
+
+// Required by codecs plug-ins
+#include "AK/Plugin/AkVorbisDecoderFactory.h"
+#ifdef AK_APPLE
+#include "AK/Plugin/AkAACFactory.h"      // Note: Usable only on Apple devices. Ok to include it on other platforms as long as it is not referenced.
+#endif
+#ifdef AK_NX
+#include "AK/Plugin/AkOpusFactory.h"    // Note: Usable only on NX. Ok to include it on other platforms as long as it is not referenced.
+#endif
+
+
 // Include for communication between WWise and the game -- Not needed in the release version
 #ifndef AK_OPTIMIZED
   #include <AK/Comm/AkCommunication.h>
@@ -126,8 +175,8 @@ namespace YTE
       assert(!"Could not initialize the Music Engine.");
     }
 
-	if constexpr(CompilerOptions::Debug())
-	{
+  if constexpr(CompilerOptions::Debug())
+  {
       AkCommSettings commSettings;
       AK::Comm::GetDefaultInitSettings(commSettings);
 
@@ -135,7 +184,7 @@ namespace YTE
       {
         assert(!"Could not initialize communication.");
       }
-	}
+  }
 
     LoadAllBanks();
 

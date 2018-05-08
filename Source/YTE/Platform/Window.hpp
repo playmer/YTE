@@ -108,8 +108,8 @@ namespace YTE
     std::string mSerializedCursorIcon;
     int mSerializedStartingWidth;
     int mSerializedStartingHeight;
-    bool mSerializedStartingFullscreen;
-    bool mSerializedShouldBeRenderedTo;
+    bool mSerializedStartingFullscreen = false;
+    bool mSerializedShouldBeRenderedTo = true;
 
     std::string mName;
   };

@@ -71,16 +71,28 @@ Function(FindWWise aTarget)
        "${WWisePath}/x64_vc150/Debug/lib/*.lib")
 
   foreach(library ${staticLibraryRelease})
-    target_link_libraries(${aTarget} $<$<CONFIG:PUBLISH>:${library}>)
-    target_link_libraries(${aTarget} $<$<CONFIG:RELEASE>:${library}>)
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} $<$<CONFIG:PUBLISH>:${library}>)
+      target_link_libraries(${aTarget} $<$<CONFIG:RELEASE>:${library}>)
+    endif()
   endforeach()
 
   foreach(library ${staticLibraryProfile})
-    target_link_libraries(${aTarget} $<$<CONFIG:RELWITHDEBINFO>:${library}>)
-    target_link_libraries(${aTarget} $<$<CONFIG:MINSIZEREL>:${library}>)
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} $<$<CONFIG:RELWITHDEBINFO>:${library}>)
+      target_link_libraries(${aTarget} $<$<CONFIG:MINSIZEREL>:${library}>)
+    endif()
   endforeach()
     
   foreach(library ${staticLibraryDebug})
-    target_link_libraries(${aTarget} debug ${library})
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} debug ${library})
+    endif()
   endforeach()
 endfunction()

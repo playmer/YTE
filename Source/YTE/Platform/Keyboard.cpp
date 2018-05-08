@@ -25,13 +25,13 @@ namespace YTE
 
   YTEDefineType(Keyboard)
   {
-    //RegisterType<Keyboard);
-    //YTEBindFunction(&Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey")).Description()
-    //  = "Finds if the given button is pressed right now.";
-    //YTEBindFunction(&Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey")).Description()
-    //  = "Finds if the given button is down right now.";
-    //YTEBindFunction(&Keyboard::WasKeyDown, YTENoOverload, "WasKeyDown", YTEParameterNames("aKey")).Description()
-    //  = "Finds if the given button was down last frame.";
+    RegisterType<Keyboard>();
+    YTEBindFunction(&Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey")).Description()
+      = "Finds if the given button is pressed right now.";
+    YTEBindFunction(&Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey")).Description()
+      = "Finds if the given button is down right now.";
+    YTEBindFunction(&Keyboard::WasKeyDown, YTENoOverload, "WasKeyDown", YTEParameterNames("aKey")).Description()
+      = "Finds if the given button was down last frame.";
   }
 
   Keyboard::Keyboard()
