@@ -7,6 +7,7 @@
 #include "YTE/StandardLibrary/OrderedMultiMap.hpp"
 #include "YTE/StandardLibrary/OrderedMap.hpp"
 #include "YTE/StandardLibrary/Utilities.hpp"
+#include "YTE/StandardLibrary/TypeTraits.hpp"
 
 #include "YTE/Meta/ForwardDeclarations.hpp"
 #include "YTE/Meta/Reflection.hpp"
@@ -111,6 +112,11 @@ void Name::InitializeType()
                                  decltype(aSetterFunction)>::ObjectType>())
 
 
+
+  template<typename T>
+  inline Type* TypeId();
+
+
   class DocumentedObject : public Base
   {
   public:
@@ -150,7 +156,8 @@ void Name::InitializeType()
     template <typename tType, typename... tArguments>
     DocumentedObject& AddAttribute(tArguments &&...aArguments)
     {
-      mAttributes.Emplace(TypeId<tType>(), std::make_unique<tType>(this, std::forward<tArguments &&>(aArguments)...));
+      auto attribute = std::make_unique<tType>(this, std::forward<tArguments &&>(aArguments)...);
+      mAttributes.Emplace(TypeId<tType>(), std::move(attribute));
 
       return (*this);
     }
@@ -254,7 +261,7 @@ void Name::InitializeType()
       , mHash(std::hash<std::string>{}(mName))
       , mAllocatedSize(SizeOf<T>())
       , mStoredSize(SizeOf<T>())
-      , mUnqualifiedSize(typename SizeOf<StripQualifiers<T>::type>())
+      , mUnqualifiedSize(SizeOf<typename StripQualifiers<T>::type>())
       , mDefaultConstructor(GenericDefaultConstruct<typename StripSingleQualifier<T>::type>)
       , mCopyConstructor(GenericCopyConstruct<typename StripSingleQualifier<T>::type>)
       , mMoveConstructor(GenericMoveConstruct<typename StripSingleQualifier<T>::type>)

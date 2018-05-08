@@ -1399,4 +1399,9 @@ namespace YTE
 
     return collision;
   }
+
+  StringComponentFactory* Composition::GetFactoryFromEngine(Type* aType)
+  {
+    return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+  }
 }

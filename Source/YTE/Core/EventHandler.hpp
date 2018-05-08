@@ -115,7 +115,7 @@ namespace YTE
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
 
-      auto delegate = aObject->template MakeEventDelegate<tFunctionType, aFunction, typename tObjectType>(aName, aObject);
+      auto delegate = aObject->template MakeEventDelegate<tFunctionType, aFunction, tObjectType>(aName, aObject);
       mEventLists[delegate->mName].mList.InsertFront(delegate->mHook);
     }
 
