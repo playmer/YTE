@@ -1,3 +1,5 @@
+#pragma once
+
 #include <qwidget>
 #include <qdockwidget.h>
 
@@ -5,7 +7,7 @@ namespace YTEditor
 {
   class MainWindow;
 
-  class Widget : public QDockWidget
+  class Widget : public QWidget
   {
   public:
 
@@ -17,15 +19,13 @@ namespace YTEditor
       Bottom = Qt::BottomDockWidgetArea
     };
 
-    Widget(const char* aName, DockArea aInitialDock, MainWindow* aMainWindow);
+    Widget(MainWindow* aMainWindow);
 
-    void SnapToDefaultDock();
+    virtual std::string GetName() const = 0;
+
+    virtual DockArea GetDefaultDockPosition() const = 0;
 
   protected:
     MainWindow* mMainWindow;
-
-  private:
-    DockArea mDefaultArea;
-
   };
 }

@@ -50,36 +50,28 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ObjectBrowser::ObjectBrowser(MainWindow * aMainWindow, QWidget * parent)
-    : QTreeWidget(parent)
-    , mMainWindow(aMainWindow)
+  ObjectBrowser::ObjectBrowser(MainWindow * aMainWindow)
+    : Widget(aMainWindow)
+    , mTree()
   {
     SetWidgetSettings();
 
     // Calls OnCurrentItemChanged() when the currentItemChanged event is received
-    connect(this, &QTreeWidget::currentItemChanged,
-      this, &ObjectBrowser::OnCurrentItemChanged);
+    mTree.connect(&mTree, &QTreeWidget::currentItemChanged, this, &ObjectBrowser::OnCurrentItemChanged);
 
     // item selection for undo redo
-    connect(this, &QTreeWidget::itemSelectionChanged,
-      this, &ObjectBrowser::OnItemSelectionChanged);
+    mTree.connect(&mTree, &QTreeWidget::itemSelectionChanged, this, &ObjectBrowser::OnItemSelectionChanged);
 
-    connect(this, &QTreeWidget::customContextMenuRequested,
-      this, &ObjectBrowser::CreateContextMenu);
+    mTree.connect(&mTree, &QTreeWidget::customContextMenuRequested, this, &ObjectBrowser::CreateContextMenu);
 
-    connect(this, &QTreeWidget::itemChanged,
-      this, &ObjectBrowser::OnItemTextChanged);
+    mTree.connect(&mTree, &QTreeWidget::itemChanged, this, &ObjectBrowser::OnItemTextChanged);
 
-    this->setItemDelegate(new ObjectItemDelegate(this));
-  }
-
-  ObjectBrowser::~ObjectBrowser()
-  {
+    mTree.setItemDelegate(new ObjectItemDelegate(this));
   }
 
   void ObjectBrowser::ClearObjectList()
   {
-    this->clear();
+    mTree.clear();
   }
 
   ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
@@ -95,11 +87,12 @@ namespace YTEditor
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
-    auto cmd = std::make_unique<AddObjectCmd>(composition,
-                                              &mMainWindow->GetOutputConsole(),
-                                              this);
+    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
+
+    auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+
     return AddTreeItem(aCompositionName, composition, aIndex);
   }
 
@@ -119,12 +112,12 @@ namespace YTEditor
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
+    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
 
-    auto cmd = std::make_unique<AddObjectCmd>(composition,
-      &mMainWindow->GetOutputConsole(),
-      this);
+    auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
   }
 
@@ -148,11 +141,11 @@ namespace YTEditor
 
     // Add new item as a top level member in the tree hierarchy
     // (object should have no parent objects)
-    this->insertTopLevelItem(aIndex, item);
+    mTree.insertTopLevelItem(aIndex, item);
 
     if (aSetAsCurrent)
     {
-      this->setCurrentItem(item);
+      mTree.setCurrentItem(item);
     }
 
     for (auto const& [name, child] : aEngineObj->GetCompositions())
@@ -182,7 +175,7 @@ namespace YTEditor
 
     if (aSetAsCurrent)
     {
-      this->setCurrentItem(item);
+      mTree.setCurrentItem(item);
     }
     
     for (auto const&[name, child] : aEngineObj->GetCompositions())
@@ -195,72 +188,86 @@ namespace YTEditor
 
   void ObjectBrowser::SetWidgetSettings()
   {
-    this->setObjectName("ObjectBrowser");
-    this->setMinimumWidth(200);
-    this->setContextMenuPolicy(Qt::CustomContextMenu);
-    this->setDragDropMode(QAbstractItemView::InternalMove);
-    this->setMouseTracking(true);
-    this->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    setObjectName("ObjectBrowser");
+    setMinimumWidth(200);
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    setMouseTracking(true);
+
+    mTree.setDragDropMode(QAbstractItemView::InternalMove);
+    mTree.setSelectionMode(QAbstractItemView::ExtendedSelection);
   }
 
   void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
                                            QTreeWidgetItem *aPrevious)
   {
-    ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
-    ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
+    ObjectItem *prevItem = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
+    ObjectItem *currItem = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
-    ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
+    ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>("ComponentBrowser");
 
-    if (currObj && currObj->GetEngineObject())
+    if (componentBrowser)
     {
-      if (currObj->GetEngineObject()->GetArchetypeName().Empty())
+      ArchetypeTools *archTools = componentBrowser->GetArchetypeTools();
+
+      if (currItem)
       {
-        archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
-      }
-      else if (currObj->GetEngineObject()->SameAsArchetype())
-      {
-        archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
-      }
-      else
-      {
-        archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
-      }
+        YTE::Composition* object = currItem->GetEngineObject();
 
-      // Load the new current object into the component browser
-      mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
-
-      mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(currObj->GetEngineObject());
-
-      YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
-
-      auto matViewer = mMainWindow->GetMaterialViewer();
-
-      if (matViewer && model && model->GetMesh())
-      {
-        // get the list of materials from the submeshes
-        auto& submeshes = model->GetMesh()->mParts;
-
-        matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
-        matViewer->SetMaterialsList(&submeshes);
-      }
-      else
-      {
-        if (matViewer)
+        if (object)
         {
-          matViewer->LoadNoMaterial();
-        }
-      }
 
-      // get the transform of the currently selected object
-      YTE::Transform *currTransform = currObj->GetEngineObject()->GetComponent<YTE::Transform>();
+          if (object->GetArchetypeName().Empty())
+          {
+            archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
+          }
+          else if (object->SameAsArchetype())
+          {
+            archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
+          }
+          else
+          {
+            archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
+          }
 
-      if (currTransform)
-      {
-        Gizmo *giz = mMainWindow->GetGizmo();
+          // Load the new current object into the component browser
+          ComponentTree *componentTree = componentBrowser->GetComponentTree();
 
-        if (giz)
-        {
-          giz->SnapToCurrentObject();
+          componentTree->ClearComponents();
+
+          componentTree->LoadGameObject(object);
+
+          YTE::Model* model = object->GetComponent<YTE::Model>();
+
+          MaterialViewer* matViewer = mMainWindow->GetWidget<MaterialViewer>("MaterialViewer");
+
+          if (matViewer && model && model->GetMesh())
+          {
+            // get the list of materials from the submeshes
+            auto& submeshes = model->GetMesh()->mParts;
+
+            matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
+            matViewer->SetMaterialsList(&submeshes);
+          }
+          else
+          {
+            if (matViewer)
+            {
+              matViewer->LoadNoMaterial();
+            }
+          }
+
+          // get the transform of the currently selected object
+          YTE::Transform *currTransform = object->GetComponent<YTE::Transform>();
+
+          if (currTransform)
+          {
+            Gizmo *giz = mMainWindow->GetGizmo();
+
+            if (giz)
+            {
+              giz->SnapToCurrentObject();
+            }
+          }
         }
       }
     }
@@ -268,9 +275,9 @@ namespace YTEditor
 
   void ObjectBrowser::OnItemSelectionChanged()
   {
-    QList<QTreeWidgetItem*> items = this->selectedItems();
+    QList<QTreeWidgetItem*> items = mTree.selectedItems();
 
-    OutputConsole *console = &mMainWindow->GetOutputConsole();
+    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
 
     std::vector<YTE::GlobalUniqueIdentifier> newSelection;
     std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
@@ -399,7 +406,7 @@ namespace YTEditor
   {
     YTE::Composition *movedObj = GetCurrentObject();
 
-    ObjectItem *parentItem = static_cast<ObjectItem*>(itemAt(aEvent->pos()));
+    ObjectItem *parentItem = static_cast<ObjectItem*>(mTree.itemAt(aEvent->pos()));
 
     YTE::Composition *parentObj = nullptr;
 

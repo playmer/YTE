@@ -21,6 +21,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/Physics/PhysicsHandler.hpp"
 
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+
 class QDockWidget;
 class QMenu;
 class QTabWidget;
@@ -47,7 +49,6 @@ namespace YTEditor
   class GameObjectMenu;
   class WWiseWidget;
 
-
   class Preferences
   {
   public:
@@ -69,26 +70,18 @@ namespace YTEditor
     MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
     ~MainWindow();
 
-    SubWindow& GetLevelWindow();
-    std::vector<SubWindow*>& GetSubWindows();
+    template <typename T>
+    std::unique_ptr<T> LoadWidget();
 
-    ObjectBrowser& GetObjectBrowser();
-    QDockWidget* GetObjectBrowserDock();
+    template <typename T>
+    T* GetWidget(std::string aClassName);
 
-    ComponentBrowser& GetComponentBrowser();
-    QDockWidget* GetComponentBrowserDock();
+  private:
 
-    OutputConsole& GetOutputConsole();
-    QDockWidget* GetOutputConsoleDock();
+    std::map<std::string, std::unique_ptr<Widget>> mWidgets;
 
-    MaterialViewer* GetMaterialViewer();
-    QDockWidget* GetMaterialViewerDock();
 
-    QTreeView& GetFileViewer();
-    QDockWidget* GetFileViewerDock();
-
-    WWiseWidget& GetWWiseWidget();
-    QDockWidget* GetWWiseWidgetDock();
+  public:
 
     UndoRedo* GetUndoRedo();
 
@@ -208,5 +201,43 @@ namespace YTEditor
     GizmoToolbar *mGizmoToolbar;
     GameToolbar *mGameToolbar;
   };
+
+
+
+  template <typename T>
+  std::unique_ptr<T> MainWindow::LoadWidget()
+  {
+    // create widget
+    std::unique_ptr<T> widget = std::make_unique<T>(this);
+
+    // create dock
+    std::unique_ptr<QDockWidget> dock = std::make_unique<QDockWidget>();
+
+    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+
+    // tell the dock what widget it's holding
+    dock->setWidget(widget);
+
+    // store the widget on the main window
+    mWidgets.insert_or_assign(widget->GetName(), std::move(widget));
+
+    // add the dock to the main window
+    addDockWidget(dock);
+  }
+
+  template <typename T>
+  T* MainWindow::GetWidget(std::string aClassName)
+  {
+    // find the base ptr
+    auto it = mWidgets.find(aClassName);
+
+    if (it == mWidgets.end())
+    {
+      return nullptr;
+    }
+
+    // cast to the derived type
+    return static_cast<T*>(it->second.get());
+  }
 
 }

@@ -181,83 +181,6 @@ namespace YTEditor
     return mEditingLevel;
   }
 
-  SubWindow& MainWindow::GetLevelWindow()
-  {
-    return *mLevelWindow;
-  }
-
-  std::vector<SubWindow*>& MainWindow::GetSubWindows()
-  {
-    return mSubWindows;
-  }
-
-  ObjectBrowser& MainWindow::GetObjectBrowser()
-  {
-    return *static_cast<ObjectBrowser*>(mObjectBrowser->widget());
-  }
-
-  QDockWidget* MainWindow::GetObjectBrowserDock()
-  {
-    return mObjectBrowser;
-  }
-
-  ComponentBrowser& MainWindow::GetComponentBrowser()
-  {
-    return *static_cast<ComponentBrowser*>(mComponentBrowser->widget());
-  }
-
-  QDockWidget* MainWindow::GetComponentBrowserDock()
-  {
-    return mComponentBrowser;
-  }
-
-  OutputConsole& MainWindow::GetOutputConsole()
-  {
-    return *static_cast<OutputConsole*>(mOutputConsole->widget());
-  }
-
-  QDockWidget* MainWindow::GetOutputConsoleDock()
-  {
-    return mOutputConsole;
-  }
-
-  MaterialViewer* MainWindow::GetMaterialViewer()
-  {
-    QWidget *widget = mMaterialViewer->widget();
-
-    if (widget == nullptr)
-    {
-      return nullptr;
-    }
-
-    return static_cast<MaterialViewer*>(widget);
-  }
-
-  QDockWidget* MainWindow::GetMaterialViewerDock()
-  {
-    return mMaterialViewer;
-  }
-
-  QTreeView& MainWindow::GetFileViewer()
-  {
-    return *static_cast<QTreeView*>(mFileViewer->widget());
-  }
-
-  QDockWidget* MainWindow::GetFileViewerDock()
-  {
-    return mFileViewer;
-  }
-
-  WWiseWidget& MainWindow::GetWWiseWidget()
-  {
-    return *static_cast<WWiseWidget*>(mWWiseWidget->widget());
-  }
-
-  QDockWidget* MainWindow::GetWWiseWidgetDock()
-  {
-    return mWWiseWidget;
-  }
-
   UndoRedo* MainWindow::GetUndoRedo()
   {
     return mUndoRedo;
@@ -630,11 +553,12 @@ namespace YTEditor
 
   void MainWindow::ConstructSubWidgets()
   {
-    ConstructOutputConsole();
+    LoadWidget<OutputConsole>();
+    LoadWidget<ObjectBrowser>();
+    LoadWidget<ComponentBrowser>();
+    LoadWidget<FileViewer>();
+
     ConstructGameWindows();
-    ConstructObjectBrowser();
-    ConstructComponentBrowser();
-    ConstructFileViewer();
   }
 
   void MainWindow::ConstructGameWindows()
@@ -712,7 +636,7 @@ namespace YTEditor
     // dockable component browser window
     mComponentBrowser = new QDockWidget("Component Browser", this);
     mComponentBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ComponentBrowser * compBrowser = new ComponentBrowser(this, mComponentBrowser);
+    ComponentBrowser * compBrowser = new ComponentBrowser(mComponentBrowser);
     mComponentBrowser->setWidget(compBrowser);
     this->addDockWidget(Qt::RightDockWidgetArea, mComponentBrowser);
   }

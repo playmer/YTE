@@ -3,19 +3,9 @@
 
 namespace YTEditor
 {
-  Widget::Widget(const char* aName, DockArea aInitialDock, MainWindow* aMainWindow)
-    : QDockWidget(aName)
-    , mDefaultArea(aInitialDock)
+  Widget::Widget(MainWindow* aMainWindow)
+    : QWidget()
     , mMainWindow(aMainWindow)
   {
-    // allow widget to be docked top, bottom, left, right
-    setAllowedAreas(Qt::AllDockWidgetAreas);
-  }
-
-  void Widget::SnapToDefaultDock()
-  {
-    // cast to the underlying qt type (the values are the same)
-    Qt::DockWidgetArea dockArea = static_cast<Qt::DockWidgetArea>(mDefaultArea);
-    mMainWindow->addDockWidget(dockArea, this);
   }
 }

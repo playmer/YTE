@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 
-#include <qwidget.h>
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
 
 class QScrollArea;
 class QVBoxLayout;
@@ -38,17 +38,18 @@ namespace YTEditor
   class ComponentTree;
   class ComponentTools;
 
-  class ComponentBrowser : public QWidget
+  class ComponentBrowser : public Widget
   {
   public:
-
-    ComponentBrowser(MainWindow * mainWindow, QWidget * parent = nullptr);
+    ComponentBrowser(MainWindow *aMainWindow);
 
     ComponentTree* GetComponentTree();
 
     ArchetypeTools* GetArchetypeTools();
 
     MainWindow* GetMainWindow();
+
+    Widget::DockArea GetDefaultDockPosition() const override;
 
   private:
 
@@ -60,8 +61,6 @@ namespace YTEditor
     ArchetypeTools *mArchTools;
     ComponentTools *mCompTools;
     ComponentTree *mComponentTree;
-
-    MainWindow * mMainWindow;
 
   };
 }

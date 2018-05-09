@@ -7,6 +7,9 @@
 
 #include "YTE/Utilities/String/String.hpp"
 
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+
+
 namespace YTEditor
 {
 
@@ -38,12 +41,14 @@ namespace YTEditor
   };
 
 
-  class FileViewer : public QTreeView
+  class FileViewer : public Widget
   {
   public:
 
-    FileViewer(QDockWidget *aParent);
+    FileViewer(MainWindow *aMainWindow);
 
+  private:
+    QTreeView mTree;
 
   };
 

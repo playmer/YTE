@@ -29,13 +29,13 @@ namespace YTE
 namespace YTEditor
 {
 
-  class ObjectBrowser;
+  class ObjectTree;
 
   class ObjectItem : public QTreeWidgetItem
   {
   public:
     ObjectItem(YTE::String &aItemName,
-      ObjectBrowser *aParentTree,
+      ObjectTree *aParentTree,
       YTE::Composition *aEngineObj,
       YTE::Composition *aEngineLevel);
 
@@ -49,22 +49,22 @@ namespace YTEditor
     void Rename(YTE::String &aName);
     void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
-    ObjectBrowser *GetObjectBrowser() const;
+    ObjectTree *GetObjectTree() const;
     YTE::Composition *GetEngineObject() const;
 
     void SetEngineObject(YTE::Composition *aComposition);
 
   private:
 
-    ObjectBrowser * mObjectBrowser;
-    YTE::Composition * mEngineObject;
-    YTE::Composition * mEngineLevel;
+    ObjectTree* mObjectTree;
+    YTE::Composition* mEngineObject;
+    YTE::Composition* mEngineLevel;
   };
 
   class ObjectItemDelegate : public QStyledItemDelegate
   {
   public:
-    ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget *aParent = nullptr);
+    ObjectItemDelegate(ObjectTree* aBrowser, QWidget* aParent = nullptr);
 
     void paint(QPainter *painter,
       const QStyleOptionViewItem &option,
@@ -76,7 +76,7 @@ namespace YTEditor
       const QModelIndex &index);
 
   private:
-    ObjectBrowser *mBrowser;
+    ObjectTree *mTree;
 
   };
 

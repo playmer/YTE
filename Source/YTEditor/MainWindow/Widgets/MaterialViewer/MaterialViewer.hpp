@@ -44,41 +44,10 @@ namespace YTEditor
   class PropertyWidget;
   class PropertyWidgetBase;
 
-
-  //class MaterialView : public YTE::Component
-  //{
-  //public:
-  //  YTEDeclareType(MaterialView);
-  //  MaterialView(YTE::Composition *aOwner, YTE::Space *aSpace, YTE::RSValue *aProperties);
-  //  ~MaterialView();
-  //
-  //  void Initialize() override;
-  //  void CreateMaterial();
-  //
-  //  void CreateTransform();
-  //
-  //  void TransformUpdate(YTE::TransformChanged *aEvent);
-  //
-  //private:
-  //  YTE::Renderer *mRenderer;
-  //  YTE::Window *mWindow;
-  //  YTE::Transform *mTransform;
-  //  YTE::UBOModel mUBOModel;
-  //
-  //  std::unique_ptr<YTE::InstantiatedModel> mInstantiatedSkybox;
-  //  std::string mTextureName;
-  //  YTE::u32 mSubdivisions;
-  //  bool mConstructing = true;
-  //};
-
-
-  class MaterialViewer : public QWidget
+  class MaterialViewer : public Widget
   {
   public:
-    MaterialViewer(MainWindow *mainWindow,
-      QWidget *parent = nullptr,
-      YTE::Window *aWindow = nullptr);
-    ~MaterialViewer();
+    MaterialViewer(MainWindow *mainWindow);
 
     void LoadMaterial(YTE::UBOs::Material const& aMaterial);
 

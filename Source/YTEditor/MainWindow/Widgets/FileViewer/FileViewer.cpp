@@ -141,22 +141,27 @@ namespace YTEditor
   }
 
 
-  FileViewer::FileViewer(QDockWidget *aParent) : QTreeView(aParent)
+  FileViewer::FileViewer(MainWindow *aMainWindow) : Widget(aMainWindow)
   {
-    FileViewerModel *fileModel = new FileViewerModel(aParent);
+    // create model that tells tree view how to look and act, we want to see folders and files
+    FileViewerModel *fileModel = new FileViewerModel(this);
     fileModel->setRootPath(QDir::currentPath() + "/../");
     fileModel->setResolveSymlinks(true);
-
-    std::string gamePath = YTE::Path::GetGamePath().String();
     
-    this->setModel(fileModel);
-    this->setRootIndex(fileModel->index(gamePath.c_str()));
+    // tell tree view to use our model
+    mTree.setModel(fileModel);
 
-    this->hideColumn(1);
-    this->hideColumn(2);
-    this->hideColumn(3);
-
-    setDragEnabled(true);
-    setDropIndicatorShown(true);
+    // set path to the assets folder
+    std::string gamePath = YTE::Path::GetGamePath().String();
+    mTree.setRootIndex(fileModel->index(gamePath.c_str()));
+    
+    // hide the columns we don't care about
+    mTree.hideColumn(1);
+    mTree.hideColumn(2);
+    mTree.hideColumn(3);
+    
+    // allow drag and drop
+    mTree.setDragEnabled(true);
+    mTree.setDropIndicatorShown(true);
   }
 }

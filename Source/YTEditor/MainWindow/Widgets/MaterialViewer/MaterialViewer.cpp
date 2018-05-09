@@ -29,15 +29,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  MaterialViewer::MaterialViewer(MainWindow *aMainWindow,
-                                 QWidget *aParent,
-                                 YTE::Window *aWindow)
-    : QWidget(aParent)
+  MaterialViewer::MaterialViewer(MainWindow *aMainWindow)
+    : Widget(aMainWindow)
     , mComboBox(new QComboBox(this))
     , mMaterialWindow(nullptr)
     , mContainer(new QWidget(this))
     , mCurrentSubMeshes(nullptr)
-    , mMainWindow(aMainWindow)
   {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -46,7 +43,8 @@ namespace YTEditor
     mContainerLayout = new QVBoxLayout();
     mContainerLayout->setSpacing(0);
 
-    mMaterialWindow = new SubWindow(aWindow, aMainWindow);
+    /*
+    mMaterialWindow = new SubWindow(nullptr, aMainWindow);
     QWidget *windowContainer = QWidget::createWindowContainer(mMaterialWindow);
 
     windowContainer->setMinimumHeight(100);
@@ -57,7 +55,6 @@ namespace YTEditor
     mBaseLayout->addWidget(mScrollArea);
 
     auto id = mMaterialWindow->winId();
-
     aWindow->SetWindowId(reinterpret_cast<void*>(id));
 
     this->setLayout(mBaseLayout);
@@ -91,10 +88,7 @@ namespace YTEditor
     view->ChangeWindow(windowName);
 
     space->Initialize();
-  }
-
-  MaterialViewer::~MaterialViewer()
-  {
+    */
   }
 
   void MaterialViewer::LoadMaterial(YTE::UBOs::Material const &aMaterial)
@@ -158,18 +152,6 @@ namespace YTEditor
       LoadMaterial((*mCurrentSubMeshes)[aIndex].mUBOMaterial);
     }
   }
-
-  //void MaterialViewer::AddVec3Property(const char *aName, glm::vec3 const &aVec)
-  //{
-  //  PropertyWidget<glm::vec3> * prop = AddProperty<glm::vec3>(aName);
-  //  prop->SetValue(aVec);
-  //}
-  //
-  //void MaterialViewer::AddFloatProperty(const char *aName, float aVal)
-  //{
-  //  PropertyWidget<float> * prop = AddProperty<float>(aName);
-  //  prop->SetValue(aVal);
-  //}
 
   void MaterialViewer::Clear()
   {

@@ -24,7 +24,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/UndoRedo/Commands.hpp"
 
@@ -33,15 +33,15 @@ namespace YTEditor
 {
 
   ObjectItem::ObjectItem(YTE::String &aItemName,
-    ObjectBrowser *aParentTree,
+    ObjectTree *aParentTree,
     YTE::Composition *aEngineObj,
     YTE::Composition *aEngineLevel)
     : QTreeWidgetItem(aParentTree),
-    mObjectBrowser(aParentTree),
+    mObjectTree(aParentTree),
     mEngineObject(aEngineObj),
     mEngineLevel(aEngineLevel)
   {
-    QSignalBlocker blocker(mObjectBrowser);
+    QSignalBlocker blocker(mObjectTree);
     setText(0, aItemName.c_str());
     setFlags(flags() | Qt::ItemIsEditable);
   }
@@ -51,11 +51,11 @@ namespace YTEditor
     YTE::Composition *aEngineObj,
     YTE::Composition *aEngineLevel)
     : QTreeWidgetItem(aParentItem),
-    mObjectBrowser(aParentItem->GetObjectBrowser()),
+    mObjectTree(aParentItem->GetObjectTree()),
     mEngineObject(aEngineObj),
     mEngineLevel(aEngineLevel)
   {
-    QSignalBlocker blocker(mObjectBrowser);
+    QSignalBlocker blocker(mObjectTree);
     setText(0, aItemName.c_str());
     setFlags(flags() | Qt::ItemIsEditable);
   }
@@ -84,12 +84,12 @@ namespace YTEditor
     mEngineObject = nullptr;
   }
 
-  ObjectBrowser * ObjectItem::GetObjectBrowser() const
+  ObjectTree* ObjectItem::GetObjectTree() const
   {
-    return mObjectBrowser;
+    return mObjectTree;
   }
 
-  YTE::Composition * ObjectItem::GetEngineObject() const
+  YTE::Composition* ObjectItem::GetEngineObject() const
   {
     return mEngineObject;
   }
@@ -99,8 +99,8 @@ namespace YTEditor
     mEngineObject = aComposition;
   }
 
-  ObjectItemDelegate::ObjectItemDelegate(ObjectBrowser *aBrowser, QWidget * aParent)
-    : QStyledItemDelegate(aParent), mBrowser(aBrowser)
+  ObjectItemDelegate::ObjectItemDelegate(ObjectTree *aBrowser, QWidget * aParent)
+    : QStyledItemDelegate(aParent), mTree(aBrowser)
   {
   }
 
@@ -157,7 +157,7 @@ namespace YTEditor
       if (clickX > x && clickX < x + w)
         if (clickY > y && clickY < y + h)
         {
-          ObjectItem *item = dynamic_cast<ObjectItem*>(mBrowser->itemAt(e->pos()));
+          ObjectItem *item = dynamic_cast<ObjectItem*>(mTree->itemAt(e->pos()));
 
           if (!item || !item->GetEngineObject())
           {
@@ -166,12 +166,12 @@ namespace YTEditor
 
           YTE::Composition *engineObj = item->GetEngineObject();
 
-          OutputConsole &console = mBrowser->GetMainWindow()->GetOutputConsole();
+          OutputConsole* console = mTree->GetMainWindow()->GetWidget<OutputConsole>("OutputConsole");
 
           auto name = item->text(0).toStdString();
-          auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, &console, mBrowser);
+          auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, console, mTree);
 
-          mBrowser->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
+          mTree->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
 
           ObjectItem *parent = dynamic_cast<ObjectItem*>(item->parent());
 
@@ -185,8 +185,7 @@ namespace YTEditor
             item->DeleteFromEngine();
           }
 
-          mBrowser->RemoveObjectFromViewer(item);
-
+          mTree->RemoveObjectFromViewer(item);
 
           return true;
         }

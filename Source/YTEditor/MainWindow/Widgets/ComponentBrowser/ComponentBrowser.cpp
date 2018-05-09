@@ -37,33 +37,42 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ComponentBrowser::ComponentBrowser(MainWindow * mainWindow, QWidget * parent)
-    : QWidget(parent), mMainWindow(mainWindow), mLayout(new QVBoxLayout())
+  ComponentBrowser::ComponentBrowser(MainWindow *aMainWindow)
+    : Widget("ComponentBrowser", aMainWindow)
+    , mLayout(new QVBoxLayout())
+    , mArchTools(nullptr)
+    , mCompTools(nullptr)
+    , mComponentTree(nullptr)
   {
     SetWindowSettings();
-    this->setLayout(mLayout);
+    setLayout(mLayout);
     ConstructSubWidgets();
   }
 
-  ComponentTree * ComponentBrowser::GetComponentTree()
+  ComponentTree* ComponentBrowser::GetComponentTree()
   {
     return mComponentTree;
   }
 
-  ArchetypeTools * ComponentBrowser::GetArchetypeTools()
+  ArchetypeTools* ComponentBrowser::GetArchetypeTools()
   {
     return mArchTools;
   }
 
-  MainWindow * ComponentBrowser::GetMainWindow()
+  MainWindow* ComponentBrowser::GetMainWindow()
   {
     return mMainWindow;
   }
 
+  Widget::DockArea ComponentBrowser::GetDefaultDockPosition() const
+  {
+    return DockArea::Right;
+  }
+
   void ComponentBrowser::SetWindowSettings()
   {
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    this->setMinimumWidth(300);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+    setMinimumWidth(300);
     mLayout->setSpacing(1);
   }
 

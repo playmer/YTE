@@ -19,6 +19,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qtreewidget.h>
 
 
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
 typedef QVector<Property> Component;
@@ -32,14 +34,13 @@ namespace YTE
 
 namespace YTEditor
 {
-
   class MainWindow;
   class ObjectItem;
 
-  class ObjectBrowser : public QTreeWidget
+  class ObjectBrowser : public Widget
   {
   public:
-    ObjectBrowser(MainWindow* aMainWindow, QWidget* aParent = nullptr);
+    ObjectBrowser(MainWindow *aMainWindow);
     ~ObjectBrowser();
 
     void ClearObjectList();
@@ -96,7 +97,8 @@ namespace YTEditor
     void MoveToFrontOfCamera(YTE::Composition *aObject);
 
   private:
-    MainWindow *mMainWindow;
+    QTreeWidget mTree;
+
     void SetWidgetSettings();
 
     void OnItemTextChanged(QTreeWidgetItem* aItem, int aIndex);
