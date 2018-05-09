@@ -296,7 +296,6 @@ namespace YTEditor
       auto it = mShapeCache.find(model->GetMeshName());
       if (it != mShapeCache.end())
       {
-        printf("Found in cache: %s\n", model->GetMeshName().c_str());
         obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&it->second, true);
       }
       else
