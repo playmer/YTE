@@ -5,6 +5,8 @@
 #include <string>
 #include <iostream> // ostream
 #include <atomic>
+#include <cstddef>
+#include <cstring>
 
 namespace YTE
 {

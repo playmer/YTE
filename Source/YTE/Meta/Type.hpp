@@ -530,7 +530,7 @@ void Name::InitializeType()
 
 
   template<>
-  struct TypeIdentification<nullptr_t>
+  struct TypeIdentification<std::nullptr_t>
   {
     static inline Type* TypeId()
     {
@@ -624,6 +624,8 @@ namespace YTE                                              \
   void InitializeType<Name>();                             \
 }
 
+// Must be used outside of a namespace, clang and MSVC seem to be fine inside of YTE
+// but GCC will not allow it, and I tend to think they're right.
 #define YTEDefineExternalType(Name) template<> void YTE::InitializeType<Name>()
 
 YTEDeclareExternalType(void)

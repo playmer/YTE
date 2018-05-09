@@ -7,7 +7,8 @@
 #define Utilities_hpp
 
 #include <cstdint>
-
+#include <cstddef>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <unordered_map>

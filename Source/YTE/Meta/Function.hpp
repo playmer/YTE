@@ -390,9 +390,9 @@ namespace YTE
     };
 
     template <>
-    struct FunctionBinding<nullptr_t>
+    struct FunctionBinding<std::nullptr_t>
     {
-      template <nullptr_t BoundFunc>
+      template <std::nullptr_t BoundFunc>
       static std::unique_ptr<Function> BindFunction(const char *aName)
       {
         UnusedArguments(aName);

@@ -3,24 +3,24 @@
 #include "YTE/StandardLibrary/ConstexprString.hpp"
 
 #if defined(_MSC_VER) && !defined(__EDG__)
-#define __PRETTY_FUNCTION__ __FUNCSIG__
+  #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define YTEConstexpr
+  #define YTEConstexpr
 #else
-#define YTEConstexpr constexpr
+  #define YTEConstexpr constexpr
 #endif
 
 namespace YTE
 {
-  YTEConstexpr size_t GetTypeStart(const char *aTypeNameString)
+  inline YTEConstexpr size_t GetTypeStart(const char *aTypeNameString)
   {
     size_t beginTrim = 0;
 
-#if defined(__clang__)
+  #if defined(__clang__)
     beginTrim = 46;
-#elif defined(_MSC_VER)
+  #elif defined(_MSC_VER)
     if (*(aTypeNameString + 39) == 's') // Where class or struct appears in MSVC
     {
       beginTrim = 46; //Where typename begins appearing in MSVC if struct.
@@ -29,20 +29,20 @@ namespace YTE
     {
       beginTrim = 45; //Where typename begins appearing in MSVC if class.
     }
-#endif
+  #endif
 
     return beginTrim;
   }
 
-  YTEConstexpr size_t GetTypeEnd()
+  inline YTEConstexpr size_t GetTypeEnd()
   {
     size_t endTrim = 0;
 
-#if defined(__clang__)
+  #if defined(__clang__)
     endTrim = 1;
-#elif defined(_MSC_VER)
+  #elif defined(_MSC_VER)
     endTrim = 7;
-#endif
+  #endif
 
     return endTrim;
   }
@@ -58,7 +58,7 @@ namespace YTE
   //  return test;
   //}
 
-  YTEConstexpr bool IsWhiteSpace(char aCharacter)
+  inline YTEConstexpr bool IsWhiteSpace(char aCharacter)
   {
     if (((9 >= aCharacter) && (aCharacter <= 13)) || ' ' == aCharacter)
     {
@@ -69,7 +69,7 @@ namespace YTE
   }
 
 
-  YTEConstexpr bool IsIdentifier(char aCharacter)
+  inline YTEConstexpr bool IsIdentifier(char aCharacter)
   {
     if ((('a' <= aCharacter) && (aCharacter <= 'z')) ||
         (('A' <= aCharacter) && (aCharacter <= 'Z')) ||
@@ -82,7 +82,7 @@ namespace YTE
     return false;
   }
 
-  YTEConstexpr StringRange GetToken(StringRange aRange)
+  inline YTEConstexpr StringRange GetToken(StringRange aRange)
   {
     auto i = aRange.mBegin;
 
@@ -116,11 +116,11 @@ namespace YTE
 
 
   template <typename T>
-  YTEConstexpr auto GetTypeName()
+  inline YTEConstexpr auto GetTypeName()
   {
     YTEConstexpr const char *functionName = __PRETTY_FUNCTION__;
 
-#if defined(__clang__)
+  #if defined(__clang__)
     YTEConstexpr size_t firstBracket = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '[') + 1;
     YTEConstexpr size_t lastBracket = GetLastInstanceOfCharacter(functionName, StringLength(functionName), ']');
 
@@ -151,7 +151,7 @@ namespace YTE
 
     //auto finalName = functionName;
 
-#elif defined(__GNUC__)
+  #elif defined(__GNUC__)
     YTEConstexpr size_t firstBracket = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '[') + 1;
     YTEConstexpr size_t lastBracket = GetLastInstanceOfCharacter(functionName, StringLength(functionName), ']');
 
@@ -181,7 +181,7 @@ namespace YTE
       ++i;
     }
 
-#elif defined(_MSC_VER)
+  #elif defined(_MSC_VER)
     YTEConstexpr size_t firstArrow = GetFirstInstanceOfCharacter(functionName, StringLength(functionName), '<') + 1;
     YTEConstexpr size_t lastArrow = GetLastInstanceOfCharacter(functionName, StringLength(functionName), '>');
 
@@ -217,7 +217,7 @@ namespace YTE
 
       totalType.mBegin = token.mEnd;
     }
-#endif
+  #endif
 
     return finalName;
   }

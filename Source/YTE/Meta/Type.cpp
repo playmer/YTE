@@ -18,8 +18,8 @@ namespace YTE
     RegisterType<Type>();
     TypeBuilder<Type> builder;
 
-    builder.Function<&Type::GetGlobalType>("GetGlobalType")
-      .SetParameterNames("aName");
+    //builder.Function<&Type::GetGlobalType>("GetGlobalType")
+    //  .SetParameterNames("aName");
 
     builder.Property<&Type::Name, NoSetter>( "Name")
       .SetDocumentation("Name of the Type.");
@@ -238,95 +238,95 @@ namespace YTE
     RegisterType<Field>();
     TypeBuilder<Field> builder;
   }
-
-  YTEDefineExternalType(YTE::String)
-  {
-    RegisterType<YTE::String>();
-    TypeBuilder<YTE::String> builder;
-  }
 }
 
+
+YTEDefineExternalType(YTE::String)
+{
+  RegisterType<YTE::String>();
+  TypeBuilder<YTE::String> builder;
+}
 
 YTEDefineExternalType(YTE::s8)
 {
   RegisterType<YTE::s8>();
-    TypeBuilder<YTE::s8> builder;
+  TypeBuilder<YTE::s8> builder;
 }
 
 YTEDefineExternalType(YTE::i8)
 {
   RegisterType<YTE::i8>();
-    TypeBuilder<YTE::i8> builder;
+  TypeBuilder<YTE::i8> builder;
 }
 
 YTEDefineExternalType(YTE::i16)
 {
   RegisterType<YTE::i16>();
-    TypeBuilder<YTE::i16> builder;
+  TypeBuilder<YTE::i16> builder;
 }
 
 YTEDefineExternalType(YTE::i32)
 {
   RegisterType<YTE::i32>();
-    TypeBuilder<YTE::i32> builder;
+  TypeBuilder<YTE::i32> builder;
 }
 
 YTEDefineExternalType(YTE::i64)
 {
   RegisterType<YTE::i64>();
-    TypeBuilder<YTE::i64> builder;
+  TypeBuilder<YTE::i64> builder;
 }
 
 YTEDefineExternalType(YTE::u8)
 {
   RegisterType<YTE::u8>();
-    TypeBuilder<YTE::u8> builder;
+  TypeBuilder<YTE::u8> builder;
 }
 
 YTEDefineExternalType(YTE::u16)
 {
   RegisterType<YTE::u16>();
-    TypeBuilder<YTE::u16> builder;
+  TypeBuilder<YTE::u16> builder;
 }
 
 YTEDefineExternalType(YTE::u32)
 {
   RegisterType<YTE::u32>();
-    TypeBuilder<YTE::u32> builder;
+  TypeBuilder<YTE::u32> builder;
 }
 
 YTEDefineExternalType(YTE::u64)
 {
   RegisterType<YTE::u64>();
-    TypeBuilder<YTE::u64> builder;
+  TypeBuilder<YTE::u64> builder;
 }
 
 YTEDefineExternalType(void)
 {
   RegisterType<void>();
-    TypeBuilder<void> builder;
+  TypeBuilder<void> builder;
 }
 
 YTEDefineExternalType(bool)
 {
   RegisterType<bool>();
-    TypeBuilder<bool> builder;
+  TypeBuilder<bool> builder;
 }
 
 YTEDefineExternalType(float)
 {
   RegisterType<float>();
-    TypeBuilder<float> builder;
+  TypeBuilder<float> builder;
 }
 
 YTEDefineExternalType(double)
 {
   RegisterType<double>();
-    TypeBuilder<double> builder;
+  TypeBuilder<double> builder;
 }
 
 YTEDefineExternalType(std::string)
 {
   RegisterType<std::string>();
-    TypeBuilder<std::string> builder;
+  TypeBuilder<std::string> builder;
 }
