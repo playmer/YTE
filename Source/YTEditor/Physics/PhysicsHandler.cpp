@@ -292,33 +292,41 @@ namespace YTEditor
     if (nullptr != model && model->GetMesh())
     {
       auto mesh = model->GetMesh();
-      
-      obj->mTriangles;
-      
-      for (auto &submesh : mesh->mParts)
-      {
-        auto indexSize = submesh.mIndexBuffer.size();
-      
-        DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
-      
-        for (size_t i = 0; i < indexSize; i += 3)
-        {
-          auto i1 = submesh.mIndexBuffer.at(i + 0);
-          auto i2 = submesh.mIndexBuffer.at(i + 1);
-          auto i3 = submesh.mIndexBuffer.at(i + 2);
 
-          obj->mTriangles.addTriangle(YTE::ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
-                                      YTE::ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
-                                      YTE::ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
-        }
+      auto it = mShapeCache.find(model->GetMeshName());
+      if (it != mShapeCache.end())
+      {
+        printf("Found in cache: %s\n", model->GetMeshName().c_str());
+        obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&it->second, true);
       }
-      
-      obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&obj->mTriangles, true);
-      
+      else
+      {
+        auto& triangles = mShapeCache[model->GetMeshName()];
+
+        for (auto &submesh : mesh->mParts)
+        {
+          auto indexSize = submesh.mIndexBuffer.size();
+
+          DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
+
+          for (size_t i = 0; i < indexSize; i += 3)
+          {
+            auto i1 = submesh.mIndexBuffer.at(i + 0);
+            auto i2 = submesh.mIndexBuffer.at(i + 1);
+            auto i3 = submesh.mIndexBuffer.at(i + 2);
+
+            triangles.addTriangle(YTE::ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
+                                  YTE::ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
+                                  YTE::ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
+          }
+        }
+
+        obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&triangles, true);
+      }
+
       obj->mShape = obj->mTriangleMeshShape.get();
-      
+
       obj->mTriangleMeshShape->setLocalScaling(scale);
-      obj->mTriangleMeshShape->buildOptimizedBvh();
     }
     else
     {

@@ -81,7 +81,7 @@ namespace YTE
       return false;
     }
 
-    std::string GetMeshName()
+    std::string const& GetMeshName()
     {
       return mMeshName;
     }
