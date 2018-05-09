@@ -295,7 +295,7 @@ namespace YTEditor
       
       obj->mTriangles;
       
-      for (auto &submesh : mesh->mColliderParts)
+      for (auto &submesh : mesh->mParts)
       {
         auto indexSize = submesh.mIndexBuffer.size();
       
@@ -307,9 +307,9 @@ namespace YTEditor
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
 
-          obj->mTriangles.addTriangle(YTE::ToBullet(submesh.mColliderVertexBuffer.at(i1)),
-                                      YTE::ToBullet(submesh.mColliderVertexBuffer.at(i2)),
-                                      YTE::ToBullet(submesh.mColliderVertexBuffer.at(i3)));
+          obj->mTriangles.addTriangle(YTE::ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
+                                      YTE::ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
+                                      YTE::ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
         }
       }
       

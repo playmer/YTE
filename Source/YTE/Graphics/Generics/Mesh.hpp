@@ -224,15 +224,6 @@ namespace YTE
     bool mCullBackFaces = true;
   };
 
-
-  struct ColliderMesh
-  {
-    ColliderMesh(const aiMesh* aMesh);
-    std::vector<glm::vec3> mColliderVertexBuffer;
-    std::vector<u32> mIndexBuffer;
-  };
-
-
   class Mesh : public EventHandler
   {
   public:
@@ -259,13 +250,12 @@ namespace YTE
 
     std::string mName;
     std::vector<Submesh> mParts;
-    std::vector<ColliderMesh> mColliderParts;
     Skeleton mSkeleton;
     Dimension mDimension;
     bool mInstanced;
 
-  private:
-    void CreateCollider(const aiScene* aScene);
+  protected:
+    bool mInstanced;
   };
 }
 

@@ -420,31 +420,6 @@ namespace YTE
     }
   }
 
-
-  ColliderMesh::ColliderMesh(const aiMesh* aMesh)
-  {
-    // get the vertex data with bones (if provided)
-    for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
-    {
-      const aiVector3D *pColPos = aMesh->mVertices + j;
-      auto colPosition = ToGlm(pColPos);
-      mColliderVertexBuffer.emplace_back(colPosition);
-    }
-
-    uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
-
-    for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
-    {
-      const aiFace &Face = aMesh->mFaces[j];
-      if (Face.mNumIndices != 3)
-        continue;
-
-      mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
-    }
-  }
-
   Dimension CalculateDimensions(std::vector<Submesh> &mParts)
   {
     Dimension toReturn;
@@ -521,9 +496,6 @@ namespace YTE
     {
       // Load bone data
       bool hasBones = mSkeleton.Initialize(pScene);
-
-      // create the collider
-      CreateCollider(pColliderScene);
 
       // extra setup
       glm::vec3 scale(1.0f);
@@ -621,15 +593,6 @@ namespace YTE
     for (auto& submesh : GetSubmeshes())
     {
       submesh.ResetTextureCoordinates();
-    }
-  }
-
-  void Mesh::CreateCollider(const aiScene* aScene)
-  {
-    uint32_t numMeshes = aScene->mNumMeshes;
-    for (u32 i = 0; i < numMeshes; ++i)
-    {
-      mColliderParts.emplace_back(aScene->mMeshes[i]);
     }
   }
 }

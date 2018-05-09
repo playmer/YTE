@@ -60,7 +60,7 @@ namespace YTE
     
     if (mesh != nullptr)
     {
-      for (auto &submesh : mesh->mColliderParts)
+      for (auto &submesh : mesh->mParts)
       {
         DebugAssert((submesh.mIndexBuffer.size() % 3) == 0, "Index buffer must be divisible by 3.");
 
@@ -72,9 +72,9 @@ namespace YTE
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
       
-          mTriangles.addTriangle(ToBullet(submesh.mColliderVertexBuffer.at(i1)),
-                                 ToBullet(submesh.mColliderVertexBuffer.at(i2)),
-                                 ToBullet(submesh.mColliderVertexBuffer.at(i3)));
+          mTriangles.addTriangle(ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
+                                 ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
+                                 ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
         }
       }
     }
