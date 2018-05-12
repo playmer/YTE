@@ -116,19 +116,25 @@ namespace YTE
   template<typename tType>
   size_t Write(FILE* aFile, tType const& aValue)
   {
-    return fwrite(static_cast<void const*>(&aValue), sizeof(tType), 1, aFile);
+    auto ret = fwrite(static_cast<void const*>(&aValue), sizeof(tType), 1, aFile);
+    assert(1 == ret);
+    return ret;
   }
 
   template<typename tType>
   size_t Write(FILE* aFile, tType const* aValue)
   {
-    return fwrite(static_cast<void const*>(aValue), sizeof(tType), 1, aFile);
+    auto ret = fwrite(static_cast<void const*>(aValue), sizeof(tType), 1, aFile);
+    assert(1 == ret);
+    return ret;
   }
 
   template<typename tType>
   size_t Write(FILE* aFile, tType const* aValue, size_t aSize)
   {
-    return fwrite(static_cast<void const*>(aValue), sizeof(tType), aSize, aFile);
+    auto ret = fwrite(static_cast<void const*>(aValue), sizeof(tType), aSize, aFile);
+    assert(aSize == ret);
+    return ret;
   }
 
   template<>
@@ -209,11 +215,16 @@ namespace YTE
     }
   }
 
+  static size_t sBytesRead;
+
   template<typename tType>
   tType Read(FILE* aFile)
   {
     typename std::aligned_storage<sizeof(tType), alignof(tType)>::type data;
-    fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
+    auto ret = fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
+    assert(1 == ret);
+
+    sBytesRead += sizeof(tType) * 1;
 
     return *reinterpret_cast<tType*>(&data);
   }
@@ -221,7 +232,12 @@ namespace YTE
   template<typename tType>
   size_t Read(FILE* aFile, tType* aBuffer, size_t aSize)
   {
-    return fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
+    auto ret = fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
+    assert(aSize == ret);
+
+    sBytesRead += sizeof(tType) * aSize;
+
+    return ret;
   }
 
   template<>
@@ -254,58 +270,102 @@ namespace YTE
     return key;
   }
 
+  struct FileReader
+  {
+    FileReader(std::string const& aFile)
+    {
+      std::ifstream file(aFile, std::ios::binary | std::ios::ate);
+      std::streamsize size = file.tellg();
+      file.seekg(0, std::ios::beg);
+
+      mData.resize(size);
+      file.read(mData.data(), size);
+      assert(false == file.bad());
+
+      if (false == file.bad())
+      {
+        mOpened = true;
+      }
+    }
+
+    template<typename tType>
+    tType& Read()
+    {
+      auto bytesToRead = sizeof(tType);
+
+      assert((mBytesRead + bytesToRead) <= mData.size());
+
+      mBytesRead += bytesToRead;
+
+      return *reinterpret_cast<tType*>(mData.data() + mBytesRead);
+    }
+    
+    template<typename tType>
+    void Read(tType* aBuffer, size_t aSize)
+    {
+      auto bytesToRead = sizeof(tType) * aSize;
+      assert((mBytesRead + bytesToRead) <= mData.size());
+
+      memcpy(aBuffer, mData.data() + mBytesRead, bytesToRead);
+    
+      mBytesRead += bytesToRead;
+    }
+
+    std::vector<char> mData;
+    size_t mBytesRead = 0;
+    bool mOpened = false;
+  };
+
 
   AnimationData ReadAnimationDataFromFile(std::string const& aName)
   {
+    sBytesRead = 0;
     AnimationData data;
+    FileReader file{ aName };
 
-    FILE* file;
-    file = fopen(aName.c_str(), "r");
-
-    if (file)
+    if (file.mOpened)
     {
+
       // The "header" of the file.
-      auto nodeSize = Read<size_t>(file);
-      auto transformationsSize = Read<size_t>(file);
-      auto childrenSize = Read<size_t>(file);
-      auto translationKeysSize = Read<size_t>(file);
-      auto scaleKeysSize = Read<size_t>(file);
-      auto rotationKeysSize = Read<size_t>(file);
-      auto namesSize = Read<size_t>(file);
-      data.mDuration = Read<double>(file);
-      data.mTicksPerSecond = Read<double>(file);
+      auto nodeSize = file.Read<size_t>();
+      auto transformationsSize = file.Read<size_t>();
+      auto childrenSize = file.Read<size_t>();
+      auto translationKeysSize = file.Read<size_t>();
+      auto scaleKeysSize = file.Read<size_t>();
+      auto rotationKeysSize = file.Read<size_t>();
+      auto namesSize = file.Read<size_t>();
+      data.mDuration = file.Read<double>();
+      data.mTicksPerSecond = file.Read<double>();
 
       data.mNodes.resize(nodeSize);
-      auto ret = Read<AnimationData::Node>(file, data.mNodes.data(), data.mNodes.size());
+      file.Read<AnimationData::Node>(data.mNodes.data(), data.mNodes.size());
 
       data.mTransformations.resize(transformationsSize);
-      ret = Read<glm::mat4>(file, data.mTransformations.data(), data.mTransformations.size());
+      file.Read<glm::mat4>(data.mTransformations.data(), data.mTransformations.size());
 
       data.mChildren.resize(childrenSize);
-      ret = Read<size_t>(file, data.mChildren.data(), data.mChildren.size());
+      file.Read<size_t>(data.mChildren.data(), data.mChildren.size());
 
       data.mTranslationKeys.reserve(translationKeysSize);
       for (size_t i = 0; i < translationKeysSize; ++i)
       {
-        data.mTranslationKeys.emplace_back(Read<AnimationData::TranslationKey>(file));
+        data.mTranslationKeys.emplace_back(file.Read<AnimationData::TranslationKey>());
       }
 
       data.mScaleKeys.reserve(scaleKeysSize);
       for (size_t i = 0; i < scaleKeysSize; ++i)
       {
-        data.mScaleKeys.emplace_back(Read<AnimationData::ScaleKey>(file));
+        data.mScaleKeys.emplace_back(file.Read<AnimationData::ScaleKey>());
       }
 
       data.mRotationKeys.reserve(rotationKeysSize);
       for (size_t i = 0; i < rotationKeysSize; ++i)
       {
-        data.mRotationKeys.emplace_back(Read<AnimationData::RotationKey>(file));
+        data.mRotationKeys.emplace_back(file.Read<AnimationData::RotationKey>());
       }
 
       data.mNames.resize(namesSize);
-      Read<char>(file, data.mNames.data(), data.mNames.size());
-
-      fclose(file);
+      file.Read<char>(data.mNames.data(), data.mNames.size());
     }
 
 
@@ -585,11 +645,6 @@ namespace YTE
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
     auto aniFileYTE = aniFile + ".YTEAnimation";
 
-    if (filesystem::exists(aniFileYTE))
-    {
-      return std::move(ReadAnimationDataFromFile(aniFileYTE));
-    }
-    else
     {
       auto scene = importer.ReadFile(aniFile.c_str(),
                                      aiProcess_Triangulate |
@@ -620,8 +675,44 @@ namespace YTE
 
       WriteAnimationDataToFile(aniFile, data);
 
-      return std::move(data);
+      return std::move(ReadAnimationDataFromFile(aniFileYTE));
     }
+
+    //if (filesystem::exists(aniFileYTE))
+    //{
+    //  return std::move(ReadAnimationDataFromFile(aniFileYTE));
+    //}
+    //else
+    //{
+    //  auto scene = importer.ReadFile(aniFile.c_str(),
+    //                                 aiProcess_Triangulate |
+    //                                 aiProcess_CalcTangentSpace |
+    //                                 aiProcess_GenSmoothNormals);
+    //
+    //  DebugObjection(scene == nullptr,
+    //                 "Failed to load animation file %s from assimp",
+    //                 aniFile.c_str());
+    //
+    //  DebugObjection(scene->HasAnimations() == false,
+    //                 "Failed to find animations in scene loaded from %s",
+    //                 aniFile.c_str());
+    //
+    //  auto animation = scene->mAnimations[0];
+    //
+    //  AnimationData data;
+    //  AnimationData::Node node;
+    //
+    //  data.mNodes.emplace_back(node);
+    //
+    //  MakeNodes(animation, scene->mRootNode, data, 0);
+    //
+    //  data.mTicksPerSecond = animation->mTicksPerSecond;
+    //  data.mDuration = animation->mDuration;
+    //
+    //  WriteAnimationDataToFile(aniFile, data);
+    //
+    //  return std::move(data);
+    //}
   }
 
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
