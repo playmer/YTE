@@ -19,6 +19,17 @@ namespace YTE
     return tBoundFunction;
   }
 
+  namespace Detail
+  {
+    // This is needed to workaround a bug in MSVC relating to using
+    // decltype on auto template parameters. It will sometimes not
+    // deduce the correct type and thus fail some template matching
+    // attempts that should succeed.
+    // Bug reported here: https://developercommunity.visualstudio.com/content/problem/248892/failed-template-matching-with-auto-parameter.html
+    // Can be removed when bug is fixed.
+    template<typename T> T GetTypeMSVCWorkaround(T);
+  }
+
   template <typename tType>
   class TypeBuilder
   {
@@ -80,14 +91,13 @@ namespace YTE
       }
 
       private:
-      Function * mFunction;
+      Function* mFunction;
     };
 
     template <auto tBoundFunction>
-    FunctionBuilder<decltype(tBoundFunction)> Function(char const* aName)
+    auto Function(char const* aName)
     {
-      using FunctionSignature = decltype(tBoundFunction);
-
+      using FunctionSignature = decltype(Detail::GetTypeMSVCWorkaround(tBoundFunction));
       auto function = Detail::Meta::FunctionBinding<FunctionSignature>:: template BindFunction<tBoundFunction>(aName);
       function->SetOwningType(TypeId<tType>());
 
@@ -114,7 +124,6 @@ namespace YTE
 
       return *ptr;
     }
-
 
     template <auto tEnumValue>
     YTE::Property& Enum(char const* aName)
@@ -175,7 +184,8 @@ namespace YTE
     }
 
     private:
-    Type * mType;
+
+    Type* mType;
   };
 
   template <typename tType>

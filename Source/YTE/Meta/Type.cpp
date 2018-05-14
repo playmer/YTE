@@ -18,18 +18,18 @@ namespace YTE
     RegisterType<Type>();
     TypeBuilder<Type> builder;
 
-    //builder.Function<&Type::GetGlobalType>("GetGlobalType")
-    //  .SetParameterNames("aName");
+    builder.Function<&Type::GetGlobalType>("GetGlobalType")
+      .SetParameterNames("aName");
 
-    builder.Property<&Type::Name, NoSetter>( "Name")
+    builder.Property<&Type::Name, NoSetter>("Name")
       .SetDocumentation("Name of the Type.");
-    builder.Property<&Type::Hash, NoSetter>( "Hash")
+    builder.Property<&Type::Hash, NoSetter>("Hash")
       .SetDocumentation("Hash of the Type.");
-    builder.Property<&Type::GetAllocatedSize, NoSetter>( "AllocatedSize")
+    builder.Property<&Type::GetAllocatedSize, NoSetter>("AllocatedSize")
       .SetDocumentation("Allocated size of the Type.");
-    builder.Property<&Type::GetStoredSize, NoSetter>( "StoredSize")
+    builder.Property<&Type::GetStoredSize, NoSetter>("StoredSize")
       .SetDocumentation("Stored size of the Type.");
-    builder.Property<&Type::GetUnqualifiedSize, NoSetter>( "UnqualifiedSize")
+    builder.Property<&Type::GetUnqualifiedSize, NoSetter>("UnqualifiedSize")
       .SetDocumentation("Unqualified size of the Type.");
   }
 
