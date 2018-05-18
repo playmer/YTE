@@ -414,9 +414,9 @@ namespace YTE
   }
 
   static inline
-    glm::quat RotationInterpolation(AnimationData const& aData,
-                                    double aAnimationTime,
-                                    AnimationData::Node const& aNode)
+  glm::quat RotationInterpolation(AnimationData const& aData,
+                                  double aAnimationTime,
+                                  AnimationData::Node const& aNode)
   {
     glm::quat rot;
 
@@ -455,9 +455,9 @@ namespace YTE
   }
 
   static inline
-    glm::vec3 TranslationInterpolation(AnimationData const& aData,
-                                       double aAnimationTime,
-                                       AnimationData::Node const& aNode)
+  glm::vec3 TranslationInterpolation(AnimationData const& aData,
+                                     double aAnimationTime,
+                                     AnimationData::Node const& aNode)
   {
     glm::vec3 trans;
     if (1 == aNode.mTranslationKeySize)
