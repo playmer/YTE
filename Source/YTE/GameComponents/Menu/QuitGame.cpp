@@ -16,7 +16,8 @@ namespace YTE
 {
   YTEDefineType(QuitGame)
   {
-    YTERegisterType(QuitGame);
+    RegisterType<QuitGame>();
+    TypeBuilder<QuitGame> builder;
   }
 
   QuitGame::QuitGame(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -27,7 +28,7 @@ namespace YTE
 
   void QuitGame::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &QuitGame::OnElementTrigger);
+    mOwner->RegisterEvent<&QuitGame::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void QuitGame::OnElementTrigger(MenuElementTrigger *)

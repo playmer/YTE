@@ -31,22 +31,23 @@ namespace YTE
 {
   YTEDefineType(BoatController)
   {
-    YTERegisterType(BoatController);
+    RegisterType<BoatController>();
+    TypeBuilder<BoatController> builder;
 
 
-    YTEBindProperty(&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed, "MaxSailSpeed")
+    builder.Property<&BoatController::GetMaxSailSpeed, &BoatController::SetMaxSailSpeed>( "MaxSailSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed, "MaxTurnSpeed")
+    builder.Property<&BoatController::GetRotationSpeed, &BoatController::SetRotationSpeed>( "MaxTurnSpeed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor, "TurnAccelerationFactor")
+    builder.Property<&BoatController::GetTurnAccFactor, &BoatController::SetTurnAccFactor>( "TurnAccelerationFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BoatController::GetWindForce, &BoatController::SetWindForce, "WindForce")
+    builder.Property<&BoatController::GetWindForce, &BoatController::SetWindForce>( "WindForce")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
@@ -124,11 +125,11 @@ namespace YTE
     mSoundEmitter->PlayEvent(mSailingStart);
 
     /* Event Registration */
-    mSpace->YTERegister(Events::SailStateChanged, this, &BoatController::ChangeSail);
-    mSpace->YTERegister(Events::BoatTurnEvent, this, &BoatController::TurnBoat);
-    mSpace->YTERegister(Events::BoatDockEvent, this, &BoatController::DockBoat);
-    mSpace->YTERegister(Events::DialogueExit, this, &BoatController::OnDialogueExit);
-    mSpace->YTERegister(Events::LogicUpdate, this, &BoatController::Update);
+    mSpace->RegisterEvent<&BoatController::ChangeSail>(Events::SailStateChanged, this);
+    mSpace->RegisterEvent<&BoatController::TurnBoat>(Events::BoatTurnEvent, this);
+    mSpace->RegisterEvent<&BoatController::DockBoat>(Events::BoatDockEvent, this);
+    mSpace->RegisterEvent<&BoatController::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&BoatController::Update>(Events::LogicUpdate, this);
 
     mAnimator = mOwner->GetComponent<Animator>();
     
@@ -196,7 +197,7 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     StopBoatImmediately();
 

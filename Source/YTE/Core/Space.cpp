@@ -33,21 +33,25 @@ namespace YTE
 {
   YTEDefineType(Space)
   {
-    YTERegisterType(Space);
-    YTEBindFunction(&Space::LoadLevel, YTENoOverload, "LoadLevel", YTEParameterNames("aLevel", "aCheckRunInEditor")).Description()
-      = "Loads a level within the current space on the next frame. Current level will be torn down.";
-
-    YTEBindFunction(&Space::SaveLevel, YTENoOverload, "SaveLevel", YTEParameterNames("aLevelName")).Description()
-      = "Saves a level.";
-
-    YTEBindFunction(&Space::Remove, YTENoOverload, "Remove", YTENoNames).Description()
-      = "Removes the Space from the Engine at the start of the next frame.";
+    RegisterType<Space>();
+    TypeBuilder<Space> builder;
+    
+    builder.Function<&Space::LoadLevel>("LoadLevel")
+      .SetParameterNames("aLevel", "CheckRunInEditor")
+      .SetDocumentation("Loads a level within the current space on the next frame. Current level will be torn down.");
+    
+    builder.Function<&Space::SaveLevel>("SaveLevel")
+      .SetParameterNames("aLevelName")
+      .SetDocumentation("Saves a level to the given file");
+    
+    builder.Function<&Space::Remove>("Remove")
+      .SetDocumentation("Saves a level to the given file");
       
-    YTEBindProperty(&Space::IsPaused, &Space::SetPaused, "Paused").Description() = "Sets if the space is paused or not.";
-
-    YTEBindProperty(&Space::GetEngine, YTENoSetter, "Engine");
-
-    YTEBindField(&Space::mStartingLevel, "StartingLevel", PropertyBinding::GetSet)
+    builder.Property<&Space::IsPaused, &Space::SetPaused>("Paused")
+      .SetDocumentation("Sets if the space is paused or not.");
+    builder.Property<&Space::GetEngine, NoSetter>("Engine");
+    
+    builder.Field<&Space::mStartingLevel>("StartingLevel", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -59,16 +63,11 @@ namespace YTE
   {
     if (false == mEngine->IsEditor())
     {
-      mEngine->GetWindow()->YTERegister(Events::WindowFocusLostOrGained, 
-                                        this, 
-                                        &Space::WindowLostOrGainedFocusHandler);
-      mEngine->GetWindow()->YTERegister(Events::WindowMinimizedOrRestored, 
-                                        this, 
-                                        &Space::WindowMinimizedOrRestoredHandler);
+      mEngine->GetWindow()->RegisterEvent<&Space::WindowLostOrGainedFocusHandler>(Events::WindowFocusLostOrGained, this);
+      mEngine->GetWindow()->RegisterEvent<&Space::WindowMinimizedOrRestoredHandler>(Events::WindowMinimizedOrRestored, this);
     }
 
-
-    mEngine->YTERegister(Events::LogicUpdate, this, &Space::Update);
+    mEngine->RegisterEvent<&Space::Update>(Events::LogicUpdate, this);
 
     if (nullptr != aProperties)
     {
@@ -252,6 +251,8 @@ namespace YTE
   // TODO (Josh): Abstract or move to another handler.
   void Space::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
   {
+    UnusedArguments(aEvent);
+
     //if ((mFocusHandled == false) && (aEvent->Focused == false) && !mEngine->GetWindow()->IsMinimized())
     //{
     //  //std::cout << "Set mPriorToMinimize" << std::endl;
@@ -268,6 +269,8 @@ namespace YTE
 
   void Space::WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent)
   {
+    UnusedArguments(aEvent);
+
     //if (aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
     //{
     //  //std::cout << "Set mPriorToMinimize" << std::endl;

@@ -19,7 +19,7 @@ namespace YTE
 
   VkWaterInfluenceMapManager::VkWaterInfluenceMapManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent);
+    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -46,7 +46,7 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent);
+    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 

@@ -15,7 +15,8 @@ namespace YTE
 {
   YTEDefineType(BoatPhysics)
   {
-    YTERegisterType(BoatPhysics);
+    RegisterType<BoatPhysics>();
+    TypeBuilder<BoatPhysics> builder;
 
     std::vector<std::vector<Type*>> deps = { 
       { TypeId<Model>() } 
@@ -35,7 +36,7 @@ namespace YTE
 
   void BoatPhysics::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &BoatPhysics::Update);
+    mSpace->RegisterEvent<&BoatPhysics::Update>(Events::LogicUpdate, this);
     mBoatRB = mOwner->GetComponent<RigidBody>();
     mBoatTransform = mOwner->GetComponent<Transform>();
     mBoatOrientation = mOwner->GetComponent<Orientation>();
@@ -52,7 +53,7 @@ namespace YTE
 
   void BoatPhysics::Update(LogicUpdate* aLogicUpdate)
   {
-    YTEUnusedArgument(aLogicUpdate);
+    UnusedArguments(aLogicUpdate);
     Composition * obj = mSpace->FindFirstCompositionByName("WaterFFT");
     FFT_WaterSimulation * waterSim = obj->GetComponent<FFT_WaterSimulation>();
 

@@ -13,7 +13,8 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedLight)
   {
-    YTERegisterType(VkInstantiatedLight);
+    RegisterType<VkInstantiatedLight>();
+    TypeBuilder<VkInstantiatedLight> builder;
   }
 
 
@@ -24,10 +25,10 @@ namespace YTE
     , mManager(aLightManager)
     , mGraphicsView(aView)
   {
-    mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedLight::GraphicsDataUpdateVk);
+    mManager->RegisterEvent<&VkInstantiatedLight::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
 
-    mGraphicsView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedLight::SurfaceLostEvent);
-    mGraphicsView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedLight::SurfaceGainedEvent);
+    mGraphicsView->RegisterEvent<&VkInstantiatedLight::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mGraphicsView->RegisterEvent<&VkInstantiatedLight::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
   VkInstantiatedLight::~VkInstantiatedLight()
@@ -37,7 +38,7 @@ namespace YTE
 
   void VkInstantiatedLight::SurfaceLostEvent(ViewChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mManager->DestroyLight(this);
   }
 
@@ -48,13 +49,13 @@ namespace YTE
 
     mManager = &(mSurface->GetViewData(view)->mLightManager);
     mManager->AddLight(this);
-    mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedLight::GraphicsDataUpdateVk);
+    mManager->RegisterEvent<&VkInstantiatedLight::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
     mDataChanged = true;
   }
 
   void VkInstantiatedLight::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (mDataChanged)
     {
       mManager->UpdateLightValue(mIndex, mLightUBOData);

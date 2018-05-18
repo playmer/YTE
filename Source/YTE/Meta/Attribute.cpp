@@ -5,34 +5,34 @@ namespace YTE
 {
   YTEDefineType(Attribute)
   {
-    YTERegisterType(Attribute);
+    RegisterType<Attribute>();
+    TypeBuilder<Attribute> builder;
   }
 
   YTEDefineType(Serializable)
   {
-    YTERegisterType(Serializable);
+    RegisterType<Serializable>();
+    TypeBuilder<Serializable> builder;
   }
 
   YTEDefineType(RunInEditor)
   {
-    YTERegisterType(RunInEditor);
+    RegisterType<RunInEditor>();
+    TypeBuilder<RunInEditor> builder;
   }
 
   YTEDefineType(EditableColor)
   {
-    YTERegisterType(EditableColor);
+    RegisterType<EditableColor>();
+    TypeBuilder<EditableColor> builder;
   }
 
   void PropertyChecked(const char *aType, DocumentedObject *aObject)
   {
-    YTEUnusedArgument(aType);
-
     auto property = dynamic_cast<Property*>(aObject);
 
     auto getter = property->GetGetter();
     auto setter = property->GetSetter();
-
-    YTEUnusedArgument(getter);
 
     DebugObjection(nullptr == getter,
                    "%s %s missing getter",
@@ -45,7 +45,6 @@ namespace YTE
                    property->GetName().c_str());
 
     auto parameters = setter->GetParameters();
-    YTEUnusedArgument(parameters);
 
     DebugObjection(parameters.size() != 2,
                    "%s %s must have a setter that takes only one parameter,"
@@ -62,6 +61,8 @@ namespace YTE
                    property->GetName().c_str(),
                    parameters[1].mType->GetName().c_str(),
                    getter->GetName().c_str());
+
+    UnusedArguments(aType, getter, parameters);
   }
 
   Serializable::Serializable(DocumentedObject *aObject)
@@ -71,27 +72,32 @@ namespace YTE
 
   YTEDefineType(EditorProperty)
   {
-    YTERegisterType(EditorProperty);
+    RegisterType<EditorProperty>();
+    TypeBuilder<EditorProperty> builder;
   }
 
   YTEDefineType(DropDownStrings)
   {
-    YTERegisterType(DropDownStrings);
+    RegisterType<DropDownStrings>();
+    TypeBuilder<DropDownStrings> builder;
   }
 
   YTEDefineType(EditorHeader)
   {
-    YTERegisterType(EditorHeader);
+    RegisterType<EditorHeader>();
+    TypeBuilder<EditorHeader> builder;
   }
 
   YTEDefineType(EditorHeaderList)
   {
-    YTERegisterType(EditorHeaderList);
+    RegisterType<EditorHeaderList>();
+    TypeBuilder<EditorHeaderList> builder;
   }
 
   YTEDefineType(RedirectObject)
   {
-    YTERegisterType(RedirectObject);
+    RegisterType<RedirectObject>();
+    TypeBuilder<RedirectObject> builder;
   }
 
   EditorProperty::EditorProperty(DocumentedObject *aObject, bool aVisible)
@@ -104,7 +110,7 @@ namespace YTE
     : mStringGettor(aStrGettor)
   {
     auto prop = dynamic_cast<Property*>(aObject);
-    YTEUnusedArgument(prop);
+    UnusedArguments(prop);
 
     DebugObjection(aStrGettor == nullptr, 
                    "SelectableStrings %s must be passed a valid function pointer"
@@ -121,7 +127,7 @@ namespace YTE
   EditorHeader::EditorHeader(YTE::DocumentedObject *aObject, std::string aName)
     : mName(aName)
   {
-    YTEUnusedArgument(aObject);
+    UnusedArguments(aObject);
   }
 
   std::string EditorHeader::GetName()
@@ -140,7 +146,7 @@ namespace YTE
     , mDeserializer(aDeserializer)
     , mName(aName)
   {
-    YTEUnusedArgument(aObject);
+    UnusedArguments(aObject);
   }
 
   std::vector<std::pair<Object*, std::string>> EditorHeaderList::GetList(YTE::Object *aObject)
@@ -176,7 +182,7 @@ namespace YTE
     , mDeserializer(aDeserializer)
     , mName(aName)
   {
-    YTEUnusedArgument(aObject);
+    UnusedArguments(aObject);
   }
 
   std::pair<Object*, std::string> RedirectObject::GetObjectPtr(YTE::Object *aObject)

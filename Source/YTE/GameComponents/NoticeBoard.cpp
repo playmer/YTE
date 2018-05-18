@@ -29,9 +29,11 @@ namespace YTE
 {
   YTEDefineEvent(NoticeBoardHookup);
 
-  YTEDefineType(NoticeBoardHookup) { YTERegisterType(NoticeBoardHookup); }
+  YTEDefineType(NoticeBoardHookup) { RegisterType<NoticeBoardHookup>();
+    TypeBuilder<NoticeBoardHookup> builder; }
 
-  YTEDefineType(NoticeBoard) { YTERegisterType(NoticeBoard); }
+  YTEDefineType(NoticeBoard) { RegisterType<NoticeBoard>();
+    TypeBuilder<NoticeBoard> builder; }
 
   NoticeBoard::NoticeBoard(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -45,7 +47,7 @@ namespace YTE
     , mCameraRotationPrev(0.0f)
     , mFakeLerp(0.0f)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
       // these are gonna be a tutorial, not postcards
     //mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Introduction);
     //mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Introduction);
@@ -65,11 +67,11 @@ namespace YTE
 
   void NoticeBoard::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &NoticeBoard::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &NoticeBoard::OnCollisionEnded);
-    mSpace->YTERegister(Events::NoticeBoardHookup, this, &NoticeBoard::OnNoticeBoardHookup);
+    mOwner->RegisterEvent<&NoticeBoard::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&NoticeBoard::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&NoticeBoard::OnNoticeBoardHookup>(Events::NoticeBoardHookup, this);
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &NoticeBoard::Update);
+    mSpace->RegisterEvent<&NoticeBoard::Update>(Events::LogicUpdate, this);
     
     mAssignedPostcard = &mPostcardVec[0];
 
@@ -99,7 +101,7 @@ namespace YTE
     }
   }
 
-  void NoticeBoard::Update(LogicUpdate *aEvent)
+  void NoticeBoard::Update(LogicUpdate *)
   {
     // just for lerping the camera at the end
     if (mEndSequencePlaying && mCameraTransform)
@@ -134,7 +136,7 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<QuestLogic>() != nullptr)
     {
-      mSpace->YTERegister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
+      mSpace->RegisterEvent<&NoticeBoard::OnRequestNoticeBoardStart>(Events::RequestNoticeBoardStart, this);
       aEvent->OtherObject->GetComponent<QuestLogic>()->HookupPostcardHandle(&mAssignedPostcard);
 
       Quest::CharacterName character = mAssignedPostcard->GetCharacter();
@@ -152,7 +154,7 @@ namespace YTE
   {
     if (aEvent->OtherObject->GetComponent<QuestLogic>() != nullptr)
     {
-      mSpace->YTEDeregister(Events::RequestNoticeBoardStart, this, &NoticeBoard::OnRequestNoticeBoardStart);
+      mSpace->DeregisterEvent<&NoticeBoard::OnRequestNoticeBoardStart>(Events::RequestNoticeBoardStart,  this);
 
       DialoguePossible diagEvent;
       diagEvent.isPossible = false;
@@ -491,7 +493,7 @@ namespace YTE
 
   void NoticeBoard::OnRequestNoticeBoardStart(RequestNoticeBoardStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mAssignedPostcard != nullptr)
     {

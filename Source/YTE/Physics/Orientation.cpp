@@ -19,25 +19,27 @@ namespace YTE
 
   YTEDefineType(OrientationChanged)
   {
-    YTERegisterType(OrientationChanged);
-    YTEBindField(&OrientationChanged::Orientation, "Orientation", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::ForwardVector, "ForwardVector", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::RightVector, "RightVector", PropertyBinding::Get);
-    YTEBindField(&OrientationChanged::UpVector, "UpVector", PropertyBinding::Get);
+    RegisterType<OrientationChanged>();
+    TypeBuilder<OrientationChanged> builder;
+    builder.Field<&OrientationChanged::Orientation>( "Orientation", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::ForwardVector>( "ForwardVector", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::RightVector>( "RightVector", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::UpVector>( "UpVector", PropertyBinding::Get);
   }
 
   YTEDefineType(Orientation)
   {
-    YTERegisterType(Orientation);
+    RegisterType<Orientation>();
+    TypeBuilder<Orientation> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Orientation::GetForwardVector, nullptr, "ForwardVector");
-    YTEBindProperty(&Orientation::GetRightVector, nullptr, "RightVector");
-    YTEBindProperty(&Orientation::GetUpVector, nullptr, "UpVector");
+    builder.Property<&Orientation::GetForwardVector, nullptr>( "ForwardVector");
+    builder.Property<&Orientation::GetRightVector, nullptr>( "RightVector");
+    builder.Property<&Orientation::GetUpVector, nullptr>( "UpVector");
   }
 
   Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -48,7 +50,7 @@ namespace YTE
 
   void Orientation::Initialize()
   {
-    mOwner->YTERegister(Events::RotationChanged, this, &Orientation::OnRotationChanged);
+    mOwner->RegisterEvent<&Orientation::OnRotationChanged>(Events::RotationChanged, this);
 
     const glm::vec3 forwardReset(0, 0, 1);
     const glm::vec3 rightReset(-1, 0, 0);
@@ -102,8 +104,6 @@ namespace YTE
 
   void Orientation::LookAt(glm::vec3 const &aDirection)
   {
-    //YTEUnusedArgument(aUp);
-    //
     /////Derived from pseudo code found here:
     /////http://stackoverflow.com/questions/13014973/quaternion-rotate-to
     ///// and actual code from :

@@ -133,21 +133,37 @@ namespace YTE
     void Remove();
     virtual RSValue RemoveSerialized(RSAllocator &aAllocator);
 
-    void RemoveComponent(Component *aComponent);
-    void RemoveComponent(BoundType *aComponent);
-    void RemoveComposition(Composition *aComposition);
+    void RemoveComponent(Component* aComponent);
+    void RemoveComponent(Type* aComponent);
+    void RemoveComposition(Composition* aComposition);
 
     void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
 
-    std::string IsDependecy(BoundType *aComponent);
-    std::string HasDependencies(BoundType *aComponent);
+    std::string IsDependecy(Type* aComponent);
+    std::string HasDependencies(Type* aComponent);
+
+    template <typename tComponentType>
+    tComponentType* GetComponent()
+    {
+      static_assert(std::is_base_of<Component, tComponentType>()
+                    && !std::is_same<Component, tComponentType>(),
+                    "Type must be derived from YTE::Component");
+      auto iterator = mComponents.Find(TypeId<tComponentType>());
+
+      if (iterator == mComponents.end())
+      {
+        return nullptr;
+      }
+
+      return static_cast<tComponentType*>(iterator->second.get());
+    }
 
     // Gets all Components of the given type that are part of or childed to this composition.
     template <typename ComponentType>
     std::vector<ComponentType*> GetComponents()
     {
-      static_assert(std::is_base_of<Component, ComponentType>()
-                    && !std::is_same<Component, ComponentType>());
+      static_assert(std::is_base_of<Component, ComponentType>() &&
+                    !std::is_same<Component, ComponentType>());
       // This function traverses all compositions and retrieves
       // all the components of the templated type.
       std::vector<ComponentType*> components;
@@ -169,23 +185,7 @@ namespace YTE
       return components;
     }
 
-    template <typename tComponentType>
-    tComponentType* GetComponent()
-    {
-      static_assert(std::is_base_of<Component, tComponentType>()
-                    && !std::is_same<Component, tComponentType>(),
-                    "Type must be derived from YTE::Component");
-      auto iterator = mComponents.Find(TypeId<tComponentType>());
-
-      if (iterator == mComponents.end())
-      {
-        return nullptr;
-      }
-
-      return static_cast<tComponentType*>(iterator->second.get());
-    }
-
-    Component* GetDerivedComponent(BoundType *aType);
+    Component* GetDerivedComponent(Type *aType);
 
     template <typename tComponentType>
     tComponentType* GetDerivedComponent()
@@ -197,7 +197,7 @@ namespace YTE
       return static_cast<tComponentType*>(GetDerivedComponent(TypeId<tComponentType>()));
     }
 
-    Component* GetComponent(BoundType *aType);
+    Component* GetComponent(Type *aType);
 
     template <typename ComponentType> 
     ComponentType* AddComponent(RSValue *aProperties = nullptr)
@@ -211,9 +211,9 @@ namespace YTE
 
       if (iterator == mComponents.end())
       {
-        auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(type);
+        auto factory = GetFactoryFromEngine(type);
 
-        auto component = addFactory->MakeComponent(this, mSpace, aProperties);
+        auto component = factory->MakeComponent(this, mSpace, aProperties);
         toReturn = static_cast<ComponentType*>(component.get());
 
         mComponents.Emplace(type, std::move(component));
@@ -227,12 +227,12 @@ namespace YTE
       return toReturn;
     }
 
-    Component* AddComponent(BoundType *aType, bool aCheckRunInEditor = false);
-    Component* AddComponent(BoundType *aType, RSValue *aProperties);
+    Component* AddComponent(Type* aType, bool aCheckRunInEditor = false);
+    Component* AddComponent(Type* aType, RSValue* aProperties);
 
-    Composition* FindFirstCompositionByName(String const &aName);
-    Composition* FindLastCompositionByName(String const &aName);
-    CompositionMap::range FindAllCompositionsByName(String const &aName);
+    Composition* FindFirstCompositionByName(String const& aName);
+    Composition* FindLastCompositionByName(String const& aName);
+    CompositionMap::range FindAllCompositionsByName(String const& aName);
 
     Composition* GetOwner() { return mOwner; };
     void SetOwner(Composition *aOwner);
@@ -245,7 +245,7 @@ namespace YTE
 
     ComponentMap* GetComponents() { return &mComponents; };
 
-    void SetArchetypeName(String &aArchName);
+    void SetArchetypeName(String& aArchName);
     String& GetArchetypeName();
     bool SameAsArchetype();
 
@@ -255,15 +255,17 @@ namespace YTE
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
   protected:
-    void ComponentClear();
-    std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
-                                  BoundType *aTypeToCheck);
 
-    void RemoveCompositionInternal(CompositionMap::iterator &aComposition);
-    void RemoveComponentInternal(ComponentMap::iterator &aComponent);
+    StringComponentFactory* GetFactoryFromEngine(Type* aType);
+    void ComponentClear();
+    std::string CheckDependencies(std::set<Type*> aTypesAvailible,
+                                  Type* aTypeToCheck);
+
+    void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
+    void RemoveComponentInternal(ComponentMap::iterator& aComponent);
     Composition* AddCompositionInternal(String aArchetype, String aObjectName);
     Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
-                                        RSValue *aSerialization, 
+                                        RSValue* aSerialization, 
                                         String aObjectName);
     bool ParentBeingDeleted();
 
@@ -282,7 +284,7 @@ namespace YTE
     bool mIsInitialized;
     bool mBeingDeleted;
 
-    Composition *mOwner;
+    Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
   };

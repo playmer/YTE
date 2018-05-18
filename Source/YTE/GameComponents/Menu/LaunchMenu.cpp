@@ -16,9 +16,10 @@ namespace YTE
 {
   YTEDefineType(LaunchMenu)
   {
-    YTERegisterType(LaunchMenu);
+    RegisterType<LaunchMenu>();
+    TypeBuilder<LaunchMenu> builder;
 
-    YTEBindProperty(&GetMenuToLaunch, &SetMenuToLaunch, "Menu To Launch")
+    builder.Property<&GetMenuToLaunch, &SetMenuToLaunch>( "Menu To Launch")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Menu that will be launched by triggering this menu element");
@@ -33,12 +34,12 @@ namespace YTE
 
   void LaunchMenu::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchMenu::OnElementTrigger);
+    mOwner->RegisterEvent<&LaunchMenu::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchMenu::OnElementTrigger(MenuElementTrigger *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     MenuStart menuStart;
     menuStart.PlaySound = false;

@@ -12,7 +12,8 @@ namespace YTE
 {
   YTEDefineType(FlybyCamera)
   {
-    YTERegisterType(FlybyCamera);
+    RegisterType<FlybyCamera>();
+    TypeBuilder<FlybyCamera> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
@@ -20,7 +21,7 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindField(&FlybyCamera::mMovementSpeed, "MovementSpeed", PropertyBinding::GetSet)
+    builder.Field<&FlybyCamera::mMovementSpeed>( "MovementSpeed", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with.");
@@ -31,7 +32,7 @@ namespace YTE
                            RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   FlybyCamera::~FlybyCamera()
@@ -49,12 +50,12 @@ namespace YTE
 
     mMouse = &mWindow->mMouse;
 
-    mMouse->YTERegister(Events::MouseMove,    this, &FlybyCamera::MouseMove);
-    mMouse->YTERegister(Events::MousePress,   this, &FlybyCamera::MousePress);
-    mMouse->YTERegister(Events::MouseRelease, this, &FlybyCamera::MouseRelease);
-    mWindow->mKeyboard.YTERegister(Events::KeyPersist, this, &FlybyCamera::KeyboardPersist);
+    mMouse->RegisterEvent<&FlybyCamera::MouseMove>(Events::MouseMove,    this);
+    mMouse->RegisterEvent<&FlybyCamera::MousePress>(Events::MousePress,   this);
+    mMouse->RegisterEvent<&FlybyCamera::MouseRelease>(Events::MouseRelease, this);
+    mWindow->mKeyboard.RegisterEvent<&FlybyCamera::KeyboardPersist>(Events::KeyPersist, this);
 
-    engine->YTERegister(Events::LogicUpdate, this, &FlybyCamera::Update);
+    engine->RegisterEvent<&FlybyCamera::Update>(Events::LogicUpdate, this);
   }
 
   void FlybyCamera::Update(LogicUpdate *aEvent)

@@ -16,9 +16,10 @@ namespace YTE
 {
   YTEDefineType(LaunchLevel)
   {
-    YTERegisterType(LaunchLevel);
+    RegisterType<LaunchLevel>();
+    TypeBuilder<LaunchLevel> builder;
 
-    YTEBindProperty(&GetLevelToLaunch, &SetLevelToLaunch, "LevelToLaunch")
+    builder.Property<&GetLevelToLaunch, &SetLevelToLaunch>( "LevelToLaunch")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -32,7 +33,7 @@ namespace YTE
 
   void LaunchLevel::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchLevel::OnElementTrigger);
+    mOwner->RegisterEvent<&LaunchLevel::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchLevel::OnElementTrigger(MenuElementTrigger *)

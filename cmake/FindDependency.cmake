@@ -13,7 +13,7 @@ Function(FindWWise aTarget)
     string(CONCAT errorString
        "Please define the environment variable `WWISESDK` with the path to WWise "
        "2017.1.0.6302 - i.e. export WWISESDK = "
-       "C:\Program Files (x86)\Audiokinetic\Wwise 2017.1.0.6302\SDK")
+       "C:\Program Files (x86)\Audiokinetic\Wwise 2017.2.4.6590\SDK")
     message(FATAL_ERROR ${errorString})
   endif()
 
@@ -61,15 +61,38 @@ Function(FindWWise aTarget)
        "${WWisePath}/x64_vc150/Release/lib/*.lib")
         
   file(GLOB_RECURSE 
+       staticLibraryProfile
+       "${WWisePath}/x64_vc150/Profile/lib"
+       "${WWisePath}/x64_vc150/Profile/lib/*.lib")
+        
+  file(GLOB_RECURSE 
        staticLibraryDebug
        "${WWisePath}/x64_vc150/Debug/lib"
        "${WWisePath}/x64_vc150/Debug/lib/*.lib")
 
   foreach(library ${staticLibraryRelease})
-    target_link_libraries(${aTarget} optimized ${library})
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} $<$<CONFIG:PUBLISH>:${library}>)
+      target_link_libraries(${aTarget} $<$<CONFIG:RELEASE>:${library}>)
+    endif()
+  endforeach()
+
+  foreach(library ${staticLibraryProfile})
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} $<$<CONFIG:RELWITHDEBINFO>:${library}>)
+      target_link_libraries(${aTarget} $<$<CONFIG:MINSIZEREL>:${library}>)
+    endif()
   endforeach()
     
   foreach(library ${staticLibraryDebug})
-    target_link_libraries(${aTarget} debug ${library})
+    get_filename_component(libraryName ${library} NAME_WE)
+
+    if (NOT ${libraryName} MATCHES "^AkMotionSink$")
+      target_link_libraries(${aTarget} debug ${library})
+    endif()
   endforeach()
 endfunction()

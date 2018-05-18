@@ -21,28 +21,12 @@ namespace YTE
 {
   YTEDefineType(BoxCollider)
   {
-    YTERegisterType(BoxCollider);
+    RegisterType<BoxCollider>();
+    TypeBuilder<BoxCollider> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
-
-    //YTEBindProperty(&BoxCollider::GetSize, &BoxCollider::SetSizeProperty, "Size")
-    //  .AddAttribute<EditorProperty>()
-    //  .AddAttribute<Serializable>();
-    //YTEBindProperty(&BoxCollider::GetOffset, &BoxCollider::SetOffsetProperty, "Offset")
-    //  .AddAttribute<EditorProperty>()
-    //  .AddAttribute<Serializable>();
-
-    //YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (const glm::vec3&)), "SetSize", YTEParameterNames("aSize"))
-    //  .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
-    //YTEBindFunction(&BoxCollider::SetSize, (void (BoxCollider::*) (float, float, float)), "SetSize", YTEParameterNames("aX" ,"aY" ,"aZ"))
-    //  .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
-    //
-    //YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (const glm::vec3&)), "SetOffset", YTEParameterNames("aOffset"))
-    //  .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
-    //YTEBindFunction(&BoxCollider::SetOffset, (void (BoxCollider::*) (float, float, float)), "SetOffset", YTEParameterNames("aX", "aY", "aZ"))
-    //  .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }
 
   BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)

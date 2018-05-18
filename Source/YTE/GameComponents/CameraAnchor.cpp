@@ -15,17 +15,19 @@
 namespace YTE
 {
   YTEDefineEvent(AttachCamera);
-  YTEDefineType(AttachCamera) { YTERegisterType(AttachCamera); }
+  YTEDefineType(AttachCamera) { RegisterType<AttachCamera>();
+    TypeBuilder<AttachCamera> builder; }
 
   YTEDefineType(CameraAnchor)
   {
-    YTERegisterType(CameraAnchor);
+    RegisterType<CameraAnchor>();
+    TypeBuilder<CameraAnchor> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&GetIsDefault, &SetIsDefault, "IsDefault")
+    builder.Property<&GetIsDefault, &SetIsDefault>( "IsDefault")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Flag for setting the default anchor -- that is, if no anchors are active, enable this one");
@@ -40,13 +42,13 @@ namespace YTE
 
   void CameraAnchor::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
-    mOwner->YTERegister(Events::DirectCameraEvent, this, &CameraAnchor::OnDirectCamera);
+    mSpace->RegisterEvent<&CameraAnchor::OnStart>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&CameraAnchor::OnDirectCamera>(Events::DirectCameraEvent, this);
 
     if (mIsDefault)
     {
-      mSpace->YTERegister(Events::DialogueExit, this, &CameraAnchor::OnDialogueExit);
-      mSpace->YTERegister(Events::StartGame, this, &CameraAnchor::OnStartGame);
+      mSpace->RegisterEvent<&CameraAnchor::OnDialogueExit>(Events::DialogueExit, this);
+      mSpace->RegisterEvent<&CameraAnchor::OnStartGame>(Events::StartGame, this);
     }
   }
 
@@ -69,7 +71,7 @@ namespace YTE
       mSpace->SendEvent(Events::AttachCamera, &attach);
     }*/
 
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &CameraAnchor::OnStart);
+    mSpace->DeregisterEvent<&CameraAnchor::OnStart>(Events::LogicUpdate,  this);
   }
 
   void CameraAnchor::OnDirectCamera(DirectCameraEvent *)

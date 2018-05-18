@@ -7,11 +7,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#include <allocators>
+#include <memory_resource>
 #include <array>
 #include <list>
 
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 namespace YTE
 {

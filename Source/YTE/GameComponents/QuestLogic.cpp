@@ -19,32 +19,36 @@ namespace YTE
   YTEDefineEvent(ProgressionLocationEvent);
   YTEDefineEvent(ProgressionDialogueEvent);
 
-  YTEDefineType(ProgressionItemEvent) { YTERegisterType(ProgressionItemEvent); }
-  YTEDefineType(ProgressionLocationEvent) { YTERegisterType(ProgressionLocationEvent); }
-  YTEDefineType(ProgressionDialogueEvent) { YTERegisterType(ProgressionDialogueEvent); }
+  YTEDefineType(ProgressionItemEvent) { RegisterType<ProgressionItemEvent>();
+    TypeBuilder<ProgressionItemEvent> builder; }
+  YTEDefineType(ProgressionLocationEvent) { RegisterType<ProgressionLocationEvent>();
+    TypeBuilder<ProgressionLocationEvent> builder; }
+  YTEDefineType(ProgressionDialogueEvent) { RegisterType<ProgressionDialogueEvent>();
+    TypeBuilder<ProgressionDialogueEvent> builder; }
 
-  YTEDefineType(QuestLogic) { YTERegisterType(QuestLogic); }
+  YTEDefineType(QuestLogic) { RegisterType<QuestLogic>();
+    TypeBuilder<QuestLogic> builder; }
 
   QuestLogic::QuestLogic(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void QuestLogic::Initialize()
   {
-    mSpace->YTERegister(Events::SpawnProgressionItem, this, &QuestLogic::OnSpawnProgressionItem);
-    mSpace->YTERegister(Events::SpawnProgressionLocation, this, &QuestLogic::OnSpawnProgressionLocation);
-    mSpace->YTERegister(Events::SpawnProgressionDialogue, this, &QuestLogic::OnSpawnProgressionDialogue);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionItem>(Events::SpawnProgressionItem, this);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionLocation>(Events::SpawnProgressionLocation, this);
+    mSpace->RegisterEvent<&QuestLogic::OnSpawnProgressionDialogue>(Events::SpawnProgressionDialogue, this);
 
-    mSpace->YTERegister(Events::ProgressionItemEvent, this, &QuestLogic::OnProgressionItemEvent);
-    mSpace->YTERegister(Events::ProgressionLocationEvent, this, &QuestLogic::OnProgressionLocationEvent);
-    mSpace->YTERegister(Events::ProgressionDialogueEvent, this, &QuestLogic::OnProgressionDialogueEvent);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionItemEvent>(Events::ProgressionItemEvent, this);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionLocationEvent>(Events::ProgressionLocationEvent, this);
+    mSpace->RegisterEvent<&QuestLogic::OnProgressionDialogueEvent>(Events::ProgressionDialogueEvent, this);
   }
 
   void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -77,7 +81,7 @@ namespace YTE
 
   void QuestLogic::OnProgressionLocationEvent(ProgressionLocationEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -110,7 +114,7 @@ namespace YTE
 
   void QuestLogic::OnProgressionDialogueEvent(ProgressionDialogueEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -143,7 +147,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 
@@ -176,7 +180,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 
@@ -209,7 +213,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 

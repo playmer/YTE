@@ -16,9 +16,10 @@ namespace YTE
 {
   YTEDefineType(ButtonAnimate)
   {
-    YTERegisterType(ButtonAnimate);
+    RegisterType<ButtonAnimate>();
+    TypeBuilder<ButtonAnimate> builder;
 
-    YTEBindProperty(&GetScaleFactor, &SetScaleFactor, "ScaleFactor")
+    builder.Property<&GetScaleFactor, &SetScaleFactor>( "ScaleFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Factor by which the UI element scales when hovered");
@@ -35,27 +36,27 @@ namespace YTE
   {
     mMyTransform = mOwner->GetComponent<Transform>();
 
-    //mSpace->YTERegister(Events::LogicUpdate, this, &ButtonAnimate::OnStart);
+    //mSpace->RegisterEvent<&ButtonAnimate::OnStart>(Events::LogicUpdate, this);
 
-    mOwner->YTERegister(Events::MenuElementHover, this, &ButtonAnimate::OnButtonHover);
-    mOwner->YTERegister(Events::MenuElementDeHover, this, &ButtonAnimate::OnButtonDeHover);
+    mOwner->RegisterEvent<&ButtonAnimate::OnButtonHover>(Events::MenuElementHover, this);
+    mOwner->RegisterEvent<&ButtonAnimate::OnButtonDeHover>(Events::MenuElementDeHover, this);
   }
 
   void ButtonAnimate::Start()
   {
     mNeutralScale = mMyTransform->GetScale();
-    //mSpace->YTEDeregister(Events::LogicUpdate, this, &ButtonAnimate::OnStart);
+    //mSpace->DeregisterEvent<&ButtonAnimate::OnStart>(Events::LogicUpdate,  this);
   }
 
   void ButtonAnimate::OnButtonHover(MenuElementHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMyTransform->SetScale(mScaleFactor * mNeutralScale);
   }
 
   void ButtonAnimate::OnButtonDeHover(MenuElementDeHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMyTransform->SetScale(mNeutralScale);
   }
 }

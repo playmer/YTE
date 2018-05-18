@@ -564,7 +564,7 @@ namespace YTE
     MONITORINFO monitorInformation = { sizeof(MONITORINFO) };
 
     auto result = GetMonitorInfo(monitorHandle, &monitorInformation);
-    YTEUnusedArgument(result);
+    UnusedArguments(result);
     DebugObjection(!result, "Couldn't retrieve monitor information.");
 
     auto right = monitorInformation.rcMonitor.right;
@@ -714,7 +714,7 @@ namespace YTE
 
   void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
   {
-    YTEUnusedArgument(aForMetro);
+    UnusedArguments(aForMetro);
     mFullscreen = aFullscreen;
 
     // We're not changing the previously requested height and width.

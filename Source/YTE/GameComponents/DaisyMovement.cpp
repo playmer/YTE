@@ -17,62 +17,63 @@ namespace YTE
 {
   YTEDefineType(DaisyMovement)
   {
-    YTERegisterType(DaisyMovement);
+    RegisterType<DaisyMovement>();
+    TypeBuilder<DaisyMovement> builder;
 
     // dock index
-    YTEBindProperty(&DaisyMovement::GetDockIndex, &DaisyMovement::SetDockIndex, "Dock Index")
+    builder.Property<&DaisyMovement::GetDockIndex, &DaisyMovement::SetDockIndex>( "Dock Index")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character positions
-    YTEBindProperty(&DaisyMovement::GetDockOnePos, &DaisyMovement::SetDockOnePos, "Dock One Position")
+    builder.Property<&DaisyMovement::GetDockOnePos, &DaisyMovement::SetDockOnePos>( "Dock One Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetDockTwoPos, &DaisyMovement::SetDockTwoPos, "Dock Two Position")
+    builder.Property<&DaisyMovement::GetDockTwoPos, &DaisyMovement::SetDockTwoPos>( "Dock Two Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetDockThreePos, &DaisyMovement::SetDockThreePos, "Dock Three Position")
+    builder.Property<&DaisyMovement::GetDockThreePos, &DaisyMovement::SetDockThreePos>( "Dock Three Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character rotations
-    YTEBindProperty(&DaisyMovement::GetCharRotOne, &DaisyMovement::SetCharRotOne, "Char Rotation One")
+    builder.Property<&DaisyMovement::GetCharRotOne, &DaisyMovement::SetCharRotOne>( "Char Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetCharRotTwo, &DaisyMovement::SetCharRotTwo, "Char Rotation Two")
+    builder.Property<&DaisyMovement::GetCharRotTwo, &DaisyMovement::SetCharRotTwo>( "Char Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetCharRotThree, &DaisyMovement::SetCharRotThree, "Char Rotation Three")
+    builder.Property<&DaisyMovement::GetCharRotThree, &DaisyMovement::SetCharRotThree>( "Char Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat offsets
-    YTEBindProperty(&DaisyMovement::GetBoatOffsetOne, &DaisyMovement::SetBoatOffsetOne, "Boat Offset One")
+    builder.Property<&DaisyMovement::GetBoatOffsetOne, &DaisyMovement::SetBoatOffsetOne>( "Boat Offset One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetBoatOffsetTwo, &DaisyMovement::SetBoatOffsetTwo, "Boat Offset Two")
+    builder.Property<&DaisyMovement::GetBoatOffsetTwo, &DaisyMovement::SetBoatOffsetTwo>( "Boat Offset Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetBoatOffsetThree, &DaisyMovement::SetBoatOffsetThree, "Boat Offset Three")
+    builder.Property<&DaisyMovement::GetBoatOffsetThree, &DaisyMovement::SetBoatOffsetThree>( "Boat Offset Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat rotations
-    YTEBindProperty(&DaisyMovement::GetBoatRotOne, &DaisyMovement::SetBoatRotOne, "Boat Rotation One")
+    builder.Property<&DaisyMovement::GetBoatRotOne, &DaisyMovement::SetBoatRotOne>( "Boat Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetBoatRotTwo, &DaisyMovement::SetBoatRotTwo, "Boat Rotation Two")
+    builder.Property<&DaisyMovement::GetBoatRotTwo, &DaisyMovement::SetBoatRotTwo>( "Boat Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&DaisyMovement::GetBoatRotThree, &DaisyMovement::SetBoatRotThree, "Boat Rotation Three")
+    builder.Property<&DaisyMovement::GetBoatRotThree, &DaisyMovement::SetBoatRotThree>( "Boat Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -116,7 +117,7 @@ namespace YTE
     mBoatRotations.emplace_back(mBoatRotationTwo);
     mBoatRotations.emplace_back(mBoatRotationThree);
 
-    mSpace->YTERegister(Events::QuestStart, this, &DaisyMovement::OnQuestStart);
+    mSpace->RegisterEvent<&DaisyMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void DaisyMovement::MoveToNextDock()

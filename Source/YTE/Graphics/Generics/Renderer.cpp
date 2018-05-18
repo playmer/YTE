@@ -14,7 +14,8 @@ namespace YTE
 {
   YTEDefineType(Renderer)
   {
-    YTERegisterType(Renderer);
+    RegisterType<Renderer>();
+    TypeBuilder<Renderer> builder;
   }
 
 
@@ -25,40 +26,36 @@ namespace YTE
 
   void Renderer::RegisterWindowForDraw(Window *aWindow)
   {
-    YTEUnusedArgument(aWindow);
+    UnusedArguments(aWindow);
   }
 
   void Renderer::DeregisterWindowFromDraw(Window * aWindow)
   {
-    YTEUnusedArgument(aWindow);
+    UnusedArguments(aWindow);
   }
 
   std::unique_ptr<InstantiatedModel> Renderer::CreateModel(GraphicsView *aView,
                                                            std::string &aMeshFile)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aMeshFile);
+    UnusedArguments(aView, aMeshFile);
 
     return nullptr;
   }
 
   std::unique_ptr<InstantiatedModel> Renderer::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aMesh);
+    UnusedArguments(aView, aMesh);
     return nullptr;
   }
 
   void Renderer::DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aModel);
+    UnusedArguments(aView, aModel);
   }
 
   Texture* Renderer::CreateTexture(std::string &aFilename, TextureType aType)
   {
-    YTEUnusedArgument(aFilename);
-    YTEUnusedArgument(aType);
+    UnusedArguments(aFilename, aType);
 
     return nullptr;
   }
@@ -72,42 +69,33 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType)
   {
-    YTEUnusedArgument(aName);
-    YTEUnusedArgument(aData);
-    YTEUnusedArgument(aLayout);
-    YTEUnusedArgument(aWidth);
-    YTEUnusedArgument(aHeight);
-    YTEUnusedArgument(aMipLevels);
-    YTEUnusedArgument(aLayerCount);
-    YTEUnusedArgument(aType);
+    UnusedArguments(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, aType);
 
     return nullptr;
   }
 
   Texture* Renderer::GetTexture(std::string &aFilename)
   {
-    YTEUnusedArgument(aFilename);
+    UnusedArguments(aFilename);
     return nullptr;
   }
 
   Mesh* Renderer::CreateSimpleMesh(std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
   {
-    YTEUnusedArgument(aName);
-    YTEUnusedArgument(aSubmeshes);
-		YTEUnusedArgument(aForceUpdate);
+    UnusedArguments(aName, aSubmeshes, aForceUpdate);
 
     return nullptr;
   }
 
   std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
     return nullptr;
   }
 
   std::unique_ptr<InstantiatedInfluenceMap> Renderer::CreateWaterInfluenceMap(GraphicsView* aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
     return nullptr;
   }
 
@@ -115,92 +103,83 @@ namespace YTE
 
   void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aUBOView);
+    UnusedArguments(aView, aUBOView);
   }
 
   void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aIllumination);
+    UnusedArguments(aView, aIllumination);
   }
 
 
   void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Renderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Renderer::PresentFrame(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
     return glm::vec4{};
   }
 
   void Renderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aColor);
+    UnusedArguments(aView, aColor);
   }
 
   void Renderer::AnimationUpdate(LogicUpdate* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Renderer::SetLights(bool aOnOrOff)
   {
-    YTEUnusedArgument(aOnOrOff);
+    UnusedArguments(aOnOrOff);
   }
 
   void Renderer::RegisterView(GraphicsView *aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
   }
 
   void Renderer::RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aDrawerType);
-    YTEUnusedArgument(aCombination);
+    UnusedArguments(aView, aDrawerType, aCombination);
   }
 
   void Renderer::SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aDrawerType);
-    YTEUnusedArgument(aCombination);
+    UnusedArguments(aView, aDrawerType, aCombination);
   }
 
   void Renderer::SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aCombination);
+    UnusedArguments(aView, aCombination);
   }
 
   void Renderer::DeregisterView(GraphicsView *aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
   }
 
   void Renderer::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
-    YTEUnusedArgument(aView);
-    YTEUnusedArgument(aNewOrder);
+    UnusedArguments(aView, aNewOrder);
   }
 
   void Renderer::ResetView(GraphicsView *aView)
   {
-    YTEUnusedArgument(aView);
+    UnusedArguments(aView);
   }
 }

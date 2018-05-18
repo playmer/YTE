@@ -7,7 +7,8 @@
 #define Utilities_hpp
 
 #include <cstdint>
-
+#include <cstddef>
+#include <cstring>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -16,9 +17,6 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
-
-#define enum_cast(aEnum) static_cast<size_t>(aEnum)
-#define YTEUnusedArgument(aArgument) (void)aArgument
 
 namespace YTE
 {
@@ -98,6 +96,18 @@ namespace YTE
     {
       return StringComparison::GreaterInString1;
     }
+  }
+
+
+  template <typename ...tArguments>
+  inline void UnusedArguments(tArguments const &...)
+  {
+  }
+
+  template <typename tTo = std::size_t, typename tEnum = int>
+  constexpr inline tTo EnumCast(tEnum aValue)
+  {
+    return static_cast<tTo>(aValue);
   }
 }
 

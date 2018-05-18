@@ -21,34 +21,40 @@ namespace YTE
 
   YTEDefineType(MouseWheelEvent)
   {
-    YTERegisterType(MouseWheelEvent);
-    YTEBindField(&MouseWheelEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
-    YTEBindField(&MouseWheelEvent::ScrollMovement, "ScrollMovement", PropertyBinding::Get);
+    RegisterType<MouseWheelEvent>();
+    TypeBuilder<MouseWheelEvent> builder;
+    builder.Field<&MouseWheelEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::ScrollMovement>( "ScrollMovement", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseButtonEvent)
   {
-    YTERegisterType(MouseButtonEvent);
-    YTEBindField(&MouseButtonEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
-    YTEBindField(&MouseButtonEvent::Button, "Button", PropertyBinding::Get);
+    RegisterType<MouseButtonEvent>();
+    TypeBuilder<MouseButtonEvent> builder;
+    builder.Field<&MouseButtonEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::Button>( "Button", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseMoveEvent)
   {
-    YTERegisterType(MouseMoveEvent);
-    YTEBindField(&MouseMoveEvent::WorldCoordinates, "WorldCoordinates", PropertyBinding::Get);
+    RegisterType<MouseMoveEvent>();
+    TypeBuilder<MouseMoveEvent> builder;
+    builder.Field<&MouseMoveEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
   }
 
   YTEDefineType(Mouse)
   {
-    YTERegisterType(Mouse);
-    YTEBindFunction(&Mouse::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed right now.";
-    YTEBindFunction(&Mouse::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed last frame.";
-
-    YTEBindProperty(&Mouse::GetCursorPosition, YTENoSetter, YTEParameterNames("CursorPosition")).Description()
-      = "Gets the current cursor position in screen coordinates.";
+    RegisterType<Mouse>();
+    TypeBuilder<Mouse> builder;
+    builder.Function<&Mouse::IsButtonDown>("IsButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed right now.");
+    builder.Function<&Mouse::WasButtonDown>("WasButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed last frame.");
+    
+    builder.Property<&Mouse::GetCursorPosition, NoSetter>("CursorPosition")
+      .SetDocumentation("Gets the current cursor position in screen coordinates.");
   }
 
   Mouse::Mouse()
@@ -67,7 +73,7 @@ namespace YTE
     MouseButtonEvent mouseEvent;
     mouseEvent.WorldCoordinates = mPosition;
 
-    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
@@ -89,7 +95,7 @@ namespace YTE
 
   void Mouse::UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition)
   {
-    size_t index = enum_cast(aButton);
+    size_t index = EnumCast(aButton);
 
     // Button got resent.
     if (mMouseCurrent[index] == aDown)
@@ -158,7 +164,7 @@ namespace YTE
 
   void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)
   {
-    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       auto button = static_cast<MouseButtons>(i);
       auto osButton = TranslateFromMouseButtonToOsKey(button);
@@ -170,7 +176,7 @@ namespace YTE
 
   bool Mouse::AnyButtonDown()
   {
-    for (size_t i = 0; i < enum_cast(MouseButtons::Mouse_Buttons_Number); ++i)
+    for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       if (mMouseCurrent[i])
       {
@@ -183,12 +189,12 @@ namespace YTE
 
   bool Mouse::IsButtonDown(MouseButtons aButton)
   {
-    return mMouseCurrent[enum_cast(aButton)];
+    return mMouseCurrent[EnumCast(aButton)];
   }
 
   bool Mouse::WasButtonDown(MouseButtons aButton)
   {
-    return mMousePrevious[enum_cast(aButton)];
+    return mMousePrevious[EnumCast(aButton)];
   }
 
   glm::i32vec2 Mouse::GetCursorPosition()

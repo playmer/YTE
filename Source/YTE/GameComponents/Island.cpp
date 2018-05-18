@@ -7,13 +7,14 @@ namespace YTE
 
   YTEDefineType(Island)
   {
-    YTERegisterType(Island);
+    RegisterType<Island>();
+    TypeBuilder<Island> builder;
   }
 
   Island::Island(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void Island::Initialize()

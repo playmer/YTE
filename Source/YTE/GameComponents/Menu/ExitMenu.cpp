@@ -16,9 +16,10 @@ namespace YTE
 {
   YTEDefineType(ExitMenu)
   {
-    YTERegisterType(ExitMenu);
+    RegisterType<ExitMenu>();
+    TypeBuilder<ExitMenu> builder;
 
-    YTEBindProperty(&GetShouldCloseAll, &SetShouldCloseAll, "ShouldCloseAll")
+    builder.Property<&GetShouldCloseAll, &SetShouldCloseAll>( "ShouldCloseAll")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Whether or not this element should close all menus or only this one");
@@ -33,7 +34,7 @@ namespace YTE
 
   void ExitMenu::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ExitMenu::OnElementTrigger);
+    mOwner->RegisterEvent<&ExitMenu::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void ExitMenu::OnElementTrigger(MenuElementTrigger *)

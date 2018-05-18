@@ -28,24 +28,26 @@ namespace YTE
 {
   YTEDefineType(RayCollisionInfo)
   {
-    YTERegisterType(RayCollisionInfo);
-    YTEBindField(&RayCollisionInfo::mObject, "Object", PropertyBinding::GetSet)
+    RegisterType<RayCollisionInfo>();
+    TypeBuilder<RayCollisionInfo> builder;
+    builder.Field<&RayCollisionInfo::mObject>( "Object", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindField(&RayCollisionInfo::mCollided, "Collided", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mCollided>( "Collided", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindField(&RayCollisionInfo::mDistance, "Distance", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mDistance>( "Distance", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    YTEBindField(&RayCollisionInfo::mPosition, "Position", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mPosition>( "Position", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
 
   YTEDefineType(PhysicsSystem)
   {
-    YTERegisterType(PhysicsSystem);
+    RegisterType<PhysicsSystem>();
+    TypeBuilder<PhysicsSystem> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
@@ -53,10 +55,12 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindFunction(&PhysicsSystem::ToggleDebugDrawOption, YTENoOverload, "ToggleDebugDrawOption", YTEParameterNames("aOption"));
-    YTEBindFunction(&PhysicsSystem::ToggleDebugDraw, YTENoOverload, "ToggleDebugDraw", YTENoNames);
-    YTEBindFunction(&PhysicsSystem::RayCast, YTENoOverload, "RayCast", YTEParameterNames("aPosition", "aDirection"));
-    YTEBindProperty(&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity, "Gravity")
+    builder.Function<&PhysicsSystem::ToggleDebugDrawOption>( "ToggleDebugDrawOption")
+      .SetParameterNames("aOption");
+    builder.Function<&PhysicsSystem::ToggleDebugDraw>("ToggleDebugDraw");
+    builder.Function<&PhysicsSystem::RayCast>("RayCast")
+      .SetParameterNames("aPosition", "aDirection");
+    builder.Property<&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity>( "Gravity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -65,9 +69,9 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mDebugDraw(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
-    mSpace->YTERegister(Events::PhysicsUpdate, this, &PhysicsSystem::OnPhysicsUpdate);
+    mSpace->RegisterEvent<&PhysicsSystem::OnPhysicsUpdate>(Events::PhysicsUpdate, this);
 
       // collision configuration contains default setup for memory , collision setup . Advanced
       // users can create their own configuration .
@@ -118,11 +122,11 @@ namespace YTE
       // Register for events.
     if (mDebugDraw)
     {
-      mOwner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mOwner->GetEngine()->RegisterEvent<&PhysicsSystem::DebugDrawUpdate>(Events::PreFrameUpdate, this);
     }
     else
     {
-      mOwner->GetEngine()->YTEDeregister(Events::PreFrameUpdate, this, &PhysicsSystem::DebugDrawUpdate);
+      mOwner->GetEngine()->DeregisterEvent<&PhysicsSystem::DebugDrawUpdate>(Events::PreFrameUpdate,  this);
       mDebugDrawer->clearLines();
     }
   }
@@ -136,12 +140,12 @@ namespace YTE
 
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mDebugDrawer->Begin();
     mDynamicsWorld->debugDrawWorld();
     mDebugDrawer->End();
@@ -149,12 +153,12 @@ namespace YTE
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     YTEProfileFunction();
 
     mDynamicsWorld->updateAabbs();
@@ -197,7 +201,7 @@ namespace YTE
 
   void PhysicsSystem::DispatchContactEvent(Composition *aMainObject, Composition *aOtherObject, btPersistentManifold *aManifold)
   {
-    YTEUnusedArgument(aManifold);
+    UnusedArguments(aManifold);
 
     if (aMainObject)
     {

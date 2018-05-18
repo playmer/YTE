@@ -11,7 +11,8 @@ namespace YTE
 {
   YTEDefineType(Dialogue)
   {
-    YTERegisterType(Dialogue);
+    RegisterType<Dialogue>();
+    TypeBuilder<Dialogue> builder;
 
     //std::vector<std::vector<Type*>> deps =
     //{
@@ -25,19 +26,19 @@ namespace YTE
     , mSprite(nullptr)
     , mActive(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
 
   void Dialogue::Initialize()
   {
-    //mOwner->YTERegister(Events::RequestDialogueStart, this, &Dialogue::OnDialogueStart);
-    //mSpace->YTERegister(Events::DialogueConfirm, this, &Dialogue::OnConfirm);
-    //mSpace->YTERegister(Events::DialogueExit, this, &Dialogue::OnExit);
+    //mOwner->RegisterEvent<&Dialogue::OnDialogueStart>(Events::RequestDialogueStart, this);
+    //mSpace->RegisterEvent<&Dialogue::OnConfirm>(Events::DialogueConfirm, this);
+    //mSpace->RegisterEvent<&Dialogue::OnExit>(Events::DialogueExit, this);
 
-    //mOwner->YTERegister(Events::CollisionPersisted, this, &Dialogue::OnCollisionPersist);
-    //mOwner->YTERegister(Events::CollisionStarted, this, &Dialogue::OnCollisionStart);
-    //mOwner->YTERegister(Events::CollisionEnded, this, &Dialogue::OnCollisionEnd);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionPersist>(Events::CollisionPersisted, this);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionStart>(Events::CollisionStarted, this);
+    //mOwner->RegisterEvent<&Dialogue::OnCollisionEnd>(Events::CollisionEnded, this);
 
     auto soundSystem = mSpace->GetEngine()->GetComponent<WWiseSystem>();
 
@@ -58,29 +59,29 @@ namespace YTE
 
   void Dialogue::Update(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Dialogue::OnCollisionPersist(CollisionPersisted * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Dialogue::OnCollisionStart(CollisionStarted * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mActive = true;
   }
 
   void Dialogue::OnCollisionEnd(CollisionEnded * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mActive = false;
   }
 
   void Dialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (!mActive)
     {
@@ -121,7 +122,7 @@ namespace YTE
 
   void Dialogue::OnConfirm(DialogueConfirm *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (!mActive)
     {
       return;
@@ -137,7 +138,7 @@ namespace YTE
 
   void Dialogue::OnExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (!mActive)
     {
       return;

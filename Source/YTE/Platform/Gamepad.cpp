@@ -18,46 +18,54 @@ namespace YTE
 
   YTEDefineType(XboxFlickEvent)
   {
-    YTERegisterType(XboxFlickEvent);
-    YTEBindField(&XboxFlickEvent::FlickDirection, "FlickDirection", PropertyBinding::Get);
-    YTEBindField(&XboxFlickEvent::FlickedStick, "FlickedStick", PropertyBinding::Get);
-    YTEBindField(&XboxFlickEvent::Controller, "Controller", PropertyBinding::Get);
+    RegisterType<XboxFlickEvent>();
+    TypeBuilder<XboxFlickEvent> builder;
+    builder.Field<&XboxFlickEvent::FlickDirection>( "FlickDirection", PropertyBinding::Get);
+    builder.Field<&XboxFlickEvent::FlickedStick>( "FlickedStick", PropertyBinding::Get);
+    builder.Field<&XboxFlickEvent::Controller>( "Controller", PropertyBinding::Get);
   }
   
   YTEDefineType(XboxStickEvent)
   {
-    YTERegisterType(XboxStickEvent);
-    YTEBindField(&XboxStickEvent::StickDirection, "StickDirection", PropertyBinding::Get);
-    YTEBindField(&XboxStickEvent::Stick, "Stick", PropertyBinding::Get);
-    YTEBindField(&XboxStickEvent::Controller, "Controller", PropertyBinding::Get);
+    RegisterType<XboxStickEvent>();
+    TypeBuilder<XboxStickEvent> builder;
+    builder.Field<&XboxStickEvent::StickDirection>( "StickDirection", PropertyBinding::Get);
+    builder.Field<&XboxStickEvent::Stick>( "Stick", PropertyBinding::Get);
+    builder.Field<&XboxStickEvent::Controller>( "Controller", PropertyBinding::Get);
   }
 
   YTEDefineType(XboxButtonEvent)
   {
-    YTERegisterType(XboxButtonEvent);
-    YTEBindField(&XboxButtonEvent::Button, "Button", PropertyBinding::GetSet);
-    YTEBindField(&XboxButtonEvent::Controller, "Controller", PropertyBinding::GetSet);
+    RegisterType<XboxButtonEvent>();
+    TypeBuilder<XboxButtonEvent> builder;
+    builder.Field<&XboxButtonEvent::Button>( "Button", PropertyBinding::GetSet);
+    builder.Field<&XboxButtonEvent::Controller>( "Controller", PropertyBinding::GetSet);
   }
 
 
   YTEDefineType(XboxController)
   {
-    YTERegisterType(XboxController);
-    YTEBindProperty(&XboxController::GetId, YTENoSetter, "Id");
-    YTEBindProperty(&XboxController::GetLeftStick, YTENoSetter, "LeftStick");
-    YTEBindProperty(&XboxController::GetRightStick, YTENoSetter, "RightStick");
-    YTEBindProperty(&XboxController::GetLeftTrigger, YTENoSetter, "LeftTrigger");
-    YTEBindProperty(&XboxController::GetRightTrigger, YTENoSetter, "RightTrigger");
-    YTEBindProperty(&XboxController::Active, YTENoSetter, "Active");
-
-    YTEBindFunction(&XboxController::IsButtonDown, YTENoOverload, "IsButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed right now.";
-    YTEBindFunction(&XboxController::WasButtonDown, YTENoOverload, "WasButtonDown", YTEParameterNames("aButton")).Description()
-      = "Finds if the given button is pressed last frame.";
-    //YTEBindFunction(&XboxController::Vibrate, YTENoOverload, "Vibrate", "aLeftSpeed, aRightSpeed").Description()
-    //  = "Sets the controllers motors to vibrate via the specified amounts.";
-    YTEBindFunction(&XboxController::VibrateForTime, YTENoOverload, "VibrateForTime", YTEParameterNames("aLeftSpeed", "aRightSpeed", "aTime")).Description()
-      = "The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.";
+    RegisterType<XboxController>();
+    TypeBuilder<XboxController> builder;
+    builder.Property<&XboxController::GetId, NoSetter>( "Id");
+    builder.Property<&XboxController::GetLeftStick, NoSetter>( "LeftStick");
+    builder.Property<&XboxController::GetRightStick, NoSetter>( "RightStick");
+    builder.Property<&XboxController::GetLeftTrigger, NoSetter>( "LeftTrigger");
+    builder.Property<&XboxController::GetRightTrigger, NoSetter>( "RightTrigger");
+    builder.Property<&XboxController::Active, NoSetter>( "Active");
+    
+    builder.Function<&XboxController::IsButtonDown>( "IsButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed right now.");
+    builder.Function<&XboxController::WasButtonDown>( "WasButtonDown")
+      .SetParameterNames("aButton")
+      .SetDocumentation("Finds if the given button is pressed last frame.");
+    builder.Function<&XboxController::Vibrate>("Vibrate")
+      .SetParameterNames("aLeftSpeed", "aRightSpeed")
+      .SetDocumentation("Sets the controllers motors to vibrate via the specified amounts.");
+    builder.Function<&XboxController::VibrateForTime>( "VibrateForTime")
+      .SetParameterNames("aLeftSpeed", "aRightSpeed", "aTime")
+      .SetDocumentation("The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.");
   }
 
   ///////////////////////////////////////

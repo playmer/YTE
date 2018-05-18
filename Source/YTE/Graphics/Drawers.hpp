@@ -84,6 +84,7 @@ namespace YTE
     void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3);
     void AddTriangle(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec4 aPoint3, glm::vec3 aColor);
     void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec3 aColor);
+    void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec4 aColor);
     void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3, glm::vec3 aColor);
 
     // This will set the lines given since the last Start() call to be drawn.

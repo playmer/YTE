@@ -9,7 +9,8 @@ namespace YTE
 {
   YTEDefineType(InstantiatedInfluenceMap)
   {
-    YTERegisterType(InstantiatedInfluenceMap);
+    RegisterType<InstantiatedInfluenceMap>();
+    TypeBuilder<InstantiatedInfluenceMap> builder;
   }
 
 

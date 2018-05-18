@@ -9,7 +9,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDrawerTypeDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result
     {
@@ -22,7 +22,7 @@ namespace YTE
 
   static std::vector<std::string> PopulateCombinationTypeDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result
     {
@@ -41,34 +41,35 @@ namespace YTE
 
   YTEDefineType(GraphicsView)
   {
-    YTERegisterType(GraphicsView);
+    RegisterType<GraphicsView>();
+    TypeBuilder<GraphicsView> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindField(&GraphicsView::mWindowName, "WindowName", PropertyBinding::GetSet)
+    builder.Field<&GraphicsView::mWindowName>( "WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&GraphicsView::GetOrder, &GraphicsView::SetOrder, "Order")
+    builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>( "Order")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The order to render the views. We render lowest to highest.");
 
-    YTEBindProperty(&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling, "SuperSampling")
+    builder.Property<&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling>( "SuperSampling")
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
 
-    YTEBindProperty(&GraphicsView::GetClearColor, &GraphicsView::SetClearColor, "ClearColor")
+    builder.Property<&GraphicsView::GetClearColor, &GraphicsView::SetClearColor>( "ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
 
-    YTEBindProperty(&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType, "DrawerType")
+    builder.Property<&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType>( "DrawerType")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDrawerTypeDropDownList);
-    YTEBindProperty(&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType, "DrawerCombination")
+    builder.Property<&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType>( "DrawerCombination")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateCombinationTypeDropDownList);
@@ -146,7 +147,7 @@ namespace YTE
     {
       mWindow = it->second.get();
     }
-    mWindow->mKeyboard.YTERegister(Events::KeyPress, this, &GraphicsView::KeyPressed);
+    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
 
     SetClearColor(mClearColor);
     mConstructing = false;

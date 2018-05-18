@@ -46,7 +46,7 @@ namespace YTE
   class AssetLoader
   {
     private:
-      std::array<std::map<std::string, std::shared_ptr<Asset>>, enum_cast(Asset::Type::_Count)>  mAssets;
+      std::array<std::map<std::string, std::shared_ptr<Asset>>, EnumCast(Asset::Type::_Count)>  mAssets;
     public:
       std::shared_ptr<Asset> LoadAsset(Asset::Type aType, const Path& aDirectory, std::string aFileNamee);
       bool UnloadAsset(std::shared_ptr<Asset> aAsset);

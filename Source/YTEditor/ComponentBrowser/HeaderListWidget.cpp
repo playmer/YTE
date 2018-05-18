@@ -2,7 +2,7 @@
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Composition.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Attribute.hpp"
 #include "YTE/Core/Utilities.hpp"
 

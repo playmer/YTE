@@ -18,7 +18,8 @@ namespace YTE
 {
   YTEDefineType(ToggleFullscreen)
   {
-    YTERegisterType(ToggleFullscreen);
+    RegisterType<ToggleFullscreen>();
+    TypeBuilder<ToggleFullscreen> builder;
   }
 
   ToggleFullscreen::ToggleFullscreen(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -35,8 +36,8 @@ namespace YTE
       mCheckSprite = childCheck->GetComponent<Sprite>();
     }
 
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ToggleFullscreen::OnElementTrigger);
-    mOwner->YTERegister(Events::UpdateVisibilityEvent, this, &ToggleFullscreen::OnParentVisibilityUpdated);
+    mOwner->RegisterEvent<&ToggleFullscreen::OnElementTrigger>(Events::MenuElementTrigger, this);
+    mOwner->RegisterEvent<&ToggleFullscreen::OnParentVisibilityUpdated>(Events::UpdateVisibilityEvent, this);
   }
 
   void ToggleFullscreen::OnElementTrigger(MenuElementTrigger *)

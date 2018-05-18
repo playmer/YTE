@@ -14,7 +14,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(QuestProgressionTrigger) { YTERegisterType(QuestProgressionTrigger); }
+  YTEDefineType(QuestProgressionTrigger) { RegisterType<QuestProgressionTrigger>();
+    TypeBuilder<QuestProgressionTrigger> builder; }
 
   QuestProgressionTrigger::QuestProgressionTrigger(Composition *aOwner, 
                                                    Space *aSpace, 
@@ -23,16 +24,16 @@ namespace YTE
     , mDeleteFlag(false)
     , mDeleteCounter(0)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void QuestProgressionTrigger::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &QuestProgressionTrigger::OnLogicUpdate);
-    mOwner->YTERegister(Events::CollisionStarted, this, &QuestProgressionTrigger::OnCollisionStarted);
+    mSpace->RegisterEvent<&QuestProgressionTrigger::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&QuestProgressionTrigger::OnCollisionStarted>(Events::CollisionStarted, this);
   }
 
-  void QuestProgressionTrigger::OnLogicUpdate(LogicUpdate *aEvent)
+  void QuestProgressionTrigger::OnLogicUpdate(LogicUpdate *)
   {
     if (mDeleteFlag)
     {

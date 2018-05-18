@@ -42,23 +42,26 @@ namespace YTE
 
   YTEDefineType(LogicUpdate)
   {
-    YTERegisterType(LogicUpdate);
-    YTEBindField(&LogicUpdate::Dt, "Dt", PropertyBinding::GetSet);
+    RegisterType<LogicUpdate>();
+    TypeBuilder<LogicUpdate> builder;
+    builder.Field<&LogicUpdate::Dt>( "Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
   {
-    YTERegisterType(BoundTypeChanged);
-    YTEBindField(&BoundTypeChanged::aOldType, "OldType", PropertyBinding::GetSet);
-    YTEBindField(&BoundTypeChanged::aNewType, "NewType", PropertyBinding::GetSet);
+    RegisterType<BoundTypeChanged>();
+    TypeBuilder<BoundTypeChanged> builder;
+    builder.Field<&BoundTypeChanged::aOldType>( "OldType", PropertyBinding::GetSet);
+    builder.Field<&BoundTypeChanged::aNewType>( "NewType", PropertyBinding::GetSet);
   }
 
   YTEDefineType(Engine)
   {
-    YTERegisterType(Engine);
-    YTEBindFunction(&Engine::EndExecution, YTENoOverload, "EndExecution", YTENoNames).Description()
-      = "End the execution of the program before the beginning of the next frame.";
-    YTEBindProperty(&Engine::GetGamepadSystem, YTENoSetter, "GamepadSystem");
+    RegisterType<Engine>();
+    TypeBuilder<Engine> builder;
+    builder.Function<&Engine::EndExecution>( "EndExecution")
+      .SetDocumentation("End the execution of the program before the beginning of the next frame.");
+    builder.Property<&Engine::GetGamepadSystem, NoSetter>( "GamepadSystem");
   }
 
   static String cEngineName{ "Engine" };
@@ -303,8 +306,10 @@ namespace YTE
     ++mFrame;
   }
 
+  // TODO: (Josh) Implement in some other more acceptable way. On by default imgui metrics window?
   void Engine::SetFrameRate(Window &aWindow, double aDt)
   {
+    UnusedArguments(aWindow);
     static double totalTime = 0.0;
     totalTime += aDt;
 

@@ -28,71 +28,84 @@ namespace YTE
 
   YTEDefineType(InitializeEvent)
   {
-    YTERegisterType(InitializeEvent);
+    RegisterType<InitializeEvent>();
+    TypeBuilder<InitializeEvent> builder;
 
-    YTEBindField(&InitializeEvent::CheckRunInEditor, "CheckRunInEditor", PropertyBinding::Get);
+    builder.Field<&InitializeEvent::CheckRunInEditor>( "CheckRunInEditor", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionAdded);
 
   YTEDefineType(CompositionAdded)
   {
-    YTERegisterType(CompositionAdded);
+    RegisterType<CompositionAdded>();
+    TypeBuilder<CompositionAdded> builder;
 
-    YTEBindField(&CompositionAdded::mComposition, "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionAdded::mComposition>( "Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionRemoved);
 
   YTEDefineType(CompositionRemoved)
   {
-    YTERegisterType(CompositionRemoved);
+    RegisterType<CompositionRemoved>();
+    TypeBuilder<CompositionRemoved> builder;
 
-    YTEBindField(&CompositionRemoved::mComposition, "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionRemoved::mComposition>( "Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(ParentChanged);
 
   YTEDefineType(ParentChanged)
   {
-    YTERegisterType(ParentChanged);
+    RegisterType<ParentChanged>();
+    TypeBuilder<ParentChanged> builder;
 
-    YTEBindField(&ParentChanged::mOldParent, "Old Parent", PropertyBinding::Get);
-    YTEBindField(&ParentChanged::mNewParent, "New Parent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mOldParent>( "Old Parent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mNewParent>( "New Parent", PropertyBinding::Get);
   }
 
   YTEDefineExternalType(CompositionMap::range)
   {
-    YTERegisterType(CompositionMap::range);
+    RegisterType<CompositionMap::range>();
+    TypeBuilder<CompositionMap::range> builder;
   }
 
   YTEDefineType(Composition)
   {
-    YTERegisterType(Composition);
+    RegisterType<Composition>();
+    TypeBuilder<Composition> builder;
 
-    YTEBindFunction(&Composition::Remove, YTENoOverload, "Remove", YTENoNames).Description()
-      = "Removes the composition from it's owner. This is delayed until the next frame.";
+    builder.Function<&Composition::Remove>( "Remove")
+      .SetDocumentation("Removes the composition from it's owner. This is delayed until the next frame.");
 
-    YTEBindFunction(&Composition::GetComponent, (Component* (Composition::*)(BoundType*)), "GetComponent", { "aType" }).Description()
-      = "Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.";
-    YTEBindFunction(&Composition::AddComponent, (Component*(Composition::*)(BoundType *, bool)), "AddComponent", YTEParameterNames("aType", "aCheckRunInEditor")).Description()
-      = "Adds a component via the typeid of the component you want.";
+    builder.Function<SelectOverload<Component* (Composition::*)(BoundType*),&Composition::GetComponent>()>("GetComponent")
+      .SetParameterNames("aType")
+      .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
+    builder.Function<SelectOverload<Component*(Composition::*)(BoundType *, bool),&Composition::AddComponent>()>("AddComponent")
+      .SetParameterNames("aType", "aCheckRunInEditor")
+      .SetDocumentation("Adds a component via the typeid of the component you want.");
 
-    YTEBindFunction(&Composition::FindFirstCompositionByName, YTENoOverload, "FindFirstCompositionByName", YTEParameterNames("aName")).Description()
-      = "Finds the first Composition with the given name. Does not search recursively.";
-    YTEBindFunction(&Composition::FindLastCompositionByName, YTENoOverload, "FindLastCompositionByName", YTEParameterNames("aName")).Description()
-      = "Finds the last Composition with the given name. Does not search recursively.";
-    YTEBindFunction(&Composition::FindAllCompositionsByName, YTENoOverload, "FindAllCompositionsByName", YTEParameterNames("aName")).Description()
-      = "Finds a Composition with the given name. Does not search recursively.";
+    builder.Function<&Composition::FindFirstCompositionByName>("FindFirstCompositionByName")
+      .SetParameterNames("aName")
+      .SetDocumentation("Finds the first Composition with the given name. Does not search recursively.");
+    builder.Function<&Composition::FindLastCompositionByName>("FindLastCompositionByName")
+      .SetParameterNames("aName")
+      .SetDocumentation("Finds the last Composition with the given name. Does not search recursively.");
+    builder.Function<&Composition::FindAllCompositionsByName>("FindAllCompositionsByName")
+      .SetParameterNames("aName")
+      .SetDocumentation("Finds a Composition with the given name. Does not search recursively.");
 
-    YTEBindFunction(&Composition::AddComposition, (Composition*(Composition::*)(String, String)), "AddObject", YTEParameterNames("aArchetype", "aName")).Description()
-      = "Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.";
-    YTEBindFunction(&Composition::AddCompositionAtPosition, YTENoOverload, "AddObjectAtPosition", YTEParameterNames("aArchetype", "aName", "aPosition")).Description()
-      = "Adds an archetype to this Space via the name of the Archetype. It takes the name of the object to name it and the position to place it.";
+    builder.Function<SelectOverload<Composition*(Composition::*)(String, String),&Composition::AddComposition>()>("AddObject")
+      .SetParameterNames("aArchetype", "aName")
+      .SetDocumentation("Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.");
+    builder.Function<&Composition::AddCompositionAtPosition>("AddObjectAtPosition")
+      .SetParameterNames("aArchetype", "aName", "aPosition")
+      .SetDocumentation("Adds an archetype to this Space via the name of the Archetype. It takes the name of the object to name it and the position to place it.");
 
-    YTEBindProperty(&Composition::GetName, YTENoSetter, "Name");
+    builder.Property<&Composition::GetName, NoSetter>( "Name");
 
-    YTEBindProperty(&Composition::GetSpace, YTENoSetter, "Space");
+    builder.Property<&Composition::GetSpace, NoSetter>( "Space");
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
@@ -106,17 +119,17 @@ namespace YTE
     , mBeingDeleted(false)
     , mGUID()
   {
-    mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+    mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
     auto parent = GetParent();
 
     if (nullptr != parent && this != parent)
     {
-      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
-      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
-      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
-      parent->YTERegister(Events::Start, this, &Composition::Start);
-      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
+      parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
+      parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
+      parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
+      parent->RegisterEvent<&Composition::Start>(Events::Start, this);
+      parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
     }
   };
 
@@ -131,17 +144,17 @@ namespace YTE
     , mBeingDeleted(false)
     , mGUID()
   {
-    mEngine->YTERegister(Events::BoundTypeChanged, this, &Composition::BoundTypeChangedHandler);
+    mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
     auto parent = GetParent();
 
     if (nullptr != parent && this != parent)
     {
-      parent->YTERegister(Events::NativeInitialize, this, &Composition::NativeInitialize);
-      parent->YTERegister(Events::PhysicsInitialize, this, &Composition::PhysicsInitialize);
-      parent->YTERegister(Events::Initialize, this, &Composition::Initialize);
-      parent->YTERegister(Events::Start, this, &Composition::Start);
-      parent->YTERegister(Events::Deinitialize, this, &Composition::Deinitialize);
+      parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
+      parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
+      parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
+      parent->RegisterEvent<&Composition::Start>(Events::Start, this);
+      parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
     }
   };
 
@@ -512,7 +525,7 @@ namespace YTE
     mEngine->mCompositionsToRemove.Erase(compositionRange);
 
     // Stop handling deletions, as we've completed all of them thus far.
-    GetSpaceOrEngine()->YTEDeregister(Events::DeletionUpdate, this, &Composition::BoundTypeChangedHandler);
+    GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
     SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
@@ -1292,7 +1305,7 @@ namespace YTE
       mCompositions.Erase(iter);
     }
 
-    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -1309,7 +1322,7 @@ namespace YTE
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
 
-    GetSpaceOrEngine()->YTERegister(Events::DeletionUpdate, this, &Composition::DeletionUpdate);
+    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void Composition::RemoveComponent(Component *aComponent)
@@ -1398,5 +1411,10 @@ namespace YTE
     mEngine->StoreCompositionGUID(this);
 
     return collision;
+  }
+
+  StringComponentFactory* Composition::GetFactoryFromEngine(Type* aType)
+  {
+    return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
   }
 }

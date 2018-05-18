@@ -22,17 +22,22 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   YTEDefineEvent(TutorialUpdate);
-  YTEDefineType(TutorialUpdate) { YTERegisterType(TutorialUpdate); }
+  YTEDefineType(TutorialUpdate) { RegisterType<TutorialUpdate>();
+    TypeBuilder<TutorialUpdate> builder; }
 
   YTEDefineEvent(SpawnProgressionItem);
   YTEDefineEvent(SpawnProgressionLocation);
   YTEDefineEvent(SpawnProgressionDialogue);
 
-  YTEDefineType(SpawnProgressionItem) { YTERegisterType(SpawnProgressionItem); }
-  YTEDefineType(SpawnProgressionLocation) { YTERegisterType(SpawnProgressionLocation); }
-  YTEDefineType(SpawnProgressionDialogue) { YTERegisterType(SpawnProgressionDialogue); }
+  YTEDefineType(SpawnProgressionItem) { RegisterType<SpawnProgressionItem>();
+    TypeBuilder<SpawnProgressionItem> builder; }
+  YTEDefineType(SpawnProgressionLocation) { RegisterType<SpawnProgressionLocation>();
+    TypeBuilder<SpawnProgressionLocation> builder; }
+  YTEDefineType(SpawnProgressionDialogue) { RegisterType<SpawnProgressionDialogue>();
+    TypeBuilder<SpawnProgressionDialogue> builder; }
 
-  YTEDefineType(JohnDialogue) { YTERegisterType(JohnDialogue); }
+  YTEDefineType(JohnDialogue) { RegisterType<JohnDialogue>();
+    TypeBuilder<JohnDialogue> builder; }
 
   JohnDialogue::JohnDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -41,7 +46,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::John, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::John, mSpace);
@@ -56,10 +61,10 @@ namespace YTE
 
   void JohnDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &JohnDialogue::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &JohnDialogue::OnCollisionEnded);
-    mSpace->YTERegister(Events::QuestStart, this, &JohnDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &JohnDialogue::OnUpdateActiveQuestState);
+    mOwner->RegisterEvent<&JohnDialogue::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&JohnDialogue::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
     {
@@ -218,21 +223,21 @@ namespace YTE
   // this is super bad but i need to call this by hand in the tutorial
   void JohnDialogue::RegisterDialogue()
   {
-    mSpace->YTERegister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-    mSpace->YTERegister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
-    mSpace->YTERegister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent, this);
+    mSpace->RegisterEvent<&JohnDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent, this);
   }
   
   // this is super bad but i need to call this by hand in the tutorial
   void JohnDialogue::DeregisterDialogue()
   {
-    mSpace->YTEDeregister(Events::DialogueStart, this, &JohnDialogue::OnDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &JohnDialogue::OnDialogueContinue);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &JohnDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &JohnDialogue::OnPlaySoundEvent);
-    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &JohnDialogue::OnPlayAnimationEvent);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueStart>(Events::DialogueStart,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnDialogueExit>(Events::DialogueExit,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent,  this);
+    mSpace->DeregisterEvent<&JohnDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent,  this);
   }
 
   void JohnDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -296,7 +301,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
     if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
@@ -322,7 +327,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSoundBranchAccumulator = 0; // reset the conversation skip number
 
     DialoguePossible diagEvent;

@@ -6,7 +6,8 @@ namespace YTE
 {
   YTEDefineType(ActionManager)
   {
-    YTERegisterType(ActionManager);
+    RegisterType<ActionManager>();
+    TypeBuilder<ActionManager> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
   }
@@ -14,7 +15,7 @@ namespace YTE
   ActionManager::ActionManager(Composition * aOwner, Space * aSpace, RSValue * aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void ActionManager::AddSequence(Composition *aComposition, const ActionSequence &sequence)
@@ -24,8 +25,8 @@ namespace YTE
 
   void ActionManager::Initialize()
   {
-    mOwner->YTERegister(Events::LogicUpdate, this, &ActionManager::Update);
-    GetSpace()->YTERegister(Events::CompositionRemoved, this, &ActionManager::OnCompositionRemoved);
+    mOwner->RegisterEvent<&ActionManager::Update>(Events::LogicUpdate, this);
+    GetSpace()->RegisterEvent<&ActionManager::OnCompositionRemoved>(Events::CompositionRemoved, this);
   }
 
   void ActionManager::Update(LogicUpdate *aUpdate)

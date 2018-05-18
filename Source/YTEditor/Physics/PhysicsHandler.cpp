@@ -76,11 +76,11 @@ namespace YTEditor
       mSolver.get(),
       mCollisionConfiguration.get());
 
-    aSpace->YTERegister(YTE::Events::CompositionAdded, this, &PhysicsHandler::AddedComposition);
-    aSpace->YTERegister(YTE::Events::CompositionRemoved, this, &PhysicsHandler::RemovedComposition);
-    aWindow->mMouse.YTERegister(YTE::Events::MousePress, this, &PhysicsHandler::OnMousePress);
-    aWindow->mMouse.YTERegister(YTE::Events::MousePersist, this, &PhysicsHandler::OnMousePersist);
-    aWindow->mMouse.YTERegister(YTE::Events::MouseRelease, this, &PhysicsHandler::OnMouseRelease);
+    aSpace->RegisterEvent<&PhysicsHandler::AddedComposition>(YTE::Events::CompositionAdded, this);
+    aSpace->RegisterEvent<&PhysicsHandler::RemovedComposition>(YTE::Events::CompositionRemoved, this);
+    aWindow->mMouse.RegisterEvent<&PhysicsHandler::OnMousePress>(YTE::Events::MousePress, this);
+    aWindow->mMouse.RegisterEvent<&PhysicsHandler::OnMousePersist>(YTE::Events::MousePersist, this);
+    aWindow->mMouse.RegisterEvent<&PhysicsHandler::OnMouseRelease>(YTE::Events::MouseRelease, this);
   }
 
 
@@ -234,7 +234,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    YTE::UnusedArguments(aEvent);
 
     mIsHittingObject = false;
     mIsGizmoActive = false;
@@ -280,13 +280,13 @@ namespace YTEditor
 
     mObjects.emplace(aComposition, std::move(uPtr));
 
-    aComposition->YTERegister(YTE::Events::PositionChanged, obj, &PickerObject::ChangedPositionAndRotation);
-    aComposition->YTERegister(YTE::Events::RotationChanged, obj, &PickerObject::ChangedPositionAndRotation);
-    aComposition->YTERegister(YTE::Events::ScaleChanged, obj, &PickerObject::ChangedScale);
+    aComposition->RegisterEvent<&PickerObject::ChangedPositionAndRotation>(YTE::Events::PositionChanged, obj);
+    aComposition->RegisterEvent<&PickerObject::ChangedPositionAndRotation>(YTE::Events::RotationChanged, obj);
+    aComposition->RegisterEvent<&PickerObject::ChangedScale>(YTE::Events::ScaleChanged, obj);
 
     if (model)
     {
-      aComposition->YTERegister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
+      aComposition->RegisterEvent<&PhysicsHandler::OnModelChanged>(YTE::Events::ModelChanged, this);
     }
 
     if (nullptr != model && model->GetMesh())
@@ -350,7 +350,7 @@ namespace YTEditor
 
     if (it != mObjects.end())
     {
-      aComposition->YTEDeregister(YTE::Events::ModelChanged, this, &PhysicsHandler::OnModelChanged);
+      aComposition->DeregisterEvent<&PhysicsHandler::OnModelChanged>(YTE::Events::ModelChanged,  this);
 
       mDynamicsWorld->removeCollisionObject(it->second->mGhostBody.get());
 

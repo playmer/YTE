@@ -7,13 +7,14 @@ namespace YTE
 
   YTEDefineType(Zone)
   {
-    YTERegisterType(Zone);
+    RegisterType<Zone>();
+    TypeBuilder<Zone> builder;
 
-    YTEBindProperty(&Zone::GetZoneName, &Zone::SetZoneName, "ZoneName")
+    builder.Property<&Zone::GetZoneName, &Zone::SetZoneName>( "ZoneName")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&Zone::GetZoneType, &Zone::SetZoneType, "ZoneType")
+    builder.Property<&Zone::GetZoneType, &Zone::SetZoneType>( "ZoneType")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }

@@ -1,4 +1,4 @@
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/Gizmos/Translate.hpp"
 #include "YTEditor/Gizmos/Scale.hpp"

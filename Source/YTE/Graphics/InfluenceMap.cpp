@@ -15,7 +15,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result{ "Linear", "Squared", "Cubic", "Logarithmic" };
     return result;
@@ -23,39 +23,40 @@ namespace YTE
 
   YTEDefineType(InfluenceMap)
   {
-    YTERegisterType(InfluenceMap);
+    RegisterType<InfluenceMap>();
+    TypeBuilder<InfluenceMap> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&InfluenceMap::GetRadius, &InfluenceMap::SetRadius, "Radius")
+    builder.Property<&InfluenceMap::GetRadius, &InfluenceMap::SetRadius>( "Radius")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&InfluenceMap::GetColor, &InfluenceMap::SetColor, "Color")
+    builder.Property<&InfluenceMap::GetColor, &InfluenceMap::SetColor>( "Color")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    YTEBindProperty(&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw, "DebugDraw")
+    builder.Property<&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw>( "DebugDraw")
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&InfluenceMap::GetColorIntensity, &InfluenceMap::SetColorIntensity, "ColorIntensity")
+    builder.Property<&InfluenceMap::GetColorIntensity, &InfluenceMap::SetColorIntensity>( "ColorIntensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&InfluenceMap::GetWaveIntensity, &InfluenceMap::SetWaveIntensity, "Wave Intensity")
+    builder.Property<&InfluenceMap::GetWaveIntensity, &InfluenceMap::SetWaveIntensity>( "Wave Intensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&InfluenceMap::GetActive, &InfluenceMap::SetActive, "Active")
+    builder.Property<&InfluenceMap::GetActive, &InfluenceMap::SetActive>( "Active")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&InfluenceMap::GetColorInfluenceFunction, &InfluenceMap::SetColorInfluenceFunction, "ColorInfluenceFunction")
+    builder.Property<&InfluenceMap::GetColorInfluenceFunction, &InfluenceMap::SetColorInfluenceFunction>( "ColorInfluenceFunction")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&InfluenceMap::GetWaveInfluenceFunction, &InfluenceMap::SetWaveInfluenceFunction, "WaveInfluenceFunction")
+    builder.Property<&InfluenceMap::GetWaveInfluenceFunction, &InfluenceMap::SetWaveInfluenceFunction>( "WaveInfluenceFunction")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
@@ -93,10 +94,10 @@ namespace YTE
 
   void InfluenceMap::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &InfluenceMap::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &InfluenceMap::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &InfluenceMap::TransformUpdate);
-    mEngine->YTERegister(Events::LogicUpdate, this, &InfluenceMap::Update);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&InfluenceMap::TransformUpdate>(Events::ScaleChanged, this);
+    mEngine->RegisterEvent<&InfluenceMap::Update>(Events::LogicUpdate, this);
 
     mTransform = mOwner->GetComponent<Transform>(); 
     mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), mGraphicsView->GetRenderer(), mGraphicsView);
@@ -108,7 +109,7 @@ namespace YTE
 
   void InfluenceMap::TransformUpdate(TransformChanged* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mInstantiatedInfluenceMap)
     {
@@ -150,11 +151,11 @@ namespace YTE
 
   void InfluenceMap::Update(LogicUpdate* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)
     {
-      mEngine->YTEDeregister(Events::LogicUpdate, this, &InfluenceMap::Update);
+      mEngine->DeregisterEvent<&InfluenceMap::Update>(Events::LogicUpdate,  this);
       if (mInstantiatedInfluenceMap)
       {
         mInstantiatedInfluenceMap->SetCenter(mTransform->GetTranslation());

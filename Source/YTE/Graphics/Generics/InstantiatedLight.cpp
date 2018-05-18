@@ -9,7 +9,8 @@ namespace YTE
 {
   YTEDefineType(InstantiatedLight)
   {
-    YTERegisterType(InstantiatedLight);
+    RegisterType<InstantiatedLight>();
+    TypeBuilder<InstantiatedLight> builder;
   }
 
 

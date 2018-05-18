@@ -33,12 +33,14 @@ namespace YTE
   YTEDefineEvent(GraphicsDataUpdateVk);
   YTEDefineType(GraphicsDataUpdateVk)
   {
-    YTERegisterType(GraphicsDataUpdateVk);
+    RegisterType<GraphicsDataUpdateVk>();
+    TypeBuilder<GraphicsDataUpdateVk> builder;
   }
 
   YTEDefineType(VkRenderedSurface)
   {
-    YTERegisterType(VkRenderedSurface);
+    RegisterType<VkRenderedSurface>();
+    TypeBuilder<VkRenderedSurface> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
   }
 
@@ -90,14 +92,10 @@ namespace YTE
 
     ResizeEvent(&event);
 
-    mWindow->YTERegister(Events::WindowResize,
-                         this,
-                         &VkRenderedSurface::ResizeEvent);
+    mWindow->RegisterEvent<&VkRenderedSurface::ResizeEvent>(Events::WindowResize, this);
 
     mConstructing = false;
   }
-
-
 
   VkRenderedSurface::~VkRenderedSurface()
   {
@@ -105,6 +103,7 @@ namespace YTE
     {
       PresentFrame();
     }
+
     mViewData.clear();
     mShaderCreateInfos.clear();
     mRenderToScreen.reset();
@@ -115,22 +114,14 @@ namespace YTE
     GetViewData(aView)->mViewUBOData = aUBOView;
     ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
     //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->YTERegister(Events::GraphicsDataUpdateVk,
-                      this,
-                      &VkRenderedSurface::GraphicsDataUpdateVkEvent);
-
+    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
   }
-
-
 
   void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->YTERegister(Events::GraphicsDataUpdateVk, this,
-                      &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
   }
-
-
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
   {
@@ -305,7 +296,7 @@ namespace YTE
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     auto baseDevice = static_cast<vk::PhysicalDevice>
                                   (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
@@ -510,16 +501,14 @@ namespace YTE
       auto &viewData = viewDataIt.second;
       viewData.mViewUBO->update<UBOView>(0, viewData.mViewUBOData, aEvent->mCBO);
       viewData.mIlluminationUBO->update<UBOIllumination>(0, viewData.mIlluminationUBOData, aEvent->mCBO);
-      this->YTEDeregister(Events::GraphicsDataUpdateVk, 
-                          this,
-                          &VkRenderedSurface::GraphicsDataUpdateVkEvent);
+      this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
     }
   }
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mWindow->IsMinimized())
     {

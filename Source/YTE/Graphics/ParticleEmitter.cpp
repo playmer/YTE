@@ -16,7 +16,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -39,67 +39,68 @@ namespace YTE
 
   YTEDefineType(ParticleEmitter)
   {
-    YTERegisterType(ParticleEmitter);
+    RegisterType<ParticleEmitter>();
+    TypeBuilder<ParticleEmitter> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { Transform::GetStaticType() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName, "Texture Name")
+    builder.Property<&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName>( "Texture Name")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&ParticleEmitter::GetPositionOffset, &ParticleEmitter::SetPositionOffset, "Position Offset")
+    builder.Property<&ParticleEmitter::GetPositionOffset, &ParticleEmitter::SetPositionOffset>( "Position Offset")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetInitVelocity, &ParticleEmitter::SetInitVelocity, "Init Velocity")
+    builder.Property<&ParticleEmitter::GetInitVelocity, &ParticleEmitter::SetInitVelocity>( "Init Velocity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetVelocityVariance, &ParticleEmitter::SetVelocityVariance, "Velocity Variance")
+    builder.Property<&ParticleEmitter::GetVelocityVariance, &ParticleEmitter::SetVelocityVariance>( "Velocity Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetLifetime, &ParticleEmitter::SetLifetime, "Lifetime")
+    builder.Property<&ParticleEmitter::GetLifetime, &ParticleEmitter::SetLifetime>( "Lifetime")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetLifetimeVariance, &ParticleEmitter::SetLifetimeVariance, "Lifetime Variance")
+    builder.Property<&ParticleEmitter::GetLifetimeVariance, &ParticleEmitter::SetLifetimeVariance>( "Lifetime Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetColor, &ParticleEmitter::SetColor, "Color")
+    builder.Property<&ParticleEmitter::GetColor, &ParticleEmitter::SetColor>( "Color")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetParticleScale, &ParticleEmitter::SetParticleScale, "Particle Scale")
+    builder.Property<&ParticleEmitter::GetParticleScale, &ParticleEmitter::SetParticleScale>( "Particle Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetParticleScaleVariance, &ParticleEmitter::SetParticleScaleVariance, "Scale Variance")
+    builder.Property<&ParticleEmitter::GetParticleScaleVariance, &ParticleEmitter::SetParticleScaleVariance>( "Scale Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetEmitterScale, &ParticleEmitter::SetEmitterScale, "Emitter Scale")
+    builder.Property<&ParticleEmitter::GetEmitterScale, &ParticleEmitter::SetEmitterScale>( "Emitter Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetEmitRate, &ParticleEmitter::SetEmitRate, "Emit Rate")
+    builder.Property<&ParticleEmitter::GetEmitRate, &ParticleEmitter::SetEmitRate>( "Emit Rate")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetEmitCount, &ParticleEmitter::SetEmitCount, "Emit Count")
+    builder.Property<&ParticleEmitter::GetEmitCount, &ParticleEmitter::SetEmitCount>( "Emit Count")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity, "Use Gravity")
+    builder.Property<&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity>( "Use Gravity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ParticleEmitter::GetGravityValue, &ParticleEmitter::SetGravityValue, "Gravity Scalar")
+    builder.Property<&ParticleEmitter::GetGravityValue, &ParticleEmitter::SetGravityValue>( "Gravity Scalar")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -131,7 +132,7 @@ namespace YTE
 
   void ParticleEmitter::Initialize()
   {
-    GetSpace()->YTERegister(Events::FrameUpdate, this, &ParticleEmitter::Update);
+    GetSpace()->RegisterEvent<&ParticleEmitter::Update>(Events::FrameUpdate, this);
 
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
 
@@ -141,7 +142,7 @@ namespace YTE
     }
 
     mPosition = mOwner->GetComponent<Transform>()->GetWorldTranslation();
-    mOwner->YTERegister(Events::PositionChanged, this, &ParticleEmitter::OnTransformChanged);
+    mOwner->RegisterEvent<&ParticleEmitter::OnTransformChanged>(Events::PositionChanged, this);
 
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mTimer = mEmitRate;
@@ -156,7 +157,7 @@ namespace YTE
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     double dt = GetSpace()->GetEngine()->GetDt();
 
     mTimer -= dt;

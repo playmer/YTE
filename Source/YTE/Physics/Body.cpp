@@ -17,13 +17,14 @@ namespace YTE
 {
   YTEDefineType(Body)
   {
-    YTERegisterType(Body);
+    RegisterType<Body>();
+    TypeBuilder<Body> builder;
   }
     
-  Body::Body(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Body::Body(Composition *aOwner, Space *aSpace, RSValue *)
     : Component(aOwner, aSpace)
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &Body::OnLogicUpdate);
+    mSpace->RegisterEvent<&Body::OnLogicUpdate>(Events::LogicUpdate, this);
   };
 
   Body::~Body()
@@ -32,7 +33,7 @@ namespace YTE
 
   void Body::OnLogicUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CollisionEvent newEvent;
     newEvent.OtherObject = nullptr;

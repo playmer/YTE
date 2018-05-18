@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qlineedit.h>
 
 #include "YTE/Core/Component.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
@@ -49,7 +49,7 @@ namespace YTEditor
       mSetter = aProp.second->GetSetter();
 
       // get property tooltip
-      YTE::String tip = aProp.second->Description();
+      std::string const& tip = aProp.second->GetDocumentation();
 
       // set tooltip for property label
       this->GetLabelWidget()->setToolTip(tip.c_str());

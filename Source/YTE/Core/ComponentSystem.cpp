@@ -16,7 +16,8 @@ namespace YTE
 {
   YTEDefineType(ComponentSystem)
   {
-    YTERegisterType(ComponentSystem);
+    RegisterType<ComponentSystem>();
+    TypeBuilder<ComponentSystem> builder;
 
   }
 
@@ -25,10 +26,10 @@ namespace YTE
                                    RSValue *aProperties)
     : Component(aOwner, nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     CoreComponentFactoryInitilization(static_cast<Engine*>(mOwner), mComponentFactories);
-    GetOwner()->YTERegister(Events::BoundTypeChanged, this, &ComponentSystem::BoundTypeChangedHandler);
+    GetOwner()->RegisterEvent<&ComponentSystem::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
   };
 
   void ComponentSystem::BoundTypeChangedHandler(BoundTypeChanged *aEvent)

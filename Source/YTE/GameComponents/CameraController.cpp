@@ -17,7 +17,8 @@ namespace YTE
 {
   YTEDefineType(CameraController)
   {
-    YTERegisterType(CameraController);
+    RegisterType<CameraController>();
+    TypeBuilder<CameraController> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
@@ -36,8 +37,8 @@ namespace YTE
   {
     mTransform = mOwner->GetComponent<Transform>();
 
-    mSpace->YTERegister(Events::AttachCamera, this, &CameraController::OnAttachCamera);
-    mSpace->YTERegister(Events::DebugSwitch, this, &CameraController::OnDebugSwitch);
+    mSpace->RegisterEvent<&CameraController::OnAttachCamera>(Events::AttachCamera, this);
+    mSpace->RegisterEvent<&CameraController::OnDebugSwitch>(Events::DebugSwitch, this);
   }
 
   void CameraController::OnAttachCamera(AttachCamera *aEvent)
@@ -45,14 +46,14 @@ namespace YTE
       // Detach ourselves from the previous anchor if we must
     if (mAnchor)
     {
-      mAnchor->YTEDeregister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
-      mAnchor->YTEDeregister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+      mAnchor->DeregisterEvent<&CameraController::OnAnchorPositionUpdate>(Events::PositionChanged,  this);
+      mAnchor->DeregisterEvent<&CameraController::OnAnchorRotationUpdate>(Events::RotationChanged,  this);
     }
 
     mAnchor = aEvent->Anchor;
     mAnchorTransform = mAnchor->GetComponent<Transform>();
-    mAnchor->YTERegister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
-    mAnchor->YTERegister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+    mAnchor->RegisterEvent<&CameraController::OnAnchorPositionUpdate>(Events::PositionChanged, this);
+    mAnchor->RegisterEvent<&CameraController::OnAnchorRotationUpdate>(Events::RotationChanged, this);
 
     mTransform->SetWorldTranslation(mAnchorTransform->GetWorldTranslation());
     mTransform->SetWorldRotation(mAnchorTransform->GetWorldRotation());
@@ -76,8 +77,8 @@ namespace YTE
       {
         if (mAnchorTransform)
         {
-          mAnchor->YTEDeregister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
-          mAnchor->YTEDeregister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+          mAnchor->DeregisterEvent<&CameraController::OnAnchorPositionUpdate>(Events::PositionChanged,  this);
+          mAnchor->DeregisterEvent<&CameraController::OnAnchorRotationUpdate>(Events::RotationChanged,  this);
         }
 
         mFlybyComponent = mOwner->AddComponent<FlybyCamera>();
@@ -91,8 +92,8 @@ namespace YTE
 
       if (mAnchorTransform != nullptr)
       {
-        mAnchor->YTERegister(Events::PositionChanged, this, &CameraController::OnAnchorPositionUpdate);
-        mAnchor->YTERegister(Events::RotationChanged, this, &CameraController::OnAnchorRotationUpdate);
+        mAnchor->RegisterEvent<&CameraController::OnAnchorPositionUpdate>(Events::PositionChanged, this);
+        mAnchor->RegisterEvent<&CameraController::OnAnchorRotationUpdate>(Events::RotationChanged, this);
 
         mTransform->SetWorldTranslation(mAnchorTransform->GetWorldTranslation());
         mTransform->SetWorldRotation(mAnchorTransform->GetWorldRotation());

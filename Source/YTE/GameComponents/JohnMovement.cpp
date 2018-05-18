@@ -16,62 +16,63 @@ namespace YTE
 {
   YTEDefineType(JohnMovement) 
   { 
-    YTERegisterType(JohnMovement); 
+    RegisterType<JohnMovement>();
+    TypeBuilder<JohnMovement> builder;
 
     // dock index
-    YTEBindProperty(&JohnMovement::GetDockIndex, &JohnMovement::SetDockIndex, "Dock Index")
+    builder.Property<&JohnMovement::GetDockIndex, &JohnMovement::SetDockIndex>( "Dock Index")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character positions
-    YTEBindProperty(&JohnMovement::GetDockOnePos, &JohnMovement::SetDockOnePos, "Dock One Position")
+    builder.Property<&JohnMovement::GetDockOnePos, &JohnMovement::SetDockOnePos>( "Dock One Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetDockTwoPos, &JohnMovement::SetDockTwoPos, "Dock Two Position")
+    builder.Property<&JohnMovement::GetDockTwoPos, &JohnMovement::SetDockTwoPos>( "Dock Two Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetDockThreePos, &JohnMovement::SetDockThreePos, "Dock Three Position")
+    builder.Property<&JohnMovement::GetDockThreePos, &JohnMovement::SetDockThreePos>( "Dock Three Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character rotations
-    YTEBindProperty(&JohnMovement::GetCharRotOne, &JohnMovement::SetCharRotOne, "Char Rotation One")
+    builder.Property<&JohnMovement::GetCharRotOne, &JohnMovement::SetCharRotOne>( "Char Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetCharRotTwo, &JohnMovement::SetCharRotTwo, "Char Rotation Two")
+    builder.Property<&JohnMovement::GetCharRotTwo, &JohnMovement::SetCharRotTwo>( "Char Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetCharRotThree, &JohnMovement::SetCharRotThree, "Char Rotation Three")
+    builder.Property<&JohnMovement::GetCharRotThree, &JohnMovement::SetCharRotThree>( "Char Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat offsets
-    YTEBindProperty(&JohnMovement::GetBoatOffsetOne, &JohnMovement::SetBoatOffsetOne, "Boat Offset One")
+    builder.Property<&JohnMovement::GetBoatOffsetOne, &JohnMovement::SetBoatOffsetOne>( "Boat Offset One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetBoatOffsetTwo, &JohnMovement::SetBoatOffsetTwo, "Boat Offset Two")
+    builder.Property<&JohnMovement::GetBoatOffsetTwo, &JohnMovement::SetBoatOffsetTwo>( "Boat Offset Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetBoatOffsetThree, &JohnMovement::SetBoatOffsetThree, "Boat Offset Three")
+    builder.Property<&JohnMovement::GetBoatOffsetThree, &JohnMovement::SetBoatOffsetThree>( "Boat Offset Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat rotations
-    YTEBindProperty(&JohnMovement::GetBoatRotOne, &JohnMovement::SetBoatRotOne, "Boat Rotation One")
+    builder.Property<&JohnMovement::GetBoatRotOne, &JohnMovement::SetBoatRotOne>( "Boat Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetBoatRotTwo, &JohnMovement::SetBoatRotTwo, "Boat Rotation Two")
+    builder.Property<&JohnMovement::GetBoatRotTwo, &JohnMovement::SetBoatRotTwo>( "Boat Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&JohnMovement::GetBoatRotThree, &JohnMovement::SetBoatRotThree, "Boat Rotation Three")
+    builder.Property<&JohnMovement::GetBoatRotThree, &JohnMovement::SetBoatRotThree>( "Boat Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -115,13 +116,13 @@ namespace YTE
     mBoatRotations.emplace_back(mBoatRotationTwo);
     mBoatRotations.emplace_back(mBoatRotationThree);
 
-    mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    mSpace->RegisterEvent<&JohnMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void JohnMovement::Start()
   {
    // mOwner->GetComponent<Transform>()->SetTranslation(mStartPos);
-    //mSpace->YTERegister(Events::QuestStart, this, &JohnMovement::OnQuestStart);
+    //mSpace->RegisterEvent<&JohnMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void JohnMovement::OnQuestStart(QuestStart *aEvent)

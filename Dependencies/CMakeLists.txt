@@ -5,6 +5,16 @@ add_subdirectory(kiss_fft)
 add_subdirectory(stb)
 add_subdirectory(imgui)
 
+
+# Turn off/configure various parts of Assimp.
+option(ASSIMP_BUILD_ASSIMP_TOOLS
+       "If the supplementary tools for Assimp are built in addition to the library."
+       OFF)
+
+option(ASSIMP_BUILD_TESTS
+       "If the test suite for Assimp is built in addition to the library."
+       OFF)
+
 add_subdirectory(assimp)
 
 get_target_property(assimpBinaryDir assimp BINARY_DIR)
@@ -17,16 +27,16 @@ target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 target_compile_options(assimp PRIVATE /bigobj)
 
 # Turn off/configure various parts of bullet3.
-OPTION(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
-OPTION(BUILD_UNIT_TESTS "Build Unit Tests"	OFF)
-OPTION(USE_GRAPHICAL_BENCHMARK "Use Graphical Benchmark" OFF)
-OPTION(BUILD_BULLET2_DEMOS "Set when you want to build the Bullet 2 demos" OFF)
-OPTION(BUILD_EXTRAS "Set when you want to build the extras" OFF)
-OPTION(INSTALL_LIBS "Set when you want to install libraries" OFF)
-OPTION(BUILD_CPU_DEMOS "Build original Bullet CPU examples" OFF)
-OPTION(BUILD_ENET "Set when you want to build apps with enet UDP networking support" OFF)
-OPTION(BUILD_CLSOCKET "Set when you want to build apps with enet TCP networking support" OFF)
-OPTION(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC Runtime Library DLL (/MD or /MDd)" ON)
+option(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
+option(BUILD_UNIT_TESTS "Build Unit Tests"	OFF)
+option(USE_GRAPHICAL_BENCHMARK "Use Graphical Benchmark" OFF)
+option(BUILD_BULLET2_DEMOS "Set when you want to build the Bullet 2 demos" OFF)
+option(BUILD_EXTRAS "Set when you want to build the extras" OFF)
+option(INSTALL_LIBS "Set when you want to install libraries" OFF)
+option(BUILD_CPU_DEMOS "Build original Bullet CPU examples" OFF)
+option(BUILD_ENET "Set when you want to build apps with enet UDP networking support" OFF)
+option(BUILD_CLSOCKET "Set when you want to build apps with enet TCP networking support" OFF)
+option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC Runtime Library DLL (/MD or /MDd)" ON)
 
 add_subdirectory(bullet3)
 

@@ -18,7 +18,8 @@ namespace YTE
 {
   YTEDefineType(ChangeResolution)
   {
-    YTERegisterType(ChangeResolution);
+    RegisterType<ChangeResolution>();
+    TypeBuilder<ChangeResolution> builder;
   }
 
   ChangeResolution::ChangeResolution(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -49,7 +50,7 @@ namespace YTE
       mFieldText = text->GetComponent<SpriteText>();
     }
 
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ChangeResolution::OnElementTrigger);
+    mOwner->RegisterEvent<&ChangeResolution::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void ChangeResolution::Start()
@@ -147,8 +148,8 @@ namespace YTE
     auto window = mSpace->GetComponent<GraphicsView>()->GetWindow();
     window->SetResolution(mCurrWidth, mCurrHeight);
 
-    mSpace->YTEDeregister(Events::OptionsConfirmEvent, this, &ChangeResolution::OnConfirm);
-    mSpace->YTEDeregister(Events::OptionsFlickEvent, this, &ChangeResolution::OnStickFlickEvent);
+    mSpace->DeregisterEvent<&ChangeResolution::OnConfirm>(Events::OptionsConfirmEvent,  this);
+    mSpace->DeregisterEvent<&ChangeResolution::OnStickFlickEvent>(Events::OptionsFlickEvent,  this);
     mSpace->GetOwner()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Menu);
   }
 
@@ -165,8 +166,8 @@ namespace YTE
       mArrows.mRight->SetVisibility(true);
     }
 
-    mSpace->YTERegister(Events::OptionsConfirmEvent, this, &ChangeResolution::OnConfirm);
-    mSpace->YTERegister(Events::OptionsFlickEvent, this, &ChangeResolution::OnStickFlickEvent);
+    mSpace->RegisterEvent<&ChangeResolution::OnConfirm>(Events::OptionsConfirmEvent, this);
+    mSpace->RegisterEvent<&ChangeResolution::OnStickFlickEvent>(Events::OptionsFlickEvent, this);
     mSpace->GetOwner()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Options);
   }
 }

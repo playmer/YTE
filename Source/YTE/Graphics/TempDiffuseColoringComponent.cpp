@@ -10,9 +10,10 @@ namespace YTE
 {
   YTEDefineType(TempDiffuseColoringComponent)
   {
-    YTERegisterType(TempDiffuseColoringComponent);
+    RegisterType<TempDiffuseColoringComponent>();
+    TypeBuilder<TempDiffuseColoringComponent> builder;
 
-    YTEBindProperty(&TempDiffuseColoringComponent::GetDiffuseColor, &TempDiffuseColoringComponent::SetDiffuseColor, "Diffuse Color")
+    builder.Property<&TempDiffuseColoringComponent::GetDiffuseColor, &TempDiffuseColoringComponent::SetDiffuseColor>( "Diffuse Color")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Change the diffuse color");

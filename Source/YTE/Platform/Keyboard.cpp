@@ -19,19 +19,24 @@ namespace YTE
 
   YTEDefineType(KeyboardEvent)
   {
-    YTERegisterType(KeyboardEvent);
-    YTEBindField(&KeyboardEvent::Key, "Key", PropertyBinding::Get);
+    RegisterType<KeyboardEvent>();
+    TypeBuilder<KeyboardEvent> builder;
+    builder.Field<&KeyboardEvent::Key>( "Key", PropertyBinding::Get);
   }
 
   YTEDefineType(Keyboard)
   {
-    YTERegisterType(Keyboard);
-    YTEBindFunction(&Keyboard::IsKeyPressed, YTENoOverload, "IsKeyPressed", YTEParameterNames("aKey")).Description()
-      = "Finds if the given button is pressed right now.";
-    YTEBindFunction(&Keyboard::IsKeyDown, YTENoOverload, "IsKeyDown", YTEParameterNames("aKey")).Description()
-      = "Finds if the given button is down right now.";
-    YTEBindFunction(&Keyboard::WasKeyDown, YTENoOverload, "WasKeyDown", YTEParameterNames("aKey")).Description()
-      = "Finds if the given button was down last frame.";
+    RegisterType<Keyboard>();
+    TypeBuilder<Keyboard> builder;
+    builder.Function<&Keyboard::IsKeyPressed>( "IsKeyPressed")
+      .SetParameterNames("aKey")
+      .SetDocumentation("Finds if the given button is pressed right now.");
+    builder.Function<&Keyboard::IsKeyDown>( "IsKeyDown")
+      .SetParameterNames("aKey")
+      .SetDocumentation("Finds if the given button is down right now.");
+    builder.Function<&Keyboard::WasKeyDown>( "WasKeyDown")
+      .SetParameterNames("aKey")
+      .SetDocumentation("Finds if the given button was down last frame.");
   }
 
   Keyboard::Keyboard()
@@ -47,7 +52,7 @@ namespace YTE
   {
     KeyboardEvent keyEvent;
 
-    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
+    for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)
     {
       if (mKeysCurrent[i] && mKeysPrevious[i])
       {
@@ -97,7 +102,7 @@ namespace YTE
 
   void Keyboard::ForceAllKeysUp()
   {
-    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
+    for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)
     {
       UpdateKey(static_cast<Keys>(i), false);
     }

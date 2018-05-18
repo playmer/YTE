@@ -168,7 +168,7 @@ namespace YTE
 
   std::shared_ptr<Asset> AssetLoader::LoadAsset(Asset::Type aType, const Path& aDirectory, std::string aFileName)
   {
-    auto& mapContainer = mAssets[enum_cast(aType)];
+    auto& mapContainer = mAssets[EnumCast(aType)];
     auto assetIt = mapContainer.find(aFileName);
     if (assetIt != mapContainer.end())
     {
@@ -218,7 +218,7 @@ namespace YTE
   // TODO(Evan): Make this stage files to be unloaded instead of doing it right away <3
   bool AssetLoader::UnloadAsset(std::shared_ptr<Asset> aAsset)
   {
-    auto &mapContainer = mAssets[enum_cast(aAsset->GetType())];
+    auto &mapContainer = mAssets[EnumCast(aAsset->GetType())];
     if (aAsset.use_count() < 3)
     {
       auto it = mapContainer.find(aAsset->GetName());

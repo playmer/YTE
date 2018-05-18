@@ -27,7 +27,8 @@ namespace YTE
 {
   YTEDefineType(GhostBody)
   {
-    YTERegisterType(GhostBody);
+    RegisterType<GhostBody>();
+    TypeBuilder<GhostBody> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() },
                                              { TypeId<BoxCollider>(),
@@ -83,7 +84,7 @@ namespace YTE
 
     mIsInitialized = true;
 
-    mOwner->YTERegister(Events::PositionChanged, this, &GhostBody::TransformEvent);
+    mOwner->RegisterEvent<&GhostBody::TransformEvent>(Events::PositionChanged, this);
   }
 
   void GhostBody::TransformEvent(TransformChanged *aEvent)

@@ -25,7 +25,8 @@ namespace YTE
 {
   YTEDefineType(VkImguiDrawer)
   {
-    YTERegisterType(VkImguiDrawer);
+    RegisterType<VkImguiDrawer>();
+    TypeBuilder<VkImguiDrawer> builder;
   }
 
   VkImguiDrawer::VkImguiDrawer(VkRenderedSurface *aSurface,
@@ -78,14 +79,14 @@ namespace YTE
                                            1,
                                            vk::ImageViewType::e2D);
 
-    owner->GetEngine()->YTERegister(Events::PreFrameUpdate, this, &VkImguiDrawer::PreFrameUpdate);
+    owner->GetEngine()->RegisterEvent<&VkImguiDrawer::PreFrameUpdate>(Events::PreFrameUpdate, this);
   }
 
   static const std::string imguiStr{ "Imgui" };
 
   void VkImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
   {
-    YTEUnusedArgument(aUpdate);
+    UnusedArguments(aUpdate);
     YTEProfileFunction();
 
     mContext->SetCurrentContext();
@@ -171,7 +172,7 @@ namespace YTE
 
   void VkImguiDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>> &aMeshes)
   {
-    YTEUnusedArgument(aMeshes);
+    UnusedArguments(aMeshes);
 
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
@@ -184,7 +185,7 @@ namespace YTE
 
   void VkImguiDrawer::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
   }
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
@@ -263,6 +264,6 @@ namespace YTE
 
   void VkImguiDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
   }
 }

@@ -15,7 +15,8 @@ namespace YTE
 {
   YTEDefineType(Object)
   {
-    YTERegisterType(Object);
+    RegisterType<Object>();
+    TypeBuilder<Object> builder;
   }
 
   Property* Object::GetProperty(const std::string &aName, Type *aType)
@@ -126,7 +127,7 @@ namespace YTE
 
         auto enumValue = enumType->GetFirstProperty(value->GetString());
 
-        YTEUnusedArgument(enumValue);
+        UnusedArguments(enumValue);
 
         DebugObjection(enumValue == nullptr,
           "Did not find value for enum property %s, on type %s",
@@ -202,7 +203,7 @@ namespace YTE
                                             Type *aType)
   {
     // TODO (Josh): Why is this being passed?.
-    YTEUnusedArgument(aType);
+    UnusedArguments(aType);
 
     for (auto &property : aMap)
     {

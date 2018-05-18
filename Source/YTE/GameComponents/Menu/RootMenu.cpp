@@ -16,7 +16,8 @@ namespace YTE
 {
   YTEDefineType(RootMenu)
   {
-    YTERegisterType(RootMenu);
+    RegisterType<RootMenu>();
+    TypeBuilder<RootMenu> builder;
   }
 
   RootMenu::RootMenu(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace)
@@ -26,7 +27,7 @@ namespace YTE
 
   void RootMenu::Initialize()
   {
-    mSpace->YTERegister(Events::MenuStart, this, &RootMenu::OnMenuStart);
+    mSpace->RegisterEvent<&RootMenu::OnMenuStart>(Events::MenuStart, this);
   }
 
   void RootMenu::OnMenuStart(MenuStart *aEvent)

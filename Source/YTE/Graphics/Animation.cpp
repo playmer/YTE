@@ -24,42 +24,46 @@ namespace YTE
 
   YTEDefineType(KeyFrameChanged)
   {
-    YTERegisterType(KeyFrameChanged);
-    YTEBindField(&KeyFrameChanged::animation, "animation", PropertyBinding::Get);
-    YTEBindField(&KeyFrameChanged::time, "time", PropertyBinding::Get);
+    RegisterType<KeyFrameChanged>();
+    TypeBuilder<KeyFrameChanged> builder;
+    builder.Field<&KeyFrameChanged::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::time>( "time", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationAdded);
 
   YTEDefineType(AnimationAdded)
   {
-    YTERegisterType(AnimationAdded);
-    YTEBindField(&AnimationAdded::animation, "animation", PropertyBinding::Get);
+    RegisterType<AnimationAdded>();
+    TypeBuilder<AnimationAdded> builder;
+    builder.Field<&AnimationAdded::animation>( "animation", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationRemoved);
 
   YTEDefineType(AnimationRemoved)
   {
-    YTERegisterType(AnimationRemoved);
-    YTEBindField(&AnimationRemoved::animation, "animation", PropertyBinding::Get);
+    RegisterType<AnimationRemoved>();
+    TypeBuilder<AnimationRemoved> builder;
+    builder.Field<&AnimationRemoved::animation>( "animation", PropertyBinding::Get);
   }
 
 
   YTEDefineType(Animation)
   {
-    YTERegisterType(Animation);
+    RegisterType<Animation>();
+    TypeBuilder<Animation> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Animation::GetSpeed, &Animation::SetSpeed, "Speed")
+    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>( "Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
 
-    YTEBindProperty(&Animation::GetPlayOverTime, &Animation::SetPlayOverTime, "PlayOverTime")
+    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>( "PlayOverTime")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("True if the animation should play with respect to time.");
@@ -75,7 +79,7 @@ namespace YTE
       aiProcess_CalcTangentSpace |
       aiProcess_GenSmoothNormals);
 
-    YTEUnusedArgument(scene);
+    UnusedArguments(scene);
 
     DebugObjection(scene == nullptr,
       "Failed to load animation file %s from assimp",
@@ -357,7 +361,8 @@ namespace YTE
 
   YTEDefineType(Animator)
   {
-    YTERegisterType(Animator);
+    RegisterType<Animator>();
+    TypeBuilder<Animator> builder;
 
     GetStaticType()->AddAttribute<EditorHeaderList>(&Deserializer,
                                                     &Serializer,
@@ -405,7 +410,7 @@ namespace YTE
       it.second->Initialize(mModel, mEngine);
     }
 
-    mEngine->YTERegister(Events::AnimationUpdate, this, &Animator::Update);
+    mEngine->RegisterEvent<&Animator::Update>(Events::AnimationUpdate, this);
   }
 
   void Animator::Update(LogicUpdate *aEvent)

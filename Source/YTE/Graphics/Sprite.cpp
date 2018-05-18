@@ -16,7 +16,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -39,32 +39,33 @@ namespace YTE
 
   YTEDefineType(Sprite)
   {
-    YTERegisterType(Sprite);
+    RegisterType<Sprite>();
+    TypeBuilder<Sprite> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Sprite::GetTexture, &Sprite::SetTexture, "Texture")
+    builder.Property<&Sprite::GetTexture, &Sprite::SetTexture>( "Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Sprite::GetColumns, &Sprite::SetColumns, "Columns")
+    builder.Property<&Sprite::GetColumns, &Sprite::SetColumns>( "Columns")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetRows, &Sprite::SetRows, "Rows")
+    builder.Property<&Sprite::GetRows, &Sprite::SetRows>( "Rows")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetFrames, &Sprite::SetFrames, "Frames")
+    builder.Property<&Sprite::GetFrames, &Sprite::SetFrames>( "Frames")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Sprite::GetSpeed, &Sprite::SetSpeed, "Speed")
+    builder.Property<&Sprite::GetSpeed, &Sprite::SetSpeed>( "Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("How many seconds it will take for the full animation to run.");
 
-    YTEBindProperty(&Sprite::GetAnimating, &Sprite::SetAnimating, "Animating")
+    builder.Property<&Sprite::GetAnimating, &Sprite::SetAnimating>( "Animating")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -156,11 +157,11 @@ namespace YTE
 
     if (aAnimating)
     {
-      mSpace->YTERegister(Events::LogicUpdate, this, &Sprite::Update);
+      mSpace->RegisterEvent<&Sprite::Update>(Events::LogicUpdate, this);
     }
     else
     {
-      mSpace->YTEDeregister(Events::LogicUpdate, this, &Sprite::Update);
+      mSpace->DeregisterEvent<&Sprite::Update>(Events::LogicUpdate,  this);
     }
   }
 
@@ -170,9 +171,9 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Sprite::TransformUpdate);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::ScaleChanged, this);
 
     CreateSprite();
   }
@@ -180,7 +181,7 @@ namespace YTE
 
   void Sprite::TransformUpdate(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CreateTransform();
 
@@ -218,7 +219,7 @@ namespace YTE
       return;
     }
 
-    auto texture = mRenderer->CreateTexture(mTextureName, TextureType::e2D);
+    auto texture = mRenderer->GetTexture(mTextureName);
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;

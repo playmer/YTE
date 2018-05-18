@@ -18,7 +18,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -43,10 +43,11 @@ namespace YTE
 
   YTEDefineType(Skybox)
   {
-    YTERegisterType(Skybox);
+    RegisterType<Skybox>();
+    TypeBuilder<Skybox> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Skybox::GetTexture, &Skybox::SetTexture, "Texture")
+    builder.Property<&Skybox::GetTexture, &Skybox::SetTexture>( "Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
@@ -71,9 +72,9 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Skybox::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Skybox::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Skybox::TransformUpdate);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Skybox::TransformUpdate>(Events::ScaleChanged, this);
 
     CreateSkybox();
     mConstructing = false;
@@ -82,7 +83,7 @@ namespace YTE
 
   void Skybox::TransformUpdate(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CreateTransform();
 

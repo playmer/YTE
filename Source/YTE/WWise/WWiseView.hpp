@@ -34,7 +34,7 @@ namespace YTE
     WWiseView(Composition *aOwner, Space *aSpace, RSValue *aProperties)
       : Component(aOwner, aSpace)
     {
-      YTEUnusedArgument(aProperties);
+      UnusedArguments(aProperties);
     }
 
     WWiseListener* GetActiveListener()

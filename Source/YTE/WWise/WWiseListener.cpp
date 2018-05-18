@@ -23,7 +23,8 @@ namespace YTE
 {
   YTEDefineType(WWiseListener)
   {
-    YTERegisterType(WWiseListener);
+    RegisterType<WWiseListener>();
+    TypeBuilder<WWiseListener> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() }, 
                                              { TypeId<Orientation>() } };
@@ -60,8 +61,8 @@ namespace YTE
   {
     auto transform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &WWiseListener::OnPositionChange);
-    mOwner->YTERegister(Events::OrientationChanged, this, &WWiseListener::OnOrientationChange);
+    mOwner->RegisterEvent<&WWiseListener::OnPositionChange>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&WWiseListener::OnOrientationChange>(Events::OrientationChanged, this);
     mListenerPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
 
     auto orientation = mOwner->GetComponent<Orientation>();

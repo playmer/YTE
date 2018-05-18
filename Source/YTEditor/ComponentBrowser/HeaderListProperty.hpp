@@ -4,7 +4,7 @@
 #include <qlineedit.h>
 
 #include "YTE/Core/Component.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/ComponentBrowser/ComponentProperty.hpp"
@@ -35,7 +35,7 @@ namespace YTEditor
       , mEngineProp(aProp)
       , mObject(aObject)
     {
-      YTE::String tip = aProp->Description();
+      std::string const& tip = aProp->GetDocumentation();
 
       this->GetLabelWidget()->setToolTip(tip.c_str());
 

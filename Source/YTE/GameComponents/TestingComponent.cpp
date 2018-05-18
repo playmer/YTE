@@ -15,9 +15,10 @@ namespace YTE
 {
   YTEDefineType(TestingComponent)
   {
-    YTERegisterType(TestingComponent);
+    RegisterType<TestingComponent>();
+    TypeBuilder<TestingComponent> builder;
 
-    YTEBindProperty(&TestingComponent::GetCurrentAnimation, &TestingComponent::SetCurrentAnimation, "Current Animation")
+    builder.Property<&TestingComponent::GetCurrentAnimation, &TestingComponent::SetCurrentAnimation>( "Current Animation")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -28,22 +29,22 @@ namespace YTE
     , mCurrentAnimation("")
     , mAnimForward(true)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void TestingComponent::Initialize()
   {
-    mOwner->GetSpace()->YTERegister(Events::LogicUpdate, this, &TestingComponent::Update);
+    mOwner->GetSpace()->RegisterEvent<&TestingComponent::Update>(Events::LogicUpdate, this);
 
     mGamepad = mOwner->GetEngine()->GetGamepadSystem()->GetXboxController(YTE::ControllerId::Xbox_P1);
-    mGamepad->YTERegister(Events::XboxButtonPress, this, &TestingComponent::CheckButtons);
+    mGamepad->RegisterEvent<&TestingComponent::CheckButtons>(Events::XboxButtonPress, this);
 
     mAnimator = mOwner->GetComponent<Animator>();
   }
 
   void TestingComponent::Update(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mCurrentAnimation.empty())
     {

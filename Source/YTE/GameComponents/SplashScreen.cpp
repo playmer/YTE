@@ -23,7 +23,8 @@ namespace YTE
 {
   YTEDefineType(SplashScreen)
   {
-    YTERegisterType(SplashScreen);
+    RegisterType<SplashScreen>();
+    TypeBuilder<SplashScreen> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<WWiseEmitter>() } };
 
@@ -31,15 +32,15 @@ namespace YTE
   }
 
   SplashScreen::SplashScreen(Composition* aOwner, Space* aSpace, RSValue* aProperties)
-    : Component(aOwner, aSpace)
-    , mFadeValue(1.0f)
-    , mReadyToExecute(false)
-    , mDigiPenLogo(nullptr)
-    , mTeamLogo(nullptr)
-    , mControllerWarning(nullptr)
-    , mBlackoutLevel(nullptr)
-    , mView(nullptr)
-    , mEmitter(nullptr)
+    : Component{ aOwner, aSpace }
+    , mFadeValue{ 1.0f }
+    , mReadyToExecute{ false }
+    , mDigiPenLogo{ nullptr }
+    , mTeamLogo{ nullptr }
+    , mControllerWarning{ nullptr }
+    , mBlackoutLevel{ nullptr }
+    , mView{ nullptr }
+    , mEmitter{ nullptr }
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }
@@ -71,8 +72,8 @@ namespace YTE
       mControllerWarning = controller->GetComponent<Sprite>();
     }
 
-    mSpace->YTERegister(Events::FrameUpdate, this, &SplashScreen::OnFrameUpdate);
-    mSpace->YTERegister(Events::LogicUpdate, this, &SplashScreen::OnLogicUpdate);
+    mSpace->RegisterEvent<&SplashScreen::OnFrameUpdate>(Events::FrameUpdate, this);
+    mSpace->RegisterEvent<&SplashScreen::OnLogicUpdate>(Events::LogicUpdate, this);
   }
 
   void SplashScreen::Start()

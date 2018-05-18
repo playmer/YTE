@@ -22,23 +22,38 @@ namespace YTE
   YTEDefineEvent(MenuElementTrigger);
   YTEDefineEvent(MenuElementDeHover);
 
-  YTEDefineType(MenuElementHover) { YTERegisterType(MenuElementHover); }
-  YTEDefineType(MenuElementTrigger) { YTERegisterType(MenuElementTrigger); }
-  YTEDefineType(MenuElementDeHover) { YTERegisterType(MenuElementHover); }
+  YTEDefineType(MenuElementHover)
+  {
+    RegisterType<MenuElementHover>();
+    TypeBuilder<MenuElementHover> builder;
+  }
+  
+  YTEDefineType(MenuElementTrigger) 
+  { 
+    RegisterType<MenuElementTrigger>();
+    TypeBuilder<MenuElementTrigger> builder;
+  }
+  
+  YTEDefineType(MenuElementDeHover)
+  {
+    RegisterType<MenuElementHover>();
+    TypeBuilder<MenuElementHover> builder;
+  }
 
   YTEDefineType(MenuController)
   {
-    YTERegisterType(MenuController);
+    RegisterType<MenuController>();
+    TypeBuilder<MenuController> builder;
 
-    YTEBindProperty(&GetDisplayed, &SetDisplayed, "IsDisplayed")
+    builder.Property<&GetDisplayed, &SetDisplayed>( "IsDisplayed")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&GetCanClose, &SetCanClose, "CanClose")
+    builder.Property<&GetCanClose, &SetCanClose>( "CanClose")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&GetNumElements, &SetNumElements, "NumMenuElements")
+    builder.Property<&GetNumElements, &SetNumElements>( "NumMenuElements")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -81,25 +96,25 @@ namespace YTE
       mSoundElementSelect = soundSystem->GetSoundIDFromString("UI_Menu_Select");
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
+    mSpace->RegisterEvent<&MenuController::OnChildrenInitialized>(Events::LogicUpdate, this);
 
-    mOwner->YTERegister(Events::MenuStart, this, &MenuController::OnMenuStart);
-    mOwner->YTERegister(Events::MenuExit, this, &MenuController::OnDirectMenuExit);
+    mOwner->RegisterEvent<&MenuController::OnMenuStart>(Events::MenuStart, this);
+    mOwner->RegisterEvent<&MenuController::OnDirectMenuExit>(Events::MenuExit, this);
 
     if (mCanClose)
     {  
-      mSpace->YTERegister(Events::MenuExit, this, &MenuController::OnMenuExit);
+      mSpace->RegisterEvent<&MenuController::OnMenuExit>(Events::MenuExit, this);
     }
 
-    mSpace->YTERegister(Events::MenuConfirm, this, &MenuController::OnMenuConfirm);
-    mSpace->YTERegister(Events::MenuElementChange, this, &MenuController::OnMenuElementChange);
+    mSpace->RegisterEvent<&MenuController::OnMenuConfirm>(Events::MenuConfirm, this);
+    mSpace->RegisterEvent<&MenuController::OnMenuElementChange>(Events::MenuElementChange, this);
   }
 
   void MenuController::OnChildrenInitialized(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     UpdateVisibility();
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &MenuController::OnChildrenInitialized);
+    mSpace->DeregisterEvent<&MenuController::OnChildrenInitialized>(Events::LogicUpdate,  this);
   }
 
   void MenuController::OnMenuStart(MenuStart *aEvent)

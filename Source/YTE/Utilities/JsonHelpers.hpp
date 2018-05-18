@@ -15,8 +15,6 @@
 
 namespace YTE
 {
-  // TODO (Josh): Fix the serialization.
-
   ///////////////////////////////
   // Float
   ///////////////////////////////

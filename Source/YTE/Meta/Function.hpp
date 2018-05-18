@@ -8,7 +8,7 @@ namespace YTE
 {
   class Function : public DocumentedObject
   {
-  public:
+    public:
     YTEDeclareType(Function)
     Function(Function&) = delete;
 
@@ -16,163 +16,36 @@ namespace YTE
 
     struct Parameter
     {
-      Parameter(Type *aType, const char *aName)
-        : mType(aType)
-        , mName(aName)
-      {
-
-      }
+      Parameter(Type *aType, const char *aName);
 
       Type *mType;
       std::string mName;
     };
 
-    Function(const char *aName, Type *aReturnType, Type *aOwningType, bool aStaticOrFree)
-      : mName(aName)
-      , mReturnType(aReturnType)
-      , mCaller(nullptr)
-      , mOwningType(aOwningType)
-      , mStaticOrFree(aStaticOrFree)
-    {
-      if ((aOwningType == nullptr) && (mStaticOrFree == false))
-      {
-        runtime_assert(false,
-                       "A function without an owning type is, by definition, static.");
-      }
-    }
-
-    Any Invoke(std::vector<Any> &aArguments) const
-    {
-      if (mParameters.size() != aArguments.size())
-      {
-        std::cout << "Different argument amounts." << std::endl;
-        return Any();
-      }
-
-      for (size_t i = 0; i < mParameters.size(); ++i)
-      {
-        auto parameterType = mParameters[i].mType->GetMostBasicType();
-        auto argumentType = aArguments[i].mType->GetMostBasicType();
-
-        if (false == argumentType->IsA(parameterType) &&
-            false == parameterType->IsA(argumentType))
-        {
-          std::cout << "Different argument types." << std::endl;
-          return Any();
-        }
-      }
-
-      return mCaller(aArguments);
-    }
+    Function(const char *aName, Type *aReturnType, Type *aOwningType);
+    Any Invoke(std::vector<Any> &aArguments) const;
 
     // Will return default constructed Any if the arguments fail.
-    template <typename ...Arguments>
-    Any Invoke(Arguments...aArguments) const
+    template <typename ...tArguments>
+    Any Invoke(tArguments...aArguments) const
     {
-      auto args = Any::FromVariadic<Arguments...>(aArguments...);
+      auto args = Any::FromVariadic<tArguments...>(aArguments...);
 
       return Invoke(args);
     }
 
-    void AddParameter(Type *aType, const char *aName = "")
-    {
-      mParameters.emplace_back(aType, aName);
-    }
+    void AddParameter(Type *aType, const char *aName = "");
+    void SetCaller(CallingFunction aCaller);
+    const std::string& GetName() const;
+    void SetOwningType(Type *aOwningType);
+    Type* GetOwningType() const;
+    bool IsSame(Function &aFunction) const;
+    Type* GetReturnType() const;
+    bool IsStaticOrFree();
+    void SetParameterNames(std::initializer_list<const char *> aNames);
+    std::vector<Parameter>& GetParameters();
 
-    void SetCaller(CallingFunction aCaller)
-    {
-      mCaller = aCaller;
-    }
-
-    const std::string& GetName() const
-    {
-      return mName;
-    }
-
-    void SetOwningType(Type *aOwningType) 
-    {
-      mOwningType = aOwningType;
-    }
-
-    Type* GetOwningType() const
-    {
-      return mOwningType;
-    }
-
-    bool IsSame(Function &aFunction) const
-    {
-      if (mName != aFunction.mName)
-      {
-        return false;
-      }
-
-      if (mReturnType != aFunction.mReturnType)
-      {
-        return false;
-      }
-
-      if (mParameters.size() == aFunction.mParameters.size())
-      {
-        for (size_t i = 0; i < mParameters.size(); ++i)
-        {
-          if (mParameters[i].mType != aFunction.mParameters[i].mType)
-          {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    }
-
-
-    Type* GetReturnType() const
-    {
-      return mReturnType;
-    }
-
-    bool IsStaticOrFree()
-    {
-      return mStaticOrFree;
-    }
-
-    void SetParameterNames(std::initializer_list<const char *> aNames)
-    {
-      // Member Function
-      if (false == mStaticOrFree && 
-          aNames.size() == (mParameters.size() - 1))
-      {
-        mParameters[0].mName = "aThisPointer";
-
-        for (size_t i = 1; i < mParameters.size(); ++i)
-        {
-          mParameters[i].mName = *(aNames.begin() + i - 1);
-        }
-      }
-      else if (aNames.size() == mParameters.size())
-      {
-        for (size_t i = 0; i < mParameters.size(); ++i)
-        {
-          mParameters[i].mName = *(aNames.begin() + i);
-        }
-      }
-      else
-      {
-        for (size_t i = 0; i < mParameters.size(); ++i)
-        {
-          std::string argumentName{ "aArgument" };
-          argumentName += std::to_string(i);
-          mParameters[i].mName = argumentName;
-        }
-      }
-    }
-
-    std::vector<Parameter>& GetParameters()
-    {
-      return mParameters;
-    }
-
-  private:
+    private:
     std::string mName;
     std::vector<Parameter> mParameters;
     Type *mReturnType;
@@ -181,335 +54,351 @@ namespace YTE
     bool mStaticOrFree;
   };
 
-  template <typename T>
-  inline void AddParameter(Function *aFunction)
+  namespace Detail::Meta
   {
-    aFunction->AddParameter(TypeId<T>());
-  }
-
-  template <typename... Rest> struct ParseArguments;
-
-  template <>
-  struct ParseArguments<>
-  {
-    inline static void Parse(Function *)
+    template <typename T>
+    inline void AddParameter(std::unique_ptr<Function>& aFunction)
     {
-    }
-  };
-
-  template <typename First, typename... Rest>
-  struct ParseArguments<First, Rest...>
-  {
-    inline static void Parse(Function *aFunction)
-    {
-      AddParameter<First>(aFunction);
-      ParseArguments<Rest...>::Parse(aFunction);
-    }
-  };
-
-  template <typename Return, typename Enable = void>
-  struct Binding {};
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // Free Functions
-  ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
-  template <typename Return, typename... Arguments>
-  struct Binding<Return(*)(Arguments...), typename std::enable_if<std::is_void<Return>::value == false>::type >
-  {
-    using FunctionSignature = Return(*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      size_t i = 0;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      Return capture = BoundFunc(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
+      aFunction->AddParameter(TypeId<T>());
     }
 
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
+    template <typename... Rest> struct ParseArguments;
+
+    template <>
+    struct ParseArguments<>
     {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), nullptr, true);
-      ParseArguments<Arguments...>::Parse(function.get());
+      inline static void Parse(std::unique_ptr<Function>&)
+      {
+      }
+    };
 
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-  };
-
-  //Returns void
-  template <typename Return, typename... Arguments>
-  struct Binding<Return(*)(Arguments...), typename std::enable_if<std::is_void<Return>::value>::type >
-  {
-    using FunctionSignature = Return(*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
+    template <typename First, typename... Rest>
+    struct ParseArguments<First, Rest...>
     {
-      size_t i = 0;
+      inline static void Parse(std::unique_ptr<Function>& aFunction)
+      {
+        AddParameter<First>(aFunction);
+        ParseArguments<Rest...>::Parse(aFunction);
+      }
+    };
 
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      BoundFunc(aArguments.at(i++).As<Arguments>()...);
-      return Any();
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
+    template <typename tFunctionSignature>
+    struct FunctionBinding
     {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), nullptr, true);
-      ParseArguments<Arguments...>::Parse(function.get());
+      using CallingType = Any(*)(std::vector<Any>&);
 
-      function->SetCaller(aCaller);
+      template <typename Return, typename Enable = void>
+      struct FunctionInvoker {};
+      
+      /////////////////////////////////////////////
+      // Free/Static Functions
+      // Returns Something
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          size_t i = 0;
 
-      return std::move(function);
-    }
+          // We get a warning for functions that don't have arguments and thus don't use these.
+          UnusedArguments(aArguments, i);
 
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
+          tReturn capture = tFunction(aArguments.at(i++).As<tArguments>()...);
+          Any toReturn{ capture, TypeId<tReturn>(), false == std::is_reference_v<tReturn> };
+          return toReturn;
+        }
+      };
+
+      // Void Return
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          size_t i = 0;
+
+          // We get a warning for functions that don't have arguments and thus don't use these.
+          UnusedArguments(aArguments, i);
+
+          tFunction(aArguments.at(i++).As<tArguments>()...);
+          return Any{};
+        }
+      };
+
+
+      /////////////////////////////////////////////
+      // Free/Static Noexcept Function Pointers
+      // Returns Something
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+
+      /////////////////////////////////////////////
+      // Free/Static Function Pointers
+      // Returns Something
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+
+      /////////////////////////////////////////////
+      // Free/Static Noexcept Function Pointers
+      // Returns Something
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename... tArguments>
+      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // TODO: Add ref qualified member functions.
+
+      /////////////////////////////////////////////
+      // Member Functions
+      // Returns Something
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          auto self = aArguments.at(0).As<tObject*>();
+
+          size_t i = 1;
+
+          // We get a warning for functions that don't have arguments and thus don't use these.
+          UnusedArguments(aArguments, i);
+
+          tReturn capture = (self->*tFunction)(aArguments.at(i++).As<tArguments>()...);
+          Any toReturn{ capture, TypeId<tReturn>(), false == std::is_reference_v<tReturn> };
+          return toReturn;
+        }
+      };
+
+      // Void Return
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          auto self = aArguments.at(0).As<tObject*>();
+
+          size_t i = 1;
+
+          // We get a warning for functions that don't have arguments and thus don't use these.
+          UnusedArguments(aArguments, i);
+
+          (self->*tFunction)(aArguments.at(i++).As<tArguments>()...);
+          return Any{};
+        }
+      };
+
+      /////////////////////////////////////////////
+      // Noexcept Member Functions
+      // Returns Something
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      /////////////////////////////////////////////
+      // Const Member Functions
+      // Returns Something
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+
+      /////////////////////////////////////////////
+      // Const Noexcept Member Functions
+      // Returns Something
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      // Void Return
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      {
+      };
+
+      template <typename tReturn>
+      struct FunctionMaker {};
+
+      // Free/Static Member Function Pointer
+      template <typename tReturn, typename... tArguments>
+      struct FunctionMaker<tReturn(*)(tArguments...)>
+      {
+        inline static
+        std::unique_ptr<Function> MakeFunction(const char *aName)
+        {
+          auto function = std::make_unique<Function>(aName,
+                                                     TypeId<tReturn>(),
+                                                     nullptr);
+
+          Detail::Meta::ParseArguments<tArguments...>::Parse(function);
+
+          return std::move(function);
+        }
+
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
+        }
+      };
+
+      // Free/Static Member Function
+      template <typename tReturn, typename... tArguments>
+      struct FunctionMaker<tReturn(tArguments...) >
+        : public FunctionMaker<tReturn(*)(tArguments...)>
+      {
+      };
+      
+      // Noexcept Free/Static Member Function
+      template <typename tReturn, typename... tArguments>
+      struct FunctionMaker<tReturn(tArguments...) noexcept>
+        : public FunctionMaker<tReturn(*)(tArguments...)>
+      {
+      };
+      
+      // Free/Static Member Function Pointer
+      template <typename tReturn, typename... tArguments>
+      struct FunctionMaker<tReturn(*)(tArguments...) noexcept>
+        : public FunctionMaker<tReturn(*)(tArguments...)>
+      {
+      };
+      
+
+      // Member Function
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionMaker<tReturn(tObject::*)(tArguments...)>
+      {
+        inline static
+          std::unique_ptr<Function> MakeFunction(const char *aName)
+        {
+          auto function = std::make_unique<Function>(aName,
+                                                     TypeId<tReturn>(),
+                                                     TypeId<tObject>());
+
+          Detail::Meta::ParseArguments<tObject*, tArguments...>::Parse(function);
+
+          return std::move(function);
+        }
+
+        template <tFunctionSignature tFunction>
+        inline static Any Invoke(std::vector<Any>& aArguments)
+        {
+          return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
+        }
+      };
+
+      // Noexcept Member Function
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionMaker<tReturn(tObject::*)(tArguments...) noexcept> :
+        public FunctionMaker<tReturn(tObject::*)(tArguments...)>
+      {
+      };
+
+      // Const Member Function
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionMaker<tReturn(tObject::*)(tArguments...) const> :
+        public FunctionMaker<tReturn(tObject::*)(tArguments...)>
+      {
+      };
+
+      // Const Noexcept Member Function
+      template <typename tReturn, typename tObject, typename... tArguments>
+      struct FunctionMaker<tReturn(tObject::*)(tArguments...) const noexcept> :
+        public FunctionMaker<tReturn(tObject::*)(tArguments...)>
+      {
+      };
+
+      template <tFunctionSignature tFunction>
+      static Any Caller(std::vector<Any>& aArguments)
+      {
+        return FunctionMaker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
+      }
+
+      static std::unique_ptr<Function> BindPassedFunction(const char *aName,
+                                                          CallingType aCaller)
+      {
+        auto function = FunctionMaker<tFunctionSignature>::MakeFunction(aName);
+
+        function->SetCaller(aCaller);
+
+        return std::move(function);
+      }
+
+      template <tFunctionSignature tFunction>
+      static std::unique_ptr<Function> BindFunction(const char *aName)
+      {
+        auto function = FunctionMaker<tFunctionSignature>::MakeFunction(aName);
+
+        function->SetCaller(Caller<tFunction>);
+
+        return std::move(function);
+      }
+    };
+
+    template <>
+    struct FunctionBinding<std::nullptr_t>
     {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), nullptr, true);
-      ParseArguments<Arguments...>::Parse(function.get());
+      template <std::nullptr_t BoundFunc>
+      static std::unique_ptr<Function> BindFunction(const char *aName)
+      {
+        UnusedArguments(aName);
 
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-  };
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // Member Functions
-  ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...), typename std::enable_if<std::is_void<Return>::value == false>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
-    }
-
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-  };
-
-  // Returns Void
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...), typename std::enable_if<std::is_void<Return>::value>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...);
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-
-      return Any();
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-  };
-
-
-  ///////////////////////////////////////////////////////////////////////////////
-  // Const Member Functions
-  ///////////////////////////////////////////////////////////////////////////////
-  //Returns Something
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...) const, typename std::enable_if<std::is_void<Return>::value == false>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...) const;
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      Return capture = (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-      Any toReturn{ capture, TypeId<Return>(), false == std::is_reference<Return>::value };
-      return toReturn;
-    }
-
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-  };
-
-  //Returns void
-  template <typename Return, typename ObjectType, typename... Arguments>
-  struct Binding<Return(ObjectType::*)(Arguments...) const, typename std::enable_if<std::is_void<Return>::value>::type>
-  {
-    using FunctionSignature = Return(ObjectType::*)(Arguments...) const;
-    using CallingType = Any(*)(std::vector<Any>&);
-
-    template <FunctionSignature BoundFunc>
-    static Any Caller(std::vector<Any>& aArguments)
-    {
-      auto self = aArguments.at(0).As<ObjectType*>();
-
-      size_t i = 1;
-
-      // We get a warning for functions that don't have arguments and thus don't use these.
-      YTEUnusedArgument(aArguments);
-      YTEUnusedArgument(i);
-
-      (self->*BoundFunc)(aArguments.at(i++).As<Arguments>()...);
-
-      return Any();
-    }
-
-    static std::unique_ptr<Function> BindPassedFunction(const char *name, CallingType aCaller)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(aCaller);
-
-      return std::move(function);
-    }
-
-    template <FunctionSignature BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      auto function = std::make_unique<Function>(name, TypeId<Return>(), TypeId<ObjectType>(), false);
-      function->AddParameter(TypeId<ObjectType*>());
-      ParseArguments<Arguments...>::Parse(function.get());
-
-      function->SetCaller(Caller<BoundFunc>);
-
-      return std::move(function);
-    }
-  };
-
-  template <>
-  struct Binding<nullptr_t>
-  {
-    template <nullptr_t BoundFunc>
-    static std::unique_ptr<Function> BindFunction(const char *name)
-    {
-      YTEUnusedArgument(name);
-
-      return std::unique_ptr<Function>();
-    }
-  };
-
-  template <typename FunctionSignature, FunctionSignature aBoundFunction, size_t aSize = 0>
-  static Function& BindFunction(const char *name, Type *aType, std::initializer_list<const char *> aParameterNames)
-  {
-    static_assert(aSize == CountFunctionArguments<FunctionSignature>::template Size() || aSize == 0,
-                  "If passing names of function parameters you must pass either exactly as many names as there are arguments, or 0.");
-
-    auto function = Binding<FunctionSignature>:: template BindFunction<aBoundFunction>(name);
-    function->SetParameterNames(aParameterNames);
-    function->SetOwningType(aType);
-
-    auto ptr = aType->AddFunction(std::move(function));
-
-    return *ptr;
+        return std::unique_ptr<Function>();
+      }
+    };
   }
 }

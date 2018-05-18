@@ -20,7 +20,7 @@ namespace YTE
 
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkLightManager::GraphicsDataUpdateVkEvent);
+    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -49,7 +49,7 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->YTERegister(Events::GraphicsDataUpdateVk, this, &VkLightManager::GraphicsDataUpdateVkEvent);
+    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 

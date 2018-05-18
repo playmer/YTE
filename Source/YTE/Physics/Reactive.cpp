@@ -21,19 +21,22 @@ namespace YTE
 
   YTEDefineType(MouseEnter)
   {
-    YTERegisterType(MouseEnter);
-    YTEBindField(&MouseEnter::Name, "Name", PropertyBinding::Get);
+    RegisterType<MouseEnter>();
+    TypeBuilder<MouseEnter> builder;
+    builder.Field<&MouseEnter::Name>( "Name", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseExit)
   {
-    YTERegisterType(MouseExit);
-    YTEBindField(&MouseExit::Name, "Name", PropertyBinding::Get);
+    RegisterType<MouseExit>();
+    TypeBuilder<MouseExit> builder;
+    builder.Field<&MouseExit::Name>( "Name", PropertyBinding::Get);
   }
 
   YTEDefineType(Reactive)
   {
-    YTERegisterType(Reactive);
+    RegisterType<Reactive>();
+    TypeBuilder<Reactive> builder;
   }
 
   Reactive::Reactive(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -44,12 +47,12 @@ namespace YTE
 
   void Reactive::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &Reactive::OnLogicUpdate);
-    mOwner->YTERegister(Events::CollisionStarted, this, &Reactive::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &Reactive::OnCollisionEnded);
+    mSpace->RegisterEvent<&Reactive::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&Reactive::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&Reactive::OnCollisionEnded>(Events::CollisionEnded, this);
 
-    mSpace->GetEngine()->GetWindow()->mMouse.YTERegister(Events::MousePress, this, &Reactive::OnMousePress);
-    mSpace->GetEngine()->GetWindow()->mMouse.YTERegister(Events::MouseRelease, this, &Reactive::OnMouseRelease);
+    mSpace->GetEngine()->GetWindow()->mMouse.RegisterEvent<&Reactive::OnMousePress>(Events::MousePress, this);
+    mSpace->GetEngine()->GetWindow()->mMouse.RegisterEvent<&Reactive::OnMouseRelease>(Events::MouseRelease, this);
 
     mMenuCollider = mOwner->GetComponent<MenuCollider>();
     mIsMouseEntered = false;
@@ -57,7 +60,7 @@ namespace YTE
 
   void Reactive::OnCollisionStarted(CollisionStarted *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mIsMouseEntered = true;
 
       // Send a MouseEntered event
@@ -67,7 +70,7 @@ namespace YTE
 
   void Reactive::OnCollisionEnded(CollisionEnded *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mIsMouseEntered = false;
 
       // Send a MouseExit event
@@ -77,7 +80,7 @@ namespace YTE
 
   void Reactive::OnMousePress(MouseButtonEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
       // Receive the global mouse click event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
@@ -88,7 +91,7 @@ namespace YTE
 
   void Reactive::OnMouseRelease(MouseButtonEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
       // Receive the global mouse release event, determine if it's relevant, then send it out again locally
     if (mIsMouseEntered)
@@ -99,7 +102,7 @@ namespace YTE
 
   void Reactive::OnLogicUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     //TODO (Josh): Fix this.
     //  // Check for collision between owner and mouse position

@@ -17,17 +17,18 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(DaisyTutorial) { YTERegisterType(DaisyTutorial); }
+  YTEDefineType(DaisyTutorial) { RegisterType<DaisyTutorial>();
+    TypeBuilder<DaisyTutorial> builder; }
 
   DaisyTutorial::DaisyTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void DaisyTutorial::Initialize()
   {
-    mSpace->YTERegister(Events::TutorialUpdate, this, &DaisyTutorial::OnTutorialUpdate);
+    mSpace->RegisterEvent<&DaisyTutorial::OnTutorialUpdate>(Events::TutorialUpdate, this);
   }
 
   void DaisyTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)

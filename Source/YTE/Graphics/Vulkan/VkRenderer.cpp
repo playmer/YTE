@@ -21,7 +21,8 @@ namespace YTE
 {
   YTEDefineType(VkRenderer)
   {
-    YTERegisterType(VkRenderer);
+    RegisterType<VkRenderer>();
+    TypeBuilder<VkRenderer> builder;
   }
 
   template<typename tTo, typename tFrom>
@@ -101,10 +102,10 @@ namespace YTE
       }
     }
 
-    mEngine->YTERegister(Events::FrameUpdate, this, &VkRenderer::FrameUpdate);
-    mEngine->YTERegister(Events::GraphicsDataUpdate, this, &VkRenderer::GraphicsDataUpdate);
-    mEngine->YTERegister(Events::AnimationUpdate, this, &VkRenderer::AnimationUpdate);
-    mEngine->YTERegister(Events::PresentFrame, this, &VkRenderer::PresentFrame);
+    mEngine->RegisterEvent<&VkRenderer::FrameUpdate>(Events::FrameUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::AnimationUpdate>(Events::AnimationUpdate, this);
+    mEngine->RegisterEvent<&VkRenderer::PresentFrame>(Events::PresentFrame, this);
   }
 
   VkRenderer::~VkRenderer()
@@ -347,7 +348,7 @@ namespace YTE
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     GraphicsDataUpdateVk update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
@@ -384,7 +385,7 @@ namespace YTE
 
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
@@ -393,7 +394,7 @@ namespace YTE
 
   void VkRenderer::AnimationUpdate(LogicUpdate* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     for (auto& surface : mSurfaces)
     {
       surface.second->AnimationUpdate();

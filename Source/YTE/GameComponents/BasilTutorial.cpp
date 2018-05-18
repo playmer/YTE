@@ -17,17 +17,18 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(BasilTutorial) { YTERegisterType(BasilTutorial); }
+  YTEDefineType(BasilTutorial) { RegisterType<BasilTutorial>();
+    TypeBuilder<BasilTutorial> builder; }
 
   BasilTutorial::BasilTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void BasilTutorial::Initialize()
   {
-    mSpace->YTERegister(Events::TutorialUpdate, this, &BasilTutorial::OnTutorialUpdate);
+    mSpace->RegisterEvent<&BasilTutorial::OnTutorialUpdate>(Events::TutorialUpdate, this);
   }
 
   void BasilTutorial::OnTutorialUpdate(TutorialUpdate *aEvent)

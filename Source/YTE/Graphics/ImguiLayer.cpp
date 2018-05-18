@@ -9,7 +9,8 @@ namespace YTE
 {
   YTEDefineType(ImguiLayer)
   {
-    YTERegisterType(ImguiLayer);
+    RegisterType<ImguiLayer>();
+    TypeBuilder<ImguiLayer> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
@@ -22,7 +23,7 @@ namespace YTE
   ImguiLayer::ImguiLayer(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component{aOwner, aSpace}
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   ImguiLayer::~ImguiLayer()
@@ -65,34 +66,34 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
-    mOwner->GetEngine()->YTERegister(Events::PreLogicUpdate, this, &ImguiLayer::ImguiUpdate);
+    mOwner->GetEngine()->RegisterEvent<&ImguiLayer::ImguiUpdate>(Events::PreLogicUpdate, this);
     
-    window->mMouse.YTERegister(Events::MouseScroll, this, &ImguiLayer::MouseScrollCallback);
-    window->mKeyboard.YTERegister(Events::KeyPress, this, &ImguiLayer::KeyPressCallback);
-    window->mKeyboard.YTERegister(Events::KeyRelease, this, &ImguiLayer::KeyReleaseCallback);
-    window->mKeyboard.YTERegister(Events::CharacterTyped, this, &ImguiLayer::CharacterTypedCallback);
+    window->mMouse.RegisterEvent<&ImguiLayer::MouseScrollCallback>(Events::MouseScroll, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::KeyPressCallback>(Events::KeyPress, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::KeyReleaseCallback>(Events::KeyRelease, this);
+    window->mKeyboard.RegisterEvent<&ImguiLayer::CharacterTypedCallback>(Events::CharacterTyped, this);
 
-    io.KeyMap[ImGuiKey_Tab] = enum_cast(Keys::Tab);
-    io.KeyMap[ImGuiKey_LeftArrow] = enum_cast(Keys::Left);
-    io.KeyMap[ImGuiKey_RightArrow] = enum_cast(Keys::Right);
-    io.KeyMap[ImGuiKey_UpArrow] = enum_cast(Keys::Up);
-    io.KeyMap[ImGuiKey_DownArrow] = enum_cast(Keys::Down);
-    io.KeyMap[ImGuiKey_PageUp] = enum_cast(Keys::PageUp);
-    io.KeyMap[ImGuiKey_PageDown] = enum_cast(Keys::PageDown);
-    io.KeyMap[ImGuiKey_Home] = enum_cast(Keys::Home);
-    io.KeyMap[ImGuiKey_End] = enum_cast(Keys::End);
-    io.KeyMap[ImGuiKey_Insert] = enum_cast(Keys::Insert);
-    io.KeyMap[ImGuiKey_Delete] = enum_cast(Keys::Delete);
-    io.KeyMap[ImGuiKey_Backspace] = enum_cast(Keys::Backspace);
-    io.KeyMap[ImGuiKey_Space] = enum_cast(Keys::Space);
-    io.KeyMap[ImGuiKey_Enter] = enum_cast(Keys::Return);
-    io.KeyMap[ImGuiKey_Escape] = enum_cast(Keys::Escape);
-    io.KeyMap[ImGuiKey_A] = enum_cast(Keys::A);
-    io.KeyMap[ImGuiKey_C] = enum_cast(Keys::C);
-    io.KeyMap[ImGuiKey_V] = enum_cast(Keys::V);
-    io.KeyMap[ImGuiKey_X] = enum_cast(Keys::X);
-    io.KeyMap[ImGuiKey_Y] = enum_cast(Keys::Y);
-    io.KeyMap[ImGuiKey_Z] = enum_cast(Keys::Z);
+    io.KeyMap[ImGuiKey_Tab] = EnumCast<int>(Keys::Tab);
+    io.KeyMap[ImGuiKey_LeftArrow] = EnumCast<int>(Keys::Left);
+    io.KeyMap[ImGuiKey_RightArrow] = EnumCast<int>(Keys::Right);
+    io.KeyMap[ImGuiKey_UpArrow] = EnumCast<int>(Keys::Up);
+    io.KeyMap[ImGuiKey_DownArrow] = EnumCast<int>(Keys::Down);
+    io.KeyMap[ImGuiKey_PageUp] = EnumCast<int>(Keys::PageUp);
+    io.KeyMap[ImGuiKey_PageDown] = EnumCast<int>(Keys::PageDown);
+    io.KeyMap[ImGuiKey_Home] = EnumCast<int>(Keys::Home);
+    io.KeyMap[ImGuiKey_End] = EnumCast<int>(Keys::End);
+    io.KeyMap[ImGuiKey_Insert] = EnumCast<int>(Keys::Insert);
+    io.KeyMap[ImGuiKey_Delete] = EnumCast<int>(Keys::Delete);
+    io.KeyMap[ImGuiKey_Backspace] = EnumCast<int>(Keys::Backspace);
+    io.KeyMap[ImGuiKey_Space] = EnumCast<int>(Keys::Space);
+    io.KeyMap[ImGuiKey_Enter] = EnumCast<int>(Keys::Return);
+    io.KeyMap[ImGuiKey_Escape] = EnumCast<int>(Keys::Escape);
+    io.KeyMap[ImGuiKey_A] = EnumCast<int>(Keys::A);
+    io.KeyMap[ImGuiKey_C] = EnumCast<int>(Keys::C);
+    io.KeyMap[ImGuiKey_V] = EnumCast<int>(Keys::V);
+    io.KeyMap[ImGuiKey_X] = EnumCast<int>(Keys::X);
+    io.KeyMap[ImGuiKey_Y] = EnumCast<int>(Keys::Y);
+    io.KeyMap[ImGuiKey_Z] = EnumCast<int>(Keys::Z);
 
     io.SetClipboardTextFn = SetClipboardTextImplementation;
     io.GetClipboardTextFn = GetClipboardTextImplementation;
@@ -172,28 +173,28 @@ namespace YTE
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[enum_cast(aEvent->Key)] = true;
+    io.KeysDown[EnumCast(aEvent->Key)] = true;
     
-    io.KeyCtrl  = io.KeysDown[enum_cast(Keys::Control)];
-    io.KeyShift = io.KeysDown[enum_cast(Keys::Shift)];
-    io.KeyAlt   = io.KeysDown[enum_cast(Keys::Alt)];
+    io.KeyCtrl  = io.KeysDown[EnumCast(Keys::Control)];
+    io.KeyShift = io.KeysDown[EnumCast(Keys::Shift)];
+    io.KeyAlt   = io.KeysDown[EnumCast(Keys::Alt)];
 
     //TODO:
-    //io.KeySuper = io.KeysDown[enum_cast(Keys::)];
+    //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
   void ImguiLayer::KeyReleaseCallback(KeyboardEvent *aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
-    io.KeysDown[enum_cast(aEvent->Key)] = false;
+    io.KeysDown[EnumCast(aEvent->Key)] = false;
 
-    io.KeyCtrl = io.KeysDown[enum_cast(Keys::Control)];
-    io.KeyShift = io.KeysDown[enum_cast(Keys::Shift)];
-    io.KeyAlt = io.KeysDown[enum_cast(Keys::Alt)];
+    io.KeyCtrl = io.KeysDown[EnumCast(Keys::Control)];
+    io.KeyShift = io.KeysDown[EnumCast(Keys::Shift)];
+    io.KeyAlt = io.KeysDown[EnumCast(Keys::Alt)];
 
     //TODO:
-    //io.KeySuper = io.KeysDown[enum_cast(Keys::)];
+    //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
   void ImguiLayer::CharacterTypedCallback(KeyboardEvent *aEvent)

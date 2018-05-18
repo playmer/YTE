@@ -1,11 +1,10 @@
-#include <array>
-
-
 #pragma once
+
+#include <array>
 
 namespace YTE
 {
-  constexpr size_t StringLength(const char *aString)
+  inline constexpr size_t StringLength(const char *aString)
   {
     size_t i = 0;
 
@@ -21,7 +20,7 @@ namespace YTE
   template <size_t tConstSize>
   struct ConstexprToken
   {
-  public:
+    public:
     constexpr ConstexprToken()
     {
     }
@@ -146,11 +145,11 @@ namespace YTE
     }
 
 
-  private:
+    private:
     size_t mCurrentIndex;
   };
 
-  constexpr size_t GetLastInstanceOfCharacter(const char *aString, size_t aSize, char aCharacter)
+  inline constexpr size_t GetLastInstanceOfCharacter(const char *aString, size_t aSize, char aCharacter)
   {
     size_t toReturn = aSize + 1;
 
@@ -168,7 +167,7 @@ namespace YTE
   }
 
 
-  constexpr size_t GetFirstInstanceOfCharacter(const char *aString, size_t aSize, char aCharacter)
+  inline constexpr size_t GetFirstInstanceOfCharacter(const char *aString, size_t aSize, char aCharacter)
   {
     size_t toReturn = aSize + 1;
 

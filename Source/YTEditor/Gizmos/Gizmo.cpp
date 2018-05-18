@@ -3,7 +3,7 @@
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTE/Graphics/Model.hpp"
 
@@ -24,7 +24,7 @@ namespace YTEditor
     , mMode{ Mode::World }
     , mCurrentComposition{ nullptr }
   {
-    aMainWindow->GetRunningEngine()->YTERegister(YTE::Events::LogicUpdate, this, &Gizmo::Update);
+    aMainWindow->GetRunningEngine()->RegisterEvent<&Gizmo::Update>(YTE::Events::LogicUpdate, this);
     mLayer->Enable(true);
   }
 

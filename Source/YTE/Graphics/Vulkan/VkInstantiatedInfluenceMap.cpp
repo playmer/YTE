@@ -13,7 +13,8 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedInfluenceMap)
   {
-    YTERegisterType(VkInstantiatedInfluenceMap);
+    RegisterType<VkInstantiatedInfluenceMap>();
+    TypeBuilder<VkInstantiatedInfluenceMap> builder;
   }
 
 
@@ -24,10 +25,10 @@ namespace YTE
     , mManager(aMapManager)
     , mGraphicsView(aView)
   {
-    mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedInfluenceMap::GraphicsDataUpdateVk);
+    mManager->RegisterEvent<&VkInstantiatedInfluenceMap::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
 
-    mGraphicsView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedInfluenceMap::SurfaceLostEvent);
-    mGraphicsView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedInfluenceMap::SurfaceGainedEvent);
+    mGraphicsView->RegisterEvent<&VkInstantiatedInfluenceMap::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mGraphicsView->RegisterEvent<&VkInstantiatedInfluenceMap::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
   VkInstantiatedInfluenceMap::~VkInstantiatedInfluenceMap()
@@ -37,7 +38,7 @@ namespace YTE
 
   void VkInstantiatedInfluenceMap::SurfaceLostEvent(ViewChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mManager->DestroyMap(this);
   }
 
@@ -48,13 +49,13 @@ namespace YTE
 
     mManager = &(mSurface->GetViewData(view)->mWaterInfluenceMapManager);
     mManager->AddMap(this);
-    mManager->YTERegister(Events::GraphicsDataUpdateVk, this, &VkInstantiatedInfluenceMap::GraphicsDataUpdateVk);
+    mManager->RegisterEvent<&VkInstantiatedInfluenceMap::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
     mDataChanged = true;
   }
 
   void VkInstantiatedInfluenceMap::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (mDataChanged)
     {
       mManager->UpdateMapValue(mIndex, mInfluenceMapUBOData);

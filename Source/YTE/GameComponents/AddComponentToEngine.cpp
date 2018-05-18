@@ -16,13 +16,14 @@ namespace YTE
 {
   YTEDefineType(AddComponentToEngine)
   {
-    YTERegisterType(AddComponentToEngine);
+    RegisterType<AddComponentToEngine>();
+    TypeBuilder<AddComponentToEngine> builder;
   }
 
   AddComponentToEngine::AddComponentToEngine(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void AddComponentToEngine::NativeInitialize()

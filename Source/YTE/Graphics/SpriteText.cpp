@@ -28,7 +28,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
       // TODO(Isaac): Consider cross-platform solution
     filesystem::path fontPath = "C:\\Windows\\Fonts";
@@ -74,37 +74,38 @@ namespace YTE
 
   YTEDefineType(SpriteText)
   {
-    YTERegisterType(SpriteText);
+    RegisterType<SpriteText>();
+    TypeBuilder<SpriteText> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&SpriteText::GetText, &SpriteText::SetText, "Text")
+    builder.Property<&SpriteText::GetText, &SpriteText::SetText>( "Text")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&SpriteText::GetFont, &SpriteText::SetFont, "Font")
+    builder.Property<&SpriteText::GetFont, &SpriteText::SetFont>( "Font")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&SpriteText::GetFontSize, &SpriteText::SetFontSize, "FontSize")
+    builder.Property<&SpriteText::GetFontSize, &SpriteText::SetFontSize>( "FontSize")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX, "AlignX")
+    builder.Property<&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX>( "AlignX")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignXDropDownList);
 
-    YTEBindProperty(&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY, "AlignY")
+    builder.Property<&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY>( "AlignY")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignYDropDownList);
 
-    YTEBindProperty(&SpriteText::GetLineLength, &SpriteText::SetLineLength, "MaxLineLength")
+    builder.Property<&SpriteText::GetLineLength, &SpriteText::SetLineLength>( "MaxLineLength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The max length of a single line (in world units) for word-wrapping. 0.0 disables word-wrapping");
@@ -137,11 +138,11 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &SpriteText::OnStart);
+    mSpace->RegisterEvent<&SpriteText::OnStart>(Events::LogicUpdate, this);
 
-    mOwner->YTERegister(Events::PositionChanged, this, &SpriteText::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &SpriteText::TransformUpdate);
-    //mOwner->YTERegister(Events::ScaleChanged, this, &SpriteText::TransformUpdate);
+    mOwner->RegisterEvent<&SpriteText::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&SpriteText::TransformUpdate>(Events::RotationChanged, this);
+    //mOwner->RegisterEvent<&SpriteText::TransformUpdate>(Events::ScaleChanged, this);
 
     PrepareFont();
     CreateSpriteText();
@@ -386,12 +387,12 @@ namespace YTE
   void SpriteText::OnStart(LogicUpdate *)
   {
     mTransform->SetWorldScale(glm::vec3(1.0f));
-    mSpace->YTEDeregister(Events::LogicUpdate, this, &SpriteText::OnStart);
+    mSpace->DeregisterEvent<&SpriteText::OnStart>(Events::LogicUpdate,  this);
   }
 
   void SpriteText::TransformUpdate(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CreateTransform();
 

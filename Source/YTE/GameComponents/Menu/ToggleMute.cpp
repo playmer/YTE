@@ -18,7 +18,8 @@ namespace YTE
 {
   YTEDefineType(ToggleMute)
   {
-    YTERegisterType(ToggleMute);
+    RegisterType<ToggleMute>();
+    TypeBuilder<ToggleMute> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<WWiseEmitter>() } };
 
@@ -40,9 +41,9 @@ namespace YTE
       mCheckSprite = childCheck->GetComponent<Sprite>();
     }
 
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ToggleMute::OnElementTrigger);
-    mOwner->YTERegister(Events::UpdateVisibilityEvent, this, &ToggleMute::OnParentVisibilityUpdated);
-    mSpace->YTERegister(Events::MuteBypass, this, &ToggleMute::OnMuteBypass);
+    mOwner->RegisterEvent<&ToggleMute::OnElementTrigger>(Events::MenuElementTrigger, this);
+    mOwner->RegisterEvent<&ToggleMute::OnParentVisibilityUpdated>(Events::UpdateVisibilityEvent, this);
+    mSpace->RegisterEvent<&ToggleMute::OnMuteBypass>(Events::MuteBypass, this);
   }
 
   void ToggleMute::OnElementTrigger(MenuElementTrigger *)

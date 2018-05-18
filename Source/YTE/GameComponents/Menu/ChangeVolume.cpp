@@ -19,7 +19,8 @@ namespace YTE
 {
   YTEDefineType(ChangeVolume)
   {
-    YTERegisterType(ChangeVolume);
+    RegisterType<ChangeVolume>();
+    TypeBuilder<ChangeVolume> builder;
   }
 
   ChangeVolume::ChangeVolume(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -45,8 +46,8 @@ namespace YTE
       mMaskTransform = fill->GetComponent<Transform>();
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &ChangeVolume::OnLogicUpdate);
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &ChangeVolume::OnElementTrigger);
+    mSpace->RegisterEvent<&ChangeVolume::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&ChangeVolume::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void ChangeVolume::Start()
@@ -104,8 +105,8 @@ namespace YTE
     mLastStickX = 0.0f;
     mMyTransform->SetScale(mMyTransform->GetScale() / 1.2f);
 
-    mSpace->YTEDeregister(Events::OptionsConfirmEvent, this, &ChangeVolume::OnConfirm);
-    mSpace->YTEDeregister(Events::OptionsStickEvent, this, &ChangeVolume::OnStickEvent);
+    mSpace->DeregisterEvent<&ChangeVolume::OnConfirm>(Events::OptionsConfirmEvent,  this);
+    mSpace->DeregisterEvent<&ChangeVolume::OnStickEvent>(Events::OptionsStickEvent,  this);
     mSpace->GetOwner()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Menu);
   }
 
@@ -113,8 +114,8 @@ namespace YTE
   {
     mMyTransform->SetScale(1.2f * mMyTransform->GetScale());
 
-    mSpace->YTERegister(Events::OptionsConfirmEvent, this, &ChangeVolume::OnConfirm);
-    mSpace->YTERegister(Events::OptionsStickEvent, this, &ChangeVolume::OnStickEvent);
+    mSpace->RegisterEvent<&ChangeVolume::OnConfirm>(Events::OptionsConfirmEvent, this);
+    mSpace->RegisterEvent<&ChangeVolume::OnStickEvent>(Events::OptionsStickEvent, this);
     mSpace->GetOwner()->GetComponent<InputInterpreter>()->SetInputContext(InputInterpreter::InputContext::Options);
   }
 

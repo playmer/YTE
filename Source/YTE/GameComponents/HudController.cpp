@@ -25,28 +25,32 @@ namespace YTE
 
   YTEDefineType(PostcardUpdate)
   {
-    YTERegisterType(PostcardUpdate);
-    YTEBindField(&PostcardUpdate::Number, "Number", PropertyBinding::GetSet);
+    RegisterType<PostcardUpdate>();
+    TypeBuilder<PostcardUpdate> builder;
+    builder.Field<&PostcardUpdate::Number>( "Number", PropertyBinding::GetSet);
   }
 
   YTEDefineEvent(HideHudEvent);
 
   YTEDefineType(HideHudEvent)
   {
-    YTERegisterType(HideHudEvent);
+    RegisterType<HideHudEvent>();
+    TypeBuilder<HideHudEvent> builder;
   }
 
   YTEDefineEvent(DialoguePossible);
 
   YTEDefineType(DialoguePossible)
   {
-    YTERegisterType(DialoguePossible);
-    YTEBindField(&DialoguePossible::isPossible, "isPossible", PropertyBinding::GetSet);
+    RegisterType<DialoguePossible>();
+    TypeBuilder<DialoguePossible> builder;
+    builder.Field<&DialoguePossible::isPossible>( "isPossible", PropertyBinding::GetSet);
   }
 
   YTEDefineType(HudController)
   {
-    YTERegisterType(HudController);
+    RegisterType<HudController>();
+    TypeBuilder<HudController> builder;
   }
 
   HudController::HudController(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -187,19 +191,19 @@ namespace YTE
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
 
     // register for user toggling hud elements
-    mSpace->YTERegister(Events::HudElementToggled, this, &HudController::OnElementToggled);
+    mSpace->RegisterEvent<&HudController::OnElementToggled>(Events::HudElementToggled, this);
 
-    mSpace->YTERegister(Events::MenuStart, this, &HudController::OnMenuStart);
-    mSpace->YTERegister(Events::MenuExit, this, &HudController::OnMenuExit);
+    mSpace->RegisterEvent<&HudController::OnMenuStart>(Events::MenuStart, this);
+    mSpace->RegisterEvent<&HudController::OnMenuExit>(Events::MenuExit, this);
 
-    mSpace->GetOwner()->YTERegister(Events::BoatRotation, this, &HudController::OnBoatRotation);
-    mSpace->GetOwner()->YTERegister(Events::PostcardUpdate, this, &HudController::OnPostcardUpdate);
-    mSpace->GetOwner()->YTERegister(Events::StartGame, this, &HudController::OnStartGame);
-    mSpace->GetOwner()->YTERegister(Events::SailStateChanged, this, &HudController::OnSailChanged);
-    mSpace->GetOwner()->YTERegister(Events::DialoguePossible, this, &HudController::OnDialoguePossible);
-    mSpace->GetOwner()->YTERegister(Events::HideHudEvent, this, &HudController::OnHideHud);
-    mSpace->GetOwner()->YTERegister(Events::DialogueStart, this, &HudController::OnDialogueStart);
-    mSpace->GetOwner()->YTERegister(Events::DialogueExit, this, &HudController::OnDialogueExit);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnBoatRotation>(Events::BoatRotation, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnPostcardUpdate>(Events::PostcardUpdate, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnStartGame>(Events::StartGame, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnSailChanged>(Events::SailStateChanged, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnDialoguePossible>(Events::DialoguePossible, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnHideHud>(Events::HideHudEvent, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->GetOwner()->RegisterEvent<&HudController::OnDialogueExit>(Events::DialogueExit, this);
 
     // force the game to load all textures so there's no hiccup when we switch in future
     for (int i = 9; i >= 0; i--)
@@ -322,13 +326,13 @@ namespace YTE
 
   void HudController::OnMenuStart(MenuStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     HideHud();
   }
 
   void HudController::OnMenuExit(MenuExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     ShowHud();
   }
 
@@ -346,7 +350,7 @@ namespace YTE
     OpenPostcard();
   }
 
-  void HudController::OnStartGame(StartGame *aEvent)
+  void HudController::OnStartGame(StartGame *)
   {
     ShowHud();
     
@@ -387,17 +391,17 @@ namespace YTE
     }
   }
 
-  void HudController::OnDialogueStart(DialogueStart *aEvent)
+  void HudController::OnDialogueStart(DialogueStart *)
   {
     HideHud();
   }
 
-  void HudController::OnDialogueExit(DialogueExit *aEvent)
+  void HudController::OnDialogueExit(DialogueExit *)
   {
     ShowHud();
   }
 
-  void HudController::OnHideHud(HideHudEvent *aEvent)
+  void HudController::OnHideHud(HideHudEvent *)
   {
     HideHud();
   }

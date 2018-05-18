@@ -66,7 +66,7 @@ namespace YTE
       {
         return;
       }
-      YTEUnusedArgument(aBool);
+      UnusedArguments(aBool);
       Destroy();
       Create();
     }

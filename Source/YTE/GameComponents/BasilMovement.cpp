@@ -17,62 +17,63 @@ namespace YTE
 {
   YTEDefineType(BasilMovement)
   {
-    YTERegisterType(BasilMovement);
+    RegisterType<BasilMovement>();
+    TypeBuilder<BasilMovement> builder;
 
     // dock index
-    YTEBindProperty(&BasilMovement::GetDockIndex, &BasilMovement::SetDockIndex, "Dock Index")
+    builder.Property<&BasilMovement::GetDockIndex, &BasilMovement::SetDockIndex>( "Dock Index")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character positions
-    YTEBindProperty(&BasilMovement::GetDockOnePos, &BasilMovement::SetDockOnePos, "Dock One Position")
+    builder.Property<&BasilMovement::GetDockOnePos, &BasilMovement::SetDockOnePos>( "Dock One Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetDockTwoPos, &BasilMovement::SetDockTwoPos, "Dock Two Position")
+    builder.Property<&BasilMovement::GetDockTwoPos, &BasilMovement::SetDockTwoPos>( "Dock Two Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetDockThreePos, &BasilMovement::SetDockThreePos, "Dock Three Position")
+    builder.Property<&BasilMovement::GetDockThreePos, &BasilMovement::SetDockThreePos>( "Dock Three Position")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // character rotations
-    YTEBindProperty(&BasilMovement::GetCharRotOne, &BasilMovement::SetCharRotOne, "Char Rotation One")
+    builder.Property<&BasilMovement::GetCharRotOne, &BasilMovement::SetCharRotOne>( "Char Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetCharRotTwo, &BasilMovement::SetCharRotTwo, "Char Rotation Two")
+    builder.Property<&BasilMovement::GetCharRotTwo, &BasilMovement::SetCharRotTwo>( "Char Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetCharRotThree, &BasilMovement::SetCharRotThree, "Char Rotation Three")
+    builder.Property<&BasilMovement::GetCharRotThree, &BasilMovement::SetCharRotThree>( "Char Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat offsets
-    YTEBindProperty(&BasilMovement::GetBoatOffsetOne, &BasilMovement::SetBoatOffsetOne, "Boat Offset One")
+    builder.Property<&BasilMovement::GetBoatOffsetOne, &BasilMovement::SetBoatOffsetOne>( "Boat Offset One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetBoatOffsetTwo, &BasilMovement::SetBoatOffsetTwo, "Boat Offset Two")
+    builder.Property<&BasilMovement::GetBoatOffsetTwo, &BasilMovement::SetBoatOffsetTwo>( "Boat Offset Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetBoatOffsetThree, &BasilMovement::SetBoatOffsetThree, "Boat Offset Three")
+    builder.Property<&BasilMovement::GetBoatOffsetThree, &BasilMovement::SetBoatOffsetThree>( "Boat Offset Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
     // boat rotations
-    YTEBindProperty(&BasilMovement::GetBoatRotOne, &BasilMovement::SetBoatRotOne, "Boat Rotation One")
+    builder.Property<&BasilMovement::GetBoatRotOne, &BasilMovement::SetBoatRotOne>( "Boat Rotation One")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetBoatRotTwo, &BasilMovement::SetBoatRotTwo, "Boat Rotation Two")
+    builder.Property<&BasilMovement::GetBoatRotTwo, &BasilMovement::SetBoatRotTwo>( "Boat Rotation Two")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&BasilMovement::GetBoatRotThree, &BasilMovement::SetBoatRotThree, "Boat Rotation Three")
+    builder.Property<&BasilMovement::GetBoatRotThree, &BasilMovement::SetBoatRotThree>( "Boat Rotation Three")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -116,7 +117,7 @@ namespace YTE
     mBoatRotations.emplace_back(mBoatRotationTwo);
     mBoatRotations.emplace_back(mBoatRotationThree);
 
-    mSpace->YTERegister(Events::QuestStart, this, &BasilMovement::OnQuestStart);
+    mSpace->RegisterEvent<&BasilMovement::OnQuestStart>(Events::QuestStart, this);
   }
 
   void BasilMovement::MoveToNextDock()

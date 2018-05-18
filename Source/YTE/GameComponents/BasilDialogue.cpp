@@ -19,7 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(BasilDialogue) { YTERegisterType(BasilDialogue); }
+  YTEDefineType(BasilDialogue) { RegisterType<BasilDialogue>();
+    TypeBuilder<BasilDialogue> builder; }
 
   BasilDialogue::BasilDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -29,7 +30,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil, mSpace);
@@ -44,10 +45,10 @@ namespace YTE
 
   void BasilDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &BasilDialogue::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &BasilDialogue::OnCollisionEnded);
-    mSpace->YTERegister(Events::QuestStart, this, &BasilDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &BasilDialogue::OnUpdateActiveQuestState);
+    mOwner->RegisterEvent<&BasilDialogue::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&BasilDialogue::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
     {
@@ -206,21 +207,21 @@ namespace YTE
   void BasilDialogue::RegisterDialogue()
   {
     mIsRegistered = true;
-    mSpace->YTERegister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-    mSpace->YTERegister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
-    mSpace->YTERegister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent, this);
+    mSpace->RegisterEvent<&BasilDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent, this);
   }
 
   void BasilDialogue::DeregisterDialogue()
   {
     mIsRegistered = false;
-    mSpace->YTEDeregister(Events::DialogueStart, this, &BasilDialogue::OnDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &BasilDialogue::OnDialogueContinue);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &BasilDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &BasilDialogue::OnPlaySoundEvent);
-    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &BasilDialogue::OnPlayAnimationEvent);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueStart>(Events::DialogueStart,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnDialogueExit>(Events::DialogueExit,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent,  this);
+    mSpace->DeregisterEvent<&BasilDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent,  this);
   }
 
   void BasilDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -282,7 +283,7 @@ namespace YTE
 
   void BasilDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
@@ -309,7 +310,7 @@ namespace YTE
 
   void BasilDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSoundBranchAccumulator = 0; // reset the conversation skip number
 
     DialoguePossible diagEvent;
@@ -346,9 +347,9 @@ namespace YTE
         auto director = mSpace->FindFirstCompositionByName("Boat")->GetComponent<DialogueDirector>();
         director->DeregisterDirector();
 
-        DialoguePossible diagEvent;
+        DialoguePossible diagEventNested;
         diagEvent.isPossible = false;
-        mSpace->SendEvent(Events::DialoguePossible, &diagEvent);
+        mSpace->SendEvent(Events::DialoguePossible, &diagEventNested);
       }
     }
     else if (mActiveQuest->GetName() == Quest::Name::NotActive)

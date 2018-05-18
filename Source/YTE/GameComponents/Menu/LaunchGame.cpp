@@ -18,11 +18,16 @@
 namespace YTE
 {
   YTEDefineEvent(StartGame);
-  YTEDefineType(StartGame) { YTERegisterType(StartGame); }
+  YTEDefineType(StartGame)
+  { 
+    RegisterType<StartGame>();
+    TypeBuilder<StartGame> builder;
+  }
 
   YTEDefineType(LaunchGame)
   {
-    YTERegisterType(LaunchGame);
+    RegisterType<LaunchGame>();
+    TypeBuilder<LaunchGame> builder;
   }
 
   LaunchGame::LaunchGame(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -38,11 +43,11 @@ namespace YTE
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
     if (emitter)
     {
-      //emitter->PlayEvent("Menu_Start");
+      emitter->PlayEvent("Menu_Start");
     }
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &LaunchGame::OnLogicUpdate);
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchGame::OnElementTrigger);
+    mSpace->RegisterEvent<&LaunchGame::OnLogicUpdate>(Events::LogicUpdate, this);
+    mOwner->RegisterEvent<&LaunchGame::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchGame::OnLogicUpdate(LogicUpdate *)

@@ -39,7 +39,8 @@ namespace YTE
 
     YTEDefineType(AudioTest)
     {
-        YTERegisterType(AudioTest);
+        RegisterType<AudioTest>();
+    TypeBuilder<AudioTest> builder;
 
         std::vector<std::vector<Type*>> deps = 
         { 
@@ -50,7 +51,7 @@ namespace YTE
         GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
 
-        YTEBindProperty(&AudioTest::GetSoundName, &AudioTest::SetSoundName, "SoundName")
+        builder.Property<&AudioTest::GetSoundName, &AudioTest::SetSoundName>( "SoundName")
             .AddAttribute<Serializable>()
             .AddAttribute<EditorProperty>()
             .AddAttribute<DropDownStrings>(PopulateDropDownList);
@@ -59,7 +60,7 @@ namespace YTE
     AudioTest::AudioTest(Composition *aOwner, Space *aSpace, RSValue *aProperties)
         : Component(aOwner, aSpace)
     {
-        YTEUnusedArgument(aProperties);
+        UnusedArguments(aProperties);
         DeserializeByType(aProperties, this, GetStaticType());
     }
 
@@ -72,7 +73,7 @@ namespace YTE
         GraphicsView *view = space->GetComponent<GraphicsView>();
         Window *window = view->GetWindow();
 
-        window->mKeyboard.YTERegister(Events::KeyPress, this, &AudioTest::Play);
+        window->mKeyboard.RegisterEvent<&AudioTest::Play>(Events::KeyPress, this);
     }
 
     void AudioTest::Play(KeyboardEvent *aEvent)

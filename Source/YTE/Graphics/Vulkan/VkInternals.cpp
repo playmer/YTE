@@ -11,7 +11,6 @@
 
 namespace YTE
 {
-#if !defined(NDEBUG)
   // debug report callback for vulkan
   static VKAPI_ATTR
   VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
@@ -23,13 +22,7 @@ namespace YTE
                                           const char* aMessage,
                                           void *aUserData)
   {
-    YTEUnusedArgument(aObjectType);
-    YTEUnusedArgument(aObject);
-    YTEUnusedArgument(aLocation);
-    YTEUnusedArgument(aMessageCode);
-    YTEUnusedArgument(aLayerPrefix);
-    YTEUnusedArgument(aUserData);
-    YTEUnusedArgument(aObjectType);
+    UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
 
     switch (aFlags)
     {
@@ -64,12 +57,11 @@ namespace YTE
         break;
       }
     }
+
     printf("%s\n", aMessage);
     assert(aFlags != VK_DEBUG_REPORT_ERROR_BIT_EXT);
     return VK_TRUE;
   }
-#endif
-
 
 
   std::shared_ptr<vkhlf::Surface> VkInternals::InitializeVulkan(Engine *aEngine)
@@ -78,45 +70,48 @@ namespace YTE
 
     enabledExtensions.emplace_back("VK_KHR_surface");
 
-#if defined(YTE_Windows)
-    enabledExtensions.emplace_back("VK_KHR_win32_surface");
-#endif
+    if constexpr(PlatformInformation::Windows())
+    {
+      enabledExtensions.emplace_back("VK_KHR_win32_surface");
+    }
 
-#if !defined(NDEBUG)
-    enabledExtensions.emplace_back("VK_EXT_debug_report");
+    if constexpr(CompilerOptions::Debug())
+    {
+      enabledExtensions.emplace_back("VK_EXT_debug_report");
 
-    // Enable standard validation layer to find as much errors as possible!
-    enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+      // Enable standard validation layer to find as much errors as possible!
+      enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
 
-    //enabledLayers.push_back("VK_LAYER_GOOGLE_threading");
-    //enabledLayers.push_back("VK_LAYER_GOOGLE_unique_objects");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_api_dump");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_device_limits");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_draw_state");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_image");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_mem_tracker");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_object_tracker");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_param_checker");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_screenshot");
-    //enabledLayers.push_back("VK_LAYER_LUNARG_swapchain");
-#endif
+      //enabledLayers.push_back("VK_LAYER_GOOGLE_threading");
+      //enabledLayers.push_back("VK_LAYER_GOOGLE_unique_objects");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_api_dump");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_device_limits");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_draw_state");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_image");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_mem_tracker");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_object_tracker");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_param_checker");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_screenshot");
+      //enabledLayers.push_back("VK_LAYER_LUNARG_swapchain");
+    }
 
     // Create a new vulkan instance using the required extensions
     mInstance = vkhlf::Instance::create("Yours Truly Engine",
-      1,
-      enabledLayers,
-      enabledExtensions);
+                                        1,
+                                        enabledLayers,
+                                        enabledExtensions);
 
-#if !defined(NDEBUG)
-    vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
-      vk::DebugReportFlagBitsEXT::eWarning |
-      vk::DebugReportFlagBitsEXT::ePerformanceWarning |
-      vk::DebugReportFlagBitsEXT::eError |
-      vk::DebugReportFlagBitsEXT::eDebug);
-    mDebugReportCallback
-      = mInstance->createDebugReportCallback(flags,
-        &debugReportCallback);
-#endif
+    if constexpr(CompilerOptions::Debug())
+    {
+      vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
+                                    vk::DebugReportFlagBitsEXT::eWarning |
+                                    vk::DebugReportFlagBitsEXT::ePerformanceWarning |
+                                    vk::DebugReportFlagBitsEXT::eError |
+                                    vk::DebugReportFlagBitsEXT::eDebug);
+
+      mDebugReportCallback = mInstance->createDebugReportCallback(flags,
+                                                                  &debugReportCallback);
+  }
 
     auto &windows = aEngine->GetWindows();
 

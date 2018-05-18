@@ -25,22 +25,24 @@ namespace YTE
 
   YTEDefineType(ProgressionHappened)
   {
-    YTERegisterType(ProgressionHappened);
+    RegisterType<ProgressionHappened>();
+    TypeBuilder<ProgressionHappened> builder;
   }
 
   YTEDefineType(ProgressionParticles)
   {
-    YTERegisterType(ProgressionParticles);
+    RegisterType<ProgressionParticles>();
+    TypeBuilder<ProgressionParticles> builder;
 
-    YTEBindProperty(&ProgressionParticles::GetPoofTime, &ProgressionParticles::SetPoofTime, "Poof Time")
+    builder.Property<&ProgressionParticles::GetPoofTime, &ProgressionParticles::SetPoofTime>( "Poof Time")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ProgressionParticles::GetPoofCount, &ProgressionParticles::SetPoofCount, "Poof Count")
+    builder.Property<&ProgressionParticles::GetPoofCount, &ProgressionParticles::SetPoofCount>( "Poof Count")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    YTEBindProperty(&ProgressionParticles::GetPoofEmitRate, &ProgressionParticles::SetPoofEmitRate, "Poof Emit Rate")
+    builder.Property<&ProgressionParticles::GetPoofEmitRate, &ProgressionParticles::SetPoofEmitRate>( "Poof Emit Rate")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
@@ -66,9 +68,9 @@ namespace YTE
 
     mRigidBody = mOwner->GetComponent<RigidBody>();
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &ProgressionParticles::Update);
+    mSpace->RegisterEvent<&ProgressionParticles::Update>(Events::LogicUpdate, this);
 
-    mSpace->YTERegister(Events::ProgressionHappened, this, &ProgressionParticles::OnProgressionHappened);
+    mSpace->RegisterEvent<&ProgressionParticles::OnProgressionHappened>(Events::ProgressionHappened, this);
 
     mProgressionEmitter->SetEmitCount(0);
     mProgressionEmitter->SetEmitRate(1000.0f);
@@ -126,11 +128,11 @@ namespace YTE
     mPoofEmitRate = aTime;
   }
 
-  void ProgressionParticles::OnProgressionHappened(ProgressionHappened * aEvent)
+  void ProgressionParticles::OnProgressionHappened(ProgressionHappened *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMakePoof = true;
-    mProgressionEmitter->SetEmitCount(mPoofCount);
+    mProgressionEmitter->SetEmitCount(static_cast<float>(mPoofCount));
     mProgressionEmitter->SetEmitRate(mPoofEmitRate);
   }
 }

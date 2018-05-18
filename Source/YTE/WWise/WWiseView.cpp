@@ -8,12 +8,14 @@ namespace YTE
 
   YTEDefineType(WWiseListenerChanged)
   {
-    YTERegisterType(WWiseListenerChanged);
+    RegisterType<WWiseListenerChanged>();
+    TypeBuilder<WWiseListenerChanged> builder;
   }
 
   YTEDefineType(WWiseView)
   {
-    YTERegisterType(WWiseView);
+    RegisterType<WWiseView>();
+    TypeBuilder<WWiseView> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
   }

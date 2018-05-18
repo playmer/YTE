@@ -24,14 +24,15 @@ namespace YTE
 
   YTEDefineType(ModelChanged)
   {
-    YTERegisterType(ModelChanged);
-    YTEBindField(&ModelChanged::Object, "Object", PropertyBinding::Get);
+    RegisterType<ModelChanged>();
+    TypeBuilder<ModelChanged> builder;
+    builder.Field<&ModelChanged::Object>( "Object", PropertyBinding::Get);
   }
 
 
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -59,7 +60,7 @@ namespace YTE
 
   static std::vector<std::string> PopulateShadingDropDown(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
     return { "Standard", "Additive Blending", "ShaderNoCull", "Alpha Blend" };
   }
 
@@ -67,7 +68,8 @@ namespace YTE
 
   YTEDefineType(Model)
   {
-    YTERegisterType(Model);
+    RegisterType<Model>();
+    TypeBuilder<Model> builder;
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
@@ -75,21 +77,21 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&Model::GetMeshName, &Model::SetMeshName, "Mesh")
+    builder.Property<&Model::GetMeshName, &Model::SetMeshName>( "Mesh")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Model::GetShading, &Model::SetShading, "Shading")
+    builder.Property<&Model::GetShading, &Model::SetShading>( "Shading")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateShadingDropDown);
 
-    YTEBindProperty(&Model::GetReload, &Model::SetReload, "Reload")
+    builder.Property<&Model::GetReload, &Model::SetReload>( "Reload")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    //YTEBindProperty(&Model::GetInstanced, &Model::SetInstanced, "Instanced")
+    //builder.Property<&Model::GetInstanced, &Model::SetInstanced>( "Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
     //  .SetDocumentation("Will use/not use instancing for this mesh. (Will apply to all Models using this mesh.)");
@@ -128,9 +130,9 @@ namespace YTE
     mRenderer = mSpace->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Model::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Model::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Model::TransformUpdate);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Model::TransformUpdate>(Events::ScaleChanged, this);
     mTransform = mOwner->GetComponent<Transform>();
     mConstructing = false;
     Create();
@@ -166,7 +168,7 @@ namespace YTE
 
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CreateTransform();
 

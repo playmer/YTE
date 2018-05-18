@@ -20,7 +20,8 @@ namespace YTE
 {
   YTEDefineType(InheritVisibility)
   {
-    YTERegisterType(InheritVisibility);
+    RegisterType<InheritVisibility>();
+    TypeBuilder<InheritVisibility> builder;
 
     std::vector<std::vector<Type*>> deps = {
       { TypeId<Model>(),
@@ -40,7 +41,7 @@ namespace YTE
 
   void InheritVisibility::Initialize()
   {
-    mOwner->YTERegister(Events::UpdateVisibilityEvent, this, &InheritVisibility::OnParentVisibilityUpdate);
+    mOwner->RegisterEvent<&InheritVisibility::OnParentVisibilityUpdate>(Events::UpdateVisibilityEvent, this);
   }
 
   void InheritVisibility::OnParentVisibilityUpdate(UpdateVisibilityEvent *aEvent)

@@ -14,7 +14,8 @@ namespace YTE
 {
   YTEDefineType(VkInstantiatedModel)
   {
-    YTERegisterType(VkInstantiatedModel);
+    RegisterType<VkInstantiatedModel>();
+    TypeBuilder<VkInstantiatedModel> builder;
   }
 
   UBOAnimation VkInstantiatedModel::cAnimation;
@@ -32,8 +33,8 @@ namespace YTE
     mMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     Create();
 
-    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
-    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
+    mView->RegisterEvent<&VkInstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mView->RegisterEvent<&VkInstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
   VkInstantiatedModel::VkInstantiatedModel(Mesh *aMesh, 
@@ -49,8 +50,8 @@ namespace YTE
     mMesh = static_cast<VkMesh*>(aMesh);
     Create();
 
-    mView->YTERegister(Events::SurfaceLost, this, &VkInstantiatedModel::SurfaceLostEvent);
-    mView->YTERegister(Events::SurfaceGained, this, &VkInstantiatedModel::SurfaceGainedEvent);
+    mView->RegisterEvent<&VkInstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mView->RegisterEvent<&VkInstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
   VkInstantiatedModel::~VkInstantiatedModel()
@@ -60,7 +61,7 @@ namespace YTE
 
   void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSurface->DestroyModel(mView, this);
   }
 
@@ -179,9 +180,7 @@ namespace YTE
         !mLoadUBOModel && 
         !mLoadUBOMaterial)
     {
-      mSurface->YTERegister(Events::GraphicsDataUpdateVk,
-                            this,
-                            &VkInstantiatedModel::GraphicsDataUpdateVk);
+      mSurface->RegisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
     }
   }
 
@@ -272,9 +271,7 @@ namespace YTE
   {
     auto mesh = static_cast<VkMesh*>(mMesh);
 
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk,
-                            this,
-                            &VkInstantiatedModel::GraphicsDataUpdateVk);
+    mSurface->DeregisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
 
     auto update = aEvent->mCBO;
 

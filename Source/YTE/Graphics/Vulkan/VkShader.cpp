@@ -18,7 +18,8 @@ namespace YTE
 {
   YTEDefineType(VkShader)
   {
-    YTERegisterType(VkShader);
+    RegisterType<VkShader>();
+    TypeBuilder<VkShader> builder;
   }
 
   VkShader::VkShader(VkCreatePipelineDataSet& aInfo, ViewData* aView)
@@ -40,7 +41,7 @@ namespace YTE
                                                VkShaderDescriptions &aDescriptions,
                                                bool aReload)
   {
-    YTEUnusedArgument(aReload);
+    UnusedArguments(aReload);
     auto device = aSurface->GetDevice();
 
     auto vertex = aName + ".vert";

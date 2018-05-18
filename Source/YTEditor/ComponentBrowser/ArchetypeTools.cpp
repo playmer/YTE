@@ -103,7 +103,7 @@ namespace YTEditor
 
   void ArchetypeTools::SetButtonMode(int aMode)
   {
-    YTEUnusedArgument(aMode);
+    YTE::UnusedArguments(aMode);
 
     mRevertButton->show();
     mSaveAsButton->show();

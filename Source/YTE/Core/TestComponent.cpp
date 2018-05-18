@@ -13,7 +13,8 @@ namespace YTE
 {
   YTEDefineType(TestComponent)
   {
-    YTERegisterType(TestComponent);
+    RegisterType<TestComponent>();
+    TypeBuilder<TestComponent> builder;
   }
 
   TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)
@@ -45,7 +46,7 @@ namespace YTE
 
     mTime = mCurrentPosition.z < 0.0f ? glm::pi<float>() : 0.0f;
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &TestComponent::Update);
+    mSpace->RegisterEvent<&TestComponent::Update>(Events::LogicUpdate, this);
   }
 
   void TestComponent::Update(LogicUpdate *aEvent)

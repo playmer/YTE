@@ -209,7 +209,7 @@ namespace YTE
   template <typename Return>
   struct DecomposeFunctionObjectType
   {
-    using ObjectType = nullptr_t;
+    using ObjectType = std::nullptr_t;
   };
 
   template <typename Return, typename ...Arguments>
@@ -253,16 +253,25 @@ namespace YTE
     using ObjectType1 = typename DecomposeFunctionObjectType<tFunctionType1>::ObjectType;
     using ObjectType2 = typename DecomposeFunctionObjectType<tFunctionType2>::ObjectType;
 
-    static_assert(std::is_same<ObjectType1, nullptr_t>::value == false || std::is_same<ObjectType2, nullptr_t>::value == false,
+    static_assert(std::is_same<ObjectType1, std::nullptr_t>::value == false || std::is_same<ObjectType2, std::nullptr_t>::value == false,
       "One or both of the getter and setter pair must be a valid function, they cannot both be nullptr.");
 
-    using ObjectType = static_switch <TrueOrFalse(std::is_same<ObjectType1, nullptr_t>::value), ObjectType1, ObjectType2>;
+    using ObjectType = static_switch <TrueOrFalse(std::is_same<ObjectType1, std::nullptr_t>::value), ObjectType1, ObjectType2>;
   };
 
-  template <typename Return, typename Arg = Return>
+  template <typename Return>
   struct CountFunctionArguments
   {
 
+  };
+
+  template <typename Return, typename ...Arguments>
+  struct CountFunctionArguments<Return(Arguments...)>
+  {
+    constexpr static size_t Size()
+    {
+      return sizeof...(Arguments);
+    }
   };
 
   template <typename Return, typename ...Arguments>
@@ -417,4 +426,10 @@ namespace YTE
   {
     typedef T type;
   };
+
+  template <auto tValue>
+  constexpr decltype(tValue) ReturnValue()
+  {
+    return tValue;
+  }
 }

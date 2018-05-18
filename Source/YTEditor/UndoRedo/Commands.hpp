@@ -16,7 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/Utilities.hpp"
 #include "YTE/Core/Utilities.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/UndoRedo/UndoRedo.hpp"

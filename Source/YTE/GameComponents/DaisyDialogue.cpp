@@ -19,7 +19,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(DaisyDialogue) { YTERegisterType(DaisyDialogue); }
+  YTEDefineType(DaisyDialogue) { RegisterType<DaisyDialogue>();
+    TypeBuilder<DaisyDialogue> builder; }
 
   DaisyDialogue::DaisyDialogue(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -28,7 +29,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Daisy, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Daisy, mSpace);
@@ -43,10 +44,10 @@ namespace YTE
 
   void DaisyDialogue::Initialize()
   {
-    mOwner->YTERegister(Events::CollisionStarted, this, &DaisyDialogue::OnCollisionStarted);
-    mOwner->YTERegister(Events::CollisionEnded, this, &DaisyDialogue::OnCollisionEnded);
-    mSpace->YTERegister(Events::QuestStart, this, &DaisyDialogue::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &DaisyDialogue::OnUpdateActiveQuestState);
+    mOwner->RegisterEvent<&DaisyDialogue::OnCollisionStarted>(Events::CollisionStarted, this);
+    mOwner->RegisterEvent<&DaisyDialogue::OnCollisionEnded>(Events::CollisionEnded, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *lambAnchor = mOwner->FindFirstCompositionByName("LambAnchor"))
     {
@@ -193,21 +194,21 @@ namespace YTE
   void DaisyDialogue::RegisterDialogue()
   {
     mIsRegistered = true;
-    mSpace->YTERegister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
-    mSpace->YTERegister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
-    mSpace->YTERegister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
-    mSpace->YTERegister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
-    mSpace->YTERegister(Events::PlayAnimationEvent, this, &DaisyDialogue::OnPlayAnimationEvent);
+    mSpace->RegisterEvent<&DaisyDialogue::OnDialogueStart>(Events::DialogueStart, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnDialogueExit>(Events::DialogueExit, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent, this);
+    mSpace->RegisterEvent<&DaisyDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent, this);
   }
 
   void DaisyDialogue::DeregisterDialogue()
   {
     mIsRegistered = false;
-    mSpace->YTEDeregister(Events::DialogueStart, this, &DaisyDialogue::OnDialogueStart);
-    mSpace->YTEDeregister(Events::DialogueNodeConfirm, this, &DaisyDialogue::OnDialogueContinue);
-    mSpace->YTEDeregister(Events::DialogueExit, this, &DaisyDialogue::OnDialogueExit);
-    mSpace->YTEDeregister(Events::PlaySoundEvent, this, &DaisyDialogue::OnPlaySoundEvent);
-    mSpace->YTEDeregister(Events::PlayAnimationEvent, this, &DaisyDialogue::OnPlayAnimationEvent);
+    mSpace->DeregisterEvent<&DaisyDialogue::OnDialogueStart>(Events::DialogueStart,  this);
+    mSpace->DeregisterEvent<&DaisyDialogue::OnDialogueContinue>(Events::DialogueNodeConfirm,  this);
+    mSpace->DeregisterEvent<&DaisyDialogue::OnDialogueExit>(Events::DialogueExit,  this);
+    mSpace->DeregisterEvent<&DaisyDialogue::OnPlaySoundEvent>(Events::PlaySoundEvent,  this);
+    mSpace->DeregisterEvent<&DaisyDialogue::OnPlayAnimationEvent>(Events::PlayAnimationEvent,  this);
   }
 
   void DaisyDialogue::OnCollisionStarted(CollisionStarted *aEvent)
@@ -269,7 +270,7 @@ namespace YTE
 
   void DaisyDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
@@ -296,7 +297,7 @@ namespace YTE
 
   void DaisyDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialoguePossible diagEvent;
     diagEvent.isPossible = true;

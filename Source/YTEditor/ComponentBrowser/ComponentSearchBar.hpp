@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qlineedit.h>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
-#include "YTE/Meta/Type.hpp"
+#include "YTE/Meta/Meta.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
 class QCompleter;

@@ -24,8 +24,9 @@ namespace YTE
 {
   YTEDefineType(RigidBody)
   {
-    YTERegisterType(RigidBody);
-    YTEBindProperty(&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty, "Velocity")
+    RegisterType<RigidBody>();
+    TypeBuilder<RigidBody> builder;
+    builder.Property<&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty>( "Velocity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
@@ -39,28 +40,31 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    YTEBindProperty(&RigidBody::GetMass, &RigidBody::SetMassProperty, "Mass")
+    builder.Property<&RigidBody::GetMass, &RigidBody::SetMassProperty>( "Mass")
       .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&RigidBody::IsKinematic, &RigidBody::SetKinematic, "Kinematic")
+    builder.Property<&RigidBody::IsKinematic, &RigidBody::SetKinematic>( "Kinematic")
       .SetDocumentation("If the object is kinematic, it can move. Non-kinematic objects are static.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&RigidBody::GetGravity, &RigidBody::SetGravity, "Gravity")
+    builder.Property<&RigidBody::GetGravity, &RigidBody::SetGravity>( "Gravity")
       .SetDocumentation("This is the acceleration due to gravity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindFunction(&RigidBody::ApplyImpulse, YTENoOverload, "ApplyImpulse", YTEParameterNames("aImpulse", "aRelativePositon"))
-      .Description() = "Applies an impulse to the RigidBody.";
+    builder.Function<&RigidBody::ApplyImpulse>("ApplyImpulse")
+      .SetParameterNames("aImpulse", "aRelativePositon")
+      .SetDocumentation("Applies an impulse to the RigidBody.");
 
-    YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (const glm::vec3&)), "SetVelocity", YTEParameterNames("aVelocityVector"))
-      .Description() = "Sets the object velocity from a Real3 of values";
-    YTEBindFunction(&RigidBody::SetVelocity, (void (RigidBody::*) (float, float, float)), "SetVelocity", YTEParameterNames("aVelX", "aVelY", "aVelZ"))
-      .Description() = "Sets the object velocity from three float values";
+    builder.Function<SelectOverload<void (RigidBody::*) (const glm::vec3&),&RigidBody::SetVelocity>()>("SetVelocity")
+      .SetParameterNames("aVelocityVector")
+      .SetDocumentation("Sets the object velocity from a Real3 of values");
+    builder.Function<SelectOverload<void (RigidBody::*) (float, float, float),&RigidBody::SetVelocity>()>("SetVelocity")
+      .SetParameterNames("aVelX", "aVelY","aVelZ")
+      .SetDocumentation("Sets the object velocity from three float values");
   }
 
   RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)

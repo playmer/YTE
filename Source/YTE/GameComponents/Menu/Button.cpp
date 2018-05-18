@@ -16,7 +16,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -38,25 +38,28 @@ namespace YTE
 
   YTEDefineType(Button)
   {
-    YTERegisterType(Button);
+    RegisterType<Button>();
+    TypeBuilder<Button> builder;
 
-    YTEBindProperty(&Button::GetHover, &Button::SetHover, "HoverSprite")
+    builder.Property<&Button::GetHover, &Button::SetHover>( "HoverSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Button::GetNeutral, &Button::SetNeutral, "NeutralSprite")
+    builder.Property<&Button::GetNeutral, &Button::SetNeutral>( "NeutralSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Button::GetActivated, &Button::SetActivated, "ActivatedSprite")
+    builder.Property<&Button::GetActivated, &Button::SetActivated>( "ActivatedSprite")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
   }
 
-  Button::Button(Composition* aOwner, Space* aSpace, RSValue* aProperties) : Component(aOwner, aSpace), mConstructing(true)
+  Button::Button(Composition* aOwner, Space* aSpace, RSValue* aProperties)
+    : Component{ aOwner, aSpace }
+    , mConstructing{ true }
   {
     DeserializeByType(aProperties, this, GetStaticType());
 
@@ -65,16 +68,17 @@ namespace YTE
 
   void Button::Initialize()
   {
-    mOwner->YTERegister(Events::MenuElementHover, this, &Button::OnButtonHover);
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &Button::OnButtonTrigger);
-    mOwner->YTERegister(Events::MenuElementDeHover, this, &Button::OnButtonDeHover);
+    mOwner->RegisterEvent<&Button::OnButtonHover>(Events::MenuElementHover, this);
+    mOwner->RegisterEvent<&Button::OnButtonTrigger>(Events::MenuElementTrigger, this);
+    mOwner->RegisterEvent<&Button::OnButtonDeHover>(Events::MenuElementDeHover, this);
 
     mCurrentSprite = mOwner->GetComponent<Sprite>();
   }
 
   void Button::OnButtonHover(MenuElementHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
+
     if (mCurrentSprite != nullptr && !mHoverSpriteName.empty())
     {
       mCurrentSprite->SetTexture(mHoverSpriteName);
@@ -83,7 +87,8 @@ namespace YTE
 
   void Button::OnButtonTrigger(MenuElementTrigger* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
+
     if (mCurrentSprite != nullptr && !mActivatedSpriteName.empty())
     {
       mCurrentSprite->SetTexture(mActivatedSpriteName);
@@ -92,7 +97,8 @@ namespace YTE
 
   void Button::OnButtonDeHover(MenuElementDeHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
+
     if (mCurrentSprite != nullptr && !mNeutralSpriteName.empty())
     {
       mCurrentSprite->SetTexture(mNeutralSpriteName);

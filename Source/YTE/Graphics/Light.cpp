@@ -15,7 +15,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result{ "Directional", "Point", "Spot"/*, "Area"*/ };
     return result;
@@ -25,42 +25,43 @@ namespace YTE
 
   YTEDefineType(Light)
   {
-    YTERegisterType(Light);
+    RegisterType<Light>();
+    TypeBuilder<Light> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    YTEBindProperty(&Light::GetLightType, &Light::SetLightType, "Light Type")
+    builder.Property<&Light::GetLightType, &Light::SetLightType>( "Light Type")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    YTEBindProperty(&Light::GetAmbient, &Light::SetAmbient, "Ambient")
+    builder.Property<&Light::GetAmbient, &Light::SetAmbient>( "Ambient")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    YTEBindProperty(&Light::GetDiffuse, &Light::SetDiffuse, "Diffuse")
+    builder.Property<&Light::GetDiffuse, &Light::SetDiffuse>( "Diffuse")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    YTEBindProperty(&Light::GetSpecular, &Light::SetSpecular, "Specular")
+    builder.Property<&Light::GetSpecular, &Light::SetSpecular>( "Specular")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    YTEBindProperty(&Light::GetSpotLightCones, &Light::SetSpotLightCones, "Spot Light Cone Angles")
+    builder.Property<&Light::GetSpotLightCones, &Light::SetSpotLightCones>( "Spot Light Cone Angles")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Light::GetSpotLightFalloff, &Light::SetSpotLightFalloff, "Spot Light Falloff")
+    builder.Property<&Light::GetSpotLightFalloff, &Light::SetSpotLightFalloff>( "Spot Light Falloff")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Light::GetActive, &Light::SetActive, "Is Active")
+    builder.Property<&Light::GetActive, &Light::SetActive>( "Is Active")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    YTEBindProperty(&Light::GetIntensity, &Light::SetIntensity, "Intensity")
+    builder.Property<&Light::GetIntensity, &Light::SetIntensity>( "Intensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -96,10 +97,10 @@ namespace YTE
 
   void Light::Initialize()
   {
-    mOwner->YTERegister(Events::PositionChanged, this, &Light::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Light::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Light::TransformUpdate);
-    mEngine->YTERegister(Events::LogicUpdate, this, &Light::Update);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Light::TransformUpdate>(Events::ScaleChanged, this);
+    mEngine->RegisterEvent<&Light::Update>(Events::LogicUpdate, this);
 
     mTransform = mOwner->GetComponent<Transform>(); 
 
@@ -120,7 +121,7 @@ namespace YTE
 
   void Light::TransformUpdate(TransformChanged* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mInstantiatedLight)
     {
@@ -140,11 +141,11 @@ namespace YTE
   void Light::Update(LogicUpdate* aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)
     {
-      mEngine->YTEDeregister(Events::LogicUpdate, this, &Light::Update);
+      mEngine->DeregisterEvent<&Light::Update>(Events::LogicUpdate,  this);
       if (mInstantiatedLight)
       {
         mInstantiatedLight->SetDirection(GetDirectionFromTransform(mTransform));

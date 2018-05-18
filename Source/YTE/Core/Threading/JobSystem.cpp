@@ -14,7 +14,8 @@ namespace YTE
 {
   YTEDefineType(JobSystem)
   {
-    YTERegisterType(JobSystem);
+    RegisterType<JobSystem>();
+    TypeBuilder<JobSystem> builder;
   }
 
 
@@ -24,7 +25,7 @@ namespace YTE
     , mPool()
     , mAsync(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   JobSystem::~JobSystem()
@@ -42,7 +43,7 @@ namespace YTE
 
   void JobSystem::Initialize()
   {
-    mOwner->YTERegister(Events::FrameUpdate, this, &JobSystem::Update);
+    mOwner->RegisterEvent<&JobSystem::Update>(Events::FrameUpdate, this);
     size_t workerCount = std::thread::hardware_concurrency();
     std::vector<Worker*> workers;
 
@@ -84,7 +85,7 @@ namespace YTE
 
   void JobSystem::Update(LogicUpdate *aUpdate)
   {
-    YTEUnusedArgument(aUpdate);
+    UnusedArguments(aUpdate);
 
     if (std::this_thread::get_id() == mForegroundWorker)
     {

@@ -37,12 +37,6 @@ namespace YTE
       const std::string aName = #aName; \
   }
 
-  #define YTERegister(aEventName, aReceiver, aFunction) \
-  RegisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
-
-  #define YTEDeregister(aEventName, aReceiver, aFunction) \
-  DeregisterEvent<decltype(aFunction), aFunction>(aEventName, aReceiver)
-
   class Event : public Object
   {
   public:
@@ -105,9 +99,11 @@ namespace YTE
     using Deleter = BlockAllocator<EventDelegate>::Deleter;
     using UniqueEvent = std::unique_ptr<EventDelegate, Deleter>;
 
-    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    template <auto tFunction, typename tObjectType>
     void RegisterEvent(const std::string &aName, tObjectType *aObject)
     {
+      using tFunctionType = decltype(tFunction);
+
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
       static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
@@ -115,7 +111,7 @@ namespace YTE
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
 
-      auto delegate = aObject->template MakeEventDelegate<tFunctionType, aFunction, typename tObjectType>(aName, aObject);
+      auto delegate = aObject->template MakeEventDelegate<tFunctionType, tFunction, tObjectType>(aName, aObject);
       mEventLists[delegate->mName].mList.InsertFront(delegate->mHook);
     }
 
@@ -148,9 +144,11 @@ namespace YTE
       return mHooks.back().get();
     }
 
-    template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
+    template <auto tFunction, typename tObjectType>
     void DeregisterEvent(const std::string &aName, tObjectType *aObject)
     {
+      using tFunctionType = decltype(tFunction);
+
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
       static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
@@ -158,7 +156,7 @@ namespace YTE
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
 
-      aObject->template RemoveEventDelegate<tFunctionType, aFunction, tObjectType>(aName, aObject);
+      aObject->template RemoveEventDelegate<tFunctionType, tFunction, tObjectType>(aName, aObject);
     }
 
     template <typename tFunctionType, tFunctionType aFunction, typename tObjectType>
@@ -187,10 +185,14 @@ namespace YTE
     void SendEvent(const std::string &aName, Event *aEvent);
 
     EventHandler() {}
-    EventHandler(const EventHandler& aEventHandler) { YTEUnusedArgument(aEventHandler); }
+    EventHandler(const EventHandler& aEventHandler)
+    { 
+      UnusedArguments(aEventHandler); 
+    }
+
     EventHandler& operator=(const EventHandler& aEventHandler) 
     { 
-      YTEUnusedArgument(aEventHandler); 
+      UnusedArguments(aEventHandler);
       return *this; 
     }
 

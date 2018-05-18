@@ -12,12 +12,13 @@ namespace YTE
 {
   YTEDefineType(Component)
   {
-    YTERegisterType(Component);
+    RegisterType<Component>();
+    TypeBuilder<Component> builder;
 
-    YTEBindFunction(&Component::Remove, YTENoOverload, "Remove", YTENoNames).Description()
-      = "Removes the component from its owner. This is delayed until the next frame.";
+    builder.Function<&Component::Remove>("Remove")
+      .SetDocumentation("Removes the component from its owner. This is delayed until the next frame.");
   
-    YTEBindProperty(&Component::GetOwner, YTENoSetter, "Owner");
+    builder.Property<&Component::GetOwner, NoSetter>("Owner");
   }
 
   Component::Component(Composition *aOwner, Space *aSpace)
@@ -96,7 +97,8 @@ namespace YTE
 
   YTEDefineType(ComponentDependencies)
   {
-    YTERegisterType(ComponentDependencies);
+    RegisterType<ComponentDependencies>();
+    TypeBuilder<ComponentDependencies> builder;
   }
 
   ComponentDependencies::ComponentDependencies(DocumentedObject *aObject,
@@ -104,7 +106,7 @@ namespace YTE
   {
     auto typeAddingTo = dynamic_cast<Type*>(aObject);
 
-    YTEUnusedArgument(typeAddingTo);
+    UnusedArguments(typeAddingTo);
     DebugObjection(nullptr == typeAddingTo,
                    "ComponentDependencies Attribute being added to unknown object type.");
 

@@ -16,7 +16,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  YTEDefineType(StarMovement) { YTERegisterType(StarMovement); }
+  YTEDefineType(StarMovement) { RegisterType<StarMovement>();
+    TypeBuilder<StarMovement> builder; }
 
   StarMovement::StarMovement(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
@@ -30,15 +31,15 @@ namespace YTE
     , mLightBeamTransform(nullptr)
     , mBoatTransform(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void StarMovement::Initialize()
   {
-    mSpace->YTERegister(Events::LogicUpdate, this, &StarMovement::Update);
+    mSpace->RegisterEvent<&StarMovement::Update>(Events::LogicUpdate, this);
 
-    mSpace->YTERegister(Events::QuestStart, this, &StarMovement::OnQuestStart);
-    mSpace->YTERegister(Events::UpdateActiveQuestState, this, &StarMovement::OnUpdateActiveQuestState);
+    mSpace->RegisterEvent<&StarMovement::OnQuestStart>(Events::QuestStart, this);
+    mSpace->RegisterEvent<&StarMovement::OnUpdateActiveQuestState>(Events::UpdateActiveQuestState, this);
 
     if (Composition *john = mSpace->FindFirstCompositionByName("john"))
     {

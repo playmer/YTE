@@ -25,7 +25,8 @@ namespace YTE
 {
   YTEDefineType(FacialAnimator)
   {
-    YTERegisterType(FacialAnimator);
+    RegisterType<FacialAnimator>();
+    TypeBuilder<FacialAnimator> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Animator>() } };
 
@@ -59,15 +60,15 @@ namespace YTE
       mFaceAnimations.insert_or_assign(anim.first, new FaceAnim(anim.first, anim.second->GetAnimation()->mTicksPerSecond));
     }
     
-    mOwner->YTERegister(Events::ModelChanged, this, &FacialAnimator::OnModelChanged);
-    mOwner->YTERegister(Events::KeyFrameChanged, this, &FacialAnimator::OnKeyFrameChanged);
-    mOwner->YTERegister(Events::AnimationAdded, this, &FacialAnimator::OnAnimationAdded);
-    mOwner->YTERegister(Events::AnimationRemoved, this, &FacialAnimator::OnAnimationRemoved);
+    mOwner->RegisterEvent<&FacialAnimator::OnModelChanged>(Events::ModelChanged, this);
+    mOwner->RegisterEvent<&FacialAnimator::OnKeyFrameChanged>(Events::KeyFrameChanged, this);
+    mOwner->RegisterEvent<&FacialAnimator::OnAnimationAdded>(Events::AnimationAdded, this);
+    mOwner->RegisterEvent<&FacialAnimator::OnAnimationRemoved>(Events::AnimationRemoved, this);
   }
 
   void FacialAnimator::OnModelChanged(ModelChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     RefreshInitialBufffers();
   }
 

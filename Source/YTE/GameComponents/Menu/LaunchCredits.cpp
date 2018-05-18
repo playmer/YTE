@@ -18,11 +18,16 @@
 namespace YTE
 {
   YTEDefineEvent(StartCredits);
-  YTEDefineType(StartCredits) { YTERegisterType(StartCredits); }
+  YTEDefineType(StartCredits)
+  {
+    RegisterType<StartCredits>();
+    TypeBuilder<StartCredits> builder;
+  }
 
   YTEDefineType(LaunchCredits)
   {
-    YTERegisterType(LaunchCredits);
+    RegisterType<LaunchCredits>();
+    TypeBuilder<LaunchCredits> builder;
   }
 
   LaunchCredits::LaunchCredits(Composition* aOwner, Space* aSpace, RSValue* aProperties)
@@ -39,7 +44,7 @@ namespace YTE
       emitter->PlayEvent("Menu_Start");
     }
 
-    mOwner->YTERegister(Events::MenuElementTrigger, this, &LaunchCredits::OnElementTrigger);
+    mOwner->RegisterEvent<&LaunchCredits::OnElementTrigger>(Events::MenuElementTrigger, this);
   }
 
   void LaunchCredits::OnElementTrigger(MenuElementTrigger *)
