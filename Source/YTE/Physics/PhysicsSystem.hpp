@@ -63,12 +63,12 @@ namespace YTE
                               Composition *otherObject,
                               btPersistentManifold *manifold);
 
-    UniquePointer<btDefaultCollisionConfiguration> mCollisionConfiguration;
-    UniquePointer<btCollisionDispatcher> mDispatcher;
-    UniquePointer<btBroadphaseInterface> mOverlappingPairCache;
-    UniquePointer<btSequentialImpulseConstraintSolver> mSolver;
-    UniquePointer<btDiscreteDynamicsWorld> mDynamicsWorld;
-    UniquePointer<YTE::DebugDrawer> mDebugDrawer;
+    std::unique_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
+    std::unique_ptr<btCollisionDispatcher> mDispatcher;
+    std::unique_ptr<btBroadphaseInterface> mOverlappingPairCache;
+    std::unique_ptr<btSequentialImpulseConstraintSolver> mSolver;
+    std::unique_ptr<btDiscreteDynamicsWorld> mDynamicsWorld;
+    std::unique_ptr<DebugDrawer> mDebugDrawer;
 
     bool mDebugDraw;
     glm::vec3 mGravityAcceleration;

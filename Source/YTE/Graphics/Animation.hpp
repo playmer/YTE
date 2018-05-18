@@ -64,6 +64,8 @@ namespace YTE
   {
     struct TranslationKey
     {
+      TranslationKey() {}
+
       TranslationKey(double aTime, glm::vec3 aTranslation)
         : mTime{ aTime }
         , mTranslation{ aTranslation }
@@ -77,6 +79,8 @@ namespace YTE
 
     struct ScaleKey
     {
+      ScaleKey() {}
+
       ScaleKey(double aTime, glm::vec3 aScale)
         : mTime{ aTime }
         , mScale{ aScale }
@@ -90,6 +94,8 @@ namespace YTE
 
     struct RotationKey
     {
+      RotationKey() {}
+
       RotationKey(double aTime, glm::quat aRotation)
         : mTime{ aTime }
         , mRotation{ aRotation }

@@ -63,122 +63,6 @@ namespace YTE
     return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
   }
 
-
-  //static inline 
-  //glm::mat4 ScaleInterpolation(double aAnimationTime, const aiNodeAnim* aNode)
-  //{
-  //  aiVector3D scale;
-  //  if (aNode->mNumScalingKeys == 1)
-  //  {
-  //    scale = aNode->mScalingKeys[0].mValue;
-  //  }
-  //  else
-  //  {
-  //    auto startFrame = aNode->mScalingKeys[0];
-  //
-  //    uint32_t index = 0;
-  //    for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
-  //    {
-  //      if (aAnimationTime < (float)aNode->mScalingKeys[i + 1].mTime - startFrame.mTime)
-  //      {
-  //        index = i;
-  //        break;
-  //      }
-  //    }
-  //
-  //    aiVectorKey frame = aNode->mScalingKeys[index];
-  //    aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
-  //
-  //    float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-  //
-  //    const aiVector3D& start = frame.mValue;
-  //    const aiVector3D& end = nextFrame.mValue;
-  //
-  //    scale = (start + delta * (end - start));
-  //  }
-  //
-  //  aiMatrix4x4 mat;
-  //  aiMatrix4x4::Scaling(scale, mat);
-  //  return ToGlm(mat);
-  //}
-  //
-  //static inline
-  //glm::mat4 RotationInterpolation(double aAnimationTime, const aiNodeAnim* aNode)
-  //{
-  //  aiQuaternion rot;
-  //
-  //  if (aNode->mNumRotationKeys == 1)
-  //  {
-  //    rot = aNode->mRotationKeys[0].mValue;
-  //  }
-  //  else
-  //  {
-  //    auto startFrame = aNode->mRotationKeys[0];
-  //
-  //    // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
-  //    uint32_t index = 0;
-  //    for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
-  //    {
-  //      if (aAnimationTime < (float)aNode->mRotationKeys[i + 1].mTime - startFrame.mTime)
-  //      {
-  //        index = i;
-  //        break;
-  //      }
-  //    }
-  //
-  //    aiQuatKey frame = aNode->mRotationKeys[index];
-  //    aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
-  //
-  //    float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-  //
-  //    const aiQuaternion& start = frame.mValue;
-  //    const aiQuaternion& end = nextFrame.mValue;
-  //
-  //    aiQuaternion::Interpolate(rot, start, end, delta);
-  //    rot.Normalize();
-  //  }
-  //
-  //  return ToGlm(aiMatrix4x4(rot.GetMatrix()));
-  //}
-  //
-  //static inline
-  //glm::mat4 TranslationInterpolation(double aAnimationTime, const aiNodeAnim *aNode)
-  //{
-  //  aiVector3D trans;
-  //  if (aNode->mNumPositionKeys == 1)
-  //  {
-  //    trans = aNode->mPositionKeys[0].mValue;
-  //  }
-  //  else
-  //  {
-  //    auto startFrame = aNode->mPositionKeys[0];
-  //
-  //    uint32_t index = 0;
-  //    for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
-  //    {
-  //      if (aAnimationTime < (float)aNode->mPositionKeys[i + 1].mTime - startFrame.mTime)
-  //      {
-  //        index = i;
-  //        break;
-  //      }
-  //    }
-  //
-  //    aiVectorKey frame = aNode->mPositionKeys[index];
-  //    aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
-  //
-  //    float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-  //
-  //    const aiVector3D& start = frame.mValue;
-  //    const aiVector3D& end = nextFrame.mValue;
-  //
-  //    trans = (start + delta * (end - start));
-  //  }
-  //
-  //  aiMatrix4x4 mat;
-  //  aiMatrix4x4::Translation(trans, mat);
-  //  return ToGlm(mat);
-  //}
-
   // The following is a glmification of the assimp aiQuaterniont<TReal>::Interpolate
   // function.
   // TODO (Joshua): Investigate glm::mix function after we've updated glm.
@@ -229,10 +113,204 @@ namespace YTE
              sclp * aStart.z + sclq * end.z };
   }
 
+  template<typename tType>
+  size_t Write(FILE* aFile, tType const& aValue)
+  {
+    return fwrite(static_cast<void const*>(&aValue), sizeof(tType), 1, aFile);
+  }
+
+  template<typename tType>
+  size_t Write(FILE* aFile, tType const* aValue)
+  {
+    return fwrite(static_cast<void const*>(aValue), sizeof(tType), 1, aFile);
+  }
+
+  template<typename tType>
+  size_t Write(FILE* aFile, tType const* aValue, size_t aSize)
+  {
+    return fwrite(static_cast<void const*>(aValue), sizeof(tType), aSize, aFile);
+  }
+
+  template<>
+  size_t Write<>(FILE* aFile, AnimationData::TranslationKey const* aValue, size_t aSize)
+  {
+    auto end = aValue + aSize;
+    for (; aValue < end; ++aValue)
+    {
+      auto ret1 = Write(aFile, aValue->mTime);
+      auto ret2 = Write(aFile, aValue->mTranslation);
+
+      assert(ret1 == ret2);
+    }
+
+    return aSize;
+  }
+
+  template<>
+  size_t Write<>(FILE* aFile, AnimationData::ScaleKey const* aValue, size_t aSize)
+  {
+    auto end = aValue + aSize;
+    for (; aValue < end; ++aValue)
+    {
+      auto ret1 = Write(aFile, aValue->mTime);
+      auto ret2 = Write(aFile, aValue->mScale);
+
+      assert(ret1 == ret2);
+    }
+
+    return aSize;
+  }
+
+  template<>
+  size_t Write<>(FILE* aFile, AnimationData::RotationKey const* aValue, size_t aSize)
+  {
+    auto end = aValue + aSize;
+    for (; aValue < end; ++aValue)
+    {
+      auto ret1 = Write(aFile, aValue->mTime);
+      auto ret2 = Write(aFile, aValue->mRotation);
+
+      assert(ret1 == ret2);
+    }
+
+    return aSize;
+  }
+
+  void WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
+  {
+    std::string fileName = aName;
+    fileName += ".YTEAnimation";
+
+    FILE* file;
+    file = fopen(fileName.c_str(), "w");
+
+    if (file)
+    {
+      // The "header" of the file.
+      Write(file, aData.mNodes.size());
+      Write(file, aData.mTransformations.size());
+      Write(file, aData.mChildren.size());
+      Write(file, aData.mTranslationKeys.size());
+      Write(file, aData.mScaleKeys.size());
+      Write(file, aData.mRotationKeys.size());
+      Write(file, aData.mNames.size());
+      Write(file, aData.mDuration);
+      Write(file, aData.mTicksPerSecond);
+
+      Write(file, aData.mNodes.data(), aData.mNodes.size());
+      Write(file, aData.mTransformations.data(), aData.mTransformations.size());
+      Write(file, aData.mChildren.data(), aData.mChildren.size());
+      Write(file, aData.mTranslationKeys.data(), aData.mTranslationKeys.size());
+      Write(file, aData.mScaleKeys.data(), aData.mScaleKeys.size());
+      Write(file, aData.mRotationKeys.data(), aData.mRotationKeys.size());
+      Write(file, aData.mNames.data(), aData.mNames.size());
+
+      fclose(file);
+    }
+  }
+
+  template<typename tType>
+  tType Read(FILE* aFile)
+  {
+    typename std::aligned_storage<sizeof(tType), alignof(tType)>::type data;
+    fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
+
+    return *reinterpret_cast<tType*>(&data);
+  }
+
+  template<typename tType>
+  size_t Read(FILE* aFile, tType* aBuffer, size_t aSize)
+  {
+    return fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
+  }
+
+  template<>
+  AnimationData::TranslationKey Read<AnimationData::TranslationKey>(FILE* aFile)
+  {
+    AnimationData::TranslationKey key;
+    key.mTime = Read<double>(aFile);
+    key.mTranslation = Read<glm::vec3>(aFile);
+
+    return key;
+  }
+
+  template<>
+  AnimationData::ScaleKey Read<AnimationData::ScaleKey>(FILE* aFile)
+  {
+    AnimationData::ScaleKey key;
+    key.mTime = Read<double>(aFile);
+    key.mScale = Read<glm::vec3>(aFile);
+
+    return key;
+  }
+
+  template<>
+  AnimationData::RotationKey Read<AnimationData::RotationKey>(FILE* aFile)
+  {
+    AnimationData::RotationKey key;
+    key.mTime = Read<double>(aFile);
+    key.mRotation = Read<glm::quat>(aFile);
+
+    return key;
+  }
 
 
+  AnimationData ReadAnimationDataFromFile(std::string const& aName)
+  {
+    AnimationData data;
+
+    FILE* file;
+    file = fopen(aName.c_str(), "r");
+
+    if (file)
+    {
+      // The "header" of the file.
+      auto nodeSize = Read<size_t>(file);
+      auto transformationsSize = Read<size_t>(file);
+      auto childrenSize = Read<size_t>(file);
+      auto translationKeysSize = Read<size_t>(file);
+      auto scaleKeysSize = Read<size_t>(file);
+      auto rotationKeysSize = Read<size_t>(file);
+      auto namesSize = Read<size_t>(file);
+      data.mDuration = Read<double>(file);
+      data.mTicksPerSecond = Read<double>(file);
+
+      data.mNodes.resize(nodeSize);
+      auto ret = Read<AnimationData::Node>(file, data.mNodes.data(), data.mNodes.size());
+
+      data.mTransformations.resize(transformationsSize);
+      ret = Read<glm::mat4>(file, data.mTransformations.data(), data.mTransformations.size());
+
+      data.mChildren.resize(childrenSize);
+      ret = Read<size_t>(file, data.mChildren.data(), data.mChildren.size());
+
+      data.mTranslationKeys.reserve(translationKeysSize);
+      for (size_t i = 0; i < translationKeysSize; ++i)
+      {
+        data.mTranslationKeys.emplace_back(Read<AnimationData::TranslationKey>(file));
+      }
+
+      data.mScaleKeys.reserve(scaleKeysSize);
+      for (size_t i = 0; i < scaleKeysSize; ++i)
+      {
+        data.mScaleKeys.emplace_back(Read<AnimationData::ScaleKey>(file));
+      }
+
+      data.mRotationKeys.reserve(rotationKeysSize);
+      for (size_t i = 0; i < rotationKeysSize; ++i)
+      {
+        data.mRotationKeys.emplace_back(Read<AnimationData::RotationKey>(file));
+      }
+
+      data.mNames.resize(namesSize);
+      Read<char>(file, data.mNames.data(), data.mNames.size());
+
+      fclose(file);
+    }
 
 
+    return std::move(data);
+  }
 
 
   
@@ -492,7 +570,7 @@ namespace YTE
     }
 
     // Process the children added
-    for (auto i = 0; i < aAssimpNode->mNumChildren; ++i)
+    for (size_t i = 0; i < aAssimpNode->mNumChildren; ++i)
     {
       MakeNodes(aAssimpAnimation, 
                 aAssimpNode->mChildren[i], 
@@ -505,34 +583,45 @@ namespace YTE
   {
     Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
-    auto scene = importer.ReadFile(aniFile.c_str(),
-                                   aiProcess_Triangulate |
-                                   aiProcess_CalcTangentSpace |
-                                   aiProcess_GenSmoothNormals);
+    auto aniFileYTE = aniFile + ".YTEAnimation";
+
+    if (filesystem::exists(aniFileYTE))
+    {
+      return std::move(ReadAnimationDataFromFile(aniFileYTE));
+    }
+    else
+    {
+      auto scene = importer.ReadFile(aniFile.c_str(),
+                                     aiProcess_Triangulate |
+                                     aiProcess_CalcTangentSpace |
+                                     aiProcess_GenSmoothNormals);
     
-    DebugObjection(scene == nullptr,
-                   "Failed to load animation file %s from assimp",
-                   aniFile.c_str());
+      UnusedArguments(scene);
 
-    DebugObjection(scene->HasAnimations() == false,
-                   "Failed to find animations in scene loaded from %s",
-                   aniFile.c_str());
-                   
-    UnusedArguments(scene);
+      DebugObjection(scene == nullptr,
+                     "Failed to load animation file %s from assimp",
+                     aniFile.c_str());
 
-    auto animation = scene->mAnimations[0];
+      DebugObjection(scene->HasAnimations() == false,
+                     "Failed to find animations in scene loaded from %s",
+                     aniFile.c_str());
 
-    AnimationData data;
-    AnimationData::Node node;
+      auto animation = scene->mAnimations[0];
 
-    data.mNodes.emplace_back(node);
-    
-    MakeNodes(animation, scene->mRootNode, data, 0);
+      AnimationData data;
+      AnimationData::Node node;
 
-    data.mTicksPerSecond = animation->mTicksPerSecond;
-    data.mDuration = animation->mDuration;
+      data.mNodes.emplace_back(node);
 
-    return std::move(data);
+      MakeNodes(animation, scene->mRootNode, data, 0);
+
+      data.mTicksPerSecond = animation->mTicksPerSecond;
+      data.mDuration = animation->mDuration;
+
+      WriteAnimationDataToFile(aniFile, data);
+
+      return std::move(data);
+    }
   }
 
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
