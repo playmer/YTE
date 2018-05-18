@@ -29,7 +29,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Daisy, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Daisy, mSpace);
@@ -270,7 +270,7 @@ namespace YTE
 
   void DaisyDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
@@ -297,7 +297,7 @@ namespace YTE
 
   void DaisyDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialoguePossible diagEvent;
     diagEvent.isPossible = true;

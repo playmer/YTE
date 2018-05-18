@@ -32,7 +32,7 @@ namespace YTE
 
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -60,7 +60,7 @@ namespace YTE
 
   static std::vector<std::string> PopulateShadingDropDown(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
     return { "Standard", "Additive Blending", "ShaderNoCull", "Alpha Blend" };
   }
 
@@ -168,7 +168,7 @@ namespace YTE
 
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     CreateTransform();
 

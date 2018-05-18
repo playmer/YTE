@@ -15,7 +15,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result{ "Directional", "Point", "Spot"/*, "Area"*/ };
     return result;
@@ -121,7 +121,7 @@ namespace YTE
 
   void Light::TransformUpdate(TransformChanged* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mInstantiatedLight)
     {
@@ -141,7 +141,7 @@ namespace YTE
   void Light::Update(LogicUpdate* aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)
     {

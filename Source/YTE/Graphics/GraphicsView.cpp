@@ -9,7 +9,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDrawerTypeDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result
     {
@@ -22,7 +22,7 @@ namespace YTE
 
   static std::vector<std::string> PopulateCombinationTypeDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result
     {

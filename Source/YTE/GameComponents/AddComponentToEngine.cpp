@@ -23,7 +23,7 @@ namespace YTE
   AddComponentToEngine::AddComponentToEngine(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void AddComponentToEngine::NativeInitialize()

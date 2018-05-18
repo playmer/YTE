@@ -15,7 +15,7 @@ namespace YTE
   ActionManager::ActionManager(Composition * aOwner, Space * aSpace, RSValue * aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void ActionManager::AddSequence(Composition *aComposition, const ActionSequence &sequence)

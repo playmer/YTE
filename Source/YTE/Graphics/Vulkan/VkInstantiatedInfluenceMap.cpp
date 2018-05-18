@@ -38,7 +38,7 @@ namespace YTE
 
   void VkInstantiatedInfluenceMap::SurfaceLostEvent(ViewChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mManager->DestroyMap(this);
   }
 
@@ -55,7 +55,7 @@ namespace YTE
 
   void VkInstantiatedInfluenceMap::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (mDataChanged)
     {
       mManager->UpdateMapValue(mIndex, mInfluenceMapUBOData);

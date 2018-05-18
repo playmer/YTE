@@ -12,28 +12,34 @@
 
 #ifdef _WIN32
     // If _WIN32 is defined, we're on Windows.
-  #define YTE_Windows
+  #define YTE_Windows 1
 
     // If _WIN64 is defined, we're on x64.
   #ifdef _WIN64
-    #define YTE_x64
+    #define YTE_x64 1
 
     // Else we're on 32 bit.
   #else
-    #define x86
+    #define YTE_x86
   #endif
 #endif
 
 namespace YTE
 {
-  struct CompilerOptions
+  struct PlatformInformation
   {
-    #if YTE_DEBUG
-      using Release = std::integral_constant<bool, false>;
-      using Debug = std::integral_constant<bool, true>;
-    #else
-      using Release = std::integral_constant<bool, true>;
-      using Debug = std::integral_constant<bool, false>;
+    #if YTE_Windows
+      using Windows = std::integral_constant<bool, true>;
+      using Linux = std::integral_constant<bool, false>;
+      using Android = std::integral_constant<bool, false>;
+      using MacOS = std::integral_constant<bool, false>;
+      using iOS = std::integral_constant<bool, false>;
+    #else // Otherwise we're no known platform.
+      using Windows = std::integral_constant<bool, false>;
+      using Linux = std::integral_constant<bool, false>;
+      using Android = std::integral_constant<bool, false>;
+      using MacOS = std::integral_constant<bool, false>;
+      using iOS = std::integral_constant<bool, false>;
     #endif
 
     #ifdef YTE_x64
@@ -42,6 +48,17 @@ namespace YTE
     #else
       using x64 = std::integral_constant<bool, false>;
       using x86 = std::integral_constant<bool, true>;
+    #endif
+  };
+
+  struct CompilerOptions
+  {
+    #if YTE_DEBUG
+      using Release = std::integral_constant<bool, false>;
+      using Debug = std::integral_constant<bool, true>;
+    #else
+      using Release = std::integral_constant<bool, true>;
+      using Debug = std::integral_constant<bool, false>;
     #endif
   };
 }

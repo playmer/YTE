@@ -112,7 +112,7 @@ namespace YTE
 
   void MenuController::OnChildrenInitialized(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     UpdateVisibility();
     mSpace->DeregisterEvent<&MenuController::OnChildrenInitialized>(Events::LogicUpdate,  this);
   }

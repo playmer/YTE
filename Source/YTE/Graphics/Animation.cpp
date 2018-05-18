@@ -79,7 +79,7 @@ namespace YTE
       aiProcess_CalcTangentSpace |
       aiProcess_GenSmoothNormals);
 
-    YTEUnusedArgument(scene);
+    UnusedArguments(scene);
 
     DebugObjection(scene == nullptr,
       "Failed to load animation file %s from assimp",

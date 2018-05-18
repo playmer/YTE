@@ -17,7 +17,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mFlag(true)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void demo_InsideZone::Initialize()
@@ -48,7 +48,7 @@ namespace YTE
 
   void demo_InsideZone::OnCollisionPersist(CollisionPersisted *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     return;
   }
 

@@ -113,7 +113,7 @@ namespace YTE
 
   void BoatParticles::Update(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     float boatSpeed = mBoatController->GetCurrentSpeed();
 

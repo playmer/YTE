@@ -19,6 +19,6 @@ namespace YTE
   BaseModel::BaseModel(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 }

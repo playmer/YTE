@@ -296,7 +296,7 @@ namespace YTE
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     auto baseDevice = static_cast<vk::PhysicalDevice>
                                   (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
@@ -508,7 +508,7 @@ namespace YTE
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mWindow->IsMinimized())
     {

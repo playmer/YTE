@@ -185,10 +185,14 @@ namespace YTE
     void SendEvent(const std::string &aName, Event *aEvent);
 
     EventHandler() {}
-    EventHandler(const EventHandler& aEventHandler) { YTEUnusedArgument(aEventHandler); }
+    EventHandler(const EventHandler& aEventHandler)
+    { 
+      UnusedArguments(aEventHandler); 
+    }
+
     EventHandler& operator=(const EventHandler& aEventHandler) 
     { 
-      YTEUnusedArgument(aEventHandler); 
+      UnusedArguments(aEventHandler);
       return *this; 
     }
 

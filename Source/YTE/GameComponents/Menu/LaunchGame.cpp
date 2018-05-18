@@ -43,7 +43,7 @@ namespace YTE
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
     if (emitter)
     {
-      //emitter->PlayEvent("Menu_Start");
+      emitter->PlayEvent("Menu_Start");
     }
 
     mSpace->RegisterEvent<&LaunchGame::OnLogicUpdate>(Events::LogicUpdate, this);

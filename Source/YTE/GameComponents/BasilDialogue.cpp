@@ -30,7 +30,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::Basil, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::Basil, mSpace);
@@ -283,7 +283,7 @@ namespace YTE
 
   void BasilDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
@@ -310,7 +310,7 @@ namespace YTE
 
   void BasilDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSoundBranchAccumulator = 0; // reset the conversation skip number
 
     DialoguePossible diagEvent;

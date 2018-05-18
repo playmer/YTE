@@ -306,8 +306,10 @@ namespace YTE
     ++mFrame;
   }
 
+  // TODO: (Josh) Implement in some other more acceptable way. On by default imgui metrics window?
   void Engine::SetFrameRate(Window &aWindow, double aDt)
   {
+    UnusedArguments(aWindow);
     static double totalTime = 0.0;
     totalTime += aDt;
 

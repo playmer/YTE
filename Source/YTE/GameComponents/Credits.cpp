@@ -36,7 +36,7 @@ namespace YTE
     , mFirstLine(nullptr)
     , mLastLine{nullptr}
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void Credits::Start()

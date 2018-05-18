@@ -52,7 +52,7 @@ namespace YTE
   {
     KeyboardEvent keyEvent;
 
-    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
+    for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)
     {
       if (mKeysCurrent[i] && mKeysPrevious[i])
       {
@@ -102,7 +102,7 @@ namespace YTE
 
   void Keyboard::ForceAllKeysUp()
   {
-    for (size_t i = 0; i < enum_cast(Keys::Keys_Number); ++i)
+    for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)
     {
       UpdateKey(static_cast<Keys>(i), false);
     }

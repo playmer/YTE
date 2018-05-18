@@ -251,7 +251,7 @@ namespace YTE
   // TODO (Josh): Abstract or move to another handler.
   void Space::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     //if ((mFocusHandled == false) && (aEvent->Focused == false) && !mEngine->GetWindow()->IsMinimized())
     //{
@@ -269,7 +269,7 @@ namespace YTE
 
   void Space::WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     //if (aEvent->Minimized && !mEngine->GetWindow()->IsNotFocused())
     //{

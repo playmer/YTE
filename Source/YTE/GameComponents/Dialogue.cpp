@@ -26,7 +26,7 @@ namespace YTE
     , mSprite(nullptr)
     , mActive(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
 
@@ -59,29 +59,29 @@ namespace YTE
 
   void Dialogue::Update(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Dialogue::OnCollisionPersist(CollisionPersisted * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void Dialogue::OnCollisionStart(CollisionStarted * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mActive = true;
   }
 
   void Dialogue::OnCollisionEnd(CollisionEnded * aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mActive = false;
   }
 
   void Dialogue::OnDialogueStart(RequestDialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (!mActive)
     {
@@ -122,7 +122,7 @@ namespace YTE
 
   void Dialogue::OnConfirm(DialogueConfirm *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (!mActive)
     {
       return;
@@ -138,7 +138,7 @@ namespace YTE
 
   void Dialogue::OnExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     if (!mActive)
     {
       return;

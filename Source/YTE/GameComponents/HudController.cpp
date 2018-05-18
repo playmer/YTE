@@ -326,13 +326,13 @@ namespace YTE
 
   void HudController::OnMenuStart(MenuStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     HideHud();
   }
 
   void HudController::OnMenuExit(MenuExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     ShowHud();
   }
 

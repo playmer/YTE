@@ -109,7 +109,7 @@ namespace YTE
 
   void VkRenderTarget::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEUnusedArgument(aMeshes);
+    UnusedArguments(aMeshes);
   }
 
 
@@ -133,7 +133,7 @@ namespace YTE
   {
     mSurface->DeregisterEvent<&VkRenderTarget::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
     mSignedUpForUpdate = false;
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
 

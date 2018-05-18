@@ -241,13 +241,13 @@ namespace YTE
 
   void Camera::TransformEvent(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mChanged = true;
   }
 
   void Camera::OrientationEvent(OrientationChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mChanged = true;
   }
 
@@ -273,7 +273,7 @@ namespace YTE
 
   void Camera::RendererResize(WindowResize *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     mChanged = true;
   }

@@ -106,7 +106,7 @@ namespace YTE
   {
     auto typeAddingTo = dynamic_cast<Type*>(aObject);
 
-    YTEUnusedArgument(typeAddingTo);
+    UnusedArguments(typeAddingTo);
     DebugObjection(nullptr == typeAddingTo,
                    "ComponentDependencies Attribute being added to unknown object type.");
 

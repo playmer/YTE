@@ -29,7 +29,7 @@ namespace YTE
     , mCurrentAnimation("")
     , mAnimForward(true)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void TestingComponent::Initialize()
@@ -44,7 +44,7 @@ namespace YTE
 
   void TestingComponent::Update(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mCurrentAnimation.empty())
     {

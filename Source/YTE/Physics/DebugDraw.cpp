@@ -40,10 +40,6 @@ namespace YTE
                              const btVector3 &aFromColor, 
                              const btVector3 &aToColor)
   {
-    YTEUnusedArgument(aFrom);
-    YTEUnusedArgument(aTo);
-    YTEUnusedArgument(aFromColor);
-    YTEUnusedArgument(aToColor);
     mLineDrawer.AddLine(BtToOurVec3(aFrom), 
                         BtToOurVec3(aTo), 
                         BtToOurVec3(aFromColor), 
@@ -65,11 +61,11 @@ namespace YTE
                                  const btVector3 &aColor, 
                                  btScalar aAlpha)
   {
-    YTEUnusedArgument(aAlpha);
-    mTriangleDrawer.AddTriangle(BtToOurVec3(aA), 
-                                BtToOurVec3(aB), 
-                                BtToOurVec3(aC), 
-                                BtToOurVec3(aColor));
+    glm::vec4 color{ aColor.x(), aColor.y(), aColor.z(), aAlpha };
+    mTriangleDrawer.AddTriangle(BtToOurVec3(aA),
+                                BtToOurVec3(aB),
+                                BtToOurVec3(aC),
+                                color);
   }
     
   void DebugDrawer::reportErrorWarning(const char * warningString)
@@ -79,13 +75,14 @@ namespace YTE
 
   void DebugDrawer::draw3dText(const btVector3 &aLocation, const char *aTextString)
   {
-    YTEUnusedArgument(aLocation);
-    YTEUnusedArgument(aTextString);
+    // TODO (Josh): Implement
+    UnusedArguments(aLocation, aTextString);
   }
 
   void DebugDrawer::setDebugMode(int aDebugMode)
   {
-    YTEUnusedArgument(aDebugMode);
+    // TODO (Josh): Implement
+    UnusedArguments(aDebugMode);
   }
 
 
@@ -95,11 +92,8 @@ namespace YTE
                                      int aLifeTime, 
                                      const btVector3& aColor)
   {
-    YTEUnusedArgument(aPointOnB);
-    YTEUnusedArgument(aNormalOnB);
-    YTEUnusedArgument(aDistance);
-    YTEUnusedArgument(aLifeTime);
-    YTEUnusedArgument(aColor);
+    // TODO (Josh): Implement
+    UnusedArguments(aPointOnB, aNormalOnB, aDistance, aLifeTime, aColor);
   };
 
   void DebugDrawer::clearLines()

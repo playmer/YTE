@@ -56,7 +56,7 @@ namespace YTE
     {
       XINPUT_STATE *state = static_cast<XINPUT_STATE*>(aState);
       XboxButtonEvent xboxEvent;
-      size_t index = enum_cast(aOurKey);
+      size_t index = EnumCast(aOurKey);
       bool down;
                                                             
       /* Key got resent. */                                     

@@ -25,7 +25,7 @@ namespace YTE
     , mPool()
     , mAsync(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   JobSystem::~JobSystem()
@@ -85,7 +85,7 @@ namespace YTE
 
   void JobSystem::Update(LogicUpdate *aUpdate)
   {
-    YTEUnusedArgument(aUpdate);
+    UnusedArguments(aUpdate);
 
     if (std::this_thread::get_id() == mForegroundWorker)
     {

@@ -348,7 +348,7 @@ namespace YTE
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     GraphicsDataUpdateVk update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
@@ -385,7 +385,7 @@ namespace YTE
 
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
@@ -394,7 +394,7 @@ namespace YTE
 
   void VkRenderer::AnimationUpdate(LogicUpdate* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     for (auto& surface : mSurfaces)
     {
       surface.second->AnimationUpdate();

@@ -173,7 +173,7 @@ namespace YTE
 
   void VkRenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
   }
 
 
@@ -213,7 +213,7 @@ namespace YTE
 
   void VkRenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
   }
 
 
@@ -836,7 +836,7 @@ namespace YTE
 
   void VkRenderToScreen::ScreenShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
 

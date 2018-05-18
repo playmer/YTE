@@ -50,7 +50,7 @@ namespace YTEditor
 
     void indexChanged(int aIndex)
     {
-      YTEUnusedArgument(aIndex);
+      YTE::UnusedArguments(aIndex);
       SetCurrentSwitchOrState();
     }
 

@@ -321,9 +321,8 @@ namespace YTE
 
   void Transform::RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint)
   {
-    YTEUnusedArgument(aAxis);
-    YTEUnusedArgument(aAngle);
-    YTEUnusedArgument(aPoint);
+    // TODO: (Josh) Implement
+    UnusedArguments(aAxis, aAngle, aPoint);
   }
 
   ////////////////////////////////////////////////////////////////////////////

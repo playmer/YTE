@@ -52,13 +52,13 @@ namespace YTE
 
     virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
     {
-      YTEUnusedArgument(aUBO);
+      UnusedArguments(aUBO);
     }
 
 
     virtual void SetInstanced(bool aInstanced)
     {
-      YTEUnusedArgument(aInstanced);
+      UnusedArguments(aInstanced);
     }
 
     // Used to update with the previous data. This is useful for switching
@@ -69,19 +69,18 @@ namespace YTE
 
     virtual void UpdateUBOModel(UBOModel &aUBO)
     {
-      YTEUnusedArgument(aUBO);
+      UnusedArguments(aUBO);
     }
 
 
     virtual void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
     {
-      YTEUnusedArgument(aUBO);
-      YTEUnusedArgument(aIndex);
+      UnusedArguments(aUBO, aIndex);
     }
 
     virtual void UpdateUBOMaterial(UBOMaterial *aUBO)
     {
-      YTEUnusedArgument(aUBO);
+      UnusedArguments(aUBO);
     }
 
     /////////////////////////////////

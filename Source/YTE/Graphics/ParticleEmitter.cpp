@@ -16,7 +16,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::wstring wStrPath = YTE::cWorkingDirectory;
 
@@ -157,7 +157,7 @@ namespace YTE
   void ParticleEmitter::Update(LogicUpdate *aEvent)
   {
     YTEProfileFunction();
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     double dt = GetSpace()->GetEngine()->GetDt();
 
     mTimer -= dt;

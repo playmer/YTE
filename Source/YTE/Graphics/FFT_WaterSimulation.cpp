@@ -153,7 +153,7 @@ namespace YTE
   // ============    ============    ============    ============    ============    ============    ============
   void FFT_WaterSimulation::TransformEvent(TransformChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     // update all the positions for the objects being rendered
     AdjustPositions();
@@ -1221,31 +1221,31 @@ namespace YTE
   // ------------------------------------
   Any FFT_WaterSimulation::MT_A(JobHandle & aJob)
   {
-    YTEUnusedArgument(aJob);
+    UnusedArguments(aJob);
     kiss_fftnd(mKFFTConfig[0], mH_Tilde.GetKFFTArray(), mH_Tilde.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_B(JobHandle & aJob)
   {
-    YTEUnusedArgument(aJob);
+    UnusedArguments(aJob);
     kiss_fftnd(mKFFTConfig[1], mH_TildeSlopeX.GetKFFTArray(), mH_TildeSlopeX.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_C(JobHandle & aJob)
   {
-    YTEUnusedArgument(aJob);
+    UnusedArguments(aJob);
     kiss_fftnd(mKFFTConfig[2], mH_TildeSlopeZ.GetKFFTArray(), mH_TildeSlopeZ.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_D(JobHandle & aJob)
   {
-    YTEUnusedArgument(aJob);
+    UnusedArguments(aJob);
     kiss_fftnd(mKFFTConfig[3], mH_TildeDX.GetKFFTArray(), mH_TildeDX.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_E(JobHandle & aJob)
   {
-    YTEUnusedArgument(aJob);
+    UnusedArguments(aJob);
     kiss_fftnd(mKFFTConfig[4], mH_TildeDZ.GetKFFTArray(), mH_TildeDZ.GetKFFTArray());
     return Any();
   }

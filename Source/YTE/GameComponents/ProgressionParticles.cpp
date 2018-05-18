@@ -130,7 +130,7 @@ namespace YTE
 
   void ProgressionParticles::OnProgressionHappened(ProgressionHappened *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMakePoof = true;
     mProgressionEmitter->SetEmitCount(static_cast<float>(mPoofCount));
     mProgressionEmitter->SetEmitRate(mPoofEmitRate);

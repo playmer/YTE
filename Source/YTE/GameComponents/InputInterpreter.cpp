@@ -193,7 +193,7 @@ namespace YTE
 
   void InputInterpreter::OnLogicUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mContext == InputContext::Sailing)
     {

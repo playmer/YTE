@@ -230,10 +230,21 @@ namespace YTE
                                    glm::vec3 aPoint3,
                                    glm::vec3 aColor)
   {
+    AddTriangle(aPoint1,
+                aPoint2,
+                aPoint3,
+                glm::vec4{ aColor, 1.0f });
+  }
+
+  void TriangleDrawer::AddTriangle(glm::vec3 aPoint1,
+                                   glm::vec3 aPoint2,
+                                   glm::vec3 aPoint3,
+                                   glm::vec4 aColor)
+  {
     auto &submesh = mSubmeshes[0];
 
     Vertex vert;
-    vert.mColor = glm::vec4{ aColor, 1.0f };
+    vert.mColor = aColor;
     vert.mPosition = aPoint1;
     submesh.mVertexBuffer.emplace_back(vert);
     vert.mPosition = aPoint2;

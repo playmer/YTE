@@ -46,7 +46,7 @@ namespace YTE
     , mCameraAnchor(nullptr)
     , mLambAnchor(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
     // im the dumbest, should make class abstract, use mName instead of this dumb
     mQuestVec.emplace_back(Quest::Name::Introduction, Quest::CharacterName::John, mSpace);
     mQuestVec.emplace_back(Quest::Name::Fetch, Quest::CharacterName::John, mSpace);
@@ -301,7 +301,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueStart(DialogueStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     DialogueNode::NodeType type = mActiveNode->GetNodeType();
       // For anims and sounds we wont hear back from the director so send an event to ourselves to begin
     if (type == DialogueNode::NodeType::Anim || type == DialogueNode::NodeType::Sound)
@@ -327,7 +327,7 @@ namespace YTE
 
   void JohnDialogue::OnDialogueExit(DialogueExit *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSoundBranchAccumulator = 0; // reset the conversation skip number
 
     DialoguePossible diagEvent;

@@ -104,8 +104,6 @@ namespace YTE
 
   void Orientation::LookAt(glm::vec3 const &aDirection)
   {
-    //YTEUnusedArgument(aUp);
-    //
     /////Derived from pseudo code found here:
     /////http://stackoverflow.com/questions/13014973/quaternion-rotate-to
     ///// and actual code from :

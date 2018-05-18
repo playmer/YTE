@@ -61,7 +61,7 @@ namespace YTE
 
   void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mSurface->DestroyModel(mView, this);
   }
 

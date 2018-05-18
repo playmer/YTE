@@ -51,7 +51,7 @@ namespace YTE
 
   void VkRTGameForwardDrawer::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
   }
 
   void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
@@ -80,7 +80,7 @@ namespace YTE
           continue;
         }
 
-        // We get the sub meshes that use the current shader, then draw them.
+        // We get the sub meshes that use the current shader
         auto range = mesh.second->mSubmeshes.equal_range(shader.first);
 
         for (auto it = range.first; it != range.second; ++it)
@@ -210,6 +210,9 @@ namespace YTE
     };
 
 
+    // A naive alpha sorting algorithm that places objects in clip
+    // space, then sorts their z (depth). It's not perfect, but solves
+    // most naive issues (UI sorting issues, most particle issues).
     {
       YTEProfileBlock("Sorting Alpha");
 
@@ -243,7 +246,7 @@ namespace YTE
 
   void VkRTGameForwardDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEUnusedArgument(aCBO);
+    UnusedArguments(aCBO);
     // secondary command buffers do not use this
     //aCBO->endRenderPass();
   }

@@ -543,7 +543,7 @@ void Name::InitializeType()
   {
     static inline Type* TypeId()
     {
-      // TODO (Austin): Check to see if this needs the bool passed in at the end of the constructor.
+      // TODO (Josh): Check to see if this needs the bool passed in at the end of the constructor.
       static Type type{ ::YTE::TypeId<T>(), Type::Modifier::Pointer, static_cast<T**>(nullptr), true};
 
       return &type;

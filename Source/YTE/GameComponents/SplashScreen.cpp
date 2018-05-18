@@ -32,15 +32,15 @@ namespace YTE
   }
 
   SplashScreen::SplashScreen(Composition* aOwner, Space* aSpace, RSValue* aProperties)
-    : Component(aOwner, aSpace)
-    , mFadeValue(1.0f)
-    , mReadyToExecute(false)
-    , mDigiPenLogo(nullptr)
-    , mTeamLogo(nullptr)
-    , mControllerWarning(nullptr)
-    , mBlackoutLevel(nullptr)
-    , mView(nullptr)
-    , mEmitter(nullptr)
+    : Component{ aOwner, aSpace }
+    , mFadeValue{ 1.0f }
+    , mReadyToExecute{ false }
+    , mDigiPenLogo{ nullptr }
+    , mTeamLogo{ nullptr }
+    , mControllerWarning{ nullptr }
+    , mBlackoutLevel{ nullptr }
+    , mView{ nullptr }
+    , mEmitter{ nullptr }
   {
     DeserializeByType(aProperties, this, GetStaticType());
   }

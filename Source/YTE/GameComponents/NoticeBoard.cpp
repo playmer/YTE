@@ -47,7 +47,7 @@ namespace YTE
     , mCameraRotationPrev(0.0f)
     , mFakeLerp(0.0f)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
       // these are gonna be a tutorial, not postcards
     //mPostcardVec.emplace_back(Quest::CharacterName::Daisy, Quest::Name::Introduction);
     //mPostcardVec.emplace_back(Quest::CharacterName::Basil, Quest::Name::Introduction);
@@ -493,7 +493,7 @@ namespace YTE
 
   void NoticeBoard::OnRequestNoticeBoardStart(RequestNoticeBoardStart *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mAssignedPostcard != nullptr)
     {

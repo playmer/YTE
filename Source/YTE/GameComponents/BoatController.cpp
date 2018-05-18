@@ -197,7 +197,7 @@ namespace YTE
   /******************************************************************************/
   void BoatController::DockBoat(BoatDockEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     StopBoatImmediately();
 

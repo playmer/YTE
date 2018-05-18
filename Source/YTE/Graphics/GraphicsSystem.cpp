@@ -36,7 +36,7 @@ namespace YTE
     , mEngine(static_cast<Engine*>(aOwner))
     , mVulkanSuccess(0)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
 
@@ -50,7 +50,7 @@ namespace YTE
 
   void GraphicsSystem::SetUpWindow(Window *aWindow)
   {
-    YTEUnusedArgument(aWindow);
+    UnusedArguments(aWindow);
   }
 
 

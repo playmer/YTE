@@ -12,7 +12,7 @@ namespace YTE
   SampleAction::SampleAction(Composition *aOwner, Space * aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void SampleAction::Initialize()
@@ -23,7 +23,7 @@ namespace YTE
 
   void SampleAction::Update(LogicUpdate* aLogicUpdate)
   {
-    YTEUnusedArgument(aLogicUpdate);
+    UnusedArguments(aLogicUpdate);
     if (mValue == 10.0f)
     {
       mValue = 0.0f;

@@ -15,7 +15,7 @@ namespace YTE
 {
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
-    YTEUnusedArgument(aComponent);
+    UnusedArguments(aComponent);
 
     std::vector<std::string> result{ "Linear", "Squared", "Cubic", "Logarithmic" };
     return result;
@@ -109,7 +109,7 @@ namespace YTE
 
   void InfluenceMap::TransformUpdate(TransformChanged* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mInstantiatedInfluenceMap)
     {
@@ -151,7 +151,7 @@ namespace YTE
 
   void InfluenceMap::Update(LogicUpdate* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)
     {

@@ -112,7 +112,7 @@ namespace YTE
     , mMuted(false)
     , mAvailableListeners{0,1,2,3,4,5,6,7}
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void WWiseSystem::Initialize()
@@ -178,16 +178,17 @@ namespace YTE
       assert(!"Could not initialize the Music Engine.");
     }
 
-  if constexpr(CompilerOptions::Debug())
-  {
-      AkCommSettings commSettings;
-      AK::Comm::GetDefaultInitSettings(commSettings);
+    #ifndef AK_OPTIMIZED 
+    {
+        AkCommSettings commSettings;
+        AK::Comm::GetDefaultInitSettings(commSettings);
 
-      if (AK::Comm::Init(commSettings) != AK_Success)
-      {
-        assert(!"Could not initialize communication.");
-      }
-  }
+        if (AK::Comm::Init(commSettings) != AK_Success)
+        {
+          assert(!"Could not initialize communication.");
+        }
+    }
+    #endif
 
     LoadAllBanks();
 
@@ -196,7 +197,7 @@ namespace YTE
     //// Register the main listener.
     // AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
     //auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
-    //YTEUnusedArgument(check);
+    //UnusedArguments(check);
     //assert(check == AK_Success);
     //
     //// Set one listener as the default.
@@ -227,14 +228,14 @@ namespace YTE
   void WWiseSystem::RegisterObject(AkGameObjectID aId, std::string &aName)
   {
     auto check = AK::SoundEngine::RegisterGameObj(aId, aName.c_str());
-    YTEUnusedArgument(check);
+    UnusedArguments(check);
     assert(check == AK_Success);
   }
 
   void WWiseSystem::DeregisterObject(AkGameObjectID aId)
   {
     auto check = AK::SoundEngine::UnregisterGameObj(aId);
-    YTEUnusedArgument(check);
+    UnusedArguments(check);
     assert(check == AK_Success);
   }
 
@@ -606,7 +607,7 @@ namespace YTE
     AKRESULT eResult = AK::SoundEngine::LoadBank(aFilename.c_str(),
                                                  AK_DEFAULT_POOL_ID, 
                                                  bank.mBankID);
-    YTEUnusedArgument(eResult);
+    UnusedArguments(eResult);
     //assert(eResult == AK_Success);
     return bank;
   }

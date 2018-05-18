@@ -31,7 +31,7 @@ namespace YTE
     , mLightBeamTransform(nullptr)
     , mBoatTransform(nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void StarMovement::Initialize()

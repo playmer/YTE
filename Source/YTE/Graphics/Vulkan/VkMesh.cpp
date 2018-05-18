@@ -513,17 +513,17 @@ namespace YTE
 
   void RemoveOffset(VkInstantiatedModel *aModel)
   {
-    YTEUnusedArgument(aModel);
+    UnusedArguments(aModel);
   }
 
   void RequestOffset(VkInstantiatedModel *aModel)
   {
-    YTEUnusedArgument(aModel);
+    UnusedArguments(aModel);
   }
 
   void VkMesh::SetInstanced(bool aInstanced)
   {
-    YTEUnusedArgument(aInstanced);
+    UnusedArguments(aInstanced);
     //if (aInstanced == mInstanced)
     //{
     //  return;

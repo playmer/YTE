@@ -234,7 +234,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    YTE::UnusedArguments(aEvent);
 
     mIsHittingObject = false;
     mIsGizmoActive = false;

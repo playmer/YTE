@@ -53,7 +53,7 @@ namespace YTE
 
   void BoatPhysics::Update(LogicUpdate* aLogicUpdate)
   {
-    YTEUnusedArgument(aLogicUpdate);
+    UnusedArguments(aLogicUpdate);
     Composition * obj = mSpace->FindFirstCompositionByName("WaterFFT");
     FFT_WaterSimulation * waterSim = obj->GetComponent<FFT_WaterSimulation>();
 

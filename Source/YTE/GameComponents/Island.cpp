@@ -14,7 +14,7 @@ namespace YTE
   Island::Island(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void Island::Initialize()

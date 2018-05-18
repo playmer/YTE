@@ -50,13 +50,13 @@ namespace YTE
 
   void ButtonAnimate::OnButtonHover(MenuElementHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMyTransform->SetScale(mScaleFactor * mNeutralScale);
   }
 
   void ButtonAnimate::OnButtonDeHover(MenuElementDeHover* aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mMyTransform->SetScale(mNeutralScale);
   }
 }

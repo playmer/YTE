@@ -60,7 +60,7 @@ namespace YTE
     AudioTest::AudioTest(Composition *aOwner, Space *aSpace, RSValue *aProperties)
         : Component(aOwner, aSpace)
     {
-        YTEUnusedArgument(aProperties);
+        UnusedArguments(aProperties);
         DeserializeByType(aProperties, this, GetStaticType());
     }
 

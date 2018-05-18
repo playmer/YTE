@@ -69,7 +69,7 @@ namespace YTE
     : Component(aOwner, aSpace)
     , mDebugDraw(false)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     mSpace->RegisterEvent<&PhysicsSystem::OnPhysicsUpdate>(Events::PhysicsUpdate, this);
 
@@ -140,12 +140,12 @@ namespace YTE
 
   void PhysicsSystem::BeginDebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void PhysicsSystem::DebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     mDebugDrawer->Begin();
     mDynamicsWorld->debugDrawWorld();
     mDebugDrawer->End();
@@ -153,12 +153,12 @@ namespace YTE
 
   void PhysicsSystem::EndDebugDrawUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
   }
 
   void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     YTEProfileFunction();
 
     mDynamicsWorld->updateAabbs();
@@ -201,7 +201,7 @@ namespace YTE
 
   void PhysicsSystem::DispatchContactEvent(Composition *aMainObject, Composition *aOtherObject, btPersistentManifold *aManifold)
   {
-    YTEUnusedArgument(aManifold);
+    UnusedArguments(aManifold);
 
     if (aMainObject)
     {

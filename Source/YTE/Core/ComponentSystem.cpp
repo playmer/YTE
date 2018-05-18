@@ -26,7 +26,7 @@ namespace YTE
                                    RSValue *aProperties)
     : Component(aOwner, nullptr)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
 
     CoreComponentFactoryInitilization(static_cast<Engine*>(mOwner), mComponentFactories);
     GetOwner()->RegisterEvent<&ComponentSystem::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);

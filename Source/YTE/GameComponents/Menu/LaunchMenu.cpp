@@ -39,7 +39,7 @@ namespace YTE
 
   void LaunchMenu::OnElementTrigger(MenuElementTrigger *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     MenuStart menuStart;
     menuStart.PlaySound = false;

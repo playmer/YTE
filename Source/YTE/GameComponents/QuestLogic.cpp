@@ -32,7 +32,7 @@ namespace YTE
   QuestLogic::QuestLogic(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void QuestLogic::Initialize()
@@ -48,7 +48,7 @@ namespace YTE
 
   void QuestLogic::OnProgressionItemEvent(ProgressionItemEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -81,7 +81,7 @@ namespace YTE
 
   void QuestLogic::OnProgressionLocationEvent(ProgressionLocationEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -114,7 +114,7 @@ namespace YTE
 
   void QuestLogic::OnProgressionDialogueEvent(ProgressionDialogueEvent *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     Quest::CharacterName name = (*mPostcardHandle)->GetCharacter();
 
     if (auto star = mSpace->FindFirstCompositionByName("FeedbackStar"))
@@ -147,7 +147,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionItem(SpawnProgressionItem *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 
@@ -180,7 +180,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionLocation(SpawnProgressionLocation *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 
@@ -213,7 +213,7 @@ namespace YTE
 
   void QuestLogic::OnSpawnProgressionDialogue(SpawnProgressionDialogue *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
 
     glm::vec3 itemPos;
 

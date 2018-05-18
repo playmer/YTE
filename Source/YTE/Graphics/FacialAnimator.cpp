@@ -68,7 +68,7 @@ namespace YTE
 
   void FacialAnimator::OnModelChanged(ModelChanged *aEvent)
   {
-    YTEUnusedArgument(aEvent);
+    UnusedArguments(aEvent);
     RefreshInitialBufffers();
   }
 

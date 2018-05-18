@@ -23,7 +23,7 @@ namespace YTE
   BasilTutorial::BasilTutorial(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void BasilTutorial::Initialize()

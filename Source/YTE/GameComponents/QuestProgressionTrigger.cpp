@@ -24,7 +24,7 @@ namespace YTE
     , mDeleteFlag(false)
     , mDeleteCounter(0)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void QuestProgressionTrigger::Initialize()
