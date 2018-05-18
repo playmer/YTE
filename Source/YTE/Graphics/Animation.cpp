@@ -238,29 +238,31 @@ namespace YTE
   
 
   static inline 
-  glm::vec3 ScaleInterpolation(double aAnimationTime, AnimationData::Node const& aNode)
+  glm::vec3 ScaleInterpolation(AnimationData const& aData, 
+                               double aAnimationTime, 
+                               AnimationData::Node const& aNode)
   {
     glm::vec3 scale;
-    if (aNode.mScaleKeys.size() == 1)
+    if (aNode.mScaleKeySize == 1)
     {
-      scale = aNode.mScaleKeys[0].mScale;
+      scale = aData.mScaleKeys[0].mScale;
     }
     else
     {
-      auto startFrame = aNode.mScaleKeys[0];
+      auto startFrame = aData.mScaleKeys[0];
 
       uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode.mScaleKeys.size() - 1; ++i)
+      for (uint32_t i = 0; i < aNode.mScaleKeySize - 1; ++i)
       {
-        if (aAnimationTime < (float)aNode.mScaleKeys[i + 1].mTime - startFrame.mTime)
+        if (aAnimationTime < (float)aData.mScaleKeys[aNode.mScaleKeyOffset + i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
         }
       }
-
-      auto frame = aNode.mScaleKeys[index];
-      auto nextFrame = aNode.mScaleKeys[(index + 1) % aNode.mScaleKeys.size()];
+      
+      auto frame = aData.mScaleKeys[aNode.mScaleKeyOffset + index];
+      auto nextFrame = aData.mScaleKeys[aNode.mScaleKeyOffset + ((index + 1) % aNode.mScaleKeySize)];
 
       float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
@@ -274,31 +276,33 @@ namespace YTE
   }
 
   static inline
-  glm::quat RotationInterpolation(double aAnimationTime, AnimationData::Node const& aNode)
+    glm::quat RotationInterpolation(AnimationData const& aData,
+                                    double aAnimationTime,
+                                    AnimationData::Node const& aNode)
   {
     glm::quat rot;
 
-    if (aNode.mRotationKeys.size() == 1)
+    if (aNode.mRotationKeySize == 1)
     {
-      rot = aNode.mRotationKeys[0].mRotation;
+      rot = aData.mRotationKeys[aNode.mRotationKeyOffset + 0].mRotation;
     }
     else
     {
-      auto startFrame = aNode.mRotationKeys[0];
+      auto startFrame = aData.mRotationKeys[aNode.mRotationKeyOffset + 0];
 
       // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
       uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode.mRotationKeys.size() - 1; ++i)
+      for (uint32_t i = 0; i < aNode.mRotationKeySize - 1; ++i)
       {
-        if (aAnimationTime < (float)aNode.mRotationKeys[i + 1].mTime - startFrame.mTime)
+        if (aAnimationTime < (float)aData.mRotationKeys[aNode.mRotationKeyOffset + i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
         }
       }
 
-      auto frame = aNode.mRotationKeys[index];
-      auto nextFrame = aNode.mRotationKeys[(index + 1) % aNode.mRotationKeys.size()];
+      auto frame = aData.mRotationKeys[aNode.mRotationKeyOffset + index];
+      auto nextFrame = aData.mRotationKeys[aNode.mRotationKeyOffset + ((index + 1) % aNode.mRotationKeySize)];
 
       float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
@@ -313,29 +317,31 @@ namespace YTE
   }
 
   static inline
-  glm::vec3 TranslationInterpolation(double aAnimationTime, AnimationData::Node const& aNode)
+    glm::vec3 TranslationInterpolation(AnimationData const& aData,
+                                       double aAnimationTime,
+                                       AnimationData::Node const& aNode)
   {
     glm::vec3 trans;
-    if (1 == aNode.mTranslationKeys.size())
+    if (1 == aNode.mTranslationKeySize)
     {
-      trans = aNode.mTranslationKeys[0].mTranslation;
+      trans = aData.mTranslationKeys[aNode.mTranslationKeyOffset + 0].mTranslation;
     }
     else
     {
-      auto startFrame = aNode.mTranslationKeys[0];
+      auto startFrame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
 
       uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode.mTranslationKeys.size() - 1; ++i)
+      for (uint32_t i = 0; i < aNode.mTranslationKeySize - 1; ++i)
       {
-        if (aAnimationTime < (float)aNode.mTranslationKeys[i + 1].mTime - startFrame.mTime)
+        if (aAnimationTime < (float)aData.mTranslationKeys[aNode.mTranslationKeyOffset + i + 1].mTime - startFrame.mTime)
         {
           index = i;
           break;
         }
       }
 
-      auto frame = aNode.mTranslationKeys[index];
-      auto nextFrame = aNode.mTranslationKeys[(index + 1) % aNode.mTranslationKeys.size()];
+      auto frame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + index];
+      auto nextFrame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + ((index + 1) % aNode.mTranslationKeySize)];
 
       float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
 
@@ -441,30 +447,57 @@ namespace YTE
                  size_t aNodeIndex)
   {
     AnimationData::Node& node = aData.mNodes[aNodeIndex];
-    node.mTransformation = ToGlm(aAssimpNode->mTransformation);
-    node.mName = aAssimpNode->mName.C_Str();
+
+    node.mTransformationOffset = aData.mTransformations.size();
+    aData.mTransformations.emplace_back(ToGlm(aAssimpNode->mTransformation));
+
+    size_t nameLength = aAssimpNode->mName.length;
+
+    node.mNameOffset = aData.mNames.size();
+    node.mNameSize = nameLength;
+    for (size_t i = 0; i < aAssimpNode->mName.length; ++i)
+    {
+      aData.mNames.emplace_back(*(aAssimpNode->mName.C_Str() + i));
+    }
+    
+    // Null terminate the string.
+    aData.mNames.emplace_back('\0');
 
     aiNodeAnim const* animKeys = FindNodeAnimation(aAssimpAnimation, aAssimpNode->mName.data);
 
     if (animKeys)
     {
-      InsertKeys(node.mTranslationKeys, animKeys->mPositionKeys, animKeys->mPositionKeys + animKeys->mNumPositionKeys);
-      InsertKeys(node.mScaleKeys, animKeys->mScalingKeys, animKeys->mScalingKeys + animKeys->mNumScalingKeys);
-      InsertKeys(node.mRotationKeys, animKeys->mRotationKeys, animKeys->mRotationKeys + animKeys->mNumRotationKeys);
+      node.mTranslationKeyOffset = aData.mTranslationKeys.size();
+      node.mTranslationKeySize = animKeys->mNumPositionKeys;
+      InsertKeys(aData.mTranslationKeys, animKeys->mPositionKeys, animKeys->mPositionKeys + animKeys->mNumPositionKeys);
+
+      node.mScaleKeyOffset = aData.mScaleKeys.size();
+      node.mScaleKeySize = animKeys->mNumScalingKeys;
+      InsertKeys(aData.mScaleKeys, animKeys->mScalingKeys, animKeys->mScalingKeys + animKeys->mNumScalingKeys);
+
+      node.mRotationKeyOffset = aData.mRotationKeys.size();
+      node.mRotationKeySize = animKeys->mNumRotationKeys;
+      InsertKeys(aData.mRotationKeys, animKeys->mRotationKeys, animKeys->mRotationKeys + animKeys->mNumRotationKeys);
     }
+
+    node.mChildrenOffset = aData.mChildren.size();
+    node.mChildrenSize = aAssimpNode->mNumChildren;
 
     // Add the children nodes to the AnimationData.
     // NOTE: node can now be potentially invalidated, so we no longer use it.
     for (uint32_t i = 0; i < aAssimpNode->mNumChildren; ++i)
     {
-      aData.mNodes[aNodeIndex].mChildren.emplace_back(aData.mNodes.size());
+      aData.mChildren.emplace_back(aData.mNodes.size());
       aData.mNodes.emplace_back(AnimationData::Node{});
     }
 
     // Process the children added
-    for (auto [child, i] : enumerate(aData.mNodes[aNodeIndex].mChildren))
+    for (auto i = 0; i < aAssimpNode->mNumChildren; ++i)
     {
-      MakeNodes(aAssimpAnimation, aAssimpNode->mChildren[i], aData, *child);
+      MakeNodes(aAssimpAnimation, 
+                aAssimpNode->mChildren[i], 
+                aData, 
+                aData.mChildren[i + aData.mNodes[aNodeIndex].mChildrenOffset]);
     }
   }
 
@@ -573,16 +606,16 @@ namespace YTE
   void Animation::ReadAnimation(AnimationData::Node const& aNode, 
                                 glm::mat4 const& aParentTransform)
   {
-    glm::mat4 nodeTransformation = aNode.mTransformation;
+    glm::mat4 nodeTransformation = mData.mTransformations[aNode.mTransformationOffset];
 
-    if (false == aNode.mTranslationKeys.empty() &&
-        false == aNode.mScaleKeys.empty() && 
-        false == aNode.mRotationKeys.empty())
+    if (aNode.mTranslationKeySize &&
+        aNode.mScaleKeySize && 
+        aNode.mRotationKeySize)
     {
-      auto numKeys = aNode.mTranslationKeys.size();
+      auto numKeys = aNode.mTranslationKeySize;
     
-      auto startKey = aNode.mTranslationKeys[0];
-      auto endKey = aNode.mTranslationKeys[numKeys - 1];
+      auto startKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
+      auto endKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + numKeys - 1];
     
       double duration = (endKey.mTime - startKey.mTime);
     
@@ -592,9 +625,9 @@ namespace YTE
       }
     
       // Get interpolated matrices between current and next frame
-      auto scale = ScaleInterpolation(mCurrentAnimationTime, aNode);
-      auto rotation = RotationInterpolation(mCurrentAnimationTime, aNode);
-      auto translation = TranslationInterpolation(mCurrentAnimationTime, aNode);
+      auto scale = ScaleInterpolation(mData, mCurrentAnimationTime, aNode);
+      auto rotation = RotationInterpolation(mData, mCurrentAnimationTime, aNode);
+      auto translation = TranslationInterpolation(mData, mCurrentAnimationTime, aNode);
 
       nodeTransformation = glm::scale(glm::toMat4(rotation), scale);
       nodeTransformation[3][0] = translation.x;
@@ -603,9 +636,12 @@ namespace YTE
     }
     
     glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
-    
+
+    auto name = std::string_view{ mData.mNames.data() + aNode.mNameOffset,
+                                  aNode.mNameSize };
+
     auto bones = mMeshSkeleton->GetBones();
-    auto bone = bones->find(aNode.mName);
+    auto bone = bones->find(name);
     if (bone != bones->end())
     {
       uint32_t boneIndex = bone->second;
@@ -616,60 +652,12 @@ namespace YTE
     }
     
     // visit the rest of the bone children
-    for (auto child : aNode.mChildren)
+    for (size_t i = 0; i < aNode.mChildrenSize; ++i)
     {
-      ReadAnimation(mData.mNodes[child], globalTransformation);
+      // i + aData.mChildren[aNode.mChildrenOffset]
+      ReadAnimation(mData.mNodes[mData.mChildren[i + aNode.mChildrenOffset]], 
+                    globalTransformation);
     }
-
-
-
-
-
-
-    //glm::mat4 nodeTransformation(ToGlm(aNode->mTransformation));
-    //
-    //const aiNodeAnim* pNodeAnim = FindNodeAnimation(mAnimation, aNode->mName.data);
-    //
-    //if (pNodeAnim)
-    //{
-    //  int numKeys = pNodeAnim->mNumPositionKeys;
-    //
-    //  auto startKey = pNodeAnim->mPositionKeys[0];
-    //  auto endKey = pNodeAnim->mPositionKeys[numKeys - 1];
-    //
-    //  double duration = (endKey.mTime - startKey.mTime);
-    //
-    //  if (duration != 0.0f)
-    //  {
-    //    mData.mDuration = duration;
-    //  }
-    //
-    //  // Get interpolated matrices between current and next frame
-    //  auto matScale = ScaleInterpolation(mCurrentAnimationTime, pNodeAnim);
-    //  auto matRotation = RotationInterpolation(mCurrentAnimationTime, pNodeAnim);
-    //  auto matTranslation = TranslationInterpolation(mCurrentAnimationTime, pNodeAnim);
-    //
-    //  nodeTransformation = matTranslation * matRotation * matScale;
-    //}
-    //
-    //glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
-    //
-    //auto bones = mMeshSkeleton->GetBones();
-    //auto bone = bones->find(aNode->mName.data);
-    //if (bone != bones->end())
-    //{
-    //  uint32_t boneIndex = bone->second;
-    //  mMeshSkeleton->GetBoneData()[boneIndex].mFinalTransformation =
-    //    mMeshSkeleton->GetGlobalInverseTransform() *
-    //    globalTransformation *
-    //    mMeshSkeleton->GetBoneData()[boneIndex].mOffset;
-    //}
-    //
-    //// visit the rest of the bone children
-    //for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
-    //{
-    //  ReadAnimation(aNode->mChildren[i], globalTransformation);
-    //}
   }
 
   Skeleton* Animation::GetSkeleton()

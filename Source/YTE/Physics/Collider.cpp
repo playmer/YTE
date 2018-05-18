@@ -96,7 +96,7 @@ namespace YTE
 
   void Collider::SetRotation(const glm::quat& aRotation)
   {
-    auto rotation = OurQuatToBt(aRotation);
+    auto rotation = ToBullet(aRotation);
 
     mCollider->getWorldTransform().setRotation(rotation);
   }

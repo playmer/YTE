@@ -104,16 +104,26 @@ namespace YTE
     struct Node
     {
       // Ids of nodes in parent AnimationData struct.
-      std::vector<size_t> mChildren;
-      std::vector<TranslationKey> mTranslationKeys;
-      std::vector<ScaleKey> mScaleKeys;
-      std::vector<RotationKey> mRotationKeys;
-
-      glm::mat4 mTransformation;
-      std::string mName;
+      size_t mTransformationOffset = 0;
+      size_t mTranslationKeyOffset = 0;
+      size_t mTranslationKeySize   = 0;
+      size_t mScaleKeyOffset       = 0;
+      size_t mScaleKeySize         = 0;
+      size_t mRotationKeyOffset    = 0;
+      size_t mRotationKeySize      = 0;
+      size_t mNameOffset           = 0;
+      size_t mNameSize             = 0;
+      size_t mChildrenOffset       = 0;
+      size_t mChildrenSize         = 0;
     };
 
     std::vector<Node> mNodes;
+    std::vector<glm::mat4> mTransformations;
+    std::vector<size_t> mChildren;
+    std::vector<TranslationKey> mTranslationKeys;
+    std::vector<ScaleKey> mScaleKeys;
+    std::vector<RotationKey> mRotationKeys;
+    std::vector<char> mNames;
 
     // Duration of the animation in ticks.
     double mDuration;

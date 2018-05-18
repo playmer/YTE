@@ -128,26 +128,26 @@ namespace YTE
     {
       //mRigidBody->setAngularFactor(btVector3(1, 1, 1));
       //mRigidBody->setAngularFactor(btVector3(0, 0, 0));
-      mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
+      mRigidBody->setLinearVelocity(ToBullet(mVelocity));
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
       mRigidBody->setDamping(0.8f, 0.8f);
       mRigidBody->updateInertiaTensor();
     }
 
     world->addRigidBody(mRigidBody.get());
-    mRigidBody->setGravity(OurVec3ToBt(mGravityAcceleration));
+    mRigidBody->setGravity(ToBullet(mGravityAcceleration));
 
     mIsInitialized = true;
   }
 
   void RigidBody::ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition)
   {
-    mRigidBody->applyForce(OurVec3ToBt(aForce), OurVec3ToBt(aRelativePosition));
+    mRigidBody->applyForce(ToBullet(aForce), ToBullet(aRelativePosition));
   }
 
   void RigidBody::ApplyImpulse(const glm::vec3 & aImpulse, const glm::vec3 & aRelativePosition)
   {
-    mRigidBody->applyImpulse(OurVec3ToBt(aImpulse), OurVec3ToBt(aRelativePosition));
+    mRigidBody->applyImpulse(ToBullet(aImpulse), ToBullet(aRelativePosition));
   }
 
   void RigidBody::SetPhysicsTransform(const glm::vec3& aTranslation, const glm::quat& aRotation)
@@ -155,8 +155,8 @@ namespace YTE
     if (mRigidBody.get() != nullptr)
     {
       btTransform transform;
-      transform.setOrigin(OurVec3ToBt(aTranslation));
-      transform.setRotation(OurQuatToBt(aRotation));
+      transform.setOrigin(ToBullet(aTranslation));
+      transform.setRotation(ToBullet(aRotation));
 
       mRigidBody->setWorldTransform(transform);
 
@@ -170,7 +170,7 @@ namespace YTE
   {
     if (mIsInitialized)
     {
-      auto velocity = BtToOurVec3(mRigidBody->getAngularVelocity());
+      auto velocity = ToGlm(mRigidBody->getAngularVelocity());
       return velocity;
     }
     return glm::vec3();
@@ -180,7 +180,7 @@ namespace YTE
   {
     if (mIsInitialized)
     {
-      auto velocity = BtToOurVec3(mRigidBody->getLinearVelocity());
+      auto velocity = ToGlm(mRigidBody->getLinearVelocity());
       return velocity;
     }
     else
@@ -195,7 +195,7 @@ namespace YTE
 
     if (mIsInitialized)
     {
-      mRigidBody->setLinearVelocity(OurVec3ToBt(mVelocity));
+      mRigidBody->setLinearVelocity(ToBullet(mVelocity));
     }
   }
 
@@ -257,7 +257,7 @@ namespace YTE
   void RigidBody::SetGravity(glm::vec3 aAcceleration)
   {
     mGravityAcceleration = aAcceleration;
-    btVector3 accel = OurVec3ToBt(aAcceleration);
+    btVector3 accel = ToBullet(aAcceleration);
     if (mRigidBody)
     {
       mRigidBody->setGravity(accel);

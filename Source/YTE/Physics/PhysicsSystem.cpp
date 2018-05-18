@@ -94,7 +94,7 @@ namespace YTE
                                                                mSolver.get(),
                                                                mCollisionConfiguration.get());
       
-    mDynamicsWorld->setGravity(OurVec3ToBt(mGravityAcceleration));
+    mDynamicsWorld->setGravity(ToBullet(mGravityAcceleration));
   }
 
 
@@ -220,8 +220,8 @@ namespace YTE
 
   RayCollisionInfo PhysicsSystem::RayCast(glm::vec3 aPosition, glm::vec3 aDirection)
   {
-    auto start = OurVec3ToBt(aPosition);
-    auto end = OurVec3ToBt(aDirection);
+    auto start = ToBullet(aPosition);
+    auto end = ToBullet(aDirection);
     btCollisionWorld::ClosestRayResultCallback rayCallback(start, end);
 
     mDynamicsWorld->rayTest(start, end, rayCallback);
@@ -235,7 +235,7 @@ namespace YTE
 
 
       
-      info.mDistance = glm::length(BtToOurVec3(rayCallback.m_hitPointWorld) - aPosition);
+      info.mDistance = glm::length(ToGlm(rayCallback.m_hitPointWorld) - aPosition);
     }
 
     return info;
@@ -249,7 +249,7 @@ namespace YTE
   void PhysicsSystem::SetGravity(glm::vec3 aAcceleration)
   {
     mGravityAcceleration = aAcceleration;
-    btVector3 accel = OurVec3ToBt(aAcceleration);
+    btVector3 accel = ToBullet(aAcceleration);
     mDynamicsWorld->setGravity(accel);
   };
 

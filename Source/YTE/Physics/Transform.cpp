@@ -38,8 +38,8 @@ namespace YTE
   ///synchronizes world transform from user to physics
   void MotionState::getWorldTransform(btTransform& centerOfMassWorldTrans) const
   {
-    centerOfMassWorldTrans.setOrigin(OurVec3ToBt(mTransform->GetWorldTranslation()));
-    centerOfMassWorldTrans.setRotation(OurQuatToBt(mTransform->GetWorldRotation()));
+    centerOfMassWorldTrans.setOrigin(ToBullet(mTransform->GetWorldTranslation()));
+    centerOfMassWorldTrans.setRotation(ToBullet(mTransform->GetWorldRotation()));
   }
 
   ///synchronizes world transform from physics to user
@@ -55,8 +55,8 @@ namespace YTE
     // and inform Bullet of changes.
     auto informOriginal = mTransform->GetInformPhysics();
     mTransform->SetInformPhysics(false);
-    mTransform->SetWorldTranslation(BtToOurVec3(centerOfMassWorldTrans.getOrigin()));
-    mTransform->SetWorldRotation(BtToOurQuat(centerOfMassWorldTrans.getRotation()));
+    mTransform->SetWorldTranslation(ToGlm(centerOfMassWorldTrans.getOrigin()));
+    mTransform->SetWorldRotation(ToGlm(centerOfMassWorldTrans.getRotation()));
     mTransform->SetInformPhysics(informOriginal);
   }
 

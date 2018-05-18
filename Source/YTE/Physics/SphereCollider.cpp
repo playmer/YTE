@@ -120,7 +120,7 @@ namespace YTE
   {
     if (mSphereShape)
     {
-      mSphereShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+      mSphereShape->setLocalScaling(ToBullet(aEvent->WorldScale));
     }
   }
 }

@@ -141,7 +141,7 @@ namespace YTE
       return mGlobalInverseTransform;
     }
 
-    std::unordered_map<std::string, uint32_t>* GetBones()
+    std::map<std::string, uint32_t, std::less<>>* GetBones()
     {
       return &mBones;
     }
@@ -150,7 +150,7 @@ namespace YTE
     void PreTransform(const aiScene* aScene);
     void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
 
-    std::unordered_map<std::string, uint32_t> mBones;
+    std::map<std::string, uint32_t, std::less<>> mBones;
     std::vector<BoneData> mBoneData;
     uint32_t mNumBones;
     glm::mat4 mGlobalInverseTransform;

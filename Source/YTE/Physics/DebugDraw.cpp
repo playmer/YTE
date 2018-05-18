@@ -40,19 +40,19 @@ namespace YTE
                              const btVector3 &aFromColor, 
                              const btVector3 &aToColor)
   {
-    mLineDrawer.AddLine(BtToOurVec3(aFrom), 
-                        BtToOurVec3(aTo), 
-                        BtToOurVec3(aFromColor), 
-                        BtToOurVec3(aToColor));
+    mLineDrawer.AddLine(ToGlm(aFrom), 
+                        ToGlm(aTo), 
+                        ToGlm(aFromColor), 
+                        ToGlm(aToColor));
   }
 
   void DebugDrawer::drawLine(const btVector3 &aFrom, 
                              const btVector3 &aTo, 
                              const btVector3 &aColor)
   {
-    mLineDrawer.AddLine(BtToOurVec3(aFrom), 
-                        BtToOurVec3(aTo), 
-                        BtToOurVec3(aColor));
+    mLineDrawer.AddLine(ToGlm(aFrom), 
+                        ToGlm(aTo), 
+                        ToGlm(aColor));
   }
 
   void DebugDrawer::drawTriangle(const btVector3 &aA, 
@@ -62,9 +62,9 @@ namespace YTE
                                  btScalar aAlpha)
   {
     glm::vec4 color{ aColor.x(), aColor.y(), aColor.z(), aAlpha };
-    mTriangleDrawer.AddTriangle(BtToOurVec3(aA),
-                                BtToOurVec3(aB),
-                                BtToOurVec3(aC),
+    mTriangleDrawer.AddTriangle(ToGlm(aA), 
+                                ToGlm(aB), 
+                                ToGlm(aC), 
                                 color);
   }
     

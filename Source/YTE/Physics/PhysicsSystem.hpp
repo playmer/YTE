@@ -75,25 +75,25 @@ namespace YTE
   };
 
 
-  inline glm::quat BtToOurQuat(const btQuaternion &aQuat)
+  inline glm::quat ToGlm(const btQuaternion &aQuat)
   {
     glm::vec3 axis{ aQuat.x(), aQuat.y(), aQuat.z() };
 
     return glm::quat(aQuat.w(), aQuat.x(), aQuat.y(), aQuat.z());
   }
 
-  inline btQuaternion OurQuatToBt(const glm::quat &aQuat)
+  inline btQuaternion ToBullet(const glm::quat &aQuat)
   {
     return btQuaternion(aQuat.x, aQuat.y, aQuat.z, aQuat.w);
   }
 
-  inline btVector3 OurVec3ToBt(const glm::vec3 &aVector)
+  inline btVector3 ToBullet(const glm::vec3 &aVector)
   {
     return btVector3(aVector.x, aVector.y, aVector.z);
   }
 
 
-  inline glm::vec3 BtToOurVec3(const btVector3 &aVector)
+  inline glm::vec3 ToGlm(const btVector3 &aVector)
   {
     return glm::vec3(aVector.x(), aVector.y(), aVector.z());
   }
