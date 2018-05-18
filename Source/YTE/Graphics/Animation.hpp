@@ -60,6 +60,68 @@ namespace YTE
     std::string animation;
   };
 
+  struct AnimationData
+  {
+    struct TranslationKey
+    {
+      TranslationKey(double aTime, glm::vec3 aTranslation)
+        : mTime{ aTime }
+        , mTranslation{ aTranslation }
+      {
+
+      }
+
+      double mTime;
+      glm::vec3 mTranslation;
+    };
+
+    struct ScaleKey
+    {
+      ScaleKey(double aTime, glm::vec3 aScale)
+        : mTime{ aTime }
+        , mScale{ aScale }
+      {
+
+      }
+
+      double mTime;
+      glm::vec3 mScale;
+    };
+
+    struct RotationKey
+    {
+      RotationKey(double aTime, glm::quat aRotation)
+        : mTime{ aTime }
+        , mRotation{ aRotation }
+      {
+
+      }
+
+      double mTime;
+      glm::quat mRotation;
+    };
+
+    struct Node
+    {
+      // Ids of nodes in parent AnimationData struct.
+      std::vector<size_t> mChildren;
+      std::vector<TranslationKey> mTranslationKeys;
+      std::vector<ScaleKey> mScaleKeys;
+      std::vector<RotationKey> mRotationKeys;
+
+      glm::mat4 mTransformation;
+      std::string mName;
+    };
+
+    std::vector<Node> mNodes;
+
+    // Duration of the animation in ticks.
+    double mDuration;
+
+    // Ticks per second. 0 if not specified in the imported file.
+    double mTicksPerSecond;
+  };
+
   class Animation : public EventHandler
   {
   public:
@@ -86,7 +148,7 @@ namespace YTE
     bool mPlayOverTime;
     double mElapsedTime;
 
-    void ReadAnimation(aiNode *aNode, glm::mat4 const& aParentTransform);
+    void ReadAnimation(AnimationData::Node const& aNode, glm::mat4 const& aParentTransform);
     void Animate();
 
     UBOAnimation* GetUBOAnim();
@@ -94,29 +156,24 @@ namespace YTE
 
     double GetTicksPerSecond()
     {
-      return mTicksPerSecond;
+      return mData.mTicksPerSecond;
     }
 
     double GetDuration()
     {
-      return mDuration;
+      return mData.mDuration;
     }
 
   private:
-    aiScene *mScene;
-    aiAnimation *mAnimation;
+    //aiScene *mScene;
+    //aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
 
     // from mesh, has the bone offsets
     Skeleton* mMeshSkeleton;
-
-    // Duration of the animation in ticks.
-    double mDuration;
-
-    // Ticks per second. 0 if not specified in the imported file.
-    double mTicksPerSecond;
+    AnimationData mData;
   };
 
 
