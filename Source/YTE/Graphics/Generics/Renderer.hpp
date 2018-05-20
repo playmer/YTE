@@ -10,6 +10,7 @@
 
 #include <future>
 #include <shared_mutex>
+#include <unordered_set>
 
 #include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/EventHandler.hpp"
@@ -90,6 +91,7 @@ namespace YTE
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
     std::shared_mutex mBaseTexturesMutex;
 
+    std::unordered_set<std::string> mRequests;
     JobSystem *mJobSystem;
   };
 }

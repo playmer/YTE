@@ -227,10 +227,6 @@ namespace YTE
   void Engine::Initialize(InitializeEvent*)
   {
     YTEProfileFunction();
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
 
     for (auto &component : mComponents)
     {
@@ -241,11 +237,7 @@ namespace YTE
     {
       auto space = static_cast<Space*>(composition.second.get());
       space->Load();
-      //space->Initialize();
     }
-
-    mShouldIntialize = false;
-    mIsInitialized = true;
 
     mDt = 0.016;
   }

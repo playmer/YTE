@@ -43,6 +43,8 @@
 #include "YTE/GameComponents/Menu/Button.hpp"
 #include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
 #include "YTE/GameComponents/InheritVisibility.hpp"
+#include "YTE/GameComponents/LoadingScreen.hpp"
+#include "YTE/GameComponents/MakeLoadingScreen.hpp"
 #include "YTE/GameComponents/Credits.hpp"
 #include "YTE/GameComponents/SplashScreen.hpp"
 #include "YTE/GameComponents/SampleAction.hpp"
@@ -135,6 +137,8 @@ namespace YTE
     helper.CreateComponentFactory<CameraController>();
 
     helper.CreateComponentFactory<Credits>();
+    helper.CreateComponentFactory<LoadingScreen>();
+    helper.CreateComponentFactory<MakeLoadingScreen>();
     helper.CreateComponentFactory<SplashScreen>();
     helper.CreateComponentFactory<MenuController>();
     helper.CreateComponentFactory<RootMenu>();

@@ -46,6 +46,12 @@ namespace YTE
     void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
+
+    bool GetFinishedLoading()
+    {
+      return mFinishedLoading;
+    }
+
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
@@ -54,6 +60,8 @@ namespace YTE
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
     bool mIsEditorSpace = false;
+
+    bool mFinishedLoading = true;
 
     bool mLoading = true;
     bool mCheckRunInEditor = false;

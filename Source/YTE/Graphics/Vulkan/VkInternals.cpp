@@ -59,7 +59,7 @@ namespace YTE
     }
 
     printf("%s\n", aMessage);
-    assert(aFlags != VK_DEBUG_REPORT_ERROR_BIT_EXT);
+    assert(false == (aFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT));
     return VK_TRUE;
   }
 
