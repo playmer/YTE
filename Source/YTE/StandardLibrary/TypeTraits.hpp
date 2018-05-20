@@ -6,10 +6,38 @@
 
 namespace YTE
 {
-  template<typename T>
+  // Enable if helpers
+  namespace EnableIf
+  {
+    template<typename tType>
+    using IsNotVoid = std::enable_if_t<!std::is_void_v<tType>>;
+
+    template<typename tType>
+    using IsVoid = std::enable_if_t<std::is_void_v<tType>>;
+
+    template<typename tType>
+    using IsMoveConstructible = std::enable_if_t<std::is_move_constructible_v<tType>>;
+
+    template<typename tType>
+    using IsNotMoveConstructible = std::enable_if_t<!std::is_move_constructible_v<tType>>;
+
+    template<typename tType>
+    using IsCopyConstructible = std::enable_if_t<std::is_copy_constructible_v<tType>>;
+
+    template<typename tType>
+    using IsNotCopyConstructible = std::enable_if_t<!std::is_copy_constructible_v<tType>>;
+
+    template<typename tType>
+    using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<tType>>;
+
+    template<typename tType>
+    using IsNotDefaultConstructible = std::enable_if_t<!std::is_default_constructible_v<tType>>;
+  }
+
+  template<typename tType>
   inline size_t SizeOf()
   {
-    return sizeof(T);
+    return sizeof(tType);
   }
 
   template<>
@@ -18,26 +46,26 @@ namespace YTE
     return 0;
   }
 
-  template <typename T>
+  template <typename tType>
   inline void GenericDestructByte(byte *aMemory)
   {
-    (reinterpret_cast<T*>(aMemory))->~T();
+    (reinterpret_cast<tType*>(aMemory))->~tType();
   }
 
-  template <typename T>
+  template <typename tType>
   inline void GenericDestruct(void* aMemory)
   {
-    (static_cast<T*>(aMemory))->~T();
+    (static_cast<tType*>(aMemory))->~tType();
   }
 
-  template <typename T, typename Enable = void>
+  template <typename tType, typename = void>
   struct GenericDefaultConstructStruct
   {
 
   };
 
-  template <typename T>
-  struct GenericDefaultConstructStruct<T, typename std::enable_if<std::is_default_constructible<T>::value == false>::type>
+  template <typename tType>
+  struct GenericDefaultConstructStruct<tType, EnableIf::IsNotDefaultConstructible<tType>>
   {
     static inline void DefaultConstruct(void *)
     {
@@ -45,12 +73,12 @@ namespace YTE
     }
   };
 
-  template <typename T>
-  struct GenericDefaultConstructStruct<T, typename std::enable_if<std::is_default_constructible<T>::value>::type>
+  template <typename tType>
+  struct GenericDefaultConstructStruct<tType, EnableIf::IsDefaultConstructible<tType>>
   {
     static inline void DefaultConstruct(void *aMemory)
     {
-      new (aMemory) T();
+      new (aMemory) tType();
     }
   };
 
@@ -61,8 +89,8 @@ namespace YTE
 
   };
 
-  template <typename T>
-  struct GenericCopyConstructStruct<T, typename std::enable_if<std::is_copy_constructible<T>::value == false>::type>
+  template <typename tType>
+  struct GenericCopyConstructStruct<tType, EnableIf::IsNotCopyConstructible<tType>>
   {
     static inline void CopyConstruct(const void *, void *)
     {
@@ -70,25 +98,23 @@ namespace YTE
     }
   };
 
-  template <typename T>
-  struct GenericCopyConstructStruct<T, typename std::enable_if<std::is_copy_constructible<T>::value>::type>
+  template <typename tType>
+  struct GenericCopyConstructStruct<tType, EnableIf::IsCopyConstructible<tType>>
   {
-    static inline void CopyConstruct(const void *aObject, void *aMemory)
+    static inline void CopyConstruct(void const* aObject, void *aMemory)
     {
-      new (aMemory) T(*static_cast<const T*>(aObject));
+      new (aMemory) tType(*static_cast<tType const*>(aObject));
     }
   };
 
-
-
-  template <typename T, typename Enable = void>
+  template <typename tType, typename Enable = void>
   struct GenericMoveConstructStruct
   {
 
   };
 
-  template <typename T>
-  struct GenericMoveConstructStruct<T, typename std::enable_if<std::is_move_constructible<T>::value == false>::type>
+  template <typename tType>
+  struct GenericMoveConstructStruct<tType, EnableIf::IsNotMoveConstructible<tType>>
   {
     static inline void MoveConstruct(void *, void *)
     {
@@ -96,31 +122,31 @@ namespace YTE
     }
   };
 
-  template <typename T>
-  struct GenericMoveConstructStruct<T, typename std::enable_if<std::is_move_constructible<T>::value>::type>
+  template <typename tType>
+  struct GenericMoveConstructStruct<tType, EnableIf::IsMoveConstructible<tType>>
   {
     static inline void MoveConstruct(void *aObject, void *aMemory)
     {
-      new (aMemory) T(std::move(*static_cast<T*>(aObject)));
+      new (aMemory) tType(std::move(*static_cast<tType*>(aObject)));
     }
   };
 
-  template <typename T>
+  template <typename tType>
   inline void GenericDefaultConstruct(void *aMemory)
   {
-    GenericDefaultConstructStruct<T>::DefaultConstruct(aMemory);
+    GenericDefaultConstructStruct<tType>::DefaultConstruct(aMemory);
   }
 
-  template <typename T>
+  template <typename tType>
   inline void GenericCopyConstruct(const void* aObject, void* aMemory)
   {
-    GenericCopyConstructStruct<T>::CopyConstruct(aObject, aMemory);
+    GenericCopyConstructStruct<tType>::CopyConstruct(aObject, aMemory);
   }
 
-  template <typename T>
+  template <typename tType>
   inline void GenericMoveConstruct(void* aObject, void* aMemory)
   {
-    GenericMoveConstructStruct<T>::MoveConstruct(aObject, aMemory);
+    GenericMoveConstructStruct<tType>::MoveConstruct(aObject, aMemory);
   }
 
 
@@ -303,129 +329,135 @@ namespace YTE
 
 
   // Helper to call the constructor of a type.
-  inline void GenericDoNothing(byte *)
+  inline void GenericDoNothing(byte*)
   {
   }
 
-  template <typename T>
+  template <typename tType>
   struct StripQualifiers
   {
-    typedef T type;
+    using type = tType;
+  };
+
+  template<typename tType>
+  using StripQualifiersT = typename StripQualifiers<tType>::type;
+
+  template <>
+  struct StripQualifiers<void*>
+  {
+    using type = void*;
   };
 
   template <>
-  struct StripQualifiers<void *>
+  struct StripQualifiers<void const*>
   {
-    typedef void * type;
+    using type =  void*;
   };
 
-  template <>
-  struct StripQualifiers<const void *>
+  template <typename tType>
+  struct StripQualifiers<tType const>
   {
-    typedef void * type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
-  struct StripQualifiers<const T>
+  template <typename tType>
+  struct StripQualifiers<tType*>
   {
-    typedef typename StripQualifiers<T>::type type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
-  struct StripQualifiers<T *>
+  template <typename tType>
+  struct StripQualifiers<tType&>
   {
-    typedef typename StripQualifiers<T>::type type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
-  struct StripQualifiers<T &>
+  template <typename tType>
+  struct StripQualifiers<tType&&>
   {
-    typedef typename StripQualifiers<T>::type type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
-  struct StripQualifiers<T &&>
+  template <typename tType>
+  struct StripQualifiers<tType const*>
   {
-    typedef typename StripQualifiers<T>::type type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
-  struct StripQualifiers<const T *>
+  template <typename tType>
+  struct StripQualifiers<tType const &>
   {
-    typedef typename StripQualifiers<T>::type type;
-  };
-  
-  template <typename T>
-  struct StripQualifiers<const T &>
-  {
-    typedef typename StripQualifiers<T>::type type;
-  };
-  
-  template <typename T>
-  struct StripQualifiers<const T &&>
-  {
-    typedef typename StripQualifiers<T>::type type;
+    using type = StripQualifiersT<tType>;
   };
 
-  template <typename T>
+  template <typename tType>
+  struct StripQualifiers<tType const&&>
+  {
+    using type = StripQualifiersT<tType>;
+  };
+
+  template <typename tType>
   struct StripSingleQualifier
   {
-    typedef T type;
+    using type = tType;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<const T>
+  template <typename tType>
+  struct StripSingleQualifier<tType const>
   {
-    typedef T type;
-  };
-
-  template <>
-  struct StripSingleQualifier<void *>
-  {
-    typedef void * type;
+    using type = tType;
   };
 
   template <>
-  struct StripSingleQualifier<const void *>
+  struct StripSingleQualifier<void*>
   {
-    typedef void * type;
+    using type = void*;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<T *>
+  template <>
+  struct StripSingleQualifier<void const*>
   {
-    typedef T type;
+    using type = void*;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<T &>
+  template <typename tType>
+  struct StripSingleQualifier<tType*>
   {
-    typedef T type;
+    using type = tType;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<T &&>
+  template <typename tType>
+  struct StripSingleQualifier<tType&>
   {
-    typedef T type;
+    using type = tType;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<const T *>
+  template <typename tType>
+  struct StripSingleQualifier<tType&&>
   {
-    typedef T type;
-  };
-  
-  template <typename T>
-  struct StripSingleQualifier<const T &>
-  {
-    typedef T type;
+    using type = tType;
   };
 
-  template <typename T>
-  struct StripSingleQualifier<const T &&>
+  template <typename tType>
+  struct StripSingleQualifier<tType const*>
   {
-    typedef T type;
+    using type = tType;
   };
+
+  template <typename tType>
+  struct StripSingleQualifier<tType const&>
+  {
+    using type = tType;
+  };
+
+  template <typename tType>
+  struct StripSingleQualifier<tType const&&>
+  {
+    using type = tType;
+  };
+
+  template<typename tType>
+  using StripSingleQualifierT = typename StripSingleQualifier<tType>::type;
 
   template <auto tValue>
   constexpr decltype(tValue) ReturnValue()

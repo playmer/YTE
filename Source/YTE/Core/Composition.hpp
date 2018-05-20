@@ -80,15 +80,15 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner = nullptr);
-    Composition(Engine *aEngine, Space *aSpace, Composition *aOwner = nullptr);
+    Composition(Engine* aEngine, String const& aName, Space* aSpace, Composition* aOwner = nullptr);
+    Composition(Engine* aEngine, Space* aSpace, Composition* aOwner = nullptr);
 
     ~Composition();
 
     virtual void Update(double dt);
 
     virtual void NativeInitialize(InitializeEvent *aEvent);
-    void PhysicsInitialize(InitializeEvent *aEvent);
+    virtual void PhysicsInitialize(InitializeEvent *aEvent);
     virtual void Initialize(InitializeEvent *aEvent);
     virtual void Deinitialize(InitializeEvent *aEvent);
     virtual void Start(InitializeEvent *aEvent);
@@ -255,6 +255,7 @@ namespace YTE
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
   protected:
+    void Create();
 
     StringComponentFactory* GetFactoryFromEngine(Type* aType);
     void ComponentClear();
@@ -271,6 +272,7 @@ namespace YTE
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
+    std::vector<Type*> mDependencyOrder;
 
     Engine *mEngine;
     Space *mSpace;
