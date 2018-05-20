@@ -288,6 +288,8 @@ namespace YTE
     bool mIsInitialized;
     bool mBeingDeleted;
 
+    IntrusiveList<Composition>::Hook mInitializationHook;
+
     Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;

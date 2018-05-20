@@ -55,6 +55,12 @@ namespace YTE
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
+
+    IntrusiveList<Composition> mAssetInitialize;
+    IntrusiveList<Composition> mNativeInitialize;
+    IntrusiveList<Composition> mPhysicsInitialize;
+    IntrusiveList<Composition> mInitialize;
+    IntrusiveList<Composition> mStart;
       
     bool mPaused = false;
     bool mPriorToMinimize = false;
