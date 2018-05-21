@@ -71,13 +71,11 @@ namespace YTE
       mLambAnchor = lambAnchor->GetComponent<Transform>();
     }
 
-    auto children = mOwner->GetCompositions()->All();
-
-    for (auto &child : children)
+    for (auto const& [name, child] : mOwner->GetCompositions())
     {
-      if (child.second->GetComponent<CameraAnchor>() != nullptr)
+      if (child->GetComponent<CameraAnchor>() != nullptr)
       {
-        mCameraAnchor = child.second.get();
+        mCameraAnchor = child.get();
         break;
       }
     }

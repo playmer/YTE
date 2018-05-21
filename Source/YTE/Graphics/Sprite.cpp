@@ -108,9 +108,9 @@ namespace YTE
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
-    mOwner->YTERegister(Events::PositionChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::RotationChanged, this, &Sprite::TransformUpdate);
-    mOwner->YTERegister(Events::ScaleChanged, this, &Sprite::TransformUpdate);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::ScaleChanged, this);
 
     CreateSprite();
   }
@@ -229,8 +229,6 @@ namespace YTE
     {
       return;
     }
-
-    auto texture = mRenderer->GetTexture(mTextureName);
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;

@@ -42,16 +42,12 @@ namespace YTE
   {
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
-    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
-    RenderBegin(cbo);
+    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, 
+               mRenderPass,
+               0,
+               GetFrameBuffer());
     Render(cbo, aMeshes);
-    RenderEnd(cbo);
     cbo->end();
-  }
-
-  void VkRTGameForwardDrawer::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
   }
 
   void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
@@ -199,6 +195,7 @@ namespace YTE
                                  0,
                                  *drawCall.mDescriptorSet,
                                  nullptr);
+
         aCBO->drawIndexed(static_cast<u32>(drawCall.mIndexCount),
                           1,
                           0,
@@ -243,12 +240,4 @@ namespace YTE
 
     runPipelines(aCBO, mAlphaBlendShader);
   }
-
-  void VkRTGameForwardDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-    // secondary command buffers do not use this
-    //aCBO->endRenderPass();
-  }
-
 }

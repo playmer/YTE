@@ -272,16 +272,13 @@ namespace YTE
       return;
     }
 
-
     mVkMesh->SetInstanced(mMesh);
   }
 
 
   void VkInstantiatedModel::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk *aEvent)
   {
-    mSurface->YTEDeregister(Events::GraphicsDataUpdateVk,
-                            this,
-                            &VkInstantiatedModel::GraphicsDataUpdateVk);
+    mSurface->DeregisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
 
     auto update = aEvent->mCBO;
 

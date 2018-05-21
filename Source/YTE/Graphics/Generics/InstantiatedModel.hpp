@@ -48,17 +48,14 @@ namespace YTE
 
     virtual void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices)
     {
-      YTEUnusedArgument(aIndex);
-      YTEUnusedArgument(aVertices);
+      UnusedArguments(aIndex, aVertices);
     }
 
     virtual void UpdateMesh(size_t aIndex, 
                             std::vector<Vertex>& aVertices, 
                             std::vector<u32>& aIndices)
     {
-      YTEUnusedArgument(aIndex);
-      YTEUnusedArgument(aVertices);
-      YTEUnusedArgument(aIndices);
+      UnusedArguments(aIndex, aVertices, aIndices);
     }
 
     virtual bool GetInstanced()

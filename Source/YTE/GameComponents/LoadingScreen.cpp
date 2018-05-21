@@ -16,7 +16,7 @@ namespace YTE
 {
   YTEDefineType(LoadingScreen)
   {
-    YTERegisterType(LoadingScreen);
+    RegisterType<LoadingScreen>();
 
     std::vector<std::vector<Type*>> deps = { { TypeId<Transform>() } };
 
@@ -28,14 +28,14 @@ namespace YTE
     , mCurrentNumber{0}
     , mLastLine{nullptr}
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void LoadingScreen::Start()
   {
     CreateLineInternal("Loading..", 800.f);
 
-    mSpace->YTERegister(Events::FrameUpdate, this, &LoadingScreen::Update);
+    mSpace->RegisterEvent<&LoadingScreen::Update>(Events::FrameUpdate, this);
   }
   
   void LoadingScreen::Update(LogicUpdate *aUpdate)

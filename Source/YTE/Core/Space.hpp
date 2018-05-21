@@ -17,6 +17,8 @@
 
 namespace YTE
 {
+  YTEDeclareEvent(SpaceUpdate);
+
   class Space : public Composition
   {
   public:
@@ -56,6 +58,12 @@ namespace YTE
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
 
+    static void ConnectNodes(Space* aSpace, Composition* aComposition);
+
+    String mLoadingName;
+    String mLevelName;
+    String mStartingLevel;
+
     IntrusiveList<Composition> mAssetInitialize;
     IntrusiveList<Composition> mNativeInitialize;
     IntrusiveList<Composition> mPhysicsInitialize;
@@ -71,9 +79,6 @@ namespace YTE
 
     bool mLoading = true;
     bool mCheckRunInEditor = false;
-    String mLoadingName;
-    String mLevelName;
-    String mStartingLevel;
   };
 }
 

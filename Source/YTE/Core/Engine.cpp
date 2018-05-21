@@ -255,7 +255,7 @@ namespace YTE
     // TODO (Josh): Should this be like it is?
     if (mDt > 0.5)
     {
-      mDt = 0.016f;
+      mDt = 0.016;
     }
 
     for (auto &window : mWindows)
@@ -278,6 +278,7 @@ namespace YTE
 
     SendEvent(Events::PreLogicUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
+    SendEvent(Events::SpaceUpdate, &updateEvent);
 
     // If we're told to shut down then our windows might be invalidated
     // so we shouldn't try to run the Graphics updates.

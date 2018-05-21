@@ -227,7 +227,7 @@ namespace YTE
     ViewData *view = GetViewData(aView);
     auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
-    // if view doesnt have shader, but surface does
+    // if view doesn't have shader, but surface does
     if (viewShaderIt == view->mShaders.end() && shaderIt != mShaderCreateInfos.end())
     {
       auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
@@ -236,7 +236,7 @@ namespace YTE
 
       view->mShaders[aShaderSetName] = std::move(shader);
     }
-    // if surface doesnt have shader
+    // If surface doesn't have shader
     else if (shaderIt == mShaderCreateInfos.end())
     {
       VkCreatePipelineDataSet cpds = VkShader::CreateInfo(aShaderSetName,
@@ -397,9 +397,9 @@ namespace YTE
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
-    for (auto &v : mViewData)
+    for (auto const& [view, data] : mViewData)
     {
-      rts.push_back(v.second.mRenderTarget.get());
+      rts.push_back(data.mRenderTarget.get());
     }
 
     if (mViewData.size() != 0)
@@ -419,9 +419,9 @@ namespace YTE
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
-    for (auto &v : mViewData)
+    for (auto const&[view, data] : mViewData)
     {
-      rts.push_back(v.second.mRenderTarget.get());
+      rts.push_back(data.mRenderTarget.get());
     }
 
     if (mViewData.size() != 0)
@@ -439,9 +439,9 @@ namespace YTE
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
-    for (auto &v : mViewData)
+    for (auto const& [view, data] : mViewData)
     {
-      rts.push_back(v.second.mRenderTarget.get());
+      rts.push_back(data.mRenderTarget.get());
     }
 
     if (mViewData.size() != 0)
@@ -461,9 +461,9 @@ namespace YTE
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
-    for (auto &v : mViewData)
+    for (auto const& [view, data] : mViewData)
     {
-      rts.push_back(v.second.mRenderTarget.get());
+      rts.push_back(data.mRenderTarget.get());
     }
 
     if (mViewData.size() != 0)
@@ -484,9 +484,9 @@ namespace YTE
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
-    for (auto &v : mViewData)
+    for (auto const&[view, data] : mViewData)
     {
-      rts.push_back(v.second.mRenderTarget.get());
+      rts.push_back(data.mRenderTarget.get());
     }
     
     if (mViewData.size() != 0)
@@ -497,11 +497,10 @@ namespace YTE
 
   void VkRenderedSurface::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent)
   {
-    for (auto &viewDataIt : mViewData)
+    for (auto const&[view, data] : mViewData)
     {
-      auto &viewData = viewDataIt.second;
-      viewData.mViewUBO->update<UBOView>(0, viewData.mViewUBOData, aEvent->mCBO);
-      viewData.mIlluminationUBO->update<UBOIllumination>(0, viewData.mIlluminationUBOData, aEvent->mCBO);
+      data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
+      data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
       this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
     }
   }
@@ -644,10 +643,10 @@ namespace YTE
 
 
     // build secondaries
-    for (auto &v : mViewData)
+    for (auto const& [view, data] : mViewData)
     {
-      v.second.mRenderTarget->RenderFull(mRenderer->mMeshes);
-      v.second.mRenderTarget->MoveToNextEvent();
+      data.mRenderTarget->RenderFull(mRenderer->mMeshes);
+      data.mRenderTarget->MoveToNextEvent();
     }
 
 

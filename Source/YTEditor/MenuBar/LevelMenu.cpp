@@ -69,14 +69,9 @@ namespace YTEditor
     mMainWindow->GetObjectBrowser().setHeaderLabel(lvl->GetName().c_str());
     /////////////////////////////////////////////////////////////////////////////
 
-    // Get all compositions on the main session (should be levels)
-    YTE::CompositionMap *objMap = lvl->GetCompositions();
-
     // Iterate through all the objects in the map / on the level
-    for (auto& cmp : *objMap)
+    for (auto const& [name, component] : lvl->GetCompositions())
     {
-      auto component = cmp.second.get();
-
       // Get the name of the object
       auto objName = component->GetName();
 
@@ -84,11 +79,11 @@ namespace YTEditor
 
       // Store the name and composition pointer in the object browser
       ObjectItem *topItem = objectBrowser.AddExistingComposition(objName.c_str(),
-                                                                 component);
+                                                                 component.get());
 
       if (topItem)
       {
-        objectBrowser.LoadAllChildObjects(cmp.second.get(), topItem);
+        objectBrowser.LoadAllChildObjects(component.get(), topItem);
       }
 
     }

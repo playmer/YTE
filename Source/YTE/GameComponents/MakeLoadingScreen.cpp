@@ -16,7 +16,8 @@ namespace YTE
 {
   YTEDefineType(MakeLoadingScreen)
   {
-    YTERegisterType(MakeLoadingScreen);
+    RegisterType<MakeLoadingScreen>();
+    TypeBuilder<MakeLoadingScreen> builder;
 
     std::vector<std::vector<Type*>> deps = { { TypeId<GraphicsView>() } };
 
@@ -26,15 +27,15 @@ namespace YTE
   MakeLoadingScreen::MakeLoadingScreen(Composition *aOwner, Space *aSpace, RSValue *aProperties)
     : Component(aOwner, aSpace)
   {
-    YTEUnusedArgument(aProperties);
+    UnusedArguments(aProperties);
   }
 
   void MakeLoadingScreen::NativeInitialize()
   {
     String hud{ "MSR_Loading" };
-    mChild = mSpace->AddChildSpace(hud, true);
+    mChild = mSpace->AddChildSpace(hud);
     mSpace->GetComponent<GraphicsView>()->SetOrder(-1000.f);
-    mSpace->YTERegister(Events::FrameUpdate, this, &MakeLoadingScreen::Update);
+    mSpace->RegisterEvent<&MakeLoadingScreen::Update>(Events::FrameUpdate, this);
   }
 
   void MakeLoadingScreen::Update(LogicUpdate *aUpdate)

@@ -84,22 +84,20 @@ namespace YTEditor
     this->ClearComponents();
 
     // Load all of the components on the object into the browser
-    YTE::ComponentMap &components = *(aObj->GetComponents());
-
-    for (auto& comp : components)
+    for (auto const& [type, component] : aObj->GetComponents())
     {
-      YTE::String name = comp.first->GetName();
+      YTE::String name = type->GetName();
 
       QTreeWidgetItem *item = new QTreeWidgetItem(this);
       item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
       item->setSizeHint(0, QSize(0, 27));
 
-      ComponentWidget *widg = CreateComponent(comp.second.get()->GetType(),
+      ComponentWidget *widg = CreateComponent(component.get()->GetType(),
                                               name.c_str(),
-                                              comp.second.get(),
+                                              component.get(),
                                               item);
 
-      widg->LoadProperties(comp.second.get());
+      widg->LoadProperties(component.get());
       BaseAddComponent(widg, item);
     }
 

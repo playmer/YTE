@@ -42,7 +42,9 @@ namespace YTE
   public:
     YTEDeclareType(InitializeEvent);
 
+    std::chrono::time_point<std::chrono::high_resolution_clock> mLoadingBegin;
     bool CheckRunInEditor = false;
+    bool ShouldRecurse = true;
   };
 
   YTEDeclareEvent(CompositionAdded);
@@ -130,7 +132,7 @@ namespace YTE
     Composition* AddComposition(String aArchetype, String aObjectName);
     Composition* AddComposition(RSValue *aArchetype, String aObjectName);
     Composition* AddCompositionAtPosition(String archetype, String aObjectName, glm::vec3 aPosition);
-    inline CompositionMap* GetCompositions() { return &mCompositions; };
+    inline CompositionMap& GetCompositions() { return mCompositions; };
 
     void Remove();
     virtual RSValue RemoveSerialized(RSAllocator &aAllocator);
@@ -139,7 +141,7 @@ namespace YTE
     void RemoveComponent(Type* aComponent);
     void RemoveComposition(Composition* aComposition);
 
-    void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
+    void BoundTypeChangedHandler(BoundTypeChanged* aEvent);
 
     std::string IsDependecy(Type* aComponent);
     std::string HasDependencies(Type* aComponent);
@@ -170,9 +172,9 @@ namespace YTE
       // all the components of the templated type.
       std::vector<ComponentType*> components;
 
-      for (auto &composition : mCompositions)
+      for (auto const& [name, composition] : mCompositions)
       {
-        auto moreComponents = composition.second->GetComponents<ComponentType>();
+        auto moreComponents = composition->GetComponents<ComponentType>();
 
         components.insert(components.end(), moreComponents.begin(), moreComponents.end());
       }
@@ -245,7 +247,7 @@ namespace YTE
     String const& GetName() const { return mName; };
     void SetName(String &aName);
 
-    ComponentMap* GetComponents() { return &mComponents; };
+    ComponentMap& GetComponents() { return mComponents; };
 
     void SetArchetypeName(String& aArchName);
     String& GetArchetypeName();
@@ -255,6 +257,17 @@ namespace YTE
     bool SetGUID(GlobalUniqueIdentifier aGUID);
 
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
+
+
+    std::vector<Type*> const& GetDependencyOrder()
+    {
+      return mDependencyOrder;
+    }
+
+    IntrusiveList<Composition>::Hook& GetInitializationHook()
+    {
+      return mInitializationHook;
+    }
 
   protected:
     void Create();
@@ -282,17 +295,16 @@ namespace YTE
     GlobalUniqueIdentifier mGUID;
     String mArchetypeName;
     String mName;
+    IntrusiveList<Composition>::Hook mInitializationHook;
 
     bool mShouldSerialize;
-    bool mShouldIntialize;
-    bool mIsInitialized;
     bool mBeingDeleted;
-
-    IntrusiveList<Composition>::Hook mInitializationHook;
 
     Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
+
+    int physInit = 0;
   };
 }
 

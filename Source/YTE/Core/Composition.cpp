@@ -34,7 +34,7 @@ namespace YTE
     RegisterType<InitializeEvent>();
     TypeBuilder<InitializeEvent> builder;
 
-    builder.Field<&InitializeEvent::CheckRunInEditor>( "CheckRunInEditor", PropertyBinding::Get);
+    builder.Field<&InitializeEvent::CheckRunInEditor>("CheckRunInEditor", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionAdded);
@@ -44,7 +44,7 @@ namespace YTE
     RegisterType<CompositionAdded>();
     TypeBuilder<CompositionAdded> builder;
 
-    builder.Field<&CompositionAdded::mComposition>( "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionAdded::mComposition>("Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionRemoved);
@@ -54,7 +54,7 @@ namespace YTE
     RegisterType<CompositionRemoved>();
     TypeBuilder<CompositionRemoved> builder;
 
-    builder.Field<&CompositionRemoved::mComposition>( "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionRemoved::mComposition>("Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(ParentChanged);
@@ -64,8 +64,8 @@ namespace YTE
     RegisterType<ParentChanged>();
     TypeBuilder<ParentChanged> builder;
 
-    builder.Field<&ParentChanged::mOldParent>( "Old Parent", PropertyBinding::Get);
-    builder.Field<&ParentChanged::mNewParent>( "New Parent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mOldParent>("OldParent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mNewParent>("NewParent", PropertyBinding::Get);
   }
 
   YTEDefineExternalType(CompositionMap::range)
@@ -99,6 +99,16 @@ namespace YTE
       .SetParameterNames("aName")
       .SetDocumentation("Finds a Composition with the given name. Does not search recursively.");
 
+    builder.Function<&Composition::IsDependecy>("IsDependecy")
+      .SetParameterNames("aComponent")
+      .SetDocumentation("Checks to see if the given component is a dependency of other components on the composition. "
+                        "Returns info string if it is, empty otherwise.");
+
+    builder.Function<&Composition::HasDependencies>("HasDependencies")
+      .SetParameterNames("aComponent")
+      .SetDocumentation("Checks to see if a component's dependencies are met. (Eg. so it can be added to the composition. "
+                        "Returns info string if it is, empty otherwise.");
+
     builder.Function<SelectOverload<Composition*(Composition::*)(String, String),&Composition::AddComposition>()>("AddObject")
       .SetParameterNames("aArchetype", "aName")
       .SetDocumentation("Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.");
@@ -112,29 +122,27 @@ namespace YTE
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName(aName)
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{ aName }
+    , mInitializationHook{this}
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
   {
     Create();
   };
 
   Composition::Composition(Engine *aEngine, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName()
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{}
+    , mInitializationHook{ this }
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
   {
     Create();
   };
@@ -175,25 +183,14 @@ namespace YTE
 
   void Composition::ComponentClear()
   {
-    // Destructing the components in order
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just clear the vector in whatever 
-    // order the containter decides to clear in Ideally we fix the 
-    // GetDependencyOrder algorithm so this never occurs.
-    if (order.size() != mComponents.size())
+    for (auto typeIt = mDependencyOrder.rbegin();
+         typeIt < mDependencyOrder.rend();
+         ++typeIt)
     {
-      mComponents.Clear();
-    }
-    else
-    {
-      for (auto typeIt = order.rbegin(); typeIt < order.rend(); ++typeIt)
+      auto component = mComponents.Find(*typeIt);
+      if (component != mComponents.end())
       {
-        auto component = mComponents.Find(*typeIt);
-        if (component != mComponents.end())
-        {
-          mComponents.Erase(component);
-        }
+        mComponents.Erase(component);
       }
     }
   }
@@ -205,6 +202,30 @@ namespace YTE
     if (iterator != mComponents.end())
     {
       mComponents.ChangeKey(iterator, aEvent->aNewType);
+    }
+  }
+
+  template <auto tMemberFunction>
+  void HandleInitialization(std::string const& aEventName,
+                            InitializeEvent* aEvent,
+                            Composition* aComposition)
+  {
+    for (auto &type : aComposition->GetDependencyOrder())
+    {
+      auto component = aComposition->GetComponent(type);
+
+      if (aEvent->CheckRunInEditor &&
+          nullptr == type->GetAttribute<RunInEditor>())
+      {
+        continue;
+      }
+
+      (component->*tMemberFunction)();
+    }
+
+    if (aEvent->ShouldRecurse)
+    {
+      aComposition->SendEvent(aEventName, aEvent);
     }
   }
 
@@ -227,120 +248,83 @@ namespace YTE
       }
     }
 
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    for (auto &type : mDependencyOrder)
-    {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
-      {
-        continue;
-      }
-
-      component->AssetInitialize();
-    }
-
-    SendEvent(Events::AssetInitialize, aEvent);
+    HandleInitialization<&Component::AssetInitialize>(Events::AssetInitialize,
+                                                      aEvent,
+                                                      this);
   }
 
   void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
     
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    for (auto &type : mDependencyOrder)
-    {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
-      {
-        continue;
-      }
-
-      {
-        YTEProfileBlock(type->GetName().c_str());
-        component->NativeInitialize();
-      }
-    }
-
-    SendEvent(Events::NativeInitialize, aEvent);
+    HandleInitialization<&Component::NativeInitialize>(Events::NativeInitialize,
+                                                       aEvent,
+                                                       this);
   }
 
   void Composition::PhysicsInitialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
 
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    auto collider = GetColliderFromObject(this);
-    if (collider != nullptr) collider->PhysicsInitialize();
-    auto ghostBody = GetComponent<GhostBody>();
-    if (ghostBody != nullptr) ghostBody->PhysicsInitialize();
-    auto collisionBody = GetComponent<CollisionBody>();
-    if (collisionBody != nullptr) collisionBody->PhysicsInitialize();
-    auto rigidBody = GetComponent<RigidBody>();
-    if (rigidBody != nullptr) rigidBody->PhysicsInitialize();
-    //auto transform = GetComponent<Transform>();
-    //if (transform != nullptr) transform->PhysicsInitialize();
-    
-    //for (auto &type : mDependencyOrder)
+    //if (auto collider = GetColliderFromObject(this);
+    //    collider != nullptr && collider->GetType()->GetAttribute<RunInEditor>())
     //{
-    //  auto component = GetComponent(type);
-    //  
     //  if (aEvent->CheckRunInEditor &&
-    //      nullptr == type->GetAttribute<RunInEditor>())
+    //      collider->GetType()->GetAttribute<RunInEditor>())
     //  {
-    //    continue;
+    //    collider->PhysicsInitialize();
     //  }
-    //  
-    //  component->PhysicsInitialize();
+    //}
+    //
+    //if (auto ghostBody = GetComponent<GhostBody>();
+    //    ghostBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<GhostBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    ghostBody->PhysicsInitialize();
+    //  }
+    //}
+    //
+    //if (auto collisionBody = GetComponent<CollisionBody>();
+    //    collisionBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<CollisionBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    collisionBody->PhysicsInitialize();
+    //  }
+    //}
+    //
+    //if (auto rigidBody = GetComponent<GhostBody>();
+    //    rigidBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<RigidBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    rigidBody->PhysicsInitialize();
+    //  }
     //}
 
-    SendEvent(Events::PhysicsInitialize, aEvent);
+    //auto transform = GetComponent<Transform>();
+    //if (transform != nullptr) transform->PhysicsInitialize();
+
+    ++physInit;
+
+    //SendEvent(Events::PhysicsInitialize, aEvent);
+    
+    HandleInitialization<&Component::PhysicsInitialize>(Events::PhysicsInitialize,
+                                                        aEvent,
+                                                        this);
   }
 
   void Composition::Initialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
 
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    for (auto &type : mDependencyOrder)
-    {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
-      {
-        continue;
-      }
-
-      {
-        YTEProfileBlock(type->GetName().c_str());
-        component->Initialize();
-      }
-    }
-
-    SendEvent(Events::Initialize, aEvent);
-
-    mShouldIntialize = false;
-    mIsInitialized = true;
+    HandleInitialization<&Component::Initialize>(Events::Initialize,
+                                                 aEvent,
+                                                 this);
 
     CompositionAdded event;
     event.mComposition = this;
@@ -351,14 +335,9 @@ namespace YTE
     }
   }
 
-  void Composition::Deinitialize(InitializeEvent * aEvent)
+  void Composition::Deinitialize(InitializeEvent* aEvent)
   {
     YTEProfileFunction();
-
-    if (!mIsInitialized)
-    {
-      return;
-    }
 
     for (auto it = mDependencyOrder.rbegin(); it != mDependencyOrder.rend(); ++it)
     {
@@ -380,27 +359,13 @@ namespace YTE
     SendEvent(Events::Deinitialize, aEvent);
   }
 
-  void Composition::Start(InitializeEvent *aEvent)
+  void Composition::Start(InitializeEvent* aEvent)
   {
     YTEProfileFunction();
 
-    for (auto &type : mDependencyOrder)
-    {
-      auto component = GetComponent(type);
-
-      if (aEvent->CheckRunInEditor &&
-          nullptr == type->GetAttribute<RunInEditor>())
-      {
-        continue;
-      }
-
-      {
-        YTEProfileBlock(type->GetName().c_str());
-        component->Start();
-      }
-    }
-
-    SendEvent(Events::Start, aEvent);
+    HandleInitialization<&Component::Start>(Events::Start,
+                                            aEvent,
+                                            this);
   }
 
 
@@ -634,7 +599,7 @@ namespace YTE
       AddComponent(componentType, &componentIt->value);
     }
 
-    mDependencyOrder = GetDependencyOrder(this);
+    mDependencyOrder = YTE::GetDependencyOrder(this);
 
     if (mComponents.size() != mDependencyOrder.size())
     {
@@ -709,13 +674,14 @@ namespace YTE
 
     RSValue components;
     components.SetObject();
-    for (auto &component : mComponents)
+
+    for (auto const& [type, component] : mComponents)
     {
-      auto componentSerialized = component.second->Serialize(aAllocator);
+      auto componentSerialized = component->Serialize(aAllocator);
       
       RSValue componentName;
-      componentName.SetString(component.first->GetName().c_str(),
-                              static_cast<RSSizeType>(component.first->GetName().size()),
+      componentName.SetString(type->GetName().c_str(),
+                              static_cast<RSSizeType>(type->GetName().size()),
                               aAllocator);
 
       components.AddMember(componentName, componentSerialized, aAllocator);
@@ -849,12 +815,12 @@ namespace YTE
   {
     Graph dependencyGraph;
 
-    for (auto &keyValue : *aComposition->GetComponents())
+    for (auto const& [type, component] : aComposition->GetComponents())
     {
       // Might not have dependencies, so we add the vertex first just in case.
-      dependencyGraph.AddVertex(keyValue.first);
+      dependencyGraph.AddVertex(type);
 
-      auto dependencies = keyValue.first->GetAttribute<ComponentDependencies>();
+      auto dependencies = type->GetAttribute<ComponentDependencies>();
     
       if (dependencies)
       {
@@ -870,7 +836,7 @@ namespace YTE
             {
               // We've found a match, we no longer need to search
               // this OR list.
-              dependencyGraph.AddEdge(keyValue.first, dependencyOr);
+              dependencyGraph.AddEdge(type, dependencyOr);
               foundOne = true;
               break;
             }
@@ -964,18 +930,18 @@ namespace YTE
       typesAvailible.emplace(component.first);
     }
 
-    for (auto &component : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      if (component.first == aType)
+      if (type == aType)
       {
         continue;
       }
 
-      auto reason = CheckDependencies(typesAvailible, component.first);
+      auto reason = CheckDependencies(typesAvailible, type);
 
       if (reason.size())
       {
-        typesWithAProblem.emplace_back(component.first);
+        typesWithAProblem.emplace_back(type);
       }
     }
 
@@ -1002,9 +968,9 @@ namespace YTE
   {
     std::set<BoundType*> typesAvailible;
 
-    for (auto &component : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      typesAvailible.emplace(component.first);
+      typesAvailible.emplace(type);
     }
 
     return CheckDependencies(typesAvailible, aType);
@@ -1014,13 +980,11 @@ namespace YTE
   {
     auto componentType = TypeId<Component>();
 
-    for (auto &componentIt : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      auto type = componentIt.first;
-
       if (type->IsA(aType, componentType))
       {
-        return componentIt.second.get();
+        return component.get();
       }
     }
 
@@ -1248,15 +1212,15 @@ namespace YTE
 
   void Composition::SetName(String &aName)
   {
-    CompositionMap *compositionMap = GetParent()->GetCompositions();
+    CompositionMap &compositionMap = GetParent()->GetCompositions();
 
-    auto range = compositionMap->FindAll(mName);
+    auto range = compositionMap.FindAll(mName);
     
     for (auto it = range.begin(); it < range.end(); ++it)
     {
       if (this == it->second.get())
       {
-        compositionMap->ChangeKey(it, aName);
+        compositionMap.ChangeKey(it, aName);
         mName = aName;
         return;
       }

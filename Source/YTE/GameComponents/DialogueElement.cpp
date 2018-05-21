@@ -77,16 +77,16 @@ namespace YTE
       mTextContent = text->GetComponent<SpriteText>();
     }
 
-    /*auto children = mOwner->GetCompositions()->All();
-    for (auto &child : children)
+    /*
+    for (auto const& [name, child] : mOwner->GetCompositions())
     {
-      auto spriteTextComponent = child.second->GetComponent<SpriteText>();
+      auto spriteTextComponent = child->GetComponent<SpriteText>();
       if (spriteTextComponent != nullptr)
       {
         mTextContent = spriteTextComponent;
       }
 
-      auto spriteComponent = child.second->GetComponent<Sprite>();
+      auto spriteComponent = child->GetComponent<Sprite>();
       if (spriteComponent != nullptr)
       {
         mChildSprite = spriteComponent;
