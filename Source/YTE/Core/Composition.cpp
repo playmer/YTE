@@ -385,6 +385,7 @@ namespace YTE
     {
       for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
       {
+        end->second->second->Deinitialize();
         RemoveComponentInternal(end->second);
       }
     }
@@ -1002,6 +1003,7 @@ namespace YTE
 
     Component *component = AddComponent(aType, nullptr);
 
+    mDependencyOrder.emplace_back(aType);
 
     if (aCheckRunInEditor &&
         nullptr == aType->GetAttribute<RunInEditor>())
@@ -1185,6 +1187,11 @@ namespace YTE
     {
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
+
+    mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
+                                          mDependencyOrder.end(),
+                                          [aComponent](Type* aType) { return aType == aComponent; }),
+                           mDependencyOrder.end());
 
     GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }

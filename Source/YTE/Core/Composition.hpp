@@ -203,32 +203,18 @@ namespace YTE
 
     Component* GetComponent(Type *aType);
 
-    template <typename ComponentType> 
-    ComponentType* AddComponent(RSValue *aProperties = nullptr)
+    template <typename tComponentType> 
+    tComponentType* AddComponent(RSValue *aProperties = nullptr)
     {
-      static_assert(std::is_base_of<Component, ComponentType>()
-                    && !std::is_same<Component, ComponentType>());
-      ComponentType *toReturn = nullptr;
+      static_assert(std::is_base_of<Component, tComponentType>()
+                    && !std::is_same<Component, tComponentType>());
 
-      auto type = ComponentType::GetStaticType();
-      auto iterator = mComponents.Find(type);
+      auto type = TypeId<tComponentType>();
+      auto component = static_cast<tComponentType*>(AddComponent(type, aProperties));
 
-      if (iterator == mComponents.end())
-      {
-        auto factory = GetFactoryFromEngine(type);
+      mDependencyOrder.emplace_back(type);
 
-        auto component = factory->MakeComponent(this, mSpace, aProperties);
-        toReturn = static_cast<ComponentType*>(component.get());
-
-        mComponents.Emplace(type, std::move(component));
-      }
-      else
-      {
-        toReturn = static_cast<ComponentType*>(iterator->second.get());
-        toReturn->Deserialize(aProperties);
-      }
-
-      return toReturn;
+      return component;
     }
 
     Component* AddComponent(Type* aType, bool aCheckRunInEditor = false);

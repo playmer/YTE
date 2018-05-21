@@ -372,7 +372,7 @@ namespace YTE
 
   void Submesh::ResetTextureCoordinates()
   {
-    for (int i = 0; i < mVertexBuffer.size(); i++)
+    for (size_t i = 0; i < mVertexBuffer.size(); i++)
     {
       mVertexBuffer[i].mTextureCoordinates = mInitialTextureCoordinates[i];
     }
@@ -503,7 +503,7 @@ namespace YTE
 
       // Load Mesh
       uint32_t startingVertex = 0;
-      for (unsigned int i = 0; i < numMeshes; i++)
+      for (u32 i = 0; i < numMeshes; i++)
       {
         mParts.emplace_back(aRenderer, 
                             pMeshScene, 
@@ -530,13 +530,13 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  void Mesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
+  void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
     mParts[aSubmeshIndex].mVertexBuffer = aVertices;
   }
 
-  void Mesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), 
                    "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
@@ -585,7 +585,7 @@ namespace YTE
   void Mesh::CreateCollider(const aiScene* aScene)
   {
     uint32_t numMeshes = aScene->mNumMeshes;
-    for (unsigned int i = 0; i < numMeshes; ++i)
+    for (u32 i = 0; i < numMeshes; ++i)
     {
       mColliderParts.emplace_back(aScene->mMeshes[i]);
     }

@@ -359,6 +359,7 @@ namespace YTE
 
   void VkRenderToScreen::ReloadShaders(bool aFromSet)
   {
+    UnusedArguments(aFromSet);
     //if (aFromSet)
     //{
     //  mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");

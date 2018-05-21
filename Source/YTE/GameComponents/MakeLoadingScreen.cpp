@@ -40,6 +40,8 @@ namespace YTE
 
   void MakeLoadingScreen::Update(LogicUpdate *aUpdate)
   {
+    UnusedArguments(aUpdate);
+
     if (mSpace->GetFinishedLoading())
     {
       mSpace->RemoveComposition(mChild);

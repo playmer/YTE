@@ -412,10 +412,10 @@ namespace YTE
                                              DrawerTypes aDrawerType,
                                              DrawerTypeCombination aCombination)
   {
-    auto view = GetViewData(aView);
-    view->mRenderTarget.reset();
-    view->mRenderTarget = CreateRenderTarget(aDrawerType, view, aCombination);
-    view->mRenderTarget->SetView(view);
+    auto viewData = GetViewData(aView);
+    viewData->mRenderTarget.reset();
+    viewData->mRenderTarget = CreateRenderTarget(aDrawerType, viewData, aCombination);
+    viewData->mRenderTarget->SetView(viewData);
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;
@@ -433,9 +433,9 @@ namespace YTE
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
                                                     DrawerTypeCombination aCombination)
   {
-    auto view = GetViewData(aView);
-    view->mRenderTarget->SetCombinationType(aCombination);
-    view->mRenderTarget->SetView(view);
+    auto viewData = GetViewData(aView);
+    viewData->mRenderTarget->SetCombinationType(aCombination);
+    viewData->mRenderTarget->SetView(viewData);
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;

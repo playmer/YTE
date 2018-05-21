@@ -465,14 +465,14 @@ namespace YTE
     mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
-  void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
+  void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     mMesh->UpdateVertices(aSubmeshIndex, aVertices);
 
     mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
-  void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 

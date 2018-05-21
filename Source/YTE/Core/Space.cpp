@@ -165,6 +165,18 @@ namespace YTE
       {
         ConnectNodes(this, composition.get());
       }
+
+
+      InitializeEvent event;
+      event.mLoadingBegin = high_resolution_clock::now();
+      event.ShouldRecurse = false;
+      event.CheckRunInEditor = mIsEditorSpace;
+
+      Composition::AssetInitialize(&event);
+      Composition::NativeInitialize(&event);
+      Composition::PhysicsInitialize(&event);
+      Composition::Initialize(&event);
+      Composition::Start(&event);
     }
 
     mFinishedLoading = false;
