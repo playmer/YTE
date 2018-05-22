@@ -371,31 +371,32 @@ namespace YTEditor
       return;
     }
 
+    // Make actual "physical" window
+    mRunningWindow = new SubWindow(nullptr, this);
+    mRunningWindowTab = createWindowContainer(mRunningWindow);
+    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
+    mCentralTabs->setCurrentIndex(index);
+
+    auto window = mRunningEngine->AddWindow("YTEditor Play Window");
+
+    mRunningWindow->mWindow = window;
+    window->mShouldBeRenderedTo = true;
+    auto id = mRunningWindow->winId();
+    window->SetWindowId(reinterpret_cast<void*>(id));
+
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    renderer->RegisterWindowForDraw(window);
+
+    // Serialize the editing level.
     YTE::RSAllocator allocator;
     auto mainSession = GetEditingLevel();
     auto value = mainSession->Serialize(allocator);
 
-    mRunningEngine->AddWindow("YTEditor Play Window");
     mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
     mRunningSpace->Load(&value, false);
 
     auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
     graphicsView->ChangeWindow("YTEditor Play Window");
-
-    auto window = graphicsView->GetWindow();
-    window->mShouldBeRenderedTo = true;
-
-    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-
-    mRunningWindow = new SubWindow(window, this);
-    mRunningWindowTab = createWindowContainer(mRunningWindow);
-    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
-    mCentralTabs->setCurrentIndex(index);
-
-    auto id = mRunningWindow->winId();
-
-    window->SetWindowId(reinterpret_cast<void*>(id));
-    renderer->RegisterWindowForDraw(window);
 
     YTE::LogicUpdate update;
     update.Dt = 0.0f;
