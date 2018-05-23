@@ -17,6 +17,8 @@
 
 namespace YTE
 {
+  YTEDeclareEvent(SpaceUpdate);
+
   class Space : public Composition
   {
   public:
@@ -46,20 +48,37 @@ namespace YTE
     void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
+
+    bool GetFinishedLoading()
+    {
+      return mFinishedLoading;
+    }
+
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
+
+    static void ConnectNodes(Space* aSpace, Composition* aComposition);
+
+    String mLoadingName;
+    String mLevelName;
+    String mStartingLevel;
+
+    IntrusiveList<Composition> mAssetInitialize;
+    IntrusiveList<Composition> mNativeInitialize;
+    IntrusiveList<Composition> mPhysicsInitialize;
+    IntrusiveList<Composition> mInitialize;
+    IntrusiveList<Composition> mStart;
       
     bool mPaused = false;
     bool mPriorToMinimize = false;
     bool mFocusHandled = false;
     bool mIsEditorSpace = false;
 
+    bool mFinishedLoading = true;
+
     bool mLoading = true;
     bool mCheckRunInEditor = false;
-    String mLoadingName;
-    String mLevelName;
-    String mStartingLevel;
   };
 }
 

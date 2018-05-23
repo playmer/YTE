@@ -44,7 +44,8 @@ namespace YTEditor
                            0.0f, 0.0f, 0.5f, 1.0f);
 
       auto flippedProjection = glm::inverse(clip) * cameraUBO.mProjectionMatrix;
-
+      
+      //auto projection = glm::value_ptr(cameraUBO.mProjectionMatrix);
       auto projection = glm::value_ptr(flippedProjection);
 
       auto compositionMatrix = mCurrentComposition->GetTransformMatrix();

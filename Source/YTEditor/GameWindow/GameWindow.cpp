@@ -74,6 +74,11 @@ namespace YTEditor
   {
     auto qtVal = QWindow::nativeEvent(aEventType, aMessage, aResult);
 
+    if (nullptr == mWindow)
+    {
+      return qtVal;
+    }
+
     // TODO Implement this on other platforms maybe?
 #ifdef YTE_Windows
     MSG message = *(static_cast<MSG*>(aMessage));

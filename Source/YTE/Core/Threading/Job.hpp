@@ -15,13 +15,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/Delegate.hpp"
 #include "YTE/StandardLibrary/UnorderedMap.hpp"
 
+#include <functional>
+
 namespace YTE
 {
   class Job
   {
   public:
-    Job(Delegate<Any(*)(JobHandle&)>&& aDelegate);
-    Job(Delegate<Any(*)(JobHandle&)>&& aDelegate, JobHandle& aParentHandle);
+    Job(std::function<Any(JobHandle&)>&& aDelegate);
+    Job(std::function<Any(JobHandle&)>&& aDelegate, JobHandle& aParentHandle);
     ~Job();
 
     JobHandle GetParentHandle();
@@ -40,7 +42,7 @@ namespace YTE
 
   protected:
     Job* mParentJob;
-    Delegate<Any(*)(JobHandle&)> mDelegate;
+    std::function<Any(JobHandle&)> mDelegate;
     Any mReturn;
     std::atomic<int> mTotalJobs;
     std::atomic<int> mUnfinishedJobs;

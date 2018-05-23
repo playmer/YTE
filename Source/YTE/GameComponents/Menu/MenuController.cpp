@@ -78,7 +78,7 @@ namespace YTE
   void MenuController::Initialize()
   {
     mSoundEmitter = mOwner->GetComponent<WWiseEmitter>();
-    mMenuElements = mOwner->GetCompositions();
+    mMenuElements = &mOwner->GetCompositions();
     //mNumElements = static_cast<int>(mMenuElements->size());
 
     mMySprite = mOwner->GetComponent<Sprite>();

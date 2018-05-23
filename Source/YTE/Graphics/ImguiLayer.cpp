@@ -159,6 +159,8 @@ namespace YTE
     // flag that you can use to dispatch inputs (or not) to your application.
     ImGui::NewFrame();
     ImGuizmo::BeginFrame();
+
+    //ShowMetricsWindow();
   }
 
   void ImguiLayer::MouseScrollCallback(MouseWheelEvent *aEvent)

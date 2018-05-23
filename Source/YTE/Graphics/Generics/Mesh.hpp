@@ -15,6 +15,7 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 
@@ -212,7 +213,8 @@ namespace YTE
   public:
     Submesh() = default;
 
-    Submesh(const aiScene *aScene,
+    Submesh(Renderer *aRenderer,
+            const aiScene *aScene,
             const aiMesh *aMesh,
             Skeleton *aSkeleton,
             uint32_t aBoneStartingVertexOffset);
@@ -274,14 +276,14 @@ namespace YTE
   public:
     YTEDeclareType(Mesh);
 
-    Mesh(std::string &aFile,
-         CreateInfo *aCreateInfo = nullptr);
+    Mesh(Renderer *aRenderer,
+         const std::string &aFile);
 
-    Mesh(std::string &aFile,
+    Mesh(const std::string &aFile,
          std::vector<Submesh> &aSubmeshes);
 
-    virtual void UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices);
-    virtual void UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+    virtual void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
+    virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
 
     virtual ~Mesh();
 
@@ -298,12 +300,10 @@ namespace YTE
     std::vector<ColliderMesh> mColliderParts;
     Skeleton mSkeleton;
     Dimension mDimension;
+    bool mInstanced;
 
   private:
     void CreateCollider(const aiScene* aScene);
-
-  protected:
-    bool mInstanced;
   };
 }
 

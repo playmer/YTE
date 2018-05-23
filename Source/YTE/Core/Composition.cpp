@@ -1,3 +1,5 @@
+#include <stack>
+
 #include "fmt/format.h"
 
 #include "YTE/Core/Composition.hpp"
@@ -20,6 +22,7 @@ namespace YTE
 {
   std::vector<Type*> GetDependencyOrder(Composition *aComposition);
 
+  YTEDefineEvent(AssetInitialize);
   YTEDefineEvent(NativeInitialize);
   YTEDefineEvent(PhysicsInitialize);
   YTEDefineEvent(Initialize);
@@ -31,7 +34,7 @@ namespace YTE
     RegisterType<InitializeEvent>();
     TypeBuilder<InitializeEvent> builder;
 
-    builder.Field<&InitializeEvent::CheckRunInEditor>( "CheckRunInEditor", PropertyBinding::Get);
+    builder.Field<&InitializeEvent::CheckRunInEditor>("CheckRunInEditor", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionAdded);
@@ -41,7 +44,7 @@ namespace YTE
     RegisterType<CompositionAdded>();
     TypeBuilder<CompositionAdded> builder;
 
-    builder.Field<&CompositionAdded::mComposition>( "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionAdded::mComposition>("Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(CompositionRemoved);
@@ -51,7 +54,7 @@ namespace YTE
     RegisterType<CompositionRemoved>();
     TypeBuilder<CompositionRemoved> builder;
 
-    builder.Field<&CompositionRemoved::mComposition>( "Composition", PropertyBinding::Get);
+    builder.Field<&CompositionRemoved::mComposition>("Composition", PropertyBinding::Get);
   }
 
   YTEDefineEvent(ParentChanged);
@@ -61,8 +64,8 @@ namespace YTE
     RegisterType<ParentChanged>();
     TypeBuilder<ParentChanged> builder;
 
-    builder.Field<&ParentChanged::mOldParent>( "Old Parent", PropertyBinding::Get);
-    builder.Field<&ParentChanged::mNewParent>( "New Parent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mOldParent>("OldParent", PropertyBinding::Get);
+    builder.Field<&ParentChanged::mNewParent>("NewParent", PropertyBinding::Get);
   }
 
   YTEDefineExternalType(CompositionMap::range)
@@ -96,6 +99,16 @@ namespace YTE
       .SetParameterNames("aName")
       .SetDocumentation("Finds a Composition with the given name. Does not search recursively.");
 
+    builder.Function<&Composition::IsDependecy>("IsDependecy")
+      .SetParameterNames("aComponent")
+      .SetDocumentation("Checks to see if the given component is a dependency of other components on the composition. "
+                        "Returns info string if it is, empty otherwise.");
+
+    builder.Function<&Composition::HasDependencies>("HasDependencies")
+      .SetParameterNames("aComponent")
+      .SetDocumentation("Checks to see if a component's dependencies are met. (Eg. so it can be added to the composition. "
+                        "Returns info string if it is, empty otherwise.");
+
     builder.Function<SelectOverload<Composition*(Composition::*)(String, String),&Composition::AddComposition>()>("AddObject")
       .SetParameterNames("aArchetype", "aName")
       .SetDocumentation("Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.");
@@ -109,40 +122,32 @@ namespace YTE
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName(aName)
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{ aName }
+    , mInitializationHook{this}
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
   {
-    mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
-
-    auto parent = GetParent();
-
-    if (nullptr != parent && this != parent)
-    {
-      parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
-      parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
-      parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
-      parent->RegisterEvent<&Composition::Start>(Events::Start, this);
-      parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
-    }
+    Create();
   };
 
   Composition::Composition(Engine *aEngine, Space *aSpace, Composition *aOwner)
-    : mEngine(aEngine)
-    , mSpace(aSpace)
-    , mOwner(aOwner)
-    , mName()
-    , mShouldSerialize(true)
-    , mShouldIntialize(true)
-    , mIsInitialized(false)
-    , mBeingDeleted(false)
-    , mGUID()
+    : mEngine{ aEngine }
+    , mSpace{ aSpace }
+    , mOwner{ aOwner }
+    , mName{}
+    , mInitializationHook{ this }
+    , mShouldSerialize{ true }
+    , mBeingDeleted{ false }
+    , mGUID{}
+  {
+    Create();
+  };
+
+  void Composition::Create()
   {
     mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
@@ -150,13 +155,14 @@ namespace YTE
 
     if (nullptr != parent && this != parent)
     {
+      parent->RegisterEvent<&Composition::AssetInitialize>(Events::AssetInitialize, this);
       parent->RegisterEvent<&Composition::NativeInitialize>(Events::NativeInitialize, this);
       parent->RegisterEvent<&Composition::PhysicsInitialize>(Events::PhysicsInitialize, this);
       parent->RegisterEvent<&Composition::Initialize>(Events::Initialize, this);
       parent->RegisterEvent<&Composition::Start>(Events::Start, this);
       parent->RegisterEvent<&Composition::Deinitialize>(Events::Deinitialize, this);
     }
-  };
+  }
 
   Composition::~Composition()
   {
@@ -175,28 +181,16 @@ namespace YTE
     ComponentClear();
   };
 
-
   void Composition::ComponentClear()
   {
-    // Destructing the components in order
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just clear the vector in whatever 
-    // order the containter decides to clear in Ideally we fix the 
-    // GetDependencyOrder algorithm so this never occurs.
-    if (order.size() != mComponents.size())
+    for (auto typeIt = mDependencyOrder.rbegin();
+         typeIt < mDependencyOrder.rend();
+         ++typeIt)
     {
-      mComponents.Clear();
-    }
-    else
-    {
-      for (auto typeIt = order.rbegin(); typeIt < order.rend(); ++typeIt)
+      auto component = mComponents.Find(*typeIt);
+      if (component != mComponents.end())
       {
-        auto component = mComponents.Find(*typeIt);
-        if (component != mComponents.end())
-        {
-          mComponents.Erase(component);
-        }
+        mComponents.Erase(component);
       }
     }
   }
@@ -211,114 +205,33 @@ namespace YTE
     }
   }
 
-  void Composition::NativeInitialize(InitializeEvent *aEvent)
+  template <auto tMemberFunction>
+  void HandleInitialization(std::string const& aEventName,
+                            InitializeEvent* aEvent,
+                            Composition* aComposition)
   {
-    YTEProfileFunction();
-    if (mShouldIntialize == false)
+    for (auto &type : aComposition->GetDependencyOrder())
     {
-      return;
-    }
+      auto component = aComposition->GetComponent(type);
 
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
+      if (aEvent->CheckRunInEditor &&
+          nullptr == type->GetAttribute<RunInEditor>())
       {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component.second->NativeInitialize();
+        continue;
       }
+
+      (component->*tMemberFunction)();
     }
-    else
+
+    if (aEvent->ShouldRecurse)
     {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component->NativeInitialize();
-      }
+      aComposition->SendEvent(aEventName, aEvent);
     }
-
-    SendEvent(Events::NativeInitialize, aEvent);
   }
 
-  void Composition::PhysicsInitialize(InitializeEvent *aEvent)
+  void Composition::AssetInitialize(InitializeEvent *aEvent)
   {
     YTEProfileFunction();
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
-
-    auto collider = GetColliderFromObject(this);
-    if (collider != nullptr) collider->PhysicsInitialize();
-    auto ghostBody = GetComponent<GhostBody>();
-    if (ghostBody != nullptr) ghostBody->PhysicsInitialize();
-    auto collisionBody = GetComponent<CollisionBody>();
-    if (collisionBody != nullptr) collisionBody->PhysicsInitialize();
-    auto rigidBody = GetComponent<RigidBody>();
-    if (rigidBody != nullptr) rigidBody->PhysicsInitialize();
-    //auto transform = GetComponent<Transform>();
-    //if (transform != nullptr) transform->PhysicsInitialize();
-    
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    //if (order.size() != mComponents.size())
-    //{
-    //  for (auto &component : mComponents)
-    //  {
-    //    if (aEvent->CheckRunInEditor &&
-    //        nullptr == component.first->GetAttribute<RunInEditor>())
-    //    {
-    //      continue;
-    //    }
-    //
-    //    component.second->PhysicsInitialize();
-    //  }
-    //}
-    //else
-    //{
-    //  for (auto &type : order)
-    //  {
-    //    auto component = GetComponent(type);
-    //    
-    //    if (aEvent->CheckRunInEditor &&
-    //        nullptr == type->GetAttribute<RunInEditor>())
-    //    {
-    //      continue;
-    //    }
-    //    
-    //    component->PhysicsInitialize();
-    //  }
-    //}
-
-    SendEvent(Events::PhysicsInitialize, aEvent);
-  }
-
-  void Composition::Initialize(InitializeEvent *aEvent)
-  {
-    YTEProfileFunction();
-    if (mShouldIntialize == false)
-    {
-      return;
-    }
 
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
@@ -335,44 +248,83 @@ namespace YTE
       }
     }
 
-    auto order = GetDependencyOrder(this);
+    HandleInitialization<&Component::AssetInitialize>(Events::AssetInitialize,
+                                                      aEvent,
+                                                      this);
+  }
 
-    // If our order is compromised, we just initialize in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
+  void Composition::NativeInitialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
+    
+    HandleInitialization<&Component::NativeInitialize>(Events::NativeInitialize,
+                                                       aEvent,
+                                                       this);
+  }
 
-        component.second->Initialize();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
+  void Composition::PhysicsInitialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
 
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
+    //if (auto collider = GetColliderFromObject(this);
+    //    collider != nullptr && collider->GetType()->GetAttribute<RunInEditor>())
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      collider->GetType()->GetAttribute<RunInEditor>())
+    //  {
+    //    collider->PhysicsInitialize();
+    //  }
+    //}
+    //
+    //if (auto ghostBody = GetComponent<GhostBody>();
+    //    ghostBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<GhostBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    ghostBody->PhysicsInitialize();
+    //  }
+    //}
+    //
+    //if (auto collisionBody = GetComponent<CollisionBody>();
+    //    collisionBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<CollisionBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    collisionBody->PhysicsInitialize();
+    //  }
+    //}
+    //
+    //if (auto rigidBody = GetComponent<GhostBody>();
+    //    rigidBody != nullptr)
+    //{
+    //  if (aEvent->CheckRunInEditor &&
+    //      TypeId<RigidBody>()->GetAttribute<RunInEditor>())
+    //  {
+    //    rigidBody->PhysicsInitialize();
+    //  }
+    //}
 
-        component->Initialize();
-      }
-    }
+    //auto transform = GetComponent<Transform>();
+    //if (transform != nullptr) transform->PhysicsInitialize();
 
-    SendEvent(Events::Initialize, aEvent);
+    ++physInit;
 
-    mShouldIntialize = false;
-    mIsInitialized = true;
+    //SendEvent(Events::PhysicsInitialize, aEvent);
+    
+    HandleInitialization<&Component::PhysicsInitialize>(Events::PhysicsInitialize,
+                                                        aEvent,
+                                                        this);
+  }
+
+  void Composition::Initialize(InitializeEvent *aEvent)
+  {
+    YTEProfileFunction();
+
+    HandleInitialization<&Component::Initialize>(Events::Initialize,
+                                                 aEvent,
+                                                 this);
 
     CompositionAdded event;
     event.mComposition = this;
@@ -383,59 +335,23 @@ namespace YTE
     }
   }
 
-  void Composition::Deinitialize(InitializeEvent * aEvent)
+  void Composition::Deinitialize(InitializeEvent* aEvent)
   {
-    if (!mIsInitialized)
+    YTEProfileFunction();
+
+    for (auto it = mDependencyOrder.rbegin(); it != mDependencyOrder.rend(); ++it)
     {
-      return;
-    }
+      auto& type = *it;
+      auto component = GetComponent(type);
 
-    Composition *collision = mEngine->StoreCompositionGUID(this);
-
-    while (collision)
-    {
-      if (collision == this)
-      {
-        break;
-      }
-      else
-      {
-        mGUID = GlobalUniqueIdentifier();
-        collision = mEngine->StoreCompositionGUID(this);
-      }
-    }
-
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just Start in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-          nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component.second->Deinitialize();
-      }
-    }
-    else
-    {
-      for (auto it = order.rbegin(); it != order.rend(); ++it)
-      {
-        auto& type = *it;
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
+      if (aEvent->CheckRunInEditor &&
           nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
+      {
+        continue;
+      }
 
+      {
+        YTEProfileBlock(type->GetName().c_str());
         component->Deinitialize();
       }
     }
@@ -443,64 +359,20 @@ namespace YTE
     SendEvent(Events::Deinitialize, aEvent);
   }
 
-  void Composition::Start(InitializeEvent *aEvent)
+  void Composition::Start(InitializeEvent* aEvent)
   {
     YTEProfileFunction();
-    Composition *collision = mEngine->StoreCompositionGUID(this);
 
-    while (collision)
-    {
-      if (collision == this)
-      {
-        break;
-      }
-      else
-      {
-        mGUID = GlobalUniqueIdentifier();
-        collision = mEngine->StoreCompositionGUID(this);
-      }
-    }
-
-    auto order = GetDependencyOrder(this);
-
-    // If our order is compromised, we just Start in whatever
-    // order the Type* are sorted. Ideally we fix the GetDependencyOrder
-    // algorithm so this never occurs.
-    if (order.size() != mComponents.size())
-    {
-      for (auto &component : mComponents)
-      {
-        if (aEvent->CheckRunInEditor &&
-            nullptr == component.first->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component.second->Start();
-      }
-    }
-    else
-    {
-      for (auto &type : order)
-      {
-        auto component = GetComponent(type);
-
-        if (aEvent->CheckRunInEditor &&
-            nullptr == type->GetAttribute<RunInEditor>())
-        {
-          continue;
-        }
-
-        component->Start();
-      }
-    }
-
-    SendEvent(Events::Start, aEvent);
+    HandleInitialization<&Component::Start>(Events::Start,
+                                            aEvent,
+                                            this);
   }
 
 
   void Composition::Update(double dt)
   {
+    YTEProfileFunction();
+
     (void)dt;
   }
 
@@ -513,6 +385,7 @@ namespace YTE
     {
       for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
       {
+        end->second->second->Deinitialize();
         RemoveComponentInternal(end->second);
       }
     }
@@ -572,13 +445,13 @@ namespace YTE
       }
 
       DebugObjection(nullptr == archetype,
-        "Archetype given is not an object for the object of the name: %s.\n",
-        aObjectName.c_str());
+                     "Archetype given is not an object for the object of the name: %s.\n",
+                     aObjectName.c_str());
 
       if (nullptr == archetype)
       {
         printf("No archetype provided for the object of the name %s.\n",
-          aObjectName.c_str());
+               aObjectName.c_str());
         return nullptr;
       }
 
@@ -589,7 +462,7 @@ namespace YTE
   }
 
 
-  Composition* Composition::AddComposition(RSValue *aSerialization, 
+  Composition* Composition::AddComposition(RSValue* aSerialization, 
                                            String aObjectName)
   {
     // If a Composition is just below the Space, we currently guarantee their mOwner is
@@ -612,6 +485,7 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
@@ -631,6 +505,7 @@ namespace YTE
     {
       InitializeEvent event;
 
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
       composition->Initialize(&event);
@@ -653,6 +528,7 @@ namespace YTE
       InitializeEvent event;
 
       // Might need to be after the change of translation.
+      composition->AssetInitialize(&event);
       composition->NativeInitialize(&event);
       composition->PhysicsInitialize(&event);
 
@@ -724,6 +600,13 @@ namespace YTE
       AddComponent(componentType, &componentIt->value);
     }
 
+    mDependencyOrder = YTE::GetDependencyOrder(this);
+
+    if (mComponents.size() != mDependencyOrder.size())
+    {
+      debugbreak();
+    }
+
     // If a Composition is just below the Space, we currently guarantee their mOwner is
     // nullptr.
     auto owner = this;
@@ -792,13 +675,14 @@ namespace YTE
 
     RSValue components;
     components.SetObject();
-    for (auto &component : mComponents)
+
+    for (auto const& [type, component] : mComponents)
     {
-      auto componentSerialized = component.second->Serialize(aAllocator);
+      auto componentSerialized = component->Serialize(aAllocator);
       
       RSValue componentName;
-      componentName.SetString(component.first->GetName().c_str(),
-                              static_cast<RSSizeType>(component.first->GetName().size()),
+      componentName.SetString(type->GetName().c_str(),
+                              static_cast<RSSizeType>(type->GetName().size()),
                               aAllocator);
 
       components.AddMember(componentName, componentSerialized, aAllocator);
@@ -852,142 +736,124 @@ namespace YTE
     return compositions;
   }
 
-
-  struct TypeNode
+  // Based on https://www.geeksforgeeks.org/topological-sorting/
+  // as well as https://www.geeksforgeeks.org/detect-cycle-in-a-graph/
+  class Graph
   {
-    TypeNode(Type *aType)
-      : mType(aType)
+    public:
+    void AddEdge(Type* aValue, Type* aDependency)
     {
-
+      // Add the dependency to the value's list.
+      mAdjacencyLists[aValue].mDependencies.push_back(aDependency);
     }
 
-    Type *mType;
-
-    std::map<Type*, std::weak_ptr<TypeNode>> mParents;
-    std::map<Type*, std::weak_ptr<TypeNode>> mChildren;
-    bool mVisitedParents{ false };
-    bool mOrdered{ false };
-  };
-
-
-  void resolveType(std::map<Type*, std::shared_ptr<TypeNode>> &aTypesPlaced, 
-                   std::vector<TypeNode*> &aOrdering, 
-                   TypeNode *aType)
-  {
-    if (aType->mOrdered)
+    void AddVertex(Type* aValue)
     {
-      return;
+      // The only requirement for a vertex is having an AdjacencyList.
+      mAdjacencyLists[aValue];
     }
 
-    if (false == aType->mVisitedParents)
+    std::vector<Type*> TopologicalSort()
     {
-      aType->mVisitedParents = true;
+      // Just in case the user has added since the last sorting.
+      ResetVisited();
 
-      for (auto &parent : aType->mParents)
+      std::vector<Type*> stack;
+      stack.reserve(mAdjacencyLists.size());
+
+      // Call the recursive helper function to store Topological
+      // Sort starting from all vertices one by one
+      for (auto[key, value] : mAdjacencyLists)
       {
-        auto parentNode = parent.second.lock();
-        resolveType(aTypesPlaced, aOrdering, parentNode.get());
+        if (false == value.mVisited)
+        {
+          TopologicalSortRecusive(key, stack);
+        }
       }
 
-      aOrdering.emplace_back(aType);
+      return std::move(stack);
     }
 
-    for (auto &child : aType->mChildren)
+    private:
+    struct Node
     {
-      auto childNode = child.second.lock();
-      resolveType(aTypesPlaced, aOrdering, childNode.get());
-    }
-  };
-
-  
-  std::vector<Type*> GetDependencyOrder(Composition *aComposition)
-  {
-    std::map<Type*, std::shared_ptr<TypeNode>> typesPlaced;
-    std::set<Type*> typesOnComposition;
-
-    auto getType = [&typesPlaced](Type *aType)
-    {
-      auto it = typesPlaced.find(aType);
-
-      if (it != typesPlaced.end())
-      {
-        return it->second;
-      }
-
-      auto it2 = typesPlaced.emplace(aType, std::make_shared<TypeNode>(aType));
-
-      return it2.first->second;
+      std::vector<Type*> mDependencies;
+      bool mVisited = false;
     };
 
-    auto components = aComposition->GetComponents();
+    std::unordered_map<Type*, Node> mAdjacencyLists;
 
-    // Preemptively make a set with the components that exist.
-    for (auto &component : *components)
+    void ResetVisited()
     {
-      typesOnComposition.emplace(component.first);
+      for (auto [key, value] : mAdjacencyLists)
+      {
+        value.mVisited = false;
+      }
     }
 
-    for (auto &component : *components)
+    void TopologicalSortRecusive(Type* aValue,
+                                 std::vector<Type*> &aStack)
     {
-      auto typeNode = getType(component.first);
+      // Mark the current node as visited.
+      mAdjacencyLists[aValue].mVisited = true;
 
-      auto dependencies = typeNode->mType->GetAttribute<ComponentDependencies>();
+      // Recurse for all the vertices adjacent to this vertex
 
-      if (nullptr != dependencies)
+      for (auto value : mAdjacencyLists[aValue].mDependencies)
       {
-        for (auto &orTypes : dependencies->mTypes)
+        if (false == mAdjacencyLists[value].mVisited)
         {
-          for (auto orType : orTypes)
+          TopologicalSortRecusive(value, aStack);
+        }
+      }
+
+      // Push current vertex to stack which stores result
+      aStack.emplace_back(aValue);
+    }
+  };
+
+  std::vector<Type*> GetDependencyOrder(Composition *aComposition)
+  {
+    Graph dependencyGraph;
+
+    for (auto const& [type, component] : aComposition->GetComponents())
+    {
+      // Might not have dependencies, so we add the vertex first just in case.
+      dependencyGraph.AddVertex(type);
+
+      auto dependencies = type->GetAttribute<ComponentDependencies>();
+    
+      if (dependencies)
+      {
+        // Each element of mTypes here represents a vector in which at least
+        // one type must be satisfied.
+        for (auto const& dependencyOrs : dependencies->mTypes)
+        {
+          bool foundOne = false;
+
+          for (auto dependencyOr : dependencyOrs)
           {
-            if (0 != typesOnComposition.count(orType))
+            if (aComposition->GetComponent(dependencyOr))
             {
-              auto dependentTypeNode = getType(orType);
-              typeNode->mParents.emplace(dependentTypeNode->mType, dependentTypeNode);
-              dependentTypeNode->mChildren.emplace(typeNode->mType, typeNode);
+              // We've found a match, we no longer need to search
+              // this OR list.
+              dependencyGraph.AddEdge(type, dependencyOr);
+              foundOne = true;
+              break;
             }
+          }
+
+          // We didn't find a satisfactory dependency, early out.
+          if (false == foundOne)
+          {
+            // Prefer to return an empty vector for failure;
+            return {};
           }
         }
       }
     }
 
-    std::vector<TypeNode*> ordering;
-
-    for (auto &type : typesPlaced)
-    {
-      if (0 == type.second->mParents.size())
-      {
-        ordering.emplace_back(type.second.get());
-        type.second->mVisitedParents = true;
-        type.second->mOrdered = true;
-      }
-    }
-
-    if (0 == ordering.size())
-    {
-      std::cout << "Type Cycle detected!\n";
-      return {};
-    }
-
-    std::vector<TypeNode*> nonDependentTypes{ ordering };
-
-    for (auto &type : nonDependentTypes)
-    {
-      for (auto &child : type->mChildren)
-      {
-        auto childNode = child.second.lock();
-        resolveType(typesPlaced, ordering, childNode.get());
-      }
-    }
-
-    std::vector<Type*> toReturn;
-    toReturn.reserve(ordering.size());
-
-    for (auto &type : ordering)
-    {
-      toReturn.emplace_back(type->mType);
-    }
-
-    return toReturn;
+    return std::move(dependencyGraph.TopologicalSort());
   }
 
 
@@ -1065,18 +931,18 @@ namespace YTE
       typesAvailible.emplace(component.first);
     }
 
-    for (auto &component : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      if (component.first == aType)
+      if (type == aType)
       {
         continue;
       }
 
-      auto reason = CheckDependencies(typesAvailible, component.first);
+      auto reason = CheckDependencies(typesAvailible, type);
 
       if (reason.size())
       {
-        typesWithAProblem.emplace_back(component.first);
+        typesWithAProblem.emplace_back(type);
       }
     }
 
@@ -1103,9 +969,9 @@ namespace YTE
   {
     std::set<BoundType*> typesAvailible;
 
-    for (auto &component : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      typesAvailible.emplace(component.first);
+      typesAvailible.emplace(type);
     }
 
     return CheckDependencies(typesAvailible, aType);
@@ -1115,13 +981,11 @@ namespace YTE
   {
     auto componentType = TypeId<Component>();
 
-    for (auto &componentIt : mComponents)
+    for (auto const&[type, component] : mComponents)
     {
-      auto type = componentIt.first;
-
       if (type->IsA(aType, componentType))
       {
-        return componentIt.second.get();
+        return component.get();
       }
     }
 
@@ -1139,6 +1003,7 @@ namespace YTE
 
     Component *component = AddComponent(aType, nullptr);
 
+    mDependencyOrder.emplace_back(aType);
 
     if (aCheckRunInEditor &&
         nullptr == aType->GetAttribute<RunInEditor>())
@@ -1146,6 +1011,7 @@ namespace YTE
       return component;
     }
 
+    component->AssetInitialize();
     component->NativeInitialize();
     component->PhysicsInitialize();
     component->Initialize();
@@ -1322,6 +1188,11 @@ namespace YTE
       mEngine->mComponentsToRemove.Emplace(this, iter);
     }
 
+    mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
+                                          mDependencyOrder.end(),
+                                          [aComponent](Type* aType) { return aType == aComponent; }),
+                           mDependencyOrder.end());
+
     GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
@@ -1348,15 +1219,15 @@ namespace YTE
 
   void Composition::SetName(String &aName)
   {
-    CompositionMap *compositionMap = GetParent()->GetCompositions();
+    CompositionMap &compositionMap = GetParent()->GetCompositions();
 
-    auto range = compositionMap->FindAll(mName);
+    auto range = compositionMap.FindAll(mName);
     
     for (auto it = range.begin(); it < range.end(); ++it)
     {
       if (this == it->second.get())
       {
-        compositionMap->ChangeKey(it, aName);
+        compositionMap.ChangeKey(it, aName);
         mName = aName;
         return;
       }

@@ -115,8 +115,8 @@ namespace YTEditor
                                             ObjectItem *aParentObj,
                                             int aIndex)
   {
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    auto space = spaces->begin()->second.get();
+    auto& spaces = mMainWindow->GetRunningEngine()->GetCompositions();
+    auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
@@ -134,6 +134,8 @@ namespace YTEditor
                                          int aIndex,
                                          bool aSetAsCurrent)
   {
+    YTEProfileFunction();
+
     YTE::String name{ aItemName };
 
     if (std::string(aItemName) == "Gizmo")
@@ -154,13 +156,9 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
 
-    auto compMap = aEngineObj->GetCompositions();
-
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    for (auto const& [name, child] : aEngineObj->GetCompositions())
     {
-      YTE::Composition *child = iter->second.get();
-
-      AddTreeItem(child->GetName().c_str(), item, child);
+      AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
     }
 
     return item;
@@ -172,6 +170,8 @@ namespace YTEditor
                                          int aIndex,
                                          bool aSetAsCurrent)
   {
+    YTEProfileFunction();
+
     YTE::String name{ aItemName };
 
     auto space = mMainWindow->GetEditingLevel();
@@ -185,14 +185,10 @@ namespace YTEditor
     {
       this->setCurrentItem(item);
     }
-
-    auto compMap = aEngineObj->GetCompositions();
-
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    
+    for (auto const&[name, child] : aEngineObj->GetCompositions())
     {
-      YTE::Composition *child = iter->second.get();
-
-      AddTreeItem(child->GetName().c_str(), item, child);
+      AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
     }
 
     return item;
@@ -558,12 +554,12 @@ namespace YTEditor
     return;
 
     // if the parent object has no children
-    if (aParentObj->GetCompositions()->size() == 0)
+    if (aParentObj->GetCompositions().size() == 0)
     {
       return;
     }
 
-    for (auto& cmp : *(aParentObj->GetCompositions()))
+    for (auto& cmp : aParentObj->GetCompositions())
     {
       ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
 

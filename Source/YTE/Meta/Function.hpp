@@ -87,14 +87,14 @@ namespace YTE
     {
       using CallingType = Any(*)(std::vector<Any>&);
 
-      template <typename Return, typename Enable = void>
+      template <typename Return, typename = void>
       struct FunctionInvoker {};
       
       /////////////////////////////////////////////
       // Free/Static Functions
       // Returns Something
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
         inline static Any Invoke(std::vector<Any>& aArguments)
@@ -112,7 +112,7 @@ namespace YTE
 
       // Void Return
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tArguments...), EnableIf::IsVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
         inline static Any Invoke(std::vector<Any>& aArguments)
@@ -132,15 +132,15 @@ namespace YTE
       // Free/Static Noexcept Function Pointers
       // Returns Something
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tArguments...) noexcept, EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tArguments...) noexcept, EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 
@@ -149,15 +149,15 @@ namespace YTE
       // Free/Static Function Pointers
       // Returns Something
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(*)(tArguments...), EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 
@@ -166,15 +166,15 @@ namespace YTE
       // Free/Static Noexcept Function Pointers
       // Returns Something
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename... tArguments>
-      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(*)(tArguments...) noexcept, typename EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 
@@ -184,7 +184,7 @@ namespace YTE
       // Member Functions
       // Returns Something
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
         inline static Any Invoke(std::vector<Any>& aArguments)
@@ -204,7 +204,7 @@ namespace YTE
 
       // Void Return
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
         inline static Any Invoke(std::vector<Any>& aArguments)
@@ -225,15 +225,15 @@ namespace YTE
       // Noexcept Member Functions
       // Returns Something
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) noexcept, EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 
@@ -241,15 +241,15 @@ namespace YTE
       // Const Member Functions
       // Returns Something
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const, EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 
@@ -258,15 +258,15 @@ namespace YTE
       // Const Noexcept Member Functions
       // Returns Something
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, typename std::enable_if<false == std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<false == std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, EnableIf::IsNotVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
       };
 
       // Void Return
       template <typename tReturn, typename tObject, typename... tArguments>
-      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, typename std::enable_if<std::is_void_v<tReturn>>::type>
-        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), typename std::enable_if<std::is_void_v<tReturn>>::type>
+      struct FunctionInvoker<tReturn(tObject::*)(tArguments...) const noexcept, EnableIf::IsVoid<tReturn>>
+        : public FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsVoid<tReturn>>
       {
       };
 

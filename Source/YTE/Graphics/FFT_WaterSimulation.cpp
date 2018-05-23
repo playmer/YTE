@@ -195,6 +195,17 @@ namespace YTE
     DeserializeByType(aProperties, this, GetStaticType());
   }
 
+  static std::string water{ "water.png" };
+  static std::string foam{ "foam.png" };
+  static std::string perlinNoise{ "copywritePerlinNoiseTextureNormal.png" };
+
+  // ------------------------------------
+  void FFT_WaterSimulation::AssetInitialize()
+  {
+    mRenderer->RequestTexture(water);
+    mRenderer->RequestTexture(foam);
+    mRenderer->RequestTexture(perlinNoise);
+  }
 
   // ------------------------------------
   void FFT_WaterSimulation::Initialize()
@@ -202,7 +213,7 @@ namespace YTE
     mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::PositionChanged, this);
     mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::ScaleChanged, this);
     mOwner->RegisterEvent<&FFT_WaterSimulation::TransformEvent>(Events::RotationChanged, this);
-    mSpace->GetEngine()->RegisterEvent<&FFT_WaterSimulation::EditorUpdate>(Events::LogicUpdate, this);
+    mSpace->RegisterEvent<&FFT_WaterSimulation::EditorUpdate>(Events::FrameUpdate, this);
     mSpace->RegisterEvent<&FFT_WaterSimulation::Update>(Events::LogicUpdate, this);
     mTransform = mOwner->GetComponent<Transform>();
 
@@ -394,11 +405,11 @@ namespace YTE
   void FFT_WaterSimulation::RunKFFT()
   {
     // perform the FFT on the rows of the water
-    auto handle1 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_A));
-    auto handle2 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_B));
-    auto handle3 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_C));
-    auto handle4 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_D));
-    auto handle5 = mJobSystem->QueueJobThisThread(YTEMakeDelegate(Delegate<Any(*)(JobHandle&)>, this, &FFT_WaterSimulation::MT_E));
+    auto handle1 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_A(handle); });
+    auto handle2 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_B(handle); });
+    auto handle3 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_C(handle); });
+    auto handle4 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_D(handle); });
+    auto handle5 = mJobSystem->QueueJobThisThread([this](JobHandle& handle)->Any { return this->MT_E(handle); });
 
     mJobSystem->WaitThisThread(handle1);
     mJobSystem->WaitThisThread(handle2);
@@ -1135,7 +1146,7 @@ namespace YTE
   {
     return mVertices;
   }
-
+  
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
   {
@@ -1153,9 +1164,9 @@ namespace YTE
           mShaderSetName,
           mGraphicsView,
           mRenderer,
-          "water.png",
-          "foam.png",
-          "copywritePerlinNoiseTextureNormal.png");
+          water,
+          foam,
+          perlinNoise);
     }
   }
 

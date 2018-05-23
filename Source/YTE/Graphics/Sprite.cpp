@@ -91,6 +91,31 @@ namespace YTE
 
   }
 
+  void Sprite::AssetInitialize()
+  {
+    mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    if (mTextureName.empty())
+    {
+      return;
+    }
+
+    mRenderer->RequestTexture(mTextureName);
+  }
+
+  void Sprite::Initialize()
+  {
+    mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
+    mTransform = mOwner->GetComponent<Transform>();
+
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::PositionChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::RotationChanged, this);
+    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::ScaleChanged, this);
+
+    CreateSprite();
+  }
+
+
   void Sprite::Update(LogicUpdate *aUpdate)
   {
     auto delta = mSpeed / mFrames;
@@ -165,20 +190,6 @@ namespace YTE
     }
   }
 
-  void Sprite::Initialize()
-  {
-    mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
-    mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
-    mTransform = mOwner->GetComponent<Transform>();
-
-    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::PositionChanged, this);
-    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::RotationChanged, this);
-    mOwner->RegisterEvent<&Sprite::TransformUpdate>(Events::ScaleChanged, this);
-
-    CreateSprite();
-  }
-
-
   void Sprite::TransformUpdate(TransformChanged *aEvent)
   {
     UnusedArguments(aEvent);
@@ -218,8 +229,6 @@ namespace YTE
     {
       return;
     }
-
-    auto texture = mRenderer->GetTexture(mTextureName);
 
     std::string meshName = "__Sprite";
     meshName += mTextureName;

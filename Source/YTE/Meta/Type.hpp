@@ -24,15 +24,15 @@ namespace YTE
     virtual ~Base() {};
   };
 
-  template <typename T>
-  typename T::SelfType GetSelfType(typename T::SelfType*) {}
+  template <typename tType>
+  typename tType::SelfType GetSelfType(typename tType::SelfType*) {}
 
-  template <typename T>
+  template <typename tType>
   void GetSelfType(...) {}
 
 
-  template <typename T>
-  T GetDummy(void (T::*)());
+  template <typename tType>
+  tType GetDummy(void (tType::*)());
 
 
 
@@ -63,50 +63,7 @@ void Name::InitializeType()
     GetSet
   };
 
-//#define YTEBindFunction(aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames)  \
-//  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                   \
-//               aFunctionPointer,                                                                        \
-//               std::initializer_list<const char*>aInitializerListOfNames.size()>(                       \
-//    aFunctionName,                                                                                      \
-//    ::YTE::TypeId<::YTE::DecomposeFunctionObjectType<decltype(aOverloadResolution aFunctionPointer)>::ObjectType>(), \
-//    aInitializerListOfNames)
-//
-//#define YTEBindStaticOrFreeFunction(aType, aFunctionPointer, aOverloadResolution, aFunctionName, aInitializerListOfNames) \
-//  ::YTE::BindFunction<decltype(aOverloadResolution aFunctionPointer),                                                     \
-//                      aFunctionPointer,                                                                                   \
-//                      std::initializer_list<const char*>aInitializerListOfNames.size()>(aFunctionName,                    \
-//                                                                                        ::YTE::TypeId<aType>(),           \
-//                                                                                        aInitializerListOfNames)
-//
-//  template<typename tEnumValueType, tEnumValueType tValue>
-//  tEnumValueType GetEnumAsNativeType()
-//  {
-//    return tValue;
-//  }
-//
-//#define builder.Enum<aEnumValue>(aEnumName)    \
-//  ::YTE::BindFunction<decltype(GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>),    \
-//                      GetEnumAsNativeType<typename std::underlying_type<decltype(aEnumValue)>::type, aEnumValue>,              \
-//                      std::initializer_list<const char*>YTENoNames.size()>(aEnumName,                                          \
-//                                                                           ::YTE::TypeId<decltype(aEnumValue)>(),              \
-//                                                                           YTENoNames)
-//
-//#define builder.Field<aFieldPointer>( aName, aPropertyBinding)              \
-//  ::YTE::BindField<decltype(aFieldPointer), aFieldPointer>(               \
-//    aName,                                                                \
-//    aPropertyBinding,                                                     \
-//    ::YTE::TypeId<::YTE::DecomposeFieldPointer<decltype(aFieldPointer)>::ObjectType>())
-//
-//#define builder.Property<aGetterFunction, aSetterFunction>( aName)            \
-//  ::YTE::BindProperty<decltype(aGetterFunction), aGetterFunction,           \
-//               decltype(aSetterFunction), aSetterFunction>(                 \
-//    aName,                                                                  \
-//    ::YTE::TypeId<::YTE::DecomposePropertyType<decltype(aGetterFunction),   \
-//                                 decltype(aSetterFunction)>::ObjectType>())
-
-
-
-  template<typename T>
+  template<typename tType>
   inline Type* TypeId();
 
 
@@ -189,15 +146,15 @@ void Name::InitializeType()
     };
 
     template <typename tDerived, typename tBase>
-    explicit Type(const char *aName, tDerived *, tBase *)
+    explicit Type(char const* aName, tDerived *, tBase *)
       : mName(aName)
       , mHash(std::hash<std::string>{}(mName))
       , mAllocatedSize(SizeOf<tDerived>())
       , mStoredSize(SizeOf<tDerived>())
-      , mUnqualifiedSize(SizeOf<typename StripQualifiers<tDerived>::type>())
-      , mDefaultConstructor(GenericDefaultConstruct<typename StripSingleQualifier<tDerived>::type>)
-      , mCopyConstructor(GenericCopyConstruct<typename StripSingleQualifier<tDerived>::type>)
-      , mMoveConstructor(GenericMoveConstruct<typename StripSingleQualifier<tDerived>::type>)
+      , mUnqualifiedSize(SizeOf<StripQualifiersT<tDerived>>())
+      , mDefaultConstructor(GenericDefaultConstruct<StripSingleQualifierT<tDerived>>)
+      , mCopyConstructor(GenericCopyConstruct<StripSingleQualifierT<tDerived>>)
+      , mMoveConstructor(GenericMoveConstruct<StripSingleQualifierT<tDerived>>)
       , mDestructor(GenericDestruct<tDerived>)
       , mReferenceTo(nullptr)
       , mPointerTo(nullptr)
@@ -207,15 +164,15 @@ void Name::InitializeType()
     }
 
     template <typename tType>
-    explicit Type(const char *aName, tType *)
+    explicit Type(char const* aName, tType *)
       : mName(aName)
       , mHash(std::hash<std::string>{}(mName))
       , mAllocatedSize(SizeOf<tType>())
       , mStoredSize(SizeOf<tType>())
-      , mUnqualifiedSize(SizeOf<typename StripQualifiers<tType>::type>())
-      , mDefaultConstructor(GenericDefaultConstruct<typename StripSingleQualifier<tType>::type>)
-      , mCopyConstructor(GenericCopyConstruct<typename StripSingleQualifier<tType>::type>)
-      , mMoveConstructor(GenericMoveConstruct<typename StripSingleQualifier<tType>::type>)
+      , mUnqualifiedSize(SizeOf<StripQualifiersT<tType>>())
+      , mDefaultConstructor(GenericDefaultConstruct<StripSingleQualifierT<tType>>)
+      , mCopyConstructor(GenericCopyConstruct<StripSingleQualifierT<tType>>)
+      , mMoveConstructor(GenericMoveConstruct<StripSingleQualifierT<tType>>)
       , mDestructor(GenericDestruct<tType>)
       , mReferenceTo(nullptr)
       , mPointerTo(nullptr)
@@ -226,15 +183,15 @@ void Name::InitializeType()
     
     
     template <typename tDerived, typename tBase>
-    explicit Type(tDerived *, tBase *)
+    explicit Type(tDerived*, tBase*)
       : mName(GetTypeName<tDerived>().data())
       , mHash(std::hash<std::string>{}(mName))
       , mAllocatedSize(SizeOf<tDerived>())
       , mStoredSize(SizeOf<tDerived>())
-      , mUnqualifiedSize(SizeOf<typename StripQualifiers<tDerived>::type>())
-      , mDefaultConstructor(GenericDefaultConstruct<typename StripSingleQualifier<tDerived>::type>)
-      , mCopyConstructor(GenericCopyConstruct<typename StripSingleQualifier<tDerived>::type>)
-      , mMoveConstructor(GenericMoveConstruct<typename StripSingleQualifier<tDerived>::type>)
+      , mUnqualifiedSize(SizeOf<StripQualifiersT<tDerived>>())
+      , mDefaultConstructor(GenericDefaultConstruct<StripSingleQualifierT<tDerived>>)
+      , mCopyConstructor(GenericCopyConstruct<StripSingleQualifierT<tDerived>>)
+      , mMoveConstructor(GenericMoveConstruct<StripSingleQualifierT<tDerived>>)
       , mDestructor(GenericDestruct<tDerived>)
       , mReferenceTo(nullptr)
       , mPointerTo(nullptr)
@@ -243,17 +200,17 @@ void Name::InitializeType()
     {
     }
 
-    template <typename T>
-    explicit Type(Type *aType, Modifier aModifier, T *)
-      : mName(GetTypeName<T>().data())
+    template <typename tType>
+    explicit Type(Type* aType, Modifier aModifier, tType*)
+      : mName(GetTypeName<tType>().data())
       , mHash(std::hash<std::string>{}(mName))
-      , mAllocatedSize(SizeOf<T>())
-      , mStoredSize(SizeOf<T>())
-      , mUnqualifiedSize(SizeOf<typename StripQualifiers<T>::type>())
-      , mDefaultConstructor(GenericDefaultConstruct<typename StripSingleQualifier<T>::type>)
-      , mCopyConstructor(GenericCopyConstruct<typename StripSingleQualifier<T>::type>)
-      , mMoveConstructor(GenericMoveConstruct<typename StripSingleQualifier<T>::type>)
-      , mDestructor(GenericDestruct<T>)
+      , mAllocatedSize(SizeOf<tType>())
+      , mStoredSize(SizeOf<tType>())
+      , mUnqualifiedSize(SizeOf<StripQualifiersT<tType>>())
+      , mDefaultConstructor(GenericDefaultConstruct<StripSingleQualifierT<tType>>)
+      , mCopyConstructor(GenericCopyConstruct<StripSingleQualifierT<tType>>)
+      , mMoveConstructor(GenericMoveConstruct<StripSingleQualifierT<tType>>)
+      , mDestructor(GenericDestruct<tType>)
       , mReferenceTo(nullptr)
       , mPointerTo(nullptr)
       , mConstOf(nullptr)
@@ -282,17 +239,17 @@ void Name::InitializeType()
       }
     }
 
-    template <typename T>
-    explicit Type(Type *aType, Modifier aModifier, T*, bool)
-      : mName(GetTypeName<T&>().data())
+    template <typename tType>
+    explicit Type(Type* aType, Modifier aModifier, tType*, bool)
+      : mName(GetTypeName<tType&>().data())
       , mHash(std::hash<std::string>{}(mName))
-      , mAllocatedSize(SizeOf<T*>())
-      , mStoredSize(SizeOf<T*>())
-      , mUnqualifiedSize(SizeOf<typename StripQualifiers<T *>::type>())
-      , mDefaultConstructor(GenericDefaultConstruct<T*>)
-      , mCopyConstructor(GenericCopyConstruct<T*>)
-      , mMoveConstructor(GenericMoveConstruct<T*>)
-      , mDestructor(GenericDestruct<T*>)
+      , mAllocatedSize(SizeOf<tType*>())
+      , mStoredSize(SizeOf<tType*>())
+      , mUnqualifiedSize(SizeOf<StripQualifiersT<tType*>>())
+      , mDefaultConstructor(GenericDefaultConstruct<tType*>)
+      , mCopyConstructor(GenericCopyConstruct<tType*>)
+      , mMoveConstructor(GenericMoveConstruct<tType*>)
+      , mDestructor(GenericDestruct<tType*>)
       , mReferenceTo(nullptr)
       , mPointerTo(nullptr)
       , mConstOf(nullptr)
@@ -497,34 +454,34 @@ void Name::InitializeType()
     MoveConstructor mMoveConstructor;
     Destructor mDestructor;
 
-    Type *mReferenceTo;
-    Type *mPointerTo;
-    Type *mConstOf;
-    Type *mBaseType;
-    Type *mEnumOf;
+    Type* mReferenceTo;
+    Type* mPointerTo;
+    Type* mConstOf;
+    Type* mBaseType;
+    Type* mEnumOf;
 
     static std::unordered_map<std::string, Type*> sGlobalTypes;
   };
 
 
-  template<typename T>
+  template<typename tType>
   inline Type* TypeId();
 
 
-  template<typename T>
+  template<typename tType>
   inline void InitializeType();
 
-  template<typename T>
+  template<typename tType>
   struct TypeIdentification
   {
     static inline Type* TypeId()
     {
-      return T::GetStaticType();
+      return tType::GetStaticType();
     }
 
     static inline void InitializeType()
     {
-      T::InitializeType();
+      tType::InitializeType();
     }
   };
 
@@ -538,53 +495,59 @@ void Name::InitializeType()
     }
   };
 
-  template<typename T>
-  struct TypeIdentification<T*>
+  template<typename tType>
+  struct TypeIdentification<tType*>
   {
     static inline Type* TypeId()
     {
       // TODO (Josh): Check to see if this needs the bool passed in at the end of the constructor.
-      static Type type{ ::YTE::TypeId<T>(), Type::Modifier::Pointer, static_cast<T**>(nullptr), true};
+      static Type type{ ::YTE::TypeId<tType>(), 
+                        Type::Modifier::Pointer, 
+                        static_cast<tType**>(nullptr), true};
 
       return &type;
     }
   };
 
-  template<typename T>
-  struct TypeIdentification<T&>
+  template<typename tType>
+  struct TypeIdentification<tType&>
   {
     static inline Type* TypeId()
     {
-      static Type type{ ::YTE::TypeId<T>(), Type::Modifier::Reference, static_cast<T*>(nullptr)};
+      static Type type{ ::YTE::TypeId<tType>(), 
+                        Type::Modifier::Reference, 
+                        static_cast<tType*>(nullptr)};
 
       return &type;
     }
   };
 
 
-  template<typename T>
-  struct TypeIdentification<const T>
+  template<typename tType>
+  struct TypeIdentification<const tType>
   {
     static inline Type* TypeId()
     {
-      static Type type{ ::YTE::TypeId<T>(), Type::Modifier::Const, static_cast<const T*>(nullptr)};
+      static Type type{ ::YTE::TypeId<tType>(), 
+                        Type::Modifier::Const, 
+                        static_cast<const tType*>(nullptr)};
 
       return &type;
     }
   };
 
 
-  template<typename T>
+  template<typename tType>
   inline Type* TypeId()
   {
-    return TypeIdentification<T>::TypeId();
+    return TypeIdentification<tType>::TypeId();
   }
 
   // Specialized so void returns nullptr;
-  template<typename T>
+  template<typename tType>
   inline Type* BaseTypeId()
   {
-    return TypeIdentification<T>::TypeId();
+    return TypeIdentification<tType>::TypeId();
   }
 
   template<>
@@ -594,10 +557,10 @@ void Name::InitializeType()
   }
 
 
-  template<typename T>
+  template<typename tType>
   inline void InitializeType()
   {
-    TypeIdentification<T>::InitializeType();
+    TypeIdentification<tType>::InitializeType();
   }
 }
 

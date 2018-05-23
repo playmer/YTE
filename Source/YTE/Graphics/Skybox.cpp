@@ -66,9 +66,20 @@ namespace YTE
 
   }
 
-  void Skybox::Initialize()
+  void Skybox::AssetInitialize()
   {
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    if (mTextureName.empty())
+    {
+      return;
+    }
+
+    mRenderer->RequestTexture(mTextureName);
+  }
+
+  void Skybox::NativeInitialize()
+  {
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 

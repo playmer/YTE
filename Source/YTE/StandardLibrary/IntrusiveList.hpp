@@ -84,6 +84,11 @@ namespace YTE
         mNext->mPrevious = this;
       }
 
+      bool Connected()
+      {
+        return mPrevious != this;
+      }
+
       Hook *mPrevious;
       Hook *mNext;
       OwnerType *mOwner;
@@ -193,6 +198,11 @@ namespace YTE
         hook->Unlink();
         hook = mHead.mPrevious;
       }
+    }
+
+    bool Empty()
+    {
+      return false == mHead.Connected();
     }
 
     Hook mHead;

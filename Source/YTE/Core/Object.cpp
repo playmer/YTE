@@ -46,7 +46,7 @@ namespace YTE
       }
     }
 
-    return GetProperty(aName, aType->GetBaseType());;
+    return GetProperty(aName, aType->GetBaseType());
   }
 
 
@@ -205,17 +205,17 @@ namespace YTE
     // TODO (Josh): Why is this being passed?.
     UnusedArguments(aType);
 
-    for (auto &property : aMap)
+    for (auto const& [name, property] : aMap)
     {
-      auto &propertyName = property.second->GetName();
+      auto &propertyName = property->GetName();
 
       // If the bound field/property does not have the Property Attribute, do nothing.
-      if (!property.second->GetAttribute<Serializable>())
+      if (!property->GetAttribute<Serializable>())
       {
         continue;
       }
 
-      if (auto redirectAttribute = property.second->GetAttribute<RedirectObject>();
+      if (auto redirectAttribute = property->GetAttribute<RedirectObject>();
           nullptr != redirectAttribute)
       {
         auto object = redirectAttribute->Serialize(aAllocator, aSelf);
@@ -230,7 +230,7 @@ namespace YTE
       }
 
       // Set up the get so we can serialize its value.
-      auto getter = property.second->GetGetter();
+      auto getter = property->GetGetter();
       auto any = getter->Invoke(aSelf);
       auto propertyType = getter->GetReturnType()->GetMostBasicType();
 

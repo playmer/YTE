@@ -64,6 +64,7 @@ namespace YTE
     /*******************/
     // Initializer for YTE
     /*******************/
+    void AssetInitialize() override;
     void Initialize() override;
 
     /*******************/

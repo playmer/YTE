@@ -111,10 +111,10 @@ namespace YTEditor
     ConstructSubWidgets();
 
     // Get all the compositions on the engine
-    auto engineMap = mRunningEngine->GetCompositions();
+    auto& engineMap = mRunningEngine->GetCompositions();
 
     // iterator to the main session space
-    auto it_lvl = engineMap->begin();
+    auto it_lvl = engineMap.begin();
 
     // get the window
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
@@ -265,6 +265,7 @@ namespace YTEditor
 
   void MainWindow::LoadCurrentLevelInfo()
   {
+    YTEProfileFunction();
     YTE::Space *lvl = GetEditingLevel();
 
     mRunningSpaceName = lvl->GetName();
@@ -323,10 +324,10 @@ namespace YTEditor
     mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
     // Get all compositions on the main session (should be levels)
-    YTE::CompositionMap *objMap = lvl->GetCompositions();
+    auto& objMap = lvl->GetCompositions();
 
     // Iterate through all the objects in the map / on the level
-    for (auto cmp = objMap->begin(); cmp != objMap->end(); cmp++)
+    for (auto cmp = objMap.begin(); cmp != objMap.end(); cmp++)
     {
       // Get the name of the object
       YTE::String objName = cmp->second.get()->GetName();
@@ -340,7 +341,7 @@ namespace YTEditor
     }
 
     // if there are objects in the level
-    if (objMap->size() != 0)
+    if (objMap.size() != 0)
     {
       GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
     }
@@ -370,31 +371,32 @@ namespace YTEditor
       return;
     }
 
+    // Make actual "physical" window
+    mRunningWindow = new SubWindow(nullptr, this);
+    mRunningWindowTab = createWindowContainer(mRunningWindow);
+    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
+    mCentralTabs->setCurrentIndex(index);
+
+    auto window = mRunningEngine->AddWindow("YTEditor Play Window");
+
+    mRunningWindow->mWindow = window;
+    window->mShouldBeRenderedTo = true;
+    auto id = mRunningWindow->winId();
+    window->SetWindowId(reinterpret_cast<void*>(id));
+
+    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+    renderer->RegisterWindowForDraw(window);
+
+    // Serialize the editing level.
     YTE::RSAllocator allocator;
     auto mainSession = GetEditingLevel();
     auto value = mainSession->Serialize(allocator);
 
-    mRunningEngine->AddWindow("YTEditor Play Window");
     mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
     mRunningSpace->Load(&value, false);
 
     auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();  
     graphicsView->ChangeWindow("YTEditor Play Window");
-
-    auto window = graphicsView->GetWindow();
-    window->mShouldBeRenderedTo = true;
-
-    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-
-    mRunningWindow = new SubWindow(window, this);
-    mRunningWindowTab = createWindowContainer(mRunningWindow);
-    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
-    mCentralTabs->setCurrentIndex(index);
-
-    auto id = mRunningWindow->winId();
-
-    window->SetWindowId(reinterpret_cast<void*>(id));
-    renderer->RegisterWindowForDraw(window);
 
     YTE::LogicUpdate update;
     update.Dt = 0.0f;
@@ -458,6 +460,11 @@ namespace YTEditor
     mainSession->LoadLevel(aLevelName, true);
 
     mRunningEngine->Update();
+
+    while (false == mainSession->GetFinishedLoading())
+    {
+      mRunningEngine->Update();
+    }
 
     LoadCurrentLevelInfo();
   }

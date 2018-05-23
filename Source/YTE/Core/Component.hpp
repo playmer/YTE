@@ -30,6 +30,7 @@ namespace YTE
 
     virtual ~Component();
 
+    virtual void AssetInitialize() { };
     virtual void NativeInitialize() { };
     virtual void PhysicsInitialize() { };
     virtual void Initialize() { };
@@ -72,4 +73,5 @@ namespace YTE
     std::vector<std::vector<Type*>> mTypes;
   };
 }
+
 #endif

@@ -451,47 +451,30 @@ namespace YTE
     TypeBuilder<VkMesh> builder;
   }
 
-  VkMesh::VkMesh(VkRenderer *aRenderer,
-                 std::string &aFile,
-                 CreateInfo *aCreateInfo)
-    : Mesh(aFile, aCreateInfo)
-    , mRenderer{ aRenderer }
+  VkMesh::VkMesh(Mesh *aMesh,
+                 VkRenderer *aRenderer)
+    : mRenderer{ aRenderer }
+    , mMesh{aMesh}
   {
-    for (unsigned i = 0; i < mParts.size(); ++i)
+    for (unsigned i = 0; i < aMesh->mParts.size(); ++i)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
+      auto submesh = std::make_unique<VkSubmesh>(this, &aMesh->mParts[i], aRenderer);
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
     mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
-
-  VkMesh::VkMesh(VkRenderer *aRenderer,
-                 std::string &aFile,
-                 std::vector<Submesh> &aSubmeshes)
-    : Mesh(aFile, aSubmeshes)
-    , mRenderer{aRenderer}
+  void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
-    for (unsigned i = 0; i < mParts.size(); ++i)
-    {
-      auto submesh = std::make_unique<VkSubmesh>(this, &mParts[i], aRenderer);
-      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
-    }
+    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
 
     mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
 
-  void VkMesh::UpdateVertices(int aSubmeshIndex, std::vector<Vertex>& aVertices)
+  void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    Mesh::UpdateVertices(aSubmeshIndex, aVertices);
-
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
-  }
-
-  void VkMesh::UpdateVerticesAndIndices(int aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
-  {
-    Mesh::UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
     mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
   }
