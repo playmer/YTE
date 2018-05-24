@@ -29,7 +29,7 @@ namespace YTE
   /////////////////////////////////////////////////////////////////////////////////////
   YTEDeclareEvent(UISelectEvent);
   YTEDeclareEvent(UIFocusSwitchEvent);
-  YTEDeclareEvent(UIDisplayEvent);
+  YTEDeclareEvent(depr_UIDisplayEvent);
   YTEDeclareEvent(UIUpdateContent);
 
   class UISelectEvent : public Event
@@ -49,11 +49,11 @@ namespace YTE
     bool IsPassiveFocused = false;
   };
 
-  class UIDisplayEvent : public Event
+  class depr_UIDisplayEvent : public Event
   {
   public:
-    YTEDeclareType(UIDisplayEvent);
-    UIDisplayEvent(bool aShouldDisplay) { ShouldDisplay = aShouldDisplay; }
+    YTEDeclareType(depr_UIDisplayEvent);
+    depr_UIDisplayEvent(bool aShouldDisplay) { ShouldDisplay = aShouldDisplay; }
 
     bool ShouldDisplay;
     int DisplayIndex = -1;

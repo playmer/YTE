@@ -36,7 +36,7 @@ namespace YTE
     ///////////////////////////////////////////////////////////////////////////////////
 
     void OnStart(LogicUpdate*);
-    void OnDisplayEvent(UIDisplayEvent *aEvent);
+    void OnDisplayEvent(depr_UIDisplayEvent *aEvent);
     void OnSelectEvent(UISelectEvent *aEvent);
 
   private:

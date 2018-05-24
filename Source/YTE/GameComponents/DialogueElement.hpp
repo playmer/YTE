@@ -54,7 +54,7 @@ namespace YTE
     void OnStart(LogicUpdate*);
     void OnContentUpdate(UIUpdateContent *aEvent);
     void OnFocusSwitch(UIFocusSwitchEvent *aEvent);
-    void OnDisplayEvent(UIDisplayEvent *aEvent);
+    void OnDisplayEvent(depr_UIDisplayEvent *aEvent);
     void OnSelectEvent(UISelectEvent *aEvent);
 
   private:

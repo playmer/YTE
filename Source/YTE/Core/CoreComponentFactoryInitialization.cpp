@@ -68,6 +68,7 @@
 #include "YTE/GameComponents/OceanCreatureBehavior.hpp"
 #include "YTE/GameComponents/ProgressionParticles.hpp"
 #include "YTE/GameComponents/PostcardIconPulse.hpp"
+#include "YTE/GameComponents/UI/UIController.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -182,6 +183,7 @@ namespace YTE
     helper.CreateComponentFactory<OceanCreatureBehavior>();
     helper.CreateComponentFactory<ProgressionParticles>();
     helper.CreateComponentFactory<PostcardIconPulse>();
+    helper.CreateComponentFactory<UIController>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();

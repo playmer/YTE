@@ -99,7 +99,7 @@ namespace YTE
     if (mContentType == ContentType::Passive)
     {
       mSelectionIndex = 0;
-      mSpace->RegisterEvent<&DialogueElement::OnDisplayEvent>(Events::UIDisplayEvent, this);
+      mSpace->RegisterEvent<&DialogueElement::OnDisplayEvent>(Events::depr_UIDisplayEvent, this);
       mSpace->RegisterEvent<&DialogueElement::OnFocusSwitch>(Events::UIFocusSwitchEvent, this);
     }
     else if (mContentType == ContentType::Active)
@@ -144,7 +144,7 @@ namespace YTE
     }
   }
 
-  void DialogueElement::OnDisplayEvent(UIDisplayEvent *aEvent)
+  void DialogueElement::OnDisplayEvent(depr_UIDisplayEvent *aEvent)
   {
     if (aEvent->ShouldDisplay != mIsDisplayed)
     {

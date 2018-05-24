@@ -75,6 +75,7 @@
 #include "YTE/GameComponents/OceanCreatureBehavior.hpp"
 #include "YTE/GameComponents/ProgressionParticles.hpp"
 #include "YTE/GameComponents/PostcardIconPulse.hpp"
+#include "YTE/GameComponents/UI/UIController.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -196,6 +197,7 @@ namespace YTE
     InitializeType<OceanCreatureBehavior>();
     InitializeType<ProgressionParticles>();
     InitializeType<PostcardIconPulse>();
+    InitializeType<UIController>();
 
     InitializeType<Event>();
     InitializeType<EventHandler>();

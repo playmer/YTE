@@ -60,6 +60,8 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/OceanCreatureBehavior.cpp
   ${CMAKE_CURRENT_LIST_DIR}/ProgressionParticles.cpp
   ${CMAKE_CURRENT_LIST_DIR}/PostcardIconPulse.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/UIEvents.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/UIController.cpp
 #  PUBLIC    
   ${CMAKE_CURRENT_LIST_DIR}/AddComponentToEngine.hpp
   ${CMAKE_CURRENT_LIST_DIR}/AudioTest.hpp
@@ -121,4 +123,6 @@ target_sources(YTE
   ${CMAKE_CURRENT_LIST_DIR}/OceanCreatureBehavior.hpp
   ${CMAKE_CURRENT_LIST_DIR}/ProgressionParticles.hpp
   ${CMAKE_CURRENT_LIST_DIR}/PostcardIconPulse.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/UIEvents.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/UI/UIController.hpp
 )

@@ -49,7 +49,7 @@ namespace YTE
 
     mSpace->RegisterEvent<&DialogueElementDefault::OnStart>(Events::LogicUpdate, this);
 
-    mSpace->RegisterEvent<&DialogueElementDefault::OnDisplayEvent>(Events::UIDisplayEvent, this);
+    mSpace->RegisterEvent<&DialogueElementDefault::OnDisplayEvent>(Events::depr_UIDisplayEvent, this);
   }
 
   void DialogueElementDefault::OnStart(LogicUpdate*)
@@ -58,7 +58,7 @@ namespace YTE
     mSpace->DeregisterEvent<&DialogueElementDefault::OnStart>(Events::LogicUpdate,  this);
   }
 
-  void DialogueElementDefault::OnDisplayEvent(UIDisplayEvent *aEvent)
+  void DialogueElementDefault::OnDisplayEvent(depr_UIDisplayEvent *aEvent)
   {
     if (!aEvent->ShouldDisplay && mIsDisplayed)
     {

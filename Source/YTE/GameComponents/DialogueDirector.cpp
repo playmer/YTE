@@ -29,7 +29,7 @@ namespace YTE
 
   YTEDefineEvent(UISelectEvent);
   YTEDefineEvent(UIFocusSwitchEvent);
-  YTEDefineEvent(UIDisplayEvent);
+  YTEDefineEvent(depr_UIDisplayEvent);
   YTEDefineEvent(UIUpdateContent);
 
   YTEDefineEvent(PlaySoundEvent);
@@ -40,8 +40,8 @@ namespace YTE
     TypeBuilder<UISelectEvent> builder; }
   YTEDefineType(UIFocusSwitchEvent) { RegisterType<UIFocusSwitchEvent>();
     TypeBuilder<UIFocusSwitchEvent> builder; }
-  YTEDefineType(UIDisplayEvent) { RegisterType<UIDisplayEvent>();
-    TypeBuilder<UIDisplayEvent> builder; }
+  YTEDefineType(depr_UIDisplayEvent) { RegisterType<depr_UIDisplayEvent>();
+    TypeBuilder<depr_UIDisplayEvent> builder; }
   YTEDefineType(UIUpdateContent) { RegisterType<UIUpdateContent>();
     TypeBuilder<UIUpdateContent> builder; }
 
@@ -143,8 +143,8 @@ namespace YTE
       UIUpdateContent content(true, aEvent->ContentMessages[0]);
       mDialogueSpace->SendEvent(Events::UIUpdateContent, &content);
 
-      UIDisplayEvent display(true);
-      mDialogueSpace->SendEvent(Events::UIDisplayEvent, &display);
+      depr_UIDisplayEvent display(true);
+      mDialogueSpace->SendEvent(Events::depr_UIDisplayEvent, &display);
 
       UIFocusSwitchEvent passiveFocus(true);
       mDialogueSpace->SendEvent(Events::UIFocusSwitchEvent, &passiveFocus);
@@ -164,10 +164,10 @@ namespace YTE
           select.NumOptions = size;
           mDialogueSpace->SendEvent(Events::UISelectEvent, &select);
 
-          /*UIDisplayEvent display(true);
+          /*depr_UIDisplayEvent display(true);
           display.DisplayIndex = i;
           display.NumOptions = size;
-          mDialogueSpace->SendEvent(Events::UIDisplayEvent, &display);*/
+          mDialogueSpace->SendEvent(Events::depr_UIDisplayEvent, &display);*/
         }
 
         UIUpdateContent content(false, aEvent->ContentMessages[i]);
@@ -309,8 +309,8 @@ namespace YTE
     UISelectEvent select(-1);
     mDialogueSpace->SendEvent(Events::UISelectEvent, &select);
 
-    UIDisplayEvent shouldDisplay(false);
-    mDialogueSpace->SendEvent(Events::UIDisplayEvent, &shouldDisplay);
+    depr_UIDisplayEvent shouldDisplay(false);
+    mDialogueSpace->SendEvent(Events::depr_UIDisplayEvent, &shouldDisplay);
 
     auto emitter = mOwner->GetComponent<WWiseEmitter>();
 
