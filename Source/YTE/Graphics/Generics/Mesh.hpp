@@ -30,44 +30,6 @@ struct aiNode;
 
 namespace YTE
 {
-  // inlined globals
-  inline glm::vec3 AssimpToGLM(const aiVector3D *aVector)
-  {
-    return { aVector->x, aVector->y ,aVector->z };
-  }
-
-  inline glm::vec3 AssimpToGLM(const aiColor3D *aVector)
-  {
-    return { aVector->r, aVector->g ,aVector->b };
-  }
-
-  inline glm::quat AssimpToGLM(const aiQuaternion *aQuat) 
-  { 
-    glm::quat quaternion; 
- 
-    quaternion.x = aQuat->x; 
-    quaternion.y = aQuat->y; 
-    quaternion.z = aQuat->z; 
-    quaternion.w = aQuat->w; 
- 
-    return quaternion; 
-  } 
- 
-  inline glm::mat4 AssimpToGLM(const aiMatrix4x4 aMatrix) 
-  { 
-    glm::mat4 result; 
-    for (int i = 0; i < 4; ++i) 
-    { 
-      for (int j = 0; j < 4; ++j) 
-      { 
-        result[i][j] = aMatrix[i][j]; 
-      } 
-    } 
- 
-    return result; 
-  } 
-
-
   // vertices have the following components in them
   enum class VertexComponent
   {

@@ -493,7 +493,7 @@ namespace YTE
 
       for (int i = 0; i < mCurrentAnimation->GetSkeleton()->GetBoneData().size(); ++i)
       {
-        mCurrentAnimation->GetUBOAnim()->mBones[i] = AssimpToGLM(mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation);
+        mCurrentAnimation->GetUBOAnim()->mBones[i] = ToGLM(mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation);
       }
 
       // cause update to graphics card

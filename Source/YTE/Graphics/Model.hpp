@@ -114,14 +114,14 @@ namespace YTE
 
     std::string mMeshName;
     std::string mShadingName;
-    Renderer *mRenderer;
-    Window *mWindow;
-    Transform *mTransform;
+    Renderer* mRenderer;
+    Window* mWindow;
+    Transform* mTransform;
     UBOModel mUBOModel;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     bool mConstructing;
-    Animation *mAnimation;
-    Engine *mEngine;
+    Animation* mAnimation;
+    Engine* mEngine;
 
     bool mBackfaceCulling;
   };
