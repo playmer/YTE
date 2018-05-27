@@ -132,55 +132,56 @@ namespace YTE
   template<typename tType>
   size_t Write(FILE* aFile, tType const* aValue, size_t aSize)
   {
-    auto ret = fwrite(static_cast<void const*>(aValue), sizeof(tType), aSize, aFile);
+    size_t actualSize = sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
+    auto ret = fwrite(static_cast<void const*>(aValue), actualSize, aSize, aFile);
     assert(aSize == ret);
     return ret;
   }
 
-  template<>
-  size_t Write<>(FILE* aFile, AnimationData::TranslationKey const* aValue, size_t aSize)
-  {
-    auto end = aValue + aSize;
-    for (; aValue < end; ++aValue)
-    {
-      auto ret1 = Write(aFile, aValue->mTime);
-      auto ret2 = Write(aFile, aValue->mTranslation);
-
-      assert(ret1 == ret2);
-    }
-
-    return aSize;
-  }
-
-  template<>
-  size_t Write<>(FILE* aFile, AnimationData::ScaleKey const* aValue, size_t aSize)
-  {
-    auto end = aValue + aSize;
-    for (; aValue < end; ++aValue)
-    {
-      auto ret1 = Write(aFile, aValue->mTime);
-      auto ret2 = Write(aFile, aValue->mScale);
-
-      assert(ret1 == ret2);
-    }
-
-    return aSize;
-  }
-
-  template<>
-  size_t Write<>(FILE* aFile, AnimationData::RotationKey const* aValue, size_t aSize)
-  {
-    auto end = aValue + aSize;
-    for (; aValue < end; ++aValue)
-    {
-      auto ret1 = Write(aFile, aValue->mTime);
-      auto ret2 = Write(aFile, aValue->mRotation);
-
-      assert(ret1 == ret2);
-    }
-
-    return aSize;
-  }
+  //template<>
+  //size_t Write<>(FILE* aFile, AnimationData::TranslationKey const* aValue, size_t aSize)
+  //{
+  //  auto end = aValue + aSize;
+  //  for (; aValue < end; ++aValue)
+  //  {
+  //    auto ret1 = Write(aFile, aValue->mTime);
+  //    auto ret2 = Write(aFile, aValue->mTranslation);
+  //
+  //    assert(ret1 == ret2);
+  //  }
+  //
+  //  return aSize;
+  //}
+  //
+  //template<>
+  //size_t Write<>(FILE* aFile, AnimationData::ScaleKey const* aValue, size_t aSize)
+  //{
+  //  auto end = aValue + aSize;
+  //  for (; aValue < end; ++aValue)
+  //  {
+  //    auto ret1 = Write(aFile, aValue->mTime);
+  //    auto ret2 = Write(aFile, aValue->mScale);
+  //
+  //    assert(ret1 == ret2);
+  //  }
+  //
+  //  return aSize;
+  //}
+  //
+  //template<>
+  //size_t Write<>(FILE* aFile, AnimationData::RotationKey const* aValue, size_t aSize)
+  //{
+  //  auto end = aValue + aSize;
+  //  for (; aValue < end; ++aValue)
+  //  {
+  //    auto ret1 = Write(aFile, aValue->mTime);
+  //    auto ret2 = Write(aFile, aValue->mRotation);
+  //
+  //    assert(ret1 == ret2);
+  //  }
+  //
+  //  return aSize;
+  //}
 
   void WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
   {
@@ -215,60 +216,60 @@ namespace YTE
     }
   }
 
-  static size_t sBytesRead;
-
-  template<typename tType>
-  tType Read(FILE* aFile)
-  {
-    typename std::aligned_storage<sizeof(tType), alignof(tType)>::type data;
-    auto ret = fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
-    assert(1 == ret);
-
-    sBytesRead += sizeof(tType) * 1;
-
-    return *reinterpret_cast<tType*>(&data);
-  }
-
-  template<typename tType>
-  size_t Read(FILE* aFile, tType* aBuffer, size_t aSize)
-  {
-    auto ret = fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
-    assert(aSize == ret);
-
-    sBytesRead += sizeof(tType) * aSize;
-
-    return ret;
-  }
-
-  template<>
-  AnimationData::TranslationKey Read<AnimationData::TranslationKey>(FILE* aFile)
-  {
-    AnimationData::TranslationKey key;
-    key.mTime = Read<double>(aFile);
-    key.mTranslation = Read<glm::vec3>(aFile);
-
-    return key;
-  }
-
-  template<>
-  AnimationData::ScaleKey Read<AnimationData::ScaleKey>(FILE* aFile)
-  {
-    AnimationData::ScaleKey key;
-    key.mTime = Read<double>(aFile);
-    key.mScale = Read<glm::vec3>(aFile);
-
-    return key;
-  }
-
-  template<>
-  AnimationData::RotationKey Read<AnimationData::RotationKey>(FILE* aFile)
-  {
-    AnimationData::RotationKey key;
-    key.mTime = Read<double>(aFile);
-    key.mRotation = Read<glm::quat>(aFile);
-
-    return key;
-  }
+  //static size_t sBytesRead;
+  //
+  //template<typename tType>
+  //tType Read(FILE* aFile)
+  //{
+  //  typename std::aligned_storage<sizeof(tType), alignof(tType)>::type data;
+  //  auto ret = fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
+  //  assert(1 == ret);
+  //
+  //  sBytesRead += sizeof(tType) * 1;
+  //
+  //  return *reinterpret_cast<tType*>(&data);
+  //}
+  //
+  //template<typename tType>
+  //size_t Read(FILE* aFile, tType* aBuffer, size_t aSize)
+  //{
+  //  auto ret = fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
+  //  assert(aSize == ret);
+  //
+  //  sBytesRead += sizeof(tType) * aSize;
+  //
+  //  return ret;
+  //}
+  //
+  //template<>
+  //AnimationData::TranslationKey Read<AnimationData::TranslationKey>(FILE* aFile)
+  //{
+  //  AnimationData::TranslationKey key;
+  //  key.mTime = Read<double>(aFile);
+  //  key.mTranslation = Read<glm::vec3>(aFile);
+  //
+  //  return key;
+  //}
+  //
+  //template<>
+  //AnimationData::ScaleKey Read<AnimationData::ScaleKey>(FILE* aFile)
+  //{
+  //  AnimationData::ScaleKey key;
+  //  key.mTime = Read<double>(aFile);
+  //  key.mScale = Read<glm::vec3>(aFile);
+  //
+  //  return key;
+  //}
+  //
+  //template<>
+  //AnimationData::RotationKey Read<AnimationData::RotationKey>(FILE* aFile)
+  //{
+  //  AnimationData::RotationKey key;
+  //  key.mTime = Read<double>(aFile);
+  //  key.mRotation = Read<glm::quat>(aFile);
+  //
+  //  return key;
+  //}
 
   struct FileReader
   {
@@ -289,9 +290,15 @@ namespace YTE
     }
 
     template<typename tType>
+    static constexpr size_t GetSize()
+    {
+      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
+    }
+
+    template<typename tType>
     tType& Read()
     {
-      auto bytesToRead = sizeof(tType);
+      auto bytesToRead = GetSize<tType>();
 
       assert((mBytesRead + bytesToRead) <= mData.size());
 
@@ -303,7 +310,7 @@ namespace YTE
     template<typename tType>
     void Read(tType* aBuffer, size_t aSize)
     {
-      auto bytesToRead = sizeof(tType) * aSize;
+      auto bytesToRead = GetSize<tType>() * aSize;
       assert((mBytesRead + bytesToRead) <= mData.size());
 
       memcpy(aBuffer, mData.data() + mBytesRead, bytesToRead);
@@ -319,13 +326,11 @@ namespace YTE
 
   AnimationData ReadAnimationDataFromFile(std::string const& aName)
   {
-    sBytesRead = 0;
     AnimationData data;
     FileReader file{ aName };
 
     if (file.mOpened)
     {
-
       // The "header" of the file.
       auto nodeSize = file.Read<size_t>();
       auto transformationsSize = file.Read<size_t>();
@@ -346,23 +351,14 @@ namespace YTE
       data.mChildren.resize(childrenSize);
       file.Read<size_t>(data.mChildren.data(), data.mChildren.size());
 
-      data.mTranslationKeys.reserve(translationKeysSize);
-      for (size_t i = 0; i < translationKeysSize; ++i)
-      {
-        data.mTranslationKeys.emplace_back(file.Read<AnimationData::TranslationKey>());
-      }
+      data.mTranslationKeys.resize(translationKeysSize);
+      file.Read<AnimationData::TranslationKey>(data.mTranslationKeys.data(), data.mTranslationKeys.size());
 
-      data.mScaleKeys.reserve(scaleKeysSize);
-      for (size_t i = 0; i < scaleKeysSize; ++i)
-      {
-        data.mScaleKeys.emplace_back(file.Read<AnimationData::ScaleKey>());
-      }
+      data.mScaleKeys.resize(scaleKeysSize);
+      file.Read<AnimationData::ScaleKey>(data.mScaleKeys.data(), data.mScaleKeys.size());
 
-      data.mRotationKeys.reserve(rotationKeysSize);
-      for (size_t i = 0; i < rotationKeysSize; ++i)
-      {
-        data.mRotationKeys.emplace_back(file.Read<AnimationData::RotationKey>());
-      }
+      data.mRotationKeys.resize(rotationKeysSize);
+      file.Read<AnimationData::RotationKey>(data.mRotationKeys.data(), data.mRotationKeys.size());
 
       data.mNames.resize(namesSize);
       file.Read<char>(data.mNames.data(), data.mNames.size());
