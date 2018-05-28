@@ -22,8 +22,8 @@ namespace YTE
 {
   namespace Resolutions
   {
-    enum Type { R1152x648, R1280x720, R1920x1080, R2160x1440, COUNT };
-    static std::string Names[] = { "1152x648", "1280x720", "1920x1080", "2160x1440" };
+    enum Type { R1152x648, R1280x720, R1920x1080, R2560x1440, COUNT };
+    static std::string Names[] = { "1152x648", "1280x720", "1920x1080", "2560x1440" };
   }
 
   class ChangeResolution : public Component

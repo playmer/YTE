@@ -774,7 +774,7 @@ namespace YTE
       }
       case Keys::F4:
       {
-        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(2160,1440);
+        mSpace->GetComponent<GraphicsView>()->GetWindow()->SetResolution(2560,1440);
         break;
       }
       case Keys::F5:

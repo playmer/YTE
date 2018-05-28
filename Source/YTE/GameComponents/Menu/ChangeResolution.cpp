@@ -74,9 +74,9 @@ namespace YTE
     {
       mCurrResolution = Resolutions::R1280x720;
     }
-    else if (mCurrWidth == 2160 && mCurrHeight == 1440)
+    else if (mCurrWidth == 2560 && mCurrHeight == 1440)
     {
-      mCurrResolution = Resolutions::R2160x1440;
+      mCurrResolution = Resolutions::R2560x1440;
     }
     else
     {
@@ -137,9 +137,9 @@ namespace YTE
         break;
       }
 
-      case Resolutions::R2160x1440:
+      case Resolutions::R2560x1440:
       {
-        mCurrWidth = 2160;
+        mCurrWidth = 2560;
         mCurrHeight = 1440;
         break;
       }
