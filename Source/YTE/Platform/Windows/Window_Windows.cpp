@@ -301,6 +301,7 @@ namespace YTE
       event.CharacterTyped = static_cast<u32>(aWParam);
       event.Keyboard = &aWindow->mKeyboard;
       event.Keyboard->SendEvent(Events::CharacterTyped, &event);
+      break;
     }
 
       // A key has been pressed.
