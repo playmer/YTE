@@ -99,7 +99,8 @@ namespace YTE
             eyeBuffer[j].mTextureCoordinates.y += eyeFrame->uv.y;
           }
 
-          mesh->UpdateVertices(i, eyeBuffer);
+          instModel->UpdateMesh(i, eyeBuffer);
+          //mesh->UpdateVertices(i, eyeBuffer);
         }
       }
       else if (submesh.mMaterialName == "OnlyDiff_Mouth")
@@ -116,7 +117,8 @@ namespace YTE
             mouthBuffer[j].mTextureCoordinates.y += mouthFrame->uv.y;
           }
 
-          mesh->UpdateVertices(i, mouthBuffer);
+          instModel->UpdateMesh(i, mouthBuffer);
+          //mesh->UpdateVertices(i, mouthBuffer);
         }
       }
     }
