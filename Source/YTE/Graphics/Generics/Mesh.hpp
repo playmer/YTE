@@ -10,9 +10,6 @@
 
 #include <limits> 
 
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
@@ -112,9 +109,9 @@ namespace YTE
       }
     };
 
-    bool Initialize(const aiScene* aScene);
+    YTE_Shared bool Initialize(const aiScene* aScene);
 
-    void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
+    YTE_Shared void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
 
     bool HasBones()
     {
@@ -147,8 +144,8 @@ namespace YTE
     }
 
   private:
-    void PreTransform(const aiScene* aScene);
-    void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
+    YTE_Shared void PreTransform(const aiScene* aScene);
+    YTE_Shared void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
 
     std::map<std::string, uint32_t, std::less<>> mBones;
     std::vector<BoneData> mBoneData;
@@ -173,13 +170,13 @@ namespace YTE
   class Submesh
   {
   public:
-    Submesh() = default;
+    YTE_Shared Submesh() = default;
 
-    Submesh(Renderer *aRenderer,
-            const aiScene *aScene,
-            const aiMesh *aMesh,
-            Skeleton *aSkeleton,
-            uint32_t aBoneStartingVertexOffset);
+    YTE_Shared Submesh(Renderer *aRenderer,
+                       const aiScene *aScene,
+                       const aiMesh *aMesh,
+                       Skeleton *aSkeleton,
+                       uint32_t aBoneStartingVertexOffset);
 
     virtual ~Submesh()
     {
@@ -229,32 +226,32 @@ namespace YTE
   public:
     YTEDeclareType(Mesh);
 
-    Mesh(Renderer *aRenderer,
-         const std::string &aFile);
+    YTE_Shared Mesh(Renderer *aRenderer,
+                    const std::string &aFile);
 
-    Mesh(const std::string &aFile,
-         std::vector<Submesh> &aSubmeshes);
+    YTE_Shared Mesh(const std::string &aFile,
+                    std::vector<Submesh> &aSubmeshes);
 
-    virtual void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
-    virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+    YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
+                                           std::vector<Vertex>& aVertices);
+    YTE_Shared virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, 
+                                                     std::vector<Vertex>& aVertices, 
+                                                     std::vector<u32>& aIndices);
 
-    virtual ~Mesh();
+    YTE_Shared virtual ~Mesh();
 
-    bool CanAnimate();
-    std::vector<Submesh>& GetSubmeshes();
+    YTE_Shared bool CanAnimate();
+    YTE_Shared std::vector<Submesh>& GetSubmeshes();
 
-    void SetBackfaceCulling(bool aCulling);
-    virtual void RecreateShader() {}
+    YTE_Shared void SetBackfaceCulling(bool aCulling);
+    YTE_Shared virtual void RecreateShader() {}
 
-    void ResetTextureCoordinates();
+    YTE_Shared void ResetTextureCoordinates();
 
     std::string mName;
     std::vector<Submesh> mParts;
     Skeleton mSkeleton;
     Dimension mDimension;
-    bool mInstanced;
-
-  protected:
     bool mInstanced;
   };
 }

@@ -113,163 +113,119 @@ namespace YTE
              sclp * aStart.z + sclq * end.z };
   }
 
-  template<typename tType>
-  size_t Write(FILE* aFile, tType const& aValue)
+  struct FileWriter
   {
-    auto ret = fwrite(static_cast<void const*>(&aValue), sizeof(tType), 1, aFile);
-    assert(1 == ret);
-    return ret;
-  }
+    template<typename tType>
+    static constexpr size_t GetSize()
+    {
+      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
+    }
 
-  template<typename tType>
-  size_t Write(FILE* aFile, tType const* aValue)
+    FileWriter(std::string const& aFile)
+      : mFile{ aFile, std::ios::binary }
+    {
+      if (false == mFile.bad())
+      {
+        mOpened = true;
+      }
+    }
+
+    ~FileWriter()
+    {
+      mFile.write(mData.data(), mData.size());
+      mFile.close();
+    }
+
+    template <size_t aSize>
+    void MemoryCopy(char const* aSource, size_t aNumber = 1)
+    {
+      size_t bytesToCopy = aSize * aNumber;
+      mData.reserve(mData.size() + bytesToCopy);
+
+      for (size_t i = 0; i < bytesToCopy; ++i)
+      {
+        mData.emplace_back(*(aSource++));
+      }
+    }
+
+    template <typename tType>
+    char const* SourceCast(tType const* aSource)
+    {
+      return reinterpret_cast<char const*>(aSource);
+    }
+
+    template<typename tType>
+    void Write(tType const& aValue)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(&aValue));
+    }
+
+    template<typename tType>
+    void Write(tType const* aValue)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(aValue));
+    }
+
+    template<typename tType>
+    void Write(tType const* aValue, size_t aSize)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(aValue), aSize);
+    }
+
+    std::ofstream mFile;
+    std::vector<char> mData;
+    bool mOpened = false;
+  };
+
+  struct AnimationFileHeader
   {
-    auto ret = fwrite(static_cast<void const*>(aValue), sizeof(tType), 1, aFile);
-    assert(1 == ret);
-    return ret;
-  }
+    // The "header" of the file.
+    u64 mNodeSize;
+    u64 mTransformationsSize;
+    u64 mChildrenSize;
+    u64 mTranslationKeysSize;
+    u64 mScaleKeysSize;
+    u64 mRotationKeysSize;
+    u64 mNamesSize;
+    double mDuration;
+    double mTicksPerSecond;
+  };
 
-  template<typename tType>
-  size_t Write(FILE* aFile, tType const* aValue, size_t aSize)
-  {
-    size_t actualSize = sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
-    auto ret = fwrite(static_cast<void const*>(aValue), actualSize, aSize, aFile);
-    assert(aSize == ret);
-    return ret;
-  }
-
-  //template<>
-  //size_t Write<>(FILE* aFile, AnimationData::TranslationKey const* aValue, size_t aSize)
-  //{
-  //  auto end = aValue + aSize;
-  //  for (; aValue < end; ++aValue)
-  //  {
-  //    auto ret1 = Write(aFile, aValue->mTime);
-  //    auto ret2 = Write(aFile, aValue->mTranslation);
-  //
-  //    assert(ret1 == ret2);
-  //  }
-  //
-  //  return aSize;
-  //}
-  //
-  //template<>
-  //size_t Write<>(FILE* aFile, AnimationData::ScaleKey const* aValue, size_t aSize)
-  //{
-  //  auto end = aValue + aSize;
-  //  for (; aValue < end; ++aValue)
-  //  {
-  //    auto ret1 = Write(aFile, aValue->mTime);
-  //    auto ret2 = Write(aFile, aValue->mScale);
-  //
-  //    assert(ret1 == ret2);
-  //  }
-  //
-  //  return aSize;
-  //}
-  //
-  //template<>
-  //size_t Write<>(FILE* aFile, AnimationData::RotationKey const* aValue, size_t aSize)
-  //{
-  //  auto end = aValue + aSize;
-  //  for (; aValue < end; ++aValue)
-  //  {
-  //    auto ret1 = Write(aFile, aValue->mTime);
-  //    auto ret2 = Write(aFile, aValue->mRotation);
-  //
-  //    assert(ret1 == ret2);
-  //  }
-  //
-  //  return aSize;
-  //}
-
-  void WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
+  std::vector<char> WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
   {
     std::string fileName = aName;
     fileName += ".YTEAnimation";
 
-    FILE* file;
-    file = fopen(fileName.c_str(), "w");
+    FileWriter file{ fileName };
 
-    if (file)
+    if (file.mOpened)
     {
+      AnimationFileHeader header;
+
+      header.mNodeSize = aData.mNodes.size();
+      header.mTransformationsSize = aData.mTransformations.size();
+      header.mChildrenSize = aData.mChildren.size();
+      header.mTranslationKeysSize = aData.mTranslationKeys.size();
+      header.mScaleKeysSize = aData.mScaleKeys.size();
+      header.mRotationKeysSize = aData.mRotationKeys.size();
+      header.mNamesSize = aData.mNames.size();
+      header.mDuration = aData.mDuration;
+      header.mTicksPerSecond = aData.mTicksPerSecond;
+
       // The "header" of the file.
-      Write(file, aData.mNodes.size());
-      Write(file, aData.mTransformations.size());
-      Write(file, aData.mChildren.size());
-      Write(file, aData.mTranslationKeys.size());
-      Write(file, aData.mScaleKeys.size());
-      Write(file, aData.mRotationKeys.size());
-      Write(file, aData.mNames.size());
-      Write(file, aData.mDuration);
-      Write(file, aData.mTicksPerSecond);
+      file.Write(header);
 
-      Write(file, aData.mNodes.data(), aData.mNodes.size());
-      Write(file, aData.mTransformations.data(), aData.mTransformations.size());
-      Write(file, aData.mChildren.data(), aData.mChildren.size());
-      Write(file, aData.mTranslationKeys.data(), aData.mTranslationKeys.size());
-      Write(file, aData.mScaleKeys.data(), aData.mScaleKeys.size());
-      Write(file, aData.mRotationKeys.data(), aData.mRotationKeys.size());
-      Write(file, aData.mNames.data(), aData.mNames.size());
-
-      fclose(file);
+      file.Write(aData.mNodes.data(), aData.mNodes.size());
+      file.Write(aData.mTransformations.data(), aData.mTransformations.size());
+      file.Write(aData.mChildren.data(), aData.mChildren.size());
+      file.Write(aData.mTranslationKeys.data(), aData.mTranslationKeys.size());
+      file.Write(aData.mScaleKeys.data(), aData.mScaleKeys.size());
+      file.Write(aData.mRotationKeys.data(), aData.mRotationKeys.size());
+      file.Write(aData.mNames.data(), aData.mNames.size());
     }
-  }
 
-  //static size_t sBytesRead;
-  //
-  //template<typename tType>
-  //tType Read(FILE* aFile)
-  //{
-  //  typename std::aligned_storage<sizeof(tType), alignof(tType)>::type data;
-  //  auto ret = fread(static_cast<void*>(&data), sizeof(tType), 1, aFile);
-  //  assert(1 == ret);
-  //
-  //  sBytesRead += sizeof(tType) * 1;
-  //
-  //  return *reinterpret_cast<tType*>(&data);
-  //}
-  //
-  //template<typename tType>
-  //size_t Read(FILE* aFile, tType* aBuffer, size_t aSize)
-  //{
-  //  auto ret = fread(static_cast<void*>(aBuffer), sizeof(tType), aSize, aFile);
-  //  assert(aSize == ret);
-  //
-  //  sBytesRead += sizeof(tType) * aSize;
-  //
-  //  return ret;
-  //}
-  //
-  //template<>
-  //AnimationData::TranslationKey Read<AnimationData::TranslationKey>(FILE* aFile)
-  //{
-  //  AnimationData::TranslationKey key;
-  //  key.mTime = Read<double>(aFile);
-  //  key.mTranslation = Read<glm::vec3>(aFile);
-  //
-  //  return key;
-  //}
-  //
-  //template<>
-  //AnimationData::ScaleKey Read<AnimationData::ScaleKey>(FILE* aFile)
-  //{
-  //  AnimationData::ScaleKey key;
-  //  key.mTime = Read<double>(aFile);
-  //  key.mScale = Read<glm::vec3>(aFile);
-  //
-  //  return key;
-  //}
-  //
-  //template<>
-  //AnimationData::RotationKey Read<AnimationData::RotationKey>(FILE* aFile)
-  //{
-  //  AnimationData::RotationKey key;
-  //  key.mTime = Read<double>(aFile);
-  //  key.mRotation = Read<glm::quat>(aFile);
-  //
-  //  return key;
-  //}
+    return file.mData;
+  }
 
   struct FileReader
   {
@@ -302,9 +258,11 @@ namespace YTE
 
       assert((mBytesRead + bytesToRead) <= mData.size());
 
+      auto &value = *reinterpret_cast<tType*>(mData.data() + mBytesRead);
+
       mBytesRead += bytesToRead;
 
-      return *reinterpret_cast<tType*>(mData.data() + mBytesRead);
+      return value;
     }
     
     template<typename tType>
@@ -324,52 +282,80 @@ namespace YTE
   };
 
 
-  AnimationData ReadAnimationDataFromFile(std::string const& aName)
+  std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName)
   {
     AnimationData data;
     FileReader file{ aName };
 
     if (file.mOpened)
     {
-      // The "header" of the file.
-      auto nodeSize = file.Read<size_t>();
-      auto transformationsSize = file.Read<size_t>();
-      auto childrenSize = file.Read<size_t>();
-      auto translationKeysSize = file.Read<size_t>();
-      auto scaleKeysSize = file.Read<size_t>();
-      auto rotationKeysSize = file.Read<size_t>();
-      auto namesSize = file.Read<size_t>();
-      data.mDuration = file.Read<double>();
-      data.mTicksPerSecond = file.Read<double>();
+      auto header = file.Read<AnimationFileHeader>();
 
-      data.mNodes.resize(nodeSize);
+      data.mDuration = header.mDuration;
+      data.mTicksPerSecond = header.mTicksPerSecond;
+
+      data.mNodes.resize(header.mNodeSize);
       file.Read<AnimationData::Node>(data.mNodes.data(), data.mNodes.size());
 
-      data.mTransformations.resize(transformationsSize);
+      data.mTransformations.resize(header.mTransformationsSize);
       file.Read<glm::mat4>(data.mTransformations.data(), data.mTransformations.size());
 
-      data.mChildren.resize(childrenSize);
+      data.mChildren.resize(header.mChildrenSize);
       file.Read<size_t>(data.mChildren.data(), data.mChildren.size());
 
-      data.mTranslationKeys.resize(translationKeysSize);
+      data.mTranslationKeys.resize(header.mTranslationKeysSize);
       file.Read<AnimationData::TranslationKey>(data.mTranslationKeys.data(), data.mTranslationKeys.size());
 
-      data.mScaleKeys.resize(scaleKeysSize);
+      data.mScaleKeys.resize(header.mScaleKeysSize);
       file.Read<AnimationData::ScaleKey>(data.mScaleKeys.data(), data.mScaleKeys.size());
 
-      data.mRotationKeys.resize(rotationKeysSize);
+      data.mRotationKeys.resize(header.mRotationKeysSize);
       file.Read<AnimationData::RotationKey>(data.mRotationKeys.data(), data.mRotationKeys.size());
 
-      data.mNames.resize(namesSize);
+      data.mNames.resize(header.mNamesSize);
       file.Read<char>(data.mNames.data(), data.mNames.size());
     }
 
 
-    return std::move(data);
+    return { std::move(data), std::move(file.mData) };
   }
 
+  bool Equal(AnimationData const& aLeft, AnimationData const& aRight)
+  {
+    auto nodes = aLeft.mNodes == aRight.mNodes;
+    auto transformations = aLeft.mTransformations == aRight.mTransformations;
+    auto children = aLeft.mChildren == aRight.mChildren;
+    auto translations = aLeft.mTranslationKeys == aRight.mTranslationKeys;
+    auto scales = aLeft.mScaleKeys == aRight.mScaleKeys;
+    auto rotations = aLeft.mRotationKeys == aRight.mRotationKeys;
+    auto names = aLeft.mNames == aRight.mNames;
+    auto durations = aLeft.mDuration == aRight.mDuration;
+    auto ticks = aLeft.mTicksPerSecond == aRight.mTicksPerSecond;
 
-  
+    return nodes && transformations && children && translations && scales && rotations && names;
+  }
+
+  AnimationData TestWritingAndReading(std::string const& aFile, AnimationData const& aOriginalData)
+  {
+    auto aniFileYTE = aFile + ".YTEAnimation";
+
+    auto writtenFileData = WriteAnimationDataToFile(aFile, aOriginalData);
+
+    auto [readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
+
+    if (writtenFileData != readFileData)
+    {
+      __debugbreak();
+    }
+
+    if (false == Equal(aOriginalData, readFile))
+    {
+      __debugbreak();
+    }
+
+    return readFile;
+  }
+
 
   static inline 
   glm::vec3 ScaleInterpolation(AnimationData const& aData, 
@@ -637,10 +623,18 @@ namespace YTE
 
   AnimationData GetAnimationData(std::string &aFile)
   {
-    Assimp::Importer importer;
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
-    auto aniFileYTE = aniFile + ".YTEAnimation";
 
+
+    //auto aniFileYTE = aniFile + ".YTEAnimation";
+    //
+    //auto[readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
+    //
+    //return std::move(readFile);
+
+
+    Assimp::Importer importer;
+    
     {
       auto scene = importer.ReadFile(aniFile.c_str(),
                                      aiProcess_Triangulate |
@@ -648,30 +642,28 @@ namespace YTE
                                      aiProcess_GenSmoothNormals);
     
       UnusedArguments(scene);
-
+    
       DebugObjection(scene == nullptr,
                      "Failed to load animation file %s from assimp",
                      aniFile.c_str());
-
+    
       DebugObjection(scene->HasAnimations() == false,
                      "Failed to find animations in scene loaded from %s",
                      aniFile.c_str());
-
+    
       auto animation = scene->mAnimations[0];
-
+    
       AnimationData data;
       AnimationData::Node node;
-
+    
       data.mNodes.emplace_back(node);
-
+    
       MakeNodes(animation, scene->mRootNode, data, 0);
-
+    
       data.mTicksPerSecond = animation->mTicksPerSecond;
       data.mDuration = animation->mDuration;
-
-      WriteAnimationDataToFile(aniFile, data);
-
-      return std::move(ReadAnimationDataFromFile(aniFileYTE));
+    
+      return std::move(TestWritingAndReading(aniFile, data));
     }
 
     //if (filesystem::exists(aniFileYTE))

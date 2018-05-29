@@ -18,6 +18,8 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/prettywriter.h"
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 namespace YTE
 {
   using RSValue = rapidjson::Value;

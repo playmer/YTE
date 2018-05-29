@@ -26,9 +26,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
+//#include "assimp/Importer.hpp"
+//#include "assimp/postprocess.h"
+//#include "assimp/scene.h"
 #include "crunch/inc/crnlib.h"
 #include "stb/stb_image.h"
 
@@ -101,336 +101,336 @@ namespace YTEditor
 
   void ImportMenu::ImportAnimation()
   {
-    QFileDialog dialog(nullptr);
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setNameFilter(tr("Animations (*.fbx)"));
-    dialog.setDirectory(QDir::homePath());
-
-    QStringList files;
-
-    if (dialog.exec())
-    {
-      files = dialog.selectedFiles();
-    }
-
-    if (files.isEmpty())
-    {
-      return;
-    }
-
-    for (auto filename : files)
-    {
-
-      namespace fs = std::experimental::filesystem;
-      auto stdFileName = filename.toStdString();
-      fs::path animationFile{ stdFileName };
-      animationFile = fs::canonical(animationFile);
-      fs::path animationDirectory = animationFile.parent_path();
-      std::string stdAnimationDirectory = animationDirectory.string();
-
-
-      Assimp::Importer Importer;
-
-      auto pScene = Importer.ReadFile(stdFileName, 0);
-
-      if (nullptr == pScene)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-                                                 "Could not find a valid fbx named %s",
-                                                 stdAnimationDirectory.c_str());
-        return;
-      }
-
-      if (pScene->mNumAnimations == 0)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-                                                 "No animations are found in file %s",
-                                                 stdAnimationDirectory.c_str());
-        return;
-      }
-
-      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
-                                               "Importing Animation: %s",
-                                               stdAnimationDirectory.c_str());
-
-      for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
-      {
-        auto animation = pScene->mAnimations[i];
-        std::string animationName = animation->mName.data;
-
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
-                                                 "Animation Name (%s), Animation Index (%i):",
-                                                 animationName.c_str(),
-                                                 i);
-      }
-
-      fs::path workingDir{ YTE::Path::GetGamePath().String() };
-      fs::path assetsDir{ workingDir.parent_path() };
-      fs::path animationDir{ assetsDir / L"Animations" };
-
-      std::error_code code;
-
-      fs::copy(animationFile,
-               animationDir / animationFile.filename(),
-               fs::copy_options::recursive |
-               fs::copy_options::overwrite_existing,
-               code);
-
-
-      // copy the face animation files if they exist
-      fs::path animStem = animationFile;
-      animStem.replace_extension("");
-
-      fs::path eyePath(animStem.string() + "_EyeAnim.txt");
-      std::ifstream eyeFile(eyePath);
-
-      if (eyeFile.good())
-      {
-        fs::copy(eyePath,
-                 animationDir / eyePath.filename(),
-                 fs::copy_options::recursive |
-                 fs::copy_options::overwrite_existing,
-                 code);
-      }
-      eyeFile.close();
-
-      fs::path mouthPath(animStem.string() + "_MouthAnim.txt");
-      std::ifstream mouthFile(mouthPath);
-
-      if (mouthFile.good())
-      {
-        fs::copy(mouthPath,
-                 animationDir / mouthPath.filename(),
-                 fs::copy_options::recursive |
-                 fs::copy_options::overwrite_existing,
-                 code);
-      }
-      mouthFile.close();
-    }
+    //QFileDialog dialog(nullptr);
+    //dialog.setFileMode(QFileDialog::ExistingFiles);
+    //dialog.setNameFilter(tr("Animations (*.fbx)"));
+    //dialog.setDirectory(QDir::homePath());
+    //
+    //QStringList files;
+    //
+    //if (dialog.exec())
+    //{
+    //  files = dialog.selectedFiles();
+    //}
+    //
+    //if (files.isEmpty())
+    //{
+    //  return;
+    //}
+    //
+    //for (auto filename : files)
+    //{
+    //
+    //  namespace fs = std::experimental::filesystem;
+    //  auto stdFileName = filename.toStdString();
+    //  fs::path animationFile{ stdFileName };
+    //  animationFile = fs::canonical(animationFile);
+    //  fs::path animationDirectory = animationFile.parent_path();
+    //  std::string stdAnimationDirectory = animationDirectory.string();
+    //
+    //
+    //  Assimp::Importer Importer;
+    //
+    //  auto pScene = Importer.ReadFile(stdFileName, 0);
+    //
+    //  if (nullptr == pScene)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //                                             "Could not find a valid fbx named %s",
+    //                                             stdAnimationDirectory.c_str());
+    //    return;
+    //  }
+    //
+    //  if (pScene->mNumAnimations == 0)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //                                             "No animations are found in file %s",
+    //                                             stdAnimationDirectory.c_str());
+    //    return;
+    //  }
+    //
+    //  mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+    //                                           "Importing Animation: %s",
+    //                                           stdAnimationDirectory.c_str());
+    //
+    //  for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
+    //  {
+    //    auto animation = pScene->mAnimations[i];
+    //    std::string animationName = animation->mName.data;
+    //
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+    //                                             "Animation Name (%s), Animation Index (%i):",
+    //                                             animationName.c_str(),
+    //                                             i);
+    //  }
+    //
+    //  fs::path workingDir{ YTE::Path::GetGamePath().String() };
+    //  fs::path assetsDir{ workingDir.parent_path() };
+    //  fs::path animationDir{ assetsDir / L"Animations" };
+    //
+    //  std::error_code code;
+    //
+    //  fs::copy(animationFile,
+    //           animationDir / animationFile.filename(),
+    //           fs::copy_options::recursive |
+    //           fs::copy_options::overwrite_existing,
+    //           code);
+    //
+    //
+    //  // copy the face animation files if they exist
+    //  fs::path animStem = animationFile;
+    //  animStem.replace_extension("");
+    //
+    //  fs::path eyePath(animStem.string() + "_EyeAnim.txt");
+    //  std::ifstream eyeFile(eyePath);
+    //
+    //  if (eyeFile.good())
+    //  {
+    //    fs::copy(eyePath,
+    //             animationDir / eyePath.filename(),
+    //             fs::copy_options::recursive |
+    //             fs::copy_options::overwrite_existing,
+    //             code);
+    //  }
+    //  eyeFile.close();
+    //
+    //  fs::path mouthPath(animStem.string() + "_MouthAnim.txt");
+    //  std::ifstream mouthFile(mouthPath);
+    //
+    //  if (mouthFile.good())
+    //  {
+    //    fs::copy(mouthPath,
+    //             animationDir / mouthPath.filename(),
+    //             fs::copy_options::recursive |
+    //             fs::copy_options::overwrite_existing,
+    //             code);
+    //  }
+    //  mouthFile.close();
+    //}
   }
 
   void ImportMenu::ImportModel()
   {
-    // Construct a file dialog for selecting the correct file
-
-    QFileDialog dialog(nullptr);
-    dialog.setFileMode(QFileDialog::ExistingFiles);
-    dialog.setNameFilter(tr("Models (*.fbx)"));
-    dialog.setDirectory(QDir::homePath());
-
-    QStringList files;
-
-    if (dialog.exec())
-    {
-      files = dialog.selectedFiles();
-    }
-
-    if (files.isEmpty())
-    {
-      return;
-    }
-
-    for (auto filename : files)
-    {
-      auto stdFileName = filename.toStdString();
-      fs::path meshFile{ stdFileName };
-      meshFile = fs::canonical(meshFile);
-      fs::path meshDirectory = meshFile.parent_path();
-      std::string stdMeshDirectory = meshDirectory.string();
-
-
-      struct TextureType
-      {
-        aiTextureType mType;
-        bool mShouldWarn;
-        const char *mName;
-      };
-
-      Assimp::Importer Importer;
-
-      auto pScene = Importer.ReadFile(stdFileName,
-        aiProcess_FlipWindingOrder |
-        aiProcess_Triangulate |
-        aiProcess_PreTransformVertices |
-        aiProcess_CalcTangentSpace |
-        aiProcess_GenSmoothNormals);
-
-      std::set<fs::path> textures;
-
-      if (nullptr == pScene)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-          "Could not find a valid fbx named %s",
-          stdMeshDirectory.c_str());
-        return;
-      }
-
-      if (pScene->mNumMeshes == 0)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-          "No meshes are found in file %s",
-          stdMeshDirectory.c_str());
-        return;
-      }
-
-      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
-        "Importing Mesh: %s",
-        stdMeshDirectory.c_str());
-
-      for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
-      {
-        auto mesh = pScene->mMeshes[i];
-        auto meshName = mesh->mName;
-
-        auto material = pScene->mMaterials[mesh->mMaterialIndex];
-
-        aiString aiMaterialName;
-        material->Get(AI_MATKEY_NAME, aiMaterialName);
-
-        std::string materialName{ aiMaterialName.C_Str() };
-        std::string shaderName = materialName.substr(0, materialName.find_first_of('_'));
-
-
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
-          "Material Name (%s), Shader Name(%s):",
-          materialName.c_str(),
-          shaderName.c_str());
-
-        std::vector<TextureType> textureTypes{ { aiTextureType_NONE, true, "NONE" },
-        { aiTextureType_DIFFUSE, false , "DIFFUSE" },
-        { aiTextureType_SPECULAR, false, "SPECULAR" },
-        { aiTextureType_AMBIENT, true, "AMBIENT" },
-        { aiTextureType_EMISSIVE, true, "EMISSIVE" },
-        { aiTextureType_HEIGHT, true, "HEIGHT" },
-        { aiTextureType_NORMALS, false, "NORMALS" },
-        { aiTextureType_SHININESS, true, "SHININESS" },
-        { aiTextureType_OPACITY, true, "OPACITY" },
-        { aiTextureType_DISPLACEMENT, true, "DISPLACEMENT" },
-        { aiTextureType_LIGHTMAP, true, "LIGHTMAP" },
-        { aiTextureType_REFLECTION, true, "REFLECTION" },
-        { aiTextureType_UNKNOWN, true, "UNKNOWN" } };
-
-
-        for (auto &type : textureTypes)
-        {
-          aiString texture;
-
-          auto count = material->GetTextureCount(type.mType);
-
-          if (0 == count)
-          {
-            continue;
-          }
-
-          if (0 != count && type.mShouldWarn)
-          {
-            mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Blue,
-              "Texture types of type %s are not currently supported, "
-              "but will be converted and copied.",
-              type.mName);
-          }
-
-          if (1 != count)
-          {
-            mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-              "We will only process the first texture of type %s in "
-              "material %s. (There are %d remaining)",
-              type.mName,
-              materialName.c_str(),
-              count - 1);
-          }
-
-          for (unsigned j = 0; j < count; j++)
-          {
-            material->GetTexture(type.mType, j, &texture);
-
-            fs::path texturePath{ texture.C_Str() };
-            auto fullTexturePath = meshDirectory / texturePath.filename();
-
-            std::string stdFullTexturePath{ fullTexturePath.string() };
-
-            mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
-              "  Type: %s, Texture Path: %s",
-              type.mName,
-              stdFullTexturePath.c_str());
-
-            textures.emplace(fullTexturePath);
-          }
-
-          mMainWindow->GetOutputConsole().PrintLn("");
-        }
-      }
-
-      fs::path workingDir{ YTE::Path::GetGamePath().String() };
-      fs::path assetsDir{ workingDir.parent_path() };
-      fs::path modelDir{ assetsDir / L"Models" };
-      fs::path textureDir{ assetsDir / L"Textures" };
-      fs::path textureOriginalDir{ textureDir / L"Originals" };
-      fs::path textureCrunchDir{ textureDir / L"Crunch" };
-
-      // Check textures meeting our expectations.
-      bool correctTextures = true;
-      for (auto &texture : textures)
-      {
-        if (false == texture.has_extension())
-        {
-          mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-            "Texture %s doesn't have "
-            "an extension.\n",
-            texture.c_str());
-          correctTextures = false;
-          continue;
-        }
-      }
-
-      if (false == correctTextures)
-      {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
-          "Aborting model load!\n");
-      }
-
-      std::error_code code;
-      fs::create_directories(textureOriginalDir, code);
-      fs::create_directories(textureCrunchDir, code);
-
-      std::vector<TextureHelper> loadedTextures;
-
-      // Process Texture files
-      for (auto &texture : textures)
-      {
-        loadedTextures.emplace_back(TextureFileChecks(texture.string()));
-
-        if (loadedTextures.back().mFailure)
-        {
-          return;
-        }
-      }
-
-      //for (auto [texture, i]: YTE::enumerate(loadedTextures))
-      //{
-      //  if (false == CompressTextureFile(*texture))
-      //  {
-      //    for (size_t j = 0; j < i; ++j)
-      //    {
-      //      fs::remove(loadedTextures[j].mCrunchFilePath, code);
-      //    }
-      //
-      //    return;
-      //  }
-      //}
-
-
-      for (auto &texture : loadedTextures)
-      {
-        CopyTextureFile(texture);
-      }
-
-      fs::copy(meshFile,
-        modelDir / meshFile.filename(),
-        fs::copy_options::recursive |
-        fs::copy_options::overwrite_existing,
-        code);
-    }
+    //// Construct a file dialog for selecting the correct file
+    //
+    //QFileDialog dialog(nullptr);
+    //dialog.setFileMode(QFileDialog::ExistingFiles);
+    //dialog.setNameFilter(tr("Models (*.fbx)"));
+    //dialog.setDirectory(QDir::homePath());
+    //
+    //QStringList files;
+    //
+    //if (dialog.exec())
+    //{
+    //  files = dialog.selectedFiles();
+    //}
+    //
+    //if (files.isEmpty())
+    //{
+    //  return;
+    //}
+    //
+    //for (auto filename : files)
+    //{
+    //  auto stdFileName = filename.toStdString();
+    //  fs::path meshFile{ stdFileName };
+    //  meshFile = fs::canonical(meshFile);
+    //  fs::path meshDirectory = meshFile.parent_path();
+    //  std::string stdMeshDirectory = meshDirectory.string();
+    //
+    //
+    //  struct TextureType
+    //  {
+    //    aiTextureType mType;
+    //    bool mShouldWarn;
+    //    const char *mName;
+    //  };
+    //
+    //  Assimp::Importer Importer;
+    //
+    //  auto pScene = Importer.ReadFile(stdFileName,
+    //    aiProcess_FlipWindingOrder |
+    //    aiProcess_Triangulate |
+    //    aiProcess_PreTransformVertices |
+    //    aiProcess_CalcTangentSpace |
+    //    aiProcess_GenSmoothNormals);
+    //
+    //  std::set<fs::path> textures;
+    //
+    //  if (nullptr == pScene)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //      "Could not find a valid fbx named %s",
+    //      stdMeshDirectory.c_str());
+    //    return;
+    //  }
+    //
+    //  if (pScene->mNumMeshes == 0)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //      "No meshes are found in file %s",
+    //      stdMeshDirectory.c_str());
+    //    return;
+    //  }
+    //
+    //  mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+    //    "Importing Mesh: %s",
+    //    stdMeshDirectory.c_str());
+    //
+    //  for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
+    //  {
+    //    auto mesh = pScene->mMeshes[i];
+    //    auto meshName = mesh->mName;
+    //
+    //    auto material = pScene->mMaterials[mesh->mMaterialIndex];
+    //
+    //    aiString aiMaterialName;
+    //    material->Get(AI_MATKEY_NAME, aiMaterialName);
+    //
+    //    std::string materialName{ aiMaterialName.C_Str() };
+    //    std::string shaderName = materialName.substr(0, materialName.find_first_of('_'));
+    //
+    //
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+    //      "Material Name (%s), Shader Name(%s):",
+    //      materialName.c_str(),
+    //      shaderName.c_str());
+    //
+    //    std::vector<TextureType> textureTypes{ { aiTextureType_NONE, true, "NONE" },
+    //    { aiTextureType_DIFFUSE, false , "DIFFUSE" },
+    //    { aiTextureType_SPECULAR, false, "SPECULAR" },
+    //    { aiTextureType_AMBIENT, true, "AMBIENT" },
+    //    { aiTextureType_EMISSIVE, true, "EMISSIVE" },
+    //    { aiTextureType_HEIGHT, true, "HEIGHT" },
+    //    { aiTextureType_NORMALS, false, "NORMALS" },
+    //    { aiTextureType_SHININESS, true, "SHININESS" },
+    //    { aiTextureType_OPACITY, true, "OPACITY" },
+    //    { aiTextureType_DISPLACEMENT, true, "DISPLACEMENT" },
+    //    { aiTextureType_LIGHTMAP, true, "LIGHTMAP" },
+    //    { aiTextureType_REFLECTION, true, "REFLECTION" },
+    //    { aiTextureType_UNKNOWN, true, "UNKNOWN" } };
+    //
+    //
+    //    for (auto &type : textureTypes)
+    //    {
+    //      aiString texture;
+    //
+    //      auto count = material->GetTextureCount(type.mType);
+    //
+    //      if (0 == count)
+    //      {
+    //        continue;
+    //      }
+    //
+    //      if (0 != count && type.mShouldWarn)
+    //      {
+    //        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Blue,
+    //          "Texture types of type %s are not currently supported, "
+    //          "but will be converted and copied.",
+    //          type.mName);
+    //      }
+    //
+    //      if (1 != count)
+    //      {
+    //        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //          "We will only process the first texture of type %s in "
+    //          "material %s. (There are %d remaining)",
+    //          type.mName,
+    //          materialName.c_str(),
+    //          count - 1);
+    //      }
+    //
+    //      for (unsigned j = 0; j < count; j++)
+    //      {
+    //        material->GetTexture(type.mType, j, &texture);
+    //
+    //        fs::path texturePath{ texture.C_Str() };
+    //        auto fullTexturePath = meshDirectory / texturePath.filename();
+    //
+    //        std::string stdFullTexturePath{ fullTexturePath.string() };
+    //
+    //        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Green,
+    //          "  Type: %s, Texture Path: %s",
+    //          type.mName,
+    //          stdFullTexturePath.c_str());
+    //
+    //        textures.emplace(fullTexturePath);
+    //      }
+    //
+    //      mMainWindow->GetOutputConsole().PrintLn("");
+    //    }
+    //  }
+    //
+    //  fs::path workingDir{ YTE::Path::GetGamePath().String() };
+    //  fs::path assetsDir{ workingDir.parent_path() };
+    //  fs::path modelDir{ assetsDir / L"Models" };
+    //  fs::path textureDir{ assetsDir / L"Textures" };
+    //  fs::path textureOriginalDir{ textureDir / L"Originals" };
+    //  fs::path textureCrunchDir{ textureDir / L"Crunch" };
+    //
+    //  // Check textures meeting our expectations.
+    //  bool correctTextures = true;
+    //  for (auto &texture : textures)
+    //  {
+    //    if (false == texture.has_extension())
+    //    {
+    //      mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //        "Texture %s doesn't have "
+    //        "an extension.\n",
+    //        texture.c_str());
+    //      correctTextures = false;
+    //      continue;
+    //    }
+    //  }
+    //
+    //  if (false == correctTextures)
+    //  {
+    //    mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+    //      "Aborting model load!\n");
+    //  }
+    //
+    //  std::error_code code;
+    //  fs::create_directories(textureOriginalDir, code);
+    //  fs::create_directories(textureCrunchDir, code);
+    //
+    //  std::vector<TextureHelper> loadedTextures;
+    //
+    //  // Process Texture files
+    //  for (auto &texture : textures)
+    //  {
+    //    loadedTextures.emplace_back(TextureFileChecks(texture.string()));
+    //
+    //    if (loadedTextures.back().mFailure)
+    //    {
+    //      return;
+    //    }
+    //  }
+    //
+    //  //for (auto [texture, i]: YTE::enumerate(loadedTextures))
+    //  //{
+    //  //  if (false == CompressTextureFile(*texture))
+    //  //  {
+    //  //    for (size_t j = 0; j < i; ++j)
+    //  //    {
+    //  //      fs::remove(loadedTextures[j].mCrunchFilePath, code);
+    //  //    }
+    //  //
+    //  //    return;
+    //  //  }
+    //  //}
+    //
+    //
+    //  for (auto &texture : loadedTextures)
+    //  {
+    //    CopyTextureFile(texture);
+    //  }
+    //
+    //  fs::copy(meshFile,
+    //    modelDir / meshFile.filename(),
+    //    fs::copy_options::recursive |
+    //    fs::copy_options::overwrite_existing,
+    //    code);
+    //}
   }
 
   void ImportMenu::ImportTexture()

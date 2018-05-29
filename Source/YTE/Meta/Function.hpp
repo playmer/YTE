@@ -22,8 +22,8 @@ namespace YTE
       std::string mName;
     };
 
-    Function(const char *aName, Type *aReturnType, Type *aOwningType);
-    Any Invoke(std::vector<Any> &aArguments) const;
+    YTE_Shared Function(const char *aName, Type *aReturnType, Type *aOwningType);
+    YTE_Shared Any Invoke(std::vector<Any> &aArguments) const;
 
     // Will return default constructed Any if the arguments fail.
     template <typename ...tArguments>
@@ -34,16 +34,16 @@ namespace YTE
       return Invoke(args);
     }
 
-    void AddParameter(Type *aType, const char *aName = "");
-    void SetCaller(CallingFunction aCaller);
-    const std::string& GetName() const;
-    void SetOwningType(Type *aOwningType);
-    Type* GetOwningType() const;
-    bool IsSame(Function &aFunction) const;
-    Type* GetReturnType() const;
-    bool IsStaticOrFree();
-    void SetParameterNames(std::initializer_list<const char *> aNames);
-    std::vector<Parameter>& GetParameters();
+    YTE_Shared void AddParameter(Type *aType, const char *aName = "");
+    YTE_Shared void SetCaller(CallingFunction aCaller);
+    YTE_Shared const std::string& GetName() const;
+    YTE_Shared void SetOwningType(Type *aOwningType);
+    YTE_Shared Type* GetOwningType() const;
+    YTE_Shared bool IsSame(Function &aFunction) const;
+    YTE_Shared Type* GetReturnType() const;
+    YTE_Shared bool IsStaticOrFree();
+    YTE_Shared void SetParameterNames(std::initializer_list<const char *> aNames);
+    YTE_Shared std::vector<Parameter>& GetParameters();
 
     private:
     std::string mName;
