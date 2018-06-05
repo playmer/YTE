@@ -610,8 +610,8 @@ namespace YTEditor
   }
 
   void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-    YTE::vector<ObjectItem*>* aResult,
-    ObjectItem* aItem)
+                                                     std::vector<ObjectItem*>& aResult,
+                                                     ObjectItem* aItem)
   {
     for (int i = 0; i < aItem->childCount(); ++i)
     {
@@ -619,7 +619,7 @@ namespace YTEditor
 
       if (item->GetEngineObject()->GetArchetypeName() == aArchetypeName)
       {
-        aResult->emplace_back(item);
+        aResult.emplace_back(item);
       }
 
       FindObjectsByArchetypeInternal(aArchetypeName, aResult, item);
@@ -655,9 +655,9 @@ namespace YTEditor
     return mMainWindow;
   }
 
-  YTE::vector<ObjectItem*>* ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
+  std::vector<ObjectItem*> ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
   {
-    YTE::vector<ObjectItem*> *result = new YTE::vector<ObjectItem*>();
+    std::vector<ObjectItem*> result;
 
     // loop through all items in the object browser
     for (int i = 0; i < topLevelItemCount(); ++i)
@@ -666,13 +666,13 @@ namespace YTEditor
 
       if (objItem->GetEngineObject()->GetArchetypeName() == aArchetypeName)
       {
-        result->emplace_back(objItem);
+        result.emplace_back(objItem);
       }
 
       FindObjectsByArchetypeInternal(aArchetypeName, result, objItem);
     }
 
-    return result;
+    return std::move(result);
   }
 
   void ObjectBrowser::SelectNoItem()

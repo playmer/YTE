@@ -13,6 +13,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Engine.cpp
     ${CMAKE_CURRENT_LIST_DIR}/EventHandler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Object.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Plugin.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Space.cpp
     ${CMAKE_CURRENT_LIST_DIR}/TestComponent.cpp
@@ -38,7 +39,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/EventHandler.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Object.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/PrivateImplementation.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Plugin.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.hpp
     ${CMAKE_CURRENT_LIST_DIR}/StaticIntents.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Space.hpp

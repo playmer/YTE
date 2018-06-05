@@ -17,10 +17,14 @@ project(YTE CXX C)
 ################################################################################
 # Set up some variables that we'll be able to access anywhere.
 ################################################################################
-set(CMake_Include          ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-set(Dependencies_Root      ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies)
-set(YTE_Binary_Dir  ${CMAKE_CURRENT_SOURCE_DIR}/Output/Binary)
-set(YTE_Library_Dir ${CMAKE_CURRENT_SOURCE_DIR}/Output/Library)
+set(Repo_Root         ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMake_Include     ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(Dependencies_Root ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies)
+set(YTE_Binary_Dir    ${CMAKE_CURRENT_SOURCE_DIR}/Output/Binary)
+set(YTE_Library_Dir   ${CMAKE_CURRENT_SOURCE_DIR}/Output/Library)
+set(YTE_Assets_Root   ${CMAKE_CURRENT_SOURCE_DIR}/Assets/YTE)
+
+message("Assets Dir: ${YTE_Assets_Root}")
 
 ################################################################################
 # Path to modules for finding external libraries.

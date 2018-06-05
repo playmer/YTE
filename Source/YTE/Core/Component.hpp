@@ -26,9 +26,9 @@ namespace YTE
   public:
     YTEDeclareType(Component);
 
-    Component(Composition *aOwner, Space *aSpace);
+    YTE_Shared Component(Composition *aOwner, Space *aSpace);
 
-    virtual ~Component();
+    YTE_Shared virtual ~Component();
 
     virtual void AssetInitialize() { };
     virtual void NativeInitialize() { };

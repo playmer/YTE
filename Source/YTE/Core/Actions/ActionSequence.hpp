@@ -20,8 +20,8 @@ namespace YTE
   {
   public:
     friend class ActionManager;
-    ActionSequence();
-    void AddGroup(const ActionGroup &group);
+    YTE_Shared ActionSequence();
+    YTE_Shared void AddGroup(const ActionGroup &group);
 
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
@@ -43,12 +43,12 @@ namespace YTE
       mGroups.push(group);
     }
 
-    void Call(std::function<void(void)> aCallback);
-    void Delay(float aDuration);
+    YTE_Shared void Call(std::function<void(void)> aCallback);
+    YTE_Shared void Delay(float aDuration);
   private:
-    float Increment(float dt);
-    void operator() ();
-    bool IsDone() const;
+    YTE_Shared float Increment(float dt);
+    YTE_Shared void operator() ();
+    YTE_Shared bool IsDone() const;
     std::queue<ActionGroup> mGroups;
   };
 }

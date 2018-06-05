@@ -25,7 +25,7 @@ namespace YTE
 {
   namespace filesystem = std::experimental::filesystem;
 
-  extern std::wstring cWorkingDirectory;
+  YTE_Shared extern std::wstring cWorkingDirectory;
 
   // Version 4, Variant 1 GUID
   struct GlobalUniqueIdentifier

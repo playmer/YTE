@@ -16,14 +16,14 @@ namespace YTE
   {
   public:
     YTEDeclareType(Sprite);
-    Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~Sprite();
+    YTE_Shared Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared ~Sprite();
 
-    void AssetInitialize() override;
-    void Initialize() override;
-    void CreateSprite();
+    YTE_Shared void AssetInitialize() override;
+    YTE_Shared void Initialize() override;
+    YTE_Shared void CreateSprite();
 
-    void Update(LogicUpdate *aUpdate);
+    YTE_Shared void Update(LogicUpdate *aUpdate);
 
     std::string GetTexture()
     {
@@ -44,9 +44,9 @@ namespace YTE
       }
     }
 
-    void CreateTransform();
+    YTE_Shared void CreateTransform();
 
-    void TransformUpdate(TransformChanged *aEvent);
+    YTE_Shared void TransformUpdate(TransformChanged *aEvent);
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
@@ -112,7 +112,7 @@ namespace YTE
     }
 
 
-    void SetAnimating(bool aAnimating);
+    YTE_Shared void SetAnimating(bool aAnimating);
 
   private:
     Renderer *mRenderer;

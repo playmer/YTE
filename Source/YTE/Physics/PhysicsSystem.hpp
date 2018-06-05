@@ -7,8 +7,8 @@
 */
 /******************************************************************************/
 
-#ifndef YTE_Physics_PhysicsSystem_H
-#define YTE_Physics_PhysicsSystem_H
+#ifndef YTE_Physics_PhysicsSystem_hpp
+#define YTE_Physics_PhysicsSystem_hpp
 
 #include "btBulletDynamicsCommon.h"
 
@@ -34,34 +34,34 @@ namespace YTE
   public:
     YTEDeclareType(PhysicsSystem);
 
-    PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~PhysicsSystem();
+    YTE_Shared PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared ~PhysicsSystem();
 
-    void Initialize() override;
+    YTE_Shared void Initialize() override;
 
     bool GetDebugDraw() { return mDebugDraw; };
-    void ToggleDebugDraw();
+    YTE_Shared void ToggleDebugDraw();
 
-    void ToggleDebugDrawOption(int aOption);
+    YTE_Shared void ToggleDebugDrawOption(int aOption);
 
-    void BeginDebugDrawUpdate(LogicUpdate *aEvent);
-    void DebugDrawUpdate(LogicUpdate *aEvent);
-    void EndDebugDrawUpdate(LogicUpdate *aEvent);
-    void OnPhysicsUpdate(LogicUpdate *aEvent);
+    YTE_Shared void BeginDebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void DebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void EndDebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void OnPhysicsUpdate(LogicUpdate *aEvent);
 
-    RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
+    YTE_Shared RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
 
     btDiscreteDynamicsWorld *GetWorld() { return mDynamicsWorld.get(); };
 
-    glm::vec3 GetGravity();
-    void SetGravity(glm::vec3 aAcceleration);
+    YTE_Shared glm::vec3 GetGravity();
+    YTE_Shared void SetGravity(glm::vec3 aAcceleration);
 
   private:
-    void DispatchCollisionEvents(void);
+    YTE_Shared void DispatchCollisionEvents(void);
 
-    void DispatchContactEvent(Composition *mainObject,
-                              Composition *otherObject,
-                              btPersistentManifold *manifold);
+    YTE_Shared void DispatchContactEvent(Composition *mainObject,
+                                Composition *otherObject,
+                                btPersistentManifold *manifold);
 
     std::unique_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
     std::unique_ptr<btCollisionDispatcher> mDispatcher;

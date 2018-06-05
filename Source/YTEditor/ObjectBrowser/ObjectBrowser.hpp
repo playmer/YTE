@@ -14,9 +14,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
+#include <vector>
+
 #include <qtreewidget.h>
 
-#include "YTE/StandardLibrary/Vector.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -38,51 +39,51 @@ namespace YTEditor
   class ObjectBrowser : public QTreeWidget
   {
   public:
-    ObjectBrowser(MainWindow *aMainWindow, QWidget *parent = nullptr);
+    ObjectBrowser(MainWindow* aMainWindow, QWidget* aParent = nullptr);
     ~ObjectBrowser();
 
     void ClearObjectBrowser();
 
-    ObjectItem* AddObject(const char *aCompositionName,
-                          const char *aArchetypeName,
+    ObjectItem* AddObject(char const*aCompositionName,
+                          char const*aArchetypeName,
                           int aIndex = 0);
 
-    ObjectItem* AddChildObject(const char *aCompositionName,
-                               const char *aArchetypeName,
-                               ObjectItem *aParentObj,
+    ObjectItem* AddChildObject(char const* aCompositionName,
+                               char const* aArchetypeName,
+                               ObjectItem* aParentObj,
                                int aIndex = 0);
 
-    ObjectItem* AddTreeItem(const char *aItemName,
-                            YTE::Composition *aEngineObj,
+    ObjectItem* AddTreeItem(char const* aItemName,
+                            YTE::Composition* aEngineObj,
                             int aIndex = 0,
                             bool aSetAsCurrent = true);
 
-    ObjectItem* AddTreeItem(const char *aItemName,
-                            ObjectItem * aParentObj,
-                            YTE::Composition *aEngineObj,
+    ObjectItem* AddTreeItem(char const* aItemName,
+                            ObjectItem* aParentObj,
+                            YTE::Composition* aEngineObj,
                             int aIndex = 0,
                             bool aSetAsCurrent = true);
 
-    ObjectItem* AddExistingComposition(const char *aCompositionName,
-                                       YTE::Composition *aComposition);
+    ObjectItem* AddExistingComposition(char const* aCompositionName,
+                                       YTE::Composition* aComposition);
 
-    void LoadAllChildObjects(YTE::Composition *aParentObj,
-                             ObjectItem *aParentItem);
+    void LoadAllChildObjects(YTE::Composition* aParentObj,
+                             ObjectItem* aParentItem);
 
     YTE::Composition* GetCurrentObject();
 
-    void RemoveObjectFromViewer(ObjectItem *aItem);
+    void RemoveObjectFromViewer(ObjectItem* aItem);
 
-    ObjectItem* FindItemByComposition(YTE::Composition *aComp);
+    ObjectItem* FindItemByComposition(YTE::Composition* aComp);
 
     MainWindow* GetMainWindow() const;
 
-    YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    std::vector<ObjectItem*> FindAllObjectsOfArchetype(YTE::String& aArchetypeName);
 
     void SelectNoItem();
     
-    void OnCurrentItemChanged(QTreeWidgetItem *current,
-                              QTreeWidgetItem *previous);
+    void OnCurrentItemChanged(QTreeWidgetItem* aCurrent,
+                              QTreeWidgetItem* aPrevious);
 
     void OnItemSelectionChanged();
 
@@ -98,18 +99,18 @@ namespace YTEditor
     MainWindow *mMainWindow;
     void SetWidgetSettings();
 
-    void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
+    void OnItemTextChanged(QTreeWidgetItem* aItem, int aIndex);
 
-    void dropEvent(QDropEvent *aEvent) override;
+    void dropEvent(QDropEvent* aEvent) override;
 
-    void CreateContextMenu(const QPoint & pos);
+    void CreateContextMenu(QPoint const& pos);
 
-    void keyPressEvent(QKeyEvent *aEvent);
+    void keyPressEvent(QKeyEvent* aEvent);
 
-    ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+    ObjectItem* SearchChildrenByComp(ObjectItem* aItem, YTE::Composition* aComp);
 
     void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-                                        YTE::vector<ObjectItem*>* aResult,
+                                        std::vector<ObjectItem*>& aResult,
                                         ObjectItem* aItem);
 
     std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;

@@ -25,6 +25,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  namespace fs = std::experimental::filesystem;
+
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
   YTEDefineEvent(PreLogicUpdate);
@@ -95,8 +97,6 @@ namespace YTE
     }
 
     YTEProfileFunction();
-
-    namespace fs = std::experimental::filesystem;
     
     auto enginePath = Path::SetEnginePath(fs::current_path().string());
 
@@ -136,6 +136,8 @@ namespace YTE
 
       mLevels.emplace(std::make_pair(levelName, std::unique_ptr<RSDocument>(nullptr)));
     }
+
+    LoadPlugins();
 
     if (nullptr != pathToUse)
     {
@@ -338,8 +340,32 @@ namespace YTE
     }
   }
 
+  void Engine::LoadPlugins()
+  {
+    fs::path gamePath = Path::GetGamePath().String();
+    gamePath /= "Plugins";
+
+    std::error_code error;
+    fs::create_directories("gamePath", error);
+
+    for (auto& itemIt : fs::directory_iterator(gamePath))
+    {
+      fs::path item{ itemIt };
+
+      auto extension = item.extension();
+      
+      //if (".YTEdll" == extension)
+      if (".dll" == extension)
+      {
+        auto path = item.u8string();
+        mPlugins[path] = std::make_unique<PluginWrapper>(this, path);
+      }
+    }
+  }
+
   void Engine::Recompile()
   {
+
   }
   
   RSDocument* Engine::GetArchetype(String &aArchetype)

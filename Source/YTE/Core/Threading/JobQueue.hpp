@@ -6,10 +6,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
+#include <deque>
 #include <mutex>
 
 #include "YTE/Core/Threading/Job.hpp"
-#include "YTE/StandardLibrary/Deque.hpp"
 
 //TODO (Evan): Replace JobQueue with circular array
 // less locks and more performant

@@ -574,15 +574,14 @@ namespace YTE                                              \
   {                                                        \
     static inline Type* TypeId()                           \
     {                                                      \
-      static Type type{ #Name,                             \
-                        static_cast<Name*>(nullptr) };     \
-      return &type;                                        \
+      return &cType;                                       \
     }                                                      \
                                                            \
     static inline void InitializeType()                    \
     {                                                      \
       Type::AddGlobalType(TypeId()->GetName(), TypeId());  \
     }                                                      \
+    YTE_Shared static Type cType;                          \
   };                                                       \
                                                            \
   template<>                                               \
@@ -591,7 +590,13 @@ namespace YTE                                              \
 
 // Must be used outside of a namespace, clang and MSVC seem to be fine inside of YTE
 // but GCC will not allow it, and I tend to think they're right.
-#define YTEDefineExternalType(Name) template<> void YTE::InitializeType<Name>()
+#define YTEDefineExternalType(Name)                                   \
+namespace YTE                                                         \
+{                                                                     \
+  Type TypeIdentification<Name>::cType{ #Name,                        \
+                                        static_cast<Name*>(nullptr)}; \
+}                                                                     \
+template<> void YTE::InitializeType<Name>()
 
 YTEDeclareExternalType(void)
 YTEDeclareExternalType(bool)

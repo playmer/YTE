@@ -68,12 +68,6 @@ namespace YTE
     builder.Field<&ParentChanged::mNewParent>("NewParent", PropertyBinding::Get);
   }
 
-  YTEDefineExternalType(CompositionMap::range)
-  {
-    RegisterType<CompositionMap::range>();
-    TypeBuilder<CompositionMap::range> builder;
-  }
-
   YTEDefineType(Composition)
   {
     RegisterType<Composition>();
@@ -1288,4 +1282,10 @@ namespace YTE
   {
     return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
   }
+}
+
+YTEDefineExternalType(YTE::CompositionMap::range)
+{
+  RegisterType<CompositionMap::range>();
+  TypeBuilder<CompositionMap::range> builder;
 }

@@ -6,19 +6,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Core_JobSystem_h
-#define YTE_Core_JobSystem_h
+#ifndef YTE_Core_JobSystem_hpp
+#define YTE_Core_JobSystem_hpp
 
-
+#include <functional>
 #include <mutex>
 #include <thread>
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Threading/Worker.hpp"
-
-#include "YTE/StandardLibrary/UnorderedMap.hpp"
-
-#include <functional>
 
 namespace YTE
 {

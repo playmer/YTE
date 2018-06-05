@@ -15,14 +15,15 @@
 
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
-#include "YTE/Core/PrivateImplementation.hpp"
+
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
 
 namespace YTE
 {

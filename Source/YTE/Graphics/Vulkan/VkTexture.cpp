@@ -197,6 +197,10 @@ namespace YTE
       }
     }
 
+    // TODO (JoshF): Please think of a better way to unload texture data.
+    //mTexture->mData.clear();
+    //mTexture->mData.shrink_to_fit();
+
     mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
   }
 }

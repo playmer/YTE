@@ -14,61 +14,6 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
-#include "YTE/GameComponents/AudioTest.hpp"
-#include "YTE/GameComponents/BoatController.hpp"
-#include "YTE/GameComponents/BoatParticles.hpp"
-#include "YTE/GameComponents/BoatPhysics.hpp"
-#include "YTE/GameComponents/Dialogue.hpp"
-#include "YTE/GameComponents/DialogueDirector.hpp"
-#include "YTE/GameComponents/DialogueElement.hpp"
-#include "YTE/GameComponents/DialogueElementDefault.hpp"
-#include "YTE/GameComponents/HudController.hpp"
-#include "YTE/GameComponents/InputInterpreter.hpp"
-#include "YTE/GameComponents/AddComponentToEngine.hpp"
-#include "YTE/GameComponents/CameraAnchor.hpp"
-#include "YTE/GameComponents/CameraBoom.hpp"
-#include "YTE/GameComponents/CameraController.hpp"
-#include "YTE/GameComponents/Menu/MenuController.hpp"
-#include "YTE/GameComponents/Menu/RootMenu.hpp"
-#include "YTE/GameComponents/Menu/LaunchMenu.hpp"
-#include "YTE/GameComponents/Menu/ExitMenu.hpp"
-#include "YTE/GameComponents/Menu/LaunchLevel.hpp"
-#include "YTE/GameComponents/Menu/LaunchGame.hpp"
-#include "YTE/GameComponents/Menu/LaunchCredits.hpp"
-#include "YTE/GameComponents/Menu/QuitGame.hpp"
-#include "YTE/GameComponents/Menu/ToggleFullscreen.hpp"
-#include "YTE/GameComponents/Menu/ToggleMute.hpp"
-#include "YTE/GameComponents/Menu/ChangeVolume.hpp"
-#include "YTE/GameComponents/Menu/ChangeResolution.hpp"
-#include "YTE/GameComponents/Menu/Button.hpp"
-#include "YTE/GameComponents/Menu/ButtonAnimate.hpp"
-#include "YTE/GameComponents/InheritVisibility.hpp"
-#include "YTE/GameComponents/LoadingScreen.hpp"
-#include "YTE/GameComponents/MakeLoadingScreen.hpp"
-#include "YTE/GameComponents/Credits.hpp"
-#include "YTE/GameComponents/SplashScreen.hpp"
-#include "YTE/GameComponents/SampleAction.hpp"
-#include "YTE/GameComponents/demo_InsideZone.hpp"
-#include "YTE/GameComponents/Zone.hpp"
-#include "YTE/GameComponents/Island.hpp"
-#include "YTE/GameComponents/TestingComponent.hpp"
-#include "YTE/GameComponents/JohnDialogue.hpp"
-#include "YTE/GameComponents/DaisyDialogue.hpp"
-#include "YTE/GameComponents/BasilDialogue.hpp"
-#include "YTE/GameComponents/QuestLogic.hpp"
-#include "YTE/GameComponents/NoticeBoard.hpp"
-#include "YTE/GameComponents/QuestProgressionTrigger.hpp"
-#include "YTE/GameComponents/JohnMovement.hpp"
-#include "YTE/GameComponents/DaisyMovement.hpp"
-#include "YTE/GameComponents/BasilMovement.hpp"
-#include "YTE/GameComponents/StarMovement.hpp"
-#include "YTE/GameComponents/JohnTutorial.hpp"
-#include "YTE/GameComponents/DaisyTutorial.hpp"
-#include "YTE/GameComponents/BasilTutorial.hpp"
-#include "YTE/GameComponents/OceanCreatureBehavior.hpp"
-#include "YTE/GameComponents/ProgressionParticles.hpp"
-#include "YTE/GameComponents/PostcardIconPulse.hpp"
-
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FacialAnimator.hpp"
@@ -125,63 +70,6 @@ namespace YTE
 
     helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
-
-    helper.CreateComponentFactory<AudioTest>();
-    helper.CreateComponentFactory<BoatController>();
-    helper.CreateComponentFactory<BoatParticles>();
-    helper.CreateComponentFactory<BoatPhysics>();
-    helper.CreateComponentFactory<InputInterpreter>();
-    helper.CreateComponentFactory<AddComponentToEngine>();
-    helper.CreateComponentFactory<CameraAnchor>();
-    helper.CreateComponentFactory<CameraBoom>();
-    helper.CreateComponentFactory<CameraController>();
-
-    helper.CreateComponentFactory<Credits>();
-    helper.CreateComponentFactory<LoadingScreen>();
-    helper.CreateComponentFactory<MakeLoadingScreen>();
-    helper.CreateComponentFactory<SplashScreen>();
-    helper.CreateComponentFactory<MenuController>();
-    helper.CreateComponentFactory<RootMenu>();
-    helper.CreateComponentFactory<LaunchMenu>();
-    helper.CreateComponentFactory<ExitMenu>();
-    helper.CreateComponentFactory<LaunchLevel>();
-    helper.CreateComponentFactory<LaunchGame>();
-    helper.CreateComponentFactory<LaunchCredits>();
-    helper.CreateComponentFactory<QuitGame>();
-    helper.CreateComponentFactory<ToggleFullscreen>();
-    helper.CreateComponentFactory<ToggleMute>();
-    helper.CreateComponentFactory<ChangeVolume>();
-    helper.CreateComponentFactory<ChangeResolution>();
-    helper.CreateComponentFactory<Button>();
-    helper.CreateComponentFactory<ButtonAnimate>();
-
-    helper.CreateComponentFactory<InheritVisibility>();
-    helper.CreateComponentFactory<SampleAction>();
-    helper.CreateComponentFactory<demo_InsideZone>();
-    helper.CreateComponentFactory<Dialogue>();
-    helper.CreateComponentFactory<DialogueDirector>();
-    helper.CreateComponentFactory<DialogueElement>();
-    helper.CreateComponentFactory<DialogueElementDefault>();
-    helper.CreateComponentFactory<HudController>();
-    helper.CreateComponentFactory<Zone>();
-    helper.CreateComponentFactory<Island>();
-    helper.CreateComponentFactory<TestingComponent>();
-    helper.CreateComponentFactory<JohnDialogue>();
-    helper.CreateComponentFactory<DaisyDialogue>();
-    helper.CreateComponentFactory<BasilDialogue>();
-    helper.CreateComponentFactory<QuestLogic>();
-    helper.CreateComponentFactory<NoticeBoard>();
-    helper.CreateComponentFactory<QuestProgressionTrigger>();
-    helper.CreateComponentFactory<JohnMovement>();
-    helper.CreateComponentFactory<DaisyMovement>();
-    helper.CreateComponentFactory<BasilMovement>();
-    helper.CreateComponentFactory<StarMovement>();
-    helper.CreateComponentFactory<JohnTutorial>();
-    helper.CreateComponentFactory<DaisyTutorial>();
-    helper.CreateComponentFactory<BasilTutorial>();
-    helper.CreateComponentFactory<OceanCreatureBehavior>();
-    helper.CreateComponentFactory<ProgressionParticles>();
-    helper.CreateComponentFactory<PostcardIconPulse>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();

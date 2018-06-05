@@ -26,7 +26,7 @@ namespace YTE
   {                                             \
   }                                             \
   name(const name& aAction)                     \
-    : Action_CRTP(aAction.mD, this)              \
+    : Action_CRTP(aAction.mD, this)             \
     , mValue(aAction.mValue)                    \
     , mB(aAction.mB)                            \
     , mC(aAction.mC)                            \
@@ -48,11 +48,11 @@ namespace YTE
   {                                             \
     Ease(mValue, mB, mC, mT, mD);               \
   }                                             \
-  static void Ease(float &value,                \
-                   float &b,                    \
-                   float &c,                    \
-                   float &t,                    \
-                   float &d);                   \
+  YTE_Shared static void Ease(float &value,     \
+                              float &b,         \
+                              float &c,         \
+                              float &t,         \
+                              float &d);        \
   }
 
 #define YTEDefineAction(name)     \
@@ -66,13 +66,13 @@ namespace YTE
   {
   public:
     friend class ActionGroup;
-    explicit Action(float aDur);
-    float Increment(float dt);
-    bool IsDone() const;
-    virtual void Init();
-    virtual Action * Clone() const;
-    virtual void operator() ();
-    virtual ~Action();
+    YTE_Shared explicit Action(float aDur);
+    YTE_Shared float Increment(float dt);
+    YTE_Shared bool IsDone() const;
+    YTE_Shared virtual void Init();
+    YTE_Shared virtual Action * Clone() const;
+    YTE_Shared virtual void operator() ();
+    YTE_Shared virtual ~Action();
   protected:
     float mD;
     float mT;
@@ -102,9 +102,9 @@ namespace YTE
   class Action_Callback : public Action_CRTP<Action_Callback>
   {
   public:
-    Action_Callback(std::function<void(void)> aCallback);
-    Action_Callback(const Action_Callback& aAction);
-    void operator() () override;
+    YTE_Shared Action_Callback(std::function<void(void)> aCallback);
+    YTE_Shared Action_Callback(const Action_Callback& aAction);
+    YTE_Shared void operator() () override;
   private:
     bool mHasCalled;
     std::function<void(void)> mCallback;

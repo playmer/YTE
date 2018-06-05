@@ -14,9 +14,9 @@ namespace YTE
 
     Property(Property&) = delete;
 
-    Property(const char *aName,
-             std::unique_ptr<Function> aGetter,
-             std::unique_ptr<Function> aSetter);
+    YTE_Shared Property(const char *aName,
+                        std::unique_ptr<Function> aGetter,
+                        std::unique_ptr<Function> aSetter);
 
     Type* GetOwningType() { return mOwningType; }
     Type* GetPropertyType() { return mType; }

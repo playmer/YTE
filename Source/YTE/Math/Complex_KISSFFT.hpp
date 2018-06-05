@@ -37,7 +37,6 @@ public:
   // ------------------------------------
   ~complex_kfft()
   {
-    mComplexs.clear();
   }
 
 
@@ -45,7 +44,7 @@ public:
   // returns the vector of YTE complex
   std::vector<YTE::complex>& GetVector()
   {
-    return mComplexs;
+    return mComplexes;
   }
 
 
@@ -53,7 +52,7 @@ public:
   // gets the actual data elements form the vector as a c-style array
   YTE::complex* GetComplexArray()
   {
-    return mComplexs.data();
+    return mComplexes.data();
   }
 
 
@@ -61,7 +60,7 @@ public:
   // returns a c-style array of YTE complex reinterpret_cast to kiss_fft complex
   kiss_fft_cpx* GetKFFTArray()
   {
-    return reinterpret_cast<kiss_fft_cpx*>(mComplexs.data());
+    return reinterpret_cast<kiss_fft_cpx*>(mComplexes.data());
   }
 
 
@@ -69,12 +68,12 @@ public:
   // since class wraps around a vector, this is used to have a more simple accessing method
   YTE::complex& operator[](int index)
   {
-    return mComplexs[index];
+    return mComplexes[index];
   }
 
 
 private:
-  std::vector<YTE::complex> mComplexs;
+  std::vector<YTE::complex> mComplexes;
 };
 
 

@@ -700,7 +700,13 @@ namespace YTE
     std::string fragment = aShaderSetName + ".frag";
 
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
-    //auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
+
+    if (false == std::filesystem::exists(vertexFile))
+    {
+      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+      engine->Log(LogType::Information, fmt::format("Could not find the vertex file: {}", vertexFile));
+      return;
+    }
 
     std::string fragmentFile = GenerateFragmentShader();
 
@@ -710,6 +716,8 @@ namespace YTE
 
     if (false == vertexData.mValid || false == fragmentData.mValid)
     {
+      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+
       auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}",
                              vertex,
                              vertexData.mReason,
@@ -720,30 +728,32 @@ namespace YTE
       //std::cout << str;
       if (aReload)
       {
-        mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
+        engine->Log(LogType::Error, fmt::format(
           "\t-> {} Failed to Reload!\n############################################################\n",
           aShaderSetName));
       }
       else 
       {
-        mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
+        engine->Log(LogType::Error, fmt::format(
           "Shader: {} Failed to Load!\n############################################################\n",
           aShaderSetName));
       }
 
 
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, fmt::format(
+      engine->Log(LogType::Information, fmt::format(
         "Generated Fragement Shader : \n{}\n------------------------------------------\n",
         fragmentFile));
 
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, fmt::format(
+      engine->Log(LogType::Information, fmt::format(
         "Errors Follow:\n{}\n############################################################\n",
         str));
 
       DebugObjection(true,
-                     fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
-                                        aShaderSetName, str)
-                     .c_str());
+                     fmt::format("Shader {} failed to compile and had no previously compiled shader to use.\n"
+                                 "Compilation Message:\n"
+                                 "{}",
+                                 aShaderSetName, 
+                                 str).c_str());
       return;
     }
 

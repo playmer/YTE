@@ -20,12 +20,11 @@
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Plugin.hpp"
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/Window.hpp"
-
-#include "YTE/StandardLibrary/Vector.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -97,6 +96,12 @@ namespace YTE
       event.CheckRunInEditor = true;
       Initialize(&event);
     }
+
+
+    // Plugins
+    YTE_Shared void LoadPlugins();
+
+
 
     YTE_Shared void Deserialize(RSValue *aValue);
 
@@ -178,6 +183,9 @@ namespace YTE
     // all compositions and components mapped to GUIDs (represented as strings)
     std::unordered_map<std::string, Composition*> mCompositionsByGUID;
     std::unordered_map<std::string, Component*> mComponentsByGUID;
+
+
+    std::unordered_map<std::string, std::unique_ptr<PluginWrapper>> mPlugins;
 
     double mDt;
     size_t mFrame;

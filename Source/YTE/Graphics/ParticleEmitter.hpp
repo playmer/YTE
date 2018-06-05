@@ -34,58 +34,58 @@ namespace YTE
   {
   public:
     YTEDeclareType(ParticleEmitter);
-    ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
 
-    ParticleEmitter(ParticleEmitter&&) = default;
+    YTE_Shared ParticleEmitter(ParticleEmitter&&) = default;
 
-    void CreateMesh();
+    YTE_Shared void CreateMesh();
 
-    void Initialize() override;
+    YTE_Shared void Initialize() override;
 
-    void Update(LogicUpdate* aEvent);
+    YTE_Shared void Update(LogicUpdate* aEvent);
 
 
-    std::string GetTextureName();
-    void SetTextureName(std::string aName);
+    YTE_Shared std::string GetTextureName();
+    YTE_Shared void SetTextureName(std::string aName);
 
-    glm::vec3 GetPositionOffset();
-    void SetPositionOffset(glm::vec3 aOffset);
+    YTE_Shared glm::vec3 GetPositionOffset();
+    YTE_Shared void SetPositionOffset(glm::vec3 aOffset);
 
-    glm::vec3 GetInitVelocity();
-    void SetInitVelocity(glm::vec3 aVelocity);
+    YTE_Shared glm::vec3 GetInitVelocity();
+    YTE_Shared void SetInitVelocity(glm::vec3 aVelocity);
 
-    glm::vec3 GetVelocityVariance();
-    void SetVelocityVariance(glm::vec3 aVelocity);
+    YTE_Shared glm::vec3 GetVelocityVariance();
+    YTE_Shared void SetVelocityVariance(glm::vec3 aVelocity);
 
-    double GetLifetime();
-    void SetLifetime(double aLifetime);
+    YTE_Shared double GetLifetime();
+    YTE_Shared void SetLifetime(double aLifetime);
 
-    double GetLifetimeVariance();
-    void SetLifetimeVariance(double aLifetime);
+    YTE_Shared double GetLifetimeVariance();
+    YTE_Shared void SetLifetimeVariance(double aLifetime);
 
-    glm::vec4 GetColor();
-    void SetColor(glm::vec4 aColor);
+    YTE_Shared glm::vec4 GetColor();
+    YTE_Shared void SetColor(glm::vec4 aColor);
 
-    glm::vec3 GetParticleScale();
-    void SetParticleScale(glm::vec3 aScale);
+    YTE_Shared glm::vec3 GetParticleScale();
+    YTE_Shared void SetParticleScale(glm::vec3 aScale);
 
-    glm::vec3 GetParticleScaleVariance();
-    void SetParticleScaleVariance(glm::vec3 aVariance);
+    YTE_Shared glm::vec3 GetParticleScaleVariance();
+    YTE_Shared void SetParticleScaleVariance(glm::vec3 aVariance);
 
-    glm::vec3 GetEmitterScale();
-    void SetEmitterScale(glm::vec3 aScale);
+    YTE_Shared glm::vec3 GetEmitterScale();
+    YTE_Shared void SetEmitterScale(glm::vec3 aScale);
 
-    float GetEmitRate();
-    void SetEmitRate(float aEmitRate);
+    YTE_Shared float GetEmitRate();
+    YTE_Shared void SetEmitRate(float aEmitRate);
 
-    float GetEmitCount();
-    void SetEmitCount(float aEmitCount);
+    YTE_Shared float GetEmitCount();
+    YTE_Shared void SetEmitCount(float aEmitCount);
 
-    bool GetUseGravity();
-    void SetUseGravity(bool aUseGravity);
+    YTE_Shared bool GetUseGravity();
+    YTE_Shared void SetUseGravity(bool aUseGravity);
 
-    float GetGravityValue();
-    void SetGravityValue(float aGravityVal);
+    YTE_Shared float GetGravityValue();
+    YTE_Shared void SetGravityValue(float aGravityVal);
 
   private:
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;

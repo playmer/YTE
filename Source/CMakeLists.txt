@@ -6,7 +6,9 @@
 set(Source_Root ${CMAKE_CURRENT_SOURCE_DIR})
 set(YTE_Root ${Source_Root}/YTE)
 set(YTEditor_Root ${Source_Root}/YTEditor)
+set(YTEPlayer_Root ${Source_Root}/YTEPlayer)
 set(CMake_Include ${Source_Root}/cmake)
 
 add_subdirectory(YTE)
 add_subdirectory(YTEditor)
+add_subdirectory(YTEPlayer)
