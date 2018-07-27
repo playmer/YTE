@@ -100,6 +100,18 @@ namespace YTE
     {
       mWindow = mOwner->GetEngine()->GetWindow();
     }
+
+    if (mWindow == nullptr)
+    {
+      return;
+    }
+
+    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
+
+    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
+
+    SetClearColor(mClearColor);
+    mConstructing = false;
   }
 
   GraphicsView::~GraphicsView()
@@ -127,26 +139,6 @@ namespace YTE
 
   void GraphicsView::NativeInitialize()
   {
-    if (mWindow == nullptr)
-    {
-      return;
-    }
-
-    auto engine = mSpace->GetEngine();
-    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
-
-    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
-
-    auto it = engine->GetWindows().find(mWindowName);
-
-    if (it != engine->GetWindows().end())
-    {
-      mWindow = it->second.get();
-    }
-    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
-
-    SetClearColor(mClearColor);
-    mConstructing = false;
   }
 
 

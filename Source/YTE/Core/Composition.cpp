@@ -591,6 +591,7 @@ namespace YTE
     {
       std::string componentTypeName = componentIt->name.GetString();
       BoundType *componentType = Type::GetGlobalType(componentTypeName);
+
       AddComponent(componentType, &componentIt->value);
     }
 
@@ -1040,7 +1041,10 @@ namespace YTE
       auto component = addFactory->MakeComponent(this, mSpace);
       toReturn = component.get();
 
-      DeserializeByType(aProperties, toReturn, aType);
+      if (false == aProperties->Empty())
+      {
+        DeserializeByType(aProperties, toReturn, aType);
+      }
 
       mComponents.Emplace(aType, std::move(component));
     }

@@ -121,8 +121,6 @@ namespace YTE
     , mConstructing(true)
   {
     mFontSize = 1.f;
-
-    mConstructing = false;
   }
 
   SpriteText::~SpriteText()
@@ -140,6 +138,8 @@ namespace YTE
     }
 
     mRenderer->RequestTexture(mTextureName);
+
+    mConstructing = false;
   }
 
   void SpriteText::NativeInitialize()

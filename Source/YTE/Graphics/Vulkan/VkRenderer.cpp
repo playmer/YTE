@@ -41,7 +41,7 @@ namespace YTE
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
 
     // vulkan is initialized, initialize the engine
-    auto &windows = aEngine->GetWindows();
+    auto& windows = aEngine->GetWindows();
 
     auto instance = mVulkanInternals->GetInstance();
 
@@ -78,16 +78,18 @@ namespace YTE
     mAllocators[AllocatorTypes::UniformBufferObject] =
       std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
 
+    //Range(std::next(windows.begin()), windows.end());
+
     bool firstSet = false;
-    for (auto &window : windows)
+    for (auto &[name, window] : windows)
     {
-      if (window.second->mShouldBeRenderedTo)
+      if (window->mShouldBeRenderedTo)
       {
         // first window's surface is already got by VkInternals
         if (false == firstSet)
         {
-          mSurfaces.emplace(window.second.get(),
-                            std::make_unique<VkRenderedSurface>(window.second.get(),
+          mSurfaces.emplace(window.get(),
+                            std::make_unique<VkRenderedSurface>(window.get(),
                                                                 this,
                                                                 firstSurface)); 
           firstSet = true;  // disable for the next window
@@ -95,9 +97,9 @@ namespace YTE
         }
 
         // all other windows
-        auto surface = mVulkanInternals->CreateSurface(window.second.get());
-        mSurfaces.emplace(window.second.get(),
-                          std::make_unique<VkRenderedSurface>(window.second.get(),
+        auto surface = mVulkanInternals->CreateSurface(window.get());
+        mSurfaces.emplace(window.get(),
+                          std::make_unique<VkRenderedSurface>(window.get(),
                                                               this,
                                                               surface));
       }

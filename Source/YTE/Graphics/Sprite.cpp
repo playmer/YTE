@@ -81,7 +81,6 @@ namespace YTE
     , mTimeAccumulated{ 0.0 }
     , mCurrentIndex{ 0 }
   {
-    mConstructing = false;
   }
 
   Sprite::~Sprite()
@@ -99,6 +98,8 @@ namespace YTE
     }
 
     mRenderer->RequestTexture(mTextureName);
+
+    mConstructing = false;
   }
 
   void Sprite::Initialize()
