@@ -25,7 +25,7 @@ namespace YTE
   public:
     YTEDeclareType(RigidBody);
 
-    YTE_Shared RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared RigidBody(Composition *aOwner, Space *aSpace);
 
     YTE_Shared ~RigidBody();
 

@@ -34,7 +34,7 @@ namespace YTE
   public:
     YTEDeclareType(PhysicsSystem);
 
-    YTE_Shared PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared PhysicsSystem(Composition *aOwner, Space *aSpace);
     YTE_Shared ~PhysicsSystem();
 
     YTE_Shared void Initialize() override;

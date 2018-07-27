@@ -23,7 +23,7 @@ namespace YTE
   public:
     YTEDeclareType(MenuCollider);
 
-    MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    MenuCollider(Composition *aOwner, Space *aSpace);
 
     void Initialize() override;
     void OnPositionChanged(TransformChanged *aEvent);

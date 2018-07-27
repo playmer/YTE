@@ -24,7 +24,7 @@ namespace YTE
   public:
     YTEDeclareType(WWiseListener);
 
-    WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    WWiseListener(Composition *aOwner, Space *aSpace);
 
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
 

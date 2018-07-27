@@ -27,7 +27,7 @@ namespace YTE
   public:
     YTEDeclareType(BaseModel);
 
-    BaseModel(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    BaseModel(Composition *aOwner, Space *aSpace);
 
     virtual std::vector<InstantiatedModel*> GetInstantiatedModel()
     {

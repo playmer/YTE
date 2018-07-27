@@ -57,7 +57,7 @@ namespace YTE
     /*******************/
     // Standard ctor, uses grid size of 8
     /*******************/
-    YTE_Shared FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared FFT_WaterSimulation(Composition *aOwner, Space *aSpace);
     YTE_Shared FFT_WaterSimulation(FFT_WaterSimulation& aRhs) = delete;
 
     /*******************/

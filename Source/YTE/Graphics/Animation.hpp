@@ -229,7 +229,7 @@ namespace YTE
   public:
     YTEDeclareType(Animator);
 
-    YTE_Shared Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Animator(Composition *aOwner, Space *aSpace);
 
     YTE_Shared ~Animator();
 

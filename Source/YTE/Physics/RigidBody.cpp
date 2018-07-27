@@ -67,15 +67,14 @@ namespace YTE
       .SetDocumentation("Sets the object velocity from three float values");
   }
 
-  RigidBody::RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties)
+  RigidBody::RigidBody(Composition *aOwner, Space *aSpace)
+    : Body(aOwner, aSpace)
     , mVelocity(0.f, 0.f, 0.f)
     , mMass(1.0f)
     , mStatic(false)
     , mIsInitialized(false)
     , mKinematic(true)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   RigidBody::~RigidBody()

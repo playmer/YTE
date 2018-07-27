@@ -853,12 +853,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Animator::Animator(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mDefaultAnimation(nullptr)
     , mCurrentAnimation(nullptr)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
   }
 

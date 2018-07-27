@@ -20,10 +20,9 @@ namespace YTE
   }
 
 
-  ImguiLayer::ImguiLayer(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  ImguiLayer::ImguiLayer(Composition *aOwner, Space *aSpace)
     : Component{aOwner, aSpace}
   {
-    UnusedArguments(aProperties);
   }
 
   ImguiLayer::~ImguiLayer()

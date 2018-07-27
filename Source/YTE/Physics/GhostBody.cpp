@@ -41,10 +41,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  GhostBody::GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
+  GhostBody::GhostBody(Composition* aOwner, Space* aSpace)
+    : Body{ aOwner, aSpace }
+    , mVelocity{ 0.f, 0.f, 0.f }
+    , mIsInitialized{ false }
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   GhostBody::~GhostBody()

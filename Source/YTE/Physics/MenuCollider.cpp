@@ -46,13 +46,11 @@ namespace YTE
       .SetDocumentation("Sets the position offset of the box collider from three Reals X, Y, and Z");
   }
 
-  MenuCollider::MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Collider(aOwner, aSpace)
+  MenuCollider::MenuCollider(Composition* aOwner, Space* aSpace)
+    : Collider{ aOwner, aSpace }
   {
     mSize = glm::vec3(1, 1, 1);
     mOffset = glm::vec3(0, 0, 0);
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void MenuCollider::Initialize()

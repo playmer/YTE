@@ -21,7 +21,7 @@ namespace YTE
     TypeBuilder<Body> builder;
   }
     
-  Body::Body(Composition *aOwner, Space *aSpace, RSValue *)
+  Body::Body(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
     mSpace->RegisterEvent<&Body::OnLogicUpdate>(Events::LogicUpdate, this);

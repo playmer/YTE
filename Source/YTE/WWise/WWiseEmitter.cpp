@@ -44,7 +44,7 @@ namespace YTE
       .SetParameterNames("aSound");
   }
 
-  WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
@@ -59,8 +59,6 @@ namespace YTE
     {
       std::cout << "No WWiseView on the current space, playing will fail!\n";
     }
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   WWiseEmitter::~WWiseEmitter()

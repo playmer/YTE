@@ -12,10 +12,10 @@ namespace YTE
     GetStaticType()->AddAttribute<RunInEditor>();
   }
 
-  ActionManager::ActionManager(Composition * aOwner, Space * aSpace, RSValue * aProperties)
+  ActionManager::ActionManager(Composition * aOwner, Space * aSpace)
     : Component(aOwner, aSpace)
   {
-    UnusedArguments(aProperties);
+    
   }
 
   void ActionManager::AddSequence(Composition *aComposition, const ActionSequence &sequence)

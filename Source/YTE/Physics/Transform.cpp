@@ -101,7 +101,7 @@ namespace YTE
       .SetDocumentation("SetWorlds the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)");
   }
 
-  Transform::Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Transform::Transform(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mTranslation{ 0.f,0.f,0.f }
     , mScale{ 1.f, 1.f, 1.f }
@@ -109,7 +109,6 @@ namespace YTE
     , mWorldScale{ 1.f, 1.f, 1.f }
     , mInformPhysics{ true }
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   void Transform::Initialize()

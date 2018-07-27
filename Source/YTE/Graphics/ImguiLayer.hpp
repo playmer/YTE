@@ -19,7 +19,7 @@ namespace YTE
   public:
     YTEDeclareType(ImguiLayer);
 
-    YTE_Shared ImguiLayer(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared ImguiLayer(Composition *aOwner, Space *aSpace);
     YTE_Shared ~ImguiLayer() override;
 
     YTE_Shared void Initialize() override;

@@ -23,7 +23,7 @@ namespace YTE
   public:
     YTEDeclareType(JobSystem);
 
-    JobSystem(Composition *aOwner, RSValue *aProperties = nullptr);
+    JobSystem(Composition *aOwner = nullptr);
     ~JobSystem();
     void Initialize();
     void WaitThisThread(JobHandle& aJobHandle);

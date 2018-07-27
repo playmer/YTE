@@ -40,10 +40,9 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
-  CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace), mRadius(1.0f), mHeight(1.0f)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CapsuleCollider::PhysicsInitialize()

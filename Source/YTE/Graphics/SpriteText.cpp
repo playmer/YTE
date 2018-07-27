@@ -111,8 +111,8 @@ namespace YTE
       .SetDocumentation("The max length of a single line (in world units) for word-wrapping. 0.0 disables word-wrapping");
   }
 
-  SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  SpriteText::SpriteText(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mText("")
     , mFontName("calibri.ttf")
     , mAlignX(AlignmentX::Center)
@@ -121,8 +121,6 @@ namespace YTE
     , mConstructing(true)
   {
     mFontSize = 1.f;
-
-    DeserializeByType(aProperties, this, GetStaticType());
 
     mConstructing = false;
   }

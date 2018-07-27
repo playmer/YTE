@@ -64,7 +64,7 @@ namespace YTE
 
     // Sets up the system, probably could just be the constructor.
 
-    YTE_Shared WWiseSystem(Composition *aOwner, RSValue *aProperties);
+    YTE_Shared WWiseSystem(Composition *aOwner);
 
     YTE_Shared virtual void Initialize() override;
     // Updates the system to the current frame.

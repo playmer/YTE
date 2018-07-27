@@ -29,10 +29,9 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CylinderCollider::PhysicsInitialize()

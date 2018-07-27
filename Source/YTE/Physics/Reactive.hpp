@@ -40,7 +40,7 @@ namespace YTE
   public:
     YTEDeclareType(Reactive);
 
-    Reactive(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Reactive(Composition *aOwner, Space *aSpace);
 
     void Initialize() override;
     void OnLogicUpdate(LogicUpdate *aEvent);

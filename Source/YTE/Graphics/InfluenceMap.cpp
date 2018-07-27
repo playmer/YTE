@@ -64,14 +64,13 @@ namespace YTE
 
 
 
-  InfluenceMap::InfluenceMap(Composition* aOwner, Space* aSpace, RSValue* aProperties)
+  InfluenceMap::InfluenceMap(Composition* aOwner, Space* aSpace)
     : Component(aOwner, aSpace)
     , mEngine(nullptr)
     , mRenderer(nullptr)
     , mGraphicsView(nullptr)
     , mTransform(nullptr)
     , mInstantiatedInfluenceMap(nullptr)
-    , mConstructing(true)
     , mSetTransform(false)
     , mUseTemp(false)
     , mDebugDraw(false)
@@ -79,8 +78,6 @@ namespace YTE
     mEngine = aSpace->GetEngine();
     mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
     mGraphicsView = aSpace->GetComponent<GraphicsView>();
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 
@@ -101,7 +98,6 @@ namespace YTE
 
     mTransform = mOwner->GetComponent<Transform>(); 
     mDrawer = std::make_unique<LineDrawer>(mOwner->GetGUID().ToIdentifierString(), mGraphicsView->GetRenderer(), mGraphicsView);
-    mConstructing = false;
     Create();
   }
 

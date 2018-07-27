@@ -26,7 +26,7 @@ namespace YTE
   public:
     YTEDeclareType(Light);
 
-    YTE_Shared Light(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Light(Composition *aOwner, Space *aSpace);
     YTE_Shared ~Light() override;
     YTE_Shared void Initialize() override; 
 
@@ -75,7 +75,6 @@ namespace YTE
     GraphicsView *mGraphicsView;
     Transform *mTransform;
     std::unique_ptr<InstantiatedLight> mInstantiatedLight;
-    bool mConstructing;
     UBOLight mLightTemp;
     bool mUseTemp;
     bool mSetTransform;

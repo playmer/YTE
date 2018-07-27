@@ -31,10 +31,10 @@ namespace YTE
   {
   public:
     YTEDeclareType(WWiseView);
-    WWiseView(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+    WWiseView(Composition *aOwner, Space *aSpace)
       : Component(aOwner, aSpace)
     {
-      UnusedArguments(aProperties);
+      
     }
 
     WWiseListener* GetActiveListener()

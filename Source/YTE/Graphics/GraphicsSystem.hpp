@@ -34,7 +34,7 @@ namespace YTE
   public:
     YTEDeclareType(GraphicsSystem);
 
-    GraphicsSystem(Composition *aOwner, RSValue *aProperties);
+    GraphicsSystem(Composition *aOwner);
     ~GraphicsSystem();
 
     void SetUpWindow(Window *aWindow);

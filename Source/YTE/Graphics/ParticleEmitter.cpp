@@ -106,7 +106,7 @@ namespace YTE
   }
 
 
-  ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mVarianceIndex{0}
     , mRenderer{ nullptr }
@@ -127,7 +127,6 @@ namespace YTE
     , mGravityValue{1.0f}
     , mCameraTransform{nullptr}
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void ParticleEmitter::Initialize()

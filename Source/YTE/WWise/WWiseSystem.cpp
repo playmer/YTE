@@ -107,12 +107,12 @@ namespace YTE
   // of the SDK's sample code, with the file package extension
   CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
-  WWiseSystem::WWiseSystem(Composition *aOwner, RSValue *aProperties)
+  WWiseSystem::WWiseSystem(Composition *aOwner)
     : Component(aOwner, nullptr)
     , mMuted(false)
     , mAvailableListeners{0,1,2,3,4,5,6,7}
   {
-    UnusedArguments(aProperties);
+    
   }
 
   void WWiseSystem::Initialize()

@@ -124,11 +124,10 @@ namespace YTE
                                     "ModelMaterial");
   }
 
-  Material::Material(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Material::Material(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mModelMaterial(this)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void Material::Create(ModelChanged *aEvent)

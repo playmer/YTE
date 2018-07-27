@@ -16,7 +16,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(Sprite);
-    YTE_Shared Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Sprite(Composition *aOwner, Space *aSpace);
     YTE_Shared ~Sprite();
 
     YTE_Shared void AssetInitialize() override;

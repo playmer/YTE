@@ -33,12 +33,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mAnimator(nullptr)
     , mModel(nullptr)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   FacialAnimator::~FacialAnimator()

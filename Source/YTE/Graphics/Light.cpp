@@ -68,22 +68,19 @@ namespace YTE
 
 
 
-  Light::Light(Composition* aOwner, Space* aSpace, RSValue* aProperties)
+  Light::Light(Composition* aOwner, Space* aSpace)
     : Component(aOwner, aSpace)
     , mEngine(nullptr)
     , mRenderer(nullptr)
     , mGraphicsView(nullptr)
     , mTransform(nullptr)
     , mInstantiatedLight(nullptr)
-    , mConstructing(true)
     , mSetTransform(false)
     , mUseTemp(false)
   {
     mEngine = aSpace->GetEngine();
     mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
     mGraphicsView = aSpace->GetComponent<GraphicsView>();
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
 
@@ -104,7 +101,6 @@ namespace YTE
 
     mTransform = mOwner->GetComponent<Transform>(); 
 
-    mConstructing = false;
     Create();
   }
 

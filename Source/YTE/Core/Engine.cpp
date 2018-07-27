@@ -109,11 +109,10 @@ namespace YTE
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
 
-    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
-
+    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
+    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this));
+    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
+    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();

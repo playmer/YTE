@@ -28,11 +28,10 @@ namespace YTE
   }
 
   FlybyCamera::FlybyCamera(Composition *aOwner, 
-                           Space *aSpace, 
-                           RSValue *aProperties)
+                           Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    UnusedArguments(aProperties);
+    
   }
 
   FlybyCamera::~FlybyCamera()

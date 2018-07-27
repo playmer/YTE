@@ -20,7 +20,7 @@ namespace YTE
   { 
   public:
     YTEDeclareType(Camera); 
-    YTE_Shared Camera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Camera(Composition *aOwner, Space *aSpace);
     YTE_Shared void Initialize() override; 
     YTE_Shared UBOView ConstructUBOView();
  
@@ -147,7 +147,6 @@ namespace YTE
 
     // Utilities
     double mDt;
-    bool mConstructing; 
     bool mChanged;
 
     UBOIllumination mIllumination;

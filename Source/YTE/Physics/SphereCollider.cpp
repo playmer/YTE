@@ -48,10 +48,9 @@ namespace YTE
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }
 
-  SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace), mRadius(1.0f)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void SphereCollider::PhysicsInitialize()

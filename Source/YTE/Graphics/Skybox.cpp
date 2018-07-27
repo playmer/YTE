@@ -53,12 +53,11 @@ namespace YTE
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
   }
 
-  Skybox::Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Skybox::Skybox(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mTextureName("None")
     , mConstructing(true)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   Skybox::~Skybox()

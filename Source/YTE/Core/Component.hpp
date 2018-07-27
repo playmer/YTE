@@ -67,11 +67,48 @@ namespace YTE
   public:
     YTEDeclareType(ComponentDependencies);
 
-    YTE_Shared ComponentDependencies(DocumentedObject *aObject,
+    YTE_Shared ComponentDependencies(DocumentedObject* aObject,
                                      std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());
 
     std::vector<std::vector<Type*>> mTypes;
   };
+
+  namespace Attributes
+  {
+    // By default, a component and all properties/fields will be deserialized
+    // after construction. But by using these attributes, the appropriate piece
+    // will be deserialized just before the given initialization phase.
+    enum class DeserializationTime
+    {
+      Asset,
+      Native,
+      Physics,
+      Initialize,
+      Start,
+      Runtime
+    };
+
+    class ComponentInitialize : public Attribute
+    {
+      public:
+      YTEDeclareType(ComponentInitialize);
+
+      YTE_Shared ComponentInitialize(DocumentedObject* aObject, 
+                                     DeserializationTime aTime);
+      DeserializationTime mTime;
+    };
+
+
+    class PropertyInitialize : public Attribute
+    {
+      public:
+      YTEDeclareType(PropertyInitialize);
+
+      YTE_Shared PropertyInitialize(DocumentedObject* aObject, 
+                                    DeserializationTime aTime);
+      DeserializationTime mTime;
+    };
+  }
 }
 
 #endif

@@ -176,8 +176,8 @@ namespace YTE
 
 
   // ------------------------------------
-  FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mGravitationalPull(9.81f)           // normal gravity
     , mGridSize(DefaultGridSize)          // grid size of 32 just for now
     , mGridSizePlus1(mGridSize + 1)       // grid size of 32 just for now
@@ -209,7 +209,6 @@ namespace YTE
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
     mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   static std::string water{ "water.png" };

@@ -24,7 +24,7 @@ namespace YTE
   public:
     YTEDeclareType(WWiseEmitter);
 
-    YTE_Shared WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared WWiseEmitter(Composition *aOwner, Space *aSpace);
 
     YTE_Shared ~WWiseEmitter() override;
 

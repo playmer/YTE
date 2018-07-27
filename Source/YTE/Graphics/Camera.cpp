@@ -123,8 +123,7 @@ namespace YTE
   } 
   
   Camera::Camera(Composition *aOwner,
-                 Space *aSpace,
-                 RSValue *aProperties)
+                 Space *aSpace)
     : Component{ aOwner, aSpace }
     , mEngine{ nullptr }
     , mGraphicsView{ nullptr }
@@ -135,12 +134,8 @@ namespace YTE
     , mFarPlane{ 20000.f }
     , mUseOrthographicProj{ false }
     , mDt{ 0.0f }
-    , mConstructing{ true }
     , mChanged{ true }
-  { 
-    DeserializeByType(aProperties, this, GetStaticType()); 
- 
-    mConstructing = false; 
+  {
   } 
  
   void Camera::Initialize()
@@ -170,7 +165,6 @@ namespace YTE
     mIllumination.mGlobalIllumination = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
     mIllumination.mTime = 0.0f;
 
-    mConstructing = false;
     RendererResize(nullptr);
   }
 

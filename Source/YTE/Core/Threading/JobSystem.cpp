@@ -19,13 +19,13 @@ namespace YTE
   }
 
 
-  JobSystem::JobSystem(Composition * aOwner, RSValue *aProperties /*= nullptr*/)
+  JobSystem::JobSystem(Composition * aOwner /*= nullptr*/)
     : Component(aOwner, nullptr)
     , mForegroundWorker()
     , mPool()
     , mAsync(false)
   {
-    UnusedArguments(aProperties);
+    
   }
 
   JobSystem::~JobSystem()

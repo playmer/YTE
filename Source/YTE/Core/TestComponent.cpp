@@ -17,10 +17,9 @@ namespace YTE
     TypeBuilder<TestComponent> builder;
   }
 
-  TestComponent::TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  TestComponent::TestComponent(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   TestComponent::~TestComponent()

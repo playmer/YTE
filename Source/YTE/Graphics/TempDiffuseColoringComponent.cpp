@@ -19,16 +19,12 @@ namespace YTE
       .SetDocumentation("Change the diffuse color");
   }
 
-  TempDiffuseColoringComponent::TempDiffuseColoringComponent(Composition *aOwner,
-    Space *aSpace,
-    RSValue *aProperties)
+  TempDiffuseColoringComponent::TempDiffuseColoringComponent(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mModel(nullptr)
     , update(false)
   {
     mDiffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   TempDiffuseColoringComponent::~TempDiffuseColoringComponent()

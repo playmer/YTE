@@ -37,7 +37,7 @@ namespace YTE
   public:
     YTEDeclareType(Model);
 
-    YTE_Shared Model(Composition* aOwner, Space* aSpace, RSValue* aProperties);
+    YTE_Shared Model(Composition* aOwner, Space* aSpace);
     YTE_Shared ~Model() override;
 
     YTE_Shared void AssetInitialize() override;

@@ -75,9 +75,7 @@ namespace YTE
       .AddAttribute<DropDownStrings>(PopulateCombinationTypeDropDownList);
   }
 
-  GraphicsView::GraphicsView(Composition *aOwner, 
-                             Space *aSpace, 
-                             RSValue *aProperties)
+  GraphicsView::GraphicsView(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mActiveCamera(nullptr)
     , mDrawerCombination(DrawerTypeCombination::DefaultCombination)
@@ -91,8 +89,6 @@ namespace YTE
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
-
-    DeserializeByType(aProperties, this, GetStaticType());
 
     auto it = engine->GetWindows().find(mWindowName);
 
@@ -331,27 +327,27 @@ namespace YTE
   {
     DrawerTypeCombination dc;
 
-    if (false == (aCombination != "AdditiveBlend"))
+    if ("AdditiveBlend" == aCombination)
     {
       dc = DrawerTypeCombination::AdditiveBlend;
     }
-    else if (false == (aCombination != "AlphaBlend"))
+    else if ("AlphaBlend" == aCombination)
     {
       dc = DrawerTypeCombination::AlphaBlend;
     }
-    else if (false == (aCombination != "Opaque"))
+    else if ("Opaque" == aCombination)
     {
       dc = DrawerTypeCombination::Opaque;
     }
-    else if (false == (aCombination != "MultiplicativeBlend"))
+    else if ("MultiplicativeBlend" == aCombination)
     {
       dc = DrawerTypeCombination::MultiplicativeBlend;
     }
-    else if (false == (aCombination != "DefaultCombination"))
+    else if ("DefaultCombination" == aCombination)
     {
       dc = DrawerTypeCombination::DefaultCombination;
     }
-    else if (false == (aCombination != "DoNotInclude"))
+    else if ("DoNotInclude" == aCombination)
     {
       dc = DrawerTypeCombination::DoNotInclude;
     }
@@ -379,15 +375,15 @@ namespace YTE
   {
     DrawerTypes dt;
 
-    if (false == (aType != "GameForwardDrawer"))
+    if ("GameForwardDrawer" == aType)
     {
       dt = DrawerTypes::GameForwardDrawer;
     }
-    else if (false == (aType != "DefaultDrawer"))
+    else if ("DefaultDrawer" == aType)
     {
       dt = DrawerTypes::GameForwardDrawer;
     }
-    else if (false == (aType != "ImguiDrawer"))
+    else if ("ImguiDrawer" == aType)
     {
       dt = DrawerTypes::ImguiDrawer;
     }

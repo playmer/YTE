@@ -42,10 +42,9 @@ namespace YTE
     builder.Property<&Orientation::GetUpVector, nullptr>( "UpVector");
   }
 
-  Orientation::Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Orientation::Orientation(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   void Orientation::Initialize()

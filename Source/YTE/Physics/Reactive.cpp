@@ -39,10 +39,9 @@ namespace YTE
     TypeBuilder<Reactive> builder;
   }
 
-  Reactive::Reactive(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Reactive::Reactive(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   void Reactive::Initialize()

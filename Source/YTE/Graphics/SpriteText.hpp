@@ -58,7 +58,7 @@ namespace YTE
 
   public:
     YTEDeclareType(SpriteText);
-    YTE_Shared SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared SpriteText(Composition *aOwner, Space *aSpace);
     YTE_Shared ~SpriteText();
 
     YTE_Shared void AssetInitialize() override;
@@ -75,7 +75,9 @@ namespace YTE
       mText = aText;
 
       if (!mConstructing)
+      {
         CreateSpriteText();
+      }
     }
 
     std::string GetFont()
@@ -92,7 +94,9 @@ namespace YTE
         PrepareFont();
 
         if (!mConstructing)
+        {
           CreateSpriteText();
+        }
       }
     }
 
@@ -106,7 +110,9 @@ namespace YTE
       mFontSize = aFontSize / 10.f;
 
       if (!mConstructing)
+      {
         CreateSpriteText();
+      }
     }
 
     const std::string& GetAlignmentX() const { return AlignmentX::Names[mAlignX]; }

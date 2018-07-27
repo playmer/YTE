@@ -16,9 +16,9 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
   
-  BaseModel::BaseModel(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  BaseModel::BaseModel(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    UnusedArguments(aProperties);
+    
   }
 }

@@ -1037,8 +1037,10 @@ namespace YTE
         return nullptr;
       }
 
-      auto component = addFactory->MakeComponent(this, mSpace, aProperties);
+      auto component = addFactory->MakeComponent(this, mSpace);
       toReturn = component.get();
+
+      DeserializeByType(aProperties, toReturn, aType);
 
       mComponents.Emplace(aType, std::move(component));
     }

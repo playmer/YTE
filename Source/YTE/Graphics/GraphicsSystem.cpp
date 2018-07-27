@@ -31,12 +31,12 @@ namespace YTE
 
 
 
-  GraphicsSystem::GraphicsSystem(Composition *aOwner, RSValue *aProperties)
+  GraphicsSystem::GraphicsSystem(Composition *aOwner)
     : Component(aOwner, nullptr)
     , mEngine(static_cast<Engine*>(aOwner))
     , mVulkanSuccess(0)
   {
-    UnusedArguments(aProperties);
+    
   }
 
 

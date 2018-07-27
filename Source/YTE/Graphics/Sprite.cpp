@@ -70,8 +70,8 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
-  Sprite::Sprite(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  Sprite::Sprite(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mConstructing{ true }
     , mAnimating{ false }
     , mColumns{ 1 }
@@ -81,8 +81,6 @@ namespace YTE
     , mTimeAccumulated{ 0.0 }
     , mCurrentIndex{ 0 }
   {
-    DeserializeByType(aProperties, this, GetStaticType());
-
     mConstructing = false;
   }
 

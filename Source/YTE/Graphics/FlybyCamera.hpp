@@ -19,7 +19,7 @@ namespace YTE
   public:
     YTEDeclareType(FlybyCamera);
 
-    FlybyCamera(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    FlybyCamera(Composition *aOwner, Space *aSpace);
     ~FlybyCamera() override;
     void Initialize() override;
 

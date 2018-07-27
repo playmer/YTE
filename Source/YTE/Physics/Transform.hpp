@@ -89,7 +89,7 @@ namespace YTE
   public:
     YTEDeclareType(Transform);
 
-    YTE_Shared Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Transform(Composition *aOwner, Space *aSpace);
     YTE_Shared void Initialize();
 
     //void NativeInitialize() override;

@@ -23,7 +23,7 @@ namespace YTE
   public:
     YTEDeclareType(MeshCollider);
 
-    MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    MeshCollider(Composition *aOwner, Space *aSpace);
 
     void PhysicsInitialize() override;
 

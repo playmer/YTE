@@ -25,7 +25,7 @@ namespace YTE
   public:
     YTEDeclareType(CollisionBody);
 
-    CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    CollisionBody(Composition *aOwner, Space *aSpace);
 
     ~CollisionBody() override;
 

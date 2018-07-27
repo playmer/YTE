@@ -15,7 +15,7 @@ namespace YTE
   public:
     YTEDeclareType(TestComponent);
 
-    TestComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    TestComponent(Composition *aOwner, Space *aSpace);
 
     void Initialize() override;
 

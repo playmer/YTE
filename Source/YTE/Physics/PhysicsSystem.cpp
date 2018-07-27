@@ -65,11 +65,11 @@ namespace YTE
       .AddAttribute<Serializable>();
   }
 
-  PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mDebugDraw(false)
   {
-    UnusedArguments(aProperties);
+    
 
     mSpace->RegisterEvent<&PhysicsSystem::OnPhysicsUpdate>(Events::PhysicsUpdate, this);
 

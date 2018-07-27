@@ -33,10 +33,9 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  MeshCollider::MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  MeshCollider::MeshCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void MeshCollider::PhysicsInitialize()

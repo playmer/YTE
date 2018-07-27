@@ -23,7 +23,7 @@ namespace YTE
   public:
     YTEDeclareType(BoxCollider);
 
-    BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    BoxCollider(Composition *aOwner, Space *aSpace);
 
     void PhysicsInitialize() override;
 

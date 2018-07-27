@@ -102,8 +102,8 @@ namespace YTE
   /////////////////////////////////
   // Model Class Functions
   /////////////////////////////////
-  Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  Model::Model(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mRenderer(nullptr)
     , mWindow(nullptr)
     , mMeshName("")
@@ -112,7 +112,6 @@ namespace YTE
     , mConstructing(true)
     , mBackfaceCulling(true)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   Model::~Model()

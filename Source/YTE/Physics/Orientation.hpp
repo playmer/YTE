@@ -36,7 +36,7 @@ namespace YTE
   public:
     YTEDeclareType(Orientation);
 
-    YTE_Shared Orientation(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Orientation(Composition *aOwner, Space *aSpace);
 
     YTE_Shared void Initialize() override;
     YTE_Shared void OnRotationChanged(TransformChanged *aEvent);

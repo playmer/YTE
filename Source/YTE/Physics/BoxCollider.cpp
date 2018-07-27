@@ -29,10 +29,9 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  BoxCollider::BoxCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace), mSize(1.f, 1.f, 1.f)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void BoxCollider::PhysicsInitialize()

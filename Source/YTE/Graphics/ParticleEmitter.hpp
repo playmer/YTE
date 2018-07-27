@@ -34,7 +34,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(ParticleEmitter);
-    YTE_Shared ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared ParticleEmitter(Composition *aOwner, Space *aSpace);
 
     YTE_Shared ParticleEmitter(ParticleEmitter&&) = default;
 

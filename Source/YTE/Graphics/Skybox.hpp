@@ -14,7 +14,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(Skybox);
-    Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Skybox(Composition *aOwner, Space *aSpace);
     ~Skybox();
 
     void AssetInitialize() override;

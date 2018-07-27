@@ -41,7 +41,7 @@ namespace YTE
   public:
     YTEDeclareType(FacialAnimator);
 
-    FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    FacialAnimator(Composition *aOwner, Space *aSpace);
     FacialAnimator(FacialAnimator&) = delete;
 
     ~FacialAnimator();

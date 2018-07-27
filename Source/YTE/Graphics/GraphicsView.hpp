@@ -42,7 +42,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(GraphicsView);
-    YTE_Shared GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared GraphicsView(Composition *aOwner, Space *aSpace);
     YTE_Shared ~GraphicsView();
 
     YTE_Shared void NativeInitialize() override;
