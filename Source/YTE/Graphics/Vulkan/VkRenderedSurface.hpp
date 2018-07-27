@@ -229,6 +229,9 @@ namespace YTE
     }
 
   private:
+    void ResizeInternal(bool aConstructing = false);
+
+
     void RenderFrameForSurface();
     std::unique_ptr<VkRenderTarget> CreateRenderTarget(DrawerTypes aDrawerType,
                                                        ViewData *view,
@@ -266,7 +269,6 @@ namespace YTE
 
     // Engine Data
     bool mDataUpdateRequired;
-    bool mConstructing;
     bool mCanPresent = false;
   };
 }

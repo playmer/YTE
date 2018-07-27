@@ -53,7 +53,6 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    mConstructing = true;
     auto internals = mRenderer->GetVkInternals();
 
     auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
@@ -90,11 +89,9 @@ namespace YTE
     event.height = mWindow->GetHeight();
     event.width = mWindow->GetWidth();
 
-    ResizeEvent(&event);
+    ResizeInternal(true);
 
     mWindow->RegisterEvent<&VkRenderedSurface::ResizeEvent>(Events::WindowResize, this);
-
-    mConstructing = false;
   }
 
   VkRenderedSurface::~VkRenderedSurface()
@@ -295,10 +292,8 @@ namespace YTE
     return mRenderer->mGraphicsQueue;
   }
 
-  void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
+  void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
-    UnusedArguments(aEvent);
-
     auto baseDevice = static_cast<vk::PhysicalDevice>
                                   (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
@@ -316,7 +311,7 @@ namespace YTE
     // resize all render targets (and swapchain)
     mRenderToScreen->Resize(extent);
 
-    if (!mConstructing)
+    if (false == aConstructing)
     {
       // reset swapchain's references to render target frame buffers
       std::vector<VkRenderTarget*> rts;
@@ -348,6 +343,13 @@ namespace YTE
     {
       view.first->SendEvent(Events::RendererResize, &event);
     }
+  }
+
+  void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
+  {
+    UnusedArguments(aEvent);
+
+    ResizeInternal(false);
   }
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)
