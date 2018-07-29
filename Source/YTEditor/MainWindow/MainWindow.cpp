@@ -69,6 +69,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
 
@@ -161,19 +162,24 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
+    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>("ComponentBrowser");
 
-    std::vector<ComponentWidget*> componentWidgets = GetComponentBrowser().GetComponentTree()->GetComponentWidgets();
-
-    for (ComponentWidget* w : componentWidgets)
+    if (componentBrowser)
     {
-      std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
+      ComponentTree* componentTree = componentBrowser->GetComponentTree();
 
-      for (auto prop : properties)
+      std::vector<ComponentWidget*> componentWidgets = componentTree->GetComponentWidgets();
+
+      for (ComponentWidget* w : componentWidgets)
       {
-        prop->ReloadValueFromEngine();
+        std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
+
+        for (auto prop : properties)
+        {
+          prop->ReloadValueFromEngine();
+        }
       }
     }
-
   }
 
   YTE::Space* MainWindow::GetEditingLevel()
@@ -188,7 +194,17 @@ namespace YTEditor
 
   void MainWindow::LoadCurrentLevelInfo()
   {
-    YTEProfileFunction();
+    ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>("ObjectBrowser"); 
+    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>("ComponentBrowser");
+
+    // make sure we have the object and component browsers
+    if (!objectBrowser || !componentBrowser)
+    {
+      return;
+    }
+
+    ObjectTree* objectTree = objectBrowser->GetObjectTree();
+
     YTE::Space *lvl = GetEditingLevel();
 
     mRunningSpaceName = lvl->GetName();
@@ -196,12 +212,14 @@ namespace YTEditor
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
-    GetObjectBrowser().ClearObjectList();
+    
+    objectBrowser->ClearObjectList();
 
     // Set the name to the new level
-    GetObjectBrowser().setHeaderLabel(lvl->GetName().c_str());
-
-    GetComponentBrowser().GetComponentTree()->ClearComponents();
+    ObjectTree* objectTree = objectBrowser->GetObjectTree();
+    objectTree->setHeaderLabel(lvl->GetName().c_str());
+    
+    componentBrowser->GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
     // Add the camera object to the new level
@@ -258,15 +276,15 @@ namespace YTEditor
       YTE::Composition *engineObj = cmp->second.get();
 
       // Store the name and composition pointer in the object browser
-      ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
+      ObjectItem* topItem = objectTree->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
 
-      GetObjectBrowser().LoadAllChildObjects(cmp->second.get(), topItem);
+      objectTree->LoadAllChildObjects(cmp->second.get(), topItem);
     }
 
     // if there are objects in the level
     if (objMap.size() != 0)
     {
-      GetObjectBrowser().setCurrentItem(GetObjectBrowser().topLevelItem(0));
+      objectTree->setCurrentItem(objectTree->topLevelItem(0));
     }
 
     CreateGizmo(mEditingLevel);
@@ -458,7 +476,13 @@ namespace YTEditor
         // duplicate current object
         if (aEvent->key() == Qt::Key_D)
         {
-          GetObjectBrowser().DuplicateCurrentlySelected();
+          ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>("ObjectBrowser");
+
+          if (objectBrowser)
+          {
+            ObjectTree* objectTree = objectBrowser->GetObjectTree();
+            objectTree->DuplicateCurrentlySelected();
+          }
         }
       }
     }

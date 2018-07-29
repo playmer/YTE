@@ -61,7 +61,7 @@ namespace YTEditor
   public:
     RemoveObjectCmd(YTE::Composition *aComposition,
                     OutputConsole *aConsole,
-                    ObjectBrowser *aBrowser);
+                    ObjectTree *aBrowser);
     ~RemoveObjectCmd();
 
     void Execute() override;
