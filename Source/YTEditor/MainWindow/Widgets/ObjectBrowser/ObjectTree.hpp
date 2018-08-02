@@ -39,6 +39,7 @@ namespace YTEditor
   {
   public:
     ObjectTree(MainWindow *aMainWindow, QWidget *parent = nullptr);
+    ~ObjectTree();
 
     ObjectItem* AddObject(const char *aCompositionName,
       const char *aArchetypeName,

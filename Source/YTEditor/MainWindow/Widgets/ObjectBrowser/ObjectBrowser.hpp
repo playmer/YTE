@@ -20,22 +20,102 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/MainWindow/Widgets/Widget.hpp"
 
+// old typedefs from sandbox project
+typedef QPair<QString, float> Property;
+typedef QVector<Property> Component;
+typedef QMap<QString, Component> Archetype;
+
+namespace YTE
+{
+  class Composition;
+  class String;
+}
 
 namespace YTEditor
 {
-  class ObjectTree;
+  class MainWindow;
+  class ObjectItem;
 
   class ObjectBrowser : public Widget
   {
   public:
     ObjectBrowser(MainWindow *aMainWindow);
-    
-    ObjectTree* GetObjectTree() const;
+    ~ObjectBrowser();
 
     void ClearObjectList();
 
+    ObjectItem* AddObject(const char *aCompositionName,
+                          const char *aArchetypeName,
+                          int aIndex = 0);
+
+    ObjectItem* AddChildObject(const char *aCompositionName,
+                               const char *aArchetypeName,
+                               ObjectItem *aParentObj,
+                               int aIndex = 0);
+
+    ObjectItem* AddTreeItem(const char *aItemName,
+                            YTE::Composition *aEngineObj,
+                            int aIndex = 0,
+                            bool aSetAsCurrent = true);
+
+    ObjectItem* AddTreeItem(const char *aItemName,
+                            ObjectItem * aParentObj,
+                            YTE::Composition *aEngineObj,
+                            int aIndex = 0,
+                            bool aSetAsCurrent = true);
+
+    ObjectItem* AddExistingComposition(const char *aCompositionName,
+                                       YTE::Composition *aComposition);
+
+    void LoadAllChildObjects(YTE::Composition *aParentObj,
+                             ObjectItem *aParentItem);
+
+    YTE::Composition* GetCurrentObject();
+
+    void RemoveObjectFromViewer(ObjectItem *aItem);
+
+    ObjectItem* FindItemByComposition(YTE::Composition *aComp);
+
+    MainWindow* GetMainWindow() const;
+
+    YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+
+    void SelectNoItem();
+    
+    void OnCurrentItemChanged(QTreeWidgetItem *current,
+                              QTreeWidgetItem *previous);
+
+    void OnItemSelectionChanged();
+
+    void DuplicateCurrentlySelected();
+
+    void RemoveCurrentObject();
+
+    void SetInsertSelectionChangedCommand(bool isActive);
+
+    void MoveToFrontOfCamera(YTE::Composition *aObject);
+
   private:
-    ObjectTree* mObjectTree;
+    QTreeWidget mTree;
+
+    void SetWidgetSettings();
+
+    void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
+
+    void dropEvent(QDropEvent *aEvent) override;
+
+    void CreateContextMenu(const QPoint & pos);
+
+    void keyPressEvent(QKeyEvent *aEvent);
+
+    ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+
+    void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
+                                        YTE::vector<ObjectItem*>* aResult,
+                                        ObjectItem* aItem);
+
+    std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;
+    bool mInsertSelectionChangedCmd;
 
   };
 

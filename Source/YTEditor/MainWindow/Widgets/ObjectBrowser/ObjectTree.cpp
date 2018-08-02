@@ -50,7 +50,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  ObjectTree::ObjectTree(MainWindow* aMainWindow, QWidget* parent)
+
+  ObjectTree::ObjectTree(MainWindow* aMainWindow, QWidget * parent)
     : QTreeWidget(parent)
     , mMainWindow(aMainWindow)
   {
@@ -73,6 +74,10 @@ namespace YTEditor
     this->setItemDelegate(new ObjectItemDelegate(this));
   }
 
+  ObjectTree::~ObjectTree()
+  {
+  }
+
   ObjectItem* ObjectTree::AddObject(const char *aCompositionName,
     const char *aArchetypeName,
     int aIndex)
@@ -85,10 +90,10 @@ namespace YTEditor
     auto space = mMainWindow->GetEditingLevel();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
-    
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
 
-    auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
+    auto cmd = std::make_unique<AddObjectCmd>(composition,
+      &mMainWindow->GetOutputConsole(),
+      this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, composition, aIndex);
@@ -110,9 +115,10 @@ namespace YTEditor
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
-    
-    auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
+
+    auto cmd = std::make_unique<AddObjectCmd>(composition,
+      &mMainWindow->GetOutputConsole(),
+      this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
@@ -203,61 +209,59 @@ namespace YTEditor
     ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
     ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
-    ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>("ComponentBrowser");
+    ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
 
-    if (componentBrowser)
+    if (currObj && currObj->GetEngineObject())
     {
-      ArchetypeTools *archTools = componentBrowser->GetArchetypeTools();
-
-      if (currObj && currObj->GetEngineObject())
+      if (currObj->GetEngineObject()->GetArchetypeName().Empty())
       {
-        if (currObj->GetEngineObject()->GetArchetypeName().Empty())
-        {
-          archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
-        }
-        else if (currObj->GetEngineObject()->SameAsArchetype())
-        {
-          archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
-        }
-        else
-        {
-          archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
-        }
+        archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
+      }
+      else if (currObj->GetEngineObject()->SameAsArchetype())
+      {
+        archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
+      }
+      else
+      {
+        archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
+      }
 
-        // Load the new current object into the component browser
-        ComponentTree* componentTree = componentBrowser->GetComponentTree();
-        componentTree->ClearComponents();
-        componentTree->LoadGameObject(currObj->GetEngineObject());
+      // Load the new current object into the component browser
+      mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
 
-        YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
+      mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(currObj->GetEngineObject());
 
-        auto matViewer = mMainWindow->GetWidget<MaterialViewer>("MaterialViewer");
+      YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
 
-        if (matViewer && model && model->GetMesh())
-        {
-          // get the list of materials from the submeshes
-          auto& submeshes = model->GetMesh()->mParts;
+      auto matViewer = mMainWindow->GetMaterialViewer();
 
-          matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
-          matViewer->SetMaterialsList(&submeshes);
-        }
-        else if (matViewer)
+      if (matViewer && model && model->GetMesh())
+      {
+        // get the list of materials from the submeshes
+        auto& submeshes = model->GetMesh()->mParts;
+
+        matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
+        matViewer->SetMaterialsList(&submeshes);
+      }
+      else
+      {
+        if (matViewer)
         {
           matViewer->LoadNoMaterial();
         }
       }
-    }
 
-    // get the transform of the currently selected object
-    YTE::Transform *currTransform = currObj->GetEngineObject()->GetComponent<YTE::Transform>();
+      // get the transform of the currently selected object
+      YTE::Transform *currTransform = currObj->GetEngineObject()->GetComponent<YTE::Transform>();
 
-    if (currTransform)
-    {
-      Gizmo *giz = mMainWindow->GetGizmo();
-
-      if (giz)
+      if (currTransform)
       {
-        giz->SnapToCurrentObject();
+        Gizmo *giz = mMainWindow->GetGizmo();
+
+        if (giz)
+        {
+          giz->SnapToCurrentObject();
+        }
       }
     }
   }
@@ -265,7 +269,8 @@ namespace YTEditor
   void ObjectTree::OnItemSelectionChanged()
   {
     QList<QTreeWidgetItem*> items = this->selectedItems();
-    
+
+    OutputConsole *console = &mMainWindow->GetOutputConsole();
 
     std::vector<YTE::GlobalUniqueIdentifier> newSelection;
     std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
@@ -286,8 +291,6 @@ namespace YTEditor
 
     if (mInsertSelectionChangedCmd)
     {
-      OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
-      
       UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
       undoRedo->InsertCommand(std::make_unique<ObjectSelectionChangedCmd>(newSelection, oldSelection, this, console));
     }
@@ -443,11 +446,9 @@ namespace YTEditor
     }
 
     YTE::Composition *engineObj = currItem->GetEngineObject();
-    
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>("OutputConsole");
 
     auto name = currItem->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, console, this);
+    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, &mMainWindow->GetOutputConsole(), &mMainWindow->GetObjectTree());
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
 
@@ -483,12 +484,7 @@ namespace YTEditor
   void ObjectTree::RemoveObjectFromViewer(ObjectItem *aItem)
   {
     // clear the component viewer
-    ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>("ComponentBrowser"); 
-    
-    if (componentBrowser)
-    {
-      componentBrowser->GetComponentTree()->ClearComponents();
-    }
+    mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
 
     // hide and remove from the tree
     aItem->setHidden(true);
@@ -512,7 +508,7 @@ namespace YTEditor
 
     ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
-    auto matViewer = mMainWindow->GetWidget<MaterialViewer>("MaterialViewer");
+    auto matViewer = mMainWindow->GetMaterialViewer();
 
     if (matViewer && currItem && currItem->GetEngineObject())
     {
@@ -653,7 +649,7 @@ namespace YTEditor
     return nullptr;
   }
 
-  MainWindow* ObjectTree::GetMainWindow() const
+  MainWindow * ObjectTree::GetMainWindow() const
   {
     return mMainWindow;
   }
