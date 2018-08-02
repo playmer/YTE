@@ -41,6 +41,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
@@ -111,7 +112,7 @@ namespace YTEditor
     int aIndex)
   {
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    auto space = spaces->begin()->second.get();
+    auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
@@ -151,7 +152,7 @@ namespace YTEditor
 
     auto compMap = aEngineObj->GetCompositions();
 
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
       YTE::Composition *child = iter->second.get();
 
@@ -183,7 +184,7 @@ namespace YTEditor
 
     auto compMap = aEngineObj->GetCompositions();
 
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
       YTE::Composition *child = iter->second.get();
 
@@ -554,12 +555,12 @@ namespace YTEditor
     return;
 
     // if the parent object has no children
-    if (aParentObj->GetCompositions()->size() == 0)
+    if (aParentObj->GetCompositions().size() == 0)
     {
       return;
     }
 
-    for (auto& cmp : *(aParentObj->GetCompositions()))
+    for (auto& cmp : aParentObj->GetCompositions())
     {
       ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
 

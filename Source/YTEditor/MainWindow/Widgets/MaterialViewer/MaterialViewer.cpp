@@ -145,7 +145,7 @@ namespace YTEditor
     return mMaterialWindow;
   }
 
-  std::string MaterialViewer::GetName() const
+  std::string MaterialViewer::GetName()
   {
     return "MaterialViewer";
   }

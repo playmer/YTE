@@ -113,7 +113,7 @@ namespace YTEditor
     int aIndex)
   {
     auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
-    auto space = spaces->begin()->second.get();
+    auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
@@ -154,7 +154,7 @@ namespace YTEditor
 
     auto compMap = aEngineObj->GetCompositions();
 
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
       YTE::Composition *child = iter->second.get();
 
@@ -186,7 +186,7 @@ namespace YTEditor
 
     auto compMap = aEngineObj->GetCompositions();
 
-    for (auto iter = compMap->begin(); iter != compMap->end(); iter++)
+    for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
       YTE::Composition *child = iter->second.get();
 
@@ -501,7 +501,7 @@ namespace YTEditor
     }
   }
 
-  std::string ObjectBrowser::GetName() const
+  std::string ObjectBrowser::GetName()
   {
     return "ObjectBrowser";
   }
@@ -576,27 +576,6 @@ namespace YTEditor
     {
       // TODO(NICK): figure out how to pass this to a tree, might need to inherit from QTreeWidget
       //mTree.keyPressEvent(aEvent);
-    }
-  }
-
-  void ObjectBrowser::LoadAllChildObjects(YTE::Composition *aParentObj, ObjectItem *aParentItem)
-  {
-    return;
-
-    // if the parent object has no children
-    if (aParentObj->GetCompositions()->size() == 0)
-    {
-      return;
-    }
-
-    for (auto& cmp : *(aParentObj->GetCompositions()))
-    {
-      ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
-
-      if (item)
-      {
-        LoadAllChildObjects(cmp.second.get(), item);
-      }
     }
   }
 

@@ -67,9 +67,6 @@ namespace YTEditor
     ObjectItem* AddExistingComposition(const char *aCompositionName,
                                        YTE::Composition *aComposition);
 
-    void LoadAllChildObjects(YTE::Composition *aParentObj,
-                             ObjectItem *aParentItem);
-
     YTE::Composition* GetCurrentObject();
 
     void RemoveObjectFromViewer(ObjectItem *aItem);
@@ -95,7 +92,7 @@ namespace YTEditor
 
     void MoveToFrontOfCamera(YTE::Composition *aObject);
 
-    std::string GetName() const override;
+    static std::string GetName();
 
     Widget::DockArea GetDefaultDockPosition() const override;
 

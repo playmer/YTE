@@ -209,7 +209,6 @@ namespace YTE
     {
       static_assert(std::is_base_of<Component, tComponentType>()
                     && !std::is_same<Component, tComponentType>());
-        auto addFactory = componentSystem->GetComponentFactory(type);
 
       auto type = TypeId<tComponentType>();
       auto component = static_cast<tComponentType*>(AddComponent(type, aProperties));

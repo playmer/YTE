@@ -18,6 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/EventHandler.hpp"
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
 
 #include "YTEditor/YTEditorMeta.hpp"
 
@@ -41,7 +42,7 @@ namespace YTEditor
     OutputConsole *mConsole;
   };
 
-  class OutputConsole : public QWidget
+  class OutputConsole : public Widget
   {
   public:
 
@@ -56,7 +57,7 @@ namespace YTEditor
       static QColor Red;
     };
 
-    OutputConsole(MainWindow *aMainWindow, QWidget *aParent = nullptr);
+    OutputConsole(MainWindow *aMainWindow);
     ~OutputConsole();
 
     void PrintToConsole(const char *aString);
@@ -67,6 +68,11 @@ namespace YTEditor
     QTextEdit* GetTextEdit() { return mConsole; }
 
     MainWindow* GetMainWindow() { return mMainWindow; }
+
+    static std::string GetName();
+
+    Widget::DockArea GetDefaultDockPosition() const override;
+
   private:
     void SetWindowSettings();
     void ConstructInnerWidget();

@@ -57,18 +57,13 @@ namespace YTEditor
     /////////////////////////////////////////////////////////////////////////////
 
     // Iterate through all the objects in the map / on the level
-    for (auto const& [name, component] : lvl->GetCompositions())
+    for (auto const& [name, composition] : lvl->GetCompositions())
     {
       // Get the name of the object
-      auto objName = component->GetName();
+      auto objName = composition->GetName();
 
       // Store the name and composition pointer in the object browser
-      ObjectItem *topItem = mObjectBrowser->AddExistingComposition(objName.c_str(), component);
-
-      if (topItem)
-      {
-        mObjectBrowser->LoadAllChildObjects(cmp.second.get(), topItem);
-      }
+      ObjectItem *topItem = mObjectBrowser->AddExistingComposition(objName.c_str(), composition.get());
     }
   }
 

@@ -3,23 +3,29 @@
 #include <qscrollarea.h>
 #include <qlayout.h>
 #include <qpushButton>
-#include <qwidget>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/WWise/WWiseSystem.hpp"
 
+#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+
 namespace YTEditor
 {
-  class WWiseWidget : public QWidget
+  class WWiseWidget : public Widget
   {
   public:
-    WWiseWidget(QWidget *aParent, YTE::Engine *aEngine);
+    WWiseWidget(MainWindow *aParent, YTE::Engine *aEngine);
     ~WWiseWidget();
 
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
 
     void LoadEvents();
+
+    static std::string GetName();
+
+    Widget::DockArea GetDefaultDockPosition() const override;
 
   private:
 

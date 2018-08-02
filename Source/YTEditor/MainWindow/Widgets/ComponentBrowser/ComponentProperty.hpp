@@ -147,7 +147,7 @@ namespace YTEditor
 
     // notify that change has been made to object instance
     MainWindow *mainWindow = mParentComponent->GetMainWindow();
-    ArchetypeTools *archTools = mainWindow->GetComponentBrowser().GetArchetypeTools();
+    ArchetypeTools *archTools = mainWindow->GetWidget<ComponentBrowser>()->GetArchetypeTools();
     archTools->IncrementChanges();
   
     std::string name = mEngineProperty->GetName();

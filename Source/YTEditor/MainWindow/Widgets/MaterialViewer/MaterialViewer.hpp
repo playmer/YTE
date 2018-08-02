@@ -57,7 +57,7 @@ namespace YTEditor
 
     SubWindow* GetSubWindow();
 
-    std::string GetName() const override;
+    static std::string GetName();
 
     Widget::DockArea GetDefaultDockPosition() const override;
 

@@ -47,6 +47,9 @@ namespace YTEditor
 
     FileViewer(MainWindow *aMainWindow);
 
+    static std::string GetName();
+    Widget::DockArea GetDefaultDockPosition() const override;
+
   private:
     QTreeView mTree;
 

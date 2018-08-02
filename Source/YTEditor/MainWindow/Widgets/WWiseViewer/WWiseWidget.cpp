@@ -125,8 +125,8 @@ namespace YTEditor
     WWiseWidget *mWidget;
   };
 
-  WWiseWidget::WWiseWidget(QWidget *aParent, YTE::Engine *aEngine)
-    : QWidget(aParent)
+  WWiseWidget::WWiseWidget(MainWindow *aMainWindow, YTE::Engine *aEngine)
+    : Widget(aMainWindow)
     , mEngine(aEngine)
   {
     std::string name{ "WWiseWidget" };
@@ -327,6 +327,16 @@ namespace YTEditor
 
       mSubWidgetLayout->addWidget(bankGroupBox);
     }
+  }
+
+  std::string WWiseWidget::GetName()
+  {
+    return "WWiseWidget";
+  }
+
+  Widget::DockArea WWiseWidget::GetDefaultDockPosition() const
+  {
+    return Widget::DockArea::Right;
   }
 
   void WWiseWidget::ConstructSubWidgets()

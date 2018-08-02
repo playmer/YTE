@@ -222,8 +222,10 @@ namespace YTEditor
   template <typename T>
   T* MainWindow::GetWidget()
   {
+    std::string name = T::GetName();
+
     // find the base ptr
-    auto it = mWidgets.find(T::GetName());
+    auto it = mWidgets.find(name);
 
     if (it == mWidgets.end())
     {

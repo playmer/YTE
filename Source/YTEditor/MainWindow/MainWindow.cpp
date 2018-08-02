@@ -127,8 +127,9 @@ namespace YTEditor
     mEditingLevel->SetIsEditorSpace(aEngine->IsEditor());
 
     //// This needs to happen after the engine has been initialized.
-    ConstructMaterialViewer();
-    ConstructWWiseWidget();
+    // TODO(NICK): need to convert to MainWindow::LoadWidget<>()
+    //ConstructMaterialViewer();
+    //ConstructWWiseWidget();
 
     tabifyDockWidget(mMaterialViewer, mComponentBrowser);
     tabifyDockWidget(mMaterialViewer, mWWiseWidget);

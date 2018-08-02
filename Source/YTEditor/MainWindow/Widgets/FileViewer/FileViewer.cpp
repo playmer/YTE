@@ -164,4 +164,14 @@ namespace YTEditor
     mTree.setDragEnabled(true);
     mTree.setDropIndicatorShown(true);
   }
+
+  std::string FileViewer::GetName()
+  {
+    return "FileViewer";
+  }
+
+  Widget::DockArea FileViewer::GetDefaultDockPosition() const
+  {
+    return Widget::DockArea::Bottom;
+  }
 }

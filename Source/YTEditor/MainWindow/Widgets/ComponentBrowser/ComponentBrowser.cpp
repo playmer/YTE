@@ -64,7 +64,7 @@ namespace YTEditor
     return mMainWindow;
   }
 
-  std::string ComponentBrowser::GetName() const
+  std::string ComponentBrowser::GetName()
   {
     return "ComponentBrowser";
   }

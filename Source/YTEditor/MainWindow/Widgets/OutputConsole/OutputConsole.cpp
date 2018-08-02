@@ -66,8 +66,8 @@ namespace YTEditor
     textEdit->setTextColor(OutputConsole::Color::Black);
   }
 
-  OutputConsole::OutputConsole(MainWindow *aMainWindow, QWidget *aParent)
-    : QWidget(aParent)
+  OutputConsole::OutputConsole(MainWindow *aMainWindow)
+    : Widget(aMainWindow)
     , mLayout(nullptr)
     , mConsole(nullptr)
     , mMainWindow(aMainWindow)
@@ -127,6 +127,16 @@ namespace YTEditor
     mConsole->setTextColor(Color::Black);
   }
 
+
+  std::string OutputConsole::GetName()
+  {
+    return "OutputConsole";
+  }
+
+  Widget::DockArea OutputConsole::GetDefaultDockPosition() const
+  {
+    return Widget::DockArea::Bottom;
+  }
 
   void OutputConsole::SetWindowSettings()
   {

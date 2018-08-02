@@ -18,6 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/StandardLibrary/Vector.hpp"
 
+
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
 typedef QVector<Property> Component;
