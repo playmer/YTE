@@ -49,7 +49,7 @@ namespace YTEditor
 
   ImportMenu::ImportMenu(MainWindow *aMainWindow)
     : Menu("Import", aMainWindow)
-    , mConsole(&aMainWindow->GetOutputConsole())
+    , mConsole(aMainWindow->GetWidget<OutputConsole>())
   {
     AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
     AddAction<ImportMenu>("Model", &ImportMenu::ImportModel, this);
@@ -122,7 +122,7 @@ namespace YTEditor
 
       if (nullptr == pScene)
       {
-        mMainWindow->GetOutputConsole().PrintLnC(OutputConsole::Color::Red,
+        mMainWindow->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red,
                                                  "Could not find a valid fbx named %s",
                                                  stdAnimationDirectory.c_str());
         return;
@@ -131,14 +131,14 @@ namespace YTEditor
       if (pScene->mNumAnimations == 0)
       {
         mConsole->PrintLnC(OutputConsole::Color::Red,
-                                                 "No animations are found in file %s",
-                                                 stdAnimationDirectory.c_str());
+                           "No animations are found in file %s",
+                           stdAnimationDirectory.c_str());
         return;
       }
 
       mConsole->PrintLnC(OutputConsole::Color::Green,
-                                               "Importing Animation: %s",
-                                               stdAnimationDirectory.c_str());
+                         "Importing Animation: %s",
+                         stdAnimationDirectory.c_str());
 
       for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
       {
@@ -146,9 +146,9 @@ namespace YTEditor
         std::string animationName = animation->mName.data;
 
         mConsole->PrintLnC(OutputConsole::Color::Green,
-                                                 "Animation Name (%s), Animation Index (%i):",
-                                                 animationName.c_str(),
-                                                 i);
+                           "Animation Name (%s), Animation Index (%i):",
+                           animationName.c_str(),
+                           i);
       }
 
       fs::path workingDir{ YTE::Path::GetGamePath().String() };

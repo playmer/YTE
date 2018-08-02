@@ -179,11 +179,12 @@ namespace YTEditor
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
-    ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
-    objBrowser.setCurrentItem(parentItem);
+    ObjectBrowser* objectBrowser = mainWindow->GetWidget<ObjectBrowser>();
+    ObjectItem *parentItem = objectBrowser->FindItemByComposition(parentObj);
+    objectBrowser->setCurrentItem(parentItem);
 
-    ComponentTree *compTree = mainWindow->GetComponentBrowser().GetComponentTree();
+    ComponentBrowser* componentBrowser = mainWindow->GetWidget<ComponentBrowser>();
+    ComponentTree *compTree = componentBrowser->GetComponentTree();
     ComponentWidget *compWidg = compTree->InternalAddComponent(mComponentType, &mSerializedComponent);
     YTE::Component *component = compWidg->GetEngineComponent();
 
@@ -246,12 +247,12 @@ namespace YTEditor
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
-    ObjectItem *parentItem = objBrowser.FindItemByComposition(parentObj);
-    objBrowser.setCurrentItem(parentItem);
+    ObjectBrowser *objBrowser = mainWindow->GetWidget<ObjectBrowser>();
+    ObjectItem *parentItem = objBrowser->FindItemByComposition(parentObj);
+    objBrowser->setCurrentItem(parentItem);
 
-    ComponentTree *compTree = mainWindow->GetComponentBrowser().GetComponentTree();
-
+    ComponentBrowser* componentBrowser = mainWindow->GetWidget<ComponentBrowser>();
+    ComponentTree *compTree = componentBrowser->GetComponentTree();
     ComponentWidget *compWidg = compTree->InternalAddComponent(mComponentType, &mSerializedComponent);
 
     YTE::Component *component = compWidg->GetEngineComponent();
@@ -265,15 +266,15 @@ namespace YTEditor
                                      YTE::Any aOldVal,
                                      YTE::Any aNewVal,
                                      MainWindow *aMainWindow)
-    : Command(&aMainWindow->GetOutputConsole())
+    : Command(aMainWindow->GetWidget<OutputConsole>())
     , mPropertyName(aPropName)
     , mPreviousValue(aOldVal)
     , mModifiedValue(aNewVal)
-    , mArchTools(aMainWindow->GetComponentBrowser().GetArchetypeTools())
     , mMainWindow(aMainWindow)
     , mCompGUID(aGUID)
   {
-
+    ComponentBrowser* componentBrowser = aMainWindow->GetWidget<ComponentBrowser>();
+    mArchTools = componentBrowser->GetArchetypeTools();
   }
 
 
@@ -329,9 +330,8 @@ namespace YTEditor
     MainWindow *mainWin = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWin->GetRunningEngine();
 
-    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
-    objBrowser.SetInsertSelectionChangedCommand(false);
 
+    mObjectBrowser->SetInsertSelectionChangedCommand(false);
     mObjectBrowser->clearSelection();
 
     for (auto guid : mNewSelection)
@@ -349,7 +349,7 @@ namespace YTEditor
       }
     }
 
-    objBrowser.SetInsertSelectionChangedCommand(true);
+    mObjectBrowser->SetInsertSelectionChangedCommand(true);
   }
 
   void ObjectSelectionChangedCmd::UnExecute()
@@ -358,9 +358,8 @@ namespace YTEditor
     MainWindow *mainWin = mObjectBrowser->GetMainWindow();
     YTE::Engine *engine = mainWin->GetRunningEngine();
 
-    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
-    objBrowser.SetInsertSelectionChangedCommand(false);
 
+    mObjectBrowser->SetInsertSelectionChangedCommand(false);
     mObjectBrowser->clearSelection();
 
     for (auto guid : mOldSelection)
@@ -378,7 +377,7 @@ namespace YTEditor
       }
     }
 
-    objBrowser.SetInsertSelectionChangedCommand(true);
+    mObjectBrowser->SetInsertSelectionChangedCommand(true);
   }
 }
 

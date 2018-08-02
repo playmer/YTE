@@ -51,7 +51,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ObjectTree::ObjectTree(MainWindow* aMainWindow, QWidget * parent)
+  ObjectTree::ObjectTree(MainWindow *aMainWindow, QWidget *parent)
     : QTreeWidget(parent)
     , mMainWindow(aMainWindow)
   {
@@ -92,8 +92,8 @@ namespace YTEditor
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
-      &mMainWindow->GetOutputConsole(),
-      this);
+                                              mMainWindow->GetWidget<OutputConsole>(),
+                                              this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, composition, aIndex);
@@ -117,8 +117,8 @@ namespace YTEditor
 
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
-      &mMainWindow->GetOutputConsole(),
-      this);
+                                              mMainWindow->GetWidget<OutputConsole>(),
+                                              this);
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
@@ -209,7 +209,7 @@ namespace YTEditor
     ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
     ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
-    ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
+    ArchetypeTools *archTools = GetMainWindow()->GetWidget<ComponentBrowser>()->GetArchetypeTools();
 
     if (currObj && currObj->GetEngineObject())
     {
@@ -227,13 +227,14 @@ namespace YTEditor
       }
 
       // Load the new current object into the component browser
-      mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
-
-      mMainWindow->GetComponentBrowser().GetComponentTree()->LoadGameObject(currObj->GetEngineObject());
+      ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>();
+      ComponentTree* componentTree = componentBrowser->GetComponentTree();
+      componentTree->ClearComponents();
+      componentTree->LoadGameObject(currObj->GetEngineObject());
 
       YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
 
-      auto matViewer = mMainWindow->GetMaterialViewer();
+      auto matViewer = mMainWindow->GetWidget<MaterialViewer>();
 
       if (matViewer && model && model->GetMesh())
       {
@@ -270,7 +271,7 @@ namespace YTEditor
   {
     QList<QTreeWidgetItem*> items = this->selectedItems();
 
-    OutputConsole *console = &mMainWindow->GetOutputConsole();
+    OutputConsole *console = mMainWindow->GetWidget<OutputConsole>();
 
     std::vector<YTE::GlobalUniqueIdentifier> newSelection;
     std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
@@ -448,7 +449,7 @@ namespace YTEditor
     YTE::Composition *engineObj = currItem->GetEngineObject();
 
     auto name = currItem->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, &mMainWindow->GetOutputConsole(), &mMainWindow->GetObjectTree());
+    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mMainWindow->GetWidget<OutputConsole>(), mMainWindow->GetWidget<ObjectBrowser>());
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
 
@@ -484,7 +485,7 @@ namespace YTEditor
   void ObjectTree::RemoveObjectFromViewer(ObjectItem *aItem)
   {
     // clear the component viewer
-    mMainWindow->GetComponentBrowser().GetComponentTree()->ClearComponents();
+    mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->ClearComponents();
 
     // hide and remove from the tree
     aItem->setHidden(true);
@@ -508,7 +509,7 @@ namespace YTEditor
 
     ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
-    auto matViewer = mMainWindow->GetMaterialViewer();
+    auto matViewer = mMainWindow->GetWidget<MaterialViewer>();
 
     if (matViewer && currItem && currItem->GetEngineObject())
     {

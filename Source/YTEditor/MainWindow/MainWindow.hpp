@@ -74,7 +74,7 @@ namespace YTEditor
     std::unique_ptr<T> LoadWidget();
 
     template <typename T>
-    T* GetWidget(std::string aClassName);
+    T* GetWidget();
 
   private:
 
@@ -161,12 +161,6 @@ namespace YTEditor
     void ConstructSubWidgets();
     void ConstructGameWindows();
     void ConstructToolbar();
-    void ConstructObjectBrowser();
-    void ConstructComponentBrowser();
-    void ConstructOutputConsole();
-    void ConstructMaterialViewer();
-    void ConstructFileViewer();
-    void ConstructWWiseWidget();
 
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
 
@@ -226,10 +220,10 @@ namespace YTEditor
   }
 
   template <typename T>
-  T* MainWindow::GetWidget(std::string aClassName)
+  T* MainWindow::GetWidget()
   {
     // find the base ptr
-    auto it = mWidgets.find(aClassName);
+    auto it = mWidgets.find(T::GetName());
 
     if (it == mWidgets.end())
     {

@@ -145,6 +145,16 @@ namespace YTEditor
     return mMaterialWindow;
   }
 
+  std::string MaterialViewer::GetName() const
+  {
+    return "MaterialViewer";
+  }
+
+  Widget::DockArea MaterialViewer::GetDefaultDockPosition() const
+  {
+    return Widget::DockArea::Right;
+  }
+
   void MaterialViewer::OnCurrentMaterialChanged(int aIndex)
   {
     if (aIndex < mCurrentSubMeshes->size())

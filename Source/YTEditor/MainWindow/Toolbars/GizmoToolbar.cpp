@@ -50,7 +50,7 @@ namespace YTEditor
 
   void GizmoToolbar::SetMode(int aMode)
   {
-    if (mMainWindow->GetObjectBrowser().GetCurrentObject() == nullptr)
+    if (mMainWindow->GetWidget<ObjectBrowser>()->GetCurrentObject() == nullptr)
     {
       aMode = Mode::Select;
     }

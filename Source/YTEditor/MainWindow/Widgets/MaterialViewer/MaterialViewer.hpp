@@ -57,6 +57,10 @@ namespace YTEditor
 
     SubWindow* GetSubWindow();
 
+    std::string GetName() const override;
+
+    Widget::DockArea GetDefaultDockPosition() const override;
+
   private:
 
     void OnCurrentMaterialChanged(int aIndex);

@@ -128,7 +128,7 @@ namespace YTEditor
 
   void Gizmo::SnapToCurrentObject()
   {
-    SetCurrentComposition(mMainWindow->GetObjectBrowser().GetCurrentObject());
+    SetCurrentComposition(mMainWindow->GetWidget<ObjectBrowser>()->GetCurrentObject());
   }
 
   void Gizmo::SetCurrentComposition(YTE::Composition *aComposition)

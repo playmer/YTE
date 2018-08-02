@@ -78,8 +78,6 @@ namespace YTEditor
     setCompleter(mCompleter);
 
     popup->connect(popup, &QAbstractItemView::clicked, this, &ComponentSearchBar::OnReturnPressed);
-
-    
   }
 
   void ComponentSearchBar::OnReturnPressed()
@@ -112,8 +110,8 @@ namespace YTEditor
     ComponentBrowser &browser = mComponentTools->GetBrowser();
     MainWindow *mainWin = browser.GetMainWindow();
 
-    ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
-    YTE::Composition *currObj = objBrowser.GetCurrentObject();
+    ObjectBrowser *objBrowser = mainWin->GetWidget<ObjectBrowser>();
+    YTE::Composition *currObj = objBrowser->GetCurrentObject();
 
     if (nullptr == currObj)
     {
@@ -131,7 +129,7 @@ namespace YTEditor
 
     if (false == error.empty())
     {
-      mainWin->GetOutputConsole().PrintLnC(OutputConsole::Color::Red, error.c_str());
+      mainWin->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red, error.c_str());
       return;
     }
 
@@ -144,11 +142,11 @@ namespace YTEditor
       mainWin->GetPhysicsHandler().Add(currObj);
     }
 
-    YTE::Model *model = objBrowser.GetCurrentObject()->GetComponent<YTE::Model>();
+    YTE::Model *model = objBrowser->GetCurrentObject()->GetComponent<YTE::Model>();
 
     if (model && model->GetMesh())
     {
-      auto matViewer = mainWin->GetMaterialViewer();
+      auto matViewer = mainWin->GetWidget<MaterialViewer>();
 
       if (matViewer)
       {
@@ -181,5 +179,4 @@ namespace YTEditor
 
     return nullptr;
   }
-
 }

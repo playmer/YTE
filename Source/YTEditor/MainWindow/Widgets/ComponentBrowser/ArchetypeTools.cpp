@@ -113,8 +113,9 @@ namespace YTEditor
   {
     // diff RSValues to see if reloading is necessary
     MainWindow *mainWin = mBrowser->GetMainWindow();
+    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
 
-    YTE::Composition *obj = mainWin->GetObjectBrowser().GetCurrentObject();
+    YTE::Composition *obj = objectBrowser->GetCurrentObject();
 
     RevertObject(obj);
 
@@ -154,9 +155,9 @@ namespace YTEditor
       YTE::Composition *parent = aObject->GetParent();
       parent->RemoveComposition(aObject);
 
-      ObjectBrowser &objBrowser = mainWin->GetObjectBrowser();
+      ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
 
-      ObjectItem *item = objBrowser.FindItemByComposition(aObject);
+      ObjectItem *item = objectBrowser->FindItemByComposition(aObject);
 
       // is the item parented?
       bool isChild = item->parent();
@@ -168,33 +169,33 @@ namespace YTEditor
       }
       else
       {
-        index = objBrowser.indexOfTopLevelItem(item);
+        index = objectBrowser->indexOfTopLevelItem(item);
       }
 
       // remove old object item
-      objBrowser.RemoveObjectFromViewer(item);
+      objectBrowser->RemoveObjectFromViewer(item);
 
       ObjectItem *newItem = nullptr;
 
       // item has a parent object
       if (isChild)
       {
-        newItem = objBrowser.AddChildObject(name.c_str(),
+        newItem = objectBrowser->AddChildObject(name.c_str(),
           archName.c_str(),
-          objBrowser.FindItemByComposition(parent),
+          objectBrowser->FindItemByComposition(parent),
           index);
       }
       // item has no parent
       else
       {
-        newItem = objBrowser.AddObject(name.c_str(), archName.c_str(), index);
+        newItem = objectBrowser->AddObject(name.c_str(), archName.c_str(), index);
       }
 
       // set obj to the new composition
       aObject = newItem->GetEngineObject();
 
       // load all the children of the new object
-      objBrowser.LoadAllChildObjects(aObject, newItem);
+      objectBrowser->LoadAllChildObjects(aObject, newItem);
 
       // set their positions and rotations to the stored values
       trans = aObject->GetComponent<YTE::Transform>();
@@ -208,7 +209,10 @@ namespace YTEditor
     mIsArchetype = true;
     mIsDifferent = false;
 
-    YTE::Composition *cmp = mBrowser->GetMainWindow()->GetObjectBrowser().GetCurrentObject();
+    MainWindow *mainWin = mBrowser->GetMainWindow();
+    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+
+    YTE::Composition *cmp = objectBrowser->GetCurrentObject();
 
     std::string str = mArchNameBar->text().toStdString();
     YTE::String arch = str.c_str();
@@ -245,7 +249,10 @@ namespace YTEditor
     std::string str = mArchNameBar->text().toStdString();
     YTE::String arch = str.c_str();
 
-    auto items = mBrowser->GetMainWindow()->GetObjectBrowser().FindAllObjectsOfArchetype(arch);
+    MainWindow *mainWin = mBrowser->GetMainWindow();
+    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+
+    auto items = objectBrowser->FindAllObjectsOfArchetype(arch);
 
     for (auto& obj : items)
     {

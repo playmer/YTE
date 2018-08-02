@@ -31,7 +31,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-
   ObjectItem::ObjectItem(YTE::String &aItemName,
     ObjectTree *aParentTree,
     YTE::Composition *aEngineObj,
@@ -166,7 +165,7 @@ namespace YTEditor
 
           YTE::Composition *engineObj = item->GetEngineObject();
 
-          OutputConsole* console = mTree->GetMainWindow()->GetWidget<OutputConsole>("OutputConsole");
+          OutputConsole* console = mTree->GetMainWindow()->GetWidget<OutputConsole>();
 
           auto name = item->text(0).toStdString();
           auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, console, mTree);

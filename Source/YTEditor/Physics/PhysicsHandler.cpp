@@ -175,11 +175,12 @@ namespace YTEditor
       
       mCurrentObj = obj;
 
-      auto& browser = mMainWindow->GetObjectBrowser();
-      auto item = browser.FindItemByComposition(mCurrentObj);
+      ObjectBrowser* browser = mMainWindow->GetWidget<ObjectBrowser>();
+      auto item = browser->FindItemByComposition(mCurrentObj);
 
       // TODO(Evan/Nick): change to setSelectedItem for drag select in future
-      browser.setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+      // TODO(NICK): this wants an ObjectTree and I'm DISAPPOINTING IT
+      browser->setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
 
       auto model = mCurrentObj->GetComponent<YTE::Model>();
 

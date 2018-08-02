@@ -32,8 +32,8 @@ namespace YTEditor
 
   LevelMenu::LevelMenu(MainWindow *aMainWindow)
     : Menu("Level", aMainWindow)
-    , mObjectBrowser(&aMainWindow->GetObjectBrowser())
-    , mComponentTree(aMainWindow->GetComponentBrowser().GetComponentTree())
+    , mObjectBrowser(aMainWindow->GetWidget<ObjectBrowser>())
+    , mComponentTree(aMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree())
   {
     AddAction<LevelMenu>("Reload Level", &LevelMenu::SelectEngine, this);
     AddAction<LevelMenu>("Select Space", &LevelMenu::SelectSpace, this);

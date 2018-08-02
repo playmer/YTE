@@ -50,7 +50,7 @@ namespace YTEditor
     : QTreeWidget(parent)
     , mComponentBrowser(parent)
     , mUndoRedo(mComponentBrowser->GetMainWindow()->GetUndoRedo())
-    , mOutputConsole(&(mComponentBrowser->GetMainWindow()->GetOutputConsole()))
+    , mOutputConsole(mComponentBrowser->GetMainWindow()->GetWidget<OutputConsole>())
   {
     SetWindowSettings();
 
@@ -185,9 +185,9 @@ namespace YTEditor
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType)
   {
     MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
-    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+    ObjectBrowser *objBrowser = mainWindow->GetWidget<ObjectBrowser>();
 
-    YTE::Composition *currentObj = objBrowser.GetCurrentObject();
+    YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
     YTE::Component *component = currentObj->AddComponent(aComponentType, true);
 
@@ -211,9 +211,9 @@ namespace YTEditor
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType, YTE::RSValue *aSerializedComponent)
   {
     MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
-    ObjectBrowser &objBrowser = mainWindow->GetObjectBrowser();
+    ObjectBrowser *objBrowser = mainWindow->GetWidget<ObjectBrowser>();
 
-    YTE::Composition *currentObj = objBrowser.GetCurrentObject();
+    YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
     YTE::Component *component = currentObj->AddComponent(aComponentType, aSerializedComponent);
 
@@ -284,7 +284,8 @@ namespace YTEditor
 
         if (compWidg->GetName() == "Model")
         {
-          mComponentBrowser->GetMainWindow()->GetMaterialViewer()->LoadNoMaterial();
+          MainWindow* mainWindow = mComponentBrowser->GetMainWindow();
+          mainWindow->GetWidget<MaterialViewer>()->LoadNoMaterial();
         }
 
         compWidg->RemoveComponentFromEngine();
@@ -420,7 +421,7 @@ namespace YTEditor
     if (compWidg->GetName() == "Model")
     {
       auto mainWin = mComponentBrowser->GetMainWindow();
-      auto matViewer = mainWin->GetMaterialViewer();
+      auto matViewer = mainWin->GetWidget<MaterialViewer>();
 
       if (matViewer)
       {

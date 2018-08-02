@@ -467,8 +467,8 @@ namespace YTEditor
 
     auto name = currItem->text(0).toStdString();
     auto cmd = std::make_unique<RemoveObjectCmd>(engineObj,
-      mMainWindow->GetWidget<OutputConsole>(),
-      mMainWindow->GetWidget<ObjectBrowser>());
+                                                 mMainWindow->GetWidget<OutputConsole>(),
+                                                 mMainWindow->GetWidget<ObjectBrowser>());
 
     mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
 

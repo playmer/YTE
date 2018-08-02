@@ -21,6 +21,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
+#include "YTEditor/MainWindow/Widgets/FileViewer/FileViewer.hpp"
 
 
 namespace YTEditor
@@ -48,12 +49,12 @@ namespace YTEditor
 
   void WindowsMenu::OpenObjectBrowser()
   {
-    mMainWindow->GetObjectBrowserDock()->show();
+    mMainWindow->GetWidget<ObjectBrowser>()->show();
   }
 
   void WindowsMenu::CloseObjectBrowser()
   {
-    mMainWindow->GetObjectBrowserDock()->hide();
+    mMainWindow->GetWidget<ObjectBrowser>()->hide();
   }
 
   Menu* WindowsMenu::MakeComponentBrowserMenu()
@@ -68,12 +69,12 @@ namespace YTEditor
 
   void WindowsMenu::OpenComponentBrowser()
   {
-    mMainWindow->GetComponentBrowserDock()->show();
+    mMainWindow->GetWidget<ComponentBrowser>()->show();
   }
 
   void WindowsMenu::CloseComponentBrowser()
   {
-    mMainWindow->GetComponentBrowserDock()->hide();
+    mMainWindow->GetWidget<ComponentBrowser>()->hide();
   }
 
   Menu* WindowsMenu::MakeOutputConsoleMenu()
@@ -88,12 +89,12 @@ namespace YTEditor
 
   void WindowsMenu::OpenOutputConsole()
   {
-    mMainWindow->GetOutputConsoleDock()->show();
+    mMainWindow->GetWidget<OutputConsole>()->show();
   }
 
   void WindowsMenu::CloseOutputConsole()
   {
-    mMainWindow->GetOutputConsoleDock()->hide();
+    mMainWindow->GetWidget<OutputConsole>()->hide();
   }
 
   Menu* WindowsMenu::MakeMaterialViewerMenu()
@@ -108,12 +109,12 @@ namespace YTEditor
 
   void WindowsMenu::OpenMaterialViewer()
   {
-    mMainWindow->GetMaterialViewerDock()->show();
+    mMainWindow->GetWidget<MaterialViewer>()->show();
   }
 
   void WindowsMenu::CloseMaterialViewer()
   {
-    mMainWindow->GetMaterialViewerDock()->hide();
+    mMainWindow->GetWidget<MaterialViewer>()->hide();
   }
 
   Menu* WindowsMenu::MakeFileViewerMenu()
@@ -128,12 +129,12 @@ namespace YTEditor
 
   void WindowsMenu::OpenFileViewer()
   {
-    mMainWindow->GetFileViewerDock()->show();
+    mMainWindow->GetWidget<FileViewer>()->show();
   }
 
   void WindowsMenu::CloseFileViewer()
   {
-    mMainWindow->GetFileViewerDock()->hide();
+    mMainWindow->GetWidget<FileViewer>()->hide();
   }
 
   Menu* WindowsMenu::MakeWWiseViewerMenu()
@@ -148,11 +149,11 @@ namespace YTEditor
 
   void WindowsMenu::OpenWWiseViewer()
   {
-    mMainWindow->GetWWiseWidgetDock()->show();
+    mMainWindow->GetWidget<WWiseWidget>()->show();
   }
 
   void WindowsMenu::CloseWWiseViewer()
   {
-    mMainWindow->GetWWiseWidgetDock()->hide();
+    mMainWindow->GetWidget<WWiseWidget>()->hide();
   }
 }

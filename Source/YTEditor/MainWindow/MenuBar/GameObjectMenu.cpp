@@ -37,8 +37,8 @@ namespace YTEditor
 {
   GameObjectMenu::GameObjectMenu(MainWindow *aMainWindow)
     : Menu("Game Object", aMainWindow)
-    , mObjectBrowser(&mMainWindow->GetObjectBrowser())
-    , mComponentBrowser(&aMainWindow->GetComponentBrowser())
+    , mObjectBrowser(mMainWindow->GetWidget<ObjectBrowser>())
+    , mComponentBrowser(aMainWindow->GetWidget<ComponentBrowser>())
     , mComponentTree(mComponentBrowser->GetComponentTree())
   {
     AddAction<GameObjectMenu>("Empty Object", &GameObjectMenu::CreateEmptyObject, this);
@@ -256,7 +256,8 @@ namespace YTEditor
 
   void GameObjectMenu::CreateParticleSystem()
   {
-    ObjectItem *item = mMainWindow->GetObjectBrowser().AddObject("Particle Emitter", "Empty");
+    ObjectBrowser *objectBrowser = mMainWindow->GetWidget<ObjectBrowser>();
+    ObjectItem *item = objectBrowser->AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
     mObjectBrowser->MoveToFrontOfCamera(obj);
 

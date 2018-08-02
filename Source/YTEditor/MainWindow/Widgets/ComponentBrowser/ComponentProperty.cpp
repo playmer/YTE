@@ -27,9 +27,10 @@ namespace YTEditor
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
     MainWindow *mainWindow = mParentComponent->GetMainWindow();
+    ComponentBrowser *componentBrowser = mainWindow->GetWidget<ComponentBrowser>();
     
     // notify that object instance changed (different from archetype now)
-    ArchetypeTools *archTools = mainWindow->GetComponentBrowser().GetArchetypeTools();
+    ArchetypeTools *archTools = componentBrowser->GetArchetypeTools();
     archTools->IncrementChanges();
 
     // current list of strings

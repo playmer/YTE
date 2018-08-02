@@ -75,7 +75,7 @@ namespace YTEditor
       std::string stem = droppedFile.stem().generic_string();
       std::string extension = droppedFile.extension().generic_string();
 
-      OutputConsole &console = mMainWindow->GetOutputConsole();
+      OutputConsole *console = mMainWindow->GetWidget<OutputConsole>();
 
       // we can assume this is coming from model or animation folder
       if (extension == ".fbx")
@@ -86,17 +86,17 @@ namespace YTEditor
         }
         else if (parent == "Animations")
         {
-          console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for animations.");
+          console->PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for animations.");
         }
       }
       else if (extension == ".json")
       {
         if (parent == "Archetypes")
         {
-          ObjectBrowser &objBrowser = mMainWindow->GetObjectBrowser();
+          ObjectBrowser *objBrowser = mMainWindow->GetWidget<ObjectBrowser>();
 
-          ObjectItem *objItem = objBrowser.AddObject(stem.c_str(), stem.c_str());
-          objBrowser.MoveToFrontOfCamera(objItem->GetEngineObject());
+          ObjectItem *objItem = objBrowser->AddObject(stem.c_str(), stem.c_str());
+          objBrowser->MoveToFrontOfCamera(objItem->GetEngineObject());
 
           /*
           YTE::Transform *transform = objItem->GetEngineObject()->GetComponent<YTE::Transform>();
@@ -117,16 +117,16 @@ namespace YTEditor
         }
         else if (parent == "Levels")
         {
-          console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for levels.");
+          console->PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for levels.");
         }
       }
       else if (parent == "Originals")
       {
-        console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for textures.");
+        console->PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for textures.");
       }
       else if (parent == "Crunch")
       {
-        console.PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for compressed textures.");
+        console->PrintLnC(OutputConsole::Color::Red, "Drag and drop not supported for compressed textures.");
       }
 
       return true;
@@ -143,10 +143,10 @@ namespace YTEditor
 
       if (keyEvent->key() == Qt::Key_Delete)
       {
-        mMainWindow->GetObjectBrowser().RemoveCurrentObject();
+        mMainWindow->GetWidget<ObjectBrowser>()->RemoveCurrentObject();
       }
     }
-    
+
     return false;
   }
 

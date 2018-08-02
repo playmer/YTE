@@ -22,7 +22,6 @@ namespace YTEditor
     Widget(MainWindow* aMainWindow);
 
     virtual std::string GetName() const = 0;
-
     virtual DockArea GetDefaultDockPosition() const = 0;
 
   protected:

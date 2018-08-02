@@ -99,7 +99,7 @@ namespace YTEditor
         QTreeWidgetItem *body = new QTreeWidgetItem(header);
         body->setFlags(Qt::NoItemFlags);
 
-        mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
+        mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
 
         header->addChild(body);
 
@@ -198,7 +198,7 @@ namespace YTEditor
       QTreeWidgetItem *body = new QTreeWidgetItem(header);
       body->setFlags(Qt::NoItemFlags);
 
-      mMainWindow->GetComponentBrowser().GetComponentTree()->setItemWidget(body, 0, widg);
+      mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
 
       header->addChild(body);
 
@@ -275,7 +275,7 @@ namespace YTEditor
       else
       {
         // otherwise it's just an editable text field
-        ComponentProperty<std::string> * comProp = AddPropertyOrField<std::string>(aProp, aProperty);
+        ComponentProperty<std::string> *comProp = AddPropertyOrField<std::string>(aProp, aProperty);
         std::string propData = value.As<std::string>();
         comProp->SetValue(propData);
         comProp->SetEvents();

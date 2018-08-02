@@ -95,6 +95,10 @@ namespace YTEditor
 
     void MoveToFrontOfCamera(YTE::Composition *aObject);
 
+    std::string GetName() const override;
+
+    Widget::DockArea GetDefaultDockPosition() const override;
+
   private:
     QTreeWidget mTree;
 

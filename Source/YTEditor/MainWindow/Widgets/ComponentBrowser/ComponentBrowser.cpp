@@ -38,7 +38,7 @@ namespace YTEditor
 {
 
   ComponentBrowser::ComponentBrowser(MainWindow *aMainWindow)
-    : Widget("ComponentBrowser", aMainWindow)
+    : Widget(aMainWindow)
     , mLayout(new QVBoxLayout())
     , mArchTools(nullptr)
     , mCompTools(nullptr)
@@ -62,6 +62,11 @@ namespace YTEditor
   MainWindow* ComponentBrowser::GetMainWindow()
   {
     return mMainWindow;
+  }
+
+  std::string ComponentBrowser::GetName() const
+  {
+    return "ComponentBrowser";
   }
 
   Widget::DockArea ComponentBrowser::GetDefaultDockPosition() const
