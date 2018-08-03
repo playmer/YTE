@@ -60,17 +60,10 @@ namespace YTE
 
     bool deserializedEditorHeader{ false };
 
-    auto count = aProperties->MemberCount();
-
-    if (rapidjson::kNullType == aProperties->GetType())
+    if (rapidjson::kObjectType != aProperties->GetType())
     {
       return;
     }
-
-    static const char* kTypeNames[] =
-    { "Null", "False", "True", "Object", "Array", "String", "Number" };
-
-    std::cout << count << ": " << kTypeNames[aProperties->GetType()] << "\n";
 
     for (auto propertiesIt = aProperties->MemberBegin(); propertiesIt < aProperties->MemberEnd(); ++propertiesIt)
     {

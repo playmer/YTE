@@ -1041,7 +1041,7 @@ namespace YTE
       auto component = addFactory->MakeComponent(this, mSpace);
       toReturn = component.get();
 
-      if (false == aProperties->Empty())
+      if ((nullptr != aProperties) && (false == aProperties->Empty()))
       {
         DeserializeByType(aProperties, toReturn, aType);
       }

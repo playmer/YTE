@@ -100,6 +100,8 @@ target_include_directories(YTEditor
     ${Dependencies_Root}/assimp/include
 )
 
+set_target_properties(YTEditor PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTE_Assets_Root}/Bin)
+
 set_target_properties(YTEditor
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
