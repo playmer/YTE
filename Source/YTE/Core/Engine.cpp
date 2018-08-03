@@ -48,24 +48,24 @@ namespace YTE
   {
     RegisterType<LogicUpdate>();
     TypeBuilder<LogicUpdate> builder;
-    builder.Field<&LogicUpdate::Dt>( "Dt", PropertyBinding::GetSet);
+    builder.Field<&LogicUpdate::Dt>("Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
   {
     RegisterType<BoundTypeChanged>();
     TypeBuilder<BoundTypeChanged> builder;
-    builder.Field<&BoundTypeChanged::aOldType>( "OldType", PropertyBinding::GetSet);
-    builder.Field<&BoundTypeChanged::aNewType>( "NewType", PropertyBinding::GetSet);
+    builder.Field<&BoundTypeChanged::aOldType>("OldType", PropertyBinding::GetSet);
+    builder.Field<&BoundTypeChanged::aNewType>("NewType", PropertyBinding::GetSet);
   }
 
   YTEDefineType(Engine)
   {
     RegisterType<Engine>();
     TypeBuilder<Engine> builder;
-    builder.Function<&Engine::EndExecution>( "EndExecution")
+    builder.Function<&Engine::EndExecution>("EndExecution")
       .SetDocumentation("End the execution of the program before the beginning of the next frame.");
-    builder.Property<&Engine::GetGamepadSystem, NoSetter>( "GamepadSystem");
+    builder.Property<&Engine::GetGamepadSystem, NoSetter>("GamepadSystem");
   }
 
   static String cEngineName{ "Engine" };

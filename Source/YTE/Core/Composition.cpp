@@ -73,7 +73,7 @@ namespace YTE
     RegisterType<Composition>();
     TypeBuilder<Composition> builder;
 
-    builder.Function<&Composition::Remove>( "Remove")
+    builder.Function<&Composition::Remove>("Remove")
       .SetDocumentation("Removes the composition from it's owner. This is delayed until the next frame.");
 
     builder.Function<SelectOverload<Component* (Composition::*)(BoundType*),&Composition::GetComponent>()>("GetComponent")
@@ -110,9 +110,9 @@ namespace YTE
       .SetParameterNames("aArchetype", "aName", "aPosition")
       .SetDocumentation("Adds an archetype to this Space via the name of the Archetype. It takes the name of the object to name it and the position to place it.");
 
-    builder.Property<&Composition::GetName, NoSetter>( "Name");
+    builder.Property<&Composition::GetName, NoSetter>("Name");
 
-    builder.Property<&Composition::GetSpace, NoSetter>( "Space");
+    builder.Property<&Composition::GetSpace, NoSetter>("Space");
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
