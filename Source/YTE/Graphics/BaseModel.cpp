@@ -11,7 +11,7 @@ namespace YTE
     RegisterType<BaseModel>();
     TypeBuilder<BaseModel> builder;
 
-    builder.Property<&BaseModel::GetVisibility, &BaseModel::SetVisibility>( "Visibility")
+    builder.Property<&BaseModel::GetVisibility, &BaseModel::SetVisibility>("Visibility")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

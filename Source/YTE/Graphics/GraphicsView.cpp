@@ -46,30 +46,30 @@ namespace YTE
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Field<&GraphicsView::mWindowName>( "WindowName", PropertyBinding::GetSet)
+    builder.Field<&GraphicsView::mWindowName>("WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>( "Order")
+    builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>("Order")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The order to render the views. We render lowest to highest.");
 
-    builder.Property<&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling>( "SuperSampling")
+    builder.Property<&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling>("SuperSampling")
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
 
-    builder.Property<&GraphicsView::GetClearColor, &GraphicsView::SetClearColor>( "ClearColor")
+    builder.Property<&GraphicsView::GetClearColor, &GraphicsView::SetClearColor>("ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
 
-    builder.Property<&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType>( "DrawerType")
+    builder.Property<&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType>("DrawerType")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDrawerTypeDropDownList);
-    builder.Property<&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType>( "DrawerCombination")
+    builder.Property<&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType>("DrawerCombination")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateCombinationTypeDropDownList);

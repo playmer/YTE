@@ -29,39 +29,39 @@ namespace YTE
     TypeBuilder<Light> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Property<&Light::GetLightType, &Light::SetLightType>( "Light Type")
+    builder.Property<&Light::GetLightType, &Light::SetLightType>("Light Type")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&Light::GetAmbient, &Light::SetAmbient>( "Ambient")
+    builder.Property<&Light::GetAmbient, &Light::SetAmbient>("Ambient")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    builder.Property<&Light::GetDiffuse, &Light::SetDiffuse>( "Diffuse")
+    builder.Property<&Light::GetDiffuse, &Light::SetDiffuse>("Diffuse")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    builder.Property<&Light::GetSpecular, &Light::SetSpecular>( "Specular")
+    builder.Property<&Light::GetSpecular, &Light::SetSpecular>("Specular")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    builder.Property<&Light::GetSpotLightCones, &Light::SetSpotLightCones>( "Spot Light Cone Angles")
+    builder.Property<&Light::GetSpotLightCones, &Light::SetSpotLightCones>("Spot Light Cone Angles")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Light::GetSpotLightFalloff, &Light::SetSpotLightFalloff>( "Spot Light Falloff")
+    builder.Property<&Light::GetSpotLightFalloff, &Light::SetSpotLightFalloff>("Spot Light Falloff")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Light::GetActive, &Light::SetActive>( "Is Active")
+    builder.Property<&Light::GetActive, &Light::SetActive>("Is Active")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Light::GetIntensity, &Light::SetIntensity>( "Intensity")
+    builder.Property<&Light::GetIntensity, &Light::SetIntensity>("Intensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

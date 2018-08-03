@@ -21,7 +21,7 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Field<&FlybyCamera::mMovementSpeed>( "MovementSpeed", PropertyBinding::GetSet)
+    builder.Field<&FlybyCamera::mMovementSpeed>("MovementSpeed", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with.");

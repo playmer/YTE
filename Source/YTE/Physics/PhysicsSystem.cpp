@@ -30,16 +30,16 @@ namespace YTE
   {
     RegisterType<RayCollisionInfo>();
     TypeBuilder<RayCollisionInfo> builder;
-    builder.Field<&RayCollisionInfo::mObject>( "Object", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mObject>("Object", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mCollided>( "Collided", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mCollided>("Collided", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mDistance>( "Distance", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mDistance>("Distance", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mPosition>( "Position", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mPosition>("Position", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -55,12 +55,12 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Function<&PhysicsSystem::ToggleDebugDrawOption>( "ToggleDebugDrawOption")
+    builder.Function<&PhysicsSystem::ToggleDebugDrawOption>("ToggleDebugDrawOption")
       .SetParameterNames("aOption");
     builder.Function<&PhysicsSystem::ToggleDebugDraw>("ToggleDebugDraw");
     builder.Function<&PhysicsSystem::RayCast>("RayCast")
       .SetParameterNames("aPosition", "aDirection");
-    builder.Property<&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity>( "Gravity")
+    builder.Property<&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity>("Gravity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

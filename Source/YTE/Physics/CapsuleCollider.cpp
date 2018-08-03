@@ -29,12 +29,12 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Field<&CapsuleCollider::mRadius>( "Radius", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mRadius>("Radius", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Field<&CapsuleCollider::mHeight>( "Height", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mHeight>("Height", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();

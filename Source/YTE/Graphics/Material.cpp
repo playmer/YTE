@@ -14,48 +14,48 @@ namespace YTE
     RegisterType<MaterialRepresentation>();
     TypeBuilder<MaterialRepresentation> builder;
 
-    builder.Property<&GetDiffuse, &SetDiffuse>( "Diffuse")
+    builder.Property<&GetDiffuse, &SetDiffuse>("Diffuse")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetAmbient, &SetAmbient>( "Ambient")
+    builder.Property<&GetAmbient, &SetAmbient>("Ambient")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetSpecular, &SetSpecular>( "Specular")
+    builder.Property<&GetSpecular, &SetSpecular>("Specular")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetEmissive, &SetEmissive>( "Emissive")
+    builder.Property<&GetEmissive, &SetEmissive>("Emissive")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetTransparent, &SetTransparent>( "Transparent")
+    builder.Property<&GetTransparent, &SetTransparent>("Transparent")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    //builder.Property<&GetReflective, &SetReflective>( "Reflective")
+    //builder.Property<&GetReflective, &SetReflective>("Reflective")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetOpacity, &SetOpacity>( "Opacity")
+    //builder.Property<&GetOpacity, &SetOpacity>("Opacity")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    builder.Property<&GetShininess, &SetShininess>( "Shininess")
+    builder.Property<&GetShininess, &SetShininess>("Shininess")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Property<&GetShininessStrength, &SetShininessStrength>( "ShininessStrength")
+    builder.Property<&GetShininessStrength, &SetShininessStrength>("ShininessStrength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    //builder.Property<&GetReflectivity, &SetReflectivity>( "Reflectivity")
+    //builder.Property<&GetReflectivity, &SetReflectivity>("Reflectivity")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetReflectiveIndex, &SetReflectiveIndex>( "ReflectiveIndex")
+    //builder.Property<&GetReflectiveIndex, &SetReflectiveIndex>("ReflectiveIndex")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetBumpScaling, &SetBumpScaling>( "BumpScaling")
+    //builder.Property<&GetBumpScaling, &SetBumpScaling>("BumpScaling")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetIsEditorObject, &SetIsEditorObject>( "IsEditorObject")
+    //builder.Property<&GetIsEditorObject, &SetIsEditorObject>("IsEditorObject")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
   }
@@ -112,10 +112,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Field<&Material::mName>( "Name", PropertyBinding::GetSet)
+    builder.Field<&Material::mName>("Name", PropertyBinding::GetSet)
       .AddAttribute<Serializable>();
 
-    builder.Field<&Material::mModelMaterial>( "ModelMaterial", PropertyBinding::GetSet)
+    builder.Field<&Material::mModelMaterial>("ModelMaterial", PropertyBinding::GetSet)
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .AddAttribute<RedirectObject>(&Material::ModelMaterialDeserializer,

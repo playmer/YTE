@@ -10,7 +10,7 @@ namespace YTE
   {
     RegisterType<DocumentedObject>();
     TypeBuilder<DocumentedObject> builder;
-    builder.Property<&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation>( "Documentation");
+    builder.Property<&DocumentedObject::GetDocumentation, &DocumentedObject::SetDocumentation>("Documentation");
   }
 
   YTEDefineType(Type)
@@ -163,7 +163,7 @@ namespace YTE
 
     if (toReturn == nullptr)
     {
-      printf("Could not find a type named %s, did you rename/misspell it/forget to Define/InitializeType it?", aName.c_str());
+      printf("Could not find a type named %s, did you rename/misspell it/forget to Define/InitializeType it?\n", aName.c_str());
     }
 
     return toReturn;
@@ -174,15 +174,15 @@ namespace YTE
     RegisterType<Property>();
     TypeBuilder<Property> builder;
 
-    builder.Property<&Property::GetOwningType, NoSetter>( "OwningType")
+    builder.Property<&Property::GetOwningType, NoSetter>("OwningType")
       .SetDocumentation("Type that owns this Property.");
-    builder.Property<&Property::GetPropertyType, NoSetter>( "PropertyType")
+    builder.Property<&Property::GetPropertyType, NoSetter>("PropertyType")
       .SetDocumentation("Type of the Property, what we can get or set.");
-    builder.Property<&Property::GetName, NoSetter>( "Name")
+    builder.Property<&Property::GetName, NoSetter>("Name")
       .SetDocumentation("Name of the Property.");
-    builder.Property<&Property::GetGetter, NoSetter>( "Getter")
+    builder.Property<&Property::GetGetter, NoSetter>("Getter")
       .SetDocumentation("Getter function of the Property, may be null.");
-    builder.Property<&Property::GetSetter, NoSetter>( "Setter")
+    builder.Property<&Property::GetSetter, NoSetter>("Setter")
       .SetDocumentation("Setter function of the Property, may be null.");
   }
 

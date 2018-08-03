@@ -13,7 +13,7 @@ namespace YTE
     RegisterType<TempDiffuseColoringComponent>();
     TypeBuilder<TempDiffuseColoringComponent> builder;
 
-    builder.Property<&TempDiffuseColoringComponent::GetDiffuseColor, &TempDiffuseColoringComponent::SetDiffuseColor>( "Diffuse Color")
+    builder.Property<&TempDiffuseColoringComponent::GetDiffuseColor, &TempDiffuseColoringComponent::SetDiffuseColor>("Diffuse Color")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("Change the diffuse color");

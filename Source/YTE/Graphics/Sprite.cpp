@@ -43,29 +43,29 @@ namespace YTE
     TypeBuilder<Sprite> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Property<&Sprite::GetTexture, &Sprite::SetTexture>( "Texture")
+    builder.Property<&Sprite::GetTexture, &Sprite::SetTexture>("Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&Sprite::GetColumns, &Sprite::SetColumns>( "Columns")
+    builder.Property<&Sprite::GetColumns, &Sprite::SetColumns>("Columns")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Sprite::GetRows, &Sprite::SetRows>( "Rows")
+    builder.Property<&Sprite::GetRows, &Sprite::SetRows>("Rows")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Sprite::GetFrames, &Sprite::SetFrames>( "Frames")
+    builder.Property<&Sprite::GetFrames, &Sprite::SetFrames>("Frames")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&Sprite::GetSpeed, &Sprite::SetSpeed>( "Speed")
+    builder.Property<&Sprite::GetSpeed, &Sprite::SetSpeed>("Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("How many seconds it will take for the full animation to run.");
 
-    builder.Property<&Sprite::GetAnimating, &Sprite::SetAnimating>( "Animating")
+    builder.Property<&Sprite::GetAnimating, &Sprite::SetAnimating>("Animating")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }

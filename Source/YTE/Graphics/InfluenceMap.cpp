@@ -27,36 +27,36 @@ namespace YTE
     TypeBuilder<InfluenceMap> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Property<&InfluenceMap::GetRadius, &InfluenceMap::SetRadius>( "Radius")
+    builder.Property<&InfluenceMap::GetRadius, &InfluenceMap::SetRadius>("Radius")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&InfluenceMap::GetColor, &InfluenceMap::SetColor>( "Color")
+    builder.Property<&InfluenceMap::GetColor, &InfluenceMap::SetColor>("Color")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
 
-    builder.Property<&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw>( "DebugDraw")
+    builder.Property<&InfluenceMap::GetDebugDraw, &InfluenceMap::SetDebugDraw>("DebugDraw")
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&InfluenceMap::GetColorIntensity, &InfluenceMap::SetColorIntensity>( "ColorIntensity")
+    builder.Property<&InfluenceMap::GetColorIntensity, &InfluenceMap::SetColorIntensity>("ColorIntensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&InfluenceMap::GetWaveIntensity, &InfluenceMap::SetWaveIntensity>( "Wave Intensity")
+    builder.Property<&InfluenceMap::GetWaveIntensity, &InfluenceMap::SetWaveIntensity>("Wave Intensity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&InfluenceMap::GetActive, &InfluenceMap::SetActive>( "Active")
+    builder.Property<&InfluenceMap::GetActive, &InfluenceMap::SetActive>("Active")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&InfluenceMap::GetColorInfluenceFunction, &InfluenceMap::SetColorInfluenceFunction>( "ColorInfluenceFunction")
+    builder.Property<&InfluenceMap::GetColorInfluenceFunction, &InfluenceMap::SetColorInfluenceFunction>("ColorInfluenceFunction")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&InfluenceMap::GetWaveInfluenceFunction, &InfluenceMap::SetWaveInfluenceFunction>( "WaveInfluenceFunction")
+    builder.Property<&InfluenceMap::GetWaveInfluenceFunction, &InfluenceMap::SetWaveInfluenceFunction>("WaveInfluenceFunction")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);

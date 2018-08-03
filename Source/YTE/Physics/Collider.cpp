@@ -30,7 +30,7 @@ namespace YTE
   {
     RegisterType<CollisionEvent>();
     TypeBuilder<CollisionEvent> builder;
-    builder.Field<&CollisionEvent::OtherObject>( "OtherObject", PropertyBinding::Get);
+    builder.Field<&CollisionEvent::OtherObject>("OtherObject", PropertyBinding::Get);
   }
 
 
@@ -38,24 +38,24 @@ namespace YTE
   {
     RegisterType<CollisionStarted>();
     TypeBuilder<CollisionStarted> builder;
-    builder.Field<&CollisionStarted::Name>( "Name", PropertyBinding::Get);
-    builder.Field<&CollisionStarted::Object>( "Object", PropertyBinding::Get);
+    builder.Field<&CollisionStarted::Name>("Name", PropertyBinding::Get);
+    builder.Field<&CollisionStarted::Object>("Object", PropertyBinding::Get);
   }
 
   YTEDefineType(CollisionPersisted)
   {
     RegisterType<CollisionPersisted>();
     TypeBuilder<CollisionPersisted> builder;
-    builder.Field<&CollisionPersisted::Name>( "Name", PropertyBinding::Get);
-    builder.Field<&CollisionPersisted::Object>( "Object", PropertyBinding::Get);
+    builder.Field<&CollisionPersisted::Name>("Name", PropertyBinding::Get);
+    builder.Field<&CollisionPersisted::Object>("Object", PropertyBinding::Get);
   }
 
   YTEDefineType(CollisionEnded)
   {
     RegisterType<CollisionEnded>();
     TypeBuilder<CollisionEnded> builder;
-    builder.Field<&CollisionEnded::Name>( "Name", PropertyBinding::Get);
-    builder.Field<&CollisionEnded::Object>( "Object", PropertyBinding::Get);
+    builder.Field<&CollisionEnded::Name>("Name", PropertyBinding::Get);
+    builder.Field<&CollisionEnded::Object>("Object", PropertyBinding::Get);
   }
 
   YTEDefineType(Collider)

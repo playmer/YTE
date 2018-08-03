@@ -26,7 +26,7 @@ namespace YTE
   {
     RegisterType<RigidBody>();
     TypeBuilder<RigidBody> builder;
-    builder.Property<&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty>( "Velocity")
+    builder.Property<&RigidBody::GetVelocity, &RigidBody::SetVelocityProperty>("Velocity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
@@ -40,17 +40,17 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&RigidBody::GetMass, &RigidBody::SetMassProperty>( "Mass")
+    builder.Property<&RigidBody::GetMass, &RigidBody::SetMassProperty>("Mass")
       .SetDocumentation("This is the mass of the object, but you should know that it is not dynamically changeable.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&RigidBody::IsKinematic, &RigidBody::SetKinematic>( "Kinematic")
+    builder.Property<&RigidBody::IsKinematic, &RigidBody::SetKinematic>("Kinematic")
       .SetDocumentation("If the object is kinematic, it can move. Non-kinematic objects are static.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&RigidBody::GetGravity, &RigidBody::SetGravity>( "Gravity")
+    builder.Property<&RigidBody::GetGravity, &RigidBody::SetGravity>("Gravity")
       .SetDocumentation("This is the acceleration due to gravity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();

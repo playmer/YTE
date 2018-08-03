@@ -24,10 +24,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&MenuCollider::GetSize, &MenuCollider::SetSizeProperty>( "Size")
+    builder.Property<&MenuCollider::GetSize, &MenuCollider::SetSizeProperty>("Size")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Property<&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty>( "Offset")
+    builder.Property<&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty>("Offset")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 

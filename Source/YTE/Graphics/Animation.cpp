@@ -508,8 +508,8 @@ namespace YTE
   {
     RegisterType<KeyFrameChanged>();
     TypeBuilder<KeyFrameChanged> builder;
-    builder.Field<&KeyFrameChanged::animation>( "animation", PropertyBinding::Get);
-    builder.Field<&KeyFrameChanged::time>( "time", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::animation>("animation", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::time>("time", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationAdded);
@@ -518,7 +518,7 @@ namespace YTE
   {
     RegisterType<AnimationAdded>();
     TypeBuilder<AnimationAdded> builder;
-    builder.Field<&AnimationAdded::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&AnimationAdded::animation>("animation", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationRemoved);
@@ -527,7 +527,7 @@ namespace YTE
   {
     RegisterType<AnimationRemoved>();
     TypeBuilder<AnimationRemoved> builder;
-    builder.Field<&AnimationRemoved::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&AnimationRemoved::animation>("animation", PropertyBinding::Get);
   }
 
 
@@ -540,12 +540,12 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>( "Speed")
+    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>("Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
 
-    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>( "PlayOverTime")
+    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>("PlayOverTime")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("True if the animation should play with respect to time.");

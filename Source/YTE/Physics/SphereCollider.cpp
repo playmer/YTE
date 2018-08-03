@@ -29,10 +29,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&SphereCollider::GetRadius, &SphereCollider::SetRadius>( "Radius")
+    builder.Property<&SphereCollider::GetRadius, &SphereCollider::SetRadius>("Radius")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    builder.Property<&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty>( "Offset")
+    builder.Property<&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty>("Offset")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
