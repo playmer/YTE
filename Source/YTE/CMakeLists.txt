@@ -90,10 +90,28 @@ target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GL
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
 
+# Set the defines needed for YTE::CompilerOptions
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_DEBUG=1>)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_DEBUG=0>)
 
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_RELEASE=0>)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_RELEASE=1>)
 
+# Set the defines needed for YTE::CompilerConfiguration
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:DEBUG>>:YTE_CONFIG_DEBUG=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:DEBUG>:YTE_CONFIG_DEBUG=1>)
+
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:MINSIZEREL>>:YTE_CONFIG_MINSIZEREL=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:MINSIZEREL>:YTE_CONFIG_MINSIZEREL=1>)
+
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:RELWITHDEBINFO>>:YTE_CONFIG_RELWITHDEBINFO=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:RELWITHDEBINFO>:YTE_CONFIG_RELWITHDEBINFO=1>)
+
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:RELEASE>>:YTE_CONFIG_RELEASE=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:RELEASE>:YTE_CONFIG_RELEASE=1>)
+
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CONFIG_PUBLISH=0>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CONFIG_PUBLISH=1>)
+
+# Set the define needed for proper DLL import/export.
 target_compile_definitions(YTE PRIVATE YTE_Internal=1)

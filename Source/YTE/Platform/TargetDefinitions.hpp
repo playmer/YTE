@@ -67,4 +67,39 @@ namespace YTE
       using Debug = std::integral_constant<bool, false>;
     #endif
   };
+
+  struct CompilerConfiguration
+  {
+#if YTE_CONFIG_DEBUG
+    using Publish = std::integral_constant<bool, false>;
+    using Release = std::integral_constant<bool, false>;
+    using RelWithDebInfo = std::integral_constant<bool, false>;
+    using MinSizeRel = std::integral_constant<bool, false>;
+    using Debug = std::integral_constant<bool, true>;
+#elif YTE_CONFIG_MINSIZEREL
+    using Publish = std::integral_constant<bool, false>;
+    using Release = std::integral_constant<bool, false>;
+    using RelWithDebInfo = std::integral_constant<bool, false>;
+    using MinSizeRel = std::integral_constant<bool, true>;
+    using Debug = std::integral_constant<bool, false>;
+#elif YTE_CONFIG_RELWITHDEBINFO
+    using Publish = std::integral_constant<bool, false>;
+    using Release = std::integral_constant<bool, false>;
+    using RelWithDebInfo = std::integral_constant<bool, true>;
+    using MinSizeRel = std::integral_constant<bool, false>;
+    using Debug = std::integral_constant<bool, false>;
+#elif YTE_CONFIG_RELEASE
+    using Publish = std::integral_constant<bool, false>;
+    using Release = std::integral_constant<bool, true>;
+    using RelWithDebInfo = std::integral_constant<bool, false>;
+    using MinSizeRel = std::integral_constant<bool, false>;
+    using Debug = std::integral_constant<bool, false>;
+#else // PUBLISH
+    using Publish = std::integral_constant<bool, true>;
+    using Release = std::integral_constant<bool, false>;
+    using RelWithDebInfo = std::integral_constant<bool, false>;
+    using MinSizeRel = std::integral_constant<bool, false>;
+    using Debug = std::integral_constant<bool, false>;
+#endif
+  };
 }
