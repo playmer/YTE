@@ -94,7 +94,7 @@ namespace YTEditor
     void MoveToFrontOfCamera(YTE::Composition *aObject);
 
   private:
-    MainWindow * mMainWindow;
+    MainWindow *mMainWindow;
     void SetWidgetSettings();
 
     void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);

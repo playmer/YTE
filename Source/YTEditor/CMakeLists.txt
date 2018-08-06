@@ -6,9 +6,8 @@
 add_executable(YTEditor "")
                    YTEditorMeta.hpp
 
-include(MainWindow/CMakeLists.txt)
-include(Physics/CMakeLists.txt)
-include(UndoRedo/CMakeLists.txt)
+include(Framework/CMakeLists.txt)
+include(YTELevelEditor/CMakeLists.txt)
 
 target_sources(YTEditor
   PRIVATE
@@ -18,7 +17,7 @@ target_sources(YTEditor
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
 )
 
-target_include_directories(YTEditor 
+target_include_directories(YTEditor
   PRIVATE
     ${Source_Root}
     ${ParentDirectory}
@@ -52,7 +51,7 @@ target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
-YTE_Source_Group(YTEditor_Root YTEditor) 
+YTE_Source_Group(YTEditor_Root YTEditor)
 
 YTE_Target_Set_LTCG(YTEditor)
 

@@ -36,10 +36,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qmessagebox.h>
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-
 #include "crunch/inc/crnlib.h"
 
 #include "stb/stb_image.h"
@@ -73,7 +69,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
 
@@ -90,9 +85,6 @@ namespace YTEditor
     : QMainWindow{}
     , mRunningEngine{ aEngine }
     , mApplication{ aQApp }
-    , mObjectBrowser{ nullptr }
-    , mComponentBrowser{ nullptr }
-    , mOutputConsole{ nullptr }
     , mRunningSpaceName{ "" }
     , mRunningLevelName{ "" }
     , mRunningSpace{ nullptr }
@@ -132,11 +124,9 @@ namespace YTEditor
     mEditingLevel->SetIsEditorSpace(aEngine->IsEditor());
 
     //// This needs to happen after the engine has been initialized.
-    ConstructMaterialViewer();
-    ConstructWWiseWidget();
-
-    tabifyDockWidget(mMaterialViewer, mComponentBrowser);
-    tabifyDockWidget(mMaterialViewer, mWWiseWidget);
+    // TODO(NICK): need to convert to MainWindow::LoadWidget<>()
+    //ConstructMaterialViewer();
+    //ConstructWWiseWidget();
 
     LoadCurrentLevelInfo();
 
@@ -166,24 +156,19 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>("ComponentBrowser");
+    ComponentTree* componentBrowser = GetWidget<ComponentBrowser>()->GetComponentTree();
+    std::vector<ComponentWidget*> componentWidgets = componentBrowser->GetComponentWidgets();
 
-    if (componentBrowser)
+    for (ComponentWidget* w : componentWidgets)
     {
-      ComponentTree* componentTree = componentBrowser->GetComponentTree();
+      std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
 
-      std::vector<ComponentWidget*> componentWidgets = componentTree->GetComponentWidgets();
-
-      for (ComponentWidget* w : componentWidgets)
+      for (auto prop : properties)
       {
-        std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
-
-        for (auto prop : properties)
-        {
-          prop->ReloadValueFromEngine();
-        }
+        prop->ReloadValueFromEngine();
       }
     }
+
   }
 
   YTE::Space* MainWindow::GetEditingLevel()
@@ -198,35 +183,20 @@ namespace YTEditor
 
   void MainWindow::LoadCurrentLevelInfo()
   {
-<<<<<<< HEAD
-    YTEProfileFunction();
-=======
-    ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>("ObjectBrowser"); 
-    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>("ComponentBrowser");
-
-    // make sure we have the object and component browsers
-    if (!objectBrowser || !componentBrowser)
-    {
-      return;
-    }
-
-    ObjectTree* objectTree = objectBrowser->GetObjectTree();
-
->>>>>>> more refactoring?
     YTE::Space *lvl = GetEditingLevel();
+    ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>();
 
     mRunningSpaceName = lvl->GetName();
     mRunningLevelName = lvl->GetLevelName();
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
-    
     objectBrowser->ClearObjectList();
 
     // Set the name to the new level
-    ObjectTree* objectTree = objectBrowser->GetObjectTree();
-    objectTree->setHeaderLabel(lvl->GetName().c_str());
-    
+    objectBrowser->setHeaderLabel(lvl->GetName().c_str());
+
+    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>();
     componentBrowser->GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
@@ -284,15 +254,13 @@ namespace YTEditor
       YTE::Composition *engineObj = cmp->second.get();
 
       // Store the name and composition pointer in the object browser
-      ObjectItem* topItem = objectTree->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
-
-      objectTree->LoadAllChildObjects(cmp->second.get(), topItem);
+      ObjectItem * topItem = objectBrowser->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
     }
 
     // if there are objects in the level
     if (objMap.size() != 0)
     {
-      objectTree->setCurrentItem(objectTree->topLevelItem(0));
+      objectBrowser->setCurrentItem(objectBrowser->topLevelItem(0));
     }
 
     CreateGizmo(mEditingLevel);
@@ -484,13 +452,7 @@ namespace YTEditor
         // duplicate current object
         if (aEvent->key() == Qt::Key_D)
         {
-          ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>("ObjectBrowser");
-
-          if (objectBrowser)
-          {
-            ObjectTree* objectTree = objectBrowser->GetObjectTree();
-            objectTree->DuplicateCurrentlySelected();
-          }
+          GetWidget<ObjectBrowser>()->DuplicateCurrentlySelected();
         }
       }
     }
@@ -577,19 +539,33 @@ namespace YTEditor
   void MainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
-    this->setDockNestingEnabled(true);
+    setDockNestingEnabled(true);
 
     // Sets the default window size.
-    this->resize(1200, 900);
+    resize(1200, 900);
   }
 
   void MainWindow::ConstructSubWidgets()
   {
-    LoadWidget<OutputConsole>();
+    // Object Browser
     LoadWidget<ObjectBrowser>();
-    LoadWidget<ComponentBrowser>();
-    LoadWidget<FileViewer>();
 
+    // Component Browser
+    LoadWidget<ComponentBrowser>();
+    
+    // Output Console
+    LoadWidget<OutputConsole>();
+    
+    // Material Viewer
+    LoadWidget<MaterialViewer>();
+    
+    // File Viewer
+    LoadWidget<FileViewer>();
+    
+    // WWise Widget
+    LoadWidget<WWiseWidget>();
+
+    // Game Windows
     ConstructGameWindows();
   }
 
@@ -640,78 +616,6 @@ namespace YTEditor
     }
   }
 
-  void MainWindow::ConstructObjectBrowser()
-  {
-    // dockable object browser window
-    mObjectBrowser = new QDockWidget("Object Browser", this);
-    mObjectBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ObjectBrowser * objBrowser = new ObjectBrowser(this, mObjectBrowser);
-    mObjectBrowser->setWidget(objBrowser);
-    this->addDockWidget(Qt::LeftDockWidgetArea, mObjectBrowser);
-  }
-
-
-  void MainWindow::ConstructWWiseWidget()
-  {
-    // dockable component browser window
-    mWWiseWidget = new QDockWidget("WWise Bank Browser", this);
-    mWWiseWidget->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    WWiseWidget *wwiseWidget = new WWiseWidget(mWWiseWidget, mRunningEngine);
-    mWWiseWidget->setWidget(wwiseWidget);
-    this->addDockWidget(Qt::RightDockWidgetArea, mWWiseWidget);
-
-    mWWiseWidget->hide();
-  }
-
-  void MainWindow::ConstructComponentBrowser()
-  {
-    // dockable component browser window
-    mComponentBrowser = new QDockWidget("Component Browser", this);
-    mComponentBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    ComponentBrowser * compBrowser = new ComponentBrowser(mComponentBrowser);
-    mComponentBrowser->setWidget(compBrowser);
-    this->addDockWidget(Qt::RightDockWidgetArea, mComponentBrowser);
-  }
-
-  void MainWindow::ConstructOutputConsole()
-  {
-    // dockable output console window
-    mOutputConsole = new QDockWidget("Output Console", this);
-    mOutputConsole->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    mConsole = new OutputConsole(this, mOutputConsole);
-    mOutputConsole->setWidget(mConsole);
-    this->addDockWidget(Qt::BottomDockWidgetArea, mOutputConsole);
-  }
-
-  void MainWindow::ConstructMaterialViewer()
-  {
-    mMaterialViewer = new QDockWidget("Material Viewer", this);
-    mObjectBrowser->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    if (!mPreferences.mNoMaterialViewer)
-    {
-      auto window = mRunningEngine->AddWindow("MaterialViewer");
-      MaterialViewer *matViewer = new MaterialViewer(this, mMaterialViewer, window);
-      mMaterialViewer->setWidget(matViewer);
-    }
-
-    this->addDockWidget(Qt::RightDockWidgetArea, mMaterialViewer);
-
-    mMaterialViewer->hide();
-  }
-
-  void MainWindow::ConstructFileViewer()
-  {
-    // dockable file browser window
-    mFileViewer = new QDockWidget("File Browser", this);
-    mFileViewer->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-
-    FileViewer *fileTree = new FileViewer(mFileViewer);
-    mFileViewer->setWidget(fileTree);
-
-    this->addDockWidget(Qt::BottomDockWidgetArea, mFileViewer);
-  }
-
   void MainWindow::ConstructMenuBar()
   {
     QMenuBar *menuBar = new QMenuBar(this);
@@ -749,7 +653,7 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      auto materialViewer = GetMaterialViewer();
+      auto materialViewer = GetWidget<MaterialViewer>();
 
       if (materialViewer)
       {
@@ -767,7 +671,7 @@ namespace YTEditor
       GetLevelWindow().mWindow->mEngine = nullptr;
       GetLevelWindow().mWindow = nullptr;
 
-      auto materialViewer = GetMaterialViewer();
+      auto materialViewer = GetWidget<MaterialViewer>();
 
       if (materialViewer)
       {

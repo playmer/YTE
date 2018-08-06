@@ -19,6 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/Vector.hpp"
 
 #include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -97,7 +98,7 @@ namespace YTEditor
     Widget::DockArea GetDefaultDockPosition() const override;
 
   private:
-    QTreeWidget mTree;
+    ObjectTree* mTree;
 
     void SetWidgetSettings();
 

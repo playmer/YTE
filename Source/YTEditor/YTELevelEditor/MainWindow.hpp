@@ -36,10 +36,6 @@ namespace YTE
 
 namespace YTEditor
 {
-  class ObjectBrowser;
-  class ComponentBrowser;
-  class OutputConsole;
-  class MaterialViewer;
   class SubWindow;
   class FileMenu;
   class UndoRedo;
@@ -47,7 +43,6 @@ namespace YTEditor
   class GizmoToolbar;
   class GameToolbar;
   class GameObjectMenu;
-  class WWiseWidget;
 
   class Preferences
   {
@@ -77,9 +72,7 @@ namespace YTEditor
     T* GetWidget();
 
   private:
-
     std::map<std::string, std::unique_ptr<Widget>> mWidgets;
-
 
   public:
 
@@ -171,15 +164,6 @@ namespace YTEditor
     SubWindow *mRunningWindow;
 
     std::vector<SubWindow*> mSubWindows;
-
-    QDockWidget *mObjectBrowser;
-    QDockWidget *mComponentBrowser;
-    QDockWidget *mOutputConsole;
-    QDockWidget *mMaterialViewer;
-    QDockWidget *mFileViewer;
-    QDockWidget *mWWiseWidget;
-
-    OutputConsole *mConsole;
     /**************************************************/
 
     // Helper functions for menu bar //
@@ -191,12 +175,9 @@ namespace YTEditor
     void closeEvent(QCloseEvent *event);
     ////
 
-
     GizmoToolbar *mGizmoToolbar;
     GameToolbar *mGameToolbar;
   };
-
-
 
   template <typename T>
   std::unique_ptr<T> MainWindow::LoadWidget()
