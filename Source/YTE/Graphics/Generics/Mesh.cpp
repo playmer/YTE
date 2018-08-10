@@ -76,9 +76,9 @@ namespace YTE
     }
 
     mVertexSkeletonData.resize(vertCount);
-#ifdef _DEBUG
-    mVertexErrorAdds.resize(vertCount);
-#endif
+//#ifdef _DEBUG
+//    mVertexErrorAdds.resize(vertCount);
+//#endif
 
     mNumBones = 0;
 
@@ -142,39 +142,39 @@ namespace YTE
       {
         auto weight = bone->mWeights[b];
         uint32_t id = aVertexStartingIndex + weight.mVertexId;
-#ifdef _DEBUG
-        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
-        {
-          mVertexErrorAdds[id] += 1;
-        }
-#else
+//#ifdef _DEBUG
+//        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
+//        {
+//          mVertexErrorAdds[id] += 1;
+//        }
+//#else
         mVertexSkeletonData[id].AddBone(index, weight.mWeight);
-#endif
+//#endif
       }
     }
 
     // loop errors
-#if defined(_DEBUG) && defined(BSTDULAF)
-    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
-    {
-      if (mVertexErrorAdds[i] != 0)
-      {
-        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
-        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
-                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
-                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
-                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[3] << "\t"
-                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
-
-      }
-    }
-#endif
+//#if defined(_DEBUG) && defined(BSTDULAF)
+//    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
+//    {
+//      if (mVertexErrorAdds[i] != 0)
+//      {
+//        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
+//        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
+//                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
+//                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
+//                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[3] << "\t"
+//                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
+//
+//      }
+//    }
+//#endif
   }
 
 

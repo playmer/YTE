@@ -153,9 +153,9 @@ namespace YTE
     glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
     UBOAnimation mDefaultOffsets;
-#ifdef _DEBUG
-    std::vector<unsigned int> mVertexErrorAdds;
-#endif
+//#ifdef _DEBUG
+//    std::vector<unsigned int> mVertexErrorAdds;
+//#endif
   };
 
 

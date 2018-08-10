@@ -157,13 +157,13 @@ namespace YTE
 
   void VkLightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
   {
-#ifdef _DEBUG
-    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
-    {
-      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-      return;
-    }
-#endif
+//#ifdef _DEBUG
+//    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
+//    {
+//      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
+//      return;
+//    }
+//#endif
 
     mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;

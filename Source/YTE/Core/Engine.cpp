@@ -346,8 +346,32 @@ namespace YTE
     fs::path gamePath = Path::GetGamePath().String();
     gamePath /= "Plugins";
 
+    char const* checkedFolder;
+
+    if constexpr(CompilerConfiguration::Debug())
+    {
+      gamePath /= "Debug";
+    }
+    else if constexpr(CompilerConfiguration::MinSizeRel())
+    {
+      gamePath /= "MinSizeRel";
+    }
+    else if constexpr(CompilerConfiguration::RelWithDebInfo())
+    {
+      gamePath /= "RelWithDebInfo";
+    }
+    else if constexpr(CompilerConfiguration::Release())
+    {
+      gamePath /= "Release";
+    }
+    else if constexpr(CompilerConfiguration::Publish())
+    {
+      gamePath /= "Publish";
+    }
+
     std::error_code error;
-    fs::create_directories("gamePath", error);
+    fs::create_directories(gamePath, error);
+
 
     for (auto& itemIt : fs::directory_iterator(gamePath))
     {
@@ -355,7 +379,6 @@ namespace YTE
 
       auto extension = item.extension();
       
-      //if (".YTEdll" == extension)
       if (".dll" == extension)
       {
         auto path = item.u8string();

@@ -8,8 +8,8 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Utilities_Orientation_h
-#define YTE_Utilities_Orientation_h
+#ifndef YTE_Utilities_Orientation_hpp
+#define YTE_Utilities_Orientation_hpp
 
 #include "YTE/Core/Component.hpp"
 
