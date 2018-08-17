@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 
 namespace YTE
 {

@@ -1,29 +1,24 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
-#include "YTE/Graphics/DirectX12/DX12Drawers/VkRTGameForwardDrawer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedModel.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Shader.hpp"
+#include "YTE/Graphics/DirectX12/Drawers/DX12RTGameForwardDrawer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
+#include "YTE/Graphics/DirectX12/DX12Shader.hpp"
 
 namespace YTE
 {
-  YTEDefineType(VkRTGameForwardDrawer)
+  YTEDefineType(DX12RTGameForwardDrawer)
   {
-    RegisterType<VkRTGameForwardDrawer>();
-    TypeBuilder<VkRTGameForwardDrawer> builder;
+    RegisterType<DX12RTGameForwardDrawer>();
+    TypeBuilder<DX12RTGameForwardDrawer> builder;
   }
 
-  VkRTGameForwardDrawer::VkRTGameForwardDrawer(Dx12RenderedSurface *aSurface,
+  DX12RTGameForwardDrawer::DX12RTGameForwardDrawer(Dx12RenderedSurface *aSurface,
                                                vk::Format aColorFormat,
                                                vk::Format aDepthFormat,
                                                std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                                               ViewData* aView,
+                                               DX12ViewData* aView,
                                                DrawerTypeCombination aCombinationType)
-    : VkRenderTarget(aSurface, 
+    : DX12RenderTarget(aSurface, 
                      aColorFormat,
                      aDepthFormat,
                      aVulkanSurface,
@@ -34,11 +29,11 @@ namespace YTE
     Initialize();
   }
 
-  VkRTGameForwardDrawer::~VkRTGameForwardDrawer()
+  DX12RTGameForwardDrawer::~DX12RTGameForwardDrawer()
   {
   }
 
-  void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
+  void DX12RTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes)
   {
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
@@ -50,8 +45,8 @@ namespace YTE
     cbo->end();
   }
 
-  void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                                     std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
+  void DX12RTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
+                                     std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes)
   {
     auto width = static_cast<float>(mData.mExtent.width);
     auto height = static_cast<float>(mData.mExtent.height);

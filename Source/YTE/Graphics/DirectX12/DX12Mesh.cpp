@@ -1,17 +1,13 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
 #include "fmt/format.h"
 
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedModel.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Shader.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkLightManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12Shader.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
+#include "YTE/Graphics/DirectX12/DX12LightManager.hpp"
 
 namespace YTE
 {
@@ -35,7 +31,7 @@ namespace YTE
   // Instance Manager
   ///////////////////////////////////////////////////////////////////////////
 
-  void InstanceManager::AddModel(VkInstantiatedModel *aModel)
+  void InstanceManager::AddModel(DX12InstantiatedModel *aModel)
   {
     auto index = FreeIndex();
 
@@ -50,7 +46,7 @@ namespace YTE
     mIndexes.emplace(indexOfIndexIt, index);
   }
 
-  void InstanceManager::RemoveModel(VkInstantiatedModel *aModel)
+  void InstanceManager::RemoveModel(DX12InstantiatedModel *aModel)
   {
     auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
     auto indexOfIndex = it - mModels.begin();
@@ -69,7 +65,7 @@ namespace YTE
     }
   }
 
-  u32 InstanceManager::GetIndex(VkInstantiatedModel *aModel)
+  u32 InstanceManager::GetIndex(DX12InstantiatedModel *aModel)
   {
     auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
     auto indexOfIndex = it - mModels.begin();
@@ -122,7 +118,7 @@ namespace YTE
     TypeBuilder<Dx12Submesh> builder;
   }
 
-  Dx12Submesh::Dx12Submesh(VkMesh *aMesh, Submesh *aSubmesh, Dx12Renderer *aRenderer)
+  Dx12Submesh::Dx12Submesh(DX12Mesh *aMesh, Submesh *aSubmesh, Dx12Renderer *aRenderer)
     : mDiffuseTexture(nullptr)
     , mSpecularTexture(nullptr)
     , mNormalTexture(nullptr)
@@ -337,7 +333,7 @@ namespace YTE
                                                     std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                                     GraphicsView *aView)
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
+    auto mesh = static_cast<DX12Mesh*>(mMesh);
 
     auto device = mRenderer->mDevice;
     auto surface = mRenderer->GetSurface(aView->GetWindow());
@@ -387,7 +383,7 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](VkTexture *aData,
+    auto addTS = [&wdss, &binding, &ds](DX12Texture *aData,
                                         vkhlf::DescriptorImageInfo &aImageInfo)
     {
       constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
@@ -433,7 +429,7 @@ namespace YTE
 
   }
 
-  void Dx12Submesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void Dx12Submesh::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
     auto update = aEvent->mCBO;
 
@@ -445,13 +441,13 @@ namespace YTE
   ///////////////////////////////////////////////////////////////////////////
   // Mesh
   ///////////////////////////////////////////////////////////////////////////
-  YTEDefineType(VkMesh)
+  YTEDefineType(DX12Mesh)
   {
-    RegisterType<VkMesh>();
-    TypeBuilder<VkMesh> builder;
+    RegisterType<DX12Mesh>();
+    TypeBuilder<DX12Mesh> builder;
   }
 
-  VkMesh::VkMesh(Mesh *aMesh,
+  DX12Mesh::DX12Mesh(Mesh *aMesh,
                  Dx12Renderer *aRenderer)
     : mRenderer{ aRenderer }
     , mMesh{aMesh}
@@ -462,30 +458,30 @@ namespace YTE
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&DX12Mesh::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
   }
 
-  void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
+  void DX12Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     mMesh->UpdateVertices(aSubmeshIndex, aVertices);
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&DX12Mesh::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
   }
 
-  void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  void DX12Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&DX12Mesh::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
   }
 
-  VkMesh::~VkMesh()
+  DX12Mesh::~DX12Mesh()
   {
   }
 
-  void VkMesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void DX12Mesh::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
-    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mRenderer->DeregisterEvent<&DX12Mesh::LoadToVulkan>(Events::DX12GraphicsDataUpdate,  this);
 
     for (auto &submesh : mSubmeshes)
     {
@@ -494,17 +490,17 @@ namespace YTE
   }
 
 
-  void RemoveOffset(VkInstantiatedModel *aModel)
+  void RemoveOffset(DX12InstantiatedModel *aModel)
   {
     UnusedArguments(aModel);
   }
 
-  void RequestOffset(VkInstantiatedModel *aModel)
+  void RequestOffset(DX12InstantiatedModel *aModel)
   {
     UnusedArguments(aModel);
   }
 
-  void VkMesh::SetInstanced(bool aInstanced)
+  void DX12Mesh::SetInstanced(bool aInstanced)
   {
     UnusedArguments(aInstanced);
     //if (aInstanced == mInstanced)

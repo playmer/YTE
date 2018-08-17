@@ -1,18 +1,13 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "fmt/format.h"
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Shader.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderCompiler.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderDescriptions.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12Shader.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderCompiler.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderDescriptions.hpp"
 
 namespace YTE
 {
@@ -22,7 +17,7 @@ namespace YTE
     TypeBuilder<Dx12Shader> builder;
   }
 
-  Dx12Shader::Dx12Shader(VkCreatePipelineDataSet& aInfo, ViewData* aView)
+  Dx12Shader::Dx12Shader(VkCreatePipelineDataSet& aInfo, DX12ViewData* aView)
     : Shader(aInfo.mName)
     , mSurface(aInfo.mSurface)
     , mView(aView)

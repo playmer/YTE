@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkMesh_hpp
@@ -11,9 +6,9 @@
 #include <unordered_map>
 
 #include "YTE/Graphics/Generics/Mesh.hpp"
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderDescriptions.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderDescriptions.hpp"
 
 #include "YTE/StandardLibrary/Utilities.hpp"
 
@@ -29,13 +24,13 @@ namespace YTE
   {
   public:
     YTEDeclareType(Dx12Submesh);
-    Dx12Submesh(VkMesh *aMesh, Submesh *aSubmesh, Dx12Renderer *aRenderer);
+    Dx12Submesh(DX12Mesh *aMesh, Submesh *aSubmesh, Dx12Renderer *aRenderer);
     ~Dx12Submesh();
 
     void Create();
     void Destroy();
 
-    void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+    void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
 
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
@@ -54,14 +49,14 @@ namespace YTE
     // Needed if instanced, otherwise this lives per-model.
     SubMeshPipelineData mPipelineData;
 
-    VkTexture *mDiffuseTexture;
-    VkTexture *mSpecularTexture;
-    VkTexture *mNormalTexture;
+    DX12Texture *mDiffuseTexture;
+    DX12Texture *mSpecularTexture;
+    DX12Texture *mNormalTexture;
 
     Dx12ShaderDescriptions mDescriptions;
     Dx12Renderer *mRenderer;
     
-    VkMesh *mMesh;
+    DX12Mesh *mMesh;
     Submesh *mSubmesh;
 
     u64 mIndexCount;
@@ -73,10 +68,10 @@ namespace YTE
   struct InstanceManager
   {
   public:
-    void AddModel(VkInstantiatedModel *aModel);
-    void RemoveModel(VkInstantiatedModel *aModel);
+    void AddModel(DX12InstantiatedModel *aModel);
+    void RemoveModel(DX12InstantiatedModel *aModel);
 
-    u32 GetIndex(VkInstantiatedModel *aModel);
+    u32 GetIndex(DX12InstantiatedModel *aModel);
     void Clear();
 
     std::shared_ptr<vkhlf::Buffer>& InstanceBuffer();
@@ -100,7 +95,7 @@ namespace YTE
       return mIndexes.end();
     }
 
-    std::vector<VkInstantiatedModel*> mModels;
+    std::vector<DX12InstantiatedModel*> mModels;
     std::vector<u32> mIndexes;
 
     std::shared_ptr<vkhlf::Buffer> mInstanceBuffer;
@@ -109,25 +104,25 @@ namespace YTE
     Dx12Renderer *mRenderer;
   };
 
-  class VkMesh : public EventHandler
+  class DX12Mesh : public EventHandler
   {
   public:
-    YTEDeclareType(VkMesh);
+    YTEDeclareType(DX12Mesh);
 
-    VkMesh(Mesh *aMesh,
+    DX12Mesh(Mesh *aMesh,
            Dx12Renderer *aRenderer);
 
-    ~VkMesh();
+    ~DX12Mesh();
     
-    VkMesh(const VkMesh &aMesh) = delete;
+    DX12Mesh(const DX12Mesh &aMesh) = delete;
 
-    void RemoveOffset(VkInstantiatedModel *aModel);
-    void RequestOffset(VkInstantiatedModel *aModel);
+    void RemoveOffset(DX12InstantiatedModel *aModel);
+    void RequestOffset(DX12InstantiatedModel *aModel);
 
     void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
     void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
 
-    u32 GetOffset(VkInstantiatedModel *aModel)
+    u32 GetOffset(DX12InstantiatedModel *aModel)
     {
       return mInstanceManager.GetIndex(aModel);
     }
@@ -138,7 +133,7 @@ namespace YTE
       return mMesh->mInstanced;
     }
 
-    void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+    void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
 
     std::unordered_multimap<std::string, std::unique_ptr<Dx12Submesh>> mSubmeshes;
     InstanceManager mInstanceManager;

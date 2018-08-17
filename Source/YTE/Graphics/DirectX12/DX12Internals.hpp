@@ -1,16 +1,11 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Dx12Internals_hpp
 #define YTE_Graphics_Vulkan_Dx12Internals_hpp
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
 
 namespace YTE
 {

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRenderTarget_hpp
@@ -11,15 +6,14 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderDescriptions.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkCommandBufferBuffer.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkCommandBufferEventBuffer.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderDescriptions.hpp"
+#include "YTE/Graphics/DirectX12/DX12CommandBufferBuffer.hpp"
+#include "YTE/Graphics/DirectX12/DX12CommandBufferEventBuffer.hpp"
 
 namespace YTE
 {
-  class VkRenderTarget : public EventHandler
+  class DX12RenderTarget : public EventHandler
   {
   public:
     struct RenderTargetData
@@ -58,51 +52,51 @@ namespace YTE
     };
 
 
-    YTEDeclareType(VkRenderTarget);
+    YTEDeclareType(DX12RenderTarget);
 
-    VkRenderTarget(Dx12RenderedSurface *aSurface,
-                   vk::Format aColorFormat,
-                   vk::Format aDepthFormat,
-                   //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                   ViewData *aView,
-                   std::string aName,
-                   DrawerTypeCombination aCombination);
+    DX12RenderTarget(Dx12RenderedSurface *aSurface,
+                     //vk::Format aColorFormat,
+                     //vk::Format aDepthFormat,
+                     //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
+                     DX12ViewData *aView,
+                     std::string aName,
+                     DrawerTypeCombination aCombination);
 
-    VkRenderTarget(Dx12RenderedSurface *aSurface,
-                   vk::Format aColorFormat,
-                   vk::Format aDepthFormat,
-                   //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                   std::string aName,
-                   DrawerTypeCombination aCombination);
+    DX12RenderTarget(Dx12RenderedSurface *aSurface,
+                     //vk::Format aColorFormat,
+                     //vk::Format aDepthFormat,
+                     //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
+                     std::string aName,
+                     DrawerTypeCombination aCombination);
 
-    virtual ~VkRenderTarget();
+    virtual ~DX12RenderTarget();
 
     // for sorting
     //bool operator() (int i, int j);
-    bool operator<(VkRenderTarget& rhs);
+    bool operator<(DX12RenderTarget& rhs);
 
     virtual void Initialize();
 
     virtual void Resize(vk::Extent2D& aExtent);
-    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
+    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes);
 
-    virtual void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+    virtual void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
 
-    virtual void ExecuteCommands(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO*/);
-    virtual void ExecuteSecondaryEvent(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO*/);
+    //virtual void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
+    //virtual void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
     virtual void MoveToNextEvent();
 
-    std::shared_ptr<vkhlf::RenderPass>& GetRenderPass()
-    {
-      return mRenderPass;
-    }
+    //std::shared_ptr<vkhlf::RenderPass>& GetRenderPass()
+    //{
+    //  return mRenderPass;
+    //}
 
     RenderTargetData* GetRenderTargetData()
     {
       return &mData;
     }
 
-    void SetView(ViewData *aView)
+    void SetView(DX12ViewData *aView)
     {
       mParentViewData = aView;
     }
@@ -117,21 +111,21 @@ namespace YTE
       mData.mCombinationType = aCombination;
     }
 
-    std::shared_ptr<vkhlf::Framebuffer>& GetFrameBuffer()
-    {
-      return mData.mFrameBuffer;
-    }
+    //std::shared_ptr<vkhlf::Framebuffer>& GetFrameBuffer()
+    //{
+    //  return mData.mFrameBuffer;
+    //}
 
   protected:
     virtual void CreateFrameBuffer();
     virtual void CreateRenderPass();
 
     Dx12RenderedSurface *mSurface;
-    ViewData *mParentViewData;
+    DX12ViewData *mParentViewData;
 
     RenderTargetData mData;
-    std::shared_ptr<vkhlf::Surface> mVulkanSurface;
-    std::shared_ptr<vkhlf::RenderPass> mRenderPass;
+    //std::shared_ptr<vkhlf::Surface> mVulkanSurface;
+    //std::shared_ptr<vkhlf::RenderPass> mRenderPass;
     std::unique_ptr<Dx12CBOB<3, true>> mCBOB;
     std::unique_ptr<VkCBEB<3 >> mCBEB;
     vk::Format mColorFormat;

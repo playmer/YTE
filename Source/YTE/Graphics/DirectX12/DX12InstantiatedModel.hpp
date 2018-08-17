@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
@@ -13,25 +8,25 @@
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
 
 namespace YTE
 {
-  class VkInstantiatedModel : public InstantiatedModel
+  class DX12InstantiatedModel : public InstantiatedModel
   {
   public:
-    YTEDeclareType(VkInstantiatedModel);
+    YTEDeclareType(DX12InstantiatedModel);
 
-    VkInstantiatedModel(std::string &aModelFile, Dx12RenderedSurface *aSurface, GraphicsView *aView);
-    VkInstantiatedModel(VkMesh *aMesh, Dx12RenderedSurface *aSurface, GraphicsView *aView);
-    ~VkInstantiatedModel() override;
+    DX12InstantiatedModel(std::string &aModelFile, Dx12RenderedSurface *aSurface, GraphicsView *aView);
+    DX12InstantiatedModel(DX12Mesh *aMesh, Dx12RenderedSurface *aSurface, GraphicsView *aView);
+    ~DX12InstantiatedModel() override;
 
     void Create();
     void CreateShader();
-    void SurfaceLostEvent(ViewChanged *aEvent);
-    void SurfaceGainedEvent(ViewChanged *aEvent);
+    void SurfaceLostEvent(DX12ViewChanged *aEvent);
+    void SurfaceGainedEvent(DX12ViewChanged *aEvent);
 
     void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
     void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
@@ -46,7 +41,7 @@ namespace YTE
 
     // Takes the submesh, as well as the index of the submesh.
     void CreateDescriptorSet(Dx12Submesh *aMesh, size_t mIndex);
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
+    void DX12GraphicsDataUpdate(DX12GraphicsDataUpdate *aEvent);
 
     void SetInstanced(bool aInstanced) override;
     bool GetInstanced() override;
@@ -63,7 +58,7 @@ namespace YTE
     // These are only needed if we're not instanced, otherwise lives on Dx12Submesh.
     std::unordered_map<Dx12Submesh*, SubMeshPipelineData> mPipelineData;
 
-    VkMesh* GetVkMesh()
+    DX12Mesh* GetVkMesh()
     {
       return mVkMesh;
     }
@@ -72,7 +67,7 @@ namespace YTE
     bool mLoadUBOModel;
     bool mLoadUBOAnimation;
     bool mLoadUBOMaterial;
-    VkMesh *mVkMesh;
+    DX12Mesh *mVkMesh;
 
     static UBOAnimation cAnimation;
   };

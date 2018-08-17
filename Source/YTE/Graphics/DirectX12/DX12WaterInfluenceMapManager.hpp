@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VKWaterInfluenceMapManager_hpp
@@ -12,19 +7,19 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
 namespace YTE
 {
-  class VkWaterInfluenceMapManager : public EventHandler
+  class DX12WaterInfluenceMapManager : public EventHandler
   {
   public:
-    VkWaterInfluenceMapManager();
-    VkWaterInfluenceMapManager(Dx12RenderedSurface* aSurface);
+    DX12WaterInfluenceMapManager();
+    DX12WaterInfluenceMapManager(Dx12RenderedSurface* aSurface);
 
-    ~VkWaterInfluenceMapManager()
+    ~DX12WaterInfluenceMapManager()
     {
       mBuffer.reset();
       mMaps.clear();
@@ -32,11 +27,11 @@ namespace YTE
 
     void SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent);
+    void GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent);
 
-    void AddMap(VkInstantiatedInfluenceMap *aMap);
-    std::unique_ptr<VkInstantiatedInfluenceMap> CreateMap();
-    void DestroyMap(VkInstantiatedInfluenceMap* aMap);
+    void AddMap(DX12InstantiatedInfluenceMap *aMap);
+    std::unique_ptr<DX12InstantiatedInfluenceMap> CreateMap();
+    void DestroyMap(DX12InstantiatedInfluenceMap* aMap);
 
     void UpdateMapValue(unsigned int aIndex, UBOWaterInfluenceMap &aMapValue);
 
@@ -53,7 +48,7 @@ namespace YTE
     UBOWaterInformationMan mWaterInformationData;
 
   private:
-    std::vector<VkInstantiatedInfluenceMap*> mMaps;
+    std::vector<DX12InstantiatedInfluenceMap*> mMaps;
     std::shared_ptr<vkhlf::Buffer> mBuffer;
     Dx12RenderedSurface* mSurface;
     GraphicsView* mGraphicsView;

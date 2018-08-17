@@ -1,21 +1,16 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedModel.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedLight.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedInfluenceMap.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Internals.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedLight.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedInfluenceMap.hpp"
+#include "YTE/Graphics/DirectX12/DX12Internals.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
 
 namespace YTE
 {
@@ -28,8 +23,8 @@ namespace YTE
   template<typename tTo, typename tFrom>
   std::unique_ptr<tTo> static_unique_pointer_cast(std::unique_ptr<tFrom> &&aValue)
   {
-    return std::unique_ptr<tTo>{static_cast<tTo*>(aValue.release())};
     //conversion: unique_ptr<FROM>->FROM*->TO*->unique_ptr<TO>
+    return std::unique_ptr<tTo>{static_cast<tTo*>(aValue.release())};
   }
 
 
@@ -149,7 +144,7 @@ namespace YTE
 
   void Dx12Renderer::DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel)
   {
-    GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
+    GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<DX12InstantiatedModel*>(aModel));
   }
 
   std::unique_ptr<InstantiatedLight> Dx12Renderer::CreateLight(GraphicsView* aView)
@@ -163,16 +158,16 @@ namespace YTE
   }
 
   // Textures
-  VkTexture* Dx12Renderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  DX12Texture* Dx12Renderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
   {
     auto textureIt = mTextures.find(aFilename);
-    VkTexture *texturePtr{ nullptr };
+    DX12Texture *texturePtr{ nullptr };
 
     if (textureIt == mTextures.end())
     {
       auto baseTexture = GetBaseTexture(aFilename);
 
-      auto texture = std::make_unique<VkTexture>(baseTexture,
+      auto texture = std::make_unique<DX12Texture>(baseTexture,
                                                  this,
                                                  aType);
 
@@ -189,7 +184,7 @@ namespace YTE
   }
 
 
-  VkTexture* Dx12Renderer::CreateTexture(std::string aName,
+  DX12Texture* Dx12Renderer::CreateTexture(std::string aName,
                                        std::vector<u8> aData,
                                        TextureLayout aType,
                                        u32 aWidth,
@@ -199,7 +194,7 @@ namespace YTE
                                        vk::ImageViewType aVulkanType)
   {
     auto textureIt = mTextures.find(aName);
-    VkTexture *texturePtr{ nullptr };
+    DX12Texture *texturePtr{ nullptr };
 
     if (textureIt == mTextures.end())
     {
@@ -224,7 +219,7 @@ namespace YTE
       mBaseTexturesMutex.unlock();
 
 
-      auto texture = std::make_unique<VkTexture>(baseTexturePtr,
+      auto texture = std::make_unique<DX12Texture>(baseTexturePtr,
                                                  this,
                                                  aVulkanType);
 
@@ -287,18 +282,18 @@ namespace YTE
   }
 
   // Meshes
-  VkMesh* Dx12Renderer::CreateMesh(std::string &aFilename)
+  DX12Mesh* Dx12Renderer::CreateMesh(std::string &aFilename)
   {
     auto baseMesh = GetBaseMesh(aFilename);
 
     auto meshIt = mMeshes.find(aFilename);
 
-    VkMesh *meshPtr{ nullptr };
+    DX12Mesh *meshPtr{ nullptr };
 
     if (meshIt == mMeshes.end())
     {
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(baseMesh,
+      auto mesh = std::make_unique<DX12Mesh>(baseMesh,
                                            this);
 
       meshPtr = mesh.get();
@@ -320,7 +315,7 @@ namespace YTE
   {
     auto meshIt = mMeshes.find(aName);
 
-    VkMesh *meshPtr{ nullptr };
+    DX12Mesh *meshPtr{ nullptr };
 
     if (aForceUpdate || meshIt == mMeshes.end())
     {
@@ -340,7 +335,7 @@ namespace YTE
       mBaseMeshesMutex.unlock();
 
       // create mesh
-      auto mesh = std::make_unique<VkMesh>(baseMeshPtr, this);
+      auto mesh = std::make_unique<DX12Mesh>(baseMeshPtr, this);
 
       auto it2 = mMeshes.find(aName);
 
@@ -381,13 +376,13 @@ namespace YTE
   {
     UnusedArguments(aEvent);
 
-    GraphicsDataUpdateVk update;
+    DX12GraphicsDataUpdate update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
     update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
     update.mCBO->begin();
 
-    SendEvent(Events::GraphicsDataUpdateVk, &update);
+    SendEvent(Events::DX12GraphicsDataUpdate, &update);
 
     update.mCBO->end();
 
@@ -498,7 +493,7 @@ namespace YTE
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
 
-  VkWaterInfluenceMapManager* Dx12Renderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
+  DX12WaterInfluenceMapManager* Dx12Renderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
   {
     return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
   }

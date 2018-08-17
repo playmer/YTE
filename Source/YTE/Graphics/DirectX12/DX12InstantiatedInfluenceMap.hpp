@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkInstantiatedInfluenceMap_hpp
@@ -13,21 +8,21 @@
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 
 namespace YTE
 {
-  class VkInstantiatedInfluenceMap : public InstantiatedInfluenceMap
+  class DX12InstantiatedInfluenceMap : public InstantiatedInfluenceMap
   {
   public:
-    YTEDeclareType(VkInstantiatedInfluenceMap);
+    YTEDeclareType(DX12InstantiatedInfluenceMap);
 
-    VkInstantiatedInfluenceMap(Dx12RenderedSurface *aSurface, VkWaterInfluenceMapManager* aMapManager, GraphicsView* aView);
-    ~VkInstantiatedInfluenceMap() override;
+    DX12InstantiatedInfluenceMap(Dx12RenderedSurface *aSurface, DX12WaterInfluenceMapManager* aMapManager, GraphicsView* aView);
+    ~DX12InstantiatedInfluenceMap() override;
 
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
-    void SurfaceLostEvent(ViewChanged *aEvent);
-    void SurfaceGainedEvent(ViewChanged *aEvent);
+    void DX12GraphicsDataUpdate(DX12GraphicsDataUpdate *aEvent);
+    void SurfaceLostEvent(DX12ViewChanged *aEvent);
+    void SurfaceGainedEvent(DX12ViewChanged *aEvent);
 
     void SetIndex(unsigned int aIndex)
     {
@@ -37,7 +32,7 @@ namespace YTE
 
     Dx12RenderedSurface *mSurface;
     GraphicsView *mGraphicsView;
-    VkWaterInfluenceMapManager *mManager;
+    DX12WaterInfluenceMapManager *mManager;
     unsigned int mIndex;
   };
 }

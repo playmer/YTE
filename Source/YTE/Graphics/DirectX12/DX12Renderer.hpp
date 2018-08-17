@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Dx12Renderer_hpp
@@ -12,7 +7,7 @@
 
 #include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
 #include "YTE/Graphics/DirectX12/DX12CommandBufferBuffer.hpp"
 
 namespace YTE
@@ -34,8 +29,8 @@ namespace YTE
     std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
     std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
-    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
-    VkTexture* CreateTexture(std::string aName,
+    DX12Texture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    DX12Texture* CreateTexture(std::string aName,
                              std::vector<u8> aData,
                              TextureLayout aType,
                              u32 aWidth,
@@ -58,7 +53,7 @@ namespace YTE
     void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
     void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
 
-    VkMesh* CreateMesh(std::string &aFilename);
+    DX12Mesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,
                            std::vector<Submesh> &aSubmeshes,
 		                       bool aForceUpdate = false) override;
@@ -89,7 +84,7 @@ namespace YTE
     void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     Dx12RenderedSurface* GetSurface(Window *aWindow);
 
-    VkWaterInfluenceMapManager* GetAllWaterInfluenceMaps(GraphicsView *aView);
+    DX12WaterInfluenceMapManager* GetAllWaterInfluenceMaps(GraphicsView *aView);
 
     Engine* GetEngine() const
     {
@@ -108,8 +103,8 @@ namespace YTE
 
     //std::shared_ptr<vkhlf::Device> mDevice;
     //std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
-    //std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
-    //std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+    //std::unordered_map<std::string, std::unique_ptr<DX12Texture>> mTextures;
+    //std::unordered_map<std::string, std::unique_ptr<DX12Mesh>> mMeshes;
     //std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
     //std::shared_ptr<vkhlf::CommandPool> mCommandPool;
   private:

@@ -1,25 +1,18 @@
-/////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-#include "YTE/Graphics/DirectX12/DX12VkWaterInfluenceMapManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedInfluenceMap.hpp"
-
-
+#include "YTE/Graphics/DirectX12/DX12WaterInfluenceMapManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedInfluenceMap.hpp"
 
 namespace YTE
 {
-  VkWaterInfluenceMapManager::VkWaterInfluenceMapManager()
+  DX12WaterInfluenceMapManager::DX12WaterInfluenceMapManager()
   {
     mWaterInformationData.mNumberOfInfluences = 0;
   }
 
-  VkWaterInfluenceMapManager::VkWaterInfluenceMapManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
+  DX12WaterInfluenceMapManager::DX12WaterInfluenceMapManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -42,11 +35,11 @@ namespace YTE
     mWaterInformationData.mNumberOfInfluences = 0;
   }
 
-  void VkWaterInfluenceMapManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
+  void DX12WaterInfluenceMapManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -69,9 +62,9 @@ namespace YTE
     mWaterInformationData.mNumberOfInfluences = 0;
   }
 
-  void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
+  void DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::GraphicsDataUpdateVk, aEvent);
+    SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
 
     if (mUpdateRequired)
     {
@@ -81,7 +74,7 @@ namespace YTE
     }
   }
 
-  void VkWaterInfluenceMapManager::AddMap(VkInstantiatedInfluenceMap *aMap)
+  void DX12WaterInfluenceMapManager::AddMap(DX12InstantiatedInfluenceMap *aMap)
   {
     if (mWaterInformationData.mNumberOfInfluences == YTE_Graphics_WaterInformationCount)
     {
@@ -95,7 +88,7 @@ namespace YTE
     mUpdateRequired = true;
   }
 
-  std::unique_ptr<VkInstantiatedInfluenceMap> VkWaterInfluenceMapManager::CreateMap()
+  std::unique_ptr<DX12InstantiatedInfluenceMap> DX12WaterInfluenceMapManager::CreateMap()
   {
     if (mWaterInformationData.mNumberOfInfluences == YTE_Graphics_WaterInformationCount)
     {
@@ -103,7 +96,7 @@ namespace YTE
       return nullptr;
     }
 
-    auto map = std::make_unique<VkInstantiatedInfluenceMap>(mSurface, this, mGraphicsView);
+    auto map = std::make_unique<DX12InstantiatedInfluenceMap>(mSurface, this, mGraphicsView);
     mMaps.push_back(map.get());
 
     map->SetIndex(mWaterInformationData.mNumberOfInfluences);
@@ -115,7 +108,7 @@ namespace YTE
 
 
 
-  void VkWaterInfluenceMapManager::DestroyMap(VkInstantiatedInfluenceMap* aMap)
+  void DX12WaterInfluenceMapManager::DestroyMap(DX12InstantiatedInfluenceMap* aMap)
   {
     int index = aMap->mIndex;
 
@@ -123,7 +116,7 @@ namespace YTE
     {
       mWaterInformationData.mInformation[i] = mWaterInformationData.mInformation[i + 1];
       mMaps[i + 1]->mIndex -= 1;
-      VkInstantiatedInfluenceMap* temp = mMaps[i];
+      DX12InstantiatedInfluenceMap* temp = mMaps[i];
       mMaps[i] = mMaps[i + 1];
       mMaps[i + 1] = temp;
     }
@@ -136,7 +129,7 @@ namespace YTE
 
 
 
-  void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
+  void DX12WaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
   {
 //#ifdef _DEBUG
 //    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)

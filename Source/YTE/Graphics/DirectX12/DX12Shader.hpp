@@ -1,14 +1,9 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Dx12Shader_hpp
 #define YTE_Graphics_Vulkan_Dx12Shader_hpp
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 #include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/Shader.hpp"
 
@@ -111,7 +106,7 @@ namespace YTE
   public:
     YTEDeclareType(Dx12Shader);
 
-    Dx12Shader(VkCreatePipelineDataSet& aInfo, ViewData* aView);
+    Dx12Shader(VkCreatePipelineDataSet& aInfo, DX12ViewData* aView);
     ~Dx12Shader() override;
 
     static VkCreatePipelineDataSet CreateInfo(std::string &aName,
@@ -132,7 +127,7 @@ namespace YTE
     std::shared_ptr<vkhlf::Pipeline> mAlphaBlendShader;
     std::shared_ptr<vkhlf::Pipeline> mAdditiveBlendShader;
     Dx12RenderedSurface *mSurface;
-    ViewData* mView;
+    DX12ViewData* mView;
   };
 }
 

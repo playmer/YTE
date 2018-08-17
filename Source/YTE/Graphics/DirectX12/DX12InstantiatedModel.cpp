@@ -1,26 +1,21 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedModel.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
 
 namespace YTE
 {
-  YTEDefineType(VkInstantiatedModel)
+  YTEDefineType(DX12InstantiatedModel)
   {
-    RegisterType<VkInstantiatedModel>();
-    TypeBuilder<VkInstantiatedModel> builder;
+    RegisterType<DX12InstantiatedModel>();
+    TypeBuilder<DX12InstantiatedModel> builder;
   }
 
-  UBOAnimation VkInstantiatedModel::cAnimation;
+  UBOAnimation DX12InstantiatedModel::cAnimation;
 
-  VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
+  DX12InstantiatedModel::DX12InstantiatedModel(std::string &aModelFile,
                                            Dx12RenderedSurface *aSurface,
                                            GraphicsView *aView)
     : InstantiatedModel{}
@@ -34,11 +29,11 @@ namespace YTE
     mMesh = mVkMesh->mMesh;
     Create();
 
-    mView->RegisterEvent<&VkInstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
-    mView->RegisterEvent<&VkInstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
+    mView->RegisterEvent<&DX12InstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mView->RegisterEvent<&DX12InstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
-  VkInstantiatedModel::VkInstantiatedModel(VkMesh *aMesh, 
+  DX12InstantiatedModel::DX12InstantiatedModel(DX12Mesh *aMesh, 
                                            Dx12RenderedSurface *aSurface,
                                            GraphicsView *aView)
     : InstantiatedModel{}
@@ -52,22 +47,22 @@ namespace YTE
     mMesh = aMesh->mMesh;
     Create();
 
-    mView->RegisterEvent<&VkInstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
-    mView->RegisterEvent<&VkInstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
+    mView->RegisterEvent<&DX12InstantiatedModel::SurfaceLostEvent>(Events::SurfaceLost, this);
+    mView->RegisterEvent<&DX12InstantiatedModel::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
 
-  VkInstantiatedModel::~VkInstantiatedModel()
+  DX12InstantiatedModel::~DX12InstantiatedModel()
   {
     mSurface->DestroyModel(mView, this);
   }
 
-  void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
+  void DX12InstantiatedModel::SurfaceLostEvent(DX12ViewChanged *aEvent)
   {
     UnusedArguments(aEvent);
     mSurface->DestroyModel(mView, this);
   }
 
-  void VkInstantiatedModel::SurfaceGainedEvent(ViewChanged *aEvent)
+  void DX12InstantiatedModel::SurfaceGainedEvent(DX12ViewChanged *aEvent)
   {
     mView = aEvent->View;
     mSurface = static_cast<Dx12Renderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
@@ -75,7 +70,7 @@ namespace YTE
     mSurface->AddModel(this);
   }
 
-  void VkInstantiatedModel::Create()
+  void DX12InstantiatedModel::Create()
   {
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
     auto &device = mSurface->GetDevice();
@@ -157,7 +152,7 @@ namespace YTE
     CreateShader();
   }
 
-  void VkInstantiatedModel::CreateShader()
+  void DX12InstantiatedModel::CreateShader()
   {
     mPipelineData.clear();
 
@@ -172,13 +167,13 @@ namespace YTE
 
 
 
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
+  void DX12InstantiatedModel::UpdateMesh(size_t aIndex, 
                                        std::vector<Vertex>& aVertices)
   {
     mVkMesh->UpdateVertices(aIndex, aVertices);
   }
 
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
+  void DX12InstantiatedModel::UpdateMesh(size_t aIndex, 
                                        std::vector<Vertex>& aVertices,
                                        std::vector<u32>& aIndices)
   {
@@ -188,17 +183,17 @@ namespace YTE
 
   // TODO (Josh): Change the name to be more representative. (This is really 
   //              just telling the object to register to be updated)
-  void VkInstantiatedModel::UpdateUBOModel()
+  void DX12InstantiatedModel::UpdateUBOModel()
   {
     if (!mLoadUBOAnimation && 
         !mLoadUBOModel && 
         !mLoadUBOMaterial)
     {
-      mSurface->RegisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&DX12InstantiatedModel::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
     }
   }
 
-  void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
+  void DX12InstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
   {
     mUBOModelData = aUBO;
 
@@ -207,7 +202,7 @@ namespace YTE
     mLoadUBOModel = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
+  void DX12InstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
   {
     mUBOAnimationData = aUBO;
 
@@ -216,7 +211,7 @@ namespace YTE
     mLoadUBOAnimation = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOMaterial(UBOMaterial *aUBO)
+  void DX12InstantiatedModel::UpdateUBOMaterial(UBOMaterial *aUBO)
   {
     mUBOModelMaterialData = *aUBO;
 
@@ -225,7 +220,7 @@ namespace YTE
     mLoadUBOMaterial = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+  void DX12InstantiatedModel::UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
   {
     mUBOSubmeshMaterials[aIndex].second = *aUBO;
 
@@ -235,7 +230,7 @@ namespace YTE
   }
 
 
-  void VkInstantiatedModel::SetDefaultAnimationOffset()
+  void DX12InstantiatedModel::SetDefaultAnimationOffset()
   {
     mUBOAnimationData = mMesh->mSkeleton.GetDefaultOffsets();
 
@@ -244,7 +239,7 @@ namespace YTE
     mLoadUBOAnimation = true;
   }
 
-  void VkInstantiatedModel::CreateDescriptorSet(Dx12Submesh *aSubMesh, size_t aIndex)
+  void DX12InstantiatedModel::CreateDescriptorSet(Dx12Submesh *aSubMesh, size_t aIndex)
   {
     mPipelineData.emplace(aSubMesh, 
                           aSubMesh->CreatePipelineData(mUBOModel, 
@@ -254,12 +249,12 @@ namespace YTE
                                                        mView));
   }
 
-  bool VkInstantiatedModel::GetInstanced()
+  bool DX12InstantiatedModel::GetInstanced()
   {
     return mVkMesh->GetInstanced();
   }
 
-  void VkInstantiatedModel::SetInstanced(bool aInstanced)
+  void DX12InstantiatedModel::SetInstanced(bool aInstanced)
   {
     if (mMesh->CanAnimate())
     {
@@ -276,9 +271,9 @@ namespace YTE
   }
 
 
-  void VkInstantiatedModel::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk *aEvent)
+  void DX12InstantiatedModel::DX12GraphicsDataUpdate(YTE::DX12GraphicsDataUpdate *aEvent)
   {
-    mSurface->DeregisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
+    mSurface->DeregisterEvent<&DX12InstantiatedModel::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
 
     auto update = aEvent->mCBO;
 

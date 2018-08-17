@@ -1,12 +1,7 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Internals.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12Internals.hpp"
 
 
 namespace YTE

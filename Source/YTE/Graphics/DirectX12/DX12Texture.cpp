@@ -1,19 +1,14 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include <array>
 #include <filesystem>
 #include <fstream>
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12Dx12Internals.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12Internals.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -21,14 +16,14 @@ namespace fs = std::experimental::filesystem;
 
 namespace YTE
 {
-  YTEDefineType(VkTexture)
+  YTEDefineType(DX12Texture)
   {
-    RegisterType<VkTexture>();
-    TypeBuilder<VkTexture> builder;
+    RegisterType<DX12Texture>();
+    TypeBuilder<DX12Texture> builder;
   }
 
 
-  VkTexture::VkTexture(Texture *aTexture,
+  DX12Texture::DX12Texture(Texture *aTexture,
                        Dx12Renderer *aRenderer,
                        vk::ImageViewType aVulkanType)
     : mRenderer{ aRenderer }
@@ -38,7 +33,7 @@ namespace YTE
     Initialize();
   }
 
-  void VkTexture::Initialize()
+  void DX12Texture::Initialize()
   {
     auto device = mRenderer->mDevice;
 
@@ -97,7 +92,7 @@ namespace YTE
                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
                                  allocator);
 
-    mRenderer->RegisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&DX12Texture::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
 
 
     vk::ComponentMapping components = { vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA };
@@ -133,13 +128,13 @@ namespace YTE
 
 
 
-  VkTexture::~VkTexture()
+  DX12Texture::~DX12Texture()
   {
   }
 
 
 
-  void VkTexture::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void DX12Texture::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
     auto update = aEvent->mCBO;
     // create a temporary upload image and fill it with pixel data. 
@@ -201,6 +196,6 @@ namespace YTE
     //mTexture->mData.clear();
     //mTexture->mData.shrink_to_fit();
 
-    mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mRenderer->DeregisterEvent<&DX12Texture::LoadToVulkan>(Events::DX12GraphicsDataUpdate,  this);
   }
 }

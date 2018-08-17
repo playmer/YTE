@@ -1,14 +1,9 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkCommandBufferEventBuffer_hpp
 #define YTE_Graphics_Vulkan_VkCommandBufferEventBuffer_hpp
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 
 namespace YTE
 {

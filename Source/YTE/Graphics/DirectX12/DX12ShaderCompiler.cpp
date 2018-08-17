@@ -2,7 +2,7 @@
 
 #include "VkHLF/3rdparty/glslang/SPIRV/GlslangToSpv.h"
 
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderCompiler.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderCompiler.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 

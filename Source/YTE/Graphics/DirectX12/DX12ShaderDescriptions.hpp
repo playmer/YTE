@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Dx12ShaderDescriptions_hpp
@@ -10,7 +5,7 @@
 
 #include "fmt/format.h"
 
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Graphics/Vertex.hpp"

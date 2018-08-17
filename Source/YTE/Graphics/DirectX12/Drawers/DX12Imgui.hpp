@@ -19,7 +19,7 @@
 
 #include "imgui.h"
 
-//#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+//#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
@@ -31,17 +31,17 @@
 
 namespace YTE
 {
-  class Dx12ImguiDrawer : public VkRenderTarget
+  class Dx12ImguiDrawer : public DX12RenderTarget
   {
   public:
     YTEDeclareType(Dx12ImguiDrawer);
 
     Dx12ImguiDrawer(Dx12RenderedSurface *aSurface,
-                  vk::Format aColorFormat,
-                  vk::Format aDepthFormat,
-                  std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                  ViewData* aView,
-                  DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
+                    //vk::Format aColorFormat,
+                    //vk::Format aDepthFormat,
+                    //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
+                    DX12ViewData* aView,
+                    DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     void Initialize();
 
@@ -49,10 +49,10 @@ namespace YTE
 
     void PreFrameUpdate(LogicUpdate *aUpdate);
 
-    void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>> &aMeshes) override;
-    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>> &aMeshes) override;
+    void RenderBegin(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
+    void Render(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
+    void RenderEnd(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
 
     ImguiLayer *mContext{ nullptr };
     GraphicsView *mView;

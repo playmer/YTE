@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VKLightManager_hpp
@@ -11,20 +6,20 @@
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
 namespace YTE
 {
-  class VkLightManager : public EventHandler
+  class DX12LightManager : public EventHandler
   {
   public:
-    VkLightManager();
-    VkLightManager(Dx12RenderedSurface* aSurface);
+    DX12LightManager();
+    DX12LightManager(Dx12RenderedSurface* aSurface);
 
-    ~VkLightManager()
+    ~DX12LightManager()
     {
       mBuffer.reset();
       mLights.clear();
@@ -32,11 +27,11 @@ namespace YTE
 
     void SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent);
+    void GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent);
 
-    void AddLight(VkInstantiatedLight *aLight);
-    std::unique_ptr<VkInstantiatedLight> CreateLight();
-    void DestroyLight(VkInstantiatedLight* aLight);
+    void AddLight(DX12InstantiatedLight *aLight);
+    std::unique_ptr<DX12InstantiatedLight> CreateLight();
+    void DestroyLight(DX12InstantiatedLight* aLight);
 
     void UpdateLightValue(unsigned int aIndex, UBOLight &aLightValue);
 
@@ -48,7 +43,7 @@ namespace YTE
     }
 
   private:
-    std::vector<VkInstantiatedLight*> mLights;
+    std::vector<DX12InstantiatedLight*> mLights;
     UBOLightMan mLightData;
     std::shared_ptr<vkhlf::Buffer> mBuffer;
     Dx12RenderedSurface* mSurface;

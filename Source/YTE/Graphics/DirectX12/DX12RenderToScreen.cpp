@@ -1,29 +1,24 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkRenderToScreen.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Internals.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderCompiler.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderToScreen.hpp"
+#include "YTE/Graphics/DirectX12/DX12Internals.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderCompiler.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {
-  YTEDefineType(VkRenderToScreen)
+  YTEDefineType(DX12RenderToScreen)
   {
-    RegisterType<VkRenderToScreen>();
-    TypeBuilder<VkRenderToScreen> builder;
+    RegisterType<DX12RenderToScreen>();
+    TypeBuilder<DX12RenderToScreen> builder;
   }
 
 
-  VkRenderToScreen::VkRenderToScreen(Window *aWindow,
+  DX12RenderToScreen::DX12RenderToScreen(Window *aWindow,
                                      Dx12Renderer *aRenderer,
                                      Dx12RenderedSurface *aSurface,
                                      vk::Format aColorFormat,
@@ -40,20 +35,18 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
     mSignedUpForUpdate = true;
 
     mCBOB = std::make_unique<Dx12CBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
 
     CreateRenderPass();
-    //ReloadQuad();
-    //ReloadShaders(false);
   }
 
 
 
-  VkRenderToScreen::~VkRenderToScreen()
+  DX12RenderToScreen::~DX12RenderToScreen()
   {
     mFrameBufferSwapChain.reset();
     mRenderPass.reset();
@@ -62,17 +55,15 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::Resize(vk::Extent2D& aExtent)
+  void DX12RenderToScreen::Resize(vk::Extent2D& aExtent)
   {
     CreateSwapChain(aExtent);
-    //ReloadQuad();
-    //ReloadShaders(false);
   }
 
   
 
-  bool RenderTargetSorter(VkRenderTarget::RenderTargetData* a,
-                          VkRenderTarget::RenderTargetData* b)
+  bool RenderTargetSorter(DX12RenderTarget::RenderTargetData* a,
+                          DX12RenderTarget::RenderTargetData* b)
   {
     if (a->mOrder < b->mOrder)
     {
@@ -83,7 +74,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ResetRenderTargets(std::vector<VkRenderTarget*>& aRTs)
+  void DX12RenderToScreen::ResetRenderTargets(std::vector<DX12RenderTarget*>& aRTs)
   {
     mRenderTargetData.clear();
     for (int i = 0; i < aRTs.size(); ++i)
@@ -102,19 +93,17 @@ namespace YTE
     else
     {
       mScreenQuad->Resize();
-      //ReloadQuad();
-      //ReloadShaders();
     }
   }
 
 
 
-  void VkRenderToScreen::SetRenderTargets(std::vector<VkRenderTarget*>& aRTs)
+  void DX12RenderToScreen::SetRenderTargets(std::vector<DX12RenderTarget*>& aRTs)
   {
     mRenderTargetData.clear();
     for (int i = 0; i < aRTs.size(); ++i)
     {
-      VkRenderTarget::RenderTargetData* v = aRTs[i]->GetRenderTargetData();
+      DX12RenderTarget::RenderTargetData* v = aRTs[i]->GetRenderTargetData();
       mRenderTargetData.push_back(v);
     }
     std::sort(mRenderTargetData.begin(),
@@ -135,28 +124,28 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::FrameUpdate()
+  void DX12RenderToScreen::FrameUpdate()
   {
     mFrameBufferSwapChain->acquireNextFrame();
   }
 
 
 
-  const vk::Extent2D& VkRenderToScreen::GetExtent()
+  const vk::Extent2D& DX12RenderToScreen::GetExtent()
   {
     return mFrameBufferSwapChain->getExtent();
   }
 
 
 
-  void VkRenderToScreen::MoveToNextEvent()
+  void DX12RenderToScreen::MoveToNextEvent()
   {
     mCBEB->NextEvent();
   }
 
 
 
-  void VkRenderToScreen::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
     auto& e = mCBEB->GetCurrentEvent();
     aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
@@ -164,21 +153,21 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
     aCBO->executeCommands(mCBOB->GetCurrentCBO());
   }
 
 
 
-  void VkRenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
     UnusedArguments(aCBO);
   }
 
 
 
-  void VkRenderToScreen::RenderFull(const vk::Extent2D& aExtent)
+  void DX12RenderToScreen::RenderFull(const vk::Extent2D& aExtent)
   {
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
@@ -202,7 +191,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
     mScreenShader->Bind(aCBO);
     mScreenQuad->Bind(aCBO);
@@ -211,14 +200,14 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
     UnusedArguments(aCBO);
   }
 
 
 
-  bool VkRenderToScreen::PresentFrame(std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
+  bool DX12RenderToScreen::PresentFrame(std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
                                       std::shared_ptr<vkhlf::Semaphore>& aRenderCompleteSemaphore)
   {
     try
@@ -235,7 +224,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::CreateSwapChain(vk::Extent2D& aExtent)
+  void DX12RenderToScreen::CreateSwapChain(vk::Extent2D& aExtent)
   {
     mWindow->SetExtent(aExtent.width, aExtent.height);
 
@@ -257,7 +246,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::CreateRenderPass()
+  void DX12RenderToScreen::CreateRenderPass()
   {
     // Attachment Descriptions
     vk::AttachmentDescription colorAttachment{ {},
@@ -326,9 +315,9 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void DX12RenderToScreen::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
-    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mSurface->DeregisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate,  this);
     mSignedUpForUpdate = false;
 
     if (mScreenQuad)
@@ -344,20 +333,20 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ReloadQuad()
+  void DX12RenderToScreen::ReloadQuad()
   {
     mScreenQuad.reset();
     mScreenQuad = std::make_unique<ScreenQuad>(this);
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
     }
   }
 
 
 
-  void VkRenderToScreen::ReloadShaders(bool aFromSet)
+  void DX12RenderToScreen::ReloadShaders(bool aFromSet)
   {
     UnusedArguments(aFromSet);
     //if (aFromSet)
@@ -369,27 +358,27 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
     }
   }
 
 
 
-  void VkRenderToScreen::LoadQuad()
+  void DX12RenderToScreen::LoadQuad()
   {
     ReloadQuad();
   }
 
 
 
-  void VkRenderToScreen::LoadShaders()
+  void DX12RenderToScreen::LoadShaders()
   {
     mScreenShader.reset();
     mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, false);
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
     }
   }
 
@@ -407,7 +396,7 @@ namespace YTE
   // Screen Quad
   // /////////////////////////////////////////////////////////////////////
 
-  VkRenderToScreen::ScreenQuad::ScreenQuad(VkRenderToScreen* aParent)
+  DX12RenderToScreen::ScreenQuad::ScreenQuad(DX12RenderToScreen* aParent)
     : mParent(aParent)
   {
     mIndices.reserve(6);
@@ -417,14 +406,14 @@ namespace YTE
 
 
 
-  VkRenderToScreen::ScreenQuad::~ScreenQuad()
+  DX12RenderToScreen::ScreenQuad::~ScreenQuad()
   {
     Destroy();
   }
 
 
 
-  void VkRenderToScreen::ScreenQuad::Create()
+  void DX12RenderToScreen::ScreenQuad::Create()
   {
     // Mesh
     Vertex v1, v2, v3, v4;
@@ -491,7 +480,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::Resize()
+  void DX12RenderToScreen::ScreenQuad::Resize()
   {
     auto device = mParent->mSurface->GetDevice();
     size_t samplers{ 0 };
@@ -583,7 +572,7 @@ namespace YTE
 
     // Add Texture Samplers
     auto addTS = [&wdss, &binding, &ds](size_t aAttachmentIndex,
-                                        VkRenderTarget::RenderTargetData *aData, 
+                                        DX12RenderTarget::RenderTargetData *aData, 
                                         vkhlf::DescriptorImageInfo &aImageInfo)
     {
       constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
@@ -618,7 +607,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::Destroy()
+  void DX12RenderToScreen::ScreenQuad::Destroy()
   {
     mVertexBuffer.reset();
     mIndexBuffer.reset();
@@ -631,7 +620,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void DX12RenderToScreen::ScreenQuad::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
     mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
     mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
@@ -639,7 +628,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
     aCBO->bindVertexBuffer(0, mVertexBuffer, 0);
     aCBO->bindIndexBuffer(mIndexBuffer, 0, vk::IndexType::eUint32);
@@ -653,7 +642,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenQuad::Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
     aCBO->drawIndexed(mIndexCount, 1, 0, 0, 0);
   }
@@ -671,7 +660,7 @@ namespace YTE
   // Screen Shader
   // /////////////////////////////////////////////////////////////////////
 
-  VkRenderToScreen::ScreenShader::ScreenShader(VkRenderToScreen* aParent,
+  DX12RenderToScreen::ScreenShader::ScreenShader(DX12RenderToScreen* aParent,
                                                ScreenQuad* aSibling,
                                                std::string &aShaderSetName,
                                                bool aReload)
@@ -683,14 +672,14 @@ namespace YTE
 
 
 
-  VkRenderToScreen::ScreenShader::~ScreenShader()
+  DX12RenderToScreen::ScreenShader::~ScreenShader()
   {
     Destroy();
   }
 
 
 
-  void VkRenderToScreen::ScreenShader::Create(std::string& aShaderSetName, bool aReload)
+  void DX12RenderToScreen::ScreenShader::Create(std::string& aShaderSetName, bool aReload)
   {
     auto modelData = mSibling->GetShaderData();
 
@@ -838,28 +827,28 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenShader::Destroy()
+  void DX12RenderToScreen::ScreenShader::Destroy()
   {
     mShader.reset();
   }
 
 
 
-  void VkRenderToScreen::ScreenShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void DX12RenderToScreen::ScreenShader::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
     UnusedArguments(aEvent);
   }
 
 
 
-  void VkRenderToScreen::ScreenShader::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenShader::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
     aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, mShader);
   }
 
 
 
-  std::string VkRenderToScreen::ScreenShader::GenerateFragmentShader()
+  std::string DX12RenderToScreen::ScreenShader::GenerateFragmentShader()
   {
     std::stringstream ss;
 

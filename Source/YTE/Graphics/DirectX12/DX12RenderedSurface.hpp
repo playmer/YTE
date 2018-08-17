@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Dx12RendererdSurface_hpp
@@ -13,36 +8,36 @@
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkFunctionLoader.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12ShaderDescriptions.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkLightManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkWaterInfluenceMapManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkRenderToScreen.hpp"
-#include "YTE/Graphics/DirectX12/DX12Drawers/VkRenderTarget.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkCommandBufferBuffer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Shader.hpp"
+#include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
+#include "YTE/Graphics/DirectX12/DX12ShaderDescriptions.hpp"
+#include "YTE/Graphics/DirectX12/DX12LightManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12WaterInfluenceMapManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderToScreen.hpp"
+#include "YTE/Graphics/DirectX12/DX12Drawers/DX12RenderTarget.hpp"
+#include "YTE/Graphics/DirectX12/DX12CommandBufferBuffer.hpp"
+#include "YTE/Graphics/DirectX12/DX12Shader.hpp"
 
 namespace YTE
 {
-  YTEDeclareEvent(GraphicsDataUpdateVk);
+  YTEDeclareEvent(DX12GraphicsDataUpdate);
   YTEDeclareEvent(AnimationUpdateVk);
 
   // forward declare
   struct VkCreatePipelineDataSet;
 
   // vulkan specific graphics data update event so that it can contain the CBO object
-  class GraphicsDataUpdateVk : public Event
+  class DX12GraphicsDataUpdate : public Event
   {
   public:
-    YTEDeclareType(GraphicsDataUpdateVk);
+    YTEDeclareType(DX12GraphicsDataUpdate);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
   };
 
 
-  struct ViewData
+  struct DX12ViewData
   {
   public:
-    ViewData()
+    DX12ViewData()
     {
 
     }
@@ -56,11 +51,11 @@ namespace YTE
     glm::vec4 mClearColor;
     UBOView mViewUBOData;
     UBOIllumination mIlluminationUBOData;
-    VkLightManager mLightManager;
-    VkWaterInfluenceMapManager mWaterInfluenceMapManager;
-    std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
+    DX12LightManager mLightManager;
+    DX12WaterInfluenceMapManager mWaterInfluenceMapManager;
+    std::unordered_map<DX12Mesh*, std::vector<DX12InstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<Dx12Shader>> mShaders;
-    std::unique_ptr<VkRenderTarget> mRenderTarget;
+    std::unique_ptr<DX12RenderTarget> mRenderTarget;
     GraphicsView *mView;
     float mViewOrder;
   };
@@ -84,12 +79,12 @@ namespace YTE
     /////////////////////////////////
     // Creation / Destruction
     /////////////////////////////////
-    std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, std::string &aModelFile);
-    std::unique_ptr<VkInstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
-    void AddModel(VkInstantiatedModel *aModel);
-    void DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel);
+    std::unique_ptr<DX12InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aModelFile);
+    std::unique_ptr<DX12InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
+    void AddModel(DX12InstantiatedModel *aModel);
+    void DestroyModel(GraphicsView *aView, DX12InstantiatedModel *aModel);
     
-    void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
+    void DestroyMeshAndModel(GraphicsView *aView, DX12InstantiatedModel *aModel);
     
 
     Dx12Shader* CreateShader(std::string &aShaderSetName,
@@ -97,8 +92,8 @@ namespace YTE
                            Dx12ShaderDescriptions &aDescription, 
                            GraphicsView* aView);
 
-    std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
-    std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
+    std::unique_ptr<DX12InstantiatedLight> CreateLight(GraphicsView *aView);
+    std::unique_ptr<DX12InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
 
     void ReloadAllShaders();
@@ -107,7 +102,7 @@ namespace YTE
     // Events
     /////////////////////////////////
     void ResizeEvent(WindowResize *aEvent);
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent);
+    void GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate *aEvent);
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
@@ -181,27 +176,27 @@ namespace YTE
       GetViewData(aView)->mClearColor = aColor;
     }
 
-    VkLightManager* GetLightManager(GraphicsView *aView)
+    DX12LightManager* GetLightManager(GraphicsView *aView)
     {
       return &GetViewData(aView)->mLightManager;
     }
 
-    VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
+    DX12WaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
     {
       return &GetViewData(aView)->mWaterInfluenceMapManager;
     }
 
-    std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)
+    std::vector<DX12InstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, DX12Mesh *aMesh)
     {
       return GetViewData(aView)->mInstantiatedModels[aMesh];
     }
 
-    std::map<GraphicsView*, ViewData>& GetViews()
+    std::map<GraphicsView*, DX12ViewData>& GetViews()
     {
       return mViewData;
     }
 
-    ViewData* GetViewData(GraphicsView *aView)
+    DX12ViewData* GetViewData(GraphicsView *aView)
     {
       auto it = mViewData.find(aView);
 
@@ -218,7 +213,7 @@ namespace YTE
       return mRenderToScreen->GetExtent();
     }
 
-    VkRenderTarget* GetRenderTarget(GraphicsView* aView)
+    DX12RenderTarget* GetRenderTarget(GraphicsView* aView)
     {
       return GetViewData(aView)->mRenderTarget.get();
     }
@@ -233,8 +228,8 @@ namespace YTE
 
 
     void RenderFrameForSurface();
-    std::unique_ptr<VkRenderTarget> CreateRenderTarget(DrawerTypes aDrawerType,
-                                                       ViewData *view,
+    std::unique_ptr<DX12RenderTarget> CreateRenderTarget(DrawerTypes aDrawerType,
+                                                       DX12ViewData *view,
                                                        DrawerTypeCombination aCombination);
     
     Window *mWindow;
@@ -247,10 +242,10 @@ namespace YTE
     vk::Format mDepthFormat;
 
     // Rendering stuff
-    std::unique_ptr<VkRenderToScreen> mRenderToScreen;
+    std::unique_ptr<DX12RenderToScreen> mRenderToScreen;
 
     // loaded data
-    std::map<GraphicsView*, ViewData> mViewData;
+    std::map<GraphicsView*, DX12ViewData> mViewData;
     std::unordered_map<std::string, VkCreatePipelineDataSet> mShaderCreateInfos;
 
     // loaders

@@ -1,27 +1,21 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/DirectX12/DX12Drawers/VkImgui.hpp"
 #include "YTE/Graphics/DirectX12/DX12Drawers/VkRTGameForwardDrawer.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedLight.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedInfluenceMap.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedModel.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Internals.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkLightManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkWaterInfluenceMapManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkMesh.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkRenderToScreen.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12Shader.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkTexture.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedLight.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedInfluenceMap.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
+#include "YTE/Graphics/DirectX12/DX12Internals.hpp"
+#include "YTE/Graphics/DirectX12/DX12LightManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12WaterInfluenceMapManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12Mesh.hpp"
+#include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderToScreen.hpp"
+#include "YTE/Graphics/DirectX12/DX12Shader.hpp"
+#include "YTE/Graphics/DirectX12/DX12Texture.hpp"
 
 #include "YTE/StandardLibrary/Range.hpp"
 
@@ -30,11 +24,11 @@
 namespace YTE
 {
   YTEDefineEvent(AnimationUpdateVk);
-  YTEDefineEvent(GraphicsDataUpdateVk);
-  YTEDefineType(GraphicsDataUpdateVk)
+  YTEDefineEvent(DX12GraphicsDataUpdate);
+  YTEDefineType(DX12GraphicsDataUpdate)
   {
-    RegisterType<GraphicsDataUpdateVk>();
-    TypeBuilder<GraphicsDataUpdateVk> builder;
+    RegisterType<DX12GraphicsDataUpdate>();
+    TypeBuilder<DX12GraphicsDataUpdate> builder;
   }
 
   YTEDefineType(Dx12RenderedSurface)
@@ -58,7 +52,7 @@ namespace YTE
     auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
 
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
+    auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
                                                                          baseSurfaceKhr);
     auto formats = supportDetails.Formats();
 
@@ -72,7 +66,7 @@ namespace YTE
     PrintSurfaceFormats(formats);
     mDepthFormat = vk::Format::eD24UnormS8Uint;
 
-    mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
+    mRenderToScreen = std::make_unique<DX12RenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
     mCubemapComplete = mRenderer->mDevice->createSemaphore();
@@ -111,13 +105,13 @@ namespace YTE
     GetViewData(aView)->mViewUBOData = aUBOView;
     ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
     //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
   }
 
   void Dx12RenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
   }
 
   void Dx12RenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -133,29 +127,29 @@ namespace YTE
   }
   
   // Models
-  std::unique_ptr<VkInstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
+  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
   {
     mDataUpdateRequired = true;
-    auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
+    auto model = std::make_unique<DX12InstantiatedModel>(aModelFile, this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(model->GetVkMesh())].push_back(model.get());
+    instantiatedModels[static_cast<DX12Mesh*>(model->GetVkMesh())].push_back(model.get());
     return std::move(model);
   }
 
-  std::unique_ptr<VkInstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
+  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
     mDataUpdateRequired = true;
 
-    auto model = std::make_unique<VkInstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
+    auto model = std::make_unique<DX12InstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(model->GetVkMesh())].push_back(model.get());
+    instantiatedModels[static_cast<DX12Mesh*>(model->GetVkMesh())].push_back(model.get());
     return std::move(model);
   }
 
-  void Dx12RenderedSurface::AddModel(VkInstantiatedModel *aModel)
+  void Dx12RenderedSurface::AddModel(DX12InstantiatedModel *aModel)
   {
     auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
-    instantiatedModels[static_cast<VkMesh*>(aModel->GetVkMesh())].push_back(aModel);
+    instantiatedModels[static_cast<DX12Mesh*>(aModel->GetVkMesh())].push_back(aModel);
   }
 
   std::shared_ptr<vkhlf::Device>& Dx12RenderedSurface::GetDevice()
@@ -169,7 +163,7 @@ namespace YTE
   }
 
 
-  void Dx12RenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
+  void Dx12RenderedSurface::DestroyModel(GraphicsView *aView, DX12InstantiatedModel *aModel)
   {
     if (aModel == nullptr)
     {
@@ -190,7 +184,7 @@ namespace YTE
     }
   }
 
-  void Dx12RenderedSurface::DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel)
+  void Dx12RenderedSurface::DestroyMeshAndModel(GraphicsView *aView, DX12InstantiatedModel *aModel)
   {
     if (aModel == nullptr)
     {
@@ -221,7 +215,7 @@ namespace YTE
   {
     auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
     Dx12Shader *shaderPtr{ nullptr };
-    ViewData *view = GetViewData(aView);
+    DX12ViewData *view = GetViewData(aView);
     auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
     // if view doesn't have shader, but surface does
@@ -267,14 +261,14 @@ namespace YTE
 
 
 
-  std::unique_ptr<VkInstantiatedLight> Dx12RenderedSurface::CreateLight(GraphicsView* aView)
+  std::unique_ptr<DX12InstantiatedLight> Dx12RenderedSurface::CreateLight(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
     auto light = GetViewData(aView)->mLightManager.CreateLight();
     return std::move(light);
   }
 
-  std::unique_ptr<VkInstantiatedInfluenceMap> Dx12RenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
+  std::unique_ptr<DX12InstantiatedInfluenceMap> Dx12RenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
     auto map = GetViewData(aView)->mWaterInfluenceMapManager.CreateMap();
@@ -298,7 +292,7 @@ namespace YTE
                                   (*(mRenderer->GetDx12Internals()->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
 
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
+    auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
                                                                          baseSurfaceKhr);
 
     auto extent = supportDetails.Capabilities().currentExtent;
@@ -314,7 +308,7 @@ namespace YTE
     if (false == aConstructing)
     {
       // reset swapchain's references to render target frame buffers
-      std::vector<VkRenderTarget*> rts;
+      std::vector<DX12RenderTarget*> rts;
 
       for (auto &v : mViewData)
       {
@@ -398,7 +392,7 @@ namespace YTE
     }
 
     // reset swapchain's references to render target frame buffers
-    std::vector<VkRenderTarget*> rts;
+    std::vector<DX12RenderTarget*> rts;
     for (auto const& [view, data] : mViewData)
     {
       rts.push_back(data.mRenderTarget.get());
@@ -420,7 +414,7 @@ namespace YTE
     viewData->mRenderTarget->SetView(viewData);
 
     // reset swapchain's references to render target frame buffers
-    std::vector<VkRenderTarget*> rts;
+    std::vector<DX12RenderTarget*> rts;
     for (auto const&[view, data] : mViewData)
     {
       rts.push_back(data.mRenderTarget.get());
@@ -440,7 +434,7 @@ namespace YTE
     viewData->mRenderTarget->SetView(viewData);
 
     // reset swapchain's references to render target frame buffers
-    std::vector<VkRenderTarget*> rts;
+    std::vector<DX12RenderTarget*> rts;
     for (auto const& [view, data] : mViewData)
     {
       rts.push_back(data.mRenderTarget.get());
@@ -462,7 +456,7 @@ namespace YTE
     }
 
     // reset swapchain's references to render target frame buffers
-    std::vector<VkRenderTarget*> rts;
+    std::vector<DX12RenderTarget*> rts;
     for (auto const& [view, data] : mViewData)
     {
       rts.push_back(data.mRenderTarget.get());
@@ -485,7 +479,7 @@ namespace YTE
     }
 
     // reset swapchain's references to render target frame buffers
-    std::vector<VkRenderTarget*> rts;
+    std::vector<DX12RenderTarget*> rts;
     for (auto const&[view, data] : mViewData)
     {
       rts.push_back(data.mRenderTarget.get());
@@ -497,13 +491,13 @@ namespace YTE
     }
   }
 
-  void Dx12RenderedSurface::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent)
+  void Dx12RenderedSurface::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate *aEvent)
   {
     for (auto const&[view, data] : mViewData)
     {
       data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
       data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
-      this->DeregisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+      this->DeregisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
     }
   }
 
@@ -551,13 +545,13 @@ namespace YTE
 
   void Dx12RenderedSurface::GraphicsDataUpdate()
   {
-    GraphicsDataUpdateVk update;
+    DX12GraphicsDataUpdate update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
     update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
     update.mCBO->begin();
 
-    SendEvent(Events::GraphicsDataUpdateVk, &update);
+    SendEvent(Events::DX12GraphicsDataUpdate, &update);
 
     update.mCBO->end();
 
@@ -600,7 +594,7 @@ namespace YTE
 
   void Dx12RenderedSurface::AnimationUpdate()
   {
-    GraphicsDataUpdateVk update;
+    DX12GraphicsDataUpdate update;
     mAnimationUpdateCBOB->NextCommandBuffer();
     update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
     update.mCBO->begin();
@@ -724,8 +718,8 @@ namespace YTE
   }
 
 
-  std::unique_ptr<VkRenderTarget> Dx12RenderedSurface::CreateRenderTarget(DrawerTypes aDrawerType, 
-                                                                        ViewData *view,
+  std::unique_ptr<DX12RenderTarget> Dx12RenderedSurface::CreateRenderTarget(DrawerTypes aDrawerType, 
+                                                                        DX12ViewData *view,
                                                                         DrawerTypeCombination aCombination)
   {
     switch (aDrawerType)

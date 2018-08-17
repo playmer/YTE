@@ -1,26 +1,19 @@
-/////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-#include "YTE/Graphics/DirectX12/DX12VkLightManager.hpp"
-#include "YTE/Graphics/DirectX12/DX12Dx12RenderedSurface.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkDeviceInfo.hpp"
-#include "YTE/Graphics/DirectX12/DX12VkInstantiatedLight.hpp"
-
-
+#include "YTE/Graphics/DirectX12/DX12LightManager.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12DeviceInfo.hpp"
+#include "YTE/Graphics/DirectX12/DX12InstantiatedLight.hpp"
 
 namespace YTE
 {
-  VkLightManager::VkLightManager()
+  DX12LightManager::DX12LightManager()
   {
     mLightData.mActive = 0.0f; // false
     mLightData.mNumOfLights = 0;
   }
 
-  VkLightManager::VkLightManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
+  DX12LightManager::DX12LightManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -45,11 +38,11 @@ namespace YTE
     mLightData.mNumOfLights = 0;
   }
 
-  void VkLightManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
+  void DX12LightManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -73,9 +66,9 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-  void VkLightManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
+  void DX12LightManager::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::GraphicsDataUpdateVk, aEvent);
+    SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
 
     if (mUpdateRequired)
     {
@@ -85,7 +78,7 @@ namespace YTE
     }
   }
 
-  void VkLightManager::AddLight(VkInstantiatedLight *aLight)
+  void DX12LightManager::AddLight(DX12InstantiatedLight *aLight)
   {
     if (mLightData.mNumOfLights == YTE_Graphics_LightCount)
     {
@@ -104,7 +97,7 @@ namespace YTE
     mUpdateRequired = true;
   }
 
-  std::unique_ptr<VkInstantiatedLight> VkLightManager::CreateLight()
+  std::unique_ptr<DX12InstantiatedLight> DX12LightManager::CreateLight()
   {
     if (mLightData.mNumOfLights == YTE_Graphics_LightCount)
     {
@@ -117,7 +110,7 @@ namespace YTE
       mLightData.mActive = 10.0f; // true
     }
 
-    auto light = std::make_unique<VkInstantiatedLight>(mSurface, this, mGraphicsView);
+    auto light = std::make_unique<DX12InstantiatedLight>(mSurface, this, mGraphicsView);
     mLights.push_back(light.get());
 
     light->SetIndex(mLightData.mNumOfLights);
@@ -129,7 +122,7 @@ namespace YTE
 
 
 
-  void VkLightManager::DestroyLight(VkInstantiatedLight* aLight)
+  void DX12LightManager::DestroyLight(DX12InstantiatedLight* aLight)
   {
     int index = aLight->mIndex;
 
@@ -137,7 +130,7 @@ namespace YTE
     {
       mLightData.mLights[i] = mLightData.mLights[i + 1];
       mLights[i + 1]->mIndex -= 1;
-      VkInstantiatedLight* temp = mLights[i];
+      DX12InstantiatedLight* temp = mLights[i];
       mLights[i] = mLights[i + 1];
       mLights[i + 1] = temp;
     }
@@ -155,7 +148,7 @@ namespace YTE
 
 
 
-  void VkLightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
+  void DX12LightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
   {
 //#ifdef _DEBUG
 //    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
@@ -169,7 +162,7 @@ namespace YTE
     mUpdateRequired = true;
   }
 
-  void VkLightManager::SetLights(bool aOnOrOff)
+  void DX12LightManager::SetLights(bool aOnOrOff)
   {
     mLightData.mActive = aOnOrOff ? 10.0f : 0.0f;
     mUpdateRequired = true;

@@ -1,63 +1,58 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 #define YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 
-#include "YTE/Graphics/DirectX12/DX12Drawers/VkRenderTarget.hpp"
+#include "YTE/Graphics/DirectX12/Drawers/DX12RenderTarget.hpp"
 
 namespace YTE
 {
-  class VkRTGameForwardDrawer : public VkRenderTarget
+  class DX12RTGameForwardDrawer : public DX12RenderTarget
   {
   public:
-    YTEDeclareType(VkRTGameForwardDrawer);
+    YTEDeclareType(DX12RTGameForwardDrawer);
 
-    VkRTGameForwardDrawer(Dx12RenderedSurface *aSurface,
+    DX12RTGameForwardDrawer(Dx12RenderedSurface *aSurface,
                           vk::Format aColorFormat,
                           vk::Format aDepthFormat,
                           std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                          ViewData* aView,
+                          DX12ViewData* aView,
                           DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
-    virtual ~VkRTGameForwardDrawer() override;
+    virtual ~DX12RTGameForwardDrawer() override;
 
-    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes) override;
+    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes) override;
     void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
-                std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
+                std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes);
 
 
     struct DrawData
     {
-      DrawData(std::shared_ptr<vkhlf::Pipeline> &aPipeline,
-               std::shared_ptr<vkhlf::Buffer> &aVertexBuffer,
-               std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
-               std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-               std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
+      DrawData(//std::shared_ptr<vkhlf::Pipeline> &aPipeline,
+               //std::shared_ptr<vkhlf::Buffer> &aVertexBuffer,
+               //std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
+               //std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+               //std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
                glm::mat4 &aModelMatrix,
                u32 aIndexCount,
                float aLineWidth)
-        : mPipeline{ &aPipeline}
-        , mVertexBuffer{ &aVertexBuffer}
-        , mIndexBuffer{ &aIndexBuffer}
-        , mPipelineLayout{ &aPipelineLayout}
-        , mDescriptorSet{ &aDescriptorSet }
-        , mModelMatrix{ &aModelMatrix }
+        //: mPipeline{ &aPipeline}
+        //, mVertexBuffer{ &aVertexBuffer}
+        //, mIndexBuffer{ &aIndexBuffer}
+        //, mPipelineLayout{ &aPipelineLayout}
+        //, mDescriptorSet{ &aDescriptorSet }
+        : mModelMatrix{ &aModelMatrix }
         , mIndexCount{aIndexCount}
         , mLineWidth(aLineWidth)
       {
 
       }
 
-      std::shared_ptr<vkhlf::Pipeline> *mPipeline;
-      std::shared_ptr<vkhlf::Buffer> *mVertexBuffer;
-      std::shared_ptr<vkhlf::Buffer> *mIndexBuffer;
-      std::shared_ptr<vkhlf::PipelineLayout> *mPipelineLayout;
-      std::shared_ptr<vkhlf::DescriptorSet> *mDescriptorSet;
+      //std::shared_ptr<vkhlf::Pipeline> *mPipeline;
+      //std::shared_ptr<vkhlf::Buffer> *mVertexBuffer;
+      //std::shared_ptr<vkhlf::Buffer> *mIndexBuffer;
+      //std::shared_ptr<vkhlf::PipelineLayout> *mPipelineLayout;
+      //std::shared_ptr<vkhlf::DescriptorSet> *mDescriptorSet;
       glm::mat4 *mModelMatrix;
       u32 mIndexCount;
       float mLineWidth;
