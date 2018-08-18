@@ -6,6 +6,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
 #include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 #include "YTE/Graphics/DirectX12/DX12ShaderDescriptions.hpp"
 #include "YTE/Graphics/DirectX12/DX12CommandBufferBuffer.hpp"
@@ -16,17 +17,22 @@ namespace YTE
   class DX12RenderTarget : public EventHandler
   {
   public:
-    struct RenderTargetData
+    struct DX12RenderTargetData
     {
-      struct Attachment
+      struct DX12Attachment
       {
-        Attachment() : mImageView(nullptr), mImage(nullptr) {}
-        Attachment(std::shared_ptr<vkhlf::Image> aImage, std::shared_ptr<vkhlf::ImageView> aImageView)
-          : mImageView(aImageView)
-          , mImage(aImage)
+        DX12Attachment() 
+          //: mImageView(nullptr)
+          //, mImage(nullptr) 
         {
-
         }
+
+        //DX12Attachment(std::shared_ptr<vkhlf::Image> aImage, std::shared_ptr<vkhlf::ImageView> aImageView)
+        //  : mImageView(aImageView)
+        //  , mImage(aImage)
+        //{
+        //
+        //}
 
         //std::shared_ptr<vkhlf::ImageView> mImageView;
         //std::shared_ptr<vkhlf::Image> mImage;
@@ -34,14 +40,14 @@ namespace YTE
 
       //std::shared_ptr<vkhlf::Framebuffer> mFrameBuffer;
       //std::shared_ptr<vkhlf::Sampler> mSampler;
-      vk::Extent2D mExtent;
-      std::vector<Attachment> mAttachments;
+      //vk::Extent2D mExtent;
+      std::vector<DX12Attachment> mAttachments;
       std::vector<size_t> mColorAttachments;
       std::string mName;
       DrawerTypeCombination mCombinationType;
       float mOrder;
 
-      bool operator<(RenderTargetData& rhs)
+      bool operator<(DX12RenderTargetData& rhs)
       {
         if (mOrder < rhs.mOrder)
         {
@@ -72,12 +78,11 @@ namespace YTE
     virtual ~DX12RenderTarget();
 
     // for sorting
-    //bool operator() (int i, int j);
     bool operator<(DX12RenderTarget& rhs);
 
     virtual void Initialize();
 
-    virtual void Resize(vk::Extent2D& aExtent);
+    virtual void Resize(/*vk::Extent2D& aExtent*/);
     virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes);
 
     virtual void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
@@ -91,7 +96,7 @@ namespace YTE
     //  return mRenderPass;
     //}
 
-    RenderTargetData* GetRenderTargetData()
+    DX12RenderTargetData* GetRenderTargetData()
     {
       return &mData;
     }
@@ -123,13 +128,13 @@ namespace YTE
     Dx12RenderedSurface *mSurface;
     DX12ViewData *mParentViewData;
 
-    RenderTargetData mData;
+    DX12RenderTargetData mData;
     //std::shared_ptr<vkhlf::Surface> mVulkanSurface;
     //std::shared_ptr<vkhlf::RenderPass> mRenderPass;
     std::unique_ptr<Dx12CBOB<3, true>> mCBOB;
-    std::unique_ptr<VkCBEB<3 >> mCBEB;
-    vk::Format mColorFormat;
-    vk::Format mDepthFormat;
+    std::unique_ptr<DX12CBEB<3>> mCBEB;
+    //vk::Format mColorFormat;
+    //vk::Format mDepthFormat;
     bool mSignedUpForUpdate;
   };
 }

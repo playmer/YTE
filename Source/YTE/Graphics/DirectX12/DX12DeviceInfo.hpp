@@ -81,13 +81,13 @@ namespace YTE
   //
   //
   //
-  //namespace DX12AllocatorTypes
-  //{
-  //  extern const std::string Mesh;
-  //  extern const std::string Texture;
-  //  extern const std::string UniformBufferObject;
-  //  extern const std::string SpriteInstances;
-  //}
+  namespace DX12AllocatorTypes
+  {
+    extern const std::string Mesh;
+    extern const std::string Texture;
+    extern const std::string UniformBufferObject;
+    extern const std::string SpriteInstances;
+  }
 }
 
 #endif

@@ -19,51 +19,51 @@ namespace YTE
 
 
   DX12RenderToScreen::DX12RenderToScreen(Window *aWindow,
-                                     Dx12Renderer *aRenderer,
-                                     Dx12RenderedSurface *aSurface,
-                                     vk::Format aColorFormat,
-                                     vk::Format aDepthFormat,
-                                     std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                                     std::string aShaderSetName)
+                                         Dx12Renderer *aRenderer,
+                                         Dx12RenderedSurface *aSurface,
+                                         //vk::Format aColorFormat,
+                                         //vk::Format aDepthFormat,
+                                         //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
+                                         std::string aShaderSetName)
     : mWindow(aWindow)
     , mRenderer(aRenderer)
     , mSurface(aSurface)
-    , mColorFormat(aColorFormat)
-    , mDepthFormat(aDepthFormat)
-    , mVulkanSurface(aVulkanSurface)
+    //, mColorFormat(aColorFormat)
+    //, mDepthFormat(aDepthFormat)
+    //, mVulkanSurface(aVulkanSurface)
     , mShaderSetName(aShaderSetName)
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
-
-    mCBOB = std::make_unique<Dx12CBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
-
-    CreateRenderPass();
+    //mSurface->RegisterEvent<&DX12RenderToScreen::LoadToVulkan>(Events::DX12GraphicsDataUpdate, this);
+    //mSignedUpForUpdate = true;
+    //
+    //mCBOB = std::make_unique<Dx12CBOB<3, true>>(mSurface->GetCommandPool());
+    //mCBEB = std::make_unique<DX12CBEB<3>>(mSurface->GetDevice());
+    //
+    //CreateRenderPass();
   }
 
 
 
   DX12RenderToScreen::~DX12RenderToScreen()
   {
-    mFrameBufferSwapChain.reset();
-    mRenderPass.reset();
-    mScreenQuad.reset();
-    mScreenShader.reset();
+    //mFrameBufferSwapChain.reset();
+    //mRenderPass.reset();
+    //mScreenQuad.reset();
+    //mScreenShader.reset();
   }
 
 
-  void DX12RenderToScreen::Resize(vk::Extent2D& aExtent)
+  void DX12RenderToScreen::Resize(/*vk::Extent2D& aExtent*/)
   {
-    CreateSwapChain(aExtent);
+    CreateSwapChain(/*aExtent*/);
   }
 
   
 
-  bool RenderTargetSorter(DX12RenderTarget::RenderTargetData* a,
-                          DX12RenderTarget::RenderTargetData* b)
+  bool RenderTargetSorter(DX12RenderTarget::DX12RenderTargetData* a,
+                          DX12RenderTarget::DX12RenderTargetData* b)
   {
     if (a->mOrder < b->mOrder)
     {
@@ -103,7 +103,7 @@ namespace YTE
     mRenderTargetData.clear();
     for (int i = 0; i < aRTs.size(); ++i)
     {
-      DX12RenderTarget::RenderTargetData* v = aRTs[i]->GetRenderTargetData();
+      DX12RenderTarget::DX12RenderTargetData* v = aRTs[i]->GetRenderTargetData();
       mRenderTargetData.push_back(v);
     }
     std::sort(mRenderTargetData.begin(),
@@ -126,15 +126,15 @@ namespace YTE
 
   void DX12RenderToScreen::FrameUpdate()
   {
-    mFrameBufferSwapChain->acquireNextFrame();
+    //mFrameBufferSwapChain->acquireNextFrame();
   }
 
 
 
-  const vk::Extent2D& DX12RenderToScreen::GetExtent()
-  {
-    return mFrameBufferSwapChain->getExtent();
-  }
+  //const vk::Extent2D& DX12RenderToScreen::GetExtent()
+  //{
+  //  return mFrameBufferSwapChain->getExtent();
+  //}
 
 
 
@@ -145,173 +145,153 @@ namespace YTE
 
 
 
-  void DX12RenderToScreen::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::ExecuteSecondaryEvent(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO*/)
   {
-    auto& e = mCBEB->GetCurrentEvent();
-    aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
+    //auto& e = mCBEB->GetCurrentEvent();
+    //aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
   }
 
 
 
-  void DX12RenderToScreen::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::ExecuteCommands(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO*/)
   {
-    aCBO->executeCommands(mCBOB->GetCurrentCBO());
+    //aCBO->executeCommands(mCBOB->GetCurrentCBO());
+  }
+
+
+  void DX12RenderToScreen::RenderFull(/*const vk::Extent2D& aExtent*/)
+  {
+    //mCBOB->NextCommandBuffer();
+    //auto cbo = mCBOB->GetCurrentCBO();
+    //cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
+    //
+    //auto width = static_cast<float>(aExtent.width);
+    //auto height = static_cast<float>(aExtent.height);
+    //
+    //vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
+    //cbo->setViewport(0, viewport);
+    //cbo->setLineWidth(1.0f);
+    //
+    //vk::Rect2D scissor{ { 0, 0 }, aExtent };
+    //cbo->setScissor(0, scissor);
+    //
+    //Render(cbo);
+    //cbo->end();
   }
 
 
 
-  void DX12RenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  void DX12RenderToScreen::Render(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO*/)
   {
-    UnusedArguments(aCBO);
+    //mScreenShader->Bind(aCBO);
+    //mScreenQuad->Bind(aCBO);
+    //mScreenQuad->Render(aCBO);
   }
 
-
-
-  void DX12RenderToScreen::RenderFull(const vk::Extent2D& aExtent)
+  bool DX12RenderToScreen::PresentFrame(/*std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
+                                        std::shared_ptr<vkhlf::Semaphore>& aRenderCompleteSemaphore*/)
   {
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
-    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
-
-    auto width = static_cast<float>(aExtent.width);
-    auto height = static_cast<float>(aExtent.height);
-
-    vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
-    cbo->setViewport(0, viewport);
-    cbo->setLineWidth(1.0f);
-
-    vk::Rect2D scissor{ { 0, 0 }, aExtent };
-    cbo->setScissor(0, scissor);
-
-    RenderBegin(cbo);
-    Render(cbo);
-    RenderEnd(cbo);
-    cbo->end();
-  }
-
-
-
-  void DX12RenderToScreen::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    mScreenShader->Bind(aCBO);
-    mScreenQuad->Bind(aCBO);
-    mScreenQuad->Render(aCBO);
-  }
-
-
-
-  void DX12RenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-  }
-
-
-
-  bool DX12RenderToScreen::PresentFrame(std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
-                                      std::shared_ptr<vkhlf::Semaphore>& aRenderCompleteSemaphore)
-  {
-    try
-    {
-      mFrameBufferSwapChain->present(aGraphicsQueue, aRenderCompleteSemaphore);
-    }
-    catch (...)
-    {
-      return false;
-    }
-
+    //try
+    //{
+    //  mFrameBufferSwapChain->present(aGraphicsQueue, aRenderCompleteSemaphore);
+    //}
+    //catch (...)
+    //{
+    //  return false;
+    //}
+    //
     return true;
   }
 
 
 
-  void DX12RenderToScreen::CreateSwapChain(vk::Extent2D& aExtent)
+  void DX12RenderToScreen::CreateSwapChain(/*vk::Extent2D& aExtent*/)
   {
-    mWindow->SetExtent(aExtent.width, aExtent.height);
-
-    DebugObjection((0 > aExtent.width) || (0 > aExtent.height),
-                   "Resizing to a negative x or y direction is not possible");
-
-    // TODO (Josh): According to vkhlf, you have to do this little dance,
-    //              unsure why, should find out.
-    mFrameBufferSwapChain.reset();
-    mFrameBufferSwapChain = std::make_unique<vkhlf::FramebufferSwapchain>(mSurface->GetDevice(),
-                                                                          mVulkanSurface,
-                                                                          mColorFormat,
-                                                                          mDepthFormat,
-                                                                          mRenderPass);
-
-    DebugObjection(mFrameBufferSwapChain->getExtent() != aExtent,
-                   "Swap chain extent did not update with resize");
+    //mWindow->SetExtent(aExtent.width, aExtent.height);
+    //
+    //DebugObjection((0 > aExtent.width) || (0 > aExtent.height),
+    //               "Resizing to a negative x or y direction is not possible");
+    //
+    //// TODO (Josh): According to vkhlf, you have to do this little dance,
+    ////              unsure why, should find out.
+    //mFrameBufferSwapChain.reset();
+    //mFrameBufferSwapChain = std::make_unique<vkhlf::FramebufferSwapchain>(mSurface->GetDevice(),
+    //                                                                      mVulkanSurface,
+    //                                                                      mColorFormat,
+    //                                                                      mDepthFormat,
+    //                                                                      mRenderPass);
+    //
+    //DebugObjection(mFrameBufferSwapChain->getExtent() != aExtent,
+    //               "Swap chain extent did not update with resize");
   }
 
 
 
   void DX12RenderToScreen::CreateRenderPass()
   {
-    // Attachment Descriptions
-    vk::AttachmentDescription colorAttachment{ {},
-                                               mColorFormat,
-                                               vk::SampleCountFlagBits::e1,
-                                               //vk::AttachmentLoadOp::eLoad,
-                                               vk::AttachmentLoadOp::eClear,
-                                               vk::AttachmentStoreOp::eStore, // color
-                                               vk::AttachmentLoadOp::eDontCare,
-                                               vk::AttachmentStoreOp::eDontCare, // stencil
-                                               vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::ePresentSrcKHR };
-
-    vk::AttachmentDescription depthAttachment{ {},
-                                               mDepthFormat,
-                                               vk::SampleCountFlagBits::e1,
-                                               vk::AttachmentLoadOp::eClear,
-                                               vk::AttachmentStoreOp::eStore, // depth
-                                               vk::AttachmentLoadOp::eDontCare,
-                                               vk::AttachmentStoreOp::eDontCare, // stencil
-                                               vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::eDepthStencilAttachmentOptimal };
-
-    std::array<vk::AttachmentDescription, 2> attachmentDescriptions{ colorAttachment,
-                                                                     depthAttachment };
-
-    // Subpass Description
-    vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
-    vk::AttachmentReference depthReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
-
-    vk::SubpassDescription subpass{ {},
-                                    vk::PipelineBindPoint::eGraphics,
-                                    0,
-                                    nullptr,
-                                    1,
-                                    &colorReference,
-                                    nullptr,
-                                    &depthReference,
-                                    0,
-                                    nullptr };
-
-    std::array<vk::SubpassDependency, 2> subpassDependencies;
-
-    // Transition from final to initial (VK_SUBPASS_EXTERNAL refers to all commands executed outside of the actual renderpass)
-    subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependencies[0].dstSubpass = 0;
-    subpassDependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-    subpassDependencies[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-    subpassDependencies[0].srcAccessMask = vk::AccessFlagBits::eMemoryRead;
-    subpassDependencies[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
-                                           vk::AccessFlagBits::eColorAttachmentWrite;
-    subpassDependencies[0].dependencyFlags = vk::DependencyFlagBits::eByRegion;
-
-    // Transition from initial to final
-    subpassDependencies[1].srcSubpass = 0;
-    subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
-    subpassDependencies[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
-    subpassDependencies[1].dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
-    subpassDependencies[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
-                                           vk::AccessFlagBits::eColorAttachmentWrite;
-    subpassDependencies[1].dstAccessMask = vk::AccessFlagBits::eMemoryRead;
-    subpassDependencies[1].dependencyFlags = vk::DependencyFlagBits::eByRegion;
-
-    mRenderPass = mSurface->GetDevice()->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
-
+    //// DX12Attachment Descriptions
+    //vk::AttachmentDescription colorAttachment{ {},
+    //                                           mColorFormat,
+    //                                           vk::SampleCountFlagBits::e1,
+    //                                           //vk::AttachmentLoadOp::eLoad,
+    //                                           vk::AttachmentLoadOp::eClear,
+    //                                           vk::AttachmentStoreOp::eStore, // color
+    //                                           vk::AttachmentLoadOp::eDontCare,
+    //                                           vk::AttachmentStoreOp::eDontCare, // stencil
+    //                                           vk::ImageLayout::eUndefined,
+    //                                           vk::ImageLayout::ePresentSrcKHR };
+    //
+    //vk::AttachmentDescription depthAttachment{ {},
+    //                                           mDepthFormat,
+    //                                           vk::SampleCountFlagBits::e1,
+    //                                           vk::AttachmentLoadOp::eClear,
+    //                                           vk::AttachmentStoreOp::eStore, // depth
+    //                                           vk::AttachmentLoadOp::eDontCare,
+    //                                           vk::AttachmentStoreOp::eDontCare, // stencil
+    //                                           vk::ImageLayout::eUndefined,
+    //                                           vk::ImageLayout::eDepthStencilAttachmentOptimal };
+    //
+    //std::array<vk::AttachmentDescription, 2> attachmentDescriptions{ colorAttachment,
+    //                                                                 depthAttachment };
+    //
+    //// Subpass Description
+    //vk::AttachmentReference colorReference(0, vk::ImageLayout::eColorAttachmentOptimal);
+    //vk::AttachmentReference depthReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
+    //
+    //vk::SubpassDescription subpass{ {},
+    //                                vk::PipelineBindPoint::eGraphics,
+    //                                0,
+    //                                nullptr,
+    //                                1,
+    //                                &colorReference,
+    //                                nullptr,
+    //                                &depthReference,
+    //                                0,
+    //                                nullptr };
+    //
+    //std::array<vk::SubpassDependency, 2> subpassDependencies;
+    //
+    //// Transition from final to initial (VK_SUBPASS_EXTERNAL refers to all commands executed outside of the actual renderpass)
+    //subpassDependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+    //subpassDependencies[0].dstSubpass = 0;
+    //subpassDependencies[0].srcStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+    //subpassDependencies[0].dstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    //subpassDependencies[0].srcAccessMask = vk::AccessFlagBits::eMemoryRead;
+    //subpassDependencies[0].dstAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
+    //                                       vk::AccessFlagBits::eColorAttachmentWrite;
+    //subpassDependencies[0].dependencyFlags = vk::DependencyFlagBits::eByRegion;
+    //
+    //// Transition from initial to final
+    //subpassDependencies[1].srcSubpass = 0;
+    //subpassDependencies[1].dstSubpass = VK_SUBPASS_EXTERNAL;
+    //subpassDependencies[1].srcStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
+    //subpassDependencies[1].dstStageMask = vk::PipelineStageFlagBits::eBottomOfPipe;
+    //subpassDependencies[1].srcAccessMask = vk::AccessFlagBits::eColorAttachmentRead |
+    //                                       vk::AccessFlagBits::eColorAttachmentWrite;
+    //subpassDependencies[1].dstAccessMask = vk::AccessFlagBits::eMemoryRead;
+    //subpassDependencies[1].dependencyFlags = vk::DependencyFlagBits::eByRegion;
+    //
+    //mRenderPass = mSurface->GetDevice()->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
   }
 
 
@@ -457,23 +437,26 @@ namespace YTE
     size_t indexBufferSize = mIndices.size() * sizeof(u32);
 
 
-    // create
-    auto device = mParent->mSurface->GetDevice();
-    auto allocator = mParent->mSurface->GetAllocator(AllocatorTypes::Mesh);
+    UnusedArguments(vertexBufferSize);
+    UnusedArguments(indexBufferSize);
 
-    mVertexBuffer = device->createBuffer(vertexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
-
-    mIndexBuffer =  device->createBuffer(indexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
+    //// create
+    //auto device = mParent->mSurface->GetDevice();
+    //auto allocator = mParent->mSurface->GetAllocator(DX12AllocatorTypes::Mesh);
+    //
+    //mVertexBuffer = device->createBuffer(vertexBufferSize,
+    //                                     vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, 
+    //                                     vk::SharingMode::eExclusive, 
+    //                                     nullptr,
+    //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                     allocator);
+    //
+    //mIndexBuffer =  device->createBuffer(indexBufferSize,
+    //                                     vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, 
+    //                                     vk::SharingMode::eExclusive, 
+    //                                     nullptr,
+    //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                     allocator);
 
     Resize();
   }
@@ -482,169 +465,159 @@ namespace YTE
 
   void DX12RenderToScreen::ScreenQuad::Resize()
   {
-    auto device = mParent->mSurface->GetDevice();
-    size_t samplers{ 0 };
-    std::vector<std::string> samplerTypes;
-    mSamplers.clear();
-
-    for (int i = 0; i < mParent->mRenderTargetData.size(); ++i)
-    {
-      std::pair<std::string, DrawerTypeCombination> pair;
-      pair.first = mParent->mRenderTargetData[i]->mName;
-      pair.second = mParent->mRenderTargetData[i]->mCombinationType;
-      samplerTypes.push_back(pair.first);
-      mSamplers.push_back(pair);
-      samplers++;
-    }
-
-    std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
-    //u32 uniformBuffers{ 0 };
-    u32 binding{ 0 };
-    Dx12ShaderDescriptions descriptions;
-
-    // view buffer
-    //  dslbs.emplace_back(binding, vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, nullptr);
-    //  descriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
-    //  ++uniformBuffers;
-
-    for (size_t i = 0; i < samplers; ++i)
-    {
-      dslbs.emplace_back(binding,
-                         vk::DescriptorType::eCombinedImageSampler,
-                         vk::ShaderStageFlagBits::eFragment,
-                         nullptr);
-      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding++));
-      descriptions.AddSampler(samplerTypes[i]);
-    }
-
-
-    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec3 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
-
-    std::string defines;
-
-    std::vector<vk::DescriptorPoolSize> descriptorTypes;
-    //descriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
-
-    if (0 != samplers)
-    {
-      descriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(samplers));
-    }
-
-    mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
-
-    auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
-
-    if (descriptorTypes.size() == 0)
-    {
-      return;
-    }
-
-    auto pool = device->createDescriptorPool({}, 1, descriptorTypes);
-
-    mDescriptorSet = device->allocateDescriptorSet(pool, mDescriptorSetLayout);
-
-    std::vector<vkhlf::WriteDescriptorSet> wdss;
-
-    constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
-    auto &ds = mDescriptorSet;
-
-    // We must reset binding to 0, as the previous value was for setting up the layout binding 
-    // and we need a fresh 0ing for sake of getting our bindings accurate. 
-    binding = 0;
-
-    // add uniform buffers
-    // view buffer
-    //vkhlf::DescriptorBufferInfo uboView{mParent->mSurface->GetUBOViewBuffer(View), 0, sizeof(UBOView)};
-    // wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
-
-
-
-    // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](size_t aAttachmentIndex,
-                                        DX12RenderTarget::RenderTargetData *aData, 
-                                        vkhlf::DescriptorImageInfo &aImageInfo)
-    {
-      constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
-
-      if (nullptr == aData)
-      {
-        return;
-      }
-
-      aImageInfo.sampler = aData->mSampler;
-      aImageInfo.imageView = aData->mAttachments[aAttachmentIndex].mImageView;
-      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
-    };
-
-    for (u32 i = 0; i < mParent->mRenderTargetData.size(); ++i)
-    {
-      auto &data = mParent->mRenderTargetData[i];
-      for (size_t k = 0; k < data->mColorAttachments.size(); ++k)
-      {
-        vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
-        addTS(data->mColorAttachments[k], data, dTexInfo);
-      }
-    }
-
-    device->updateDescriptorSets(wdss, nullptr);
-
-
-    mShaderData.mDefines = defines;
-    mShaderData.mPipelineLayout = pipelineLayout;
-    mShaderData.mDescriptions = descriptions;
+    //auto device = mParent->mSurface->GetDevice();
+    //size_t samplers{ 0 };
+    //std::vector<std::string> samplerTypes;
+    //mSamplers.clear();
+    //
+    //for (int i = 0; i < mParent->mRenderTargetData.size(); ++i)
+    //{
+    //  std::pair<std::string, DrawerTypeCombination> pair;
+    //  pair.first = mParent->mRenderTargetData[i]->mName;
+    //  pair.second = mParent->mRenderTargetData[i]->mCombinationType;
+    //  samplerTypes.push_back(pair.first);
+    //  mSamplers.push_back(pair);
+    //  samplers++;
+    //}
+    //
+    //std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
+    //u32 binding{ 0 };
+    //Dx12ShaderDescriptions descriptions;
+    //
+    //for (size_t i = 0; i < samplers; ++i)
+    //{
+    //  dslbs.emplace_back(binding,
+    //                     vk::DescriptorType::eCombinedImageSampler,
+    //                     vk::ShaderStageFlagBits::eFragment,
+    //                     nullptr);
+    //  descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding++));
+    //  descriptions.AddSampler(samplerTypes[i]);
+    //}
+    //
+    //
+    //descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
+    //descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec3 mColor;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
+    //descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    //descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    //descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    //descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
+    //
+    //std::string defines;
+    //
+    //std::vector<vk::DescriptorPoolSize> descriptorTypes;
+    //
+    //if (0 != samplers)
+    //{
+    //  descriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(samplers));
+    //}
+    //
+    //mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
+    //
+    //auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
+    //
+    //if (descriptorTypes.size() == 0)
+    //{
+    //  return;
+    //}
+    //
+    //auto pool = device->createDescriptorPool({}, 1, descriptorTypes);
+    //
+    //mDescriptorSet = device->allocateDescriptorSet(pool, mDescriptorSetLayout);
+    //
+    //std::vector<vkhlf::WriteDescriptorSet> wdss;
+    //
+    //constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
+    //auto &ds = mDescriptorSet;
+    //
+    //// We must reset binding to 0, as the previous value was for setting up the layout binding 
+    //// and we need a fresh 0ing for sake of getting our bindings accurate. 
+    //binding = 0;
+    //
+    //// add uniform buffers
+    //// view buffer
+    //
+    //// Add Texture Samplers
+    //auto addTS = [&wdss, &binding, &ds](size_t aAttachmentIndex,
+    //                                    DX12RenderTarget::DX12RenderTargetData *aData, 
+    //                                    vkhlf::DescriptorImageInfo &aImageInfo)
+    //{
+    //  constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
+    //
+    //  if (nullptr == aData)
+    //  {
+    //    return;
+    //  }
+    //
+    //  aImageInfo.sampler = aData->mSampler;
+    //  aImageInfo.imageView = aData->mAttachments[aAttachmentIndex].mImageView;
+    //  wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
+    //};
+    //
+    //for (u32 i = 0; i < mParent->mRenderTargetData.size(); ++i)
+    //{
+    //  auto &data = mParent->mRenderTargetData[i];
+    //  for (size_t k = 0; k < data->mColorAttachments.size(); ++k)
+    //  {
+    //    vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
+    //    addTS(data->mColorAttachments[k], data, dTexInfo);
+    //  }
+    //}
+    //
+    //device->updateDescriptorSets(wdss, nullptr);
+    //
+    //
+    //mShaderData.mDefines = defines;
+    //mShaderData.mPipelineLayout = pipelineLayout;
+    //mShaderData.mDescriptions = descriptions;
   }
 
 
 
   void DX12RenderToScreen::ScreenQuad::Destroy()
   {
-    mVertexBuffer.reset();
-    mIndexBuffer.reset();
-    mDescriptorSetLayout.reset();
-    mDescriptorSet.reset();
-    mVertices.clear();
-    mIndices.clear();
-    mShaderData.mPipelineLayout.reset();
+    //mVertexBuffer.reset();
+    //mIndexBuffer.reset();
+    //mDescriptorSetLayout.reset();
+    //mDescriptorSet.reset();
+    //mVertices.clear();
+    //mIndices.clear();
+    //mShaderData.mPipelineLayout.reset();
   }
 
 
 
   void DX12RenderToScreen::ScreenQuad::LoadToVulkan(DX12GraphicsDataUpdate *aEvent)
   {
-    mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
-    mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
+    UnusedArguments(aEvent);
+    //mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
+    //mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
   }
 
 
 
-  void DX12RenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenQuad::Bind(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/)
   {
-    aCBO->bindVertexBuffer(0, mVertexBuffer, 0);
-    aCBO->bindIndexBuffer(mIndexBuffer, 0, vk::IndexType::eUint32);
-
-    aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                             mShaderData.mPipelineLayout,
-                             0,
-                             mDescriptorSet,
-                             nullptr);
+    //aCBO->bindVertexBuffer(0, mVertexBuffer, 0);
+    //aCBO->bindIndexBuffer(mIndexBuffer, 0, vk::IndexType::eUint32);
+    //
+    //aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+    //                         mShaderData.mPipelineLayout,
+    //                         0,
+    //                         mDescriptorSet,
+    //                         nullptr);
   }
 
 
 
-  void DX12RenderToScreen::ScreenQuad::Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenQuad::Render(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/)
   {
-    aCBO->drawIndexed(mIndexCount, 1, 0, 0, 0);
+    //aCBO->drawIndexed(mIndexCount, 1, 0, 0, 0);
   }
 
 
@@ -681,155 +654,158 @@ namespace YTE
 
   void DX12RenderToScreen::ScreenShader::Create(std::string& aShaderSetName, bool aReload)
   {
-    auto modelData = mSibling->GetShaderData();
+    UnusedArguments(aShaderSetName);
+    UnusedArguments(aReload);
 
-    auto device = mParent->mSurface->GetDevice();
-
-    std::string vertex = aShaderSetName + ".vert";
-    std::string fragment = aShaderSetName + ".frag";
-
-    auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
-
-    if (false == std::filesystem::exists(vertexFile))
-    {
-      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
-      engine->Log(LogType::Information, fmt::format("Could not find the vertex file: {}", vertexFile));
-      return;
-    }
-
-    std::string fragmentFile = GenerateFragmentShader();
-
-    auto lines = modelData.mDescriptions.GetLines();
-    auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
-    auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, true);
-
-    if (false == vertexData.mValid || false == fragmentData.mValid)
-    {
-      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
-
-      auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}",
-                             vertex,
-                             vertexData.mReason,
-                             //fragmentFile,
-                             "Generated Fragment Shader",
-                             fragmentData.mReason);
-
-      //std::cout << str;
-      if (aReload)
-      {
-        engine->Log(LogType::Error, fmt::format(
-          "\t-> {} Failed to Reload!\n############################################################\n",
-          aShaderSetName));
-      }
-      else 
-      {
-        engine->Log(LogType::Error, fmt::format(
-          "Shader: {} Failed to Load!\n############################################################\n",
-          aShaderSetName));
-      }
-
-
-      engine->Log(LogType::Information, fmt::format(
-        "Generated Fragement Shader : \n{}\n------------------------------------------\n",
-        fragmentFile));
-
-      engine->Log(LogType::Information, fmt::format(
-        "Errors Follow:\n{}\n############################################################\n",
-        str));
-
-      DebugObjection(true,
-                     fmt::format("Shader {} failed to compile and had no previously compiled shader to use.\n"
-                                 "Compilation Message:\n"
-                                 "{}",
-                                 aShaderSetName, 
-                                 str).c_str());
-      return;
-    }
-
-    auto vertexModule = device->createShaderModule(vertexData.mData);
-    auto fragmentModule = device->createShaderModule(fragmentData.mData);
-
-    // Initialize Pipeline
-    std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
-    
-    vkhlf::PipelineShaderStageCreateInfo vertexStage(vk::ShaderStageFlagBits::eVertex, vertexModule, "main");
-    vkhlf::PipelineShaderStageCreateInfo fragmentStage(vk::ShaderStageFlagBits::eFragment, fragmentModule, "main");
-    
-    vkhlf::PipelineVertexInputStateCreateInfo vertexInput(modelData.mDescriptions.Bindings(),
-                                                          modelData.mDescriptions.Attributes());
-
-    vk::PipelineInputAssemblyStateCreateInfo assembly({}, vk::PrimitiveTopology::eTriangleList, VK_FALSE);
-
-    vkhlf::PipelineViewportStateCreateInfo viewport({ {} }, { {} });
-
-    vk::PipelineRasterizationStateCreateInfo rasterization({},
-                                                           false,
-                                                           false,
-                                                           vk::PolygonMode::eFill,
-                                                           vk::CullModeFlagBits::eBack,
-                                                           vk::FrontFace::eCounterClockwise, 
-                                                           false, 
-                                                           0.0f, 
-                                                           0.0f, 
-                                                           0.0f, 
-                                                           1.0f);
-
-    vkhlf::PipelineMultisampleStateCreateInfo multiSample(vk::SampleCountFlagBits::e1, false, 0.0f, nullptr, false, false);
-
-    vk::StencilOpState stencilOpState(vk::StencilOp::eKeep, vk::StencilOp::eKeep, vk::StencilOp::eKeep, vk::CompareOp::eAlways, 0, 0, 0);
-
-    vk::PipelineDepthStencilStateCreateInfo enableDepthStencil({},
-                                                               true,
-                                                               true,
-                                                               vk::CompareOp::eLessOrEqual,
-                                                               false,
-                                                               false, 
-                                                               stencilOpState,
-                                                               stencilOpState,
-                                                               0.0f, 
-                                                               0.0f);
-
-    vk::PipelineColorBlendAttachmentState noColorBlendAttachment(false,                                 // enable
-                                                                 vk::BlendFactor::eSrcColor,            // SrcColorBlendFactor
-                                                                 vk::BlendFactor::eOne,                 // DstColorBlendFactor
-                                                                 vk::BlendOp::eAdd,                     // ColorBlendOp
-                                                                 vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
-                                                                 vk::BlendFactor::eOneMinusSrcAlpha,    // DstAlphaBlendFactor
-                                                                 vk::BlendOp::eAdd,                     // AlphaBlendOp
-                                                                 vk::ColorComponentFlagBits::eR |       // ColorWriteMask
-                                                                 vk::ColorComponentFlagBits::eG |
-                                                                 vk::ColorComponentFlagBits::eB |
-                                                                 vk::ColorComponentFlagBits::eA);
-
-    vkhlf::PipelineColorBlendStateCreateInfo noColorBlend(false,
-                                                          vk::LogicOp::eNoOp,
-                                                          noColorBlendAttachment,
-                                                          { 1.0f, 1.0f, 1.0f, 1.0f });
-
-    vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
-                                                    vk::DynamicState::eScissor });
-
-    mShader = device->createGraphicsPipeline(pipelineCache,
-                                             {},
-                                             { vertexStage, fragmentStage },
-                                             vertexInput,
-                                             assembly,
-                                             nullptr,
-                                             viewport,
-                                             rasterization,
-                                             multiSample,
-                                             enableDepthStencil,
-                                             noColorBlend,
-                                             dynamic,
-                                             modelData.mPipelineLayout,
-                                             mParent->GetRenderPass());
+    //auto modelData = mSibling->GetShaderData();
+    //
+    //auto device = mParent->mSurface->GetDevice();
+    //
+    //std::string vertex = aShaderSetName + ".vert";
+    //std::string fragment = aShaderSetName + ".frag";
+    //
+    //auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
+    //
+    //if (false == std::filesystem::exists(vertexFile))
+    //{
+    //  auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+    //  engine->Log(LogType::Information, fmt::format("Could not find the vertex file: {}", vertexFile));
+    //  return;
+    //}
+    //
+    //std::string fragmentFile = GenerateFragmentShader();
+    //
+    //auto lines = modelData.mDescriptions.GetLines();
+    //auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
+    //auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, true);
+    //
+    //if (false == vertexData.mValid || false == fragmentData.mValid)
+    //{
+    //  auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+    //
+    //  auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}",
+    //                         vertex,
+    //                         vertexData.mReason,
+    //                         //fragmentFile,
+    //                         "Generated Fragment Shader",
+    //                         fragmentData.mReason);
+    //
+    //  //std::cout << str;
+    //  if (aReload)
+    //  {
+    //    engine->Log(LogType::Error, fmt::format(
+    //      "\t-> {} Failed to Reload!\n############################################################\n",
+    //      aShaderSetName));
+    //  }
+    //  else 
+    //  {
+    //    engine->Log(LogType::Error, fmt::format(
+    //      "Shader: {} Failed to Load!\n############################################################\n",
+    //      aShaderSetName));
+    //  }
+    //
+    //
+    //  engine->Log(LogType::Information, fmt::format(
+    //    "Generated Fragement Shader : \n{}\n------------------------------------------\n",
+    //    fragmentFile));
+    //
+    //  engine->Log(LogType::Information, fmt::format(
+    //    "Errors Follow:\n{}\n############################################################\n",
+    //    str));
+    //
+    //  DebugObjection(true,
+    //                 fmt::format("Shader {} failed to compile and had no previously compiled shader to use.\n"
+    //                             "Compilation Message:\n"
+    //                             "{}",
+    //                             aShaderSetName, 
+    //                             str).c_str());
+    //  return;
+    //}
+    //
+    //auto vertexModule = device->createShaderModule(vertexData.mData);
+    //auto fragmentModule = device->createShaderModule(fragmentData.mData);
+    //
+    //// Initialize Pipeline
+    //std::shared_ptr<vkhlf::PipelineCache> pipelineCache = device->createPipelineCache(0, nullptr);
+    //
+    //vkhlf::PipelineShaderStageCreateInfo vertexStage(vk::ShaderStageFlagBits::eVertex, vertexModule, "main");
+    //vkhlf::PipelineShaderStageCreateInfo fragmentStage(vk::ShaderStageFlagBits::eFragment, fragmentModule, "main");
+    //
+    //vkhlf::PipelineVertexInputStateCreateInfo vertexInput(modelData.mDescriptions.Bindings(),
+    //                                                      modelData.mDescriptions.Attributes());
+    //
+    //vk::PipelineInputAssemblyStateCreateInfo assembly({}, vk::PrimitiveTopology::eTriangleList, VK_FALSE);
+    //
+    //vkhlf::PipelineViewportStateCreateInfo viewport({ {} }, { {} });
+    //
+    //vk::PipelineRasterizationStateCreateInfo rasterization({},
+    //                                                       false,
+    //                                                       false,
+    //                                                       vk::PolygonMode::eFill,
+    //                                                       vk::CullModeFlagBits::eBack,
+    //                                                       vk::FrontFace::eCounterClockwise, 
+    //                                                       false, 
+    //                                                       0.0f, 
+    //                                                       0.0f, 
+    //                                                       0.0f, 
+    //                                                       1.0f);
+    //
+    //vkhlf::PipelineMultisampleStateCreateInfo multiSample(vk::SampleCountFlagBits::e1, false, 0.0f, nullptr, false, false);
+    //
+    //vk::StencilOpState stencilOpState(vk::StencilOp::eKeep, vk::StencilOp::eKeep, vk::StencilOp::eKeep, vk::CompareOp::eAlways, 0, 0, 0);
+    //
+    //vk::PipelineDepthStencilStateCreateInfo enableDepthStencil({},
+    //                                                           true,
+    //                                                           true,
+    //                                                           vk::CompareOp::eLessOrEqual,
+    //                                                           false,
+    //                                                           false, 
+    //                                                           stencilOpState,
+    //                                                           stencilOpState,
+    //                                                           0.0f, 
+    //                                                           0.0f);
+    //
+    //vk::PipelineColorBlendAttachmentState noColorBlendAttachment(false,                                 // enable
+    //                                                             vk::BlendFactor::eSrcColor,            // SrcColorBlendFactor
+    //                                                             vk::BlendFactor::eOne,                 // DstColorBlendFactor
+    //                                                             vk::BlendOp::eAdd,                     // ColorBlendOp
+    //                                                             vk::BlendFactor::eOne,                 // SrcAlphaBlendFactor
+    //                                                             vk::BlendFactor::eOneMinusSrcAlpha,    // DstAlphaBlendFactor
+    //                                                             vk::BlendOp::eAdd,                     // AlphaBlendOp
+    //                                                             vk::ColorComponentFlagBits::eR |       // ColorWriteMask
+    //                                                             vk::ColorComponentFlagBits::eG |
+    //                                                             vk::ColorComponentFlagBits::eB |
+    //                                                             vk::ColorComponentFlagBits::eA);
+    //
+    //vkhlf::PipelineColorBlendStateCreateInfo noColorBlend(false,
+    //                                                      vk::LogicOp::eNoOp,
+    //                                                      noColorBlendAttachment,
+    //                                                      { 1.0f, 1.0f, 1.0f, 1.0f });
+    //
+    //vkhlf::PipelineDynamicStateCreateInfo dynamic({ vk::DynamicState::eViewport,
+    //                                                vk::DynamicState::eScissor });
+    //
+    //mShader = device->createGraphicsPipeline(pipelineCache,
+    //                                         {},
+    //                                         { vertexStage, fragmentStage },
+    //                                         vertexInput,
+    //                                         assembly,
+    //                                         nullptr,
+    //                                         viewport,
+    //                                         rasterization,
+    //                                         multiSample,
+    //                                         enableDepthStencil,
+    //                                         noColorBlend,
+    //                                         dynamic,
+    //                                         modelData.mPipelineLayout,
+    //                                         mParent->GetRenderPass());
   }
 
 
 
   void DX12RenderToScreen::ScreenShader::Destroy()
   {
-    mShader.reset();
+    //mShader.reset();
   }
 
 
@@ -841,9 +817,9 @@ namespace YTE
 
 
 
-  void DX12RenderToScreen::ScreenShader::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
+  void DX12RenderToScreen::ScreenShader::Bind(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/)
   {
-    aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, mShader);
+    //aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics, mShader);
   }
 
 

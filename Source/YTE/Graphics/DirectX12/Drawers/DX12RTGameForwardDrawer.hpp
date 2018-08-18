@@ -3,6 +3,8 @@
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 #define YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
 #include "YTE/Graphics/DirectX12/Drawers/DX12RenderTarget.hpp"
 
 namespace YTE
@@ -13,16 +15,16 @@ namespace YTE
     YTEDeclareType(DX12RTGameForwardDrawer);
 
     DX12RTGameForwardDrawer(Dx12RenderedSurface *aSurface,
-                          vk::Format aColorFormat,
-                          vk::Format aDepthFormat,
-                          std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
-                          DX12ViewData* aView,
-                          DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
+                            //vk::Format aColorFormat,
+                            //vk::Format aDepthFormat,
+                            //std::shared_ptr<vkhlf::Surface>& aVulkanSurface,
+                            DX12ViewData* aView,
+                            DrawerTypeCombination aCombination = DrawerTypeCombination::DefaultCombination);
 
     virtual ~DX12RTGameForwardDrawer() override;
 
-    virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes) override;
-    void Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
+    void RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes) override;
+    void Render(/*std::shared_ptr<vkhlf::CommandBuffer>& aCBO,*/
                 std::unordered_map<std::string, std::unique_ptr<DX12Mesh>>& aMeshes);
 
 

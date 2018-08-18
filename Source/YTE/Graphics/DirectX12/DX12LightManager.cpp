@@ -13,69 +13,72 @@ namespace YTE
 
   DX12LightManager::DX12LightManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
-
-    mLightData.mActive = 0.0f; // false
-
-    mLights.reserve(YTE_Graphics_LightCount);
-
-    for (int i = 0; i < YTE_Graphics_LightCount; ++i)
-    {
-      mLightUse[i] = 0;
-    }
-
-    mUpdateRequired = true;
-    mLightData.mNumOfLights = 0;
+    //mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
+    //
+    //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
+    //
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
+    //                                              vk::BufferUsageFlagBits::eTransferDst |
+    //                                              vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                              vk::SharingMode::eExclusive,
+    //                                              nullptr,
+    //                                              vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                              allocator);
+    //
+    //mLightData.mActive = 0.0f; // false
+    //
+    //mLights.reserve(YTE_Graphics_LightCount);
+    //
+    //for (int i = 0; i < YTE_Graphics_LightCount; ++i)
+    //{
+    //  mLightUse[i] = 0;
+    //}
+    //
+    //mUpdateRequired = true;
+    //mLightData.mNumOfLights = 0;
   }
 
   void DX12LightManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
   {
-    mSurface = aSurface;
-    mGraphicsView = aView;
-    mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
-
-    mLights.reserve(YTE_Graphics_LightCount);
-
-    for (int i = 0; i < YTE_Graphics_LightCount; ++i)
-    {
-      mLightUse[i] = 0;
-    }
-
-    mUpdateRequired = true;
-    mLightData.mNumOfLights = 0;
-    mLightData.mActive = 0.0f; // false
+    UnusedArguments(aSurface);
+    UnusedArguments(aView);
+    //mSurface = aSurface;
+    //mGraphicsView = aView;
+    //mSurface->RegisterEvent<&DX12LightManager::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
+    //
+    //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
+    //
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
+    //                                              vk::BufferUsageFlagBits::eTransferDst |
+    //                                              vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                              vk::SharingMode::eExclusive,
+    //                                              nullptr,
+    //                                              vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                              allocator);
+    //
+    //mLights.reserve(YTE_Graphics_LightCount);
+    //
+    //for (int i = 0; i < YTE_Graphics_LightCount; ++i)
+    //{
+    //  mLightUse[i] = 0;
+    //}
+    //
+    //mUpdateRequired = true;
+    //mLightData.mNumOfLights = 0;
+    //mLightData.mActive = 0.0f; // false
   }
 
-  void DX12LightManager::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent)
+  void DX12LightManager::GraphicsDataUpdateEvent(DX12GraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
-
-    if (mUpdateRequired)
-    {
-      auto update = aEvent->mCBO;
-      mBuffer->update<UBOLightMan>(0, mLightData, update);
-      mUpdateRequired = false;
-    }
+    UnusedArguments(aEvent);
+    //SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
+    //
+    //if (mUpdateRequired)
+    //{
+    //  auto update = aEvent->mCBO;
+    //  //mBuffer->update<UBOLightMan>(0, mLightData, update);
+    //  mUpdateRequired = false;
+    //}
   }
 
   void DX12LightManager::AddLight(DX12InstantiatedLight *aLight)
@@ -150,14 +153,6 @@ namespace YTE
 
   void DX12LightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
   {
-//#ifdef _DEBUG
-//    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
-//    {
-//      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
     mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;
   }

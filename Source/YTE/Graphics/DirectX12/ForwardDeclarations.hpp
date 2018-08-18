@@ -3,6 +3,8 @@
 #ifndef YTE_Graphics_Vulkan_ForwardDeclarations_hpp
 #define YTE_Graphics_Vulkan_ForwardDeclarations_hpp
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+
 namespace YTE
 {
   class DX12GraphicsDataUpdate;
@@ -23,7 +25,6 @@ namespace YTE
   class DX12Texture;
   class DX12RenderToScreen;
   class DX12RenderTarget;
-  class DX12ViewChanged;
 }
 
 #endif

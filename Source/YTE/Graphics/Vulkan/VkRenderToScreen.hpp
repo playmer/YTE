@@ -53,11 +53,9 @@ namespace YTE
                       std::shared_ptr<vkhlf::Semaphore> &aRenderCompleteSemaphore);
 
     void RenderFull(const vk::Extent2D &aExtent);
-    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
     void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
-    void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+    void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
 
     void MoveToNextEvent();
     void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
@@ -127,7 +125,7 @@ namespace YTE
       ScreenQuad(VkRenderToScreen* aParent);
       ~ScreenQuad();
 
-      void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+      void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
 
       void Resize();
 
@@ -157,25 +155,20 @@ namespace YTE
       std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
       std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
       std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
-      //std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
       u32 mIndexCount;
       std::vector<std::pair<std::string, DrawerTypeCombination>> mSamplers;
     };
 
-
-
-
-
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     // Screen Quad Shader
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     class ScreenShader
     {
     public:
       ScreenShader(VkRenderToScreen* aParent, ScreenQuad *aSibling, std::string& aShaderSetName, bool aReload);
       ~ScreenShader();
 
-      void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+      void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
 
       void Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO);
 
@@ -188,10 +181,6 @@ namespace YTE
       VkRenderToScreen::ScreenQuad *mSibling;
 
       std::shared_ptr<vkhlf::Pipeline> mShader;
-      //std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
-      //VkShaderDescriptions mDescriptions;
-      //std::string mDefines;
-      //bool mCullBackFaces;
     };
   };
 }

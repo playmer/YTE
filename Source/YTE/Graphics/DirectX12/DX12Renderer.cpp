@@ -33,100 +33,101 @@ namespace YTE
     , mVulkanInternals(std::make_unique<Dx12Internals>())
     , mEngine(aEngine)
   {
-    auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
-
-    // vulkan is initialized, initialize the engine
-    auto& windows = aEngine->GetWindows();
-
-    auto instance = mVulkanInternals->GetInstance();
-
-
-    auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
-                                              0.0f};
-
-    // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
-    vk::PhysicalDeviceFeatures enabledFeatures;
-    enabledFeatures.setTextureCompressionBC(true);
-    enabledFeatures.setWideLines(true);
-    enabledFeatures.setFillModeNonSolid(true);
-    enabledFeatures.setSamplerAnisotropy(true);
-    
-    mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                                  nullptr,
-                                                                  { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                                  enabledFeatures);
-
-    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
-    mGraphicsDataUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mCommandPool);
-
-    mGraphicsQueue = mDevice->getQueue(family, 0);
-
-    mAllocators[AllocatorTypes::Mesh] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    // 4x 1024 texture size for rgba in this one
-    mAllocators[AllocatorTypes::Texture] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
-
-    mAllocators[AllocatorTypes::UniformBufferObject] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    //Range(std::next(windows.begin()), windows.end());
-
-    bool firstSet = false;
-    for (auto &[name, window] : windows)
-    {
-      if (window->mShouldBeRenderedTo)
-      {
-        // first window's surface is already got by Dx12Internals
-        if (false == firstSet)
-        {
-          mSurfaces.emplace(window.get(),
-                            std::make_unique<Dx12RenderedSurface>(window.get(),
-                                                                this,
-                                                                firstSurface)); 
-          firstSet = true;  // disable for the next window
-          continue;
-        }
-
-        // all other windows
-        auto surface = mVulkanInternals->CreateSurface(window.get());
-        mSurfaces.emplace(window.get(),
-                          std::make_unique<Dx12RenderedSurface>(window.get(),
-                                                              this,
-                                                              surface));
-      }
-    }
-
-    mEngine->RegisterEvent<&Dx12Renderer::FrameUpdate>(Events::FrameUpdate, this);
-    mEngine->RegisterEvent<&Dx12Renderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
-    mEngine->RegisterEvent<&Dx12Renderer::AnimationUpdate>(Events::AnimationUpdate, this);
-    mEngine->RegisterEvent<&Dx12Renderer::PresentFrame>(Events::PresentFrame, this);
+    //auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
+    //
+    //// vulkan is initialized, initialize the engine
+    //auto& windows = aEngine->GetWindows();
+    //
+    //auto instance = mVulkanInternals->GetInstance();
+    //
+    //
+    //auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
+    //vkhlf::DeviceQueueCreateInfo deviceCreate{family,
+    //                                          0.0f};
+    //
+    //// Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
+    //vk::PhysicalDeviceFeatures enabledFeatures;
+    //enabledFeatures.setTextureCompressionBC(true);
+    //enabledFeatures.setWideLines(true);
+    //enabledFeatures.setFillModeNonSolid(true);
+    //enabledFeatures.setSamplerAnisotropy(true);
+    //
+    //mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
+    //                                                              nullptr,
+    //                                                              { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+    //                                                              enabledFeatures);
+    //
+    //mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+    //                                          mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
+    //mGraphicsDataUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mCommandPool);
+    //
+    //mGraphicsQueue = mDevice->getQueue(family, 0);
+    //
+    //mAllocators[DX12AllocatorTypes::Mesh] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+    //
+    //// 4x 1024 texture size for rgba in this one
+    //mAllocators[DX12AllocatorTypes::Texture] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
+    //
+    //mAllocators[DX12AllocatorTypes::UniformBufferObject] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+    //
+    ////Range(std::next(windows.begin()), windows.end());
+    //
+    //bool firstSet = false;
+    //for (auto &[name, window] : windows)
+    //{
+    //  if (window->mShouldBeRenderedTo)
+    //  {
+    //    // first window's surface is already got by Dx12Internals
+    //    if (false == firstSet)
+    //    {
+    //      mSurfaces.emplace(window.get(),
+    //                        std::make_unique<Dx12RenderedSurface>(window.get(),
+    //                                                            this,
+    //                                                            firstSurface)); 
+    //      firstSet = true;  // disable for the next window
+    //      continue;
+    //    }
+    //
+    //    // all other windows
+    //    auto surface = mVulkanInternals->CreateSurface(window.get());
+    //    mSurfaces.emplace(window.get(),
+    //                      std::make_unique<Dx12RenderedSurface>(window.get(),
+    //                                                          this,
+    //                                                          surface));
+    //  }
+    //}
+    //
+    //mEngine->RegisterEvent<&Dx12Renderer::FrameUpdate>(Events::FrameUpdate, this);
+    //mEngine->RegisterEvent<&Dx12Renderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
+    //mEngine->RegisterEvent<&Dx12Renderer::AnimationUpdate>(Events::AnimationUpdate, this);
+    //mEngine->RegisterEvent<&Dx12Renderer::PresentFrame>(Events::PresentFrame, this);
   }
 
   Dx12Renderer::~Dx12Renderer()
   {
-    mSurfaces.clear();
-    mTextures.clear();
-    mMeshes.clear();
+    //mSurfaces.clear();
+    //mTextures.clear();
+    //mMeshes.clear();
   }
 
-  void Dx12Renderer::RegisterWindowForDraw(Window *aWindow)
+  void Dx12Renderer::RegisterWindowForDraw(Window* aWindow)
   {
-    DebugAssert(aWindow, "Cannot create a vk rendered surface for a null window");
-    if (aWindow && aWindow->mShouldBeRenderedTo)
-    {
-      auto surface = mVulkanInternals->CreateSurface(aWindow);
-      mSurfaces.emplace(aWindow,
-        std::make_unique<Dx12RenderedSurface>(aWindow,
-          this,
-          surface));
-    }
+    UnusedArguments(aWindow);
+    //DebugAssert(aWindow, "Cannot create a vk rendered surface for a null window");
+    //if (aWindow && aWindow->mShouldBeRenderedTo)
+    //{
+    //  auto surface = mVulkanInternals->CreateSurface(aWindow);
+    //  mSurfaces.emplace(aWindow,
+    //    std::make_unique<Dx12RenderedSurface>(aWindow,
+    //      this,
+    //      surface));
+    //}
   }
 
-  void Dx12Renderer::DeregisterWindowFromDraw(Window * aWindow)
+  void Dx12Renderer::DeregisterWindowFromDraw(Window* aWindow)
   {
     mSurfaces.erase(aWindow);
   }
@@ -158,125 +159,137 @@ namespace YTE
   }
 
   // Textures
-  DX12Texture* Dx12Renderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  DX12Texture* Dx12Renderer::CreateTexture(std::string &aFilename/*, vk::ImageViewType aType*/)
   {
-    auto textureIt = mTextures.find(aFilename);
-    DX12Texture *texturePtr{ nullptr };
-
-    if (textureIt == mTextures.end())
-    {
-      auto baseTexture = GetBaseTexture(aFilename);
-
-      auto texture = std::make_unique<DX12Texture>(baseTexture,
-                                                 this,
-                                                 aType);
-
-      texturePtr = texture.get();
-      mTextures[aFilename] = std::move(texture);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      texturePtr = textureIt->second.get();
-    }
-
-    return texturePtr;
+    UnusedArguments(aFilename);
+    //auto textureIt = mTextures.find(aFilename);
+    //DX12Texture *texturePtr{ nullptr };
+    //
+    //if (textureIt == mTextures.end())
+    //{
+    //  auto baseTexture = GetBaseTexture(aFilename);
+    //
+    //  auto texture = std::make_unique<DX12Texture>(baseTexture,
+    //                                             this,
+    //                                             aType);
+    //
+    //  texturePtr = texture.get();
+    //  mTextures[aFilename] = std::move(texture);
+    //  mDataUpdateRequired = true;
+    //}
+    //else
+    //{
+    //  texturePtr = textureIt->second.get();
+    //}
+    //
+    //return texturePtr;
+    return nullptr;
   }
 
 
   DX12Texture* Dx12Renderer::CreateTexture(std::string aName,
-                                       std::vector<u8> aData,
-                                       TextureLayout aType,
-                                       u32 aWidth,
-                                       u32 aHeight,
-                                       u32 aMipLevels,
-                                       u32 aLayerCount,
-                                       vk::ImageViewType aVulkanType)
+                                           std::vector<u8> aData,
+                                           TextureLayout aType,
+                                           u32 aWidth,
+                                           u32 aHeight,
+                                           u32 aMipLevels,
+                                           u32 aLayerCount/*,
+                                           vk::ImageViewType aVulkanType*/)
   {
-    auto textureIt = mTextures.find(aName);
-    DX12Texture *texturePtr{ nullptr };
-
-    if (textureIt == mTextures.end())
-    {
-      auto baseTexture = std::make_unique<Texture>(aData, 
-                                                   aType, 
-                                                   aWidth, 
-                                                   aHeight, 
-                                                   aMipLevels, 
-                                                   aLayerCount);
-
-      mBaseTexturesMutex.lock();
-
-      auto it = mBaseTextures.find(aName);
-
-      if (it != mBaseTextures.end())
-      {
-        mBaseTextures.erase(it);
-      }
-
-      auto ret = mBaseTextures.emplace(aName, std::move(baseTexture));
-      auto baseTexturePtr = ret.first->second.get();
-      mBaseTexturesMutex.unlock();
-
-
-      auto texture = std::make_unique<DX12Texture>(baseTexturePtr,
-                                                 this,
-                                                 aVulkanType);
-
-      texturePtr = texture.get();
-      mTextures[aName] = std::move(texture);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      texturePtr = textureIt->second.get();
-    }
-
-    return texturePtr;
+    UnusedArguments(aName);
+    UnusedArguments(aData);
+    UnusedArguments(aType);
+    UnusedArguments(aWidth);
+    UnusedArguments(aHeight);
+    UnusedArguments(aMipLevels);
+    UnusedArguments(aLayerCount);
+    //auto textureIt = mTextures.find(aName);
+    //DX12Texture *texturePtr{ nullptr };
+    //
+    //if (textureIt == mTextures.end())
+    //{
+    //  auto baseTexture = std::make_unique<Texture>(aData, 
+    //                                               aType, 
+    //                                               aWidth, 
+    //                                               aHeight, 
+    //                                               aMipLevels, 
+    //                                               aLayerCount);
+    //
+    //  mBaseTexturesMutex.lock();
+    //
+    //  auto it = mBaseTextures.find(aName);
+    //
+    //  if (it != mBaseTextures.end())
+    //  {
+    //    mBaseTextures.erase(it);
+    //  }
+    //
+    //  auto ret = mBaseTextures.emplace(aName, std::move(baseTexture));
+    //  auto baseTexturePtr = ret.first->second.get();
+    //  mBaseTexturesMutex.unlock();
+    //
+    //
+    //  auto texture = std::make_unique<DX12Texture>(baseTexturePtr,
+    //                                             this,
+    //                                             aVulkanType);
+    //
+    //  texturePtr = texture.get();
+    //  mTextures[aName] = std::move(texture);
+    //  mDataUpdateRequired = true;
+    //}
+    //else
+    //{
+    //  texturePtr = textureIt->second.get();
+    //}
+    //
+    //return texturePtr;
+    return nullptr;
   }
 
   Texture* Dx12Renderer::CreateTexture(std::string &aFilename, TextureType aType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
-    {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
-    }
-
-    auto texture = CreateTexture(aFilename, type);
+    UnusedArguments(aType);
+    //vk::ImageViewType type{ vk::ImageViewType::e2D };
+    //
+    //switch (aType)
+    //{
+    //  case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+    //  case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+    //  case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+    //  case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+    //  case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+    //  case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+    //  case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    //}
+    //
+    auto texture = CreateTexture(aFilename/*, type*/);
     return texture->mTexture;
   }
 
   Texture* Dx12Renderer::CreateTexture(std::string aName,
-                                   std::vector<u8> aData,
-                                   TextureLayout aLayout,
-                                   u32 aWidth,
-                                   u32 aHeight,
-                                   u32 aMipLevels,
-                                   u32 aLayerCount,
-                                   TextureType aType)
+                                       std::vector<u8> aData,
+                                       TextureLayout aLayout,
+                                       u32 aWidth,
+                                       u32 aHeight,
+                                       u32 aMipLevels,
+                                       u32 aLayerCount,
+                                       TextureType aType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
-    {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
-    }
-
-    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+    UnusedArguments(aType);
+    //vk::ImageViewType type{ vk::ImageViewType::e2D };
+    //
+    //switch (aType)
+    //{
+    //  case TextureType::e1D: type = vk::ImageViewType::e1D; break;
+    //  case TextureType::e2D: type = vk::ImageViewType::e2D; break;
+    //  case TextureType::e3D: type = vk::ImageViewType::e3D; break;
+    //  case TextureType::eCube: type = vk::ImageViewType::eCube; break;
+    //  case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
+    //  case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
+    //  case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+    //}
+    //
+    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount/*, type*/);
 
     return texture->mTexture;
   }
@@ -284,77 +297,83 @@ namespace YTE
   // Meshes
   DX12Mesh* Dx12Renderer::CreateMesh(std::string &aFilename)
   {
-    auto baseMesh = GetBaseMesh(aFilename);
-
-    auto meshIt = mMeshes.find(aFilename);
-
-    DX12Mesh *meshPtr{ nullptr };
-
-    if (meshIt == mMeshes.end())
-    {
-      // create mesh
-      auto mesh = std::make_unique<DX12Mesh>(baseMesh,
-                                           this);
-
-      meshPtr = mesh.get();
-
-      mMeshes[aFilename] = std::move(mesh);
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr;
+    UnusedArguments(aFilename);
+    //auto baseMesh = GetBaseMesh(aFilename);
+    //
+    //auto meshIt = mMeshes.find(aFilename);
+    //
+    //DX12Mesh *meshPtr{ nullptr };
+    //
+    //if (meshIt == mMeshes.end())
+    //{
+    //  // create mesh
+    //  auto mesh = std::make_unique<DX12Mesh>(baseMesh,
+    //                                       this);
+    //
+    //  meshPtr = mesh.get();
+    //
+    //  mMeshes[aFilename] = std::move(mesh);
+    //  mDataUpdateRequired = true;
+    //}
+    //else
+    //{
+    //  meshPtr = meshIt->second.get();
+    //}
+    //
+    //return meshPtr;
+    return nullptr;
   }
   
   Mesh* Dx12Renderer::CreateSimpleMesh(std::string &aName,
                                      std::vector<Submesh> &aSubmeshes,
 		                                 bool aForceUpdate)
   {
-    auto meshIt = mMeshes.find(aName);
-
-    DX12Mesh *meshPtr{ nullptr };
-
-    if (aForceUpdate || meshIt == mMeshes.end())
-    {
-      auto baseMesh = std::make_unique<Mesh>(aName,
-                                             aSubmeshes);
-
-      mBaseMeshesMutex.lock();
-      auto it = mBaseMeshes.find(aName);
-
-      if (it != mBaseMeshes.end())
-      {
-        mBaseMeshes.erase(it);
-      }
-
-      auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
-      auto baseMeshPtr = ret.first->second.get();
-      mBaseMeshesMutex.unlock();
-
-      // create mesh
-      auto mesh = std::make_unique<DX12Mesh>(baseMeshPtr, this);
-
-      auto it2 = mMeshes.find(aName);
-
-      if (it2 != mMeshes.end())
-      {
-        mMeshes.erase(it2);
-      }
-
-      auto ret2 = mMeshes.emplace(aName, std::move(mesh));
-      meshPtr = ret2.first->second.get();
-
-      mDataUpdateRequired = true;
-    }
-    else
-    {
-      meshPtr = meshIt->second.get();
-    }
-
-    return meshPtr->mMesh;
+    UnusedArguments(aName);
+    UnusedArguments(aSubmeshes);
+    UnusedArguments(aForceUpdate);
+    //auto meshIt = mMeshes.find(aName);
+    //
+    //DX12Mesh *meshPtr{ nullptr };
+    //
+    //if (aForceUpdate || meshIt == mMeshes.end())
+    //{
+    //  auto baseMesh = std::make_unique<Mesh>(aName,
+    //                                         aSubmeshes);
+    //
+    //  mBaseMeshesMutex.lock();
+    //  auto it = mBaseMeshes.find(aName);
+    //
+    //  if (it != mBaseMeshes.end())
+    //  {
+    //    mBaseMeshes.erase(it);
+    //  }
+    //
+    //  auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
+    //  auto baseMeshPtr = ret.first->second.get();
+    //  mBaseMeshesMutex.unlock();
+    //
+    //  // create mesh
+    //  auto mesh = std::make_unique<DX12Mesh>(baseMeshPtr, this);
+    //
+    //  auto it2 = mMeshes.find(aName);
+    //
+    //  if (it2 != mMeshes.end())
+    //  {
+    //    mMeshes.erase(it2);
+    //  }
+    //
+    //  auto ret2 = mMeshes.emplace(aName, std::move(mesh));
+    //  meshPtr = ret2.first->second.get();
+    //
+    //  mDataUpdateRequired = true;
+    //}
+    //else
+    //{
+    //  meshPtr = meshIt->second.get();
+    //}
+    //
+    //return meshPtr->mMesh;
+    return nullptr;
   }
 
 
@@ -375,23 +394,24 @@ namespace YTE
   void Dx12Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
-
-    DX12GraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
-
-    update.mCBO->begin();
-
-    SendEvent(Events::DX12GraphicsDataUpdate, &update);
-
-    update.mCBO->end();
-
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
-
-    for (auto &surface : mSurfaces)
-    {
-      surface.second->GraphicsDataUpdate();
-    }
+    //UnusedArguments(aEvent);
+    //
+    //DX12GraphicsDataUpdate update;
+    //mGraphicsDataUpdateCBOB->NextCommandBuffer();
+    //update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+    //
+    //update.mCBO->begin();
+    //
+    //SendEvent(Events::DX12GraphicsDataUpdate, &update);
+    //
+    //update.mCBO->end();
+    //
+    //vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    //
+    //for (auto &surface : mSurfaces)
+    //{
+    //  surface.second->GraphicsDataUpdate();
+    //}
   }
 
   void Dx12Renderer::FrameUpdate(LogicUpdate *aEvent)

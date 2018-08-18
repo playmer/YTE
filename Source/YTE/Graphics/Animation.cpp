@@ -332,7 +332,7 @@ namespace YTE
     auto durations = aLeft.mDuration == aRight.mDuration;
     auto ticks = aLeft.mTicksPerSecond == aRight.mTicksPerSecond;
 
-    return nodes && transformations && children && translations && scales && rotations && names;
+    return nodes && transformations && children && translations && scales && rotations && names && durations && ticks;
   }
 
   AnimationData TestWritingAndReading(std::string const& aFile, AnimationData const& aOriginalData)

@@ -6,7 +6,7 @@
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Graphics/DirectX12/DX12ForwardDeclarations.hpp"
+#include "YTE/Graphics/DirectX12/ForwardDeclarations.hpp"
 #include "YTE/Graphics/DirectX12/DX12FunctionLoader.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
@@ -21,13 +21,13 @@ namespace YTE
 
     ~DX12WaterInfluenceMapManager()
     {
-      mBuffer.reset();
+      //mBuffer.reset();
       mMaps.clear();
     }
 
     void SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent);
+    void GraphicsDataUpdateEvent(DX12GraphicsDataUpdate* aEvent);
 
     void AddMap(DX12InstantiatedInfluenceMap *aMap);
     std::unique_ptr<DX12InstantiatedInfluenceMap> CreateMap();
@@ -40,16 +40,16 @@ namespace YTE
       mWaterInformationData.mBaseHeight = aHeight;
     }
 
-    std::shared_ptr<vkhlf::Buffer> GetUBOMapBuffer()
-    {
-      return mBuffer;
-    }
+    //std::shared_ptr<vkhlf::Buffer> GetUBOMapBuffer()
+    //{
+    //  return mBuffer;
+    //}
 
     UBOWaterInformationMan mWaterInformationData;
 
   private:
     std::vector<DX12InstantiatedInfluenceMap*> mMaps;
-    std::shared_ptr<vkhlf::Buffer> mBuffer;
+    //std::shared_ptr<vkhlf::Buffer> mBuffer;
     Dx12RenderedSurface* mSurface;
     GraphicsView* mGraphicsView;
     unsigned char mMapUse[YTE_Graphics_WaterInformationCount];

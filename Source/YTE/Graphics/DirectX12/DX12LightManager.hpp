@@ -21,13 +21,13 @@ namespace YTE
 
     ~DX12LightManager()
     {
-      mBuffer.reset();
+      //mBuffer.reset();
       mLights.clear();
     }
 
     void SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent);
+    void GraphicsDataUpdateEvent(DX12GraphicsDataUpdate* aEvent);
 
     void AddLight(DX12InstantiatedLight *aLight);
     std::unique_ptr<DX12InstantiatedLight> CreateLight();
@@ -37,15 +37,15 @@ namespace YTE
 
     void SetLights(bool aOnOrOff);
 
-    std::shared_ptr<vkhlf::Buffer> GetUBOLightBuffer()
-    {
-      return mBuffer;
-    }
+    //std::shared_ptr<vkhlf::Buffer> GetUBOLightBuffer()
+    //{
+    //  return mBuffer;
+    //}
 
   private:
     std::vector<DX12InstantiatedLight*> mLights;
     UBOLightMan mLightData;
-    std::shared_ptr<vkhlf::Buffer> mBuffer;
+    //std::shared_ptr<vkhlf::Buffer> mBuffer;
     Dx12RenderedSurface* mSurface;
     GraphicsView* mGraphicsView;
     unsigned char mLightUse[YTE_Graphics_LightCount];

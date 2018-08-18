@@ -335,6 +335,8 @@ namespace YTE
   {
     mCompositions.Clear();
 
+    mPlugins.clear();
+
     if constexpr (YTE_CAN_PROFILE)
     {
       profiler::stopListen();
@@ -345,8 +347,6 @@ namespace YTE
   {
     fs::path gamePath = Path::GetGamePath().String();
     gamePath /= "Plugins";
-
-    char const* checkedFolder;
 
     if constexpr(CompilerConfiguration::Debug())
     {

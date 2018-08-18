@@ -12,15 +12,13 @@ namespace YTE
     TypeBuilder<DX12InstantiatedLight> builder;
   }
 
-
-
   DX12InstantiatedLight::DX12InstantiatedLight(Dx12RenderedSurface* aSurface, DX12LightManager* aLightManager, GraphicsView* aView)
     : InstantiatedLight()
     , mSurface(aSurface)
     , mManager(aLightManager)
     , mGraphicsView(aView)
   {
-    mManager->RegisterEvent<&DX12InstantiatedLight::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
+    mManager->RegisterEvent<&DX12InstantiatedLight::GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
 
     mGraphicsView->RegisterEvent<&DX12InstantiatedLight::SurfaceLostEvent>(Events::SurfaceLost, this);
     mGraphicsView->RegisterEvent<&DX12InstantiatedLight::SurfaceGainedEvent>(Events::SurfaceGained, this);
@@ -31,24 +29,24 @@ namespace YTE
     mManager->DestroyLight(this);
   }
 
-  void DX12InstantiatedLight::SurfaceLostEvent(DX12ViewChanged *aEvent)
+  void DX12InstantiatedLight::SurfaceLostEvent(ViewChanged *aEvent)
   {
     UnusedArguments(aEvent);
     mManager->DestroyLight(this);
   }
 
-  void DX12InstantiatedLight::SurfaceGainedEvent(DX12ViewChanged *aEvent)
+  void DX12InstantiatedLight::SurfaceGainedEvent(ViewChanged *aEvent)
   {
     auto view = aEvent->View;
     mSurface = static_cast<Dx12Renderer*>(view->GetRenderer())->GetSurface(view->GetWindow());
 
     mManager = &(mSurface->GetViewData(view)->mLightManager);
     mManager->AddLight(this);
-    mManager->RegisterEvent<&DX12InstantiatedLight::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
+    mManager->RegisterEvent<&DX12InstantiatedLight::GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
     mDataChanged = true;
   }
 
-  void DX12InstantiatedLight::DX12GraphicsDataUpdate(YTE::DX12GraphicsDataUpdate* aEvent)
+  void DX12InstantiatedLight::GraphicsDataUpdate(YTE::DX12GraphicsDataUpdate* aEvent)
   {
     UnusedArguments(aEvent);
     if (mDataChanged)

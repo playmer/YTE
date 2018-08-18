@@ -46,11 +46,8 @@ namespace YTE
 
     // Takes the submesh, as well as the index of the submesh.
     void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
-
-    void SetInstanced(bool aInstanced) override;
-    bool GetInstanced() override;
-
+    void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
+    
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
     GraphicsView *mView;

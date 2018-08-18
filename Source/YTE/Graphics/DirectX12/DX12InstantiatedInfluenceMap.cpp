@@ -12,15 +12,15 @@ namespace YTE
     TypeBuilder<DX12InstantiatedInfluenceMap> builder;
   }
 
-
-
-  DX12InstantiatedInfluenceMap::DX12InstantiatedInfluenceMap(Dx12RenderedSurface* aSurface, DX12WaterInfluenceMapManager* aMapManager, GraphicsView* aView)
+  DX12InstantiatedInfluenceMap::DX12InstantiatedInfluenceMap(Dx12RenderedSurface* aSurface, 
+                                                             DX12WaterInfluenceMapManager* aMapManager, 
+                                                             GraphicsView* aView)
     : InstantiatedInfluenceMap()
     , mSurface(aSurface)
     , mManager(aMapManager)
     , mGraphicsView(aView)
   {
-    mManager->RegisterEvent<&DX12InstantiatedInfluenceMap::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
+    mManager->RegisterEvent<&DX12InstantiatedInfluenceMap::GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
 
     mGraphicsView->RegisterEvent<&DX12InstantiatedInfluenceMap::SurfaceLostEvent>(Events::SurfaceLost, this);
     mGraphicsView->RegisterEvent<&DX12InstantiatedInfluenceMap::SurfaceGainedEvent>(Events::SurfaceGained, this);
@@ -31,26 +31,27 @@ namespace YTE
     mManager->DestroyMap(this);
   }
 
-  void DX12InstantiatedInfluenceMap::SurfaceLostEvent(DX12ViewChanged *aEvent)
+  void DX12InstantiatedInfluenceMap::SurfaceLostEvent(ViewChanged *aEvent)
   {
     UnusedArguments(aEvent);
     mManager->DestroyMap(this);
   }
 
-  void DX12InstantiatedInfluenceMap::SurfaceGainedEvent(DX12ViewChanged *aEvent)
+  void DX12InstantiatedInfluenceMap::SurfaceGainedEvent(ViewChanged *aEvent)
   {
     auto view = aEvent->View;
     mSurface = static_cast<Dx12Renderer*>(view->GetRenderer())->GetSurface(view->GetWindow());
 
     mManager = &(mSurface->GetViewData(view)->mWaterInfluenceMapManager);
     mManager->AddMap(this);
-    mManager->RegisterEvent<&DX12InstantiatedInfluenceMap::DX12GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
+    mManager->RegisterEvent<&DX12InstantiatedInfluenceMap::GraphicsDataUpdate>(Events::DX12GraphicsDataUpdate, this);
     mDataChanged = true;
   }
 
-  void DX12InstantiatedInfluenceMap::DX12GraphicsDataUpdate(YTE::DX12GraphicsDataUpdate* aEvent)
+  void DX12InstantiatedInfluenceMap::GraphicsDataUpdate(YTE::DX12GraphicsDataUpdate* aEvent)
   {
     UnusedArguments(aEvent);
+
     if (mDataChanged)
     {
       mManager->UpdateMapValue(mIndex, mInfluenceMapUBOData);

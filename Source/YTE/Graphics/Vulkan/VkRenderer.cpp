@@ -381,13 +381,13 @@ namespace YTE
   {
     UnusedArguments(aEvent);
 
-    GraphicsDataUpdateVk update;
+    VkGraphicsDataUpdate update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
     update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
     update.mCBO->begin();
 
-    SendEvent(Events::GraphicsDataUpdateVk, &update);
+    SendEvent(Events::VkGraphicsDataUpdate, &update);
 
     update.mCBO->end();
 

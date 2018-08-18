@@ -24,17 +24,18 @@ namespace YTE
                                      std::string aName,
                                      DrawerTypeCombination aCombination)
     : mSurface(aSurface)
-    , mColorFormat(aColorFormat)
-    , mDepthFormat(aDepthFormat)
-    , mVulkanSurface(aVulkanSurface)
+    //, mColorFormat(aColorFormat)
+    //, mDepthFormat(aDepthFormat)
+    //, mVulkanSurface(aVulkanSurface)
     , mParentViewData(aView)
   {
+    UnusedArguments(aCombination);
     //mSignedUpForUpdate = true;
     //mData.mName = aName;
     //mData.mCombinationType = aCombination;
     //mData.mOrder = aView->mView->GetOrder();
     //mCBOB = std::make_unique<Dx12CBOB<3, true>>(mSurface->GetCommandPool());
-    //mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    //mCBEB = std::make_unique<DX12CBEB<3>>(mSurface->GetDevice());
   }
 
 
@@ -46,15 +47,16 @@ namespace YTE
                                      std::string aName,
                                      DrawerTypeCombination aCombination)
     : mSurface(aSurface)
-    , mColorFormat(aColorFormat)
-    , mDepthFormat(aDepthFormat)
-    , mVulkanSurface(aVulkanSurface)
+    //, mColorFormat(aColorFormat)
+    //, mDepthFormat(aDepthFormat)
+    //, mVulkanSurface(aVulkanSurface)
   {
+    UnusedArguments(aCombination);
     //mSignedUpForUpdate = true;
     //mData.mName = aName;
     //mData.mCombinationType = aCombination;
     //mCBOB = std::make_unique<Dx12CBOB<3, true>>(mSurface->GetCommandPool());
-    //mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    //mCBEB = std::make_unique<DX12CBEB<3>>(mSurface->GetDevice());
   }
 
 
@@ -84,15 +86,16 @@ namespace YTE
 
   bool DX12RenderTarget::operator<(DX12RenderTarget& rhs)
   {
+    UnusedArguments(rhs);
     //if (mParentViewData->mViewOrder < rhs.mParentViewData->mViewOrder)
     //{
     //  return true;
     //}
-    //return false;
+    return false;
   }
 
 
-  void DX12RenderTarget::Resize(vk::Extent2D& aExtent)
+  void DX12RenderTarget::Resize(/*vk::Extent2D& aExtent*/)
   {
     //mData.mExtent = aExtent;
     //CreateFrameBuffer();
@@ -254,7 +257,7 @@ namespace YTE
 
   void DX12RenderTarget::CreateRenderPass()
   {
-    //// Attachment Descriptions
+    //// DX12Attachment Descriptions
     //vk::AttachmentDescription colorAttachment{ {},
     //                                           mColorFormat,
     //                                           vk::SampleCountFlagBits::e1,

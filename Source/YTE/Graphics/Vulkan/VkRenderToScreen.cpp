@@ -40,7 +40,7 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     mSignedUpForUpdate = true;
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
@@ -169,15 +169,6 @@ namespace YTE
     aCBO->executeCommands(mCBOB->GetCurrentCBO());
   }
 
-
-
-  void VkRenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-  }
-
-
-
   void VkRenderToScreen::RenderFull(const vk::Extent2D& aExtent)
   {
     mCBOB->NextCommandBuffer();
@@ -194,9 +185,7 @@ namespace YTE
     vk::Rect2D scissor{ { 0, 0 }, aExtent };
     cbo->setScissor(0, scissor);
 
-    RenderBegin(cbo);
     Render(cbo);
-    RenderEnd(cbo);
     cbo->end();
   }
 
@@ -208,15 +197,6 @@ namespace YTE
     mScreenQuad->Bind(aCBO);
     mScreenQuad->Render(aCBO);
   }
-
-
-
-  void VkRenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-  }
-
-
 
   bool VkRenderToScreen::PresentFrame(std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
                                       std::shared_ptr<vkhlf::Semaphore>& aRenderCompleteSemaphore)
@@ -326,9 +306,9 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
-    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
     mSignedUpForUpdate = false;
 
     if (mScreenQuad)
@@ -351,7 +331,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -369,7 +349,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -389,7 +369,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -631,7 +611,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::ScreenQuad::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
     mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
@@ -845,7 +825,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::ScreenShader::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     UnusedArguments(aEvent);
   }

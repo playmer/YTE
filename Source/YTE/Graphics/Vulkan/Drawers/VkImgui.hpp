@@ -50,9 +50,7 @@ namespace YTE
     void PreFrameUpdate(LogicUpdate *aUpdate);
 
     void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>> &aMeshes) override;
-    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
     void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
     ImguiLayer *mContext{ nullptr };
     GraphicsView *mView;

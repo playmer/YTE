@@ -440,7 +440,6 @@ namespace YTE
     if (mFreeParticles.empty())
     {
       model = mRenderer->CreateModel(mGraphicsView, mMesh);
-      model->SetInstanced(true);
       model->mType = ShaderType::AlphaBlendShader;
     }
     else

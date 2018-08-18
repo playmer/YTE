@@ -178,15 +178,8 @@ namespace YTE
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
-    RenderBegin(cbo);
     Render(cbo);
-    RenderEnd(cbo);
     cbo->end();
-  }
-
-  void VkImguiDrawer::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
   }
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
@@ -261,10 +254,5 @@ namespace YTE
 
       vtx_offset += commandList->VtxBuffer.Size;
     }
-  }
-
-  void VkImguiDrawer::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
   }
 }

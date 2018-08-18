@@ -86,6 +86,7 @@ namespace YTE
 
   void Dx12ImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
   {
+    UnusedArguments(aUpdate);
     //UnusedArguments(aUpdate);
     //YTEProfileFunction();
     //
@@ -173,6 +174,7 @@ namespace YTE
 
   void Dx12ImguiDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<DX12Mesh>> &aMeshes)
   {
+    UnusedArguments(aMeshes);
     //UnusedArguments(aMeshes);
     //
     //mCBOB->NextCommandBuffer();

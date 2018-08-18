@@ -23,6 +23,8 @@ namespace YTE
   class ParticleEmitter;
   class SimpleModel;
   class Sprite;
+  class ViewChanged;
+
   struct Instance;
   struct UBOMaterial;
   struct UBOModel;

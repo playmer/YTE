@@ -104,9 +104,6 @@ namespace YTE
       return mShadingName;
     }
 
-    YTE_Shared void SetInstanced(bool mInstanced);
-    YTE_Shared bool GetInstanced();
-
   private:
     void Create();  // tells renderer to create mesh
     void Destroy(); // tells renderer to remove this instantiation

@@ -25,7 +25,7 @@ namespace YTE
     VkInstantiatedLight(VkRenderedSurface *aSurface, VkLightManager* aLightManager, GraphicsView* aView);
     ~VkInstantiatedLight() override;
 
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
+    void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     void SurfaceLostEvent(ViewChanged *aEvent);
     void SurfaceGainedEvent(ViewChanged *aEvent);
 

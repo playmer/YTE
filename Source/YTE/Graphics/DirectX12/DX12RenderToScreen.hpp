@@ -27,56 +27,53 @@ namespace YTE
 
   public:
     DX12RenderToScreen(Window *aWindow,
-                     Dx12Renderer *aRenderer,
-                     Dx12RenderedSurface *aSurface,
-                     vk::Format aColorFormat,
-                     vk::Format aDepthFormat,
-                     std::shared_ptr<vkhlf::Surface> &aVulkanSurface,
-                     std::string aShaderSetName);
+                       Dx12Renderer *aRenderer,
+                       Dx12RenderedSurface *aSurface,
+                       //vk::Format aColorFormat,
+                       //vk::Format aDepthFormat,
+                       //std::shared_ptr<vkhlf::Surface> &aVulkanSurface,
+                       std::string aShaderSetName);
 
     ~DX12RenderToScreen();
 
     void ReloadShaders(bool aFromSet = false);
-    void Resize(vk::Extent2D &aExtent);
+    void Resize(/*vk::Extent2D &aExtent*/);
     void ResetRenderTargets(std::vector<DX12RenderTarget*> &aRTs);
     void SetRenderTargets(std::vector<DX12RenderTarget*> &aRTs);
 
     void FrameUpdate();
-    const vk::Extent2D &GetExtent();
+    //const vk::Extent2D &GetExtent();
 
-    bool PresentFrame(std::shared_ptr<vkhlf::Queue> &aGraphicsQueue,
-                      std::shared_ptr<vkhlf::Semaphore> &aRenderCompleteSemaphore);
+    bool PresentFrame(/*std::shared_ptr<vkhlf::Queue> &aGraphicsQueue,
+                      std::shared_ptr<vkhlf::Semaphore> &aRenderCompleteSemaphore*/);
 
-    void RenderFull(const vk::Extent2D &aExtent);
-    void RenderBegin(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void RenderEnd(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    void RenderFull(/*const vk::Extent2D &aExtent*/);
+    void Render(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
 
     void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
 
     void MoveToNextEvent();
-    void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    void ExecuteSecondaryEvent(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
+    void ExecuteCommands(/*std::shared_ptr<vkhlf::CommandBuffer> &aCBO*/);
 
-    // gettors / settors
-    std::shared_ptr<vkhlf::RenderPass> &GetRenderPass()
-    {
-      return mRenderPass;
-    }
-
-    const std::shared_ptr<vkhlf::Semaphore> &GetPresentSemaphore()
-    {
-      return mFrameBufferSwapChain->getPresentSemaphore();
-    }
-
-    const std::shared_ptr<vkhlf::Framebuffer> &GetFrameBuffer()
-    {
-      return mFrameBufferSwapChain->getFramebuffer();
-    }
+    //std::shared_ptr<vkhlf::RenderPass> &GetRenderPass()
+    //{
+    //  return mRenderPass;
+    //}
+    //
+    //const std::shared_ptr<vkhlf::Semaphore> &GetPresentSemaphore()
+    //{
+    //  return mFrameBufferSwapChain->getPresentSemaphore();
+    //}
+    //
+    //const std::shared_ptr<vkhlf::Framebuffer> &GetFrameBuffer()
+    //{
+    //  return mFrameBufferSwapChain->getFramebuffer();
+    //}
 
 
   private:
-    void CreateSwapChain(vk::Extent2D &aExtent);
+    void CreateSwapChain(/*vk::Extent2D &aExtent*/);
     void CreateRenderPass();
     void ReloadQuad();
     void LoadQuad();
@@ -85,36 +82,33 @@ namespace YTE
     Dx12RenderedSurface *mSurface;
     Dx12Renderer *mRenderer;
     Window *mWindow;
-    std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
-    std::shared_ptr<vkhlf::Surface> mVulkanSurface;
-    std::shared_ptr<vkhlf::RenderPass> mRenderPass;
-    vk::Format mColorFormat;
-    vk::Format mDepthFormat;
+    //std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
+    //std::shared_ptr<vkhlf::Surface> mVulkanSurface;
+    //std::shared_ptr<vkhlf::RenderPass> mRenderPass;
+    //vk::Format mColorFormat;
+    //vk::Format mDepthFormat;
     bool mSignedUpForUpdate;
     std::unique_ptr<ScreenQuad> mScreenQuad;
     std::unique_ptr<ScreenShader> mScreenShader;
     std::string mShaderSetName;
     std::unique_ptr<Dx12CBOB<3, true>> mCBOB;
-    std::unique_ptr<VkCBEB<3>> mCBEB;
-    std::vector<DX12RenderTarget::RenderTargetData*> mRenderTargetData;
+    std::unique_ptr<DX12CBEB<3>> mCBEB;
+    std::vector<DX12RenderTarget::DX12RenderTargetData*> mRenderTargetData;
     bool mIsResize = false;
 
     friend class ScreenQuad;
     friend class ScreenShader;
 
-
-
-
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     // Screen Quad
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     class ScreenQuad
     {
     public:
       struct ShaderData
       {
         Dx12ShaderDescriptions mDescriptions;
-        std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
+        //std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
         std::string mDefines;
       };
 
@@ -126,8 +120,8 @@ namespace YTE
 
       void Resize();
 
-      void Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO);
-      void Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO);
+      void Bind(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/);
+      void Render(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/);
 
       ShaderData& GetShaderData()
       {
@@ -146,13 +140,12 @@ namespace YTE
       DX12RenderToScreen *mParent;
       ShaderData mShaderData;
 
-      std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
       std::vector<Vertex> mVertices;
       std::vector<u32> mIndices;
-      std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
-      std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
-      std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
-      //std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
+      //std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
+      //std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
+      //std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
+      //std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
       u32 mIndexCount;
       std::vector<std::pair<std::string, DrawerTypeCombination>> mSamplers;
     };
@@ -161,9 +154,9 @@ namespace YTE
 
 
 
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     // Screen Quad Shader
-    // //////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
     class ScreenShader
     {
     public:
@@ -172,7 +165,7 @@ namespace YTE
 
       void LoadToVulkan(DX12GraphicsDataUpdate *aEvent);
 
-      void Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO);
+      void Bind(/*std::shared_ptr<vkhlf::CommandBuffer> aCBO*/);
 
     private:
       void Create(std::string& aShaderSetName, bool aReload);
@@ -182,11 +175,7 @@ namespace YTE
       DX12RenderToScreen *mParent;
       DX12RenderToScreen::ScreenQuad *mSibling;
 
-      std::shared_ptr<vkhlf::Pipeline> mShader;
-      //std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout;
-      //Dx12ShaderDescriptions mDescriptions;
-      //std::string mDefines;
-      //bool mCullBackFaces;
+      //std::shared_ptr<vkhlf::Pipeline> mShader;
     };
   };
 }

@@ -24,17 +24,17 @@
 
 namespace YTE
 {
-  YTEDeclareEvent(GraphicsDataUpdateVk);
-  YTEDeclareEvent(AnimationUpdateVk);
+  YTEDeclareEvent(VkGraphicsDataUpdate);
+  YTEDeclareEvent(VkAnimationUpdate);
 
   // forward declare
   struct VkCreatePipelineDataSet;
 
   // vulkan specific graphics data update event so that it can contain the CBO object
-  class GraphicsDataUpdateVk : public Event
+  class VkGraphicsDataUpdate : public Event
   {
   public:
-    YTEDeclareType(GraphicsDataUpdateVk);
+    YTEDeclareType(VkGraphicsDataUpdate);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
   };
 
@@ -107,7 +107,7 @@ namespace YTE
     // Events
     /////////////////////////////////
     void ResizeEvent(WindowResize *aEvent);
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent);
+    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent);
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();

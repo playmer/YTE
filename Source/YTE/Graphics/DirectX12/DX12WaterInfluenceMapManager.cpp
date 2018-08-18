@@ -12,66 +12,69 @@ namespace YTE
 
   DX12WaterInfluenceMapManager::DX12WaterInfluenceMapManager(Dx12RenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
-
-    mMaps.reserve(YTE_Graphics_WaterInformationCount);
-
-    for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
-    {
-      mMapUse[i] = 0;
-    }
-
-    mUpdateRequired = true;
-    mWaterInformationData.mNumberOfInfluences = 0;
+    //mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
+    //
+    //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
+    //
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    //                                              vk::BufferUsageFlagBits::eTransferDst |
+    //                                              vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                              vk::SharingMode::eExclusive,
+    //                                              nullptr,
+    //                                              vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                              allocator);
+    //
+    //mMaps.reserve(YTE_Graphics_WaterInformationCount);
+    //
+    //for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
+    //{
+    //  mMapUse[i] = 0;
+    //}
+    //
+    //mUpdateRequired = true;
+    //mWaterInformationData.mNumberOfInfluences = 0;
   }
 
   void DX12WaterInfluenceMapManager::SetSurfaceAndView(Dx12RenderedSurface* aSurface, GraphicsView* aView)
   {
-    mSurface = aSurface;
-    mGraphicsView = aView;
-    mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
-
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
-
-    mMaps.reserve(YTE_Graphics_WaterInformationCount);
-
-    for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
-    {
-      mMapUse[i] = 0;
-    }
-
-    mUpdateRequired = true;
-    mWaterInformationData.mNumberOfInfluences = 0;
+    UnusedArguments(aSurface);
+    UnusedArguments(aView);
+    //mSurface = aSurface;
+    //mGraphicsView = aView;
+    //mSurface->RegisterEvent<&DX12WaterInfluenceMapManager::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
+    //
+    //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
+    //
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    //                                              vk::BufferUsageFlagBits::eTransferDst |
+    //                                              vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                              vk::SharingMode::eExclusive,
+    //                                              nullptr,
+    //                                              vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                              allocator);
+    //
+    //mMaps.reserve(YTE_Graphics_WaterInformationCount);
+    //
+    //for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
+    //{
+    //  mMapUse[i] = 0;
+    //}
+    //
+    //mUpdateRequired = true;
+    //mWaterInformationData.mNumberOfInfluences = 0;
   }
 
-  void DX12WaterInfluenceMapManager::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate* aEvent)
+  void DX12WaterInfluenceMapManager::GraphicsDataUpdateEvent(DX12GraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
-
-    if (mUpdateRequired)
-    {
-      auto update = aEvent->mCBO;
-      mBuffer->update<UBOWaterInformationMan>(0, mWaterInformationData, update);
-      mUpdateRequired = false;
-    }
+    UnusedArguments(aEvent);
+    //SendEvent(Events::DX12GraphicsDataUpdate, aEvent);
+    //
+    //if (mUpdateRequired)
+    //{
+    //  auto update = aEvent->mCBO;
+    //  mBuffer->update<UBOWaterInformationMan>(0, mWaterInformationData, update);
+    //  mUpdateRequired = false;
+    //}
   }
 
   void DX12WaterInfluenceMapManager::AddMap(DX12InstantiatedInfluenceMap *aMap)
@@ -131,14 +134,8 @@ namespace YTE
 
   void DX12WaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
   {
-//#ifdef _DEBUG
-//    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)
-//    {
-//      DebugObjection(true, "Water Influence Map Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
+    UnusedArguments(aIndex);
+    UnusedArguments(aMapValue);
     mWaterInformationData.mInformation[aIndex] = aMapValue;
     mUpdateRequired = true;
   }

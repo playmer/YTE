@@ -56,7 +56,7 @@ namespace YTE
 
     ImguiLayer *mContext{ nullptr };
     GraphicsView *mView;
-    SubMeshPipelineData *mPipelineData;
+    DX12SubMeshPipelineData *mPipelineData;
     Dx12Submesh *mDx12Submesh;
     Dx12Shader *mShader;
     std::string mModelName;

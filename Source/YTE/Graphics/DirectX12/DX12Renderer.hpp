@@ -29,15 +29,15 @@ namespace YTE
     std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
     std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
-    DX12Texture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    DX12Texture* CreateTexture(std::string &aFilename/*, vk::ImageViewType aType*/);
     DX12Texture* CreateTexture(std::string aName,
-                             std::vector<u8> aData,
-                             TextureLayout aType,
-                             u32 aWidth,
-                             u32 aHeight,
-                             u32 aMipLevels,
-                             u32 aLayerCount,
-                             vk::ImageViewType aVulkanType);
+                               std::vector<u8> aData,
+                               TextureLayout aType,
+                               u32 aWidth,
+                               u32 aHeight,
+                               u32 aMipLevels,
+                               u32 aLayerCount/*,
+                               vk::ImageViewType aVulkanType*/);
 
 
     Texture* CreateTexture(std::string &aFilename, TextureType aType) override;

@@ -348,26 +348,6 @@ namespace YTE
     mInstantiatedModel.reset();
   }
 
-  void Model::SetInstanced(bool aInstanced)
-  {
-    if (mInstantiatedModel)
-    {
-      mInstantiatedModel->SetInstanced(aInstanced);
-    }
-  }
-
-  bool Model::GetInstanced()
-  {
-    if (mInstantiatedModel)
-    {
-      return mInstantiatedModel->GetInstanced();
-    }
-    else
-    {
-      return false;
-    }
-  }
-
   void Model::CreateTransform()
   {
     if (mTransform == nullptr)

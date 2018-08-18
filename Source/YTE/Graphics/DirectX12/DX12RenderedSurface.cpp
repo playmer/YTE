@@ -2,8 +2,8 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
-#include "YTE/Graphics/DirectX12/DX12Drawers/VkImgui.hpp"
-#include "YTE/Graphics/DirectX12/DX12Drawers/VkRTGameForwardDrawer.hpp"
+#include "YTE/Graphics/DirectX12/Drawers/DX12Imgui.hpp"
+#include "YTE/Graphics/DirectX12/Drawers/DX12RTGameForwardDrawer.hpp"
 #include "YTE/Graphics/DirectX12/DX12InstantiatedLight.hpp"
 #include "YTE/Graphics/DirectX12/DX12InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
@@ -23,7 +23,7 @@
 
 namespace YTE
 {
-  YTEDefineEvent(AnimationUpdateVk);
+  YTEDefineEvent(DX12AnimationUpdate);
   YTEDefineEvent(DX12GraphicsDataUpdate);
   YTEDefineType(DX12GraphicsDataUpdate)
   {
@@ -40,52 +40,52 @@ namespace YTE
 
 
   Dx12RenderedSurface::Dx12RenderedSurface(Window *aWindow,
-                                       Dx12Renderer *aRenderer,
-                                       std::shared_ptr<vkhlf::Surface> &aSurface)
+                                           Dx12Renderer *aRenderer/*,
+                                           std::shared_ptr<vkhlf::Surface> &aSurface*/)
     : mWindow(aWindow)
     , mRenderer(aRenderer)
-    , mSurface(aSurface)
+    //, mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    auto internals = mRenderer->GetDx12Internals();
-
-    auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
-    auto formats = supportDetails.Formats();
-
-    // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
-    // the surface has no preferred format.  Otherwise, at least one
-    // supported format will be returned.
-    mColorFormat = ((formats.size() == 1) && (formats[0].format == vk::Format::eUndefined)) ?
-                                                                 vk::Format::eB8G8R8A8Unorm :
-                                                                 formats[0].format;
-
-    PrintSurfaceFormats(formats);
-    mDepthFormat = vk::Format::eD24UnormS8Uint;
-
-    mRenderToScreen = std::make_unique<DX12RenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
-
-    mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
-    mCubemapComplete = mRenderer->mDevice->createSemaphore();
-    //mRenderPass1 = mRenderer->mDevice->createSemaphore();
-    //mRenderPass2 = mDevice->createSemaphore();
-    //mRenderPass3 = mDevice->createSemaphore();
-
-    mAnimationUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
-    mGraphicsDataUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
-    mRenderingCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
-
-    // create Framebuffer & Swapchain
-    WindowResize event;
-    event.height = mWindow->GetHeight();
-    event.width = mWindow->GetWidth();
-
-    ResizeInternal(true);
-
-    mWindow->RegisterEvent<&Dx12RenderedSurface::ResizeEvent>(Events::WindowResize, this);
+    //auto internals = mRenderer->GetDx12Internals();
+    //
+    //auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
+    //vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
+    //
+    //auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
+    //                                                                     baseSurfaceKhr);
+    //auto formats = supportDetails.Formats();
+    //
+    //// If the format list includes just one entry of VK_FORMAT_UNDEFINED,
+    //// the surface has no preferred format.  Otherwise, at least one
+    //// supported format will be returned.
+    //mColorFormat = ((formats.size() == 1) && (formats[0].format == vk::Format::eUndefined)) ?
+    //                                                             vk::Format::eB8G8R8A8Unorm :
+    //                                                             formats[0].format;
+    //
+    //PrintSurfaceFormats(formats);
+    //mDepthFormat = vk::Format::eD24UnormS8Uint;
+    //
+    //mRenderToScreen = std::make_unique<DX12RenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
+    //
+    //mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
+    //mCubemapComplete = mRenderer->mDevice->createSemaphore();
+    ////mRenderPass1 = mRenderer->mDevice->createSemaphore();
+    ////mRenderPass2 = mDevice->createSemaphore();
+    ////mRenderPass3 = mDevice->createSemaphore();
+    //
+    //mAnimationUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
+    //mGraphicsDataUpdateCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
+    //mRenderingCBOB = std::make_unique<Dx12CBOB<3, false>>(mRenderer->mCommandPool);
+    //
+    //// create Framebuffer & Swapchain
+    //WindowResize event;
+    //event.height = mWindow->GetHeight();
+    //event.width = mWindow->GetWidth();
+    //
+    //ResizeInternal(true);
+    //
+    //mWindow->RegisterEvent<&Dx12RenderedSurface::ResizeEvent>(Events::WindowResize, this);
   }
 
   Dx12RenderedSurface::~Dx12RenderedSurface()
@@ -103,31 +103,30 @@ namespace YTE
   void Dx12RenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
   {
     GetViewData(aView)->mViewUBOData = aUBOView;
-    ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
+    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
   }
 
   void Dx12RenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
+    this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
   }
 
-  void Dx12RenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
+  void Dx12RenderedSurface::PrintSurfaceFormats(/*std::vector<vk::SurfaceFormatKHR> &aFormats*/)
   {
-    printf("Formats Available: \n");
-
-    for (auto format : aFormats)
-    {
-      auto colorSpace = vk::to_string(format.colorSpace);
-      auto formatString = vk::to_string(format.format);
-      printf("  Format/Color Space: %s/%s\n", formatString.c_str(), colorSpace.c_str());
-    }
+    //printf("Formats Available: \n");
+    //
+    //for (auto format : aFormats)
+    //{
+    //  auto colorSpace = vk::to_string(format.colorSpace);
+    //  auto formatString = vk::to_string(format.format);
+    //  printf("  Format/Color Space: %s/%s\n", formatString.c_str(), colorSpace.c_str());
+    //}
   }
   
   // Models
-  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
+  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView* aView, 
+                                                                          std::string& aModelFile)
   {
     mDataUpdateRequired = true;
     auto model = std::make_unique<DX12InstantiatedModel>(aModelFile, this, aView);
@@ -136,14 +135,18 @@ namespace YTE
     return std::move(model);
   }
 
-  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
+  std::unique_ptr<DX12InstantiatedModel> Dx12RenderedSurface::CreateModel(GraphicsView* aView, 
+                                                                          Mesh* aMesh)
   {
-    mDataUpdateRequired = true;
-
-    auto model = std::make_unique<DX12InstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
-    auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
-    instantiatedModels[static_cast<DX12Mesh*>(model->GetVkMesh())].push_back(model.get());
-    return std::move(model);
+    UnusedArguments(aView);
+    UnusedArguments(aMesh);
+    //mDataUpdateRequired = true;
+    //
+    //auto model = std::make_unique<DX12InstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
+    //auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
+    //instantiatedModels[static_cast<DX12Mesh*>(model->GetVkMesh())].push_back(model.get());
+    //return std::move(model);
+    return nullptr;
   }
 
   void Dx12RenderedSurface::AddModel(DX12InstantiatedModel *aModel)
@@ -152,15 +155,15 @@ namespace YTE
     instantiatedModels[static_cast<DX12Mesh*>(aModel->GetVkMesh())].push_back(aModel);
   }
 
-  std::shared_ptr<vkhlf::Device>& Dx12RenderedSurface::GetDevice()
-  {
-    return mRenderer->mDevice;
-  }
+  //std::shared_ptr<vkhlf::Device>& Dx12RenderedSurface::GetDevice()
+  //{
+  //  return mRenderer->mDevice;
+  //}
 
-  std::shared_ptr<vkhlf::DeviceMemoryAllocator>& Dx12RenderedSurface::GetAllocator(const std::string aName)
-  {
-    return mRenderer->mAllocators[aName];
-  }
+  //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& Dx12RenderedSurface::GetAllocator(const std::string aName)
+  //{
+  //  return mRenderer->mAllocators[aName];
+  //}
 
 
   void Dx12RenderedSurface::DestroyModel(GraphicsView *aView, DX12InstantiatedModel *aModel)
@@ -209,9 +212,9 @@ namespace YTE
 
   // Shader
   Dx12Shader* Dx12RenderedSurface::CreateShader(std::string &aShaderSetName,
-                                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                                            Dx12ShaderDescriptions &aDescription,
-                                            GraphicsView* aView)
+                                                //std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+                                                Dx12ShaderDescriptions &aDescription,
+                                                GraphicsView* aView)
   {
     auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
     Dx12Shader *shaderPtr{ nullptr };
@@ -230,11 +233,11 @@ namespace YTE
     // If surface doesn't have shader
     else if (shaderIt == mShaderCreateInfos.end())
     {
-      VkCreatePipelineDataSet cpds = Dx12Shader::CreateInfo(aShaderSetName,
-                                                          this,
-                                                          aPipelineLayout,
-                                                          aDescription,
-                                                          false);
+      DX12CreatePipelineDataSet cpds = Dx12Shader::CreateInfo(aShaderSetName,
+                                                            this,
+                                                            //aPipelineLayout,
+                                                            aDescription,
+                                                            false);
                                     
       DebugObjection(cpds.mValid == false,
                   fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
@@ -276,67 +279,68 @@ namespace YTE
   }
 
 
-  std::shared_ptr<vkhlf::CommandPool>& Dx12RenderedSurface::GetCommandPool()
-  {
-    return mRenderer->mCommandPool;
-  }
-
-  std::shared_ptr<vkhlf::Queue>& Dx12RenderedSurface::GetGraphicsQueue()
-  {
-    return mRenderer->mGraphicsQueue;
-  }
+  //std::shared_ptr<vkhlf::CommandPool>& Dx12RenderedSurface::GetCommandPool()
+  //{
+  //  return mRenderer->mCommandPool;
+  //}
+  //
+  //std::shared_ptr<vkhlf::Queue>& Dx12RenderedSurface::GetGraphicsQueue()
+  //{
+  //  return mRenderer->mGraphicsQueue;
+  //}
 
   void Dx12RenderedSurface::ResizeInternal(bool aConstructing)
   {
-    auto baseDevice = static_cast<vk::PhysicalDevice>
-                                  (*(mRenderer->GetDx12Internals()->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
-
-    auto extent = supportDetails.Capabilities().currentExtent;
-
-    if (0 == extent.width || 0 == extent.height)
-    {
-      return;
-    }
-
-    // resize all render targets (and swapchain)
-    mRenderToScreen->Resize(extent);
-
-    if (false == aConstructing)
-    {
-      // reset swapchain's references to render target frame buffers
-      std::vector<DX12RenderTarget*> rts;
-
-      for (auto &v : mViewData)
-      {
-        auto superSampling = v.first->GetSuperSampling();
-
-        auto renderTargetExtent = extent;
-        renderTargetExtent.height *= superSampling;
-        renderTargetExtent.width *= superSampling;
-
-        v.second.mRenderTarget->Resize(renderTargetExtent);
-        rts.push_back(v.second.mRenderTarget.get());
-      }
-
-      if (mViewData.size() != 0)
-      {
-        mRenderToScreen->ResetRenderTargets(rts);
-      }
-    }
-
-    WindowResize event;
-    event.height = extent.height;
-    event.width = extent.width;
-    mWindow->SendEvent(Events::RendererResize, &event);
-
-    for (auto &view : mViewData)
-    {
-      view.first->SendEvent(Events::RendererResize, &event);
-    }
+    UnusedArguments(aConstructing);
+    //auto baseDevice = static_cast<vk::PhysicalDevice>
+    //                              (*(mRenderer->GetDx12Internals()->GetPhysicalDevice().get()));
+    //vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
+    //
+    //auto supportDetails = DX12SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
+    //                                                                     baseSurfaceKhr);
+    //
+    //auto extent = supportDetails.Capabilities().currentExtent;
+    //
+    //if (0 == extent.width || 0 == extent.height)
+    //{
+    //  return;
+    //}
+    //
+    //// resize all render targets (and swapchain)
+    //mRenderToScreen->Resize(extent);
+    //
+    //if (false == aConstructing)
+    //{
+    //  // reset swapchain's references to render target frame buffers
+    //  std::vector<DX12RenderTarget*> rts;
+    //
+    //  for (auto &v : mViewData)
+    //  {
+    //    auto superSampling = v.first->GetSuperSampling();
+    //
+    //    auto renderTargetExtent = extent;
+    //    renderTargetExtent.height *= superSampling;
+    //    renderTargetExtent.width *= superSampling;
+    //
+    //    v.second.mRenderTarget->Resize(renderTargetExtent);
+    //    rts.push_back(v.second.mRenderTarget.get());
+    //  }
+    //
+    //  if (mViewData.size() != 0)
+    //  {
+    //    mRenderToScreen->ResetRenderTargets(rts);
+    //  }
+    //}
+    //
+    //WindowResize event;
+    //event.height = extent.height;
+    //event.width = extent.width;
+    //mWindow->SendEvent(Events::RendererResize, &event);
+    //
+    //for (auto &view : mViewData)
+    //{
+    //  view.first->SendEvent(Events::RendererResize, &event);
+    //}
   }
 
   void Dx12RenderedSurface::ResizeEvent(WindowResize *aEvent)
@@ -352,61 +356,64 @@ namespace YTE
   }
 
   void Dx12RenderedSurface::RegisterView(GraphicsView *aView,
-                                       DrawerTypes aDrawerType,
-                                       DrawerTypeCombination aCombination)
+                                         DrawerTypes aDrawerType,
+                                         DrawerTypeCombination aCombination)
   {
-    auto it = mViewData.find(aView);
-
-    if (it == mViewData.end())
-    {
-      auto emplaced = mViewData.try_emplace(aView);
-
-      auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
-                                          vk::BufferUsageFlagBits::eTransferDst |
-                                          vk::BufferUsageFlagBits::eUniformBuffer,
-                                          vk::SharingMode::eExclusive,
-                                          nullptr,
-                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                          uboAllocator);
-      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
-                                           vk::BufferUsageFlagBits::eTransferDst |
-                                           vk::BufferUsageFlagBits::eUniformBuffer,
-                                           vk::SharingMode::eExclusive,
-                                           nullptr,
-                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                           uboAllocator);
-
-      auto &view = emplaced.first->second;
-
-      view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
-      view.mView = aView;
-      view.mViewUBO = buffer;
-      view.mIlluminationUBO = buffer2;
-      view.mLightManager.SetSurfaceAndView(this, aView);
-      view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
-      view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
-      view.mRenderTarget->SetView(&view);
-      view.mViewOrder = aView->GetOrder(); // default
-      view.mRenderTarget->SetOrder(view.mViewOrder);
-    }
-
-    // reset swapchain's references to render target frame buffers
-    std::vector<DX12RenderTarget*> rts;
-    for (auto const& [view, data] : mViewData)
-    {
-      rts.push_back(data.mRenderTarget.get());
-    }
-
-    if (mViewData.size() != 0)
-    {
-      mRenderToScreen->SetRenderTargets(rts);
-    }
+    UnusedArguments(aView);
+    UnusedArguments(aDrawerType);
+    UnusedArguments(aCombination);
+    //auto it = mViewData.find(aView);
+    //
+    //if (it == mViewData.end())
+    //{
+    //  auto emplaced = mViewData.try_emplace(aView);
+    //
+    //  auto uboAllocator = mRenderer->mAllocators[DX12AllocatorTypes::UniformBufferObject];
+    //  auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
+    //                                      vk::BufferUsageFlagBits::eTransferDst |
+    //                                      vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                      vk::SharingMode::eExclusive,
+    //                                      nullptr,
+    //                                      vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                      uboAllocator);
+    //  auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
+    //                                       vk::BufferUsageFlagBits::eTransferDst |
+    //                                       vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                       vk::SharingMode::eExclusive,
+    //                                       nullptr,
+    //                                       vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                       uboAllocator);
+    //
+    //  auto &view = emplaced.first->second;
+    //
+    //  view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
+    //  view.mView = aView;
+    //  view.mViewUBO = buffer;
+    //  view.mIlluminationUBO = buffer2;
+    //  view.mLightManager.SetSurfaceAndView(this, aView);
+    //  view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
+    //  view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
+    //  view.mRenderTarget->SetView(&view);
+    //  view.mViewOrder = aView->GetOrder(); // default
+    //  view.mRenderTarget->SetOrder(view.mViewOrder);
+    //}
+    //
+    //// reset swapchain's references to render target frame buffers
+    //std::vector<DX12RenderTarget*> rts;
+    //for (auto const& [view, data] : mViewData)
+    //{
+    //  rts.push_back(data.mRenderTarget.get());
+    //}
+    //
+    //if (mViewData.size() != 0)
+    //{
+    //  mRenderToScreen->SetRenderTargets(rts);
+    //}
   }
 
   void Dx12RenderedSurface::SetViewDrawingType(GraphicsView *aView,
-                                             DrawerTypes aDrawerType,
-                                             DrawerTypeCombination aCombination)
+                                               DrawerTypes aDrawerType,
+                                               DrawerTypeCombination aCombination)
   {
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget.reset();
@@ -491,14 +498,15 @@ namespace YTE
     }
   }
 
-  void Dx12RenderedSurface::GraphicsDataUpdateVkEvent(DX12GraphicsDataUpdate *aEvent)
+  void Dx12RenderedSurface::GraphicsDataUpdateEvent(DX12GraphicsDataUpdate *aEvent)
   {
-    for (auto const&[view, data] : mViewData)
-    {
-      data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
-      data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
-      this->DeregisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateVkEvent>(Events::DX12GraphicsDataUpdate, this);
-    }
+    UnusedArguments(aEvent);
+    //for (auto const&[view, data] : mViewData)
+    //{
+    //  data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
+    //  data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
+    //  this->DeregisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
+    //}
   }
 
   void Dx12RenderedSurface::FrameUpdate(LogicUpdate *aEvent)
@@ -523,39 +531,39 @@ namespace YTE
 
   void Dx12RenderedSurface::PresentFrame()
   {
-    if (mCanPresent == false)
-    {
-      return;
-    }
-
-    // wait till rendering is complete
-    mRenderer->mGraphicsQueue->waitIdle();
-    
-    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
-    {
-      // create Framebuffer & Swapchain
-      WindowResize event;
-      event.height = mWindow->GetHeight();
-      event.width = mWindow->GetWidth();
-      ResizeEvent(&event);
-    }
-
-    mCanPresent = false;
+    //if (mCanPresent == false)
+    //{
+    //  return;
+    //}
+    //
+    //// wait till rendering is complete
+    //mRenderer->mGraphicsQueue->waitIdle();
+    //
+    //if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    //{
+    //  // create Framebuffer & Swapchain
+    //  WindowResize event;
+    //  event.height = mWindow->GetHeight();
+    //  event.width = mWindow->GetWidth();
+    //  ResizeEvent(&event);
+    //}
+    //
+    //mCanPresent = false;
   }
 
   void Dx12RenderedSurface::GraphicsDataUpdate()
   {
-    DX12GraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
-
-    update.mCBO->begin();
-
-    SendEvent(Events::DX12GraphicsDataUpdate, &update);
-
-    update.mCBO->end();
-
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
+    //DX12GraphicsDataUpdate update;
+    //mGraphicsDataUpdateCBOB->NextCommandBuffer();
+    //update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+    //
+    //update.mCBO->begin();
+    //
+    //SendEvent(Events::DX12GraphicsDataUpdate, &update);
+    //
+    //update.mCBO->end();
+    //
+    //vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -566,11 +574,11 @@ namespace YTE
     // reconstruct
     for (auto &shader : mShaderCreateInfos)
     {
-      VkCreatePipelineDataSet cpds = Dx12Shader::CreateInfo(shader.second.mName,
-                                                          this,
-                                                          shader.second.mPipelineLayout,
-                                                          shader.second.mDescriptions,
-                                                          true);
+      DX12CreatePipelineDataSet cpds = Dx12Shader::CreateInfo(shader.second.mName,
+                                                              this,
+                                                              //shader.second.mPipelineLayout,
+                                                              shader.second.mDescriptions,
+                                                              true);
 
       // failed to compile, error already posted, just reuse the shader
       if (cpds.mValid)
@@ -594,13 +602,13 @@ namespace YTE
 
   void Dx12RenderedSurface::AnimationUpdate()
   {
-    DX12GraphicsDataUpdate update;
-    mAnimationUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
-    update.mCBO->begin();
-    SendEvent(Events::AnimationUpdateVk, &update);
-    update.mCBO->end();
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
+    //DX12GraphicsDataUpdate update;
+    //mAnimationUpdateCBOB->NextCommandBuffer();
+    //update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
+    //update.mCBO->begin();
+    //SendEvent(Events::DX12AnimationUpdate, &update);
+    //update.mCBO->end();
+    //vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }
 
 
@@ -617,144 +625,148 @@ namespace YTE
 
   void Dx12RenderedSurface::RenderFrameForSurface()
   {
-    mRenderer->mGraphicsQueue->waitIdle();
-
-    if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
-    {
-      ReloadAllShaders();
-    }
-
-    if (mDataUpdateRequired)
-    {
-      GraphicsDataUpdate();
-    }
-
-    
-    std::array<float, 4> colorValues;
-
-    vk::ClearDepthStencilValue depthStencil{1.0f, 0};
-
-    auto &extent = mRenderToScreen->GetExtent();
-    mRenderingCBOB->NextCommandBuffer();
-
-
-    // build secondaries
-    for (auto const& [view, data] : mViewData)
-    {
-      data.mRenderTarget->RenderFull(mRenderer->mMeshes);
-      data.mRenderTarget->MoveToNextEvent();
-    }
-
-
-    // render to screen;
-    mRenderToScreen->RenderFull(extent);
-    mRenderToScreen->MoveToNextEvent();
-
-
-    // cube map render
-    std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
-
-
-    // build primary
-    auto cbo = mRenderingCBOB->GetCurrentCBO();
-    cbo->begin();
-
-    // render all first pass render targets
-    // wait on present semaphore for first render
-    for (auto &v : mViewData)
-    {
-      v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
-
-      glm::vec4 col = v.second.mClearColor;
-
-      colorValues[0] = col.x;
-      colorValues[1] = col.y;
-      colorValues[2] = col.z;
-      colorValues[3] = col.w;
-      vk::ClearValue color{ colorValues };
-
-      cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
-                           v.second.mRenderTarget->GetFrameBuffer(),
-                           vk::Rect2D({ 0, 0 }, v.second.mRenderTarget->GetRenderTargetData()->mExtent),
-                           { color, depthStencil },
-                           vk::SubpassContents::eSecondaryCommandBuffers);
-
-      v.second.mRenderTarget->ExecuteCommands(cbo);
-
-      cbo->endRenderPass();
-    }
-
-    colorValues[0] = 1.0f;
-    colorValues[1] = 0.0f;
-    colorValues[2] = 0.0f;
-    colorValues[3] = 1.0f;
-    vk::ClearValue color{ colorValues };
-
-    mRenderToScreen->ExecuteSecondaryEvent(cbo);
-
-    cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
-                         mRenderToScreen->GetFrameBuffer(),
-                         vk::Rect2D({ 0, 0 }, extent),
-                         { color, depthStencil },
-                         vk::SubpassContents::eSecondaryCommandBuffers);
-
-    mRenderToScreen->ExecuteCommands(cbo);
-
-    cbo->endRenderPass();
-    
-    cbo->end();
-
-    vk::ArrayProxy<const std::shared_ptr<vkhlf::Semaphore>> vkWaitSemaphores(waitSemaphores);
-
-    // submit
-    vkhlf::SubmitInfo submit{ vkWaitSemaphores,
-                              { vk::PipelineStageFlagBits::eColorAttachmentOutput },
-                              cbo,
-                              mRenderCompleteSemaphore };
-    
-    mRenderer->mGraphicsQueue->submit(submit);
-
-    mCanPresent = true;
+    //mRenderer->mGraphicsQueue->waitIdle();
+    //
+    //if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
+    //{
+    //  ReloadAllShaders();
+    //}
+    //
+    //if (mDataUpdateRequired)
+    //{
+    //  GraphicsDataUpdate();
+    //}
+    //
+    //
+    //std::array<float, 4> colorValues;
+    //
+    //vk::ClearDepthStencilValue depthStencil{1.0f, 0};
+    //
+    //auto &extent = mRenderToScreen->GetExtent();
+    //mRenderingCBOB->NextCommandBuffer();
+    //
+    //
+    //// build secondaries
+    //for (auto const& [view, data] : mViewData)
+    //{
+    //  data.mRenderTarget->RenderFull(mRenderer->mMeshes);
+    //  data.mRenderTarget->MoveToNextEvent();
+    //}
+    //
+    //
+    //// render to screen;
+    //mRenderToScreen->RenderFull(extent);
+    //mRenderToScreen->MoveToNextEvent();
+    //
+    //
+    //// cube map render
+    //std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
+    //
+    //
+    //// build primary
+    //auto cbo = mRenderingCBOB->GetCurrentCBO();
+    //cbo->begin();
+    //
+    //// render all first pass render targets
+    //// wait on present semaphore for first render
+    //for (auto &v : mViewData)
+    //{
+    //  v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
+    //
+    //  glm::vec4 col = v.second.mClearColor;
+    //
+    //  colorValues[0] = col.x;
+    //  colorValues[1] = col.y;
+    //  colorValues[2] = col.z;
+    //  colorValues[3] = col.w;
+    //  vk::ClearValue color{ colorValues };
+    //
+    //  cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
+    //                       v.second.mRenderTarget->GetFrameBuffer(),
+    //                       vk::Rect2D({ 0, 0 }, v.second.mRenderTarget->GetRenderTargetData()->mExtent),
+    //                       { color, depthStencil },
+    //                       vk::SubpassContents::eSecondaryCommandBuffers);
+    //
+    //  v.second.mRenderTarget->ExecuteCommands(cbo);
+    //
+    //  cbo->endRenderPass();
+    //}
+    //
+    //colorValues[0] = 1.0f;
+    //colorValues[1] = 0.0f;
+    //colorValues[2] = 0.0f;
+    //colorValues[3] = 1.0f;
+    //vk::ClearValue color{ colorValues };
+    //
+    //mRenderToScreen->ExecuteSecondaryEvent(cbo);
+    //
+    //cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
+    //                     mRenderToScreen->GetFrameBuffer(),
+    //                     vk::Rect2D({ 0, 0 }, extent),
+    //                     { color, depthStencil },
+    //                     vk::SubpassContents::eSecondaryCommandBuffers);
+    //
+    //mRenderToScreen->ExecuteCommands(cbo);
+    //
+    //cbo->endRenderPass();
+    //
+    //cbo->end();
+    //
+    //vk::ArrayProxy<const std::shared_ptr<vkhlf::Semaphore>> vkWaitSemaphores(waitSemaphores);
+    //
+    //// submit
+    //vkhlf::SubmitInfo submit{ vkWaitSemaphores,
+    //                          { vk::PipelineStageFlagBits::eColorAttachmentOutput },
+    //                          cbo,
+    //                          mRenderCompleteSemaphore };
+    //
+    //mRenderer->mGraphicsQueue->submit(submit);
+    //
+    //mCanPresent = true;
   }
 
 
   std::unique_ptr<DX12RenderTarget> Dx12RenderedSurface::CreateRenderTarget(DrawerTypes aDrawerType, 
-                                                                        DX12ViewData *view,
-                                                                        DrawerTypeCombination aCombination)
+                                                                            DX12ViewData *aView,
+                                                                            DrawerTypeCombination aCombination)
   {
-    switch (aDrawerType)
-    {
-      case DrawerTypes::GameForwardDrawer:
-      {
-        return std::move(std::make_unique<VkRTGameForwardDrawer>(this,
-                                                                 mColorFormat,
-                                                                 mDepthFormat,
-                                                                 mSurface,
-                                                                 view,
-                                                                 aCombination));
-        break;
-      }
-      case DrawerTypes::ImguiDrawer:
-      {
-        return std::move(std::make_unique<Dx12ImguiDrawer>(this,
-                                                         mColorFormat,
-                                                         mDepthFormat,
-                                                         mSurface,
-                                                         view,
-                                                         aCombination));
-        break;
-      }
-      case DrawerTypes::DefaultDrawer:
-      default:
-      {
-        return std::move(std::make_unique<VkRTGameForwardDrawer>(this, 
-                                                                 mColorFormat,
-                                                                 mDepthFormat,
-                                                                 mSurface,
-                                                                 view,
-                                                                 aCombination));
-        break;
-      }
-    }
+    UnusedArguments(aDrawerType);
+    UnusedArguments(aView);
+    UnusedArguments(aCombination);
+    //switch (aDrawerType)
+    //{
+    //  case DrawerTypes::GameForwardDrawer:
+    //  {
+    //    return std::move(std::make_unique<DX12RTGameForwardDrawer>(this,
+    //                                                             mColorFormat,
+    //                                                             mDepthFormat,
+    //                                                             mSurface,
+    //                                                             aView,
+    //                                                             aCombination));
+    //    break;
+    //  }
+    //  case DrawerTypes::ImguiDrawer:
+    //  {
+    //    return std::move(std::make_unique<Dx12ImguiDrawer>(this,
+    //                                                     mColorFormat,
+    //                                                     mDepthFormat,
+    //                                                     mSurface,
+    //                                                     aView,
+    //                                                     aCombination));
+    //    break;
+    //  }
+    //  case DrawerTypes::DefaultDrawer:
+    //  default:
+    //  {
+    //    return std::move(std::make_unique<DX12RTGameForwardDrawer>(this, 
+    //                                                             mColorFormat,
+    //                                                             mDepthFormat,
+    //                                                             mSurface,
+    //                                                             aView,
+    //                                                             aCombination));
+    //    break;
+    //  }
+    //}
+    return nullptr;
   }
 }

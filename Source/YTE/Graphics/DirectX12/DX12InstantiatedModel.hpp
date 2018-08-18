@@ -19,14 +19,18 @@ namespace YTE
   public:
     YTEDeclareType(DX12InstantiatedModel);
 
-    DX12InstantiatedModel(std::string &aModelFile, Dx12RenderedSurface *aSurface, GraphicsView *aView);
-    DX12InstantiatedModel(DX12Mesh *aMesh, Dx12RenderedSurface *aSurface, GraphicsView *aView);
+    DX12InstantiatedModel(std::string &aModelFile, 
+                          Dx12RenderedSurface *aSurface, 
+                          GraphicsView *aView);
+    DX12InstantiatedModel(DX12Mesh *aMesh, 
+                          Dx12RenderedSurface *aSurface, 
+                          GraphicsView *aView);
     ~DX12InstantiatedModel() override;
 
     void Create();
     void CreateShader();
-    void SurfaceLostEvent(DX12ViewChanged *aEvent);
-    void SurfaceGainedEvent(DX12ViewChanged *aEvent);
+    void SurfaceLostEvent(ViewChanged *aEvent);
+    void SurfaceGainedEvent(ViewChanged *aEvent);
 
     void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
     void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
@@ -42,21 +46,17 @@ namespace YTE
     // Takes the submesh, as well as the index of the submesh.
     void CreateDescriptorSet(Dx12Submesh *aMesh, size_t mIndex);
     void DX12GraphicsDataUpdate(DX12GraphicsDataUpdate *aEvent);
-
-    void SetInstanced(bool aInstanced) override;
-    bool GetInstanced() override;
-
-    std::shared_ptr<vkhlf::Buffer> mUBOModel;
+    
     Dx12RenderedSurface *mSurface;
     GraphicsView *mView;
 
-    std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
-
-    std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
-    std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOMaterial>> mUBOSubmeshMaterials;
+    //std::shared_ptr<vkhlf::Buffer> mUBOModel;
+    //std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
+    //std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
+    //std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOMaterial>> mUBOSubmeshMaterials;
 
     // These are only needed if we're not instanced, otherwise lives on Dx12Submesh.
-    std::unordered_map<Dx12Submesh*, SubMeshPipelineData> mPipelineData;
+    std::unordered_map<Dx12Submesh*, DX12SubMeshPipelineData> mPipelineData;
 
     DX12Mesh* GetVkMesh()
     {

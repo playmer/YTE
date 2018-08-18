@@ -34,7 +34,7 @@ namespace YTE
     , mVulkanSurface(aVulkanSurface)
     , mParentViewData(aView)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
@@ -56,7 +56,7 @@ namespace YTE
     , mDepthFormat(aDepthFormat)
     , mVulkanSurface(aVulkanSurface)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
@@ -129,9 +129,9 @@ namespace YTE
 
 
 
-  void VkRenderTarget::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderTarget::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
-    mSurface->DeregisterEvent<&VkRenderTarget::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mSurface->DeregisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
     mSignedUpForUpdate = false;
     UnusedArguments(aEvent);
   }
