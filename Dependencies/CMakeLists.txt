@@ -22,12 +22,6 @@ get_target_property(assimpBinaryDir assimp BINARY_DIR)
 target_include_directories(assimp BEFORE PUBLIC 
                             ${assimpBinaryDir}/../include)
 
-#target_include_directories(assimp PUBLIC 
-#                            ${assimpBinaryDir}/../include 
-#                            ${assimpBinaryDir}../)
-
-message(here: ${assimpBinaryDir}/../include)
-
 target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_options(assimp PRIVATE /bigobj)
 
