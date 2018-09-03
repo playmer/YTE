@@ -79,7 +79,7 @@ namespace YTE
     RSValue value;
     auto str = FloatToString(aFloat);
     value.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
-    return value;
+    return std::move(value);
   }
 
   inline void DoubleAsValue(RSValue &aValue, double aDouble, RSAllocator &aAllocator)
@@ -93,7 +93,7 @@ namespace YTE
     RSValue value;
     auto str = DoubleToString(aDouble);
     value.SetString(str.c_str(), static_cast<RSSizeType>(str.size()), aAllocator);
-    return value;
+    return std::move(value);
   }
 
   ///////////////////////////////

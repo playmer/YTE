@@ -19,9 +19,14 @@ add_subdirectory(assimp)
 
 get_target_property(assimpBinaryDir assimp BINARY_DIR)
 
-target_include_directories(assimp PUBLIC 
-                            ${assimpBinaryDir}/../include 
-                            ${assimpBinaryDir}../)
+target_include_directories(assimp BEFORE PUBLIC 
+                            ${assimpBinaryDir}/../include)
+
+#target_include_directories(assimp PUBLIC 
+#                            ${assimpBinaryDir}/../include 
+#                            ${assimpBinaryDir}../)
+
+message(here: ${assimpBinaryDir}/../include)
 
 target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_options(assimp PRIVATE /bigobj)
@@ -77,19 +82,19 @@ if (CMAKE_SYSTEM_NAME STREQUAL Windows)
 endif()
 
 target_compile_options(assimp                PRIVATE ${disableWarning})
-target_compile_options(Bullet2FileLoader     PRIVATE ${disableWarning}) 
-target_compile_options(Bullet3Collision      PRIVATE ${disableWarning}) 
-target_compile_options(Bullet3Common         PRIVATE ${disableWarning}) 
-target_compile_options(Bullet3Dynamics       PRIVATE ${disableWarning}) 
-target_compile_options(Bullet3Geometry       PRIVATE ${disableWarning}) 
-target_compile_options(Bullet3OpenCL_clew    PRIVATE ${disableWarning}) 
-target_compile_options(BulletCollision       PRIVATE ${disableWarning}) 
-target_compile_options(BulletDynamics        PRIVATE ${disableWarning}) 
-target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning}) 
-target_compile_options(BulletSoftBody        PRIVATE ${disableWarning}) 
-target_compile_options(LinearMath            PRIVATE ${disableWarning}) 
-target_compile_options(crn                   PRIVATE ${disableWarning}) 
-target_compile_options(imgui                   PRIVATE ${disableWarning})
+target_compile_options(Bullet2FileLoader     PRIVATE ${disableWarning})
+target_compile_options(Bullet3Collision      PRIVATE ${disableWarning})
+target_compile_options(Bullet3Common         PRIVATE ${disableWarning})
+target_compile_options(Bullet3Dynamics       PRIVATE ${disableWarning})
+target_compile_options(Bullet3Geometry       PRIVATE ${disableWarning})
+target_compile_options(Bullet3OpenCL_clew    PRIVATE ${disableWarning})
+target_compile_options(BulletCollision       PRIVATE ${disableWarning})
+target_compile_options(BulletDynamics        PRIVATE ${disableWarning})
+target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning})
+target_compile_options(BulletSoftBody        PRIVATE ${disableWarning})
+target_compile_options(LinearMath            PRIVATE ${disableWarning})
+target_compile_options(crn                   PRIVATE ${disableWarning})
+target_compile_options(imgui                 PRIVATE ${disableWarning})
 target_compile_options(fmt                   PRIVATE ${disableWarning})
 target_compile_options(STB                   PRIVATE ${disableWarning})
 target_compile_options(VkHLF                 PRIVATE ${disableWarning})

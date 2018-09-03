@@ -85,6 +85,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   )
 endif()
 
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
+  target_compile_options(YTE PRIVATE 
+    PUBLIC
+      /std:c++17
+  )
+endif()
+
 target_compile_definitions(YTE PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GLM_FORCE_DEPTH_ZERO_TO_ONE)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)

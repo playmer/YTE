@@ -28,6 +28,7 @@ Function(FindWWise aTarget)
 
   if (CMAKE_SYSTEM_NAME STREQUAL Windows)
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
+    set(PlatformLibraryDirectory x64_vc150)
     
     file(GLOB_RECURSE 
          PlatformFiles 
@@ -37,6 +38,7 @@ Function(FindWWise aTarget)
          "${WWisePath}/samples/SoundEngine/Win32/*.hpp")
   else()
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
+    set(PlatformLibraryDirectory Linux_x64)
 
     file(GLOB_RECURSE 
          PlatformFiles 
@@ -57,18 +59,18 @@ Function(FindWWise aTarget)
 
   file(GLOB_RECURSE 
        staticLibraryRelease
-       "${WWisePath}/x64_vc150/Release/lib"
-       "${WWisePath}/x64_vc150/Release/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Release/lib"
+       "${WWisePath}/${PlatformLibraryDirectory}/Release/lib/*.lib")
         
   file(GLOB_RECURSE 
        staticLibraryProfile
-       "${WWisePath}/x64_vc150/Profile/lib"
-       "${WWisePath}/x64_vc150/Profile/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Profile/lib"
+       "${WWisePath}/${PlatformLibraryDirectory}/Profile/lib/*.lib")
         
   file(GLOB_RECURSE 
        staticLibraryDebug
-       "${WWisePath}/x64_vc150/Debug/lib"
-       "${WWisePath}/x64_vc150/Debug/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Debug/lib"
+       "${WWisePath}/${PlatformLibraryDirectory}/Debug/lib/*.lib")
 
   foreach(library ${staticLibraryRelease})
     get_filename_component(libraryName ${library} NAME_WE)
