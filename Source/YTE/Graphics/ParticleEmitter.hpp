@@ -36,7 +36,7 @@ namespace YTE
     YTEDeclareType(ParticleEmitter);
     YTE_Shared ParticleEmitter(Composition *aOwner, Space *aSpace);
 
-    YTE_Shared ParticleEmitter(ParticleEmitter&&) = default;
+    YTE_Shared ParticleEmitter(ParticleEmitter&) = delete;
 
     YTE_Shared void CreateMesh();
 

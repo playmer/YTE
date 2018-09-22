@@ -24,13 +24,13 @@ namespace YTE
   public:
     YTEDeclareType(Body);
 
-    Body(Composition *aOwner, Space *aSpace);
+    YTE_Shared Body(Composition *aOwner, Space *aSpace);
 
-    ~Body() override;
+    YTE_Shared ~Body() override;
 
-    void OnLogicUpdate(LogicUpdate *aEvent);
+    YTE_Shared void OnLogicUpdate(LogicUpdate *aEvent);
 
-    void AddCollidedThisFrame(Composition *aComposition);
+    YTE_Shared void AddCollidedThisFrame(Composition *aComposition);
 
   protected:
     std::vector<Composition*> mCollidedThisFrame;

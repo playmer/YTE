@@ -23,11 +23,11 @@ namespace YTE
   public:
     YTEDeclareType(JobSystem);
 
-    JobSystem(Composition *aOwner = nullptr);
-    ~JobSystem();
-    void Initialize();
-    void WaitThisThread(JobHandle& aJobHandle);
-    void Update(LogicUpdate *aUpdate);
+    YTE_Shared JobSystem(Composition *aOwner = nullptr);
+    YTE_Shared ~JobSystem();
+    YTE_Shared void Initialize();
+    YTE_Shared void WaitThisThread(JobHandle& aJobHandle);
+    YTE_Shared void Update(LogicUpdate *aUpdate);
 
     // TODO(Evan): Finish FunctionDelegate to allow lambda support
 

@@ -34,7 +34,7 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedModel);
 
-    InstantiatedModel();
+    YTE_Shared InstantiatedModel();
 
     virtual ~InstantiatedModel()
     {

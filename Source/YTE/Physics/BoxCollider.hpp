@@ -23,9 +23,9 @@ namespace YTE
   public:
     YTEDeclareType(BoxCollider);
 
-    BoxCollider(Composition *aOwner, Space *aSpace);
+    YTE_Shared BoxCollider(Composition *aOwner, Space *aSpace);
 
-    void PhysicsInitialize() override;
+    YTE_Shared void PhysicsInitialize() override;
 
     //const glm::vec3& GetSize() const { return mSize; }
     //const glm::vec3& GetOffset() const { return mOffset; }
@@ -35,7 +35,7 @@ namespace YTE
     //void SetOffset(const glm::vec3& aOffset);
     //void SetOffset(float aX, float aY, float aZ);
 
-    void ScaleUpdate(TransformChanged *aEvent);
+    YTE_Shared void ScaleUpdate(TransformChanged *aEvent);
 
   private:
     UniquePointer<btBoxShape> mBoxShape;

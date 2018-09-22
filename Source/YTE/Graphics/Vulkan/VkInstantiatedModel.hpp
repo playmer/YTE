@@ -24,29 +24,29 @@ namespace YTE
   public:
     YTEDeclareType(VkInstantiatedModel);
 
-    VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface, GraphicsView *aView);
-    VkInstantiatedModel(VkMesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
-    ~VkInstantiatedModel() override;
+    YTE_Shared VkInstantiatedModel(std::string &aModelFile, VkRenderedSurface *aSurface, GraphicsView *aView);
+    YTE_Shared VkInstantiatedModel(VkMesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
+    YTE_Shared ~VkInstantiatedModel() override;
 
-    void Create();
-    void CreateShader();
-    void SurfaceLostEvent(ViewChanged *aEvent);
-    void SurfaceGainedEvent(ViewChanged *aEvent);
+    YTE_Shared void Create();
+    YTE_Shared void CreateShader();
+    YTE_Shared void SurfaceLostEvent(ViewChanged *aEvent);
+    YTE_Shared void SurfaceGainedEvent(ViewChanged *aEvent);
 
-    void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
-    void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
+    YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
+    YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
 
-    void UpdateUBOModel() override;
-    void UpdateUBOModel(UBOModel &aUBO) override;
-    void UpdateUBOAnimation(UBOAnimation *aUBO) override;
-    void UpdateUBOMaterial(UBOMaterial *aUBO) override;
-    void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
+    YTE_Shared void UpdateUBOModel() override;
+    YTE_Shared void UpdateUBOModel(UBOModel &aUBO) override;
+    YTE_Shared void UpdateUBOAnimation(UBOAnimation *aUBO) override;
+    YTE_Shared void UpdateUBOMaterial(UBOMaterial *aUBO) override;
+    YTE_Shared void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
 
-    void SetDefaultAnimationOffset() override;
+    YTE_Shared void SetDefaultAnimationOffset() override;
 
     // Takes the submesh, as well as the index of the submesh.
-    void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
-    void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
+    YTE_Shared void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
+    YTE_Shared void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;

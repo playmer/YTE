@@ -23,11 +23,11 @@ namespace YTE
   public:
     YTEDeclareType(CylinderCollider);
 
-    CylinderCollider(Composition *aOwner, Space *aSpace);
+    YTE_Shared CylinderCollider(Composition *aOwner, Space *aSpace);
 
-    void PhysicsInitialize() override;
+    YTE_Shared void PhysicsInitialize() override;
 
-    void ScaleUpdate(TransformChanged *aEvent);
+    YTE_Shared void ScaleUpdate(TransformChanged *aEvent);
 
   private:
     UniquePointer<btCylinderShape> mCylinderShape;

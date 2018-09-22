@@ -19,16 +19,16 @@ namespace YTE
   public:
     YTEDeclareType(FlybyCamera);
 
-    FlybyCamera(Composition *aOwner, Space *aSpace);
-    ~FlybyCamera() override;
-    void Initialize() override;
+    YTE_Shared FlybyCamera(Composition *aOwner, Space *aSpace);
+    YTE_Shared ~FlybyCamera() override;
+    YTE_Shared void Initialize() override;
 
-    void Update(LogicUpdate *aEvent);
+    YTE_Shared void Update(LogicUpdate *aEvent);
 
-    void MousePress(MouseButtonEvent *aEvent);
-    void MouseMove(MouseMoveEvent *aEvent);
-    void MouseRelease(MouseButtonEvent *aEvent);
-    void KeyboardPersist(KeyboardEvent *aEvent);
+    YTE_Shared void MousePress(MouseButtonEvent *aEvent);
+    YTE_Shared void MouseMove(MouseMoveEvent *aEvent);
+    YTE_Shared void MouseRelease(MouseButtonEvent *aEvent);
+    YTE_Shared void KeyboardPersist(KeyboardEvent *aEvent);
 
   private:
     Transform *mTransform;
