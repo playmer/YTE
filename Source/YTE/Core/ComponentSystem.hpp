@@ -42,7 +42,7 @@ namespace YTE
     template<typename T>
     ComponentFactory<T>* GetComponentFactory()
     {
-      auto iterator = mComponentFactories.find(T::GetStaticType());
+      auto iterator = mComponentFactories.Find(T::GetStaticType());
         
       if (iterator != mComponentFactories.end())
       {
