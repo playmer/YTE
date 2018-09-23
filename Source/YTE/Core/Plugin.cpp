@@ -20,6 +20,13 @@ namespace YTE
   }
 
 
+  PluginWrapper::~PluginWrapper()
+  {
+    mPlugin->Unload();
+    mPlugin.reset();
+  }
+
+
   void PluginWrapper::LoadPlugin()
   {
     if (mSharedObject.GetLoaded())

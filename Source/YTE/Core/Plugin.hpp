@@ -49,6 +49,7 @@ namespace YTE
 
     public:
     PluginWrapper(Engine* aEngine, std::string const& aPluginFileName);
+    ~PluginWrapper();
 
     void Reload();
 

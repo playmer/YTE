@@ -41,6 +41,19 @@ namespace YTE
       }
     }
 
+    template <typename tComponent>
+    void DestroyComponentFactory()
+    {
+      YTE::Type *type = tComponent::GetStaticType();
+
+      auto it = mComponentFactories->Find(type);
+
+      if (it != mComponentFactories->end())
+      {
+        mComponentFactories->Erase(it);
+      }
+    }
+
     Engine *mEngine;
     FactoryMap *mComponentFactories;
   };
