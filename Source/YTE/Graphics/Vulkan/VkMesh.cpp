@@ -19,98 +19,18 @@ namespace YTE
   {
     switch (aType)
     {
-    case TextureViewType::e2D:
-      return vk::ImageViewType::e2D;
-      break;
-    case TextureViewType::eCube:
-      return vk::ImageViewType::eCube;
+      case TextureViewType::e2D:
+      {
+        return vk::ImageViewType::e2D;
+        break;
+      }
+      case TextureViewType::eCube:
+      {
+        return vk::ImageViewType::eCube;
+      }
     }
 
     return vk::ImageViewType{};
-  }
-
-
-
-  ///////////////////////////////////////////////////////////////////////////
-  // Instance Manager
-  ///////////////////////////////////////////////////////////////////////////
-
-  void InstanceManager::AddModel(VkInstantiatedModel *aModel)
-  {
-    auto index = FreeIndex();
-
-    // Where to place the model.
-    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
-    mModels.emplace(it, aModel);
-
-    // Where to place the index
-    auto indexOfIndex = it - mModels.begin();
-    auto indexOfIndexIt = mIndexes.begin() + indexOfIndex;
-
-    mIndexes.emplace(indexOfIndexIt, index);
-  }
-
-  void InstanceManager::RemoveModel(VkInstantiatedModel *aModel)
-  {
-    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
-    auto indexOfIndex = it - mModels.begin();
-
-    auto indexBeingFreed = mIndexes[indexOfIndex];
-
-    mModels.erase(it);
-    mIndexes.erase(mIndexes.begin() + indexOfIndex);
-
-    for (auto &index : mIndexes)
-    {
-      if (index > indexBeingFreed)
-      {
-        --index;
-      }
-    }
-  }
-
-  u32 InstanceManager::GetIndex(VkInstantiatedModel *aModel)
-  {
-    auto it = std::lower_bound(mModels.begin(), mModels.end(), aModel);
-    auto indexOfIndex = it - mModels.begin();
-
-    return mIndexes[indexOfIndex];
-  }
-
-  void InstanceManager::Clear()
-  {
-    mIndexes.clear();
-    mModels.clear();
-    mInstanceBuffer.reset();
-    mInstances = 0;
-  }
-
-  std::shared_ptr<vkhlf::Buffer>& InstanceManager::InstanceBuffer()
-  {
-    return mInstanceBuffer;
-  }
-
-  u32 InstanceManager::Instances()
-  {
-    return static_cast<u32>(mIndexes.size());
-  }
-
-  void InstanceManager::GrowBuffer()
-  {
-    //u32 growTo = 2 * mInstances;
-    //auto device = mSurface->GetDevice();
-    //
-    //auto allocator = mSurface->GetAllocator(AllocatorTypes::Mesh);
-    //
-    //auto buffer = device->createBuffer(sizeof(Instance),
-    //  vk::BufferUsageFlagBits::eTransferDst |
-    //  vk::BufferUsageFlagBits::eVertexBuffer,
-    //  vk::SharingMode::eExclusive,
-    //  nullptr,
-    //  vk::MemoryPropertyFlagBits::eDeviceLocal,
-    //  allocator);
-    //
-    //mInstances = growTo;
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -271,32 +191,17 @@ namespace YTE
     mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
     mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
 
-    if (mMesh->GetInstanced())
-    {
-      // Adding the Instance Vertex information
-      mDescriptions.AddBinding<Instance>(vk::VertexInputRate::eInstance);
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix0;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix1;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix2;
-      mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mMatrix3;
+    // Model Buffer for Vertex shader. (Non-instanced Meshes)
+    // We do this one last so as to make the binding numbers easier
+    // to set via #defines for the shader.
+    dslbs.emplace_back(++binding,
+                       vk::DescriptorType::eUniformBuffer,
+                       vk::ShaderStageFlagBits::eVertex,
+                       nullptr);
+    ++uniformBuffers;
 
-      // If we're instanced, we must tell the shaders.
-      mDescriptions.AddPreludeLine("#define INSTANCING");
-    }
-    else
-    {
-      // Model Buffer for Vertex shader. (Non-instanced Meshes)
-      // We do this one last so as to make the binding numbers easier
-      // to set via #defines for the shader.
-      dslbs.emplace_back(++binding,
-                         vk::DescriptorType::eUniformBuffer,
-                         vk::ShaderStageFlagBits::eVertex,
-                         nullptr);
-      ++uniformBuffers;
-
-      // We need to tell the shaders where to find the UBOModel.
-      mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
-    }
+    // We need to tell the shaders where to find the UBOModel.
+    mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
 
     // Create the descriptor set and pipeline layouts.
     mDescriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
@@ -337,8 +242,6 @@ namespace YTE
                                                     std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                                     GraphicsView *aView)
   {
-    auto mesh = static_cast<VkMesh*>(mMesh);
-
     auto device = mRenderer->mDevice;
     auto surface = mRenderer->GetSurface(aView->GetWindow());
 
@@ -410,13 +313,8 @@ namespace YTE
     addTS(mSpecularTexture, sTexInfo);
     addTS(mNormalTexture, nTexInfo);
 
-    // TODO (Josh, Andrew): Define the binding of all buffers via a shader preamble.
-    // We do the model last for easier binding.
-    if (false == mesh->GetInstanced())
-    {
-      vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
-      wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
-    }
+    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
+    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
 
     device->updateDescriptorSets(wdss, nullptr);
 
@@ -433,7 +331,7 @@ namespace YTE
 
   }
 
-  void VkSubmesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkSubmesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     auto update = aEvent->mCBO;
 
@@ -462,89 +360,34 @@ namespace YTE
       mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
     }
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
   }
 
   void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
     mMesh->UpdateVertices(aSubmeshIndex, aVertices);
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
   }
 
   void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
     mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
   }
 
   VkMesh::~VkMesh()
   {
   }
 
-  void VkMesh::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkMesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
-    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
 
     for (auto &submesh : mSubmeshes)
     {
       submesh.second->LoadToVulkan(aEvent);
     }
-  }
-
-
-  void RemoveOffset(VkInstantiatedModel *aModel)
-  {
-    UnusedArguments(aModel);
-  }
-
-  void RequestOffset(VkInstantiatedModel *aModel)
-  {
-    UnusedArguments(aModel);
-  }
-
-  void VkMesh::SetInstanced(bool aInstanced)
-  {
-    UnusedArguments(aInstanced);
-    //if (aInstanced == mInstanced)
-    //{
-    //  return;
-    //}
-    //
-    //// We can clear our offsets if we're turning instancing off.
-    //if (false == mInstanced)
-    //{
-    //  mInstanceManager.Clear();
-    //}
-    //
-    //mInstanced = aInstanced;
-    //
-    //// Switching between instancing or not forces us to recompile shaders and changes some
-    //// our descriptors.
-    //for (auto &submesh : mSubmeshes)
-    //{
-    //  submesh.second->Destroy();
-    //  submesh.second->Create();
-    //}
-    //
-    //for (auto &viewIt : mSurface->GetViews())
-    //{
-    //  // Switching also forces us to recreate our DescriptorSets on every model.
-    //  for (auto model : viewIt.second.mInstantiatedModels[this])
-    //  {
-    //    // If we're switching to instancing we need to generate offsets into the instance buffer
-    //    // for each model.
-    //    if (mInstanced)
-    //    {
-    //      mInstanceManager.AddModel(model);
-    //    }
-    //
-    //    for (auto [submesh, i] : enumerate(mSubmeshes))
-    //    {
-    //      model->CreateDescriptorSet(submesh->second.get(), i );
-    //    }
-    //  } 
-    //}
   }
 }

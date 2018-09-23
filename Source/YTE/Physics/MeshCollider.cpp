@@ -33,13 +33,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  MeshCollider::MeshCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  MeshCollider::MeshCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
-  // TODO (Josh): Reimplement Mesh collider.
   void MeshCollider::PhysicsInitialize()
   {
     // Get info from transform and feed that ish to the Bullet collider
@@ -47,8 +45,8 @@ namespace YTE
     auto translation = transform->GetTranslation();
     auto scale = transform->GetScale();
     auto rotation = transform->GetRotation();
-    auto bulletRot = OurQuatToBt(rotation);
-    auto bulletTransform = btTransform(bulletRot, OurVec3ToBt(translation));
+    auto bulletRot = ToBullet(rotation);
+    auto bulletTransform = btTransform(bulletRot, ToBullet(translation));
     
 
     Mesh *mesh{ nullptr };
@@ -61,7 +59,7 @@ namespace YTE
     
     if (mesh != nullptr)
     {
-      for (auto &submesh : mesh->mColliderParts)
+      for (auto &submesh : mesh->mParts)
       {
         DebugAssert((submesh.mIndexBuffer.size() % 3) == 0, "Index buffer must be divisible by 3.");
 
@@ -73,16 +71,16 @@ namespace YTE
           auto i2 = submesh.mIndexBuffer.at(i + 1);
           auto i3 = submesh.mIndexBuffer.at(i + 2);
       
-          mTriangles.addTriangle(OurVec3ToBt(submesh.mColliderVertexBuffer.at(i1)),
-                                 OurVec3ToBt(submesh.mColliderVertexBuffer.at(i2)),
-                                 OurVec3ToBt(submesh.mColliderVertexBuffer.at(i3)));
+          mTriangles.addTriangle(ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
+                                 ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
+                                 ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
         }
       }
     }
     
     mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&mTriangles, true);
     
-    mTriangleMeshShape->setLocalScaling(OurVec3ToBt(scale));
+    mTriangleMeshShape->setLocalScaling(ToBullet(scale));
     //mTriangleMeshShape->buildOptimizedBvh();
     
     mCollider = std::make_unique<btCollisionObject>();
@@ -96,7 +94,7 @@ namespace YTE
   {
     if (mTriangleMeshShape)
     {
-      mTriangleMeshShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+      mTriangleMeshShape->setLocalScaling(ToBullet(aEvent->WorldScale));
     }
   }
 }

@@ -9,9 +9,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-#define YTEMakeDelegate(aDelegateType, aObject, aFunction) \
-aDelegateType::From<decltype(aFunction), aFunction>(aObject)
-
   template <typename Return, typename Arg = Return>
   struct Delegate {};
 
@@ -50,10 +47,10 @@ aDelegateType::From<decltype(aFunction), aFunction>(aObject)
       return mCallerFunction(mObject, aArguments...);
     }
 
-    template<typename tFunctionType, tFunctionType aFunction, typename tObjectType>
-    static Delegate From(tObjectType * aObj)
+    template<auto aFunction, typename tObjectType>
+    static Delegate From(tObjectType* aObj)
     {
-      return Delegate(aObj, Caller<tObjectType, tFunctionType, aFunction>);
+      return Delegate(aObj, Caller<tObjectType, decltype(aFunction), aFunction>);
     }
 
     void *GetCallingObject() const {

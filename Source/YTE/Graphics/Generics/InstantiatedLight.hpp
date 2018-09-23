@@ -30,7 +30,7 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedLight);
 
-    InstantiatedLight();
+    YTE_Shared InstantiatedLight();
 
     void SetLightSourceInformation(UBOLight &aLight)
     {

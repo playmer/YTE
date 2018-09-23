@@ -329,9 +329,12 @@ namespace YTE
 
 
   // Helper to call the constructor of a type.
-  inline void GenericDoNothing(byte*)
+  template<typename tType = void>
+  inline void GenericDoNothing(tType*)
   {
   }
+
+  // Helper to call the constructor of a type.
 
   template <typename tType>
   struct StripQualifiers

@@ -20,7 +20,7 @@ namespace YTE
 
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -49,7 +49,7 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -73,9 +73,9 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-  void VkLightManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
+  void VkLightManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::GraphicsDataUpdateVk, aEvent);
+    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
 
     if (mUpdateRequired)
     {
@@ -157,13 +157,13 @@ namespace YTE
 
   void VkLightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
   {
-#ifdef _DEBUG
-    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
-    {
-      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-      return;
-    }
-#endif
+//#ifdef _DEBUG
+//    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
+//    {
+//      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
+//      return;
+//    }
+//#endif
 
     mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;

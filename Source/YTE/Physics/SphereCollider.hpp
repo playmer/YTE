@@ -23,18 +23,18 @@ namespace YTE
   public:
     YTEDeclareType(SphereCollider);
 
-    SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared SphereCollider(Composition *aOwner, Space *aSpace);
 
-    void PhysicsInitialize() override;
+    YTE_Shared void PhysicsInitialize() override;
 
     float GetRadius() const { return mRadius; }
     const glm::vec3& GetOffset() const { return mOffset; }
 
-    void SetRadius(float aRadius);
-    void SetOffset(const glm::vec3& aOffset);
-    void SetOffset(float aX, float aY, float aZ);
+    YTE_Shared void SetRadius(float aRadius);
+    YTE_Shared void SetOffset(const glm::vec3& aOffset);
+    YTE_Shared void SetOffset(float aX, float aY, float aZ);
 
-    void ScaleUpdate(TransformChanged *aEvent);
+    YTE_Shared void ScaleUpdate(TransformChanged *aEvent);
 
   private:
     UniquePointer<btSphereShape> mSphereShape;

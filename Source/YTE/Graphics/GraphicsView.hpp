@@ -42,16 +42,16 @@ namespace YTE
   {
   public:
     YTEDeclareType(GraphicsView);
-    GraphicsView(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~GraphicsView();
+    YTE_Shared GraphicsView(Composition *aOwner, Space *aSpace);
+    YTE_Shared ~GraphicsView();
 
-    void NativeInitialize() override;
-    void UpdateView(Camera *aCamera, UBOView &aView);
-    void UpdateIllumination(UBOIllumination &aIllumination);
+    YTE_Shared void NativeInitialize() override;
+    YTE_Shared void UpdateView(Camera *aCamera, UBOView &aView);
+    YTE_Shared void UpdateIllumination(UBOIllumination &aIllumination);
 
     // Getters / Setters
-    glm::vec4 GetClearColor();
-    void SetClearColor(const glm::vec4 &aColor);
+    YTE_Shared glm::vec4 GetClearColor();
+    YTE_Shared void SetClearColor(const glm::vec4 &aColor);
 
     Camera* GetActiveCamera()
     {
@@ -63,8 +63,8 @@ namespace YTE
       mActiveCamera = aCamera;
     }
 
-    void ChangeWindow(const std::string& aWindowName);
-    void ChangeWindow(Window *aWindow);
+    YTE_Shared void ChangeWindow(const std::string& aWindowName);
+    YTE_Shared void ChangeWindow(Window *aWindow);
 
     Window* GetWindow()
     {
@@ -81,17 +81,17 @@ namespace YTE
       return mOrder;
     }
 
-    void SetOrder(float aOrder);
+    YTE_Shared void SetOrder(float aOrder);
 
-    void KeyPressed(KeyboardEvent *aUpdate);
+    YTE_Shared void KeyPressed(KeyboardEvent *aUpdate);
 
-    std::string GetDrawerCombinationType();
-    void SetDrawerCombinationType(std::string aCombination);
-    std::string GetDrawerType();
-    void SetDrawerType(std::string aType);
+    YTE_Shared std::string GetDrawerCombinationType();
+    YTE_Shared void SetDrawerCombinationType(std::string aCombination);
+    YTE_Shared std::string GetDrawerType();
+    YTE_Shared void SetDrawerType(std::string aType);
 
 
-    void SetSuperSampling(i32 aSuperSampling);
+    YTE_Shared void SetSuperSampling(i32 aSuperSampling);
 
     i32 GetSuperSampling()
     {

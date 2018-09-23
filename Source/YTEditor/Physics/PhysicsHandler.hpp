@@ -30,7 +30,6 @@ namespace YTEditor
     std::unique_ptr<YTE::MotionState> mMotionState;
     std::unique_ptr<btBoxShape> mBoxShape;
     std::unique_ptr<btBvhTriangleMeshShape> mTriangleMeshShape;
-    btTriangleMesh mTriangles;
   };
 
   class PhysicsHandler : public YTE::EventHandler
@@ -60,6 +59,7 @@ namespace YTEditor
     YTE::UniquePointer<btDiscreteDynamicsWorld> mDynamicsWorld;
 
     std::unordered_map<YTE::Composition*, std::unique_ptr<PickerObject>> mObjects;
+    std::unordered_map<std::string, btTriangleMesh> mShapeCache;
 
     YTE::Space *mSpace;
     YTE::Window *mWindow;

@@ -27,8 +27,8 @@ namespace YTEditor
   {
     auto pos = aEvent->WorldPosition;
     btTransform transform;
-    transform.setOrigin(YTE::OurVec3ToBt(aEvent->WorldPosition));
-    transform.setRotation(YTE::OurQuatToBt(aEvent->WorldRotation));
+    transform.setOrigin(YTE::ToBullet(aEvent->WorldPosition));
+    transform.setRotation(YTE::ToBullet(aEvent->WorldRotation));
 
     mGhostBody->setWorldTransform(transform);
   }
@@ -36,7 +36,7 @@ namespace YTEditor
   void PickerObject::ChangedScale(YTE::TransformChanged *aEvent)
   {
 
-    btVector3 scale{ YTE::OurVec3ToBt(aEvent->WorldScale) };
+    btVector3 scale{ YTE::ToBullet(aEvent->WorldScale) };
     if (nullptr != mTriangleMeshShape)
     {
       mTriangleMeshShape->setLocalScaling(scale);
@@ -119,7 +119,7 @@ namespace YTEditor
     glm::vec3 rayDirectionWorld(rayToWorld - rayFromWorld);
     rayDirectionWorld = glm::normalize(rayDirectionWorld);
 
-    return aRayFrom + YTE::OurVec3ToBt(rayDirectionWorld) * aFar;
+    return aRayFrom + YTE::ToBullet(rayDirectionWorld) * aFar;
   }
 
   void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
@@ -150,9 +150,9 @@ namespace YTEditor
     auto owner = camera->GetOwner();
     auto transform = owner->GetComponent<YTE::Transform>();
     auto orientation = owner->GetComponent<YTE::Orientation>();
-    auto rayFrom = YTE::OurVec3ToBt(transform->GetTranslation());
-    auto cameraUp = YTE::OurVec3ToBt(orientation->GetUpVector());
-    auto cameraForward = YTE::OurVec3ToBt(orientation->GetForwardVector());
+    auto rayFrom = YTE::ToBullet(transform->GetTranslation());
+    auto cameraUp = YTE::ToBullet(orientation->GetUpVector());
+    auto cameraForward = YTE::ToBullet(orientation->GetForwardVector());
 
     YTE::UBOView uboView = camera->ConstructUBOView();
 
@@ -174,7 +174,7 @@ namespace YTEditor
 
       YTE::Transform *pickedTrans = mPickedObj->GetComponent<YTE::Transform>();
 
-      mPickedDistance = (YTE::OurVec3ToBt(pickedTrans->GetWorldTranslation()) - rayFrom).length();
+      mPickedDistance = (YTE::ToBullet(pickedTrans->GetWorldTranslation()) - rayFrom).length();
       
       mCurrentObj = obj;
 
@@ -265,9 +265,9 @@ namespace YTEditor
 
     if (nullptr != transform)
     {
-      scale = YTE::OurVec3ToBt(transform->GetWorldScale());
-      origin = YTE::OurVec3ToBt(transform->GetWorldTranslation());
-      rotation = YTE::OurQuatToBt(transform->GetWorldRotation());
+      scale = YTE::ToBullet(transform->GetWorldScale());
+      origin = YTE::ToBullet(transform->GetWorldTranslation());
+      rotation = YTE::ToBullet(transform->GetWorldRotation());
     }
 
     bTransform.setOrigin(origin);
@@ -292,33 +292,40 @@ namespace YTEditor
     if (nullptr != model && model->GetMesh())
     {
       auto mesh = model->GetMesh();
-      
-      obj->mTriangles;
-      
-      for (auto &submesh : mesh->mColliderParts)
-      {
-        auto indexSize = submesh.mIndexBuffer.size();
-      
-        DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
-      
-        for (size_t i = 0; i < indexSize; i += 3)
-        {
-          auto i1 = submesh.mIndexBuffer.at(i + 0);
-          auto i2 = submesh.mIndexBuffer.at(i + 1);
-          auto i3 = submesh.mIndexBuffer.at(i + 2);
 
-          obj->mTriangles.addTriangle(YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i1)),
-                                      YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i2)),
-                                      YTE::OurVec3ToBt(submesh.mColliderVertexBuffer.at(i3)));
-        }
+      auto it = mShapeCache.find(model->GetMeshName());
+      if (it != mShapeCache.end())
+      {
+        obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&it->second, true);
       }
-      
-      obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&obj->mTriangles, true);
-      
+      else
+      {
+        auto& triangles = mShapeCache[model->GetMeshName()];
+
+        for (auto &submesh : mesh->mParts)
+        {
+          auto indexSize = submesh.mIndexBuffer.size();
+
+          DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
+
+          for (size_t i = 0; i < indexSize; i += 3)
+          {
+            auto i1 = submesh.mIndexBuffer.at(i + 0);
+            auto i2 = submesh.mIndexBuffer.at(i + 1);
+            auto i3 = submesh.mIndexBuffer.at(i + 2);
+
+            triangles.addTriangle(YTE::ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
+                                  YTE::ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
+                                  YTE::ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
+          }
+        }
+
+        obj->mTriangleMeshShape = std::make_unique<btBvhTriangleMeshShape>(&triangles, true);
+      }
+
       obj->mShape = obj->mTriangleMeshShape.get();
-      
+
       obj->mTriangleMeshShape->setLocalScaling(scale);
-      obj->mTriangleMeshShape->buildOptimizedBvh();
     }
     else
     {

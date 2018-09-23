@@ -19,7 +19,7 @@ namespace YTE
 
   VkWaterInfluenceMapManager::VkWaterInfluenceMapManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -46,7 +46,7 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -69,9 +69,9 @@ namespace YTE
     mWaterInformationData.mNumberOfInfluences = 0;
   }
 
-  void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent)
+  void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::GraphicsDataUpdateVk, aEvent);
+    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
 
     if (mUpdateRequired)
     {
@@ -138,13 +138,13 @@ namespace YTE
 
   void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
   {
-#ifdef _DEBUG
-    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)
-    {
-      DebugObjection(true, "Water Influence Map Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-      return;
-    }
-#endif
+//#ifdef _DEBUG
+//    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)
+//    {
+//      DebugObjection(true, "Water Influence Map Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
+//      return;
+//    }
+//#endif
 
     mWaterInformationData.mInformation[aIndex] = aMapValue;
     mUpdateRequired = true;

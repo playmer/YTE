@@ -29,21 +29,20 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Field<&CapsuleCollider::mRadius>( "Radius", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mRadius>("Radius", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Field<&CapsuleCollider::mHeight>( "Height", PropertyBinding::GetSet)
+    builder.Field<&CapsuleCollider::mHeight>("Height", PropertyBinding::GetSet)
       .SetDocumentation("Only works for getting. Setting is used exclusively for serialization.")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
 
-  CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  CapsuleCollider::CapsuleCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace), mRadius(1.0f), mHeight(1.0f)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CapsuleCollider::PhysicsInitialize()
@@ -52,11 +51,11 @@ namespace YTE
     auto transform = mOwner->GetComponent<Transform>();
     auto translation = transform->GetTranslation();
     auto scale = transform->GetScale();
-    auto bulletRot = OurQuatToBt(transform->GetRotation());
+    auto bulletRot = ToBullet(transform->GetRotation());
     auto bulletTransform = btTransform(bulletRot, btVector3(translation.x, translation.y, translation.z));
 
     mCapsuleShape = std::make_unique<btCapsuleShape>(mRadius, mHeight);
-    mCapsuleShape->setLocalScaling(OurVec3ToBt(scale));
+    mCapsuleShape->setLocalScaling(ToBullet(scale));
 
     mCollider = std::make_unique<btCollisionObject>();
     mCollider->setCollisionShape(mCapsuleShape.get());
@@ -68,7 +67,7 @@ namespace YTE
   {
     if (mCapsuleShape)
     {
-      mCapsuleShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+      mCapsuleShape->setLocalScaling(ToBullet(aEvent->WorldScale));
     }
   }
 }

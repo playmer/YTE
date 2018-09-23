@@ -24,17 +24,17 @@ namespace YTE
   public:
     YTEDeclareType(WWiseEmitter);
 
-    WWiseEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared WWiseEmitter(Composition *aOwner, Space *aSpace);
 
-    ~WWiseEmitter() override;
+    YTE_Shared ~WWiseEmitter() override;
 
-    void Play();
-    void PlayEvent(const std::string & aEvent);
-    void PlayEvent(u64 aEvent);
+    YTE_Shared void Play();
+    YTE_Shared void PlayEvent(const std::string & aEvent);
+    YTE_Shared void PlayEvent(u64 aEvent);
 
-    void ListenerChanged(WWiseListenerChanged *aListenerChange);
+    YTE_Shared void ListenerChanged(WWiseListenerChanged *aListenerChange);
 
-    void Initialize() override;
+    YTE_Shared void Initialize() override;
 
 
     inline AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mOwner); };

@@ -11,6 +11,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Windows/GamepadSystem_Windows.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Windows/Keyboard_Windows.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Windows/Mouse_Windows.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/Windows/SharedObject_Windows.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Windows/Window_Windows.cpp
 #  PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/DeviceEnums.hpp
@@ -20,6 +21,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GamepadSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Keyboard.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Mouse.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/SharedObject.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TargetDefinitions.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Window.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Windows/OsKeys_Windows.hpp

@@ -3,11 +3,16 @@
 // YTE - Graphics
 ///////////////////
 
+#include <algorithm>
 #include <fstream>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "assimp/types.h"
+#include "assimp/vector3.h"
+
+#include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -20,14 +25,491 @@
 
 namespace YTE
 {
+  static inline
+  glm::vec3 ToGlm(aiVector3D const* aVector)
+  {
+    return { aVector->x, aVector->y ,aVector->z };
+  }
+
+  static inline
+  glm::vec3 ToGlm(aiColor3D const* aVector)
+  {
+    return { aVector->r, aVector->g ,aVector->b };
+  }
+
+  static inline
+  glm::quat ToGlm(aiQuaternion const* aQuat)
+  {
+    glm::quat quaternion;
+
+    quaternion.x = aQuat->x;
+    quaternion.y = aQuat->y;
+    quaternion.z = aQuat->z;
+    quaternion.w = aQuat->w;
+
+    return quaternion;
+  }
+
+  static inline
+  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
+  {
+    return glm::transpose(glm::make_mat4(&aMatrix.a1));
+  }
+
+  static inline
+  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
+  {
+    auto transposed = glm::transpose(aMatrix);
+    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
+  }
+
+  // The following is a glmification of the assimp aiQuaterniont<TReal>::Interpolate
+  // function.
+  // TODO (Joshua): Investigate glm::mix function after we've updated glm.
+  // We've preserved the following comments from assimps writing of the function:
+  // ---------------------------------------------------------------------------
+  // Performs a spherical interpolation between two quaternions
+  // Implementation adopted from the gmtl project. All others I found on the net fail in some cases.
+  // Congrats, gmtl!
+  inline glm::quat interpolate(glm::quat const& aStart, glm::quat const& aEnd, float aFactor)
+  {
+    // calc cosine theta
+    float cosom = glm::dot(aStart, aEnd);
+
+    // adjust signs (if necessary)
+    glm::quat end = aEnd;
+    if (cosom < 0.0f)
+    {
+      cosom = -cosom;
+      end.x = -end.x;   // Reverse all signs
+      end.y = -end.y;
+      end.z = -end.z;
+      end.w = -end.w;
+    }
+
+    // Calculate coefficients
+    float sclp;
+    float sclq;
+    if ((1.0f - cosom) > 0.0001f) // 0.0001 -> some epsillon
+    {
+      // Standard case (slerp)
+      float omega;
+      float sinom;
+      omega = std::acos(cosom); // extract theta from dot product's cos theta
+      sinom = std::sin(omega);
+      sclp = std::sin((1.0f - aFactor) * omega) / sinom;
+      sclq = std::sin(aFactor * omega) / sinom;
+    }
+    else
+    {
+      // Very close, do linear interp (because it's faster)
+      sclp = 1.0f - aFactor;
+      sclq = aFactor;
+    }
+
+    return { sclp * aStart.w + sclq * end.w,
+             sclp * aStart.x + sclq * end.x,
+             sclp * aStart.y + sclq * end.y,
+             sclp * aStart.z + sclq * end.z };
+  }
+
+  struct FileWriter
+  {
+    template<typename tType>
+    static constexpr size_t GetSize()
+    {
+      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
+    }
+
+    FileWriter(std::string const& aFile)
+      : mFile{ aFile, std::ios::binary }
+    {
+      if (false == mFile.bad())
+      {
+        mOpened = true;
+      }
+    }
+
+    ~FileWriter()
+    {
+      mFile.write(mData.data(), mData.size());
+      mFile.close();
+    }
+
+    template <size_t aSize>
+    void MemoryCopy(char const* aSource, size_t aNumber = 1)
+    {
+      size_t bytesToCopy = aSize * aNumber;
+      mData.reserve(mData.size() + bytesToCopy);
+
+      for (size_t i = 0; i < bytesToCopy; ++i)
+      {
+        mData.emplace_back(*(aSource++));
+      }
+    }
+
+    template <typename tType>
+    char const* SourceCast(tType const* aSource)
+    {
+      return reinterpret_cast<char const*>(aSource);
+    }
+
+    template<typename tType>
+    void Write(tType const& aValue)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(&aValue));
+    }
+
+    template<typename tType>
+    void Write(tType const* aValue)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(aValue));
+    }
+
+    template<typename tType>
+    void Write(tType const* aValue, size_t aSize)
+    {
+      MemoryCopy<GetSize<tType>()>(SourceCast(aValue), aSize);
+    }
+
+    std::ofstream mFile;
+    std::vector<char> mData;
+    bool mOpened = false;
+  };
+
+  struct AnimationFileHeader
+  {
+    // The "header" of the file.
+    u64 mNodeSize;
+    u64 mTransformationsSize;
+    u64 mChildrenSize;
+    u64 mTranslationKeysSize;
+    u64 mScaleKeysSize;
+    u64 mRotationKeysSize;
+    u64 mNamesSize;
+    double mDuration;
+    double mTicksPerSecond;
+  };
+
+  std::vector<char> WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
+  {
+    std::string fileName = aName;
+    fileName += ".YTEAnimation";
+
+    FileWriter file{ fileName };
+
+    if (file.mOpened)
+    {
+      AnimationFileHeader header;
+
+      header.mNodeSize = aData.mNodes.size();
+      header.mTransformationsSize = aData.mTransformations.size();
+      header.mChildrenSize = aData.mChildren.size();
+      header.mTranslationKeysSize = aData.mTranslationKeys.size();
+      header.mScaleKeysSize = aData.mScaleKeys.size();
+      header.mRotationKeysSize = aData.mRotationKeys.size();
+      header.mNamesSize = aData.mNames.size();
+      header.mDuration = aData.mDuration;
+      header.mTicksPerSecond = aData.mTicksPerSecond;
+
+      // The "header" of the file.
+      file.Write(header);
+
+      file.Write(aData.mNodes.data(), aData.mNodes.size());
+      file.Write(aData.mTransformations.data(), aData.mTransformations.size());
+      file.Write(aData.mChildren.data(), aData.mChildren.size());
+      file.Write(aData.mTranslationKeys.data(), aData.mTranslationKeys.size());
+      file.Write(aData.mScaleKeys.data(), aData.mScaleKeys.size());
+      file.Write(aData.mRotationKeys.data(), aData.mRotationKeys.size());
+      file.Write(aData.mNames.data(), aData.mNames.size());
+    }
+
+    return file.mData;
+  }
+
+  struct FileReader
+  {
+    FileReader(std::string const& aFile)
+    {
+      std::ifstream file(aFile, std::ios::binary | std::ios::ate);
+      std::streamsize size = file.tellg();
+      file.seekg(0, std::ios::beg);
+
+      mData.resize(size);
+      file.read(mData.data(), size);
+      assert(false == file.bad());
+
+      if (false == file.bad())
+      {
+        mOpened = true;
+      }
+    }
+
+    template<typename tType>
+    static constexpr size_t GetSize()
+    {
+      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
+    }
+
+    template<typename tType>
+    tType& Read()
+    {
+      auto bytesToRead = GetSize<tType>();
+
+      assert((mBytesRead + bytesToRead) <= mData.size());
+
+      auto &value = *reinterpret_cast<tType*>(mData.data() + mBytesRead);
+
+      mBytesRead += bytesToRead;
+
+      return value;
+    }
+    
+    template<typename tType>
+    void Read(tType* aBuffer, size_t aSize)
+    {
+      auto bytesToRead = GetSize<tType>() * aSize;
+      assert((mBytesRead + bytesToRead) <= mData.size());
+
+      memcpy(aBuffer, mData.data() + mBytesRead, bytesToRead);
+    
+      mBytesRead += bytesToRead;
+    }
+
+    std::vector<char> mData;
+    size_t mBytesRead = 0;
+    bool mOpened = false;
+  };
+
+
+  std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName)
+  {
+    AnimationData data;
+    FileReader file{ aName };
+
+    if (file.mOpened)
+    {
+      auto header = file.Read<AnimationFileHeader>();
+
+      data.mDuration = header.mDuration;
+      data.mTicksPerSecond = header.mTicksPerSecond;
+
+      data.mNodes.resize(header.mNodeSize);
+      file.Read<AnimationData::Node>(data.mNodes.data(), data.mNodes.size());
+
+      data.mTransformations.resize(header.mTransformationsSize);
+      file.Read<glm::mat4>(data.mTransformations.data(), data.mTransformations.size());
+
+      data.mChildren.resize(header.mChildrenSize);
+      file.Read<size_t>(data.mChildren.data(), data.mChildren.size());
+
+      data.mTranslationKeys.resize(header.mTranslationKeysSize);
+      file.Read<AnimationData::TranslationKey>(data.mTranslationKeys.data(), data.mTranslationKeys.size());
+
+      data.mScaleKeys.resize(header.mScaleKeysSize);
+      file.Read<AnimationData::ScaleKey>(data.mScaleKeys.data(), data.mScaleKeys.size());
+
+      data.mRotationKeys.resize(header.mRotationKeysSize);
+      file.Read<AnimationData::RotationKey>(data.mRotationKeys.data(), data.mRotationKeys.size());
+
+      data.mNames.resize(header.mNamesSize);
+      file.Read<char>(data.mNames.data(), data.mNames.size());
+    }
+
+
+    return { std::move(data), std::move(file.mData) };
+  }
+
+  bool Equal(AnimationData const& aLeft, AnimationData const& aRight)
+  {
+    auto nodes = aLeft.mNodes == aRight.mNodes;
+    auto transformations = aLeft.mTransformations == aRight.mTransformations;
+    auto children = aLeft.mChildren == aRight.mChildren;
+    auto translations = aLeft.mTranslationKeys == aRight.mTranslationKeys;
+    auto scales = aLeft.mScaleKeys == aRight.mScaleKeys;
+    auto rotations = aLeft.mRotationKeys == aRight.mRotationKeys;
+    auto names = aLeft.mNames == aRight.mNames;
+    auto durations = aLeft.mDuration == aRight.mDuration;
+    auto ticks = aLeft.mTicksPerSecond == aRight.mTicksPerSecond;
+
+    return nodes && transformations && children && translations && scales && rotations && names && durations && ticks;
+  }
+
+  AnimationData TestWritingAndReading(std::string const& aFile, AnimationData const& aOriginalData)
+  {
+    auto aniFileYTE = aFile + ".YTEAnimation";
+
+    auto writtenFileData = WriteAnimationDataToFile(aFile, aOriginalData);
+
+    auto [readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
+
+    if (writtenFileData != readFileData)
+    {
+      __debugbreak();
+    }
+
+    if (false == Equal(aOriginalData, readFile))
+    {
+      __debugbreak();
+    }
+
+    return readFile;
+  }
+
+
+  static inline 
+  glm::vec3 ScaleInterpolation(AnimationData const& aData, 
+                               double aAnimationTime, 
+                               AnimationData::Node const& aNode)
+  {
+    glm::vec3 scale;
+    if (aNode.mScaleKeySize == 1)
+    {
+      scale = aData.mScaleKeys[0].mScale;
+    }
+    else
+    {
+      auto startFrame = aData.mScaleKeys[0];
+
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode.mScaleKeySize - 1; ++i)
+      {
+        if (aAnimationTime < (float)aData.mScaleKeys[aNode.mScaleKeyOffset + i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+      
+      auto frame = aData.mScaleKeys[aNode.mScaleKeyOffset + index];
+      auto nextFrame = aData.mScaleKeys[aNode.mScaleKeyOffset + ((index + 1) % aNode.mScaleKeySize)];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      auto const& start = frame.mScale;
+      auto const& end = nextFrame.mScale;
+
+      scale = (start + delta * (end - start));
+    }
+
+    return scale;
+  }
+
+  static inline
+  glm::quat RotationInterpolation(AnimationData const& aData,
+                                  double aAnimationTime,
+                                  AnimationData::Node const& aNode)
+  {
+    glm::quat rot;
+
+    if (aNode.mRotationKeySize == 1)
+    {
+      rot = aData.mRotationKeys[aNode.mRotationKeyOffset + 0].mRotation;
+    }
+    else
+    {
+      auto startFrame = aData.mRotationKeys[aNode.mRotationKeyOffset + 0];
+
+      // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode.mRotationKeySize - 1; ++i)
+      {
+        if (aAnimationTime < (float)aData.mRotationKeys[aNode.mRotationKeyOffset + i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      auto frame = aData.mRotationKeys[aNode.mRotationKeyOffset + index];
+      auto nextFrame = aData.mRotationKeys[aNode.mRotationKeyOffset + ((index + 1) % aNode.mRotationKeySize)];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      auto const& start = frame.mRotation;
+      auto const& end = nextFrame.mRotation;
+      
+      rot = interpolate(start, end, delta);
+      glm::normalize(rot);
+    }
+
+    return rot;
+  }
+
+  static inline
+  glm::vec3 TranslationInterpolation(AnimationData const& aData,
+                                     double aAnimationTime,
+                                     AnimationData::Node const& aNode)
+  {
+    glm::vec3 trans;
+    if (1 == aNode.mTranslationKeySize)
+    {
+      trans = aData.mTranslationKeys[aNode.mTranslationKeyOffset + 0].mTranslation;
+    }
+    else
+    {
+      auto startFrame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
+
+      uint32_t index = 0;
+      for (uint32_t i = 0; i < aNode.mTranslationKeySize - 1; ++i)
+      {
+        if (aAnimationTime < (float)aData.mTranslationKeys[aNode.mTranslationKeyOffset + i + 1].mTime - startFrame.mTime)
+        {
+          index = i;
+          break;
+        }
+      }
+
+      auto frame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + index];
+      auto nextFrame = aData.mTranslationKeys[aNode.mTranslationKeyOffset + ((index + 1) % aNode.mTranslationKeySize)];
+
+      float delta = static_cast<float>((aAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
+
+      auto const& start = frame.mTranslation;
+      auto const& end = nextFrame.mTranslation;
+
+      trans = (start + delta * (end - start));
+    }
+
+    return trans;
+  }
+
+
+
+
+
+
+
+
+
+
+
+  const aiNodeAnim* FindNodeAnimation(aiAnimation *aAnimation, const char *aName)
+  {
+    for (uint32_t i = 0; i < aAnimation->mNumChannels; ++i)
+    {
+      const aiNodeAnim *anim = aAnimation->mChannels[i];
+
+      if (!strcmp(anim->mNodeName.data, aName))
+      {
+        return anim;
+      }
+    }
+    return nullptr;
+  }
+
+
+
+
+
   YTEDefineEvent(KeyFrameChanged);
 
   YTEDefineType(KeyFrameChanged)
   {
     RegisterType<KeyFrameChanged>();
     TypeBuilder<KeyFrameChanged> builder;
-    builder.Field<&KeyFrameChanged::animation>( "animation", PropertyBinding::Get);
-    builder.Field<&KeyFrameChanged::time>( "time", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::animation>("animation", PropertyBinding::Get);
+    builder.Field<&KeyFrameChanged::time>("time", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationAdded);
@@ -36,7 +518,7 @@ namespace YTE
   {
     RegisterType<AnimationAdded>();
     TypeBuilder<AnimationAdded> builder;
-    builder.Field<&AnimationAdded::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&AnimationAdded::animation>("animation", PropertyBinding::Get);
   }
 
   YTEDefineEvent(AnimationRemoved);
@@ -45,7 +527,7 @@ namespace YTE
   {
     RegisterType<AnimationRemoved>();
     TypeBuilder<AnimationRemoved> builder;
-    builder.Field<&AnimationRemoved::animation>( "animation", PropertyBinding::Get);
+    builder.Field<&AnimationRemoved::animation>("animation", PropertyBinding::Get);
   }
 
 
@@ -58,46 +540,174 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>( "Speed")
+    builder.Property<&Animation::GetSpeed, &Animation::SetSpeed>("Speed")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The speed at which the animation will be played at.");
 
-    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>( "PlayOverTime")
+    builder.Property<&Animation::GetPlayOverTime, &Animation::SetPlayOverTime>("PlayOverTime")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("True if the animation should play with respect to time.");
   }
 
-  Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
-    : mPlayOverTime(true)
+  template <typename tContainer, typename tKey>
+  void InsertKeys(tContainer& aContainer, tKey const* aBegin, tKey const* aEnd)
   {
-    Assimp::Importer importer;
+    for (auto it = aBegin; it < aEnd; ++it)
+    {
+      aContainer.emplace_back(it->mTime, ToGlm(&it->mValue));
+    }
+  }
+  
+  static inline
+  void MakeNodes(aiAnimation *aAssimpAnimation,
+                 aiNode *aAssimpNode,
+                 AnimationData& aData,
+                 size_t aNodeIndex)
+  {
+    AnimationData::Node& node = aData.mNodes[aNodeIndex];
+
+    node.mTransformationOffset = aData.mTransformations.size();
+    aData.mTransformations.emplace_back(ToGlm(aAssimpNode->mTransformation));
+
+    size_t nameLength = aAssimpNode->mName.length;
+
+    node.mNameOffset = aData.mNames.size();
+    node.mNameSize = nameLength;
+    for (size_t i = 0; i < aAssimpNode->mName.length; ++i)
+    {
+      aData.mNames.emplace_back(*(aAssimpNode->mName.C_Str() + i));
+    }
+    
+    // Null terminate the string.
+    aData.mNames.emplace_back('\0');
+
+    aiNodeAnim const* animKeys = FindNodeAnimation(aAssimpAnimation, aAssimpNode->mName.data);
+
+    if (animKeys)
+    {
+      node.mTranslationKeyOffset = aData.mTranslationKeys.size();
+      node.mTranslationKeySize = animKeys->mNumPositionKeys;
+      InsertKeys(aData.mTranslationKeys, animKeys->mPositionKeys, animKeys->mPositionKeys + animKeys->mNumPositionKeys);
+
+      node.mScaleKeyOffset = aData.mScaleKeys.size();
+      node.mScaleKeySize = animKeys->mNumScalingKeys;
+      InsertKeys(aData.mScaleKeys, animKeys->mScalingKeys, animKeys->mScalingKeys + animKeys->mNumScalingKeys);
+
+      node.mRotationKeyOffset = aData.mRotationKeys.size();
+      node.mRotationKeySize = animKeys->mNumRotationKeys;
+      InsertKeys(aData.mRotationKeys, animKeys->mRotationKeys, animKeys->mRotationKeys + animKeys->mNumRotationKeys);
+    }
+
+    node.mChildrenOffset = aData.mChildren.size();
+    node.mChildrenSize = aAssimpNode->mNumChildren;
+
+    // Add the children nodes to the AnimationData.
+    // NOTE: node can now be potentially invalidated, so we no longer use it.
+    for (uint32_t i = 0; i < aAssimpNode->mNumChildren; ++i)
+    {
+      aData.mChildren.emplace_back(aData.mNodes.size());
+      aData.mNodes.emplace_back(AnimationData::Node{});
+    }
+
+    // Process the children added
+    for (size_t i = 0; i < aAssimpNode->mNumChildren; ++i)
+    {
+      MakeNodes(aAssimpAnimation, 
+                aAssimpNode->mChildren[i], 
+                aData, 
+                aData.mChildren[i + aData.mNodes[aNodeIndex].mChildrenOffset]);
+    }
+  }
+
+  AnimationData GetAnimationData(std::string &aFile)
+  {
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
-    auto scene = importer.ReadFile(aniFile.c_str(),
-      aiProcess_Triangulate |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
 
-    UnusedArguments(scene);
 
-    DebugObjection(scene == nullptr,
-      "Failed to load animation file %s from assimp",
-      aniFile.c_str());
+    //auto aniFileYTE = aniFile + ".YTEAnimation";
+    //
+    //auto[readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
+    //
+    //return std::move(readFile);
 
-    //TODO (Andrew): Dont keep the scene loaded
-    mScene = importer.GetOrphanedScene();
 
-    DebugObjection(mScene == nullptr,
-      "Failed to load orphaned scene");
+    Assimp::Importer importer;
+    
+    {
+      auto scene = importer.ReadFile(aniFile.c_str(),
+                                     aiProcess_Triangulate |
+                                     aiProcess_CalcTangentSpace |
+                                     aiProcess_GenSmoothNormals);
+    
+      UnusedArguments(scene);
+    
+      DebugObjection(scene == nullptr,
+                     "Failed to load animation file %s from assimp",
+                     aniFile.c_str());
+    
+      DebugObjection(scene->HasAnimations() == false,
+                     "Failed to find animations in scene loaded from %s",
+                     aniFile.c_str());
+    
+      auto animation = scene->mAnimations[0];
+    
+      AnimationData data;
+      AnimationData::Node node;
+    
+      data.mNodes.emplace_back(node);
+    
+      MakeNodes(animation, scene->mRootNode, data, 0);
+    
+      data.mTicksPerSecond = animation->mTicksPerSecond;
+      data.mDuration = animation->mDuration;
+    
+      return std::move(TestWritingAndReading(aniFile, data));
+    }
 
-    DebugObjection(mScene->HasAnimations() == false,
-      "Failed to find animations in scene loaded from %s",
-      aniFile.c_str());
+    //if (filesystem::exists(aniFileYTE))
+    //{
+    //  return std::move(ReadAnimationDataFromFile(aniFileYTE));
+    //}
+    //else
+    //{
+    //  auto scene = importer.ReadFile(aniFile.c_str(),
+    //                                 aiProcess_Triangulate |
+    //                                 aiProcess_CalcTangentSpace |
+    //                                 aiProcess_GenSmoothNormals);
+    //
+    //  DebugObjection(scene == nullptr,
+    //                 "Failed to load animation file %s from assimp",
+    //                 aniFile.c_str());
+    //
+    //  DebugObjection(scene->HasAnimations() == false,
+    //                 "Failed to find animations in scene loaded from %s",
+    //                 aniFile.c_str());
+    //
+    //  auto animation = scene->mAnimations[0];
+    //
+    //  AnimationData data;
+    //  AnimationData::Node node;
+    //
+    //  data.mNodes.emplace_back(node);
+    //
+    //  MakeNodes(animation, scene->mRootNode, data, 0);
+    //
+    //  data.mTicksPerSecond = animation->mTicksPerSecond;
+    //  data.mDuration = animation->mDuration;
+    //
+    //  WriteAnimationDataToFile(aniFile, data);
+    //
+    //  return std::move(data);
+    //}
+  }
 
+  Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
+    : mPlayOverTime{ true }
+    , mData{ GetAnimationData(aFile) }
+  {
     mAnimationIndex = aAnimationIndex;
-
-    mAnimation = mScene->mAnimations[0];
 
     mName = aFile;
     mCurrentAnimationTime = 0.0f;
@@ -117,17 +727,14 @@ namespace YTE
 
   Animation::~Animation()
   {
-    if (mScene)
-    {
-      delete mScene;
-    }
+
   }
 
   void Animation::SetCurrentTime(double aCurrentTime)
   {
-    aCurrentTime *= mAnimation->mTicksPerSecond;
+    aCurrentTime *= mData.mTicksPerSecond;
 
-    if (0.0 < aCurrentTime && aCurrentTime < mAnimation->mDuration)
+    if (0.0 < aCurrentTime && aCurrentTime < mData.mDuration)
     {
       mCurrentAnimationTime = aCurrentTime;
     }
@@ -135,7 +742,7 @@ namespace YTE
 
   double Animation::GetMaxTime() const
   {
-    return mAnimation->mDuration / mAnimation->mTicksPerSecond;
+    return mData.mDuration / mData.mTicksPerSecond;
   }
 
   float Animation::GetSpeed() const
@@ -158,56 +765,66 @@ namespace YTE
     mPlayOverTime = aPlayOverTime;
   }
 
-  aiAnimation* Animation::GetAnimation()
+  void Animation::Animate()
   {
-    return mAnimation;
+    glm::mat4 identity;
+    ReadAnimation(mData.mNodes.front(), identity);
   }
 
-  void Animation::ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform)
+  void Animation::ReadAnimation(AnimationData::Node const& aNode, 
+                                glm::mat4 const& aParentTransform)
   {
-    aiMatrix4x4 NodeTransformation(aNode->mTransformation);
+    glm::mat4 nodeTransformation = mData.mTransformations[aNode.mTransformationOffset];
 
-    const aiNodeAnim* pNodeAnim = FindNodeAnimation(aNode->mName.data);
-
-    if (pNodeAnim)
+    if (aNode.mTranslationKeySize &&
+        aNode.mScaleKeySize && 
+        aNode.mRotationKeySize)
     {
-      int numKeys = pNodeAnim->mNumPositionKeys;
-
-      auto startKey = pNodeAnim->mPositionKeys[0];
-      auto endKey = pNodeAnim->mPositionKeys[numKeys - 1];
-
+      auto numKeys = aNode.mTranslationKeySize;
+    
+      auto startKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
+      auto endKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + numKeys - 1];
+    
       double duration = (endKey.mTime - startKey.mTime);
-
+    
       if (duration != 0.0f)
       {
-        mAnimation->mDuration = duration;
+        mData.mDuration = duration;
       }
-
+    
       // Get interpolated matrices between current and next frame
-      aiMatrix4x4 matScale = ScaleInterpolation(pNodeAnim);
-      aiMatrix4x4 matRotation = RotationInterpolation(pNodeAnim);
-      aiMatrix4x4 matTranslation = TranslationInterpolation(pNodeAnim);
+      auto scale = ScaleInterpolation(mData, mCurrentAnimationTime, aNode);
+      auto rotation = RotationInterpolation(mData, mCurrentAnimationTime, aNode);
+      auto translation = TranslationInterpolation(mData, mCurrentAnimationTime, aNode);
 
-      NodeTransformation = matTranslation * matRotation * matScale;
+      nodeTransformation = glm::scale(glm::toMat4(rotation), scale);
+      nodeTransformation[3][0] = translation.x;
+      nodeTransformation[3][1] = translation.y;
+      nodeTransformation[3][2] = translation.z;
     }
+    
+    glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
 
-    aiMatrix4x4 GlobalTransformation = aParentTransform * NodeTransformation;
+    auto name = std::string_view{ mData.mNames.data() + aNode.mNameOffset,
+                                  aNode.mNameSize };
 
-    auto* bones = mMeshSkeleton->GetBones();
-    auto bone = bones->find(aNode->mName.data);
+    auto bones = mMeshSkeleton->GetBones();
+    auto bone = bones->find(name);
     if (bone != bones->end())
     {
-      uint32_t BoneIndex = bone->second;
-      mMeshSkeleton->GetBoneData()[BoneIndex].mFinalTransformation =
+      uint32_t boneIndex = bone->second;
+      mMeshSkeleton->GetBoneData()[boneIndex].mFinalTransformation =
         mMeshSkeleton->GetGlobalInverseTransform() *
-        GlobalTransformation *
-        mMeshSkeleton->GetBoneData()[BoneIndex].mOffset;
+        globalTransformation *
+        mMeshSkeleton->GetBoneData()[boneIndex].mOffset;
     }
-
+    
     // visit the rest of the bone children
-    for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
+    for (size_t i = 0; i < aNode.mChildrenSize; ++i)
     {
-      ReadAnimation(aNode->mChildren[i], GlobalTransformation);
+      // i + aData.mChildren[aNode.mChildrenOffset]
+      ReadAnimation(mData.mNodes[mData.mChildren[i + aNode.mChildrenOffset]], 
+                    globalTransformation);
     }
   }
 
@@ -220,144 +837,6 @@ namespace YTE
   {
     return &mUBOAnimationData;
   }
-
-  aiScene* Animation::GetScene()
-  {
-    return mScene;
-  }
-
-
-  aiMatrix4x4 Animation::ScaleInterpolation(const aiNodeAnim* aNode)
-  {
-    aiVector3D scale;
-    if (aNode->mNumScalingKeys == 1)
-    {
-      scale = aNode->mScalingKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mScalingKeys[0];
-
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumScalingKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mScalingKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiVectorKey frame = aNode->mScalingKeys[index];
-      aiVectorKey nextFrame = aNode->mScalingKeys[(index + 1) % aNode->mNumScalingKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiVector3D& start = frame.mValue;
-      const aiVector3D& end = nextFrame.mValue;
-
-      scale = (start + delta * (end - start));
-    }
-
-    aiMatrix4x4 mat;
-    aiMatrix4x4::Scaling(scale, mat);
-    return mat;
-  }
-
-
-
-  aiMatrix4x4 Animation::RotationInterpolation(const aiNodeAnim* aNode)
-  {
-    aiQuaternion rot;
-
-    if (aNode->mNumRotationKeys == 1)
-    {
-      rot = aNode->mRotationKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mRotationKeys[0];
-
-      // TODO (Andrew): Can we resuse the keys between scale translate and rotation? is the index the same?
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumRotationKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mRotationKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiQuatKey frame = aNode->mRotationKeys[index];
-      aiQuatKey nextFrame = aNode->mRotationKeys[(index + 1) % aNode->mNumRotationKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiQuaternion& start = frame.mValue;
-      const aiQuaternion& end = nextFrame.mValue;
-
-      aiQuaternion::Interpolate(rot, start, end, delta);
-      rot.Normalize();
-    }
-
-    return aiMatrix4x4(rot.GetMatrix());
-  }
-
-
-
-  aiMatrix4x4 Animation::TranslationInterpolation(const aiNodeAnim *aNode)
-  {
-    aiVector3D trans;
-    if (aNode->mNumPositionKeys == 1)
-    {
-      trans = aNode->mPositionKeys[0].mValue;
-    }
-    else
-    {
-      auto startFrame = aNode->mPositionKeys[0];
-
-      uint32_t index = 0;
-      for (uint32_t i = 0; i < aNode->mNumPositionKeys - 1; ++i)
-      {
-        if (mCurrentAnimationTime < (float)aNode->mPositionKeys[i + 1].mTime - startFrame.mTime)
-        {
-          index = i;
-          break;
-        }
-      }
-
-      aiVectorKey frame = aNode->mPositionKeys[index];
-      aiVectorKey nextFrame = aNode->mPositionKeys[(index + 1) % aNode->mNumPositionKeys];
-
-      float delta = static_cast<float>((mCurrentAnimationTime + startFrame.mTime - frame.mTime) / (nextFrame.mTime - frame.mTime));
-
-      const aiVector3D& start = frame.mValue;
-      const aiVector3D& end = nextFrame.mValue;
-
-      trans = (start + delta * (end - start));
-    }
-
-    aiMatrix4x4 mat;
-    aiMatrix4x4::Translation(trans, mat);
-    return mat;
-  }
-
-  const aiNodeAnim* Animation::FindNodeAnimation(const char *aName)
-  {
-    for (uint32_t i = 0; i < mAnimation->mNumChannels; ++i)
-    {
-      const aiNodeAnim *anim = mAnimation->mChannels[i];
-
-      if (!strcmp(anim->mNodeName.data, aName))
-      {
-        return anim;
-      }
-    }
-    return nullptr;
-  }
-
-
 
   YTEDefineType(Animator)
   {
@@ -374,12 +853,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  Animator::Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Animator::Animator(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mDefaultAnimation(nullptr)
     , mCurrentAnimation(nullptr)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
     mEngine = aSpace->GetEngine();
   }
 
@@ -436,10 +914,10 @@ namespace YTE
     {
       mCurrentAnimation->mElapsedTime += aEvent->Dt * mCurrentAnimation->mSpeed;
 
-      mCurrentAnimation->mCurrentAnimationTime = fmodf(static_cast<float>(mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond),
-        static_cast<float>(mCurrentAnimation->GetAnimation()->mDuration));
+      mCurrentAnimation->mCurrentAnimationTime = fmodf(static_cast<float>(mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetTicksPerSecond()),
+                                                       static_cast<float>(mCurrentAnimation->GetDuration()));
 
-      if (mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetAnimation()->mTicksPerSecond > mCurrentAnimation->GetAnimation()->mDuration)
+      if (mCurrentAnimation->mElapsedTime * mCurrentAnimation->GetTicksPerSecond() > mCurrentAnimation->GetDuration())
       {
         mCurrentAnimation->mCurrentAnimationTime = 0.0;
         mCurrentAnimation->mElapsedTime = 0.0;
@@ -459,12 +937,11 @@ namespace YTE
 
     if (mCurrentAnimation)
     {
-      aiMatrix4x4 identity = aiMatrix4x4();
-      mCurrentAnimation->ReadAnimation(mCurrentAnimation->GetScene()->mRootNode, identity);
+      mCurrentAnimation->Animate();
 
       for (int i = 0; i < mCurrentAnimation->GetSkeleton()->GetBoneData().size(); ++i)
       {
-        mCurrentAnimation->GetUBOAnim()->mBones[i] = AssimpToGLM(mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation);
+        mCurrentAnimation->GetUBOAnim()->mBones[i] = mCurrentAnimation->GetSkeleton()->GetBoneData()[i].mFinalTransformation;
       }
 
       // cause update to graphics card
@@ -574,7 +1051,7 @@ namespace YTE
 
     AnimationAdded animAdd;
     animAdd.animation = anim->mName;
-    animAdd.ticksPerSecond = anim->GetAnimation()->mTicksPerSecond;
+    animAdd.ticksPerSecond = anim->GetTicksPerSecond();
     mOwner->SendEvent(Events::AnimationAdded, &animAdd);
 
     return anim;

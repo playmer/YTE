@@ -26,9 +26,9 @@ namespace YTE
   public:
     YTEDeclareType(Component);
 
-    Component(Composition *aOwner, Space *aSpace);
+    YTE_Shared Component(Composition *aOwner, Space *aSpace);
 
-    virtual ~Component();
+    YTE_Shared virtual ~Component();
 
     virtual void AssetInitialize() { };
     virtual void NativeInitialize() { };
@@ -45,15 +45,15 @@ namespace YTE
       DeserializeByType(aProperties, this, GetStaticType());
     };
 
-    RSValue Serialize(RSAllocator &aAllocator) override;
+    YTE_Shared RSValue Serialize(RSAllocator &aAllocator) override;
 
-    virtual void Remove();
-    virtual RSValue RemoveSerialized();
+    YTE_Shared virtual void Remove();
+    YTE_Shared virtual RSValue RemoveSerialized();
 
-    void DebugBreak();
+    YTE_Shared void DebugBreak();
 
-    GlobalUniqueIdentifier& GetGUID();
-    bool SetGUID(GlobalUniqueIdentifier aGUID);
+    YTE_Shared GlobalUniqueIdentifier& GetGUID();
+    YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
   protected:
     Composition *mOwner;
@@ -67,11 +67,48 @@ namespace YTE
   public:
     YTEDeclareType(ComponentDependencies);
 
-    ComponentDependencies(DocumentedObject *aObject,
-                          std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());
+    YTE_Shared ComponentDependencies(DocumentedObject* aObject,
+                                     std::vector<std::vector<Type*>> aTypes = std::vector<std::vector<Type*>>());
 
     std::vector<std::vector<Type*>> mTypes;
   };
+
+  namespace Attributes
+  {
+    // By default, a component and all properties/fields will be deserialized
+    // after construction. But by using these attributes, the appropriate piece
+    // will be deserialized just before the given initialization phase.
+    enum class DeserializationTime
+    {
+      Asset,
+      Native,
+      Physics,
+      Initialize,
+      Start,
+      Runtime
+    };
+
+    class ComponentInitialize : public Attribute
+    {
+      public:
+      YTEDeclareType(ComponentInitialize);
+
+      YTE_Shared ComponentInitialize(DocumentedObject* aObject, 
+                                     DeserializationTime aTime);
+      DeserializationTime mTime;
+    };
+
+
+    class PropertyInitialize : public Attribute
+    {
+      public:
+      YTEDeclareType(PropertyInitialize);
+
+      YTE_Shared PropertyInitialize(DocumentedObject* aObject, 
+                                    DeserializationTime aTime);
+      DeserializationTime mTime;
+    };
+  }
 }
 
 #endif

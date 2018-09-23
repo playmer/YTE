@@ -22,11 +22,11 @@ namespace YTE
   {
   public:
     YTEDeclareType(ActionManager);
-    ActionManager(Composition *aOwner, Space * aSpace, RSValue *aProperties = nullptr);
-    void AddSequence(Composition *aComposition, const ActionSequence &sequence);
-    void Initialize();
-    void Update(LogicUpdate *aUpdate);
-    void OnCompositionRemoved(CompositionRemoved *aDeletion);
+    YTE_Shared ActionManager(Composition *aOwner, Space * aSpace);
+    YTE_Shared void AddSequence(Composition *aComposition, const ActionSequence &sequence);
+    YTE_Shared void Initialize();
+    YTE_Shared void Update(LogicUpdate *aUpdate);
+    YTE_Shared void OnCompositionRemoved(CompositionRemoved *aDeletion);
   private:
     std::unordered_map<Composition*, ActionSequence> mSequences;
   };

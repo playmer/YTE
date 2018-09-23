@@ -40,7 +40,7 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     mSignedUpForUpdate = true;
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
@@ -169,15 +169,6 @@ namespace YTE
     aCBO->executeCommands(mCBOB->GetCurrentCBO());
   }
 
-
-
-  void VkRenderToScreen::RenderBegin(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-  }
-
-
-
   void VkRenderToScreen::RenderFull(const vk::Extent2D& aExtent)
   {
     mCBOB->NextCommandBuffer();
@@ -194,9 +185,7 @@ namespace YTE
     vk::Rect2D scissor{ { 0, 0 }, aExtent };
     cbo->setScissor(0, scissor);
 
-    RenderBegin(cbo);
     Render(cbo);
-    RenderEnd(cbo);
     cbo->end();
   }
 
@@ -208,15 +197,6 @@ namespace YTE
     mScreenQuad->Bind(aCBO);
     mScreenQuad->Render(aCBO);
   }
-
-
-
-  void VkRenderToScreen::RenderEnd(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    UnusedArguments(aCBO);
-  }
-
-
 
   bool VkRenderToScreen::PresentFrame(std::shared_ptr<vkhlf::Queue>& aGraphicsQueue,
                                       std::shared_ptr<vkhlf::Semaphore>& aRenderCompleteSemaphore)
@@ -326,9 +306,9 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
-    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
     mSignedUpForUpdate = false;
 
     if (mScreenQuad)
@@ -351,7 +331,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -369,7 +349,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -389,7 +369,7 @@ namespace YTE
     if (mSignedUpForUpdate == false)
     {
       mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -631,7 +611,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenQuad::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::ScreenQuad::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
     mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
@@ -700,7 +680,13 @@ namespace YTE
     std::string fragment = aShaderSetName + ".frag";
 
     auto vertexFile = Path::GetShaderPath(Path::GetEnginePath(), vertex.c_str());
-    //auto fragmentFile = Path::GetShaderPath(Path::GetEnginePath(), fragment.c_str());
+
+    if (false == std::filesystem::exists(vertexFile))
+    {
+      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+      engine->Log(LogType::Information, fmt::format("Could not find the vertex file: {}", vertexFile));
+      return;
+    }
 
     std::string fragmentFile = GenerateFragmentShader();
 
@@ -710,6 +696,8 @@ namespace YTE
 
     if (false == vertexData.mValid || false == fragmentData.mValid)
     {
+      auto engine = mParent->mSurface->GetRenderer()->GetEngine();
+
       auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}",
                              vertex,
                              vertexData.mReason,
@@ -720,30 +708,32 @@ namespace YTE
       //std::cout << str;
       if (aReload)
       {
-        mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
+        engine->Log(LogType::Error, fmt::format(
           "\t-> {} Failed to Reload!\n############################################################\n",
           aShaderSetName));
       }
       else 
       {
-        mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
+        engine->Log(LogType::Error, fmt::format(
           "Shader: {} Failed to Load!\n############################################################\n",
           aShaderSetName));
       }
 
 
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, fmt::format(
+      engine->Log(LogType::Information, fmt::format(
         "Generated Fragement Shader : \n{}\n------------------------------------------\n",
         fragmentFile));
 
-      mParent->mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, fmt::format(
+      engine->Log(LogType::Information, fmt::format(
         "Errors Follow:\n{}\n############################################################\n",
         str));
 
       DebugObjection(true,
-                     fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
-                                        aShaderSetName, str)
-                     .c_str());
+                     fmt::format("Shader {} failed to compile and had no previously compiled shader to use.\n"
+                                 "Compilation Message:\n"
+                                 "{}",
+                                 aShaderSetName, 
+                                 str).c_str());
       return;
     }
 
@@ -835,7 +825,7 @@ namespace YTE
 
 
 
-  void VkRenderToScreen::ScreenShader::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkRenderToScreen::ScreenShader::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     UnusedArguments(aEvent);
   }

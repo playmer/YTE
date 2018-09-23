@@ -61,7 +61,7 @@ namespace YTE
   }
 
 
-  Space::Space(Engine *aEngine, RSValue *aProperties)
+  Space::Space(Engine* aEngine, RSValue* aProperties)
     : Composition(aEngine, this, aEngine)
     , mLevelToLoad(nullptr)
   {
@@ -140,7 +140,7 @@ namespace YTE
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.
-  void Space::Load(RSValue *aLevel, bool aInitialize)
+  void Space::Load(RSValue* aLevel, bool aInitialize)
   {
     YTEProfileFunction();
     mCompositions.Clear();
@@ -241,7 +241,7 @@ namespace YTE
   }
 
   // Updates the Space to the current frame.
-  void Space::Update(LogicUpdate *aEvent)
+  void Space::Update(LogicUpdate* aEvent)
   {
     YTEProfileFunction();
 
@@ -302,8 +302,8 @@ namespace YTE
   {
   }
 
-  void Space::CreateBlankLevel(const String& aLevelName)
-{
+  void Space::CreateBlankLevel(String const& aLevelName)
+  {
     mCompositions.Clear();
     ComponentClear();
 
@@ -328,7 +328,7 @@ namespace YTE
     mLoading = false;
   }
 
-  void Space::LoadLevel(String &level, bool aCheckRunInEditor)
+  void Space::LoadLevel(String& level, bool aCheckRunInEditor)
   {
     mCheckRunInEditor = aCheckRunInEditor;
     mLoading = true;
@@ -336,7 +336,7 @@ namespace YTE
     mLoadingName = level;
   }
 
-  void Space::SaveLevel(String &aLevelName)
+  void Space::SaveLevel(String& aLevelName)
   {
     // TODO (Josh): Fix
     RSAllocator allocator;
@@ -382,7 +382,7 @@ namespace YTE
 
 
   // TODO (Josh): Abstract or move to another handler.
-  void Space::WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent)
+  void Space::WindowLostOrGainedFocusHandler(WindowFocusLostOrGained const* aEvent)
   {
     UnusedArguments(aEvent);
 
@@ -400,7 +400,7 @@ namespace YTE
     //}
   }
 
-  void Space::WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent)
+  void Space::WindowMinimizedOrRestoredHandler(WindowMinimizedOrRestored const* aEvent)
   {
     UnusedArguments(aEvent);
 

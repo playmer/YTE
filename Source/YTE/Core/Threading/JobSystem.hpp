@@ -6,19 +6,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Core_JobSystem_h
-#define YTE_Core_JobSystem_h
+#ifndef YTE_Core_JobSystem_hpp
+#define YTE_Core_JobSystem_hpp
 
-
+#include <functional>
 #include <mutex>
 #include <thread>
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/Threading/Worker.hpp"
-
-#include "YTE/StandardLibrary/UnorderedMap.hpp"
-
-#include <functional>
 
 namespace YTE
 {
@@ -27,11 +23,11 @@ namespace YTE
   public:
     YTEDeclareType(JobSystem);
 
-    JobSystem(Composition *aOwner, RSValue *aProperties = nullptr);
-    ~JobSystem();
-    void Initialize();
-    void WaitThisThread(JobHandle& aJobHandle);
-    void Update(LogicUpdate *aUpdate);
+    YTE_Shared JobSystem(Composition *aOwner);
+    YTE_Shared ~JobSystem();
+    YTE_Shared void Initialize();
+    YTE_Shared void WaitThisThread(JobHandle& aJobHandle);
+    YTE_Shared void Update(LogicUpdate *aUpdate);
 
     // TODO(Evan): Finish FunctionDelegate to allow lambda support
 

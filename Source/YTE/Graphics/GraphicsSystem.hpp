@@ -10,12 +10,13 @@
 
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
-#include "YTE/Core/PrivateImplementation.hpp"
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
+
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
 
 namespace YTE
 {
@@ -28,14 +29,12 @@ namespace YTE
     int height;
   };
 
-
-
   class GraphicsSystem : public Component
   {
   public:
     YTEDeclareType(GraphicsSystem);
 
-    GraphicsSystem(Composition *aOwner, RSValue *aProperties);
+    GraphicsSystem(Composition *aOwner);
     ~GraphicsSystem();
 
     void SetUpWindow(Window *aWindow);

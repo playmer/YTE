@@ -22,12 +22,9 @@ namespace YTE
   }
 
 
-  ComponentSystem::ComponentSystem(Composition *aOwner, 
-                                   RSValue *aProperties)
+  ComponentSystem::ComponentSystem(Composition *aOwner)
     : Component(aOwner, nullptr)
   {
-    UnusedArguments(aProperties);
-
     CoreComponentFactoryInitilization(static_cast<Engine*>(mOwner), mComponentFactories);
     GetOwner()->RegisterEvent<&ComponentSystem::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
   };
@@ -51,9 +48,7 @@ namespace YTE
   }
     
   std::pair<StringComponentFactory *, UniquePointer<Component>>
-    ComponentSystem::MakeComponent(BoundType *aType,
-                                    Composition *aOwner, 
-                                    RSValue *aProperties)
+    ComponentSystem::MakeComponent(BoundType *aType, Composition *aOwner)
   {
     auto it = mComponentFactories.Find(aType);
 
@@ -63,7 +58,7 @@ namespace YTE
     }
 
     auto &factory = mComponentFactories.Find(aType)->second;
-    return std::make_pair(factory.get(), factory->MakeComponent(aOwner, mSpace, aProperties));
+    return std::make_pair(factory.get(), factory->MakeComponent(aOwner, mSpace));
   }
 } // End yte namespace.
 

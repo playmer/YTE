@@ -22,12 +22,12 @@ namespace YTE
   public:
     YTEDeclareType(VkInstantiatedLight);
 
-    VkInstantiatedLight(VkRenderedSurface *aSurface, VkLightManager* aLightManager, GraphicsView* aView);
-    ~VkInstantiatedLight() override;
+    YTE_Shared VkInstantiatedLight(VkRenderedSurface *aSurface, VkLightManager* aLightManager, GraphicsView* aView);
+    YTE_Shared ~VkInstantiatedLight() override;
 
-    void GraphicsDataUpdateVk(GraphicsDataUpdateVk *aEvent);
-    void SurfaceLostEvent(ViewChanged *aEvent);
-    void SurfaceGainedEvent(ViewChanged *aEvent);
+    YTE_Shared void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
+    YTE_Shared void SurfaceLostEvent(ViewChanged *aEvent);
+    YTE_Shared void SurfaceGainedEvent(ViewChanged *aEvent);
 
     void SetIndex(unsigned int aIndex)
     {

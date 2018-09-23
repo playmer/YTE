@@ -25,7 +25,7 @@ namespace YTE
   public:
     YTEDeclareType(GhostBody);
 
-    GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    GhostBody(Composition *aOwner, Space *aSpace);
 
     ~GhostBody() override;
 

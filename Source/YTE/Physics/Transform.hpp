@@ -89,61 +89,61 @@ namespace YTE
   public:
     YTEDeclareType(Transform);
 
-    Transform(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    void Initialize();
+    YTE_Shared Transform(Composition *aOwner, Space *aSpace);
+    YTE_Shared void Initialize();
 
     //void NativeInitialize() override;
 
     // LOCAL TRANSFORM INFORMATION
-    const glm::vec3& GetTranslation() const;
-    void SetTranslation(const glm::vec3& aTrans);
-    void SetTranslation(float aX, float aY, float aZ);
+    YTE_Shared const glm::vec3& GetTranslation() const;
+    YTE_Shared void SetTranslation(const glm::vec3& aTrans);
+    YTE_Shared void SetTranslation(float aX, float aY, float aZ);
 
-    const glm::vec3& GetScale() const;
-    void SetScale(const glm::vec3& aScale);
-    void SetScale(float aX, float aY, float aZ);
+    YTE_Shared const glm::vec3& GetScale() const;
+    YTE_Shared void SetScale(const glm::vec3& aScale);
+    YTE_Shared void SetScale(float aX, float aY, float aZ);
 
-    const glm::quat& GetRotation() const;
-    glm::vec3 GetRotationAsEuler() const;
-    glm::vec3 GetRotationAsEulerRadians() const;
-    void SetRotation(const glm::quat& aRotation);
-    void SetRotation(const glm::vec3& aEulerRot);
-    void SetRotation(float aThetaX, float aThetaY, float ThetaZ);
+    YTE_Shared const glm::quat& GetRotation() const;
+    YTE_Shared glm::vec3 GetRotationAsEuler() const;
+    YTE_Shared glm::vec3 GetRotationAsEulerRadians() const;
+    YTE_Shared void SetRotation(const glm::quat& aRotation);
+    YTE_Shared void SetRotation(const glm::vec3& aEulerRot);
+    YTE_Shared void SetRotation(float aThetaX, float aThetaY, float ThetaZ);
 
-    void RotateAboutLocalAxis(glm::vec3 aAxis, float aAngle);
-    void RotateAboutWorldAxis(const glm::vec3& aAxis, float aAngle);
-    void RotateToward(const glm::vec3& aTargetVector, const glm::vec3& aUpVector);
-    void RotateTowardPoint(const glm::vec3& aTargetPoint, const glm::vec3& aUpVector);
-    void RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint);
+    YTE_Shared void RotateAboutLocalAxis(glm::vec3 aAxis, float aAngle);
+    YTE_Shared void RotateAboutWorldAxis(const glm::vec3& aAxis, float aAngle);
+    YTE_Shared void RotateToward(const glm::vec3& aTargetVector, const glm::vec3& aUpVector);
+    YTE_Shared void RotateTowardPoint(const glm::vec3& aTargetPoint, const glm::vec3& aUpVector);
+    YTE_Shared void RotateAround(glm::vec3 aAxis, float aAngle, glm::vec3 aPoint);
 
     // WORLD SPACE TRANSFORM INFORMATION
-    const glm::vec3& GetWorldTranslation() const;
-    void SetWorldTranslation(const glm::vec3& aTrans);
-    void SetWorldTranslation(float aX, float aY, float aZ);
+    YTE_Shared const glm::vec3& GetWorldTranslation() const;
+    YTE_Shared void SetWorldTranslation(const glm::vec3& aTrans);
+    YTE_Shared void SetWorldTranslation(float aX, float aY, float aZ);
 
-    const glm::vec3& GetWorldScale() const;
-    void SetWorldScale(const glm::vec3& aScale);
-    void SetWorldScale(float aX, float aY, float aZ);
+    YTE_Shared const glm::vec3& GetWorldScale() const;
+    YTE_Shared void SetWorldScale(const glm::vec3& aScale);
+    YTE_Shared void SetWorldScale(float aX, float aY, float aZ);
 
-    const glm::quat& GetWorldRotation() const;
-    glm::vec3 GetWorldRotationAsEuler() const;
-    void SetWorldRotation(const glm::quat& aRotation);
-    void SetWorldRotation(const glm::vec3& aEulerRot);
-    void SetWorldRotation(float aThetaX, float aThetaY, float ThetaZ);
+    YTE_Shared const glm::quat& GetWorldRotation() const;
+    YTE_Shared glm::vec3 GetWorldRotationAsEuler() const;
+    YTE_Shared void SetWorldRotation(const glm::quat& aRotation);
+    YTE_Shared void SetWorldRotation(const glm::vec3& aEulerRot);
+    YTE_Shared void SetWorldRotation(float aThetaX, float aThetaY, float ThetaZ);
 
-    inline void SetTranslationProperty(const glm::vec3& aTrans) { SetTranslation(aTrans); };
-    inline void SetScaleProperty(const glm::vec3& aScale) { SetScale(aScale); };
-    inline void SetRotationPropertyQuat(const glm::quat& aRot) { SetRotation(aRot); };
-    inline void SetRotationProperty(const glm::vec3& aEulerRot) { SetRotation(aEulerRot); };
+    void SetTranslationProperty(const glm::vec3& aTrans) { SetTranslation(aTrans); };
+    void SetScaleProperty(const glm::vec3& aScale) { SetScale(aScale); };
+    void SetRotationPropertyQuat(const glm::quat& aRot) { SetRotation(aRot); };
+    void SetRotationProperty(const glm::vec3& aEulerRot) { SetRotation(aEulerRot); };
 
-    inline void SetWorldTranslationProperty(const glm::vec3& aTrans) { SetWorldTranslation(aTrans); };
-    inline void SetWorldScaleProperty(const glm::vec3& aScale) { SetWorldScale(aScale); };
-    inline void SetWorldRotationProperty(const glm::vec3& aEulerRot) { SetWorldRotation(aEulerRot); };
+    void SetWorldTranslationProperty(const glm::vec3& aTrans) { SetWorldTranslation(aTrans); };
+    void SetWorldScaleProperty(const glm::vec3& aScale) { SetWorldScale(aScale); };
+    void SetWorldRotationProperty(const glm::vec3& aEulerRot) { SetWorldRotation(aEulerRot); };
 
-    void ParentPositionChanged(TransformChanged *aEvent);
-    void ParentScaleChanged(TransformChanged *aEvent);
-    void ParentRotationChanged(TransformChanged *aEvent);
-    void ParentObjectChanged(ParentChanged *aEvent);
+    YTE_Shared void ParentPositionChanged(TransformChanged *aEvent);
+    YTE_Shared void ParentScaleChanged(TransformChanged *aEvent);
+    YTE_Shared void ParentRotationChanged(TransformChanged *aEvent);
+    YTE_Shared void ParentObjectChanged(ParentChanged *aEvent);
 
     void SetInformPhysics(bool aInformPhysics)
     {
@@ -155,7 +155,7 @@ namespace YTE
       return mInformPhysics;
     }
 
-    glm::mat4 GetTransformMatrix();
+    YTE_Shared glm::mat4 GetTransformMatrix();
 
   private:
     glm::vec3 GetAccumulatedParentTranslation();

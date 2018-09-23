@@ -32,7 +32,7 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
@@ -48,8 +48,6 @@ namespace YTE
     {
       std::cout << "No WWiseView on the current space, playing will fail!\n";
     }
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   WWiseListener::~WWiseListener()

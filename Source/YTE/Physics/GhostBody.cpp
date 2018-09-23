@@ -41,10 +41,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  GhostBody::GhostBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties), mVelocity(0.f, 0.f, 0.f), mIsInitialized(false)
+  GhostBody::GhostBody(Composition* aOwner, Space* aSpace)
+    : Body{ aOwner, aSpace }
+    , mVelocity{ 0.f, 0.f, 0.f }
+    , mIsInitialized{ false }
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   GhostBody::~GhostBody()
@@ -76,8 +77,8 @@ namespace YTE
     mGhostBody->setUserPointer(mOwner);
 
     btTransform translationAndRotation;
-    translationAndRotation.setOrigin(OurVec3ToBt(transform->GetWorldTranslation()));
-    translationAndRotation.setRotation(OurQuatToBt(transform->GetWorldRotation()));
+    translationAndRotation.setOrigin(ToBullet(transform->GetWorldTranslation()));
+    translationAndRotation.setRotation(ToBullet(transform->GetWorldRotation()));
     mGhostBody->setWorldTransform(translationAndRotation);
 
     world->addCollisionObject(mGhostBody.get());
@@ -90,8 +91,8 @@ namespace YTE
   void GhostBody::TransformEvent(TransformChanged *aEvent)
   {
     btTransform translationAndRotation;
-    translationAndRotation.setOrigin(OurVec3ToBt(aEvent->WorldPosition));
-    translationAndRotation.setRotation(OurQuatToBt(aEvent->WorldRotation));
+    translationAndRotation.setOrigin(ToBullet(aEvent->WorldPosition));
+    translationAndRotation.setRotation(ToBullet(aEvent->WorldRotation));
     mGhostBody->setWorldTransform(translationAndRotation);
   }
 }

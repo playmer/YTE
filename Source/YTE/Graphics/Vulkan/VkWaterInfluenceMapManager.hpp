@@ -32,7 +32,7 @@ namespace YTE
 
     void SetSurfaceAndView(VkRenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent);
+    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent);
 
     void AddMap(VkInstantiatedInfluenceMap *aMap);
     std::unique_ptr<VkInstantiatedInfluenceMap> CreateMap();

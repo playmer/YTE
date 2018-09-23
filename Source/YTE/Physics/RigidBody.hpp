@@ -25,34 +25,34 @@ namespace YTE
   public:
     YTEDeclareType(RigidBody);
 
-    RigidBody(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared RigidBody(Composition *aOwner, Space *aSpace);
 
-    ~RigidBody();
+    YTE_Shared ~RigidBody();
 
-    void PhysicsInitialize() override;
+    YTE_Shared void PhysicsInitialize() override;
 
-    void ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition);
-    void ApplyImpulse(const glm::vec3& aImpulse, const glm::vec3& aRelativePosition);
-    void SetPhysicsTransform(const glm::vec3& aTranslation, const glm::quat& aRotation);
+    YTE_Shared void ApplyForce(const glm::vec3& aForce, const glm::vec3& aRelativePosition);
+    YTE_Shared void ApplyImpulse(const glm::vec3& aImpulse, const glm::vec3& aRelativePosition);
+    YTE_Shared void SetPhysicsTransform(const glm::vec3& aTranslation, const glm::quat& aRotation);
 
-    const glm::vec3 GetAngularVelocity() const;
+    YTE_Shared const glm::vec3 GetAngularVelocity() const;
 
-    const glm::vec3 GetVelocity() const;
-    void SetVelocity(const glm::vec3& aVelocity);
-    void SetVelocity(float aVelX, float aVelY, float aVelZ);
+    YTE_Shared const glm::vec3 GetVelocity() const;
+    YTE_Shared void SetVelocity(const glm::vec3& aVelocity);
+    YTE_Shared void SetVelocity(float aVelX, float aVelY, float aVelZ);
 
     btRigidBody* GetBody() { return mRigidBody.get(); };
 
-    void SetKinematic(bool flag);
-    bool IsKinematic() const;
+    YTE_Shared void SetKinematic(bool flag);
+    YTE_Shared bool IsKinematic() const;
 
-    void SetMass(float aMass);
-    float GetMass() const;
+    YTE_Shared void SetMass(float aMass);
+    YTE_Shared float GetMass() const;
 
-    void SetGravity(glm::vec3 aAcceleration);
-    glm::vec3 GetGravity();
+    YTE_Shared void SetGravity(glm::vec3 aAcceleration);
+    YTE_Shared glm::vec3 GetGravity();
 
-    void SetDamping(float aLinearDamp, float aAngularDamp);
+    YTE_Shared void SetDamping(float aLinearDamp, float aAngularDamp);
 
   private:
     UniquePointer<btRigidBody> mRigidBody;

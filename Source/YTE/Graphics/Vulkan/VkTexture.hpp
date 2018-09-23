@@ -27,7 +27,7 @@ namespace YTE
 
     void Initialize();
 
-    void LoadToVulkan(GraphicsDataUpdateVk *aEvent);
+    void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
 
     std::shared_ptr<vkhlf::Sampler> mSampler;
     std::shared_ptr<vkhlf::ImageView> mImageView;

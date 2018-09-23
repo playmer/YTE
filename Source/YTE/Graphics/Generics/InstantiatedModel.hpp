@@ -34,7 +34,7 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedModel);
 
-    InstantiatedModel();
+    YTE_Shared InstantiatedModel();
 
     virtual ~InstantiatedModel()
     {
@@ -58,20 +58,9 @@ namespace YTE
       UnusedArguments(aIndex, aVertices, aIndices);
     }
 
-    virtual bool GetInstanced()
-    {
-      return false;
-    }
-
     virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
     {
       UnusedArguments(aUBO);
-    }
-
-
-    virtual void SetInstanced(bool aInstanced)
-    {
-      UnusedArguments(aInstanced);
     }
 
     // Used to update with the previous data. This is useful for switching

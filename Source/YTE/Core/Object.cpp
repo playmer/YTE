@@ -60,6 +60,11 @@ namespace YTE
 
     bool deserializedEditorHeader{ false };
 
+    if (rapidjson::kObjectType != aProperties->GetType())
+    {
+      return;
+    }
+
     for (auto propertiesIt = aProperties->MemberBegin(); propertiesIt < aProperties->MemberEnd(); ++propertiesIt)
     {
       std::string propertyName = propertiesIt->name.GetString();

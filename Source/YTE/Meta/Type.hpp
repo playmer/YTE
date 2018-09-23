@@ -12,6 +12,8 @@
 #include "YTE/Meta/ForwardDeclarations.hpp"
 #include "YTE/Meta/Reflection.hpp"
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 #include "YTE/Utilities/String/String.hpp"
 
 
@@ -44,14 +46,14 @@ void Dummy() {}                                                       \
 typedef decltype(::YTE::GetDummy(&Name::Dummy)) TempSelfType;         \
 typedef decltype(::YTE::GetSelfType<TempSelfType>(nullptr)) BaseType; \
 typedef TempSelfType SelfType;                                        \
-static ::YTE::Type sType;                                             \
-static ::YTE::Type* GetStaticType() { return &sType; };               \
-::YTE::Type* GetType() { return &sType; };                            \
-static void InitializeType();
+YTE_Shared static ::YTE::Type sType;                                  \
+YTE_Shared static ::YTE::Type* GetStaticType() { return &sType; };    \
+YTE_Shared ::YTE::Type* GetType() { return &sType; };                 \
+YTE_Shared static void InitializeType();
 
 
 #define YTEDefineType(Name)                              \
-::YTE::Type Name::sType{#Name,                                  \
+::YTE::Type Name::sType{#Name,                           \
                  static_cast<Name*>(nullptr),            \
                  static_cast<Name::BaseType*>(nullptr)}; \
 void Name::InitializeType()
@@ -280,7 +282,7 @@ void Name::InitializeType()
 
     Type(Type&) = delete;
 
-    ~Type();
+    YTE_Shared ~Type();
 
     const std::string& Name()  const { return mName; }
     size_t             Hash() const { return mHash; }
@@ -303,9 +305,9 @@ void Name::InitializeType()
       return false;
     }
 
-    Function* AddFunction(std::unique_ptr<Function> aFunction);
-    Property* AddProperty(std::unique_ptr<Property> aProperty);
-    Field* AddField(std::unique_ptr<Field>    aField);
+    YTE_Shared Function* AddFunction(std::unique_ptr<Function> aFunction);
+    YTE_Shared Property* AddProperty(std::unique_ptr<Property> aProperty);
+    YTE_Shared Field* AddField(std::unique_ptr<Field>    aField);
 
     OrderedMultiMap<std::string, std::unique_ptr<Function>>::range GetFunctionRange(const std::string_view aName)
     {
@@ -384,8 +386,8 @@ void Name::InitializeType()
       return mFields.FindAll(name);
     }
 
-    bool IsA(Type *aType);
-    bool IsA(Type *aType, Type *aTypeToStopAt);
+    YTE_Shared bool IsA(Type *aType);
+    YTE_Shared bool IsA(Type *aType, Type *aTypeToStopAt);
 
     template<typename tType>
     bool IsA()
@@ -393,8 +395,8 @@ void Name::InitializeType()
       return IsA(TypeId<tType>());
     }
 
-    Type* GetMostBasicType();
-    Property* GetFirstField(const char *aName);
+    YTE_Shared Type* GetMostBasicType();
+    YTE_Shared Property* GetFirstField(const char *aName);
 
     Type* GetPointerTo()
     {
@@ -431,8 +433,8 @@ void Name::InitializeType()
       return mName;
     }
 
-    static void AddGlobalType(const std::string &aName, Type *aType);
-    static Type* GetGlobalType(const std::string &aName);
+    YTE_Shared static void AddGlobalType(const std::string &aName, Type *aType);
+    YTE_Shared static Type* GetGlobalType(const std::string &aName);
 
     static std::unordered_map<std::string, Type*>& GetGlobalTypes() { return sGlobalTypes; }
 
@@ -460,7 +462,7 @@ void Name::InitializeType()
     Type* mBaseType;
     Type* mEnumOf;
 
-    static std::unordered_map<std::string, Type*> sGlobalTypes;
+    YTE_Shared static std::unordered_map<std::string, Type*> sGlobalTypes;
   };
 
 
@@ -572,15 +574,14 @@ namespace YTE                                              \
   {                                                        \
     static inline Type* TypeId()                           \
     {                                                      \
-      static Type type{ #Name,                             \
-                        static_cast<Name*>(nullptr) };     \
-      return &type;                                        \
+      return &cType;                                       \
     }                                                      \
                                                            \
     static inline void InitializeType()                    \
     {                                                      \
       Type::AddGlobalType(TypeId()->GetName(), TypeId());  \
     }                                                      \
+    YTE_Shared static Type cType;                          \
   };                                                       \
                                                            \
   template<>                                               \
@@ -589,7 +590,13 @@ namespace YTE                                              \
 
 // Must be used outside of a namespace, clang and MSVC seem to be fine inside of YTE
 // but GCC will not allow it, and I tend to think they're right.
-#define YTEDefineExternalType(Name) template<> void YTE::InitializeType<Name>()
+#define YTEDefineExternalType(Name)                                   \
+namespace YTE                                                         \
+{                                                                     \
+  Type TypeIdentification<Name>::cType{ #Name,                        \
+                                        static_cast<Name*>(nullptr)}; \
+}                                                                     \
+template<> void YTE::InitializeType<Name>()
 
 YTEDeclareExternalType(void)
 YTEDeclareExternalType(bool)

@@ -11,9 +11,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/StandardLibrary/Array.hpp"
 #include "YTE/StandardLibrary/Delegate.hpp"
-#include "YTE/StandardLibrary/UnorderedMap.hpp"
 
 #include <functional>
 

@@ -97,7 +97,7 @@ namespace YTE
                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
                                  allocator);
 
-    mRenderer->RegisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk, this);
+    mRenderer->RegisterEvent<&VkTexture::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 
 
     vk::ComponentMapping components = { vk::ComponentSwizzle::eR, vk::ComponentSwizzle::eG, vk::ComponentSwizzle::eB, vk::ComponentSwizzle::eA };
@@ -139,7 +139,7 @@ namespace YTE
 
 
 
-  void VkTexture::LoadToVulkan(GraphicsDataUpdateVk *aEvent)
+  void VkTexture::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
   {
     auto update = aEvent->mCBO;
     // create a temporary upload image and fill it with pixel data. 
@@ -197,6 +197,10 @@ namespace YTE
       }
     }
 
-    mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::GraphicsDataUpdateVk,  this);
+    // TODO (JoshF): Please think of a better way to unload texture data.
+    //mTexture->mData.clear();
+    //mTexture->mData.shrink_to_fit();
+
+    mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
   }
 }

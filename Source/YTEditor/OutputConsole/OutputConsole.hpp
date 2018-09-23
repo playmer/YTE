@@ -19,6 +19,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTEditor/YTEditorMeta.hpp"
+
 class QGridLayout;
 class QTextEdit;
 
@@ -30,7 +32,7 @@ namespace YTEditor
   class LogHandler : public YTE::EventHandler
   {
   public:
-    YTEDeclareType(LogHandler);
+    YTEditorDeclareType(LogHandler);
     LogHandler(OutputConsole *aConsole);
 
     void HandleLog(YTE::LogEvent *aEvent);

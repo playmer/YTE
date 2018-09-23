@@ -20,12 +20,11 @@
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Plugin.hpp"
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/Window.hpp"
-
-#include "YTE/StandardLibrary/Vector.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -86,11 +85,11 @@ namespace YTE
   public:
     YTEDeclareType(Engine);
     
-    Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode = false);
-    void Update();
-    ~Engine();
+    YTE_Shared Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode = false);
+    YTE_Shared void Update();
+    YTE_Shared ~Engine();
 
-    void Initialize(InitializeEvent*) override;
+    YTE_Shared void Initialize(InitializeEvent*) override;
     void Initialize()
     {
       InitializeEvent event;
@@ -98,18 +97,23 @@ namespace YTE
       Initialize(&event);
     }
 
-    void Deserialize(RSValue *aValue);
 
-    Window* AddWindow(const char *aName);
-    void RemoveWindow(Window *aWindow);
+    // Plugins
+    YTE_Shared void LoadPlugins();
+
+
+
+    YTE_Shared void Deserialize(RSValue *aValue);
+
+    YTE_Shared Window* AddWindow(const char *aName);
+    YTE_Shared void RemoveWindow(Window *aWindow);
 
     bool KeepRunning() const { return mShouldRun; };
+    
+    YTE_Shared void EndExecution();
+    YTE_Shared void Recompile();
 
-    void EndExecution();
-
-    void Recompile();
-
-    void SetFrameRate(Window &aWindow, double aDt);
+    YTE_Shared void SetFrameRate(Window &aWindow, double aDt);
 
     Window* GetWindow()
     {
@@ -129,10 +133,10 @@ namespace YTE
 
 
     inline GamepadSystem *GetGamepadSystem() { return &mGamepadSystem; }
-    RSDocument* GetArchetype(String &aArchetype);
-    std::unordered_map<String, UniquePointer<RSDocument>>* GetArchetypes(void);
-    RSDocument* GetLevel(String &aLevel);
-    std::unordered_map<String, UniquePointer<RSDocument>>* GetLevels(void);
+    YTE_Shared RSDocument* GetArchetype(String &aArchetype);
+    YTE_Shared std::unordered_map<String, UniquePointer<RSDocument>>* GetArchetypes(void);
+    YTE_Shared RSDocument* GetLevel(String &aLevel);
+    YTE_Shared std::unordered_map<String, UniquePointer<RSDocument>>* GetLevels(void);
 
     bool IsEditor()
     {
@@ -146,17 +150,17 @@ namespace YTE
 
     size_t GetFrame() { return mFrame; }
 
-    Composition* StoreCompositionGUID(Composition *aComposition);
-    Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
-    Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
-    bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared Composition* StoreCompositionGUID(Composition *aComposition);
+    YTE_Shared Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 
-    Component* StoreComponentGUID(Component *aComponent);
-    Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
-    Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
-    bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared Component* StoreComponentGUID(Component *aComponent);
+    YTE_Shared Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
 
-    void Log(LogType aType, std::string_view aLog);
+    YTE_Shared void Log(LogType aType, std::string_view aLog);
 
 
     OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
@@ -179,6 +183,9 @@ namespace YTE
     // all compositions and components mapped to GUIDs (represented as strings)
     std::unordered_map<std::string, Composition*> mCompositionsByGUID;
     std::unordered_map<std::string, Component*> mComponentsByGUID;
+
+
+    std::unordered_map<std::string, std::unique_ptr<PluginWrapper>> mPlugins;
 
     double mDt;
     size_t mFrame;

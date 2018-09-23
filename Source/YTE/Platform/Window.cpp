@@ -24,7 +24,7 @@ namespace YTE
     builder.Function<&Window::SetFullscreen>("SetFullscreen")
       .SetParameterNames("aFullscreen", "aForMetro")
       .SetDocumentation("Either switches to fullscreen or unfullscreen.");
-    builder.Function<&Window::SetCursorVisibility>( "SetCursorVisibility")
+    builder.Function<&Window::SetCursorVisibility>("SetCursorVisibility")
       .SetParameterNames("aShow")
       .SetDocumentation("Turns the visibility of the mouse cursor on and off");
     

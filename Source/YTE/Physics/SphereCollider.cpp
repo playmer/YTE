@@ -29,10 +29,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&SphereCollider::GetRadius, &SphereCollider::SetRadius>( "Radius")
+    builder.Property<&SphereCollider::GetRadius, &SphereCollider::SetRadius>("Radius")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
-    builder.Property<&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty>( "Offset")
+    builder.Property<&SphereCollider::GetOffset, &SphereCollider::SetOffsetProperty>("Offset")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
@@ -48,10 +48,9 @@ namespace YTE
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }
 
-  SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  SphereCollider::SphereCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace), mRadius(1.0f)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void SphereCollider::PhysicsInitialize()
@@ -120,7 +119,7 @@ namespace YTE
   {
     if (mSphereShape)
     {
-      mSphereShape->setLocalScaling(OurVec3ToBt(aEvent->WorldScale));
+      mSphereShape->setLocalScaling(ToBullet(aEvent->WorldScale));
     }
   }
 }

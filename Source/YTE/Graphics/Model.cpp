@@ -26,7 +26,7 @@ namespace YTE
   {
     RegisterType<ModelChanged>();
     TypeBuilder<ModelChanged> builder;
-    builder.Field<&ModelChanged::Object>( "Object", PropertyBinding::Get);
+    builder.Field<&ModelChanged::Object>("Object", PropertyBinding::Get);
   }
 
 
@@ -77,21 +77,21 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&Model::GetMeshName, &Model::SetMeshName>( "Mesh")
+    builder.Property<&Model::GetMeshName, &Model::SetMeshName>("Mesh")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&Model::GetShading, &Model::SetShading>( "Shading")
+    builder.Property<&Model::GetShading, &Model::SetShading>("Shading")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateShadingDropDown);
 
-    builder.Property<&Model::GetReload, &Model::SetReload>( "Reload")
+    builder.Property<&Model::GetReload, &Model::SetReload>("Reload")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    //builder.Property<&Model::GetInstanced, &Model::SetInstanced>( "Instanced")
+    //builder.Property<&Model::GetInstanced, &Model::SetInstanced>("Instanced")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>()
     //  .SetDocumentation("Will use/not use instancing for this mesh. (Will apply to all Models using this mesh.)");
@@ -102,8 +102,8 @@ namespace YTE
   /////////////////////////////////
   // Model Class Functions
   /////////////////////////////////
-  Model::Model(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  Model::Model(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mRenderer(nullptr)
     , mWindow(nullptr)
     , mMeshName("")
@@ -112,7 +112,6 @@ namespace YTE
     , mConstructing(true)
     , mBackfaceCulling(true)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   Model::~Model()
@@ -347,26 +346,6 @@ namespace YTE
   void Model::Destroy()
   {
     mInstantiatedModel.reset();
-  }
-
-  void Model::SetInstanced(bool aInstanced)
-  {
-    if (mInstantiatedModel)
-    {
-      mInstantiatedModel->SetInstanced(aInstanced);
-    }
-  }
-
-  bool Model::GetInstanced()
-  {
-    if (mInstantiatedModel)
-    {
-      return mInstantiatedModel->GetInstanced();
-    }
-    else
-    {
-      return false;
-    }
   }
 
   void Model::CreateTransform()

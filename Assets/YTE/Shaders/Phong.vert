@@ -131,11 +131,7 @@ mat4 Animate()
     boneTransform += Animation.mBones[inBoneIDs2[0]] * inBoneWeights2[0];
     boneTransform += Animation.mBones[inBoneIDs2[1]] * inBoneWeights2[1];
     
-    // transpose is done since assimp does pre-transpose their matrices from
-    // maya
-    // TODO (Andrew): Remove this transpose when out own system is used for
-    // animation with our own data files
-    return (transpose(boneTransform));
+    return boneTransform;
   }
   else
   {

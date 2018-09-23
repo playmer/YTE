@@ -10,7 +10,7 @@
 
 namespace YTE
 {
-  class GraphicsDataUpdateVk;
+  class VkGraphicsDataUpdate;
   class SwapChainSupportDetails;
   class VkInstantiatedModel;
   class VkInstantiatedLight;

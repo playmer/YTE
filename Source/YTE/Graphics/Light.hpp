@@ -26,43 +26,43 @@ namespace YTE
   public:
     YTEDeclareType(Light);
 
-    Light(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~Light() override;
-    void Initialize() override; 
+    YTE_Shared Light(Composition *aOwner, Space *aSpace);
+    YTE_Shared ~Light() override;
+    YTE_Shared void Initialize() override; 
 
     
     
     ///////////////////////////////////////
     // Events
     ///////////////////////////////////////
-    void TransformUpdate(TransformChanged *aEvent);
-    void Update(LogicUpdate* aEvent);
+    YTE_Shared void TransformUpdate(TransformChanged *aEvent);
+    YTE_Shared void Update(LogicUpdate* aEvent);
 
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    void SetLightSourceInformation(UBOLight &aLight);
-    void SetPosition(glm::vec3& aPosition);
-    void SetDirection(glm::vec3& aDirection);
-    void SetAmbient(glm::vec3& aColor);
-    void SetDiffuse(glm::vec3& aColor);
-    void SetSpecular(glm::vec3& aColor);
-    void SetSpotLightCones(glm::vec2& aCones);  // inner, outer
-    void SetLightType(std::string aLightType);
-    void SetSpotLightFalloff(float& aFalloff);
-    void SetActive(bool aValue);
-    void SetIntensity(float& aItensity);
+    YTE_Shared void SetLightSourceInformation(UBOLight &aLight);
+    YTE_Shared void SetPosition(glm::vec3& aPosition);
+    YTE_Shared void SetDirection(glm::vec3& aDirection);
+    YTE_Shared void SetAmbient(glm::vec3& aColor);
+    YTE_Shared void SetDiffuse(glm::vec3& aColor);
+    YTE_Shared void SetSpecular(glm::vec3& aColor);
+    YTE_Shared void SetSpotLightCones(glm::vec2& aCones);  // inner, outer
+    YTE_Shared void SetLightType(std::string aLightType);
+    YTE_Shared void SetSpotLightFalloff(float& aFalloff);
+    YTE_Shared void SetActive(bool aValue);
+    YTE_Shared void SetIntensity(float& aItensity);
 
-    glm::vec3 GetPosition() const;
-    glm::vec3 GetDirection() const;
-    glm::vec3 GetAmbient() const;
-    glm::vec3 GetDiffuse() const;
-    glm::vec3 GetSpecular() const;
-    glm::vec2 GetSpotLightCones() const;
-    std::string GetLightType() const;
-    float GetSpotLightFalloff() const;
-    bool GetActive() const;
-    float GetIntensity() const;
+    YTE_Shared glm::vec3 GetPosition() const;
+    YTE_Shared glm::vec3 GetDirection() const;
+    YTE_Shared glm::vec3 GetAmbient() const;
+    YTE_Shared glm::vec3 GetDiffuse() const;
+    YTE_Shared glm::vec3 GetSpecular() const;
+    YTE_Shared glm::vec2 GetSpotLightCones() const;
+    YTE_Shared std::string GetLightType() const;
+    YTE_Shared float GetSpotLightFalloff() const;
+    YTE_Shared bool GetActive() const;
+    YTE_Shared float GetIntensity() const;
 
 
 
@@ -75,7 +75,6 @@ namespace YTE
     GraphicsView *mGraphicsView;
     Transform *mTransform;
     std::unique_ptr<InstantiatedLight> mInstantiatedLight;
-    bool mConstructing;
     UBOLight mLightTemp;
     bool mUseTemp;
     bool mSetTransform;

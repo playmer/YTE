@@ -47,66 +47,66 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName>( "Texture Name")
+    builder.Property<&ParticleEmitter::GetTextureName, &ParticleEmitter::SetTextureName>("Texture Name")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&ParticleEmitter::GetPositionOffset, &ParticleEmitter::SetPositionOffset>( "Position Offset")
+    builder.Property<&ParticleEmitter::GetPositionOffset, &ParticleEmitter::SetPositionOffset>("Position Offset")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetInitVelocity, &ParticleEmitter::SetInitVelocity>( "Init Velocity")
+    builder.Property<&ParticleEmitter::GetInitVelocity, &ParticleEmitter::SetInitVelocity>("Init Velocity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetVelocityVariance, &ParticleEmitter::SetVelocityVariance>( "Velocity Variance")
+    builder.Property<&ParticleEmitter::GetVelocityVariance, &ParticleEmitter::SetVelocityVariance>("Velocity Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetLifetime, &ParticleEmitter::SetLifetime>( "Lifetime")
+    builder.Property<&ParticleEmitter::GetLifetime, &ParticleEmitter::SetLifetime>("Lifetime")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetLifetimeVariance, &ParticleEmitter::SetLifetimeVariance>( "Lifetime Variance")
+    builder.Property<&ParticleEmitter::GetLifetimeVariance, &ParticleEmitter::SetLifetimeVariance>("Lifetime Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetColor, &ParticleEmitter::SetColor>( "Color")
+    builder.Property<&ParticleEmitter::GetColor, &ParticleEmitter::SetColor>("Color")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetParticleScale, &ParticleEmitter::SetParticleScale>( "Particle Scale")
+    builder.Property<&ParticleEmitter::GetParticleScale, &ParticleEmitter::SetParticleScale>("Particle Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetParticleScaleVariance, &ParticleEmitter::SetParticleScaleVariance>( "Scale Variance")
+    builder.Property<&ParticleEmitter::GetParticleScaleVariance, &ParticleEmitter::SetParticleScaleVariance>("Scale Variance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetEmitterScale, &ParticleEmitter::SetEmitterScale>( "Emitter Scale")
+    builder.Property<&ParticleEmitter::GetEmitterScale, &ParticleEmitter::SetEmitterScale>("Emitter Scale")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetEmitRate, &ParticleEmitter::SetEmitRate>( "Emit Rate")
+    builder.Property<&ParticleEmitter::GetEmitRate, &ParticleEmitter::SetEmitRate>("Emit Rate")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetEmitCount, &ParticleEmitter::SetEmitCount>( "Emit Count")
+    builder.Property<&ParticleEmitter::GetEmitCount, &ParticleEmitter::SetEmitCount>("Emit Count")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity>( "Use Gravity")
+    builder.Property<&ParticleEmitter::GetUseGravity, &ParticleEmitter::SetUseGravity>("Use Gravity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Property<&ParticleEmitter::GetGravityValue, &ParticleEmitter::SetGravityValue>( "Gravity Scalar")
+    builder.Property<&ParticleEmitter::GetGravityValue, &ParticleEmitter::SetGravityValue>("Gravity Scalar")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
   }
 
 
-  ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mVarianceIndex{0}
     , mRenderer{ nullptr }
@@ -127,7 +127,6 @@ namespace YTE
     , mGravityValue{1.0f}
     , mCameraTransform{nullptr}
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void ParticleEmitter::Initialize()
@@ -441,7 +440,6 @@ namespace YTE
     if (mFreeParticles.empty())
     {
       model = mRenderer->CreateModel(mGraphicsView, mMesh);
-      model->SetInstanced(true);
       model->mType = ShaderType::AlphaBlendShader;
     }
     else

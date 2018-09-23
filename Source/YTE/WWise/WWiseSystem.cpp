@@ -96,7 +96,7 @@ namespace YTE
     RegisterType<WWiseSystem>();
     TypeBuilder<WWiseSystem> builder;
 
-    builder.Property<&WWiseSystem::GetMute, &WWiseSystem::SetMute>( "Mute");
+    builder.Property<&WWiseSystem::GetMute, &WWiseSystem::SetMute>("Mute");
     builder.Function<SelectOverload<void (WWiseSystem::*) (u64, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
       .SetParameterNames("aRTPC", "aValue");
     builder.Function<SelectOverload<void (WWiseSystem::*) (const std::string&, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
@@ -107,12 +107,12 @@ namespace YTE
   // of the SDK's sample code, with the file package extension
   CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
-  WWiseSystem::WWiseSystem(Composition *aOwner, RSValue *aProperties)
+  WWiseSystem::WWiseSystem(Composition *aOwner)
     : Component(aOwner, nullptr)
     , mMuted(false)
     , mAvailableListeners{0,1,2,3,4,5,6,7}
   {
-    UnusedArguments(aProperties);
+    
   }
 
   void WWiseSystem::Initialize()

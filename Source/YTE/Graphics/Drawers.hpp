@@ -28,21 +28,21 @@ namespace YTE
   public:
     YTEDeclareType(LineDrawer)
 
-    LineDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
-    ~LineDrawer();
+    YTE_Shared LineDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
+    YTE_Shared ~LineDrawer();
 
     // This will clear the previous version of the Lines.
-    void Start();
-    void AddLine(glm::vec4 aPoint1, glm::vec4 aPoint2);
-    void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2);
-    void AddLine(glm::vec2 aPoint1, glm::vec2 aPoint2);
-    void AddLine(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec3 aColor);
-    void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aFromColor, glm::vec3 aToColor);
-    void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aColor);
-    void AddLine(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec3 aColor);
+    YTE_Shared void Start();
+    YTE_Shared void AddLine(glm::vec4 aPoint1, glm::vec4 aPoint2);
+    YTE_Shared void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2);
+    YTE_Shared void AddLine(glm::vec2 aPoint1, glm::vec2 aPoint2);
+    YTE_Shared void AddLine(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec3 aColor);
+    YTE_Shared void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aFromColor, glm::vec3 aToColor);
+    YTE_Shared void AddLine(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aColor);
+    YTE_Shared void AddLine(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec3 aColor);
 
     // This will set the lines given since the last Start() call to be drawn.
-    void End();
+    YTE_Shared void End();
 
     glm::vec3 GetColor()
     {
@@ -54,7 +54,7 @@ namespace YTE
       mColor = aColor;
     }
 
-    void SetLineWidth(float aLineWidth);
+    YTE_Shared void SetLineWidth(float aLineWidth);
 
   private:
     Renderer *mRenderer;
@@ -74,21 +74,21 @@ namespace YTE
   public:
     YTEDeclareType(TriangleDrawer)
 
-    TriangleDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
-    ~TriangleDrawer();
+    YTE_Shared TriangleDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
+    YTE_Shared ~TriangleDrawer();
 
     // This will clear the previous version of the Lines.
-    void Start();
-    void AddTriangle(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec4 aPoint3);
-    void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3);
-    void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3);
-    void AddTriangle(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec4 aPoint3, glm::vec3 aColor);
-    void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec3 aColor);
-    void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec4 aColor);
-    void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3, glm::vec3 aColor);
+    YTE_Shared void Start();
+    YTE_Shared void AddTriangle(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec4 aPoint3);
+    YTE_Shared void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3);
+    YTE_Shared void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3);
+    YTE_Shared void AddTriangle(glm::vec4 aPoint1, glm::vec4 aPoint2, glm::vec4 aPoint3, glm::vec3 aColor);
+    YTE_Shared void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec3 aColor);
+    YTE_Shared void AddTriangle(glm::vec3 aPoint1, glm::vec3 aPoint2, glm::vec3 aPoint3, glm::vec4 aColor);
+    YTE_Shared void AddTriangle(glm::vec2 aPoint1, glm::vec2 aPoint2, glm::vec2 aPoint3, glm::vec3 aColor);
 
     // This will set the lines given since the last Start() call to be drawn.
-    void End();
+    YTE_Shared void End();
 
     glm::vec3 GetColor()
     {
@@ -100,7 +100,7 @@ namespace YTE
       mColor = aColor;
     }
 
-    void SetLineWidth(float aLineWidth);
+    YTE_Shared void SetLineWidth(float aLineWidth);
 
   private:
     Renderer * mRenderer;
@@ -122,20 +122,20 @@ namespace YTE
   public:
     YTEDeclareType(CurveDrawer)
 
-    CurveDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
-    ~CurveDrawer();
+    YTE_Shared CurveDrawer(std::string aUniqueName, Renderer *aRenderer, GraphicsView *aView);
+    YTE_Shared ~CurveDrawer();
 
     // This will clear the previous version of the Lines.
-    void Start();
-    void AddPoint(glm::vec4 aPoint1);
-    void AddPoint(glm::vec3 aPoint1);
-    void AddPoint(glm::vec2 aPoint1);
-    void AddPoint(glm::vec4 aPoint1, glm::vec3 aColor);
-    void AddPoint(glm::vec3 aPoint1, glm::vec3 aColor);
-    void AddPoint(glm::vec2 aPoint1, glm::vec3 aColor);
+    YTE_Shared void Start();
+    YTE_Shared void AddPoint(glm::vec4 aPoint1);
+    YTE_Shared void AddPoint(glm::vec3 aPoint1);
+    YTE_Shared void AddPoint(glm::vec2 aPoint1);
+    YTE_Shared void AddPoint(glm::vec4 aPoint1, glm::vec3 aColor);
+    YTE_Shared void AddPoint(glm::vec3 aPoint1, glm::vec3 aColor);
+    YTE_Shared void AddPoint(glm::vec2 aPoint1, glm::vec3 aColor);
 
     // This will set the lines given since the last Start() call to be drawn.
-    void End();
+    YTE_Shared void End();
 
     glm::vec3 GetColor()
     {
@@ -147,7 +147,7 @@ namespace YTE
       mColor = aColor;
     }
 
-    void SetLineWidth(float aLineWidth);
+    YTE_Shared void SetLineWidth(float aLineWidth);
 
   private:
     Renderer * mRenderer;

@@ -82,37 +82,37 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&SpriteText::GetText, &SpriteText::SetText>( "Text")
+    builder.Property<&SpriteText::GetText, &SpriteText::SetText>("Text")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&SpriteText::GetFont, &SpriteText::SetFont>( "Font")
+    builder.Property<&SpriteText::GetFont, &SpriteText::SetFont>("Font")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
 
-    builder.Property<&SpriteText::GetFontSize, &SpriteText::SetFontSize>( "FontSize")
+    builder.Property<&SpriteText::GetFontSize, &SpriteText::SetFontSize>("FontSize")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX>( "AlignX")
+    builder.Property<&SpriteText::GetAlignmentX, &SpriteText::SetAlignmentX>("AlignX")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignXDropDownList);
 
-    builder.Property<&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY>( "AlignY")
+    builder.Property<&SpriteText::GetAlignmentY, &SpriteText::SetAlignmentY>("AlignY")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateAlignYDropDownList);
 
-    builder.Property<&SpriteText::GetLineLength, &SpriteText::SetLineLength>( "MaxLineLength")
+    builder.Property<&SpriteText::GetLineLength, &SpriteText::SetLineLength>("MaxLineLength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The max length of a single line (in world units) for word-wrapping. 0.0 disables word-wrapping");
   }
 
-  SpriteText::SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  SpriteText::SpriteText(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mText("")
     , mFontName("calibri.ttf")
     , mAlignX(AlignmentX::Center)
@@ -121,10 +121,6 @@ namespace YTE
     , mConstructing(true)
   {
     mFontSize = 1.f;
-
-    DeserializeByType(aProperties, this, GetStaticType());
-
-    mConstructing = false;
   }
 
   SpriteText::~SpriteText()
@@ -142,6 +138,8 @@ namespace YTE
     }
 
     mRenderer->RequestTexture(mTextureName);
+
+    mConstructing = false;
   }
 
   void SpriteText::NativeInitialize()

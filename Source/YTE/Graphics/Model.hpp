@@ -36,26 +36,27 @@ namespace YTE
   {
   public:
     YTEDeclareType(Model);
-    Model(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~Model() override;
 
-    void AssetInitialize() override;
-    void NativeInitialize() override;
+    YTE_Shared Model(Composition* aOwner, Space* aSpace);
+    YTE_Shared ~Model() override;
 
-    void Reload();
+    YTE_Shared void AssetInitialize() override;
+    YTE_Shared void NativeInitialize() override;
 
-    bool CanAnimate();
+    YTE_Shared void Reload();
+
+    YTE_Shared bool CanAnimate();
     
 
     /////////////////////////////////
     // Events
     /////////////////////////////////
-    void TransformUpdate(TransformChanged *aEvent);
+    YTE_Shared void TransformUpdate(TransformChanged *aEvent);
 
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    void SetMesh(std::string &aName);
+    YTE_Shared void SetMesh(std::string &aName);
 
     void SetMeshName(std::string aName)
     {
@@ -73,14 +74,14 @@ namespace YTE
       Create();
     }
 
-    Mesh* GetMesh();
+    YTE_Shared Mesh* GetMesh();
 
     bool GetReload()
     {
       return false;
     }
 
-    std::string GetMeshName()
+    std::string const& GetMeshName()
     {
       return mMeshName;
     }
@@ -97,14 +98,11 @@ namespace YTE
       return toReturn;
     }
 
-    void SetShading(std::string const &aName);
+    YTE_Shared void SetShading(std::string const &aName);
     std::string const& GetShading()
     {
       return mShadingName;
     }
-
-    void SetInstanced(bool mInstanced);
-    bool GetInstanced();
 
   private:
     void Create();  // tells renderer to create mesh
@@ -113,14 +111,14 @@ namespace YTE
 
     std::string mMeshName;
     std::string mShadingName;
-    Renderer *mRenderer;
-    Window *mWindow;
-    Transform *mTransform;
+    Renderer* mRenderer;
+    Window* mWindow;
+    Transform* mTransform;
     UBOModel mUBOModel;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     bool mConstructing;
-    Animation *mAnimation;
-    Engine *mEngine;
+    Animation* mAnimation;
+    Engine* mEngine;
 
     bool mBackfaceCulling;
   };

@@ -30,16 +30,16 @@ namespace YTE
   {
     RegisterType<RayCollisionInfo>();
     TypeBuilder<RayCollisionInfo> builder;
-    builder.Field<&RayCollisionInfo::mObject>( "Object", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mObject>("Object", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mCollided>( "Collided", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mCollided>("Collided", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mDistance>( "Distance", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mDistance>("Distance", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Field<&RayCollisionInfo::mPosition>( "Position", PropertyBinding::GetSet)
+    builder.Field<&RayCollisionInfo::mPosition>("Position", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
@@ -55,21 +55,21 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Function<&PhysicsSystem::ToggleDebugDrawOption>( "ToggleDebugDrawOption")
+    builder.Function<&PhysicsSystem::ToggleDebugDrawOption>("ToggleDebugDrawOption")
       .SetParameterNames("aOption");
     builder.Function<&PhysicsSystem::ToggleDebugDraw>("ToggleDebugDraw");
     builder.Function<&PhysicsSystem::RayCast>("RayCast")
       .SetParameterNames("aPosition", "aDirection");
-    builder.Property<&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity>( "Gravity")
+    builder.Property<&PhysicsSystem::GetGravity, &PhysicsSystem::SetGravity>("Gravity")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
 
-  PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  PhysicsSystem::PhysicsSystem(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mDebugDraw(false)
   {
-    UnusedArguments(aProperties);
+    
 
     mSpace->RegisterEvent<&PhysicsSystem::OnPhysicsUpdate>(Events::PhysicsUpdate, this);
 
@@ -94,7 +94,7 @@ namespace YTE
                                                                mSolver.get(),
                                                                mCollisionConfiguration.get());
       
-    mDynamicsWorld->setGravity(OurVec3ToBt(mGravityAcceleration));
+    mDynamicsWorld->setGravity(ToBullet(mGravityAcceleration));
   }
 
 
@@ -220,8 +220,8 @@ namespace YTE
 
   RayCollisionInfo PhysicsSystem::RayCast(glm::vec3 aPosition, glm::vec3 aDirection)
   {
-    auto start = OurVec3ToBt(aPosition);
-    auto end = OurVec3ToBt(aDirection);
+    auto start = ToBullet(aPosition);
+    auto end = ToBullet(aDirection);
     btCollisionWorld::ClosestRayResultCallback rayCallback(start, end);
 
     mDynamicsWorld->rayTest(start, end, rayCallback);
@@ -235,7 +235,7 @@ namespace YTE
 
 
       
-      info.mDistance = glm::length(BtToOurVec3(rayCallback.m_hitPointWorld) - aPosition);
+      info.mDistance = glm::length(ToGlm(rayCallback.m_hitPointWorld) - aPosition);
     }
 
     return info;
@@ -249,7 +249,7 @@ namespace YTE
   void PhysicsSystem::SetGravity(glm::vec3 aAcceleration)
   {
     mGravityAcceleration = aAcceleration;
-    btVector3 accel = OurVec3ToBt(aAcceleration);
+    btVector3 accel = ToBullet(aAcceleration);
     mDynamicsWorld->setGravity(accel);
   };
 

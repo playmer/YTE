@@ -23,7 +23,7 @@ namespace YTE
   public:
     YTEDeclareType(CapsuleCollider);
 
-    CapsuleCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    CapsuleCollider(Composition *aOwner, Space *aSpace);
 
     void PhysicsInitialize();
 

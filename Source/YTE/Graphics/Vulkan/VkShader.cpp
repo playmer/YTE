@@ -52,12 +52,37 @@ namespace YTE
 
     auto lines = aDescriptions.GetLines();
 
+
+    if (false == std::filesystem::exists(vertexFile))
+    {
+      auto engine = aSurface->GetRenderer()->GetEngine();
+      auto errStr = fmt::format("Could not find the vertex file: {}", vertexFile);
+      engine->Log(LogType::Information, errStr);
+
+      VkCreatePipelineDataSet ret(aName, errStr);
+      return ret;
+    }
+
+    if (false == std::filesystem::exists(fragmentFile))
+    {
+      auto engine = aSurface->GetRenderer()->GetEngine();
+      auto errStr = fmt::format("Could not find the fragment file: {}", fragmentFile);
+      engine->Log(LogType::Information, errStr);
+
+      VkCreatePipelineDataSet ret(aName, errStr);
+      return ret;
+    }
+
     auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
     auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, false);
 
     if (false == vertexData.mValid || false == fragmentData.mValid)
     {
-      auto str = fmt::format("Vertex Shader named {}:\n {}\n-----------------\nFragment Shader named {}:\n {}", 
+      auto str = fmt::format("Vertex Shader named {}:\n "
+                             "{}\n"
+                             "-----------------\n"
+                             "Fragment Shader named {}:\n "
+                             "{}", 
                              vertexFile, 
                              vertexData.mReason,
                              fragmentFile, 
@@ -65,7 +90,10 @@ namespace YTE
 
       //std::cout << str;
       aSurface->GetRenderer()->GetEngine()->Log(LogType::Error, fmt::format(
-        "Shader: {} Failed to Load! Errors Follow:\n############################################################\n{}\n############################################################",
+        "Shader: {} Failed to Load! Errors Follow:\n"
+        "############################################################\n"
+        "{}\n"
+        "############################################################",
         aName,
         str));
 

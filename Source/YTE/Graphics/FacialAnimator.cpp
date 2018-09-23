@@ -33,12 +33,11 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  FacialAnimator::FacialAnimator(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mAnimator(nullptr)
     , mModel(nullptr)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   FacialAnimator::~FacialAnimator()
@@ -55,9 +54,9 @@ namespace YTE
 
     auto animations = mAnimator->GetAnimations();
 
-    for (auto &anim : animations)
+    for (auto [key, animation] : animations)
     {
-      mFaceAnimations.insert_or_assign(anim.first, new FaceAnim(anim.first, anim.second->GetAnimation()->mTicksPerSecond));
+      mFaceAnimations[key] = std::make_unique<FaceAnim>(key, animation->GetTicksPerSecond());
     }
     
     mOwner->RegisterEvent<&FacialAnimator::OnModelChanged>(Events::ModelChanged, this);
@@ -77,7 +76,7 @@ namespace YTE
     // get initial buffers
     InstantiatedModel *instModel = mModel->GetInstantiatedModel()[0];
     
-    FaceAnim *anim = mFaceAnimations[aEvent->animation];
+    FaceAnim *anim = mFaceAnimations[aEvent->animation].get();
 
     Mesh *mesh = instModel->GetMesh();
 
@@ -99,7 +98,8 @@ namespace YTE
             eyeBuffer[j].mTextureCoordinates.y += eyeFrame->uv.y;
           }
 
-          mesh->UpdateVertices(i, eyeBuffer);
+          instModel->UpdateMesh(i, eyeBuffer);
+          //mesh->UpdateVertices(i, eyeBuffer);
         }
       }
       else if (submesh.mMaterialName == "OnlyDiff_Mouth")
@@ -116,7 +116,8 @@ namespace YTE
             mouthBuffer[j].mTextureCoordinates.y += mouthFrame->uv.y;
           }
 
-          mesh->UpdateVertices(i, mouthBuffer);
+          instModel->UpdateMesh(i, mouthBuffer);
+          //mesh->UpdateVertices(i, mouthBuffer);
         }
       }
     }
@@ -125,7 +126,7 @@ namespace YTE
   void FacialAnimator::OnAnimationAdded(AnimationAdded *event)
   {
     std::string anim = event->animation;
-    mFaceAnimations.insert_or_assign(anim, new FaceAnim(anim, event->ticksPerSecond));
+    mFaceAnimations[anim] = std::make_unique<FaceAnim>(anim, event->ticksPerSecond);
   }
 
   void FacialAnimator::OnAnimationRemoved(AnimationRemoved *event)

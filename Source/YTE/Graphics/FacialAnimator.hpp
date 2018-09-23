@@ -41,7 +41,8 @@ namespace YTE
   public:
     YTEDeclareType(FacialAnimator);
 
-    FacialAnimator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    FacialAnimator(Composition *aOwner, Space *aSpace);
+    FacialAnimator(FacialAnimator&) = delete;
 
     ~FacialAnimator();
 
@@ -57,7 +58,7 @@ namespace YTE
     Model *mModel;
     Animator *mAnimator;
 
-    std::map<std::string, FaceAnim*> mFaceAnimations;
+    std::map<std::string, std::unique_ptr<FaceAnim>> mFaceAnimations;
 
     void RefreshInitialBufffers();
 

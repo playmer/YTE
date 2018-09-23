@@ -11,14 +11,14 @@ namespace YTE
     RegisterType<BaseModel>();
     TypeBuilder<BaseModel> builder;
 
-    builder.Property<&BaseModel::GetVisibility, &BaseModel::SetVisibility>( "Visibility")
+    builder.Property<&BaseModel::GetVisibility, &BaseModel::SetVisibility>("Visibility")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
   }
   
-  BaseModel::BaseModel(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  BaseModel::BaseModel(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    UnusedArguments(aProperties);
+    
   }
 }

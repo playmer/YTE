@@ -21,20 +21,20 @@ namespace YTE
   {
     RegisterType<KeyboardEvent>();
     TypeBuilder<KeyboardEvent> builder;
-    builder.Field<&KeyboardEvent::Key>( "Key", PropertyBinding::Get);
+    builder.Field<&KeyboardEvent::Key>("Key", PropertyBinding::Get);
   }
 
   YTEDefineType(Keyboard)
   {
     RegisterType<Keyboard>();
     TypeBuilder<Keyboard> builder;
-    builder.Function<&Keyboard::IsKeyPressed>( "IsKeyPressed")
+    builder.Function<&Keyboard::IsKeyPressed>("IsKeyPressed")
       .SetParameterNames("aKey")
       .SetDocumentation("Finds if the given button is pressed right now.");
-    builder.Function<&Keyboard::IsKeyDown>( "IsKeyDown")
+    builder.Function<&Keyboard::IsKeyDown>("IsKeyDown")
       .SetParameterNames("aKey")
       .SetDocumentation("Finds if the given button is down right now.");
-    builder.Function<&Keyboard::WasKeyDown>( "WasKeyDown")
+    builder.Function<&Keyboard::WasKeyDown>("WasKeyDown")
       .SetParameterNames("aKey")
       .SetDocumentation("Finds if the given button was down last frame.");
   }

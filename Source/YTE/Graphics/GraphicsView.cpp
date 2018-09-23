@@ -46,38 +46,36 @@ namespace YTE
 
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Field<&GraphicsView::mWindowName>( "WindowName", PropertyBinding::GetSet)
+    builder.Field<&GraphicsView::mWindowName>("WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>( "Order")
+    builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>("Order")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The order to render the views. We render lowest to highest.");
 
-    builder.Property<&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling>( "SuperSampling")
+    builder.Property<&GraphicsView::GetSuperSampling, &GraphicsView::SetSuperSampling>("SuperSampling")
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Determines the Super Sampling rate of the view. Must be a power of 2.");
 
-    builder.Property<&GraphicsView::GetClearColor, &GraphicsView::SetClearColor>( "ClearColor")
+    builder.Property<&GraphicsView::GetClearColor, &GraphicsView::SetClearColor>("ClearColor")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>()
       .SetDocumentation("The color the screen will be painted before rendering, defaults to gray.");
 
-    builder.Property<&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType>( "DrawerType")
+    builder.Property<&GraphicsView::GetDrawerType, &GraphicsView::SetDrawerType>("DrawerType")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDrawerTypeDropDownList);
-    builder.Property<&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType>( "DrawerCombination")
+    builder.Property<&GraphicsView::GetDrawerCombinationType, &GraphicsView::SetDrawerCombinationType>("DrawerCombination")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateCombinationTypeDropDownList);
   }
 
-  GraphicsView::GraphicsView(Composition *aOwner, 
-                             Space *aSpace, 
-                             RSValue *aProperties)
+  GraphicsView::GraphicsView(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mActiveCamera(nullptr)
     , mDrawerCombination(DrawerTypeCombination::DefaultCombination)
@@ -92,8 +90,6 @@ namespace YTE
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-    DeserializeByType(aProperties, this, GetStaticType());
-
     auto it = engine->GetWindows().find(mWindowName);
 
     if (it != engine->GetWindows().end())
@@ -104,6 +100,18 @@ namespace YTE
     {
       mWindow = mOwner->GetEngine()->GetWindow();
     }
+
+    if (mWindow == nullptr)
+    {
+      return;
+    }
+
+    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
+
+    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
+
+    SetClearColor(mClearColor);
+    mConstructing = false;
   }
 
   GraphicsView::~GraphicsView()
@@ -131,26 +139,6 @@ namespace YTE
 
   void GraphicsView::NativeInitialize()
   {
-    if (mWindow == nullptr)
-    {
-      return;
-    }
-
-    auto engine = mSpace->GetEngine();
-    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
-
-    mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
-
-    auto it = engine->GetWindows().find(mWindowName);
-
-    if (it != engine->GetWindows().end())
-    {
-      mWindow = it->second.get();
-    }
-    mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
-
-    SetClearColor(mClearColor);
-    mConstructing = false;
   }
 
 
@@ -331,27 +319,27 @@ namespace YTE
   {
     DrawerTypeCombination dc;
 
-    if (false == (aCombination != "AdditiveBlend"))
+    if ("AdditiveBlend" == aCombination)
     {
       dc = DrawerTypeCombination::AdditiveBlend;
     }
-    else if (false == (aCombination != "AlphaBlend"))
+    else if ("AlphaBlend" == aCombination)
     {
       dc = DrawerTypeCombination::AlphaBlend;
     }
-    else if (false == (aCombination != "Opaque"))
+    else if ("Opaque" == aCombination)
     {
       dc = DrawerTypeCombination::Opaque;
     }
-    else if (false == (aCombination != "MultiplicativeBlend"))
+    else if ("MultiplicativeBlend" == aCombination)
     {
       dc = DrawerTypeCombination::MultiplicativeBlend;
     }
-    else if (false == (aCombination != "DefaultCombination"))
+    else if ("DefaultCombination" == aCombination)
     {
       dc = DrawerTypeCombination::DefaultCombination;
     }
-    else if (false == (aCombination != "DoNotInclude"))
+    else if ("DoNotInclude" == aCombination)
     {
       dc = DrawerTypeCombination::DoNotInclude;
     }
@@ -379,15 +367,15 @@ namespace YTE
   {
     DrawerTypes dt;
 
-    if (false == (aType != "GameForwardDrawer"))
+    if ("GameForwardDrawer" == aType)
     {
       dt = DrawerTypes::GameForwardDrawer;
     }
-    else if (false == (aType != "DefaultDrawer"))
+    else if ("DefaultDrawer" == aType)
     {
       dt = DrawerTypes::GameForwardDrawer;
     }
-    else if (false == (aType != "ImguiDrawer"))
+    else if ("ImguiDrawer" == aType)
     {
       dt = DrawerTypes::ImguiDrawer;
     }

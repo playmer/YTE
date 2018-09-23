@@ -1,3 +1,4 @@
+
 /******************************************************************************/
 /*!
 \file   Composition.hpp
@@ -83,25 +84,25 @@ namespace YTE
   public:
     YTEDeclareType(Composition);
 
-    Composition(Engine* aEngine, String const& aName, Space* aSpace, Composition* aOwner = nullptr);
-    Composition(Engine* aEngine, Space* aSpace, Composition* aOwner = nullptr);
+    YTE_Shared Composition(Engine* aEngine, String const& aName, Space* aSpace, Composition* aOwner = nullptr);
+    YTE_Shared Composition(Engine* aEngine, Space* aSpace, Composition* aOwner = nullptr);
 
-    ~Composition();
+    YTE_Shared ~Composition();
 
-    virtual void Update(double dt);
+    YTE_Shared virtual void Update(double dt);
 
-    virtual void AssetInitialize(InitializeEvent *aEvent);
-    virtual void NativeInitialize(InitializeEvent *aEvent);
-    virtual void PhysicsInitialize(InitializeEvent *aEvent);
-    virtual void Initialize(InitializeEvent *aEvent);
-    virtual void Deinitialize(InitializeEvent *aEvent);
-    virtual void Start(InitializeEvent *aEvent);
-    void DeletionUpdate(LogicUpdate *aUpdate);
+    YTE_Shared virtual void AssetInitialize(InitializeEvent* aEvent);
+    YTE_Shared virtual void NativeInitialize(InitializeEvent* aEvent);
+    YTE_Shared virtual void PhysicsInitialize(InitializeEvent* aEvent);
+    YTE_Shared virtual void Initialize(InitializeEvent* aEvent);
+    YTE_Shared virtual void Deinitialize(InitializeEvent* aEvent);
+    YTE_Shared virtual void Start(InitializeEvent* aEvent);
+    YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
-    void Deserialize(RSValue *aValue);
-    RSValue Serialize(RSAllocator &aAllocator) override;
+    YTE_Shared void Deserialize(RSValue *aValue);
+    YTE_Shared RSValue Serialize(RSAllocator &aAllocator) override;
 
     Space* GetSpace() const { return mSpace; }
     Engine* GetEngine() const { return mEngine; }
@@ -129,28 +130,19 @@ namespace YTE
       return result;
     }
 
-    Composition* AddComposition(String aArchetype, String aObjectName);
-    Composition* AddComposition(RSValue *aArchetype, String aObjectName);
-    Composition* AddCompositionAtPosition(String archetype, String aObjectName, glm::vec3 aPosition);
+    YTE_Shared Composition* AddComposition(String aArchetype, String aObjectName);
+    YTE_Shared Composition* AddComposition(RSValue* aArchetype, String aObjectName);
+    YTE_Shared Composition* AddCompositionAtPosition(String archetype, String aObjectName, glm::vec3 aPosition);
     inline CompositionMap& GetCompositions() { return mCompositions; };
 
-    void Remove();
-    virtual RSValue RemoveSerialized(RSAllocator &aAllocator);
-
-    void RemoveComponent(Component* aComponent);
-    void RemoveComponent(Type* aComponent);
-    void RemoveComposition(Composition* aComposition);
-
-    void BoundTypeChangedHandler(BoundTypeChanged* aEvent);
-
-    std::string IsDependecy(Type* aComponent);
-    std::string HasDependencies(Type* aComponent);
+    YTE_Shared void Remove();
+    YTE_Shared virtual RSValue RemoveSerialized(RSAllocator &aAllocator);
 
     template <typename tComponentType>
     tComponentType* GetComponent()
     {
-      static_assert(std::is_base_of<Component, tComponentType>()
-                    && !std::is_same<Component, tComponentType>(),
+      static_assert(std::is_base_of<Component, tComponentType>() &&
+                    !std::is_same<Component, tComponentType>(),
                     "Type must be derived from YTE::Component");
       auto iterator = mComponents.Find(TypeId<tComponentType>());
 
@@ -161,6 +153,15 @@ namespace YTE
 
       return static_cast<tComponentType*>(iterator->second.get());
     }
+
+    YTE_Shared void RemoveComponent(Component* aComponent);
+    YTE_Shared void RemoveComponent(Type* aComponent);
+    YTE_Shared void RemoveComposition(Composition* aComposition);
+
+    YTE_Shared void BoundTypeChangedHandler(BoundTypeChanged* aEvent);
+
+    YTE_Shared std::string IsDependecy(Type* aComponent);
+    YTE_Shared std::string HasDependencies(Type* aComponent);
 
     // Gets all Components of the given type that are part of or childed to this composition.
     template <typename ComponentType>
@@ -189,7 +190,7 @@ namespace YTE
       return components;
     }
 
-    Component* GetDerivedComponent(Type *aType);
+    YTE_Shared Component* GetDerivedComponent(Type* aType);
 
     template <typename tComponentType>
     tComponentType* GetDerivedComponent()
@@ -201,7 +202,7 @@ namespace YTE
       return static_cast<tComponentType*>(GetDerivedComponent(TypeId<tComponentType>()));
     }
 
-    Component* GetComponent(Type *aType);
+    YTE_Shared Component* GetComponent(Type *aType);
 
     template <typename tComponentType> 
     tComponentType* AddComponent(RSValue *aProperties = nullptr)
@@ -217,30 +218,30 @@ namespace YTE
       return component;
     }
 
-    Component* AddComponent(Type* aType, bool aCheckRunInEditor = false);
-    Component* AddComponent(Type* aType, RSValue* aProperties);
+    YTE_Shared Component* AddComponent(Type* aType, bool aCheckRunInEditor = false);
+    YTE_Shared Component* AddComponent(Type* aType, RSValue* aProperties);
 
-    Composition* FindFirstCompositionByName(String const& aName);
-    Composition* FindLastCompositionByName(String const& aName);
-    CompositionMap::range FindAllCompositionsByName(String const& aName);
+    YTE_Shared Composition* FindFirstCompositionByName(String const& aName);
+    YTE_Shared Composition* FindLastCompositionByName(String const& aName);
+    YTE_Shared CompositionMap::range FindAllCompositionsByName(String const& aName);
 
     Composition* GetOwner() { return mOwner; };
-    void SetOwner(Composition *aOwner);
-    Composition* GetParent();
-    void ReParent(Composition *aNewParent = nullptr);
-    Composition* GetSpaceOrEngine();
+    YTE_Shared void SetOwner(Composition *aOwner);
+    YTE_Shared Composition* GetParent();
+    YTE_Shared void ReParent(Composition *aNewParent = nullptr);
+    YTE_Shared Composition* GetSpaceOrEngine();
 
     String const& GetName() const { return mName; };
-    void SetName(String &aName);
+    YTE_Shared void SetName(String &aName);
 
     ComponentMap& GetComponents() { return mComponents; };
 
-    void SetArchetypeName(String& aArchName);
-    String& GetArchetypeName();
-    bool SameAsArchetype();
+    YTE_Shared void SetArchetypeName(String& aArchName);
+    YTE_Shared String& GetArchetypeName();
+    YTE_Shared bool SameAsArchetype();
 
-    GlobalUniqueIdentifier& GetGUID();
-    bool SetGUID(GlobalUniqueIdentifier aGUID);
+    YTE_Shared GlobalUniqueIdentifier& GetGUID();
+    YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
     bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
@@ -256,20 +257,21 @@ namespace YTE
     }
 
   protected:
-    void Create();
+    YTE_Shared void Create();
 
-    StringComponentFactory* GetFactoryFromEngine(Type* aType);
-    void ComponentClear();
-    std::string CheckDependencies(std::set<Type*> aTypesAvailible,
-                                  Type* aTypeToCheck);
+    YTE_Shared StringComponentFactory* GetFactoryFromEngine(Type* aType);
 
-    void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
-    void RemoveComponentInternal(ComponentMap::iterator& aComponent);
-    Composition* AddCompositionInternal(String aArchetype, String aObjectName);
-    Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
-                                        RSValue* aSerialization, 
-                                        String aObjectName);
-    bool ParentBeingDeleted();
+    YTE_Shared void ComponentClear();
+    YTE_Shared std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
+                                             BoundType* aTypeToCheck);
+
+    YTE_Shared void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
+    YTE_Shared void RemoveComponentInternal(ComponentMap::iterator& aComponent);
+    YTE_Shared Composition* AddCompositionInternal(String aArchetype, String aObjectName);
+    YTE_Shared Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
+                                                   RSValue* aSerialization, 
+                                                   String aObjectName);
+    YTE_Shared bool ParentBeingDeleted();
 
     CompositionMap mCompositions;
     ComponentMap mComponents;

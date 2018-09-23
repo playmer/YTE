@@ -7,6 +7,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
+#include <iostream>
+#include <fstream>
 #include <memory>
 #include <filesystem>
 
@@ -25,6 +27,8 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
+  namespace fs = std::experimental::filesystem;
+
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
   YTEDefineEvent(PreLogicUpdate);
@@ -44,24 +48,24 @@ namespace YTE
   {
     RegisterType<LogicUpdate>();
     TypeBuilder<LogicUpdate> builder;
-    builder.Field<&LogicUpdate::Dt>( "Dt", PropertyBinding::GetSet);
+    builder.Field<&LogicUpdate::Dt>("Dt", PropertyBinding::GetSet);
   }
 
   YTEDefineType(BoundTypeChanged)
   {
     RegisterType<BoundTypeChanged>();
     TypeBuilder<BoundTypeChanged> builder;
-    builder.Field<&BoundTypeChanged::aOldType>( "OldType", PropertyBinding::GetSet);
-    builder.Field<&BoundTypeChanged::aNewType>( "NewType", PropertyBinding::GetSet);
+    builder.Field<&BoundTypeChanged::aOldType>("OldType", PropertyBinding::GetSet);
+    builder.Field<&BoundTypeChanged::aNewType>("NewType", PropertyBinding::GetSet);
   }
 
   YTEDefineType(Engine)
   {
     RegisterType<Engine>();
     TypeBuilder<Engine> builder;
-    builder.Function<&Engine::EndExecution>( "EndExecution")
+    builder.Function<&Engine::EndExecution>("EndExecution")
       .SetDocumentation("End the execution of the program before the beginning of the next frame.");
-    builder.Property<&Engine::GetGamepadSystem, NoSetter>( "GamepadSystem");
+    builder.Property<&Engine::GetGamepadSystem, NoSetter>("GamepadSystem");
   }
 
   static String cEngineName{ "Engine" };
@@ -95,8 +99,6 @@ namespace YTE
     }
 
     YTEProfileFunction();
-
-    namespace fs = std::experimental::filesystem;
     
     auto enginePath = Path::SetEnginePath(fs::current_path().string());
 
@@ -109,11 +111,10 @@ namespace YTE
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
 
-    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this, nullptr));
-    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this, nullptr));
-
+    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
+    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this));
+    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
+    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();
@@ -136,6 +137,8 @@ namespace YTE
 
       mLevels.emplace(std::make_pair(levelName, std::unique_ptr<RSDocument>(nullptr)));
     }
+
+    LoadPlugins();
 
     if (nullptr != pathToUse)
     {
@@ -332,14 +335,61 @@ namespace YTE
   {
     mCompositions.Clear();
 
+    mPlugins.clear();
+
     if constexpr (YTE_CAN_PROFILE)
     {
       profiler::stopListen();
     }
   }
 
+  void Engine::LoadPlugins()
+  {
+    fs::path gamePath = Path::GetGamePath().String();
+    gamePath /= "Plugins";
+
+    if constexpr(CompilerConfiguration::Debug())
+    {
+      gamePath /= "Debug";
+    }
+    else if constexpr(CompilerConfiguration::MinSizeRel())
+    {
+      gamePath /= "MinSizeRel";
+    }
+    else if constexpr(CompilerConfiguration::RelWithDebInfo())
+    {
+      gamePath /= "RelWithDebInfo";
+    }
+    else if constexpr(CompilerConfiguration::Release())
+    {
+      gamePath /= "Release";
+    }
+    else if constexpr(CompilerConfiguration::Publish())
+    {
+      gamePath /= "Publish";
+    }
+
+    std::error_code error;
+    fs::create_directories(gamePath, error);
+
+
+    for (auto& itemIt : fs::directory_iterator(gamePath))
+    {
+      fs::path item{ itemIt };
+
+      auto extension = item.extension();
+      
+      if (".dll" == extension)
+      {
+        auto path = item.u8string();
+        mPlugins[path] = std::make_unique<PluginWrapper>(this, path);
+      }
+    }
+  }
+
   void Engine::Recompile()
   {
+
   }
   
   RSDocument* Engine::GetArchetype(String &aArchetype)

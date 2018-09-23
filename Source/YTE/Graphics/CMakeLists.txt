@@ -1,3 +1,7 @@
+include(${CMAKE_CURRENT_LIST_DIR}/DirectX12/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/Generics/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/Vulkan/CMakeLists.txt)
+
 target_sources(YTE
   PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/Animation.cpp
@@ -20,31 +24,6 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/SpriteText.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.cpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedHeightmap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedInfluenceMap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkImgui.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedInfluenceMap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkWaterInfluenceMapManager.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderToScreen.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderCompiler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkTexture.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkDeviceInfo.cpp
 #  PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/Animation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/BaseModel.hpp
@@ -69,35 +48,4 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.hpp
     ${CMAKE_CURRENT_LIST_DIR}/UBOs.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vertex.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedHeightmap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedLight.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedInfluenceMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/InstantiatedModel.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Mesh.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Renderer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Shader.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Generics/Texture.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkImgui.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRenderTarget.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/Drawers/VkRTGameForwardDrawer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkCommandBufferBuffer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkCommandBufferEventBuffer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkFunctionLoader.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedLight.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedInfluenceMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInstantiatedModel.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkInternals.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkLightManager.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkWaterInfluenceMapManager.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkMesh.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderedSurface.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkRenderToScreen.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShader.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderDescriptions.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkShaderCompiler.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkTexture.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vulkan/VkDeviceInfo.hpp
 )

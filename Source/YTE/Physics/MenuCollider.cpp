@@ -24,10 +24,10 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&MenuCollider::GetSize, &MenuCollider::SetSizeProperty>( "Size")
+    builder.Property<&MenuCollider::GetSize, &MenuCollider::SetSizeProperty>("Size")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Property<&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty>( "Offset")
+    builder.Property<&MenuCollider::GetOffset, &MenuCollider::SetOffsetProperty>("Offset")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
@@ -46,13 +46,11 @@ namespace YTE
       .SetDocumentation("Sets the position offset of the box collider from three Reals X, Y, and Z");
   }
 
-  MenuCollider::MenuCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Collider(aOwner, aSpace)
+  MenuCollider::MenuCollider(Composition* aOwner, Space* aSpace)
+    : Collider{ aOwner, aSpace }
   {
     mSize = glm::vec3(1, 1, 1);
     mOffset = glm::vec3(0, 0, 0);
-
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void MenuCollider::Initialize()

@@ -6,6 +6,7 @@
 set(YTEditorSource main.cpp
                    WinMain.cpp
                    YTEditor.rc
+                   YTEditorMeta.hpp
                    ForwardDeclarations.hpp
                    ComponentBrowser/ArchetypeTools.hpp
                    ComponentBrowser/ArchetypeTools.cpp
@@ -99,6 +100,8 @@ target_include_directories(YTEditor
     ${Dependencies_Root}/assimp/include
 )
 
+set_target_properties(YTEditor PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTE_Assets_Root}/Bin)
+
 set_target_properties(YTEditor
                       PROPERTIES
                       ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
@@ -121,6 +124,8 @@ find_package(Qt5Widgets)
 target_link_libraries(YTEditor YTE Qt5::Widgets)
 
 target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
+
+target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
 

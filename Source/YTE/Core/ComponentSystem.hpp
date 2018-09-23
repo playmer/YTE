@@ -31,19 +31,18 @@ namespace YTE
     YTEDeclareType(ComponentSystem);
 
     // Sets up the system, probably could just be the constructor.
-    ComponentSystem(Composition *aOwner,
-                    RSValue *aProperties);
+    ComponentSystem(Composition *aOwner);
 
     void FactorySetup(FactorySetupCallback aFunctionPtr);
     void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
 
     std::pair<StringComponentFactory *, UniquePointer<Component>> 
-      MakeComponent(BoundType *aType, Composition *aOwner, RSValue *aArguments);
+      MakeComponent(BoundType *aType, Composition *aOwner);
 
     template<typename T>
     ComponentFactory<T>* GetComponentFactory()
     {
-      auto iterator = mComponentFactories.find(T::GetStaticType());
+      auto iterator = mComponentFactories.Find(T::GetStaticType());
         
       if (iterator != mComponentFactories.end())
       {

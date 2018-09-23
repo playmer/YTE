@@ -27,7 +27,7 @@ namespace YTE
   public:
     YTEDeclareType(InfluenceMap);
 
-    InfluenceMap(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    InfluenceMap(Composition *aOwner, Space *aSpace);
     ~InfluenceMap() override;
     void Initialize() override; 
 
@@ -74,7 +74,6 @@ namespace YTE
     GraphicsView *mGraphicsView;
     Transform *mTransform;
     std::unique_ptr<InstantiatedInfluenceMap> mInstantiatedInfluenceMap;
-    bool mConstructing;
     UBOWaterInfluenceMap mMapTemp;
     bool mUseTemp;
     bool mSetTransform;

@@ -7,25 +7,14 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/BlockAllocator.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ConstexprString.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Delegate.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Deque.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/DoublyLinkedList.hpp
     ${CMAKE_CURRENT_LIST_DIR}/FunctionDelegate.hpp
     ${CMAKE_CURRENT_LIST_DIR}/IntrusiveList.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Iterator.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Multiset.hpp
     ${CMAKE_CURRENT_LIST_DIR}/OrderedMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/OrderedMultiMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/PriorityQueue.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Queue.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PrivateImplementation.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Range.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Set.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/SinglyLinkedList.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Stack.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TypeTraits.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMultimap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/UnorderedMultiset.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/UnorderedSet.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Vector.hpp
 )

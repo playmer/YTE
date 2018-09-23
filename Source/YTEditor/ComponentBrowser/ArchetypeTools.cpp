@@ -248,7 +248,7 @@ namespace YTEditor
 
     auto items = mBrowser->GetMainWindow()->GetObjectBrowser().FindAllObjectsOfArchetype(arch);
 
-    for (ObjectItem *obj : *items)
+    for (auto& obj : items)
     {
       RevertObject(obj);
     }

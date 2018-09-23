@@ -64,43 +64,34 @@ namespace YTE
 
     // Sets up the system, probably could just be the constructor.
 
-    WWiseSystem(Composition *aOwner, RSValue *aProperties);
+    YTE_Shared WWiseSystem(Composition *aOwner);
 
-    virtual void Initialize() override;
+    YTE_Shared virtual void Initialize() override;
     // Updates the system to the current frame.
-    void Update(double);
+    YTE_Shared void Update(double);
 
     // Cleans up anything in the system.
-    virtual ~WWiseSystem();
+    YTE_Shared ~WWiseSystem() override;
 
-    void RegisterObject(AkGameObjectID aId, std::string &aName);
-    void DeregisterObject(AkGameObjectID aId);
-
-    u8 RegisterListener(AkGameObjectID aId, std::string &aName);
-    void DeregisterListener(AkGameObjectID aId, u8 aListener);
-
-    void LoadAllBanks();
-    AudioBank& LoadBank(const std::string &aFilename);
-
-    void UnloadBank(const std::string &aBankName);
-    void UnloadAllBanks();
-
-    void SendEvent(const std::string &aEvent, AkGameObjectID aId);
-    void SendEvent(u64 aEventId, AkGameObjectID aId);
-
-    void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId);
-    void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId);
-
-    void SetState(const std::string &aStateGroup, const std::string &aState);
-    void SetState(u64 aStateGroupId, u64 aStateId);
-
-    u64 GetSoundIDFromString(const std::string& aName);
-
-    void SetRTPC(const std::string &aRTPC, float aValue);
-    void SetRTPC(u64 aRTPC, float aValue);
-
-    bool GetMute();
-    void SetMute(bool aMute);
+    YTE_Shared void RegisterObject(AkGameObjectID aId, std::string &aName);
+    YTE_Shared void DeregisterObject(AkGameObjectID aId);
+    YTE_Shared u8 RegisterListener(AkGameObjectID aId, std::string &aName);
+    YTE_Shared void DeregisterListener(AkGameObjectID aId, u8 aListener);
+    YTE_Shared void LoadAllBanks();
+    YTE_Shared AudioBank& LoadBank(const std::string &aFilename);
+    YTE_Shared void UnloadBank(const std::string &aBankName);
+    YTE_Shared void UnloadAllBanks();
+    YTE_Shared void SendEvent(const std::string &aEvent, AkGameObjectID aId);
+    YTE_Shared void SendEvent(u64 aEventId, AkGameObjectID aId);
+    YTE_Shared void SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId);
+    YTE_Shared void SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId);
+    YTE_Shared void SetState(const std::string &aStateGroup, const std::string &aState);
+    YTE_Shared void SetState(u64 aStateGroupId, u64 aStateId);
+    YTE_Shared u64 GetSoundIDFromString(const std::string& aName);
+    YTE_Shared void SetRTPC(const std::string &aRTPC, float aValue);
+    YTE_Shared void SetRTPC(u64 aRTPC, float aValue);
+    YTE_Shared bool GetMute();
+    YTE_Shared void SetMute(bool aMute);
 
     std::unordered_map<std::string, AudioBank>& GetBanks() { return mBanks; }
 

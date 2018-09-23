@@ -24,13 +24,13 @@ namespace YTE
   public:
     YTEDeclareType(WWiseListener);
 
-    WWiseListener(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared WWiseListener(Composition *aOwner, Space *aSpace);
+
+    YTE_Shared ~WWiseListener() override;
+
+    YTE_Shared void Initialize() override;
 
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
-
-    void Initialize() override;
-
-    ~WWiseListener() override;
 
   private:
     void SetListenerPosition();

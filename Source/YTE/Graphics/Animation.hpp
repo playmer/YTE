@@ -10,9 +10,6 @@
 
 #include <queue>
 
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Component.hpp"
@@ -60,23 +57,141 @@ namespace YTE
     std::string animation;
   };
 
+  struct AnimationData
+  {
+    struct TranslationKey
+    {
+      TranslationKey() {}
+
+      TranslationKey(double aTime, glm::vec3 aTranslation)
+        : mTime{ aTime }
+        , mTranslation{ aTranslation }
+      {
+
+      }
+
+      bool operator==(TranslationKey const& aRight) const
+      {
+        return mTime == aRight.mTime &&
+               mTranslation == aRight.mTranslation;
+      }
+
+      double mTime;
+      glm::vec3 mTranslation;
+    };
+
+    struct ScaleKey
+    {
+      ScaleKey() {}
+
+      ScaleKey(double aTime, glm::vec3 aScale)
+        : mTime{ aTime }
+        , mScale{ aScale }
+      {
+
+      }
+
+      bool operator==(ScaleKey const& aRight) const
+      {
+        return mTime == aRight.mTime &&
+               mScale == aRight.mScale;
+      }
+
+      double mTime;
+      glm::vec3 mScale;
+    };
+
+    struct RotationKey
+    {
+      RotationKey() {}
+
+      RotationKey(double aTime, glm::quat aRotation)
+        : mTime{ aTime }
+        , mRotation{ aRotation }
+      {
+
+      }
+
+      bool operator==(RotationKey const& aRight) const
+      {
+        return mTime == aRight.mTime &&
+                mRotation == aRight.mRotation;
+      }
+
+      double mTime;
+      glm::quat mRotation;
+    };
+
+    struct Node
+    {
+      bool operator==(Node const& aRight) const
+      {
+        return
+          mTransformationOffset == aRight.mTransformationOffset &&
+          mTranslationKeyOffset == aRight.mTranslationKeyOffset &&
+          mTranslationKeySize == aRight.mTranslationKeySize &&
+          mScaleKeyOffset == aRight.mScaleKeyOffset &&
+          mScaleKeySize == aRight.mScaleKeySize &&
+          mRotationKeyOffset == aRight.mRotationKeyOffset &&
+          mRotationKeySize == aRight.mRotationKeySize &&
+          mNameOffset == aRight.mNameOffset &&
+          mNameSize == aRight.mNameSize &&
+          mChildrenOffset == aRight.mChildrenOffset &&
+          mChildrenSize == aRight.mChildrenSize;
+      }
+
+      // Ids of nodes in parent AnimationData struct.
+      size_t mTransformationOffset = 0;
+      size_t mTranslationKeyOffset = 0;
+      size_t mTranslationKeySize   = 0;
+      size_t mScaleKeyOffset       = 0;
+      size_t mScaleKeySize         = 0;
+      size_t mRotationKeyOffset    = 0;
+      size_t mRotationKeySize      = 0;
+      size_t mNameOffset           = 0;
+      size_t mNameSize             = 0;
+      size_t mChildrenOffset       = 0;
+      size_t mChildrenSize         = 0;
+    };
+
+    std::vector<Node> mNodes;
+    std::vector<glm::mat4> mTransformations;
+    std::vector<size_t> mChildren;
+    std::vector<TranslationKey> mTranslationKeys;
+    std::vector<ScaleKey> mScaleKeys;
+    std::vector<RotationKey> mRotationKeys;
+    std::vector<char> mNames;
+
+    // Duration of the animation in ticks.
+    double mDuration;
+
+    // Ticks per second. 0 if not specified in the imported file.
+    double mTicksPerSecond;
+  };
+
   class Animation : public EventHandler
   {
   public:
     YTEDeclareType(Animation);
 
-    Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
-    void Initialize(Model *aModel, Engine *aEngine);
-    virtual ~Animation();
+    YTE_Shared Animation(std::string &aFile, uint32_t aAnimationIndex = 0);
+    YTE_Shared void Initialize(Model *aModel, Engine *aEngine);
+    YTE_Shared virtual ~Animation();
 
-    void SetCurrentTime(double aCurrentTime);
-    double GetMaxTime() const;
+    YTE_Shared void SetCurrentTime(double aCurrentTime);
+    YTE_Shared double GetMaxTime() const;
 
-    float GetSpeed() const;
-    void SetSpeed(float aSpeed);
+    YTE_Shared float GetSpeed() const;
+    YTE_Shared void SetSpeed(float aSpeed);
 
-    bool GetPlayOverTime() const;
-    void SetPlayOverTime(bool aPlayOverTime);
+    YTE_Shared bool GetPlayOverTime() const;
+    YTE_Shared void SetPlayOverTime(bool aPlayOverTime);
+
+    YTE_Shared void ReadAnimation(AnimationData::Node const& aNode, glm::mat4 const& aParentTransform);
+    YTE_Shared void Animate();
+
+    YTE_Shared UBOAnimation* GetUBOAnim();
+    YTE_Shared Skeleton* GetSkeleton();
 
     std::string mName;
     double mCurrentAnimationTime;
@@ -86,27 +201,26 @@ namespace YTE
     bool mPlayOverTime;
     double mElapsedTime;
 
-    void ReadAnimation(aiNode *aNode, aiMatrix4x4 &aParentTransform);
+    double GetTicksPerSecond()
+    {
+      return mData.mTicksPerSecond;
+    }
 
-    aiScene* GetScene();
-    aiAnimation* GetAnimation();
-    UBOAnimation* GetUBOAnim();
-    Skeleton* GetSkeleton();
+    double GetDuration()
+    {
+      return mData.mDuration;
+    }
 
   private:
-    aiScene *mScene;
-    aiAnimation *mAnimation;
+    //aiScene *mScene;
+    //aiAnimation *mAnimation;
     UBOAnimation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
 
-    aiMatrix4x4 ScaleInterpolation(const aiNodeAnim *aNode);
-    aiMatrix4x4 RotationInterpolation(const aiNodeAnim *aNode);
-    aiMatrix4x4 TranslationInterpolation(const aiNodeAnim *aNode);
-    const aiNodeAnim* FindNodeAnimation(const char *aName);
-
     // from mesh, has the bone offsets
     Skeleton* mMeshSkeleton;
+    AnimationData mData;
   };
 
 
@@ -115,34 +229,34 @@ namespace YTE
   public:
     YTEDeclareType(Animator);
 
-    Animator(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    YTE_Shared Animator(Composition *aOwner, Space *aSpace);
 
-    ~Animator();
+    YTE_Shared ~Animator();
 
-    void Initialize() override;
+    YTE_Shared void Initialize() override;
 
-    void Update(LogicUpdate* aEvent);
+    YTE_Shared void Update(LogicUpdate* aEvent);
 
-    void PlayAnimationSet(std::string aAnimation);
+    YTE_Shared void PlayAnimationSet(std::string aAnimation);
 
-    void AddNextAnimation(std::string aAnimation);
+    YTE_Shared void AddNextAnimation(std::string aAnimation);
 
-    void SetDefaultAnimation(std::string aAnimation);
-    void SetCurrentAnimation(std::string aAnimation);
-    void SetCurrentPlayOverTime(bool aPlayOverTime);
+    YTE_Shared void SetDefaultAnimation(std::string aAnimation);
+    YTE_Shared void SetCurrentAnimation(std::string aAnimation);
+    YTE_Shared void SetCurrentPlayOverTime(bool aPlayOverTime);
 
-    void SetCurrentAnimTime(double aTime);
-    double GetMaxTime() const;
+    YTE_Shared void SetCurrentAnimTime(double aTime);
+    YTE_Shared double GetMaxTime() const;
 
-    std::map<std::string, Animation*>& GetAnimations();
+    YTE_Shared std::map<std::string, Animation*>& GetAnimations();
 
-    static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
-    static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
-    static void Deserializer(RSValue &aValue, Object *aOwner);
+    YTE_Shared static std::vector<std::pair<YTE::Object*, std::string>> Lister(YTE::Object *aSelf);
+    YTE_Shared static RSValue Serializer(RSAllocator &aAllocator, Object *aOwner);
+    YTE_Shared static void Deserializer(RSValue &aValue, Object *aOwner);
 
-    Animation* AddAnimation(std::string aName);
-    Animation* InternalAddAnimation(std::string aName);
-    void RemoveAnimation(Animation *aAnimation);
+    YTE_Shared Animation* AddAnimation(std::string aName);
+    YTE_Shared Animation* InternalAddAnimation(std::string aName);
+    YTE_Shared void RemoveAnimation(Animation *aAnimation);
 
   private:
     Model * mModel;

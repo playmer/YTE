@@ -29,12 +29,12 @@
 
 namespace YTE
 {
-  YTEDefineEvent(AnimationUpdateVk);
-  YTEDefineEvent(GraphicsDataUpdateVk);
-  YTEDefineType(GraphicsDataUpdateVk)
+  YTEDefineEvent(VkAnimationUpdate);
+  YTEDefineEvent(VkGraphicsDataUpdate);
+  YTEDefineType(VkGraphicsDataUpdate)
   {
-    RegisterType<GraphicsDataUpdateVk>();
-    TypeBuilder<GraphicsDataUpdateVk> builder;
+    RegisterType<VkGraphicsDataUpdate>();
+    TypeBuilder<VkGraphicsDataUpdate> builder;
   }
 
   YTEDefineType(VkRenderedSurface)
@@ -53,7 +53,6 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    mConstructing = true;
     auto internals = mRenderer->GetVkInternals();
 
     auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
@@ -90,11 +89,9 @@ namespace YTE
     event.height = mWindow->GetHeight();
     event.width = mWindow->GetWidth();
 
-    ResizeEvent(&event);
+    ResizeInternal(true);
 
     mWindow->RegisterEvent<&VkRenderedSurface::ResizeEvent>(Events::WindowResize, this);
-
-    mConstructing = false;
   }
 
   VkRenderedSurface::~VkRenderedSurface()
@@ -114,13 +111,13 @@ namespace YTE
     GetViewData(aView)->mViewUBOData = aUBOView;
     ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
     //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
   }
 
   void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
   }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -295,10 +292,8 @@ namespace YTE
     return mRenderer->mGraphicsQueue;
   }
 
-  void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
+  void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
-    UnusedArguments(aEvent);
-
     auto baseDevice = static_cast<vk::PhysicalDevice>
                                   (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
@@ -316,7 +311,7 @@ namespace YTE
     // resize all render targets (and swapchain)
     mRenderToScreen->Resize(extent);
 
-    if (!mConstructing)
+    if (false == aConstructing)
     {
       // reset swapchain's references to render target frame buffers
       std::vector<VkRenderTarget*> rts;
@@ -348,6 +343,13 @@ namespace YTE
     {
       view.first->SendEvent(Events::RendererResize, &event);
     }
+  }
+
+  void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
+  {
+    UnusedArguments(aEvent);
+
+    ResizeInternal(false);
   }
 
   void VkRenderedSurface::RegisterView(GraphicsView *aView)
@@ -495,13 +497,13 @@ namespace YTE
     }
   }
 
-  void VkRenderedSurface::GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk *aEvent)
+  void VkRenderedSurface::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent)
   {
     for (auto const&[view, data] : mViewData)
     {
       data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
       data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
-      this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::GraphicsDataUpdateVk, this);
+      this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -549,13 +551,13 @@ namespace YTE
 
   void VkRenderedSurface::GraphicsDataUpdate()
   {
-    GraphicsDataUpdateVk update;
+    VkGraphicsDataUpdate update;
     mGraphicsDataUpdateCBOB->NextCommandBuffer();
     update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
     update.mCBO->begin();
 
-    SendEvent(Events::GraphicsDataUpdateVk, &update);
+    SendEvent(Events::VkGraphicsDataUpdate, &update);
 
     update.mCBO->end();
 
@@ -598,11 +600,11 @@ namespace YTE
 
   void VkRenderedSurface::AnimationUpdate()
   {
-    GraphicsDataUpdateVk update;
+    VkGraphicsDataUpdate update;
     mAnimationUpdateCBOB->NextCommandBuffer();
     update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
     update.mCBO->begin();
-    SendEvent(Events::AnimationUpdateVk, &update);
+    SendEvent(Events::VkAnimationUpdate, &update);
     update.mCBO->end();
     vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
   }

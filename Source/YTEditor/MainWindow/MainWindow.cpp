@@ -36,10 +36,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qmessagebox.h>
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-
 #include "crunch/inc/crnlib.h"
 
 #include "stb/stb_image.h"

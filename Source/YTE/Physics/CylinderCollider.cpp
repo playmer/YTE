@@ -29,10 +29,9 @@ namespace YTE
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
   }
 
-  CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  CylinderCollider::CylinderCollider(Composition *aOwner, Space *aSpace)
     : Collider(aOwner, aSpace)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   void CylinderCollider::PhysicsInitialize()
@@ -42,10 +41,10 @@ namespace YTE
     auto translation = transform->GetTranslation();
     auto scale = transform->GetScale();
     auto rotation = transform->GetRotation();
-    auto bulletTransform = btTransform(OurQuatToBt(rotation), OurVec3ToBt(translation));
+    auto bulletTransform = btTransform(ToBullet(rotation), ToBullet(translation));
 
     mCylinderShape = std::make_unique<btCylinderShape>(btVector3(1.f, 1.f, 1.f));
-    mCylinderShape->setLocalScaling(OurVec3ToBt(scale));
+    mCylinderShape->setLocalScaling(ToBullet(scale));
 
     mCollider = std::make_unique<btCollisionObject>();
     mCollider->setCollisionShape(mCylinderShape.get());
@@ -57,7 +56,7 @@ namespace YTE
     if (mCylinderShape)
     {
       auto scale = aEvent->WorldScale;
-      mCylinderShape->setLocalScaling(OurVec3ToBt(scale));
+      mCylinderShape->setLocalScaling(ToBullet(scale));
     }
   }
 }

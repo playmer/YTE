@@ -2,12 +2,15 @@
 // Author: Andrew Griffin
 // YTE - Graphics
 ///////////////////
+#include <iostream>
+#include <fstream>
 
 // dependencies
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
-#include <fstream>
+
+#include <kiss_fft.h>
+#include <kiss_fftnd.h>
 
 // YTE
 #include "YTE/Core/Engine.hpp" 
@@ -28,6 +31,7 @@
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/Math/Complex_KISSFFT.hpp"
 #include "YTE/Math/Random.hpp"
 #include "YTE/Math/Values.hpp"
 
@@ -51,6 +55,17 @@
 // --------------------------
 // Definitions
 
+struct KissFFTData
+{
+  // KISS FFT specific
+  std::array<kiss_fftnd_cfg, 5> mKFFTConfig;
+  complex_kfft mH_Tilde;         
+  complex_kfft mH_TildeSlopeX;  
+  complex_kfft mH_TildeSlopeZ;  
+  complex_kfft mH_TildeDX;      
+  complex_kfft mH_TildeDZ;      
+};
+
 namespace YTE
 {
   YTEDefineType(FFT_WaterSimulation)
@@ -63,86 +78,86 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Property<&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect>( "TimeDilation")
+    builder.Property<&FFT_WaterSimulation::GetTimeDilationEffect, &FFT_WaterSimulation::SetTimeDilationEffect>("TimeDilation")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Adjusts the wave's speed. Can be used to slow or quicken the pace of the algorithm");
 
-    builder.Property<&FFT_WaterSimulation::GetVertexDistance, &FFT_WaterSimulation::SetVertexDistance>( "VertexDistance")
+    builder.Property<&FFT_WaterSimulation::GetVertexDistance, &FFT_WaterSimulation::SetVertexDistance>("VertexDistance")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Adjusts the distance between each individual vertex. This will expand or shrink the overall size of the mesh");
 
-    builder.Property<&FFT_WaterSimulation::GetReset, &FFT_WaterSimulation::SetReset>( "ResetSimulation")
+    builder.Property<&FFT_WaterSimulation::GetReset, &FFT_WaterSimulation::SetReset>("ResetSimulation")
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Completely resets the simulation to run from scratch again");
 
-    builder.Property<&FFT_WaterSimulation::GetGravitationalPull, &FFT_WaterSimulation::SetGravitationalPull>( "GravitationalPull")
+    builder.Property<&FFT_WaterSimulation::GetGravitationalPull, &FFT_WaterSimulation::SetGravitationalPull>("GravitationalPull")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the gravitational pull on the waves in the y (up) direction. This requires a reset");
 
-    builder.Property<&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGridSize>( "Complexity")
+    builder.Property<&FFT_WaterSimulation::GetGridSize, &FFT_WaterSimulation::SetGridSize>("Complexity")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the size of the size of the N*N gird used to calculate the water. This requires a reset");
 
-    builder.Property<&FFT_WaterSimulation::GetWaveHeight, &FFT_WaterSimulation::SetWaveHeight>( "WaveMaximumHeight")
+    builder.Property<&FFT_WaterSimulation::GetWaveHeight, &FFT_WaterSimulation::SetWaveHeight>("WaveMaximumHeight")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the max wave height the algorithm can achieve. This requires a reset");
 
-    builder.Property<&FFT_WaterSimulation::GetWindFactor, &FFT_WaterSimulation::SetWindFactor>( "WindFactor")
+    builder.Property<&FFT_WaterSimulation::GetWindFactor, &FFT_WaterSimulation::SetWindFactor>("WindFactor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Sets the wind direction and magnitude. This requires a reset");
 
-    builder.Property<&FFT_WaterSimulation::GetShaderSetName, &FFT_WaterSimulation::SetShaderSetName>( "ShaderSetName")
+    builder.Property<&FFT_WaterSimulation::GetShaderSetName, &FFT_WaterSimulation::SetShaderSetName>("ShaderSetName")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("What shader to use for the object");
 
-    builder.Property<&FFT_WaterSimulation::GetRunWithEngineUpdate, &FFT_WaterSimulation::SetRunWithEngineUpdate>( "RunInEditor")
+    builder.Property<&FFT_WaterSimulation::GetRunWithEngineUpdate, &FFT_WaterSimulation::SetRunWithEngineUpdate>("RunInEditor")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Run while in editor");
 
-    builder.Property<&FFT_WaterSimulation::GetRunInSteps, &FFT_WaterSimulation::SetRunInSteps>( "DontRunEveryFrame")
+    builder.Property<&FFT_WaterSimulation::GetRunInSteps, &FFT_WaterSimulation::SetRunInSteps>("DontRunEveryFrame")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Prevents the FFT from running every frame");
 
-    builder.Property<&FFT_WaterSimulation::GetStepCount, &FFT_WaterSimulation::SetStepCount>( "RunIn_X_Frames")
+    builder.Property<&FFT_WaterSimulation::GetStepCount, &FFT_WaterSimulation::SetStepCount>("RunIn_X_Frames")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("Runs the FFT every ___ frames");
 
-    builder.Property<&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount>( "InstanceCount")
+    builder.Property<&FFT_WaterSimulation::GetInstancingAmount, &FFT_WaterSimulation::SetInstancingAmount>("InstanceCount")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    builder.Property<&FFT_WaterSimulation::GetUseHTilde, &FFT_WaterSimulation::SetUseHTilde>( "UseHTilde")
+    builder.Property<&FFT_WaterSimulation::GetUseHTilde, &FFT_WaterSimulation::SetUseHTilde>("UseHTilde")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    builder.Property<&FFT_WaterSimulation::GetUsePhillips, &FFT_WaterSimulation::SetUsePhillips>( "UsePhillips")
+    builder.Property<&FFT_WaterSimulation::GetUsePhillips, &FFT_WaterSimulation::SetUsePhillips>("UsePhillips")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    builder.Property<&FFT_WaterSimulation::GetUseNoDisplacement, &FFT_WaterSimulation::SetUseNoDisplacement>( "UseNoDisplacement")
+    builder.Property<&FFT_WaterSimulation::GetUseNoDisplacement, &FFT_WaterSimulation::SetUseNoDisplacement>("UseNoDisplacement")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    builder.Property<&FFT_WaterSimulation::GetUseNewKs, &FFT_WaterSimulation::SetUseNewKs>( "UseNewKs")
+    builder.Property<&FFT_WaterSimulation::GetUseNewKs, &FFT_WaterSimulation::SetUseNewKs>("UseNewKs")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
 
-    builder.Property<&FFT_WaterSimulation::GetUseHTildeSubZero, &FFT_WaterSimulation::SetUseHTildeSubZero>( "UseHTildeSubZero")
+    builder.Property<&FFT_WaterSimulation::GetUseHTildeSubZero, &FFT_WaterSimulation::SetUseHTildeSubZero>("UseHTildeSubZero")
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>()
       .SetDocumentation("How far to instance from the origin of the world");
@@ -161,8 +176,8 @@ namespace YTE
 
 
   // ------------------------------------
-  FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : BaseModel{ aOwner, aSpace, aProperties }
+  FFT_WaterSimulation::FFT_WaterSimulation(Composition *aOwner, Space *aSpace)
+    : BaseModel{ aOwner, aSpace }
     , mGravitationalPull(9.81f)           // normal gravity
     , mGridSize(DefaultGridSize)          // grid size of 32 just for now
     , mGridSizePlus1(mGridSize + 1)       // grid size of 32 just for now
@@ -183,16 +198,17 @@ namespace YTE
     , mInstanceCount(1)
     , mConstructing(true)
   {
-    for (int i = 0; i < 5; ++i)
+    auto self = mData.ConstructAndGet<KissFFTData>();
+
+    for (auto& config : self->mKFFTConfig)
     {
-      mKFFTConfig[i] = NULL;
+      config = nullptr;
     }
 
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
     mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   static std::string water{ "water.png" };
@@ -242,11 +258,13 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Construct()
   {
-    mH_Tilde.GetVector().resize(squared(mGridSize));
-    mH_TildeSlopeX.GetVector().resize(squared(mGridSize));
-    mH_TildeSlopeZ.GetVector().resize(squared(mGridSize));
-    mH_TildeDX.GetVector().resize(squared(mGridSize));
-    mH_TildeDZ.GetVector().resize(squared(mGridSize));
+    auto self = mData.Get<KissFFTData>();
+
+    self->mH_Tilde.GetVector().resize(squared(mGridSize));
+    self->mH_TildeSlopeX.GetVector().resize(squared(mGridSize));
+    self->mH_TildeSlopeZ.GetVector().resize(squared(mGridSize));
+    self->mH_TildeDX.GetVector().resize(squared(mGridSize));
+    self->mH_TildeDZ.GetVector().resize(squared(mGridSize));
 
     mComputationalVertices.resize(squared(mGridSizePlus1));
     mIndices.reserve((squared(mGridSize) * 6));
@@ -358,29 +376,32 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Destruct()
   {
-    mH_Tilde.GetVector().clear();
-    mH_TildeDX.GetVector().clear();
-    mH_TildeDZ.GetVector().clear();
-    mH_TildeSlopeX.GetVector().clear();
-    mH_TildeSlopeZ.GetVector().clear();
+    auto self = mData.Get<KissFFTData>();
+
+    self->mH_Tilde.GetVector().clear();
+    self->mH_TildeDX.GetVector().clear();
+    self->mH_TildeDZ.GetVector().clear();
+    self->mH_TildeSlopeX.GetVector().clear();
+    self->mH_TildeSlopeZ.GetVector().clear();
     mComputationalVertices.clear();
     mIndices.clear();
 
     DestroyHeightmap();
   }
 
-
   // ------------------------------------
   void FFT_WaterSimulation::StartKFFT()
   {
+    auto self = mData.Get<KissFFTData>();
+
     int size[] = { mGridSize, mGridSize };
     const int sizeDem = 2;
 
-    for (int i = 0; i < 5; ++i)
+    for (auto& config : self->mKFFTConfig)
     {
-      mKFFTConfig[i] = kiss_fftnd_alloc(size, sizeDem, 1, NULL, NULL);
+      config = kiss_fftnd_alloc(size, sizeDem, 1, NULL, NULL);
      
-      if (mKFFTConfig[i] == NULL)
+      if (nullptr == config)
       {
         std::cout << "FFT_WaterSimulation: Failed to create KFFT Config! No FFT calculations will be made"
           << std::endl;
@@ -388,18 +409,18 @@ namespace YTE
     }
   }
 
-
   // ------------------------------------
   void FFT_WaterSimulation::StopKFFT()
   {
+    auto self = mData.Get<KissFFTData>();
+
     kiss_fft_cleanup();
-    for (int i = 0; i < 5; ++i)
+    for (auto& config : self->mKFFTConfig)
     {
-      free(mKFFTConfig[i]);
-      mKFFTConfig[i] = NULL;
+      free(config);
+      config = nullptr;
     }
   }
-
 
   // ------------------------------------
   void FFT_WaterSimulation::RunKFFT()
@@ -573,6 +594,8 @@ namespace YTE
   {
     YTEProfileFunction();
 
+    auto self = mData.Get<KissFFTData>();
+
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
     {
@@ -607,21 +630,21 @@ namespace YTE
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
-        auto &h_Tilde = mH_Tilde[vertex];
+        auto &h_Tilde = self->mH_Tilde[vertex];
 
         h_Tilde = Calc_hTilde(x, z);
-        mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
-        mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
+        self->mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
+        self->mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
 
         if (floatNotZero(kLen))
         {
-          mH_TildeDX[vertex] = complex(0.0f, 0.0f);
-          mH_TildeDZ[vertex] = complex(0.0f, 0.0f);
+          self->mH_TildeDX[vertex] = complex(0.0f, 0.0f);
+          self->mH_TildeDZ[vertex] = complex(0.0f, 0.0f);
         }
         else
         {
-          mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
-          mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
+          self->mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
+          self->mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
         }
       }
     }
@@ -653,10 +676,10 @@ namespace YTE
 
         sign = signs[(x + z) & 1];
 
-        mH_Tilde[tilde] *= sign;   // why?
+        self->mH_Tilde[tilde] *= sign;   // why?
 
                                    // height adjustment
-        computationalVertex.mPosition.y = (mH_Tilde[tilde].mReal);
+        computationalVertex.mPosition.y = (self->mH_Tilde[tilde].mReal);
 
         if (UseNoDisplacement)
         {
@@ -668,8 +691,8 @@ namespace YTE
         }
         else
         {
-          auto &hTildeDX = mH_TildeDX[tilde];
-          auto &hTildeDZ = mH_TildeDZ[tilde];
+          auto &hTildeDX = self->mH_TildeDX[tilde];
+          auto &hTildeDZ = self->mH_TildeDZ[tilde];
 
           // displacement update
           hTildeDX *= sign;
@@ -682,8 +705,8 @@ namespace YTE
 
 
         // normal update
-        auto &hTildeSlopeX = mH_TildeSlopeX[tilde];
-        auto &hTildeSlopeZ = mH_TildeSlopeZ[tilde];
+        auto &hTildeSlopeX = self->mH_TildeSlopeX[tilde];
+        auto &hTildeSlopeZ = self->mH_TildeSlopeZ[tilde];
         hTildeSlopeX *= sign;
         hTildeSlopeZ *= sign;
         computationalVertex.mNormal = glm::normalize(glm::vec3(-(hTildeSlopeX.mReal),
@@ -725,19 +748,19 @@ namespace YTE
         {
           //int index = squared(mGridSize) - 1;
           int index = mGridSize + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
+          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
         }
         if (x == 0)
         {
           //int index = vertex + (mGridSize - 1);
           int index = vertex + mGridSize;
-          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
+          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
         }
         if (z == 0)
         {
           //int index = vertex + (mGridSize * (mGridSize - 1));
           int index = vertex + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, mH_TildeDX, mH_TildeDZ, index);
+          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
         }
 
 
@@ -1233,31 +1256,46 @@ namespace YTE
   Any FFT_WaterSimulation::MT_A(JobHandle & aJob)
   {
     UnusedArguments(aJob);
-    kiss_fftnd(mKFFTConfig[0], mH_Tilde.GetKFFTArray(), mH_Tilde.GetKFFTArray());
+
+    auto self = mData.Get<KissFFTData>();
+
+    kiss_fftnd(self->mKFFTConfig[0], self->mH_Tilde.GetKFFTArray(), self->mH_Tilde.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_B(JobHandle & aJob)
   {
     UnusedArguments(aJob);
-    kiss_fftnd(mKFFTConfig[1], mH_TildeSlopeX.GetKFFTArray(), mH_TildeSlopeX.GetKFFTArray());
+
+    auto self = mData.Get<KissFFTData>();
+
+    kiss_fftnd(self->mKFFTConfig[1], self->mH_TildeSlopeX.GetKFFTArray(), self->mH_TildeSlopeX.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_C(JobHandle & aJob)
   {
     UnusedArguments(aJob);
-    kiss_fftnd(mKFFTConfig[2], mH_TildeSlopeZ.GetKFFTArray(), mH_TildeSlopeZ.GetKFFTArray());
+
+    auto self = mData.Get<KissFFTData>();
+
+    kiss_fftnd(self->mKFFTConfig[2], self->mH_TildeSlopeZ.GetKFFTArray(), self->mH_TildeSlopeZ.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_D(JobHandle & aJob)
   {
     UnusedArguments(aJob);
-    kiss_fftnd(mKFFTConfig[3], mH_TildeDX.GetKFFTArray(), mH_TildeDX.GetKFFTArray());
+
+    auto self = mData.Get<KissFFTData>();
+
+    kiss_fftnd(self->mKFFTConfig[3], self->mH_TildeDX.GetKFFTArray(), self->mH_TildeDX.GetKFFTArray());
     return Any();
   }
   Any FFT_WaterSimulation::MT_E(JobHandle & aJob)
   {
     UnusedArguments(aJob);
-    kiss_fftnd(mKFFTConfig[4], mH_TildeDZ.GetKFFTArray(), mH_TildeDZ.GetKFFTArray());
+
+    auto self = mData.Get<KissFFTData>();
+
+    kiss_fftnd(self->mKFFTConfig[4], self->mH_TildeDZ.GetKFFTArray(), self->mH_TildeDZ.GetKFFTArray());
     return Any();
   }
 }

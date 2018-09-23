@@ -68,18 +68,12 @@ namespace YTE
     builder.Field<&ParentChanged::mNewParent>("NewParent", PropertyBinding::Get);
   }
 
-  YTEDefineExternalType(CompositionMap::range)
-  {
-    RegisterType<CompositionMap::range>();
-    TypeBuilder<CompositionMap::range> builder;
-  }
-
   YTEDefineType(Composition)
   {
     RegisterType<Composition>();
     TypeBuilder<Composition> builder;
 
-    builder.Function<&Composition::Remove>( "Remove")
+    builder.Function<&Composition::Remove>("Remove")
       .SetDocumentation("Removes the composition from it's owner. This is delayed until the next frame.");
 
     builder.Function<SelectOverload<Component* (Composition::*)(BoundType*),&Composition::GetComponent>()>("GetComponent")
@@ -116,9 +110,9 @@ namespace YTE
       .SetParameterNames("aArchetype", "aName", "aPosition")
       .SetDocumentation("Adds an archetype to this Space via the name of the Archetype. It takes the name of the object to name it and the position to place it.");
 
-    builder.Property<&Composition::GetName, NoSetter>( "Name");
+    builder.Property<&Composition::GetName, NoSetter>("Name");
 
-    builder.Property<&Composition::GetSpace, NoSetter>( "Space");
+    builder.Property<&Composition::GetSpace, NoSetter>("Space");
   }
 
   Composition::Composition(Engine *aEngine, const String &aName, Space *aSpace, Composition *aOwner)
@@ -597,6 +591,7 @@ namespace YTE
     {
       std::string componentTypeName = componentIt->name.GetString();
       BoundType *componentType = Type::GetGlobalType(componentTypeName);
+
       AddComponent(componentType, &componentIt->value);
     }
 
@@ -1043,8 +1038,10 @@ namespace YTE
         return nullptr;
       }
 
-      auto component = addFactory->MakeComponent(this, mSpace, aProperties);
+      auto component = addFactory->MakeComponent(this, mSpace);
       toReturn = component.get();
+
+      DeserializeByType(aProperties, toReturn, aType);
 
       mComponents.Emplace(aType, std::move(component));
     }
@@ -1288,4 +1285,10 @@ namespace YTE
   {
     return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
   }
+}
+
+YTEDefineExternalType(YTE::CompositionMap::range)
+{
+  RegisterType<CompositionMap::range>();
+  TypeBuilder<CompositionMap::range> builder;
 }

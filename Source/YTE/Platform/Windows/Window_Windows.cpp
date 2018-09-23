@@ -301,6 +301,7 @@ namespace YTE
       event.CharacterTyped = static_cast<u32>(aWParam);
       event.Keyboard = &aWindow->mKeyboard;
       event.Keyboard->SendEvent(Events::CharacterTyped, &event);
+      break;
     }
 
       // A key has been pressed.
@@ -673,6 +674,8 @@ namespace YTE
                    monitorInformation.rcMonitor.right - monitorInformation.rcMonitor.left,
                    monitorInformation.rcMonitor.bottom - monitorInformation.rcMonitor.top,
                    SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+
+      UpdateWindow(self->mWindowHandle);
     }
     else
     {
@@ -693,17 +696,13 @@ namespace YTE
       RECT clientSize;
       GetClientRect(self->mWindowHandle, &clientSize);
 
-      // TODO (Josh): Fix resolution being set at 720p always.
-      // Keep the previous position (more or less)
       RECT forPosition;
       GetWindowRect(self->mWindowHandle, &forPosition);
-      int differenceX = mRequestedWidth - clientSize.right;
-      int differenceY = mRequestedHeight - clientSize.bottom;
 
       SetWindowPos(self->mWindowHandle,
                    NULL,
-                   forPosition.left - differenceX / 2,
-                   forPosition.top - differenceY / 2,
+                   forPosition.left,
+                   forPosition.top,
                    mRequestedWidth,
                    mRequestedHeight,
                    SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);

@@ -80,26 +80,23 @@ namespace YTE
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
     auto &device = mSurface->GetDevice();
 
-    if (false == mVkMesh->GetInstanced())
-    {
-      // create UBO Per Model buffer
-      mUBOModel = device->createBuffer(sizeof(UBOModel),
-                                       vk::BufferUsageFlagBits::eTransferDst |
-                                       vk::BufferUsageFlagBits::eUniformBuffer,
-                                       vk::SharingMode::eExclusive,
-                                       nullptr,
-                                       vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                       allocator);
+    // create UBO Per Model buffer
+    mUBOModel = device->createBuffer(sizeof(UBOModel),
+                                      vk::BufferUsageFlagBits::eTransferDst |
+                                      vk::BufferUsageFlagBits::eUniformBuffer,
+                                      vk::SharingMode::eExclusive,
+                                      nullptr,
+                                      vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                      allocator);
       
-      //// create UBO Per Model buffer
-      mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
-                                               vk::BufferUsageFlagBits::eTransferDst |
-                                               vk::BufferUsageFlagBits::eUniformBuffer,
-                                               vk::SharingMode::eExclusive,
-                                               nullptr,
-                                               vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                               allocator);
-    }
+    // create UBO Per Model Material buffer
+    mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+                                             vk::BufferUsageFlagBits::eTransferDst |
+                                             vk::BufferUsageFlagBits::eUniformBuffer,
+                                             vk::SharingMode::eExclusive,
+                                             nullptr,
+                                             vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                             allocator);
 
     // Create UBO Animation Buffer.
     mUBOAnimation = device->createBuffer(sizeof(UBOAnimation),
@@ -194,7 +191,7 @@ namespace YTE
         !mLoadUBOModel && 
         !mLoadUBOMaterial)
     {
-      mSurface->RegisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
+      mSurface->RegisterEvent<&VkInstantiatedModel::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -253,32 +250,9 @@ namespace YTE
                                                        mUBOSubmeshMaterials[aIndex].first,
                                                        mView));
   }
-
-  bool VkInstantiatedModel::GetInstanced()
+  void VkInstantiatedModel::VkGraphicsDataUpdate(YTE::VkGraphicsDataUpdate *aEvent)
   {
-    return mVkMesh->GetInstanced();
-  }
-
-  void VkInstantiatedModel::SetInstanced(bool aInstanced)
-  {
-    if (mMesh->CanAnimate())
-    {
-      printf("Currently don't support animating, instanced meshes.");
-      return;
-    }
-
-    if (mVkMesh->GetInstanced() == aInstanced)
-    {
-      return;
-    }
-
-    mVkMesh->SetInstanced(mMesh);
-  }
-
-
-  void VkInstantiatedModel::GraphicsDataUpdateVk(YTE::GraphicsDataUpdateVk *aEvent)
-  {
-    mSurface->DeregisterEvent<&VkInstantiatedModel::GraphicsDataUpdateVk>(Events::GraphicsDataUpdateVk, this);
+    mSurface->DeregisterEvent<&VkInstantiatedModel::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
 
     auto update = aEvent->mCBO;
 
@@ -303,16 +277,7 @@ namespace YTE
 
     if (mLoadUBOModel)
     {
-      if (mVkMesh->GetInstanced())
-      {
-        Instance instance(mUBOModelData);
-
-        mVkMesh->mInstanceManager.InstanceBuffer()->update<Instance>(mVkMesh->GetOffset(this), instance, update);
-      }
-      else
-      {
-        mUBOModel->update<UBOModel>(0, mUBOModelData, update);
-      }
+      mUBOModel->update<UBOModel>(0, mUBOModelData, update);
 
       mLoadUBOModel = false;
     }

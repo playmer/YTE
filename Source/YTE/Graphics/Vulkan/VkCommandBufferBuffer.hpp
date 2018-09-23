@@ -15,16 +15,16 @@ namespace YTE
   // Command Buffer Object Buffered
   // Buffers based on BufferCount the CBOs available
   // reuses CBOs
-  template<size_t T_BufferCount, bool T_IsSecondary>
+  template<size_t tBufferCount, bool tIsSecondary>
   class VkCBOB
   {
   public:
     // ctor
     VkCBOB(std::shared_ptr<vkhlf::CommandPool>& aPool)
     {
-      mSize = T_BufferCount;
+      mSize = tBufferCount;
       mIndex = 0;
-      mIsSecondary = T_IsSecondary;
+      mIsSecondary = tIsSecondary;
       for (size_t i = 0; i < mSize; ++i)
       {
         if (mIsSecondary)
@@ -109,11 +109,11 @@ namespace YTE
 
 
   private:
-    std::array<std::shared_ptr<vkhlf::CommandBuffer>, T_BufferCount> mCBOs;
-    std::array<bool, T_BufferCount> mHasBeenUsed;
+    std::array<std::shared_ptr<vkhlf::CommandBuffer>, tBufferCount> mCBOs;
+    std::array<bool, tBufferCount> mHasBeenUsed;
     size_t mIndex;
-    size_t mSize = T_BufferCount;
-    bool mIsSecondary = T_IsSecondary;
+    size_t mSize = tBufferCount;
+    bool mIsSecondary = tIsSecondary;
   };
 }
 

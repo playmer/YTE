@@ -58,11 +58,11 @@ namespace YTE
 
   public:
     YTEDeclareType(SpriteText);
-    SpriteText(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~SpriteText();
+    YTE_Shared SpriteText(Composition *aOwner, Space *aSpace);
+    YTE_Shared ~SpriteText();
 
-    void AssetInitialize() override;
-    void NativeInitialize() override;
+    YTE_Shared void AssetInitialize() override;
+    YTE_Shared void NativeInitialize() override;
     
     // PROPERTIES /////////////////////////////////////////
     std::string GetText()
@@ -75,7 +75,9 @@ namespace YTE
       mText = aText;
 
       if (!mConstructing)
+      {
         CreateSpriteText();
+      }
     }
 
     std::string GetFont()
@@ -92,7 +94,9 @@ namespace YTE
         PrepareFont();
 
         if (!mConstructing)
+        {
           CreateSpriteText();
+        }
       }
     }
 
@@ -106,7 +110,9 @@ namespace YTE
       mFontSize = aFontSize / 10.f;
 
       if (!mConstructing)
+      {
         CreateSpriteText();
+      }
     }
 
     const std::string& GetAlignmentX() const { return AlignmentX::Names[mAlignX]; }
@@ -143,11 +149,11 @@ namespace YTE
     }
     ////////////////////////////////////////////////////////
 
-    void CreateSpriteText();
-    void CreateTransform();
+    YTE_Shared void CreateSpriteText();
+    YTE_Shared void CreateTransform();
 
-    void OnStart(LogicUpdate *);
-    void TransformUpdate(TransformChanged *aEvent);
+    YTE_Shared void OnStart(LogicUpdate *);
+    YTE_Shared void TransformUpdate(TransformChanged *aEvent);
 
     std::vector<InstantiatedModel*> GetInstantiatedModel() override
     {
@@ -181,6 +187,6 @@ namespace YTE
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
     bool mConstructing;
 
-    void PrepareFont();
+    YTE_Shared void PrepareFont();
   };
 }

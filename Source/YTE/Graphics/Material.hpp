@@ -180,7 +180,7 @@ namespace YTE
     YTEDeclareType(Material);
     Material(Material&) = delete;
 
-    Material(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    Material(Composition *aOwner, Space *aSpace);
     ~Material() override;
 
     void Initialize() override;

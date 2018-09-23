@@ -263,8 +263,8 @@ namespace YTE
 
     toReturn = std::experimental::filesystem::canonical(toReturn, cWorkingDirectory);
 
-    DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
-                "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
+    //DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
+    //            "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
     UnusedArguments(aFileType);
 
     return toReturn;

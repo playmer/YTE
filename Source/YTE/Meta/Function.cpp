@@ -8,13 +8,13 @@ namespace YTE
     RegisterType<Function>();
     TypeBuilder<Function> builder;
 
-    builder.Property<&Function::GetOwningType, NoSetter>( "OwningType")
+    builder.Property<&Function::GetOwningType, NoSetter>("OwningType")
       .SetDocumentation("Type that owns this Function.");
-    builder.Property<&Function::GetName, NoSetter>( "Name")
+    builder.Property<&Function::GetName, NoSetter>("Name")
       .SetDocumentation("Name of the property.");
-    builder.Property<&Function::GetReturnType, NoSetter>( "ReturnType")
+    builder.Property<&Function::GetReturnType, NoSetter>("ReturnType")
       .SetDocumentation("The return type of the function.");
-    builder.Property<&Function::IsStaticOrFree, NoSetter>( "StaticOrFree")
+    builder.Property<&Function::IsStaticOrFree, NoSetter>("StaticOrFree")
       .SetDocumentation("Lets you know if this function is a static or free function, as in not a member function.");
   }
 

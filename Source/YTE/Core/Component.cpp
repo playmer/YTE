@@ -127,4 +127,19 @@ namespace YTE
       mTypes.emplace_back(std::move(types));
     }
   }
+
+  namespace Attributes
+  {
+    YTEDefineType(ComponentInitialize)
+    {
+      RegisterType<ComponentInitialize>();
+      TypeBuilder<ComponentInitialize> builder;
+    }
+
+    YTEDefineType(PropertyInitialize)
+    {
+      RegisterType<PropertyInitialize>();
+      TypeBuilder<PropertyInitialize> builder;
+    }
+  }
 }

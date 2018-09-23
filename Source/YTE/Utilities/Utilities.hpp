@@ -25,17 +25,17 @@ namespace YTE
 {
   namespace filesystem = std::experimental::filesystem;
 
-  extern std::wstring cWorkingDirectory;
+  YTE_Shared extern std::wstring cWorkingDirectory;
 
   // Version 4, Variant 1 GUID
   struct GlobalUniqueIdentifier
   {
-    GlobalUniqueIdentifier();
+    YTE_Shared GlobalUniqueIdentifier();
 
-    std::string ToString() const;
-    std::string ToIdentifierString() const;
+    YTE_Shared std::string ToString() const;
+    YTE_Shared std::string ToIdentifierString() const;
 
-    bool operator==(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGUID);
 
 
     //       u32           u16         u16        u16            u32         u16
@@ -49,22 +49,22 @@ namespace YTE
   };
 
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
-  std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);
+  YTE_Shared std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);
 
-  bool ReadFileToString(std::string const &file, std::string &output);
-  void StringToFloats(std::string &file, std::vector<float> &output);
+  YTE_Shared bool ReadFileToString(std::string const &file, std::string &output);
+  YTE_Shared void StringToFloats(std::string &file, std::vector<float> &output);
 
-  std::string Format(const char *aFormatString, ...);
-  std::string Format(const char *aFormatString, va_list argv);
+  YTE_Shared std::string Format(const char *aFormatString, ...);
+  YTE_Shared std::string Format(const char *aFormatString, va_list argv);
   
-  std::string GetConfigPath(const String &name);
-  std::string GetConfigPath(const char *name);
-  std::string GetConfigPath(const std::string &name);
-  bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile);
+  YTE_Shared std::string GetConfigPath(const String &name);
+  YTE_Shared std::string GetConfigPath(const char *name);
+  YTE_Shared std::string GetConfigPath(const std::string &name);
+  YTE_Shared bool FileCheck(const Path& aPath, const std::string& aDirectory, std::string &aFile);
 
-  std::string RemoveExtension(const std::string & filename);
+  YTE_Shared std::string RemoveExtension(const std::string & filename);
 
-  filesystem::path relativeTo(filesystem::path from, filesystem::path to);
+  YTE_Shared filesystem::path relativeTo(filesystem::path from, filesystem::path to);
 }
 
 #endif

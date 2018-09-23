@@ -47,18 +47,17 @@ namespace YTE
     TypeBuilder<Skybox> builder;
     GetStaticType()->AddAttribute<RunInEditor>();
 
-    builder.Property<&Skybox::GetTexture, &Skybox::SetTexture>( "Texture")
+    builder.Property<&Skybox::GetTexture, &Skybox::SetTexture>("Texture")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<DropDownStrings>(PopulateDropDownList);
   }
 
-  Skybox::Skybox(Composition *aOwner, Space *aSpace, RSValue *aProperties)
+  Skybox::Skybox(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mTextureName("None")
     , mConstructing(true)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   }
 
   Skybox::~Skybox()

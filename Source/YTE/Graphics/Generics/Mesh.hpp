@@ -10,9 +10,6 @@
 
 #include <limits> 
 
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
@@ -30,44 +27,6 @@ struct aiNode;
 
 namespace YTE
 {
-  // inlined globals
-  inline glm::vec3 AssimpToGLM(const aiVector3D *aVector)
-  {
-    return { aVector->x, aVector->y ,aVector->z };
-  }
-
-  inline glm::vec3 AssimpToGLM(const aiColor3D *aVector)
-  {
-    return { aVector->r, aVector->g ,aVector->b };
-  }
-
-  inline glm::quat AssimpToGLM(const aiQuaternion *aQuat) 
-  { 
-    glm::quat quaternion; 
- 
-    quaternion.x = aQuat->x; 
-    quaternion.y = aQuat->y; 
-    quaternion.z = aQuat->z; 
-    quaternion.w = aQuat->w; 
- 
-    return quaternion; 
-  } 
- 
-  inline glm::mat4 AssimpToGLM(const aiMatrix4x4 aMatrix) 
-  { 
-    glm::mat4 result; 
-    for (int i = 0; i < 4; ++i) 
-    { 
-      for (int j = 0; j < 4; ++j) 
-      { 
-        result[i][j] = aMatrix[i][j]; 
-      } 
-    } 
- 
-    return result; 
-  } 
-
-
   // vertices have the following components in them
   enum class VertexComponent
   {
@@ -101,17 +60,17 @@ namespace YTE
   {
     BoneData()
     {
-      mOffset = aiMatrix4x4();
-      mFinalTransformation = aiMatrix4x4();
+      mOffset = glm::mat4{};
+      mFinalTransformation = glm::mat4{};
     }
 
-    BoneData(aiMatrix4x4 aOffset) : mOffset(aOffset)
+    BoneData(glm::mat4 const& aOffset) : mOffset(aOffset)
     {
-      mFinalTransformation = aiMatrix4x4();
+      mFinalTransformation = glm::mat4{};
     }
 
-    aiMatrix4x4 mOffset;
-    aiMatrix4x4 mFinalTransformation;
+    glm::mat4 mOffset;
+    glm::mat4 mFinalTransformation;
   };
 
 
@@ -150,9 +109,9 @@ namespace YTE
       }
     };
 
-    bool Initialize(const aiScene* aScene);
+    YTE_Shared bool Initialize(const aiScene* aScene);
 
-    void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
+    YTE_Shared void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
 
     bool HasBones()
     {
@@ -174,29 +133,29 @@ namespace YTE
       return &mDefaultOffsets;
     }
 
-    aiMatrix4x4& GetGlobalInverseTransform()
+    glm::mat4& GetGlobalInverseTransform()
     {
       return mGlobalInverseTransform;
     }
 
-    std::unordered_map<std::string, uint32_t>* GetBones()
+    std::map<std::string, uint32_t, std::less<>>* GetBones()
     {
       return &mBones;
     }
 
   private:
-    void PreTransform(const aiScene* aScene);
-    void VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform);
+    YTE_Shared void PreTransform(const aiScene* aScene);
+    YTE_Shared void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
 
-    std::unordered_map<std::string, uint32_t> mBones;
+    std::map<std::string, uint32_t, std::less<>> mBones;
     std::vector<BoneData> mBoneData;
     uint32_t mNumBones;
-    aiMatrix4x4 mGlobalInverseTransform;
+    glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
     UBOAnimation mDefaultOffsets;
-#ifdef _DEBUG
-    std::vector<unsigned int> mVertexErrorAdds;
-#endif
+//#ifdef _DEBUG
+//    std::vector<unsigned int> mVertexErrorAdds;
+//#endif
   };
 
 
@@ -211,13 +170,13 @@ namespace YTE
   class Submesh
   {
   public:
-    Submesh() = default;
+    YTE_Shared Submesh() = default;
 
-    Submesh(Renderer *aRenderer,
-            const aiScene *aScene,
-            const aiMesh *aMesh,
-            Skeleton *aSkeleton,
-            uint32_t aBoneStartingVertexOffset);
+    YTE_Shared Submesh(Renderer *aRenderer,
+                       const aiScene *aScene,
+                       const aiMesh *aMesh,
+                       Skeleton *aSkeleton,
+                       uint32_t aBoneStartingVertexOffset);
 
     virtual ~Submesh()
     {
@@ -262,48 +221,38 @@ namespace YTE
     bool mCullBackFaces = true;
   };
 
-
-  struct ColliderMesh
-  {
-    ColliderMesh(const aiMesh* aMesh);
-    std::vector<glm::vec3> mColliderVertexBuffer;
-    std::vector<u32> mIndexBuffer;
-  };
-
-
   class Mesh : public EventHandler
   {
   public:
     YTEDeclareType(Mesh);
 
-    Mesh(Renderer *aRenderer,
-         const std::string &aFile);
+    YTE_Shared Mesh(Renderer *aRenderer,
+                    const std::string &aFile);
 
-    Mesh(const std::string &aFile,
-         std::vector<Submesh> &aSubmeshes);
+    YTE_Shared Mesh(const std::string &aFile,
+                    std::vector<Submesh> &aSubmeshes);
 
-    virtual void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
-    virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+    YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
+                                           std::vector<Vertex>& aVertices);
+    YTE_Shared virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, 
+                                                     std::vector<Vertex>& aVertices, 
+                                                     std::vector<u32>& aIndices);
 
-    virtual ~Mesh();
+    YTE_Shared virtual ~Mesh();
 
-    bool CanAnimate();
-    std::vector<Submesh>& GetSubmeshes();
+    YTE_Shared bool CanAnimate();
+    YTE_Shared std::vector<Submesh>& GetSubmeshes();
 
-    void SetBackfaceCulling(bool aCulling);
-    virtual void RecreateShader() {}
+    YTE_Shared void SetBackfaceCulling(bool aCulling);
+    YTE_Shared virtual void RecreateShader() {}
 
-    void ResetTextureCoordinates();
+    YTE_Shared void ResetTextureCoordinates();
 
     std::string mName;
     std::vector<Submesh> mParts;
-    std::vector<ColliderMesh> mColliderParts;
     Skeleton mSkeleton;
     Dimension mDimension;
     bool mInstanced;
-
-  private:
-    void CreateCollider(const aiScene* aScene);
   };
 }
 

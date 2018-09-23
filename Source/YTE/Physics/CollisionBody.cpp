@@ -24,12 +24,11 @@ namespace YTE
     TypeBuilder<CollisionBody> builder;
   }
   
-  CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace, RSValue *aProperties)
-    : Body(aOwner, aSpace, aProperties)
+  CollisionBody::CollisionBody(Composition *aOwner, Space *aSpace)
+    : Body(aOwner, aSpace)
     , mVelocity(0.f, 0.f, 0.f)
     , mIsInitialized(false)
   {
-    DeserializeByType(aProperties, this, GetStaticType());
   };
 
   CollisionBody::~CollisionBody()

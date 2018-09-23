@@ -32,7 +32,7 @@ namespace YTE
 
     void SetSurfaceAndView(VkRenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(GraphicsDataUpdateVk* aEvent);
+    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent);
 
     void AddLight(VkInstantiatedLight *aLight);
     std::unique_ptr<VkInstantiatedLight> CreateLight();

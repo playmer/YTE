@@ -28,7 +28,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  YTEDefineType(LogHandler)
+  YTEditorDefineType(LogHandler)
   {
     YTE::RegisterType<LogHandler>();
   }

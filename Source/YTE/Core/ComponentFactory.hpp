@@ -24,8 +24,7 @@ namespace YTE
   {
   public:
     virtual UniquePointer<Component> MakeComponent(Composition *aOwner,
-                                                    Space *aSpace,
-                                                    RSValue *aProperties) = 0;
+                                                   Space *aSpace) = 0;
 
     StringComponentFactory(Engine *aEngine) : mEngine(aEngine) {};
 
@@ -39,9 +38,9 @@ namespace YTE
   class ComponentFactory : public StringComponentFactory
   {
   public:
-    UniquePointer<Component> MakeComponent(Composition *aOwner, Space *aSpace, RSValue *aProperties) override
+    UniquePointer<Component> MakeComponent(Composition *aOwner, Space *aSpace) override
     {
-      return std::make_unique<T>(aOwner, aSpace, aProperties);
+      return std::make_unique<T>(aOwner, aSpace);
     }
   
     ComponentFactory(Engine *aEngine) : StringComponentFactory(aEngine) {};

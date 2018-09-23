@@ -20,30 +20,32 @@ namespace YTE
   {
   public:
     friend class ActionSequence;
-    ActionGroup();
-    ActionGroup(const ActionGroup& aGroup);
-    ~ActionGroup();
+    YTE_Shared ActionGroup();
+    YTE_Shared ActionGroup(const ActionGroup& aGroup);
+    YTE_Shared ~ActionGroup();
     template <typename T>
     void Add(float& aValue, float aFinal, float aDuration)
     {
       static_assert(std::is_base_of<Action, T>::value,
-        "Actions must derive from the Action class");
-      mActions.push_back(new T(aValue, aFinal, aDuration));
+                    "Actions must derive from the Action class");
+
+      mActions.emplace_back(new T(aValue, aFinal, aDuration));
     }
     template <typename T>
     void Add(const T& aAction)
     {
       static_assert(std::is_base_of<Action, T>::value,
-        "Actions must derive from the Action class");
-      mActions.push_back(aAction->Clone());
+                    "Actions must derive from the Action class");
+
+      mActions.emplace_back(aAction->Clone());
     }
-    void Call(std::function<void(void)> aCallback);
-    void Delay(float aDuration);
+    YTE_Shared void Call(std::function<void(void)> aCallback);
+    YTE_Shared void Delay(float aDuration);
   private:
-    void Init();
-    float Increment(float dt);
-    void operator() ();
-    bool IsDone() const;
+    YTE_Shared void Init();
+    YTE_Shared float Increment(float dt);
+    YTE_Shared void operator() ();
+    YTE_Shared bool IsDone() const;
 
     std::vector<Action*> mActions;
   };

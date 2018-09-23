@@ -6,6 +6,10 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "assimp/types.h"
+#include "assimp/vector3.h"
+
+#include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -16,13 +20,50 @@
 
 namespace YTE
 {
+  static inline
+  glm::vec3 ToGlm(const aiVector3D *aVector)
+  {
+    return { aVector->x, aVector->y ,aVector->z };
+  }
+
+  static inline
+  glm::vec3 ToGlm(const aiColor3D *aVector)
+  {
+    return { aVector->r, aVector->g ,aVector->b };
+  }
+
+  static inline
+  glm::quat ToGlm(const aiQuaternion *aQuat)
+  {
+    glm::quat quaternion;
+
+    quaternion.x = aQuat->x;
+    quaternion.y = aQuat->y;
+    quaternion.z = aQuat->z;
+    quaternion.w = aQuat->w;
+
+    return quaternion;
+  }
+
+  static inline
+  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
+  {
+    return glm::transpose(glm::make_mat4(&aMatrix.a1));
+  }
+
+  static inline
+  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
+  {
+    auto transposed = glm::transpose(aMatrix);
+    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
+  }
+
+
   YTEDefineType(Mesh)
   {
     RegisterType<Mesh>();
     TypeBuilder<Mesh> builder;
   }
-  
-
 
   bool Skeleton::Initialize(const aiScene* aScene)
   {
@@ -35,14 +76,14 @@ namespace YTE
     }
 
     mVertexSkeletonData.resize(vertCount);
-#ifdef _DEBUG
-    mVertexErrorAdds.resize(vertCount);
-#endif
+//#ifdef _DEBUG
+//    mVertexErrorAdds.resize(vertCount);
+//#endif
 
     mNumBones = 0;
 
-    mGlobalInverseTransform = aScene->mRootNode->mTransformation;
-    mGlobalInverseTransform.Inverse();
+    auto globalInverse = aScene->mRootNode->mTransformation;
+    mGlobalInverseTransform = ToGlm(globalInverse.Inverse());
 
     bool bonesFound = false;
     uint32_t startingVertex = 0;
@@ -88,7 +129,7 @@ namespace YTE
         index = mNumBones;
         ++mNumBones;
         mBones[boneName] = index;
-        mBoneData.emplace_back(bone->mOffsetMatrix);
+        mBoneData.emplace_back(ToGlm(bone->mOffsetMatrix));
       }
       else
       {
@@ -101,39 +142,39 @@ namespace YTE
       {
         auto weight = bone->mWeights[b];
         uint32_t id = aVertexStartingIndex + weight.mVertexId;
-#ifdef _DEBUG
-        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
-        {
-          mVertexErrorAdds[id] += 1;
-        }
-#else
+//#ifdef _DEBUG
+//        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
+//        {
+//          mVertexErrorAdds[id] += 1;
+//        }
+//#else
         mVertexSkeletonData[id].AddBone(index, weight.mWeight);
-#endif
+//#endif
       }
     }
 
     // loop errors
-#if defined(_DEBUG) && defined(BSTDULAF)
-    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
-    {
-      if (mVertexErrorAdds[i] != 0)
-      {
-        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
-        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
-                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
-                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
-                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
-                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
-                  << mVertexSkeletonData[i].mIDs[3] << "\t"
-                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
-
-      }
-    }
-#endif
+//#if defined(_DEBUG) && defined(BSTDULAF)
+//    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
+//    {
+//      if (mVertexErrorAdds[i] != 0)
+//      {
+//        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
+//        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
+//                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
+//                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
+//                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
+//                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
+//                  << mVertexSkeletonData[i].mIDs[3] << "\t"
+//                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
+//
+//      }
+//    }
+//#endif
   }
 
 
@@ -141,7 +182,7 @@ namespace YTE
   void Skeleton::PreTransform(const aiScene* aScene)
   {
     // setup parent transforms
-    aiMatrix4x4 identity = aiMatrix4x4();
+    glm::mat4 identity;
 
     // recursive step
     VisitNodes(aScene->mRootNode, identity);
@@ -149,24 +190,25 @@ namespace YTE
     mDefaultOffsets.mHasAnimation = 1;
     for (uint32_t i = 0; i < mNumBones; ++i)
     {
-      mDefaultOffsets.mBones[i] = AssimpToGLM(mBoneData[i].mFinalTransformation);
+      mDefaultOffsets.mBones[i] = mBoneData[i].mFinalTransformation;
     }
   }
 
 
 
-  void Skeleton::VisitNodes(const aiNode* aNode, const aiMatrix4x4& aParentTransform)
+  void Skeleton::VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform)
   {
     std::string nodeName(aNode->mName.data);
-    aiMatrix4x4 globalTrans = aParentTransform * aNode->mTransformation;
+    glm::mat4 globalTrans = aParentTransform * ToGlm(aNode->mTransformation);
 
     auto index = mBones.find(nodeName);
 
     if (index != mBones.end())
     {
-      mBoneData[index->second].mFinalTransformation = mGlobalInverseTransform *
-                                                      globalTrans *
-                                                      mBoneData[index->second].mOffset;
+      mBoneData[index->second].mFinalTransformation = 
+        mGlobalInverseTransform *
+        globalTrans *
+        mBoneData[index->second].mOffset;
     }
 
     for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
@@ -209,12 +251,12 @@ namespace YTE
     material->Get(AI_MATKEY_COLOR_TRANSPARENT, Transparent);
     material->Get(AI_MATKEY_COLOR_REFLECTIVE, Reflective);
 
-    mUBOMaterial.mDiffuse = glm::vec4(AssimpToGLM(&Diffuse), 1.0f);
-    mUBOMaterial.mAmbient = glm::vec4(AssimpToGLM(&Ambient), 1.0f);
-    mUBOMaterial.mSpecular = glm::vec4(AssimpToGLM(&Specular), 1.0f);
-    mUBOMaterial.mEmissive = glm::vec4(AssimpToGLM(&Emissive), 1.0f);
-    mUBOMaterial.mTransparent = glm::vec4(AssimpToGLM(&Transparent), 1.0f);
-    mUBOMaterial.mReflective = glm::vec4(AssimpToGLM(&Reflective), 1.0f);
+    mUBOMaterial.mDiffuse = glm::vec4(ToGlm(&Diffuse), 1.0f);
+    mUBOMaterial.mAmbient = glm::vec4(ToGlm(&Ambient), 1.0f);
+    mUBOMaterial.mSpecular = glm::vec4(ToGlm(&Specular), 1.0f);
+    mUBOMaterial.mEmissive = glm::vec4(ToGlm(&Emissive), 1.0f);
+    mUBOMaterial.mTransparent = glm::vec4(ToGlm(&Transparent), 1.0f);
+    mUBOMaterial.mReflective = glm::vec4(ToGlm(&Reflective), 1.0f);
     mUBOMaterial.mFlags = 0;
 
     material->Get(AI_MATKEY_NAME, name);
@@ -286,18 +328,18 @@ namespace YTE
         pBiTangent = aMesh->mBitangents + j;
       }
 
-      auto position = AssimpToGLM(pPos);
+      auto position = ToGlm(pPos);
 
       // NOTE: We do this to invert the uvs to what the texture would expect.
       auto textureCoordinates = glm::vec3{ pTexCoord->x,
-        1.0f - pTexCoord->y,
-        pTexCoord->z };
+                                           1.0f - pTexCoord->y,
+                                           pTexCoord->z };
 
-      auto normal = AssimpToGLM(pNormal);
-      auto color = glm::vec4{ AssimpToGLM(&pColor), 1.0f };
-      auto tangent = AssimpToGLM(pTangent);
+      auto normal = ToGlm(pNormal);
+      auto color = glm::vec4{ ToGlm(&pColor), 1.0f };
+      auto tangent = ToGlm(pTangent);
       auto binormal = glm::cross(tangent, normal);
-      auto bitangent = AssimpToGLM(pBiTangent);
+      auto bitangent = ToGlm(pBiTangent);
 
       glm::vec3 boneWeights;
       glm::vec2 boneWeights2;
@@ -378,31 +420,6 @@ namespace YTE
     }
   }
 
-
-  ColliderMesh::ColliderMesh(const aiMesh* aMesh)
-  {
-    // get the vertex data with bones (if provided)
-    for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
-    {
-      const aiVector3D *pColPos = aMesh->mVertices + j;
-      auto colPosition = AssimpToGLM(pColPos);
-      mColliderVertexBuffer.emplace_back(colPosition);
-    }
-
-    uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
-
-    for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
-    {
-      const aiFace &Face = aMesh->mFaces[j];
-      if (Face.mNumIndices != 3)
-        continue;
-
-      mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
-    }
-  }
-
   Dimension CalculateDimensions(std::vector<Submesh> &mParts)
   {
     Dimension toReturn;
@@ -479,9 +496,6 @@ namespace YTE
     {
       // Load bone data
       bool hasBones = mSkeleton.Initialize(pScene);
-
-      // create the collider
-      CreateCollider(pColliderScene);
 
       // extra setup
       glm::vec3 scale(1.0f);
@@ -579,15 +593,6 @@ namespace YTE
     for (auto& submesh : GetSubmeshes())
     {
       submesh.ResetTextureCoordinates();
-    }
-  }
-
-  void Mesh::CreateCollider(const aiScene* aScene)
-  {
-    uint32_t numMeshes = aScene->mNumMeshes;
-    for (u32 i = 0; i < numMeshes; ++i)
-    {
-      mColliderParts.emplace_back(aScene->mMeshes[i]);
     }
   }
 }

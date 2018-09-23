@@ -7,8 +7,8 @@
 */
 /******************************************************************************/
 
-#ifndef YTE_Physics_PhysicsSystem_H
-#define YTE_Physics_PhysicsSystem_H
+#ifndef YTE_Physics_PhysicsSystem_hpp
+#define YTE_Physics_PhysicsSystem_hpp
 
 #include "btBulletDynamicsCommon.h"
 
@@ -34,66 +34,66 @@ namespace YTE
   public:
     YTEDeclareType(PhysicsSystem);
 
-    PhysicsSystem(Composition *aOwner, Space *aSpace, RSValue *aProperties);
-    ~PhysicsSystem();
+    YTE_Shared PhysicsSystem(Composition *aOwner, Space *aSpace);
+    YTE_Shared ~PhysicsSystem();
 
-    void Initialize() override;
+    YTE_Shared void Initialize() override;
 
     bool GetDebugDraw() { return mDebugDraw; };
-    void ToggleDebugDraw();
+    YTE_Shared void ToggleDebugDraw();
 
-    void ToggleDebugDrawOption(int aOption);
+    YTE_Shared void ToggleDebugDrawOption(int aOption);
 
-    void BeginDebugDrawUpdate(LogicUpdate *aEvent);
-    void DebugDrawUpdate(LogicUpdate *aEvent);
-    void EndDebugDrawUpdate(LogicUpdate *aEvent);
-    void OnPhysicsUpdate(LogicUpdate *aEvent);
+    YTE_Shared void BeginDebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void DebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void EndDebugDrawUpdate(LogicUpdate *aEvent);
+    YTE_Shared void OnPhysicsUpdate(LogicUpdate *aEvent);
 
-    RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
+    YTE_Shared RayCollisionInfo RayCast(glm::vec3 aPosition, glm::vec3 aDirection);
 
     btDiscreteDynamicsWorld *GetWorld() { return mDynamicsWorld.get(); };
 
-    glm::vec3 GetGravity();
-    void SetGravity(glm::vec3 aAcceleration);
+    YTE_Shared glm::vec3 GetGravity();
+    YTE_Shared void SetGravity(glm::vec3 aAcceleration);
 
   private:
-    void DispatchCollisionEvents(void);
+    YTE_Shared void DispatchCollisionEvents(void);
 
-    void DispatchContactEvent(Composition *mainObject,
-                              Composition *otherObject,
-                              btPersistentManifold *manifold);
+    YTE_Shared void DispatchContactEvent(Composition *mainObject,
+                                Composition *otherObject,
+                                btPersistentManifold *manifold);
 
-    UniquePointer<btDefaultCollisionConfiguration> mCollisionConfiguration;
-    UniquePointer<btCollisionDispatcher> mDispatcher;
-    UniquePointer<btBroadphaseInterface> mOverlappingPairCache;
-    UniquePointer<btSequentialImpulseConstraintSolver> mSolver;
-    UniquePointer<btDiscreteDynamicsWorld> mDynamicsWorld;
-    UniquePointer<YTE::DebugDrawer> mDebugDrawer;
+    std::unique_ptr<btDefaultCollisionConfiguration> mCollisionConfiguration;
+    std::unique_ptr<btCollisionDispatcher> mDispatcher;
+    std::unique_ptr<btBroadphaseInterface> mOverlappingPairCache;
+    std::unique_ptr<btSequentialImpulseConstraintSolver> mSolver;
+    std::unique_ptr<btDiscreteDynamicsWorld> mDynamicsWorld;
+    std::unique_ptr<DebugDrawer> mDebugDrawer;
 
     bool mDebugDraw;
     glm::vec3 mGravityAcceleration;
   };
 
 
-  inline glm::quat BtToOurQuat(const btQuaternion &aQuat)
+  inline glm::quat ToGlm(const btQuaternion &aQuat)
   {
     glm::vec3 axis{ aQuat.x(), aQuat.y(), aQuat.z() };
 
     return glm::quat(aQuat.w(), aQuat.x(), aQuat.y(), aQuat.z());
   }
 
-  inline btQuaternion OurQuatToBt(const glm::quat &aQuat)
+  inline btQuaternion ToBullet(const glm::quat &aQuat)
   {
     return btQuaternion(aQuat.x, aQuat.y, aQuat.z, aQuat.w);
   }
 
-  inline btVector3 OurVec3ToBt(const glm::vec3 &aVector)
+  inline btVector3 ToBullet(const glm::vec3 &aVector)
   {
     return btVector3(aVector.x, aVector.y, aVector.z);
   }
 
 
-  inline glm::vec3 BtToOurVec3(const btVector3 &aVector)
+  inline glm::vec3 ToGlm(const btVector3 &aVector)
   {
     return glm::vec3(aVector.x(), aVector.y(), aVector.z());
   }

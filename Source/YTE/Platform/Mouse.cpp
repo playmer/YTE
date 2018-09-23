@@ -23,23 +23,23 @@ namespace YTE
   {
     RegisterType<MouseWheelEvent>();
     TypeBuilder<MouseWheelEvent> builder;
-    builder.Field<&MouseWheelEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
-    builder.Field<&MouseWheelEvent::ScrollMovement>( "ScrollMovement", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::ScrollMovement>("ScrollMovement", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseButtonEvent)
   {
     RegisterType<MouseButtonEvent>();
     TypeBuilder<MouseButtonEvent> builder;
-    builder.Field<&MouseButtonEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
-    builder.Field<&MouseButtonEvent::Button>( "Button", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::Button>("Button", PropertyBinding::Get);
   }
 
   YTEDefineType(MouseMoveEvent)
   {
     RegisterType<MouseMoveEvent>();
     TypeBuilder<MouseMoveEvent> builder;
-    builder.Field<&MouseMoveEvent::WorldCoordinates>( "WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseMoveEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
   }
 
   YTEDefineType(Mouse)

@@ -4,8 +4,8 @@
 /******************************************************************************/
 #pragma once
 
-#ifndef YTE_Core_Space_h
-#define YTE_Core_Space_h
+#ifndef YTE_Core_Space_hpp
+#define YTE_Core_Space_hpp
 
 #include "YTE/Core/EventHandler.hpp"
 
@@ -24,28 +24,28 @@ namespace YTE
   public:
     YTEDeclareType(Space);
   
-    Space(Engine *aEngine, RSValue *aProperties);
-    void Load();
-    void Load(RSValue *aLevel, bool aInitialize = true);
-    void Update(LogicUpdate *aEvent);
-    ~Space();
+    YTE_Shared Space(Engine *aEngine, RSValue *aProperties);
+    YTE_Shared void Load();
+    YTE_Shared void Load(RSValue *aLevel, bool aInitialize = true);
+    YTE_Shared void Update(LogicUpdate *aEvent);
+    YTE_Shared ~Space();
 
-    void Initialize(InitializeEvent *aEvent) override;
-    void Initialize();
+    YTE_Shared void Initialize(InitializeEvent *aEvent) override;
+    YTE_Shared void Initialize();
         
-    void CreateBlankLevel(const String& aLevelName);
-    void LoadLevel(String &level, bool aCheckRunInEditor = false);
-    void SaveLevel(String &aLevelName);
+    YTE_Shared void CreateBlankLevel(const String& aLevelName);
+    YTE_Shared void LoadLevel(String &level, bool aCheckRunInEditor = false);
+    YTE_Shared void SaveLevel(String &aLevelName);
 
-    Space* AddChildSpace(String aLevelName);
+    YTE_Shared Space* AddChildSpace(String aLevelName);
   
-    bool IsPaused() const { return mPaused; };
-    void SetPaused(bool aPause) { mPaused = aPause; };
+    YTE_Shared bool IsPaused() const { return mPaused; };
+    YTE_Shared void SetPaused(bool aPause) { mPaused = aPause; };
 
-    String& GetLevelName() { return mLevelName; };
+    YTE_Shared String& GetLevelName() { return mLevelName; };
 
-    bool GetIsEditorSpace() { return mIsEditorSpace; }
-    void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
+    YTE_Shared bool GetIsEditorSpace() { return mIsEditorSpace; }
+    YTE_Shared void SetIsEditorSpace(bool aIsEditorSpace) { mIsEditorSpace = aIsEditorSpace; }
   
     RSValue *mLevelToLoad;
 

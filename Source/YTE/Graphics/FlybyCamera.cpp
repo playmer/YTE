@@ -21,18 +21,17 @@ namespace YTE
 
     GetStaticType()->AddAttribute<ComponentDependencies>(deps);
 
-    builder.Field<&FlybyCamera::mMovementSpeed>( "MovementSpeed", PropertyBinding::GetSet)
+    builder.Field<&FlybyCamera::mMovementSpeed>("MovementSpeed", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .SetDocumentation("The near plane the view will be rendered with.");
   }
 
   FlybyCamera::FlybyCamera(Composition *aOwner, 
-                           Space *aSpace, 
-                           RSValue *aProperties)
+                           Space *aSpace)
     : Component(aOwner, aSpace)
   {
-    UnusedArguments(aProperties);
+    
   }
 
   FlybyCamera::~FlybyCamera()
