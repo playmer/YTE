@@ -1,5 +1,8 @@
 # LambPlanet, a Josh's Farm game
 
+## Licence
+Everything is copyright DigiPen unless otherwise stated (likewise, other than the custom CMakes/forks for some of them, everything in the Dependencies folder are likewise, not ours.)
+
 ## Getting setup:
 0.) Install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 
