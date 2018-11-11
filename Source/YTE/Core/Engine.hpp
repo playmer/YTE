@@ -113,6 +113,12 @@ namespace YTE
     YTE_Shared void EndExecution();
     YTE_Shared void Recompile();
 
+
+    bool IsInitialized()
+    {
+      return mInitialized;
+    }
+
     YTE_Shared void SetFrameRate(Window &aWindow, double aDt);
 
     Window* GetWindow()
@@ -177,9 +183,6 @@ namespace YTE
     std::chrono::time_point<std::chrono::high_resolution_clock> mBegin;
     std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrame;
 
-    bool mShouldRun;
-    bool mEditorMode;
-
     // all compositions and components mapped to GUIDs (represented as strings)
     std::unordered_map<std::string, Composition*> mCompositionsByGUID;
     std::unordered_map<std::string, Component*> mComponentsByGUID;
@@ -189,6 +192,9 @@ namespace YTE
 
     double mDt;
     size_t mFrame;
+    bool mShouldRun;
+    bool mEditorMode;
+    bool mInitialized;
   };
 }
 

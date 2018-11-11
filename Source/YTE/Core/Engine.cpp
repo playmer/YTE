@@ -71,12 +71,13 @@ namespace YTE
   static String cEngineName{ "Engine" };
 
   Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
-    : Composition(this, cEngineName, nullptr)
-    , mShouldRun(true)
-    , mEditorMode(aEditorMode)
-    , mFrame(0)
-    , mCompositionsByGUID()
-    , mComponentsByGUID()
+    : Composition{ this, cEngineName, nullptr }
+    , mFrame{ 0 }
+    , mCompositionsByGUID{}
+    , mComponentsByGUID{}
+    , mShouldRun{ true }
+    , mEditorMode{ aEditorMode }
+    , mInitialized{ false }
   {
     namespace fs = std::experimental::filesystem;
 
@@ -243,6 +244,8 @@ namespace YTE
     }
 
     mDt = 0.016;
+
+    mInitialized = true;
   }
 
   

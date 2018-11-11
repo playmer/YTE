@@ -56,7 +56,13 @@ namespace YTEditor
     mWindow->SetWidth(event.width);
 
     mWindow->SendEvent(YTE::Events::WindowResize, &event);
-    mWindow->mEngine->Update();
+
+    // We check this because Qt might send us this resize event as soon as
+    // the window is made, which might be before the Engine is initialized.
+    if (mWindow->mEngine->IsInitialized())
+    {
+      mWindow->mEngine->Update();
+    }
   }
 
   void SubWindow::keyPressEvent(QKeyEvent * aEvent)
