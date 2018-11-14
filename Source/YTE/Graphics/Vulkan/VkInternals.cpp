@@ -121,7 +121,7 @@ namespace YTE
     {
       if (window.second->mShouldBeRenderedTo)
       {
-        surface = window.second->SetUpVulkanWindow(static_cast<void*>(mInstance.get()));
+        surface = std::any_cast<std::shared_ptr<vkhlf::Surface>>(window.second->SetUpVulkanWindow(static_cast<void*>(mInstance.get())));
         break;
       }
     }
@@ -149,7 +149,7 @@ namespace YTE
 
   std::shared_ptr<vkhlf::Surface> VkInternals::CreateSurface(Window *aWindow)
   {
-    auto surface = aWindow->SetUpVulkanWindow(static_cast<void*>(mInstance.get()));
+    auto surface = std::any_cast<std::shared_ptr<vkhlf::Surface>>(aWindow->SetUpVulkanWindow(static_cast<void*>(mInstance.get())));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*surface);
     auto indices = QueueFamilyIndices::FindQueueFamilies(*mMainDevice);
 

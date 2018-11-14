@@ -795,7 +795,7 @@ namespace YTE
     return toReturn;
   }
 
-  std::shared_ptr<vkhlf::Surface> Window::SetUpVulkanWindow(void *aSetup)
+  std::any Window::SetUpVulkanWindow(void *aSetup)
   {
     auto self = mData.Get<WindowData>();
 

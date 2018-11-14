@@ -11,6 +11,7 @@
 #ifndef YTE_Platform_Window_h
 #define YTE_Platform_Window_h
 
+#include <any>
 #include <string>
 
 #include "YTE/Core/EventHandler.hpp"
@@ -80,7 +81,8 @@ namespace YTE
 
     YTE_Shared glm::i32vec2 GetPosition();
 
-    YTE_Shared std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
+    //YTE_Shared std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
+    YTE_Shared std::any SetUpVulkanWindow(void *aSetup);
 
     YTE_Shared void SetCursorVisibility(bool aShow);
 
