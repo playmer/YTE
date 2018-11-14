@@ -316,9 +316,9 @@ namespace YTE
     //  wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
     //};
     //
-    //vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
-    //vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
-    //vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eGeneral };
+    //vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
+    //vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
+    //vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
     //
     //addTS(mDiffuseTexture, dTexInfo);
     //addTS(mSpecularTexture, sTexInfo);
