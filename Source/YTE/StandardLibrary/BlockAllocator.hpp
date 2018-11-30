@@ -39,7 +39,7 @@ namespace YTE
 
       void operator()(value_type *aToDelete)
       {
-        GenericDestruct<value_type>(aToDelete);
+        GenericDestruct<value_type>(reinterpret_cast<byte*>(aToDelete));
         mAllocator->deallocate(aToDelete);
       }
 

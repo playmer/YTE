@@ -26,11 +26,17 @@ namespace YTE
   class ViewChanged;
 
   struct Instance;
-  struct UBOMaterial;
-  struct UBOModel;
-  struct UBOLight;
-  struct UBOView;
-  struct UBOIllumination;
+
+  namespace UBOs
+  {
+    struct Material;
+    struct Model;
+    struct Light;
+    struct View;
+    struct Illumination;
+  }
+
+  class UBOBase;
   struct Vertex;
 }
 #endif

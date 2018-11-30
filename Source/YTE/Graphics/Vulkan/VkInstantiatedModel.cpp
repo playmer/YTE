@@ -18,7 +18,7 @@ namespace YTE
     TypeBuilder<VkInstantiatedModel> builder;
   }
 
-  UBOAnimation VkInstantiatedModel::cAnimation;
+  UBOs::Animation VkInstantiatedModel::cAnimation;
 
   VkInstantiatedModel::VkInstantiatedModel(std::string &aModelFile,
                                            VkRenderedSurface *aSurface,
@@ -81,7 +81,7 @@ namespace YTE
     auto &device = mSurface->GetDevice();
 
     // create UBO Per Model buffer
-    mUBOModel = device->createBuffer(sizeof(UBOModel),
+    mUBOModel = device->createBuffer(sizeof(UBOs::Model),
                                       vk::BufferUsageFlagBits::eTransferDst |
                                       vk::BufferUsageFlagBits::eUniformBuffer,
                                       vk::SharingMode::eExclusive,
@@ -90,7 +90,7 @@ namespace YTE
                                       allocator);
       
     // create UBO Per Model Material buffer
-    mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+    mUBOModelMaterial = device->createBuffer(sizeof(UBOs::Material),
                                              vk::BufferUsageFlagBits::eTransferDst |
                                              vk::BufferUsageFlagBits::eUniformBuffer,
                                              vk::SharingMode::eExclusive,
@@ -99,7 +99,7 @@ namespace YTE
                                              allocator);
 
     // Create UBO Animation Buffer.
-    mUBOAnimation = device->createBuffer(sizeof(UBOAnimation),
+    mUBOAnimation = device->createBuffer(sizeof(UBOs::Animation),
                                          vk::BufferUsageFlagBits::eTransferDst |
                                          vk::BufferUsageFlagBits::eUniformBuffer,
                                          vk::SharingMode::eExclusive,
@@ -109,7 +109,7 @@ namespace YTE
 
     UpdateUBOAnimation(&cAnimation);
 
-    UBOMaterial modelMaterial{};
+    UBOs::Material modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -126,7 +126,7 @@ namespace YTE
       isEditorObject = true;
     }
 
-    modelMaterial.mFlags = isEditorObject ? (u32)UBOMaterialFlags::IsGizmo : 0;
+    modelMaterial.mFlags = isEditorObject ? (u32)UBOs::MaterialFlags::IsGizmo : 0;
 
     UpdateUBOMaterial(&modelMaterial);
 
@@ -136,7 +136,7 @@ namespace YTE
     // create descriptor sets
     for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
     {
-      auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
+      auto materialUBO = device->createBuffer(sizeof(UBOs::Material),
                                               vk::BufferUsageFlagBits::eTransferDst |
                                               vk::BufferUsageFlagBits::eUniformBuffer,
                                               vk::SharingMode::eExclusive,
@@ -195,7 +195,7 @@ namespace YTE
     }
   }
 
-  void VkInstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
+  void VkInstantiatedModel::UpdateUBOModel(UBOs::Model &aUBO)
   {
     mUBOModelData = aUBO;
 
@@ -204,7 +204,7 @@ namespace YTE
     mLoadUBOModel = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
+  void VkInstantiatedModel::UpdateUBOAnimation(UBOs::Animation *aUBO)
   {
     mUBOAnimationData = aUBO;
 
@@ -213,7 +213,7 @@ namespace YTE
     mLoadUBOAnimation = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOMaterial(UBOMaterial *aUBO)
+  void VkInstantiatedModel::UpdateUBOMaterial(UBOs::Material *aUBO)
   {
     mUBOModelMaterialData = *aUBO;
 
@@ -222,7 +222,7 @@ namespace YTE
     mLoadUBOMaterial = true;
   }
 
-  void VkInstantiatedModel::UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+  void VkInstantiatedModel::UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex)
   {
     mUBOSubmeshMaterials[aIndex].second = *aUBO;
 
@@ -261,23 +261,23 @@ namespace YTE
       // TODO: We're updating all materials here, which is unfortunate. Maybe update at the submesh level?
       for (auto material : mUBOSubmeshMaterials)
       {
-        material.first->update<UBOMaterial>(0, material.second, update);
+        material.first->update<UBOs::Material>(0, material.second, update);
       }
 
-      mUBOModelMaterial->update<UBOMaterial>(0, mUBOModelMaterialData, update);
+      mUBOModelMaterial->update<UBOs::Material>(0, mUBOModelMaterialData, update);
 
       mLoadUBOMaterial = false;
     }
 
     if (mLoadUBOAnimation)
     {
-      mUBOAnimation->update<UBOAnimation>(0, *mUBOAnimationData, update);
+      mUBOAnimation->update<UBOs::Animation>(0, *mUBOAnimationData, update);
       mLoadUBOAnimation = false;
     }
 
     if (mLoadUBOModel)
     {
-      mUBOModel->update<UBOModel>(0, mUBOModelData, update);
+      mUBOModel->update<UBOs::Model>(0, mUBOModelData, update);
 
       mLoadUBOModel = false;
     }

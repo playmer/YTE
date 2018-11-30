@@ -23,7 +23,7 @@ namespace YTE
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
                                                   vk::BufferUsageFlagBits::eTransferDst |
                                                   vk::BufferUsageFlagBits::eUniformBuffer,
                                                   vk::SharingMode::eExclusive,
@@ -50,7 +50,7 @@ namespace YTE
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
                                                   vk::BufferUsageFlagBits::eTransferDst |
                                                   vk::BufferUsageFlagBits::eUniformBuffer,
                                                   vk::SharingMode::eExclusive,
@@ -76,7 +76,7 @@ namespace YTE
     if (mUpdateRequired)
     {
       auto update = aEvent->mCBO;
-      mBuffer->update<UBOWaterInformationMan>(0, mWaterInformationData, update);
+      mBuffer->update<UBOs::WaterInformationManager>(0, mWaterInformationData, update);
       mUpdateRequired = false;
     }
   }
@@ -136,7 +136,7 @@ namespace YTE
 
 
 
-  void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
+  void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOs::WaterInfluenceMap& aMapValue)
   {
 //#ifdef _DEBUG
 //    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)

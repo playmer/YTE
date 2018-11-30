@@ -200,7 +200,7 @@ namespace YTE
                        nullptr);
     ++uniformBuffers;
 
-    // We need to tell the shaders where to find the UBOModel.
+    // We need to tell the shaders where to find the UBOs::Model.
     mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
 
     // Create the descriptor set and pipeline layouts.
@@ -262,31 +262,31 @@ namespace YTE
     // Add Uniform Buffers
 
     // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
+    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOs::View) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
     // Animation (Bone Array) Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOAnimation) };
+    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOs::Animation) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
 
     // Model Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOs::Material) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModelMaterial);
 
     // Submesh Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOs::Material) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
 
     // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
+    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOs::LightManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
 
     // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
+    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOs::Illumination) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Water Buffer for the Vertex Shader
-    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOWaterInformationMan) };
+    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOs::WaterInformationManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers
@@ -313,7 +313,7 @@ namespace YTE
     addTS(mSpecularTexture, sTexInfo);
     addTS(mNormalTexture, nTexInfo);
 
-    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
+    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOs::Model) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
 
     device->updateDescriptorSets(wdss, nullptr);

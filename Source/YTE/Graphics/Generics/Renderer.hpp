@@ -16,10 +16,10 @@
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -55,8 +55,19 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
-    virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);
-    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination);
+    // Creates a ubo of the given type, aSize allows you to make an array of them.
+    // Passing 0 to aSize will result in returning nullptr.
+    virtual std::unique_ptr<UBOBase> CreateUBO(Type const* aType, size_t aSize = 1) = 0;
+
+    //template <typename tType>
+    //UBO<tType> CreateUBO(size_t aSize = 1)
+    //{
+    //  return CreateUBO(GetType<tType>(), aSize);
+    //}
+
+
+    virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
+    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination);
     virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
     virtual void FrameUpdate(LogicUpdate *aEvent);
     virtual void PresentFrame(LogicUpdate *aEvent);

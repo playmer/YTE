@@ -158,7 +158,7 @@ namespace YTE
   }
 
 
-  void Light::SetLightSourceInformation(UBOLight& aLight)
+  void Light::SetLightSourceInformation(UBOs::Light& aLight)
   {
     if (mInstantiatedLight)
     {

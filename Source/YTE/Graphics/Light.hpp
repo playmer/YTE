@@ -41,7 +41,7 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    YTE_Shared void SetLightSourceInformation(UBOLight &aLight);
+    YTE_Shared void SetLightSourceInformation(UBOs::Light &aLight);
     YTE_Shared void SetPosition(glm::vec3& aPosition);
     YTE_Shared void SetDirection(glm::vec3& aDirection);
     YTE_Shared void SetAmbient(glm::vec3& aColor);
@@ -75,7 +75,7 @@ namespace YTE
     GraphicsView *mGraphicsView;
     Transform *mTransform;
     std::unique_ptr<InstantiatedLight> mInstantiatedLight;
-    UBOLight mLightTemp;
+    UBOs::Light mLightTemp;
     bool mUseTemp;
     bool mSetTransform;
   };

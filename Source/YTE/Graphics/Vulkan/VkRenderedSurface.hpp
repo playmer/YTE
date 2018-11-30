@@ -54,8 +54,8 @@ namespace YTE
 
     // Engine Side Data
     glm::vec4 mClearColor;
-    UBOView mViewUBOData;
-    UBOIllumination mIlluminationUBOData;
+    UBOs::View mViewUBOData;
+    UBOs::Illumination mIlluminationUBOData;
     VkLightManager mLightManager;
     VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
@@ -76,8 +76,8 @@ namespace YTE
 
     ~VkRenderedSurface();
 
-    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOIllumination &aIllumination);
-    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
+    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOs::Illumination &aIllumination);
+    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
 

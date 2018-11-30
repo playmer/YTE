@@ -18,6 +18,28 @@
 
 namespace YTE
 {
+  struct VkUBOUpdates
+  {
+    struct VkUBOReference
+    {
+      VkUBOReference(vkhlf::Buffer* aBuffer,
+                     size_t aBufferOffset,
+                     size_t aDataOffset,
+                     size_t aSize);
+
+      vkhlf::Buffer* mBuffer;
+      size_t mBufferOffset;
+      size_t mDataOffset;
+      size_t mSize;
+    };
+
+    void Add(vkhlf::Buffer* aBuffer, u8 const* aData, size_t aSize, size_t mOffset);
+    void Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer);
+
+    std::vector<u8> mData;
+    std::vector<VkUBOReference> mReferences;
+  };
+
   class VkRenderer : public Renderer
   {
   public:
@@ -56,8 +78,8 @@ namespace YTE
                            u32 aLayerCount,
                            TextureType aType) override;
         
-    void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
-    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
+    void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView) override;
+    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination) override;
 
     VkMesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,
@@ -65,6 +87,8 @@ namespace YTE
 		                       bool aForceUpdate = false) override;
 
     void ResetView(GraphicsView *aView);
+
+    std::unique_ptr<UBOBase> CreateUBO(Type const* aType, size_t aSize = 1) override;
 
 
     /////////////////////////////////
@@ -113,6 +137,8 @@ namespace YTE
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
     std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
     std::shared_ptr<vkhlf::CommandPool> mCommandPool;
+
+    VkUBOUpdates mUBOUpdates;
   private:
     bool mDataUpdateRequired = false;
     // create a command pool for command buffer allocation
@@ -121,6 +147,7 @@ namespace YTE
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;
+
   };
 }
 

@@ -19,6 +19,40 @@
 
 namespace YTE
 {
+  VkUBOUpdates::VkUBOReference::VkUBOReference(vkhlf::Buffer* aBuffer,
+                 size_t aBufferOffset,
+                 size_t aDataOffset,
+                 size_t aSize)
+    : mBuffer{ aBuffer }
+    , mBufferOffset{ aBufferOffset }
+    , mDataOffset{ aDataOffset }
+    , mSize{ aSize }
+  {
+
+  }
+
+  void VkUBOUpdates::Add(vkhlf::Buffer* aBuffer, 
+                         u8 const* aData, 
+                         size_t aSize, 
+                         size_t mOffset)
+  {
+    mReferences.emplace_back(aBuffer, mOffset, mData.size(), aSize);
+    mData.insert(mData.end(), aData, aData + aSize);
+  }
+
+  void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer)
+  {
+    for (auto const& reference : mReferences)
+    {
+      vk::ArrayProxy<u8 const> dataProxy{ static_cast<u32>(reference.mSize),
+                                          &mData[reference.mDataOffset] };
+      reference.mBuffer->update<u8>(0, dataProxy, aBuffer);
+    }
+
+    mData.clear();
+    mReferences.clear();
+  }
+
   YTEDefineType(VkRenderer)
   {
     RegisterType<VkRenderer>();
@@ -363,14 +397,14 @@ namespace YTE
   }
 
 
-  void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
   }
 
 
 
-  void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOIllumination& aIllumination)
+  void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOs::Illumination& aIllumination)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
   }
@@ -387,6 +421,7 @@ namespace YTE
 
     update.mCBO->begin();
 
+    mUBOUpdates.Update(update.mCBO);
     SendEvent(Events::VkGraphicsDataUpdate, &update);
 
     update.mCBO->end();
@@ -496,6 +531,51 @@ namespace YTE
   void VkRenderer::ResetView(GraphicsView *aView)
   {
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
+  }
+
+  struct VkUBOData
+  {
+    std::shared_ptr<vkhlf::Buffer> mBuffer;
+    VkRenderer *mRenderer;
+  };
+
+  class VkUBO : public UBOBase
+  {
+    public:
+    VkUBO(Type const* aType, size_t aSize)
+      : UBOBase{ aType, aSize }
+    {
+
+    }
+
+    void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) override
+    {
+      auto self = mData.Get<VkUBOData>();
+
+      self->mRenderer->mUBOUpdates.Add(self->mBuffer.get(), aPointer, aBytes, 0);
+    }
+  };
+
+  std::unique_ptr<UBOBase> VkRenderer::CreateUBO(Type const* aType, size_t aSize)
+  {
+    auto base = std::make_unique<VkUBO>(aType, aSize);
+
+    auto allocator = mAllocators[AllocatorTypes::UniformBufferObject];
+    auto &device = mDevice;
+
+    auto uboData = base->GetData().ConstructAndGet<VkUBOData>();
+    
+    uboData->mBuffer = device->createBuffer(aType->GetStoredSize() * aSize,
+                                            vk::BufferUsageFlagBits::eTransferDst |
+                                            vk::BufferUsageFlagBits::eUniformBuffer,
+                                            vk::SharingMode::eExclusive,
+                                            nullptr,
+                                            vk::MemoryPropertyFlagBits::eDeviceLocal,
+                                            allocator);
+
+    uboData->mRenderer = this;
+
+    return base;
   }
 
   VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)

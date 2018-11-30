@@ -17,7 +17,7 @@ namespace YTE
     //
     //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
     //
-    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::LightManager),
     //                                              vk::BufferUsageFlagBits::eTransferDst |
     //                                              vk::BufferUsageFlagBits::eUniformBuffer,
     //                                              vk::SharingMode::eExclusive,
@@ -48,7 +48,7 @@ namespace YTE
     //
     //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
     //
-    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::LightManager),
     //                                              vk::BufferUsageFlagBits::eTransferDst |
     //                                              vk::BufferUsageFlagBits::eUniformBuffer,
     //                                              vk::SharingMode::eExclusive,
@@ -76,7 +76,7 @@ namespace YTE
     //if (mUpdateRequired)
     //{
     //  auto update = aEvent->mCBO;
-    //  //mBuffer->update<UBOLightMan>(0, mLightData, update);
+    //  //mBuffer->update<UBOs::LightManager>(0, mLightData, update);
     //  mUpdateRequired = false;
     //}
   }
@@ -151,7 +151,7 @@ namespace YTE
 
 
 
-  void DX12LightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
+  void DX12LightManager::UpdateLightValue(unsigned aIndex, UBOs::Light& aLightValue)
   {
     mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;

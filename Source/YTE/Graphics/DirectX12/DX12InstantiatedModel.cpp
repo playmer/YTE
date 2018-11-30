@@ -13,7 +13,7 @@ namespace YTE
     TypeBuilder<DX12InstantiatedModel> builder;
   }
 
-  UBOAnimation DX12InstantiatedModel::cAnimation;
+  UBOs::Animation DX12InstantiatedModel::cAnimation;
 
   DX12InstantiatedModel::DX12InstantiatedModel(std::string &aModelFile,
                                            Dx12RenderedSurface *aSurface,
@@ -78,7 +78,7 @@ namespace YTE
     //if (false == mVkMesh->GetInstanced())
     //{
     //  // create UBO Per Model buffer
-    //  mUBOModel = device->createBuffer(sizeof(UBOModel),
+    //  mUBOModel = device->createBuffer(sizeof(UBOs::Model),
     //                                   vk::BufferUsageFlagBits::eTransferDst |
     //                                   vk::BufferUsageFlagBits::eUniformBuffer,
     //                                   vk::SharingMode::eExclusive,
@@ -87,7 +87,7 @@ namespace YTE
     //                                   allocator);
     //  
     //  //// create UBO Per Model buffer
-    //  mUBOModelMaterial = device->createBuffer(sizeof(UBOMaterial),
+    //  mUBOModelMaterial = device->createBuffer(sizeof(UBOs::Material),
     //                                           vk::BufferUsageFlagBits::eTransferDst |
     //                                           vk::BufferUsageFlagBits::eUniformBuffer,
     //                                           vk::SharingMode::eExclusive,
@@ -97,7 +97,7 @@ namespace YTE
     //}
     //
     //// Create UBO Animation Buffer.
-    //mUBOAnimation = device->createBuffer(sizeof(UBOAnimation),
+    //mUBOAnimation = device->createBuffer(sizeof(UBOs::Animation),
     //                                     vk::BufferUsageFlagBits::eTransferDst |
     //                                     vk::BufferUsageFlagBits::eUniformBuffer,
     //                                     vk::SharingMode::eExclusive,
@@ -107,7 +107,7 @@ namespace YTE
     //
     //UpdateUBOAnimation(&cAnimation);
     //
-    //UBOMaterial modelMaterial{};
+    //UBOs::Material modelMaterial{};
     //modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     //modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     //modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -134,7 +134,7 @@ namespace YTE
     //// create descriptor sets
     //for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
     //{
-    //  auto materialUBO = device->createBuffer(sizeof(UBOMaterial),
+    //  auto materialUBO = device->createBuffer(sizeof(UBOs::Material),
     //                                          vk::BufferUsageFlagBits::eTransferDst |
     //                                          vk::BufferUsageFlagBits::eUniformBuffer,
     //                                          vk::SharingMode::eExclusive,
@@ -193,7 +193,7 @@ namespace YTE
     }
   }
 
-  void DX12InstantiatedModel::UpdateUBOModel(UBOModel &aUBO)
+  void DX12InstantiatedModel::UpdateUBOModel(UBOs::Model &aUBO)
   {
     mUBOModelData = aUBO;
 
@@ -202,7 +202,7 @@ namespace YTE
     mLoadUBOModel = true;
   }
 
-  void DX12InstantiatedModel::UpdateUBOAnimation(UBOAnimation *aUBO)
+  void DX12InstantiatedModel::UpdateUBOAnimation(UBOs::Animation *aUBO)
   {
     mUBOAnimationData = aUBO;
 
@@ -211,7 +211,7 @@ namespace YTE
     mLoadUBOAnimation = true;
   }
 
-  void DX12InstantiatedModel::UpdateUBOMaterial(UBOMaterial *aUBO)
+  void DX12InstantiatedModel::UpdateUBOMaterial(UBOs::Material *aUBO)
   {
     mUBOModelMaterialData = *aUBO;
 
@@ -220,7 +220,7 @@ namespace YTE
     mLoadUBOMaterial = true;
   }
 
-  void DX12InstantiatedModel::UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+  void DX12InstantiatedModel::UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex)
   {
     UnusedArguments(aUBO);
     UnusedArguments(aIndex);
@@ -265,17 +265,17 @@ namespace YTE
     //  // TODO: We're updating all materials here, which is unfortunate. Maybe update at the submesh level?
     //  for (auto material : mUBOSubmeshMaterials)
     //  {
-    //    material.first->update<UBOMaterial>(0, material.second, update);
+    //    material.first->update<UBOs::Material>(0, material.second, update);
     //  }
     //
-    //  mUBOModelMaterial->update<UBOMaterial>(0, mUBOModelMaterialData, update);
+    //  mUBOModelMaterial->update<UBOs::Material>(0, mUBOModelMaterialData, update);
     //
     //  mLoadUBOMaterial = false;
     //}
     //
     //if (mLoadUBOAnimation)
     //{
-    //  mUBOAnimation->update<UBOAnimation>(0, *mUBOAnimationData, update);
+    //  mUBOAnimation->update<UBOs::Animation>(0, *mUBOAnimationData, update);
     //  mLoadUBOAnimation = false;
     //}
     //
@@ -289,7 +289,7 @@ namespace YTE
     //  }
     //  else
     //  {
-    //    mUBOModel->update<UBOModel>(0, mUBOModelData, update);
+    //    mUBOModel->update<UBOs::Model>(0, mUBOModelData, update);
     //  }
     //
     //  mLoadUBOModel = false;

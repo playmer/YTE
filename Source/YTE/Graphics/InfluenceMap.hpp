@@ -42,7 +42,7 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    void SetMapSourceInformation(UBOWaterInfluenceMap &aMap);
+    void SetMapSourceInformation(UBOs::WaterInfluenceMap &aMap);
     void SetRadius(float aRadius);
     void SetColor(glm::vec3& aColor);
     void SetDebugDraw(bool aDraw);
@@ -74,7 +74,7 @@ namespace YTE
     GraphicsView *mGraphicsView;
     Transform *mTransform;
     std::unique_ptr<InstantiatedInfluenceMap> mInstantiatedInfluenceMap;
-    UBOWaterInfluenceMap mMapTemp;
+    UBOs::WaterInfluenceMap mMapTemp;
     bool mUseTemp;
     bool mSetTransform;
     std::unique_ptr<LineDrawer> mDrawer;

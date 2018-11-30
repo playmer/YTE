@@ -21,7 +21,7 @@ namespace YTE
 
     InstantiatedInfluenceMap();
 
-    void SetInfluenceMapInformation(UBOWaterInfluenceMap &aMap)
+    void SetInfluenceMapInformation(UBOs::WaterInfluenceMap &aMap)
     {
       mInfluenceMapUBOData = aMap;
       mDataChanged = true;
@@ -129,7 +129,7 @@ namespace YTE
     }
 
 
-    UBOWaterInfluenceMap mInfluenceMapUBOData;
+    UBOs::WaterInfluenceMap mInfluenceMapUBOData;
     bool mDataChanged;
   };
 }

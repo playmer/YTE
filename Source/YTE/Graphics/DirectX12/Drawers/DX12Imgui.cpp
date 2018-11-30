@@ -142,7 +142,7 @@ namespace YTE
     //auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
     //instantiatedModel = renderer->CreateModel(mView, mesh);
     //
-    //UBOModel modelUBO;
+    //UBOs::Model modelUBO;
     //
     //auto width = mView->GetWindow()->GetWidth();
     //auto height = mView->GetWindow()->GetHeight();

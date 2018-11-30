@@ -68,7 +68,6 @@ void Name::InitializeType()
   template<typename tType>
   inline Type* TypeId();
 
-
   class DocumentedObject : public Base
   {
   public:

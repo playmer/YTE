@@ -58,7 +58,7 @@ namespace YTE
       UnusedArguments(aIndex, aVertices, aIndices);
     }
 
-    virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
+    virtual void UpdateUBOAnimation(UBOs::Animation *aUBO)
     {
       UnusedArguments(aUBO);
     }
@@ -69,18 +69,18 @@ namespace YTE
     {
     }
 
-    virtual void UpdateUBOModel(UBOModel &aUBO)
+    virtual void UpdateUBOModel(UBOs::Model &aUBO)
     {
       UnusedArguments(aUBO);
     }
 
 
-    virtual void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+    virtual void UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex)
     {
       UnusedArguments(aUBO, aIndex);
     }
 
-    virtual void UpdateUBOMaterial(UBOMaterial *aUBO)
+    virtual void UpdateUBOMaterial(UBOs::Material *aUBO)
     {
       UnusedArguments(aUBO);
     }
@@ -88,13 +88,13 @@ namespace YTE
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
-    UBOModel& GetUBOModelData()
+    UBOs::Model& GetUBOModelData()
     {
       return mUBOModelData;
     }
 
     
-    UBOMaterial GetUBOMaterialData()
+    UBOs::Material GetUBOMaterialData()
     {
       return mUBOModelMaterialData;
     }
@@ -120,9 +120,9 @@ namespace YTE
 
   protected:
     Mesh *mMesh;
-    UBOModel mUBOModelData;
-    UBOAnimation *mUBOAnimationData;
-    UBOMaterial mUBOModelMaterialData;
+    UBOs::Model mUBOModelData;
+    UBOs::Animation *mUBOAnimationData;
+    UBOs::Material mUBOModelMaterialData;
     bool mVisibility = true;
   };
 }

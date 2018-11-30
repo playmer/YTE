@@ -46,8 +46,8 @@ namespace YTE
     YTE_Shared ~GraphicsView();
 
     YTE_Shared void NativeInitialize() override;
-    YTE_Shared void UpdateView(Camera *aCamera, UBOView &aView);
-    YTE_Shared void UpdateIllumination(UBOIllumination &aIllumination);
+    YTE_Shared void UpdateView(Camera *aCamera, UBOs::View &aView);
+    YTE_Shared void UpdateIllumination(UBOs::Illumination &aIllumination);
 
     // Getters / Setters
     YTE_Shared glm::vec4 GetClearColor();

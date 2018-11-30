@@ -33,7 +33,7 @@ namespace YTE
     std::unique_ptr<DX12InstantiatedLight> CreateLight();
     void DestroyLight(DX12InstantiatedLight* aLight);
 
-    void UpdateLightValue(unsigned int aIndex, UBOLight &aLightValue);
+    void UpdateLightValue(unsigned int aIndex, UBOs::Light &aLightValue);
 
     void SetLights(bool aOnOrOff);
 
@@ -44,7 +44,7 @@ namespace YTE
 
   private:
     std::vector<DX12InstantiatedLight*> mLights;
-    UBOLightMan mLightData;
+    UBOs::LightManager mLightData;
     //std::shared_ptr<vkhlf::Buffer> mBuffer;
     Dx12RenderedSurface* mSurface;
     GraphicsView* mGraphicsView;

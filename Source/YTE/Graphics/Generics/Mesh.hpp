@@ -128,7 +128,7 @@ namespace YTE
       return mVertexSkeletonData;
     }
 
-    UBOAnimation* GetDefaultOffsets()
+    UBOs::Animation* GetDefaultOffsets()
     {
       return &mDefaultOffsets;
     }
@@ -152,10 +152,10 @@ namespace YTE
     uint32_t mNumBones;
     glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
-    UBOAnimation mDefaultOffsets;
-//#ifdef _DEBUG
-//    std::vector<unsigned int> mVertexErrorAdds;
-//#endif
+    UBOs::Animation mDefaultOffsets;
+    //#ifdef _DEBUG
+    //    std::vector<unsigned int> mVertexErrorAdds;
+    //#endif.
   };
 
 
@@ -204,7 +204,7 @@ namespace YTE
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
-    UBOMaterial mUBOMaterial;
+    UBOs::Material mUBOMaterial;
 
     std::string mDiffuseMap;
     TextureViewType mDiffuseType = TextureViewType::e2D;

@@ -168,12 +168,12 @@ namespace YTE
     RendererResize(nullptr);
   }
 
-  UBOView Camera::ConstructUBOView()
+  UBOs::View Camera::ConstructUBOView()
   {
     auto height = static_cast<float>(mWindow->GetHeight());
     auto width = static_cast<float>(mWindow->GetWidth());
 
-    UBOView view;
+    UBOs::View view;
 
     // projection matrix (since its an easy calculation, Ill leave it here for now, but
     // it really doesn't need to happen every view update
@@ -253,7 +253,7 @@ namespace YTE
     {
       if (mChanged)
       {
-        UBOView view = ConstructUBOView();
+        UBOs::View view = ConstructUBOView();
 
         mChanged = false;
         mGraphicsView->UpdateView(this, view);

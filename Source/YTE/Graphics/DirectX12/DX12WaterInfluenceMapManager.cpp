@@ -16,7 +16,7 @@ namespace YTE
     //
     //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
     //
-    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
     //                                              vk::BufferUsageFlagBits::eTransferDst |
     //                                              vk::BufferUsageFlagBits::eUniformBuffer,
     //                                              vk::SharingMode::eExclusive,
@@ -45,7 +45,7 @@ namespace YTE
     //
     //auto allocator = mSurface->GetAllocator(DX12AllocatorTypes::UniformBufferObject);
     //
-    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
+    //mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
     //                                              vk::BufferUsageFlagBits::eTransferDst |
     //                                              vk::BufferUsageFlagBits::eUniformBuffer,
     //                                              vk::SharingMode::eExclusive,
@@ -72,7 +72,7 @@ namespace YTE
     //if (mUpdateRequired)
     //{
     //  auto update = aEvent->mCBO;
-    //  mBuffer->update<UBOWaterInformationMan>(0, mWaterInformationData, update);
+    //  mBuffer->update<UBOs::WaterInformationManager>(0, mWaterInformationData, update);
     //  mUpdateRequired = false;
     //}
   }
@@ -132,7 +132,7 @@ namespace YTE
 
 
 
-  void DX12WaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
+  void DX12WaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOs::WaterInfluenceMap& aMapValue)
   {
     UnusedArguments(aIndex);
     UnusedArguments(aMapValue);

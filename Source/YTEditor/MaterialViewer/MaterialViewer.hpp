@@ -84,7 +84,7 @@ namespace YTEditor
       YTE::Window *aWindow = nullptr);
     ~MaterialViewer();
 
-    void LoadMaterial(YTE::UBOMaterial const& aMaterial);
+    void LoadMaterial(YTE::UBOs::Material const& aMaterial);
 
     void SetMaterialsList(std::vector<YTE::Submesh> * aSubMeshList);
 

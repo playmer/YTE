@@ -32,7 +32,7 @@ namespace YTE
 
     YTE_Shared InstantiatedLight();
 
-    void SetLightSourceInformation(UBOLight &aLight)
+    void SetLightSourceInformation(UBOs::Light &aLight)
     {
       mLightUBOData = aLight;
       mDataChanged = true;
@@ -139,7 +139,7 @@ namespace YTE
       return static_cast<LightType>(mLightUBOData.mLightType);
     }
 
-    UBOLight* GetLightData()
+    UBOs::Light* GetLightData()
     {
       return &mLightUBOData;
     }
@@ -156,7 +156,7 @@ namespace YTE
 
 
 
-    UBOLight mLightUBOData;
+    UBOs::Light mLightUBOData;
     bool mDataChanged;
   };
 }

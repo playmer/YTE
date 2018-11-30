@@ -377,14 +377,14 @@ namespace YTE
   }
 
 
-  void Dx12Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void Dx12Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
   }
 
 
 
-  void Dx12Renderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOIllumination& aIllumination)
+  void Dx12Renderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOs::Illumination& aIllumination)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
   }

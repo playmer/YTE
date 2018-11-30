@@ -106,7 +106,7 @@ namespace YTE
     mRenderToScreen.reset();
   }
   
-  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     GetViewData(aView)->mViewUBOData = aUBOView;
     ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
@@ -114,7 +114,7 @@ namespace YTE
     this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
   }
 
-  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
+  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
     this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
@@ -368,14 +368,14 @@ namespace YTE
       auto emplaced = mViewData.try_emplace(aView);
 
       auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
+      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
                                           vk::BufferUsageFlagBits::eTransferDst |
                                           vk::BufferUsageFlagBits::eUniformBuffer,
                                           vk::SharingMode::eExclusive,
                                           nullptr,
                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
                                           uboAllocator);
-      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
+      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
                                            vk::BufferUsageFlagBits::eTransferDst |
                                            vk::BufferUsageFlagBits::eUniformBuffer,
                                            vk::SharingMode::eExclusive,
@@ -501,8 +501,8 @@ namespace YTE
   {
     for (auto const&[view, data] : mViewData)
     {
-      data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
-      data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
+      data.mViewUBO->update<UBOs::View>(0, data.mViewUBOData, aEvent->mCBO);
+      data.mIlluminationUBO->update<UBOs::Illumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
       this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
     }
   }

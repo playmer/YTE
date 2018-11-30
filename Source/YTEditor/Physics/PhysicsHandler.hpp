@@ -72,7 +72,7 @@ namespace YTEditor
     float mPickedDistance;
   };
 
-  btVector3 getRayTo(YTE::UBOView& aView,
+  btVector3 getRayTo(YTE::UBOs::View& aView,
     btVector3& aRayFrom,
     glm::i32vec2 aMouseCoordinates,
     YTE::u32 aWidth,

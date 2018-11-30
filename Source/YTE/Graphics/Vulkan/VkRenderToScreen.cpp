@@ -556,7 +556,7 @@ namespace YTE
 
     // add uniform buffers
     // view buffer
-    //vkhlf::DescriptorBufferInfo uboView{mParent->mSurface->GetUBOViewBuffer(View), 0, sizeof(UBOView)};
+    //vkhlf::DescriptorBufferInfo uboView{mParent->mSurface->GetUBOViewBuffer(View), 0, sizeof(UBOs::View)};
     // wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
 

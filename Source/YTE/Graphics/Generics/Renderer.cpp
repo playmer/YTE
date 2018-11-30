@@ -104,12 +104,12 @@ namespace YTE
 
 
 
-  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     UnusedArguments(aView, aUBOView);
   }
 
-  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination)
+  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination)
   {
     UnusedArguments(aView, aIllumination);
   }

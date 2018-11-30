@@ -84,14 +84,14 @@ namespace YTEditor
   }
 
 
-  btVector3 getRayTo(YTE::UBOView& aView,
+  btVector3 getRayTo(YTE::UBOs::View& aView,
     btVector3& aRayFrom,
     glm::i32vec2 aMouseCoordinates,
     YTE::u32 aWidth,
     YTE::u32 aHeight,
     float aFar)
   {
-    YTE::UBOView& uboView = aView;
+    YTE::UBOs::View& uboView = aView;
 
     glm::vec2 mouse = aMouseCoordinates;
     glm::vec2 screen(aWidth, aHeight);
@@ -154,7 +154,7 @@ namespace YTEditor
     auto cameraUp = YTE::ToBullet(orientation->GetUpVector());
     auto cameraForward = YTE::ToBullet(orientation->GetForwardVector());
 
-    YTE::UBOView uboView = camera->ConstructUBOView();
+    YTE::UBOs::View uboView = camera->ConstructUBOView();
 
     btVector3 rayTo = getRayTo(
       uboView,
@@ -195,7 +195,7 @@ namespace YTEditor
           for (auto &mesh : instanceModel)
           {
             auto material = mesh->GetUBOMaterialData();
-            material.mFlags |= 1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2;
+            material.mFlags |= 1u << (YTE::u32)YTE::UBOs::MaterialFlags::IsSelected / 2;
             mesh->UpdateUBOMaterial(&material);
           }
         }
@@ -220,7 +220,7 @@ namespace YTEditor
           for (auto &mesh : instanceModel)
           {
             auto material = mesh->GetUBOMaterialData();
-            material.mFlags &= ~(1u << (YTE::u32)YTE::UBOMaterialFlags::IsSelected / 2);
+            material.mFlags &= ~(1u << (YTE::u32)YTE::UBOs::MaterialFlags::IsSelected / 2);
             mesh->UpdateUBOMaterial(&material);
           }
         }

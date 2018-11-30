@@ -1115,7 +1115,7 @@ namespace YTE
 
     for (unsigned i = 0; i < data.mNumberOfInfluences; ++i)
     {
-      UBOWaterInfluenceMap& map = data.mInformation[i];
+      UBOs::WaterInfluenceMap const& map = data.mInformation[i];
       glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
       float vtcLen = glm::length(vertToCenter);
 

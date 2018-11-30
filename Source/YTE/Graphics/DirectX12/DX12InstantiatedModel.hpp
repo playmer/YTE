@@ -36,10 +36,10 @@ namespace YTE
     void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
 
     void UpdateUBOModel() override;
-    void UpdateUBOModel(UBOModel &aUBO) override;
-    void UpdateUBOAnimation(UBOAnimation *aUBO) override;
-    void UpdateUBOMaterial(UBOMaterial *aUBO) override;
-    void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
+    void UpdateUBOModel(UBOs::Model &aUBO) override;
+    void UpdateUBOAnimation(UBOs::Animation *aUBO) override;
+    void UpdateUBOMaterial(UBOs::Material *aUBO) override;
+    void UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex) override;
 
     void SetDefaultAnimationOffset() override;
 
@@ -53,7 +53,7 @@ namespace YTE
     //std::shared_ptr<vkhlf::Buffer> mUBOModel;
     //std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
     //std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
-    //std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOMaterial>> mUBOSubmeshMaterials;
+    //std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOs::Material>> mUBOSubmeshMaterials;
 
     // These are only needed if we're not instanced, otherwise lives on Dx12Submesh.
     std::unordered_map<Dx12Submesh*, DX12SubMeshPipelineData> mPipelineData;
@@ -69,7 +69,7 @@ namespace YTE
     bool mLoadUBOMaterial;
     DX12Mesh *mVkMesh;
 
-    static UBOAnimation cAnimation;
+    static UBOs::Animation cAnimation;
   };
 }
 
