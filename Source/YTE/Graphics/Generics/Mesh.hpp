@@ -168,6 +168,13 @@ namespace YTE
     {
       return std::max(glm::length(mMin), glm::length(mMax));
     }
+
+    glm::vec3 GetCenter()
+    {
+      auto difference = mMax - mMin;
+
+      return mMin + (difference * .5f);
+    }
   };
 
   // Submesh class contains all the data of the actual submesh

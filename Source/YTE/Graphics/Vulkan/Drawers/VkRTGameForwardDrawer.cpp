@@ -20,53 +20,6 @@ namespace YTE
 
   namespace detail
   {
-    // Adapted from "Fast Extraction of Viewing Frustum Planes from the World-View-Projection Matrix"
-    // https://www.gamedevs.org/uploads/fast-extraction-viewing-frustum-planes-from-world-view-projection-matrix.pdf
-    struct Plane
-    {
-      float a, b, c, d;
-
-      void Normalize()
-      {
-        float mag = sqrt((a * a) + (b * b) + (c * c));
-
-        a = a / mag;
-        b = b / mag;
-        c = c / mag;
-        d = d / mag;
-      }
-    };
-
-
-    float DistanceToPoint(Plane const& aPlane, glm::vec4 const& aPoint)
-    {
-      return (aPlane.a * aPoint.x) + (aPlane.b * aPoint.y) + (aPlane.c * aPoint.z) + aPlane.d;
-    }
-
-    enum class Halfspace : u8
-    {
-      Negative = -1,
-      OnPlane = 0,
-      Positive = 1,
-    };
-
-    Halfspace ClassifyPoint(Plane const& aPlane, glm::vec4 const& aPoint)
-    {
-      float d = (aPlane.a * aPoint.x) + (aPlane.b * aPoint.y) + (aPlane.c * aPoint.z) + aPlane.d;
-
-      if (d < 0) 
-      {
-        return Halfspace::Negative;
-      }
-
-      if (d > 0) 
-      {
-        return Halfspace::Positive;
-      }
-
-      return Halfspace::OnPlane;
-    }
-
     // From Sascha Willems
     // https://github.com/SaschaWillems/Vulkan/blob/master/base/frustum.hpp
     class Frustum
@@ -297,8 +250,15 @@ namespace YTE
 
           for (auto &model : models)
           {
-            auto position = model->GetUBOModelData().mModelMatrix * origin;
-            auto visible = frustum.CheckSphere(glm::vec3(position), submesh->mMesh->mMesh->mDimension.GetRadius() * 2.0f);
+            auto submeshDimension = submesh->mSubmesh->mDimension;
+            auto subMeshPosition = submeshDimension.GetCenter();
+            auto modelMatrix = model->GetUBOModelData().mModelMatrix;
+            modelMatrix[3][0] += subMeshPosition.x;
+            modelMatrix[3][1] += subMeshPosition.y;
+            modelMatrix[3][2] += subMeshPosition.z;
+
+            auto position = modelMatrix * origin;
+            auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * 2.0f);
 
             if ((visible == false) || (false == model->GetVisibility()))
             {

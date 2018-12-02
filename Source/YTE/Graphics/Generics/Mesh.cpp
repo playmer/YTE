@@ -67,6 +67,7 @@ namespace YTE
 
   bool Skeleton::Initialize(const aiScene* aScene)
   {
+    YTEProfileFunction();
     // find number of vertices to initialize the skeleton
     uint32_t numMeshes = aScene->mNumMeshes;
     uint32_t vertCount = 0;
@@ -110,6 +111,7 @@ namespace YTE
 
   void Skeleton::LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex)
   {
+    YTEProfileFunction();
     DebugObjection(aMesh->mNumBones >= BoneConstants::MaxBones,
                    "Animated models cannot have more than %d bones, %s mesh has %d bones.",
                    BoneConstants::MaxBones, aMesh->mName.C_Str(), aMesh->mNumBones);
@@ -420,8 +422,27 @@ namespace YTE
     }
   }
 
-  Dimension CalculateDimensions(std::vector<Submesh> &mParts)
+  void CalculateSubMeshDimensions(std::vector<Submesh> &mParts)
   {
+    YTEProfileFunction();
+    for (auto &part : mParts)
+    {
+      for (auto const& vertex : part.mVertexBuffer)
+      {
+        part.mDimension.mMax.x = fmax(vertex.mPosition.x, part.mDimension.mMax.x);
+        part.mDimension.mMax.y = fmax(vertex.mPosition.y, part.mDimension.mMax.y);
+        part.mDimension.mMax.z = fmax(vertex.mPosition.z, part.mDimension.mMax.z);
+
+        part.mDimension.mMin.x = fmin(vertex.mPosition.x, part.mDimension.mMin.x);
+        part.mDimension.mMin.y = fmin(vertex.mPosition.y, part.mDimension.mMin.y);
+        part.mDimension.mMin.z = fmin(vertex.mPosition.z, part.mDimension.mMin.z);
+      }
+    }
+  }
+
+  Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
+  {
+    YTEProfileFunction();
     Dimension toReturn;
 
     for (auto &part : mParts)
@@ -541,6 +562,7 @@ namespace YTE
     mName = aFile;
     mParts = aSubmeshes;
 
+    CalculateSubMeshDimensions(mParts);
     mDimension = CalculateDimensions(mParts);
   }
 
@@ -548,6 +570,9 @@ namespace YTE
   {
     DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
     mParts[aSubmeshIndex].mVertexBuffer = aVertices;
+
+    CalculateSubMeshDimensions(mParts);
+    mDimension = CalculateDimensions(mParts);
   }
 
   void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
@@ -563,6 +588,9 @@ namespace YTE
 
     mParts[aSubmeshIndex].mVertexBuffer = aVertices;
     mParts[aSubmeshIndex].mIndexBuffer = aIndices;
+
+    CalculateSubMeshDimensions(mParts);
+    mDimension = CalculateDimensions(mParts);
   }
 
   Mesh::~Mesh()
