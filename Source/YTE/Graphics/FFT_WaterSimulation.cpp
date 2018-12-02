@@ -986,7 +986,7 @@ namespace YTE
 
     auto matrix = glm::mat4(1.0f) * glm::toMat4(mTransform->GetWorldRotation());
     matrix = glm::scale(matrix, mTransform->GetWorldScale());;
-    glm::vec3 trans = mTransform->GetWorldTranslation();
+    glm::vec3 position = mTransform->GetWorldTranslation();
 
     for (int z = 0; z < mInstanceCount; ++z)
     {
@@ -994,13 +994,14 @@ namespace YTE
       {
         int i = z * mInstanceCount + x;
 
-        //trans.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
-        //trans.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
-        trans.x += mVertexDistanceX * x;
-        trans.z += mVertexDistanceZ * -z;
+        //translation.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
+        //translation.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
 
+        matrix[3][0] = position.x + (mVertexDistanceX * x);
+        matrix[3][1] = position.y;
+        matrix[3][2] = position.z + (mVertexDistanceZ * -z);
 
-        mInstancingMatrices[i].mModelMatrix = glm::translate(matrix, trans);
+        mInstancingMatrices[i].mModelMatrix = matrix;
       }
     }
   }
