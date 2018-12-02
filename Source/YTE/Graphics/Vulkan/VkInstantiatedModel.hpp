@@ -48,13 +48,16 @@ namespace YTE
     YTE_Shared void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
     YTE_Shared void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     
-    std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
     GraphicsView *mView;
-
+    std::shared_ptr<vkhlf::Buffer> mUBOModel;
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
-
     std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
+    IntrusiveList<VkInstantiatedModel>::Hook mModelHook;
+    IntrusiveList<VkInstantiatedModel>::Hook mAnimationHook;
+    IntrusiveList<VkInstantiatedModel>::Hook mModelMaterialHook;
+
+
     std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOs::Material>> mUBOSubmeshMaterials;
 
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.

@@ -83,6 +83,7 @@ namespace YTE
 
     if constexpr (YTE_CAN_PROFILE)
     {
+      EASY_PROFILER_ENABLE;
       profiler::startListen();
     }
 
@@ -160,6 +161,8 @@ namespace YTE
 
   void Engine::Deserialize(RSValue *aValue)
   {
+    YTEProfileFunction();
+
     DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't an Engine.");
     DebugObjection(false == aValue->HasMember("Windows") || 
                 false == (*aValue)["Windows"].IsObject(), 
@@ -200,6 +203,8 @@ namespace YTE
 
   Window* Engine::AddWindow(const char *aName)
   {
+    YTEProfileFunction();
+
     if (false == mEditorMode)
     {
       auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this, nullptr));
@@ -218,6 +223,8 @@ namespace YTE
 
   void Engine::RemoveWindow(Window * aWindow)
   {
+    YTEProfileFunction();
+
     for (auto it = mWindows.begin(); it != mWindows.end(); ++it) 
     {
       if (it->second.get() == aWindow)
@@ -266,7 +273,7 @@ namespace YTE
 
     for (auto &window : mWindows)
     {
-      //SetFrameRate(*window.second, mDt);
+      SetFrameRate(*window.second, mDt);
       window.second->Update();
     }
     
@@ -336,6 +343,8 @@ namespace YTE
   // Cleans up anything in the Space.
   Engine::~Engine()
   {
+    YTEProfileFunction();
+
     mCompositions.Clear();
 
     mPlugins.clear();
@@ -348,6 +357,8 @@ namespace YTE
 
   void Engine::LoadPlugins()
   {
+    YTEProfileFunction();
+
     fs::path gamePath = Path::GetGamePath().String();
     gamePath /= "Plugins";
 
@@ -397,6 +408,8 @@ namespace YTE
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
   {
+    YTEProfileFunction();
+
     if (false == mEditorMode)
     {
       if (auto iter = mArchetypes.find(aArchetype); 
@@ -438,6 +451,8 @@ namespace YTE
   
   RSDocument* Engine::GetLevel(String &aLevel)
   {
+    YTEProfileFunction();
+
     if (false == mEditorMode)
     {
       if (auto iter = mLevels.find(aLevel);
@@ -491,6 +506,8 @@ namespace YTE
 
   Composition* Engine::StoreCompositionGUID(Composition *aComposition)
   {
+    YTEProfileFunction();
+
     GlobalUniqueIdentifier &guid = aComposition->GetGUID();
     
     Composition *collision = CheckForCompositionGUIDCollision(guid);
@@ -506,6 +523,8 @@ namespace YTE
 
   Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
   {
+    YTEProfileFunction();
+
     auto it = mCompositionsByGUID.find(aGUID.ToString());
 
     if (it == mCompositionsByGUID.end())
@@ -518,6 +537,8 @@ namespace YTE
 
   Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
   {
+    YTEProfileFunction();
+
     std::string guid = aGUID.ToString();
     auto it = mCompositionsByGUID.find(guid);
 
@@ -531,6 +552,8 @@ namespace YTE
 
   bool Engine::RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID)
   {
+    YTEProfileFunction();
+
     if (mCompositionsByGUID.size() == 0)
     {
       return false;
@@ -549,6 +572,8 @@ namespace YTE
 
   Component* Engine::StoreComponentGUID(Component *aComponent)
   {
+    YTEProfileFunction();
+
     GlobalUniqueIdentifier &guid = aComponent->GetGUID();
 
     Component* collision = CheckForComponentGUIDCollision(guid);
@@ -564,6 +589,8 @@ namespace YTE
 
   Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
   {
+    YTEProfileFunction();
+
     auto it = mComponentsByGUID.find(aGUID.ToString());
 
     if (it == mComponentsByGUID.end())
@@ -576,6 +603,8 @@ namespace YTE
 
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
   {
+    YTEProfileFunction();
+
     std::string guid = aGUID.ToString();
     auto it = mComponentsByGUID.find(guid);
 
@@ -589,6 +618,8 @@ namespace YTE
 
   bool Engine::RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID)
   {
+    YTEProfileFunction();
+
     if (mComponentsByGUID.size() == 0)
     {
       return false;

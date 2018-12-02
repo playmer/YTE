@@ -125,6 +125,8 @@ namespace YTE
     , mBeingDeleted{ false }
     , mGUID{}
   {
+    YTEProfileFunction();
+
     Create();
   };
 
@@ -138,11 +140,15 @@ namespace YTE
     , mBeingDeleted{ false }
     , mGUID{}
   {
+    YTEProfileFunction();
+
     Create();
   };
 
   void Composition::Create()
   {
+    YTEProfileFunction();
+
     mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
     auto parent = GetParent();
@@ -160,6 +166,8 @@ namespace YTE
 
   Composition::~Composition()
   {
+    YTEProfileFunction();
+
     mEngine->RemoveCompositionGUID(mGUID);
 
     if (nullptr != mSpace)
@@ -177,6 +185,8 @@ namespace YTE
 
   void Composition::ComponentClear()
   {
+    YTEProfileFunction();
+
     for (auto typeIt = mDependencyOrder.rbegin();
          typeIt < mDependencyOrder.rend();
          ++typeIt)
@@ -191,6 +201,8 @@ namespace YTE
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)
   {
+    YTEProfileFunction();
+
     auto iterator = mComponents.Find(aEvent->aOldType);
 
     if (iterator != mComponents.end())
@@ -204,6 +216,8 @@ namespace YTE
                             InitializeEvent* aEvent,
                             Composition* aComposition)
   {
+    YTEProfileFunction();
+
     for (auto &type : aComposition->GetDependencyOrder())
     {
       auto component = aComposition->GetComponent(type);
@@ -372,6 +386,8 @@ namespace YTE
 
   void Composition::DeletionUpdate(LogicUpdate *aUpdate)
   {
+    YTEProfileFunction();
+
     // Delete Attached Components
     auto componentRange = mEngine->mComponentsToRemove.FindAll(this);
 
@@ -398,6 +414,8 @@ namespace YTE
 
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
+    YTEProfileFunction();
+
     // If a Composition is just below the Space, we currently guarantee their mOwner is
     // nullptr.
     auto owner = this;
@@ -421,6 +439,8 @@ namespace YTE
 
   Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
+    YTEProfileFunction();
+
     mComposition->mName = aObjectName;
 
     auto &composition = mCompositions.Emplace(aObjectName, std::move(mComposition))->second;
@@ -459,6 +479,8 @@ namespace YTE
   Composition* Composition::AddComposition(RSValue* aSerialization, 
                                            String aObjectName)
   {
+    YTEProfileFunction();
+
     // If a Composition is just below the Space, we currently guarantee their mOwner is
     // nullptr.
     auto owner = this;
@@ -493,6 +515,8 @@ namespace YTE
   Composition* Composition::AddComposition(String aArchetype, 
                                            String aObjectName)
   {
+    YTEProfileFunction();
+
     auto composition = AddCompositionInternal(aArchetype, aObjectName);
 
     if (composition != nullptr)
@@ -515,6 +539,8 @@ namespace YTE
                                                      String aObjectName, 
                                                      glm::vec3 aPosition)
   {
+    YTEProfileFunction();
+
     Composition *composition = AddCompositionInternal(aArchetype, aObjectName);
 
     if (composition != nullptr)
@@ -542,6 +568,8 @@ namespace YTE
 
   void Composition::Deserialize(RSValue *aValue)
   {
+    YTEProfileFunction();
+
     RSStringBuffer buffer;
     RSPrettyWriter writer(buffer);
     aValue->Accept(writer);
@@ -638,6 +666,8 @@ namespace YTE
 
   RSValue Composition::Serialize(RSAllocator &aAllocator)
   {
+    YTEProfileFunction();
+
     RSValue toReturn;
     toReturn.SetObject();
 
@@ -690,6 +720,8 @@ namespace YTE
 
   Component* Composition::GetComponent(BoundType *aType)
   {
+    YTEProfileFunction();
+
     auto iterator = mComponents.Find(aType);
 
     if (iterator == mComponents.end())
@@ -703,6 +735,8 @@ namespace YTE
 
   Composition* Composition::FindFirstCompositionByName(String const &aName)
   {
+    YTEProfileFunction();
+
     auto iterator = mCompositions.FindFirst(aName);
 
     if (iterator != mCompositions.end())
@@ -715,6 +749,8 @@ namespace YTE
 
   Composition* Composition::FindLastCompositionByName(String const &aName)
   {
+    YTEProfileFunction();
+
     auto iterator = mCompositions.FindLast(aName);
 
     if (iterator != mCompositions.end())
@@ -727,6 +763,8 @@ namespace YTE
 
   CompositionMap::range Composition::FindAllCompositionsByName(String const &aName)
   {
+    YTEProfileFunction();
+
     auto compositions = mCompositions.FindAll(aName);
     return compositions;
   }
@@ -809,6 +847,8 @@ namespace YTE
 
   std::vector<Type*> GetDependencyOrder(Composition *aComposition)
   {
+    YTEProfileFunction();
+
     Graph dependencyGraph;
 
     for (auto const& [type, component] : aComposition->GetComponents())
@@ -855,6 +895,8 @@ namespace YTE
   std::string Composition::CheckDependencies(std::set<BoundType*> aTypesAvailible, 
                                              BoundType *aTypeToCheck)
   {
+    YTEProfileFunction();
+
     std::string toReturn;
 
     auto componentDeps = aTypeToCheck->GetAttribute<ComponentDependencies>();
@@ -913,6 +955,8 @@ namespace YTE
 
   std::string Composition::IsDependecy(BoundType *aType)
   {
+    YTEProfileFunction();
+
     std::vector<BoundType*> typesWithAProblem;
     std::set<BoundType*> typesAvailible;
 
@@ -962,6 +1006,8 @@ namespace YTE
 
   std::string Composition::HasDependencies(BoundType *aType)
   {
+    YTEProfileFunction();
+
     std::set<BoundType*> typesAvailible;
 
     for (auto const&[type, component] : mComponents)
@@ -974,6 +1020,8 @@ namespace YTE
 
   Component* Composition::GetDerivedComponent(BoundType *aType)
   {
+    YTEProfileFunction();
+
     auto componentType = TypeId<Component>();
 
     for (auto const&[type, component] : mComponents)
@@ -989,6 +1037,8 @@ namespace YTE
 
   Component* Composition::AddComponent(BoundType *aType, bool aCheckRunInEditor)
   {
+    YTEProfileFunction();
+
     // TODO: Output this to a debug logger. If this happens in game in the editor, 
     //       it won't be currently displayed.
     if (false == HasDependencies(aType).empty())
@@ -1017,41 +1067,46 @@ namespace YTE
 
   Component* Composition::AddComponent(BoundType *aType, RSValue *aProperties)
   {
-    Component *toReturn = nullptr;
-
-    auto iterator = mComponents.Find(aType);
-
-    if (iterator == mComponents.end())
+    YTEProfileFunction();
     {
-      auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+      YTEProfileBlock(aType->GetName().c_str());
 
-      if (nullptr == addFactory)
+      Component *toReturn = nullptr;
+
+      auto iterator = mComponents.Find(aType);
+
+      if (iterator == mComponents.end())
       {
-        if (aType)
+        auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+
+        if (nullptr == addFactory)
         {
-          mEngine->Log(LogType::Warning,
-            fmt::format("A factory of the type named {} could not be found. \n"
-              "Perhaps it needs to be added to CoreComponentFactoryInitialization",
-              aType->GetName()));
+          if (aType)
+          {
+            mEngine->Log(LogType::Warning,
+              fmt::format("A factory of the type named {} could not be found. \n"
+                "Perhaps it needs to be added to CoreComponentFactoryInitialization",
+                aType->GetName()));
+          }
+
+          return nullptr;
         }
 
-        return nullptr;
+        auto component = addFactory->MakeComponent(this, mSpace);
+        toReturn = component.get();
+
+        DeserializeByType(aProperties, toReturn, aType);
+
+        mComponents.Emplace(aType, std::move(component));
+      }
+      else
+      {
+        toReturn = iterator->second.get();
+        toReturn->Deserialize(aProperties);
       }
 
-      auto component = addFactory->MakeComponent(this, mSpace);
-      toReturn = component.get();
-
-      DeserializeByType(aProperties, toReturn, aType);
-
-      mComponents.Emplace(aType, std::move(component));
+      return toReturn;
     }
-    else
-    {
-      toReturn = iterator->second.get();
-      toReturn->Deserialize(aProperties);
-    }
-
-    return toReturn;
   }
 
   void Composition::SetOwner(Composition *aOwner)
@@ -1063,6 +1118,8 @@ namespace YTE
   // Space or Engine.
   Composition* Composition::GetParent()
   {
+    YTEProfileFunction();
+
     Composition *parent = mOwner;
 
     if (parent == nullptr)
@@ -1080,6 +1137,8 @@ namespace YTE
 
   void Composition::ReParent(Composition *aNewParent /* = nullptr */)
   {
+    YTEProfileFunction();
+
     auto parent = GetParent();
     // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
     // and default re-parenting of spaces
@@ -1118,8 +1177,9 @@ namespace YTE
   // Get the parent Space or Engine.
   Composition* Composition::GetSpaceOrEngine()
   {
-    Composition *parent = mSpace;
+    YTEProfileFunction();
 
+    Composition *parent = mSpace;
 
     if (this == parent || parent == nullptr)
     {
@@ -1131,6 +1191,8 @@ namespace YTE
 
   bool Composition::ParentBeingDeleted()
   {
+    YTEProfileFunction();
+
     for (Composition *parent = GetParent();
          nullptr != parent;
          parent = GetParent())
@@ -1150,7 +1212,9 @@ namespace YTE
   }
   
   void Composition::RemoveComposition(Composition *aComposition)
-  { 
+  {
+    YTEProfileFunction();
+
     auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
                     {
                       return aLhs.get() == aRhs; 
@@ -1178,6 +1242,8 @@ namespace YTE
 
   void Composition::RemoveComponent(BoundType *aComponent)
   {
+    YTEProfileFunction();
+
     auto iter = mComponents.Find(aComponent);
 
     if (iter != mComponents.end())
@@ -1195,11 +1261,15 @@ namespace YTE
 
   void Composition::RemoveComponent(Component *aComponent)
   {
+    YTEProfileFunction();
+
     RemoveComponent(aComponent->GetType());
   }
 
   void Composition::Remove()
   {
+    YTEProfileFunction();
+
     if (false == ParentBeingDeleted())
     {
       mBeingDeleted = true;
@@ -1267,6 +1337,8 @@ namespace YTE
 
   bool Composition::SetGUID(GlobalUniqueIdentifier aGUID)
   {
+    YTEProfileFunction();
+
     bool collision = mEngine->CheckForCompositionGUIDCollision(aGUID);
 
     if (collision)

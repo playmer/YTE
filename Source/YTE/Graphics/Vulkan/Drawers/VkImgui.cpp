@@ -53,6 +53,8 @@ namespace YTE
 
   void VkImguiDrawer::Initialize()
   {
+    YTEProfileFunction();
+
     mView = mParentViewData->mView;
     auto owner = mView->GetOwner();
     auto guidString = owner->GetGUID().ToString();;
@@ -175,6 +177,8 @@ namespace YTE
   {
     UnusedArguments(aMeshes);
 
+    YTEProfileFunction();
+
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
@@ -184,6 +188,8 @@ namespace YTE
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
+    YTEProfileFunction();
+
     mContext->SetCurrentContext();
     auto drawData = ImGui::GetDrawData();
 

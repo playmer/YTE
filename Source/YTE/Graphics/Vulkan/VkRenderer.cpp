@@ -19,34 +19,42 @@
 
 namespace YTE
 {
-  VkUBOUpdates::VkUBOReference::VkUBOReference(vkhlf::Buffer* aBuffer,
-                 size_t aBufferOffset,
-                 size_t aDataOffset,
-                 size_t aSize)
-    : mBuffer{ aBuffer }
+  VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer>& aBuffer,
+                                               size_t aBufferOffset,
+                                               size_t aSize)
+    : mBuffer { aBuffer }
     , mBufferOffset{ aBufferOffset }
-    , mDataOffset{ aDataOffset }
     , mSize{ aSize }
   {
 
   }
 
-  void VkUBOUpdates::Add(vkhlf::Buffer* aBuffer, 
+  void VkUBOUpdates::Add(std::shared_ptr<vkhlf::Buffer> aBuffer,
                          u8 const* aData, 
                          size_t aSize, 
                          size_t mOffset)
   {
-    mReferences.emplace_back(aBuffer, mOffset, mData.size(), aSize);
+    mReferences.emplace_back(aBuffer, mOffset, aSize);
     mData.insert(mData.end(), aData, aData + aSize);
   }
 
   void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer)
   {
+    size_t dataOffset = 0;
+
     for (auto const& reference : mReferences)
     {
+      if (1 == aBuffer.use_count())
+      {
+        dataOffset += reference.mSize;
+        continue;
+      }
+
       vk::ArrayProxy<u8 const> dataProxy{ static_cast<u32>(reference.mSize),
-                                          &mData[reference.mDataOffset] };
+                                          &mData[dataOffset] };
       reference.mBuffer->update<u8>(0, dataProxy, aBuffer);
+
+      dataOffset += reference.mSize;
     }
 
     mData.clear();
@@ -552,7 +560,7 @@ namespace YTE
     {
       auto self = mData.Get<VkUBOData>();
 
-      self->mRenderer->mUBOUpdates.Add(self->mBuffer.get(), aPointer, aBytes, 0);
+      self->mRenderer->mUBOUpdates.Add(self->mBuffer, aPointer, aBytes, aOffset);
     }
   };
 

@@ -158,12 +158,16 @@ namespace YTE
     //#endif.
   };
 
-
   // Dimension struct is used for bounding box of 3D mesh
   struct Dimension
   {
     glm::vec3 mMin = glm::vec3(std::numeric_limits<float>::max());
     glm::vec3 mMax = glm::vec3(-std::numeric_limits<float>::max());
+
+    float GetRadius()
+    {
+      return std::max(glm::length(mMin), glm::length(mMax));
+    }
   };
 
   // Submesh class contains all the data of the actual submesh

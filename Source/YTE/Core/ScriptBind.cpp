@@ -72,6 +72,8 @@ namespace YTE
 {
   void InitializeYTETypes()
   {
+    YTEProfileFunction();
+
     InitializeType<ActionManager>();
     InitializeType<Component>();
     InitializeType<ComponentSystem>();

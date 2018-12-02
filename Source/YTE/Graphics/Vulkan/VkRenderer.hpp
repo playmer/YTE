@@ -22,18 +22,16 @@ namespace YTE
   {
     struct VkUBOReference
     {
-      VkUBOReference(vkhlf::Buffer* aBuffer,
+      VkUBOReference(std::shared_ptr<vkhlf::Buffer>& aBuffer,
                      size_t aBufferOffset,
-                     size_t aDataOffset,
                      size_t aSize);
 
-      vkhlf::Buffer* mBuffer;
+      std::shared_ptr<vkhlf::Buffer> mBuffer;
       size_t mBufferOffset;
-      size_t mDataOffset;
       size_t mSize;
     };
 
-    void Add(vkhlf::Buffer* aBuffer, u8 const* aData, size_t aSize, size_t mOffset);
+    void Add(std::shared_ptr<vkhlf::Buffer> aBuffer, u8 const* aData, size_t aSize, size_t mOffset);
     void Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer);
 
     std::vector<u8> mData;

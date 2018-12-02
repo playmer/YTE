@@ -38,17 +38,17 @@ namespace YTE
                std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
                std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
                std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
-               glm::mat4 &aModelMatrix,
                u32 aIndexCount,
-               float aLineWidth)
+               float aLineWidth,
+               float aDepth )
         : mPipeline{ &aPipeline}
         , mVertexBuffer{ &aVertexBuffer}
         , mIndexBuffer{ &aIndexBuffer}
         , mPipelineLayout{ &aPipelineLayout}
         , mDescriptorSet{ &aDescriptorSet }
-        , mModelMatrix{ &aModelMatrix }
         , mIndexCount{aIndexCount}
         , mLineWidth(aLineWidth)
+        , mDepth{ aDepth }
       {
 
       }

@@ -195,13 +195,24 @@ namespace YTE
     }
   }
 
+  constexpr bool cConsolodatedDataUpdates = false;
+
   void VkInstantiatedModel::UpdateUBOModel(UBOs::Model &aUBO)
   {
     mUBOModelData = aUBO;
 
-    UpdateUBOModel();
-
-    mLoadUBOModel = true;
+    if constexpr (cConsolodatedDataUpdates)
+    {
+      mSurface->GetRenderer()->mUBOUpdates.Add(mUBOModelMaterial,
+                                               reinterpret_cast<u8*>(&mUBOModelMaterialData), 
+                                               sizeof(mUBOModelMaterialData),
+                                               0);
+    }
+    else
+    {
+      UpdateUBOModel();
+      mLoadUBOModel = true;
+    }
   }
 
   void VkInstantiatedModel::UpdateUBOAnimation(UBOs::Animation *aUBO)
@@ -275,11 +286,14 @@ namespace YTE
       mLoadUBOAnimation = false;
     }
 
-    if (mLoadUBOModel)
+    if constexpr (false == cConsolodatedDataUpdates)
     {
-      mUBOModel->update<UBOs::Model>(0, mUBOModelData, update);
+      if (mLoadUBOModel)
+      {
+        mUBOModel->update<UBOs::Model>(0, mUBOModelData, update);
 
-      mLoadUBOModel = false;
+        mLoadUBOModel = false;
+      }
     }
   }
 }

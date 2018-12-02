@@ -48,8 +48,9 @@
 #else
   namespace profiler
   {
-    inline void startListen(uint16_t aBlah = 1) { (void)aBlah; }
+    inline void startListen(uint16_t = 1) {}
     inline void stopListen() { }
+    inline void dumpBlocksToFile(char const*) {};
   }
 
   #define YTEProfileName(aName)
