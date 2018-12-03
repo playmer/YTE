@@ -20,60 +20,72 @@ namespace YTE
 
   namespace detail
   {
-    // From Sascha Willems
+    // Adapted From Sascha Willems
     // https://github.com/SaschaWillems/Vulkan/blob/master/base/frustum.hpp
     class Frustum
     {
     public:
       enum side { LEFT = 0, RIGHT = 1, TOP = 2, BOTTOM = 3, BACK = 4, FRONT = 5 };
-      std::array<glm::vec4, 6> planes;
+      std::array<glm::vec4, 6> mPlanes;
+      glm::vec3 mCameraPosition;
 
-      void update(glm::mat4 matrix)
+      void Update(glm::mat4 const& aClipSpace, glm::vec4 const& aCameraPosition)
       {
-        planes[LEFT].x = matrix[0].w + matrix[0].x;
-        planes[LEFT].y = matrix[1].w + matrix[1].x;
-        planes[LEFT].z = matrix[2].w + matrix[2].x;
-        planes[LEFT].w = matrix[3].w + matrix[3].x;
+        mCameraPosition = glm::vec3(aCameraPosition);
 
-        planes[RIGHT].x = matrix[0].w - matrix[0].x;
-        planes[RIGHT].y = matrix[1].w - matrix[1].x;
-        planes[RIGHT].z = matrix[2].w - matrix[2].x;
-        planes[RIGHT].w = matrix[3].w - matrix[3].x;
+        mPlanes[LEFT].x = aClipSpace[0].w + aClipSpace[0].x;
+        mPlanes[LEFT].y = aClipSpace[1].w + aClipSpace[1].x;
+        mPlanes[LEFT].z = aClipSpace[2].w + aClipSpace[2].x;
+        mPlanes[LEFT].w = aClipSpace[3].w + aClipSpace[3].x;
 
-        planes[TOP].x = matrix[0].w - matrix[0].y;
-        planes[TOP].y = matrix[1].w - matrix[1].y;
-        planes[TOP].z = matrix[2].w - matrix[2].y;
-        planes[TOP].w = matrix[3].w - matrix[3].y;
+        mPlanes[RIGHT].x = aClipSpace[0].w - aClipSpace[0].x;
+        mPlanes[RIGHT].y = aClipSpace[1].w - aClipSpace[1].x;
+        mPlanes[RIGHT].z = aClipSpace[2].w - aClipSpace[2].x;
+        mPlanes[RIGHT].w = aClipSpace[3].w - aClipSpace[3].x;
 
-        planes[BOTTOM].x = matrix[0].w + matrix[0].y;
-        planes[BOTTOM].y = matrix[1].w + matrix[1].y;
-        planes[BOTTOM].z = matrix[2].w + matrix[2].y;
-        planes[BOTTOM].w = matrix[3].w + matrix[3].y;
+        mPlanes[TOP].x = aClipSpace[0].w - aClipSpace[0].y;
+        mPlanes[TOP].y = aClipSpace[1].w - aClipSpace[1].y;
+        mPlanes[TOP].z = aClipSpace[2].w - aClipSpace[2].y;
+        mPlanes[TOP].w = aClipSpace[3].w - aClipSpace[3].y;
 
-        planes[BACK].x = matrix[0].w + matrix[0].z;
-        planes[BACK].y = matrix[1].w + matrix[1].z;
-        planes[BACK].z = matrix[2].w + matrix[2].z;
-        planes[BACK].w = matrix[3].w + matrix[3].z;
+        mPlanes[BOTTOM].x = aClipSpace[0].w + aClipSpace[0].y;
+        mPlanes[BOTTOM].y = aClipSpace[1].w + aClipSpace[1].y;
+        mPlanes[BOTTOM].z = aClipSpace[2].w + aClipSpace[2].y;
+        mPlanes[BOTTOM].w = aClipSpace[3].w + aClipSpace[3].y;
 
-        planes[FRONT].x = matrix[0].w - matrix[0].z;
-        planes[FRONT].y = matrix[1].w - matrix[1].z;
-        planes[FRONT].z = matrix[2].w - matrix[2].z;
-        planes[FRONT].w = matrix[3].w - matrix[3].z;
+        mPlanes[BACK].x = aClipSpace[0].w + aClipSpace[0].z;
+        mPlanes[BACK].y = aClipSpace[1].w + aClipSpace[1].z;
+        mPlanes[BACK].z = aClipSpace[2].w + aClipSpace[2].z;
+        mPlanes[BACK].w = aClipSpace[3].w + aClipSpace[3].z;
 
-        for (auto i = 0; i < planes.size(); i++)
+        mPlanes[FRONT].x = aClipSpace[0].w - aClipSpace[0].z;
+        mPlanes[FRONT].y = aClipSpace[1].w - aClipSpace[1].z;
+        mPlanes[FRONT].z = aClipSpace[2].w - aClipSpace[2].z;
+        mPlanes[FRONT].w = aClipSpace[3].w - aClipSpace[3].z;
+
+        for (auto i = 0; i < mPlanes.size(); i++)
         {
-          float length = sqrtf(planes[i].x * planes[i].x + planes[i].y * planes[i].y + planes[i].z * planes[i].z);
-          planes[i] /= length;
+          float length = sqrtf(mPlanes[i].x * mPlanes[i].x + mPlanes[i].y * mPlanes[i].y + mPlanes[i].z * mPlanes[i].z);
+          mPlanes[i] /= length;
         }
       }
 
-      bool CheckSphere(glm::vec3 pos, float radius)
+      bool CheckSphere(glm::vec3 aPosition, float aRadius)
       {
         YTEProfileFunction();
 
-        for (auto i = 0; i < planes.size(); i++)
+        // Check to see if Camera is within the sphere, if so, just draw it.
+        auto distance = glm::length(mCameraPosition - aPosition);
+
+        if (distance < aRadius)
         {
-          if ((planes[i].x * pos.x) + (planes[i].y * pos.y) + (planes[i].z * pos.z) + planes[i].w <= -radius)
+          return true;
+        }
+
+        // Next check to see if the sphere is within the planes.
+        for (auto i = 0; i < mPlanes.size(); i++)
+        {
+          if ((mPlanes[i].x * aPosition.x) + (mPlanes[i].y * aPosition.y) + (mPlanes[i].z * aPosition.z) + mPlanes[i].w <= -aRadius)
           {
             return false;
           }
@@ -81,10 +93,17 @@ namespace YTE
         return true;
       }
     };
+
+    // Derived from https://math.stackexchange.com/a/1463487
+    float ExtractMaximumUniformScale(glm::mat4 const& aModelMatrix)
+    {
+      auto x = glm::length(aModelMatrix[0]);
+      auto y = glm::length(aModelMatrix[1]);
+      auto z = glm::length(aModelMatrix[2]);
+
+      return std::max(x, std::max(y, z));
+    }
   }
-
-
-
 
 
 
@@ -213,7 +232,7 @@ namespace YTE
                        mParentViewData->mViewUBOData.mViewMatrix;
 
     detail::Frustum frustum;
-    frustum.update(toClipSpace);
+    frustum.Update(toClipSpace, mParentViewData->mViewUBOData.mCameraPosition);
 
     glm::vec4 origin{ 0.f,0.f,0.f,1.f };
     float depth{ 0.0f };
@@ -258,7 +277,9 @@ namespace YTE
             modelMatrix[3][2] += subMeshPosition.z;
 
             auto position = modelMatrix * origin;
-            auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * 2.0f);
+            auto radiusScale = detail::ExtractMaximumUniformScale(modelMatrix);
+
+            auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
 
             if ((visible == false) || (false == model->GetVisibility()))
             {
