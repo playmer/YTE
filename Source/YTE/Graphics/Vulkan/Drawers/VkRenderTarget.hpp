@@ -86,8 +86,6 @@ namespace YTE
     virtual void Resize(vk::Extent2D& aExtent);
     virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
 
-    virtual void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
-
     virtual void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
     virtual void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
     virtual void MoveToNextEvent();
@@ -137,7 +135,6 @@ namespace YTE
     std::unique_ptr<VkCBEB<3>> mCBEB;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
-    bool mSignedUpForUpdate;
   };
 }
 

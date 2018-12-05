@@ -55,7 +55,7 @@ namespace YTE
     void RenderFull(const vk::Extent2D &aExtent);
     void Render(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
 
-    void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
+    void LoadToVulkan();
 
     void MoveToNextEvent();
     void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
@@ -99,7 +99,6 @@ namespace YTE
     Window *mWindow;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
-    bool mSignedUpForUpdate;
     bool mIsResize = false;
 
     friend class ScreenQuad;
@@ -125,7 +124,7 @@ namespace YTE
       ScreenQuad(VkRenderToScreen* aParent);
       ~ScreenQuad();
 
-      void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
+      void LoadToVulkan();
 
       void Resize();
 
@@ -167,8 +166,6 @@ namespace YTE
     public:
       ScreenShader(VkRenderToScreen* aParent, ScreenQuad *aSibling, std::string& aShaderSetName, bool aReload);
       ~ScreenShader();
-
-      void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
 
       void Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO);
 

@@ -83,7 +83,7 @@ namespace YTE
 
     if constexpr (YTE_CAN_PROFILE)
     {
-      EASY_PROFILER_ENABLE;
+      //EASY_PROFILER_ENABLE;
       profiler::startListen();
     }
 

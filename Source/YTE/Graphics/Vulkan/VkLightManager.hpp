@@ -32,13 +32,11 @@ namespace YTE
 
     void SetSurfaceAndView(VkRenderedSurface* aSurface, GraphicsView* aView);
 
-    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent);
+    void LoadToVulkan(VkGraphicsDataUpdate* aEvent);
 
     void AddLight(VkInstantiatedLight *aLight);
     std::unique_ptr<VkInstantiatedLight> CreateLight();
     void DestroyLight(VkInstantiatedLight* aLight);
-
-    void UpdateLightValue(unsigned int aIndex, UBOs::Light &aLightValue);
 
     void SetLights(bool aOnOrOff);
 

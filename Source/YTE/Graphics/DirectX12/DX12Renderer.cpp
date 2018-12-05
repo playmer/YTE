@@ -102,7 +102,6 @@ namespace YTE
     //
     //mEngine->RegisterEvent<&Dx12Renderer::FrameUpdate>(Events::FrameUpdate, this);
     //mEngine->RegisterEvent<&Dx12Renderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
-    //mEngine->RegisterEvent<&Dx12Renderer::AnimationUpdate>(Events::AnimationUpdate, this);
     //mEngine->RegisterEvent<&Dx12Renderer::PresentFrame>(Events::PresentFrame, this);
   }
 
@@ -435,15 +434,6 @@ namespace YTE
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
-    }
-  }
-
-  void Dx12Renderer::AnimationUpdate(LogicUpdate* aEvent)
-  {
-    UnusedArguments(aEvent);
-    for (auto& surface : mSurfaces)
-    {
-      surface.second->AnimationUpdate();
     }
   }
 

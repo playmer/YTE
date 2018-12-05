@@ -35,7 +35,7 @@ namespace YTE
     void Create();
     void Destroy();
 
-    void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
+    void LoadToVulkan();
 
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
@@ -82,9 +82,10 @@ namespace YTE
     void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
     void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
 
-    void LoadToVulkan(VkGraphicsDataUpdate *aEvent);
+    void LoadToVulkan();
 
-    std::unordered_multimap<std::string, std::unique_ptr<VkSubmesh>> mSubmeshes;
+    std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
+    std::unordered_multimap<std::string, VkSubmesh*> mSubmeshMap;
     VkRenderer *mRenderer;
     Mesh *mMesh;
   };

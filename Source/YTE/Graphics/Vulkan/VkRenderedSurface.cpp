@@ -29,7 +29,6 @@
 
 namespace YTE
 {
-  YTEDefineEvent(VkAnimationUpdate);
   YTEDefineEvent(VkGraphicsDataUpdate);
   YTEDefineType(VkGraphicsDataUpdate)
   {
@@ -633,20 +632,6 @@ namespace YTE
     mRenderToScreen->ReloadShaders();
   }
 
-
-  void VkRenderedSurface::AnimationUpdate()
-  {
-    VkGraphicsDataUpdate update;
-    mAnimationUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
-    update.mCBO->begin();
-    SendEvent(Events::VkAnimationUpdate, &update);
-    update.mCBO->end();
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
-  }
-
-
-
   void VkRenderedSurface::SetLights(bool aOnOrOff)
   {
     for (auto& view : mViewData)
@@ -654,8 +639,6 @@ namespace YTE
       view.second.mLightManager.SetLights(aOnOrOff);
     }
   }
-
-
 
   void VkRenderedSurface::RenderFrameForSurface()
   {

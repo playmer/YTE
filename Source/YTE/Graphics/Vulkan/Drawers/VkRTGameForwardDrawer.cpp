@@ -261,7 +261,7 @@ namespace YTE
         }
 
         // We get the sub meshes that use the current shader
-        auto range = mesh.second->mSubmeshes.equal_range(shader.first);
+        auto range = mesh.second->mSubmeshMap.equal_range(shader.first);
 
         for (auto it = range.first; it != range.second; ++it)
         {
@@ -286,7 +286,7 @@ namespace YTE
               continue;
             }
 
-            auto &data = model->mPipelineData[submesh.get()];
+            auto &data = model->mPipelineData[submesh];
 
             // Gather up all the data for the individual passes.
             std::shared_ptr<vkhlf::Pipeline> *toUseToDraw{ nullptr };

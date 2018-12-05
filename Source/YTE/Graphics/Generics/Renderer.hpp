@@ -73,7 +73,6 @@ namespace YTE
     virtual void PresentFrame(LogicUpdate *aEvent);
     virtual glm::vec4 GetClearColor(GraphicsView *aView);
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
-    virtual void AnimationUpdate(LogicUpdate *aEvent);
 
     virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);

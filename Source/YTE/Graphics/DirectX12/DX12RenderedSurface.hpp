@@ -106,7 +106,6 @@ namespace YTE
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
-    void AnimationUpdate();
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);

@@ -40,6 +40,10 @@ namespace YTE
 
   void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer)
   {
+    YTEProfileFunction();
+    auto bytes = std::to_string(mData.size());
+    YTEProfileBlock(bytes.c_str());
+
     size_t dataOffset = 0;
 
     for (auto const& reference : mReferences)
@@ -57,8 +61,14 @@ namespace YTE
       dataOffset += reference.mSize;
     }
 
+    //mBytesLastUsed = mData.size();
     mData.clear();
     mReferences.clear();
+
+    //if (auto idealSize = (2 * mBytesLastUsed); mData.capacity() > (2 * mBytesLastUsed))
+    //{
+    //  mData.sh
+    //}
   }
 
   YTEDefineType(VkRenderer)
@@ -149,7 +159,6 @@ namespace YTE
 
     mEngine->RegisterEvent<&VkRenderer::FrameUpdate>(Events::FrameUpdate, this);
     mEngine->RegisterEvent<&VkRenderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
-    mEngine->RegisterEvent<&VkRenderer::AnimationUpdate>(Events::AnimationUpdate, this);
     mEngine->RegisterEvent<&VkRenderer::PresentFrame>(Events::PresentFrame, this);
   }
 
@@ -429,8 +438,9 @@ namespace YTE
 
     update.mCBO->begin();
 
-    mUBOUpdates.Update(update.mCBO);
+    // Currently the VkLightManager relies on this being sent, should have them do something else.
     SendEvent(Events::VkGraphicsDataUpdate, &update);
+    mUBOUpdates.Update(update.mCBO);
 
     update.mCBO->end();
 
@@ -463,15 +473,6 @@ namespace YTE
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
-    }
-  }
-
-  void VkRenderer::AnimationUpdate(LogicUpdate* aEvent)
-  {
-    UnusedArguments(aEvent);
-    for (auto& surface : mSurfaces)
-    {
-      surface.second->AnimationUpdate();
     }
   }
 

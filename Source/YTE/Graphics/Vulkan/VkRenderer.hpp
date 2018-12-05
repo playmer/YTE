@@ -45,6 +45,7 @@ namespace YTE
 
     std::vector<u8> mData;
     std::vector<VkUBOReference> mReferences;
+    //size_t mBytesLastUsed = 0;
   };
 
   class VkRenderer : public Renderer
@@ -104,7 +105,6 @@ namespace YTE
     void GraphicsDataUpdate(LogicUpdate *aEvent) override;
     void FrameUpdate(LogicUpdate *aEvent) override;
     void PresentFrame(LogicUpdate *aEvent) override;
-    void AnimationUpdate(LogicUpdate *aEvent) override;
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;

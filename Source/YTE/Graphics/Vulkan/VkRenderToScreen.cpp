@@ -40,8 +40,7 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
+    LoadToVulkan();
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
@@ -306,75 +305,39 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkRenderToScreen::LoadToVulkan()
   {
-    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
-    mSignedUpForUpdate = false;
-
     if (mScreenQuad)
     {
-      mScreenQuad->LoadToVulkan(aEvent);
-    }
-
-    if (mScreenShader)
-    {
-      mScreenShader->LoadToVulkan(aEvent);
+      mScreenQuad->LoadToVulkan();
     }
   }
-
-
 
   void VkRenderToScreen::ReloadQuad()
   {
     mScreenQuad.reset();
     mScreenQuad = std::make_unique<ScreenQuad>(this);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+
+    LoadToVulkan();
   }
-
-
 
   void VkRenderToScreen::ReloadShaders(bool aFromSet)
   {
     UnusedArguments(aFromSet);
-    //if (aFromSet)
-    //{
-    //  mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");
-    //}
-    LoadShaders();
+    mScreenShader.reset();
+    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, false);
+    LoadToVulkan();
   }
-
-
 
   void VkRenderToScreen::LoadQuad()
   {
     ReloadQuad();
   }
 
-
-
   void VkRenderToScreen::LoadShaders()
   {
-    mScreenShader.reset();
-    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, false);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+    ReloadShaders();
   }
-
-
-
-
-
-
-
-
-
 
 
   // /////////////////////////////////////////////////////////////////////
@@ -603,15 +566,11 @@ namespace YTE
     mShaderData.mPipelineLayout.reset();
   }
 
-
-
-  void VkRenderToScreen::ScreenQuad::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkRenderToScreen::ScreenQuad::LoadToVulkan()
   {
-    mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
-    mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
+    mParent->mRenderer->mUBOUpdates.Add(mVertexBuffer, *mVertices.data(), mVertices.size());
+    mParent->mRenderer->mUBOUpdates.Add(mIndexBuffer, *mIndices.data(), mIndices.size());
   }
-
-
 
   void VkRenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
@@ -625,20 +584,10 @@ namespace YTE
                              nullptr);
   }
 
-
-
   void VkRenderToScreen::ScreenQuad::Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
     aCBO->drawIndexed(mIndexCount, 1, 0, 0, 0);
   }
-
-
-
-
-
-
-
-
 
 
   // /////////////////////////////////////////////////////////////////////
@@ -810,21 +759,10 @@ namespace YTE
                                              mParent->GetRenderPass());
   }
 
-
-
   void VkRenderToScreen::ScreenShader::Destroy()
   {
     mShader.reset();
   }
-
-
-
-  void VkRenderToScreen::ScreenShader::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-
 
   void VkRenderToScreen::ScreenShader::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {

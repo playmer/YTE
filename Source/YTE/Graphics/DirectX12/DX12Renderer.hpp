@@ -67,7 +67,6 @@ namespace YTE
     void GraphicsDataUpdate(LogicUpdate *aEvent) override;
     void FrameUpdate(LogicUpdate *aEvent) override;
     void PresentFrame(LogicUpdate *aEvent) override;
-    void AnimationUpdate(LogicUpdate *aEvent) override;
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;

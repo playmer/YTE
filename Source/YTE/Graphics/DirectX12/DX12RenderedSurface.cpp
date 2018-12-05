@@ -600,19 +600,6 @@ namespace YTE
   }
 
 
-  void Dx12RenderedSurface::AnimationUpdate()
-  {
-    //DX12GraphicsDataUpdate update;
-    //mAnimationUpdateCBOB->NextCommandBuffer();
-    //update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
-    //update.mCBO->begin();
-    //SendEvent(Events::DX12AnimationUpdate, &update);
-    //update.mCBO->end();
-    //vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
-  }
-
-
-
   void Dx12RenderedSurface::SetLights(bool aOnOrOff)
   {
     for (auto& view : mViewData)
@@ -620,8 +607,6 @@ namespace YTE
       view.second.mLightManager.SetLights(aOnOrOff);
     }
   }
-
-
 
   void Dx12RenderedSurface::RenderFrameForSurface()
   {

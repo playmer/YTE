@@ -4,6 +4,7 @@
 ///////////////////
 
 #include "YTE/Graphics/Vulkan/VkLightManager.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
@@ -20,7 +21,7 @@ namespace YTE
 
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -49,7 +50,7 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 
     auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -73,14 +74,27 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-  void VkLightManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
+  void VkLightManager::LoadToVulkan(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
+    UnusedArguments(aEvent);
+
+    // Check to see if our lights need to update.
+    // TODO: Maybe make this happen at a higher level once Buffers are API generic?
+    for (auto& [lightIt, i] : enumerate(mLights))
+    {
+      auto& light = *lightIt;
+
+      if (light->mDataChanged)
+      {
+        mLightData.mLights[i] = light->mLightUBOData;
+        light->mDataChanged = false;
+        mUpdateRequired = true;
+      }
+    }
 
     if (mUpdateRequired)
     {
-      auto update = aEvent->mCBO;
-      mBuffer->update<UBOs::LightManager>(0, mLightData, update);
+      mSurface->GetRenderer()->mUBOUpdates.Add(mBuffer, mLightData);
       mUpdateRequired = false;
     }
   }
@@ -150,22 +164,6 @@ namespace YTE
       mLightData.mActive = 0.0f; // false
     }
 
-    mUpdateRequired = true;
-  }
-
-
-
-  void VkLightManager::UpdateLightValue(unsigned aIndex, UBOs::Light& aLightValue)
-  {
-//#ifdef _DEBUG
-//    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
-//    {
-//      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
-    mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;
   }
 

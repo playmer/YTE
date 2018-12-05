@@ -141,11 +141,6 @@ namespace YTE
     UnusedArguments(aView, aColor);
   }
 
-  void Renderer::AnimationUpdate(LogicUpdate* aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
   void Renderer::SetLights(bool aOnOrOff)
   {
     UnusedArguments(aOnOrOff);

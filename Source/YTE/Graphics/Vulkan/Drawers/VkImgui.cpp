@@ -157,9 +157,9 @@ namespace YTE
     auto vkmesh = static_cast<VkInstantiatedModel*>(instantiatedModel.get())->GetVkMesh();
 
     // We get the sub meshes that use the current shader, then draw them.
-    auto range = vkmesh->mSubmeshes.equal_range(imguiStr);
+    auto range = vkmesh->mSubmeshMap.equal_range(imguiStr);
 
-    mVkSubmesh = range.first->second.get();
+    mVkSubmesh = range.first->second;
     auto model = static_cast<VkInstantiatedModel*>(instantiatedModel.get());
     mPipelineData = &(model->mPipelineData.at(mVkSubmesh));
 

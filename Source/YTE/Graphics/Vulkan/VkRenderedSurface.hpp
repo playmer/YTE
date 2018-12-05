@@ -25,7 +25,6 @@
 namespace YTE
 {
   YTEDeclareEvent(VkGraphicsDataUpdate);
-  YTEDeclareEvent(VkAnimationUpdate);
 
   // forward declare
   struct VkCreatePipelineDataSet;
@@ -111,7 +110,6 @@ namespace YTE
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
-    void AnimationUpdate();
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);

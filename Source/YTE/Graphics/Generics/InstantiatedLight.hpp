@@ -154,8 +154,6 @@ namespace YTE
       return mLightUBOData.mIntensity;
     }
 
-
-
     UBOs::Light mLightUBOData;
     bool mDataChanged;
   };

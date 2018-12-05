@@ -34,8 +34,6 @@ namespace YTE
     , mVulkanSurface(aVulkanSurface)
     , mParentViewData(aView)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mData.mOrder = aView->mView->GetOrder();
@@ -56,8 +54,6 @@ namespace YTE
     , mDepthFormat(aDepthFormat)
     , mVulkanSurface(aVulkanSurface)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
@@ -133,19 +129,6 @@ namespace YTE
     auto& e = mCBEB->GetCurrentEvent();
     aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
   }
-
-
-
-  void VkRenderTarget::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
-  {
-    YTEProfileFunction();
-
-    mSurface->DeregisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
-    mSignedUpForUpdate = false;
-    UnusedArguments(aEvent);
-  }
-
-
 
   void VkRenderTarget::CreateFrameBuffer()
   {

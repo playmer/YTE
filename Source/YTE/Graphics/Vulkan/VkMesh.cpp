@@ -331,12 +331,15 @@ namespace YTE
 
   }
 
-  void VkSubmesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkSubmesh::LoadToVulkan()
   {
-    auto update = aEvent->mCBO;
+    YTEProfileFunction();
 
-    mVertexBuffer->update<Vertex>(0, mSubmesh->mVertexBuffer, update);
-    mIndexBuffer->update<u32>(0, mSubmesh->mIndexBuffer, update);
+    auto &vertices = mSubmesh->mVertexBuffer;
+    auto &indices = mSubmesh->mIndexBuffer;
+
+    mRenderer->mUBOUpdates.Add(mVertexBuffer, *vertices.data(), vertices.size());
+    mRenderer->mUBOUpdates.Add(mIndexBuffer, *indices.data(), indices.size());
   }
 
 
@@ -354,40 +357,43 @@ namespace YTE
     : mRenderer{ aRenderer }
     , mMesh{aMesh}
   {
-    for (unsigned i = 0; i < aMesh->mParts.size(); ++i)
+    for (auto& part : aMesh->mParts)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &aMesh->mParts[i], aRenderer);
-      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
+      auto submesh = std::make_unique<VkSubmesh>(this, &part, aRenderer);
+      mSubmeshMap.emplace(submesh->mSubmesh->mShaderSetName, submesh.get());
+      mSubmeshes.emplace_back(std::move(submesh));
     }
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    LoadToVulkan();
   }
 
   void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
-    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
+    YTEProfileFunction();
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
+    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
   }
 
   void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    YTEProfileFunction();
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
   }
 
   VkMesh::~VkMesh()
   {
   }
 
-  void VkMesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkMesh::LoadToVulkan()
   {
-    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
+    YTEProfileFunction();
 
     for (auto &submesh : mSubmeshes)
     {
-      submesh.second->LoadToVulkan(aEvent);
+      submesh->LoadToVulkan();
     }
   }
 }

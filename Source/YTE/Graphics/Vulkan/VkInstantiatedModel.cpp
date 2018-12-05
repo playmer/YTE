@@ -128,8 +128,10 @@ namespace YTE
 
 
     // create descriptor sets
-    for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
+    for (auto[submeshIt, i] : enumerate(mVkMesh->mSubmeshes))
     {
+      auto& submesh = *submeshIt;
+
       auto materialUBO = device->createBuffer(sizeof(UBOs::Material),
                                               vk::BufferUsageFlagBits::eTransferDst |
                                               vk::BufferUsageFlagBits::eUniformBuffer,
@@ -138,7 +140,7 @@ namespace YTE
                                               vk::MemoryPropertyFlagBits::eDeviceLocal,
                                               allocator);
 
-      auto &material = submesh->second->mSubmesh->mUBOMaterial;
+      auto &material = submesh->mSubmesh->mUBOMaterial;
 
       mUBOSubmeshMaterials.emplace_back(materialUBO, material);
 
@@ -153,11 +155,13 @@ namespace YTE
     mPipelineData.clear();
 
     // create descriptor sets
-    for (auto[submesh, i] : enumerate(mVkMesh->mSubmeshes))
+    for (auto[submeshIt, i] : enumerate(mVkMesh->mSubmeshes))
     {
-      submesh->second->CreateShader(mView);
+      auto& submesh = *submeshIt;
 
-      CreateDescriptorSet(submesh->second.get(), i);
+      submesh->CreateShader(mView);
+
+      CreateDescriptorSet(submesh.get(), i);
     }
   }
 
