@@ -26,9 +26,6 @@ namespace YTE
     : InstantiatedModel{}
     , mSurface{aSurface}
     , mView{ aView }
-    , mLoadUBOAnimation{ false }
-    , mLoadUBOModel{ false }
-    , mLoadUBOMaterial{ false }
   {
     mVkMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     mMesh = mVkMesh->mMesh;
@@ -44,9 +41,6 @@ namespace YTE
     : InstantiatedModel{}
     , mSurface{ aSurface }
     , mView{ aView }
-    , mLoadUBOAnimation{false}
-    , mLoadUBOModel{ false }
-    , mLoadUBOMaterial{ false }
     , mVkMesh{aMesh}
   {
     mMesh = aMesh->mMesh;
@@ -167,8 +161,6 @@ namespace YTE
     }
   }
 
-
-
   void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
                                        std::vector<Vertex>& aVertices)
   {
@@ -182,74 +174,37 @@ namespace YTE
     mVkMesh->UpdateVerticesAndIndices(aIndex, aVertices, aIndices);
   }
 
-
-  // TODO (Josh): Change the name to be more representative. (This is really 
-  //              just telling the object to register to be updated)
-  void VkInstantiatedModel::UpdateUBOModel()
-  {
-    if (!mLoadUBOAnimation && 
-        !mLoadUBOModel && 
-        !mLoadUBOMaterial)
-    {
-      mSurface->RegisterEvent<&VkInstantiatedModel::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
-    }
-  }
-
-  constexpr bool cConsolodatedDataUpdates = false;
-
   void VkInstantiatedModel::UpdateUBOModel(UBOs::Model &aUBO)
   {
     mUBOModelData = aUBO;
 
-    if constexpr (cConsolodatedDataUpdates)
-    {
-      mSurface->GetRenderer()->mUBOUpdates.Add(mUBOModelMaterial,
-                                               reinterpret_cast<u8*>(&mUBOModelMaterialData), 
-                                               sizeof(mUBOModelMaterialData),
-                                               0);
-    }
-    else
-    {
-      UpdateUBOModel();
-      mLoadUBOModel = true;
-    }
+    mSurface->GetRenderer()->mUBOUpdates.Add(mUBOModel, mUBOModelData);
   }
 
   void VkInstantiatedModel::UpdateUBOAnimation(UBOs::Animation *aUBO)
   {
     mUBOAnimationData = aUBO;
 
-    UpdateUBOModel();
-
-    mLoadUBOAnimation = true;
+    mSurface->GetRenderer()->mUBOUpdates.Add(mUBOAnimation, *mUBOAnimationData);
   }
 
   void VkInstantiatedModel::UpdateUBOMaterial(UBOs::Material *aUBO)
   {
     mUBOModelMaterialData = *aUBO;
-
-    UpdateUBOModel();
-
-    mLoadUBOMaterial = true;
+    mSurface->GetRenderer()->mUBOUpdates.Add(mUBOModelMaterial, mUBOModelMaterialData);
   }
 
   void VkInstantiatedModel::UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex)
   {
-    mUBOSubmeshMaterials[aIndex].second = *aUBO;
+    auto& [buffer, ubo] = mUBOSubmeshMaterials[aIndex];
+    ubo = *aUBO;
 
-    UpdateUBOModel();
-
-    mLoadUBOMaterial = true;
+    mSurface->GetRenderer()->mUBOUpdates.Add(buffer, ubo);
   }
-
 
   void VkInstantiatedModel::SetDefaultAnimationOffset()
   {
-    mUBOAnimationData = mMesh->mSkeleton.GetDefaultOffsets();
-
-    UpdateUBOModel();
-
-    mLoadUBOAnimation = true;
+    UpdateUBOAnimation(mMesh->mSkeleton.GetDefaultOffsets());
   }
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
@@ -260,41 +215,6 @@ namespace YTE
                                                        mUBOModelMaterial,
                                                        mUBOSubmeshMaterials[aIndex].first,
                                                        mView));
-  }
-  void VkInstantiatedModel::VkGraphicsDataUpdate(YTE::VkGraphicsDataUpdate *aEvent)
-  {
-    mSurface->DeregisterEvent<&VkInstantiatedModel::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
-
-    auto update = aEvent->mCBO;
-
-    if (mLoadUBOMaterial)
-    {
-      // TODO: We're updating all materials here, which is unfortunate. Maybe update at the submesh level?
-      for (auto material : mUBOSubmeshMaterials)
-      {
-        material.first->update<UBOs::Material>(0, material.second, update);
-      }
-
-      mUBOModelMaterial->update<UBOs::Material>(0, mUBOModelMaterialData, update);
-
-      mLoadUBOMaterial = false;
-    }
-
-    if (mLoadUBOAnimation)
-    {
-      mUBOAnimation->update<UBOs::Animation>(0, *mUBOAnimationData, update);
-      mLoadUBOAnimation = false;
-    }
-
-    if constexpr (false == cConsolodatedDataUpdates)
-    {
-      if (mLoadUBOModel)
-      {
-        mUBOModel->update<UBOs::Model>(0, mUBOModelData, update);
-
-        mLoadUBOModel = false;
-      }
-    }
   }
 }
 

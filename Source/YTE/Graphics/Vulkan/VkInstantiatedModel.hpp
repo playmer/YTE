@@ -36,7 +36,6 @@ namespace YTE
     YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
     YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
 
-    YTE_Shared void UpdateUBOModel() override;
     YTE_Shared void UpdateUBOModel(UBOs::Model &aUBO) override;
     YTE_Shared void UpdateUBOAnimation(UBOs::Animation *aUBO) override;
     YTE_Shared void UpdateUBOMaterial(UBOs::Material *aUBO) override;
@@ -46,17 +45,12 @@ namespace YTE
 
     // Takes the submesh, as well as the index of the submesh.
     YTE_Shared void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
-    YTE_Shared void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     
     VkRenderedSurface *mSurface;
     GraphicsView *mView;
     std::shared_ptr<vkhlf::Buffer> mUBOModel;
     std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
     std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
-    IntrusiveList<VkInstantiatedModel>::Hook mModelHook;
-    IntrusiveList<VkInstantiatedModel>::Hook mAnimationHook;
-    IntrusiveList<VkInstantiatedModel>::Hook mModelMaterialHook;
-
 
     std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOs::Material>> mUBOSubmeshMaterials;
 
@@ -69,9 +63,6 @@ namespace YTE
     }
 
   private:
-    bool mLoadUBOModel;
-    bool mLoadUBOAnimation;
-    bool mLoadUBOMaterial;
     VkMesh *mVkMesh;
 
     static UBOs::Animation cAnimation;

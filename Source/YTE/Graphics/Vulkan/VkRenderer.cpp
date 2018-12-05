@@ -29,12 +29,12 @@ namespace YTE
 
   }
 
-  void VkUBOUpdates::Add(std::shared_ptr<vkhlf::Buffer> aBuffer,
+  void VkUBOUpdates::Add(std::shared_ptr<vkhlf::Buffer>& aBuffer,
                          u8 const* aData, 
                          size_t aSize, 
-                         size_t mOffset)
+                         size_t aOffset)
   {
-    mReferences.emplace_back(aBuffer, mOffset, aSize);
+    mReferences.emplace_back(aBuffer, aOffset, aSize);
     mData.insert(mData.end(), aData, aData + aSize);
   }
 
@@ -52,7 +52,7 @@ namespace YTE
 
       vk::ArrayProxy<u8 const> dataProxy{ static_cast<u32>(reference.mSize),
                                           &mData[dataOffset] };
-      reference.mBuffer->update<u8>(0, dataProxy, aBuffer);
+      reference.mBuffer->update<u8>(reference.mBufferOffset, dataProxy, aBuffer);
 
       dataOffset += reference.mSize;
     }

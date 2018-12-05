@@ -344,13 +344,7 @@ namespace YTE
     //{
     //  mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");
     //}
-    mScreenShader.reset();
-    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, true);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+    LoadShaders();
   }
 
 
@@ -865,9 +859,9 @@ namespace YTE
        << "// Samplers \n";
 
     auto& samplerData = mSibling->GetSamplerData();
-    for (size_t i = 0; i < samplerData.size(); ++i)
+    for (auto&[name, drawerType] : samplerData)
     {
-      ss << fmt::format("layout(binding = UBO_{}_BINDING) uniform sampler2D {}Sampler;\n", samplerData[i].first, samplerData[i].first);
+      ss << fmt::format("layout(binding = UBO_{}_BINDING) uniform sampler2D {}Sampler;\n", name, name);
     }
 
 
@@ -925,60 +919,61 @@ namespace YTE
        << "  // fragment color\n"
        << "  vec4 col = vec4(0,0,0,0);\n";
 
-    for (size_t i = 0; i < samplerData.size(); ++i)
+    for (auto& [name, drawerType] : samplerData)
     {
-      ss << fmt::format("  // {}\n", samplerData[i].first);
-      switch (samplerData[i].second)
+      ss << fmt::format("  // {}\n", name);
+
+      switch (drawerType)
       {
         case DrawerTypeCombination::AdditiveBlend:
         {
-          ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
+          ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", name);
           break;
         }
         case DrawerTypeCombination::AlphaBlend:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  vec4(({}color.w * {}color.xyz), {}color.w) );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first, 
-                            samplerData[i].first, 
-                            samplerData[i].first, 
-                            samplerData[i].first);
+                            name,
+                            name, 
+                            name, 
+                            name, 
+                            name);
           break;
         }
         case DrawerTypeCombination::MultiplicativeBlend:
         {
-          ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
+          ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", name);
           break;
         }
         case DrawerTypeCombination::Opaque:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  {}color );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first);
+                            name,
+                            name,
+                            name);
           break;
         }
         case DrawerTypeCombination::DoNotInclude:
         {
           ss << fmt::format("  // Not Included\n");
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", name, name);
           break;
         }
         case DrawerTypeCombination::DefaultCombination: // alpha blend
         default:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  vec4(({}color.w * {}color.xyz), {}color.w) );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first);
+                            name,
+                            name,
+                            name,
+                            name,
+                            name);
           break;
         }
       }

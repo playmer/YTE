@@ -18,6 +18,8 @@
 
 namespace YTE
 {
+  inline constexpr bool cConsolodatedDataUpdates = true;
+
   struct VkUBOUpdates
   {
     struct VkUBOReference
@@ -31,7 +33,14 @@ namespace YTE
       size_t mSize;
     };
 
-    void Add(std::shared_ptr<vkhlf::Buffer> aBuffer, u8 const* aData, size_t aSize, size_t mOffset);
+    void Add(std::shared_ptr<vkhlf::Buffer>& aBuffer, u8 const* aData, size_t aSize, size_t aOffset);
+
+    template <typename tType>
+    void Add(std::shared_ptr<vkhlf::Buffer>& aBuffer, tType const& aData, size_t aNumber = 1, size_t aOffset = 0)
+    {
+      Add(aBuffer, reinterpret_cast<u8 const*>(&aData), sizeof(tType) * aNumber, aOffset);
+    }
+
     void Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer);
 
     std::vector<u8> mData;

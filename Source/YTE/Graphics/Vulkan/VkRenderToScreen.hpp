@@ -85,21 +85,21 @@ namespace YTE
     void LoadQuad();
     void LoadShaders();
 
+    std::string mShaderSetName;
+    std::shared_ptr<vkhlf::Surface> mVulkanSurface;
+    std::shared_ptr<vkhlf::RenderPass> mRenderPass;
+    std::vector<VkRenderTarget::RenderTargetData*> mRenderTargetData;
+    std::unique_ptr<ScreenQuad> mScreenQuad;
+    std::unique_ptr<ScreenShader> mScreenShader;
+    std::unique_ptr<VkCBOB<3, true>> mCBOB;
+    std::unique_ptr<VkCBEB<3>> mCBEB;
+    std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
     VkRenderedSurface *mSurface;
     VkRenderer *mRenderer;
     Window *mWindow;
-    std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
-    std::shared_ptr<vkhlf::Surface> mVulkanSurface;
-    std::shared_ptr<vkhlf::RenderPass> mRenderPass;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
     bool mSignedUpForUpdate;
-    std::unique_ptr<ScreenQuad> mScreenQuad;
-    std::unique_ptr<ScreenShader> mScreenShader;
-    std::string mShaderSetName;
-    std::unique_ptr<VkCBOB<3, true>> mCBOB;
-    std::unique_ptr<VkCBEB<3>> mCBEB;
-    std::vector<VkRenderTarget::RenderTargetData*> mRenderTargetData;
     bool mIsResize = false;
 
     friend class ScreenQuad;
@@ -150,13 +150,13 @@ namespace YTE
       ShaderData mShaderData;
 
       std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
-      std::vector<Vertex> mVertices;
-      std::vector<u32> mIndices;
       std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
       std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
       std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
-      u32 mIndexCount;
       std::vector<std::pair<std::string, DrawerTypeCombination>> mSamplers;
+      std::vector<Vertex> mVertices;
+      std::vector<u32> mIndices;
+      u32 mIndexCount;
     };
 
     ////////////////////////////////////////////////////
@@ -177,10 +177,9 @@ namespace YTE
       void Destroy();
       std::string GenerateFragmentShader();
 
+      std::shared_ptr<vkhlf::Pipeline> mShader;
       VkRenderToScreen *mParent;
       VkRenderToScreen::ScreenQuad *mSibling;
-
-      std::shared_ptr<vkhlf::Pipeline> mShader;
     };
   };
 }
