@@ -106,7 +106,6 @@ namespace YTE
     // Events
     /////////////////////////////////
     void ResizeEvent(WindowResize *aEvent);
-    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent);
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();

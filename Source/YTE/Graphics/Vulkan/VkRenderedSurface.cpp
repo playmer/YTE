@@ -113,18 +113,18 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    GetViewData(aView)->mViewUBOData = aUBOView;
-    ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    auto view = GetViewData(aView);
+    view->mViewUBOData = aUBOView;
+    mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
   }
 
   void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
   {
     YTEProfileFunction();
 
-    GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    auto view = GetViewData(aView);
+    view->mIlluminationUBOData = aIllumination;
+    mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
   }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -525,20 +525,6 @@ namespace YTE
     if (mViewData.size() != 0)
     {
       mRenderToScreen->SetRenderTargets(rts);
-    }
-  }
-
-  void VkRenderedSurface::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent)
-  {
-    YTEProfileFunction();
-
-    for (auto const&[view, data] : mViewData)
-    {
-      YTEMetaProfileBlock(data.mName.c_str());
-
-      data.mViewUBO->update<UBOs::View>(0, data.mViewUBOData, aEvent->mCBO);
-      data.mIlluminationUBO->update<UBOs::Illumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
-      this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
