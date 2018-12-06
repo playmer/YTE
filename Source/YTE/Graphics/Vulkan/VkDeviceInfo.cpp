@@ -120,5 +120,6 @@ namespace YTE
     const std::string Texture{ "Texture" };
     const std::string UniformBufferObject{ "UniformBufferObject" };
     const std::string SpriteInstances{ "SpriteInstances" };
+    const std::string BufferUpdates{ "BufferUpdates" };
   }
 }

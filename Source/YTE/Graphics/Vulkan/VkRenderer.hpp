@@ -22,6 +22,12 @@ namespace YTE
 
   struct VkUBOUpdates
   {
+    VkUBOUpdates(VkRenderer* aRenderer)
+      : mRenderer{aRenderer}
+    {
+
+    }
+
     struct VkUBOReference
     {
       VkUBOReference(std::shared_ptr<vkhlf::Buffer>& aBuffer,
@@ -45,6 +51,7 @@ namespace YTE
 
     std::vector<u8> mData;
     std::vector<VkUBOReference> mReferences;
+    VkRenderer* mRenderer;
     //size_t mBytesLastUsed = 0;
   };
 

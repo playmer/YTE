@@ -53,8 +53,6 @@ namespace YTE
       //  mCBOs[i].reset();
       //}
     }
-
-
     
     // Increments the current CBO and resets the one before it
     void NextCommandBuffer()
@@ -70,25 +68,19 @@ namespace YTE
         mHasBeenUsed[mIndex] = true;
         return; // dont reset uninitialized data
       }
-      if (mIsSecondary)
-      {
-        mCBOs[mIndex]->reset(vk::CommandBufferResetFlagBits::eReleaseResources);
-      }
-      else
-      {
-        mCBOs[mIndex]->reset(vk::CommandBufferResetFlagBits::eReleaseResources);
-      }
+
+      mCBOs[mIndex]->reset(vk::CommandBufferResetFlagBits::eReleaseResources);
     }
+
     void operator++()
     {
       NextCommandBuffer();
     }
+
     void operator++(int)
     {
       NextCommandBuffer();
     }
-
-
 
     std::shared_ptr<vkhlf::CommandBuffer>& GetCurrentCBO()
     {
@@ -99,14 +91,10 @@ namespace YTE
       return mCBOs[mIndex];
     }
 
-
-
     size_t size()
     {
       return mSize;
     }
-
-
 
   private:
     std::array<std::shared_ptr<vkhlf::CommandBuffer>, tBufferCount> mCBOs;

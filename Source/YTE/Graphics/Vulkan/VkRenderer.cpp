@@ -38,37 +38,51 @@ namespace YTE
     mData.insert(mData.end(), aData, aData + aSize);
   }
 
-  void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer)
+  void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aCommandBuffer)
   {
     YTEProfileFunction();
     auto bytes = std::to_string(mData.size());
+    auto size = mData.size();
     YTEProfileBlock(bytes.c_str());
+
+    if (0 == size)
+    {
+      return;
+    }
+
+    auto& allocator = mRenderer->mAllocators[AllocatorTypes::BufferUpdates];
+
+    auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
+                                                          vk::BufferUsageFlagBits::eTransferSrc, 
+                                                          vk::SharingMode::eExclusive, 
+                                                          nullptr, 
+                                                          vk::MemoryPropertyFlagBits::eHostVisible,
+                                                          allocator);
+
+    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, size);
+    memcpy(pData, mData.data(), size);
+    auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
+    deviceMemory->flush(0, VK_WHOLE_SIZE);
+    deviceMemory->unmap();
 
     size_t dataOffset = 0;
 
     for (auto const& reference : mReferences)
     {
-      if (1 == aBuffer.use_count())
+      if (1 == reference.mBuffer.use_count())
       {
         dataOffset += reference.mSize;
         continue;
       }
 
-      vk::ArrayProxy<u8 const> dataProxy{ static_cast<u32>(reference.mSize),
-                                          &mData[dataOffset] };
-      reference.mBuffer->update<u8>(reference.mBufferOffset, dataProxy, aBuffer);
+      vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
+      aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
 
       dataOffset += reference.mSize;
     }
 
-    //mBytesLastUsed = mData.size();
     mData.clear();
     mReferences.clear();
-
-    //if (auto idealSize = (2 * mBytesLastUsed); mData.capacity() > (2 * mBytesLastUsed))
-    //{
-    //  mData.sh
-    //}
   }
 
   YTEDefineType(VkRenderer)
@@ -86,9 +100,10 @@ namespace YTE
 
 
   VkRenderer::VkRenderer(Engine *aEngine)
-    : Renderer(aEngine)
-    , mVulkanInternals(std::make_unique<VkInternals>())
-    , mEngine(aEngine)
+    : Renderer{ aEngine }
+    , mUBOUpdates{ this }
+    , mVulkanInternals{ std::make_unique<VkInternals>() }
+    , mEngine{ aEngine }
   {
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
 
@@ -129,6 +144,10 @@ namespace YTE
 
     mAllocators[AllocatorTypes::UniformBufferObject] =
       std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+
+    // 100MB blocks
+    mAllocators[AllocatorTypes::BufferUpdates] =
+      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024 * 100, nullptr);
 
     //Range(std::next(windows.begin()), windows.end());
 

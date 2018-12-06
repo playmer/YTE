@@ -94,6 +94,7 @@ namespace YTE
     extern const std::string Texture;
     extern const std::string UniformBufferObject;
     extern const std::string SpriteInstances;
+    extern const std::string BufferUpdates;
   }
 }
 
