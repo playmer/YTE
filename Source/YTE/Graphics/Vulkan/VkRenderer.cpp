@@ -19,7 +19,7 @@
 
 namespace YTE
 {
-  VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer>& aBuffer,
+  VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                                                size_t aBufferOffset,
                                                size_t aSize)
     : mBuffer { aBuffer }
@@ -29,7 +29,7 @@ namespace YTE
 
   }
 
-  void VkUBOUpdates::Add(std::shared_ptr<vkhlf::Buffer>& aBuffer,
+  void VkUBOUpdates::Add(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                          u8 const* aData, 
                          size_t aSize, 
                          size_t aOffset)
@@ -59,7 +59,7 @@ namespace YTE
                                                           vk::MemoryPropertyFlagBits::eHostVisible,
                                                           allocator);
 
-    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, size);
+    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
     memcpy(pData, mData.data(), size);
     auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
     deviceMemory->flush(0, VK_WHOLE_SIZE);
@@ -561,39 +561,17 @@ namespace YTE
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
 
-  struct VkUBOData
+
+  std::unique_ptr<GPUBufferBase> VkRenderer::CreateUBO(size_t aSizeOfType, size_t aSize)
   {
-    std::shared_ptr<vkhlf::Buffer> mBuffer;
-    VkRenderer *mRenderer;
-  };
-
-  class VkUBO : public UBOBase
-  {
-    public:
-    VkUBO(Type const* aType, size_t aSize)
-      : UBOBase{ aType, aSize }
-    {
-
-    }
-
-    void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) override
-    {
-      auto self = mData.Get<VkUBOData>();
-
-      self->mRenderer->mUBOUpdates.Add(self->mBuffer, aPointer, aBytes, aOffset);
-    }
-  };
-
-  std::unique_ptr<UBOBase> VkRenderer::CreateUBO(Type const* aType, size_t aSize)
-  {
-    auto base = std::make_unique<VkUBO>(aType, aSize);
+    auto base = std::make_unique<VkUBO>(aSize);
 
     auto allocator = mAllocators[AllocatorTypes::UniformBufferObject];
     auto &device = mDevice;
 
     auto uboData = base->GetData().ConstructAndGet<VkUBOData>();
     
-    uboData->mBuffer = device->createBuffer(aType->GetStoredSize() * aSize,
+    uboData->mBuffer = device->createBuffer(aSizeOfType * aSize,
                                             vk::BufferUsageFlagBits::eTransferDst |
                                             vk::BufferUsageFlagBits::eUniformBuffer,
                                             vk::SharingMode::eExclusive,
@@ -603,13 +581,12 @@ namespace YTE
 
     uboData->mRenderer = this;
 
-    return base;
+    return static_unique_pointer_cast<GPUBufferBase>(std::move(base));
   }
 
   VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
   {
     return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
   }
-
 }
 

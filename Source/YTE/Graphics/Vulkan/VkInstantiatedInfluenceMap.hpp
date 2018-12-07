@@ -25,7 +25,6 @@ namespace YTE
     VkInstantiatedInfluenceMap(VkRenderedSurface *aSurface, VkWaterInfluenceMapManager* aMapManager, GraphicsView* aView);
     ~VkInstantiatedInfluenceMap() override;
 
-    void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     void SurfaceLostEvent(ViewChanged *aEvent);
     void SurfaceGainedEvent(ViewChanged *aEvent);
 

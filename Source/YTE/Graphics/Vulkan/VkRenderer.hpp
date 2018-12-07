@@ -18,7 +18,6 @@
 
 namespace YTE
 {
-  inline constexpr bool cConsolodatedDataUpdates = true;
 
   struct VkUBOUpdates
   {
@@ -30,7 +29,7 @@ namespace YTE
 
     struct VkUBOReference
     {
-      VkUBOReference(std::shared_ptr<vkhlf::Buffer>& aBuffer,
+      VkUBOReference(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                      size_t aBufferOffset,
                      size_t aSize);
 
@@ -39,10 +38,10 @@ namespace YTE
       size_t mSize;
     };
 
-    void Add(std::shared_ptr<vkhlf::Buffer>& aBuffer, u8 const* aData, size_t aSize, size_t aOffset);
+    void Add(std::shared_ptr<vkhlf::Buffer> const& aBuffer, u8 const* aData, size_t aSize, size_t aOffset);
 
     template <typename tType>
-    void Add(std::shared_ptr<vkhlf::Buffer>& aBuffer, tType const& aData, size_t aNumber = 1, size_t aOffset = 0)
+    void Add(std::shared_ptr<vkhlf::Buffer> const& aBuffer, tType const& aData, size_t aNumber = 1, size_t aOffset = 0)
     {
       Add(aBuffer, reinterpret_cast<u8 const*>(&aData), sizeof(tType) * aNumber, aOffset);
     }
@@ -103,7 +102,7 @@ namespace YTE
 
     void ResetView(GraphicsView *aView);
 
-    std::unique_ptr<UBOBase> CreateUBO(Type const* aType, size_t aSize = 1) override;
+    std::unique_ptr<GPUBufferBase> CreateUBO(size_t aSizeOfType = 1, size_t aSize = 1) override;
 
 
     /////////////////////////////////
@@ -162,6 +161,36 @@ namespace YTE
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     Engine *mEngine;
 
+  };
+
+  struct VkUBOData
+  {
+    std::shared_ptr<vkhlf::Buffer> mBuffer;
+    VkRenderer *mRenderer;
+  };
+
+  class VkUBO : public GPUBufferBase
+  {
+  public:
+    VkUBO(size_t aSize)
+      : GPUBufferBase{ aSize }
+    {
+
+    }
+
+    void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) override
+    {
+      auto self = mData.Get<VkUBOData>();
+
+      self->mRenderer->mUBOUpdates.Add(self->mBuffer, aPointer, aBytes, aOffset);
+    }
+
+    std::shared_ptr<vkhlf::Buffer>& GetBuffer()
+    {
+      auto self = mData.Get<VkUBOData>();
+
+      return self->mBuffer;
+    }
   };
 }
 

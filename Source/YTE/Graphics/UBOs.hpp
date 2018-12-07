@@ -180,19 +180,13 @@ namespace YTE
     };
   }
 
-  class UBOBase
+  class GPUBufferBase
   {
     public:
-    UBOBase(Type const* aType, size_t aSize)
-      : mType{ aType }
-      , mArraySize{ aSize }
+    GPUBufferBase(size_t aSize)
+      : mArraySize{ aSize }
     {
 
-    }
-
-    Type const* GetType()
-    {
-      return mType;
     }
 
     PrivateImplementationLocal<32>& GetData()
@@ -204,27 +198,31 @@ namespace YTE
 
     protected:
     PrivateImplementationLocal<32> mData;
-    Type const* mType;
     size_t mArraySize;
   };
   
   template <typename tType>
-  class UBO
+  class GPUBuffer
   {
     public:
-    UBO(std::unique_ptr<UBOBase> aUBO)
-      : mUBO{ aUBO }
+    GPUBuffer(std::unique_ptr<GPUBufferBase> aUBO)
+      : mUBO{ std::move(aUBO) }
     {
 
     }
 
-    UBOBase& GetBase()
+    GPUBufferBase& GetBase()
     {
       return *mUBO;
     }
 
+    void Update(tType const& aData)
+    {
+      mUBO->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+    }
+
     private:
-    std::unique_ptr<UBOBase> mUBO;
+    std::unique_ptr<GPUBufferBase> mUBO;
   };
 }
 

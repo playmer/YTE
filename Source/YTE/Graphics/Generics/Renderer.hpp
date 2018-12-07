@@ -18,6 +18,7 @@
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
 
@@ -57,14 +58,13 @@ namespace YTE
 
     // Creates a ubo of the given type, aSize allows you to make an array of them.
     // Passing 0 to aSize will result in returning nullptr.
-    virtual std::unique_ptr<UBOBase> CreateUBO(Type const* aType, size_t aSize = 1) = 0;
+    virtual std::unique_ptr<GPUBufferBase> CreateUBO(size_t aSizeOfType = 1, size_t aSize = 1) = 0;
 
-    //template <typename tType>
-    //UBO<tType> CreateUBO(size_t aSize = 1)
-    //{
-    //  return CreateUBO(GetType<tType>(), aSize);
-    //}
-
+    template <typename tType>
+    GPUBuffer<tType> CreateUBO(size_t aSize = 1)
+    {
+      return CreateUBO(sizeof(tType), aSize);
+    }
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
     virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination);

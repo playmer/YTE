@@ -36,7 +36,7 @@ namespace YTE
     struct Illumination;
   }
 
-  class UBOBase;
+  class GPUBufferBase;
   struct Vertex;
 }
 #endif

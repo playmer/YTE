@@ -5,10 +5,9 @@
 
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
-
-
 
 namespace YTE
 {
@@ -71,12 +70,19 @@ namespace YTE
 
   void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
+    for (auto map : mMaps)
+    {
+      if (map->mDataChanged)
+      {
+        mWaterInformationData.mInformation[map->mIndex] = map->mInfluenceMapUBOData;
+        mUpdateRequired = true;
+      }
+    }
 
     if (mUpdateRequired)
     {
       auto update = aEvent->mCBO;
-      mBuffer->update<UBOs::WaterInformationManager>(0, mWaterInformationData, update);
+      mSurface->GetRenderer()->mUBOUpdates.Add(mBuffer, mWaterInformationData);
       mUpdateRequired = false;
     }
   }
@@ -131,22 +137,6 @@ namespace YTE
     mMaps.pop_back();
     mWaterInformationData.mNumberOfInfluences -= 1;
 
-    mUpdateRequired = true;
-  }
-
-
-
-  void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOs::WaterInfluenceMap& aMapValue)
-  {
-//#ifdef _DEBUG
-//    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)
-//    {
-//      DebugObjection(true, "Water Influence Map Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
-    mWaterInformationData.mInformation[aIndex] = aMapValue;
     mUpdateRequired = true;
   }
 }

@@ -207,7 +207,7 @@ namespace YTE
 
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
-    mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
+    mRenderer = static_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
   }
 

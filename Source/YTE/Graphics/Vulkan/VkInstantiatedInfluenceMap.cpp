@@ -25,8 +25,6 @@ namespace YTE
     , mManager(aMapManager)
     , mGraphicsView(aView)
   {
-    mManager->RegisterEvent<&VkInstantiatedInfluenceMap::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
-
     mGraphicsView->RegisterEvent<&VkInstantiatedInfluenceMap::SurfaceLostEvent>(Events::SurfaceLost, this);
     mGraphicsView->RegisterEvent<&VkInstantiatedInfluenceMap::SurfaceGainedEvent>(Events::SurfaceGained, this);
   }
@@ -49,17 +47,6 @@ namespace YTE
 
     mManager = &(mSurface->GetViewData(view)->mWaterInfluenceMapManager);
     mManager->AddMap(this);
-    mManager->RegisterEvent<&VkInstantiatedInfluenceMap::VkGraphicsDataUpdate>(Events::VkGraphicsDataUpdate, this);
     mDataChanged = true;
-  }
-
-  void VkInstantiatedInfluenceMap::VkGraphicsDataUpdate(YTE::VkGraphicsDataUpdate* aEvent)
-  {
-    UnusedArguments(aEvent);
-    if (mDataChanged)
-    {
-      mManager->UpdateMapValue(mIndex, mInfluenceMapUBOData);
-      mDataChanged = false;
-    }
   }
 }
