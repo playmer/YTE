@@ -192,6 +192,12 @@ namespace YTE
       return self->mBuffer;
     }
   };
+
+  template <typename tType>
+  std::shared_ptr<vkhlf::Buffer>& GetBuffer(GPUBuffer<tType>& aBuffer)
+  {
+    return static_cast<VkUBO*>(&aBuffer.GetBase())->GetBuffer();
+  }
 }
 
 

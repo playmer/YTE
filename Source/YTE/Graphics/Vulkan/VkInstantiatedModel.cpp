@@ -103,15 +103,11 @@ namespace YTE
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
-    auto& modelBuffer = static_cast<VkUBO*>(&mModelUBO.GetBase())->GetBuffer();
-    auto& animationBuffer = static_cast<VkUBO*>(&mAnimationUBO.GetBase())->GetBuffer();
-    auto& modelMaterialBuffer = static_cast<VkUBO*>(&mModelMaterialUBO.GetBase())->GetBuffer();
-    auto& submeshMaterialBuffer = static_cast<VkUBO*>(&mSubmeshMaterialsUBO[aIndex].first.GetBase())->GetBuffer();
     mPipelineData.emplace(aSubMesh, 
-                          aSubMesh->CreatePipelineData(modelBuffer,
-                                                       animationBuffer,
-                                                       modelMaterialBuffer,
-                                                       submeshMaterialBuffer,
+                          aSubMesh->CreatePipelineData(GetBuffer(mModelUBO),
+                                                       GetBuffer(mAnimationUBO),
+                                                       GetBuffer(mModelMaterialUBO),
+                                                       GetBuffer(mSubmeshMaterialsUBO[aIndex].first),
                                                        mView));
   }
 }
