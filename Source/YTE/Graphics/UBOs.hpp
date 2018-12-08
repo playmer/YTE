@@ -179,51 +179,6 @@ namespace YTE
       float mActive = 0.0f;  // bool
     };
   }
-
-  class GPUBufferBase
-  {
-    public:
-    GPUBufferBase(size_t aSize)
-      : mArraySize{ aSize }
-    {
-
-    }
-
-    PrivateImplementationLocal<32>& GetData()
-    {
-      return mData;
-    }
-
-    virtual void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) = 0;
-
-    protected:
-    PrivateImplementationLocal<32> mData;
-    size_t mArraySize;
-  };
-  
-  template <typename tType>
-  class GPUBuffer
-  {
-    public:
-    GPUBuffer(std::unique_ptr<GPUBufferBase> aUBO)
-      : mUBO{ std::move(aUBO) }
-    {
-
-    }
-
-    GPUBufferBase& GetBase()
-    {
-      return *mUBO;
-    }
-
-    void Update(tType const& aData)
-    {
-      mUBO->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
-    }
-
-    private:
-    std::unique_ptr<GPUBufferBase> mUBO;
-  };
 }
 
 YTEDeclareExternalType(UBOs::View);

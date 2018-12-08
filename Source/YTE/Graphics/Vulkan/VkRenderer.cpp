@@ -50,39 +50,42 @@ namespace YTE
       return;
     }
 
-    auto& allocator = mRenderer->mAllocators[AllocatorTypes::BufferUpdates];
-
-    auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
-                                                          vk::BufferUsageFlagBits::eTransferSrc, 
-                                                          vk::SharingMode::eExclusive, 
-                                                          nullptr, 
-                                                          vk::MemoryPropertyFlagBits::eHostVisible,
-                                                          allocator);
-
-    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
-    memcpy(pData, mData.data(), size);
-    auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
-    deviceMemory->flush(0, VK_WHOLE_SIZE);
-    deviceMemory->unmap();
-
-    size_t dataOffset = 0;
-
-    for (auto const& reference : mReferences)
-    {
-      if (1 == reference.mBuffer.use_count())
-      {
-        dataOffset += reference.mSize;
-        continue;
-      }
-
-      vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
-      aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
-
-      dataOffset += reference.mSize;
-    }
-
-    mData.clear();
-    mReferences.clear();
+    //auto& allocator = mRenderer->GetAllocator(AllocatorTypes::BufferUpdates);
+    //
+    //allocator->CreateBuffer()
+    //
+    //
+    //auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
+    //                                                      vk::BufferUsageFlagBits::eTransferSrc, 
+    //                                                      vk::SharingMode::eExclusive, 
+    //                                                      nullptr, 
+    //                                                      vk::MemoryPropertyFlagBits::eHostVisible,
+    //                                                      allocator);
+    //
+    //void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
+    //memcpy(pData, mData.data(), size);
+    //auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
+    //deviceMemory->flush(0, VK_WHOLE_SIZE);
+    //deviceMemory->unmap();
+    //
+    //size_t dataOffset = 0;
+    //
+    //for (auto const& reference : mReferences)
+    //{
+    //  if (1 == reference.mBuffer.use_count())
+    //  {
+    //    dataOffset += reference.mSize;
+    //    continue;
+    //  }
+    //
+    //  vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
+    //  aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
+    //
+    //  dataOffset += reference.mSize;
+    //}
+    //
+    //mData.clear();
+    //mReferences.clear();
   }
 
   YTEDefineType(VkRenderer)
@@ -135,21 +138,21 @@ namespace YTE
 
     mGraphicsQueue = mDevice->getQueue(family, 0);
 
-    mAllocators[AllocatorTypes::Mesh] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    // 4x 1024 texture size for rgba in this one
-    mAllocators[AllocatorTypes::Texture] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
-
-    mAllocators[AllocatorTypes::UniformBufferObject] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-
-    // 100MB blocks
-    mAllocators[AllocatorTypes::BufferUpdates] =
-      std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024 * 100, nullptr);
-
-    //Range(std::next(windows.begin()), windows.end());
+    //mAllocators[AllocatorTypes::Mesh] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+    //
+    //// 4x 1024 texture size for rgba in this one
+    //mAllocators[AllocatorTypes::Texture] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
+    //
+    //mAllocators[AllocatorTypes::UniformBufferObject] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
+    //
+    //// 100MB blocks
+    //mAllocators[AllocatorTypes::BufferUpdates] =
+    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024 * 100, nullptr);
+    //
+    ////Range(std::next(windows.begin()), windows.end());
 
     bool firstSet = false;
     for (auto &[name, window] : windows)
@@ -561,32 +564,136 @@ namespace YTE
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
 
-
-  std::unique_ptr<GPUBufferBase> VkRenderer::CreateUBO(size_t aSizeOfType, size_t aSize)
-  {
-    auto base = std::make_unique<VkUBO>(aSize);
-
-    auto allocator = mAllocators[AllocatorTypes::UniformBufferObject];
-    auto &device = mDevice;
-
-    auto uboData = base->GetData().ConstructAndGet<VkUBOData>();
-    
-    uboData->mBuffer = device->createBuffer(aSizeOfType * aSize,
-                                            vk::BufferUsageFlagBits::eTransferDst |
-                                            vk::BufferUsageFlagBits::eUniformBuffer,
-                                            vk::SharingMode::eExclusive,
-                                            nullptr,
-                                            vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                            allocator);
-
-    uboData->mRenderer = this;
-
-    return static_unique_pointer_cast<GPUBufferBase>(std::move(base));
-  }
-
   VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
   {
     return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
+  }
+
+
+  GPUAllocator& VkRenderer::InternalMakeAllocator(std::string const& aAllocatorType)
+  {
+    auto allocator = std::make_unique<VkGPUAllocator>();
+  }
+
+  VkGPUAllocator::VkGPUAllocator(size_t aBlockSize)
+    : GPUAllocator{aBlockSize}
+  {
+
+  }
+
+  template <typename tType>
+  u64 ToU64(tType aValue)
+  {
+    return static_cast<u64>(aValue);
+  }
+
+  vk::MemoryPropertyFlagBits ToVulkan(GPUAllocator::MemoryProperty aValue)
+  {
+    u64 toReturn = 0;
+
+    auto value = ToU64(aValue);
+
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::DeviceLocal)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eDeviceLocal));
+    }
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostVisible)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostVisible));
+    }
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostCoherent)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostCoherent));
+    }
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostCached)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostCached));
+    }
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::LazilyAllocated)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eLazilyAllocated));
+    }
+    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::Protected)))
+    {
+      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eProtected));
+    }
+
+    return static_cast<vk::MemoryPropertyFlagBits>(toReturn);
+  }
+
+  vk::BufferUsageFlagBits ToVulkan(GPUAllocator::BufferUsage aValue)
+  {
+    u64 toReturn = 0;
+
+    auto value = ToU64(aValue);
+
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::TransferSrc)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eTransferSrc));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::TransferDst)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eTransferDst));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::UniformTexelBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eUniformTexelBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::StorageTexelBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eStorageTexelBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::UniformBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eUniformBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::StorageBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eStorageBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::IndexBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eIndexBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::VertexBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eVertexBuffer));
+    }
+    if (0 != (value & ToU64(GPUAllocator::BufferUsage::IndirectBuffer)))
+    {
+      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eIndirectBuffer));
+    }
+
+    return static_cast<vk::BufferUsageFlagBits>(toReturn);
+  }
+
+
+  std::unique_ptr<GPUBufferBase> VkGPUAllocator::CreateBuffer(size_t aSize, BufferUsage aUsage, MemoryProperty aProperties)
+  {
+    auto self = mData.Get<VkGPUAllocatorData>();
+
+    auto base = std::make_unique<VkUBO>(aSize);
+    
+    auto uboData = base->GetData().ConstructAndGet<VkUBOData>();
+    
+    //uboData->mBuffer = self->mDevice->createBuffer(aSize,
+    //                                               vk::BufferUsageFlagBits::eTransferDst |
+    //                                               vk::BufferUsageFlagBits::eUniformBuffer,
+    //                                               vk::SharingMode::eExclusive,
+    //                                               nullptr,
+    //                                               vk::MemoryPropertyFlagBits::eDeviceLocal,
+    //                                               self->mAllocator);
+
+    uboData->mBuffer = self->mDevice->createBuffer(aSize,
+                                                   ToVulkan(aUsage),
+                                                   vk::SharingMode::eExclusive,
+                                                   nullptr,
+                                                   ToVulkan(aProperties),
+                                                   self->mAllocator);
+
+    uboData->mRenderer = self->mRenderer;
+
+    return static_unique_pointer_cast<GPUBufferBase>(std::move(base));
   }
 }
 

@@ -10,8 +10,11 @@
 
 #include <unordered_map>
 
+#include "YTE/Graphics/GPUBuffer.hpp"
+
 #include "YTE/Graphics/Generics/Texture.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
+
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 #include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
@@ -102,8 +105,6 @@ namespace YTE
 
     void ResetView(GraphicsView *aView);
 
-    std::unique_ptr<GPUBufferBase> CreateUBO(size_t aSizeOfType = 1, size_t aSize = 1) override;
-
 
     /////////////////////////////////
     // Events
@@ -144,8 +145,10 @@ namespace YTE
       return mVulkanInternals.get();
     }
 
+    GPUAllocator& InternalMakeAllocator(std::string const& aAllocatorType) override;
+
     std::shared_ptr<vkhlf::Device> mDevice;
-    std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
+    //std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
     std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
@@ -198,6 +201,32 @@ namespace YTE
   {
     return static_cast<VkUBO*>(&aBuffer.GetBase())->GetBuffer();
   }
+
+  struct VkGPUAllocatorData
+  {
+    VkGPUAllocatorData(std::shared_ptr<vkhlf::DeviceMemoryAllocator> aAllocator,
+                       std::shared_ptr<vkhlf::Device>& aDevice,
+                       VkRenderer* aRenderer)
+      : mAllocator{aAllocator}
+      , mDevice{ aDevice }
+      , mRenderer{ aRenderer }
+    {
+
+    }
+
+    std::shared_ptr<vkhlf::DeviceMemoryAllocator> mAllocator;
+    std::shared_ptr<vkhlf::Device>& mDevice;
+    VkRenderer* mRenderer;
+  };
+
+
+  class VkGPUAllocator : public GPUAllocator
+  {
+    VkGPUAllocator(size_t aBlockSize);
+    std::unique_ptr<GPUBufferBase> CreateBuffer(size_t aSize, 
+                                                BufferUsage aUse, 
+                                                MemoryProperty aProperties) override;
+  };
 }
 
 

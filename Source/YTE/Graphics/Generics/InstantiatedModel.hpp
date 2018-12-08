@@ -10,9 +10,11 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
-#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Vertex.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vertex.hpp"
+
+#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 

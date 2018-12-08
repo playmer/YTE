@@ -17,8 +17,10 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
 
@@ -56,10 +58,6 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
-    // Creates a ubo of the given type, aSize allows you to make an array of them.
-    // Passing 0 to aSize will result in returning nullptr.
-    virtual std::unique_ptr<GPUBufferBase> CreateUBO(size_t aSizeOfType = 1, size_t aSize = 1) = 0;
-
     template <typename tType>
     GPUBuffer<tType> CreateUBO(size_t aSize = 1)
     {
@@ -90,7 +88,21 @@ namespace YTE
     Mesh* GetBaseMesh(const std::string &aFilename);
     Texture* GetBaseTexture(const std::string &aFilename);
 
+    GPUAllocator& GetAllocator(std::string const& aAllocatorType)
+    {
+      if (auto it = mAllocators.find(aAllocatorType); it != mAllocators.end())
+      {
+        return *(it->second);
+      }
+      else
+      {
+        return InternalMakeAllocator(aAllocatorType);
+      }
+    }
+
   protected:
+    virtual GPUAllocator& InternalMakeAllocator(std::string const& aAllocatorType) = 0;
+
     std::unordered_map<std::string, JobHandle> mRequestedMeshes;
     std::shared_mutex mRequestedMeshesMutex;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
@@ -100,6 +112,8 @@ namespace YTE
     std::shared_mutex mRequestedTexturesMutex;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
     std::shared_mutex mBaseTexturesMutex;
+
+    std::unordered_map<std::string, std::unique_ptr<GPUAllocator>> mAllocators;
 
     std::unordered_set<std::string> mRequests;
     JobSystem *mJobSystem;
