@@ -22,7 +22,7 @@ namespace YTE
   VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                                                size_t aBufferOffset,
                                                size_t aSize)
-    : mBuffer { aBuffer }
+    : mBuffer(aBuffer)
     , mBufferOffset{ aBufferOffset }
     , mSize{ aSize }
   {
@@ -50,22 +50,29 @@ namespace YTE
       return;
     }
 
-    auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
+    if ((nullptr == mMappingBuffer) || size < mMappingBuffer->getSize())
+    {
+      auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
     
-    auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
-                                                          vk::BufferUsageFlagBits::eTransferSrc, 
-                                                          vk::SharingMode::eExclusive, 
-                                                          nullptr, 
-                                                          vk::MemoryPropertyFlagBits::eHostVisible,
-                                                          allocator);
+      mMappingBuffer = mRenderer->mDevice->createBuffer(size,
+                                                        vk::BufferUsageFlagBits::eTransferSrc, 
+                                                        vk::SharingMode::eExclusive, 
+                                                        nullptr, 
+                                                        vk::MemoryPropertyFlagBits::eHostVisible,
+                                                        allocator);
+    }
     
-    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
+    void* pData = mMappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
     memcpy(pData, mData.data(), size);
-    auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
+    auto& deviceMemory = mMappingBuffer->get<vkhlf::DeviceMemory>();
     deviceMemory->flush(0, VK_WHOLE_SIZE);
     deviceMemory->unmap();
     
     size_t dataOffset = 0;
+
+    aCommandBuffer->getResourceTracker()->track(mMappingBuffer);
+
+    auto commandBuffer = static_cast<vk::CommandBuffer>(*aCommandBuffer);
     
     for (auto const& reference : mReferences)
     {
@@ -76,11 +83,13 @@ namespace YTE
       }
     
       vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
-      aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
+
+      aCommandBuffer->getResourceTracker()->track(reference.mBuffer);
+      commandBuffer.copyBuffer(*mMappingBuffer, *reference.mBuffer, copyOperation);
     
       dataOffset += reference.mSize;
     }
-    
+
     mData.clear();
     mReferences.clear();
   }

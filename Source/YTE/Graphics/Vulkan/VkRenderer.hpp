@@ -53,6 +53,7 @@ namespace YTE
 
     std::vector<u8> mData;
     std::vector<VkUBOReference> mReferences;
+    std::shared_ptr<vkhlf::Buffer> mMappingBuffer;
     VkRenderer* mRenderer;
     //size_t mBytesLastUsed = 0;
   };
