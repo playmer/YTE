@@ -92,14 +92,14 @@ namespace YTE
   {
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
+    mConstructing = false;
+
     if (mTextureName.empty())
     {
       return;
     }
 
     mRenderer->RequestTexture(mTextureName);
-
-    mConstructing = false;
   }
 
   void Sprite::Initialize()

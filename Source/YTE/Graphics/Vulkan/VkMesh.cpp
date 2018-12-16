@@ -22,7 +22,6 @@ namespace YTE
       case TextureViewType::e2D:
       {
         return vk::ImageViewType::e2D;
-        break;
       }
       case TextureViewType::eCube:
       {
