@@ -401,27 +401,18 @@ namespace YTE
     mVertices.push_back(v3);
     mVertices.push_back(v4);
 
-    size_t vertexBufferSize = mVertices.size() * sizeof(Vertex);
-    size_t indexBufferSize = mIndices.size() * sizeof(u32);
+    auto allocator = mParent->mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
+    mVertexBuffer = allocator->CreateBuffer<Vertex>(mVertices.size(),
+                                                    GPUAllocation::BufferUsage::TransferDst | 
+                                                    GPUAllocation::BufferUsage::VertexBuffer,
+                                                    GPUAllocation::MemoryProperty::DeviceLocal);
 
-    // create
-    auto device = mParent->mSurface->GetDevice();
-    auto allocator = mParent->mSurface->GetAllocator(AllocatorTypes::Mesh);
+    mIndexBuffer = allocator->CreateBuffer<u32>(mIndices.size(),
+                                                GPUAllocation::BufferUsage::TransferDst | 
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
 
-    mVertexBuffer = device->createBuffer(vertexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
-
-    mIndexBuffer =  device->createBuffer(indexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
 
     Resize();
   }
@@ -568,14 +559,14 @@ namespace YTE
 
   void VkRenderToScreen::ScreenQuad::LoadToVulkan()
   {
-    mParent->mRenderer->mUBOUpdates.Add(mVertexBuffer, *mVertices.data(), mVertices.size());
-    mParent->mRenderer->mUBOUpdates.Add(mIndexBuffer, *mIndices.data(), mIndices.size());
+    mVertexBuffer.Update(mVertices.data(), mVertices.size());
+    mIndexBuffer.Update(mIndices.data(), mIndices.size());
   }
 
   void VkRenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
-    aCBO->bindVertexBuffer(0, mVertexBuffer, 0);
-    aCBO->bindIndexBuffer(mIndexBuffer, 0, vk::IndexType::eUint32);
+    aCBO->bindVertexBuffer(0, GetBuffer(mVertexBuffer), 0);
+    aCBO->bindIndexBuffer(GetBuffer(mIndexBuffer), 0, vk::IndexType::eUint32);
 
     aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                              mShaderData.mPipelineLayout,

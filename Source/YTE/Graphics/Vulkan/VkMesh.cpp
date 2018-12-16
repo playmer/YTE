@@ -58,28 +58,20 @@ namespace YTE
   {
     // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
-    auto allocator = mRenderer->mAllocators[AllocatorTypes::Mesh];
+    auto allocator = mRenderer->GetAllocator(AllocatorTypes::Mesh);
 
     auto device = mRenderer->mDevice;
 
     // Create Vertex, Index, and Material buffers.
-    auto vertexBufferSize = static_cast<u32>(mSubmesh->mVertexBuffer.size() * sizeof(Vertex));
-    mVertexBuffer = device->createBuffer(vertexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst |
-                                         vk::BufferUsageFlagBits::eVertexBuffer,
-                                         vk::SharingMode::eExclusive,
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
+    mVertexBuffer = allocator->CreateBuffer<Vertex>(mSubmesh->mVertexBuffer.size(),
+                                                    GPUAllocation::BufferUsage::TransferDst |
+                                                    GPUAllocation::BufferUsage::VertexBuffer,
+                                                    GPUAllocation::MemoryProperty::DeviceLocal);
 
-    auto indexBufferSize = static_cast<u32>(mSubmesh->mIndexBuffer.size() * sizeof(u32));
-    mIndexBuffer = device->createBuffer(indexBufferSize,
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eIndexBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
+    mIndexBuffer = allocator->CreateBuffer<u32>(mSubmesh->mIndexBuffer.size(),
+                                                GPUAllocation::BufferUsage::TransferDst |
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
 
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
@@ -261,7 +253,7 @@ namespace YTE
     // Add Uniform Buffers
 
     // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOs::View) };
+    vkhlf::DescriptorBufferInfo uboView{ GetBuffer(surface->GetUBOViewBuffer(aView)), 0, sizeof(UBOs::View) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
     // Animation (Bone Array) Buffer for Vertex shader.
@@ -277,15 +269,15 @@ namespace YTE
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
 
     // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOs::LightManager) };
+    vkhlf::DescriptorBufferInfo uboLights { GetBuffer(surface->GetLightManager(aView)->GetUBOLightBuffer()), 0, sizeof(UBOs::LightManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
 
     // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOs::Illumination) };
+    vkhlf::DescriptorBufferInfo uboIllumination { GetBuffer(surface->GetUBOIlluminationBuffer(aView)), 0, sizeof(UBOs::Illumination) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Water Buffer for the Vertex Shader
-    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOs::WaterInformationManager) };
+    vkhlf::DescriptorBufferInfo uboWater{ GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()), 0, sizeof(UBOs::WaterInformationManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers
@@ -337,8 +329,8 @@ namespace YTE
     auto &vertices = mSubmesh->mVertexBuffer;
     auto &indices = mSubmesh->mIndexBuffer;
 
-    mRenderer->mUBOUpdates.Add(mVertexBuffer, *vertices.data(), vertices.size());
-    mRenderer->mUBOUpdates.Add(mIndexBuffer, *indices.data(), indices.size());
+    mVertexBuffer.Update(vertices.data(), vertices.size());
+    mIndexBuffer.Update(indices.data(), indices.size());
   }
 
 

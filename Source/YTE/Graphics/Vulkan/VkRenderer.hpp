@@ -145,7 +145,7 @@ namespace YTE
       return mVulkanInternals.get();
     }
 
-    GPUAllocator& InternalMakeAllocator(std::string const& aAllocatorType) override;
+    GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) override;
 
     std::shared_ptr<vkhlf::Device> mDevice;
     //std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
@@ -204,7 +204,7 @@ namespace YTE
 
   struct VkGPUAllocatorData
   {
-    VkGPUAllocatorData(std::shared_ptr<vkhlf::DeviceMemoryAllocator> aAllocator,
+    VkGPUAllocatorData(std::shared_ptr<vkhlf::DeviceMemoryAllocator>& aAllocator,
                        std::shared_ptr<vkhlf::Device>& aDevice,
                        VkRenderer* aRenderer)
       : mAllocator{aAllocator}
@@ -215,18 +215,24 @@ namespace YTE
     }
 
     std::shared_ptr<vkhlf::DeviceMemoryAllocator> mAllocator;
-    std::shared_ptr<vkhlf::Device>& mDevice;
+    std::shared_ptr<vkhlf::Device> mDevice;
     VkRenderer* mRenderer;
   };
 
 
   class VkGPUAllocator : public GPUAllocator
   {
-    VkGPUAllocator(size_t aBlockSize);
-    std::unique_ptr<GPUBufferBase> CreateBuffer(size_t aSize, 
-                                                BufferUsage aUse, 
-                                                MemoryProperty aProperties) override;
+  public:
+    VkGPUAllocator(size_t aBlockSize, VkRenderer* aRenderer);
+    std::unique_ptr<GPUBufferBase> CreateBufferInternal(size_t aSize,
+                                                        GPUAllocation::BufferUsage aUse, 
+                                                        GPUAllocation::MemoryProperty aProperties) override;
   };
+
+  inline std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(GPUAllocator* aBuffer)
+  {
+    return aBuffer->GetData().Get<VkGPUAllocatorData>()->mAllocator;
+  }
 }
 
 

@@ -218,10 +218,10 @@ namespace YTE
                              nullptr);
 
     aCBO->bindVertexBuffer(0,
-                           mVkSubmesh->mVertexBuffer,
+                           GetBuffer(mVkSubmesh->mVertexBuffer),
                            0);
 
-    aCBO->bindIndexBuffer(mVkSubmesh->mIndexBuffer,
+    aCBO->bindIndexBuffer(GetBuffer(mVkSubmesh->mIndexBuffer),
                           0,
                           vk::IndexType::eUint32);
 

@@ -22,16 +22,13 @@ namespace YTE
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
     mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::LightManager),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    mBuffer = allocator->CreateBuffer<UBOs::LightManager>(1, 
+                                                          GPUAllocation::BufferUsage::TransferDst | 
+                                                          GPUAllocation::BufferUsage::UniformBuffer,
+                                                          GPUAllocation::MemoryProperty::DeviceLocal);
 
     mLightData.mActive = 0.0f; // false
 
@@ -52,15 +49,13 @@ namespace YTE
     mGraphicsView = aView;
     mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::LightManager),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    mBuffer = allocator->CreateBuffer<UBOs::LightManager>(1, 
+                                                          GPUAllocation::BufferUsage::TransferDst | 
+                                                          GPUAllocation::BufferUsage::UniformBuffer,
+                                                          GPUAllocation::MemoryProperty::DeviceLocal);
+
 
     mLights.reserve(YTE_Graphics_LightCount);
 
@@ -94,7 +89,7 @@ namespace YTE
 
     if (mUpdateRequired)
     {
-      mSurface->GetRenderer()->mUBOUpdates.Add(mBuffer, mLightData);
+      mBuffer.Update(mLightData);
       mUpdateRequired = false;
     }
   }

@@ -19,16 +19,14 @@ namespace YTE
   VkWaterInfluenceMapManager::VkWaterInfluenceMapManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
     mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
+    
+    mBuffer = allocator->CreateBuffer<UBOs::WaterInformationManager>(1,
+                                                                     GPUAllocation::BufferUsage::TransferDst | 
+                                                                     GPUAllocation::BufferUsage::UniformBuffer,
+                                                                     GPUAllocation::MemoryProperty::DeviceLocal);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
 
     mMaps.reserve(YTE_Graphics_WaterInformationCount);
 
@@ -47,15 +45,12 @@ namespace YTE
     mGraphicsView = aView;
     mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOs::WaterInformationManager),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
+    
+    mBuffer = allocator->CreateBuffer<UBOs::WaterInformationManager>(1,
+                                                                     GPUAllocation::BufferUsage::TransferDst | 
+                                                                     GPUAllocation::BufferUsage::UniformBuffer,
+                                                                     GPUAllocation::MemoryProperty::DeviceLocal);
 
     mMaps.reserve(YTE_Graphics_WaterInformationCount);
 
@@ -70,6 +65,8 @@ namespace YTE
 
   void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
   {
+    UnusedArguments(aEvent);
+
     for (auto map : mMaps)
     {
       if (map->mDataChanged)
@@ -81,8 +78,7 @@ namespace YTE
 
     if (mUpdateRequired)
     {
-      auto update = aEvent->mCBO;
-      mSurface->GetRenderer()->mUBOUpdates.Add(mBuffer, mWaterInformationData);
+      mBuffer.Update(mWaterInformationData);
       mUpdateRequired = false;
     }
   }

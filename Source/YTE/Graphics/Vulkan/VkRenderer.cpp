@@ -50,42 +50,39 @@ namespace YTE
       return;
     }
 
-    //auto& allocator = mRenderer->GetAllocator(AllocatorTypes::BufferUpdates);
-    //
-    //allocator->CreateBuffer()
-    //
-    //
-    //auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
-    //                                                      vk::BufferUsageFlagBits::eTransferSrc, 
-    //                                                      vk::SharingMode::eExclusive, 
-    //                                                      nullptr, 
-    //                                                      vk::MemoryPropertyFlagBits::eHostVisible,
-    //                                                      allocator);
-    //
-    //void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
-    //memcpy(pData, mData.data(), size);
-    //auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
-    //deviceMemory->flush(0, VK_WHOLE_SIZE);
-    //deviceMemory->unmap();
-    //
-    //size_t dataOffset = 0;
-    //
-    //for (auto const& reference : mReferences)
-    //{
-    //  if (1 == reference.mBuffer.use_count())
-    //  {
-    //    dataOffset += reference.mSize;
-    //    continue;
-    //  }
-    //
-    //  vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
-    //  aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
-    //
-    //  dataOffset += reference.mSize;
-    //}
-    //
-    //mData.clear();
-    //mReferences.clear();
+    auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
+    
+    auto mappingBuffer = mRenderer->mDevice->createBuffer(size,
+                                                          vk::BufferUsageFlagBits::eTransferSrc, 
+                                                          vk::SharingMode::eExclusive, 
+                                                          nullptr, 
+                                                          vk::MemoryPropertyFlagBits::eHostVisible,
+                                                          allocator);
+    
+    void* pData = mappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
+    memcpy(pData, mData.data(), size);
+    auto& deviceMemory = mappingBuffer->get<vkhlf::DeviceMemory>();
+    deviceMemory->flush(0, VK_WHOLE_SIZE);
+    deviceMemory->unmap();
+    
+    size_t dataOffset = 0;
+    
+    for (auto const& reference : mReferences)
+    {
+      if (1 == reference.mBuffer.use_count())
+      {
+        dataOffset += reference.mSize;
+        continue;
+      }
+    
+      vk::BufferCopy copyOperation{ dataOffset, reference.mBufferOffset, reference.mSize };
+      aCommandBuffer->copyBuffer(mappingBuffer, reference.mBuffer, copyOperation);
+    
+      dataOffset += reference.mSize;
+    }
+    
+    mData.clear();
+    mReferences.clear();
   }
 
   YTEDefineType(VkRenderer)
@@ -138,21 +135,11 @@ namespace YTE
 
     mGraphicsQueue = mDevice->getQueue(family, 0);
 
-    //mAllocators[AllocatorTypes::Mesh] =
-    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-    //
-    //// 4x 1024 texture size for rgba in this one
-    //mAllocators[AllocatorTypes::Texture] =
-    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 4096 * 4096, nullptr);
-    //
-    //mAllocators[AllocatorTypes::UniformBufferObject] =
-    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024, nullptr);
-    //
-    //// 100MB blocks
-    //mAllocators[AllocatorTypes::BufferUpdates] =
-    //  std::make_unique<vkhlf::DeviceMemoryAllocator>(mDevice, 1024 * 1024 * 100, nullptr);
-    //
-    ////Range(std::next(windows.begin()), windows.end());
+
+    MakeAllocator(AllocatorTypes::Mesh, 1024 * 1024);
+    MakeAllocator(AllocatorTypes::Texture, 4096 * 4096);
+    MakeAllocator(AllocatorTypes::UniformBufferObject, 1024 * 1024);
+    MakeAllocator(AllocatorTypes::BufferUpdates, 1024 * 1024 * 100);
 
     bool firstSet = false;
     for (auto &[name, window] : windows)
@@ -570,15 +557,22 @@ namespace YTE
   }
 
 
-  GPUAllocator& VkRenderer::InternalMakeAllocator(std::string const& aAllocatorType)
+  GPUAllocator* VkRenderer::MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize)
   {
-    auto allocator = std::make_unique<VkGPUAllocator>();
+    auto allocator = std::make_unique<VkGPUAllocator>(aBlockSize, this);
+    auto toReturn = allocator.get();
+
+    mAllocators.emplace(aAllocatorType, std::move(allocator));
+
+    return toReturn;
   }
 
-  VkGPUAllocator::VkGPUAllocator(size_t aBlockSize)
+  VkGPUAllocator::VkGPUAllocator(size_t aBlockSize, VkRenderer* aRenderer)
     : GPUAllocator{aBlockSize}
   {
-
+    auto device = aRenderer->mDevice;
+    auto allocator = std::make_shared<vkhlf::DeviceMemoryAllocator>(device, aBlockSize, nullptr);
+    mData.ConstructAndGet<VkGPUAllocatorData>(allocator, device, aRenderer);
   }
 
   template <typename tType>
@@ -587,103 +581,99 @@ namespace YTE
     return static_cast<u64>(aValue);
   }
 
-  vk::MemoryPropertyFlagBits ToVulkan(GPUAllocator::MemoryProperty aValue)
+  vk::MemoryPropertyFlags ToVulkan(GPUAllocation::MemoryProperty aValue)
   {
-    u64 toReturn = 0;
+    vk::MemoryPropertyFlags toReturn{};
 
     auto value = ToU64(aValue);
 
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::DeviceLocal)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::DeviceLocal)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eDeviceLocal));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eDeviceLocal;
     }
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostVisible)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::HostVisible)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostVisible));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eHostVisible;
     }
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostCoherent)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::HostCoherent)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostCoherent));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eHostCoherent;
     }
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::HostCached)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::HostCached)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eHostCached));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eHostCached;
     }
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::LazilyAllocated)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::LazilyAllocated)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eLazilyAllocated));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eLazilyAllocated;
     }
-    if (0 != (value & ToU64(GPUAllocator::MemoryProperty::Protected)))
+    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::Protected)))
     {
-      toReturn |= (1 << ToU64(vk::MemoryPropertyFlagBits::eProtected));
+      toReturn = toReturn | vk::MemoryPropertyFlagBits::eProtected;
     }
 
-    return static_cast<vk::MemoryPropertyFlagBits>(toReturn);
+    return toReturn;
   }
 
-  vk::BufferUsageFlagBits ToVulkan(GPUAllocator::BufferUsage aValue)
+  vk::BufferUsageFlags ToVulkan(GPUAllocation::BufferUsage aValue)
   {
-    u64 toReturn = 0;
+    vk::BufferUsageFlags toReturn{};
 
     auto value = ToU64(aValue);
 
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::TransferSrc)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::TransferSrc)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eTransferSrc));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eTransferSrc;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::TransferDst)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::TransferDst)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eTransferDst));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eTransferDst;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::UniformTexelBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::UniformTexelBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eUniformTexelBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eUniformTexelBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::StorageTexelBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::StorageTexelBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eStorageTexelBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eStorageTexelBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::UniformBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::UniformBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eUniformBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eUniformBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::StorageBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::StorageBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eStorageBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eStorageBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::IndexBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::IndexBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eIndexBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eIndexBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::VertexBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::VertexBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eVertexBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eVertexBuffer;
     }
-    if (0 != (value & ToU64(GPUAllocator::BufferUsage::IndirectBuffer)))
+    if (0 != (value & ToU64(GPUAllocation::BufferUsage::IndirectBuffer)))
     {
-      toReturn |= (1 << ToU64(vk::BufferUsageFlagBits::eIndirectBuffer));
+      toReturn = toReturn | vk::BufferUsageFlagBits::eIndirectBuffer;
     }
 
-    return static_cast<vk::BufferUsageFlagBits>(toReturn);
+    return toReturn;
   }
 
-
-  std::unique_ptr<GPUBufferBase> VkGPUAllocator::CreateBuffer(size_t aSize, BufferUsage aUsage, MemoryProperty aProperties)
+  std::unique_ptr<GPUBufferBase> VkGPUAllocator::CreateBufferInternal(size_t aSize, 
+                                                                      GPUAllocation::BufferUsage aUsage, 
+                                                                      GPUAllocation::MemoryProperty aProperties)
   {
     auto self = mData.Get<VkGPUAllocatorData>();
 
     auto base = std::make_unique<VkUBO>(aSize);
     
     auto uboData = base->GetData().ConstructAndGet<VkUBOData>();
-    
-    //uboData->mBuffer = self->mDevice->createBuffer(aSize,
-    //                                               vk::BufferUsageFlagBits::eTransferDst |
-    //                                               vk::BufferUsageFlagBits::eUniformBuffer,
-    //                                               vk::SharingMode::eExclusive,
-    //                                               nullptr,
-    //                                               vk::MemoryPropertyFlagBits::eDeviceLocal,
-    //                                               self->mAllocator);
 
+    auto usage = ToVulkan(aUsage);
+    auto properties = ToVulkan(aProperties);
+    
     uboData->mBuffer = self->mDevice->createBuffer(aSize,
                                                    ToVulkan(aUsage),
                                                    vk::SharingMode::eExclusive,

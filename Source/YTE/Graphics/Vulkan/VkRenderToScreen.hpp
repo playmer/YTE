@@ -149,8 +149,8 @@ namespace YTE
       ShaderData mShaderData;
 
       std::shared_ptr<vkhlf::DescriptorSet> mDescriptorSet;
-      std::shared_ptr<vkhlf::Buffer> mVertexBuffer;
-      std::shared_ptr<vkhlf::Buffer> mIndexBuffer;
+      GPUBuffer<Vertex> mVertexBuffer;
+      GPUBuffer<u32> mIndexBuffer;
       std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
       std::vector<std::pair<std::string, DrawerTypeCombination>> mSamplers;
       std::vector<Vertex> mVertices;

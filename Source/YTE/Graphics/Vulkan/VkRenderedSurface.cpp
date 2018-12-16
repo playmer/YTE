@@ -115,7 +115,8 @@ namespace YTE
 
     auto view = GetViewData(aView);
     view->mViewUBOData = aUBOView;
-    mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
+    view->mViewUBO.Update(view->mViewUBOData);
+    //mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
   }
 
   void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
@@ -124,7 +125,8 @@ namespace YTE
 
     auto view = GetViewData(aView);
     view->mIlluminationUBOData = aIllumination;
-    mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
+    view->mIlluminationUBO.Update(view->mIlluminationUBOData);
+    //mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
   }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -176,10 +178,10 @@ namespace YTE
     return mRenderer->mDevice;
   }
 
-  std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
-  {
-    return mRenderer->mAllocators[aName];
-  }
+  //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
+  //{
+  //  return mRenderer->GetAllocator(aName);
+  //}
 
 
   void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
@@ -390,28 +392,40 @@ namespace YTE
     {
       auto emplaced = mViewData.try_emplace(aView);
 
-      auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
-                                          vk::BufferUsageFlagBits::eTransferDst |
-                                          vk::BufferUsageFlagBits::eUniformBuffer,
-                                          vk::SharingMode::eExclusive,
-                                          nullptr,
-                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                          uboAllocator);
-      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
-                                           vk::BufferUsageFlagBits::eTransferDst |
-                                           vk::BufferUsageFlagBits::eUniformBuffer,
-                                           vk::SharingMode::eExclusive,
-                                           nullptr,
-                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                           uboAllocator);
+
+      //auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
+      //auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
+      //                                    vk::BufferUsageFlagBits::eTransferDst |
+      //                                    vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                    vk::SharingMode::eExclusive,
+      //                                    nullptr,
+      //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                    uboAllocator);
+      //auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
+      //                                     vk::BufferUsageFlagBits::eTransferDst |
+      //                                     vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                     vk::SharingMode::eExclusive,
+      //                                     nullptr,
+      //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                     uboAllocator);
 
       auto &view = emplaced.first->second;
 
+      
+
+      auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
+      
+      view.mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
+                                                             GPUAllocation::BufferUsage::TransferDst |
+                                                             GPUAllocation::BufferUsage::UniformBuffer,
+                                                             GPUAllocation::MemoryProperty::DeviceLocal);
+      view.mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
+                                                                             GPUAllocation::BufferUsage::TransferDst |
+                                                                             GPUAllocation::BufferUsage::UniformBuffer,
+                                                                             GPUAllocation::MemoryProperty::DeviceLocal);
+
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mView = aView;
-      view.mViewUBO = buffer;
-      view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
       view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);

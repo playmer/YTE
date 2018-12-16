@@ -4,6 +4,7 @@
 ///////////////////
 
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
@@ -346,8 +347,8 @@ namespace YTE
             }
 
             toEmplaceInto->emplace_back(*toUseToDraw,
-                                        submesh->mVertexBuffer,
-                                        submesh->mIndexBuffer,
+                                        GetBuffer(submesh->mVertexBuffer),
+                                        GetBuffer(submesh->mIndexBuffer),
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
                                         static_cast<u32>(submesh->mIndexCount),

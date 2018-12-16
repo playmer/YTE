@@ -61,7 +61,12 @@ namespace YTE
     template <typename tType>
     GPUBuffer<tType> CreateUBO(size_t aSize = 1)
     {
-      return CreateUBO(sizeof(tType), aSize);
+      auto allocator = GetAllocator(AllocatorTypes::UniformBufferObject);
+
+      return allocator->CreateBuffer<tType>(aSize,
+                                            GPUAllocation::BufferUsage::TransferDst |
+                                            GPUAllocation::BufferUsage::UniformBuffer,
+                                            GPUAllocation::MemoryProperty::DeviceLocal);
     }
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
@@ -88,20 +93,19 @@ namespace YTE
     Mesh* GetBaseMesh(const std::string &aFilename);
     Texture* GetBaseTexture(const std::string &aFilename);
 
-    GPUAllocator& GetAllocator(std::string const& aAllocatorType)
+    GPUAllocator* GetAllocator(std::string const& aAllocatorType)
     {
       if (auto it = mAllocators.find(aAllocatorType); it != mAllocators.end())
       {
-        return *(it->second);
+        return it->second.get();
       }
-      else
-      {
-        return InternalMakeAllocator(aAllocatorType);
-      }
+
+      return nullptr;
     }
 
+    virtual GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) = 0;
+
   protected:
-    virtual GPUAllocator& InternalMakeAllocator(std::string const& aAllocatorType) = 0;
 
     std::unordered_map<std::string, JobHandle> mRequestedMeshes;
     std::shared_mutex mRequestedMeshesMutex;

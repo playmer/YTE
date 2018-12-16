@@ -11,6 +11,7 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -47,8 +48,10 @@ namespace YTE
     }
 
     // Buffers
-    std::shared_ptr<vkhlf::Buffer> mViewUBO;
-    std::shared_ptr<vkhlf::Buffer> mIlluminationUBO;
+    GPUBuffer<Vertex> mVertexBuffer;
+    GPUBuffer<u32> mIndexBuffer;
+    GPUBuffer<UBOs::View> mViewUBO;
+    GPUBuffer<UBOs::Illumination> mIlluminationUBO;
     std::string mName = "EMPTY";
 
     // Engine Side Data
@@ -138,19 +141,19 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Device>& GetDevice();
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName);
+    //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName);
 
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass(GraphicsView *aView)
     {
       return GetViewData(aView)->mRenderTarget->GetRenderPass();
     }
 
-    std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer(GraphicsView *aView)
+    GPUBuffer<UBOs::View>& GetUBOViewBuffer(GraphicsView *aView)
     {
       return GetViewData(aView)->mViewUBO;
     }
 
-    std::shared_ptr<vkhlf::Buffer>& GetUBOIlluminationBuffer(GraphicsView *aView)
+    GPUBuffer<UBOs::Illumination>& GetUBOIlluminationBuffer(GraphicsView *aView)
     {
       return GetViewData(aView)->mIlluminationUBO;
     }
