@@ -33,7 +33,7 @@ namespace YTE
     std::unique_ptr<DX12InstantiatedInfluenceMap> CreateMap();
     void DestroyMap(DX12InstantiatedInfluenceMap* aMap);
 
-    void UpdateMapValue(unsigned int aIndex, UBOWaterInfluenceMap &aMapValue);
+    void UpdateMapValue(unsigned int aIndex, UBOs::WaterInfluenceMap &aMapValue);
 
     void SetBaseHeight(float aHeight)
     {
@@ -45,7 +45,7 @@ namespace YTE
     //  return mBuffer;
     //}
 
-    UBOWaterInformationMan mWaterInformationData;
+    UBOs::WaterInformationManager mWaterInformationData;
 
   private:
     std::vector<DX12InstantiatedInfluenceMap*> mMaps;

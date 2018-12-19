@@ -42,7 +42,7 @@ namespace YTE
   {
     auto device = mRenderer->mDevice;
 
-    auto allocator = mRenderer->mAllocators[AllocatorTypes::Texture];
+    auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::Texture));
 
     // 1. init image
     vk::Format format;

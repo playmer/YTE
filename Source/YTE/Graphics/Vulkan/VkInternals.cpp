@@ -79,20 +79,8 @@ namespace YTE
     {
       enabledExtensions.emplace_back("VK_EXT_debug_report");
 
-      // Enable standard validation layer to find as much errors as possible!
+      // Enable standard validation layer to find as many errors as possible!
       enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
-
-      //enabledLayers.push_back("VK_LAYER_GOOGLE_threading");
-      //enabledLayers.push_back("VK_LAYER_GOOGLE_unique_objects");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_api_dump");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_device_limits");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_draw_state");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_image");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_mem_tracker");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_object_tracker");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_param_checker");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_screenshot");
-      //enabledLayers.push_back("VK_LAYER_LUNARG_swapchain");
     }
 
     // Create a new vulkan instance using the required extensions

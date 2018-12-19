@@ -10,9 +10,11 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
-#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Vertex.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/Vertex.hpp"
+
+#include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -34,17 +36,16 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedModel);
 
-    YTE_Shared InstantiatedModel();
+    YTE_Shared InstantiatedModel(Renderer* aRenderer);
+
+    void Create();
 
     virtual ~InstantiatedModel()
     {
       
     }
 
-    virtual void SetDefaultAnimationOffset()
-    {
-      
-    }
+    void SetDefaultAnimationOffset();
 
     virtual void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices)
     {
@@ -58,43 +59,42 @@ namespace YTE
       UnusedArguments(aIndex, aVertices, aIndices);
     }
 
-    virtual void UpdateUBOAnimation(UBOAnimation *aUBO)
+    void UpdateUBOModel(UBOs::Model const& aUBO)
     {
-      UnusedArguments(aUBO);
+      mUBOModelData = aUBO;
+      mModelUBO.Update(mUBOModelData);
     }
 
-    // Used to update with the previous data. This is useful for switching
-    // between instancing or no instancing.
-    virtual void UpdateUBOModel()
+    void UpdateUBOAnimation(UBOs::Animation *aUBO)
     {
+      mUBOAnimationData = aUBO;
+      mAnimationUBO.Update(*mUBOAnimationData);
     }
 
-    virtual void UpdateUBOModel(UBOModel &aUBO)
+    virtual void UpdateUBOSubmeshMaterial(UBOs::Material *aUBO, size_t aIndex)
     {
-      UnusedArguments(aUBO);
+      auto& [buffer, ubo] = mSubmeshMaterialsUBO[aIndex];
+
+      ubo = *aUBO;
+      buffer.Update(ubo);
     }
 
-
-    virtual void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex)
+    void UpdateUBOMaterial(UBOs::Material *aUBO)
     {
-      UnusedArguments(aUBO, aIndex);
-    }
-
-    virtual void UpdateUBOMaterial(UBOMaterial *aUBO)
-    {
-      UnusedArguments(aUBO);
+      mUBOModelMaterialData = *aUBO;
+      mModelMaterialUBO.Update(mUBOModelMaterialData);
     }
 
     /////////////////////////////////
     // Getters / Setters
     /////////////////////////////////
-    UBOModel& GetUBOModelData()
+    UBOs::Model const& GetUBOModelData()
     {
       return mUBOModelData;
     }
 
     
-    UBOMaterial GetUBOMaterialData()
+    UBOs::Material GetUBOMaterialData()
     {
       return mUBOModelMaterialData;
     }
@@ -118,12 +118,34 @@ namespace YTE
     ShaderType mType = ShaderType::Triangles;
     float mLineWidth = 1.0f;
 
+    GPUBuffer<UBOs::Model>& GetModelUBOBuffer()
+    {
+      return mModelUBO;
+    }
+
+    GPUBuffer<UBOs::Animation>& GetAnimationUBOBuffer()
+    {
+      return mAnimationUBO;
+    }
+
+    GPUBuffer<UBOs::Material>& GetModelMaterialUBOBuffer()
+    {
+      return mModelMaterialUBO;
+    }
+
   protected:
+    Renderer* mRenderer;
     Mesh *mMesh;
-    UBOModel mUBOModelData;
-    UBOAnimation *mUBOAnimationData;
-    UBOMaterial mUBOModelMaterialData;
+    GPUBuffer<UBOs::Model> mModelUBO;
+    GPUBuffer<UBOs::Animation> mAnimationUBO;
+    GPUBuffer<UBOs::Material> mModelMaterialUBO;
+    std::vector<std::pair<GPUBuffer<UBOs::Material>, UBOs::Material>> mSubmeshMaterialsUBO;
+    UBOs::Model mUBOModelData;
+    UBOs::Animation *mUBOAnimationData;
+    UBOs::Material mUBOModelMaterialData;
     bool mVisibility = true;
+
+    static UBOs::Animation cAnimation;
   };
 }
 

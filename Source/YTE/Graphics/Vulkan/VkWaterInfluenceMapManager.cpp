@@ -5,10 +5,9 @@
 
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
-
-
 
 namespace YTE
 {
@@ -20,16 +19,14 @@ namespace YTE
   VkWaterInfluenceMapManager::VkWaterInfluenceMapManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
     mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
+    
+    mBuffer = allocator->CreateBuffer<UBOs::WaterInformationManager>(1,
+                                                                     GPUAllocation::BufferUsage::TransferDst | 
+                                                                     GPUAllocation::BufferUsage::UniformBuffer,
+                                                                     GPUAllocation::MemoryProperty::DeviceLocal);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
 
     mMaps.reserve(YTE_Graphics_WaterInformationCount);
 
@@ -48,15 +45,12 @@ namespace YTE
     mGraphicsView = aView;
     mSurface->RegisterEvent<&VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOWaterInformationMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
+    
+    mBuffer = allocator->CreateBuffer<UBOs::WaterInformationManager>(1,
+                                                                     GPUAllocation::BufferUsage::TransferDst | 
+                                                                     GPUAllocation::BufferUsage::UniformBuffer,
+                                                                     GPUAllocation::MemoryProperty::DeviceLocal);
 
     mMaps.reserve(YTE_Graphics_WaterInformationCount);
 
@@ -71,12 +65,20 @@ namespace YTE
 
   void VkWaterInfluenceMapManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
+    UnusedArguments(aEvent);
+
+    for (auto map : mMaps)
+    {
+      if (map->mDataChanged)
+      {
+        mWaterInformationData.mInformation[map->mIndex] = map->mInfluenceMapUBOData;
+        mUpdateRequired = true;
+      }
+    }
 
     if (mUpdateRequired)
     {
-      auto update = aEvent->mCBO;
-      mBuffer->update<UBOWaterInformationMan>(0, mWaterInformationData, update);
+      mBuffer.Update(mWaterInformationData);
       mUpdateRequired = false;
     }
   }
@@ -131,22 +133,6 @@ namespace YTE
     mMaps.pop_back();
     mWaterInformationData.mNumberOfInfluences -= 1;
 
-    mUpdateRequired = true;
-  }
-
-
-
-  void VkWaterInfluenceMapManager::UpdateMapValue(unsigned aIndex, UBOWaterInfluenceMap& aMapValue)
-  {
-//#ifdef _DEBUG
-//    if (aIndex > mWaterInformationData.mNumberOfInfluences || aIndex < 0)
-//    {
-//      DebugObjection(true, "Water Influence Map Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
-    mWaterInformationData.mInformation[aIndex] = aMapValue;
     mUpdateRequired = true;
   }
 }

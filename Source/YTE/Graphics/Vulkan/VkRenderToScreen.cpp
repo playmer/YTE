@@ -40,8 +40,7 @@ namespace YTE
     , mScreenQuad(nullptr)
     , mScreenShader(nullptr)
   {
-    mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
+    LoadToVulkan();
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
     mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
@@ -306,81 +305,39 @@ namespace YTE
   }
 
 
-  void VkRenderToScreen::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkRenderToScreen::LoadToVulkan()
   {
-    mSurface->DeregisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
-    mSignedUpForUpdate = false;
-
     if (mScreenQuad)
     {
-      mScreenQuad->LoadToVulkan(aEvent);
-    }
-
-    if (mScreenShader)
-    {
-      mScreenShader->LoadToVulkan(aEvent);
+      mScreenQuad->LoadToVulkan();
     }
   }
-
-
 
   void VkRenderToScreen::ReloadQuad()
   {
     mScreenQuad.reset();
     mScreenQuad = std::make_unique<ScreenQuad>(this);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+
+    LoadToVulkan();
   }
-
-
 
   void VkRenderToScreen::ReloadShaders(bool aFromSet)
   {
     UnusedArguments(aFromSet);
-    //if (aFromSet)
-    //{
-    //  mSurface->GetRenderer()->GetEngine()->Log(LogType::Information, "Reloading Screen Shader:");
-    //}
     mScreenShader.reset();
-    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, true);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, false);
+    LoadToVulkan();
   }
-
-
 
   void VkRenderToScreen::LoadQuad()
   {
     ReloadQuad();
   }
 
-
-
   void VkRenderToScreen::LoadShaders()
   {
-    mScreenShader.reset();
-    mScreenShader = std::make_unique<ScreenShader>(this, mScreenQuad.get(), mShaderSetName, false);
-    if (mSignedUpForUpdate == false)
-    {
-      mSignedUpForUpdate = true;
-      mSurface->RegisterEvent<&VkRenderToScreen::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    }
+    ReloadShaders();
   }
-
-
-
-
-
-
-
-
-
 
 
   // /////////////////////////////////////////////////////////////////////
@@ -444,27 +401,18 @@ namespace YTE
     mVertices.push_back(v3);
     mVertices.push_back(v4);
 
-    size_t vertexBufferSize = mVertices.size() * sizeof(Vertex);
-    size_t indexBufferSize = mIndices.size() * sizeof(u32);
+    auto allocator = mParent->mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
+    mVertexBuffer = allocator->CreateBuffer<Vertex>(mVertices.size(),
+                                                    GPUAllocation::BufferUsage::TransferDst | 
+                                                    GPUAllocation::BufferUsage::VertexBuffer,
+                                                    GPUAllocation::MemoryProperty::DeviceLocal);
 
-    // create
-    auto device = mParent->mSurface->GetDevice();
-    auto allocator = mParent->mSurface->GetAllocator(AllocatorTypes::Mesh);
+    mIndexBuffer = allocator->CreateBuffer<u32>(mIndices.size(),
+                                                GPUAllocation::BufferUsage::TransferDst | 
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
 
-    mVertexBuffer = device->createBuffer(vertexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
-
-    mIndexBuffer =  device->createBuffer(indexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, 
-                                         vk::SharingMode::eExclusive, 
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
 
     Resize();
   }
@@ -556,7 +504,7 @@ namespace YTE
 
     // add uniform buffers
     // view buffer
-    //vkhlf::DescriptorBufferInfo uboView{mParent->mSurface->GetUBOViewBuffer(View), 0, sizeof(UBOView)};
+    //vkhlf::DescriptorBufferInfo uboView{mParent->mSurface->GetUBOViewBuffer(View), 0, sizeof(UBOs::View)};
     // wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
 
@@ -609,20 +557,16 @@ namespace YTE
     mShaderData.mPipelineLayout.reset();
   }
 
-
-
-  void VkRenderToScreen::ScreenQuad::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkRenderToScreen::ScreenQuad::LoadToVulkan()
   {
-    mVertexBuffer->update<Vertex>(0, mVertices, aEvent->mCBO);
-    mIndexBuffer->update<u32>(0, mIndices, aEvent->mCBO);
+    mVertexBuffer.Update(mVertices.data(), mVertices.size());
+    mIndexBuffer.Update(mIndices.data(), mIndices.size());
   }
-
-
 
   void VkRenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
-    aCBO->bindVertexBuffer(0, mVertexBuffer, 0);
-    aCBO->bindIndexBuffer(mIndexBuffer, 0, vk::IndexType::eUint32);
+    aCBO->bindVertexBuffer(0, GetBuffer(mVertexBuffer), 0);
+    aCBO->bindIndexBuffer(GetBuffer(mIndexBuffer), 0, vk::IndexType::eUint32);
 
     aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                              mShaderData.mPipelineLayout,
@@ -631,20 +575,10 @@ namespace YTE
                              nullptr);
   }
 
-
-
   void VkRenderToScreen::ScreenQuad::Render(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
     aCBO->drawIndexed(mIndexCount, 1, 0, 0, 0);
   }
-
-
-
-
-
-
-
-
 
 
   // /////////////////////////////////////////////////////////////////////
@@ -816,21 +750,10 @@ namespace YTE
                                              mParent->GetRenderPass());
   }
 
-
-
   void VkRenderToScreen::ScreenShader::Destroy()
   {
     mShader.reset();
   }
-
-
-
-  void VkRenderToScreen::ScreenShader::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-
 
   void VkRenderToScreen::ScreenShader::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)
   {
@@ -865,9 +788,9 @@ namespace YTE
        << "// Samplers \n";
 
     auto& samplerData = mSibling->GetSamplerData();
-    for (size_t i = 0; i < samplerData.size(); ++i)
+    for (auto&[name, drawerType] : samplerData)
     {
-      ss << fmt::format("layout(binding = UBO_{}_BINDING) uniform sampler2D {}Sampler;\n", samplerData[i].first, samplerData[i].first);
+      ss << fmt::format("layout(binding = UBO_{}_BINDING) uniform sampler2D {}Sampler;\n", name, name);
     }
 
 
@@ -925,60 +848,61 @@ namespace YTE
        << "  // fragment color\n"
        << "  vec4 col = vec4(0,0,0,0);\n";
 
-    for (size_t i = 0; i < samplerData.size(); ++i)
+    for (auto& [name, drawerType] : samplerData)
     {
-      ss << fmt::format("  // {}\n", samplerData[i].first);
-      switch (samplerData[i].second)
+      ss << fmt::format("  // {}\n", name);
+
+      switch (drawerType)
       {
         case DrawerTypeCombination::AdditiveBlend:
         {
-          ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
+          ss << fmt::format("  col = saturate( col + texture({}Sampler, inTextureCoordinates.xy) );\n\n", name);
           break;
         }
         case DrawerTypeCombination::AlphaBlend:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  vec4(({}color.w * {}color.xyz), {}color.w) );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first, 
-                            samplerData[i].first, 
-                            samplerData[i].first, 
-                            samplerData[i].first);
+                            name,
+                            name, 
+                            name, 
+                            name, 
+                            name);
           break;
         }
         case DrawerTypeCombination::MultiplicativeBlend:
         {
-          ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", samplerData[i].first);
+          ss << fmt::format("  col = saturate( col * texture({}Sampler, inTextureCoordinates.xy) );\n\n", name);
           break;
         }
         case DrawerTypeCombination::Opaque:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  {}color );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first);
+                            name,
+                            name,
+                            name);
           break;
         }
         case DrawerTypeCombination::DoNotInclude:
         {
           ss << fmt::format("  // Not Included\n");
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n\n", name, name);
           break;
         }
         case DrawerTypeCombination::DefaultCombination: // alpha blend
         default:
         {
-          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", samplerData[i].first, samplerData[i].first);
+          ss << fmt::format("  vec4 {}color = texture({}Sampler, inTextureCoordinates.xy);\n", name, name);
           ss << fmt::format("  col = saturate( vec4(((1.0f - {}color.w) * col.xyz), (1.0f - {}color.w)) + \n"
                             "                  vec4(({}color.w * {}color.xyz), {}color.w) );\n\n",
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first,
-                            samplerData[i].first);
+                            name,
+                            name,
+                            name,
+                            name,
+                            name);
           break;
         }
       }

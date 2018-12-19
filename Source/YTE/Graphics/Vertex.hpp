@@ -67,7 +67,7 @@ namespace YTE
     glm::vec4 mMatrix2;
     glm::vec4 mMatrix3;
 
-    Instance(UBOModel aModel)
+    Instance(UBOs::Model aModel)
       : mMatrix0(aModel.mModelMatrix[0])
       , mMatrix1(aModel.mModelMatrix[1])
       , mMatrix2(aModel.mModelMatrix[2])

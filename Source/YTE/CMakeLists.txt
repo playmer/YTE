@@ -32,6 +32,7 @@ if(EasyProfilerSDKPath)
   target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CAN_PROFILE=0>)
 
   set(EasyProfilerBeingUsed TRUE)
+  message(used: ${EasyProfilerBeingUsed})
 endif()
 
 if(EasyProfilerBeingUsed)

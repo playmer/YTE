@@ -28,7 +28,6 @@ namespace YTE
     YTE_Shared VkInstantiatedModel(VkMesh *aMesh, VkRenderedSurface *aSurface, GraphicsView *aView);
     YTE_Shared ~VkInstantiatedModel() override;
 
-    YTE_Shared void Create();
     YTE_Shared void CreateShader();
     YTE_Shared void SurfaceLostEvent(ViewChanged *aEvent);
     YTE_Shared void SurfaceGainedEvent(ViewChanged *aEvent);
@@ -36,26 +35,11 @@ namespace YTE
     YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
     YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
 
-    YTE_Shared void UpdateUBOModel() override;
-    YTE_Shared void UpdateUBOModel(UBOModel &aUBO) override;
-    YTE_Shared void UpdateUBOAnimation(UBOAnimation *aUBO) override;
-    YTE_Shared void UpdateUBOMaterial(UBOMaterial *aUBO) override;
-    YTE_Shared void UpdateUBOSubmeshMaterial(UBOMaterial *aUBO, size_t aIndex) override;
-
-    YTE_Shared void SetDefaultAnimationOffset() override;
-
     // Takes the submesh, as well as the index of the submesh.
     YTE_Shared void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
-    YTE_Shared void VkGraphicsDataUpdate(VkGraphicsDataUpdate *aEvent);
     
-    std::shared_ptr<vkhlf::Buffer> mUBOModel;
     VkRenderedSurface *mSurface;
     GraphicsView *mView;
-
-    std::shared_ptr<vkhlf::Buffer> mUBOAnimation;
-
-    std::shared_ptr<vkhlf::Buffer> mUBOModelMaterial;
-    std::vector<std::pair<std::shared_ptr<vkhlf::Buffer>, UBOMaterial>> mUBOSubmeshMaterials;
 
     // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
@@ -66,12 +50,7 @@ namespace YTE
     }
 
   private:
-    bool mLoadUBOModel;
-    bool mLoadUBOAnimation;
-    bool mLoadUBOMaterial;
     VkMesh *mVkMesh;
-
-    static UBOAnimation cAnimation;
   };
 }
 

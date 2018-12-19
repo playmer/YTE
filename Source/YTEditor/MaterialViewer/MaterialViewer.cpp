@@ -97,7 +97,7 @@ namespace YTEditor
   {
   }
 
-  void MaterialViewer::LoadMaterial(YTE::UBOMaterial const &aMaterial)
+  void MaterialViewer::LoadMaterial(YTE::UBOs::Material const &aMaterial)
   {
     this->Clear();
 

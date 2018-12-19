@@ -34,8 +34,6 @@ namespace YTE
     , mVulkanSurface(aVulkanSurface)
     , mParentViewData(aView)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mData.mOrder = aView->mView->GetOrder();
@@ -56,8 +54,6 @@ namespace YTE
     , mDepthFormat(aDepthFormat)
     , mVulkanSurface(aVulkanSurface)
   {
-    //mSurface->RegisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
-    mSignedUpForUpdate = true;
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
@@ -67,6 +63,8 @@ namespace YTE
 
   void VkRenderTarget::Initialize()
   {
+    YTEProfileFunction();
+
     CreateRenderPass();
     CreateFrameBuffer();
   }
@@ -75,11 +73,14 @@ namespace YTE
 
   VkRenderTarget::~VkRenderTarget()
   {
+    YTEProfileFunction();
+
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
       mData.mAttachments[i].mImageView.reset();
       mData.mAttachments[i].mImage.reset();
     }
+
     mData.mAttachments.clear();
     mData.mColorAttachments.clear();
 
@@ -101,6 +102,8 @@ namespace YTE
 
   void VkRenderTarget::Resize(vk::Extent2D& aExtent)
   {
+    YTEProfileFunction();
+
     mData.mExtent = aExtent;
     CreateFrameBuffer();
   }
@@ -127,24 +130,16 @@ namespace YTE
     aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
   }
 
-
-
-  void VkRenderTarget::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
-  {
-    mSurface->DeregisterEvent<&VkRenderTarget::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
-    mSignedUpForUpdate = false;
-    UnusedArguments(aEvent);
-  }
-
-
-
   void VkRenderTarget::CreateFrameBuffer()
   {
+    YTEProfileFunction();
+
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
       mData.mAttachments[i].mImageView.reset();
       mData.mAttachments[i].mImage.reset();
     }
+
     mData.mAttachments.clear();
     mData.mColorAttachments.clear();
 
@@ -266,6 +261,8 @@ namespace YTE
 
   void VkRenderTarget::CreateRenderPass()
   {
+    YTEProfileFunction();
+
     // Attachment Descriptions
     vk::AttachmentDescription colorAttachment{ {},
                                                mColorFormat,

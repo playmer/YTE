@@ -16,10 +16,13 @@
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
+#include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/UBOs.hpp"
+
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/GraphicsView.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -55,14 +58,24 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
-    virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView);
-    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination);
+    template <typename tType>
+    GPUBuffer<tType> CreateUBO(size_t aSize = 1)
+    {
+      auto allocator = GetAllocator(AllocatorTypes::UniformBufferObject);
+
+      return allocator->CreateBuffer<tType>(aSize,
+                                            GPUAllocation::BufferUsage::TransferDst |
+                                            GPUAllocation::BufferUsage::UniformBuffer,
+                                            GPUAllocation::MemoryProperty::DeviceLocal);
+    }
+
+    virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
+    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination);
     virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
     virtual void FrameUpdate(LogicUpdate *aEvent);
     virtual void PresentFrame(LogicUpdate *aEvent);
     virtual glm::vec4 GetClearColor(GraphicsView *aView);
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
-    virtual void AnimationUpdate(LogicUpdate *aEvent);
 
     virtual void SetLights(bool aOnOrOff);  // true for on, false for off
     virtual void RegisterView(GraphicsView *aView);
@@ -80,7 +93,20 @@ namespace YTE
     Mesh* GetBaseMesh(const std::string &aFilename);
     Texture* GetBaseTexture(const std::string &aFilename);
 
+    GPUAllocator* GetAllocator(std::string const& aAllocatorType)
+    {
+      if (auto it = mAllocators.find(aAllocatorType); it != mAllocators.end())
+      {
+        return it->second.get();
+      }
+
+      return nullptr;
+    }
+
+    virtual GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) = 0;
+
   protected:
+
     std::unordered_map<std::string, JobHandle> mRequestedMeshes;
     std::shared_mutex mRequestedMeshesMutex;
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
@@ -90,6 +116,8 @@ namespace YTE
     std::shared_mutex mRequestedTexturesMutex;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;
     std::shared_mutex mBaseTexturesMutex;
+
+    std::unordered_map<std::string, std::unique_ptr<GPUAllocator>> mAllocators;
 
     std::unordered_set<std::string> mRequests;
     JobSystem *mJobSystem;

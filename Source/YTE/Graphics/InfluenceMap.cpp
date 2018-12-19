@@ -166,7 +166,7 @@ namespace YTE
   }
 
 
-  void InfluenceMap::SetMapSourceInformation(UBOWaterInfluenceMap& aMap)
+  void InfluenceMap::SetMapSourceInformation(UBOs::WaterInfluenceMap& aMap)
   {
     if (mInstantiatedInfluenceMap)
     {

@@ -128,7 +128,7 @@ namespace YTE
       return mVertexSkeletonData;
     }
 
-    UBOAnimation* GetDefaultOffsets()
+    UBOs::Animation* GetDefaultOffsets()
     {
       return &mDefaultOffsets;
     }
@@ -152,18 +152,29 @@ namespace YTE
     uint32_t mNumBones;
     glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
-    UBOAnimation mDefaultOffsets;
-//#ifdef _DEBUG
-//    std::vector<unsigned int> mVertexErrorAdds;
-//#endif
+    UBOs::Animation mDefaultOffsets;
+    //#ifdef _DEBUG
+    //    std::vector<unsigned int> mVertexErrorAdds;
+    //#endif.
   };
-
 
   // Dimension struct is used for bounding box of 3D mesh
   struct Dimension
   {
     glm::vec3 mMin = glm::vec3(std::numeric_limits<float>::max());
     glm::vec3 mMax = glm::vec3(-std::numeric_limits<float>::max());
+
+    float GetRadius()
+    {
+      return std::max(glm::length(mMin), glm::length(mMax));
+    }
+
+    glm::vec3 GetCenter()
+    {
+      auto difference = mMax - mMin;
+
+      return mMin + (difference * .5f);
+    }
   };
 
   // Submesh class contains all the data of the actual submesh
@@ -204,7 +215,7 @@ namespace YTE
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
-    UBOMaterial mUBOMaterial;
+    UBOs::Material mUBOMaterial;
 
     std::string mDiffuseMap;
     TextureViewType mDiffuseType = TextureViewType::e2D;

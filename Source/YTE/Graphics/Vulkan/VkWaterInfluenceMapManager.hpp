@@ -11,10 +11,12 @@
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/Utilities.hpp"
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
+#include "YTE/Graphics/UBOs.hpp"
+
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/UBOs.hpp"
 
 namespace YTE
 {
@@ -38,23 +40,23 @@ namespace YTE
     std::unique_ptr<VkInstantiatedInfluenceMap> CreateMap();
     void DestroyMap(VkInstantiatedInfluenceMap* aMap);
 
-    void UpdateMapValue(unsigned int aIndex, UBOWaterInfluenceMap &aMapValue);
+    void UpdateMapValue(unsigned int aIndex, UBOs::WaterInfluenceMap &aMapValue);
 
     void SetBaseHeight(float aHeight)
     {
       mWaterInformationData.mBaseHeight = aHeight;
     }
 
-    std::shared_ptr<vkhlf::Buffer> GetUBOMapBuffer()
+    GPUBuffer<UBOs::WaterInformationManager>& GetUBOMapBuffer()
     {
       return mBuffer;
     }
 
-    UBOWaterInformationMan mWaterInformationData;
+    UBOs::WaterInformationManager mWaterInformationData;
 
   private:
     std::vector<VkInstantiatedInfluenceMap*> mMaps;
-    std::shared_ptr<vkhlf::Buffer> mBuffer;
+    GPUBuffer<UBOs::WaterInformationManager> mBuffer;
     VkRenderedSurface* mSurface;
     GraphicsView* mGraphicsView;
     unsigned char mMapUse[YTE_Graphics_WaterInformationCount];

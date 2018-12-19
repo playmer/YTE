@@ -190,7 +190,7 @@ namespace YTE
     YTE_Shared void ReadAnimation(AnimationData::Node const& aNode, glm::mat4 const& aParentTransform);
     YTE_Shared void Animate();
 
-    YTE_Shared UBOAnimation* GetUBOAnim();
+    YTE_Shared UBOs::Animation* GetUBOAnim();
     YTE_Shared Skeleton* GetSkeleton();
 
     std::string mName;
@@ -212,9 +212,7 @@ namespace YTE
     }
 
   private:
-    //aiScene *mScene;
-    //aiAnimation *mAnimation;
-    UBOAnimation mUBOAnimationData;
+    UBOs::Animation mUBOAnimationData;
     Model *mModel;
     Engine *mEngine;
 

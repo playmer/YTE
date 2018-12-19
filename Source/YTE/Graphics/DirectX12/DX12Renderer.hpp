@@ -50,8 +50,8 @@ namespace YTE
                            u32 aLayerCount,
                            TextureType aType) override;
         
-    void UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView) override;
-    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination) override;
+    void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView) override;
+    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination) override;
 
     DX12Mesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,
@@ -67,7 +67,6 @@ namespace YTE
     void GraphicsDataUpdate(LogicUpdate *aEvent) override;
     void FrameUpdate(LogicUpdate *aEvent) override;
     void PresentFrame(LogicUpdate *aEvent) override;
-    void AnimationUpdate(LogicUpdate *aEvent) override;
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;

@@ -29,7 +29,6 @@
 
 namespace YTE
 {
-  YTEDefineEvent(VkAnimationUpdate);
   YTEDefineEvent(VkGraphicsDataUpdate);
   YTEDefineType(VkGraphicsDataUpdate)
   {
@@ -53,6 +52,8 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
+    YTEProfileFunction();
+
     auto internals = mRenderer->GetVkInternals();
 
     auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
@@ -96,6 +97,8 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
+    YTEProfileFunction();
+
     if (mCanPresent)
     {
       PresentFrame();
@@ -106,18 +109,24 @@ namespace YTE
     mRenderToScreen.reset();
   }
   
-  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
-    GetViewData(aView)->mViewUBOData = aUBOView;
-    ////GetViewData(aView).mViewUBOData.mProjectionMatrix[0][0] *= -1;   // flips vulkan x axis right, since it defaults down
-    //GetViewData(aView).mViewUBOData.mProjectionMatrix[1][1] *= -1;   // flips vulkan y axis up, since it defaults down
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    YTEProfileFunction();
+
+    auto view = GetViewData(aView);
+    view->mViewUBOData = aUBOView;
+    view->mViewUBO.Update(view->mViewUBOData);
+    //mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
   }
 
-  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
+  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
   {
-    GetViewData(aView)->mIlluminationUBOData = aIllumination;
-    this->RegisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    YTEProfileFunction();
+
+    auto view = GetViewData(aView);
+    view->mIlluminationUBOData = aIllumination;
+    view->mIlluminationUBO.Update(view->mIlluminationUBOData);
+    //mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
   }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -135,6 +144,8 @@ namespace YTE
   // Models
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
   {
+    YTEProfileFunction();
+
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
@@ -144,6 +155,8 @@ namespace YTE
 
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
+    YTEProfileFunction();
+
     mDataUpdateRequired = true;
 
     auto model = std::make_unique<VkInstantiatedModel>(mRenderer->mMeshes[aMesh->mName].get(), this, aView);
@@ -154,6 +167,8 @@ namespace YTE
 
   void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
   {
+    YTEProfileFunction();
+
     auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(aModel->GetVkMesh())].push_back(aModel);
   }
@@ -163,10 +178,10 @@ namespace YTE
     return mRenderer->mDevice;
   }
 
-  std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
-  {
-    return mRenderer->mAllocators[aName];
-  }
+  //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
+  //{
+  //  return mRenderer->GetAllocator(aName);
+  //}
 
 
   void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
@@ -175,6 +190,8 @@ namespace YTE
     {
       return;
     }
+
+    YTEProfileFunction();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -196,6 +213,8 @@ namespace YTE
     {
       return;
     }
+
+    YTEProfileFunction();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -294,6 +313,8 @@ namespace YTE
 
   void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
+    YTEProfileFunction();
+
     auto baseDevice = static_cast<vk::PhysicalDevice>
                                   (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
     vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
@@ -347,6 +368,8 @@ namespace YTE
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
+    YTEProfileFunction();
+
     UnusedArguments(aEvent);
 
     ResizeInternal(false);
@@ -361,34 +384,48 @@ namespace YTE
                                        DrawerTypes aDrawerType,
                                        DrawerTypeCombination aCombination)
   {
+    YTEProfileFunction();
+
     auto it = mViewData.find(aView);
 
     if (it == mViewData.end())
     {
       auto emplaced = mViewData.try_emplace(aView);
 
-      auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
-                                          vk::BufferUsageFlagBits::eTransferDst |
-                                          vk::BufferUsageFlagBits::eUniformBuffer,
-                                          vk::SharingMode::eExclusive,
-                                          nullptr,
-                                          vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                          uboAllocator);
-      auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
-                                           vk::BufferUsageFlagBits::eTransferDst |
-                                           vk::BufferUsageFlagBits::eUniformBuffer,
-                                           vk::SharingMode::eExclusive,
-                                           nullptr,
-                                           vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                           uboAllocator);
+
+      //auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
+      //auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
+      //                                    vk::BufferUsageFlagBits::eTransferDst |
+      //                                    vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                    vk::SharingMode::eExclusive,
+      //                                    nullptr,
+      //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                    uboAllocator);
+      //auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
+      //                                     vk::BufferUsageFlagBits::eTransferDst |
+      //                                     vk::BufferUsageFlagBits::eUniformBuffer,
+      //                                     vk::SharingMode::eExclusive,
+      //                                     nullptr,
+      //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
+      //                                     uboAllocator);
 
       auto &view = emplaced.first->second;
 
+      
+
+      auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
+      
+      view.mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
+                                                             GPUAllocation::BufferUsage::TransferDst |
+                                                             GPUAllocation::BufferUsage::UniformBuffer,
+                                                             GPUAllocation::MemoryProperty::DeviceLocal);
+      view.mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
+                                                                             GPUAllocation::BufferUsage::TransferDst |
+                                                                             GPUAllocation::BufferUsage::UniformBuffer,
+                                                                             GPUAllocation::MemoryProperty::DeviceLocal);
+
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mView = aView;
-      view.mViewUBO = buffer;
-      view.mIlluminationUBO = buffer2;
       view.mLightManager.SetSurfaceAndView(this, aView);
       view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
@@ -414,6 +451,8 @@ namespace YTE
                                              DrawerTypes aDrawerType,
                                              DrawerTypeCombination aCombination)
   {
+    YTEProfileFunction();
+
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget.reset();
     viewData->mRenderTarget = CreateRenderTarget(aDrawerType, viewData, aCombination);
@@ -435,6 +474,8 @@ namespace YTE
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
                                                     DrawerTypeCombination aCombination)
   {
+    YTEProfileFunction();
+
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget->SetCombinationType(aCombination);
     viewData->mRenderTarget->SetView(viewData);
@@ -454,6 +495,8 @@ namespace YTE
 
   void VkRenderedSurface::DeregisterView(GraphicsView *aView)
   {
+    YTEProfileFunction();
+
     auto it = mViewData.find(aView);
 
     if (it != mViewData.end())
@@ -476,6 +519,8 @@ namespace YTE
 
   void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
+    YTEProfileFunction();
+
     auto it = mViewData.find(aView);
 
     if (it != mViewData.end())
@@ -494,16 +539,6 @@ namespace YTE
     if (mViewData.size() != 0)
     {
       mRenderToScreen->SetRenderTargets(rts);
-    }
-  }
-
-  void VkRenderedSurface::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent)
-  {
-    for (auto const&[view, data] : mViewData)
-    {
-      data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
-      data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
-      this->DeregisterEvent<&VkRenderedSurface::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
     }
   }
 
@@ -597,20 +632,6 @@ namespace YTE
     mRenderToScreen->ReloadShaders();
   }
 
-
-  void VkRenderedSurface::AnimationUpdate()
-  {
-    VkGraphicsDataUpdate update;
-    mAnimationUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
-    update.mCBO->begin();
-    SendEvent(Events::VkAnimationUpdate, &update);
-    update.mCBO->end();
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
-  }
-
-
-
   void VkRenderedSurface::SetLights(bool aOnOrOff)
   {
     for (auto& view : mViewData)
@@ -619,11 +640,14 @@ namespace YTE
     }
   }
 
-
-
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    mRenderer->mGraphicsQueue->waitIdle();
+    YTEProfileFunction();
+
+    {
+      YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
+      mRenderer->mGraphicsQueue->waitIdle();
+    }
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
@@ -645,17 +669,25 @@ namespace YTE
 
 
     // build secondaries
-    for (auto const& [view, data] : mViewData)
     {
-      data.mRenderTarget->RenderFull(mRenderer->mMeshes);
-      data.mRenderTarget->MoveToNextEvent();
+      YTEMetaProfileBlock("Building Secondary Command Buffers");
+
+      for (auto const& [view, data] : mViewData)
+      {
+        YTEMetaProfileBlock(data.mName.c_str());
+        
+        data.mRenderTarget->RenderFull(mRenderer->mMeshes);
+        data.mRenderTarget->MoveToNextEvent();
+      }
     }
 
-
     // render to screen;
-    mRenderToScreen->RenderFull(extent);
-    mRenderToScreen->MoveToNextEvent();
+    {
+      YTEMetaProfileBlock("Building Secondary Command Buffers");
 
+      mRenderToScreen->RenderFull(extent);
+      mRenderToScreen->MoveToNextEvent();
+    }
 
     // cube map render
     std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
@@ -667,27 +699,33 @@ namespace YTE
 
     // render all first pass render targets
     // wait on present semaphore for first render
-    for (auto &v : mViewData)
     {
-      v.second.mRenderTarget->ExecuteSecondaryEvent(cbo);
+      YTEMetaProfileBlock("Building Primary Command Buffer");
 
-      glm::vec4 col = v.second.mClearColor;
+      for (auto const&[view, data] : mViewData)
+      {
+        YTEMetaProfileBlock(data.mName.c_str());
 
-      colorValues[0] = col.x;
-      colorValues[1] = col.y;
-      colorValues[2] = col.z;
-      colorValues[3] = col.w;
-      vk::ClearValue color{ colorValues };
+        data.mRenderTarget->ExecuteSecondaryEvent(cbo);
 
-      cbo->beginRenderPass(v.second.mRenderTarget->GetRenderPass(),
-                           v.second.mRenderTarget->GetFrameBuffer(),
-                           vk::Rect2D({ 0, 0 }, v.second.mRenderTarget->GetRenderTargetData()->mExtent),
-                           { color, depthStencil },
-                           vk::SubpassContents::eSecondaryCommandBuffers);
+        glm::vec4 col = data.mClearColor;
 
-      v.second.mRenderTarget->ExecuteCommands(cbo);
+        colorValues[0] = col.x;
+        colorValues[1] = col.y;
+        colorValues[2] = col.z;
+        colorValues[3] = col.w;
+        vk::ClearValue color{ colorValues };
 
-      cbo->endRenderPass();
+        cbo->beginRenderPass(data.mRenderTarget->GetRenderPass(),
+                             data.mRenderTarget->GetFrameBuffer(),
+                             vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
+                             { color, depthStencil },
+                             vk::SubpassContents::eSecondaryCommandBuffers);
+
+        data.mRenderTarget->ExecuteCommands(cbo);
+
+        cbo->endRenderPass();
+      }
     }
 
     colorValues[0] = 1.0f;
@@ -717,8 +755,12 @@ namespace YTE
                               { vk::PipelineStageFlagBits::eColorAttachmentOutput },
                               cbo,
                               mRenderCompleteSemaphore };
-    
-    mRenderer->mGraphicsQueue->submit(submit);
+
+    {
+      YTEMetaProfileBlock("Submitting to the Queue");
+
+      mRenderer->mGraphicsQueue->submit(submit);
+    }
 
     mCanPresent = true;
   }

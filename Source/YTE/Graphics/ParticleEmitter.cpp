@@ -163,7 +163,7 @@ namespace YTE
 
     glm::quat camRot = mCameraTransform->GetWorldRotation();
 
-    UBOMaterial modelMaterial{};
+    UBOs::Material modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -399,7 +399,7 @@ namespace YTE
     vert3.mTextureCoordinates = { 0.0f, 1.0f, 0.0f };
     vert3.mNormal = { 0.0f, 0.0f, 1.0f };
 
-    UBOMaterial modelMaterial{};
+    UBOs::Material modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -477,7 +477,7 @@ namespace YTE
     particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
     particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
 
-    UBOMaterial modelMaterial{};
+    UBOs::Material modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };

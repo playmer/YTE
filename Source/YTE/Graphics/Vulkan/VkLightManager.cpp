@@ -4,6 +4,7 @@
 ///////////////////
 
 #include "YTE/Graphics/Vulkan/VkLightManager.hpp"
+#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkDeviceInfo.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
@@ -20,17 +21,14 @@ namespace YTE
 
   VkLightManager::VkLightManager(VkRenderedSurface* aSurface) : mSurface(aSurface)
   {
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
-
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    mBuffer = allocator->CreateBuffer<UBOs::LightManager>(1, 
+                                                          GPUAllocation::BufferUsage::TransferDst | 
+                                                          GPUAllocation::BufferUsage::UniformBuffer,
+                                                          GPUAllocation::MemoryProperty::DeviceLocal);
 
     mLightData.mActive = 0.0f; // false
 
@@ -49,17 +47,15 @@ namespace YTE
   {
     mSurface = aSurface;
     mGraphicsView = aView;
-    mSurface->RegisterEvent<&VkLightManager::GraphicsDataUpdateVkEvent>(Events::VkGraphicsDataUpdate, this);
+    mSurface->RegisterEvent<&VkLightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 
-    auto allocator = mSurface->GetAllocator(AllocatorTypes::UniformBufferObject);
+    auto allocator = mSurface->GetRenderer()->GetAllocator(AllocatorTypes::UniformBufferObject);
 
-    mBuffer = mSurface->GetDevice()->createBuffer(sizeof(UBOLightMan),
-                                                  vk::BufferUsageFlagBits::eTransferDst |
-                                                  vk::BufferUsageFlagBits::eUniformBuffer,
-                                                  vk::SharingMode::eExclusive,
-                                                  nullptr,
-                                                  vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                                  allocator);
+    mBuffer = allocator->CreateBuffer<UBOs::LightManager>(1, 
+                                                          GPUAllocation::BufferUsage::TransferDst | 
+                                                          GPUAllocation::BufferUsage::UniformBuffer,
+                                                          GPUAllocation::MemoryProperty::DeviceLocal);
+
 
     mLights.reserve(YTE_Graphics_LightCount);
 
@@ -73,14 +69,27 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-  void VkLightManager::GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate* aEvent)
+  void VkLightManager::LoadToVulkan(VkGraphicsDataUpdate* aEvent)
   {
-    SendEvent(Events::VkGraphicsDataUpdate, aEvent);
+    UnusedArguments(aEvent);
+
+    // Check to see if our lights need to update.
+    // TODO: Maybe make this happen at a higher level once Buffers are API generic?
+    for (auto& [lightIt, i] : enumerate(mLights))
+    {
+      auto& light = *lightIt;
+
+      if (light->mDataChanged)
+      {
+        mLightData.mLights[i] = light->mLightUBOData;
+        light->mDataChanged = false;
+        mUpdateRequired = true;
+      }
+    }
 
     if (mUpdateRequired)
     {
-      auto update = aEvent->mCBO;
-      mBuffer->update<UBOLightMan>(0, mLightData, update);
+      mBuffer.Update(mLightData);
       mUpdateRequired = false;
     }
   }
@@ -150,22 +159,6 @@ namespace YTE
       mLightData.mActive = 0.0f; // false
     }
 
-    mUpdateRequired = true;
-  }
-
-
-
-  void VkLightManager::UpdateLightValue(unsigned aIndex, UBOLight& aLightValue)
-  {
-//#ifdef _DEBUG
-//    if (aIndex > mLightData.mNumOfLights || aIndex < 0)
-//    {
-//      DebugObjection(true, "Light Manager cannot access a value at the index of %d. Safe to Continue", aIndex);
-//      return;
-//    }
-//#endif
-
-    mLightData.mLights[aIndex] = aLightValue;
     mUpdateRequired = true;
   }
 

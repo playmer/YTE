@@ -53,6 +53,8 @@ namespace YTE
 
   void VkImguiDrawer::Initialize()
   {
+    YTEProfileFunction();
+
     mView = mParentViewData->mView;
     auto owner = mView->GetOwner();
     auto guidString = owner->GetGUID().ToString();;
@@ -141,7 +143,7 @@ namespace YTE
     auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
     instantiatedModel = renderer->CreateModel(mView, mesh);
 
-    UBOModel modelUBO;
+    UBOs::Model modelUBO;
 
     auto width = mView->GetWindow()->GetWidth();
     auto height = mView->GetWindow()->GetHeight();
@@ -155,9 +157,9 @@ namespace YTE
     auto vkmesh = static_cast<VkInstantiatedModel*>(instantiatedModel.get())->GetVkMesh();
 
     // We get the sub meshes that use the current shader, then draw them.
-    auto range = vkmesh->mSubmeshes.equal_range(imguiStr);
+    auto range = vkmesh->mSubmeshMap.equal_range(imguiStr);
 
-    mVkSubmesh = range.first->second.get();
+    mVkSubmesh = range.first->second;
     auto model = static_cast<VkInstantiatedModel*>(instantiatedModel.get());
     mPipelineData = &(model->mPipelineData.at(mVkSubmesh));
 
@@ -175,6 +177,8 @@ namespace YTE
   {
     UnusedArguments(aMeshes);
 
+    YTEProfileFunction();
+
     mCBOB->NextCommandBuffer();
     auto cbo = mCBOB->GetCurrentCBO();
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
@@ -184,6 +188,8 @@ namespace YTE
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
+    YTEProfileFunction();
+
     mContext->SetCurrentContext();
     auto drawData = ImGui::GetDrawData();
 
@@ -212,10 +218,10 @@ namespace YTE
                              nullptr);
 
     aCBO->bindVertexBuffer(0,
-                           mVkSubmesh->mVertexBuffer,
+                           GetBuffer(mVkSubmesh->mVertexBuffer),
                            0);
 
-    aCBO->bindIndexBuffer(mVkSubmesh->mIndexBuffer,
+    aCBO->bindIndexBuffer(GetBuffer(mVkSubmesh->mIndexBuffer),
                           0,
                           vk::IndexType::eUint32);
 

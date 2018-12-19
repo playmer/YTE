@@ -18,7 +18,6 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"

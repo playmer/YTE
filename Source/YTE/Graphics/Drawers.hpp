@@ -60,7 +60,7 @@ namespace YTE
     Renderer *mRenderer;
     GraphicsView *mView;
     Transform *mTransform;
-    UBOModel mUBOModel;
+    UBOs::Model mUBOModel;
 
     std::string mMeshName;
     std::vector<Submesh> mSubmeshes;
@@ -106,7 +106,7 @@ namespace YTE
     Renderer * mRenderer;
     GraphicsView *mView;
     Transform *mTransform;
-    UBOModel mUBOModel;
+    UBOs::Model mUBOModel;
 
     std::string mMeshName;
     std::vector<Submesh> mSubmeshes;
@@ -153,7 +153,7 @@ namespace YTE
     Renderer * mRenderer;
     GraphicsView *mView;
     Transform *mTransform;
-    UBOModel mUBOModel;
+    UBOs::Model mUBOModel;
 
     std::string mMeshName;
     std::vector<Submesh> mSubmeshes;

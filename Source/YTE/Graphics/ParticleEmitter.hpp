@@ -27,7 +27,7 @@ namespace YTE
 
     glm::quat mRotation;
 
-    UBOModel mUBO;
+    UBOs::Model mUBO;
   };
 
   class ParticleEmitter : public Component

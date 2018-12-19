@@ -118,7 +118,7 @@ namespace YTE
     Renderer *mRenderer;
     Window *mWindow;
     Transform *mTransform;
-    UBOModel mUBOModel;
+    UBOs::Model mUBOModel;
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;

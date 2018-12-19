@@ -104,12 +104,12 @@ namespace YTE
 
 
 
-  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     UnusedArguments(aView, aUBOView);
   }
 
-  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOIllumination &aIllumination)
+  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination)
   {
     UnusedArguments(aView, aIllumination);
   }
@@ -139,11 +139,6 @@ namespace YTE
   void Renderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
   {
     UnusedArguments(aView, aColor);
-  }
-
-  void Renderer::AnimationUpdate(LogicUpdate* aEvent)
-  {
-    UnusedArguments(aEvent);
   }
 
   void Renderer::SetLights(bool aOnOrOff)

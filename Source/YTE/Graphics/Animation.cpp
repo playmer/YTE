@@ -833,7 +833,7 @@ namespace YTE
     return mMeshSkeleton;
   }
 
-  UBOAnimation* Animation::GetUBOAnim()
+  UBOs::Animation* Animation::GetUBOAnim()
   {
     return &mUBOAnimationData;
   }

@@ -33,7 +33,7 @@ namespace YTE
       DeserializeByType(aProperties, this, GetStaticType());
     }
 
-    MaterialRepresentation(UBOMaterial aMaterial, 
+    MaterialRepresentation(UBOs::Material aMaterial, 
                            Material *aMaterialComponent, 
                            size_t aIndex, 
                            Submesh *aSubmesh)
@@ -119,7 +119,7 @@ namespace YTE
       UpdateUBO();
     }
 
-    void SetFlag(UBOMaterialFlags aFlag, bool aValue)
+    void SetFlag(UBOs::MaterialFlags aFlag, bool aValue)
     {
       // Set flag
       if (aValue)
@@ -164,7 +164,7 @@ namespace YTE
     void SetIndex(size_t aIndex) { mIndex = aIndex; }
   private:
     Material *mMaterialComponent{ nullptr };
-    UBOMaterial mMaterial;
+    UBOs::Material mMaterial;
     size_t mIndex{ 0 };
     std::string mDiffuseTexture;
     std::string mSpecularTexture;

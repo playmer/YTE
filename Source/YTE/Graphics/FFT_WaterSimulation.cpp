@@ -207,7 +207,7 @@ namespace YTE
 
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
-    mRenderer = dynamic_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
+    mRenderer = static_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
   }
 
@@ -977,10 +977,16 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::CreateTransform()
   {
+    YTEProfileFunction();
+
     if (mTransform == nullptr)
     {
       return;
     }
+
+    auto matrix = glm::mat4(1.0f) * glm::toMat4(mTransform->GetWorldRotation());
+    matrix = glm::scale(matrix, mTransform->GetWorldScale());;
+    glm::vec3 position = mTransform->GetWorldTranslation();
 
     for (int z = 0; z < mInstanceCount; ++z)
     {
@@ -988,17 +994,14 @@ namespace YTE
       {
         int i = z * mInstanceCount + x;
 
-        mInstancingMatrices[i].mModelMatrix = glm::mat4(1.0f) * glm::toMat4(mTransform->GetWorldRotation());
-        mInstancingMatrices[i].mModelMatrix = glm::scale(mInstancingMatrices[i].mModelMatrix, mTransform->GetWorldScale());
+        //translation.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
+        //translation.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
 
-        glm::vec3 trans = mTransform->GetWorldTranslation();
-        //trans.x += (x * (mTransform->GetWorldScale().x + (mVertexDistanceX - 3)));
-        //trans.z += (z * (mTransform->GetWorldScale().z + (mVertexDistanceZ - 3)));
-        trans.x += mVertexDistanceX * x;
-        trans.z += mVertexDistanceZ * -z;
+        matrix[3][0] = position.x + (mVertexDistanceX * x);
+        matrix[3][1] = position.y;
+        matrix[3][2] = position.z + (mVertexDistanceZ * -z);
 
-
-        mInstancingMatrices[i].mModelMatrix = glm::translate(mInstancingMatrices[i].mModelMatrix, trans);
+        mInstancingMatrices[i].mModelMatrix = matrix;
       }
     }
   }
@@ -1007,10 +1010,13 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::AdjustPositions()
   {
+    YTEProfileFunction();
+
     CreateTransform();
     
     for (int i = 0; i < mInstantiatedHeightmap.size(); ++i)
     {
+      // TODO: We can save on data here UpdateUBOModel actually makes a copy here, we have no need to store these.
       mInstantiatedHeightmap[i]->GetInstantiatedModel()->UpdateUBOModel(mInstancingMatrices[i]);
     }
 
@@ -1115,7 +1121,7 @@ namespace YTE
 
     for (unsigned i = 0; i < data.mNumberOfInfluences; ++i)
     {
-      UBOWaterInfluenceMap& map = data.mInformation[i];
+      UBOs::WaterInfluenceMap const& map = data.mInformation[i];
       glm::vec2 vertToCenter = glm::vec2(point.x, point.z) - glm::vec2(map.mCenter.x, map.mCenter.z);
       float vtcLen = glm::length(vertToCenter);
 

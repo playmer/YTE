@@ -100,13 +100,13 @@ namespace YTE
     mRenderToScreen.reset();
   }
   
-  void Dx12RenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView)
+  void Dx12RenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     GetViewData(aView)->mViewUBOData = aUBOView;
     this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
   }
 
-  void Dx12RenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOIllumination& aIllumination)
+  void Dx12RenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
   {
     GetViewData(aView)->mIlluminationUBOData = aIllumination;
     this->RegisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
@@ -369,14 +369,14 @@ namespace YTE
     //  auto emplaced = mViewData.try_emplace(aView);
     //
     //  auto uboAllocator = mRenderer->mAllocators[DX12AllocatorTypes::UniformBufferObject];
-    //  auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOView),
+    //  auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
     //                                      vk::BufferUsageFlagBits::eTransferDst |
     //                                      vk::BufferUsageFlagBits::eUniformBuffer,
     //                                      vk::SharingMode::eExclusive,
     //                                      nullptr,
     //                                      vk::MemoryPropertyFlagBits::eDeviceLocal,
     //                                      uboAllocator);
-    //  auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOIllumination),
+    //  auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
     //                                       vk::BufferUsageFlagBits::eTransferDst |
     //                                       vk::BufferUsageFlagBits::eUniformBuffer,
     //                                       vk::SharingMode::eExclusive,
@@ -503,8 +503,8 @@ namespace YTE
     UnusedArguments(aEvent);
     //for (auto const&[view, data] : mViewData)
     //{
-    //  data.mViewUBO->update<UBOView>(0, data.mViewUBOData, aEvent->mCBO);
-    //  data.mIlluminationUBO->update<UBOIllumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
+    //  data.mViewUBO->update<UBOs::View>(0, data.mViewUBOData, aEvent->mCBO);
+    //  data.mIlluminationUBO->update<UBOs::Illumination>(0, data.mIlluminationUBOData, aEvent->mCBO);
     //  this->DeregisterEvent<&Dx12RenderedSurface::GraphicsDataUpdateEvent>(Events::DX12GraphicsDataUpdate, this);
     //}
   }
@@ -600,19 +600,6 @@ namespace YTE
   }
 
 
-  void Dx12RenderedSurface::AnimationUpdate()
-  {
-    //DX12GraphicsDataUpdate update;
-    //mAnimationUpdateCBOB->NextCommandBuffer();
-    //update.mCBO = mAnimationUpdateCBOB->GetCurrentCBO();
-    //update.mCBO->begin();
-    //SendEvent(Events::DX12AnimationUpdate, &update);
-    //update.mCBO->end();
-    //vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
-  }
-
-
-
   void Dx12RenderedSurface::SetLights(bool aOnOrOff)
   {
     for (auto& view : mViewData)
@@ -620,8 +607,6 @@ namespace YTE
       view.second.mLightManager.SetLights(aOnOrOff);
     }
   }
-
-
 
   void Dx12RenderedSurface::RenderFrameForSurface()
   {

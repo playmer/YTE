@@ -11,6 +11,7 @@
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -25,7 +26,6 @@
 namespace YTE
 {
   YTEDeclareEvent(VkGraphicsDataUpdate);
-  YTEDeclareEvent(VkAnimationUpdate);
 
   // forward declare
   struct VkCreatePipelineDataSet;
@@ -48,14 +48,16 @@ namespace YTE
     }
 
     // Buffers
-    std::shared_ptr<vkhlf::Buffer> mViewUBO;
-    std::shared_ptr<vkhlf::Buffer> mIlluminationUBO;
+    GPUBuffer<Vertex> mVertexBuffer;
+    GPUBuffer<u32> mIndexBuffer;
+    GPUBuffer<UBOs::View> mViewUBO;
+    GPUBuffer<UBOs::Illumination> mIlluminationUBO;
     std::string mName = "EMPTY";
 
     // Engine Side Data
     glm::vec4 mClearColor;
-    UBOView mViewUBOData;
-    UBOIllumination mIlluminationUBOData;
+    UBOs::View mViewUBOData;
+    UBOs::Illumination mIlluminationUBOData;
     VkLightManager mLightManager;
     VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
@@ -76,8 +78,8 @@ namespace YTE
 
     ~VkRenderedSurface();
 
-    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOIllumination &aIllumination);
-    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
+    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOs::Illumination &aIllumination);
+    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
     void PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats);
 
 
@@ -107,11 +109,9 @@ namespace YTE
     // Events
     /////////////////////////////////
     void ResizeEvent(WindowResize *aEvent);
-    void GraphicsDataUpdateVkEvent(VkGraphicsDataUpdate *aEvent);
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
-    void AnimationUpdate();
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);
@@ -141,19 +141,19 @@ namespace YTE
 
     std::shared_ptr<vkhlf::Device>& GetDevice();
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName);
+    //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(const std::string aName);
 
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass(GraphicsView *aView)
     {
       return GetViewData(aView)->mRenderTarget->GetRenderPass();
     }
 
-    std::shared_ptr<vkhlf::Buffer>& GetUBOViewBuffer(GraphicsView *aView)
+    GPUBuffer<UBOs::View>& GetUBOViewBuffer(GraphicsView *aView)
     {
       return GetViewData(aView)->mViewUBO;
     }
 
-    std::shared_ptr<vkhlf::Buffer>& GetUBOIlluminationBuffer(GraphicsView *aView)
+    GPUBuffer<UBOs::Illumination>& GetUBOIlluminationBuffer(GraphicsView *aView)
     {
       return GetViewData(aView)->mIlluminationUBO;
     }

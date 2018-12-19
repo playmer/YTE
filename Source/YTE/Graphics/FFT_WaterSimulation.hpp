@@ -275,7 +275,7 @@ namespace YTE
     double mTimeDilationEffect;
     double mTime;
     bool mReset;
-    std::vector<UBOModel> mInstancingMatrices;
+    std::vector<UBOs::Model> mInstancingMatrices;
     std::string mRenderModeStr;
     bool mResetNeeded;
     int mInstanceCount;

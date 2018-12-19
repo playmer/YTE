@@ -22,7 +22,6 @@ namespace YTE
       case TextureViewType::e2D:
       {
         return vk::ImageViewType::e2D;
-        break;
       }
       case TextureViewType::eCube:
       {
@@ -59,28 +58,20 @@ namespace YTE
   {
     // Shader Descriptions
     // TODO (Josh): We should be reflecting these.
-    auto allocator = mRenderer->mAllocators[AllocatorTypes::Mesh];
+    auto allocator = mRenderer->GetAllocator(AllocatorTypes::Mesh);
 
     auto device = mRenderer->mDevice;
 
     // Create Vertex, Index, and Material buffers.
-    auto vertexBufferSize = static_cast<u32>(mSubmesh->mVertexBuffer.size() * sizeof(Vertex));
-    mVertexBuffer = device->createBuffer(vertexBufferSize,
-                                         vk::BufferUsageFlagBits::eTransferDst |
-                                         vk::BufferUsageFlagBits::eVertexBuffer,
-                                         vk::SharingMode::eExclusive,
-                                         nullptr,
-                                         vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                         allocator);
+    mVertexBuffer = allocator->CreateBuffer<Vertex>(mSubmesh->mVertexBuffer.size(),
+                                                    GPUAllocation::BufferUsage::TransferDst |
+                                                    GPUAllocation::BufferUsage::VertexBuffer,
+                                                    GPUAllocation::MemoryProperty::DeviceLocal);
 
-    auto indexBufferSize = static_cast<u32>(mSubmesh->mIndexBuffer.size() * sizeof(u32));
-    mIndexBuffer = device->createBuffer(indexBufferSize,
-                                        vk::BufferUsageFlagBits::eTransferDst |
-                                        vk::BufferUsageFlagBits::eIndexBuffer,
-                                        vk::SharingMode::eExclusive,
-                                        nullptr,
-                                        vk::MemoryPropertyFlagBits::eDeviceLocal,
-                                        allocator);
+    mIndexBuffer = allocator->CreateBuffer<u32>(mSubmesh->mIndexBuffer.size(),
+                                                GPUAllocation::BufferUsage::TransferDst |
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
 
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
@@ -200,7 +191,7 @@ namespace YTE
                        nullptr);
     ++uniformBuffers;
 
-    // We need to tell the shaders where to find the UBOModel.
+    // We need to tell the shaders where to find the UBOs::Model.
     mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
 
     // Create the descriptor set and pipeline layouts.
@@ -262,31 +253,31 @@ namespace YTE
     // Add Uniform Buffers
 
     // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ surface->GetUBOViewBuffer(aView), 0, sizeof(UBOView) };
+    vkhlf::DescriptorBufferInfo uboView{ GetBuffer(surface->GetUBOViewBuffer(aView)), 0, sizeof(UBOs::View) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
 
     // Animation (Bone Array) Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOAnimation) };
+    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOs::Animation) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
 
     // Model Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOs::Material) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModelMaterial);
 
     // Submesh Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOMaterial) };
+    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOs::Material) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
 
     // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { surface->GetLightManager(aView)->GetUBOLightBuffer(), 0, sizeof(UBOLightMan) };
+    vkhlf::DescriptorBufferInfo uboLights { GetBuffer(surface->GetLightManager(aView)->GetUBOLightBuffer()), 0, sizeof(UBOs::LightManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
 
     // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { surface->GetUBOIlluminationBuffer(aView), 0, sizeof(UBOIllumination) };
+    vkhlf::DescriptorBufferInfo uboIllumination { GetBuffer(surface->GetUBOIlluminationBuffer(aView)), 0, sizeof(UBOs::Illumination) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
 
     // Water Buffer for the Vertex Shader
-    vkhlf::DescriptorBufferInfo uboWater{ surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer(), 0, sizeof(UBOWaterInformationMan) };
+    vkhlf::DescriptorBufferInfo uboWater{ GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()), 0, sizeof(UBOs::WaterInformationManager) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
 
     // Add Texture Samplers
@@ -313,7 +304,7 @@ namespace YTE
     addTS(mSpecularTexture, sTexInfo);
     addTS(mNormalTexture, nTexInfo);
 
-    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOModel) };
+    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOs::Model) };
     wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
 
     device->updateDescriptorSets(wdss, nullptr);
@@ -331,12 +322,15 @@ namespace YTE
 
   }
 
-  void VkSubmesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkSubmesh::LoadToVulkan()
   {
-    auto update = aEvent->mCBO;
+    YTEProfileFunction();
 
-    mVertexBuffer->update<Vertex>(0, mSubmesh->mVertexBuffer, update);
-    mIndexBuffer->update<u32>(0, mSubmesh->mIndexBuffer, update);
+    auto &vertices = mSubmesh->mVertexBuffer;
+    auto &indices = mSubmesh->mIndexBuffer;
+
+    mVertexBuffer.Update(vertices.data(), vertices.size());
+    mIndexBuffer.Update(indices.data(), indices.size());
   }
 
 
@@ -354,40 +348,43 @@ namespace YTE
     : mRenderer{ aRenderer }
     , mMesh{aMesh}
   {
-    for (unsigned i = 0; i < aMesh->mParts.size(); ++i)
+    for (auto& part : aMesh->mParts)
     {
-      auto submesh = std::make_unique<VkSubmesh>(this, &aMesh->mParts[i], aRenderer);
-      mSubmeshes.emplace(submesh->mSubmesh->mShaderSetName, std::move(submesh));
+      auto submesh = std::make_unique<VkSubmesh>(this, &part, aRenderer);
+      mSubmeshMap.emplace(submesh->mSubmesh->mShaderSetName, submesh.get());
+      mSubmeshes.emplace_back(std::move(submesh));
     }
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    LoadToVulkan();
   }
 
   void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
-    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
+    YTEProfileFunction();
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
+    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
   }
 
   void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    YTEProfileFunction();
 
-    mRenderer->RegisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
+    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
   }
 
   VkMesh::~VkMesh()
   {
   }
 
-  void VkMesh::LoadToVulkan(VkGraphicsDataUpdate *aEvent)
+  void VkMesh::LoadToVulkan()
   {
-    mRenderer->DeregisterEvent<&VkMesh::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
+    YTEProfileFunction();
 
     for (auto &submesh : mSubmeshes)
     {
-      submesh.second->LoadToVulkan(aEvent);
+      submesh->LoadToVulkan();
     }
   }
 }

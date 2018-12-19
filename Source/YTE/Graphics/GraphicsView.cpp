@@ -150,7 +150,7 @@ namespace YTE
     }
   }
 
-  void GraphicsView::UpdateView(Camera *aCamera, UBOView &aView)
+  void GraphicsView::UpdateView(Camera *aCamera, UBOs::View &aView)
   {
     if (aCamera != mActiveCamera)
     {
@@ -166,7 +166,7 @@ namespace YTE
     mRenderer->UpdateWindowViewBuffer(this, aView);
   }
   
-  void GraphicsView::UpdateIllumination(UBOIllumination& aIllumination)
+  void GraphicsView::UpdateIllumination(UBOs::Illumination& aIllumination)
   {
     mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
   }

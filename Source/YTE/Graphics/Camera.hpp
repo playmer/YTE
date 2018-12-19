@@ -20,9 +20,10 @@ namespace YTE
   { 
   public:
     YTEDeclareType(Camera); 
+    
     YTE_Shared Camera(Composition *aOwner, Space *aSpace);
     YTE_Shared void Initialize() override; 
-    YTE_Shared UBOView ConstructUBOView();
+    YTE_Shared UBOs::View ConstructUBOView();
  
     Window* GetWindow()
     { 
@@ -149,7 +150,7 @@ namespace YTE
     double mDt;
     bool mChanged;
 
-    UBOIllumination mIllumination;
+    UBOs::Illumination mIllumination;
   }; 
 } 
  

@@ -92,6 +92,7 @@ namespace YTE
     YTE_Shared void Initialize(InitializeEvent*) override;
     void Initialize()
     {
+      YTEProfileFunction();
       InitializeEvent event;
       event.CheckRunInEditor = true;
       Initialize(&event);

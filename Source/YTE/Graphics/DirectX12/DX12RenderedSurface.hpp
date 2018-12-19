@@ -49,8 +49,8 @@ namespace YTE
 
     // Engine Side Data
     glm::vec4 mClearColor;
-    UBOView mViewUBOData;
-    UBOIllumination mIlluminationUBOData;
+    UBOs::View mViewUBOData;
+    UBOs::Illumination mIlluminationUBOData;
     DX12LightManager mLightManager;
     DX12WaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<DX12Mesh*, std::vector<DX12InstantiatedModel*>> mInstantiatedModels;
@@ -71,8 +71,8 @@ namespace YTE
 
     ~Dx12RenderedSurface();
 
-    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOIllumination &aIllumination);
-    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOView &aUBOView);
+    void UpdateSurfaceIlluminationBuffer(GraphicsView* aView, UBOs::Illumination &aIllumination);
+    void UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
     void PrintSurfaceFormats(/*std::vector<vk::SurfaceFormatKHR> &aFormats*/);
 
 
@@ -106,7 +106,6 @@ namespace YTE
     void FrameUpdate(LogicUpdate *aEvent);
     void PresentFrame();
     void GraphicsDataUpdate();
-    void AnimationUpdate();
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView);

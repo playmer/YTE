@@ -92,14 +92,14 @@ namespace YTE
   {
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
+    mConstructing = false;
+
     if (mTextureName.empty())
     {
       return;
     }
 
     mRenderer->RequestTexture(mTextureName);
-
-    mConstructing = false;
   }
 
   void Sprite::Initialize()
@@ -262,7 +262,7 @@ namespace YTE
       vert3.mTextureCoordinates = { 0.0f,   1.0f,           0.0f };
     }
 
-    UBOMaterial modelMaterial{};
+    UBOs::Material modelMaterial{};
     modelMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mAmbient = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
