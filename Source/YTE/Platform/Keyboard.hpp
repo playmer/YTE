@@ -32,7 +32,7 @@ namespace YTE
 
     Keys Key;
     u32 CharacterTyped;
-    Keyboard *Keyboard;
+    Keyboard *SendingKeyboard;
   };
 
   YTE_Shared Keys TranslateFromOsToOurKey(uint64_t aOsKey);

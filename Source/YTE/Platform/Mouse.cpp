@@ -78,7 +78,7 @@ namespace YTE
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
         mouseEvent.Button = static_cast<MouseButtons>(i);
-        mouseEvent.Mouse = this;
+        mouseEvent.SendingMouse = this;
 
         SendEvent(Events::MousePersist, &mouseEvent);
       }
@@ -123,7 +123,7 @@ namespace YTE
     MouseButtonEvent mouseEvent;
     mouseEvent.Button = aButton;
     mouseEvent.WorldCoordinates = aPosition;
-    mouseEvent.Mouse = this;
+    mouseEvent.SendingMouse = this;
 
     SendEvent(*state, &mouseEvent);
   }

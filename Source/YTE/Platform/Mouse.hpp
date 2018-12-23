@@ -34,7 +34,7 @@ namespace YTE
 
     glm::i32vec2 WorldCoordinates;
     MouseButtons Button;
-    Mouse *Mouse;
+    Mouse *SendingMouse;
   };
 
 
@@ -45,7 +45,7 @@ namespace YTE
 
     glm::i32vec2 WorldCoordinates;
     glm::vec2 ScrollMovement;
-    Mouse *Mouse;
+    Mouse *SendingMouse;
   };
 
   class MouseMoveEvent : public Event
@@ -54,7 +54,7 @@ namespace YTE
     YTEDeclareType(MouseMoveEvent);
 
     glm::i32vec2 WorldCoordinates;
-    Mouse *Mouse;
+    Mouse *SendingMouse;
   };
 
   YTE_Shared glm::i32vec2 GetMousePosition();

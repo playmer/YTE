@@ -299,8 +299,8 @@ namespace YTE
     {
       KeyboardEvent event;
       event.CharacterTyped = static_cast<u32>(aWParam);
-      event.Keyboard = &aWindow->mKeyboard;
-      event.Keyboard->SendEvent(Events::CharacterTyped, &event);
+      event.SendingKeyboard = &aWindow->mKeyboard;
+      event.SendingKeyboard->SendEvent(Events::CharacterTyped, &event);
       break;
     }
 

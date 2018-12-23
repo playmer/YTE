@@ -57,7 +57,7 @@ namespace YTE
       if (mKeysCurrent[i] && mKeysPrevious[i])
       {
         keyEvent.Key = static_cast<Keys>(i);
-        keyEvent.Keyboard = this;
+        keyEvent.SendingKeyboard = this;
 
         SendEvent(Events::KeyPersist, &keyEvent);
       }
@@ -95,7 +95,7 @@ namespace YTE
 
     KeyboardEvent keyboardEvent;
     keyboardEvent.Key = aKey;
-    keyboardEvent.Keyboard = this;
+    keyboardEvent.SendingKeyboard = this;
 
     SendEvent(*state, &keyboardEvent);
   }
