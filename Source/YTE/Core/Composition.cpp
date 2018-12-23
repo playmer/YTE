@@ -76,10 +76,15 @@ namespace YTE
     builder.Function<&Composition::Remove>("Remove")
       .SetDocumentation("Removes the composition from it's owner. This is delayed until the next frame.");
 
-    builder.Function<SelectOverload<Component* (Composition::*)(BoundType*),&Composition::GetComponent>()>("GetComponent")
+    //auto getComponentFunction = SelectOverload<Component* (Composition::*)(Type*),&Composition::GetComponent>();
+    //builder.Function<getComponentFunction>("GetComponent")
+    //  .SetParameterNames("aType")
+    //  .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
+
+    builder.Function<SelectOverload<Component* (Composition::*)(Type*),&Composition::GetComponent>()>("GetComponent")
       .SetParameterNames("aType")
       .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
-    builder.Function<SelectOverload<Component*(Composition::*)(BoundType *, bool),&Composition::AddComponent>()>("AddComponent")
+    builder.Function<SelectOverload<Component*(Composition::*)(Type *, bool),&Composition::AddComponent>()>("AddComponent")
       .SetParameterNames("aType", "aCheckRunInEditor")
       .SetDocumentation("Adds a component via the typeid of the component you want.");
 
@@ -618,7 +623,7 @@ namespace YTE
          ++componentIt)
     {
       std::string componentTypeName = componentIt->name.GetString();
-      BoundType *componentType = Type::GetGlobalType(componentTypeName);
+      Type *componentType = Type::GetGlobalType(componentTypeName);
 
       AddComponent(componentType, &componentIt->value);
     }
@@ -718,7 +723,7 @@ namespace YTE
     return toReturn;
   }
 
-  Component* Composition::GetComponent(BoundType *aType)
+  Component* Composition::GetComponent(Type *aType)
   {
     YTEProfileFunction();
 
@@ -892,8 +897,8 @@ namespace YTE
   }
 
 
-  std::string Composition::CheckDependencies(std::set<BoundType*> aTypesAvailible, 
-                                             BoundType *aTypeToCheck)
+  std::string Composition::CheckDependencies(std::set<Type*> aTypesAvailible, 
+                                             Type *aTypeToCheck)
   {
     YTEProfileFunction();
 
@@ -953,12 +958,12 @@ namespace YTE
     return toReturn;
   }
 
-  std::string Composition::IsDependecy(BoundType *aType)
+  std::string Composition::IsDependecy(Type *aType)
   {
     YTEProfileFunction();
 
-    std::vector<BoundType*> typesWithAProblem;
-    std::set<BoundType*> typesAvailible;
+    std::vector<Type*> typesWithAProblem;
+    std::set<Type*> typesAvailible;
 
     for (auto &component : mComponents)
     {
@@ -1004,11 +1009,11 @@ namespace YTE
     return toReturn;
   }
 
-  std::string Composition::HasDependencies(BoundType *aType)
+  std::string Composition::HasDependencies(Type *aType)
   {
     YTEProfileFunction();
 
-    std::set<BoundType*> typesAvailible;
+    std::set<Type*> typesAvailible;
 
     for (auto const&[type, component] : mComponents)
     {
@@ -1018,7 +1023,7 @@ namespace YTE
     return CheckDependencies(typesAvailible, aType);
   }
 
-  Component* Composition::GetDerivedComponent(BoundType *aType)
+  Component* Composition::GetDerivedComponent(Type *aType)
   {
     YTEProfileFunction();
 
@@ -1035,7 +1040,7 @@ namespace YTE
     return nullptr;
   }
 
-  Component* Composition::AddComponent(BoundType *aType, bool aCheckRunInEditor)
+  Component* Composition::AddComponent(Type *aType, bool aCheckRunInEditor)
   {
     YTEProfileFunction();
 
@@ -1065,7 +1070,7 @@ namespace YTE
     return component;
   }
 
-  Component* Composition::AddComponent(BoundType *aType, RSValue *aProperties)
+  Component* Composition::AddComponent(Type *aType, RSValue *aProperties)
   {
     YTEProfileFunction();
     {
@@ -1240,7 +1245,7 @@ namespace YTE
     mComponents.Erase(aComponent);
   }
 
-  void Composition::RemoveComponent(BoundType *aComponent)
+  void Composition::RemoveComponent(Type *aComponent)
   {
     YTEProfileFunction();
 

@@ -262,8 +262,8 @@ namespace YTE
     YTE_Shared StringComponentFactory* GetFactoryFromEngine(Type* aType);
 
     YTE_Shared void ComponentClear();
-    YTE_Shared std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
-                                             BoundType* aTypeToCheck);
+    YTE_Shared std::string CheckDependencies(std::set<Type*> aTypesAvailible, 
+                                             Type* aTypeToCheck);
 
     YTE_Shared void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
     YTE_Shared void RemoveComponentInternal(ComponentMap::iterator& aComponent);

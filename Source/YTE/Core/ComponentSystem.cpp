@@ -48,7 +48,7 @@ namespace YTE
   }
     
   std::pair<StringComponentFactory *, UniquePointer<Component>>
-    ComponentSystem::MakeComponent(BoundType *aType, Composition *aOwner)
+    ComponentSystem::MakeComponent(Type *aType, Composition *aOwner)
   {
     auto it = mComponentFactories.Find(aType);
 

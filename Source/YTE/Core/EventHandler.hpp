@@ -106,7 +106,7 @@ namespace YTE
 
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
-      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+      static_assert(1 == CountFunctionArguments<tFunctionType>::Size(),
                     "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
@@ -151,7 +151,7 @@ namespace YTE
 
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
-      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+      static_assert(1 == CountFunctionArguments<tFunctionType>::Size(),
                     "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");

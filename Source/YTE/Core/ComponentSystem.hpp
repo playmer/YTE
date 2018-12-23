@@ -37,7 +37,7 @@ namespace YTE
     void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
 
     std::pair<StringComponentFactory *, UniquePointer<Component>> 
-      MakeComponent(BoundType *aType, Composition *aOwner);
+      MakeComponent(Type *aType, Composition *aOwner);
 
     template<typename T>
     ComponentFactory<T>* GetComponentFactory()
@@ -52,7 +52,7 @@ namespace YTE
       return nullptr;
     }
       
-    StringComponentFactory* GetComponentFactory(BoundType *aType)
+    StringComponentFactory* GetComponentFactory(Type *aType)
     {
       auto iterator = mComponentFactories.Find(aType);
 
@@ -64,9 +64,9 @@ namespace YTE
       return nullptr;
     }
 
-    std::vector<BoundType*> GetComponentTypes()
+    std::vector<Type*> GetComponentTypes()
     {
-      std::vector<BoundType*> components;
+      std::vector<Type*> components;
  
       for (auto &factoryPair : mComponentFactories)
       {
@@ -82,7 +82,7 @@ namespace YTE
       { abort(); }
 
   private:
-    OrderedMap<BoundType*, std::unique_ptr<StringComponentFactory>> mComponentFactories;
+    OrderedMap<Type*, std::unique_ptr<StringComponentFactory>> mComponentFactories;
   };
 }
 

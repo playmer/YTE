@@ -58,8 +58,8 @@ namespace YTE
   public:
     YTEDeclareType(BoundTypeChanged);
 
-    BoundType *aOldType;
-    BoundType *aNewType;
+    Type *aOldType;
+    Type *aNewType;
   };
 
   enum class LogType

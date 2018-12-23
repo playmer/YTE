@@ -317,15 +317,15 @@ namespace YTE
 
     // Widgets: Trees
     YTE_Shared bool          TreeNode(const char* label);                                            // if returning 'true' the node is open and the tree id is pushed into the id stack. user is responsible for calling TreePop().
-    YTE_Shared bool          TreeNode(const char* str_id, const char* fmt, ...) IM_FMTARGS(2);       // read the FAQ about why and how to use ID. to align arbitrary text at the same level as a TreeNode() you can use Bullet().
-    YTE_Shared bool          TreeNode(const void* ptr_id, const char* fmt, ...) IM_FMTARGS(2);       // "
-    YTE_Shared bool          TreeNodeV(const char* str_id, const char* fmt, va_list args) IM_FMTLIST(2);
-    YTE_Shared bool          TreeNodeV(const void* ptr_id, const char* fmt, va_list args) IM_FMTLIST(2);
+    YTE_Shared bool          TreeNode(const char* str_id, const char* fmt, ...);       // read the FAQ about why and how to use ID. to align arbitrary text at the same level as a TreeNode() you can use Bullet().
+    YTE_Shared bool          TreeNode(const void* ptr_id, const char* fmt, ...);       // "
+    YTE_Shared bool          TreeNodeV(const char* str_id, const char* fmt, va_list args);
+    YTE_Shared bool          TreeNodeV(const void* ptr_id, const char* fmt, va_list args);
     YTE_Shared bool          TreeNodeEx(const char* label, ImGuiTreeNodeFlags flags = 0);
-    YTE_Shared bool          TreeNodeEx(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, ...) IM_FMTARGS(3);
-    YTE_Shared bool          TreeNodeEx(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, ...) IM_FMTARGS(3);
-    YTE_Shared bool          TreeNodeExV(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args) IM_FMTLIST(3);
-    YTE_Shared bool          TreeNodeExV(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args) IM_FMTLIST(3);
+    YTE_Shared bool          TreeNodeEx(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, ...);
+    YTE_Shared bool          TreeNodeEx(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, ...);
+    YTE_Shared bool          TreeNodeExV(const char* str_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args);
+    YTE_Shared bool          TreeNodeExV(const void* ptr_id, ImGuiTreeNodeFlags flags, const char* fmt, va_list args);
     YTE_Shared void          TreePush(const char* str_id);                                           // ~ Indent()+PushId(). Already called by TreeNode() when returning true, but you can call Push/Pop yourself for layout purpose
     YTE_Shared void          TreePush(const void* ptr_id = NULL);                                    // "
     YTE_Shared void          TreePop();                                                              // ~ Unindent()+PopId()

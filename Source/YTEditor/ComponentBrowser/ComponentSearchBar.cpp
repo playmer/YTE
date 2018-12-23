@@ -45,7 +45,7 @@ namespace YTEditor
   {
   }
 
-  void ComponentSearchBar::SetComponentList(const std::vector<YTE::BoundType*>& aTypeList)
+  void ComponentSearchBar::SetComponentList(const std::vector<YTE::Type*>& aTypeList)
   {
     // replace the list of types
     mComponentTypes = aTypeList;
@@ -120,7 +120,7 @@ namespace YTEditor
       return;
     }
 
-    YTE::BoundType *type = FindBoundType(stdName);
+    YTE::Type *type = FindBoundType(stdName);
 
     if (currObj->GetComponent(type) != nullptr)
     {

@@ -66,9 +66,7 @@ namespace YTE
   template <typename Type, typename Deleter = std::default_delete<Type>> 
   using UniquePointer = std::unique_ptr<Type, Deleter>;
 
-  using BoundType = Type;
-
-  using FactoryMap = OrderedMap<BoundType*, UniquePointer<StringComponentFactory>>;
+  using FactoryMap = OrderedMap<Type*, UniquePointer<StringComponentFactory>>;
   using FactorySetupCallback = void(*)(FactoryMap &);
 
   using CompositionMap = OrderedMultiMap<String, std::unique_ptr<Composition>>;

@@ -134,10 +134,10 @@ namespace YTEditor
     
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
     
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
     
-    YTE::BoundType* spriteType = YTE::Sprite::GetStaticType();
+    YTE::Type* spriteType = YTE::Sprite::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(spriteType);
     
     mMainWindow->GetPhysicsHandler().Remove(obj);
@@ -194,10 +194,10 @@ namespace YTEditor
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
 
-    YTE::BoundType* light = YTE::Light::GetStaticType();
+    YTE::Type* light = YTE::Light::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(light);
 
     YTE::Light *lightComponent = static_cast<YTE::Light*>(compWidget->GetEngineComponent());
@@ -234,13 +234,13 @@ namespace YTEditor
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
 
-    YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
+    YTE::Type* orientation = YTE::Orientation::GetStaticType();
     compTree->AddComponent(orientation);
 
-    YTE::BoundType* emitterType = YTE::WWiseEmitter::GetStaticType();
+    YTE::Type* emitterType = YTE::WWiseEmitter::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(emitterType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
@@ -258,13 +258,13 @@ namespace YTEditor
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
 
-    YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
+    YTE::Type* orientation = YTE::Orientation::GetStaticType();
     compTree->AddComponent(orientation);
 
-    YTE::BoundType* listenerType = YTE::WWiseListener::GetStaticType();
+    YTE::Type* listenerType = YTE::WWiseListener::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(listenerType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
@@ -320,10 +320,10 @@ namespace YTEditor
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
 
-    YTE::BoundType* particleType = YTE::ParticleEmitter::GetStaticType();
+    YTE::Type* particleType = YTE::ParticleEmitter::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(particleType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
@@ -348,13 +348,13 @@ namespace YTEditor
 
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
-    YTE::BoundType* transform = YTE::Transform::GetStaticType();
+    YTE::Type* transform = YTE::Transform::GetStaticType();
     compTree->AddComponent(transform);
 
-    YTE::BoundType* orientation = YTE::Orientation::GetStaticType();
+    YTE::Type* orientation = YTE::Orientation::GetStaticType();
     compTree->AddComponent(orientation);
 
-    YTE::BoundType* particleType = YTE::Camera::GetStaticType();
+    YTE::Type* particleType = YTE::Camera::GetStaticType();
     ComponentWidget *compWidget = compTree->AddComponent(particleType);
 
     YTE::Camera *cameraComponent = static_cast<YTE::Camera*>(compWidget->GetEngineComponent());
@@ -375,11 +375,11 @@ namespace YTEditor
     ComponentTree *compTree = mMainWindow->GetComponentBrowser().GetComponentTree();
 
     // add transform
-    YTE::BoundType* transform = YTE::TypeId<YTE::Transform>();
+    YTE::Type* transform = YTE::TypeId<YTE::Transform>();
     compTree->AddComponent(transform);
 
     // add model
-    YTE::BoundType* modelType = YTE::TypeId<YTE::Model>();
+    YTE::Type* modelType = YTE::TypeId<YTE::Model>();
     ComponentWidget *compWidget = compTree->AddComponent(modelType);
 
     YTE::Model *modelComponent = static_cast<YTE::Model*>(compWidget->GetEngineComponent());
