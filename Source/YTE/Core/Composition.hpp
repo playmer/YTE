@@ -164,23 +164,23 @@ namespace YTE
     YTE_Shared std::string HasDependencies(Type* aComponent);
 
     // Gets all Components of the given type that are part of or childed to this composition.
-    template <typename ComponentType>
-    std::vector<ComponentType*> GetComponents()
+    template <typename tComponentType>
+    std::vector<tComponentType*> GetComponents()
     {
-      static_assert(std::is_base_of<Component, ComponentType>() &&
-                    !std::is_same<Component, ComponentType>());
+      static_assert(std::is_base_of<Component, tComponentType>() &&
+                    !std::is_same<Component, tComponentType>());
       // This function traverses all compositions and retrieves
       // all the components of the templated type.
-      std::vector<ComponentType*> components;
+      std::vector<tComponentType*> components;
 
       for (auto const& [name, composition] : mCompositions)
       {
-        auto moreComponents = composition->GetComponents<ComponentType>();
+        auto moreComponents = composition->template GetComponents<tComponentType>();
 
         components.insert(components.end(), moreComponents.begin(), moreComponents.end());
       }
 
-      auto component = GetComponent<ComponentType>();
+      auto component = GetComponent<tComponentType>();
 
       if (component != nullptr)
       {

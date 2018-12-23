@@ -79,7 +79,7 @@ namespace YTE
     FactoryMap* GetComponentFactories() { return &mComponentFactories; };
 
     ComponentSystem(const ComponentSystem&) : Component(nullptr, nullptr) 
-      { __debugbreak(); abort(); }
+      { abort(); }
 
   private:
     OrderedMap<BoundType*, std::unique_ptr<StringComponentFactory>> mComponentFactories;
