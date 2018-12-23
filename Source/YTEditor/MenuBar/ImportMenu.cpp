@@ -13,7 +13,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include <array>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <set>
 #include <iostream>
 #include <fstream>
@@ -42,7 +42,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 namespace YTEditor
 {
@@ -121,7 +121,7 @@ namespace YTEditor
     //for (auto filename : files)
     //{
     //
-    //  namespace fs = std::experimental::filesystem;
+    //  namespace fs = std::filesystem;
     //  auto stdFileName = filename.toStdString();
     //  fs::path animationFile{ stdFileName };
     //  animationFile = fs::canonical(animationFile);
@@ -463,7 +463,7 @@ namespace YTEditor
   {
     TextureHelper helper;
 
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
     fs::path textureFile{ aTexture };
     aTexture = fs::canonical(textureFile).string();
 
@@ -651,7 +651,7 @@ namespace YTEditor
 
   bool ImportMenu::CopyTextureFile(TextureHelper &aTexture)
   {
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
     path textureOriginalDir{ aTexture.mTextureDirectory / L"Originals" };
     path textureFile{ aTexture.mTextureFile };
 

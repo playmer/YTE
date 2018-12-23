@@ -1059,7 +1059,7 @@ namespace YTE
 
   Animation* Animator::InternalAddAnimation(std::string aName)
   {
-    std::experimental::filesystem::path path(aName);
+    std::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
     if (exten != ".fbx")

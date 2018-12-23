@@ -10,7 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <random>
 #include <cstdlib>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <stdarg.h> /* va_list, va_start, va_end*/
 #include <stdio.h>
 #include <random>
@@ -22,7 +22,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  std::wstring cWorkingDirectory = std::experimental::filesystem::current_path();
+  std::wstring cWorkingDirectory = std::filesystem::current_path();
 
   template <typename tType>
   tType randomInteger(std::default_random_engine &e)
@@ -261,9 +261,13 @@ namespace YTE
                 std::wstring(convert.begin(), convert.end()) +
                 aFileExtension;
 
-    toReturn = std::experimental::filesystem::canonical(toReturn, cWorkingDirectory);
+    std::filesystem::path basePath{ cWorkingDirectory };
+    std::filesystem::path toReturnPath{ toReturn };
+    std::filesystem::path baseAndToReturn = basePath / toReturnPath;
 
-    //DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
+    toReturn = std::filesystem::canonical(baseAndToReturn);
+
+    //DebugObjection(std::filesystem::exists(toReturn) == false, 
     //            "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
     UnusedArguments(aFileType);
 
@@ -304,10 +308,10 @@ namespace YTE
       return false;
     }
 
-    std::experimental::filesystem::path pathName{ aPath.String() };
+    std::filesystem::path pathName{ aPath.String() };
     pathName.append(aDirectory);
     pathName.append(aFile);
-    return std::experimental::filesystem::exists(pathName);
+    return std::filesystem::exists(pathName);
   }
     
   /////////////////////////////////////////////////

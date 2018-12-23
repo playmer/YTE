@@ -19,7 +19,7 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 namespace YTE
 {
@@ -203,7 +203,7 @@ namespace YTE
     std::string animDir = assetsDir.string() + "/Animations/" + animationFilename;
 
     // check to see if there is a facial animation for this animation
-    std::experimental::filesystem::path animPath(animDir);
+    std::filesystem::path animPath(animDir);
     animPath.replace_extension("");
 
     std::string eyePath(animPath.string() + "_EyeAnim.txt");

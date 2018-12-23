@@ -14,7 +14,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include <qmenu.h>
 
@@ -32,7 +32,7 @@ namespace YTEditor
 
   private:
 
-    using path = std::experimental::filesystem::path;
+    using path = std::filesystem::path;
 
     struct TextureHelper
     {

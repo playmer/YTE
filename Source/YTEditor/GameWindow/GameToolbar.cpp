@@ -1,4 +1,4 @@
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include <qdir.h>
 
@@ -10,8 +10,8 @@
 
 YTEditor::GameToolbar::GameToolbar(MainWindow * aMainWindow) : Toolbar(aMainWindow)
 {
-  std::experimental::filesystem::path workingDir{ YTE::Path::GetEnginePath().String() };
-  std::experimental::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/") };
+  std::filesystem::path workingDir{ YTE::Path::GetEnginePath().String() };
+  std::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/") };
 
   QString iconPath = (assetsDir.generic_string() + "play.png").c_str();
   mPlay = new ToolbarButton(this, iconPath);

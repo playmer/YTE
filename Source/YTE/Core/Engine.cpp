@@ -10,7 +10,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <fstream>
 #include <memory>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -27,7 +27,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  namespace fs = std::experimental::filesystem;
+  namespace fs = std::filesystem;
 
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
@@ -79,7 +79,7 @@ namespace YTE
     , mEditorMode{ aEditorMode }
     , mInitialized{ false }
   {
-    namespace fs = std::experimental::filesystem;
+    namespace fs = std::filesystem;
 
     if constexpr (YTE_CAN_PROFILE)
     {

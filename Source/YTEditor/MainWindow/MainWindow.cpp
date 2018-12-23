@@ -13,7 +13,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include <array>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <set>
 #include <iostream>
 #include <fstream>
@@ -845,7 +845,10 @@ namespace YTEditor
 
     pref = pathWStr + pref + L".json";
 
-    pref = std::experimental::filesystem::canonical(pref, std::experimental::filesystem::current_path());
+    std::filesystem::path prefPath{ pref };
+    std::filesystem::path baseAndPref = std::filesystem::current_path() / prefPath;
+
+    pref = std::filesystem::canonical(baseAndPref);
 
     YTE::RSStringBuffer sb;
     YTE::RSPrettyWriter writer(sb);

@@ -349,8 +349,12 @@ namespace YTE
     std::wstring pathWStr{ path.begin(), path.end() };
     
     level = pathWStr + L"Levels/" + level + L".json";
+
+    std::filesystem::path basePath{ cWorkingDirectory };
+    std::filesystem::path levelPath{ level };
+    std::filesystem::path baseAndLevel = basePath / levelPath;
     
-    level = std::experimental::filesystem::canonical(level, cWorkingDirectory);
+    level = std::filesystem::canonical(baseAndLevel);
     
     RSStringBuffer sb;
     RSPrettyWriter writer(sb);

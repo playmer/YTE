@@ -1,4 +1,4 @@
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include <qmimedata.h>
 
@@ -70,7 +70,7 @@ namespace YTEditor
       std::string filename = newItems[0].toStdString();
       std::string parent = newItems[1].toStdString();
 
-      namespace fs = std::experimental::filesystem;
+      namespace fs = std::filesystem;
       fs::path droppedFile{ filename };
       std::string stem = droppedFile.stem().generic_string();
       std::string extension = droppedFile.extension().generic_string();

@@ -177,7 +177,7 @@ namespace YTE
       return;
     }
 
-    std::experimental::filesystem::path path(aTexture);
+    std::filesystem::path path(aTexture);
     std::string extension = path.extension().u8string();
 
     if (aTexture == "None")
