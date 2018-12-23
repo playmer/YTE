@@ -57,7 +57,7 @@ namespace YTE
     template <typename tType>
     tType* Get()
     {
-      if (GenericDestruct<tType> != mDestructor)
+      if (&GenericDestruct<tType> != mDestructor)
       {
         return nullptr;
       }

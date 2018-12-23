@@ -7,9 +7,8 @@
 */
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
-#ifdef YTE_Windows
 
-#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
+#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 #include <Winuser.h>
 
 #include "YTE/Platform/Mouse.hpp"
@@ -45,5 +44,3 @@ namespace YTE
     SetCursorPos(aPosition.x, aPosition.y);
   }
 }
-
-#endif

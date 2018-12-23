@@ -354,15 +354,13 @@ namespace YTE
     std::filesystem::path levelPath{ level };
     std::filesystem::path baseAndLevel = basePath / levelPath;
     
-    level = std::filesystem::canonical(baseAndLevel);
-    
     RSStringBuffer sb;
     RSPrettyWriter writer(sb);
     value.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
     std::string levelInJson = sb.GetString();
     
     std::ofstream levelToSave;
-    levelToSave.open(level);
+    levelToSave.open(std::filesystem::canonical(baseAndLevel));
     levelToSave << levelInJson;
     levelToSave.close();
   }

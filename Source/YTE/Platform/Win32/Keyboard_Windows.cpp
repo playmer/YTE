@@ -8,15 +8,13 @@
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#ifdef YTE_Windows
-
 #include <stdint.h>
 #include <iostream>
 #include <string>
 #include <locale>
 #include <codecvt>
 
-#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
+#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 #include <Winuser.h>
 
 #include "YTE/Platform/Keyboard.hpp"
@@ -111,4 +109,3 @@ namespace YTE
     }
   }
 }
-#endif

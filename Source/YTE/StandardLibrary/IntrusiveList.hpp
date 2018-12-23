@@ -37,7 +37,7 @@ namespace YTE
                        "When constructing a Hook, Owner must be valid.");
       }
 
-      Hook(Hook &aHook) = delete;
+      Hook(Hook const &aHook) = delete;
 
       Hook(Hook &&aHook, OwnerType *aOwner)
         : mPrevious(aHook.mPrevious)

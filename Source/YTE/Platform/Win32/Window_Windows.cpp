@@ -8,13 +8,11 @@
 /******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#ifdef YTE_Windows
-
 //#include <shellapi.h>
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
-#include <YTE/Platform/Windows/WindowsInclude_Windows.hpp>
+#include <YTE/Platform/Win32/WindowsInclude_Win32.hpp>
 #include <Winuser.h>
 
 #if defined(MemoryBarrier)
@@ -804,4 +802,3 @@ namespace YTE
     return instance->createSurface(self->mInstance, self->mWindowHandle);
   }
 }
-#endif

@@ -180,27 +180,27 @@ namespace YTE
     FindDeviceOfType(vk::PhysicalDeviceType::eDiscreteGpu);
 
     // If we can't find a Discrete GPU, select one of the others by default.
-    if (false == mMainDevice)
+    if (nullptr == mMainDevice)
     {
       FindDeviceOfType(vk::PhysicalDeviceType::eIntegratedGpu);
     }
 
-    if (false == mMainDevice)
+    if (nullptr == mMainDevice)
     {
       FindDeviceOfType(vk::PhysicalDeviceType::eVirtualGpu);
     }
 
-    if (false == mMainDevice)
+    if (nullptr == mMainDevice)
     {
       FindDeviceOfType(vk::PhysicalDeviceType::eCpu);
     }
 
-    if (false == mMainDevice)
+    if (nullptr == mMainDevice)
     {
       FindDeviceOfType(vk::PhysicalDeviceType::eOther);
     }
 
-    DebugObjection(mMainDevice == false, "We can't find a suitible graphics device!");
+    DebugObjection(nullptr == mMainDevice, "We can't find a suitible graphics device!");
 
     printf("Chosen Device: %s\n", mMainDevice->getProperties().deviceName);
   }

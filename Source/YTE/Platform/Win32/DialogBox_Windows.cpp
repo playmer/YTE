@@ -12,7 +12,7 @@
 
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
+#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 
 #include "YTE/Platform/DialogBox.hpp"
 #include "YTE/Platform/Window.hpp"
