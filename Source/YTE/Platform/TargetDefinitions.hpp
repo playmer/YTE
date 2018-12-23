@@ -10,7 +10,7 @@
 
 #include <type_traits>
 
-#if YTE_Windows && defined(YTE_Internal)
+#if YTE_Windows
   #if defined(YTE_Internal)
     #define YTE_Shared __declspec( dllexport )
   #else

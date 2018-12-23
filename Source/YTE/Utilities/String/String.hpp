@@ -17,10 +17,10 @@ namespace YTE
   using StringRef = const String&;
 
   class String
-	{
+  {
   public:
-		struct StringNode
-		{
+    struct StringNode
+    {
       ///////////////////////////////////////
       // Functions
       ///////////////////////////////////////
@@ -38,7 +38,7 @@ namespace YTE
       size_t mHash;
       char mData[1];
 
-		};
+    };
 
     ///////////////////////////////////////
     // Functions

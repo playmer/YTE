@@ -11,7 +11,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
   #error "god has forsaken you child"
 #endif
 
-#include <memory_resource>
 #include <array>
 #include <list>
 
@@ -20,16 +19,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   template <typename T, size_t S = 128>
-  class BlockAllocator : std::allocator<T>
+  class BlockAllocator
   {
   public:
     using value_type = T;
     using pointer = T*;
-    /*using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;*/
     using size_type = std::size_t;
-    //using difference_type = std::ptrdiff_t;
     using storage_type = typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type;
     using array_type = std::array<storage_type, S>;
 
