@@ -82,10 +82,10 @@ namespace YTE
         return *this;
       }
 
-      template <typename tType, typename... tArguments>
+      template <typename tAttributeType, typename... tArguments>
       FunctionBuilder& AddAttribute(tArguments&& ...aArguments)
       {
-        mFunction->AddAttribute<tType>(std::forward<tArguments>(aArguments)...);
+        mFunction->AddAttribute<tAttributeType>(std::forward<tArguments>(aArguments)...);
 
         return *this;
       }
