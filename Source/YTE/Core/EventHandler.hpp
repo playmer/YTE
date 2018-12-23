@@ -199,27 +199,6 @@ namespace YTE
     }
 
   protected:
-    struct StdStringViewEquality
-    {
-      bool operator()(std::string_view const& aLeft,
-        std::string_view const& aRight) const
-      {
-        return aLeft == aRight;
-      }
-
-      bool operator()(std::string_view const& aLeft,
-                      std::string const& aRight) const
-      {
-        return aLeft == aRight;
-      }
-
-      bool operator()(std::string const& aLeft,
-                      std::string_view const& aRight) const
-      {
-        return aLeft == aRight;
-      }
-    };
-
     struct EventList
     {
       EventList()
@@ -233,10 +212,7 @@ namespace YTE
     };
 
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<std::string_view, 
-                       EventList,
-                       std::hash<std::string_view>, 
-                       StdStringViewEquality> mEventLists;
+    std::unordered_map<std::string_view, EventList> mEventLists;
 
     YTE_Shared static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
   };
