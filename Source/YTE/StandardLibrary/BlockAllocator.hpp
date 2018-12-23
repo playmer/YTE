@@ -7,10 +7,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 #pragma once
 
-#if !defined(__cpp_lib_memory_resource)
-  #error "god has forsaken you child"
-#endif
-
 #include <array>
 #include <list>
 
