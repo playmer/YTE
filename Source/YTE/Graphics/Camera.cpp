@@ -225,7 +225,7 @@ namespace YTE
   void Camera::SurfaceGainedEvent(ViewChanged *aEvent)
   {
     mGraphicsView = aEvent->View;
-    mWindow = aEvent->Window;
+    mWindow = aEvent->ChangingWindow;
   }
 
   void Camera::SetCameraAsActive()

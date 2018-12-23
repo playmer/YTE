@@ -25,7 +25,7 @@ namespace YTE
   public:
     YTEDeclareType(OrientationChanged);
 
-    Orientation *Orientation;
+    Orientation *ChangedOrientation;
     glm::vec3 ForwardVector;
     glm::vec3 RightVector;
     glm::vec3 UpVector;

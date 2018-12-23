@@ -185,7 +185,7 @@ namespace YTE
   {
     ViewChanged event;
     event.View = this;
-    event.Window = nullptr;
+    event.ChangingWindow = nullptr;
 
     if (false == mConstructing)
     {
@@ -198,7 +198,7 @@ namespace YTE
 
     mWindow = it->second.get();
 
-    event.Window = mWindow;
+    event.ChangingWindow = mWindow;
 
     if (false == mConstructing)
     {
@@ -215,14 +215,14 @@ namespace YTE
 
     if (mConstructing && nullptr == mWindow)
     {
-      event.Window = aWindow;
+      event.ChangingWindow = aWindow;
       mWindow = aWindow;
       NativeInitialize();
       SendEvent(Events::SurfaceGained, &event);
       return;
     }
 
-    event.Window = nullptr;
+    event.ChangingWindow = nullptr;
 
     if (false == mConstructing)
     {
@@ -232,7 +232,7 @@ namespace YTE
 
     mWindow = aWindow;
     mWindowName = aWindow->mName;
-    event.Window = mWindow;
+    event.ChangingWindow = mWindow;
 
     if (false == mConstructing)
     {
