@@ -14,6 +14,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <memory>
 #include <set>
+#include <string>
+#include <string_view>
 #include <map>
 #include <vector>
 
@@ -197,24 +199,24 @@ namespace YTE
     }
 
   protected:
-    struct StdStringRefWrapperEquality
+    struct StdStringViewEquality
     {
-      bool operator()(const std::reference_wrapper<const std::string>& aLeft,
-                      const std::reference_wrapper<const std::string>& aRight) const
+      bool operator()(std::string_view const& aLeft,
+        std::string_view const& aRight) const
       {
-        return aLeft.get() == aRight.get();
+        return aLeft == aRight;
       }
 
-      bool operator()(const std::reference_wrapper<std::string>& aLeft,
-                      const std::string &aRight) const
+      bool operator()(std::string_view const& aLeft,
+                      std::string const& aRight) const
       {
-        return aLeft.get() == aRight;
+        return aLeft == aRight;
       }
 
-      bool operator()(const std::string &aLeft,
-                      const std::reference_wrapper<std::string> &aRight) const
+      bool operator()(std::string const& aLeft,
+                      std::string_view const& aRight) const
       {
-        return aLeft == aRight.get();
+        return aLeft == aRight;
       }
     };
 
@@ -231,10 +233,10 @@ namespace YTE
     };
 
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<std::reference_wrapper<const std::string>, 
+    std::unordered_map<std::string_view, 
                        EventList,
-                       std::hash<std::string>, 
-                       StdStringRefWrapperEquality> mEventLists;
+                       std::hash<std::string_view>, 
+                       StdStringViewEquality> mEventLists;
 
     YTE_Shared static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
   };
