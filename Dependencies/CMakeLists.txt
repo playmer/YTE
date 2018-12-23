@@ -22,8 +22,11 @@ get_target_property(assimpBinaryDir assimp BINARY_DIR)
 target_include_directories(assimp BEFORE PUBLIC 
                             ${assimpBinaryDir}/../include)
 
-target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
-target_compile_options(assimp PRIVATE /bigobj)
+# TODO: Is this really needed? Doesn't Assimp do this itself?
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  target_compile_definitions(assimp PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
+  target_compile_options(assimp PRIVATE /bigobj)
+endif()
 
 # Turn off/configure various parts of bullet3.
 option(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
@@ -63,16 +66,17 @@ FindWWise(WWise_SoundEngine)
 target_compile_options(crn                   PRIVATE ${disableWarning})
 target_compile_options(fmt                   PRIVATE ${disableWarning})
 # Turn the warnings off on our dependencies.
-if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-  if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    set(disableWarning /W0)
-  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang OR
-          ${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang OR
-          ${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-    set(disableWarning -w)
-  elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
-    set(disableWarning -w0)
-  endif()
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  set(disableWarning /W0)
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang OR
+        ${CMAKE_CXX_COMPILER_ID} STREQUAL AppleClang)
+  # Also, this is an easy place to force color output for me in this moment
+  # Future maintainers of this file may judge me, but I will do this thing.
+  set(disableWarning -Wno-everything -fcolor-diagnostics)
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+  set(disableWarning -w)
+elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
+  set(disableWarning -w0)
 endif()
 
 target_compile_options(assimp                PRIVATE ${disableWarning})
