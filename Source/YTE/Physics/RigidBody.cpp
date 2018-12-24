@@ -59,10 +59,10 @@ namespace YTE
       .SetParameterNames("aImpulse", "aRelativePositon")
       .SetDocumentation("Applies an impulse to the RigidBody.");
 
-    builder.Function<SelectOverload<void (RigidBody::*) (const glm::vec3&),&RigidBody::SetVelocity>()>("SetVelocity")
+    builder.Function<SelectOverload<void (RigidBody::*) (const glm::vec3&)>(&RigidBody::SetVelocity)>("SetVelocity")
       .SetParameterNames("aVelocityVector")
       .SetDocumentation("Sets the object velocity from a Real3 of values");
-    builder.Function<SelectOverload<void (RigidBody::*) (float, float, float),&RigidBody::SetVelocity>()>("SetVelocity")
+    builder.Function<SelectOverload<void (RigidBody::*) (float, float, float)>(&RigidBody::SetVelocity)>("SetVelocity")
       .SetParameterNames("aVelX", "aVelY","aVelZ")
       .SetDocumentation("Sets the object velocity from three float values");
   }

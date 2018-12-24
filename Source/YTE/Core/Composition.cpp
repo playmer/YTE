@@ -81,10 +81,10 @@ namespace YTE
     //  .SetParameterNames("aType")
     //  .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
 
-    builder.Function<SelectOverload<Component* (Composition::*)(Type*),&Composition::GetComponent>()>("GetComponent")
+    builder.Function<SelectOverload<Component* (Composition::*)(Type*)>(&Composition::GetComponent)>("GetComponent")
       .SetParameterNames("aType")
       .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
-    builder.Function<SelectOverload<Component*(Composition::*)(Type *, bool),&Composition::AddComponent>()>("AddComponent")
+    builder.Function<SelectOverload<Component*(Composition::*)(Type *, bool)>(&Composition::AddComponent)>("AddComponent")
       .SetParameterNames("aType", "aCheckRunInEditor")
       .SetDocumentation("Adds a component via the typeid of the component you want.");
 
@@ -108,7 +108,7 @@ namespace YTE
       .SetDocumentation("Checks to see if a component's dependencies are met. (Eg. so it can be added to the composition. "
                         "Returns info string if it is, empty otherwise.");
 
-    builder.Function<SelectOverload<Composition*(Composition::*)(String, String),&Composition::AddComposition>()>("AddObject")
+    builder.Function<SelectOverload<Composition*(Composition::*)(String, String)>(&Composition::AddComposition)>("AddObject")
       .SetParameterNames("aArchetype", "aName")
       .SetDocumentation("Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.");
     builder.Function<&Composition::AddCompositionAtPosition>("AddObjectAtPosition")

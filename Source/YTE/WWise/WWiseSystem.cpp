@@ -97,9 +97,9 @@ namespace YTE
     TypeBuilder<WWiseSystem> builder;
 
     builder.Property<&WWiseSystem::GetMute, &WWiseSystem::SetMute>("Mute");
-    builder.Function<SelectOverload<void (WWiseSystem::*) (u64, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
+    builder.Function<SelectOverload<void (WWiseSystem::*) (u64, float)>(&WWiseSystem::SetRTPC)>("SetRTPC")
       .SetParameterNames("aRTPC", "aValue");
-    builder.Function<SelectOverload<void (WWiseSystem::*) (const std::string&, float),&WWiseSystem::SetRTPC>()>("SetRTPC")
+    builder.Function<SelectOverload<void (WWiseSystem::*) (const std::string&, float)>(&WWiseSystem::SetRTPC)>("SetRTPC")
       .SetParameterNames("aRTPC", "aValue");
   }
 

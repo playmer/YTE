@@ -38,9 +38,9 @@ namespace YTE
       .AddAttribute<EditorProperty>();
 
     builder.Function<&WWiseEmitter::Play>("Play");
-    builder.Function<SelectOverload<void (WWiseEmitter::*)(const std::string&),&WWiseEmitter::PlayEvent>()>("PlaySound")
+    builder.Function<SelectOverload<void (WWiseEmitter::*)(const std::string&)>(&WWiseEmitter::PlayEvent)>("PlaySound")
       .SetParameterNames("aSound");
-    builder.Function<SelectOverload<void (WWiseEmitter::*)(u64),&WWiseEmitter::PlayEvent>()>("PlaySound")
+    builder.Function<SelectOverload<void (WWiseEmitter::*)(u64)>(&WWiseEmitter::PlayEvent)>("PlaySound")
       .SetParameterNames("aSound");
   }
 

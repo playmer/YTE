@@ -78,11 +78,11 @@ namespace YTE
     builder.Property<&Transform::GetRotationAsEuler, &Transform::SetRotationProperty>("Rotation")
       .AddAttribute<EditorProperty>();
 
-    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&), &Transform::SetRotation>()>("SetRotation")
+    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&)>(&Transform::SetRotation)>("SetRotation")
       .SetParameterNames("aEulerAngles")
       .SetDocumentation("Sets the local rotation relative to parent from a Real3 of Euler Angles");
 
-    builder.Function<SelectOverload<void (Transform::*) (float, float, float),&Transform::SetRotation>()>("SetRotation")
+    builder.Function<SelectOverload<void (Transform::*) (float, float, float)>(&Transform::SetRotation)>("SetRotation")
       .SetParameterNames("aThetaX", "aThetaY", "aThetaZ")
       .SetDocumentation("Sets the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)");
 
@@ -93,10 +93,10 @@ namespace YTE
     builder.Property<&Transform::GetWorldRotationAsEuler, &Transform::SetWorldRotationProperty>("WorldRotation")
       .AddAttribute<EditorProperty>(false);
 
-    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&),&Transform::SetWorldRotation>()>("SetWorldRotation")
+    builder.Function<SelectOverload<void (Transform::*) (const glm::vec3&)>(&Transform::SetWorldRotation)>("SetWorldRotation")
       .SetParameterNames("aEulerAngles")
       .SetDocumentation("SetWorlds the local rotation relative to parent from a Real3 of Euler Angles");
-    builder.Function<SelectOverload<void (Transform::*) (float, float, float),&Transform::SetWorldRotation>()>("SetWorldRotation")
+    builder.Function<SelectOverload<void (Transform::*) (float, float, float)>(&Transform::SetWorldRotation)>("SetWorldRotation")
       .SetParameterNames("aThetaX", "aThetaY", "aThetaZ")
       .SetDocumentation("SetWorlds the local rotation relative to parent from three individual Euler Angles X, Y, and Z (in degrees)");
   }

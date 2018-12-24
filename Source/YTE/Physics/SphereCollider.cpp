@@ -36,14 +36,14 @@ namespace YTE
       .AddAttribute<Serializable>()
       .AddAttribute<EditorProperty>();
 
-    builder.Function<SelectOverload<void (SphereCollider::*) (float),&SphereCollider::SetRadius>()>("SetRadius")
+    builder.Function<SelectOverload<void (SphereCollider::*) (float)>(&SphereCollider::SetRadius)>("SetRadius")
       .SetParameterNames("aRadius")
       .SetDocumentation("Sets the collider scale as a multiple of the scale of the transform");
 
-    builder.Function<SelectOverload<void (SphereCollider::*) (const glm::vec3&),&SphereCollider::SetOffset>()>("SetOffset")
+    builder.Function<SelectOverload<void (SphereCollider::*) (const glm::vec3&)>(&SphereCollider::SetOffset)>("SetOffset")
       .SetParameterNames("aOffset")
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
-    builder.Function<SelectOverload<void (SphereCollider::*) (float, float, float),&SphereCollider::SetOffset>()>("SetOffset")
+    builder.Function<SelectOverload<void (SphereCollider::*) (float, float, float)>(&SphereCollider::SetOffset)>("SetOffset")
       .SetParameterNames("aX", "aY","aZ")
       .SetDocumentation("Sets the collider position offset from the World Translation of the transform");
   }

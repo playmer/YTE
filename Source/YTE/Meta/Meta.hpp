@@ -12,12 +12,13 @@ namespace YTE
 {
   inline constexpr std::nullptr_t NoGetter = nullptr;
   inline constexpr std::nullptr_t NoSetter = nullptr;
-
-  template <typename tFunctionSignature, tFunctionSignature tBoundFunction>
-  constexpr auto SelectOverload()
+  
+  template <typename tFunctionSignature>
+  constexpr auto SelectOverload(tFunctionSignature aBoundFunction) -> tFunctionSignature
   {
-    return tBoundFunction;
+    return aBoundFunction;
   }
+
 
   template <typename tType>
   class TypeBuilder
