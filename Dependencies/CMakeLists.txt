@@ -114,7 +114,7 @@ PUBLIC
 
 ##########################################################################
 # Get WWise
-FindWWise(WWise_SoundEngine)
+#FindWWise(WWise_SoundEngine)
 
 # Turn the warnings off on our dependencies.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)

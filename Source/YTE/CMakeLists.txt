@@ -10,7 +10,7 @@ include(Meta/CMakeLists.txt)
 include(Platform/CMakeLists.txt)
 include(StandardLibrary/CMakeLists.txt)
 include(Utilities/CMakeLists.txt)
-include(WWise/CMakeLists.txt)
+#include(WWise/CMakeLists.txt)
 
 target_include_directories(YTE 
   PUBLIC
