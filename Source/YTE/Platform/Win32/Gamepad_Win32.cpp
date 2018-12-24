@@ -111,7 +111,7 @@ namespace YTE
     // TODO (Josh): Make some way to do this contiguously instead of using the TODO trick.
     // Include trick for updating button states.
     #define ProcessButtonMacro(aOsKey, aOurKey) ProcessButton(state, aOsKey, aOurKey);
-    #include "YTE/Platform/Windows/OsXboxButtons_Windows.hpp"
+    #include "YTE/Platform/Win32/OsXboxButtons_Win32.hpp"
     #undef ProcessButtonMacro
 
     mPreviousLeftStick = mLeftStick;

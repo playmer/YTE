@@ -25,10 +25,10 @@ namespace YTE
   {
     switch (aOsKey)
     {
-#define ProcessKey(aOsKey, aOurKey) case (aOsKey) : return Keys::aOurKey;
-#include "YTE/Platform/Windows/OsKeys_Windows.hpp"
-#undef ProcessKey
-    default: return Keys::Unknown;
+      #define ProcessKey(aOsKey, aOurKey) case (aOsKey) : return Keys::aOurKey;
+      #include "YTE/Platform/Win32/OsKeys_Win32.hpp"
+      #undef ProcessKey
+      default: return Keys::Unknown;
     }
   }
 
@@ -36,10 +36,10 @@ namespace YTE
   {
     switch (aOurKey)
     {
-#define ProcessKey(aOsKey, aOurKey) case (Keys::aOurKey) : return aOsKey;
-#include "YTE/Platform/Windows/OsKeys_Windows.hpp"
-#undef ProcessKey
-    default: return 0;
+      #define ProcessKey(aOsKey, aOurKey) case (Keys::aOurKey) : return aOsKey;
+      #include "YTE/Platform/Win32/OsKeys_Win32.hpp"
+      #undef ProcessKey
+      default: return 0;
     }
   }
 

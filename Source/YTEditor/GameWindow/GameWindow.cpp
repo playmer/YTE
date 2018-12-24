@@ -19,7 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/Window.hpp"
 
 #ifdef YTE_Windows
-#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
+#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 #endif
 
 #include "YTE/Core/Engine.hpp"

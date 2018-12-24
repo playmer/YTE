@@ -26,9 +26,9 @@ endif()
 
 # Now add in the files per platform.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  include(Win32/CMakeLists.txt)
+  include(${CMAKE_CURRENT_LIST_DIR}/Win32/CMakeLists.txt)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  include(Linux/CMakeLists.txt)
+  include(${CMAKE_CURRENT_LIST_DIR}/Linux/CMakeLists.txt)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   set(YTE_Darwin "YTE_Darwin=1")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Android")

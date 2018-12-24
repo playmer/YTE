@@ -20,7 +20,7 @@ namespace YTE
     switch (aOurButton)
     {
       #define ProcessKey(aOsKey, aOurKey) case (MouseButtons::aOurKey) : return aOsKey;
-      #include "YTE/Platform/Windows/OsMouseButtons_Windows.hpp"
+      #include "YTE/Platform/Win32/OsMouseButtons_Win32.hpp"
       #undef ProcessKey
       default: return 0;
     }

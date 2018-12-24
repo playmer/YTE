@@ -7,7 +7,7 @@
  */
 /******************************************************************************/
 #include <stdlib.h>
-#include "YTE/Platform/Windows/WindowsInclude_Windows.hpp"
+#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 
 #include "AK/SoundEngine/Common/AkMemoryMgr.h"    // Memory Manager
 
