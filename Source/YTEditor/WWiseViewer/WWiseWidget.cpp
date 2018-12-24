@@ -225,7 +225,7 @@ namespace YTEditor
 
           for (auto &aSwitch : switchGroup.second.second)
           {
-            comboBox->addItem(aSwitch.mName.c_str(), aSwitch.mId);
+            comboBox->addItem(aSwitch.mName.c_str(), static_cast<qulonglong>(aSwitch.mId));
           }
 
           comboBox->SetCurrentSwitchOrState();
@@ -271,7 +271,7 @@ namespace YTEditor
 
           for (auto &state : stateGroup.second.second)
           {
-            comboBox->addItem(state.mName.c_str(), state.mId);
+            comboBox->addItem(state.mName.c_str(), static_cast<qulonglong>(state.mId));
           }
 
           comboBox->SetCurrentSwitchOrState();

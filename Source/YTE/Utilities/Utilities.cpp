@@ -228,17 +228,17 @@ namespace YTE
   {
     auto strPointer = file.c_str();
   
-    while (*strPointer != NULL)
+    while ('\0' != *strPointer)
     {
       if (*strPointer != ',')
       {
         output.push_back(static_cast<float>(atof(strPointer)));
 
-        while (*strPointer != NULL && *strPointer != ',')
+        while (('\0' != *strPointer) && (*strPointer != ','))
         {
           ++strPointer;
         }
-        if (*strPointer == NULL)
+        if ('\0' == *strPointer)
         {
           output.pop_back();
           return;

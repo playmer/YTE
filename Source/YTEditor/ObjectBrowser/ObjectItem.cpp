@@ -13,12 +13,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include <qapplication.h>
-#include <qevent.h>
-#include <qhboxLayout>
-#include <qlineedit.h>
-#include <qpainter.h>
-#include <qpushbutton.h>
+#include <QApplication>
+#include <QEvent>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QPainter>
+#include <QPushButton>
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Utilities/String/String.hpp"

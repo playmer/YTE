@@ -19,26 +19,28 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 #include <thread>
 
-#include <qtimer.h>
-#include <qprogressdialog.h>
-#include <qdockwidget.h>
-#include <qtextedit.h>
-#include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qaction.h>
-#include <qfile.h>
-#include <qapplication.h>
-#include <qdir.h>
-#include <qfilesystemmodel.h>
-#include <qpushbutton.h>
-#include <qfiledialog.h>
-#include <qdesktopservices.h>
-#include <qevent.h>
-#include <qmessagebox.h>
+#include <QTimer>
+#include <QProgressDialog>
+#include <QDockWidget>
+#include <QTextEdit>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QAction>
+#include <QFile>
+#include <QApplication>
+#include <QDir>
+#include <QFileSystemModel>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QEvent>
+#include <QMessageBox>
 
 #include "crunch/inc/crnlib.h"
 
 #include "stb/stb_image.h"
+
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
@@ -848,7 +850,7 @@ namespace YTEditor
     std::filesystem::path prefPath{ pref };
     std::filesystem::path baseAndPref = std::filesystem::current_path() / prefPath;
 
-    pref = std::filesystem::canonical(baseAndPref);
+    prefPath = std::filesystem::canonical(baseAndPref);
 
     YTE::RSStringBuffer sb;
     YTE::RSPrettyWriter writer(sb);
@@ -856,7 +858,7 @@ namespace YTEditor
     std::string prefInJson = sb.GetString();
 
     std::ofstream prefToSave;
-    prefToSave.open(pref);
+    prefToSave.open(prefPath);
     prefToSave << prefInJson;
     prefToSave.close();
   }

@@ -16,10 +16,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/FileSystem.hpp"
 #include <fstream>
 
-#include <qapplication>
-#include <qfiledialog>
-#include <qdesktopservices>
-#include <qmessagebox>
+#include <QApplication>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QMessageBox>
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"

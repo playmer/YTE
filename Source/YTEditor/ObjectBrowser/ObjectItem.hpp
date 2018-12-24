@@ -14,10 +14,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qstyleditemdelegate.h>
-#include <qtreewidget.h>
+#include <QLabel>
+#include <QPushButton>
+#include <QStyledItemDelegate>
+#include <QTreeWidget>
 
 
 namespace YTE
