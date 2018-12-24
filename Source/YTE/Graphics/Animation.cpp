@@ -345,12 +345,20 @@ namespace YTE
 
     if (writtenFileData != readFileData)
     {
-      __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
     }
 
     if (false == Equal(aOriginalData, readFile))
     {
-      __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
     }
 
     return readFile;

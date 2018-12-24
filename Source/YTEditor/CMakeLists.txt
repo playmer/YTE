@@ -120,18 +120,13 @@ endif()
 
 find_package(Qt5Widgets)
 
-target_link_libraries(YTEditor YTE Qt5::Widgets)
+YTE_Target_Set_LTCG(YTEditor)
 
-target_compile_options(YTEditor PRIVATE -permissive- -std:c++17 -WX- -W3)
+target_link_libraries(YTEditor YTE Qt5::Widgets)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
 YTE_Source_Group(YTEditor_Root YTEditor) 
-
-YTE_Target_Set_LTCG(YTEditor)
-
-# Have to do /LTCG here because it appears as though setting this property resets it.
-set_target_properties(YTEditor PROPERTIES LINK_FLAGS_PUBLISH "/SUBSYSTEM:WINDOWS /LTCG")
 
 if ("${INSTALL_YTEDITOR}" STREQUAL "1")
   message(STATUS "YTEditor Install Target Enabled")
@@ -149,4 +144,18 @@ if ("${INSTALL_YTEDITOR}" STREQUAL "1")
 
   Install(PROGRAMS "$<TARGET_FILE_DIR:YTEditor>/Qt5Widgets.dll" 
   DESTINATION BIN)
+endif()
+
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  # Have to do /LTCG here because it appears as though setting this property resets it.
+  set_target_properties(YTEditor PROPERTIES LINK_FLAGS_PUBLISH "/SUBSYSTEM:WINDOWS /LTCG")
+
+  target_compile_options(YTEditor PRIVATE 
+    PUBLIC
+      -permissive- -std:c++17 -MP
+    PRIVATE
+      -WX- -W4
+  )
+else()
+  target_compile_options(YTEditor PRIVATE -std=c++17)
 endif()

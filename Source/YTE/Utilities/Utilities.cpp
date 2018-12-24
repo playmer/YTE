@@ -22,10 +22,10 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  std::wstring cWorkingDirectory = std::filesystem::current_path();
+  std::wstring cWorkingDirectory = std::filesystem::current_path().wstring();
 
-  template <typename tType>
-  tType randomInteger(std::default_random_engine &e)
+  template <typename tType, typename tRandomEngine>
+  tType randomInteger(tRandomEngine &e)
   {
     std::uniform_int_distribution<tType> dist{ std::numeric_limits<tType>::min(), std::numeric_limits<tType>::max() };
 
@@ -160,7 +160,7 @@ namespace YTE
     return finalPath;
   }
 
-  #ifdef YTE_Windows
+  #if YTE_Windows
     static int vasprintf(char **strPtr, const char *aFormatString, va_list argv)
     {
       int needed = vsnprintf((*strPtr = nullptr), 0, aFormatString, argv);
@@ -265,7 +265,7 @@ namespace YTE
     std::filesystem::path toReturnPath{ toReturn };
     std::filesystem::path baseAndToReturn = basePath / toReturnPath;
 
-    toReturn = std::filesystem::canonical(baseAndToReturn);
+    toReturn = std::filesystem::canonical(baseAndToReturn).wstring();
 
     //DebugObjection(std::filesystem::exists(toReturn) == false, 
     //            "%S of with name of \"%s\" doesn't exist", aFileType, aFile);

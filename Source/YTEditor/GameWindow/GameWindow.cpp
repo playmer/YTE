@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#ifdef YTE_Windows
+#if YTE_Windows
 #include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
 #endif
 
@@ -86,7 +86,7 @@ namespace YTEditor
     }
 
     // TODO Implement this on other platforms maybe?
-#ifdef YTE_Windows
+#if YTE_Windows
     MSG message = *(static_cast<MSG*>(aMessage));
 
     TranslateMessage(&message);

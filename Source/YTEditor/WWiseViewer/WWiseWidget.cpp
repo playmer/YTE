@@ -1,10 +1,10 @@
-#include <qcomboBox>
-#include <qpushButton>
-#include <qgroupBox>
-#include <qhboxLayout>
-#include <qlineEdit>
-#include <qlayout>
-#include <qlabel>
+#include <QComboBox>
+#include <QPushButton>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLineEdit>
+#include <QLayout>
+#include <QLabel>
 
 #include "AK/SoundEngine/Common/AkSoundEngine.h"
 

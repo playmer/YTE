@@ -225,16 +225,16 @@ namespace YTEditor
     archetype.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
     std::string archOut = sb.GetString();
 
-    std::string archName(arch.c_str());
-    std::wstring archWStr{ archName.begin(), archName.end() };
+    std::filesystem::path archName{ arch.c_str() };
 
-    std::string path = YTE::Path::GetGamePath().String();
-    std::wstring pathWStr{ path.begin(), path.end() };
+    std::filesystem::path path{ YTE::Path::GetGamePath().String() };
 
-    archWStr = pathWStr + L"Archetypes/" + archWStr + L".json";
+    archName = archName.concat(".json");
+
+    auto finalPath = path / "Archetypes" / archName;
 
     std::ofstream newArch;
-    newArch.open(archWStr);
+    newArch.open(finalPath);
     newArch << archOut;
     newArch.close();
 

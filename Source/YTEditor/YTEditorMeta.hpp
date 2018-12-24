@@ -2,10 +2,18 @@
 
 #include "YTE/Platform/TargetDefinitions.hpp"
 
-#if defined(YTE_Windows) && defined(YTEditor_Internal)
-  #define YTEditor_Shared __declspec( dllexport )
-#elif defined(YTE_Windows)
-  #define YTEditor_Shared __declspec( dllimport )
+#if YTE_Windows
+  #if defined(YTEditor_Internal)
+    #define YTEditor_Shared __declspec( dllexport )
+  #else
+    #define YTEditor_Shared __declspec( dllimport )
+  #endif
+#elif YTE_Linux
+  #if defined(YTEditor_Internal)
+    #define YTEditor_Shared __attribute__((visibility("default")))
+  #else
+    #define YTEditor_Shared
+  #endif
 #endif
 
 #define YTEditorDeclareType(Name)                                     \

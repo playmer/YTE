@@ -7,7 +7,10 @@
  */
 /******************************************************************************/
 #include <stdlib.h>
-#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
+
+#if YTE_Windows
+  #include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
+#endif
 
 #include "AK/SoundEngine/Common/AkMemoryMgr.h"    // Memory Manager
 
@@ -15,7 +18,7 @@
 // and MUST be defined by the game developer.
 namespace AK
 {
-#ifdef WIN32
+#if YTE_Windows
   void * AllocHook(size_t in_size)
   {
     return malloc(in_size);

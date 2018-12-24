@@ -53,7 +53,7 @@ Function(FindWWise aTarget)
   add_library(${aTarget} ${WWiseTargetFiles})
 
   target_compile_definitions(${aTarget} PRIVATE UNICODE)
-  target_include_directories(${aTarget} PRIVATE ${PlatformIncludeDirectory})
+  target_include_directories(${aTarget} PUBLIC ${PlatformIncludeDirectory})
   target_include_directories(${aTarget} PUBLIC ${WWisePath}/include)
   target_include_directories(${aTarget} PUBLIC ${WWisePath}/samples)
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <qscrollarea.h>
-#include <qlayout.h>
-#include <qpushButton>
-#include <qwidget>
+#include <QScrollArea>
+#include <QLayout>
+#include <QPushButton>
+#include <QWidget>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 

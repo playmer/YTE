@@ -213,7 +213,7 @@ namespace YTEditor
                                                       this);
     widg->setValidator(validate);
     char buff[100] = { '\0' };
-    sprintf_s(buff, "%.4f", aVal);
+    sprintf(buff, "%.4f", aVal);
     widg->setText(buff);
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -230,7 +230,7 @@ namespace YTEditor
       this);
     widg->setValidator(validate);
     char buff[100] = { '\0' };
-    sprintf_s(buff, "%.4f", aVal);
+    sprintf(buff, "%.4f", aVal);
     widg->setText(buff);
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -411,7 +411,7 @@ namespace YTEditor
   {
     LineEdit *widg = static_cast<LineEdit*>(mWidgets[0]);
     char buff[100] = { '\0' };
-    sprintf_s(buff, "%.4f", aVal);
+    sprintf(buff, "%.4f", aVal);
     widg->setText(buff);
   }
 
@@ -420,7 +420,7 @@ namespace YTEditor
   {
     LineEdit *widg = static_cast<LineEdit*>(mWidgets[0]);
     char buff[100] = { '\0' };
-    sprintf_s(buff, "%.4f", aVal);
+    sprintf(buff, "%.4f", aVal);
     widg->setText(buff);
   }
 
@@ -459,7 +459,7 @@ namespace YTEditor
     {
       LineEdit * widg = static_cast<LineEdit*>(mWidgets[i]);
       char buff[100] = { '\0' };
-      sprintf_s(buff, "%.4f", aVal[i]);
+      sprintf(buff, "%.4f", aVal[i]);
       widg->setText(buff);
     }
   }
@@ -478,7 +478,7 @@ namespace YTEditor
       {
         LineEdit * widg = static_cast<LineEdit*>(mWidgets[i]);
         char buff[100] = { '\0' };
-        sprintf_s(buff, "%.4f", aVal[i]);
+        sprintf(buff, "%.4f", aVal[i]);
         widg->setText(buff);
       }
     }
@@ -498,7 +498,7 @@ namespace YTEditor
       {
         LineEdit * widg = static_cast<LineEdit*>(mWidgets[i]);
         char buff[100] = { '\0' };
-        sprintf_s(buff, "%.4f", aVal[i]);
+        sprintf(buff, "%.4f", aVal[i]);
         widg->setText(buff);
       }
     }
