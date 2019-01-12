@@ -29,6 +29,7 @@ Function(FindWWise aTarget)
   if (CMAKE_SYSTEM_NAME STREQUAL Windows)
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
     set(PlatformLibraryDirectory x64_vc150)
+    set(platformLibraryExtension lib)
     
     file(GLOB_RECURSE 
          PlatformFiles 
@@ -39,6 +40,7 @@ Function(FindWWise aTarget)
   else()
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
     set(PlatformLibraryDirectory Linux_x64)
+    set(platformLibraryExtension a)
 
     file(GLOB_RECURSE 
          PlatformFiles 
@@ -50,7 +52,7 @@ Function(FindWWise aTarget)
   
   set(WWiseTargetFiles ${CommonFiles} ${PlatformFiles})
 
-  add_library(${aTarget} ${WWiseTargetFiles})
+  add_library(${aTarget} STATIC ${WWiseTargetFiles})
 
   target_compile_definitions(${aTarget} PRIVATE UNICODE)
   target_include_directories(${aTarget} PUBLIC ${PlatformIncludeDirectory})
@@ -60,24 +62,24 @@ Function(FindWWise aTarget)
   file(GLOB_RECURSE 
        staticLibraryRelease
        "${WWisePath}/${PlatformLibraryDirectory}/Release/lib"
-       "${WWisePath}/${PlatformLibraryDirectory}/Release/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Release/lib/*.${platformLibraryExtension}")
         
   file(GLOB_RECURSE 
        staticLibraryProfile
        "${WWisePath}/${PlatformLibraryDirectory}/Profile/lib"
-       "${WWisePath}/${PlatformLibraryDirectory}/Profile/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Profile/lib/*.${platformLibraryExtension}")
         
   file(GLOB_RECURSE 
        staticLibraryDebug
        "${WWisePath}/${PlatformLibraryDirectory}/Debug/lib"
-       "${WWisePath}/${PlatformLibraryDirectory}/Debug/lib/*.lib")
+       "${WWisePath}/${PlatformLibraryDirectory}/Debug/lib/*.${platformLibraryExtension}")
 
   foreach(library ${staticLibraryRelease})
     get_filename_component(libraryName ${library} NAME_WE)
 
     if (NOT ${libraryName} MATCHES "^AkMotionSink$")
-      target_link_libraries(${aTarget} $<$<CONFIG:PUBLISH>:${library}>)
-      target_link_libraries(${aTarget} $<$<CONFIG:RELEASE>:${library}>)
+      target_link_libraries(${aTarget} PUBLIC $<$<CONFIG:PUBLISH>:${library}>)
+      target_link_libraries(${aTarget} PUBLIC $<$<CONFIG:RELEASE>:${library}>)
     endif()
   endforeach()
 
@@ -85,8 +87,8 @@ Function(FindWWise aTarget)
     get_filename_component(libraryName ${library} NAME_WE)
 
     if (NOT ${libraryName} MATCHES "^AkMotionSink$")
-      target_link_libraries(${aTarget} $<$<CONFIG:RELWITHDEBINFO>:${library}>)
-      target_link_libraries(${aTarget} $<$<CONFIG:MINSIZEREL>:${library}>)
+      target_link_libraries(${aTarget} PUBLIC $<$<CONFIG:RELWITHDEBINFO>:${library}>)
+      target_link_libraries(${aTarget} PUBLIC $<$<CONFIG:MINSIZEREL>:${library}>)
     endif()
   endforeach()
     
@@ -94,7 +96,21 @@ Function(FindWWise aTarget)
     get_filename_component(libraryName ${library} NAME_WE)
 
     if (NOT ${libraryName} MATCHES "^AkMotionSink$")
-      target_link_libraries(${aTarget} debug ${library})
+      target_link_libraries(${aTarget} PUBLIC debug ${library})
     endif()
   endforeach()
+
+
+  message(release: ${staticLibraryRelease})
+  message(profile: ${staticLibraryProfile})
+  message(debug:${staticLibraryDebug})
+
+  if (NOT MSVC)
+    target_compile_options(${aTarget} PRIVATE -fPIC)
+  endif()
+
+  #message(ReleaseLibraries: ${staticLibraryRelease})
+  #message(ProfileLibraries: ${staticLibraryProfile})
+  #message(DebugLibraries: ${staticLibraryDebug})
+
 endfunction()
