@@ -13,7 +13,7 @@ Function(FindWWise aTarget)
     string(CONCAT errorString
        "Please define the environment variable `WWISESDK` with the path to WWise "
        "2017.1.0.6302 - i.e. export WWISESDK = "
-       "C:\Program Files (x86)\Audiokinetic\Wwise 2017.2.4.6590\SDK")
+       "C:/Program Files (x86)/Audiokinetic/Wwise 2017.2.4.6590/SDK")
     message(FATAL_ERROR ${errorString})
   endif()
 
