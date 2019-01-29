@@ -1,4 +1,4 @@
-# LambPlanet, a Josh's Farm game
+# YTE (Yours Truly Engine)
 
 ## Licence
 Everything is copyright DigiPen unless otherwise stated (likewise, other than the custom CMakes/forks for some of them, everything in the Dependencies folder are likewise, not ours.)
@@ -16,36 +16,11 @@ cd lambplanet
 mkdir build
 ```
     
-2.) Installing CMake 3.6:
+2.) Installing CMake 3.10:
   * On Windows:
 ```
 1.) https://cmake.org/download/
-2.) Select the appropriate installer for your device (version doesn't matter as long as it's at least 3.6)
-```
-  * On Linux: [DEPRECATED UNTIL LINUX SUPPORT]
-```
- * apt-get version:
- 1.) Get cmake and verify version
-    sudo apt-get install cmake
-    cmake --version
-    (should be at least 3.6.0)
-
-* apt-get doesn't have 3.6.0 or above?
-1.) Uninstall current version if it's already installed
-  sudo apt-get purge cmake
-2.) Go to https://cmake.org/download/ and download and extract the latest version
-  mkdir ~/temp
-  cd ~/temp
-  wget https://cmake.org/files/v3.6/cmake-3.6.0.tar.gz
-  tar xzvf cmake-3.6.0.tar.gz
-  cd cmake-3.6.0/
-3.) Install it
-  ./bootstrap
-  make -j4
-  sudo make install
-4.) Test your new cmake version
-  cmake --version
-  Result should be something like: cmake version 3.6.0
+2.) Select the appropriate installer for your device (version doesn't matter as long as it's at least 3.10)
 ```
 
 3.) Installing Qt 5.9.0
@@ -70,9 +45,9 @@ mkdir build
       - Under Microsoft, choose Windows
 ```
 
-5.) Installing Vulkan 1.0.46.9
+5.) Installing Vulkan 1.1.92.1
 ```
-1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.0.46.0 installer for your platform
+1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.1.92.1 installer for your platform
 2.) Install, all of the default options should be fine
 ```
 
@@ -87,17 +62,8 @@ cmake ..
 LambPlanet.sln
 
 // Visual Studio should be open now
-Right click LambPlanet and set as startup project
+Right click YTEPlayer and set as startup project
 Build as per the usual
-```
-
-* On Linux: [DEPRECATED UNTIL LINUX SUPPORT]
-```
-cd build
-cmake ..
-make
-cd LambPlanet
-./LambPlanet
 ```
 
 ## Workflow
