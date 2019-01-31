@@ -24,13 +24,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Attribute.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/HeaderListProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/HeaderListWidget.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListWidget.hpp"
 
 
 namespace YTEditor

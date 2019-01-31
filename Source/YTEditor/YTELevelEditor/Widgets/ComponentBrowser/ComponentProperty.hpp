@@ -20,12 +20,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Component.hpp"
 #include "YTE/Meta/Meta.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ArchetypeTools.hpp"
-#include "YTEditor/UndoRedo/Commands.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
 
 namespace YTEditor

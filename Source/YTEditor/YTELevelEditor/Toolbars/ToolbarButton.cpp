@@ -1,8 +1,8 @@
 #include <qdir.h>
 #include <qevent.h>
 
-#include "YTEditor/MainWindow/Toolbars/Toolbar.hpp"
-#include "YTEditor/MainWindow/Toolbars/ToolbarButton.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/Toolbar.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/ToolbarButton.hpp"
 
 namespace YTEditor
 {

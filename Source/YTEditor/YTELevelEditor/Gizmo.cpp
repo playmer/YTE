@@ -6,11 +6,11 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Meta/Meta.hpp"
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/Physics/PhysicsHandler.hpp"
-#include "YTEditor/UndoRedo/Commands.hpp"
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
 namespace YTEditor
 {

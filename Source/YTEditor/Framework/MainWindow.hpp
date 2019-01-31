@@ -6,12 +6,12 @@
 
 #include <qmainwindow.h>
 
-#include "YTEditor/Framework/Workspace.hpp"
-
 namespace YTEditor
 {
 namespace Framework
 {
+
+class Workspace;
 
 class MainWindow : public QMainWindow
 {
@@ -34,14 +34,22 @@ public:
   bool UnloadWorkspace(T* workspace);
 
 private:
-  std::map<std::type_index, std::unique_ptr<Workspace> > mWorkspaces;
+  std::map<std::type_index, Framework::Workspace*> mWorkspaces;
 };
 
 template <typename T, typename... Args>
 T* MainWindow::LoadWorkspace(Args&&... args)
 {
-  auto inserted = mWorkspaces.emplace({ std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...) });
-  return inserted->get();
+  auto inserted = mWorkspaces.emplace(std::type_index(typeid(T)), new T(std::forward<Args>(args)...));
+
+  if (inserted.second)
+  {
+    if (inserted.first->second->Initialize())
+    {
+      return static_cast<T*>(inserted.first->second);
+    }
+  }
+  return nullptr;
 }
 
 template <typename T>
@@ -51,12 +59,12 @@ bool MainWindow::UnloadWorkspace(T* workspace)
 
   if (it != mWorkspaces.end())
   {
+    it->second->Shutdown();
     mWorkspaces.erase(it);
     return true;
   }
-
   return false;
 }
 
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

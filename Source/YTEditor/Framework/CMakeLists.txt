@@ -5,19 +5,17 @@
 ################################################################################
 
 target_sources(YTEditor
-PRIVATE  
-  ${CMAKE_CURRENT_LIST_DIR}/MainWindow.hpp
+PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/MainWindow.cpp
-
-  ${CMAKE_CURRENT_LIST_DIR}/Workspace.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Workspace.cpp
-  
-  ${CMAKE_CURRENT_LIST_DIR}/Widget.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Widget.cpp
-  
-  ${CMAKE_CURRENT_LIST_DIR}/Menu.hpp
   ${CMAKE_CURRENT_LIST_DIR}/Menu.cpp
-  
-  ${CMAKE_CURRENT_LIST_DIR}/ToolBar.hpp
   ${CMAKE_CURRENT_LIST_DIR}/ToolBar.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Widget.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/Workspace.cpp
+
+PUBLIC
+  ${CMAKE_CURRENT_LIST_DIR}/MainWindow.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Menu.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/ToolBar.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Widget.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Workspace.hpp
 )

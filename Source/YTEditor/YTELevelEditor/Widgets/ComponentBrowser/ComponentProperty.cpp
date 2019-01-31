@@ -1,4 +1,4 @@
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
 
 namespace YTEditor
 {

@@ -1,4 +1,4 @@
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/HeaderListProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListProperty.hpp"
 
 namespace YTEditor
 {

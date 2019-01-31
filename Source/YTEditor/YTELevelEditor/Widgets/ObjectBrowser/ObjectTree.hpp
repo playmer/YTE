@@ -16,8 +16,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtreewidget.h>
 
-#include "YTE/StandardLibrary/Vector.hpp"
-
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -76,7 +74,7 @@ namespace YTEditor
 
     MainWindow* GetMainWindow() const;
 
-    YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    std::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
     void SelectNoItem();
 

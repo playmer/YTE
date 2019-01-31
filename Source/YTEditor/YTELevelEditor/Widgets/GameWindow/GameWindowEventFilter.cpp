@@ -6,13 +6,13 @@
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/Orientation.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/FileViewer/FileViewer.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindowEventFilter.hpp"
-#include "YTEditor/MainWindow/MenuBar/GameObjectMenu.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/GameObjectMenu.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 namespace YTEditor

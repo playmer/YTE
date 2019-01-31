@@ -34,17 +34,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ArchetypeTools.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
-#include "YTEditor/UndoRedo/Commands.hpp"
-#include "YTEditor/UndoRedo/UndoRedo.hpp"
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 
 
 namespace YTEditor

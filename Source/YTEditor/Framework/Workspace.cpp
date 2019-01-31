@@ -10,10 +10,10 @@ Workspace::Workspace(MainWindow* mainWindow)
 {
 }
 
-const MainWindow* Workspace::GetMainWindow() const
+MainWindow* Workspace::GetMainWindow() const
 {
   return mMainWindow;
 }
 
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

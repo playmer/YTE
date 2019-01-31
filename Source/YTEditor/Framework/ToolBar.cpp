@@ -13,4 +13,4 @@ ToolBar::ToolBar(Workspace* workspace)
 }
 
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

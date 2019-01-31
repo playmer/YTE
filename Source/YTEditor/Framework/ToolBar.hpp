@@ -22,4 +22,4 @@ private:
 };
 
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

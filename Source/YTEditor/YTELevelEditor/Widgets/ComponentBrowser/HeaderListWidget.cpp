@@ -4,11 +4,11 @@
 #include "YTE/Meta/Attribute.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/HeaderListWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidgetBase.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/HeaderListProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidgetBase.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 
 namespace YTEditor
 {

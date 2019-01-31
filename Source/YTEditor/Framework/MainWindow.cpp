@@ -1,6 +1,7 @@
-#include "MainWindow.hpp"
-
 #include <qmenubar.h>
+
+#include "YTEditor/Framework/MainWindow.hpp"
+#include "YTEditor/Framework/Workspace.hpp"
 
 namespace YTEditor
 {
@@ -9,8 +10,8 @@ namespace Framework
 
 MainWindow::MainWindow()
 {
-  setMenuBar(new QMenuBar(this));
+  QMainWindow::setMenuBar(new QMenuBar(this));
 }
 
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

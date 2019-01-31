@@ -19,8 +19,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qlineedit.h>
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/SearchBarEventFilter.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentSearchBar.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/SearchBarEventFilter.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentSearchBar.hpp"
 
 namespace YTEditor
 {

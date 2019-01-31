@@ -23,10 +23,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/UndoRedo/Commands.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
 
 namespace YTEditor

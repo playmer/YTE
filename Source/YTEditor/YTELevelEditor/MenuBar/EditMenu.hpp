@@ -14,15 +14,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qmenu.h>
+#include <YTEditor/Framework/Menu.hpp>
 
 namespace YTEditor
 {
-  class EditMenu : public QMenu
+  class EditMenu : public Framework::Menu
   {
   public:
     EditMenu(MainWindow *aMainWindow);
-    ~EditMenu();
 
   private:
 

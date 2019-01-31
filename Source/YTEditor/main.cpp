@@ -28,15 +28,15 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
-#include "YTEditor/MainWindow/ScriptBind.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/YTELevelEditor/ComponentFactoryInit.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/YTELevelEditor/ScriptBind.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 // Helper function

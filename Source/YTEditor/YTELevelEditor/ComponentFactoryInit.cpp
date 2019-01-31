@@ -1,5 +1,5 @@
 
-#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
+#include "YTEditor/YTELevelEditor/ComponentFactoryInit.hpp"
 
 namespace YTEditor
 {

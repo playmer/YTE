@@ -3,7 +3,7 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTEditor/MainWindow/Widgets/FileViewer/FileViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 
 namespace YTEditor
 {

@@ -21,9 +21,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 
 
 namespace YTEditor

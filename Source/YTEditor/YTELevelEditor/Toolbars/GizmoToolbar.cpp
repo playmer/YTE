@@ -4,11 +4,11 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
-#include "YTEditor/MainWindow/Toolbars/ToolbarButton.hpp"
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/ToolbarButton.hpp"
 
 namespace YTEditor
 {

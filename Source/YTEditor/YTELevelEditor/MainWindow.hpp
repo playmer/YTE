@@ -19,9 +19,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/Physics/PhysicsHandler.hpp"
+#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
 
 class QDockWidget;
 class QMenu;

@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
 
 class QScrollArea;
 class QVBoxLayout;

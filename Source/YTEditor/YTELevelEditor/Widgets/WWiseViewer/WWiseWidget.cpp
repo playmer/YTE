@@ -10,7 +10,7 @@
 
 #include "YTE/Core/Engine.hpp"
 
-#include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 
 namespace YTEditor
 {

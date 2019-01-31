@@ -29,6 +29,9 @@ public:
   virtual DockArea GetDefaultDockArea() const = 0;
   virtual DockArea GetAllowedDockAreas() const;
 
+  template <typename T>
+  T* GetWorkspace() const;
+
 protected:
   std::unique_ptr<QDockWidget> mDockWidget;
 
@@ -37,5 +40,11 @@ private:
   Workspace* mWorkspace;
 };
 
+template <typename T>
+T* Widget::GetWorkspace() const
+{
+  return static_cast<T*>(mWorkspace);
+}
+
 } // End of Framework namespace
-} // End of YTEditor namespace
+} // End of Editor namespace

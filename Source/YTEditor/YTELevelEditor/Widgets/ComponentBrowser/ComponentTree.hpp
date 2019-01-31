@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtreewidget.h>
 
-#include "YTEditor/UndoRedo/UndoRedo.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 
 class QScrollArea;
 class QVBoxLayout;

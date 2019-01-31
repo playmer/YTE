@@ -16,7 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Meta/ForwardDeclarations.hpp"
 
-#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/Menu.hpp"
 
 namespace YTE
 {

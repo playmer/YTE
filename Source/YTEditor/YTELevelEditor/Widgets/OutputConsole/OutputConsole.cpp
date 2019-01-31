@@ -23,8 +23,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "YTEditor/MainWindow/Toolbars/Toolbar.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/Toolbar.hpp"
 
 namespace YTEditor
 {

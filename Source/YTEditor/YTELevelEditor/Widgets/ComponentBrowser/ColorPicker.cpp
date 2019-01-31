@@ -1,4 +1,4 @@
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ColorPicker.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ColorPicker.hpp"
 
 namespace YTEditor
 {

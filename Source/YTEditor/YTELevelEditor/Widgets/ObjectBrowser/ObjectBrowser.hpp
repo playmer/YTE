@@ -16,10 +16,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtreewidget.h>
 
-#include "YTE/StandardLibrary/Vector.hpp"
-
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -76,7 +74,7 @@ namespace YTEditor
 
     MainWindow* GetMainWindow() const;
 
-    YTE::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    std::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
     void SelectNoItem();
     
@@ -113,7 +111,7 @@ namespace YTEditor
     ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
 
     void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-                                        YTE::vector<ObjectItem*>* aResult,
+                                        std::vector<ObjectItem*>* aResult,
                                         ObjectItem* aItem);
 
     std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;

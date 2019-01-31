@@ -4,9 +4,9 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Toolbars/GameToolbar.hpp"
-#include "YTEditor/MainWindow/Toolbars/ToolbarButton.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/GameToolbar.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/ToolbarButton.hpp"
 
 YTEditor::GameToolbar::GameToolbar(MainWindow * aMainWindow) : Toolbar(aMainWindow)
 {

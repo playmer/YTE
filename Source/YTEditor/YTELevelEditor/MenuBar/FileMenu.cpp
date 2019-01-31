@@ -26,12 +26,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 
 namespace YTEditor
