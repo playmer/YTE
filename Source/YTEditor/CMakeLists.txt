@@ -4,7 +4,6 @@
 ## Author : Joshua T. Fisher
 ################################################################################
 add_executable(YTEditor "")
-                   YTEditorMeta.hpp
 
 include(Framework/CMakeLists.txt)
 include(YTELevelEditor/CMakeLists.txt)
@@ -15,6 +14,7 @@ target_sources(YTEditor
     ${CMAKE_CURRENT_LIST_DIR}/WinMain.cpp
     ${CMAKE_CURRENT_LIST_DIR}/YTEditor.rc
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/YTEditorMeta.hpp
 )
 
 target_include_directories(YTEditor
