@@ -24,10 +24,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ColorPicker.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/CheckBox.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/LineEdit.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidgetBase.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ColorPicker.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/CheckBox.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/LineEdit.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidgetBase.hpp"
 
 namespace YTEditor
 {
@@ -37,18 +37,18 @@ namespace YTEditor
   {
   public:
 
-    PropertyWidget(const std::string &aName, 
-                   YTE::Property *aProperty, 
-                   MainWindow *aMainWindow, 
-                   QWidget * aParent = nullptr)
-      : PropertyWidgetBase(aParent)
-      , mMainWindow(aMainWindow)
-      , mProperty(aProperty)
+    PropertyWidget(const std::string& name, 
+                   YTE::Property* property, 
+                   YTELevelEditor* editor, 
+                   QWidget* parent = nullptr)
+      : PropertyWidgetBase(parent)
+      , mEditor(editor)
+      , mProperty(property)
       , mValues(new QHBoxLayout(this))
-      , mPropertyName(aName)
+      , mPropertyName(name)
     {
       this->setLayout(mValues);
-      mLabel = new QLabel(aName.c_str(), this);
+      mLabel = new QLabel(name.c_str(), this);
       mValues->addWidget(mLabel);
 
       // check for the type and add the appropriate widgets
@@ -170,14 +170,14 @@ namespace YTEditor
 
   private:
 
-    MainWindow *mMainWindow;
-    YTE::Property *mProperty;
+    YTELevelEditor* mEditor;
+    YTE::Property* mProperty;
 
     std::vector<QWidget*> mWidgets;
-    QHBoxLayout *mValues;
+    QHBoxLayout* mValues;
     std::string mPropertyName;
 
-    QLabel *mLabel;
+    QLabel* mLabel;
 
     void AddInteger(int aVal = 0);
     void AddFloat(float aVal = 0.0f);
@@ -192,7 +192,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddInteger(int aVal)
   {
-    LineEdit *widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mEditor);
     QIntValidator *validate = new QIntValidator(std::numeric_limits<int>::min(),
                                                 std::numeric_limits<int>::max(),
                                                 this);
@@ -205,7 +205,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddFloat(float aVal)
   {
-    LineEdit *widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mEditor);
 
     QDoubleValidator *validate = new QDoubleValidator(-std::numeric_limits<float>::max(),
                                                       std::numeric_limits<float>::max(),
@@ -222,7 +222,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddDouble(double aVal)
   {
-    LineEdit *widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mEditor);
 
     QDoubleValidator *validate = new QDoubleValidator(-std::numeric_limits<double>::max(),
       std::numeric_limits<double>::max(),
@@ -239,7 +239,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddString(YTE::String aVal)
   {
-    LineEdit *widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mEditor);
     widg->setText(aVal.c_str());
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -248,7 +248,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddStdString(std::string aVal)
   {
-    LineEdit *widg = new LineEdit(this, mMainWindow);
+    LineEdit *widg = new LineEdit(this, mEditor);
     widg->setText(aVal.c_str());
     mValues->addWidget(widg);
     mWidgets.push_back(widg);
@@ -257,7 +257,7 @@ namespace YTEditor
   template<class T>
   inline void PropertyWidget<T>::AddBool(bool aVal)
   {
-    CheckBox *widg = new CheckBox(this, mMainWindow);
+    CheckBox *widg = new CheckBox(this, mEditor);
     widg->setChecked(aVal);
     mValues->addWidget(widg);
     mWidgets.push_back(widg);

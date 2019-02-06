@@ -1,4 +1,5 @@
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -21,16 +22,16 @@ namespace YTEditor
   void ComponentProperty<QStringList>::SaveToEngine()
   {
     // engine component that owns property
-    YTE::Component *cmp = mParentComponent->GetEngineComponent();
+    YTE::Component* cmp = mParentComponent->GetEngineComponent();
 
     // current value on engine side
     YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
 
-    MainWindow *mainWindow = mParentComponent->GetMainWindow();
-    ComponentBrowser *componentBrowser = mainWindow->GetWidget<ComponentBrowser>();
+    YTELevelEditor* editor = mParentComponent->GetEditor();
+    ComponentBrowser* componentBrowser = editor->GetWidget<ComponentBrowser>();
     
     // notify that object instance changed (different from archetype now)
-    ArchetypeTools *archTools = componentBrowser->GetArchetypeTools();
+    ArchetypeTools* archTools = componentBrowser->GetArchetypeTools();
     archTools->IncrementChanges();
 
     // current list of strings
@@ -54,10 +55,10 @@ namespace YTEditor
                                                   cmp->GetGUID(),
                                                   oldVal,
                                                   modVal,
-                                                  mainWindow);
+                                                  editor);
 
     // put command on undo stack
-    mainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     // save the value to the engine component
     BaseSaveToEngine();

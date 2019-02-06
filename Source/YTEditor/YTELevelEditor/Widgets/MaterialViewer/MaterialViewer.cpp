@@ -30,7 +30,7 @@ namespace YTEditor
 {
 
   MaterialViewer::MaterialViewer(MainWindow *aMainWindow)
-    : Widget(aMainWindow)
+    : Framework::Widget(aMainWindow)
     , mComboBox(new QComboBox(this))
     , mMaterialWindow(nullptr)
     , mContainer(new QWidget(this))
@@ -150,7 +150,7 @@ namespace YTEditor
     return "MaterialViewer";
   }
 
-  Widget::DockArea MaterialViewer::GetDefaultDockPosition() const
+  Framework::Widget::DockArea MaterialViewer::GetDefaultDockArea() const
   {
     return Widget::DockArea::Right;
   }

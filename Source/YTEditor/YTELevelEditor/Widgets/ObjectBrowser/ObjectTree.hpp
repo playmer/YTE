@@ -14,8 +14,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qtreewidget.h>
+#include <vector>
 
+#include <qtreewidget.h>
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -106,7 +107,7 @@ namespace YTEditor
     ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
 
     void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-      YTE::vector<ObjectItem*>* aResult,
+      std::vector<ObjectItem*>* aResult,
       ObjectItem* aItem);
 
     std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;

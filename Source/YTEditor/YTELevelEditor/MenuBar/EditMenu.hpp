@@ -18,14 +18,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
+  class YTELevelEditor;
+
   class EditMenu : public Framework::Menu
   {
   public:
-    EditMenu(MainWindow *aMainWindow);
+    EditMenu(YTELevelEditor* editor);
 
   private:
-
-    MainWindow *mMainWindow;
 
     void Undo();
     void Redo();

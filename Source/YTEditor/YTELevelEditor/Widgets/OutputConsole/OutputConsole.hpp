@@ -18,7 +18,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/EventHandler.hpp"
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/Framework/Widget.hpp"
 
 #include "YTEditor/YTEditorMeta.hpp"
 

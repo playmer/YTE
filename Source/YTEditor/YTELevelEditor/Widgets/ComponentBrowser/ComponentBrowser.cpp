@@ -37,8 +37,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ComponentBrowser::ComponentBrowser(MainWindow *aMainWindow)
-    : Widget(aMainWindow)
+  ComponentBrowser::ComponentBrowser(YTELevelEditor* editor)
+    : Widget(editor)
     , mLayout(new QVBoxLayout())
     , mArchTools(nullptr)
     , mCompTools(nullptr)
@@ -59,17 +59,12 @@ namespace YTEditor
     return mArchTools;
   }
 
-  MainWindow* ComponentBrowser::GetMainWindow()
-  {
-    return mMainWindow;
-  }
-
   std::string ComponentBrowser::GetName()
   {
     return "ComponentBrowser";
   }
 
-  Widget::DockArea ComponentBrowser::GetDefaultDockPosition() const
+  Framework::Widget::DockArea ComponentBrowser::GetDefaultDockArea() const
   {
     return DockArea::Right;
   }

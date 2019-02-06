@@ -7,7 +7,7 @@
 
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
 
 
 namespace YTEditor

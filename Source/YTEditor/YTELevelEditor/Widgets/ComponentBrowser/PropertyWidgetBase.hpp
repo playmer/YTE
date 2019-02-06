@@ -23,7 +23,7 @@ namespace YTEditor
   {
   public:
 
-    PropertyWidgetBase(QWidget * parent = nullptr) : QWidget(parent), mType(PropType::Int) { }
+    PropertyWidgetBase(QWidget* parent = nullptr) : QWidget(parent), mType(PropType::Int) { }
 
     int GetBaseType() const
     {

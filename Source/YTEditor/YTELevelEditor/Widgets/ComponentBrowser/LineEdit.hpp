@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qlineedit.h>
 #include <qevent.h>
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -25,8 +25,8 @@ namespace YTEditor
   class LineEdit : public QLineEdit
   {
   public:
-    LineEdit(QWidget *aParent, MainWindow *aMainWindow)
-      : QLineEdit(aParent), mMainWindow(aMainWindow) { }
+    LineEdit(QWidget* parent, YTELevelEditor* editor)
+      : QLineEdit(parent), mEditor(editor) { }
 
     ~LineEdit() { }
 
@@ -48,8 +48,7 @@ namespace YTEditor
     }
 
   private:
-    MainWindow *mMainWindow;
-
+    YTELevelEditor* mEditor;
   };
 
 }

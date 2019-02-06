@@ -14,9 +14,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
+#include <vector>
+
 #include <qtreewidget.h>
 
-#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
+#include "YTEditor/Framework/Widget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
@@ -32,13 +34,13 @@ namespace YTE
 
 namespace YTEditor
 {
-  class MainWindow;
+  class YTELevelEditor;
   class ObjectItem;
 
-  class ObjectBrowser : public Widget
+  class ObjectBrowser : public Framework::Widget
   {
   public:
-    ObjectBrowser(MainWindow *aMainWindow);
+    ObjectBrowser(YTELevelEditor* editor);
     ~ObjectBrowser();
 
     void ClearObjectList();
@@ -72,16 +74,9 @@ namespace YTEditor
 
     ObjectItem* FindItemByComposition(YTE::Composition *aComp);
 
-    MainWindow* GetMainWindow() const;
-
-    std::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    std::vector<ObjectItem*> FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
     void SelectNoItem();
-    
-    void OnCurrentItemChanged(QTreeWidgetItem *current,
-                              QTreeWidgetItem *previous);
-
-    void OnItemSelectionChanged();
 
     void DuplicateCurrentlySelected();
 
@@ -93,26 +88,22 @@ namespace YTEditor
 
     static std::string GetName();
 
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Widget::DockArea GetDefaultDockArea() const override;
 
   private:
     ObjectTree* mTree;
 
     void SetWidgetSettings();
 
-    void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
-
     void dropEvent(QDropEvent *aEvent) override;
-
-    void CreateContextMenu(const QPoint & pos);
 
     void keyPressEvent(QKeyEvent *aEvent);
 
     ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
 
-    void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-                                        std::vector<ObjectItem*>* aResult,
-                                        ObjectItem* aItem);
+    void FindObjectsByArchetypeInternal(YTE::String &archetypeName,
+                                        std::vector<ObjectItem*>& result,
+                                        ObjectItem* item);
 
     std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;
     bool mInsertSelectionChangedCmd;

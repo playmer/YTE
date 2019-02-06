@@ -17,12 +17,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 
-#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
+#include "YTEditor/Framework/Widget.hpp"
 
 class QScrollArea;
 class QVBoxLayout;
 class QGridLayout;
-
 
 namespace YTE
 {
@@ -32,36 +31,34 @@ namespace YTE
 
 namespace YTEditor
 {
-  class MainWindow;
+  class YTELevelEditor;
   class ArchetypeTools;
   class ComponentWidget;
   class ComponentTree;
   class ComponentTools;
 
-  class ComponentBrowser : public Widget
+  class ComponentBrowser : public Framework::Widget
   {
   public:
-    ComponentBrowser(MainWindow *aMainWindow);
+    ComponentBrowser(YTELevelEditor* editor);
 
     ComponentTree* GetComponentTree();
 
     ArchetypeTools* GetArchetypeTools();
 
-    MainWindow* GetMainWindow();
-
     static std::string GetName();
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Framework::Widget::DockArea GetDefaultDockArea() const override;
 
   private:
 
     void SetWindowSettings();
     void ConstructSubWidgets();
 
-    QVBoxLayout *mLayout;
+    QVBoxLayout* mLayout;
 
-    ArchetypeTools *mArchTools;
-    ComponentTools *mCompTools;
-    ComponentTree *mComponentTree;
+    ArchetypeTools* mArchTools;
+    ComponentTools* mCompTools;
+    ComponentTree* mComponentTree;
 
   };
 }

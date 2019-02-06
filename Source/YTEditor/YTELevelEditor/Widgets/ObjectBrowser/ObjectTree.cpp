@@ -611,7 +611,7 @@ namespace YTEditor
   }
 
   void ObjectTree::FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-    YTE::vector<ObjectItem*>* aResult,
+    std::vector<ObjectItem*>* aResult,
     ObjectItem* aItem)
   {
     for (int i = 0; i < aItem->childCount(); ++i)
@@ -656,9 +656,9 @@ namespace YTEditor
     return mMainWindow;
   }
 
-  YTE::vector<ObjectItem*>* ObjectTree::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
+  std::vector<ObjectItem*>* ObjectTree::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
   {
-    YTE::vector<ObjectItem*> *result = new YTE::vector<ObjectItem*>();
+    std::vector<ObjectItem*> *result = new std::vector<ObjectItem*>();
 
     // loop through all items in the object browser
     for (int i = 0; i < topLevelItemCount(); ++i)

@@ -16,12 +16,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/EditMenu.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
 
-  EditMenu::EditMenu(MainWindow *aMainWindow)
-    : Framework::Menu("Edit", aMainWindow)
+  EditMenu::EditMenu(YTELevelEditor* editor)
+    : Framework::Menu("Edit", editor)
   {
     AddAction<EditMenu>("Undo", &EditMenu::Undo, this, "Ctrl+Z");
     AddAction<EditMenu>("Redo", &EditMenu::Redo, this, "Ctrl+Y");

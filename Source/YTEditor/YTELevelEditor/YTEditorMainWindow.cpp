@@ -1,6 +1,6 @@
 /******************************************************************************/
 /*!
-\file   YTEditorMainWindow.cpp
+\file   YTEditorYTEditorMainWindow.cpp
 \author Nicholas Ammann
 \par    email: nicholas.ammann\@digipen.edu
 \par    Course: GAM 300
@@ -48,41 +48,48 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/ImguiLayer.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/MainWindow/Gizmo.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
 
-#include "YTEditor/MainWindow/MenuBar/EditMenu.hpp"
-#include "YTEditor/MainWindow/MenuBar/FileMenu.hpp"
-#include "YTEditor/MainWindow/MenuBar/GameObjectMenu.hpp"
-#include "YTEditor/MainWindow/MenuBar/ImportMenu.hpp"
-#include "YTEditor/MainWindow/MenuBar/LevelMenu.hpp"
-#include "YTEditor/MainWindow/MenuBar/WindowsMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/EditMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/GameObjectMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/ImportMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/LevelMenu.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/WindowsMenu.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/FileViewer/FileViewer.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/GameWindow/GameWindowEventFilter.hpp"
-#include "YTEditor/MainWindow/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
-#include "YTEditor/MainWindow/Widgets/WWiseViewer/WWiseWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
 
-#include "YTEditor/MainWindow/Toolbars/GameToolbar.hpp"
-#include "YTEditor/MainWindow/Toolbars/GizmoToolbar.hpp"
-#include "YTEditor/Physics/PhysicsHandler.hpp"
-#include "YTEditor/UndoRedo/UndoRedo.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
+
+#include "YTEditor/YTELevelEditor/Toolbars/GameToolbar.hpp"
+#include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
+
+#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 
 
 
 namespace YTEditor
 {
-  MainWindow::MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
-    : QMainWindow{}
+  YTEditorMainWindow::YTEditorMainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile)
+    : Framework::MainWindow{}
     , mRunningEngine{ aEngine }
     , mApplication{ aQApp }
     , mRunningSpaceName{ "" }
@@ -124,7 +131,7 @@ namespace YTEditor
     mEditingLevel->SetIsEditorSpace(aEngine->IsEditor());
 
     //// This needs to happen after the engine has been initialized.
-    // TODO(NICK): need to convert to MainWindow::LoadWidget<>()
+    // TODO(NICK): need to convert to YTEditorMainWindow::LoadWidget<>()
     //ConstructMaterialViewer();
     //ConstructWWiseWidget();
 
@@ -137,11 +144,11 @@ namespace YTEditor
     });
   }
 
-  MainWindow::~MainWindow()
+  YTEditorMainWindow::~YTEditorMainWindow()
   {
   }
 
-  void MainWindow::UpdateEngine()
+  void YTEditorMainWindow::UpdateEngine()
   {
     if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
@@ -171,17 +178,17 @@ namespace YTEditor
 
   }
 
-  YTE::Space* MainWindow::GetEditingLevel()
+  YTE::Space* YTEditorMainWindow::GetEditingLevel()
   {
     return mEditingLevel;
   }
 
-  UndoRedo* MainWindow::GetUndoRedo()
+  UndoRedo* YTEditorMainWindow::GetUndoRedo()
   {
     return mUndoRedo;
   }
 
-  void MainWindow::LoadCurrentLevelInfo()
+  void YTEditorMainWindow::LoadCurrentLevelInfo()
   {
     YTE::Space *lvl = GetEditingLevel();
     ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>();
@@ -266,22 +273,22 @@ namespace YTEditor
     CreateGizmo(mEditingLevel);
   }
 
-  void MainWindow::SaveCurrentLevel()
+  void YTEditorMainWindow::SaveCurrentLevel()
   {
     mFileMenu->SaveLevel();
   }
 
-  void MainWindow::SetRunningSpaceName(YTE::String &aName)
+  void YTEditorMainWindow::SetRunningSpaceName(YTE::String &aName)
   {
     mRunningSpaceName = aName;
   }
 
-  YTE::String& MainWindow::GetRunningSpaceName()
+  YTE::String& YTEditorMainWindow::GetRunningSpaceName()
   {
     return mRunningSpaceName;
   }
 
-  void MainWindow::PlayLevel()
+  void YTEditorMainWindow::PlayLevel()
   {
     if (mRunningSpace)
     {
@@ -322,7 +329,7 @@ namespace YTEditor
     mRunningSpace->Update(&update);
   }
 
-  void MainWindow::PauseLevel(bool pauseState)
+  void YTEditorMainWindow::PauseLevel(bool pauseState)
   {
     if (mRunningSpace)
     {
@@ -330,7 +337,7 @@ namespace YTEditor
     }
   }
 
-  void MainWindow::StopLevel()
+  void YTEditorMainWindow::StopLevel()
   {
     if (!mRunningSpace) {
       return;
@@ -355,7 +362,7 @@ namespace YTEditor
     mRunningSpace = nullptr;
   }
 
-  void MainWindow::CreateBlankLevel(const YTE::String &aLevelName)
+  void YTEditorMainWindow::CreateBlankLevel(const YTE::String &aLevelName)
   {
     mRunningLevelName = aLevelName;
 
@@ -368,7 +375,7 @@ namespace YTEditor
     LoadCurrentLevelInfo();
   }
 
-  void MainWindow::LoadLevel(YTE::String aLevelName)
+  void YTEditorMainWindow::LoadLevel(YTE::String aLevelName)
   {
     mRunningLevelName = aLevelName;
 
@@ -386,11 +393,11 @@ namespace YTEditor
     LoadCurrentLevelInfo();
   }
 
-  QApplication* MainWindow::GetApplication()
+  QApplication* YTEditorMainWindow::GetApplication()
   {
     return mApplication;
   }
-  Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
+  Gizmo* YTEditorMainWindow::CreateGizmo(YTE::Space *aSpace)
   {
     auto gizmo = RemakeGizmo();
 
@@ -401,7 +408,7 @@ namespace YTEditor
     return gizmo;
   }
 
-  Gizmo* MainWindow::RemakeGizmo()
+  Gizmo* YTEditorMainWindow::RemakeGizmo()
   {
     // get the window 
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
@@ -413,17 +420,17 @@ namespace YTEditor
     return mGizmo.get();
   }
 
-  void MainWindow::DeleteGizmo()
+  void YTEditorMainWindow::DeleteGizmo()
   {
     mGizmo.reset();
   }
 
-  Gizmo* MainWindow::GetGizmo()
+  Gizmo* YTEditorMainWindow::GetGizmo()
   {
     return mGizmo.get();
   }
 
-  void MainWindow::keyPressEvent(QKeyEvent * aEvent)
+  void YTEditorMainWindow::keyPressEvent(QKeyEvent * aEvent)
   {
     auto mouse = mLevelWindow->mWindow->mMouse;
 
@@ -488,39 +495,39 @@ namespace YTEditor
     }
   }
 
-  FileMenu* MainWindow::GetFileMenu()
+  FileMenu* YTEditorMainWindow::GetFileMenu()
   {
     return mFileMenu;
   }
 
-  GameObjectMenu * MainWindow::GetGameObjectMenu()
+  GameObjectMenu * YTEditorMainWindow::GetGameObjectMenu()
   {
     return mGameObjectMenu;
   }
 
-  PhysicsHandler& MainWindow::GetPhysicsHandler()
+  PhysicsHandler& YTEditorMainWindow::GetPhysicsHandler()
   {
     return *mPhysicsHandler;
   }
 
 
-  GizmoToolbar* MainWindow::GetGizmoToolbar()
+  GizmoToolbar* YTEditorMainWindow::GetGizmoToolbar()
   {
     return mGizmoToolbar;
   }
 
-  Preferences* MainWindow::GetPreferences()
+  Preferences* YTEditorMainWindow::GetPreferences()
   {
     return &mPreferences;
   }
 
-  YTE::Composition * MainWindow::GetEditorCamera()
+  YTE::Composition * YTEditorMainWindow::GetEditorCamera()
   {
     return mEditorCamera;
   }
 
   // process serialized preferences file
-  void MainWindow::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
+  void YTEditorMainWindow::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
   {
     // create a default preferences file
     mPreferences = Preferences();
@@ -536,7 +543,7 @@ namespace YTEditor
     }
   }
 
-  void MainWindow::SetWindowSettings()
+  void YTEditorMainWindow::SetWindowSettings()
   {
     // Enables "infinite docking".
     setDockNestingEnabled(true);
@@ -545,7 +552,7 @@ namespace YTEditor
     resize(1200, 900);
   }
 
-  void MainWindow::ConstructSubWidgets()
+  void YTEditorMainWindow::ConstructSubWidgets()
   {
     // Object Browser
     LoadWidget<ObjectBrowser>();
@@ -569,7 +576,7 @@ namespace YTEditor
     ConstructGameWindows();
   }
 
-  void MainWindow::ConstructGameWindows()
+  void YTEditorMainWindow::ConstructGameWindows()
   {
     mCentralTabs = new QTabWidget();
     mCentralTabs->setMovable(true);
@@ -604,7 +611,7 @@ namespace YTEditor
     //}
   }
 
-  void MainWindow::ConstructToolbar()
+  void YTEditorMainWindow::ConstructToolbar()
   {
     mGizmoToolbar = new GizmoToolbar(this);
     addToolBar(mGizmoToolbar);
@@ -616,7 +623,7 @@ namespace YTEditor
     }
   }
 
-  void MainWindow::ConstructMenuBar()
+  void YTEditorMainWindow::ConstructMenuBar()
   {
     QMenuBar *menuBar = new QMenuBar(this);
 
@@ -635,7 +642,7 @@ namespace YTEditor
     setMenuBar(menuBar);
   }
 
-  void MainWindow::closeEvent(QCloseEvent *event)
+  void YTEditorMainWindow::closeEvent(QCloseEvent *event)
   {
     // ask the user if they want to save the level
     QMessageBox quitConfirm;

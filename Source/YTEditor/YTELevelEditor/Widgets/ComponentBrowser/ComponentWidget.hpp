@@ -32,8 +32,7 @@ namespace YTE
 
 namespace YTEditor
 {
-
-  class MainWindow;
+  class YTELevelEditor;
 
   template <class T>
   class PropertyWidget;
@@ -50,21 +49,21 @@ namespace YTEditor
   {
   public:
 
-    ComponentWidget(YTE::Type *type,
-                    const char *name,
-                    YTE::Component *engineComp,
-                    MainWindow *aMainWindow,
-                    QTreeWidgetItem *aTopItem,
-                    QWidget *parent = nullptr);
+    ComponentWidget(YTE::Type* type,
+                    const char* name,
+                    YTE::Component* engineComp,
+                    YTELevelEditor* editor,
+                    QTreeWidgetItem* topItem,
+                    QWidget* parent = nullptr);
 
 
     std::string const& GetName() const;
 
     // Add, Get, or Remove a property from the component
     template <typename tType>
-    ComponentProperty<tType>* AddPropertyOrField(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, bool aProperty)
+    ComponentProperty<tType>* AddPropertyOrField(std::pair<const std::string, std::unique_ptr<YTE::Property>>& aProp, bool aProperty)
     {
-      ComponentProperty<tType> *prop = new ComponentProperty<tType>(aProp, mMainWindow, this);
+      ComponentProperty<tType>* prop = new ComponentProperty<tType>(aProp, mEditor, this);
       mProperties->addWidget(prop);
 
       if (aProperty)
@@ -81,8 +80,8 @@ namespace YTEditor
 
     void RemoveProperty(QWidget *aWidget);
 
-    void LoadProperties(YTE::Component *aComponent);
-    void LoadPropertyMap(YTE::Component *aComponent,
+    void LoadProperties(YTE::Component* aComponent);
+    void LoadPropertyMap(YTE::Component* aComponent,
                          YTE::OrderedMultiMap<std::string, std::unique_ptr<YTE::Property>>& aProperties,
                          bool aProperty);
 
@@ -103,23 +102,23 @@ namespace YTEditor
     std::vector<PropertyWidgetBase*> GetPropertyWidgets();
     std::vector<PropertyWidgetBase*> GetFieldWidgets();
 
-    void keyPressEvent(QKeyEvent *aEvent);
+    void keyPressEvent(QKeyEvent* aEvent);
 
-    MainWindow* GetMainWindow() { return mMainWindow; }
+    YTELevelEditor* GetEditor() { return mEditor; }
 
     QTreeWidgetItem* GetParentItem();
 
   private:
 
-    MainWindow *mMainWindow;
+    YTELevelEditor* mEditor;
 
-    QTreeWidgetItem *mTopItem;
+    QTreeWidgetItem* mTopItem;
 
     std::string mCompName;
-    QVBoxLayout * mProperties;
-    YTE::Type * mType;
+    QVBoxLayout* mProperties;
+    YTE::Type* mType;
 
-    YTE::Component * mEngineComponent;
+    YTE::Component* mEngineComponent;
 
     std::vector<PropertyWidgetBase*> mPropertyWidgets;
     std::vector<PropertyWidgetBase*> mFieldWidgets;

@@ -17,7 +17,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qcheckbox.h>
 #include <qevent.h>
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -25,7 +25,7 @@ namespace YTEditor
   class CheckBox : public QCheckBox
   {
   public:
-    CheckBox(QWidget *aParent, MainWindow *aMainWindow) : QCheckBox(aParent), mMainWindow(aMainWindow) { }
+    CheckBox(QWidget *parent, YTELevelEditor *editor) : QCheckBox(parent), mEditor(editor) { }
 
     ~CheckBox() { }
 
@@ -48,7 +48,7 @@ namespace YTEditor
 
 
   private:
-    MainWindow *mMainWindow;
+    YTELevelEditor* mEditor;
 
   };
 

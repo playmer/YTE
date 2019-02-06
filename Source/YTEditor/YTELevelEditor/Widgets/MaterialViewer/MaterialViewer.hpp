@@ -44,7 +44,7 @@ namespace YTEditor
   class PropertyWidget;
   class PropertyWidgetBase;
 
-  class MaterialViewer : public Widget
+  class MaterialViewer : public Framework::Widget
   {
   public:
     MaterialViewer(MainWindow *mainWindow);
@@ -59,7 +59,7 @@ namespace YTEditor
 
     static std::string GetName();
 
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Widget::DockArea GetDefaultDockArea() const override;
 
   private:
 

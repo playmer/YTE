@@ -6,13 +6,13 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Meta/Meta.hpp"
 
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ArchetypeTools.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentProperty.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/MainWindow/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/UndoRedo/Commands.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
+#include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
 
 namespace YTEditor
@@ -25,15 +25,15 @@ namespace YTEditor
   class HeaderListProperty : public PropertyWidget<T>
   {
   public:
-    HeaderListProperty(const std::string &aName, 
-                       MainWindow *aMainWindow, 
-                       HeaderListWidget *aParent, 
-                       YTE::Property *aProp,
-                       YTE::Object *aObject)
-      : PropertyWidget<T>(aName, aProp, aMainWindow, aParent)
-      , mHeaderWidget(aParent)
-      , mEngineProp(aProp)
-      , mObject(aObject)
+    HeaderListProperty(const std::string& name, 
+                       YTELevelEditor* editor, 
+                       HeaderListWidget* parent, 
+                       YTE::Property* prop,
+                       YTE::Object* object)
+      : PropertyWidget<T>(name, prop, editor, parent)
+      , mHeaderWidget(parent)
+      , mEngineProp(prop)
+      , mObject(object)
     {
       std::string const& tip = aProp->GetDocumentation();
 

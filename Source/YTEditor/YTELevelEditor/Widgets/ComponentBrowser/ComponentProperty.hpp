@@ -30,26 +30,23 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-
-  class MainWindow;
-
   template <class T>
   class ComponentProperty : public PropertyWidget<T>
   {
   public:
-    ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp, 
-                      MainWindow *aMainWindow, 
-                      ComponentWidget* aParent)
-      : PropertyWidget<T>(aProp.first, aProp.second.get(), aMainWindow, aParent)
-      , mParentComponent(aParent)
-      , mEngineProperty(aProp.second.get())
+    ComponentProperty(std::pair<const std::string, std::unique_ptr<YTE::Property>>& prop, 
+                      YTELevelEditor* editor, 
+                      ComponentWidget* parent)
+      : PropertyWidget<T>(prop.first, prop.second.get(), editor, parent)
+      , mParentComponent(parent)
+      , mEngineProperty(prop.second.get())
     {
 
-      mGetter = aProp.second->GetGetter();
-      mSetter = aProp.second->GetSetter();
+      mGetter = prop.second->GetGetter();
+      mSetter = prop.second->GetSetter();
 
       // get property tooltip
-      std::string const& tip = aProp.second->GetDocumentation();
+      std::string const& tip = prop.second->GetDocumentation();
 
       // set tooltip for property label
       this->GetLabelWidget()->setToolTip(tip.c_str());

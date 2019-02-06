@@ -21,7 +21,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
 
 class QDockWidget;
 class QMenu;
@@ -59,22 +59,11 @@ namespace YTEditor
   };
 
 
-  class MainWindow : public QMainWindow
+  class YTEditorMainWindow : public Framework::MainWindow
   {
   public:
-    MainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
-    ~MainWindow();
-
-    template <typename T>
-    std::unique_ptr<T> LoadWidget();
-
-    template <typename T>
-    T* GetWidget();
-
-  private:
-    std::map<std::string, std::unique_ptr<Widget>> mWidgets;
-
-  public:
+    YTEditorMainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
+    ~YTEditorMainWindow();
 
     UndoRedo* GetUndoRedo();
 
@@ -178,43 +167,4 @@ namespace YTEditor
     GizmoToolbar *mGizmoToolbar;
     GameToolbar *mGameToolbar;
   };
-
-  template <typename T>
-  std::unique_ptr<T> MainWindow::LoadWidget()
-  {
-    // create widget
-    std::unique_ptr<T> widget = std::make_unique<T>(this);
-
-    // create dock
-    std::unique_ptr<QDockWidget> dock = std::make_unique<QDockWidget>();
-
-    dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-
-    // tell the dock what widget it's holding
-    dock->setWidget(widget);
-
-    // store the widget on the main window
-    mWidgets.insert_or_assign(widget->GetName(), std::move(widget));
-
-    // add the dock to the main window
-    addDockWidget(dock);
-  }
-
-  template <typename T>
-  T* MainWindow::GetWidget()
-  {
-    std::string name = T::GetName();
-
-    // find the base ptr
-    auto it = mWidgets.find(name);
-
-    if (it == mWidgets.end())
-    {
-      return nullptr;
-    }
-
-    // cast to the derived type
-    return static_cast<T*>(it->second.get());
-  }
-
 }

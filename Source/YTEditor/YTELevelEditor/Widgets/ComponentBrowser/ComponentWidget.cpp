@@ -38,16 +38,16 @@ namespace YTEditor
   ComponentWidget::ComponentWidget(YTE::Type *type,
                                    const char *name,
                                    YTE::Component *engineComp,
-                                   MainWindow *aMainWindow,
-                                   QTreeWidgetItem *aTopItem,
-                                   QWidget *parent) 
+                                   YTELevelEditor *editor,
+                                   QTreeWidgetItem *topItem,
+                                   QWidget *parent)
     : QFrame(parent)
     , mEngineComponent(engineComp)
     , mType(type)
     , mProperties(new QVBoxLayout(this))
     , mCompName(name)
-    , mMainWindow(aMainWindow)
-    , mTopItem(aTopItem)
+    , mEditor(editor)
+    , mTopItem(topItem)
   {
     setLayout(mProperties);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -94,12 +94,12 @@ namespace YTEditor
         QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
         header->setText(0, object.second.c_str());
 
-        HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mMainWindow, mEngineComponent, header);
+        HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor, mEngineComponent, header);
 
         QTreeWidgetItem *body = new QTreeWidgetItem(header);
         body->setFlags(Qt::NoItemFlags);
 
-        mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
+        mEditor->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
 
         header->addChild(body);
 
@@ -193,12 +193,12 @@ namespace YTEditor
       QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
       header->setText(0, object.second.c_str());
 
-      HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mMainWindow, mEngineComponent, header);
+      HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor, mEngineComponent, header);
 
       QTreeWidgetItem *body = new QTreeWidgetItem(header);
       body->setFlags(Qt::NoItemFlags);
 
-      mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
+      mEditor->GetWidget<ComponentBrowser>()->GetComponentTree()->setItemWidget(body, 0, widg);
 
       header->addChild(body);
 

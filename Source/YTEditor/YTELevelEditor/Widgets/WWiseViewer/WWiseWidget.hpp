@@ -8,8 +8,8 @@
 
 #include "YTE/WWise/WWiseSystem.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/Widgets/Widget.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+#include "YTEditor/Framework/Widget.hpp"
 
 namespace YTEditor
 {

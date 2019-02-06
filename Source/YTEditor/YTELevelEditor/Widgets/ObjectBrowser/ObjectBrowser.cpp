@@ -46,25 +46,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
+
 
 namespace YTEditor
 {
 
-  ObjectBrowser::ObjectBrowser(MainWindow * aMainWindow)
-    : Widget(aMainWindow)
+  ObjectBrowser::ObjectBrowser(YTELevelEditor* editor)
+    : Widget(editor)
     , mTree()
   {
     SetWidgetSettings();
-
-    // Calls OnCurrentItemChanged() when the currentItemChanged event is received
-    mTree.connect(&mTree, &QTreeWidget::currentItemChanged, this, &ObjectBrowser::OnCurrentItemChanged);
-
-    // item selection for undo redo
-    mTree.connect(&mTree, &QTreeWidget::itemSelectionChanged, this, &ObjectBrowser::OnItemSelectionChanged);
-
-    mTree.connect(&mTree, &QTreeWidget::customContextMenuRequested, this, &ObjectBrowser::CreateContextMenu);
-
-    mTree.connect(&mTree, &QTreeWidget::itemChanged, this, &ObjectBrowser::OnItemTextChanged);
 
     // TODO(NICK): NO MORE OBJECT TREE :(
     //mTree.setItemDelegate(new ObjectItemDelegate(this));
@@ -76,7 +68,7 @@ namespace YTEditor
 
   void ObjectBrowser::ClearObjectList()
   {
-    mTree.clear();
+    mTree->clear();
   }
 
   ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
@@ -88,15 +80,17 @@ namespace YTEditor
       return nullptr;
     }
 
-    auto space = mMainWindow->GetEditingLevel();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+
+    auto space = editor->GetEditingLevel();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>();
+    OutputConsole* console = editor->GetWidget<OutputConsole>();
 
     auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     return AddTreeItem(aCompositionName, composition, aIndex);
   }
@@ -112,16 +106,18 @@ namespace YTEditor
     ObjectItem *aParentObj,
     int aIndex)
   {
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+
+    auto spaces = editor->GetRunningEngine()->GetCompositions();
     auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>();
+    OutputConsole* console = editor->GetWidget<OutputConsole>();
 
     auto cmd = std::make_unique<AddObjectCmd>(composition, console, this);
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
   }
@@ -138,18 +134,20 @@ namespace YTEditor
       return nullptr;
     }
 
-    YTE::Composition *space = mMainWindow->GetEditingLevel();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+
+    YTE::Composition *space = editor->GetEditingLevel();
 
     // TODO(NICK): NO MORE OBJECT TREE :(
     ObjectItem *item = new ObjectItem(name, &mTree, aEngineObj, space);
 
     // Add new item as a top level member in the tree hierarchy
     // (object should have no parent objects)
-    mTree.insertTopLevelItem(aIndex, item);
+    mTree->insertTopLevelItem(aIndex, item);
 
     if (aSetAsCurrent)
     {
-      mTree.setCurrentItem(item);
+      mTree->setCurrentItem(item);
     }
 
     auto compMap = aEngineObj->GetCompositions();
@@ -172,7 +170,9 @@ namespace YTEditor
   {
     YTE::String name{ aItemName };
 
-    auto space = mMainWindow->GetEditingLevel();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+    
+    auto space = editor->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, aParentObj, aEngineObj, space);
 
@@ -181,7 +181,7 @@ namespace YTEditor
 
     if (aSetAsCurrent)
     {
-      mTree.setCurrentItem(item);
+      mTree->setCurrentItem(item);
     }
 
     auto compMap = aEngineObj->GetCompositions();
@@ -203,164 +203,8 @@ namespace YTEditor
     setContextMenuPolicy(Qt::CustomContextMenu);
     setMouseTracking(true);
 
-    mTree.setDragDropMode(QAbstractItemView::InternalMove);
-    mTree.setSelectionMode(QAbstractItemView::ExtendedSelection);
-  }
-
-  void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
-    QTreeWidgetItem *aPrevious)
-  {
-    ObjectItem *prevItem = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
-    ObjectItem *currItem = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
-
-    ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>();
-
-    if (componentBrowser)
-    {
-      ArchetypeTools *archTools = componentBrowser->GetArchetypeTools();
-
-      if (currItem)
-      {
-        YTE::Composition* object = currItem->GetEngineObject();
-
-        if (object)
-        {
-
-          if (object->GetArchetypeName().Empty())
-          {
-            archTools->SetButtonMode(ArchetypeTools::Mode::NoArchetype);
-          }
-          else if (object->SameAsArchetype())
-          {
-            archTools->SetButtonMode(ArchetypeTools::Mode::IsSame);
-          }
-          else
-          {
-            archTools->SetButtonMode(ArchetypeTools::Mode::HasChanged);
-          }
-
-          // Load the new current object into the component browser
-          ComponentTree *componentTree = componentBrowser->GetComponentTree();
-
-          componentTree->ClearComponents();
-
-          componentTree->LoadGameObject(object);
-
-          YTE::Model* model = object->GetComponent<YTE::Model>();
-
-          MaterialViewer* matViewer = mMainWindow->GetWidget<MaterialViewer>();
-
-          if (matViewer && model && model->GetMesh())
-          {
-            // get the list of materials from the submeshes
-            auto& submeshes = model->GetMesh()->mParts;
-
-            matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
-            matViewer->SetMaterialsList(&submeshes);
-          }
-          else
-          {
-            if (matViewer)
-            {
-              matViewer->LoadNoMaterial();
-            }
-          }
-
-          // get the transform of the currently selected object
-          YTE::Transform *currTransform = object->GetComponent<YTE::Transform>();
-
-          if (currTransform)
-          {
-            Gizmo *giz = mMainWindow->GetGizmo();
-
-            if (giz)
-            {
-              giz->SnapToCurrentObject();
-            }
-          }
-        }
-      }
-    }
-  }
-
-  void ObjectBrowser::OnItemSelectionChanged()
-  {
-    QList<QTreeWidgetItem*> items = mTree.selectedItems();
-
-    OutputConsole* console = mMainWindow->GetWidget<OutputConsole>();
-
-    std::vector<YTE::GlobalUniqueIdentifier> newSelection;
-    std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
-
-    for (auto item : items)
-    {
-      ObjectItem *objItem = static_cast<ObjectItem*>(item);
-
-      auto guid = objItem->GetEngineObject()->GetGUID();
-
-      newSelection.push_back(guid);
-    }
-
-    for (auto item : mSelectedItems)
-    {
-      oldSelection.push_back(item);
-    }
-
-    if (mInsertSelectionChangedCmd)
-    {
-      UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
-      undoRedo->InsertCommand(std::make_unique<ObjectSelectionChangedCmd>(newSelection, oldSelection, this, console));
-    }
-
-    mSelectedItems = newSelection;
-
-    /*
-    // if objects were selected
-    if (items.size() > mSelectedItems.size())
-    {
-    QList<QTreeWidgetItem*> delta = items;
-
-    for (auto item : mSelectedItems)
-    {
-    delta.removeOne(item);
-    }
-
-    std::vector<YTE::GlobalUniqueIdentifier> guids;
-
-    for (auto item : delta)
-    {
-    ObjectItem *objItem = static_cast<ObjectItem*>(item);
-
-    auto guid = objItem->GetEngineObject()->GetGUID();
-
-    guids.push_back(guid);
-    }
-
-    UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
-    undoRedo->InsertCommand(std::make_unique<ObjectsSelectedCmd>(guids, this, console));
-    }
-    // if objects were unselected
-    else if (items.size() < mSelectedItems.size())
-    {
-    QList<QTreeWidgetItem*> delta = mSelectedItems;
-
-    for (auto item : items)
-    {
-    delta.removeOne(item);
-    }
-
-    std::vector<YTE::GlobalUniqueIdentifier> guids;
-
-    for (auto item : delta)
-    {
-    ObjectItem *objItem = static_cast<ObjectItem*>(item);
-
-    auto guid = objItem->GetEngineObject()->GetGUID();
-
-    guids.push_back(guid);
-    }
-    }
-    */
+    mTree->setDragDropMode(QAbstractItemView::InternalMove);
+    mTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
   }
 
 
@@ -380,7 +224,8 @@ namespace YTEditor
     serialized.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
     std::string levelInJson = sb.GetString();
 
-    YTE::Composition *duplicate = mMainWindow->GetEditingLevel()->AddComposition(&serialized, "Copy");
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+    YTE::Composition *duplicate = editor->GetEditingLevel()->AddComposition(&serialized, "Copy");
 
     YTE::String guid = duplicate->GetGUID().ToString();
     duplicate->SetName(guid);
@@ -388,35 +233,11 @@ namespace YTEditor
     AddExistingComposition(guid.c_str(), duplicate);
   }
 
-  void ObjectBrowser::OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex)
-  {
-    (void)aIndex;
-
-    ObjectItem *currItem = static_cast<ObjectItem*>(aItem);
-
-    if (currItem->GetEngineObject() == nullptr)
-    {
-      return;
-    }
-
-    QString name = aItem->text(0);
-
-    if (name.isEmpty())
-    {
-      return;
-    }
-
-    std::string stdName = name.toStdString();
-    YTE::String yteName = stdName.c_str();
-
-    currItem->Rename(yteName);
-  }
-
   void ObjectBrowser::dropEvent(QDropEvent *aEvent)
   {
     YTE::Composition *movedObj = GetCurrentObject();
 
-    ObjectItem *parentItem = static_cast<ObjectItem*>(mTree.itemAt(aEvent->pos()));
+    ObjectItem *parentItem = static_cast<ObjectItem*>(mTree->itemAt(aEvent->pos()));
 
     YTE::Composition *parentObj = nullptr;
 
@@ -431,32 +252,14 @@ namespace YTEditor
     //dropEvent(aEvent);
   }
 
-  void ObjectBrowser::CreateContextMenu(const QPoint &pos)
-  {
-    QTreeWidgetItem *item = mTree.itemAt(pos);
-
-    if (item == nullptr)
-    {
-      return;
-    }
-
-    QMenu *contextMenu = new QMenu(this);
-
-    QAction *removeAct = new QAction("Remove", contextMenu);
-    connect(removeAct, &QAction::triggered, this, &ObjectBrowser::RemoveCurrentObject);
-
-    contextMenu->addAction(removeAct);
-    contextMenu->exec(this->mapToGlobal(pos));
-  }
-
   void ObjectBrowser::RemoveCurrentObject()
   {
-    if (mTree.topLevelItemCount() == 0)
+    if (mTree->topLevelItemCount() == 0)
     {
       return;
     }
 
-    ObjectItem *currItem = dynamic_cast<ObjectItem*>(mTree.currentItem());
+    ObjectItem *currItem = dynamic_cast<ObjectItem*>(mTree->currentItem());
 
     if (!currItem || !currItem->GetEngineObject())
     {
@@ -464,13 +267,14 @@ namespace YTEditor
     }
 
     YTE::Composition *engineObj = currItem->GetEngineObject();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
 
     auto name = currItem->text(0).toStdString();
     auto cmd = std::make_unique<RemoveObjectCmd>(engineObj,
-                                                 mMainWindow->GetWidget<OutputConsole>(),
-                                                 mMainWindow->GetWidget<ObjectBrowser>());
+                                                 editor->GetWidget<OutputConsole>(),
+                                                 editor->GetWidget<ObjectBrowser>());
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     // remove current object from engine
     currItem->DeleteFromEngine();
@@ -487,7 +291,8 @@ namespace YTEditor
   {
     if (YTE::Transform *transform = aObject->GetComponent<YTE::Transform>())
     {
-      YTE::Composition *camera = mMainWindow->GetEditorCamera();
+      YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+      YTE::Composition *camera = editor->GetEditorCamera();
 
       YTE::Transform *camTransform = camera->GetComponent<YTE::Transform>();
       YTE::Orientation *orientation = camera->GetComponent<YTE::Orientation>();
@@ -506,7 +311,7 @@ namespace YTEditor
     return "ObjectBrowser";
   }
 
-  Widget::DockArea ObjectBrowser::GetDefaultDockPosition() const
+  Framework::Widget::DockArea ObjectBrowser::GetDefaultDockArea() const
   {
     return Widget::DockArea::Left;
   }
@@ -514,7 +319,8 @@ namespace YTEditor
   void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
   {
     // clear the component viewer
-    mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->ClearComponents();
+    YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
+    editor->GetWidget<ComponentBrowser>()->GetComponentTree()->ClearComponents();
 
     // hide and remove from the tree
     aItem->setHidden(true);
@@ -523,8 +329,8 @@ namespace YTEditor
 
     if (nullptr == parent)
     {
-      int index = mTree.indexOfTopLevelItem(aItem);
-      auto item = mTree.takeTopLevelItem(index);
+      int index = mTree->indexOfTopLevelItem(aItem);
+      auto item = mTree->takeTopLevelItem(index);
       delete item;
     }
     else
@@ -534,11 +340,11 @@ namespace YTEditor
       delete item;
     }
 
-    mTree.setCurrentItem(mTree.topLevelItem(0));
+    mTree->setCurrentItem(mTree->topLevelItem(0));
 
-    ObjectItem *currItem = dynamic_cast<ObjectItem*>(mTree.currentItem());
+    ObjectItem *currItem = dynamic_cast<ObjectItem*>(mTree->currentItem());
 
-    auto matViewer = mMainWindow->GetWidget<MaterialViewer>();
+    auto matViewer = editor->GetWidget<MaterialViewer>();
 
     if (matViewer && currItem && currItem->GetEngineObject())
     {
@@ -560,9 +366,9 @@ namespace YTEditor
       }
     }
 
-    if (mTree.topLevelItemCount() == 0)
+    if (mTree->topLevelItemCount() == 0)
     {
-      mMainWindow->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
+      editor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
     }
   }
 
@@ -581,7 +387,7 @@ namespace YTEditor
 
   YTE::Composition* ObjectBrowser::GetCurrentObject()
   {
-    auto objItem = dynamic_cast<ObjectItem*>(mTree.currentItem());
+    auto objItem = dynamic_cast<ObjectItem*>(mTree->currentItem());
 
     if (objItem)
     {
@@ -618,28 +424,28 @@ namespace YTEditor
     return nullptr;
   }
 
-  void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
-                                                     std::vector<ObjectItem*>& aResult,
-                                                     ObjectItem* aItem)
+  void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String &archetypeName,
+                                                     std::vector<ObjectItem*>& result,
+                                                     ObjectItem* item)
   {
-    for (int i = 0; i < aItem->childCount(); ++i)
+    for (int i = 0; i < item->childCount(); ++i)
     {
-      ObjectItem *item = dynamic_cast<ObjectItem*>(aItem->child(i));
+      ObjectItem* currentItem = dynamic_cast<ObjectItem*>(item->child(i));
 
-      if (item->GetEngineObject()->GetArchetypeName() == aArchetypeName)
+      if (item->GetEngineObject()->GetArchetypeName() == archetypeName)
       {
-        aResult.emplace_back(item);
+        result.emplace_back(item);
       }
 
-      FindObjectsByArchetypeInternal(aArchetypeName, aResult, item);
+      FindObjectsByArchetypeInternal(archetypeName, result, item);
     }
   }
 
   ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
   {
-    for (int i = 0; i < mTree.topLevelItemCount(); ++i)
+    for (int i = 0; i < mTree->topLevelItemCount(); ++i)
     {
-      ObjectItem *item = dynamic_cast<ObjectItem*>(mTree.topLevelItem(i));
+      ObjectItem *item = dynamic_cast<ObjectItem*>(mTree->topLevelItem(i));
 
       if (item->GetEngineObject() == aComp)
       {
@@ -659,19 +465,14 @@ namespace YTEditor
     return nullptr;
   }
 
-  MainWindow * ObjectBrowser::GetMainWindow() const
-  {
-    return mMainWindow;
-  }
-
   std::vector<ObjectItem*> ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
   {
     std::vector<ObjectItem*> result;
 
     // loop through all items in the object browser
-    for (int i = 0; i < mTree.topLevelItemCount(); ++i)
+    for (int i = 0; i < mTree->topLevelItemCount(); ++i)
     {
-      ObjectItem *objItem = dynamic_cast<ObjectItem*>(mTree.topLevelItem(i));
+      ObjectItem *objItem = dynamic_cast<ObjectItem*>(mTree->topLevelItem(i));
 
       if (objItem->GetEngineObject()->GetArchetypeName() == aArchetypeName)
       {
@@ -681,12 +482,12 @@ namespace YTEditor
       FindObjectsByArchetypeInternal(aArchetypeName, result, objItem);
     }
 
-    return std::move(result);
+    return result;
   }
 
   void ObjectBrowser::SelectNoItem()
   {
-    mTree.setCurrentItem(nullptr);
+    mTree->setCurrentItem(nullptr);
   }
 
 }
