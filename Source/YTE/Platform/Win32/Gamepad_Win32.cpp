@@ -233,15 +233,6 @@ namespace YTE
     zerovibration.wRightMotorSpeed = (WORD)(aRightSpeed * cMaxRumble);
     XInputSetState(mGamepadIndex, &zerovibration);
   }
-
-  void XboxController::VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime)
-  {
-    Vibration vibe;
-    vibe.mLeft = aLeftSpeed;
-    vibe.mRight = aRightSpeed;
-    vibe.mTime = aTime;
-    mVibrations.push_back(vibe);
-  }
 }
 
 #endif

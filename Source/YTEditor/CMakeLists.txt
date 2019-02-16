@@ -4,7 +4,6 @@
 ## Author : Joshua T. Fisher
 ################################################################################
 set(YTEditorSource main.cpp
-                   WinMain.cpp
                    YTEditor.rc
                    YTEditorMeta.hpp
                    ForwardDeclarations.hpp
@@ -122,7 +121,7 @@ find_package(Qt5Widgets)
 
 YTE_Target_Set_LTCG(YTEditor)
 
-target_link_libraries(YTEditor YTE Qt5::Widgets)
+target_link_libraries(YTEditor YTEMain Qt5::Widgets)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 

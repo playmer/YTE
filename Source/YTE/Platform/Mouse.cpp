@@ -62,7 +62,6 @@ namespace YTE
   {
     std::memset(mArrayOne, 0, sizeof(mArrayOne));
     std::memset(mArrayTwo, 0, sizeof(mArrayTwo));
-    mLRSwapped = GetLRSwapped();
 
     mMouseCurrent = mArrayOne;
     mMousePrevious = mArrayTwo;
@@ -160,18 +159,6 @@ namespace YTE
   glm::i32vec2 Mouse::GetPrevPosition()
   {
     return mPrevPosition;
-  }
-
-  void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)
-  {
-    for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
-    {
-      auto button = static_cast<MouseButtons>(i);
-      auto osButton = TranslateFromMouseButtonToOsKey(button);
-      auto key = TranslateFromOsToOurKey(osButton);
-      auto down = CheckKey(key);
-      UpdateButton(button, down, aRelativePosition);
-    }
   }
 
   bool Mouse::AnyButtonDown()

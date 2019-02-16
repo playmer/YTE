@@ -4,8 +4,10 @@ add_subdirectory(kiss_fft)
 #add_subdirectory(LuaJIT)
 add_subdirectory(stb)
 add_subdirectory(imgui)
+add_subdirectory(SDL)
 
 
+##########################################################################
 # Turn off/configure various parts of Assimp.
 option(ASSIMP_BUILD_ASSIMP_TOOLS
        "If the supplementary tools for Assimp are built in addition to the library."
@@ -28,6 +30,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   target_compile_options(assimp PRIVATE /bigobj)
 endif()
 
+##########################################################################
 # Turn off/configure various parts of bullet3.
 option(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
 option(BUILD_UNIT_TESTS "Build Unit Tests"	OFF)
@@ -42,6 +45,7 @@ option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC Runtime Library DLL (/MD or /MDd)"
 
 add_subdirectory(bullet3)
 
+##########################################################################
 # Turn off/configure various parts of VkHLF.
 set(BUILD_VKCPP_SAMPLES OFF CACHE BOOL "Build the VkCpp based samples" )
 option(BUILD_VKCPP_GLFW "Build GLFW" OFF)
@@ -60,6 +64,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
 add_subdirectory(VkHLF) 
 
+##########################################################################
 # Get WWise
 FindWWise(WWise_SoundEngine)
 
@@ -102,6 +107,9 @@ target_compile_options(OSDependent           PRIVATE ${disableWarning})
 target_compile_options(SPIRV                 PRIVATE ${disableWarning})
 target_compile_options(SPVRemapper           PRIVATE ${disableWarning})
 target_compile_options(KissFFT               PRIVATE ${disableWarning})
+target_compile_options(SDL2                  PRIVATE ${disableWarning})
+target_compile_options(SDL2main              PRIVATE ${disableWarning})
+target_compile_options(SDL2-static           PRIVATE ${disableWarning})
 
 set_target_properties(SPVRemapper PROPERTIES FOLDER "Ignore")
 
@@ -127,6 +135,9 @@ set_target_properties(assimp
                       glslang
                       OGLCompiler
                       OSDependent
+                      SDL2
+                      SDL2main
+                      SDL2-static
                       SPIRV
                       SPVRemapper
                       #HLSL

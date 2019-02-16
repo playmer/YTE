@@ -24,6 +24,9 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(YTE_x64 YTE_x64=1)
 endif()
 
+
+include(${CMAKE_CURRENT_LIST_DIR}/SDL/CMakeLists.txt)
+
 # Now add in the files per platform.
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   include(${CMAKE_CURRENT_LIST_DIR}/Win32/CMakeLists.txt)
@@ -49,6 +52,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Keyboard.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Mouse.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Mouse.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/PlatformManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/SharedObject.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TargetDefinitions.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Window.cpp

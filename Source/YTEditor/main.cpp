@@ -7,6 +7,8 @@
  */
 /******************************************************************************/
 
+#include <SDL/include/SDL.h>
+
 #include <qapplication.h>
 #include <qmainwindow.h>
 #include <qdockwidget.h>
@@ -41,6 +43,8 @@
 #include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/OutputConsole/OutputConsole.hpp"
 
+#include "YTEMain/YTEMain.hpp"
+
 
 // Helper function
 void SetDarkTheme(QApplication& app)
@@ -67,14 +71,14 @@ void SetDarkTheme(QApplication& app)
   app.setStyleSheet("QToolTip { color: #101010; background-color: #2a82da; border: 1px solid white; }");
 }
 
-int main(int argc, char *argv[])
+int YTE_Main(ApplicationArguments& aArguments)
 {
   QCoreApplication::addLibraryPath("./");
   QCoreApplication::addLibraryPath("C:/Qt/5.9/msvc2017_64/bin");
   QCoreApplication::addLibraryPath("C:/Qt/5.9/msvc2017_64/plugins");
 
   // Construct the application
-  QApplication app(argc, argv);
+  QApplication app(aArguments.mOriginalArgumentsSize, aArguments.mOriginalArguments);
 
   // RUNNING THE GAME
   YTE::InitializeYTETypes();

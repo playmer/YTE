@@ -30,7 +30,7 @@ Function(FindWWise aTarget)
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/Win32/)
     set(PlatformLibraryDirectory x64_vc150)
     set(platformLibraryExtension lib)
-    
+
     file(GLOB_RECURSE 
          PlatformFiles 
          "${WWisePath}/samples/SoundEngine/Win32/*.inl"
@@ -41,7 +41,7 @@ Function(FindWWise aTarget)
     set(PlatformIncludeDirectory ${WWisePath}/samples/SoundEngine/POSIX/)
     set(PlatformLibraryDirectory Linux_x64)
     set(platformLibraryExtension a)
-
+    
     file(GLOB_RECURSE 
          PlatformFiles 
          "${WWisePath}/samples/SoundEngine/POSIX/*.inl"
@@ -101,9 +101,9 @@ Function(FindWWise aTarget)
   endforeach()
 
 
-  message(release: ${staticLibraryRelease})
-  message(profile: ${staticLibraryProfile})
-  message(debug:${staticLibraryDebug})
+  #message(release: ${staticLibraryRelease})
+  #message(profile: ${staticLibraryProfile})
+  #message(debug:${staticLibraryDebug})
 
   if (NOT MSVC)
     target_compile_options(${aTarget} PRIVATE -fPIC)

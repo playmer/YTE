@@ -58,7 +58,6 @@ namespace YTE
   };
 
   YTE_Shared glm::i32vec2 GetMousePosition();
-  YTE_Shared bool GetLRSwapped();
   YTE_Shared void SurveyMouse(bool *aMouse);
   YTE_Shared uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOsKey);
 
@@ -96,8 +95,6 @@ namespace YTE
 
     bool mArrayOne[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
     bool mArrayTwo[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
-
-    bool mLRSwapped;
   };
 }
 

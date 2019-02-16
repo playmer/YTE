@@ -8,9 +8,12 @@
 /******************************************************************************/
 #include "YTE/Core/Engine.hpp"
 
+#include "YTEMain/YTEMain.hpp"
+
 using namespace std;
 
-int main(int, char*[])
+//int SDL_main(int, char*[])
+int YTE_Main(ApplicationArguments&)
 {
   //if constexpr (YTE_CAN_PROFILE)
   //{
@@ -19,8 +22,6 @@ int main(int, char*[])
   //}
   //
   //YTEProfileFunction();
-
-  YTE::InitializeYTETypes();
   
   YTE::Engine mainEngine{
     { 
