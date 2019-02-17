@@ -141,7 +141,8 @@ namespace YTE
     }
 
 
-    inline GamepadSystem *GetGamepadSystem() { return &mGamepadSystem; }
+    inline PlatformManager* GetPlatformManager() { return &mPlatform; }
+    inline GamepadSystem* GetGamepadSystem() { return &mGamepadSystem; }
     YTE_Shared RSDocument* GetArchetype(String &aArchetype);
     YTE_Shared std::unordered_map<String, UniquePointer<RSDocument>>* GetArchetypes(void);
     YTE_Shared RSDocument* GetLevel(String &aLevel);

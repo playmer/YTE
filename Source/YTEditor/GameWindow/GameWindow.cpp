@@ -75,4 +75,14 @@ namespace YTEditor
     mMainWindow->keyPressEvent(aEvent);
     aEvent->ignore();
   }
+
+  void SubWindow::focusInEvent(QFocusEvent*)
+  {
+    mMainWindow->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(mWindow);
+  }
+
+  void SubWindow::focusOutEvent(QFocusEvent*)
+  {
+    mMainWindow->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(nullptr);
+  }
 }

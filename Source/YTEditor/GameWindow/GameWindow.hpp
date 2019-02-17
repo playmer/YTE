@@ -30,13 +30,13 @@ namespace YTEditor
 
     ~SubWindow();
 
-    void resizeEvent(QResizeEvent *aEvent);
-
-    void keyPressEvent(QKeyEvent *aEvent);
+    void resizeEvent(QResizeEvent *aEvent) override;
+    void keyPressEvent(QKeyEvent *aEvent) override;
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
 
 
     YTE::Window *mWindow;
-
     MainWindow *mMainWindow;
   };
 
