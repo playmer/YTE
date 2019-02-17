@@ -26,8 +26,6 @@ namespace YTE
         case SDL_TEXTINPUT:              /**< Keyboard text input */
         case SDL_KEYMAPCHANGED:          /**< Keymap changed due to a system event such as an input language or keyboard layout change. */
         {
-          printf("WindowFocus: %s \n", mKeyboardFocusedWindow ? "true" : "false");
-
           if (nullptr != mKeyboardFocusedWindow)
           {
             KeyboardEventHandler(event, mKeyboardFocusedWindow, &mKeyboardFocusedWindow->mKeyboard);

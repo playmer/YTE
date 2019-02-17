@@ -135,16 +135,6 @@ namespace YTE
 
       mMouseDelta = screenCoordinates - mMouseInitialPosition;
 
-      auto output = fmt::format(
-        "ix: {}, iy: {}, nx: {}, ny: {}, dx: {}, dy: {}",
-        mMouseInitialPosition.x,
-        mMouseInitialPosition.y,
-        aEvent->WorldCoordinates.x,
-        aEvent->WorldCoordinates.y,
-        mMouseDelta.x,
-        mMouseDelta.y);
-
-      mWindow->mEngine->Log(LogType::Information, output);
       mMouse->SetCursorPosition(mMouseInitialPosition);
     }
   }

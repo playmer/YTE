@@ -43,14 +43,107 @@ namespace YTE
         // Key pressed
       case SDL_KEYDOWN:
       {
-        aKeyboard->UpdateKey(TranslateFromOsToOurKey(aEvent.key.keysym.sym), true);
+        auto key = TranslateFromOsToOurKey(aEvent.key.keysym.sym);
+
+        aKeyboard->UpdateKey(key, true);
+
+        switch (key)
+        {
+          case Keys::LeftShift:
+          case Keys::RightShift:
+          {
+            aKeyboard->UpdateKey(Keys::Shift, true);
+            break;
+          }
+
+          case Keys::LeftControl:
+          case Keys::RightControl:
+          {
+            aKeyboard->UpdateKey(Keys::Control, true);
+            break;
+          }
+
+          case Keys::LeftAlt:
+          case Keys::RightAlt:
+          {
+            aKeyboard->UpdateKey(Keys::Alt, true);
+            break;
+          }
+        }
+
         break;
       }
 
         // Key released
       case SDL_KEYUP:
       {
+        auto key = TranslateFromOsToOurKey(aEvent.key.keysym.sym);
+
         aKeyboard->UpdateKey(TranslateFromOsToOurKey(aEvent.key.keysym.sym), false);
+        
+        switch (key)
+        {
+          case Keys::LeftShift:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::RightShift))
+            {
+              aKeyboard->UpdateKey(Keys::Shift, false);
+            }
+
+            break;
+          }
+
+          case Keys::RightShift:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::LeftShift))
+            {
+              aKeyboard->UpdateKey(Keys::Shift, false);
+            }
+
+            break;
+          }
+
+          case Keys::LeftControl:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::RightControl))
+            {
+              aKeyboard->UpdateKey(Keys::Control, false);
+            }
+
+            break;
+          }
+
+          case Keys::RightControl:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::LeftControl))
+            {
+              aKeyboard->UpdateKey(Keys::Control, false);
+            }
+
+            break;
+          }
+
+          case Keys::LeftAlt:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::RightAlt))
+            {
+              aKeyboard->UpdateKey(Keys::Alt, false);
+            }
+
+            break;
+          }
+
+          case Keys::RightAlt:
+          {
+            if (false == aKeyboard->IsKeyDown(Keys::LeftAlt))
+            {
+              aKeyboard->UpdateKey(Keys::Alt, false);
+            }
+
+            break;
+          }
+        }
+
         break;
       }
 
