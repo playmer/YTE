@@ -75,43 +75,4 @@ namespace YTEditor
     mMainWindow->keyPressEvent(aEvent);
     aEvent->ignore();
   }
-
-  bool SubWindow::nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult)
-  {
-    auto qtVal = QWindow::nativeEvent(aEventType, aMessage, aResult);
-
-    if (nullptr == mWindow)
-    {
-      return qtVal;
-    }
-
-    // TODO Implement this on other platforms maybe?
-#if YTE_Windows
-    MSG message = *(static_cast<MSG*>(aMessage));
-
-    TranslateMessage(&message);
-
-    if ((WM_DESTROY == message.message) ||
-        (WM_CLOSE == message.message)   ||
-        (WM_NCDESTROY == message.message))
-    {
-      mWindow = nullptr;
-    }
-
-    if ((WM_SIZE != message.message) &&
-        (nullptr != mWindow) &&
-        (0x90 /*WM_UAHDESTROYWINDOW*/ != message.message))
-    {
-      // commented out because window was already destroyed on delete
-      YTE::Window::MessageHandler(message.hwnd,
-        message.message,
-        message.wParam,
-        message.lParam,
-        mWindow);
-    }
-#endif
-
-    return qtVal;
-  }
-
 }

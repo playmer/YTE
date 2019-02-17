@@ -31,7 +31,6 @@ namespace YTEditor
     ~SubWindow();
 
     void resizeEvent(QResizeEvent *aEvent);
-    bool nativeEvent(const QByteArray &aEventType, void *aMessage, long *aResult) override;
 
     void keyPressEvent(QKeyEvent *aEvent);
 
