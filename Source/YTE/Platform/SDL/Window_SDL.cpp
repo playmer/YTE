@@ -231,8 +231,6 @@ namespace YTE
     : mMouse{ this }
     , mEngine { aEngine }
   {
-    Window *parent = nullptr;
-
     DeserializeByType(aProperties, this, TypeId<Window>());
 
     static std::string defaultName = "Yours Truly Engine";
@@ -263,7 +261,6 @@ namespace YTE
 
     auto width = displayRect.w;
     auto height = displayRect.h;
-    auto right = displayRect.x;
 
     {
       width = mSerializedStartingWidth;

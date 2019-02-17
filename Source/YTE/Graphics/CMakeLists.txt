@@ -1,4 +1,4 @@
-include(${CMAKE_CURRENT_LIST_DIR}/DirectX12/CMakeLists.txt)
+#include(${CMAKE_CURRENT_LIST_DIR}/DirectX12/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/Generics/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/Vulkan/CMakeLists.txt)
 
