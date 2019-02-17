@@ -1,4 +1,5 @@
-#include "SDL/include/SDL.h"
+#include "SDL.h"
+#include "SDL_vulkan.h"
 
 #include "YTE/Core/Engine.hpp"
 
@@ -9,10 +10,21 @@
 
 int SDL_main(int aArgumentsSize, char** aArguments)
 {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+    SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+    return 1;
+  }
+
+  SDL_Vulkan_LoadLibrary(nullptr);
+
   YTE::InitializeYTETypes();
 
   ApplicationArguments arguments{ aArgumentsSize, aArguments };
 
-  return YTE_Main(arguments);
+  auto toReturn = YTE_Main(arguments);
+
+  SDL_Quit();
+
+  return toReturn;
 }
 

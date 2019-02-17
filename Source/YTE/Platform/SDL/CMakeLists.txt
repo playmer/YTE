@@ -14,6 +14,7 @@ PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/SharedObject_SDL.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Window_SDL.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Window_SDL.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/Window_Secluded_SDL.cpp
 )
 
 target_link_libraries(YTE PRIVATE SDL2)

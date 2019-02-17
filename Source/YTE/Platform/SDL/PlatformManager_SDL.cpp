@@ -12,11 +12,39 @@
 
 namespace YTE
 {
+  struct PlatformManagerData
+  {
+    std::vector<SDL_Event> mEvents;
+  };
+
+
+  PlatformManager::PlatformManager(Engine* aEngine)
+    : mEngine{ aEngine }
+    , mMouseFocusedWindow{ nullptr }
+    , mKeyboardFocusedWindow{ nullptr }
+  {
+    mData.ConstructAndGet<PlatformManagerData>();
+  }
+
+
   void PlatformManager::Update()
   {
-    SDL_Event event;
+    if (false == mEngine->IsEditor())
+    {
+      SDL_PumpEvents();
+    }
 
-    while( SDL_PollEvent( &event) != 0 )
+    auto self = mData.Get<PlatformManagerData>();
+    auto& eventQueue = self->mEvents;
+
+    auto numberOfEvents = SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    eventQueue.resize(numberOfEvents);
+    auto error = SDL_PeepEvents(eventQueue.data(), eventQueue.size(), SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+
+    UnusedArguments(error);
+    DebugAssert(0 <= error, "Couldn't retreive SDL_Events");
+
+    for(auto& event : eventQueue)
     {
       switch (event.type)
       {
@@ -64,5 +92,7 @@ namespace YTE
     {
       window->Update();
     }
+
+    eventQueue.clear();
   }
 }

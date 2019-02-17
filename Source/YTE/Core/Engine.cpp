@@ -63,9 +63,10 @@ namespace YTE
 
   Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
     : Composition{ this, cEngineName, nullptr }
-    , mFrame{ 0 }
+    , mPlatform{ this }
     , mCompositionsByGUID{}
     , mComponentsByGUID{}
+    , mFrame{ 0 }
     , mShouldRun{ true }
     , mEditorMode{ aEditorMode }
     , mInitialized{ false }

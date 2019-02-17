@@ -16,8 +16,13 @@
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Window.hpp"
 
+
 namespace YTE
 {
+  namespace Detail
+  {
+    void ChangeSDLWindowFlags(SDL_Window* aWindow);
+  }
 
   int GetPrimaryMonitor()
   {
@@ -51,23 +56,6 @@ namespace YTE
   i64 Window::MessageHandler(void*, u64, u64, i64, Window*)
   {
     return 0;
-  }
-
-  void* Window::GetWindowId()
-  {
-    auto self = mData.Get<WindowData>();
-    return self->mWindow;
-  }
-
-  void Window::SetWindowId(void* aId)
-  {
-    auto self = mData.Get<WindowData>();
-
-    self->mWindow = SDL_CreateWindowFrom(aId);
-
-    SDL_GetWindowSize(self->mWindow, &self->mWidth, &self->mHeight);
-
-    mShouldBeRenderedTo = true;
   }
   
   void WindowEventHandler(Uint8 aEvent, PlatformManager* aManager, Window* aWindow)
@@ -165,19 +153,21 @@ namespace YTE
       // Window has gained mouse focus
       case SDL_WINDOWEVENT_ENTER:
       {
+        puts("Window entered\n");
         aManager->SetMouseFocusedWindow(aWindow);
         break;
       }
       // Window has lost mouse focus
       case SDL_WINDOWEVENT_LEAVE:
       {
+        puts("Window left\n");
         aManager->SetMouseFocusedWindow(nullptr);
         break;
       }
       // Window has gained keyboard focus
       case SDL_WINDOWEVENT_FOCUS_GAINED:
       {
-        printf("A Window gained focus\n");
+        puts("A Window gained focus\n");
         aManager->SetKeyboardFocusedWindow(aWindow);
 
         WindowFocusLostOrGained focusEvent;
@@ -190,7 +180,7 @@ namespace YTE
       // Window has lost keyboard focus
       case SDL_WINDOWEVENT_FOCUS_LOST:
       {
-        printf("A Window lost focus\n");
+        puts("A Window lost focus\n");
         aManager->SetKeyboardFocusedWindow(nullptr);
 
         WindowFocusLostOrGained focusEvent;
@@ -225,6 +215,7 @@ namespace YTE
     : mMouse{ this }
     , mEngine{ aEngine }
   {
+    mData.ConstructAndGet<WindowData>();
   }
 
   Window::Window(Engine* aEngine, RSValue* aProperties)
@@ -256,7 +247,7 @@ namespace YTE
 
 
     UnusedArguments(result);
-    DebugObjection(!result, "Couldn't retrieve monitor information.");
+    DebugAssert(result >= 0, "Couldn't retrieve monitor information.");
     
 
     auto width = displayRect.w;
@@ -310,6 +301,26 @@ namespace YTE
     if (false == mEngine->IsEditor())
     {
     }
+  }
+
+  void* Window::GetWindowId()
+  {
+    auto self = mData.Get<WindowData>();
+    return self->mWindow;
+  }
+
+  void Window::SetWindowId(void* aId)
+  {
+    auto self = mData.Get<WindowData>();
+
+    self->mWindow = SDL_CreateWindowFrom(aId);
+
+    Detail::ChangeSDLWindowFlags(self->mWindow);
+    SDL_SetWindowData(self->mWindow, "YTE_Window", this);
+
+    SDL_GetWindowSize(self->mWindow, &self->mWidth, &self->mHeight);
+
+    mShouldBeRenderedTo = true;
   }
 
   void Window::SetCursorVisibility(bool aShow)
@@ -393,14 +404,12 @@ namespace YTE
   {
     auto self = mData.Get<WindowData>();
     self->mHeight = aHeight;
-    //SDL_SetWindowSize(self->mWindow, self->mWidth, aHeight);
   }
 
   void Window::SetWidth(u32 aWidth)
   {
     auto self = mData.Get<WindowData>();
     self->mWidth = aWidth;
-    //SDL_SetWindowSize(self->mWindow, aWidth, self->mHeight);
   }
 
   glm::i32vec2 Window::GetPosition()
@@ -415,7 +424,9 @@ namespace YTE
     auto instance = static_cast<vkhlf::Instance*>(aSetup);
 
     VkSurfaceKHR surface;
-    SDL_Vulkan_CreateSurface(self->mWindow, static_cast<vk::Instance>(*instance), &surface);
+    auto result = SDL_Vulkan_CreateSurface(self->mWindow, static_cast<vk::Instance>(*instance), &surface);
+
+    printf(result ? "true\n" : "false\n");
 
     vk::SurfaceKHR surface2 = surface;
     return std::make_shared<vkhlf::Surface>(instance->shared_from_this(), surface2, nullptr);

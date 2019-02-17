@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Platform/Window.hpp"
 
 namespace YTE
@@ -9,6 +10,8 @@ namespace YTE
   class PlatformManager
   {
   public:
+    PlatformManager(Engine* aEngine);
+
     void Update();
 
     std::optional<Window*> GetPrimaryWindow()
@@ -48,7 +51,9 @@ namespace YTE
     }
 
   private:
+    PrivateImplementationDynamic mData;
     std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
+    Engine* mEngine;
     Window* mMouseFocusedWindow;
     Window* mKeyboardFocusedWindow;
   };
