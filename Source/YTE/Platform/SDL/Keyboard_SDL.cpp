@@ -36,7 +36,7 @@ namespace YTE
     }
   }
   
-  void KeyboardEventHandler(SDL_Event aEvent, Window* aWindow, Keyboard* aKeyboard)
+  void KeyboardEventHandler(SDL_Event aEvent, Keyboard* aKeyboard)
   {
     switch (aEvent.type)
     {
@@ -167,16 +167,16 @@ namespace YTE
     }
   }
 
-  bool CheckKey(Keys aKey)
-  {
-    //auto key = TranslateFromOurToOSKey(aKey);
-    //
-    //bool state = GetAsyncKeyState(static_cast<int>(key)) & 0x8000;
-    //
-    //return state;
-
-    return false;
-  }
+  //bool CheckKey(Keys aKey)
+  //{
+  //  //auto key = TranslateFromOurToOSKey(aKey);
+  //  //
+  //  //bool state = GetAsyncKeyState(static_cast<int>(key)) & 0x8000;
+  //  //
+  //  //return state;
+  //
+  //  return false;
+  //}
 
   std::string GetClipboardText()
   {

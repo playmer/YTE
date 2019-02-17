@@ -43,7 +43,7 @@ namespace YTE
   YTE_Shared void SetClipboardText(std::string &aText);
 
   // Checks key with OS.
-  YTE_Shared bool CheckKey(Keys aKey);
+  //YTE_Shared bool CheckKey(Keys aKey);
 
   class Keyboard : public EventHandler
   {

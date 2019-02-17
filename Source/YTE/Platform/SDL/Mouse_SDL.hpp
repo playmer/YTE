@@ -7,5 +7,5 @@
 
 namespace YTE
 {
-  void MouseEventHandler(SDL_Event aEvent, Window* aWindow, Mouse* aMouse);
+  void MouseEventHandler(SDL_Event aEvent, Mouse* aMouse);
 }

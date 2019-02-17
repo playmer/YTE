@@ -21,7 +21,7 @@ namespace YTE
     }
   }
 
-  void MouseEventHandler(SDL_Event aEvent, Window* aWindow, Mouse* aMouse)
+  void MouseEventHandler(SDL_Event aEvent, Mouse* aMouse)
   {
     switch (aEvent.type)
     {
@@ -55,8 +55,8 @@ namespace YTE
       case SDL_MOUSEWHEEL:
       {
         glm::vec2 scrollMove;
-        scrollMove.x = aEvent.wheel.x;
-        scrollMove.y = aEvent.wheel.y;
+        scrollMove.x = static_cast<float>(aEvent.wheel.x);
+        scrollMove.y = static_cast<float>(aEvent.wheel.y);
 
         aMouse->UpdateWheel(scrollMove);
 

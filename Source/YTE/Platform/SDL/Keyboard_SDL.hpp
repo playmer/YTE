@@ -7,5 +7,5 @@
 
 namespace YTE
 {
-  void KeyboardEventHandler(SDL_Event aEvent, Window* aWindow, Keyboard* aKeyboard);
+  void KeyboardEventHandler(SDL_Event aEvent, Keyboard* aKeyboard);
 }

@@ -28,7 +28,7 @@ namespace YTE
         {
           if (nullptr != mKeyboardFocusedWindow)
           {
-            KeyboardEventHandler(event, mKeyboardFocusedWindow, &mKeyboardFocusedWindow->mKeyboard);
+            KeyboardEventHandler(event, &mKeyboardFocusedWindow->mKeyboard);
           }
 
           break;
@@ -41,7 +41,7 @@ namespace YTE
         {
           if (nullptr != mMouseFocusedWindow)
           {
-            MouseEventHandler(event, mMouseFocusedWindow, &mMouseFocusedWindow->mMouse);
+            MouseEventHandler(event, &mMouseFocusedWindow->mMouse);
           }
 
           break;
