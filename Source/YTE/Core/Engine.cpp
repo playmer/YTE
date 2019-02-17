@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2015-09-19
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -177,13 +168,15 @@ namespace YTE
     {
       std::string windowName = windowsIt->name.GetString();
 
+      auto& platformWindows = GetWindows();
+
       if (false == mEditorMode)
       {
-        mWindows.emplace(windowName, std::make_unique<Window>(this, &windowsIt->value));
+        platformWindows.emplace(windowName, std::make_unique<Window>(this, &windowsIt->value));
       }
       else
       {
-        mWindows.emplace(windowName, std::make_unique<Window>(this));
+        platformWindows.emplace(windowName, std::make_unique<Window>(this));
       }
     }
 
@@ -205,16 +198,18 @@ namespace YTE
   {
     YTEProfileFunction();
 
+    auto& windows = GetWindows();
+
     if (false == mEditorMode)
     {
-      auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this, nullptr));
+      auto toReturn = windows.emplace(aName, std::make_unique<Window>(this, nullptr));
       toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
     else
     {
-      auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this));
+      auto toReturn = windows.emplace(aName, std::make_unique<Window>(this));
       toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
@@ -225,11 +220,13 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    for (auto it = mWindows.begin(); it != mWindows.end(); ++it) 
+    auto& windows = GetWindows();
+
+    for (auto it = windows.begin(); it != windows.end(); ++it)
     {
       if (it->second.get() == aWindow)
       {
-        mWindows.erase(it);
+        windows.erase(it);
         return;
       }
     }
@@ -271,11 +268,12 @@ namespace YTE
       mDt = 0.016;
     }
 
-    for (auto &window : mWindows)
+    for (auto &window : GetWindows())
     {
       SetFrameRate(*window.second, mDt);
-      window.second->Update();
     }
+
+    mPlatform.Update();
     
     LogicUpdate updateEvent;
     updateEvent.Dt = mDt;

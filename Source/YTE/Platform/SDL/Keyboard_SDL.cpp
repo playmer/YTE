@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
 #include <stdint.h>
@@ -40,7 +32,45 @@ namespace YTE
         #include "YTE/Platform/SDL/OsKeys_SDL.hpp"
       #undef ProcessKey
 
-      default: return 0;
+      default: return SDLK_UNKNOWN;
+    }
+  }
+  
+  void KeyboardEventHandler(SDL_Event aEvent, Window* aWindow, Keyboard* aKeyboard)
+  {
+    switch (aEvent.type)
+    {
+        // Key pressed
+      case SDL_KEYDOWN:
+      {
+        aKeyboard->UpdateKey(TranslateFromOsToOurKey(aEvent.key.keysym.sym), true);
+        break;
+      }
+
+        // Key released
+      case SDL_KEYUP:
+      {
+        aKeyboard->UpdateKey(TranslateFromOsToOurKey(aEvent.key.keysym.sym), false);
+        break;
+      }
+
+        // Keyboard text editing (composition)
+      case SDL_TEXTEDITING:
+      {
+        break;
+      }
+
+        // Keyboard text input
+      case SDL_TEXTINPUT:
+      {
+        break;
+      }
+
+        // Keymap changed due to a system event such as an input language or keyboard layout change.
+      case SDL_KEYMAPCHANGED:
+      {
+        break;
+      }
     }
   }
 

@@ -24,7 +24,7 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Platform/GamepadSystem.hpp"
-#include "YTE/Platform/Window.hpp"
+#include "YTE/Platform/PlatformManager.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -124,9 +124,11 @@ namespace YTE
 
     Window* GetWindow()
     {
-      if (mWindows.size())
+      auto window = mPlatform.GetPrimaryWindow();
+      
+      if (window.has_value())
       {
-        return mWindows.begin()->second.get();
+        return *window;
       }
       
       return nullptr;
@@ -135,7 +137,7 @@ namespace YTE
 
     std::unordered_map<std::string, std::unique_ptr<Window>>& GetWindows()
     {
-      return mWindows;
+      return mPlatform.GetWindows();
     }
 
 
@@ -174,9 +176,8 @@ namespace YTE
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
   private:
+    PlatformManager mPlatform;
     GamepadSystem mGamepadSystem;
-
-    std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
 
     std::unordered_map<String, UniquePointer<RSDocument>> mArchetypes;
     std::unordered_map<String, UniquePointer<RSDocument>> mLevels;

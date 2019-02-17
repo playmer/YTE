@@ -22,7 +22,7 @@ namespace YTE
     builder.Field<&Window::mMouse>("Mouse", PropertyBinding::Get);
     
     builder.Function<&Window::SetFullscreen>("SetFullscreen")
-      .SetParameterNames("aFullscreen", "aForMetro")
+      .SetParameterNames("aFullscreen")
       .SetDocumentation("Either switches to fullscreen or unfullscreen.");
     builder.Function<&Window::SetCursorVisibility>("SetCursorVisibility")
       .SetParameterNames("aShow")

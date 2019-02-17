@@ -1,23 +1,70 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "SDL.h"
 
 #include "YTE/Platform/TargetDefinitions.hpp"
+
+#include "YTE/Platform/SDL/Window_SDL.hpp"
 
 #include "YTE/Platform/Mouse.hpp"
 
 namespace YTE
 {
-  uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOurButton)
+  MouseButtons SdlToOurButton(Uint8 aButton)
   {
-    return 0;
+    switch (aButton)
+    {
+      case SDL_BUTTON_LEFT:  return MouseButtons::Left;
+      case SDL_BUTTON_RIGHT: return MouseButtons::Right;
+      case SDL_BUTTON_MIDDLE: return MouseButtons::Middle;
+      case SDL_BUTTON_X1: return MouseButtons::Back;
+      case SDL_BUTTON_X2: return MouseButtons::Forward;
+      default: return MouseButtons::Unknown;
+    }
   }
+
+  void MouseEventHandler(SDL_Event aEvent, Window* aWindow, Mouse* aMouse)
+  {
+    switch (aEvent.type)
+    {
+        // Mouse moved
+      case SDL_MOUSEMOTION:
+      {
+        glm::i32vec2 position{ aEvent.motion.x, aEvent.motion.y };
+        aMouse->UpdatePosition(position);
+        break;
+      }
+
+      // Mouse button pressed
+      case SDL_MOUSEBUTTONDOWN:
+      {
+        auto button = SdlToOurButton(aEvent.button.button);
+        glm::i32vec2 position{ aEvent.button.x, aEvent.button.y };
+        aMouse->UpdateButton(button, true, position);
+        break;
+      }
+
+      // Mouse button released
+      case SDL_MOUSEBUTTONUP:
+      {
+        auto button = SdlToOurButton(aEvent.button.button);
+        glm::i32vec2 position{ aEvent.button.x, aEvent.button.y };
+        aMouse->UpdateButton(button, false, position);
+        break;
+      }
+
+      // Mouse wheel motion
+      case SDL_MOUSEWHEEL:
+      {
+        glm::vec2 scrollMove;
+        scrollMove.x = aEvent.wheel.x;
+        scrollMove.y = aEvent.wheel.y;
+
+        aMouse->UpdateWheel(scrollMove);
+
+        break;
+      }
+    }
+  }
+
 
   glm::i32vec2 GetMousePosition()
   {
@@ -28,7 +75,12 @@ namespace YTE
   
   void Mouse::SetCursorPosition(glm::i32vec2 aPosition)
   {
-    SDL_WarpMouseGlobal(aPosition.x, aPosition.y);
+    auto self = mWindow->mData.Get<WindowData>();
+    int x;
+    int y;
+
+    SDL_GetWindowPosition(self->mWindow, &x, &y);
+    SDL_WarpMouseGlobal(aPosition.x + x, aPosition.y + y);
   }
 
 
@@ -40,7 +92,7 @@ namespace YTE
     UpdateButton(MouseButtons::Left, SDL_BUTTON_LMASK & buttonState, aRelativePosition);
     UpdateButton(MouseButtons::Right, SDL_BUTTON_RMASK & buttonState , aRelativePosition);
     UpdateButton(MouseButtons::Middle, SDL_BUTTON_MMASK & buttonState, aRelativePosition);
-    UpdateButton(MouseButtons::Forward, SDL_BUTTON_X1MASK & buttonState, aRelativePosition);
-    UpdateButton(MouseButtons::Back, SDL_BUTTON_X2MASK & buttonState, aRelativePosition);
+    UpdateButton(MouseButtons::Back, SDL_BUTTON_X1MASK & buttonState, aRelativePosition);
+    UpdateButton(MouseButtons::Forward, SDL_BUTTON_X2MASK & buttonState, aRelativePosition);
   }
 }

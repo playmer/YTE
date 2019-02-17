@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Platform/TargetDefinitions.hpp"
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -18,10 +10,11 @@
 
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Platform/SDL/Window_SDL.hpp"
+
 #include "YTE/Platform/DialogBox.hpp"
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Window.hpp"
-
 
 namespace YTE
 {
@@ -45,17 +38,6 @@ namespace YTE
     return -1;
   }
 
-  struct WindowData
-  {
-    SDL_Window* mWindow;
-    int mWindowId;
-    std::string mWindowName;
-    int mWidth;
-    int mHeight;
-    bool mMinimized;
-    bool mFocus;
-  };
-
 
   bool SetCursorView(bool aShow)
   {
@@ -66,10 +48,7 @@ namespace YTE
   }
 
 
-  ///////////////////////////////////////
-  // Static Functions
-  ///////////////////////////////////////
-  i64 Window::MessageHandler(void* aWindowHandle, u64 aMessage, u64 aWParam, i64 aLParam, Window *aWindow)
+  i64 Window::MessageHandler(void*, u64, u64, i64, Window*)
   {
     return 0;
   }
@@ -80,7 +59,7 @@ namespace YTE
     return self->mWindow;
   }
 
-  void Window::SetWindowId(void *aId)
+  void Window::SetWindowId(void* aId)
   {
     auto self = mData.Get<WindowData>();
 
@@ -90,14 +69,167 @@ namespace YTE
 
     mShouldBeRenderedTo = true;
   }
+  
+  void WindowEventHandler(Uint8 aEvent, PlatformManager* aManager, Window* aWindow)
+  {
+    WindowData *self = nullptr;
 
-  Window::Window(Engine *aEngine) 
-    : mEngine(aEngine)
+    if (nullptr != aWindow)
+    {
+      self = aWindow->mData.Get<WindowData>();
+    }
+
+    switch (aEvent)
+    {
+        // Window has been shown
+      case SDL_WINDOWEVENT_SHOWN:
+      {
+        break;
+      }
+      // Window has been hidden
+      case SDL_WINDOWEVENT_HIDDEN:
+      {
+        break;
+      }
+      // Window has been exposed and should be redrawn
+      case SDL_WINDOWEVENT_EXPOSED:
+      {
+        break;
+      }
+      // Window has been moved to data1, data2
+      case SDL_WINDOWEVENT_MOVED:
+      {
+        break;
+      }
+      // Window has been resized to data1xdata2
+      case SDL_WINDOWEVENT_RESIZED:
+      {
+        break;
+      }
+      // The window size has changed, either as a result of an API call or through the system or user changing the window size.
+      case SDL_WINDOWEVENT_SIZE_CHANGED:
+      {
+        break;
+      }
+      // Window has been minimized
+      case SDL_WINDOWEVENT_MINIMIZED:
+      {
+        if (true == aWindow->mEngine->IsEditor())
+        {
+          break;
+        }
+
+        self->mMinimized = true;
+
+        WindowMinimizedOrRestored minimizeEvent;
+        minimizeEvent.Minimized = true;
+        aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
+        break;
+      }
+      // Window has been maximized
+      case SDL_WINDOWEVENT_MAXIMIZED:
+      {
+        break;
+      }
+      // Window has been restored to normal size and position
+      case SDL_WINDOWEVENT_RESTORED:
+      {
+        if (true == aWindow->mEngine->IsEditor())
+        {
+          break;
+        }
+
+        if (self->mMinimized == true)
+        {
+          self->mMinimized = false;
+
+          WindowMinimizedOrRestored minimizeEvent;
+          minimizeEvent.Minimized = false;
+          aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
+        }
+
+        int width;
+        int height;
+        SDL_GetWindowSize(self->mWindow, &width, &height);
+
+        WindowResize resizeEvent;
+        resizeEvent.width = width;
+        resizeEvent.height = height;
+
+        self->mWidth = resizeEvent.width;
+        self->mHeight = resizeEvent.height;
+
+        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
+        break;
+      }
+      // Window has gained mouse focus
+      case SDL_WINDOWEVENT_ENTER:
+      {
+        aManager->SetMouseFocusedWindow(aWindow);
+        break;
+      }
+      // Window has lost mouse focus
+      case SDL_WINDOWEVENT_LEAVE:
+      {
+        aManager->SetMouseFocusedWindow(nullptr);
+        break;
+      }
+      // Window has gained keyboard focus
+      case SDL_WINDOWEVENT_FOCUS_GAINED:
+      {
+        printf("A Window gained focus\n");
+        aManager->SetKeyboardFocusedWindow(aWindow);
+
+        WindowFocusLostOrGained focusEvent;
+        focusEvent.Focused = true;
+        self->mFocus = true;
+
+        aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
+        break;
+      }
+      // Window has lost keyboard focus
+      case SDL_WINDOWEVENT_FOCUS_LOST:
+      {
+        printf("A Window lost focus\n");
+        aManager->SetKeyboardFocusedWindow(nullptr);
+
+        WindowFocusLostOrGained focusEvent;
+        focusEvent.Focused = false;
+        self->mFocus = false;
+
+        aWindow->mKeyboard.ForceAllKeysUp();
+        aWindow->SendEvent(Events::WindowFocusLostOrGained, &focusEvent);
+        break;
+      }
+      // The window manager requests that the window be closed
+      case SDL_WINDOWEVENT_CLOSE:
+      {
+        break;
+      }
+      // Window is being offered a focus (should SetWindowInputFocus() on itself or a subwindow, or ignore)
+      case SDL_WINDOWEVENT_TAKE_FOCUS:
+      {
+        break;
+      }
+      // Window had a hit test that wasn't SDL_HITTEST_NORMAL.
+      case SDL_WINDOWEVENT_HIT_TEST:
+      {
+        break;
+      }
+    }
+  }
+
+
+
+  Window::Window(Engine* aEngine)
+    : mMouse{ this }
+    , mEngine{ aEngine }
   {
   }
 
-  Window::Window(Engine *aEngine, RSValue *aProperties)
-    : mEngine(aEngine)
+  Window::Window(Engine* aEngine, RSValue* aProperties)
+    : mMouse{ this }
+    , mEngine { aEngine }
   {
     Window *parent = nullptr;
 
@@ -132,7 +264,6 @@ namespace YTE
     auto width = displayRect.w;
     auto height = displayRect.h;
     auto right = displayRect.x;
-    auto bottom = displayRect.y + displayRect.h;
 
     {
       width = mSerializedStartingWidth;
@@ -144,9 +275,6 @@ namespace YTE
       mRequestedWidth = width;
       mRequestedHeight = height;
     }
-
-    auto leftPos = (right / 2) - (width / 2);
-    auto topPos = (bottom / 2) - (height / 2);
 
     self->mWindow = SDL_CreateWindow(
       self->mWindowName.c_str(),
@@ -162,9 +290,11 @@ namespace YTE
       return;
     }
 
+    SDL_SetWindowData(self->mWindow, "YTE_Window", this);
+
     self->mWindowId = SDL_GetWindowID(self->mWindow);
 
-    SetFullscreen(mSerializedStartingFullscreen, false);
+    SetFullscreen(mSerializedStartingFullscreen);
 
     Constructed = true;
   }
@@ -190,22 +320,34 @@ namespace YTE
     SetCursorView(aShow);
   }
 
-  //////////////////////////////////////////
-  // Implementation mostly by Chromium (BSD)
-  //////////////////////////////////////////
   void Window::SetResolution(u32 aWidth, u32 aHeight)
   {
     if (mEngine->IsEditor())
     {
       return;
     }
+
+    auto self = mData.Get<WindowData>();
+
+    SDL_SetWindowSize(self->mWindow, static_cast<int>(aWidth), static_cast<int>(aHeight));
   }
 
-  void Window::SetFullscreen(bool aFullscreen, bool aForMetro)
+  void Window::SetFullscreen(bool aFullscreen)
   {
+    auto self = mData.Get<WindowData>();
+    
+    mFullscreen = aFullscreen;
+    int fullscreenMode = 0;
+    
+    if (aFullscreen)
+    {
+      fullscreenMode = SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+    
+    SDL_SetWindowFullscreen(self->mWindow, fullscreenMode);
   }
   
-  void Window::SetWindowTitle(const char *aString)
+  void Window::SetWindowTitle(char const* aString)
   {
     auto self = mData.Get<WindowData>();
     SDL_SetWindowTitle(self->mWindow, aString);
@@ -269,7 +411,7 @@ namespace YTE
     return {};
   }
 
-  std::any Window::SetUpVulkanWindow(void *aSetup)
+  std::any Window::SetUpVulkanWindow(void* aSetup)
   {
     auto self = mData.Get<WindowData>();
 

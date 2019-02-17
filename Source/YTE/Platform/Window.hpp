@@ -63,7 +63,7 @@ namespace YTE
     YTE_Shared Window(Engine *aEngine);
 
     YTE_Shared void SetResolution(u32 aWidth, u32 aHeight);
-    YTE_Shared void SetFullscreen(bool aFullscreen, bool aMetro);
+    YTE_Shared void SetFullscreen(bool aFullscreen);
     YTE_Shared void SetWindowTitle(const char *aString);
 
     YTE_Shared bool IsMinimized();

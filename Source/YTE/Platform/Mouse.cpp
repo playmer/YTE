@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include <utility>
 
 #include "YTE/Platform/Keyboard.hpp"
@@ -57,8 +49,9 @@ namespace YTE
       .SetDocumentation("Gets the current cursor position in screen coordinates.");
   }
 
-  Mouse::Mouse()
-    : mPositionChanged(false)
+  Mouse::Mouse(Window* aWindow)
+    : mPositionChanged{ false }
+    , mWindow{aWindow}
   {
     std::memset(mArrayOne, 0, sizeof(mArrayOne));
     std::memset(mArrayTwo, 0, sizeof(mArrayTwo));
@@ -127,14 +120,11 @@ namespace YTE
     SendEvent(*state, &mouseEvent);
   }
 
-
-  void Mouse::UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition)
+  void Mouse::UpdateWheel(glm::vec2 aWheelMove)
   {
-    UpdatePosition(aPosition);
-
     MouseWheelEvent mouseEvent;
     mouseEvent.ScrollMovement = aWheelMove;
-    mouseEvent.WorldCoordinates = aPosition;
+    mouseEvent.WorldCoordinates = mPosition;
 
     SendEvent(Events::MouseScroll, &mouseEvent);
   }

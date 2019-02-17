@@ -59,18 +59,17 @@ namespace YTE
 
   YTE_Shared glm::i32vec2 GetMousePosition();
   YTE_Shared void SurveyMouse(bool *aMouse);
-  YTE_Shared uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOsKey);
 
   class Mouse : public EventHandler
   {
   public:
     YTEDeclareType(Mouse);
 
-    YTE_Shared Mouse();
+    YTE_Shared Mouse(Window* aWindow);
 
     YTE_Shared void Update();
     YTE_Shared void UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition);
-    YTE_Shared void UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition);
+    YTE_Shared void UpdateWheel(glm::vec2 aWheelMove);
     YTE_Shared void UpdatePosition(glm::i32vec2 aPosition);
 
     YTE_Shared glm::i32vec2 GetPositionDelta();
@@ -87,11 +86,12 @@ namespace YTE
   private:
     glm::i32vec2 mPosition;
     glm::i32vec2 mPrevPosition;
+    Window* mWindow;
+    bool* mMouseCurrent;
+    bool* mMousePrevious;
 
     bool mPositionChanged;
 
-    bool *mMouseCurrent;
-    bool *mMousePrevious;
 
     bool mArrayOne[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
     bool mArrayTwo[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];

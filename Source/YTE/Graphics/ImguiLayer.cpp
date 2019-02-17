@@ -1,4 +1,3 @@
-//#include "imgui.h"
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/ImguiLayer.hpp"
@@ -162,7 +161,7 @@ namespace YTE
     //ShowMetricsWindow();
   }
 
-  void ImguiLayer::MouseScrollCallback(MouseWheelEvent *aEvent)
+  void ImguiLayer::MouseScrollCallback(MouseWheelEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -170,7 +169,7 @@ namespace YTE
     io.MouseWheel += (float)aEvent->ScrollMovement.y;
   }
 
-  void ImguiLayer::KeyPressCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::KeyPressCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -184,7 +183,7 @@ namespace YTE
     //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
-  void ImguiLayer::KeyReleaseCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::KeyReleaseCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -198,7 +197,7 @@ namespace YTE
     //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
-  void ImguiLayer::CharacterTypedCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::CharacterTypedCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
 
