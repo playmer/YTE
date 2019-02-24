@@ -10,11 +10,128 @@
 #include "YTE/Platform/Window.hpp"
 
 
+// GamePadManager.hpp
+namespace YTE
+{
+  struct GamePadManager
+  {
+  public:
+    GamePadManager();
+
+    inline PrivateImplementationDynamic* GetData()
+    {
+      return &mData;
+    }
+
+  private:
+    PrivateImplementationDynamic mData;
+  };
+}
+
+// GamePadManager_SDL.hpp
+namespace YTE
+{
+  void GamePadManagerEventHandler(SDL_JoyDeviceEvent aEvent);
+
+  struct ControllerData
+  {
+    char const* mName;
+    SDL_GameController* mController;
+    int mIndex;
+  };
+}
+
+// GamePadManager_SDL.cpp
+#include <map>
+
+namespace YTE
+{
+  struct GamePadManagerData
+  {
+    std::map<int, ControllerData> mControllers;
+  };
+
+  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent, GamePadManager* aManager)
+  {
+    auto self = aManager->GetData()->Get<GamePadManagerData>();
+    SDL_GameController * pad;
+    switch (aEvent.type)
+    {
+      case SDL_JOYDEVICEADDED:
+      {
+        auto errorIsGameController = SDL_IsGameController(aEvent.which);
+
+        if (errorIsGameController)
+        {
+          pad = SDL_GameControllerOpen(aEvent.which);
+
+          if (pad)
+          {
+            printf("Device Added: %s\n", SDL_GameControllerName(pad));
+          }
+        }
+
+        break;
+      }
+      case SDL_JOYDEVICEREMOVED:
+      {
+        pad = SDL_GameControllerOpen(aEvent.which);
+        printf("Device Removed: %s\n", SDL_GameControllerName(pad));
+        return;
+      }
+    }
+  }
+
+  GamePadManager::GamePadManager()
+  {
+    mData.ConstructAndGet<GamePadManager>();
+  }
+}
+
+
+// GamePad.hpp
+namespace YTE
+{
+  struct GamePad
+  {
+  public:
+    GamePad();
+
+  private:
+  };
+}
+
+// GamePad_SDL.hpp
+namespace YTE
+{
+  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent);
+}
+
+// GamePad_SDL.cpp
+#include <map>
+
+namespace YTE
+{
+
+  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent, GamePad* aGamePad)
+  {
+    auto self = aGamePad->GetData()->Get<ControllerData>();
+    
+  }
+}
+
+
+
+
+
+
+
 namespace YTE
 {
   struct PlatformManagerData
   {
     std::vector<SDL_Event> mEvents;
+    std::vector<SDL_GameController*> mControllers;
   };
 
   void SDLCALL PlatformManagerBlockedUpdate(void* aUserData, SDL_Window*)
@@ -38,10 +155,15 @@ namespace YTE
     mData.ConstructAndGet<PlatformManagerData>();
   }
 
-
   void PlatformManager::Update()
   {
     mIsUpdating = true;
+
+    //auto size = SDL_NumJoysticks();
+
+    //printf("Controllers: %d\n", size);
+
+
 
     if (false == mEngine->IsEditor())
     {
@@ -97,6 +219,12 @@ namespace YTE
 
           WindowEventHandler(event.window, this, window);
 
+          break;
+        }
+        case SDL_JOYDEVICEADDED:
+        case SDL_JOYDEVICEREMOVED:
+        {
+          GamePadEventHandler(event.jdevice);
           break;
         }
       }
