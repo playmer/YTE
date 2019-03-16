@@ -1,16 +1,21 @@
 function(YTE_Target_Folder_Recursive aTarget aFolderDelimiter)
-  get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
-  foreach(linkLibrary ${targetLinkLibraries})
-    if (TARGET ${linkLibrary})
-      get_target_property(targetType ${linkLibrary} TYPE)
 
-      if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
-        set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
-      endif ()
+  get_target_property(targetType ${aTarget} TYPE)
 
-      YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary}_Dependencies)
-    endif()
-  endforeach()
+  if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+    get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+    foreach(linkLibrary ${targetLinkLibraries})
+      if (TARGET ${linkLibrary})
+        get_target_property(targetType ${linkLibrary} TYPE)
+
+        if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+          set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
+        endif ()
+
+        YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary}_Dependencies)
+      endif()
+    endforeach()
+  endif()
 endfunction(YTE_Target_Folder_Recursive)
 
 function(YTE_Target_Folder aTarget aFolderDelimiter)
@@ -123,19 +128,24 @@ function(YTE_Target_Set_Outputs aTarget aLibraryDirectory aBinaryDirectory)
                         ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
                         LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
                         RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
-  
-  get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+
+  get_target_property(targetType ${aTarget} TYPE)
+
+  if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+    get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+  endif()
+
   foreach(linkLibrary ${targetLinkLibraries})
     if (TARGET ${linkLibrary})
-      get_target_property(targetType ${linkLibrary} TYPE)
+      get_target_property(libraryType ${linkLibrary} TYPE)
 
-      if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
+      if (NOT libraryType STREQUAL "INTERFACE_LIBRARY")
         set_target_properties(${linkLibrary}
                               PROPERTIES
                               ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
                               LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
                               RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
-      endif ()
+      endif()
 
       YTE_Target_Set_Outputs(${linkLibrary} ${aLibraryDirectory} ${aBinaryDirectory})
     endif()

@@ -57,6 +57,7 @@ target_link_libraries(YTE
     LinearMath
     crn
     fmt
+    glm
     imgui
     VkHLF
   PRIVATE

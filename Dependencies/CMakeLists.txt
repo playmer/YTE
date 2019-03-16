@@ -6,7 +6,6 @@ add_subdirectory(stb)
 add_subdirectory(imgui)
 add_subdirectory(SDL)
 
-
 ##########################################################################
 # Turn off/configure various parts of Assimp.
 option(ASSIMP_BUILD_ASSIMP_TOOLS
@@ -44,6 +43,12 @@ option(BUILD_CLSOCKET "Set when you want to build apps with enet TCP networking 
 option(USE_MSVC_RUNTIME_LIBRARY_DLL "Use MSVC Runtime Library DLL (/MD or /MDd)" ON)
 
 add_subdirectory(bullet3)
+
+##########################################################################
+# Turn off/configure various parts of glm.
+option(GLM_TEST_ENABLE "Build unit tests" OFF)
+
+add_subdirectory(glm)
 
 ##########################################################################
 # Turn off/configure various parts of VkHLF.
