@@ -277,7 +277,6 @@ target_link_libraries(YTEPlayer PRIVATE YTEMain)
 
 
 #Set the working directory and startup project. 
-message("Working Dir: ${YTE_Assets_Root}/Bin")
 set_target_properties(YTEPlayer PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTE_Assets_Root}/Bin)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT YTEPlayer) 
 

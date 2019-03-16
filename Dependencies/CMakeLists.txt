@@ -46,9 +46,12 @@ add_subdirectory(bullet3)
 
 ##########################################################################
 # Turn off/configure various parts of glm.
-option(GLM_TEST_ENABLE "Build unit tests" OFF)
-
-add_subdirectory(glm)
+#option(GLM_TEST_ENABLE "Build unit tests" OFF)
+#option(GLM_INSTALL_ENABLE "Allow installing of the library" OFF)
+#
+#add_subdirectory(glm)
+#
+#target_compile_definitions(glm INTERFACE GLM_ENABLE_EXPERIMENTAL GLM_FORCE_DEPTH_ZERO_TO_ONE)
 
 ##########################################################################
 # Turn off/configure various parts of VkHLF.

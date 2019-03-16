@@ -18,6 +18,7 @@ target_include_directories(YTE
     ${Dependencies_Root}/assimp/include
     ${Dependencies_Root}/assimp/contrib/rapidjson/include
     ${Dependencies_Root}/bullet3/src
+    ${Dependencies_Root}/glm
     ${Source_Root}
     ${ParentDirectory}
 )
@@ -57,7 +58,6 @@ target_link_libraries(YTE
     LinearMath
     crn
     fmt
-    glm
     imgui
     VkHLF
   PRIVATE
