@@ -93,11 +93,35 @@ namespace YTE
       // Window has been resized to data1xdata2
       case SDL_WINDOWEVENT_RESIZED:
       {
+        int width;
+        int height;
+        SDL_GetWindowSize(self->mWindow, &width, &height);
+
+        WindowResize resizeEvent;
+        resizeEvent.width = width;
+        resizeEvent.height = height;
+
+        self->mWidth = resizeEvent.width;
+        self->mHeight = resizeEvent.height;
+
+        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
         break;
       }
       // The window size has changed, either as a result of an API call or through the system or user changing the window size.
       case SDL_WINDOWEVENT_SIZE_CHANGED:
       {
+        int width;
+        int height;
+        SDL_GetWindowSize(self->mWindow, &width, &height);
+
+        WindowResize resizeEvent;
+        resizeEvent.width = width;
+        resizeEvent.height = height;
+
+        self->mWidth = resizeEvent.width;
+        self->mHeight = resizeEvent.height;
+
+        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
         break;
       }
       // Window has been minimized
@@ -149,6 +173,7 @@ namespace YTE
         self->mHeight = resizeEvent.height;
 
         aWindow->SendEvent(Events::WindowResize, &resizeEvent);
+        puts("Window restored\n");
         break;
       }
       // Window has gained mouse focus
@@ -278,6 +303,8 @@ namespace YTE
     {
       return;
     }
+
+    SDL_SetWindowResizable(self->mWindow, SDL_TRUE);
 
     SDL_SetWindowData(self->mWindow, "YTE_Window", this);
 
