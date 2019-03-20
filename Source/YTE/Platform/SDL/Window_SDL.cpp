@@ -10,6 +10,7 @@
 
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Platform/SDL/PlatformManager_SDL.hpp"
 #include "YTE/Platform/SDL/Window_SDL.hpp"
 
 #include "YTE/Platform/DialogBox.hpp"
@@ -283,6 +284,7 @@ namespace YTE
     self->mWindowId = SDL_GetWindowID(self->mWindow);
 
     SetFullscreen(mSerializedStartingFullscreen);
+    SDL_SetWindowBlockerData(self->mWindow, &PlatformManagerBlockedUpdate, aEngine->GetPlatformManager());
 
     Constructed = true;
   }

@@ -17,11 +17,23 @@ namespace YTE
     std::vector<SDL_Event> mEvents;
   };
 
+  void SDLCALL PlatformManagerBlockedUpdate(void* aUserData, SDL_Window*)
+  {
+    auto self = reinterpret_cast<PlatformManager*>(aUserData);
+
+    auto engine = self->GetEngine();
+
+    if (engine->KeepRunning())
+    {
+      engine->Update();
+    }
+  }
 
   PlatformManager::PlatformManager(Engine* aEngine)
     : mEngine{ aEngine }
     , mMouseFocusedWindow{ nullptr }
     , mKeyboardFocusedWindow{ nullptr }
+    , mIsUpdating{ false }
   {
     mData.ConstructAndGet<PlatformManagerData>();
   }
@@ -29,6 +41,13 @@ namespace YTE
 
   void PlatformManager::Update()
   {
+    if (mIsUpdating)
+    {
+      return;
+    }
+
+    mIsUpdating = true;
+
     if (false == mEngine->IsEditor())
     {
       SDL_PumpEvents();
@@ -94,5 +113,7 @@ namespace YTE
     }
 
     eventQueue.clear();
+
+    mIsUpdating = false;
   }
 }

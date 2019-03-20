@@ -11,6 +11,7 @@ PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/OsMouseButtons_SDL.hpp
   #${CMAKE_CURRENT_LIST_DIR}/OsXboxButtons_SDL.hpp
   ${CMAKE_CURRENT_LIST_DIR}/PlatformManager_SDL.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/PlatformManager_SDL.hpp
   ${CMAKE_CURRENT_LIST_DIR}/SharedObject_SDL.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Window_SDL.cpp
   ${CMAKE_CURRENT_LIST_DIR}/Window_SDL.hpp

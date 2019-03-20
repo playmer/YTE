@@ -50,11 +50,17 @@ namespace YTE
       return mMouseFocusedWindow;
     }
 
+    Engine* GetEngine()
+    {
+      return mEngine;
+    }
+
   private:
     PrivateImplementationDynamic mData;
     std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
     Engine* mEngine;
     Window* mMouseFocusedWindow;
     Window* mKeyboardFocusedWindow;
+    bool mIsUpdating;
   };
 }
