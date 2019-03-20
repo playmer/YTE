@@ -18,7 +18,7 @@ target_include_directories(YTE
     ${Dependencies_Root}/assimp/include
     ${Dependencies_Root}/assimp/contrib/rapidjson/include
     ${Dependencies_Root}/bullet3/src
-    ${Dependencies_Root}/glm
+    #${Dependencies_Root}/glm
     ${Source_Root}
     ${ParentDirectory}
 )
@@ -58,6 +58,7 @@ target_link_libraries(YTE
     LinearMath
     crn
     fmt
+    glm
     imgui
     VkHLF
   PRIVATE
@@ -104,7 +105,6 @@ target_compile_definitions(YTE PUBLIC ${YTE_x64})
 target_compile_definitions(YTE PUBLIC ${YTE_x86})
 
 target_compile_definitions(YTE PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
-target_compile_definitions(YTE PUBLIC GLM_FORCE_CXX14 GLM_FORCE_SIZE_T_LENGTH GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_FORCE_CTOR_INIT GLM_ENABLE_EXPERIMENTAL GLM_FORCE_SILENT_WARNINGS)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
 

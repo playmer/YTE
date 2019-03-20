@@ -46,12 +46,24 @@ add_subdirectory(bullet3)
 
 ##########################################################################
 # Turn off/configure various parts of glm.
-#option(GLM_TEST_ENABLE "Build unit tests" OFF)
-#option(GLM_INSTALL_ENABLE "Allow installing of the library" OFF)
-#
-#add_subdirectory(glm)
-#
-#target_compile_definitions(glm INTERFACE GLM_ENABLE_EXPERIMENTAL GLM_FORCE_DEPTH_ZERO_TO_ONE)
+option(GLM_TEST_ENABLE "Build unit tests" OFF)
+option(GLM_INSTALL_ENABLE "Allow installing of the library" OFF)
+option(BUILD_SHARED_LIBS "Build shared library" OFF)
+option(BUILD_STATIC_LIBS "Build static library" OFF)
+
+add_subdirectory(glm)
+
+target_compile_definitions(glm 
+  INTERFACE 
+    GLM_FORCE_CXX14 
+    GLM_FORCE_SIZE_T_LENGTH 
+    GLM_FORCE_DEPTH_ZERO_TO_ONE 
+    GLM_FORCE_CTOR_INIT 
+    GLM_ENABLE_EXPERIMENTAL 
+    GLM_FORCE_SILENT_WARNINGS
+)
+
+#target_include_directories(glm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/glm)
 
 ##########################################################################
 # Turn off/configure various parts of VkHLF.
@@ -76,8 +88,6 @@ add_subdirectory(VkHLF)
 # Get WWise
 FindWWise(WWise_SoundEngine)
 
-target_compile_options(crn                   PRIVATE ${disableWarning})
-target_compile_options(fmt                   PRIVATE ${disableWarning})
 # Turn the warnings off on our dependencies.
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   set(disableWarning /W0)
@@ -121,35 +131,37 @@ target_compile_options(SDL2-static           PRIVATE ${disableWarning})
 
 set_target_properties(SPVRemapper PROPERTIES FOLDER "Ignore")
 
-set_target_properties(assimp
-                      Bullet2FileLoader
-                      Bullet3Collision
-                      Bullet3Common
-                      Bullet3Dynamics
-                      Bullet3Geometry
-                      Bullet3OpenCL_clew
-                      BulletCollision
-                      BulletDynamics
-                      BulletInverseDynamics
-                      BulletSoftBody
-                      LinearMath
-                      crn
-                      fmt
-                      imgui
-                      KissFFT
-                      #LuaJIT
-                      STB
-                      VkHLF
-                      glslang
-                      OGLCompiler
-                      OSDependent
-                      SDL2
-                      SDL2main
-                      SDL2-static
-                      SPIRV
-                      SPVRemapper
-                      #HLSL
-                      PROPERTIES
-                      ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
-                      LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
-                      RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir})
+set_target_properties(
+  assimp
+  Bullet2FileLoader
+  Bullet3Collision
+  Bullet3Common
+  Bullet3Dynamics
+  Bullet3Geometry
+  Bullet3OpenCL_clew
+  BulletCollision
+  BulletDynamics
+  BulletInverseDynamics
+  BulletSoftBody
+  LinearMath
+  crn
+  fmt
+  imgui
+  KissFFT
+  #LuaJIT
+  STB
+  VkHLF
+  glslang
+  OGLCompiler
+  OSDependent
+  SDL2
+  SDL2main
+  SDL2-static
+  SPIRV
+  SPVRemapper
+  #HLSL
+PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY ${YTE_Library_Dir}
+  LIBRARY_OUTPUT_DIRECTORY ${YTE_Library_Dir}
+  RUNTIME_OUTPUT_DIRECTORY ${YTE_Binary_Dir}
+)
