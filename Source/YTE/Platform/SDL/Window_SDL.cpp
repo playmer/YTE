@@ -173,27 +173,27 @@ namespace YTE
         self->mHeight = resizeEvent.height;
 
         aWindow->SendEvent(Events::WindowResize, &resizeEvent);
-        puts("Window restored\n");
+        //puts("Window restored\n");
         break;
       }
       // Window has gained mouse focus
       case SDL_WINDOWEVENT_ENTER:
       {
-        puts("Window entered\n");
+        //puts("Window entered\n");
         aManager->SetMouseFocusedWindow(aWindow);
         break;
       }
       // Window has lost mouse focus
       case SDL_WINDOWEVENT_LEAVE:
       {
-        puts("Window left\n");
+        //puts("Window left\n");
         aManager->SetMouseFocusedWindow(nullptr);
         break;
       }
       // Window has gained keyboard focus
       case SDL_WINDOWEVENT_FOCUS_GAINED:
       {
-        puts("A Window gained focus\n");
+        //puts("A Window gained focus\n");
         aManager->SetKeyboardFocusedWindow(aWindow);
 
         WindowFocusLostOrGained focusEvent;
@@ -206,7 +206,7 @@ namespace YTE
       // Window has lost keyboard focus
       case SDL_WINDOWEVENT_FOCUS_LOST:
       {
-        puts("A Window lost focus\n");
+        //puts("A Window lost focus\n");
         aManager->SetKeyboardFocusedWindow(nullptr);
 
         WindowFocusLostOrGained focusEvent;

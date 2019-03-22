@@ -41,11 +41,6 @@ namespace YTE
 
   void PlatformManager::Update()
   {
-    if (mIsUpdating)
-    {
-      return;
-    }
-
     mIsUpdating = true;
 
     if (false == mEngine->IsEditor())
