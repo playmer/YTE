@@ -235,7 +235,7 @@ namespace YTE
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
 
-    auto submesh = CreateSphere(128, mTextureName);
+    auto submesh = CreateSphere(8, mTextureName);
 
     std::vector<Submesh> submeshes{ submesh };
 
