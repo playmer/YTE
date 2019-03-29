@@ -58,6 +58,29 @@ namespace YTE
   {
     return 0;
   }
+
+  void DoResize(Window* aWindow)
+  {
+    if (true == aWindow->mEngine->IsEditor())
+    {
+      return;
+    }
+    
+    auto self = aWindow->mData.Get<WindowData>();
+
+    int width;
+    int height;
+    SDL_GetWindowSize(self->mWindow, &width, &height);
+
+    WindowResize resizeEvent;
+    resizeEvent.width = width;
+    resizeEvent.height = height;
+
+    self->mWidth = resizeEvent.width;
+    self->mHeight = resizeEvent.height;
+
+    aWindow->SendEvent(Events::WindowResize, &resizeEvent);
+  }
   
   void WindowEventHandler(Uint8 aEvent, PlatformManager* aManager, Window* aWindow)
   {
@@ -92,36 +115,10 @@ namespace YTE
       }
       // Window has been resized to data1xdata2
       case SDL_WINDOWEVENT_RESIZED:
-      {
-        int width;
-        int height;
-        SDL_GetWindowSize(self->mWindow, &width, &height);
-
-        WindowResize resizeEvent;
-        resizeEvent.width = width;
-        resizeEvent.height = height;
-
-        self->mWidth = resizeEvent.width;
-        self->mHeight = resizeEvent.height;
-
-        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
-        break;
-      }
       // The window size has changed, either as a result of an API call or through the system or user changing the window size.
       case SDL_WINDOWEVENT_SIZE_CHANGED:
       {
-        int width;
-        int height;
-        SDL_GetWindowSize(self->mWindow, &width, &height);
-
-        WindowResize resizeEvent;
-        resizeEvent.width = width;
-        resizeEvent.height = height;
-
-        self->mWidth = resizeEvent.width;
-        self->mHeight = resizeEvent.height;
-
-        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
+        DoResize(aWindow);
         break;
       }
       // Window has been minimized
@@ -161,39 +158,24 @@ namespace YTE
           aWindow->SendEvent(Events::WindowMinimizedOrRestored, &minimizeEvent);
         }
 
-        int width;
-        int height;
-        SDL_GetWindowSize(self->mWindow, &width, &height);
-
-        WindowResize resizeEvent;
-        resizeEvent.width = width;
-        resizeEvent.height = height;
-
-        self->mWidth = resizeEvent.width;
-        self->mHeight = resizeEvent.height;
-
-        aWindow->SendEvent(Events::WindowResize, &resizeEvent);
-        //puts("Window restored\n");
+        DoResize(aWindow);
         break;
       }
       // Window has gained mouse focus
       case SDL_WINDOWEVENT_ENTER:
       {
-        //puts("Window entered\n");
         aManager->SetMouseFocusedWindow(aWindow);
         break;
       }
       // Window has lost mouse focus
       case SDL_WINDOWEVENT_LEAVE:
       {
-        //puts("Window left\n");
         aManager->SetMouseFocusedWindow(nullptr);
         break;
       }
       // Window has gained keyboard focus
       case SDL_WINDOWEVENT_FOCUS_GAINED:
       {
-        //puts("A Window gained focus\n");
         aManager->SetKeyboardFocusedWindow(aWindow);
 
         WindowFocusLostOrGained focusEvent;
@@ -206,7 +188,6 @@ namespace YTE
       // Window has lost keyboard focus
       case SDL_WINDOWEVENT_FOCUS_LOST:
       {
-        //puts("A Window lost focus\n");
         aManager->SetKeyboardFocusedWindow(nullptr);
 
         WindowFocusLostOrGained focusEvent;
