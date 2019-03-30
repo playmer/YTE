@@ -2,6 +2,7 @@
 
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {
@@ -87,6 +88,12 @@ namespace YTE
 
   void Mouse::UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition)
   {
+    UpdatePosition(aPosition);
+    UpdateButton(aButton, aDown);
+  }
+
+  void Mouse::UpdateButton(MouseButtons aButton, bool aDown)
+  {
     size_t index = EnumCast(aButton);
 
     // Button got resent.
@@ -94,8 +101,6 @@ namespace YTE
     {
       return;
     }
-
-    UpdatePosition(aPosition);
 
     mMousePrevious[index] = mMouseCurrent[index];
 
@@ -114,7 +119,7 @@ namespace YTE
 
     MouseButtonEvent mouseEvent;
     mouseEvent.Button = aButton;
-    mouseEvent.WorldCoordinates = aPosition;
+    mouseEvent.WorldCoordinates = mPosition;
     mouseEvent.SendingMouse = this;
 
     SendEvent(*state, &mouseEvent);
@@ -131,14 +136,14 @@ namespace YTE
 
   void Mouse::UpdatePosition(glm::i32vec2 aPosition)
   {
-    
+  	aPosition = aPosition - mWindow->GetPosition();
+
     if (mPosition != aPosition)
     {
       mPrevPosition = mPosition;
       mPosition = aPosition;
       mPositionChanged = true;
     }
-
   }
 
   glm::i32vec2 Mouse::GetPositionDelta()

@@ -69,6 +69,7 @@ namespace YTE
 
     YTE_Shared void Update();
     YTE_Shared void UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition);
+    YTE_Shared void UpdateButton(MouseButtons aButton, bool aDown);
     YTE_Shared void UpdateWheel(glm::vec2 aWheelMove);
     YTE_Shared void UpdatePosition(glm::i32vec2 aPosition);
 

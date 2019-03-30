@@ -121,7 +121,7 @@ namespace YTE
   {
     if (MouseButtons::Right == aEvent->Button)
     {
-      mMouseInitialPosition = aEvent->WorldCoordinates + mWindow->GetPosition();
+	  mMouseInitialPosition = aEvent->WorldCoordinates + mWindow->GetPosition();
       mMouseHeld = true;
       mWindow->SetCursorVisibility(false);
     }
@@ -131,7 +131,8 @@ namespace YTE
   {
     if (mMouseHeld)
     {
-      auto screenCoordinates = mWindow->GetPosition() + aEvent->WorldCoordinates;
+      auto windowPosition = mWindow->GetPosition();
+	  auto screenCoordinates = aEvent->WorldCoordinates + windowPosition;
 
       mMouseDelta = screenCoordinates - mMouseInitialPosition;
 

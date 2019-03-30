@@ -148,6 +148,16 @@ namespace YTEditor
   {
     if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
+      if (mLevelWindow)
+      {
+        mLevelWindow->Update();
+      }
+
+      if (mRunningWindow)
+      {
+        mRunningWindow->Update();
+      }
+
       mRunningEngine->Update();
     }
 

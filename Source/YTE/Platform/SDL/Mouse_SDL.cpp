@@ -76,11 +76,7 @@ namespace YTE
   void Mouse::SetCursorPosition(glm::i32vec2 aPosition)
   {
     auto self = mWindow->mData.Get<WindowData>();
-    int x;
-    int y;
-
-    SDL_GetWindowPosition(self->mWindow, &x, &y);
-    SDL_WarpMouseGlobal(aPosition.x + x, aPosition.y + y);
+    SDL_WarpMouseGlobal(aPosition.x + self->mX, aPosition.y + self->mY);
   }
 
 
@@ -89,10 +85,12 @@ namespace YTE
     glm::i32vec2 position;
     auto buttonState = SDL_GetGlobalMouseState(&position.x, &position.y);
 
-    UpdateButton(MouseButtons::Left, SDL_BUTTON_LMASK & buttonState, aRelativePosition);
-    UpdateButton(MouseButtons::Right, SDL_BUTTON_RMASK & buttonState , aRelativePosition);
-    UpdateButton(MouseButtons::Middle, SDL_BUTTON_MMASK & buttonState, aRelativePosition);
-    UpdateButton(MouseButtons::Back, SDL_BUTTON_X1MASK & buttonState, aRelativePosition);
-    UpdateButton(MouseButtons::Forward, SDL_BUTTON_X2MASK & buttonState, aRelativePosition);
+    UpdateButton(MouseButtons::Left, SDL_BUTTON_LMASK & buttonState);
+    UpdateButton(MouseButtons::Right, SDL_BUTTON_RMASK & buttonState);
+    UpdateButton(MouseButtons::Middle, SDL_BUTTON_MMASK & buttonState);
+    UpdateButton(MouseButtons::Back, SDL_BUTTON_X1MASK & buttonState);
+    UpdateButton(MouseButtons::Forward, SDL_BUTTON_X2MASK & buttonState);
+
+    UpdatePosition(aRelativePosition);
   }
 }

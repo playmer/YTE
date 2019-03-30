@@ -62,11 +62,11 @@ namespace YTE
     {
       switch (event.type)
       {
-        case SDL_KEYDOWN: /**< Key pressed */
-        case SDL_KEYUP:                  /**< Key released */
-        case SDL_TEXTEDITING:            /**< Keyboard text editing (composition) */
-        case SDL_TEXTINPUT:              /**< Keyboard text input */
-        case SDL_KEYMAPCHANGED:          /**< Keymap changed due to a system event such as an input language or keyboard layout change. */
+        case SDL_KEYDOWN:       // Key pressed
+        case SDL_KEYUP:         // Key released
+        case SDL_TEXTEDITING:   // Keyboard text editing (composition)
+        case SDL_TEXTINPUT:     // Keyboard text input
+        case SDL_KEYMAPCHANGED: // Keymap changed due to a system event such as an input language or keyboard layout change.
         {
           if (nullptr != mKeyboardFocusedWindow)
           {
@@ -76,10 +76,10 @@ namespace YTE
           break;
         }
 
-        case SDL_MOUSEMOTION: /**< Mouse moved */
-        case SDL_MOUSEBUTTONDOWN:        /**< Mouse button pressed */
-        case SDL_MOUSEBUTTONUP:          /**< Mouse button released */
-        case SDL_MOUSEWHEEL:             /**< Mouse wheel motion */
+        case SDL_MOUSEMOTION:     // Mouse moved
+        case SDL_MOUSEBUTTONDOWN: // Mouse button pressed
+        case SDL_MOUSEBUTTONUP:   // Mouse button released
+        case SDL_MOUSEWHEEL:      // Mouse wheel motion
         {
           if (nullptr != mMouseFocusedWindow)
           {
@@ -89,13 +89,13 @@ namespace YTE
           break;
         }
 
-        case SDL_WINDOWEVENT:           /**< Never used */
+        case SDL_WINDOWEVENT:
         {
           SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID);
 
           auto window = static_cast<Window*>(SDL_GetWindowData(sdlWindow, "YTE_Window"));
 
-          WindowEventHandler(event.window.event, this, window);
+          WindowEventHandler(event.window, this, window);
 
           break;
         }

@@ -12,6 +12,8 @@ struct WindowData
   SDL_Window* mWindow;
   int mWindowId;
   std::string mWindowName;
+  int mX;
+  int mY;
   int mWidth;
   int mHeight;
   bool mMinimized;
@@ -20,5 +22,5 @@ struct WindowData
 
 namespace YTE
 {
-  void WindowEventHandler(Uint8 aEvent, PlatformManager* aManager, Window* aWindow);
+  void WindowEventHandler(SDL_WindowEvent aEvent, PlatformManager* aManager, Window* aWindow);
 }

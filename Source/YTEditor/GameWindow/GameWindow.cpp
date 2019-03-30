@@ -18,10 +18,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#if YTE_Windows
-#include "YTE/Platform/Win32/WindowsInclude_Win32.hpp"
-#endif
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTEditor/GameWindow/GameWindow.hpp"
@@ -52,8 +48,7 @@ namespace YTEditor
     event.height = size.height();
     event.width = size.width();
 
-    mWindow->SetHeight(event.height);
-    mWindow->SetWidth(event.width);
+    mWindow->SetInternalDimensions(event.width, event.height);
 
     mWindow->SendEvent(YTE::Events::WindowResize, &event);
 
@@ -65,7 +60,20 @@ namespace YTEditor
     }
   }
 
-  void SubWindow::keyPressEvent(QKeyEvent * aEvent)
+  void SubWindow::Update()
+  {
+    if (nullptr == mWindow)
+    {
+      return;
+    }
+
+    auto place = geometry();
+    auto topLeft = mapToGlobal(QPoint{0,0});
+    
+    mWindow->SetInternalPosition(topLeft.x(), topLeft.y());
+  }
+
+  void SubWindow::keyPressEvent(QKeyEvent* aEvent)
   {
     if (nullptr == mWindow)
     {

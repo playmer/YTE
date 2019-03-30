@@ -75,12 +75,15 @@ namespace YTE
     YTE_Shared u32 GetHeight();
     YTE_Shared u32 GetWidth();
 
-    YTE_Shared void SetHeight(u32 aHeight);
-    YTE_Shared void SetWidth(u32 aWidth);
+    // Does not change the Window width/height, just the internal representation
+    // of the sizes, this is an escape hatch for editor mode.
+    YTE_Shared void SetInternalDimensions(u32 aWidth, u32 aHeight);
 
+    // Does not change the Window position, just the internal representation
+    // of where the window is, this is an escape hatch for editor mode.
+    YTE_Shared void SetInternalPosition(i32 aX, i32 aY);
     YTE_Shared glm::i32vec2 GetPosition();
 
-    //YTE_Shared std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
     YTE_Shared std::any SetUpVulkanWindow(void *aSetup);
 
     YTE_Shared void SetCursorVisibility(bool aShow);

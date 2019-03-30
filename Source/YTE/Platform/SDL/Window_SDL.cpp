@@ -49,7 +49,7 @@ namespace YTE
   {
     auto showing = SDL_ShowCursor(SDL_QUERY);
     SDL_ShowCursor(aShow);
-
+    
     return showing;
   }
 
@@ -82,7 +82,7 @@ namespace YTE
     aWindow->SendEvent(Events::WindowResize, &resizeEvent);
   }
   
-  void WindowEventHandler(Uint8 aEvent, PlatformManager* aManager, Window* aWindow)
+  void WindowEventHandler(SDL_WindowEvent aEvent, PlatformManager* aManager, Window* aWindow)
   {
     WindowData *self = nullptr;
 
@@ -91,7 +91,7 @@ namespace YTE
       self = aWindow->mData.Get<WindowData>();
     }
 
-    switch (aEvent)
+    switch (aEvent.event)
     {
         // Window has been shown
       case SDL_WINDOWEVENT_SHOWN:
@@ -111,6 +111,14 @@ namespace YTE
       // Window has been moved to data1, data2
       case SDL_WINDOWEVENT_MOVED:
       {
+        if (true == aWindow->mEngine->IsEditor())
+        {
+          break;
+        }
+
+        self->mX = aEvent.data1;
+        self->mY = aEvent.data2;
+
         break;
       }
       // Window has been resized to data1xdata2
@@ -410,21 +418,26 @@ namespace YTE
     return self->mWidth;
   }
 
-  void Window::SetHeight(u32 aHeight)
-  {
-    auto self = mData.Get<WindowData>();
-    self->mHeight = aHeight;
-  }
-
-  void Window::SetWidth(u32 aWidth)
+  void Window::SetInternalDimensions(u32 aWidth, u32 aHeight)
   {
     auto self = mData.Get<WindowData>();
     self->mWidth = aWidth;
+    self->mHeight = aHeight;
+  }
+
+  void Window::SetInternalPosition(i32 aX, i32 aY)
+  {
+    auto self = mData.Get<WindowData>();
+
+    self->mX = aX;
+    self->mY = aY;
   }
 
   glm::i32vec2 Window::GetPosition()
   {
-    return {};
+    auto self = mData.Get<WindowData>();
+
+    return{ self->mX, self->mY };
   }
 
   std::any Window::SetUpVulkanWindow(void* aSetup)
