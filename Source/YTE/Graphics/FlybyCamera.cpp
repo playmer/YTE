@@ -132,7 +132,7 @@ namespace YTE
     if (mMouseHeld)
     {
       auto windowPosition = mWindow->GetPosition();
-	  auto screenCoordinates = aEvent->WorldCoordinates + windowPosition;
+	    auto screenCoordinates = aEvent->WorldCoordinates + windowPosition;
 
       mMouseDelta = screenCoordinates - mMouseInitialPosition;
 

@@ -297,6 +297,10 @@ namespace YTE
 
     SDL_SetWindowData(self->mWindow, "YTE_Window", this);
 
+    int x, y;
+    SDL_GetWindowPosition(self->mWindow, &x, &y);
+    SetInternalPosition(x, y);
+
     self->mWindowId = SDL_GetWindowID(self->mWindow);
 
     SetFullscreen(mSerializedStartingFullscreen);
