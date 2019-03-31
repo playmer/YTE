@@ -42,13 +42,14 @@ namespace YTE
   }
 
   VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
-    : mDiffuseTexture(nullptr)
-    , mSpecularTexture(nullptr)
-    , mNormalTexture(nullptr)
-    , mRenderer(aRenderer)
-    , mMesh(aMesh)
-    , mSubmesh(aSubmesh)
-    , mIndexCount(0)
+    : mDiffuseTexture{ nullptr }
+    , mSpecularTexture{ nullptr }
+    , mNormalTexture{ nullptr }
+    , mRenderer{ aRenderer }
+    , mMesh{ aMesh }
+    , mSubmesh{ aSubmesh }
+    , mPipelineInfo{nullptr}
+    , mIndexCount{ 0 }
   {
     Create();
   }
@@ -76,153 +77,111 @@ namespace YTE
     mIndexCount = mSubmesh->mIndexBuffer.size();
 
     // Load Textures
-    size_t samplers{ 0 };
-    std::array<const char *, 3> samplerTypes;
-
     if (false == mSubmesh->mDiffuseMap.empty())
     {
       mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
-      samplerTypes[samplers++] = "DIFFUSE";
+      mSamplerTypes.emplace_back("DIFFUSE");
     }
     if (false == mSubmesh->mSpecularMap.empty())
     {
       mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
-      samplerTypes[samplers++] = "SPECULAR";
+      mSamplerTypes.emplace_back("SPECULAR");
     }
     if (false == mSubmesh->mNormalMap.empty())
     {
       mNormalTexture = mRenderer->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
-      samplerTypes[samplers++] = "NORMAL";
+      mSamplerTypes.emplace_back("NORMAL");
     }
+  }
 
-    std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
+  VkShaderDescriptions VkSubmesh::CreateShaderDescriptions()
+  {
     u32 binding{ 0 };
-    u32 uniformBuffers{ 0 };
+    VkShaderDescriptions descriptions;
 
-    // View Buffer for Vertex shader.
-    dslbs.emplace_back(binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_VIEW_BINDING {}", binding));
-    ++uniformBuffers;
+    auto addUBO = [&descriptions, &binding](char const* aName, vk::DescriptorType aDescriptorType, vk::ShaderStageFlagBits aStage, size_t aBufferSize, size_t aBufferOffset = 0)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, binding++));
+      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
+    };
 
-    // Animation (Bone Array) Buffer for Vertex shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ANIMATION_BONE_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Model Material Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_MATERIAL_BINDING {}", binding));
-    ++uniformBuffers;
-    
-    // Submesh Material Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_SUBMESH_MATERIAL_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Lights Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_LIGHTS_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Illumination Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eFragment,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_ILLUMINATION_BINDING {}", binding));
-    ++uniformBuffers;
-
-    // Water Information Buffer for Fragment shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_WATER_BINDING {}", binding));
-    ++uniformBuffers;
+    addUBO("VIEW", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::WaterInformationManager));
 
 
     // Descriptions for the textures we support based on which maps we found above:
-    //   Diffuse
-    //   Specular
-    //   Normal
-    for (size_t i = 0; i < samplers; ++i)
+    for (auto sampler : mSamplerTypes)
     {
-      dslbs.emplace_back(++binding,
-                         vk::DescriptorType::eCombinedImageSampler,
-                         vk::ShaderStageFlagBits::eFragment,
-                         nullptr);
-      mDescriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding));
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", sampler, binding++));
+      descriptions.AddTextureDescriptor(vk::DescriptorType::eCombinedImageSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::ShaderStageFlagBits::eFragment);
     }
 
-    mDescriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
-    mDescriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mColor;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
-    mDescriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
-    mDescriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
-    mDescriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
-    mDescriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
+    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mColor;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
 
     // Model Buffer for Vertex shader. (Non-instanced Meshes)
-    // We do this one last so as to make the binding numbers easier
-    // to set via #defines for the shader.
-    dslbs.emplace_back(++binding,
-                       vk::DescriptorType::eUniformBuffer,
-                       vk::ShaderStageFlagBits::eVertex,
-                       nullptr);
-    ++uniformBuffers;
+    addUBO("MODEL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::Model));
 
-    // We need to tell the shaders where to find the UBOs::Model.
-    mDescriptions.AddPreludeLine(fmt::format("#define UBO_MODEL_BINDING {}", binding));
-
-    // Create the descriptor set and pipeline layouts.
-    mDescriptorTypes.emplace_back(vk::DescriptorType::eUniformBuffer, uniformBuffers);
-
-    if (0 != samplers)
-    {
-      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(samplers));
-    }
-
-    mDescriptorSetLayout = device->createDescriptorSetLayout(dslbs);
+    return descriptions;
   }
-
 
 
   void VkSubmesh::CreateShader(GraphicsView *aView)
   {
     auto device = mRenderer->mDevice;
-    auto pipelineLayout = device->createPipelineLayout(mDescriptorSetLayout, nullptr);
+
+    VkShaderDescriptions descriptions;
+
+    mPipelineInfo = mRenderer->GetSurface(aView->GetWindow())->IfShaderExistsCreateOnView(mSubmesh->mShaderSetName, aView);
+
+    if (mPipelineInfo)
+    {
+      return;
+    }
+
+    descriptions = CreateShaderDescriptions();
+
+    auto descriptorSetLayout = mRenderer->mDevice->createDescriptorSetLayout(descriptions.DescriptorSetLayout());
+    auto pipelineLayout = device->createPipelineLayout(descriptorSetLayout, nullptr);
      
     // load shader passing our created pipeline layout
-    mRenderer->GetSurface(aView->GetWindow())->CreateShader(mSubmesh->mShaderSetName,
-                                               pipelineLayout,
-                                               mDescriptions,
-                                               aView);
+    mPipelineInfo = mRenderer->GetSurface(aView->GetWindow())->CreateShader(
+      mSubmesh->mShaderSetName,
+      descriptorSetLayout,
+      pipelineLayout,
+      descriptions,
+      aView);
   }
 
 
   std::shared_ptr<vkhlf::DescriptorPool> VkSubmesh::MakePool()
   {
     auto device = mRenderer->mDevice;
+
+    // Create the descriptor set and pipeline layouts.
+    mDescriptorTypes.emplace_back(
+      vk::DescriptorType::eUniformBuffer, 
+      mPipelineInfo->mDescriptions.CountDescriptorsOfType(vk::DescriptorType::eUniformBuffer));
+
+    if (0 != mSamplerTypes.size())
+    {
+      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(mSamplerTypes.size()));
+    }
 
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
@@ -237,77 +196,48 @@ namespace YTE
     auto surface = mRenderer->GetSurface(aView->GetWindow());
 
     SubMeshPipelineData pipelineData;
-    pipelineData.mPipelineLayout = device->createPipelineLayout(mDescriptorSetLayout,
-                                                                nullptr);
-    pipelineData.mDescriptorSet = device->allocateDescriptorSet(MakePool(),
-                                                                mDescriptorSetLayout);
-
-    std::vector<vkhlf::WriteDescriptorSet> wdss;
-    wdss.reserve(6);
-
-    // Helper constants and variables.
-    constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
-    auto &ds = pipelineData.mDescriptorSet;
-    u32 binding = 0;
+    pipelineData.mPipelineLayout = mPipelineInfo->mPipelineLayout;
+    pipelineData.mDescriptorSet = device->allocateDescriptorSet(
+      MakePool(),
+      mPipelineInfo->mDescriptorSetLayout);
 
     // Add Uniform Buffers
+    std::vector<VkShaderDescriptions::BufferOrImage> bufferOrImages;
 
-    // View Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboView{ GetBuffer(surface->GetUBOViewBuffer(aView)), 0, sizeof(UBOs::View) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboView);
-
-    // Animation (Bone Array) Buffer for Vertex shader.
-    vkhlf::DescriptorBufferInfo uboAnimation{ aUBOAnimation, 0, sizeof(UBOs::Animation) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboAnimation);
-
-    // Model Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboModelMaterial{ aUBOModelMaterial, 0, sizeof(UBOs::Material) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModelMaterial);
-
-    // Submesh Material Buffer for Fragment shader.
-    vkhlf::DescriptorBufferInfo uboSubmeshMaterial{ aUBOSubmeshMaterial, 0, sizeof(UBOs::Material) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboSubmeshMaterial);
-
-    // Light manager Buffer for Fragment Shader
-    vkhlf::DescriptorBufferInfo uboLights { GetBuffer(surface->GetLightManager(aView)->GetUBOLightBuffer()), 0, sizeof(UBOs::LightManager) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboLights);
-
-    // Illumination Buffer for the Fragment Shader
-    vkhlf::DescriptorBufferInfo uboIllumination { GetBuffer(surface->GetUBOIlluminationBuffer(aView)), 0, sizeof(UBOs::Illumination) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboIllumination);
-
-    // Water Buffer for the Vertex Shader
-    vkhlf::DescriptorBufferInfo uboWater{ GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()), 0, sizeof(UBOs::WaterInformationManager) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboWater);
+    bufferOrImages.emplace_back(GetBuffer(surface->GetUBOViewBuffer(aView)));
+    bufferOrImages.emplace_back(aUBOAnimation);
+    bufferOrImages.emplace_back(aUBOModelMaterial);
+    bufferOrImages.emplace_back(aUBOSubmeshMaterial);
+    bufferOrImages.emplace_back(GetBuffer(surface->GetLightManager(aView)->GetUBOLightBuffer()));
+    bufferOrImages.emplace_back(GetBuffer(surface->GetUBOIlluminationBuffer(aView)));
+    bufferOrImages.emplace_back(GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()));
 
     // Add Texture Samplers
-    auto addTS = [&wdss, &binding, &ds](VkTexture *aData,
-                                        vkhlf::DescriptorImageInfo &aImageInfo)
+    auto addTS = [&bufferOrImages](VkTexture *aData)
     {
-      constexpr auto imgsam = vk::DescriptorType::eCombinedImageSampler;
-
       if (nullptr == aData)
       {
         return;
       }
 
-      aImageInfo.sampler = aData->mSampler;
-      aImageInfo.imageView = aData->mImageView;
-      wdss.emplace_back(ds, binding++, 0, 1, imgsam, aImageInfo, nullptr);
+      vkhlf::DescriptorImageInfo textureInfo{ 
+        aData->mSampler, 
+        aData->mImageView, 
+        vk::ImageLayout::eShaderReadOnlyOptimal };
+
+      bufferOrImages.emplace_back(textureInfo);
     };
 
-    vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
-    vkhlf::DescriptorImageInfo sTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
-    vkhlf::DescriptorImageInfo nTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
+    addTS(mDiffuseTexture);
+    addTS(mSpecularTexture);
+    addTS(mNormalTexture);
 
-    addTS(mDiffuseTexture, dTexInfo);
-    addTS(mSpecularTexture, sTexInfo);
-    addTS(mNormalTexture, nTexInfo);
+    bufferOrImages.emplace_back(aUBOModel);
+    auto writeDescriptorSets = mPipelineInfo->mDescriptions.MakeWriteDescriptorSet(
+      &pipelineData.mDescriptorSet,
+      bufferOrImages);
 
-    vkhlf::DescriptorBufferInfo uboModel{ aUBOModel, 0, sizeof(UBOs::Model) };
-    wdss.emplace_back(ds, binding++, 0, 1, unibuf, nullptr, uboModel);
-
-    device->updateDescriptorSets(wdss, nullptr);
+    device->updateDescriptorSets(writeDescriptorSets, nullptr);
 
     return pipelineData;
   }

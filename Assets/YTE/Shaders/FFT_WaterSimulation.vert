@@ -80,6 +80,7 @@ const uint InfluenceType_Logarithmic = 3;
   layout (binding = UBO_MODEL_BINDING) uniform UBOModel
   {
     mat4 mModelMatrix;
+    vec4 mDiffuseColor;
   } Model;
 
 

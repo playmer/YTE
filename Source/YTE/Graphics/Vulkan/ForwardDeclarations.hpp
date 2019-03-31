@@ -23,6 +23,7 @@ namespace YTE
   class VkRenderer;
   class VkRenderedSurface;
   struct ViewData;
+  struct VkCreatePipelineDataSet;
   class VkShader;
   class VkSubmesh;
   class VkTexture;

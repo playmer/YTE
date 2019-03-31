@@ -453,7 +453,6 @@ namespace YTE
                          vk::ShaderStageFlagBits::eFragment,
                          nullptr);
       descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", samplerTypes[i], binding++));
-      descriptions.AddSampler(samplerTypes[i]);
     }
 
 

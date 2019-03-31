@@ -35,11 +35,13 @@ namespace YTE
   }
 
 
-  VkCreatePipelineDataSet VkShader::CreateInfo(std::string &aName,
-                                               VkRenderedSurface *aSurface,
-                                               std::shared_ptr<vkhlf::PipelineLayout> aLayout,
-                                               VkShaderDescriptions &aDescriptions,
-                                               bool aReload)
+  VkCreatePipelineDataSet VkShader::CreateInfo(
+    std::string &aName,
+    VkRenderedSurface* aSurface,
+    std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+    std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+    VkShaderDescriptions &aDescriptions,
+    bool aReload)
   {
     UnusedArguments(aReload);
     auto device = aSurface->GetDevice();
@@ -237,29 +239,31 @@ namespace YTE
                                                     vk::DynamicState::eScissor,
                                                     vk::DynamicState::eLineWidth});
 
-    return VkCreatePipelineDataSet(pipelineCache,
-                                   {},
-                                   vertexStage,
-                                   fragmentStage,
-                                   vertexInput,
-                                   assembly,
-                                   nullptr,
-                                   viewport,
-                                   rasterizationNoCull,
-                                   rasterizationCullBack,
-                                   multisample,
-                                   enableDepthStencil,
-                                   disableDepthStencil,
-                                   noColorBlend,
-                                   alphaColorBlend,
-                                   additiveColorBlend,
-                                   dynamic,
-                                   aLayout,
-                                   aName,
-                                   "",
-                                   aSurface,
-                                   aDescriptions,
-                                   true);
+    return VkCreatePipelineDataSet(
+      pipelineCache,
+      {},
+      vertexStage,
+      fragmentStage,
+      vertexInput,
+      assembly,
+      nullptr,
+      viewport,
+      rasterizationNoCull,
+      rasterizationCullBack,
+      multisample,
+      enableDepthStencil,
+      disableDepthStencil,
+      noColorBlend,
+      alphaColorBlend,
+      additiveColorBlend,
+      dynamic, 
+      aDescriptorSetLayout,
+      aLayout,
+      aName,
+      "",
+      aSurface,
+      aDescriptions,
+      true);
   }
 
 

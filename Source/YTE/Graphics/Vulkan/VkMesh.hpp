@@ -37,6 +37,7 @@ namespace YTE
 
     void LoadToVulkan();
 
+    VkShaderDescriptions CreateShaderDescriptions();
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
     SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
@@ -49,8 +50,8 @@ namespace YTE
     GPUBuffer<Vertex> mVertexBuffer;
     GPUBuffer<u32> mIndexBuffer;
 
-    std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
     std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
+    std::vector<const char*> mSamplerTypes;
 
     // Needed if instanced, otherwise this lives per-model.
     SubMeshPipelineData mPipelineData;
@@ -59,11 +60,11 @@ namespace YTE
     VkTexture *mSpecularTexture;
     VkTexture *mNormalTexture;
 
-    VkShaderDescriptions mDescriptions;
     VkRenderer *mRenderer;
     
     VkMesh *mMesh;
     Submesh *mSubmesh;
+    VkCreatePipelineDataSet* mPipelineInfo;
 
     u64 mIndexCount;
   };

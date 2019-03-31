@@ -232,14 +232,42 @@ namespace YTE
     }
   }
 
-  // Shader
-  VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
-                                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                                            VkShaderDescriptions &aDescription,
-                                            GraphicsView* aView)
+
+  VkCreatePipelineDataSet* VkRenderedSurface::IfShaderExistsCreateOnView(
+    std::string& aShaderSetName,
+    GraphicsView* aView)
   {
     auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
-    VkShader *shaderPtr{ nullptr };
+    ViewData* view = GetViewData(aView);
+    auto viewShaderIt = view->mShaders.find(aShaderSetName);
+
+    if (shaderIt == mShaderCreateInfos.end())
+    {
+      return nullptr;
+    }
+    else if (viewShaderIt == view->mShaders.end() && shaderIt != mShaderCreateInfos.end())
+    {
+      auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
+      view->mShaders[aShaderSetName] = std::move(shader);
+
+      return &shaderIt->second;
+    }
+    else
+    {
+      return &shaderIt->second;
+    }
+  }
+
+  // Shader
+  VkCreatePipelineDataSet* VkRenderedSurface::CreateShader(
+    std::string &aShaderSetName,
+    std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+    std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+    VkShaderDescriptions &aDescription,
+    GraphicsView* aView)
+  {
+    auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
+    VkCreatePipelineDataSet* piplineInfoPtr{ nullptr };
     ViewData *view = GetViewData(aView);
     auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
@@ -248,40 +276,39 @@ namespace YTE
     {
       auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
 
-      shaderPtr = shader.get();
+      piplineInfoPtr = &shaderIt->second;
 
       view->mShaders[aShaderSetName] = std::move(shader);
     }
     // If surface doesn't have shader
     else if (shaderIt == mShaderCreateInfos.end())
     {
-      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(aShaderSetName,
-                                                          this,
-                                                          aPipelineLayout,
-                                                          aDescription,
-                                                          false);
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(
+        aShaderSetName,
+        this,
+        aDescriptorSetLayout,
+        aPipelineLayout,
+        aDescription,
+        false);
                                     
       DebugObjection(cpds.mValid == false,
                   fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
                               aShaderSetName, cpds.mErrorMessage)
                   .c_str());
 
-      mShaderCreateInfos.emplace(aShaderSetName, cpds);
+      piplineInfoPtr = &mShaderCreateInfos.emplace(aShaderSetName, cpds).first->second;
 
       auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
-
-      shaderPtr = shader.get();
-
+      
       view->mShaders[aShaderSetName] = std::move(shader);
-      //mDataUpdateRequired = true; // shades do not load data
     }
     // otherwise both have the shader
     else
     {
-      shaderPtr = view->mShaders[aShaderSetName].get();
+      piplineInfoPtr = &shaderIt->second;
     }
 
-    return shaderPtr;
+    return piplineInfoPtr;
   }
 
 
@@ -607,11 +634,13 @@ namespace YTE
     // reconstruct
     for (auto &shader : mShaderCreateInfos)
     {
-      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(shader.second.mName,
-                                                          this,
-                                                          shader.second.mPipelineLayout,
-                                                          shader.second.mDescriptions,
-                                                          true);
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(
+        shader.second.mName,
+        this,
+        shader.second.mDescriptorSetLayout,
+        shader.second.mPipelineLayout,
+        shader.second.mDescriptions,
+        true);
 
       // failed to compile, error already posted, just reuse the shader
       if (cpds.mValid)

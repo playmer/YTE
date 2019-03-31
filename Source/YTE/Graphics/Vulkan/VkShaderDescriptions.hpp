@@ -8,6 +8,8 @@
 #ifndef YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 #define YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 
+#include <variant>
+
 #include "fmt/format.h"
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -20,6 +22,8 @@ namespace YTE
   class VkShaderDescriptions
   {
   public:
+    using BufferOrImage = std::variant<std::shared_ptr<vkhlf::Buffer>, vkhlf::DescriptorImageInfo>;
+
     VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8, size_t aNumberOfSamplers = 0)
     {
       mBindings.reserve(aNumberOfBindings);
@@ -71,21 +75,48 @@ namespace YTE
       mVertexOffset = 0;
     }
 
-    void AddSampler(std::string aSampler)
+    void AddTextureDescriptor(vk::DescriptorType aDescriptorType, vk::ImageLayout aLayout, vk::ShaderStageFlagBits aStage)
     {
-      mSamplers.emplace_back(aSampler);
+      vkhlf::DescriptorImageInfo descriptorTextureInfo{ nullptr, nullptr, aLayout };
+      mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, descriptorTextureInfo, nullptr);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
+
+      ++mBufferBinding;
     }
 
-
-    template <typename T>
-    void AddBuffer(std::string_view aName, 
-                   vk::DescriptorType aType, 
-                   vk::ShaderStageFlagBits aShader)
+    void AddDescriptor(vk::DescriptorType aDescriptorType, vk::ShaderStageFlagBits aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
+      vkhlf::DescriptorBufferInfo descriptorBufferInfo{ nullptr, aBufferOffset, aBufferSize };
+      mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, nullptr, descriptorBufferInfo);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
 
-
-      mDescriptorSetLayout.emplace_back(mBufferBinding++, aType, aShader, nullptr);
+      ++mBufferBinding;
     }
+
+    u32 CountDescriptorsOfType(vk::DescriptorType aType) const
+    {
+      u32 ofType{ 0 };
+
+      for (auto const& descriptor : mDescriptorSetLayout)
+      {
+        if (descriptor.descriptorType == aType)
+        {
+          ++ofType;
+        }
+      }
+
+      return ofType;
+    }
+
+    //template <typename T>
+    //void AddBuffer(std::string_view aName, 
+    //               vk::DescriptorType aType, 
+    //               vk::ShaderStageFlagBits aShader)
+    //{
+    //
+    //
+    //  mDescriptorSetLayout.emplace_back(mBufferBinding++, aType, aShader, nullptr);
+    //}
 
 
     /////////////////////////////////
@@ -109,16 +140,6 @@ namespace YTE
     size_t AttributeSize()
     {
       return mAttributes.size();
-    }
-
-    std::string* SamplerData()
-    {
-      return mSamplers.data();
-    }
-
-    size_t SamplerSize()
-    {
-      return mSamplers.size();
     }
 
     std::vector<vk::VertexInputBindingDescription>& Bindings()
@@ -160,6 +181,35 @@ namespace YTE
       return w.str();
     }
 
+    std::vector<vkhlf::DescriptorSetLayoutBinding>& DescriptorSetLayout()
+    {
+      return mDescriptorSetLayout;
+    }
+
+    std::vector<vkhlf::WriteDescriptorSet> MakeWriteDescriptorSet(
+      std::shared_ptr<vkhlf::DescriptorSet>* aDescriptorSet, 
+      std::vector<BufferOrImage> aBuffersOrImages)
+    {
+      //assert(aBuffersOrImages.size() == mWriteDescriptorSet.size());
+      auto newSet = mWriteDescriptorSet;
+
+      for (auto [set, i] : enumerate(newSet))
+      {
+        if (auto buffer = std::get_if<std::shared_ptr<vkhlf::Buffer>>(&aBuffersOrImages[i]))
+        {
+          newSet[i].bufferInfo->buffer = *buffer;
+        }
+        else if (auto image = std::get_if<vkhlf::DescriptorImageInfo>(&aBuffersOrImages[i]))
+        {
+          newSet[i].imageInfo->imageView = image->imageView;
+          newSet[i].imageInfo->imageLayout = image->imageLayout;
+        }
+        newSet[i].dstSet = *aDescriptorSet;
+      }
+
+      return newSet;
+    }
+
   private:
 
     template <typename T>
@@ -175,7 +225,6 @@ namespace YTE
     // Vertex Input Data
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
-    std::vector<std::string> mSamplers;
     std::vector<std::string> mLines;
     u32 mBinding = 0;
     u32 mVertexOffset = 0;
@@ -184,6 +233,7 @@ namespace YTE
 
     // Buffer Data
     std::vector<vkhlf::DescriptorSetLayoutBinding> mDescriptorSetLayout;
+    std::vector<vkhlf::WriteDescriptorSet> mWriteDescriptorSet;
     u32 mBufferBinding = 0;
 
 

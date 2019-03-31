@@ -93,11 +93,13 @@ namespace YTE
     
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
-
-    VkShader* CreateShader(std::string &aShaderSetName,
-                           std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                           VkShaderDescriptions &aDescription, 
-                           GraphicsView* aView);
+    VkCreatePipelineDataSet* IfShaderExistsCreateOnView(std::string& aShaderSetName, GraphicsView* aView);
+    VkCreatePipelineDataSet* CreateShader(
+      std::string& aShaderSetName,
+      std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+      std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+      VkShaderDescriptions &aDescription, 
+      GraphicsView* aView);
 
     std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
     std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
