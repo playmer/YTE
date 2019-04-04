@@ -1082,7 +1082,7 @@ namespace YTE
 
       if (iterator == mComponents.end())
       {
-        auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+        auto addFactory = mEngine->GetComponentSystem()->GetComponentFactory(aType);
 
         if (nullptr == addFactory)
         {
@@ -1360,7 +1360,7 @@ namespace YTE
 
   StringComponentFactory* Composition::GetFactoryFromEngine(Type* aType)
   {
-    return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+    return mEngine->GetComponentSystem()->GetComponentFactory(aType);
   }
 }
 

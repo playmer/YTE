@@ -209,6 +209,7 @@ namespace YTE
       // The window manager requests that the window be closed
       case SDL_WINDOWEVENT_CLOSE:
       {
+        aWindow->mEngine->EndExecution();
         break;
       }
       // Window is being offered a focus (should SetWindowInputFocus() on itself or a subwindow, or ignore)

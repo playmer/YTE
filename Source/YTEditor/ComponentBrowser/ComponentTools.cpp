@@ -57,7 +57,7 @@ namespace YTEditor
     // Get the component types
     MainWindow * mainWindow = mBrowser->GetMainWindow();
     YTE::Engine * engine = mainWindow->GetRunningEngine();
-    YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
+    YTE::ComponentSystem * system = engine->GetComponentSystem();
 
     auto compTypes = system->GetComponentTypes();
 

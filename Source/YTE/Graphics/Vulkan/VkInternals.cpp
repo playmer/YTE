@@ -12,6 +12,18 @@
 namespace YTE
 {
   // debug report callback for vulkan
+
+  //VkBool32 VKAPI_PTR debugUtilsCallback(
+  //  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+  //  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+  //  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+  //  void* pUserData)
+  //{
+  //
+  //}
+
+
+
   static VKAPI_ATTR
   VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
                                           VkDebugReportObjectTypeEXT aObjectType,
@@ -23,7 +35,7 @@ namespace YTE
                                           void *aUserData)
   {
     UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
-
+  
     switch (aFlags)
     {
       case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
@@ -57,7 +69,7 @@ namespace YTE
         break;
       }
     }
-
+  
     printf("%s\n", aMessage);
     assert(false == (aFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT));
     return VK_TRUE;
@@ -96,7 +108,21 @@ namespace YTE
                                     vk::DebugReportFlagBitsEXT::ePerformanceWarning |
                                     vk::DebugReportFlagBitsEXT::eError |
                                     vk::DebugReportFlagBitsEXT::eDebug);
+      
+      auto instance = static_cast<vk::Instance>(*mInstance);
 
+      //vk::DebugUtilsMessengerCreateFlagBitsEXT::
+      //
+      //vk::DebugUtilsMessengerCreateInfoEXT debugUtilsCreate(
+      //  //DebugUtilsMessengerCreateFlagsEXT flags_ = DebugUtilsMessengerCreateFlagsEXT(),
+      //  //DebugUtilsMessageSeverityFlagsEXT messageSeverity_ = DebugUtilsMessageSeverityFlagsEXT(),
+      //  //DebugUtilsMessageTypeFlagsEXT messageType_ = DebugUtilsMessageTypeFlagsEXT(),
+      //  //PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback_ = nullptr,
+      //  //void* pUserData_ = nullptr
+      //);
+      //
+      //instance.createDebugUtilsMessengerEXT(debugUtilsCreate);
+      
       mDebugReportCallback = mInstance->createDebugReportCallback(flags,
                                                                   &debugReportCallback);
   }

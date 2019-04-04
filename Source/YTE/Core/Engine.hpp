@@ -172,24 +172,28 @@ namespace YTE
 
     YTE_Shared void Log(LogType aType, std::string_view aLog);
 
+    YTE_Shared ComponentSystem* GetComponentSystem()
+    {
+      return &mComponentSystem;
+    }
 
     OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
   private:
+    // all compositions and components mapped to GUIDs (represented as strings)
+    std::unordered_map<std::string, Composition*> mCompositionsByGUID;
+    std::unordered_map<std::string, Component*> mComponentsByGUID;
+
     PlatformManager mPlatform;
     GamepadSystem mGamepadSystem;
+    ComponentSystem mComponentSystem;
 
     std::unordered_map<String, UniquePointer<RSDocument>> mArchetypes;
     std::unordered_map<String, UniquePointer<RSDocument>> mLevels;
 
     std::chrono::time_point<std::chrono::high_resolution_clock> mBegin;
     std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrame;
-
-    // all compositions and components mapped to GUIDs (represented as strings)
-    std::unordered_map<std::string, Composition*> mCompositionsByGUID;
-    std::unordered_map<std::string, Component*> mComponentsByGUID;
-
 
     std::unordered_map<std::string, std::unique_ptr<PluginWrapper>> mPlugins;
 

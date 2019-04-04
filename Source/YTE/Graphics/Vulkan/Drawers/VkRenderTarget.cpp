@@ -273,7 +273,7 @@ namespace YTE
                                                vk::AttachmentLoadOp::eDontCare,
                                                vk::AttachmentStoreOp::eDontCare, // stencil
                                                vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::ePresentSrcKHR };
+                                               vk::ImageLayout::eShaderReadOnlyOptimal };
 
     vk::AttachmentDescription depthAttachment{ {},
                                                mDepthFormat,

@@ -530,7 +530,7 @@ namespace YTE
       auto &data = mParent->mRenderTargetData[i];
       for (size_t k = 0; k < data->mColorAttachments.size(); ++k)
       {
-        vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::ePresentSrcKHR };
+        vkhlf::DescriptorImageInfo dTexInfo{ nullptr, nullptr, vk::ImageLayout::eShaderReadOnlyOptimal };
         addTS(data->mColorAttachments[k], data, dTexInfo);
       }
     }

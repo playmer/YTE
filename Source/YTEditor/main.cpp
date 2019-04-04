@@ -95,7 +95,7 @@ int YTE_Main(ApplicationArguments& aArguments)
   YTEditor::InitializeYTEditorTypes();
 
   // then create factories for them
-  YTE::ComponentSystem *componentSystem = mainEngine.GetComponent<YTE::ComponentSystem>();
+  YTE::ComponentSystem *componentSystem = mainEngine.GetComponentSystem();
   YTE::FactoryMap *factoryMap = componentSystem->GetComponentFactories();
   YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
 

@@ -63,9 +63,10 @@ namespace YTE
 
   Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
     : Composition{ this, cEngineName, nullptr }
-    , mPlatform{ this }
     , mCompositionsByGUID{}
     , mComponentsByGUID{}
+    , mPlatform{ this }
+    , mComponentSystem{ this }
     , mFrame{ 0 }
     , mShouldRun{ true }
     , mEditorMode{ aEditorMode }
@@ -106,7 +107,6 @@ namespace YTE
     mLastFrame = mBegin;
 
     mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
-    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this));
     mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
 
@@ -345,6 +345,8 @@ namespace YTE
     YTEProfileFunction();
 
     mCompositions.Clear();
+
+    mComponents.Clear();
 
     mPlugins.clear();
 

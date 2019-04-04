@@ -194,6 +194,7 @@ namespace YTE
         }
         else if (auto image = std::get_if<vkhlf::DescriptorImageInfo>(&aBuffersOrImages[i]))
         {
+          newSet[i].imageInfo->sampler = image->sampler;
           newSet[i].imageInfo->imageView = image->imageView;
           newSet[i].imageInfo->imageLayout = image->imageLayout;
         }
