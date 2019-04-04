@@ -26,7 +26,7 @@ namespace YTE
   {
     static StaticGLSLCompiler compiler;
 
-    std::string shaderText;
+    std::string shaderText{"#version 450\n"};
 
     if (aFilenameIsShaderText)
     {

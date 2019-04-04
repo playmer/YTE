@@ -213,11 +213,10 @@ namespace YTE
     if (!stream.fail())
     {
       stream.seekg(0, std::ios::end);
-      output.reserve(static_cast<unsigned int>(stream.tellg()));
+      output.reserve(output.size() +  static_cast<unsigned int>(stream.tellg()));
       stream.seekg(0, std::ios::beg);
 
-      output.assign((std::istreambuf_iterator<char>(stream)),
-	      std::istreambuf_iterator<char>());
+      output.insert(output.end(), std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
       return true;
     }
 

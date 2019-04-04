@@ -53,7 +53,7 @@ namespace YTE
 
     auto numberOfEvents = SDL_PeepEvents(nullptr, 0, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
     eventQueue.resize(numberOfEvents);
-    auto error = SDL_PeepEvents(eventQueue.data(), eventQueue.size(), SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
+    auto error = SDL_PeepEvents(eventQueue.data(), static_cast<int>(eventQueue.size()), SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT);
 
     UnusedArguments(error);
     DebugAssert(0 <= error, "Couldn't retreive SDL_Events");

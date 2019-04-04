@@ -292,21 +292,22 @@ namespace YTE
     if (0 != diffuse.length)
     {
       mDiffuseMap = diffuse.C_Str();
-      aRenderer->RequestTexture(mDiffuseMap);
     }
 
     if (0 != specular.length)
     {
       mSpecularMap = specular.C_Str();
-      aRenderer->RequestTexture(mSpecularMap);
     }
 
     if (0 != normals.length)
     {
       mNormalMap = normals.C_Str();
       mUBOMaterial.mUsesNormalTexture = 1; // true
-      aRenderer->RequestTexture(mNormalMap);
     }
+
+    aRenderer->RequestTexture(mDiffuseMap);
+    aRenderer->RequestTexture(mSpecularMap);
+    aRenderer->RequestTexture(mNormalMap);
 
     mShaderSetName = "Phong";
 

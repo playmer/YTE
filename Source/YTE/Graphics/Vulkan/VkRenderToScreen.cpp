@@ -624,7 +624,8 @@ namespace YTE
 
     std::string fragmentFile = GenerateFragmentShader();
 
-    auto lines = modelData.mDescriptions.GetLines();
+    //auto lines = modelData.mDescriptions.GetLines();
+    std::string lines;
     auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
     auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, true);
 
@@ -768,12 +769,7 @@ namespace YTE
 
     // begin
     ss << "#version 450\n"
-       << "\n"
-       << "#extension GL_ARB_separate_shader_objects : enable\n"
-       << "#extension GL_ARB_shading_language_420pack : enable\n"
        << "\n";
-           
-      
 
     // UBOs
     ss << "//========================================\n"

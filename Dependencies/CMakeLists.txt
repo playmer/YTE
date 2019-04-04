@@ -84,6 +84,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/VkHLF/3rdparty)
 
 add_subdirectory(VkHLF) 
 
+target_compile_definitions(glslang 
+PUBLIC 
+  AMD_EXTENSIONS
+  NV_EXTENSIONS
+)
+
 ##########################################################################
 # Get WWise
 FindWWise(WWise_SoundEngine)
