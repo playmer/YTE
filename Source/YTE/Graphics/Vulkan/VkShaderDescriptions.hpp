@@ -24,11 +24,10 @@ namespace YTE
   public:
     using BufferOrImage = std::variant<std::shared_ptr<vkhlf::Buffer>, vkhlf::DescriptorImageInfo>;
 
-    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8, size_t aNumberOfSamplers = 0)
+    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
     {
       mBindings.reserve(aNumberOfBindings);
       mAttributes.reserve(aNumberOfAttributes);
-      mSamplers.reserve(aNumberOfSamplers);
     }
 
     template <typename T>
@@ -151,12 +150,6 @@ namespace YTE
     {
       return mAttributes;
     }
-
-    std::vector<std::string>& Samplers()
-    {
-      return mSamplers;
-    }
-
 
     std::unique_ptr<vkhlf::SpecializationInfo> PipelineShaderStageCreateInfo()
     {

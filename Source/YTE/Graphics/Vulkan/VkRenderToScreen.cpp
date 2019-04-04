@@ -623,8 +623,7 @@ namespace YTE
 
     std::string fragmentFile = GenerateFragmentShader();
 
-    //auto lines = modelData.mDescriptions.GetLines();
-    std::string lines;
+    auto lines = modelData.mDescriptions.GetLines();
     auto vertexData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eVertex, vertexFile, lines, false);
     auto fragmentData = CompileGLSLToSPIRV(vk::ShaderStageFlagBits::eFragment, fragmentFile, lines, true);
 
