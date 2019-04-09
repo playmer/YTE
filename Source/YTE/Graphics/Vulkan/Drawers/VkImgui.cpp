@@ -93,7 +93,7 @@ namespace YTE
 
     mContext->SetCurrentContext();
 
-    auto &submesh = mContext->GetSubmesh();
+    auto& submesh = mContext->GetSubmesh();
 
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
@@ -102,8 +102,8 @@ namespace YTE
     submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = imguiStr;
 
-    submesh.mVertexBuffer.clear();
-    submesh.mIndexBuffer.clear();
+    submesh.mVertexData.clear();
+    submesh.mIndexData.clear();
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
@@ -120,24 +120,26 @@ namespace YTE
         vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
         vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
         vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
-        submesh.mVertexBuffer.emplace_back(vert);
+        submesh.mVertexData.emplace_back(vert);
       }
 
       for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
       {
-        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i]);
+        submesh.mIndexData.emplace_back(cmd_list->IdxBuffer.Data[i]);
       }
     }
 
     auto &instantiatedModel = mContext->GetInstantiatedModel();
 
-    if (submesh.mVertexBuffer.empty())
+    if (submesh.mVertexData.empty())
     {
       instantiatedModel.reset();
       return;
     }
 
-    std::vector<Submesh> submeshes{ submesh };
+    submesh.Initialize();
+    std::vector<Submesh> submeshes;
+    submeshes.emplace(std::move(submesh));
 
     auto renderer = mSurface->GetRenderer();
     auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
@@ -217,11 +219,13 @@ namespace YTE
                              mPipelineData->mDescriptorSet,
                              nullptr);
 
+    auto submesh = mVkSubmesh->mSubmesh;
+
     aCBO->bindVertexBuffer(0,
-                           GetBuffer(mVkSubmesh->mVertexBuffer),
+                           GetBuffer(submesh->mVertexBuffer),
                            0);
 
-    aCBO->bindIndexBuffer(GetBuffer(mVkSubmesh->mIndexBuffer),
+    aCBO->bindIndexBuffer(GetBuffer(submesh->mIndexBuffer),
                           0,
                           vk::IndexType::eUint32);
 

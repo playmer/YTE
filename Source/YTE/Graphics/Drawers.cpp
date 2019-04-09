@@ -36,8 +36,8 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBuffer.clear();
-    submesh.mIndexBuffer.clear();
+    submesh.mVertexData.clear();
+    submesh.mIndexData.clear();
   }
 
   void LineDrawer::AddLine(glm::vec4 aPoint1, glm::vec4 aPoint2)
@@ -82,11 +82,11 @@ namespace YTE
     Vertex vert;
     vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
-    submesh.mVertexBuffer.emplace_back(vert);
+    submesh.mVertexData.emplace_back(vert);
     vert.mPosition = aPoint2;
-    submesh.mVertexBuffer.emplace_back(vert);
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
+    submesh.mVertexData.emplace_back(vert);
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
   }
 
 
@@ -100,18 +100,18 @@ namespace YTE
     Vertex vert;
     vert.mColor = glm::vec4{ aFromColor, 1.0f };
     vert.mPosition = aPoint1;
-    submesh.mVertexBuffer.emplace_back(vert);
+    submesh.mVertexData.emplace_back(vert);
     vert.mColor = glm::vec4{ aToColor, 1.0f };
     vert.mPosition = aPoint2;
-    submesh.mVertexBuffer.emplace_back(vert);
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
+    submesh.mVertexData.emplace_back(vert);
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
   }
 
   // This will set the lines given since the last Start() call to be drawn.
   void LineDrawer::End()
   {
-    if (mSubmeshes[0].mVertexBuffer.empty())
+    if (mSubmeshes[0].mVertexData.empty())
     {
       return;
     }
@@ -169,8 +169,8 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBuffer.clear();
-    submesh.mIndexBuffer.clear();
+    submesh.mVertexData.clear();
+    submesh.mIndexData.clear();
   }
 
   void TriangleDrawer::AddTriangle(glm::vec4 aPoint1, 
@@ -246,21 +246,21 @@ namespace YTE
     Vertex vert;
     vert.mColor = aColor;
     vert.mPosition = aPoint1;
-    submesh.mVertexBuffer.emplace_back(vert);
+    submesh.mVertexData.emplace_back(vert);
     vert.mPosition = aPoint2;
-    submesh.mVertexBuffer.emplace_back(vert);
+    submesh.mVertexData.emplace_back(vert);
     vert.mPosition = aPoint3;
-    submesh.mVertexBuffer.emplace_back(vert);
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
+    submesh.mVertexData.emplace_back(vert);
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
   }
 
 
   // This will set the lines given since the last Start() call to be drawn.
   void TriangleDrawer::End()
   {
-    if (mSubmeshes[0].mVertexBuffer.empty())
+    if (mSubmeshes[0].mVertexData.empty())
     {
       return;
     }
@@ -318,8 +318,8 @@ namespace YTE
     mInstantiatedLines.reset();
     auto &submesh = mSubmeshes[0];
 
-    submesh.mVertexBuffer.clear();
-    submesh.mIndexBuffer.clear();
+    submesh.mVertexData.clear();
+    submesh.mIndexData.clear();
   }
 
   void CurveDrawer::AddPoint(glm::vec4 aPoint)
@@ -361,15 +361,15 @@ namespace YTE
     Vertex vert;
     vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint;
-    submesh.mVertexBuffer.emplace_back(vert);
-    submesh.mIndexBuffer.emplace_back(static_cast<u32>(submesh.mIndexBuffer.size()));
+    submesh.mVertexData.emplace_back(vert);
+    submesh.mIndexData.emplace_back(static_cast<u32>(submesh.mIndexData.size()));
   }
 
 
   // This will set the lines given since the last Start() call to be drawn.
   void CurveDrawer::End()
   {
-    if (mSubmeshes[0].mVertexBuffer.empty())
+    if (mSubmeshes[0].mVertexData.empty())
     {
       return;
     }

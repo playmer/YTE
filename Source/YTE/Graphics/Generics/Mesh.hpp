@@ -12,6 +12,7 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vertex.hpp"
@@ -27,6 +28,8 @@ struct aiNode;
 
 namespace YTE
 {
+  class Mesh;
+
   // vertices have the following components in them
   enum class VertexComponent
   {
@@ -183,35 +186,44 @@ namespace YTE
   public:
     YTE_Shared Submesh() = default;
 
+    YTE_Shared Submesh(Submesh&& aSubmesh);
     YTE_Shared Submesh(Renderer *aRenderer,
                        const aiScene *aScene,
                        const aiMesh *aMesh,
                        Skeleton *aSkeleton,
                        uint32_t aBoneStartingVertexOffset);
 
-    virtual ~Submesh()
+    YTE_Shared Submesh& operator=(Submesh&& aSubmesh);
+
+    // Call this if you've built up a default constructed Submesh. 
+    // This will create the GPU buffers and calculate the dimensions.
+    void Initialize();
+
+    size_t GetTriangleCount() const
     {
-      
+      return mIndexData.size() / 3;
     }
 
-    size_t GetTriangleCount()
-    {
-      return mIndexBuffer.size() / 3;
-    }
-
-    glm::uvec3 GetTriangle(size_t aIndex)
+    glm::uvec3 GetTriangle(size_t aIndex) const
     {
       glm::uvec3 tri;
-      tri.x = (glm::uint)mIndexBuffer[aIndex];
-      tri.y = (glm::uint)mIndexBuffer[aIndex + 1];
-      tri.z = (glm::uint)mIndexBuffer[aIndex + 2];
+      tri.x = (glm::uint)mIndexData[aIndex];
+      tri.y = (glm::uint)mIndexData[aIndex + 1];
+      tri.z = (glm::uint)mIndexData[aIndex + 2];
       return tri;
     }
 
     void ResetTextureCoordinates();
 
-    std::vector<Vertex> mVertexBuffer;
-    std::vector<u32> mIndexBuffer;
+    // You probably shouldn't call these functions as it won't recalculate the owning mesh's dimensions
+    void UpdateVertices(std::vector<Vertex>& aVertices);
+    void UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+
+    std::vector<Vertex> mVertexData;
+    std::vector<u32> mIndexData;
+
+    GPUBuffer<Vertex> mVertexBuffer;
+    GPUBuffer<u32> mIndexBuffer;
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
@@ -229,19 +241,31 @@ namespace YTE
     std::string mName;
     std::string mMaterialName;
     std::string mShaderSetName;
+    Mesh* mMesh;
     bool mCullBackFaces = true;
+
+  private:
+    void CreateGPUBuffers();
+
+    YTE_Shared Submesh& operator=(Submesh const& aSubmesh) = delete;
+    YTE_Shared Submesh(Submesh& aSubmesh) = delete;
   };
 
   class Mesh : public EventHandler
   {
   public:
     YTEDeclareType(Mesh);
+    
+    YTE_Shared Mesh();
 
     YTE_Shared Mesh(Renderer *aRenderer,
                     const std::string &aFile);
 
     YTE_Shared Mesh(const std::string &aFile,
                     std::vector<Submesh> &aSubmeshes);
+
+    YTE_Shared Mesh(const std::string& aFile,
+                    Submesh& aSubmesh);
 
     YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
                                            std::vector<Vertex>& aVertices);
@@ -261,6 +285,7 @@ namespace YTE
 
     std::string mName;
     std::vector<Submesh> mParts;
+    Renderer* mRenderer;
     Skeleton mSkeleton;
     Dimension mDimension;
     bool mInstanced;

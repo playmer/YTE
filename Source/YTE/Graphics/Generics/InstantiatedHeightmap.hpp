@@ -44,9 +44,6 @@ namespace YTE
                     std::string aSpecularTextureName,
                     std::string aNormalTextureName);
 
-    void UpdateMesh(std::vector<Vertex>& aVertices);
-    void UpdateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
-
     InstantiatedModel* GetInstantiatedModel()
     {
       return mModel.get();

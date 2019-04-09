@@ -88,19 +88,6 @@ namespace YTE
     }
   }
 
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
-                                       std::vector<Vertex>& aVertices)
-  {
-    mVkMesh->UpdateVertices(aIndex, aVertices);
-  }
-
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
-                                       std::vector<Vertex>& aVertices,
-                                       std::vector<u32>& aIndices)
-  {
-    mVkMesh->UpdateVerticesAndIndices(aIndex, aVertices, aIndices);
-  }
-
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
     mPipelineData.emplace(aSubMesh, 

@@ -1218,7 +1218,7 @@ namespace YTE
     YTEProfileFunction();
 
     // update
-    mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mIndices);
+    mInstantiatedHeightmap[0]->GetInstantiatedModel()->GetMesh()->UpdateVerticesAndIndices(0, mVertices, mIndices);
   }
 
 

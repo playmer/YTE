@@ -304,19 +304,19 @@ namespace YTEditor
 
         for (auto &submesh : mesh->mParts)
         {
-          auto indexSize = submesh.mIndexBuffer.size();
+          auto indexSize = submesh.mIndexData.size();
 
           DebugAssert((indexSize % 3) == 0, "Index buffer must be divisible by 3.");
 
           for (size_t i = 0; i < indexSize; i += 3)
           {
-            auto i1 = submesh.mIndexBuffer.at(i + 0);
-            auto i2 = submesh.mIndexBuffer.at(i + 1);
-            auto i3 = submesh.mIndexBuffer.at(i + 2);
+            auto i1 = submesh.mIndexData.at(i + 0);
+            auto i2 = submesh.mIndexData.at(i + 1);
+            auto i3 = submesh.mIndexData.at(i + 2);
 
-            triangles.addTriangle(YTE::ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
-                                  YTE::ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
-                                  YTE::ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
+            triangles.addTriangle(YTE::ToBullet(submesh.mVertexData.at(i1).mPosition),
+                                  YTE::ToBullet(submesh.mVertexData.at(i2).mPosition),
+                                  YTE::ToBullet(submesh.mVertexData.at(i3).mPosition));
           }
         }
 

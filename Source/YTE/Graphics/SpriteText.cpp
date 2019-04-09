@@ -271,17 +271,17 @@ namespace YTE
       vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
       vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
 
-      submesh.mVertexBuffer.emplace_back(vert0);
-      submesh.mVertexBuffer.emplace_back(vert1);
-      submesh.mVertexBuffer.emplace_back(vert2);
-      submesh.mVertexBuffer.emplace_back(vert3);
+      submesh.mVertexData.emplace_back(vert0);
+      submesh.mVertexData.emplace_back(vert1);
+      submesh.mVertexData.emplace_back(vert2);
+      submesh.mVertexData.emplace_back(vert3);
 
-      submesh.mIndexBuffer.push_back(lastIndex);
-      submesh.mIndexBuffer.push_back(lastIndex + 1);
-      submesh.mIndexBuffer.push_back(lastIndex + 2);
-      submesh.mIndexBuffer.push_back(lastIndex);
-      submesh.mIndexBuffer.push_back(lastIndex + 2);
-      submesh.mIndexBuffer.push_back(lastIndex + 3);
+      submesh.mIndexData.push_back(lastIndex);
+      submesh.mIndexData.push_back(lastIndex + 1);
+      submesh.mIndexData.push_back(lastIndex + 2);
+      submesh.mIndexData.push_back(lastIndex);
+      submesh.mIndexData.push_back(lastIndex + 2);
+      submesh.mIndexData.push_back(lastIndex + 3);
 
       lastIndex += 4;
       ++i;
@@ -301,24 +301,24 @@ namespace YTE
         else
         {
           int vertCursor = lastIndex - (4 * (i - cursor));
-          float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
+          float shiftAmount = (submesh.mVertexData[vertCursor].mPosition.x - mBoundingBox.xMin);
 
             // Shrink our bounding box to fit the wrapped text
-          mBoundingBox.xMax = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+          mBoundingBox.xMax = submesh.mVertexData[vertCursor - 2].mPosition.x;
 
           while (cursor < i)
           {
-            submesh.mVertexBuffer[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 1].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 2].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 3].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData[vertCursor + 1].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData[vertCursor + 2].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData[vertCursor + 3].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
 
             vertCursor += 4;
             ++cursor;
           }
 
-          offsetX = (submesh.mVertexBuffer[vertCursor - 2].mPosition.x / sizeFactor) - sizeFactor;
-          currMaxX = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+          offsetX = (submesh.mVertexData[vertCursor - 2].mPosition.x / sizeFactor) - sizeFactor;
+          currMaxX = submesh.mVertexData[vertCursor - 2].mPosition.x;
         }
 
           // Line feed
@@ -327,7 +327,7 @@ namespace YTE
     }
 
       // Apply alignment
-    for (auto &verts : submesh.mVertexBuffer)
+    for (auto &verts : submesh.mVertexData)
     {
         // Offsets the text to account for leaving the anchor at the bottom-left of the first row
       verts.mPosition.y -= maxCharHeight;
@@ -363,7 +363,7 @@ namespace YTE
       
     }
 
-    submeshes.emplace_back(submesh);
+    submeshes.emplace_back(std::move(submesh));
 
     auto view = mSpace->GetComponent<GraphicsView>();
 

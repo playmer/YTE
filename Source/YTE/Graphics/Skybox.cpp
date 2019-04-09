@@ -149,16 +149,16 @@ namespace YTE
           u32 c{ (i)*(aSubdivisions + 1) + (j) };
           u32 d{ (i)*(aSubdivisions + 1) + (j - 1) };
           
-          sphere.mIndexBuffer.emplace_back(c);
-          sphere.mIndexBuffer.emplace_back(b);
-          sphere.mIndexBuffer.emplace_back(a);
+          sphere.mIndexData.emplace_back(c);
+          sphere.mIndexData.emplace_back(b);
+          sphere.mIndexData.emplace_back(a);
           
-          sphere.mIndexBuffer.emplace_back(a);
-          sphere.mIndexBuffer.emplace_back(d);
-          sphere.mIndexBuffer.emplace_back(c);
+          sphere.mIndexData.emplace_back(a);
+          sphere.mIndexData.emplace_back(d);
+          sphere.mIndexData.emplace_back(c);
         }
 
-        sphere.mVertexBuffer.push_back(vert);
+        sphere.mVertexData.push_back(vert);
       }
     }
 
@@ -166,7 +166,8 @@ namespace YTE
     sphere.mDiffuseType = TextureViewType::e2D;
     sphere.mShaderSetName = "Skybox";
 
-    return sphere;
+    sphere.Initialize();
+    return std::move(sphere);
   }
 
 
@@ -235,9 +236,8 @@ namespace YTE
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
 
-    auto submesh = CreateSphere(8, mTextureName);
-
-    std::vector<Submesh> submeshes{ submesh };
+    std::vector<Submesh> submeshes;
+    submeshes.emplace_back(std::move(CreateSphere(8, mTextureName)));
 
     auto view = mSpace->GetComponent<GraphicsView>();
 

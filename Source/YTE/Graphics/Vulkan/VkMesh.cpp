@@ -57,24 +57,7 @@ namespace YTE
 
   void VkSubmesh::Create()
   {
-    // Shader Descriptions
-    // TODO (Josh): We should be reflecting these.
-    auto allocator = mRenderer->GetAllocator(AllocatorTypes::Mesh);
-
-    auto device = mRenderer->mDevice;
-
-    // Create Vertex, Index, and Material buffers.
-    mVertexBuffer = allocator->CreateBuffer<Vertex>(mSubmesh->mVertexBuffer.size(),
-                                                    GPUAllocation::BufferUsage::TransferDst |
-                                                    GPUAllocation::BufferUsage::VertexBuffer,
-                                                    GPUAllocation::MemoryProperty::DeviceLocal);
-
-    mIndexBuffer = allocator->CreateBuffer<u32>(mSubmesh->mIndexBuffer.size(),
-                                                GPUAllocation::BufferUsage::TransferDst |
-                                                GPUAllocation::BufferUsage::IndexBuffer,
-                                                GPUAllocation::MemoryProperty::DeviceLocal);
-
-    mIndexCount = mSubmesh->mIndexBuffer.size();
+    mIndexCount = mSubmesh->mIndexData.size();
 
     // Load Textures
     if (false == mSubmesh->mDiffuseMap.empty())
@@ -252,17 +235,6 @@ namespace YTE
 
   }
 
-  void VkSubmesh::LoadToVulkan()
-  {
-    YTEProfileFunction();
-
-    auto &vertices = mSubmesh->mVertexBuffer;
-    auto &indices = mSubmesh->mIndexBuffer;
-
-    mVertexBuffer.Update(vertices.data(), vertices.size());
-    mIndexBuffer.Update(indices.data(), indices.size());
-  }
-
 
   ///////////////////////////////////////////////////////////////////////////
   // Mesh
@@ -286,22 +258,6 @@ namespace YTE
     }
 
     LoadToVulkan();
-  }
-
-  void VkMesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
-  {
-    YTEProfileFunction();
-
-    mMesh->UpdateVertices(aSubmeshIndex, aVertices);
-    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
-  }
-
-  void VkMesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
-  {
-    YTEProfileFunction();
-
-    mMesh->UpdateVerticesAndIndices(aSubmeshIndex, aVertices, aIndices);
-    mSubmeshes[aSubmeshIndex]->LoadToVulkan();
   }
 
   VkMesh::~VkMesh()

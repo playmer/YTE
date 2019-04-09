@@ -152,12 +152,12 @@ namespace YTE
         // update the model
         auto mesh = mInstantiatedSprite->GetMesh();
 
-        mSubmesh.mVertexBuffer[0].mTextureCoordinates = uv0;
-        mSubmesh.mVertexBuffer[1].mTextureCoordinates = uv1;
-        mSubmesh.mVertexBuffer[2].mTextureCoordinates = uv2;
-        mSubmesh.mVertexBuffer[3].mTextureCoordinates = uv3;
+        mVertexData[0].mTextureCoordinates = uv0;
+        mVertexData[1].mTextureCoordinates = uv1;
+        mVertexData[2].mTextureCoordinates = uv2;
+        mVertexData[3].mTextureCoordinates = uv3;
         
-        mesh->UpdateVertices(0, mSubmesh.mVertexBuffer);
+        mesh->UpdateVertices(0, mVertexData);
 
         ++mCurrentIndex;
 
@@ -268,28 +268,35 @@ namespace YTE
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
-    mSubmesh.mUBOMaterial = modelMaterial;
+
+    Submesh submesh;
+    submesh.mUBOMaterial = modelMaterial;
     
-    mSubmesh.mDiffuseMap = mTextureName;
-    mSubmesh.mDiffuseType = TextureViewType::e2D;
-    mSubmesh.mShaderSetName = "Sprite";
+    submesh.mDiffuseMap = mTextureName;
+    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mShaderSetName = "Sprite";
 
-    mSubmesh.mCullBackFaces = false;
+    submesh.mCullBackFaces = false;
 
-    mSubmesh.mVertexBuffer.clear();
+    submesh.mVertexData.clear();
 
-    mSubmesh.mVertexBuffer.emplace_back(vert0);
-    mSubmesh.mVertexBuffer.emplace_back(vert1);
-    mSubmesh.mVertexBuffer.emplace_back(vert2);
-    mSubmesh.mVertexBuffer.emplace_back(vert3);
+    submesh.mVertexData.emplace_back(vert0);
+    submesh.mVertexData.emplace_back(vert1);
+    submesh.mVertexData.emplace_back(vert2);
+    submesh.mVertexData.emplace_back(vert3);
 
-    mSubmesh.mIndexBuffer.clear();
-    mSubmesh.mIndexBuffer = {
+    mVertexData = submesh.mVertexData;
+
+    submesh.mIndexData.clear();
+    submesh.mIndexData = {
       0, 1, 2,
       2, 3, 0
     };
 
-    std::vector<Submesh> submeshes{ mSubmesh };
+    submesh.Initialize();
+
+    std::vector<Submesh> submeshes;
+    submeshes.emplace_back(std::move(submesh));
 
     auto view = mSpace->GetComponent<GraphicsView>();
 

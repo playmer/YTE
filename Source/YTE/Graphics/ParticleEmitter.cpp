@@ -419,14 +419,16 @@ namespace YTE
 
     submesh.mCullBackFaces = false;
 
-    submesh.mVertexBuffer.emplace_back(vert0);
-    submesh.mVertexBuffer.emplace_back(vert1);
-    submesh.mVertexBuffer.emplace_back(vert2);
-    submesh.mVertexBuffer.emplace_back(vert3);
+    submesh.mVertexData.emplace_back(vert0);
+    submesh.mVertexData.emplace_back(vert1);
+    submesh.mVertexData.emplace_back(vert2);
+    submesh.mVertexData.emplace_back(vert3);
 
-    submesh.mIndexBuffer = std::move(mIndices);
+    submesh.mIndexData = std::move(mIndices);
+    submesh.Initialize();
 
-    std::vector<Submesh> submeshes{ submesh };
+    std::vector<Submesh> submeshes;
+    submeshes.emplace_back(std::move(submesh));
 
     mMesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
 

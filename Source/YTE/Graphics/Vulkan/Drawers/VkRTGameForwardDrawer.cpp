@@ -267,10 +267,11 @@ namespace YTE
         for (auto it = range.first; it != range.second; ++it)
         {
           auto &submesh = it->second;
+          auto trueSubmesh = submesh->mSubmesh;
 
           for (auto &model : models)
           {
-            auto submeshDimension = submesh->mSubmesh->mDimension;
+            auto submeshDimension = trueSubmesh->mDimension;
             auto subMeshPosition = submeshDimension.GetCenter();
             auto modelMatrix = model->GetUBOModelData().mModelMatrix;
             modelMatrix[3][0] += subMeshPosition.x;
@@ -347,8 +348,8 @@ namespace YTE
             }
 
             toEmplaceInto->emplace_back(*toUseToDraw,
-                                        GetBuffer(submesh->mVertexBuffer),
-                                        GetBuffer(submesh->mIndexBuffer),
+                                        GetBuffer(trueSubmesh->mVertexBuffer),
+                                        GetBuffer(trueSubmesh->mIndexBuffer),
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
                                         static_cast<u32>(submesh->mIndexCount),

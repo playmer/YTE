@@ -46,10 +46,6 @@ namespace YTE
                                            std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
                                            GraphicsView *aView);
 
-
-    GPUBuffer<Vertex> mVertexBuffer;
-    GPUBuffer<u32> mIndexBuffer;
-
     std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
     std::vector<const char*> mSamplerTypes;
 
@@ -80,9 +76,6 @@ namespace YTE
     ~VkMesh();
     
     VkMesh(const VkMesh &aMesh) = delete;
-
-    void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
-    void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
 
     void LoadToVulkan();
 

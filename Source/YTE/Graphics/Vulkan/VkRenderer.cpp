@@ -431,6 +431,14 @@ namespace YTE
     return meshPtr->mMesh;
   }
 
+  Mesh* VkRenderer::CreateSimpleMesh(
+    std::string& aName,
+    Submesh& aSubmesh,
+    bool aForceUpdate)
+  {
+
+  }
+
 
   void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {

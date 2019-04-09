@@ -90,6 +90,13 @@ namespace YTE
     return nullptr;
   }
 
+  Mesh* Renderer::CreateSimpleMesh(std::string& aName, Submesh& aSubmesh, bool aForceUpdate)
+  {
+    UnusedArguments(aName, aSubmesh, aForceUpdate);
+
+    return nullptr;
+  }
+
   std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
   {
     UnusedArguments(aView);

@@ -58,6 +58,47 @@ namespace YTE
     return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
   }
 
+  void CalculateSubMeshDimensions(Submesh& mSubMesh)
+  {
+    YTEProfileFunction();
+
+    for (auto const& vertex : mSubMesh.mVertexData)
+    {
+      mSubMesh.mDimension.mMax.x = fmax(vertex.mPosition.x, mSubMesh.mDimension.mMax.x);
+      mSubMesh.mDimension.mMax.y = fmax(vertex.mPosition.y, mSubMesh.mDimension.mMax.y);
+      mSubMesh.mDimension.mMax.z = fmax(vertex.mPosition.z, mSubMesh.mDimension.mMax.z);
+
+      mSubMesh.mDimension.mMin.x = fmin(vertex.mPosition.x, mSubMesh.mDimension.mMin.x);
+      mSubMesh.mDimension.mMin.y = fmin(vertex.mPosition.y, mSubMesh.mDimension.mMin.y);
+      mSubMesh.mDimension.mMin.z = fmin(vertex.mPosition.z, mSubMesh.mDimension.mMin.z);
+    }
+  }
+
+  Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
+  {
+    YTEProfileFunction();
+    Dimension toReturn;
+
+    for (auto& part : mParts)
+    {
+      toReturn.mMax.x = fmax(part.mDimension.mMax.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(part.mDimension.mMax.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(part.mDimension.mMax.z, toReturn.mMax.z);
+      toReturn.mMax.x = fmax(part.mDimension.mMin.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(part.mDimension.mMin.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(part.mDimension.mMin.z, toReturn.mMax.z);
+
+      toReturn.mMin.x = fmin(part.mDimension.mMax.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(part.mDimension.mMax.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(part.mDimension.mMax.z, toReturn.mMin.z);
+      toReturn.mMin.x = fmin(part.mDimension.mMin.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(part.mDimension.mMin.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(part.mDimension.mMin.z, toReturn.mMin.z);
+    }
+
+    return toReturn;
+  }
+
 
   YTEDefineType(Mesh)
   {
@@ -65,6 +106,9 @@ namespace YTE
     TypeBuilder<Mesh> builder;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Skeleton
+  //////////////////////////////////////////////////////////////////////////////
   bool Skeleton::Initialize(const aiScene* aScene)
   {
     YTEProfileFunction();
@@ -221,6 +265,9 @@ namespace YTE
 
 
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Submesh
+  //////////////////////////////////////////////////////////////////////////////
   Submesh::Submesh(Renderer *aRenderer,
                    const aiScene *aScene,
                    const aiMesh *aMesh,
@@ -375,7 +422,8 @@ namespace YTE
         boneIDs2 = glm::ivec2(0, 0);
       }
       
-      mVertexBuffer.emplace_back(position,
+      mVertexData.emplace_back(
+        position,
         textureCoordinates,
         normal,
         color,
@@ -388,17 +436,9 @@ namespace YTE
         boneIDs2);
 
       mInitialTextureCoordinates.emplace_back(textureCoordinates);
-
-      mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
-      mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
-      mDimension.mMax.z = fmax(pPos->z, mDimension.mMax.z);
-                               
-      mDimension.mMin.x = fmin(pPos->x, mDimension.mMin.x);
-      mDimension.mMin.y = fmin(pPos->y, mDimension.mMin.y);
-      mDimension.mMin.z = fmin(pPos->z, mDimension.mMin.z);
     }
 
-    uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
+    uint32_t indexBase = static_cast<uint32_t>(mIndexData.size());
 
     for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
     {
@@ -409,61 +449,130 @@ namespace YTE
         continue;
       }
 
-      mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
+      mIndexData.push_back(indexBase + Face.mIndices[0]);
+      mIndexData.push_back(indexBase + Face.mIndices[1]);
+      mIndexData.push_back(indexBase + Face.mIndices[2]);
     }
+
+    Initialize();
+  }
+
+  Submesh::Submesh(Submesh&& aRight)
+    : mVertexData{ std::move(aRight.mVertexData) }
+    , mIndexData{ std::move(aRight.mIndexData) }
+    , mVertexBuffer{ std::move(aRight.mVertexBuffer) }
+    , mIndexBuffer{ std::move(aRight.mIndexBuffer) }
+    , mInitialTextureCoordinates{ std::move(aRight.mInitialTextureCoordinates) }
+    , mUBOMaterial{ std::move(aRight.mUBOMaterial) }
+    , mDiffuseMap{ std::move(aRight.mDiffuseMap) }
+    , mDiffuseType{ std::move(aRight.mDiffuseType) }
+    , mNormalMap{ std::move(aRight.mNormalMap) }
+    , mNormalType{ std::move(aRight.mNormalType) }
+    , mSpecularMap{ std::move(aRight.mSpecularMap) }
+    , mSpecularType{ std::move(aRight.mSpecularType) }
+    , mDimension{ std::move(aRight.mDimension) }
+    , mName{ std::move(aRight.mName) }
+    , mMaterialName{ std::move(aRight.mMaterialName) }
+    , mShaderSetName{ std::move(aRight.mShaderSetName) }
+    , mMesh{ std::move(aRight.mMesh) }
+    , mCullBackFaces{ std::move(aRight.mCullBackFaces) }
+  {
+
+  }
+
+  Submesh& Submesh::operator=(Submesh&& aRight)
+  {
+    mVertexData = std::move(aRight.mVertexData);
+    mIndexData = std::move(aRight.mIndexData);
+    mVertexBuffer = std::move(aRight.mVertexBuffer);
+    mIndexBuffer = std::move(aRight.mIndexBuffer);
+    mInitialTextureCoordinates = std::move(aRight.mInitialTextureCoordinates);
+    mUBOMaterial = std::move(aRight.mUBOMaterial);
+    mDiffuseMap = std::move(aRight.mDiffuseMap);
+    mDiffuseType = std::move(aRight.mDiffuseType);
+    mNormalMap = std::move(aRight.mNormalMap);
+    mNormalType = std::move(aRight.mNormalType);
+    mSpecularMap = std::move(aRight.mSpecularMap);
+    mSpecularType = std::move(aRight.mSpecularType);
+    mDimension = std::move(aRight.mDimension);
+    mName = std::move(aRight.mName);
+    mMaterialName = std::move(aRight.mMaterialName);
+    mShaderSetName = std::move(aRight.mShaderSetName);
+    mMesh = std::move(aRight.mMesh);
+    mCullBackFaces = std::move(aRight.mCullBackFaces);
+  }
+
+  void Submesh::Initialize()
+  {
+    CalculateSubMeshDimensions(*this);
+    CreateGPUBuffers();
+  }
+
+  void Submesh::CreateGPUBuffers()
+  {
+    auto allocator = mMesh->mRenderer->GetAllocator(AllocatorTypes::Mesh);
+
+    // Create Vertex, Index, and Material buffers.
+    mVertexBuffer = allocator->CreateBuffer<Vertex>(mVertexData.size(),
+                                                    GPUAllocation::BufferUsage::TransferDst |
+                                                    GPUAllocation::BufferUsage::VertexBuffer,
+                                                    GPUAllocation::MemoryProperty::DeviceLocal);
+
+    mIndexBuffer = allocator->CreateBuffer<u32>(mIndexData.size(),
+                                                GPUAllocation::BufferUsage::TransferDst |
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
   }
 
   void Submesh::ResetTextureCoordinates()
   {
-    for (size_t i = 0; i < mVertexBuffer.size(); i++)
+    for (size_t i = 0; i < mVertexData.size(); i++)
     {
-      mVertexBuffer[i].mTextureCoordinates = mInitialTextureCoordinates[i];
+      mVertexData[i].mTextureCoordinates = mInitialTextureCoordinates[i];
     }
   }
 
-  void CalculateSubMeshDimensions(std::vector<Submesh> &mParts)
+  void Submesh::UpdateVertices(std::vector<Vertex>& aVertices)
   {
-    YTEProfileFunction();
-    for (auto &part : mParts)
-    {
-      for (auto const& vertex : part.mVertexBuffer)
-      {
-        part.mDimension.mMax.x = fmax(vertex.mPosition.x, part.mDimension.mMax.x);
-        part.mDimension.mMax.y = fmax(vertex.mPosition.y, part.mDimension.mMax.y);
-        part.mDimension.mMax.z = fmax(vertex.mPosition.z, part.mDimension.mMax.z);
+    DebugObjection(aVertices.size() != mVertexData.size(), 
+                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
+                   mVertexData.size(), 
+                   aVertices.size());
 
-        part.mDimension.mMin.x = fmin(vertex.mPosition.x, part.mDimension.mMin.x);
-        part.mDimension.mMin.y = fmin(vertex.mPosition.y, part.mDimension.mMin.y);
-        part.mDimension.mMin.z = fmin(vertex.mPosition.z, part.mDimension.mMin.z);
-      }
-    }
+    mVertexData = aVertices;
+
+    mVertexBuffer.Update(mVertexData.data(), mVertexData.size());
+
+    CalculateSubMeshDimensions(*this);
   }
 
-  Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
+  void Submesh::UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    YTEProfileFunction();
-    Dimension toReturn;
+    DebugObjection(aVertices.size() != mVertexData.size(), 
+                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
+                   mVertexData.size(), 
+                   aVertices.size());
 
-    for (auto &part : mParts)
-    {
-      toReturn.mMax.x = fmax(part.mDimension.mMax.x, toReturn.mMax.x);
-      toReturn.mMax.y = fmax(part.mDimension.mMax.y, toReturn.mMax.y);
-      toReturn.mMax.z = fmax(part.mDimension.mMax.z, toReturn.mMax.z);
-      toReturn.mMax.x = fmax(part.mDimension.mMin.x, toReturn.mMax.x);
-      toReturn.mMax.y = fmax(part.mDimension.mMin.y, toReturn.mMax.y);
-      toReturn.mMax.z = fmax(part.mDimension.mMin.z, toReturn.mMax.z);
+    DebugObjection(aIndices.size() != mIndexData.size(), 
+                   "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
+                   mIndexData.size(), 
+                   aIndices.size());
 
-      toReturn.mMin.x = fmin(part.mDimension.mMax.x, toReturn.mMin.x);
-      toReturn.mMin.y = fmin(part.mDimension.mMax.y, toReturn.mMin.y);
-      toReturn.mMin.z = fmin(part.mDimension.mMax.z, toReturn.mMin.z);
-      toReturn.mMin.x = fmin(part.mDimension.mMin.x, toReturn.mMin.x);
-      toReturn.mMin.y = fmin(part.mDimension.mMin.y, toReturn.mMin.y);
-      toReturn.mMin.z = fmin(part.mDimension.mMin.z, toReturn.mMin.z);
-    }
+    mVertexData = aVertices;
+    mIndexData = aIndices;
 
-    return toReturn;
+    mVertexBuffer.Update(mVertexData.data(), mVertexData.size());
+    mIndexBuffer.Update(mIndexData.data(), mIndexData.size());
+
+    CalculateSubMeshDimensions(*this);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Mesh
+  //////////////////////////////////////////////////////////////////////////////
+  Mesh::Mesh()
+  {
+
   }
 
   Mesh::Mesh(Renderer *aRenderer,
@@ -546,6 +655,7 @@ namespace YTE
                             pMeshScene->mMeshes[i], 
                             &mSkeleton, 
                             startingVertex);
+        mParts[i].mMesh = this;
         startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
       }
 
@@ -563,34 +673,41 @@ namespace YTE
     mName = aFile;
     mParts = aSubmeshes;
 
-    CalculateSubMeshDimensions(mParts);
+    for (auto& submesh : mParts)
+    {
+      submesh.mMesh = this;
+      CalculateSubMeshDimensions(submesh);
+    }
+
+    mDimension = CalculateDimensions(mParts);
+  }
+
+  Mesh::Mesh(const std::string& aFile, Submesh& aSubmesh)
+  {
+    YTEProfileFunction();
+    mName = aFile;
+    mParts.emplace_back(std::move(aSubmesh));
+
+    auto& submesh = mParts[0];
+    submesh.mMesh = this;
+
+    CalculateSubMeshDimensions(submesh);
+
     mDimension = CalculateDimensions(mParts);
   }
 
   void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
   {
-    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
-    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
+    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexData.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexData.size(), aVertices.size());
+    mParts[aSubmeshIndex].mVertexData = aVertices;
 
-    CalculateSubMeshDimensions(mParts);
     mDimension = CalculateDimensions(mParts);
   }
 
   void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
   {
-    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), 
-                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-                   mParts[aSubmeshIndex].mVertexBuffer.size(), 
-                   aVertices.size());
-    DebugObjection(aIndices.size() != mParts[aSubmeshIndex].mIndexBuffer.size(), 
-                   "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
-                   mParts[aSubmeshIndex].mIndexBuffer.size(), 
-                   aIndices.size());
+    mParts[aSubmeshIndex].UpdateVerticesAndIndices(aVertices, aIndices);
 
-    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
-    mParts[aSubmeshIndex].mIndexBuffer = aIndices;
-
-    CalculateSubMeshDimensions(mParts);
     mDimension = CalculateDimensions(mParts);
   }
 
@@ -619,7 +736,7 @@ namespace YTE
 
   void Mesh::ResetTextureCoordinates()
   {
-    for (auto& submesh : GetSubmeshes())
+    for (auto& submesh : mParts)
     {
       submesh.ResetTextureCoordinates();
     }

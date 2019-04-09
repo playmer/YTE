@@ -70,20 +70,6 @@ namespace YTE
     CreateMesh(aVertices, aIndices, aModelName);
   }
 
-
-  void InstantiatedHeightmap::UpdateMesh(std::vector<Vertex>& aVertices)
-  {
-    // Update the model
-    auto mesh = mModel->GetMesh();
-    mesh->UpdateVertices(0, aVertices);
-  }
-
-  void InstantiatedHeightmap::UpdateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
-  {
-    // update the model
-    mModel->UpdateMesh(0, aVertices, aIndices);
-  }
-
   void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName)
   {
     std::string meshName = aModelName;
@@ -99,14 +85,17 @@ namespace YTE
 
     submesh.mCullBackFaces = true;
 
-    submesh.mVertexBuffer = aVertices;
-    submesh.mIndexBuffer = aIndices;
+    submesh.mVertexData = aVertices;
+    submesh.mIndexData = aIndices;
 
     submesh.mDiffuseMap = mDiffuseTName;
     submesh.mSpecularMap = mSpecularTName;
     submesh.mNormalMap = mNormalTName;
 
-    std::vector<Submesh> submeshes{ submesh };
+    submesh.Initialize();
+    std::vector<Submesh> submeshes;
+    submeshes.emplace_back(std::move(submesh));
+
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
     mModel = mRenderer->CreateModel(mGraphicsView, mesh);
   }
