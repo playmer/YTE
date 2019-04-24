@@ -53,11 +53,7 @@ namespace YTE
                                    TextureType aType);
 
     virtual Mesh* CreateSimpleMesh(std::string& aName,
-                                   std::vector<Submesh>& aSubmeshes,
-			                             bool aForceUpdate = false);
-    
-    virtual Mesh* CreateSimpleMesh(std::string& aName,
-                                   Submesh& aSubmesh,
+                                   ContiguousRange<SubmeshData> aSubmeshes,
 			                             bool aForceUpdate = false);
 
     virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);

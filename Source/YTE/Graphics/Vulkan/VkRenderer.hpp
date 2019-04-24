@@ -101,10 +101,7 @@ namespace YTE
 
     VkMesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,
-                           std::vector<Submesh> &aSubmeshes,
-		                       bool aForceUpdate = false) override;
-    Mesh* CreateSimpleMesh(std::string &aName,
-                           Submesh& aSubmesh,
+                           ContiguousRange<SubmeshData> aSubmeshes,
 		                       bool aForceUpdate = false) override;
 
     void ResetView(GraphicsView *aView);

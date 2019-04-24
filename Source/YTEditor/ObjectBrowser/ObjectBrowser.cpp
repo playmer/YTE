@@ -241,7 +241,7 @@ namespace YTEditor
         // get the list of materials from the submeshes
         auto& submeshes = model->GetMesh()->mParts;
 
-        matViewer->LoadMaterial(submeshes[0].mUBOMaterial);
+        matViewer->LoadMaterial(submeshes[0].mData.mUBOMaterial);
         matViewer->SetMaterialsList(&submeshes);
       }
       else
@@ -521,7 +521,7 @@ namespace YTEditor
         
         if (mesh)
         {
-          matViewer->LoadMaterial(mesh->mParts[0].mUBOMaterial);
+          matViewer->LoadMaterial(mesh->mParts[0].mData.mUBOMaterial);
 
           // get the list of materials from the submeshes
           auto& submeshes = mesh->mParts;

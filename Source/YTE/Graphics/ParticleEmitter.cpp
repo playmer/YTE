@@ -379,7 +379,7 @@ namespace YTE
 
     std::string meshName = "__Sprite" + mTextureName;
 
-    Submesh submesh;
+    SubmeshData submesh;
 
     Vertex vert0;
     Vertex vert1;
@@ -425,12 +425,8 @@ namespace YTE
     submesh.mVertexData.emplace_back(vert3);
 
     submesh.mIndexData = std::move(mIndices);
-    submesh.Initialize();
 
-    std::vector<Submesh> submeshes;
-    submeshes.emplace_back(std::move(submesh));
-
-    mMesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    mMesh = mRenderer->CreateSimpleMesh(meshName, submesh);
 
     mFreeParticles.clear();
   }

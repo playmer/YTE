@@ -47,18 +47,6 @@ namespace YTE
 
     void SetDefaultAnimationOffset();
 
-    //virtual void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices)
-    //{
-    //  UnusedArguments(aIndex, aVertices);
-    //}
-    //
-    //virtual void UpdateMesh(size_t aIndex, 
-    //                        std::vector<Vertex>& aVertices, 
-    //                        std::vector<u32>& aIndices)
-    //{
-    //  UnusedArguments(aIndex, aVertices, aIndices);
-    //}
-
     void UpdateUBOModel(UBOs::Model const& aUBO)
     {
       mUBOModelData = aUBO;

@@ -469,7 +469,7 @@ namespace YTE
       ImGui::SetCurrentContext(mContext);
     }
 
-    Submesh& GetSubmesh()
+    SubmeshData& GetSubmeshData()
     {
       return mSubmesh;
     }
@@ -483,7 +483,7 @@ namespace YTE
     static const char* GetClipboardTextImplementation(void *aSelf);
     static void SetClipboardTextImplementation(void *aSelf, const char* text);
 
-    Submesh mSubmesh;
+    SubmeshData mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedModel;
     ImGuiContext *mContext;
     GraphicsView *mView;

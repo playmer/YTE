@@ -271,7 +271,7 @@ namespace YTE
 
           for (auto &model : models)
           {
-            auto submeshDimension = trueSubmesh->mDimension;
+            auto submeshDimension = trueSubmesh->mData.mDimension;
             auto subMeshPosition = submeshDimension.GetCenter();
             auto modelMatrix = model->GetUBOModelData().mModelMatrix;
             modelMatrix[3][0] += subMeshPosition.x;

@@ -250,21 +250,21 @@ namespace YTE
     output.pop_back();
   }
 
-  std::wstring GetFileOfType(const wchar_t *aFileType, const wchar_t *aDirectory, 
-                             const char *aFile, const wchar_t *aFileExtension)
+  std::string GetFileOfType(const char *aFileType, const char *aDirectory, 
+                             const char *aFile, const char *aFileExtension)
   {
     std::string convert(aFile);
-    std::wstring toReturn = L"../";
+    std::string toReturn = "../";
 
-    toReturn = toReturn + aDirectory + L"/" +
-                std::wstring(convert.begin(), convert.end()) +
+    toReturn = toReturn + aDirectory + "/" +
+                std::string(convert.begin(), convert.end()) +
                 aFileExtension;
 
     std::filesystem::path basePath{ cWorkingDirectory };
     std::filesystem::path toReturnPath{ toReturn };
     std::filesystem::path baseAndToReturn = basePath / toReturnPath;
 
-    toReturn = std::filesystem::canonical(baseAndToReturn).wstring();
+    toReturn = std::filesystem::canonical(baseAndToReturn).u8string();
 
     //DebugObjection(std::filesystem::exists(toReturn) == false, 
     //            "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
@@ -276,7 +276,7 @@ namespace YTE
 
   std::string GetConfigPath(const String &name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name.c_str(), L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name.c_str(), ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;
@@ -285,7 +285,7 @@ namespace YTE
 
   std::string GetConfigPath(const char *name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name, L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name, ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;
@@ -294,7 +294,7 @@ namespace YTE
 
   std::string GetConfigPath(const std::string &name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name.c_str(), L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name.c_str(), ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;

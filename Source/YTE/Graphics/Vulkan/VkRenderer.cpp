@@ -309,22 +309,26 @@ namespace YTE
     return texturePtr;
   }
 
-  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  vk::ImageViewType ToVkType(TextureType aTextureType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
+    switch (aTextureType)
     {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+      case TextureType::e1D: return vk::ImageViewType::e1D; break;
+      case TextureType::e2D: return  vk::ImageViewType::e2D; break;
+      case TextureType::e3D: return  vk::ImageViewType::e3D; break;
+      case TextureType::eCube: return  vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: return  vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: return  vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: return  vk::ImageViewType::eCubeArray; break;
     }
 
-    auto texture = CreateTexture(aFilename, type);
+    DebugAssert(false, "Bad value passed");
+    return vk::ImageViewType::e1D;
+  }
+
+  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  {
+    auto texture = CreateTexture(aFilename, ToVkType(aType));
     return texture->mTexture;
   }
 
@@ -337,20 +341,7 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
-    {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
-    }
-
-    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, ToVkType(aType));
 
     return texture->mTexture;
   }
@@ -384,7 +375,7 @@ namespace YTE
   }
   
   Mesh* VkRenderer::CreateSimpleMesh(std::string &aName,
-                                     std::vector<Submesh> &aSubmeshes,
+                                     ContiguousRange<SubmeshData> aSubmeshes,
 		                                 bool aForceUpdate)
   {
     auto meshIt = mMeshes.find(aName);
@@ -393,8 +384,7 @@ namespace YTE
 
     if (aForceUpdate || meshIt == mMeshes.end())
     {
-      auto baseMesh = std::make_unique<Mesh>(aName,
-                                             aSubmeshes);
+      auto baseMesh = std::make_unique<Mesh>(this, aName, aSubmeshes);
 
       mBaseMeshesMutex.lock();
       auto it = mBaseMeshes.find(aName);
@@ -431,28 +421,15 @@ namespace YTE
     return meshPtr->mMesh;
   }
 
-  Mesh* VkRenderer::CreateSimpleMesh(
-    std::string& aName,
-    Submesh& aSubmesh,
-    bool aForceUpdate)
-  {
-
-  }
-
-
   void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
   }
-
-
-
+   
   void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOs::Illumination& aIllumination)
   {
     GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
   }
-
-
 
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {

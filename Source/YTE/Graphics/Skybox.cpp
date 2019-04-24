@@ -118,10 +118,10 @@ namespace YTE
     mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
   }
 
-  Submesh CreateSphere(u32 aSubdivisions, const std::string &aTextureName)
+  SubmeshData CreateSphere(u32 aSubdivisions, const std::string &aTextureName)
   {
     float subdivisions = static_cast<float>(aSubdivisions);
-    Submesh sphere;
+    SubmeshData sphere;
     
     const float pi = glm::pi<float>();
     const float tau = 2.0f * pi;
@@ -166,7 +166,6 @@ namespace YTE
     sphere.mDiffuseType = TextureViewType::e2D;
     sphere.mShaderSetName = "Skybox";
 
-    sphere.Initialize();
     return std::move(sphere);
   }
 
@@ -236,12 +235,11 @@ namespace YTE
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
 
-    std::vector<Submesh> submeshes;
-    submeshes.emplace_back(std::move(CreateSphere(8, mTextureName)));
+    auto submesh = CreateSphere(8, mTextureName);
 
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
 
     mInstantiatedSkybox = mRenderer->CreateModel(view, mesh);
     CreateTransform();

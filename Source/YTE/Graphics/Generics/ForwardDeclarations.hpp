@@ -19,6 +19,7 @@ namespace YTE
   class Renderer;
   class Shader;
   class Submesh;
+  struct SubmeshData;
   struct Texture;
 }
 

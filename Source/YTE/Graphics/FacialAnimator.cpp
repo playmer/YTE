@@ -82,9 +82,90 @@ namespace YTE
 
     for (int i = 0; i < mesh->mParts.size(); i++)
     {
+
+
+
+
+
+
+
+
+      //////////////////////////////////////////////////
+      // This should be better than what's below, but I don't have time to test it until I'm
+      // done with the current refactor, but the code was there to be rewritten, so I did so.
+      //////////////////////////////////////////////////
+      //Submesh& submesh = mesh->mParts[i];
+      //FaceFrame* frame{ nullptr };
+      //std::vector<Vertex> vertexBuffer;
+      //
+      //
+      //if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
+      //{
+      //  frame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
+      //  vertexBuffer = mInitialEyeVertexBuffer;
+      //}
+      //else if(submesh.mData.mMaterialName == "OnlyDiff_Mouth")
+      //{
+      //  frame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
+      //  vertexBuffer = mInitialMouthVertexBuffer;
+      //}
+      //
+      //if (frame)
+      //{
+      //  for (auto& vertex : vertexBuffer)
+      //  {
+      //    vertex.mTextureCoordinates.x += frame->uv.x;
+      //    vertex.mTextureCoordinates.y += frame->uv.y;
+      //  }
+      //
+      //  mesh->UpdateVertices(i, vertexBuffer);
+      //}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       Submesh &submesh = mesh->mParts[i];
 
-      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
       {
         FaceFrame *eyeFrame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
 
@@ -101,7 +182,7 @@ namespace YTE
           mesh->UpdateVertices(i, eyeBuffer);
         }
       }
-      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      else if (submesh.mData.mMaterialName == "OnlyDiff_Mouth")
       {
         FaceFrame *mouthFrame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
 
@@ -150,15 +231,15 @@ namespace YTE
     {
       Submesh &submesh = mesh->mParts[i];
 
-      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
       {
         mEyeBufferIndex = i;
-        mInitialEyeVertexBuffer = submesh.mVertexData;
+        mInitialEyeVertexBuffer = submesh.mData.mVertexData;
       }
-      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      else if (submesh.mData.mMaterialName == "OnlyDiff_Mouth")
       {
         mMouthBufferIndex = i;
-        mInitialMouthVertexBuffer = submesh.mVertexData;
+        mInitialMouthVertexBuffer = submesh.mData.mVertexData;
       }
     }
 

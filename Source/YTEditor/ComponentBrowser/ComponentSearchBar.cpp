@@ -152,7 +152,7 @@ namespace YTEditor
 
       if (matViewer)
       {
-        matViewer->LoadMaterial(model->GetMesh()->mParts[0].mUBOMaterial);
+        matViewer->LoadMaterial(model->GetMesh()->mParts[0].mData.mUBOMaterial);
 
         // get the list of materials from the submeshes
         auto& submeshes = model->GetMesh()->mParts;

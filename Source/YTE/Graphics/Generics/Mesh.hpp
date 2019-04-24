@@ -180,50 +180,10 @@ namespace YTE
     }
   };
 
-  // Submesh class contains all the data of the actual submesh
-  class Submesh
+  struct SubmeshData
   {
-  public:
-    YTE_Shared Submesh() = default;
-
-    YTE_Shared Submesh(Submesh&& aSubmesh);
-    YTE_Shared Submesh(Renderer *aRenderer,
-                       const aiScene *aScene,
-                       const aiMesh *aMesh,
-                       Skeleton *aSkeleton,
-                       uint32_t aBoneStartingVertexOffset);
-
-    YTE_Shared Submesh& operator=(Submesh&& aSubmesh);
-
-    // Call this if you've built up a default constructed Submesh. 
-    // This will create the GPU buffers and calculate the dimensions.
-    void Initialize();
-
-    size_t GetTriangleCount() const
-    {
-      return mIndexData.size() / 3;
-    }
-
-    glm::uvec3 GetTriangle(size_t aIndex) const
-    {
-      glm::uvec3 tri;
-      tri.x = (glm::uint)mIndexData[aIndex];
-      tri.y = (glm::uint)mIndexData[aIndex + 1];
-      tri.z = (glm::uint)mIndexData[aIndex + 2];
-      return tri;
-    }
-
-    void ResetTextureCoordinates();
-
-    // You probably shouldn't call these functions as it won't recalculate the owning mesh's dimensions
-    void UpdateVertices(std::vector<Vertex>& aVertices);
-    void UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
-
     std::vector<Vertex> mVertexData;
     std::vector<u32> mIndexData;
-
-    GPUBuffer<Vertex> mVertexBuffer;
-    GPUBuffer<u32> mIndexBuffer;
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
@@ -243,12 +203,59 @@ namespace YTE
     std::string mShaderSetName;
     Mesh* mMesh;
     bool mCullBackFaces = true;
+  };
+
+  // Submesh class contains all the data of the actual submesh
+  class Submesh
+  {
+  public:
+    YTE_Shared Submesh() = default;
+
+    YTE_Shared Submesh(Renderer* aRenderer,
+                       Mesh* aYTEMesh,
+                       const aiScene *aScene,
+                       const aiMesh *aMesh,
+                       Skeleton *aSkeleton,
+                       uint32_t aBoneStartingVertexOffset);
+
+    YTE_Shared Submesh(SubmeshData&& aSubmesh);
+    YTE_Shared Submesh(Submesh&& aSubmesh);
+    YTE_Shared Submesh& operator=(Submesh&& aSubmesh);
+
+    // Call this if you've built up a default constructed Submesh. 
+    // This will create the GPU buffers and calculate the dimensions.
+    void Initialize();
+
+    size_t GetTriangleCount() const
+    {
+      return mData.mIndexData.size() / 3;
+    }
+
+    glm::uvec3 GetTriangle(size_t aIndex) const
+    {
+      glm::uvec3 tri;
+      tri.x = (glm::uint)mData.mIndexData[aIndex];
+      tri.y = (glm::uint)mData.mIndexData[aIndex + 1];
+      tri.z = (glm::uint)mData.mIndexData[aIndex + 2];
+      return tri;
+    }
+
+    void ResetTextureCoordinates();
+
+    // You probably shouldn't call these functions as it won't recalculate the owning mesh's dimensions
+    void UpdateVertices(std::vector<Vertex>& aVertices);
+    void UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+    
+    GPUBuffer<Vertex> mVertexBuffer;
+    GPUBuffer<u32> mIndexBuffer;
+
+    SubmeshData mData;
 
   private:
     void CreateGPUBuffers();
 
     YTE_Shared Submesh& operator=(Submesh const& aSubmesh) = delete;
-    YTE_Shared Submesh(Submesh& aSubmesh) = delete;
+    YTE_Shared Submesh(Submesh const& aSubmesh) = delete;
   };
 
   class Mesh : public EventHandler
@@ -261,11 +268,9 @@ namespace YTE
     YTE_Shared Mesh(Renderer *aRenderer,
                     const std::string &aFile);
 
-    YTE_Shared Mesh(const std::string &aFile,
-                    std::vector<Submesh> &aSubmeshes);
-
-    YTE_Shared Mesh(const std::string& aFile,
-                    Submesh& aSubmesh);
+    YTE_Shared Mesh(Renderer* aRenderer, 
+                    const std::string &aFile,
+                    ContiguousRange<SubmeshData> aSubmeshes);
 
     YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
                                            std::vector<Vertex>& aVertices);
@@ -289,6 +294,10 @@ namespace YTE
     Skeleton mSkeleton;
     Dimension mDimension;
     bool mInstanced;
+
+  private:
+    Mesh(Mesh const&) = delete;
+    Mesh& operator=(Mesh const&) = delete;
   };
 }
 

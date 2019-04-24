@@ -178,8 +178,7 @@ namespace YTE
     std::string meshName = "__SpriteText";
     meshName += mOwner->GetGUID().ToString();
 
-    Submesh submesh;
-    std::vector<Submesh> submeshes;
+    SubmeshData submesh;
 
     u32 lastIndex = 0;
     float offsetX = 0, offsetY = 0;
@@ -363,11 +362,9 @@ namespace YTE
       
     }
 
-    submeshes.emplace_back(std::move(submesh));
-
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh, true);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 

@@ -48,9 +48,9 @@ namespace YTE
       auto& submesh = *submeshIt;
 
       mSubmeshMaterialsUBO.emplace_back(mRenderer->CreateUBO<UBOs::Material>(), 
-                                        submesh.mUBOMaterial);
+                                        submesh.mData.mUBOMaterial);
 
-      UpdateUBOSubmeshMaterial(&submesh.mUBOMaterial, i);
+      UpdateUBOSubmeshMaterial(&submesh.mData.mUBOMaterial, i);
     }
   }
 

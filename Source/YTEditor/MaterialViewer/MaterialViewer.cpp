@@ -126,7 +126,7 @@ namespace YTEditor
 
     for (auto& smesh : *mCurrentSubMeshes)
     {
-      matNames.push_back(smesh.mMaterialName.c_str());
+      matNames.push_back(smesh.mData.mMaterialName.c_str());
     }
 
     mComboBox->clear();
@@ -155,7 +155,7 @@ namespace YTEditor
   {
     if (aIndex < mCurrentSubMeshes->size())
     {
-      LoadMaterial((*mCurrentSubMeshes)[aIndex].mUBOMaterial);
+      LoadMaterial((*mCurrentSubMeshes)[aIndex].mData.mUBOMaterial);
     }
   }
 

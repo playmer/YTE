@@ -73,7 +73,7 @@ namespace YTE
   void InstantiatedHeightmap::CreateMesh(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices, std::string& aModelName)
   {
     std::string meshName = aModelName;
-    Submesh submesh;
+    SubmeshData submesh;
 
     submesh.mUBOMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     submesh.mUBOMaterial.mSpecular = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -92,11 +92,7 @@ namespace YTE
     submesh.mSpecularMap = mSpecularTName;
     submesh.mNormalMap = mNormalTName;
 
-    submesh.Initialize();
-    std::vector<Submesh> submeshes;
-    submeshes.emplace_back(std::move(submesh));
-
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
     mModel = mRenderer->CreateModel(mGraphicsView, mesh);
   }
 }

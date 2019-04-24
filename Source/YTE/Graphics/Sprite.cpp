@@ -269,7 +269,7 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
 
-    Submesh submesh;
+    SubmeshData submesh;
     submesh.mUBOMaterial = modelMaterial;
     
     submesh.mDiffuseMap = mTextureName;
@@ -293,14 +293,9 @@ namespace YTE
       2, 3, 0
     };
 
-    submesh.Initialize();
-
-    std::vector<Submesh> submeshes;
-    submeshes.emplace_back(std::move(submesh));
-
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 

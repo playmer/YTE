@@ -6,6 +6,8 @@
  * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
  */
 /******************************************************************************/
+#include <thread>
+
 #include "YTE/Core/Engine.hpp"
 
 #include "YTEMain/YTEMain.hpp"
@@ -22,6 +24,9 @@ int YTE_Main(ApplicationArguments&)
   //}
   //
   //YTEProfileFunction();
+
+  using namespace std::chrono_literals;
+  std::this_thread::sleep_for(7s);
   
   YTE::Engine mainEngine{
     { 

@@ -57,22 +57,22 @@ namespace YTE
 
   void VkSubmesh::Create()
   {
-    mIndexCount = mSubmesh->mIndexData.size();
+    mIndexCount = mSubmesh->mData.mIndexData.size();
 
     // Load Textures
-    if (false == mSubmesh->mDiffuseMap.empty())
+    if (false == mSubmesh->mData.mDiffuseMap.empty())
     {
-      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mDiffuseMap, Convert(mSubmesh->mDiffuseType));
+      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mData.mDiffuseMap, Convert(mSubmesh->mData.mDiffuseType));
       mSamplerTypes.emplace_back("DIFFUSE");
     }
-    if (false == mSubmesh->mSpecularMap.empty())
+    if (false == mSubmesh->mData.mSpecularMap.empty())
     {
-      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mSpecularMap, Convert(mSubmesh->mSpecularType));
+      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mData.mSpecularMap, Convert(mSubmesh->mData.mSpecularType));
       mSamplerTypes.emplace_back("SPECULAR");
     }
-    if (false == mSubmesh->mNormalMap.empty())
+    if (false == mSubmesh->mData.mNormalMap.empty())
     {
-      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mNormalMap, Convert(mSubmesh->mNormalType));
+      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mData.mNormalMap, Convert(mSubmesh->mData.mNormalType));
       mSamplerTypes.emplace_back("NORMAL");
     }
   }
@@ -130,7 +130,7 @@ namespace YTE
 
     VkShaderDescriptions descriptions;
 
-    mPipelineInfo = mRenderer->GetSurface(aView->GetWindow())->IfShaderExistsCreateOnView(mSubmesh->mShaderSetName, aView);
+    mPipelineInfo = mRenderer->GetSurface(aView->GetWindow())->IfShaderExistsCreateOnView(mSubmesh->mData.mShaderSetName, aView);
 
     if (mPipelineInfo)
     {
@@ -144,7 +144,7 @@ namespace YTE
      
     // load shader passing our created pipeline layout
     mPipelineInfo = mRenderer->GetSurface(aView->GetWindow())->CreateShader(
-      mSubmesh->mShaderSetName,
+      mSubmesh->mData.mShaderSetName,
       descriptorSetLayout,
       pipelineLayout,
       descriptions,
@@ -253,24 +253,12 @@ namespace YTE
     for (auto& part : aMesh->mParts)
     {
       auto submesh = std::make_unique<VkSubmesh>(this, &part, aRenderer);
-      mSubmeshMap.emplace(submesh->mSubmesh->mShaderSetName, submesh.get());
+      mSubmeshMap.emplace(submesh->mSubmesh->mData.mShaderSetName, submesh.get());
       mSubmeshes.emplace_back(std::move(submesh));
     }
-
-    LoadToVulkan();
   }
 
   VkMesh::~VkMesh()
   {
-  }
-
-  void VkMesh::LoadToVulkan()
-  {
-    YTEProfileFunction();
-
-    for (auto &submesh : mSubmeshes)
-    {
-      submesh->LoadToVulkan();
-    }
   }
 }

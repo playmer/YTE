@@ -93,7 +93,7 @@ namespace YTE
 
     mContext->SetCurrentContext();
 
-    auto& submesh = mContext->GetSubmesh();
+    auto submesh = mContext->GetSubmeshData();
 
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
@@ -137,12 +137,8 @@ namespace YTE
       return;
     }
 
-    submesh.Initialize();
-    std::vector<Submesh> submeshes;
-    submeshes.emplace(std::move(submesh));
-
     auto renderer = mSurface->GetRenderer();
-    auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
+    auto mesh = renderer->CreateSimpleMesh(mModelName, submesh, true);
     instantiatedModel = renderer->CreateModel(mView, mesh);
 
     UBOs::Model modelUBO;

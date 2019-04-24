@@ -35,8 +35,6 @@ namespace YTE
     void Create();
     void Destroy();
 
-    void LoadToVulkan();
-
     VkShaderDescriptions CreateShaderDescriptions();
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
@@ -76,8 +74,6 @@ namespace YTE
     ~VkMesh();
     
     VkMesh(const VkMesh &aMesh) = delete;
-
-    void LoadToVulkan();
 
     std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
     std::unordered_multimap<std::string, VkSubmesh*> mSubmeshMap;

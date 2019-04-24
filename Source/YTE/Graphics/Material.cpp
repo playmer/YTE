@@ -163,7 +163,7 @@ namespace YTE
 
           for (auto[submesh, i] : enumerate(mesh->mParts))
           {
-            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
+            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mData.mUBOMaterial,
                                                                         this,
                                                                         i,
                                                                         &(*submesh));
@@ -219,7 +219,7 @@ namespace YTE
     for (auto &materialIt : self->mSubmeshMaterials)
     {
       std::string name = materialIt->GetSubmesh() ? 
-                          materialIt->GetSubmesh()->mMaterialName :
+                          materialIt->GetSubmesh()->mData.mMaterialName :
                           "";
 
       materials.emplace_back(std::make_pair(materialIt.get(), name));
@@ -260,7 +260,7 @@ namespace YTE
 
       if (submeshMaterial->GetSubmesh())
       {
-        name = submeshMaterial->GetSubmesh()->mMaterialName;
+        name = submeshMaterial->GetSubmesh()->mData.mMaterialName;
       }
 
       materialName.SetString(name.c_str(),

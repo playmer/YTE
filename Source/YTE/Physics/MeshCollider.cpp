@@ -59,21 +59,23 @@ namespace YTE
     
     if (mesh != nullptr)
     {
-      for (auto &submesh : mesh->mParts)
+      for (auto const& submesh : mesh->mParts)
       {
-        DebugAssert((submesh.mIndexData.size() % 3) == 0, "Index buffer must be divisible by 3.");
+        auto const& data = submesh.mData;
 
-        auto indexSize = submesh.mIndexData.size();
+        DebugAssert((data.mIndexData.size() % 3) == 0, "Index buffer must be divisible by 3.");
+
+        auto indexSize = data.mIndexData.size();
       
         for (size_t i = 0; i < indexSize; i += 3)
         {
-          auto i1 = submesh.mIndexData.at(i + 0);
-          auto i2 = submesh.mIndexData.at(i + 1);
-          auto i3 = submesh.mIndexData.at(i + 2);
+          auto i1 = data.mIndexData[i + 0];
+          auto i2 = data.mIndexData[i + 1];
+          auto i3 = data.mIndexData[i + 2];
       
-          mTriangles.addTriangle(ToBullet(submesh.mVertexData.at(i1).mPosition),
-                                 ToBullet(submesh.mVertexData.at(i2).mPosition),
-                                 ToBullet(submesh.mVertexData.at(i3).mPosition));
+          mTriangles.addTriangle(ToBullet(data.mVertexData[i1].mPosition),
+                                 ToBullet(data.mVertexData[i2].mPosition),
+                                 ToBullet(data.mVertexData[i3].mPosition));
         }
       }
     }
