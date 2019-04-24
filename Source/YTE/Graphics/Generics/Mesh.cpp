@@ -464,12 +464,18 @@ namespace YTE
     }
 
     Initialize();
+
+    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
+    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
   }
 
   Submesh::Submesh(SubmeshData&& aRightData)
     : mData{ std::move(aRightData) }
   {
     Initialize();
+
+    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
+    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
   }
 
   Submesh::Submesh(Submesh&& aRight)
@@ -477,7 +483,6 @@ namespace YTE
     , mIndexBuffer{std::move(aRight.mIndexBuffer) }
     , mData{ std::move(aRight.mData) }
   {
-    Initialize();
   }
 
   Submesh& Submesh::operator=(Submesh&& aRight)
@@ -509,9 +514,6 @@ namespace YTE
                                                 GPUAllocation::BufferUsage::TransferDst |
                                                 GPUAllocation::BufferUsage::IndexBuffer,
                                                 GPUAllocation::MemoryProperty::DeviceLocal);
-
-    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
-    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
   }
 
   void Submesh::ResetTextureCoordinates()
@@ -601,16 +603,10 @@ namespace YTE
         throw "Mesh does not exist.";
       }
     }
-
+    
     auto pScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |
       //aiProcess_PreTransformVertices |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
-
-    auto pColliderScene = ImporterCol.ReadFile(meshFile.c_str(),
-      aiProcess_Triangulate |
-      aiProcess_PreTransformVertices |
       aiProcess_CalcTangentSpace |
       aiProcess_GenSmoothNormals);
 
@@ -622,46 +618,11 @@ namespace YTE
       auto pMeshScene = pScene;
       if (!hasBones)
       {
-        ///////////////////////////////////////////////////////
-        // Don't have time to test, pretty sure this should be here though, delete the above.
-        ///////////////////////////////////////////////////////
-        //pMeshScene = ImporterCol.ReadFile(meshFile.c_str(),
-        //  aiProcess_Triangulate |
-        //  aiProcess_PreTransformVertices |
-        //  aiProcess_CalcTangentSpace |
-        //  aiProcess_GenSmoothNormals);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        pMeshScene = pColliderScene;
+        pMeshScene = ImporterCol.ReadFile(meshFile.c_str(),
+          aiProcess_Triangulate |
+          aiProcess_PreTransformVertices |
+          aiProcess_CalcTangentSpace |
+          aiProcess_GenSmoothNormals);
       }
 
       mParts.clear();
@@ -720,7 +681,8 @@ namespace YTE
       mParts[aSubmeshIndex].mData.mVertexData.size(), 
       aVertices.size());
 
-    mParts[aSubmeshIndex].mData.mVertexData = aVertices;
+
+    mParts[aSubmeshIndex].UpdateVertices(aVertices);
 
     mDimension = CalculateDimensions(mParts);
   }

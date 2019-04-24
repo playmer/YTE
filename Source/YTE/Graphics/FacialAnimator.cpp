@@ -80,124 +80,31 @@ namespace YTE
 
     Mesh *mesh = instModel->GetMesh();
 
-    for (int i = 0; i < mesh->mParts.size(); i++)
+    for (auto&& [submesh, i] : enumerate(mesh->mParts))
     {
-
-
-
-
-
-
-
-
-      //////////////////////////////////////////////////
-      // This should be better than what's below, but I don't have time to test it until I'm
-      // done with the current refactor, but the code was there to be rewritten, so I did so.
-      //////////////////////////////////////////////////
-      //Submesh& submesh = mesh->mParts[i];
-      //FaceFrame* frame{ nullptr };
-      //std::vector<Vertex> vertexBuffer;
-      //
-      //
-      //if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
-      //{
-      //  frame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
-      //  vertexBuffer = mInitialEyeVertexBuffer;
-      //}
-      //else if(submesh.mData.mMaterialName == "OnlyDiff_Mouth")
-      //{
-      //  frame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
-      //  vertexBuffer = mInitialMouthVertexBuffer;
-      //}
-      //
-      //if (frame)
-      //{
-      //  for (auto& vertex : vertexBuffer)
-      //  {
-      //    vertex.mTextureCoordinates.x += frame->uv.x;
-      //    vertex.mTextureCoordinates.y += frame->uv.y;
-      //  }
-      //
-      //  mesh->UpdateVertices(i, vertexBuffer);
-      //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      Submesh &submesh = mesh->mParts[i];
-
-      if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
+      FaceFrame* frame{ nullptr };
+      std::vector<Vertex> vertexBuffer;
+      
+      if (submesh->mData.mMaterialName == "OnlyDiff_Eye")
       {
-        FaceFrame *eyeFrame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
-
-        if (eyeFrame)
-        {
-          std::vector<Vertex> eyeBuffer = mInitialEyeVertexBuffer;
-
-          for (int j = 0; j < mInitialEyeVertexBuffer.size(); j++)
-          {
-            eyeBuffer[j].mTextureCoordinates.x += eyeFrame->uv.x;
-            eyeBuffer[j].mTextureCoordinates.y += eyeFrame->uv.y;
-          }
-
-          mesh->UpdateVertices(i, eyeBuffer);
-        }
+        frame = FindFrame(anim->eyeFrames, aEvent->time * anim->ticksPerSecond);
+        vertexBuffer = mInitialEyeVertexBuffer;
       }
-      else if (submesh.mData.mMaterialName == "OnlyDiff_Mouth")
+      else if (submesh->mData.mMaterialName == "OnlyDiff_Mouth")
       {
-        FaceFrame *mouthFrame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
-
-        if (mouthFrame)
+        frame = FindFrame(anim->mouthFrames, aEvent->time * anim->ticksPerSecond);
+        vertexBuffer = mInitialMouthVertexBuffer;
+      }
+      
+      if (frame)
+      {
+        for (auto& vertex : vertexBuffer)
         {
-          std::vector<Vertex> mouthBuffer = mInitialMouthVertexBuffer;
-
-          for (int j = 0; j < mInitialMouthVertexBuffer.size(); j++)
-          {
-            mouthBuffer[j].mTextureCoordinates.x += mouthFrame->uv.x;
-            mouthBuffer[j].mTextureCoordinates.y += mouthFrame->uv.y;
-          }
-
-          mesh->UpdateVertices(i, mouthBuffer);
+          vertex.mTextureCoordinates.x += frame->uv.x;
+          vertex.mTextureCoordinates.y += frame->uv.y;
         }
+      
+        mesh->UpdateVertices(i, vertexBuffer);
       }
     }
   }
@@ -246,28 +153,13 @@ namespace YTE
     instModel->mType = ShaderType::AlphaBlendShader;
   }
 
-  FaceFrame* FacialAnimator::FindEyeFrame(FaceAnim *anim, double time)
+  FaceFrame* FacialAnimator::FindFrame(std::vector<FaceFrame>& aFrames, double time)
   {
-    // find correct frame
-    for (int k = 0; k < anim->eyeFrames.size(); k++)
+    for (auto& frame : aFrames)
     {
-      if (anim->eyeFrames[k].time > time)
+      if (frame.time > time)
       {
-        return &anim->eyeFrames[k];
-      }
-    }
-
-    return nullptr;
-  }
-
-  FaceFrame* FacialAnimator::FindMouthFrame(FaceAnim *anim, double time)
-  {
-    // find correct frame
-    for (int k = 0; k < anim->mouthFrames.size(); k++)
-    {
-      if (anim->mouthFrames[k].time > time)
-      {
-        return &anim->mouthFrames[k];
+        return &frame;
       }
     }
 

@@ -34,6 +34,7 @@ namespace YTE
                          size_t aSize, 
                          size_t aOffset)
   {
+    std::lock_guard<std::mutex> lock(mAddingMutex);
     mReferences.emplace_back(aBuffer, aOffset, aSize);
     mData.insert(mData.end(), aData, aData + aSize);
   }
@@ -41,6 +42,8 @@ namespace YTE
   void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aCommandBuffer)
   {
     YTEProfileFunction();
+    std::lock_guard<std::mutex> lock(mAddingMutex);
+
     auto bytes = std::to_string(mData.size());
     auto size = mData.size();
     YTEProfileBlock(bytes.c_str());

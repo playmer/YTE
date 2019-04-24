@@ -52,10 +52,10 @@ namespace YTE
     void Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer);
 
     std::vector<u8> mData;
+    std::mutex mAddingMutex;
     std::vector<VkUBOReference> mReferences;
     std::shared_ptr<vkhlf::Buffer> mMappingBuffer;
     VkRenderer* mRenderer;
-    //size_t mBytesLastUsed = 0;
   };
 
   class VkRenderer : public Renderer

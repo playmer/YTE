@@ -68,8 +68,7 @@ namespace YTE
     int mMouthBufferIndex;
     std::vector<Vertex> mInitialMouthVertexBuffer;
 
-    FaceFrame* FindEyeFrame(FaceAnim *anim, double time);
-    FaceFrame* FindMouthFrame(FaceAnim *anim, double time);
+    FaceFrame* FindFrame(std::vector<FaceFrame>& aFrames, double time);
   };
 }
 
