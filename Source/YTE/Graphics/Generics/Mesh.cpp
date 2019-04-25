@@ -113,13 +113,30 @@ namespace YTE
   //////////////////////////////////////////////////////////////////////////////
   // Skeleton
   //////////////////////////////////////////////////////////////////////////////
-  bool Skeleton::Initialize(const aiScene* aScene)
+  bool Skeleton::HasBones(aiScene const* aScene)
+  {
+    u32 const numMeshes = aScene->mNumMeshes;
+
+    for (u32 i = 0; i < numMeshes; ++i)
+    {
+      aiMesh const* mesh = aScene->mMeshes[i];
+
+      if (0 < mesh->mNumBones)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  void Skeleton::Initialize(aiScene const* aScene)
   {
     YTEProfileFunction();
     // find number of vertices to initialize the skeleton
-    uint32_t numMeshes = aScene->mNumMeshes;
-    uint32_t vertCount = 0;
-    for (uint32_t i = 0; i < numMeshes; ++i)
+    u32 numMeshes = aScene->mNumMeshes;
+    u32 vertCount = 0;
+    for (u32 i = 0; i < numMeshes; ++i)
     {
       vertCount += aScene->mMeshes[i]->mNumVertices;
     }
@@ -134,25 +151,20 @@ namespace YTE
     auto globalInverse = aScene->mRootNode->mTransformation;
     mGlobalInverseTransform = ToGlm(globalInverse.Inverse());
 
-    bool bonesFound = false;
-    uint32_t startingVertex = 0;
-    for (uint32_t i = 0; i < numMeshes; ++i)
+    u32 startingVertex = 0;
+    for (u32 i = 0; i < numMeshes; ++i)
     {
-      aiMesh *m = aScene->mMeshes[i];
-      if (m->mNumBones > 0)
+      aiMesh* mesh = aScene->mMeshes[i];
+
+      if (0 < mesh->mNumBones)
       {
-        LoadBoneData(m, startingVertex);
-        bonesFound = true;
+        LoadBoneData(mesh, startingVertex);
       }
-      startingVertex += m->mNumVertices;
+
+      startingVertex += mesh->mNumVertices;
     }
 
-    if (bonesFound)
-    {
-      PreTransform(aScene);
-    }
-
-    return bonesFound;
+    PreTransform(aScene);
   }
 
 
@@ -574,7 +586,6 @@ namespace YTE
   {
     YTEProfileFunction();
     Assimp::Importer Importer;
-    Assimp::Importer ImporterCol;
 
     std::string filename = aFile; // TODO: don't actually make a copy lol
     std::string meshFile;
@@ -603,46 +614,49 @@ namespace YTE
         throw "Mesh does not exist.";
       }
     }
-    
-    auto pScene = Importer.ReadFile(meshFile.c_str(),
+
+    auto meshScene = Importer.ReadFile(meshFile.c_str(),
       aiProcess_Triangulate |
-      //aiProcess_PreTransformVertices |
       aiProcess_CalcTangentSpace |
       aiProcess_GenSmoothNormals);
 
-    if (pScene)
+    if (meshScene)
     {
-      // Load bone data
-      bool hasBones = mSkeleton.Initialize(pScene);
-      
-      auto pMeshScene = pScene;
-      if (!hasBones)
+      // If this scene has bones, we need to reload it without pre-transforming the
+      // vertices.
+      if (false == Skeleton::HasBones(meshScene))
       {
-        pMeshScene = ImporterCol.ReadFile(meshFile.c_str(),
-          aiProcess_Triangulate |
-          aiProcess_PreTransformVertices |
-          aiProcess_CalcTangentSpace |
-          aiProcess_GenSmoothNormals);
+        Importer.ApplyPostProcessing(
+          //aiProcess_Triangulate |
+          //aiProcess_GenSmoothNormals |
+          //aiProcess_CalcTangentSpace |
+          aiProcess_PreTransformVertices
+        );
+      }
+      else
+      {
+        // Load bone data
+        mSkeleton.Initialize(meshScene);
       }
 
       mParts.clear();
-      mParts.reserve(pMeshScene->mNumMeshes);
+      mParts.reserve(meshScene->mNumMeshes);
 
       //printf("Mesh FileName: %s\n", aFile.c_str());
 
-      uint32_t numMeshes = pMeshScene->mNumMeshes;
+      u32 numMeshes = meshScene->mNumMeshes;
 
       // Load Mesh
-      uint32_t startingVertex = 0;
+      u32 startingVertex = 0;
       for (u32 i = 0; i < numMeshes; i++)
       {
         mParts.emplace_back(aRenderer,
                             this,
-                            pMeshScene, 
-                            pMeshScene->mMeshes[i], 
+                            meshScene, 
+                            meshScene->mMeshes[i], 
                             &mSkeleton, 
                             startingVertex);
-        startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
+        startingVertex += meshScene->mMeshes[i]->mNumVertices;
       }
 
       mName = aFile;

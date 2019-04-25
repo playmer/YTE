@@ -112,7 +112,10 @@ namespace YTE
       }
     };
 
-    YTE_Shared bool Initialize(const aiScene* aScene);
+
+    static YTE_Shared bool HasBones(const aiScene* aScene);
+
+    YTE_Shared void Initialize(const aiScene* aScene);
 
     YTE_Shared void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
 
