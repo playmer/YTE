@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -43,7 +38,6 @@ namespace YTE
     LoadToVulkan();
 
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
 
     CreateRenderPass();
     //ReloadQuad();
@@ -139,29 +133,10 @@ namespace YTE
     mFrameBufferSwapChain->acquireNextFrame();
   }
 
-
-
   const vk::Extent2D& VkRenderToScreen::GetExtent()
   {
     return mFrameBufferSwapChain->getExtent();
   }
-
-
-
-  void VkRenderToScreen::MoveToNextEvent()
-  {
-    mCBEB->NextEvent();
-  }
-
-
-
-  void VkRenderToScreen::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    auto& e = mCBEB->GetCurrentEvent();
-    aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
-  }
-
-
 
   void VkRenderToScreen::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
@@ -558,8 +533,8 @@ namespace YTE
 
   void VkRenderToScreen::ScreenQuad::LoadToVulkan()
   {
-    mVertexBuffer.Update(mVertices.data(), mVertices.size());
-    mIndexBuffer.Update(mIndices.data(), mIndices.size());
+    mVertexBuffer.Update(mVertices);
+    mIndexBuffer.Update(mIndices);
   }
 
   void VkRenderToScreen::ScreenQuad::Bind(std::shared_ptr<vkhlf::CommandBuffer> aCBO)

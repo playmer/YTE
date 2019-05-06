@@ -1,9 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -706,7 +700,6 @@ namespace YTE
         YTEMetaProfileBlock(data.mName.c_str());
         
         data.mRenderTarget->RenderFull(mRenderer->mMeshes);
-        data.mRenderTarget->MoveToNextEvent();
       }
     }
 
@@ -715,7 +708,6 @@ namespace YTE
       YTEMetaProfileBlock("Building Secondary Command Buffers");
 
       mRenderToScreen->RenderFull(extent);
-      mRenderToScreen->MoveToNextEvent();
     }
 
     // cube map render
@@ -734,8 +726,6 @@ namespace YTE
       for (auto const&[view, data] : mViewData)
       {
         YTEMetaProfileBlock(data.mName.c_str());
-
-        data.mRenderTarget->ExecuteSecondaryEvent(cbo);
 
         glm::vec4 col = data.mClearColor;
 
@@ -762,8 +752,6 @@ namespace YTE
     colorValues[2] = 0.0f;
     colorValues[3] = 1.0f;
     vk::ClearValue color{ colorValues };
-
-    mRenderToScreen->ExecuteSecondaryEvent(cbo);
 
     cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
                          mRenderToScreen->GetFrameBuffer(),
