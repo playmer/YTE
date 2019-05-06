@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VKWaterInfluenceMapManager_hpp

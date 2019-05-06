@@ -1,7 +1,3 @@
-//////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Material_hpp

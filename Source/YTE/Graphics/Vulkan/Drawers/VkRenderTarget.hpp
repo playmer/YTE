@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRenderTarget_hpp
@@ -15,7 +10,6 @@
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 #include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
-#include "YTE/Graphics/Vulkan/VkCommandBufferEventBuffer.hpp"
 
 namespace YTE
 {
@@ -87,10 +81,8 @@ namespace YTE
     virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
 
     virtual void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
-    virtual void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
-    virtual void MoveToNextEvent();
 
-    // gettors / settors
+    // getters / setters
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass()
     {
       return mRenderPass;
@@ -132,7 +124,6 @@ namespace YTE
     std::shared_ptr<vkhlf::Surface> mVulkanSurface;
     std::shared_ptr<vkhlf::RenderPass> mRenderPass;
     std::unique_ptr<VkCBOB<3, true>> mCBOB;
-    std::unique_ptr<VkCBEB<3>> mCBEB;
     vk::Format mColorFormat;
     vk::Format mDepthFormat;
   };

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Generics_InstantiatedInfluenceMap_hpp

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
@@ -477,8 +472,8 @@ namespace YTE
 
     Initialize();
 
-    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
-    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
+    mVertexBuffer.Update(mData.mVertexData);
+    mIndexBuffer.Update(mData.mIndexData);
   }
 
   Submesh::Submesh(SubmeshData&& aRightData)
@@ -486,8 +481,8 @@ namespace YTE
   {
     Initialize();
 
-    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
-    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
+    mVertexBuffer.Update(mData.mVertexData);
+    mIndexBuffer.Update(mData.mIndexData);
   }
 
   Submesh::Submesh(Submesh&& aRight)
@@ -536,7 +531,7 @@ namespace YTE
     }
   }
 
-  void Submesh::UpdateVertices(std::vector<Vertex>& aVertices)
+  void Submesh::UpdateVertices(std::vector<Vertex> const& aVertices)
   {
     DebugObjection(aVertices.size() != mData.mVertexData.size(), 
                    "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
@@ -545,12 +540,12 @@ namespace YTE
 
     mData.mVertexData = aVertices;
 
-    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
+    mVertexBuffer.Update(mData.mVertexData);
 
     CalculateSubMeshDimensions(*this);
   }
 
-  void Submesh::UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  void Submesh::UpdateVerticesAndIndices(std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices)
   {
     DebugObjection(aVertices.size() != mData.mVertexData.size(),
                    "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
@@ -565,8 +560,8 @@ namespace YTE
     mData.mVertexData = aVertices;
     mData.mIndexData = aIndices;
 
-    mVertexBuffer.Update(mData.mVertexData.data(), mData.mVertexData.size());
-    mIndexBuffer.Update(mData.mIndexData.data(), mData.mIndexData.size());
+    mVertexBuffer.Update(mData.mVertexData);
+    mIndexBuffer.Update(mData.mIndexData);
 
     CalculateSubMeshDimensions(*this);
   }
@@ -687,7 +682,7 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
+  void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex> const& aVertices)
   {
     DebugObjection(
       aVertices.size() != mParts[aSubmeshIndex].mData.mVertexData.size(), 
@@ -701,7 +696,7 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
+  void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices)
   {
     mParts[aSubmeshIndex].UpdateVerticesAndIndices(aVertices, aIndices);
 
@@ -733,13 +728,6 @@ namespace YTE
 
   void Mesh::ResetTextureCoordinates()
   {
-    //auto range = ContiguousRange<Submesh>(mParts);
-    //auto range2 = ContiguousRange<Submesh>(mParts[0]);
-    //
-    //std::array<Submesh, 5> submeshes;
-    //
-    //auto range3 = MakeContiguousRange(submeshes);
-
     for (auto& submesh : mParts)
     {
       submesh.ResetTextureCoordinates();

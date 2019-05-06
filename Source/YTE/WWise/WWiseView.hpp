@@ -1,5 +1,3 @@
-// copyright All content 2016 DigiPen(USA) Corporation, all rights reserved.
-
 #pragma once
 
 #ifndef YTE_WWise_WWiseView_hpp

@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2018/01/19
-*
-* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #pragma once
 
 #include "fmt/format.h"

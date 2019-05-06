@@ -1,7 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
 #include <iostream>
 #include <fstream>
 

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"

@@ -1,7 +1,3 @@
-/******************************************************************************/
-// Joshua T. Fisher
-// All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Space_hpp

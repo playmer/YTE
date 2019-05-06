@@ -1,11 +1,4 @@
-﻿/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
 #ifndef YTE_Core_EventHandler_hpp
 #define YTE_Core_EventHandler_hpp

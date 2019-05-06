@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"

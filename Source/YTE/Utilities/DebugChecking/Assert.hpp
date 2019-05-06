@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   6/30/2015
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Utilities_Assert_H

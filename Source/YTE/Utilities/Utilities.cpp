@@ -1,7 +1,3 @@
-/*****************************************************************************
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-\author Joshua T. Fisher
-******************************************************************************/
 #include <functional>
 #include <string>
 #include <fstream>

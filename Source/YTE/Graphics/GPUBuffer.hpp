@@ -61,6 +61,11 @@ namespace YTE
       mUBO->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
     }
 
+    void Update(ContiguousRange<tType> aData)
+    {
+      mUBO->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
+    }
+
     void reset()
     {
       mUBO.reset();

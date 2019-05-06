@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"

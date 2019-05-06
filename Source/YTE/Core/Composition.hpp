@@ -1,18 +1,3 @@
-
-/******************************************************************************/
-/*!
-\file   Composition.hpp
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\par    Course: GAM 200
-\date   10/23/2014
-\brief
-This file contains the declaration of various functions included in our
-Component library.
-
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Composition_hpp

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/StandardLibrary/Utilities.hpp"
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"

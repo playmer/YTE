@@ -32,7 +32,7 @@ namespace YTE
   class ContiguousRange
   {
   public:
-    ContiguousRange(std::vector<tType> aContainer)
+    ContiguousRange(std::vector<tType>& aContainer)
       : mBegin(&*aContainer.begin()), mEnd(&*aContainer.end())
     {
     }

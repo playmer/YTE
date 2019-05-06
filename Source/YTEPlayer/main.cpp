@@ -1,12 +1,4 @@
-﻿/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   2015-10-26
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
-#include <thread>
+﻿#include <thread>
 
 #include "YTE/Core/Engine.hpp"
 

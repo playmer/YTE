@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2015-10-28
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Utilities_Orientation_hpp

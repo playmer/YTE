@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp

@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2015-10-26
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include <memory>
 #include <iostream>
 #include <fstream>

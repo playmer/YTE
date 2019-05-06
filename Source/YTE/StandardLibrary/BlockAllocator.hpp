@@ -1,11 +1,4 @@
-﻿/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
 #include <array>
 #include <list>

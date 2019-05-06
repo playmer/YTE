@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #pragma once
 
 #include "assimp/types.h"

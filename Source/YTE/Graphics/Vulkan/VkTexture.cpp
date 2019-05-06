@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include <array>
 #include "YTE/StandardLibrary/FileSystem.hpp"
 #include <fstream>

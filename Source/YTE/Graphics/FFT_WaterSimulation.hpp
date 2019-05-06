@@ -1,7 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
 #pragma once
 #ifndef YTE_Graphics_FFT_WaterSimulation_hpp
 #define YTE_Graphics_FFT_WaterSimulation_hpp

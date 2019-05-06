@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "fmt/format.h"
 
 #include "YTE/Core/AssetLoader.hpp"

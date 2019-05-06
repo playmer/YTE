@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include <fstream>
 
 #include "assimp/Importer.hpp"

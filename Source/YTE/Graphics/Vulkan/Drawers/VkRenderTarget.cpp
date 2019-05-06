@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -38,7 +33,6 @@ namespace YTE
     mData.mCombinationType = aCombination;
     mData.mOrder = aView->mView->GetOrder();
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
   }
 
 
@@ -57,7 +51,6 @@ namespace YTE
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
   }
 
 
@@ -113,21 +106,6 @@ namespace YTE
   void VkRenderTarget::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
     UnusedArguments(aMeshes);
-  }
-
-
-
-  void VkRenderTarget::MoveToNextEvent()
-  {
-    mCBEB->NextEvent();
-  }
-
-
-
-  void VkRenderTarget::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    auto& e = mCBEB->GetCurrentEvent();
-    aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
   }
 
   void VkRenderTarget::CreateFrameBuffer()

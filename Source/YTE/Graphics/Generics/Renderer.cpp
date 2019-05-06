@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"

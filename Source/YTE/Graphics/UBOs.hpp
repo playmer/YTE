@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_UBOs_hpp

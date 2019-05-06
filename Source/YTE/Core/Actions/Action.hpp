@@ -1,13 +1,8 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
+
 #ifndef YTE_Actions_Action_hpp
 #define YTE_Actions_Action_hpp
+
 #include <functional>
 
 #include "YTE/Utilities/Utilities.hpp"

@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2015-10-16
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include "fmt/format.h"
 
 #include <glm/gtx/transform.hpp>

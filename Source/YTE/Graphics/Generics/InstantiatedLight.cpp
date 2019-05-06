@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 
 namespace YTE

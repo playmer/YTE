@@ -1,17 +1,3 @@
-/******************************************************************************/
-/*!
-\file   ComponentFactory.h
-\author Joshua T. Fisher \ Austin A. Morris
-\par    email: j.fisher\@digipen.edu, a.morris\@digipen.edu
-\par    Course: GAM 200
-\date   10/23/2014
-\brief
-This file contains the declaration of various functions included in our
-ComponentFactory library.
-
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_ComponentSystem_h

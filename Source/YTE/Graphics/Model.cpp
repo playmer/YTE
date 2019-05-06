@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"

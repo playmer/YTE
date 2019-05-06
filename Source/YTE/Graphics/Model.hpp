@@ -1,7 +1,3 @@
-//////////////////////////
-// Author: Andrew Griffin
-//////////////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Model_hpp

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Generics_Mesh_hpp
@@ -216,9 +211,9 @@ namespace YTE
 
     YTE_Shared Submesh(Renderer* aRenderer,
                        Mesh* aYTEMesh,
-                       const aiScene *aScene,
-                       const aiMesh *aMesh,
-                       Skeleton *aSkeleton,
+                       aiScene const* aScene,
+                       aiMesh const* aMesh,
+                       Skeleton* aSkeleton,
                        uint32_t aBoneStartingVertexOffset);
 
     YTE_Shared Submesh(SubmeshData&& aSubmesh);
@@ -246,8 +241,8 @@ namespace YTE
     void ResetTextureCoordinates();
 
     // You probably shouldn't call these functions as it won't recalculate the owning mesh's dimensions
-    void UpdateVertices(std::vector<Vertex>& aVertices);
-    void UpdateVerticesAndIndices(std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
+    void UpdateVertices(std::vector<Vertex> const& aVertices);
+    void UpdateVerticesAndIndices(std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices);
     
     GPUBuffer<Vertex> mVertexBuffer;
     GPUBuffer<u32> mIndexBuffer;
@@ -276,10 +271,10 @@ namespace YTE
                     ContiguousRange<SubmeshData> aSubmeshes);
 
     YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
-                                           std::vector<Vertex>& aVertices);
+                                           std::vector<Vertex> const& aVertices);
     YTE_Shared virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, 
-                                                     std::vector<Vertex>& aVertices, 
-                                                     std::vector<u32>& aIndices);
+                                                     std::vector<Vertex> const& aVertices, 
+                                                     std::vector<u32> const& aIndices);
 
     YTE_Shared virtual ~Mesh();
 

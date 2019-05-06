@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
