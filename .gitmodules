@@ -21,7 +21,7 @@
 	url = https://github.com/playmer/crunch.git
 [submodule "Dependencies/SDL"]
 	path = Dependencies/SDL
-	url = https://github.com/SDL-mirror/SDL.git
+	url = https://github.com/playmer/SDL.git
 [submodule "Dependencies/glm"]
 	path = Dependencies/glm
 	url = https://github.com/playmer/glm.git
