@@ -312,6 +312,8 @@ namespace YTE
 
   Window::~Window()
   {
+    auto self = mData.Get<WindowData>();
+    SDL_DestroyWindow(self->mWindow);
   }
 
   void Window::PlatformUpdate()
