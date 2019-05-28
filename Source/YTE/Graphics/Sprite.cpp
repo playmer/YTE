@@ -22,7 +22,7 @@ namespace YTE
 
     filesystem::path fsPath = Path::GetGamePath().String();
 
-    filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
+    filesystem::path finalPath = fsPath.parent_path() / "Textures";
 
     std::vector<std::string> result;
 
@@ -93,6 +93,8 @@ namespace YTE
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
     mConstructing = false;
+
+    //mTextureName = "MENU_BUTTON_Yes.basis";
 
     if (mTextureName.empty())
     {

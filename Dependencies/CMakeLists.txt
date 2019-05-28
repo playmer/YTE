@@ -29,6 +29,18 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   target_compile_options(assimp PRIVATE /bigobj)
 endif()
 
+
+##########################################################################
+# Turn off/configure various parts of basis_universal.
+option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+option(BUILD_TESTS "Build test applications" OFF)
+option(BASISU_BUILD_TOOL "Build the tool" OFF)
+option(BASISU_INSTALL "Installs basis universal" OFF)
+option(BASISU_INSTALL_TOOL "Installs the tool" OFF)
+option(BASISU_OPENMP "Allows OpenMP support" OFF)
+
+add_subdirectory(basis_universal)
+
 ##########################################################################
 # Turn off/configure various parts of bullet3.
 option(BUILD_PYBULLET "Set when you want to build pybullet (Python bindings for Bullet)" OFF)
@@ -109,6 +121,8 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL Intel)
 endif()
 
 target_compile_options(assimp                PRIVATE ${disableWarning})
+target_compile_options(basisu_encoder        PRIVATE ${disableWarning})
+target_compile_options(basisu_transcoder     PRIVATE ${disableWarning})
 target_compile_options(Bullet2FileLoader     PRIVATE ${disableWarning})
 target_compile_options(Bullet3Collision      PRIVATE ${disableWarning})
 target_compile_options(Bullet3Common         PRIVATE ${disableWarning})
@@ -139,6 +153,8 @@ set_target_properties(SPVRemapper PROPERTIES FOLDER "Ignore")
 
 set_target_properties(
   assimp
+  basisu_encoder
+  basisu_transcoder
   Bullet2FileLoader
   Bullet3Collision
   Bullet3Common

@@ -17,6 +17,7 @@ target_include_directories(YTE
     ${Dependencies_Root}
     ${Dependencies_Root}/assimp/include
     ${Dependencies_Root}/assimp/contrib/rapidjson/include
+    ${Dependencies_Root}/basis_universal/src
     ${Dependencies_Root}/bullet3/src
     #${Dependencies_Root}/glm
     ${Source_Root}
@@ -45,6 +46,7 @@ endif()
 
 target_link_libraries(YTE
   PUBLIC
+    basisu_transcoder
     Bullet2FileLoader
     Bullet3Collision
     Bullet3Common

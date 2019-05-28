@@ -25,3 +25,6 @@
 [submodule "Dependencies/glm"]
 	path = Dependencies/glm
 	url = https://github.com/playmer/glm.git
+[submodule "Dependencies/basis_universal"]
+	path = Dependencies/basis_universal
+	url = https://github.com/playmer/basis_universal.git

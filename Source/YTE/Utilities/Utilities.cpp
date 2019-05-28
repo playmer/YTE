@@ -188,20 +188,8 @@ namespace YTE
     return Format(aFormatString, variadicArguments);
   }
 
-  /******************************************************************************/
-  /*!
-  \brief
-  As the name.
-  Based on a StackOverflow:
-  http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
-
-  \param name
-  Name of the file to read.
-
-  \return
-  Success or failure.
-  */
-  /******************************************************************************/
+  // Based on a StackOverflow:
+  // http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
   bool ReadFileToString(std::string const &file, std::string &output)
   {
     std::ifstream stream(file);
@@ -217,6 +205,25 @@ namespace YTE
     }
 
     return false;
+  }
+
+  // Based on:
+  // http://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
+  std::vector<byte> ReadFileToVector(std::string const& file)
+  {
+    std::basic_ifstream<byte, std::char_traits<byte>> stream(file);
+    std::vector<byte> output;
+
+    if (!stream.fail())
+    {
+      stream.seekg(0, std::ios::end);
+      output.resize(static_cast<size_t>(stream.tellg()));
+      stream.seekg(0, std::ios::beg);
+      stream.read(output.data(), output.size());
+      stream.close();
+    }
+
+    return std::move(output);
   }
 
   void StringToFloats(std::string &file, std::vector<float> &output)

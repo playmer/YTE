@@ -9,7 +9,6 @@
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"
-#include "YTE/WWise/Utilities.hpp"
 
 namespace YTE
 {

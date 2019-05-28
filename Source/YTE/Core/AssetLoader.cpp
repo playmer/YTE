@@ -29,13 +29,27 @@ namespace YTE
   // TODO: Support unicode file aPaths ... eventually ... maybe
   const Path& Path::SetGamePath(std::string aPath)
   {
-    sGamePath = (aPath.back() != '/') ? Path(aPath + '/') : Path(aPath);
+    fs::path path{ aPath };
+
+    if (true == path.has_stem())
+    {
+      path.append("");
+    }
+
+    sGamePath = Path(path.u8string());
     return sGamePath;
   }
 
   const Path& Path::SetEnginePath(std::string aPath)
   {
-    sEnginePath = (aPath.back() != '/') ? Path(aPath + '/') : Path(aPath);
+    fs::path path{ aPath };
+
+    if (true == path.has_stem())
+    {
+      path.append("");
+    }
+
+    sEnginePath = Path(path.u8string());
     return sEnginePath;
   }
 
@@ -111,7 +125,7 @@ namespace YTE
     path.append("Textures");
     path.append(aName);
 
-    return path.string();
+    return path.u8string();
   }
 
   std::string Path::GetTextsDirectory(const Path& aPath)

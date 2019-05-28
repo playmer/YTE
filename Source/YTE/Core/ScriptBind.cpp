@@ -1,3 +1,7 @@
+#define BASISU_DEVEL_MESSAGES 1
+
+#include "transcoder/basisu_transcoder.h"
+
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Core/Actions/ActionManager.hpp"
@@ -65,6 +69,9 @@ namespace YTE
   void InitializeYTETypes()
   {
     YTEProfileFunction();
+
+    basist::basisu_transcoder_init();
+
 
     InitializeType<ActionManager>();
     InitializeType<Component>();

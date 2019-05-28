@@ -9,7 +9,6 @@
 
 #include "YTE/WWise//WWiseView.hpp"
 #include "YTE/WWise//WWiseListener.hpp"
-#include "YTE/WWise//Utilities.hpp"
 
 namespace YTE
 {

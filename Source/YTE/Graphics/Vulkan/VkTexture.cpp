@@ -44,12 +44,17 @@ namespace YTE
 
     switch (mTexture->mType)
     {
-      case TextureLayout::DXT1_sRGB:
+      case TextureLayout::Bc1_Rgba_Srgb:
       {
         format = vk::Format::eBc1RgbaSrgbBlock;
         break;
       }
-      case TextureLayout::DXT5_sRGB:
+      case TextureLayout::Bc3_Srgb:
+      {
+        format = vk::Format::eBc3SrgbBlock;
+        break;
+      }
+      case TextureLayout::Bc3_Unorm:
       {
         format = vk::Format::eBc3UnormBlock;
         break;
@@ -141,34 +146,37 @@ namespace YTE
     // The destructor of MappedImage will put the transfer into the command buffer.
     vkhlf::MappedImage mi(mImage, update, 0, mTexture->mData.size());
     vk::SubresourceLayout layout = mi.getSubresourceLayout(vk::ImageAspectFlagBits::eColor, 0, 0);
-    uint8_t *data = reinterpret_cast<uint8_t*>(mi.getPointer());
+    uint8_t* dataWriter = reinterpret_cast<uint8_t*>(mi.getPointer());
 
-    auto height = mTexture->mHeight;
-    auto width = mTexture->mWidth;
+    auto const height = mTexture->mHeight;
+    auto const width = mTexture->mWidth;
 
-    auto pixels = mTexture->mData.data();
+    u8 const* dataReader = mTexture->mData.data();
+
+    auto const basisRowPitch = mTexture->mBytesPerBlock * ((width + 3) / 4);
 
     switch (mTexture->mType)
     {
-      case TextureLayout::DXT1_sRGB:
-      {
-        break;
-      }
-      case TextureLayout::DXT5_sRGB:
+      case TextureLayout::Bc1_Rgba_Srgb:
+      case TextureLayout::Bc3_Srgb:
+      case TextureLayout::Bc3_Unorm:
       {
         // Adapted from: https://stackoverflow.com/questions/36138217/unable-to-create-image-from-compressed-texture-data-s3tc
-        constexpr u32 blockSize{ 16 };
-        u32 widthBlocks = width / 4;
-        u32 heightBlocks = height / 4;
+        u32 const blockSize =  mTexture->mBytesPerBlock;
+        u32 const widthBlocks = width / 4;
+        u32 const heightBlocks = height / 4;
+
         for (u32 y = 0; y < heightBlocks; ++y)
         {
-          auto *rowPtr = data + y * layout.rowPitch; // rowPitch is 0
-          auto *rowSrc = pixels + y * (widthBlocks * blockSize);
+          auto* rowPtr = dataWriter + y * layout.rowPitch;
+
+          u8 const* rowSrc = dataReader + y * basisRowPitch;
+
           for (u32 x = 0; x < widthBlocks; ++x)
           {
-            auto *pxDest = rowPtr + x * blockSize;
-            auto *pxSrc = rowSrc + x * blockSize; // 4x4 image block
-            memcpy(pxDest, pxSrc, blockSize); // 128Bit per block
+            auto* pxDest = rowPtr + x * blockSize;
+            u8 const* pxSrc = rowSrc + x * blockSize;
+            memcpy(pxDest, pxSrc, blockSize);
           }
         }
 
@@ -179,22 +187,24 @@ namespace YTE
       {
         for (size_t y = 0; y < height; y++)
         {
-          uint8_t *rowPtr = data;
-          for (size_t x = 0; x < width; x++, rowPtr += 4, pixels += 4)
+          uint8_t* rowPtr = dataWriter;
+
+          for (size_t x = 0; x < width; x++, rowPtr += 4, dataReader += 4)
           {
-            rowPtr[0] = pixels[0];
-            rowPtr[1] = pixels[1];
-            rowPtr[2] = pixels[2];
-            rowPtr[3] = pixels[3];
+            rowPtr[0] = dataReader[0];
+            rowPtr[1] = dataReader[1];
+            rowPtr[2] = dataReader[2];
+            rowPtr[3] = dataReader[3];
           }
-          data += layout.rowPitch;
+
+          dataWriter += layout.rowPitch;
         }
       }
     }
 
-    // TODO (JoshF): Please think of a better way to unload texture data.
-    //mTexture->mData.clear();
-    //mTexture->mData.shrink_to_fit();
+    // Clean up CPU side texture memory.
+    mTexture->mData.clear();
+    mTexture->mData.shrink_to_fit();
 
     mRenderer->DeregisterEvent<&VkTexture::LoadToVulkan>(Events::VkGraphicsDataUpdate,  this);
   }

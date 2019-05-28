@@ -43,7 +43,8 @@ namespace YTE
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   YTE_Shared std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);
 
-  YTE_Shared bool ReadFileToString(std::string const &file, std::string &output);
+  YTE_Shared bool ReadFileToString(std::string const& file, std::string& output);
+  YTE_Shared std::vector<byte> ReadFileToVector(std::string const& file);
   YTE_Shared void StringToFloats(std::string &file, std::vector<float> &output);
 
   YTE_Shared std::string Format(const char *aFormatString, ...);

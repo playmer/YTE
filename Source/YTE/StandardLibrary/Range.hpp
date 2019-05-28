@@ -33,17 +33,20 @@ namespace YTE
   {
   public:
     ContiguousRange(std::vector<tType>& aContainer)
-      : mBegin(&*aContainer.begin()), mEnd(&*aContainer.end())
+      : mBegin(aContainer.data())
+      , mEnd(aContainer.data() + aContainer.size())
     {
     }
 
     ContiguousRange(tType& aValue)
-      : mBegin(&aValue), mEnd(&aValue + 1)
+      : mBegin(&aValue)
+      , mEnd(&aValue + 1)
     {
     }
 
     ContiguousRange(tType* aBegin, tType* aEnd)
-      : mBegin(aBegin), mEnd(aEnd)
+      : mBegin(aBegin)
+      , mEnd(aEnd)
     {
     }
 

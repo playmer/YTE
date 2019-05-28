@@ -215,22 +215,22 @@ namespace YTE
       return;
     }
 
-    bool success = FileCheck(Path::GetGamePath(), "Textures/Originals", mTextureName);
-
-    if (false == success)
-    {
-      success = FileCheck(Path::GetEnginePath(), "Textures/Originals", mTextureName);
-    }
-
-    if (false == success)
-    {
-      auto log = fmt::format("Skybox ({}): Texture of name {} is not found.", 
-                             mOwner->GetName().c_str(), 
-                             mTextureName);
-
-      mOwner->GetEngine()->Log(LogType::Warning, log);
-      return;
-    }
+    //bool success = FileCheck(Path::GetGamePath(), "Textures/Originals", mTextureName);
+    //
+    //if (false == success)
+    //{
+    //  success = FileCheck(Path::GetEnginePath(), "Textures/Originals", mTextureName);
+    //}
+    //
+    //if (false == success)
+    //{
+    //  auto log = fmt::format("Skybox ({}): Texture of name {} is not found.", 
+    //                         mOwner->GetName().c_str(), 
+    //                         mTextureName);
+    //
+    //  mOwner->GetEngine()->Log(LogType::Warning, log);
+    //  return;
+    //}
 
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
