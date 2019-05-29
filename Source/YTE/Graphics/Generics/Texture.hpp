@@ -13,7 +13,8 @@ namespace YTE
     Bc1_Rgba_Srgb,
     Bc3_Srgb,
     Bc3_Unorm,
-    Bc7_Unorm_Opaque
+    Bc7_Unorm_Opaque,
+    InvalidLayout
   };
 
   enum class TextureType

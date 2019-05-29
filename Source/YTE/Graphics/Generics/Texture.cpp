@@ -20,7 +20,8 @@ namespace YTE
 
 
 
-  Texture::Texture(std::string const&aFile)
+  Texture::Texture(std::string const&aFile) 
+    : mType{TextureLayout::InvalidLayout}
   {
     YTEProfileFunction();
     Load(aFile);
@@ -28,7 +29,8 @@ namespace YTE
 
   
 
-  Texture::Texture(const char *aFile)
+  Texture::Texture(const char *aFile) 
+    : mType{ TextureLayout::InvalidLayout }
   {
     YTEProfileFunction();
     std::string f(aFile);
