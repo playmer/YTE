@@ -84,10 +84,10 @@ namespace YTE
 
     if constexpr(CompilerOptions::Debug())
     {
-      enabledExtensions.emplace_back("VK_EXT_debug_report");
-
-      // Enable standard validation layer to find as many errors as possible!
-      enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+      //enabledExtensions.emplace_back("VK_EXT_debug_report");
+      //
+      //// Enable standard validation layer to find as many errors as possible!
+      //enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
     }
 
     // Create a new vulkan instance using the required extensions
@@ -98,13 +98,19 @@ namespace YTE
 
     if constexpr(CompilerOptions::Debug())
     {
-      vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
-                                    vk::DebugReportFlagBitsEXT::eWarning |
-                                    vk::DebugReportFlagBitsEXT::ePerformanceWarning |
-                                    vk::DebugReportFlagBitsEXT::eError |
-                                    vk::DebugReportFlagBitsEXT::eDebug);
-      
-      auto instance = static_cast<vk::Instance>(*mInstance);
+      //vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
+      //                              vk::DebugReportFlagBitsEXT::eWarning |
+      //                              vk::DebugReportFlagBitsEXT::ePerformanceWarning |
+      //                              vk::DebugReportFlagBitsEXT::eError |
+      //                              vk::DebugReportFlagBitsEXT::eDebug);
+      //
+      //auto instance = static_cast<vk::Instance>(*mInstance);
+      //
+      //mDebugReportCallback = mInstance->createDebugReportCallback(flags,
+      //                                                            &debugReportCallback);
+
+
+
 
       //vk::DebugUtilsMessengerCreateFlagBitsEXT::
       //
@@ -117,9 +123,6 @@ namespace YTE
       //);
       //
       //instance.createDebugUtilsMessengerEXT(debugUtilsCreate);
-      
-      mDebugReportCallback = mInstance->createDebugReportCallback(flags,
-                                                                  &debugReportCallback);
   }
 
     auto &windows = aEngine->GetWindows();
