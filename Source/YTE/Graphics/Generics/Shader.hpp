@@ -9,6 +9,14 @@
 
 namespace YTE
 {
+  enum class ShaderStage
+  {
+    Compute,
+    Tessellation,
+    Vertex,
+    Fragment
+  };
+
   class Shader : public EventHandler
   {
   public:

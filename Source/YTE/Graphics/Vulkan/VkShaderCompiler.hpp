@@ -17,6 +17,7 @@ namespace YTE
 
     std::vector<uint32_t> mData;
     std::string mReason;
+    vk::ShaderStageFlagBits mStage;
     bool mValid;
   };
 

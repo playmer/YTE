@@ -14,8 +14,7 @@ namespace YTE
     VkCreatePipelineDataSet(
       std::shared_ptr<vkhlf::PipelineCache> aPipelineCache,
       vk::PipelineCreateFlags aFlags,
-      std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> aVertexStage,
-      std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> aFragmentStage,
+      std::vector<vkhlf::PipelineShaderStageCreateInfo>& aStages,
       vkhlf::PipelineVertexInputStateCreateInfo aVertexInput,
       vk::PipelineInputAssemblyStateCreateInfo aAssembly,
       vk::Optional<const vk::PipelineTessellationStateCreateInfo> aTessalationState,
@@ -38,8 +37,7 @@ namespace YTE
       bool aValid)      
       : mPipelineCache{ aPipelineCache }
       , mFlags{ aFlags }
-      , mVertexStage{ aVertexStage }
-      , mFragmentStage{ aFragmentStage }
+      , mStages{ std::move(aStages) }
       , mVertexInput{ aVertexInput }
       , mAssembly{ aAssembly }
       , mTessalationState{ aTessalationState }
@@ -79,8 +77,7 @@ namespace YTE
     // construction
     std::shared_ptr<vkhlf::PipelineCache> mPipelineCache = nullptr;
     vk::PipelineCreateFlags mFlags;
-    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> mVertexStage = nullptr;
-    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> mFragmentStage = nullptr;
+    std::vector<vkhlf::PipelineShaderStageCreateInfo> mStages;
     vkhlf::PipelineVertexInputStateCreateInfo mVertexInput = { {}, {} };
     vk::PipelineInputAssemblyStateCreateInfo mAssembly;
     vk::Optional<const vk::PipelineTessellationStateCreateInfo> mTessalationState = nullptr;
@@ -114,7 +111,7 @@ namespace YTE
     ~VkShader() override;
 
     static VkCreatePipelineDataSet CreateInfo(
-      std::string &aName,
+      std::string const&aName,
       VkRenderedSurface* aSurface,
       std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
       std::shared_ptr<vkhlf::PipelineLayout> aLayout,

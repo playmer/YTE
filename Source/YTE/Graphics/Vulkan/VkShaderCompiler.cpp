@@ -125,7 +125,7 @@ namespace YTE
     }
   };
 
-  SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits stage, 
+  SpirV CompileGLSLToSPIRV(vk::ShaderStageFlagBits aStage,
                            std::string const &aFile,
                            std::string &aDefines,
                            bool aFilenameIsShaderText)
@@ -157,7 +157,7 @@ namespace YTE
 
     SpirV spirv;
 
-    const auto stageIt = stageToLanguageMap.find(stage);
+    const auto stageIt = stageToLanguageMap.find(aStage);
 
     if (stageIt == stageToLanguageMap.end())
     {
@@ -205,6 +205,7 @@ namespace YTE
 
     spirv.mValid = true;
     spirv.mData = std::move(code);
+    spirv.mStage = aStage;
 
     return std::move(spirv);
   }
