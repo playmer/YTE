@@ -6,20 +6,35 @@
 
 namespace YTE
 {
-  // debug report callback for vulkan
+  constexpr bool cVulkanValidations = false;
 
+
+  // debug report callback for vulkan
   //VkBool32 VKAPI_PTR debugUtilsCallback(
   //  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   //  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
   //  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
   //  void* pUserData)
   //{
+  //  //UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
   //
+  //  vk::DebugUtilsMessageSeverityFlagBitsEXT severityFlag{ messageSeverity };
+  //  vk::DebugUtilsMessageTypeFlagsEXT typeFlag{ messageTypes };
+  //  
+  //
+  //  auto text = fmt::format(
+  //    "Vulkan Layer {} Report, Severity {}:\n\t: ", 
+  //    vk::to_string(typeFlag), 
+  //    vk::to_string(severityFlag));
+  //
+  //
+  //  if constexpr (cVulkanValidations)
+  //  {
+  //    __debugbreak();
+  //    assert(false == (severityFlag & vk::DebugUtilsMessageSeverityFlagBitsEXT::eError));
+  //  }
+  //  return VK_TRUE;
   //}
-
-  constexpr bool cVulkanValidations = false;
-
-
 
   static VKAPI_ATTR
   VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,

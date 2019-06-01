@@ -186,37 +186,51 @@ namespace YTE
         {
           YTEProfileBlock("bindVertexBuffer");
 
-          aCBO->bindVertexBuffer(0,
-                                 *drawCall.mVertexBuffer,
-                                 0);
+          if (nullptr != drawCall.mInstanceBuffer)
+          {
+            aCBO->bindVertexBuffers(
+              0,
+              { *drawCall.mVertexBuffer, *drawCall.mInstanceBuffer },
+              { 0, 0 });
+          }
+          else
+          {
+            aCBO->bindVertexBuffer(
+              0,
+              *drawCall.mVertexBuffer,
+              0);
+          }
         }
 
         {
           YTEProfileBlock("bindIndexBuffer");
 
-          aCBO->bindIndexBuffer(*drawCall.mIndexBuffer,
-                                0,
-                                vk::IndexType::eUint32);
+          aCBO->bindIndexBuffer(
+            *drawCall.mIndexBuffer,
+            0,
+            vk::IndexType::eUint32);
         }
 
         {
           YTEProfileBlock("bindDescriptorSets");
 
-          aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                   *drawCall.mPipelineLayout,
-                                   0,
-                                   *drawCall.mDescriptorSet,
-                                   nullptr); 
+          aCBO->bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            *drawCall.mPipelineLayout,
+            0,
+            *drawCall.mDescriptorSet,
+            nullptr); 
         }
 
         {
           YTEProfileBlock("drawIndexed");
 
-          aCBO->drawIndexed(static_cast<u32>(drawCall.mIndexCount),
-                            1,
-                            0,
-                            0,
-                            0);
+          aCBO->drawIndexed(
+            drawCall.mIndexCount,
+            drawCall.mInstanceCount,
+            0,
+            0,
+            0);
         }
       }
 

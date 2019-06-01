@@ -50,11 +50,13 @@ namespace YTE
 
       std::shared_ptr<vkhlf::Pipeline> *mPipeline;
       std::shared_ptr<vkhlf::Buffer> *mVertexBuffer;
-      std::shared_ptr<vkhlf::Buffer> *mIndexBuffer;
+      std::shared_ptr<vkhlf::Buffer>* mIndexBuffer;
+      std::shared_ptr<vkhlf::Buffer>* mInstanceBuffer = nullptr;
       std::shared_ptr<vkhlf::PipelineLayout> *mPipelineLayout;
       std::shared_ptr<vkhlf::DescriptorSet> *mDescriptorSet;
       glm::mat4 *mModelMatrix;
       u32 mIndexCount;
+      u32 mInstanceCount = 1;
       float mLineWidth;
       float mDepth;
     };
