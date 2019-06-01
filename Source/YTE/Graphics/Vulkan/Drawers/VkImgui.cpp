@@ -177,11 +177,12 @@ namespace YTE
 
     YTEProfileFunction();
 
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
-    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
-    Render(cbo);
-    cbo->end();
+    ++(*mCBOB);
+    auto [commandBuffer, renderingFence] = **mCBOB;
+
+    commandBuffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
+    Render(commandBuffer);
+    commandBuffer->end();
   }
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)

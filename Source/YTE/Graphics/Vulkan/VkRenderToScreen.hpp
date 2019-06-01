@@ -3,6 +3,8 @@
 #ifndef YTE_Graphics_Vulkan_VkRenderToScreen_hpp
 #define YTE_Graphics_Vulkan_VkRenderToScreen_hpp
 
+#include <optional>
+
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -51,7 +53,7 @@ namespace YTE
 
     void LoadToVulkan();
 
-    void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> GetCommands();
 
     // gettors / settors
     std::shared_ptr<vkhlf::RenderPass> &GetRenderPass()
@@ -83,7 +85,7 @@ namespace YTE
     std::vector<VkRenderTarget::RenderTargetData*> mRenderTargetData;
     std::unique_ptr<ScreenQuad> mScreenQuad;
     std::unique_ptr<ScreenShader> mScreenShader;
-    std::unique_ptr<VkCBOB<3, true>> mCBOB;
+    std::optional<VkCBOB<3, true>> mCBOB;
     std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
     VkRenderedSurface *mSurface;
     VkRenderer *mRenderer;

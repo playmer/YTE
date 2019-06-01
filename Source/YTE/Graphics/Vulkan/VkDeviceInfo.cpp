@@ -9,26 +9,51 @@ namespace YTE
 
 
 
-  QueueFamilyIndices QueueFamilyIndices::FindQueueFamilies(vk::PhysicalDevice aDevice)
+  QueueFamilyIndices QueueFamilyIndices::FindQueueFamilies(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice, vk::QueueFlags aQueueFlag)
   {
     QueueFamilyIndices indices;
 
-    auto queueFamilyProperties = aDevice.getQueueFamilyProperties();
+    auto queueFamilyProperties = aDevice->getQueueFamilyProperties();
 
-    u32 i = 0;
-    for (const auto& queueFamily : queueFamilyProperties)
+    // Dedicated queue for compute
+    // Try to find a queue family index that supports compute but not graphics
+    if (aQueueFlag & vk::QueueFlagBits::eCompute)
     {
-      if (queueFamily.queueCount > 0 && queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+      for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties.size()); i++)
+      {
+        if ((queueFamilyProperties[i].queueFlags & aQueueFlag) && 
+            ((queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics) == vk::QueueFlags{0}))
+        {
+          indices.mGraphicsFamily = i;
+          return indices;
+        }
+      }
+    }
+
+    // Dedicated queue for transfer
+    // Try to find a queue family index that supports transfer but not graphics and compute
+    if (aQueueFlag & vk::QueueFlagBits::eTransfer)
+    {
+      for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties.size()); i++)
+      {
+        if ((queueFamilyProperties[i].queueFlags & aQueueFlag) && 
+            ((queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eGraphics) == vk::QueueFlags{0}) &&
+            ((queueFamilyProperties[i].queueFlags & vk::QueueFlagBits::eCompute) == vk::QueueFlags{0}))
+        {
+          indices.mGraphicsFamily = i;
+          return indices;
+        }
+      }
+    }
+
+    // For other queue types or if no separate compute queue is present, return the first one to support the requested flags
+    for (uint32_t i = 0; i < static_cast<uint32_t>(queueFamilyProperties.size()); i++)
+    {
+      if (queueFamilyProperties[i].queueFlags & aQueueFlag)
       {
         indices.mGraphicsFamily = i;
+        return indices;
       }
-
-      if (indices.IsComplete())
-      {
-        break;
-      }
-
-      i++;
     }
 
     return indices;
@@ -36,9 +61,9 @@ namespace YTE
 
 
 
-  bool QueueFamilyIndices::IsDeviceSuitable(vk::PhysicalDevice aDevice, vk::SurfaceKHR aSurface)
+  bool QueueFamilyIndices::IsDeviceSuitable(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice, std::shared_ptr<vkhlf::Surface>& aSurface)
   {
-    auto indices = FindQueueFamilies(aDevice);
+    auto indices = FindQueueFamilies(aDevice, vk::QueueFlagBits::eGraphics);
 
     bool extensionsSupported = CheckDeviceExtensionSupport(aDevice);
 
@@ -52,7 +77,7 @@ namespace YTE
                           !swapChainSupport.PresentModes().empty();
     }
 
-    auto supportsSurface = aDevice.getSurfaceSupportKHR(mGraphicsFamily, aSurface);
+    auto supportsSurface = aDevice->getSurfaceSupport(mGraphicsFamily, aSurface);
 
     return indices.IsComplete() && 
            extensionsSupported && 
@@ -62,9 +87,11 @@ namespace YTE
 
 
 
-  bool QueueFamilyIndices::CheckDeviceExtensionSupport(vk::PhysicalDevice aDevice)
+  bool QueueFamilyIndices::CheckDeviceExtensionSupport(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice)
   {
-    auto availableExtensions = aDevice.enumerateDeviceExtensionProperties();
+    vk::PhysicalDevice device = static_cast<vk::PhysicalDevice>(*aDevice);
+
+    auto availableExtensions = device.enumerateDeviceExtensionProperties();
 
     std::set<std::string> requiredExtensions(sDeviceExtensions.begin(),
                                              sDeviceExtensions.end());
@@ -77,9 +104,7 @@ namespace YTE
     return requiredExtensions.empty();
   }
 
-
-
-  void QueueFamilyIndices::AddRequiredExtension(const char * aExtension)
+  void QueueFamilyIndices::AddRequiredExtension(char const* aExtension)
   {
     for (auto extension : sDeviceExtensions)
     {

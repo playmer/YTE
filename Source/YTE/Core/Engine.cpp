@@ -282,7 +282,6 @@ namespace YTE
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
-    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(mDt);
   
@@ -300,6 +299,7 @@ namespace YTE
     }
 
     SendEvent(Events::PreFrameUpdate, &updateEvent);
+    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
 

@@ -50,11 +50,8 @@ namespace YTE
 
     auto internals = mRenderer->GetVkInternals();
 
-    auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
+    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(internals->GetPhysicalDevice(),
+                                                                         mSurface);
     auto formats = supportDetails.Formats();
 
     // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -70,14 +67,9 @@ namespace YTE
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
-    mCubemapComplete = mRenderer->mDevice->createSemaphore();
-    //mRenderPass1 = mRenderer->mDevice->createSemaphore();
-    //mRenderPass2 = mDevice->createSemaphore();
-    //mRenderPass3 = mDevice->createSemaphore();
 
-    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
-    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mTransferBufferedCommandBuffer = std::make_unique<VkCBOB<3, false>>(mRenderer->mTransferQueueData->mCommandPool);
+    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mGraphicsQueueData->mCommandPool);
 
     // create Framebuffer & Swapchain
     WindowResize event;
@@ -321,27 +313,12 @@ namespace YTE
     return std::move(map);
   }
 
-
-  std::shared_ptr<vkhlf::CommandPool>& VkRenderedSurface::GetCommandPool()
-  {
-    return mRenderer->mCommandPool;
-  }
-
-  std::shared_ptr<vkhlf::Queue>& VkRenderedSurface::GetGraphicsQueue()
-  {
-    return mRenderer->mGraphicsQueue;
-  }
-
   void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
     YTEProfileFunction();
 
-    auto baseDevice = static_cast<vk::PhysicalDevice>
-                                  (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
+    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(mRenderer->GetVkInternals()->GetPhysicalDevice(),
+                                                                         mSurface);
 
     auto extent = supportDetails.Capabilities().currentExtent;
 
@@ -412,23 +389,6 @@ namespace YTE
     if (it == mViewData.end())
     {
       auto emplaced = mViewData.try_emplace(aView);
-
-
-      //auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      //auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
-      //                                    vk::BufferUsageFlagBits::eTransferDst |
-      //                                    vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                    vk::SharingMode::eExclusive,
-      //                                    nullptr,
-      //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                    uboAllocator);
-      //auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
-      //                                     vk::BufferUsageFlagBits::eTransferDst |
-      //                                     vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                     vk::SharingMode::eExclusive,
-      //                                     nullptr,
-      //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                     uboAllocator);
 
       auto &view = emplaced.first->second;
 
@@ -591,9 +551,13 @@ namespace YTE
     }
 
     // wait till rendering is complete
-    mRenderer->mGraphicsQueue->waitIdle();
+    //mRenderer->mGraphicsQueueData->mQueue->waitIdle();
+
+    auto [graphicsCommandBuffer, graphicsFence] = **mRenderingCBOB;
+
+    waitOnFence(mRenderer->mDevice, { graphicsFence });
     
-    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueueData->mQueue, mRenderCompleteSemaphore) == false)
     {
       // create Framebuffer & Swapchain
       WindowResize event;
@@ -608,8 +572,12 @@ namespace YTE
   void VkRenderedSurface::GraphicsDataUpdate()
   {
     VkGraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+
+    ++(*mTransferBufferedCommandBuffer);
+
+    auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
+
+    update.mCBO = transferCommandBuffer;
 
     update.mCBO->begin();
 
@@ -617,7 +585,9 @@ namespace YTE
 
     update.mCBO->end();
 
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
+    mRenderer->mTransferQueueData->mQueue->submit(update.mCBO, transferFence);
+
+    mDataUpdateRequired = false;
   }
 
 
@@ -667,10 +637,10 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    {
-      YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
-      mRenderer->mGraphicsQueue->waitIdle();
-    }
+    //{
+    //  YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
+    //  mRenderer->mGraphicsQueueData->mQueue->waitIdle();
+    //}
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
@@ -679,7 +649,8 @@ namespace YTE
 
     if (mDataUpdateRequired)
     {
-      GraphicsDataUpdate();
+      __debugbreak();
+      //GraphicsDataUpdate();
     }
 
     
@@ -688,7 +659,7 @@ namespace YTE
     vk::ClearDepthStencilValue depthStencil{1.0f, 0};
 
     auto &extent = mRenderToScreen->GetExtent();
-    mRenderingCBOB->NextCommandBuffer();
+    ++(*mRenderingCBOB);
 
 
     // build secondaries
@@ -710,13 +681,12 @@ namespace YTE
       mRenderToScreen->RenderFull(extent);
     }
 
-    // cube map render
     std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
 
-
     // build primary
-    auto cbo = mRenderingCBOB->GetCurrentCBO();
-    cbo->begin();
+    auto [renderingCommandBuffer, renderingFence] = **mRenderingCBOB;
+
+    renderingCommandBuffer->begin();
 
     // render all first pass render targets
     // wait on present semaphore for first render
@@ -735,15 +705,15 @@ namespace YTE
         colorValues[3] = col.w;
         vk::ClearValue color{ colorValues };
 
-        cbo->beginRenderPass(data.mRenderTarget->GetRenderPass(),
-                             data.mRenderTarget->GetFrameBuffer(),
-                             vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
-                             { color, depthStencil },
-                             vk::SubpassContents::eSecondaryCommandBuffers);
+        renderingCommandBuffer->beginRenderPass(data.mRenderTarget->GetRenderPass(),
+                                                 data.mRenderTarget->GetFrameBuffer(),
+                                                 vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
+                                                 { color, depthStencil },
+                                                 vk::SubpassContents::eSecondaryCommandBuffers);
 
-        data.mRenderTarget->ExecuteCommands(cbo);
+        renderingCommandBuffer->executeCommands(data.mRenderTarget->GetCommands());
 
-        cbo->endRenderPass();
+        renderingCommandBuffer->endRenderPass();
       }
     }
 
@@ -753,30 +723,39 @@ namespace YTE
     colorValues[3] = 1.0f;
     vk::ClearValue color{ colorValues };
 
-    cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
-                         mRenderToScreen->GetFrameBuffer(),
-                         vk::Rect2D({ 0, 0 }, extent),
-                         { color, depthStencil },
-                         vk::SubpassContents::eSecondaryCommandBuffers);
+    renderingCommandBuffer->beginRenderPass(mRenderToScreen->GetRenderPass(),
+                                            mRenderToScreen->GetFrameBuffer(),
+                                            vk::Rect2D({ 0, 0 }, extent),
+                                            { color, depthStencil },
+                                            vk::SubpassContents::eSecondaryCommandBuffers);
 
-    mRenderToScreen->ExecuteCommands(cbo);
 
-    cbo->endRenderPass();
+    renderingCommandBuffer->executeCommands(mRenderToScreen->GetCommands());
+
+    renderingCommandBuffer->endRenderPass();
     
-    cbo->end();
+    renderingCommandBuffer->end();
 
     vk::ArrayProxy<const std::shared_ptr<vkhlf::Semaphore>> vkWaitSemaphores(waitSemaphores);
 
     // submit
     vkhlf::SubmitInfo submit{ vkWaitSemaphores,
-                              { vk::PipelineStageFlagBits::eColorAttachmentOutput },
-                              cbo,
-                              mRenderCompleteSemaphore };
+                             { vk::PipelineStageFlagBits::eColorAttachmentOutput },
+                             renderingCommandBuffer,
+                             mRenderCompleteSemaphore };
+
+    {
+      YTEMetaProfileBlock("Waiting on fences.");
+
+      auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
+
+      waitOnFence(mRenderer->mDevice, { transferFence });
+    }
 
     {
       YTEMetaProfileBlock("Submitting to the Queue");
 
-      mRenderer->mGraphicsQueue->submit(submit);
+      mRenderer->mGraphicsQueueData->mQueue->submit(submit, renderingFence);
     }
 
     mCanPresent = true;

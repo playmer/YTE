@@ -136,13 +136,18 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
+    ++(*mCBOB);
+
+    auto [graphicsCommandBuffer, graphicsFence] = **mCBOB;
+    auto& cbo = graphicsCommandBuffer;
+
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, 
                mRenderPass,
                0,
                GetFrameBuffer());
+
     Render(cbo, aMeshes);
+
     cbo->end();
   }
 

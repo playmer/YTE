@@ -61,7 +61,9 @@ namespace YTE
       auto fileName = aName + type;
       auto file = Path::GetShaderPath(Path::GetEnginePath(), fileName.c_str());
 
-      if (false == std::filesystem::exists(file) && required)
+      auto fileExists = std::filesystem::exists(file);
+
+      if ((false == fileExists) && required)
       {
         auto engine = aSurface->GetRenderer()->GetEngine();
         auto errStr = fmt::format("Could not find the {} file: {}", type, file);
@@ -69,6 +71,10 @@ namespace YTE
 
         VkCreatePipelineDataSet ret(aName, errStr);
         return ret;
+      }
+      else if (false == fileExists)
+      {
+        continue;
       }
 
       shaderSpriv.emplace_back(CompileGLSLToSPIRV(stage, file, lines, false));
@@ -84,8 +90,9 @@ namespace YTE
       for (auto const& spriv : shaderSpriv)
       {
         auto stage = to_string(spriv.mStage);
-        errorText.append(fmt::format("{} Stage: {}", stage, spriv.mReason));
+        errorText.append(fmt::format("\n{} Stage: {}", stage, spriv.mReason));
       }
+      errorText.append("\n");
 
       aSurface->GetRenderer()->GetEngine()->Log(LogType::Error, errorText);
     

@@ -31,6 +31,7 @@ namespace YTE
   public:
     YTEDeclareType(VkGraphicsDataUpdate);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
+    std::shared_ptr<vkhlf::CommandBuffer> mTransferCBO;
   };
 
 
@@ -155,9 +156,6 @@ namespace YTE
       return GetViewData(aView)->mIlluminationUBO;
     }
 
-    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool();
-    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue();
-
     void SetWindow(Window *aWindow)
     {
       mWindow = aWindow;
@@ -220,11 +218,6 @@ namespace YTE
       return GetViewData(aView)->mRenderTarget.get();
     }
 
-    std::shared_ptr<vkhlf::CommandBuffer> const& GetRenderingCBOB()
-    {
-      return mRenderingCBOB->GetCurrentCBO();
-    }
-
   private:
     void ResizeInternal(bool aConstructing = false);
 
@@ -250,19 +243,13 @@ namespace YTE
     std::map<GraphicsView*, ViewData> mViewData;
     std::unordered_map<std::string, VkCreatePipelineDataSet> mShaderCreateInfos;
 
-    // loaders
-    std::unique_ptr<VkCBOB<3, false>> mAnimationUpdateCBOB;
-    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
+    // Queue related
+    std::unique_ptr<VkCBOB<3, false>> mTransferBufferedCommandBuffer;
     std::unique_ptr<VkCBOB<3, false>> mRenderingCBOB;
 
-    // rendering blocks
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass1;
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass2;
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass3;
-    std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
-    std::shared_ptr<vkhlf::Semaphore> mCubemapComplete;
-    // final semaphore is in the swapchain
 
+    // rendering blocks
+    std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
 
     // Engine Data
     bool mDataUpdateRequired;

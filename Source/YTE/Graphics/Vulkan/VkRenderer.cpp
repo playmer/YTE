@@ -14,6 +14,16 @@
 
 namespace YTE
 {
+  void waitOnFence(std::shared_ptr<vkhlf::Device>& aDevice, vk::ArrayProxy<std::shared_ptr<vkhlf::Fence> const> aFences)
+  {
+    vk::Result vkRes;
+    do
+    {
+      vkRes = aDevice->waitForFences(aFences, true, 0);
+    } while (vkRes == vk::Result::eTimeout);
+    assert(vkRes == vk::Result::eSuccess);
+  }
+
   VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                                                size_t aBufferOffset,
                                                size_t aSize)
@@ -92,6 +102,15 @@ namespace YTE
     mReferences.clear();
   }
 
+  VkQueueData::VkQueueData(std::shared_ptr<vkhlf::Device>& aDevice, u32 aGraphicsFamily)
+    : mQueue{ aDevice->getQueue(aGraphicsFamily, 0) }
+    , mCommandPool{ aDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+                                               aGraphicsFamily) }
+    , mBufferedCommandBuffer{ mCommandPool }
+  {
+
+  }
+
   YTEDefineType(VkRenderer)
   {
     RegisterType<VkRenderer>();
@@ -118,11 +137,17 @@ namespace YTE
     auto& windows = aEngine->GetWindows();
 
     auto instance = mVulkanInternals->GetInstance();
+    auto& physicalDevice = mVulkanInternals->GetPhysicalDevice();
 
+    auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
+    auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
+    auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
 
-    auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
-                                              0.0f};
+    std::array<vkhlf::DeviceQueueCreateInfo, 3> deviceQueueCreateInfos{
+      vkhlf::DeviceQueueCreateInfo{ graphicsQueueFamilyIndices.GetFamily(), 0.0f},
+      vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
+      vkhlf::DeviceQueueCreateInfo{ transferQueueFamilyIndices.GetFamily(), 0.0f},
+    };
 
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
     vk::PhysicalDeviceFeatures enabledFeatures;
@@ -131,17 +156,14 @@ namespace YTE
     enabledFeatures.setFillModeNonSolid(true);
     enabledFeatures.setSamplerAnisotropy(true);
     
-    mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                                  nullptr,
-                                                                  { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                                  enabledFeatures);
+    mDevice = physicalDevice->createDevice(deviceQueueCreateInfos,
+                                           nullptr,
+                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                           enabledFeatures);
 
-    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-
-    mGraphicsQueue = mDevice->getQueue(family, 0);
-
+    mGraphicsQueueData.emplace(mDevice, graphicsQueueFamilyIndices.GetFamily());
+    mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
+    mTransferQueueData.emplace(mDevice, transferQueueFamilyIndices.GetFamily());
 
     MakeAllocator(AllocatorTypes::Mesh, 1024 * 1024);
     MakeAllocator(AllocatorTypes::Texture, 4096 * 4096);
@@ -434,23 +456,35 @@ namespace YTE
     UnusedArguments(aEvent);
 
     VkGraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
 
+    ++mTransferQueueData->mBufferedCommandBuffer;
+    ++mGraphicsQueueData->mBufferedCommandBuffer;
+
+    auto [transferCommandBuffer, transferFence] = *mTransferQueueData->mBufferedCommandBuffer;
+    auto [graphicsCommandBuffer, graphicsFence] = *mGraphicsQueueData->mBufferedCommandBuffer;
+
+    update.mTransferCBO = transferCommandBuffer;
+    update.mCBO = graphicsCommandBuffer;
+
+    update.mTransferCBO->begin();
     update.mCBO->begin();
-
+    
     // Currently the VkLightManager relies on this being sent, should have them do something else.
     SendEvent(Events::VkGraphicsDataUpdate, &update);
-    mUBOUpdates.Update(update.mCBO);
-
+    mUBOUpdates.Update(update.mTransferCBO);
+    
     update.mCBO->end();
+    update.mTransferCBO->end();
 
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    mTransferQueueData->mQueue->submit(update.mTransferCBO, transferFence);
+    mGraphicsQueueData->mQueue->submit(update.mCBO, graphicsFence);
 
     for (auto &surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
     }
+
+    mDataUpdateRequired = false;
   }
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
@@ -459,8 +493,14 @@ namespace YTE
 
     if (mDataUpdateRequired)
     {
-      GraphicsDataUpdate(aEvent);
+      __debugbreak();
+      //GraphicsDataUpdate(aEvent);
     }
+
+    auto [transferCommandBuffer, transferFence] = *mTransferQueueData->mBufferedCommandBuffer;
+    auto [graphicsCommandBuffer, graphicsFence] = *mGraphicsQueueData->mBufferedCommandBuffer;
+
+    waitOnFence(mDevice, { transferFence , graphicsFence });
 
     for (auto& surface : mSurfaces)
     {

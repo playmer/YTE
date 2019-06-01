@@ -3,7 +3,10 @@
 #ifndef YTE_Graphics_Vulkan_VkRenderer_hpp
 #define YTE_Graphics_Vulkan_VkRenderer_hpp
 
+#include <optional>
 #include <unordered_map>
+
+#include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Graphics/GPUBuffer.hpp"
 
@@ -16,6 +19,7 @@
 
 namespace YTE
 {
+  void waitOnFence(std::shared_ptr<vkhlf::Device>& aDevice, vk::ArrayProxy<std::shared_ptr<vkhlf::Fence> const> aFences);
 
   struct VkUBOUpdates
   {
@@ -51,6 +55,15 @@ namespace YTE
     std::vector<VkUBOReference> mReferences;
     std::shared_ptr<vkhlf::Buffer> mMappingBuffer;
     VkRenderer* mRenderer;
+  };
+
+  struct VkQueueData
+  {
+    VkQueueData(std::shared_ptr<vkhlf::Device>& aDevice, u32 aGraphicsFamily);
+
+    std::shared_ptr<vkhlf::Queue> mQueue;
+    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
+    VkCBOB<3, false> mBufferedCommandBuffer;
   };
 
   class VkRenderer : public Renderer
@@ -105,9 +118,9 @@ namespace YTE
     /////////////////////////////////
     // Events
     /////////////////////////////////
-    void GraphicsDataUpdate(LogicUpdate *aEvent) override;
-    void FrameUpdate(LogicUpdate *aEvent) override;
-    void PresentFrame(LogicUpdate *aEvent) override;
+    void GraphicsDataUpdate(LogicUpdate *aEvent);
+    void FrameUpdate(LogicUpdate *aEvent);
+    void PresentFrame(LogicUpdate *aEvent);
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
@@ -144,17 +157,18 @@ namespace YTE
     GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) override;
 
     std::shared_ptr<vkhlf::Device> mDevice;
-    //std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
-    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
-    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
+
+    std::optional<VkQueueData> mGraphicsQueueData;
+    std::optional<VkQueueData> mComputeQueueData;
+    std::optional<VkQueueData> mTransferQueueData;
 
     VkUBOUpdates mUBOUpdates;
   private:
     bool mDataUpdateRequired = false;
     // create a command pool for command buffer allocation
-    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
+    //std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
 
     std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;

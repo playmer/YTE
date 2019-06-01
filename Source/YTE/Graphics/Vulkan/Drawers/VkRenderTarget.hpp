@@ -80,7 +80,7 @@ namespace YTE
     virtual void Resize(vk::Extent2D& aExtent);
     virtual void RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes);
 
-    virtual void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO);
+    virtual vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> GetCommands();
 
     // getters / setters
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass()

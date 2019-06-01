@@ -55,7 +55,9 @@ namespace YTE
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
     template <typename tType>
-    GPUBuffer<tType> CreateUBO(size_t aSize = 1)
+    GPUBuffer<tType> CreateUBO(
+      size_t aSize = 1, 
+      GPUAllocation::MemoryProperty aProperty = GPUAllocation::MemoryProperty::DeviceLocal)
     {
       auto allocator = GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -67,9 +69,6 @@ namespace YTE
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
     virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination);
-    virtual void GraphicsDataUpdate(LogicUpdate *aEvent);
-    virtual void FrameUpdate(LogicUpdate *aEvent);
-    virtual void PresentFrame(LogicUpdate *aEvent);
     virtual glm::vec4 GetClearColor(GraphicsView *aView);
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
 

@@ -37,7 +37,7 @@ namespace YTE
   {
     LoadToVulkan();
 
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
+    mCBOB.emplace(mSurface->GetRenderer()->mGraphicsQueueData->mCommandPool);
 
     CreateRenderPass();
     //ReloadQuad();
@@ -138,29 +138,30 @@ namespace YTE
     return mFrameBufferSwapChain->getExtent();
   }
 
-  void VkRenderToScreen::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> VkRenderToScreen::GetCommands()
   {
-    aCBO->executeCommands(mCBOB->GetCurrentCBO());
+    return (**mCBOB).first;
   }
 
   void VkRenderToScreen::RenderFull(const vk::Extent2D& aExtent)
   {
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
-    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
+    ++(*mCBOB);
+    auto [commandBuffer, fence] = **mCBOB;
+
+    commandBuffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
 
     auto width = static_cast<float>(aExtent.width);
     auto height = static_cast<float>(aExtent.height);
 
     vk::Viewport viewport{ 0.0f, 0.0f, width, height, 0.0f,1.0f };
-    cbo->setViewport(0, viewport);
-    cbo->setLineWidth(1.0f);
+    commandBuffer->setViewport(0, viewport);
+    commandBuffer->setLineWidth(1.0f);
 
     vk::Rect2D scissor{ { 0, 0 }, aExtent };
-    cbo->setScissor(0, scissor);
+    commandBuffer->setScissor(0, scissor);
 
-    Render(cbo);
-    cbo->end();
+    Render(commandBuffer);
+    commandBuffer->end();
   }
 
 

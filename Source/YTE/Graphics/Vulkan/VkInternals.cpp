@@ -17,6 +17,8 @@ namespace YTE
   //
   //}
 
+  constexpr bool cVulkanValidations = false;
+
 
 
   static VKAPI_ATTR
@@ -82,12 +84,12 @@ namespace YTE
       enabledExtensions.emplace_back("VK_KHR_win32_surface");
     }
 
-    if constexpr(CompilerOptions::Debug())
+    if constexpr(CompilerOptions::Debug() && cVulkanValidations)
     {
-      //enabledExtensions.emplace_back("VK_EXT_debug_report");
-      //
-      //// Enable standard validation layer to find as many errors as possible!
-      //enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+      enabledExtensions.emplace_back("VK_EXT_debug_report");
+
+      // Enable standard validation layer to find as many errors as possible!
+      enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
     }
 
     // Create a new vulkan instance using the required extensions
@@ -96,18 +98,18 @@ namespace YTE
                                         enabledLayers,
                                         enabledExtensions);
 
-    if constexpr(CompilerOptions::Debug())
+    if constexpr(CompilerOptions::Debug() && cVulkanValidations)
     {
-      //vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
-      //                              vk::DebugReportFlagBitsEXT::eWarning |
-      //                              vk::DebugReportFlagBitsEXT::ePerformanceWarning |
-      //                              vk::DebugReportFlagBitsEXT::eError |
-      //                              vk::DebugReportFlagBitsEXT::eDebug);
-      //
-      //auto instance = static_cast<vk::Instance>(*mInstance);
-      //
-      //mDebugReportCallback = mInstance->createDebugReportCallback(flags,
-      //                                                            &debugReportCallback);
+      vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
+                                    vk::DebugReportFlagBitsEXT::eWarning |
+                                    vk::DebugReportFlagBitsEXT::ePerformanceWarning |
+                                    vk::DebugReportFlagBitsEXT::eError |
+                                    vk::DebugReportFlagBitsEXT::eDebug);
+      
+      auto instance = static_cast<vk::Instance>(*mInstance);
+      
+      mDebugReportCallback = mInstance->createDebugReportCallback(flags,
+                                                                  &debugReportCallback);
 
 
 
@@ -143,11 +145,6 @@ namespace YTE
     // initialize physical devices
     auto baseDevice = static_cast<vk::PhysicalDevice>(*mMainDevice);
 
-    mQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(baseDevice);
-
-    auto family = mQueueFamilyIndices.GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{ family, 0.0f };
-
     return surface;
   }
 
@@ -162,10 +159,9 @@ namespace YTE
   std::shared_ptr<vkhlf::Surface> VkInternals::CreateSurface(Window *aWindow)
   {
     auto surface = std::any_cast<std::shared_ptr<vkhlf::Surface>>(aWindow->SetUpVulkanWindow(static_cast<void*>(mInstance.get())));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*surface);
-    auto indices = QueueFamilyIndices::FindQueueFamilies(*mMainDevice);
+    auto indices = QueueFamilyIndices::FindQueueFamilies(mMainDevice, vk::QueueFlagBits::eGraphics);
 
-    if (indices.IsDeviceSuitable(*mMainDevice, baseSurfaceKhr))
+    if (indices.IsDeviceSuitable(mMainDevice, surface))
     {
       return surface;
     }
@@ -188,12 +184,10 @@ namespace YTE
     for (size_t i = 0; i < count; ++i)
     {
       auto device = mInstance->getPhysicalDevice(i);
-      auto baseDevice = static_cast<vk::PhysicalDevice>(*device);
-      vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*aSurface);
 
-      auto indices = QueueFamilyIndices::FindQueueFamilies(baseDevice);
+      auto indices = QueueFamilyIndices::FindQueueFamilies(device, vk::QueueFlagBits::eGraphics);
 
-      if (indices.IsDeviceSuitable(baseDevice, baseSurfaceKhr))
+      if (indices.IsDeviceSuitable(device, aSurface))
       {
         mPhysicalDevices.emplace_back(device);
       }

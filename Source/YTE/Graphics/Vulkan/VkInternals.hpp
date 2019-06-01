@@ -23,21 +23,15 @@ namespace YTE
       return mInstance;
     }
 
-    std::shared_ptr<vkhlf::PhysicalDevice> GetPhysicalDevice() const
+    std::shared_ptr<vkhlf::PhysicalDevice>& GetPhysicalDevice()
     {
       return mMainDevice;
-    }
-
-    QueueFamilyIndices GetQueueFamilies() const
-    {
-      return mQueueFamilyIndices;
     }
 
   private:
     void SelectDevice(std::shared_ptr<vkhlf::Surface> aSurface);
     void FindDeviceOfType(vk::PhysicalDeviceType aType);
     void PrintDeviceProperties(std::shared_ptr<vkhlf::PhysicalDevice> &aDevice);
-    
     
     std::shared_ptr<vkhlf::Instance> mInstance;
     std::shared_ptr<vkhlf::DebugReportCallback> mDebugReportCallback;

@@ -109,22 +109,6 @@ namespace YTE
     UnusedArguments(aView, aIllumination);
   }
 
-
-  void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-  void Renderer::FrameUpdate(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-  void Renderer::PresentFrame(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
   glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
   {
     UnusedArguments(aView);

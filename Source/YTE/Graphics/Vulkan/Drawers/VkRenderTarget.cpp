@@ -32,7 +32,7 @@ namespace YTE
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mData.mOrder = aView->mView->GetOrder();
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
+    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetRenderer()->mGraphicsQueueData->mCommandPool);
   }
 
 
@@ -50,7 +50,7 @@ namespace YTE
   {
     mData.mName = aName;
     mData.mCombinationType = aCombination;
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
+    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetRenderer()->mGraphicsQueueData->mCommandPool);
   }
 
 
@@ -306,9 +306,8 @@ namespace YTE
     mRenderPass = mSurface->GetDevice()->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
   }
 
-  void VkRenderTarget::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> VkRenderTarget::GetCommands()
   {
-    aCBO->executeCommands(mCBOB->GetCurrentCBO());
+    return (**mCBOB).first;
   }
-
 }
