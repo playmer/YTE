@@ -98,8 +98,10 @@ namespace YTE
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
     submesh.mShaderSetName = imguiStr;
 
     submesh.mVertexData.clear();

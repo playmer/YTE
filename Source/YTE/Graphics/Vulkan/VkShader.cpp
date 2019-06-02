@@ -89,6 +89,11 @@ namespace YTE
 
       for (auto const& spriv : shaderSpriv)
       {
+        if (spriv.mValid)
+        {
+          continue;
+        }
+
         auto stage = to_string(spriv.mStage);
         errorText.append(fmt::format("\n{} Stage: {}", stage, spriv.mReason));
       }

@@ -83,7 +83,7 @@ namespace YTE
     std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
     std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
-    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    VkTexture* CreateTexture(std::string const& aFilename, vk::ImageViewType aType);
     VkTexture* CreateTexture(std::string aName,
                              std::vector<u8> aData,
                              TextureLayout aType,

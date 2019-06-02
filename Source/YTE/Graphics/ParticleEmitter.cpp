@@ -7,6 +7,7 @@
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Shader.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -377,6 +378,8 @@ namespace YTE
       mTextureName = "Mats_Diffuse.png";
     }
 
+    ShaderDescriptions descriptions;
+
     std::string meshName = "__Sprite" + mTextureName;
 
     SubmeshData submesh;
@@ -413,9 +416,11 @@ namespace YTE
       2, 3, 0
     };
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
-    submesh.mShaderSetName = "Sprite";
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
+    submesh.mShaderSetName = "CPUParticles";
 
     submesh.mCullBackFaces = false;
 

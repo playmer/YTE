@@ -274,9 +274,11 @@ namespace YTE
     SubmeshData submesh;
     submesh.mUBOMaterial = modelMaterial;
     
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = "Sprite";
+
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
     submesh.mCullBackFaces = false;
 

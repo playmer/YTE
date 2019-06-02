@@ -156,6 +156,7 @@ namespace YTE
     };
 
     SpirV spirv;
+    spirv.mStage = aStage;
 
     const auto stageIt = stageToLanguageMap.find(aStage);
 
@@ -205,7 +206,6 @@ namespace YTE
 
     spirv.mValid = true;
     spirv.mData = std::move(code);
-    spirv.mStage = aStage;
 
     return std::move(spirv);
   }

@@ -438,11 +438,9 @@ namespace YTE
   class ShaderDescriptions
   {
   public:
-    ShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
-    {
-      mBindings.reserve(aNumberOfBindings);
-      mAttributes.reserve(aNumberOfAttributes);
-    }
+    ShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8);
+
+    //void Append(ShaderDescriptions aDescriptions);
 
     template <typename T>
     void AddAttribute(VertexFormat aFormat)
@@ -491,20 +489,7 @@ namespace YTE
       ++mBufferBinding;
     }
 
-    u32 CountDescriptorsOfType(DescriptorType aType) const
-    {
-      u32 ofType{ 0 };
-
-      for (auto const& descriptor : mDescriptorSetLayouts)
-      {
-        if (descriptor.mDescriptorType == aType)
-        {
-          ++ofType;
-        }
-      }
-
-      return ofType;
-    }
+    u32 CountDescriptorsOfType(DescriptorType aType) const;
 
     /////////////////////////////////
     // Getter 
@@ -537,6 +522,11 @@ namespace YTE
     std::vector<VertexInputAttributeDescription> const& Attributes() const
     {
       return mAttributes;
+    }
+
+    u32 GetBufferBinding()
+    {
+      return mBufferBinding;
     }
 
     void AddPreludeLine(std::string_view aLine)

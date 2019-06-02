@@ -22,6 +22,9 @@ namespace YTE
       mIsSecondary = tIsSecondary;
       auto& device = aPool->get<vkhlf::Device>();
 
+      // Device is conditionally unused in the case of a tIsSecondary VkCBOB.
+      UnusedArguments(device);
+
       for (size_t i = 0; i < mSize; ++i)
       {
         if (mIsSecondary)

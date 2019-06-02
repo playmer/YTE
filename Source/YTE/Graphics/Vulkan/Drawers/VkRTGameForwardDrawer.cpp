@@ -366,7 +366,7 @@ namespace YTE
                                         GetBuffer(trueSubmesh->mIndexBuffer),
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
-                                        static_cast<u32>(submesh->mIndexCount),
+                                        static_cast<u32>(trueSubmesh->mData.mIndexData.size()),
                                         model->mLineWidth,
                                         depth);
           }

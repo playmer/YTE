@@ -162,8 +162,11 @@ namespace YTE
       }
     }
 
-    sphere.mDiffuseMap = aTextureName;
-    sphere.mDiffuseType = TextureViewType::e2D;
+    sphere.mTextureData.emplace_back(aTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
+
     sphere.mShaderSetName = "Skybox";
 
     return std::move(sphere);

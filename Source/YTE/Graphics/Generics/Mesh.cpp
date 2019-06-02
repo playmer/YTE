@@ -15,6 +15,26 @@
 
 namespace YTE
 {
+  char const* ToShaderString(SubmeshData::TextureType aType)
+  {
+    switch (aType)
+    {
+    case SubmeshData::TextureType::Diffuse: return "DIFFUSE";
+    case SubmeshData::TextureType::Specular: return "SPECULAR";
+    case SubmeshData::TextureType::Ambient: return "AMBIENT";
+    case SubmeshData::TextureType::Emissive: return "EMISSIVE";
+    case SubmeshData::TextureType::Height: return "HEIGHT";
+    case SubmeshData::TextureType::Normal: return "NORMAL";
+    case SubmeshData::TextureType::Shininess: return "SHININESS";
+    case SubmeshData::TextureType::Opacity: return "OPACITY";
+    case SubmeshData::TextureType::Displacment: return "DISPLACEMENT";
+    case SubmeshData::TextureType::Lightmap: return "LIGHTMAP";
+    case SubmeshData::TextureType::Reflection: return "REFLECTION";
+    }
+
+    return "UNKNOWN";
+  }
+
   static inline
   glm::vec3 ToGlm(const aiVector3D *aVector)
   {
@@ -274,17 +294,37 @@ namespace YTE
     }
   }
 
+  SubmeshData::TextureType ToYTE(aiTextureType aType)
+  {
+    switch (aType)
+    {
+      case aiTextureType_DIFFUSE: return SubmeshData::TextureType::Diffuse;
+      case aiTextureType_SPECULAR: return SubmeshData::TextureType::Specular;
+      case aiTextureType_AMBIENT: return SubmeshData::TextureType::Ambient;
+      case aiTextureType_EMISSIVE: return SubmeshData::TextureType::Emissive;
+      case aiTextureType_HEIGHT: return SubmeshData::TextureType::Height;
+      case aiTextureType_NORMALS: return SubmeshData::TextureType::Normal;
+      case aiTextureType_SHININESS: return SubmeshData::TextureType::Shininess;
+      case aiTextureType_OPACITY: return SubmeshData::TextureType::Opacity;
+      case aiTextureType_DISPLACEMENT: return SubmeshData::TextureType::Displacment;
+      case aiTextureType_LIGHTMAP: return SubmeshData::TextureType::Lightmap;
+      case aiTextureType_REFLECTION: return SubmeshData::TextureType::Reflection;
+    }
+
+    return SubmeshData::TextureType::Unknown;
+  }
+
 
 
   //////////////////////////////////////////////////////////////////////////////
   // Submesh
   //////////////////////////////////////////////////////////////////////////////
-  Submesh::Submesh(Renderer *aRenderer,
-                   Mesh* aYTEMesh,
-                   const aiScene *aScene,
-                   const aiMesh *aMesh,
-                   Skeleton* aSkeleton,
-                   uint32_t aBoneStartingVertexOffset)
+  Submesh::Submesh(Renderer* aRenderer,
+    Mesh* aYTEMesh,
+    const aiScene* aScene,
+    const aiMesh* aMesh,
+    Skeleton* aSkeleton,
+    uint32_t aBoneStartingVertexOffset)
   {
     YTEProfileFunction();
 
@@ -335,42 +375,81 @@ namespace YTE
     mData.mName = aMesh->mName.C_Str();
     mData.mMaterialName = name.C_Str();
 
-    // TODO (Andrew): Add ability to provide a shader if wanted
-    //mShaderSetName = mMaterialName.substr(0, mMaterialName.find_first_of('_'));
+    std::array textureTypesSupported{
+      // The texture is combined with the result of the diffuse lighting equation.
+      aiTextureType_DIFFUSE,
 
-    aiString diffuse;
-    aiString specular;
-    aiString normals;
+      // The texture is combined with the result of the specular lighting equation.
+      aiTextureType_SPECULAR,
 
-    material->GetTexture(aiTextureType_DIFFUSE, 0, &diffuse);
-    material->GetTexture(aiTextureType_SPECULAR, 0, &specular);
-    material->GetTexture(aiTextureType_NORMALS, 0, &normals);
+      //// The texture is combined with the result of the ambient lighting equation.
+      //aiTextureType_AMBIENT,
+
+      //// The texture is added to the result of the lighting calculation. It isn't 
+      //// influenced by incoming light.
+      //aiTextureType_EMISSIVE,
+
+      //// Height Map: By convention, higher gray-scale values stand for higher elevations 
+      //// from the base height.
+      //aiTextureType_HEIGHT,
+
+      // Normal Map: (Tangent Space) Again, there are several conventions for tangent-space 
+      // normal maps. Assimp does (intentionally) not distinguish here.
+      aiTextureType_NORMALS,
+
+      //// The texture defines the glossiness of the material.
+      //// The glossiness is in fact the exponent of the specular (phong) lighting 
+      //// equation. Usually there is a conversion function defined to map the linear
+      //// color values in the texture to a suitable exponent. Have fun.
+      //aiTextureType_SHININESS,
+
+      //// The texture defines per-pixel opacity. Usually 'white' means opaque and 
+      //// 'black' means 'transparency'. Or quite the opposite. Have fun.
+      //aiTextureType_OPACITY,
+
+      //// Displacement texture: The exact purpose and format is application-dependent. 
+      //// Higher color values stand for higher vertex displacements.
+      //aiTextureType_DISPLACEMENT,
+
+      //// Lightmap texture: (aka Ambient Occlusion) Both 'Lightmaps' and dedicated 
+      //// 'ambient occlusion maps' are covered by this material property. The texture contains 
+      //// a scaling value for the final color value of a pixel. Its intensity is not affected by 
+      //// incoming light.
+      //aiTextureType_LIGHTMAP,
+
+      //// Reflection texture: Contains the color of a perfect mirror reflection. 
+      //// Rarely used, almost never for real-time applications.
+      //aiTextureType_REFLECTION
+    };
+
 
     std::string defaultTexture{ "white.png" };
 
-    mData.mDiffuseMap = defaultTexture;
-    mData.mSpecularMap = defaultTexture;
-    mData.mNormalMap = defaultTexture;
-
-    if (0 != diffuse.length)
+    for (auto type : textureTypesSupported)
     {
-      mData.mDiffuseMap = diffuse.C_Str();
-    }
+      aiString aiTextureName;
+      material->GetTexture(type, 0, &aiTextureName);
 
-    if (0 != specular.length)
-    {
-      mData.mSpecularMap = specular.C_Str();
-    }
+      std::string textureName;
 
-    if (0 != normals.length)
-    {
-      mData.mNormalMap = normals.C_Str();
-      uboMaterial.mUsesNormalTexture = 1; // true
-    }
+      if (0 != aiTextureName.length)
+      {
+        textureName = aiTextureName.C_Str();
 
-    aRenderer->RequestTexture(mData.mDiffuseMap);
-    aRenderer->RequestTexture(mData.mSpecularMap);
-    aRenderer->RequestTexture(mData.mNormalMap);
+        if (aiTextureType_NORMALS == type)
+        {
+          uboMaterial.mUsesNormalTexture = 1;
+        }
+      }
+      else
+      {
+        textureName = defaultTexture;
+      }
+
+      mData.mTextureData.emplace_back(textureName, TextureViewType::e2D, ToYTE(type));
+
+      aRenderer->RequestTexture(textureName);
+    }
 
     mData.mShaderSetName = "Phong";
 
@@ -505,6 +584,52 @@ namespace YTE
   {
     CalculateSubMeshDimensions(*this);
     CreateGPUBuffers();
+  }
+
+
+  ShaderDescriptions const& Submesh::CreateShaderDescriptions()
+  {
+    auto& descriptions = mData.mDescriptions;
+
+    auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
+    };
+
+    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
+
+
+    // Descriptions for the textures we support based on which maps we found above:
+    for (auto sampler : mData.mTextureData)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
+    }
+
+    descriptions.AddBinding<Vertex>(VertexInputRate::Vertex);
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec4>(VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
+
+    // Model Buffer for Vertex shader. (Non-instanced Meshes)
+    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
+
+    return descriptions;
   }
 
   void Submesh::CreateGPUBuffers()

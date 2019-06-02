@@ -30,7 +30,6 @@ namespace YTE
     void Create();
     void Destroy();
 
-    VkShaderDescriptions CreateShaderDescriptions();
     void CreateShader(GraphicsView *aView);
     std::shared_ptr<vkhlf::DescriptorPool> MakePool();
     SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
@@ -45,17 +44,13 @@ namespace YTE
     // Needed if instanced, otherwise this lives per-model.
     SubMeshPipelineData mPipelineData;
 
-    VkTexture *mDiffuseTexture;
-    VkTexture *mSpecularTexture;
-    VkTexture *mNormalTexture;
+    std::vector<VkTexture*> mTextures;
 
     VkRenderer *mRenderer;
     
     VkMesh *mMesh;
     Submesh *mSubmesh;
     VkCreatePipelineDataSet* mPipelineInfo;
-
-    u64 mIndexCount;
   };
 
   class VkMesh : public EventHandler

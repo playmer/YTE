@@ -27,7 +27,7 @@ namespace YTE
 
     return vk::ImageViewType{};
   }
-
+  
   ///////////////////////////////////////////////////////////////////////////
   // Submesh
   ///////////////////////////////////////////////////////////////////////////
@@ -38,14 +38,10 @@ namespace YTE
   }
 
   VkSubmesh::VkSubmesh(VkMesh *aMesh, Submesh *aSubmesh, VkRenderer *aRenderer)
-    : mDiffuseTexture{ nullptr }
-    , mSpecularTexture{ nullptr }
-    , mNormalTexture{ nullptr }
-    , mRenderer{ aRenderer }
+    : mRenderer{ aRenderer }
     , mMesh{ aMesh }
     , mSubmesh{ aSubmesh }
     , mPipelineInfo{nullptr}
-    , mIndexCount{ 0 }
   {
     Create();
   }
@@ -53,72 +49,12 @@ namespace YTE
 
   void VkSubmesh::Create()
   {
-    mIndexCount = mSubmesh->mData.mIndexData.size();
-
     // Load Textures
-    if (false == mSubmesh->mData.mDiffuseMap.empty())
+    for (auto const& texture : mSubmesh->mData.mTextureData)
     {
-      mDiffuseTexture = mRenderer->CreateTexture(mSubmesh->mData.mDiffuseMap, Convert(mSubmesh->mData.mDiffuseType));
-      mSamplerTypes.emplace_back("DIFFUSE");
-    }
-    if (false == mSubmesh->mData.mSpecularMap.empty())
-    {
-      mSpecularTexture = mRenderer->CreateTexture(mSubmesh->mData.mSpecularMap, Convert(mSubmesh->mData.mSpecularType));
-      mSamplerTypes.emplace_back("SPECULAR");
-    }
-    if (false == mSubmesh->mData.mNormalMap.empty())
-    {
-      mNormalTexture = mRenderer->CreateTexture(mSubmesh->mData.mNormalMap, Convert(mSubmesh->mData.mNormalType));
-      mSamplerTypes.emplace_back("NORMAL");
+      mTextures.emplace_back(mRenderer->CreateTexture(texture.mName, Convert(texture.mViewType)));
     }
   }
-
-  VkShaderDescriptions VkSubmesh::CreateShaderDescriptions()
-  {
-    u32 binding{ 0 };
-    ShaderDescriptions descriptions;
-
-    auto addUBO = [&descriptions, &binding](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
-    {
-      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, binding++));
-      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
-    };
-
-    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
-    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
-    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
-    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
-    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
-    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
-    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
-
-
-    // Descriptions for the textures we support based on which maps we found above:
-    for (auto sampler : mSamplerTypes)
-    {
-      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", sampler, binding++));
-      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
-    }
-
-    descriptions.AddBinding<Vertex>(VertexInputRate::Vertex);
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec4>(VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
-
-    // Model Buffer for Vertex shader. (Non-instanced Meshes)
-    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
-
-    return VkShaderDescriptions{ descriptions };
-  }
-
 
   void VkSubmesh::CreateShader(GraphicsView *aView)
   {
@@ -133,7 +69,7 @@ namespace YTE
       return;
     }
 
-    descriptions = CreateShaderDescriptions();
+    descriptions = VkShaderDescriptions{ mSubmesh->CreateShaderDescriptions() };
 
     auto descriptorSetLayout = mRenderer->mDevice->createDescriptorSetLayout(descriptions.DescriptorSetLayout());
     auto pipelineLayout = device->createPipelineLayout(descriptorSetLayout, nullptr);
@@ -194,22 +130,18 @@ namespace YTE
     // Add Texture Samplers
     auto addTS = [&bufferOrImages](VkTexture *aData)
     {
-      if (nullptr == aData)
-      {
-        return;
-      }
+    };
 
+
+    for (auto texture : mTextures)
+    {
       vkhlf::DescriptorImageInfo textureInfo{ 
-        aData->mSampler, 
-        aData->mImageView, 
+        texture->mSampler,
+        texture->mImageView,
         vk::ImageLayout::eShaderReadOnlyOptimal };
 
       bufferOrImages.emplace_back(textureInfo);
-    };
-
-    addTS(mDiffuseTexture);
-    addTS(mSpecularTexture);
-    addTS(mNormalTexture);
+    }
 
     bufferOrImages.emplace_back(aUBOModel);
     auto writeDescriptorSets = mPipelineInfo->mDescriptions.MakeWriteDescriptorSet(

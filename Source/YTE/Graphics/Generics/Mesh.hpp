@@ -7,6 +7,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/Graphics/Generics/Shader.hpp"
+
 #include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
@@ -180,19 +182,52 @@ namespace YTE
 
   struct SubmeshData
   {
+    enum class TextureType
+    {
+      Diffuse,
+      Specular,
+      Normal,
+      Ambient,
+      Emissive,
+      Height,
+      Shininess,
+      Opacity,
+      Displacment,
+      Lightmap,
+      Reflection,
+      Unknown
+    };
+
+    struct TextureData
+    {
+      TextureData(std::string aName, TextureViewType aViewType, TextureType aSamplerType)
+        : mName{ aName }
+        , mViewType{ aViewType }
+        , mSamplerType{ aSamplerType }
+      {
+
+      }
+
+      std::string mName;
+      TextureViewType mViewType = TextureViewType::e2D;
+      TextureType mSamplerType;
+    };
+
+    ShaderDescriptions mDescriptions;
     std::vector<Vertex> mVertexData;
     std::vector<u32> mIndexData;
+    std::vector<TextureData> mTextureData;
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
     UBOs::Material mUBOMaterial;
 
-    std::string mDiffuseMap;
-    TextureViewType mDiffuseType = TextureViewType::e2D;
-    std::string mNormalMap;
-    TextureViewType mNormalType = TextureViewType::e2D;
-    std::string mSpecularMap;
-    TextureViewType mSpecularType = TextureViewType::e2D;
+    //std::string mDiffuseMap;
+    //TextureViewType mDiffuseType = TextureViewType::e2D;
+    //std::string mNormalMap;
+    //TextureViewType mNormalType = TextureViewType::e2D;
+    //std::string mSpecularMap;
+    //TextureViewType mSpecularType = TextureViewType::e2D;
 
     Dimension mDimension;
 
@@ -237,6 +272,8 @@ namespace YTE
       tri.z = (glm::uint)mData.mIndexData[aIndex + 2];
       return tri;
     }
+
+    ShaderDescriptions const& CreateShaderDescriptions();
 
     void ResetTextureCoordinates();
 

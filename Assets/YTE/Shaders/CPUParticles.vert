@@ -17,6 +17,8 @@ layout (location = 8) in vec2 inBoneWeights2;
 layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
+layout (location = 11) in vec3 inInstancePosition;
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,21 +132,6 @@ vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
 }
 
 // ======================
-// CalculatePosition:
-// Position the vertex for the fragment shader and GPU
-// takes the projection matrix, and the view position value to calculate with
-void CalculatePosition(mat4 aProjMat, vec4 aPos)
-{
-  // Initial Position Update
-  gl_Position = aProjMat        * 
-                aPos;
-
-  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
-}
-
-
-// ======================
 // Main:
 // Entry point of shader
 void main() 
@@ -159,19 +146,6 @@ void main()
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
   outNormal = CalculateNormal(Model.mModelMatrix,
                               inNormal);
-  CalculatePosition(View.mProjectionMatrix,
-                    outPosition);
 
-  // Unsure if this needs to be vec3/mat3 here.
-  //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
-  //gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
-
-  //gl_Position = View.mProjectionMatrix * 
-  //              View.mViewMatrix       *
-  //              Model.mModelMatrix     *
-  //              vec4(inPosition, 1.0f);
-
-
-  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
+  gl_Position = View.mProjectionMatrix * outPosition;
 }

@@ -74,8 +74,6 @@ namespace YTE
     submesh.mUBOMaterial.mSpecular = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
     submesh.mUBOMaterial.mShininess = 200.0f;
 
-    //submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = mShaderSetName;
 
     submesh.mCullBackFaces = true;
@@ -83,9 +81,9 @@ namespace YTE
     submesh.mVertexData = aVertices;
     submesh.mIndexData = aIndices;
 
-    submesh.mDiffuseMap = mDiffuseTName;
-    submesh.mSpecularMap = mSpecularTName;
-    submesh.mNormalMap = mNormalTName;
+    submesh.mTextureData.emplace_back(mDiffuseTName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    submesh.mTextureData.emplace_back(mSpecularTName, TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    submesh.mTextureData.emplace_back(mNormalTName, TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
     auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
     mModel = mRenderer->CreateModel(mGraphicsView, mesh);

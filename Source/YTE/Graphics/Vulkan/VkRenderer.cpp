@@ -252,7 +252,7 @@ namespace YTE
   }
 
   // Textures
-  VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  VkTexture* VkRenderer::CreateTexture(std::string const& aFilename, vk::ImageViewType aType)
   {
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
