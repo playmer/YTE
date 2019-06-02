@@ -324,22 +324,22 @@ namespace YTE
 
   enum class ShaderStageFlags
   {
-    Vertex,
-    TessellationControl,
-    TessellationEvaluation,
-    Geometry,
-    Fragment,
-    Compute,
-    AllGraphics,
-    All,
-    RaygenNV,
-    AnyHitNV,
-    ClosestHitNV,
-    MissNV,
-    IntersectionNV,
-    CallableNV,
-    TaskNV,
-    MeshNV
+    Vertex = 0x00000001,
+    TessellationControl = 0x00000002,
+    TessellationEvaluation = 0x00000004,
+    Geometry = 0x00000008,
+    Fragment = 0x00000010,
+    Compute = 0x00000020,
+    AllGraphics = 0x0000001F,
+    All = 0x7FFFFFFF,
+    RaygenNV = 0x00000100,
+    AnyHitNV = 0x00000200,
+    ClosestHitNV = 0x00000400,
+    MissNV = 0x00000800,
+    IntersectionNV = 0x00001000,
+    CallableNV = 0x00002000,
+    TaskNV = 0x00000040,
+    MeshNV = 0x00000080
   };
 
   inline bool operator&(ShaderStageFlags lhs, ShaderStageFlags rhs)
@@ -479,14 +479,14 @@ namespace YTE
 
     void AddDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, ImageLayout aLayout)
     {
-      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, aLayout);
+      mDescriptorSetLayouts.emplace_back(mBufferBinding, aDescriptorType, aStage, aLayout);
 
       ++mBufferBinding;
     }
 
     void AddDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
-      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, aBufferSize, aBufferOffset);
+      mDescriptorSetLayouts.emplace_back(mBufferBinding, aDescriptorType, aStage, aBufferSize, aBufferOffset);
 
       ++mBufferBinding;
     }
@@ -495,7 +495,7 @@ namespace YTE
     {
       u32 ofType{ 0 };
 
-      for (auto const& descriptor : mDescriptorSetLayout)
+      for (auto const& descriptor : mDescriptorSetLayouts)
       {
         if (descriptor.mDescriptorType == aType)
         {
@@ -524,7 +524,17 @@ namespace YTE
       return mBindings;
     }
 
+    std::vector<VertexInputBindingDescription> const& Bindings() const
+    {
+      return mBindings;
+    }
+
     std::vector<VertexInputAttributeDescription>& Attributes()
+    {
+      return mAttributes;
+    }
+
+    std::vector<VertexInputAttributeDescription> const& Attributes() const
     {
       return mAttributes;
     }
@@ -547,9 +557,20 @@ namespace YTE
       return w.str();
     }
 
-    std::vector<DescriptorSetLayoutBinding>& DescriptorSetLayout()
+
+    std::vector<std::string> const& Lines() const
     {
-      return mDescriptorSetLayout;
+      return mLines;
+    }
+
+    std::vector<DescriptorSetLayoutBinding>& DescriptorSetLayouts()
+    {
+      return mDescriptorSetLayouts;
+    }
+
+    std::vector<DescriptorSetLayoutBinding> const& DescriptorSetLayouts() const
+    {
+      return mDescriptorSetLayouts;
     }
 
   private:
@@ -563,8 +584,7 @@ namespace YTE
     u32 mConstant = 0;
 
     // Buffer Data
-    std::vector<DescriptorSetLayoutBinding> mDescriptorSetLayout;
-    //std::vector<vkhlf::WriteDescriptorSet> mWriteDescriptorSet;
+    std::vector<DescriptorSetLayoutBinding> mDescriptorSetLayouts;
     u32 mBufferBinding = 0;
   };
 }

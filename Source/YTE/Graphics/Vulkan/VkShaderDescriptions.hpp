@@ -33,6 +33,8 @@ namespace YTE
       mAttributes.reserve(aNumberOfAttributes);
     }
 
+    VkShaderDescriptions(ShaderDescriptions const& aDescriptions);
+
     template <typename T>
     void AddAttribute(vk::Format aFormat)
     {

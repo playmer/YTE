@@ -76,47 +76,47 @@ namespace YTE
   VkShaderDescriptions VkSubmesh::CreateShaderDescriptions()
   {
     u32 binding{ 0 };
-    VkShaderDescriptions descriptions;
+    ShaderDescriptions descriptions;
 
-    auto addUBO = [&descriptions, &binding](char const* aName, vk::DescriptorType aDescriptorType, vk::ShaderStageFlagBits aStage, size_t aBufferSize, size_t aBufferOffset = 0)
+    auto addUBO = [&descriptions, &binding](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
       descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, binding++));
       descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
     };
 
-    addUBO("VIEW", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::View));
-    addUBO("ANIMATION_BONE", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::Animation));
-    addUBO("MODEL_MATERIAL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Material));
-    addUBO("SUBMESH_MATERIAL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Material));
-    addUBO("LIGHTS", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::LightManager));
-    addUBO("ILLUMINATION", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eFragment, sizeof(UBOs::Illumination));
-    addUBO("WATER", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::WaterInformationManager));
+    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
 
 
     // Descriptions for the textures we support based on which maps we found above:
     for (auto sampler : mSamplerTypes)
     {
       descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", sampler, binding++));
-      descriptions.AddTextureDescriptor(vk::DescriptorType::eCombinedImageSampler, vk::ImageLayout::eShaderReadOnlyOptimal, vk::ShaderStageFlagBits::eFragment);
+      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
     }
 
-    descriptions.AddBinding<Vertex>(vk::VertexInputRate::eVertex);
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec4>(vk::Format::eR32G32B32A32Sfloat); //glm::vec4 mColor;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(vk::Format::eR32G32B32Sfloat);    //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(vk::Format::eR32G32Sfloat);       //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(vk::Format::eR32G32B32Sint);     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(vk::Format::eR32G32Sint);        //glm::ivec4 mBoneIDs;
+    descriptions.AddBinding<Vertex>(VertexInputRate::Vertex);
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddAttribute<glm::vec4>(VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddAttribute<glm::vec2>(VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddAttribute<glm::ivec3>(VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddAttribute<glm::ivec2>(VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
 
     // Model Buffer for Vertex shader. (Non-instanced Meshes)
-    addUBO("MODEL", vk::DescriptorType::eUniformBuffer, vk::ShaderStageFlagBits::eVertex, sizeof(UBOs::Model));
+    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
 
-    return descriptions;
+    return VkShaderDescriptions{ descriptions };
   }
 
 

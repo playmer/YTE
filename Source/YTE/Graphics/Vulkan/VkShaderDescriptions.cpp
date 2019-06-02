@@ -3,6 +3,58 @@
 
 namespace YTE
 {
+  VkShaderDescriptions::VkShaderDescriptions(ShaderDescriptions const& aDescriptions)
+  {
+    auto const& bindings = aDescriptions.Bindings();
+    auto const& attributes = aDescriptions.Attributes();
+    auto const& descriptoSetLayouts = aDescriptions.DescriptorSetLayouts();
+
+    mBindings.reserve(bindings.size());
+    mAttributes.reserve(attributes.size());
+    mDescriptorSetLayout.reserve(descriptoSetLayouts.size());
+    mWriteDescriptorSet.reserve(descriptoSetLayouts.size());
+
+
+    for (auto const& binding : bindings)
+    {
+      mBindings.emplace_back(binding.binding, binding.stride, to_vulkan(binding.inputRate));
+    }
+
+    for (auto const& attribute : attributes)
+    {
+      mAttributes.emplace_back(attribute.location, attribute.binding, to_vulkan(attribute.format), attribute.offset);
+    }
+
+    for (auto const& dsl : descriptoSetLayouts)
+    {
+      auto const binding = dsl.mBinding;
+      auto const descriptorType = to_vulkan(dsl.mDescriptorType);
+      auto const stage = to_vulkan(dsl.mStageFlags);
+
+
+      switch (dsl.mType)
+      {
+        case DescriptorSetLayoutBinding::Type::Image:
+        {
+          vkhlf::DescriptorImageInfo descriptorTextureInfo{ nullptr, nullptr, to_vulkan(dsl.mBufferOrImage.mLayout) };
+          mWriteDescriptorSet.emplace_back(nullptr, binding, 0, 1, descriptorType, descriptorTextureInfo, nullptr);
+          mDescriptorSetLayout.emplace_back(binding, descriptorType, stage, nullptr);
+          break;
+        }
+        case DescriptorSetLayoutBinding::Type::Buffer:
+        {
+          auto const& buffer = dsl.mBufferOrImage.mBuffer;
+
+          vkhlf::DescriptorBufferInfo descriptorBufferInfo{nullptr, buffer.mOffset, buffer.mSize };
+          mWriteDescriptorSet.emplace_back(nullptr, binding, 0, 1, descriptorType, nullptr, descriptorBufferInfo);
+          mDescriptorSetLayout.emplace_back(binding, descriptorType, stage, nullptr);
+          break;
+        }
+      }
+    }
+
+    mLines = aDescriptions.Lines();
+  }
 
   vk::Format to_vulkan(VertexFormat aFormat)
   {
@@ -340,7 +392,7 @@ namespace YTE
 
   vk::ShaderStageFlags to_vulkan(ShaderStageFlags aFlags)
   {
-    vk::ShaderStageFlags toReturn;
+    vk::ShaderStageFlags toReturn{0};
 
     if (aFlags & ShaderStageFlags::Vertex) toReturn |= vk::ShaderStageFlagBits::eVertex;
     if (aFlags & ShaderStageFlags::TessellationControl) toReturn |= vk::ShaderStageFlagBits::eTessellationControl;
@@ -348,8 +400,8 @@ namespace YTE
     if (aFlags & ShaderStageFlags::Geometry) toReturn |= vk::ShaderStageFlagBits::eGeometry;
     if (aFlags & ShaderStageFlags::Fragment) toReturn |= vk::ShaderStageFlagBits::eFragment;
     if (aFlags & ShaderStageFlags::Compute) toReturn |= vk::ShaderStageFlagBits::eCompute;
-    if (aFlags & ShaderStageFlags::AllGraphics) toReturn |= vk::ShaderStageFlagBits::eAllGraphics;
-    if (aFlags & ShaderStageFlags::All) toReturn |= vk::ShaderStageFlagBits::eAll;
+    //if (aFlags & ShaderStageFlags::AllGraphics) toReturn |= vk::ShaderStageFlagBits::eAllGraphics;
+    //if (aFlags & ShaderStageFlags::All) toReturn |= vk::ShaderStageFlagBits::eAll;
     if (aFlags & ShaderStageFlags::RaygenNV) toReturn |= vk::ShaderStageFlagBits::eRaygenNV;
     if (aFlags & ShaderStageFlags::AnyHitNV) toReturn |= vk::ShaderStageFlagBits::eAnyHitNV;
     if (aFlags & ShaderStageFlags::ClosestHitNV) toReturn |= vk::ShaderStageFlagBits::eClosestHitNV;
