@@ -342,6 +342,33 @@ namespace YTE
     MeshNV
   };
 
+  inline bool operator&(ShaderStageFlags lhs, ShaderStageFlags rhs)
+  {
+    using T = std::underlying_type_t <ShaderStageFlags>;
+    return static_cast<T>(lhs) & static_cast<T>(rhs);
+  }
+
+  enum class ImageLayout
+  {
+    Undefined,
+    General,
+    ColorAttachmentOptimal,
+    DepthStencilAttachmentOptimal,
+    DepthStencilReadOnlyOptimal,
+    ShaderReadOnlyOptimal,
+    TransferSrcOptimal,
+    TransferDstOptimal,
+    Preinitialized,
+    DepthReadOnlyStencilAttachmentOptimal,
+    DepthAttachmentStencilReadOnlyOptimal,
+    PresentSrcKHR,
+    SharedPresentKHR,
+    ShadingRateOptimalNV,
+    FragmentDensityMapOptimalEXT,
+    DepthReadOnlyStencilAttachmentOptimalKHR,
+    DepthAttachmentStencilReadOnlyOptimalKHR
+  };
+
   struct VertexInputAttributeDescription
   {
     u32 location;
@@ -359,16 +386,58 @@ namespace YTE
 
   struct DescriptorSetLayoutBinding
   {
-    u32 binding;
-    DescriptorType descriptorType;
-    ShaderStageFlags stageFlags;
+    DescriptorSetLayoutBinding(u32 aBinding,
+      DescriptorType aDescriptorType,
+      ShaderStageFlags aStageFlags,
+      size_t aSize,
+      size_t aOffset)
+      : mBinding{aBinding}
+      , mDescriptorType{aDescriptorType}
+      , mStageFlags{aStageFlags}
+      , mType{Type::Buffer}
+    {
+      mBufferOrImage.mBuffer = Buffer{ aSize, aOffset };
+    }
+
+    DescriptorSetLayoutBinding(u32 aBinding,
+      DescriptorType aDescriptorType,
+      ShaderStageFlags aStageFlags,
+      ImageLayout aLayout)
+      : mBinding{ aBinding }
+      , mDescriptorType{ aDescriptorType }
+      , mStageFlags{ aStageFlags }
+      , mType{ Type::Image }
+    {
+      mBufferOrImage.mLayout = aLayout;
+    }
+
+    enum class Type
+    {
+      Image,
+      Buffer
+    };
+
+    u32 mBinding;
+    DescriptorType mDescriptorType;
+    ShaderStageFlags mStageFlags;
+    Type mType;
+
+    struct Buffer
+    {
+      size_t mSize;
+      size_t mOffset;
+    };
+
+    union BufferOrImage
+    {
+      Buffer mBuffer;
+      ImageLayout mLayout;
+    } mBufferOrImage;
   };
 
   class ShaderDescriptions
   {
   public:
-    //using BufferOrImage = std::variant<std::shared_ptr<vkhlf::Buffer>, vkhlf::DescriptorImageInfo>;
-
     ShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
     {
       mBindings.reserve(aNumberOfBindings);
@@ -408,20 +477,16 @@ namespace YTE
       mVertexOffset = 0;
     }
 
-    void AddTextureDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, vk::ImageLayout aLayout)
+    void AddDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, ImageLayout aLayout)
     {
-      //vkhlf::DescriptorImageInfo descriptorTextureInfo{ nullptr, nullptr, aLayout };
-      //mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, descriptorTextureInfo, nullptr);
-      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, aLayout);
 
       ++mBufferBinding;
     }
 
     void AddDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
-      //vkhlf::DescriptorBufferInfo descriptorBufferInfo{ nullptr, aBufferOffset, aBufferSize };
-      //mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, nullptr, descriptorBufferInfo);
-      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, aBufferSize, aBufferOffset);
 
       ++mBufferBinding;
     }
@@ -432,7 +497,7 @@ namespace YTE
 
       for (auto const& descriptor : mDescriptorSetLayout)
       {
-        if (descriptor.descriptorType == aType)
+        if (descriptor.mDescriptorType == aType)
         {
           ++ofType;
         }
@@ -440,17 +505,6 @@ namespace YTE
 
       return ofType;
     }
-
-    //template <typename T>
-    //void AddBuffer(std::string_view aName, 
-    //               vk::DescriptorType aType, 
-    //               vk::ShaderStageFlagBits aShader)
-    //{
-    //
-    //
-    //  mDescriptorSetLayout.emplace_back(mBufferBinding++, aType, aShader, nullptr);
-    //}
-
 
     /////////////////////////////////
     // Getter 
@@ -512,9 +566,6 @@ namespace YTE
     std::vector<DescriptorSetLayoutBinding> mDescriptorSetLayout;
     //std::vector<vkhlf::WriteDescriptorSet> mWriteDescriptorSet;
     u32 mBufferBinding = 0;
-
-
-    std::vector<vk::SpecializationMapEntry> mEntries;
   };
 }
 

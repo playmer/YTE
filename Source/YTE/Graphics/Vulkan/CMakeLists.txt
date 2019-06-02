@@ -33,6 +33,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/VkShader.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkShaderCompiler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkShaderCompiler.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/VkShaderDescriptions.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkShaderDescriptions.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkTexture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkTexture.hpp

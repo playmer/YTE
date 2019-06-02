@@ -55,7 +55,7 @@ namespace YTE
 
       if (!transcoder.validate_file_checksums(
         mTexture->mData.data(),
-        mTexture->mData.size(),
+        static_cast<u32>(mTexture->mData.size()),
         true))
       {
         __debugbreak();
@@ -64,7 +64,7 @@ namespace YTE
 
       if (!transcoder.get_file_info(
         mTexture->mData.data(),
-        mTexture->mData.size(),
+        static_cast<u32>(mTexture->mData.size()),
         info))
       {
         __debugbreak();
@@ -89,7 +89,7 @@ namespace YTE
       basist::basisu_image_info imageInfo;
       if (!transcoder.get_image_info(
         mTexture->mData.data(),
-        mTexture->mData.size(),
+        static_cast<u32>(mTexture->mData.size()),
         imageInfo,
         0))
       {
@@ -104,7 +104,7 @@ namespace YTE
 
       if (!transcoder.get_image_level_info(
         mTexture->mData.data(),
-        mTexture->mData.size(),
+        static_cast<u32>(mTexture->mData.size()),
         levelInfo,
         0,
         0))
@@ -279,7 +279,7 @@ namespace YTE
 
         if (!transcoder.start_transcoding(
           mTexture->mData.data(),
-          mTexture->mData.size()))
+          static_cast<u32>(mTexture->mData.size())))
         {
           __debugbreak();
           return;
@@ -287,14 +287,14 @@ namespace YTE
 
         if (!transcoder.transcode_image_level(
           mTexture->mData.data(),
-          mTexture->mData.size(),
+          static_cast<u32>(mTexture->mData.size()),
           0,
           0,
           dataWriter,
           totalBlocks,
           transcoderFormat,
           0,
-          layout.rowPitch / basist::basis_get_bytes_per_block(transcoderFormat)))
+          static_cast<u32>(layout.rowPitch / basist::basis_get_bytes_per_block(transcoderFormat))))
         {
           __debugbreak();
           return;
