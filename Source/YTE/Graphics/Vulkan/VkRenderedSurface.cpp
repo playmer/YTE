@@ -297,15 +297,6 @@ namespace YTE
     return piplineInfoPtr;
   }
 
-
-
-  std::unique_ptr<VkInstantiatedLight> VkRenderedSurface::CreateLight(GraphicsView* aView)
-  {
-    mDataUpdateRequired = true;
-    auto light = GetViewData(aView)->mLightManager.CreateLight();
-    return std::move(light);
-  }
-
   std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     mDataUpdateRequired = true;
@@ -407,7 +398,7 @@ namespace YTE
 
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mView = aView;
-      view.mLightManager.SetSurfaceAndView(this, aView);
+      view.mView->GetLightManager()->SetView(aView);
       view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
@@ -629,7 +620,7 @@ namespace YTE
   {
     for (auto& view : mViewData)
     {
-      view.second.mLightManager.SetLights(aOnOrOff);
+      view.first->GetLightManager()->SetLights(aOnOrOff);
     }
   }
 

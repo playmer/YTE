@@ -54,7 +54,6 @@ namespace YTE
     glm::vec4 mClearColor;
     UBOs::View mViewUBOData;
     UBOs::Illumination mIlluminationUBOData;
-    VkLightManager mLightManager;
     VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
@@ -97,7 +96,6 @@ namespace YTE
       VkShaderDescriptions &aDescription, 
       GraphicsView* aView);
 
-    std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
     std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
 
@@ -174,11 +172,6 @@ namespace YTE
     void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
     {
       GetViewData(aView)->mClearColor = aColor;
-    }
-
-    VkLightManager* GetLightManager(GraphicsView *aView)
-    {
-      return &GetViewData(aView)->mLightManager;
     }
 
     VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)

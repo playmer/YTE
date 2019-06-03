@@ -241,11 +241,6 @@ namespace YTE
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
   }
 
-  std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
-  {
-    return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
-  }
-
   std::unique_ptr<InstantiatedInfluenceMap> VkRenderer::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     return static_unique_pointer_cast<InstantiatedInfluenceMap>(GetSurface(aView->GetWindow())->CreateWaterInfluenceMap(aView));

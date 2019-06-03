@@ -9,8 +9,6 @@
 
 #include "YTE/Math/Constants.hpp"
 
-#define YTE_Graphics_LightCount 16
-#define YTE_Graphics_WaterInformationCount 16
 
 namespace YTE
 {
@@ -33,6 +31,9 @@ namespace YTE
 
   namespace UBOs
   {
+    constexpr size_t LightCount = 16;
+    constexpr size_t WaterInformationCount = 16;
+
     struct View
     {
       glm::mat4 mProjectionMatrix = mat4Identity;
@@ -135,7 +136,7 @@ namespace YTE
 
     struct WaterInformationManager
     {
-      WaterInfluenceMap mInformation[YTE_Graphics_WaterInformationCount];
+      WaterInfluenceMap mInformation[UBOs::WaterInformationCount];
       unsigned int mNumberOfInfluences = 0;
       float mBaseHeight;
       glm::vec2 mPadding;
@@ -169,7 +170,7 @@ namespace YTE
 
     struct LightManager
     {
-      Light mLights[YTE_Graphics_LightCount];
+      Light mLights[UBOs::LightCount];
       unsigned int mNumOfLights = 0;
       float mActive = 0.0f;  // bool
     };

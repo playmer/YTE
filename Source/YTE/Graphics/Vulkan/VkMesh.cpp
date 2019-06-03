@@ -123,7 +123,7 @@ namespace YTE
     bufferOrImages.emplace_back(aUBOAnimation);
     bufferOrImages.emplace_back(aUBOModelMaterial);
     bufferOrImages.emplace_back(aUBOSubmeshMaterial);
-    bufferOrImages.emplace_back(GetBuffer(surface->GetLightManager(aView)->GetUBOLightBuffer()));
+    bufferOrImages.emplace_back(GetBuffer(aView->GetLightManager()->GetUBOLightBuffer()));
     bufferOrImages.emplace_back(GetBuffer(surface->GetUBOIlluminationBuffer(aView)));
     bufferOrImages.emplace_back(GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()));
 

@@ -77,15 +77,16 @@ namespace YTE
 
   GraphicsView::GraphicsView(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
-    , mActiveCamera(nullptr)
-    , mDrawerCombination(DrawerTypeCombination::DefaultCombination)
-    , mDrawerType(DrawerTypes::DefaultDrawer)
-    , mWindow(nullptr)
-    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
-    , mSuperSampling(1)
-    , mOrder(0.0f)
-    , mConstructing(true)
-    , mInitialized(false)
+    , mLightManager{ this }
+    , mActiveCamera{ nullptr }
+    , mDrawerCombination{ DrawerTypeCombination::DefaultCombination }
+    , mDrawerType{ DrawerTypes::DefaultDrawer }
+    , mWindow{ nullptr }
+    , mClearColor{ 0.22f, 0.22f, 0.22f, 1.0f }
+    , mSuperSampling{ 1 }
+    , mOrder{ 0.0f }
+    , mConstructing{ true }
+    , mInitialized{ false }
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();

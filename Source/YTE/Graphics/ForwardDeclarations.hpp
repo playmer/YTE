@@ -13,6 +13,8 @@ namespace YTE
   class GraphicsView;
   class FFT_WaterSimulation;
   class InstantiatedModel;
+  class InstantiatedLight;
+  class LightManager;
   class Light;
   class Model;
   class ModelChanged;

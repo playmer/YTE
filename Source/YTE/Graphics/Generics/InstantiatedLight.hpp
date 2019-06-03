@@ -6,6 +6,7 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/UBOs.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -25,7 +26,8 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedLight);
 
-    YTE_Shared InstantiatedLight();
+    YTE_Shared InstantiatedLight(GraphicsView* aView);
+    YTE_Shared ~InstantiatedLight();
 
     void SetLightSourceInformation(UBOs::Light &aLight)
     {
@@ -148,6 +150,19 @@ namespace YTE
     {
       return mLightUBOData.mIntensity;
     }
+
+    YTE_Shared void SurfaceLostEvent(ViewChanged* aEvent);
+    YTE_Shared void SurfaceGainedEvent(ViewChanged* aEvent);
+
+    void SetIndex(unsigned int aIndex)
+    {
+      mIndex = aIndex;
+    }
+
+
+    GraphicsView* mGraphicsView;
+    LightManager* mManager;
+    unsigned int mIndex;
 
     UBOs::Light mLightUBOData;
     bool mDataChanged;

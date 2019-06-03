@@ -51,7 +51,7 @@ namespace YTE
                                    ContiguousRange<SubmeshData> aSubmeshes,
 			                             bool aForceUpdate = false);
 
-    virtual std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
+    std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
     template <typename tType>
@@ -64,7 +64,7 @@ namespace YTE
       return allocator->CreateBuffer<tType>(aSize,
                                             GPUAllocation::BufferUsage::TransferDst |
                                             GPUAllocation::BufferUsage::UniformBuffer,
-                                            GPUAllocation::MemoryProperty::DeviceLocal);
+                                            aProperty);
     }
 
     virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
