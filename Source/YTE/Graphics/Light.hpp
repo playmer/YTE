@@ -7,8 +7,9 @@
 #include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/UBOs.hpp"
+
+#include "YTE/Graphics/InstantiatedLight.hpp"
 
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Platform/Keyboard.hpp"

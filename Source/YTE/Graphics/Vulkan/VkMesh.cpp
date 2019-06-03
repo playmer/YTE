@@ -7,7 +7,6 @@
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkShader.hpp"
 #include "YTE/Graphics/Vulkan/VkTexture.hpp"
-#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 
 namespace YTE
 {

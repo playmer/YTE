@@ -11,7 +11,6 @@
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
-#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderToScreen.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"

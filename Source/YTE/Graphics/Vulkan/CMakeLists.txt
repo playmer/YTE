@@ -9,16 +9,12 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkCommandBufferBuffer.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkFunctionLoader.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedLight.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedLight.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedInfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedInfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInstantiatedModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInternals.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkInternals.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/VkLightManager.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/VkLightManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkWaterInfluenceMapManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/VkWaterInfluenceMapManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/VkMesh.cpp

@@ -1,5 +1,4 @@
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
-
+#include "YTE/Graphics/InstantiatedLight.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/LightManager.hpp"
 

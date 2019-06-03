@@ -1,13 +1,12 @@
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
 
-
-#include "YTE/Graphics/Generics/Renderer.hpp"
+#include "YTE/Graphics/InstantiatedLight.hpp"
 
 namespace YTE
 {

@@ -1,8 +1,8 @@
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Graphics/LightManager.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
+#include "YTE/Graphics/LightManager.hpp"
+#include "YTE/Graphics/InstantiatedLight.hpp"
 
 namespace YTE
 {

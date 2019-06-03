@@ -1,8 +1,8 @@
 #include "YTE/Core/Engine.hpp"
 
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Light.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"

@@ -1,21 +1,18 @@
 target_sources(YTE
   PRIVATE
+  ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedHeightmap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedLight.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Renderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Shader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Texture.cpp
-#  PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedHeightmap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedLight.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Mesh.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Renderer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Renderer.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Shader.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Shader.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/Texture.cpp
     ${CMAKE_CURRENT_LIST_DIR}/Texture.hpp
 )
