@@ -6,9 +6,10 @@
 
 #include "YTE/Core/Component.hpp"
 
-#include "YTE/Graphics/ForwardDeclarations.hpp"
-#include "YTE/Graphics/LightManager.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
+#include "YTE/Graphics/LightManager.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -106,8 +107,35 @@ namespace YTE
       return &(*mLightManager);
     }
 
+    GPUBuffer<UBOs::View>& GetViewUBO()
+    {
+      return mViewUBO;
+    }
+
+    GPUBuffer<UBOs::Illumination>& GetIlluminationUBO()
+    {
+      return mIlluminationUBO;
+    }
+
+
+    UBOs::View const& GetViewUBOData()
+    {
+      return mViewUBOData;
+    }
+    UBOs::Illumination const& GetIlluminationUBOData()
+    {
+      return mIlluminationUBOData;
+    }
+
   private:
     std::optional<LightManager> mLightManager;
+
+    GPUBuffer<UBOs::View> mViewUBO;
+    GPUBuffer<UBOs::Illumination> mIlluminationUBO;
+
+    UBOs::View mViewUBOData;
+    UBOs::Illumination mIlluminationUBOData;
+
     Camera *mActiveCamera;
     DrawerTypeCombination mDrawerCombination;
     DrawerTypes mDrawerType;

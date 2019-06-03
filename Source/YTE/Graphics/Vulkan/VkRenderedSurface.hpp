@@ -42,17 +42,12 @@ namespace YTE
 
     }
 
-    // Buffers
     GPUBuffer<Vertex> mVertexBuffer;
     GPUBuffer<u32> mIndexBuffer;
-    GPUBuffer<UBOs::View> mViewUBO;
-    GPUBuffer<UBOs::Illumination> mIlluminationUBO;
     std::string mName = "EMPTY";
 
     // Engine Side Data
     glm::vec4 mClearColor;
-    UBOs::View mViewUBOData;
-    UBOs::Illumination mIlluminationUBOData;
     VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
@@ -141,16 +136,6 @@ namespace YTE
     std::shared_ptr<vkhlf::RenderPass>& GetRenderPass(GraphicsView *aView)
     {
       return GetViewData(aView)->mRenderTarget->GetRenderPass();
-    }
-
-    GPUBuffer<UBOs::View>& GetUBOViewBuffer(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mViewUBO;
-    }
-
-    GPUBuffer<UBOs::Illumination>& GetUBOIlluminationBuffer(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mIlluminationUBO;
     }
 
     void SetWindow(Window *aWindow)

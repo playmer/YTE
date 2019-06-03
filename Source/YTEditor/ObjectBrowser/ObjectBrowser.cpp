@@ -553,6 +553,8 @@ namespace YTEditor
 
   void ObjectBrowser::LoadAllChildObjects(YTE::Composition *aParentObj, ObjectItem *aParentItem)
   {
+    YTE::UnusedArguments(aParentObj, aParentItem);
+
     return;
 
     // if the parent object has no children

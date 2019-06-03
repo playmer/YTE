@@ -66,8 +66,6 @@ namespace YTE
                                             aProperty);
     }
 
-    virtual void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView);
-    virtual void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination);
     virtual glm::vec4 GetClearColor(GraphicsView *aView);
     virtual void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor);
 

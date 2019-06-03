@@ -243,11 +243,12 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    auto toClipSpace = mParentViewData->mViewUBOData.mProjectionMatrix *
-                       mParentViewData->mViewUBOData.mViewMatrix;
+    auto const& viewUbo = mParentViewData->mView->GetViewUBOData();
+    auto toClipSpace = viewUbo.mProjectionMatrix *
+                       viewUbo.mViewMatrix;
 
     detail::Frustum frustum;
-    frustum.Update(toClipSpace, mParentViewData->mViewUBOData.mCameraPosition);
+    frustum.Update(toClipSpace, viewUbo.mCameraPosition);
 
     glm::vec4 origin{ 0.f,0.f,0.f,1.f };
     float depth{ 0.0f };

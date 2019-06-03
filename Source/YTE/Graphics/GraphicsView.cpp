@@ -108,6 +108,18 @@ namespace YTE
       return;
     }
 
+    auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
+      
+    mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
+                                                      GPUAllocation::BufferUsage::TransferDst |
+                                                      GPUAllocation::BufferUsage::UniformBuffer,
+                                                      GPUAllocation::MemoryProperty::DeviceLocal);
+
+    mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
+                                                                      GPUAllocation::BufferUsage::TransferDst |
+                                                                      GPUAllocation::BufferUsage::UniformBuffer,
+                                                                      GPUAllocation::MemoryProperty::DeviceLocal);
+
     mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
 
     mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
@@ -165,12 +177,14 @@ namespace YTE
       return;
     }
 
-    mRenderer->UpdateWindowViewBuffer(this, aView);
+    mViewUBOData = aView;
+    mViewUBO.Update(mViewUBOData);
   }
   
   void GraphicsView::UpdateIllumination(UBOs::Illumination& aIllumination)
   {
-    mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
+    mIlluminationUBOData = aIllumination;
+    mIlluminationUBO.Update(mIlluminationUBOData);
   }
 
   glm::vec4 GraphicsView::GetClearColor()

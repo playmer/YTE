@@ -103,9 +103,6 @@ namespace YTE
                            u32 aLayerCount,
                            TextureType aType) override;
         
-    void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView) override;
-    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination) override;
-
     VkMesh* CreateMesh(std::string &aFilename);
     Mesh* CreateSimpleMesh(std::string &aName,
                            ContiguousRange<SubmeshData> aSubmeshes,

@@ -92,26 +92,6 @@ namespace YTE
     mShaderCreateInfos.clear();
     mRenderToScreen.reset();
   }
-  
-  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    YTEProfileFunction();
-
-    auto view = GetViewData(aView);
-    view->mViewUBOData = aUBOView;
-    view->mViewUBO.Update(view->mViewUBOData);
-    //mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
-  }
-
-  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
-  {
-    YTEProfileFunction();
-
-    auto view = GetViewData(aView);
-    view->mIlluminationUBOData = aIllumination;
-    view->mIlluminationUBO.Update(view->mIlluminationUBOData);
-    //mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
-  }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
   {
@@ -380,19 +360,6 @@ namespace YTE
       auto emplaced = mViewData.try_emplace(aView);
 
       auto &view = emplaced.first->second;
-
-      
-
-      auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
-      
-      view.mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
-                                                             GPUAllocation::BufferUsage::TransferDst |
-                                                             GPUAllocation::BufferUsage::UniformBuffer,
-                                                             GPUAllocation::MemoryProperty::DeviceLocal);
-      view.mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
-                                                                             GPUAllocation::BufferUsage::TransferDst |
-                                                                             GPUAllocation::BufferUsage::UniformBuffer,
-                                                                             GPUAllocation::MemoryProperty::DeviceLocal);
 
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mView = aView;

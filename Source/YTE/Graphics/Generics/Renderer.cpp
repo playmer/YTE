@@ -90,18 +90,6 @@ namespace YTE
     return nullptr;
   }
 
-
-
-  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    UnusedArguments(aView, aUBOView);
-  }
-
-  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination)
-  {
-    UnusedArguments(aView, aIllumination);
-  }
-
   glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
   {
     UnusedArguments(aView);

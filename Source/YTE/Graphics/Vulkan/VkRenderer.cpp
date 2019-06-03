@@ -435,16 +435,6 @@ namespace YTE
     return meshPtr->mMesh;
   }
 
-  void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
-  }
-   
-  void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOs::Illumination& aIllumination)
-  {
-    GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
-  }
-
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
