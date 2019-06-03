@@ -6,7 +6,7 @@
 
 namespace YTE
 {
-  constexpr bool cVulkanValidations = false;
+  constexpr bool cVulkanValidations = true;
 
 
   // debug report callback for vulkan

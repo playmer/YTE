@@ -17,7 +17,7 @@ layout (location = 8) in vec2 inBoneWeights2;
 layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
-layout (location = 11) in vec3 inInstancePosition;
+//layout (location = 11) in vec3 inInstancePosition;
 
 
 
