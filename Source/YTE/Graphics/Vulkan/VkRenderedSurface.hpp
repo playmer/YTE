@@ -42,8 +42,6 @@ namespace YTE
 
     }
 
-    GPUBuffer<Vertex> mVertexBuffer;
-    GPUBuffer<u32> mIndexBuffer;
     std::string mName = "EMPTY";
 
     // Engine Side Data
