@@ -340,8 +340,6 @@ namespace YTEditor
       // Get the name of the object
       YTE::String objName = cmp->second.get()->GetName();
 
-      YTE::Composition *engineObj = cmp->second.get();
-
       // Store the name and composition pointer in the object browser
       ObjectItem * topItem = this->GetObjectBrowser().AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
 
@@ -481,12 +479,15 @@ namespace YTEditor
   {
     return mApplication;
   }
+
   Gizmo* MainWindow::CreateGizmo(YTE::Space *aSpace)
   {
+    YTE::UnusedArguments(aSpace);
+
     auto gizmo = RemakeGizmo();
 
     // get the window 
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
     gizmo->SetOperation(Gizmo::Operation::Select);
 
     return gizmo;
@@ -495,7 +496,7 @@ namespace YTEditor
   Gizmo* MainWindow::RemakeGizmo()
   {
     // get the window 
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
     mGizmo = std::make_unique<Gizmo>(this, 
                                      mImguiLayer->GetComponent<YTE::ImguiLayer>(),

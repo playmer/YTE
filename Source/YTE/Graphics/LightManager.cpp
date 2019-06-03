@@ -1,3 +1,5 @@
+#include "YTE/Core/Engine.hpp"
+
 #include "YTE/Graphics/LightManager.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Generics/InstantiatedLight.hpp"
@@ -14,7 +16,7 @@ namespace YTE
     : mGraphicsView{ aGraphicsView }
     , mRenderer{ mGraphicsView->GetRenderer() }
   {
-    //mSurface->RegisterEvent<&LightManager::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
+    mRenderer->RegisterEvent<&LightManager::LoadToGPU>(Events::GraphicsDataUpdate, this);
     
     auto allocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
 
@@ -61,12 +63,11 @@ namespace YTE
     mLightData.mActive = 0.0f; // false
   }
 
-  void LightManager::LoadToGPU(GraphicsDataUpdate* aEvent)
+  void LightManager::LoadToGPU(LogicUpdate* aEvent)
   {
     UnusedArguments(aEvent);
 
     // Check to see if our lights need to update.
-    // TODO: Maybe make this happen at a higher level once Buffers are API generic?
     for (auto& [lightIt, i] : enumerate(mLights))
     {
       auto& light = *lightIt;
@@ -104,31 +105,6 @@ namespace YTE
     mLightData.mNumOfLights++;
     mUpdateRequired = true;
   }
-
-  std::unique_ptr<InstantiatedLight> LightManager::CreateLight()
-  {
-    if (mLightData.mNumOfLights == UBOs::LightCount)
-    {
-      DebugObjection(true , "Light Manager is full, no new lights can be added, you may safely continue, no light was added");
-      return nullptr;
-    }
-
-    if (mLightData.mNumOfLights == 0)
-    {
-      mLightData.mActive = 10.0f; // true
-    }
-
-    auto light = std::make_unique<InstantiatedLight>(mGraphicsView);
-    mLights.push_back(light.get());
-
-    light->SetIndex(mLightData.mNumOfLights);
-    mLightData.mNumOfLights++;
-    mUpdateRequired = true;
-
-    return std::move(light);
-  }
-
-
 
   void LightManager::DestroyLight(InstantiatedLight* aLight)
   {

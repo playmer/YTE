@@ -1,5 +1,6 @@
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/Light.hpp"
@@ -477,7 +478,7 @@ namespace YTE
 
   void Light::Create()
   {
-    mInstantiatedLight = mRenderer->CreateLight(mGraphicsView);
+    mInstantiatedLight = std::make_unique<InstantiatedLight>(mGraphicsView);
 
     if (mUseTemp)
     {

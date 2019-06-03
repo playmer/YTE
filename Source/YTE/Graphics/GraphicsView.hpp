@@ -2,6 +2,8 @@
 #ifndef YTE_Graphics_GraphicsView_hpp 
 #define YTE_Graphics_GraphicsView_hpp 
 
+#include <optional>
+
 #include "YTE/Core/Component.hpp"
 
 #include "YTE/Graphics/ForwardDeclarations.hpp"
@@ -101,11 +103,11 @@ namespace YTE
 
     LightManager* GetLightManager()
     {
-      return &mLightManager;
+      return &(*mLightManager);
     }
 
   private:
-    LightManager mLightManager;
+    std::optional<LightManager> mLightManager;
     Camera *mActiveCamera;
     DrawerTypeCombination mDrawerCombination;
     DrawerTypes mDrawerType;

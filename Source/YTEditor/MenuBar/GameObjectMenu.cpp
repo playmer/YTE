@@ -138,7 +138,7 @@ namespace YTEditor
     compTree->AddComponent(transform);
     
     YTE::Type* spriteType = YTE::Sprite::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(spriteType);
+    compTree->AddComponent(spriteType);
     
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
@@ -241,7 +241,7 @@ namespace YTEditor
     compTree->AddComponent(orientation);
 
     YTE::Type* emitterType = YTE::WWiseEmitter::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(emitterType);
+    compTree->AddComponent(emitterType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
@@ -265,7 +265,7 @@ namespace YTEditor
     compTree->AddComponent(orientation);
 
     YTE::Type* listenerType = YTE::WWiseListener::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(listenerType);
+    compTree->AddComponent(listenerType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
@@ -324,7 +324,7 @@ namespace YTEditor
     compTree->AddComponent(transform);
 
     YTE::Type* particleType = YTE::ParticleEmitter::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(particleType);
+    compTree->AddComponent(particleType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);
@@ -355,9 +355,7 @@ namespace YTEditor
     compTree->AddComponent(orientation);
 
     YTE::Type* particleType = YTE::Camera::GetStaticType();
-    ComponentWidget *compWidget = compTree->AddComponent(particleType);
-
-    YTE::Camera *cameraComponent = static_cast<YTE::Camera*>(compWidget->GetEngineComponent());
+    compTree->AddComponent(particleType);
 
     mMainWindow->GetPhysicsHandler().Remove(obj);
     mMainWindow->GetPhysicsHandler().Add(obj);

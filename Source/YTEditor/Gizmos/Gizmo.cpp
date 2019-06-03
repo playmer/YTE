@@ -28,8 +28,10 @@ namespace YTEditor
     mLayer->Enable(true);
   }
 
-  void Gizmo::Update(YTE::LogicUpdate *aEvent)
+  void Gizmo::Update(YTE::LogicUpdate* aEvent)
   {
+    YTE::UnusedArguments(aEvent);
+
     if ((Operation::Select != mOperation) && (nullptr != mCurrentComposition))
     {
       ImGuiIO& io = mLayer->GetIO();
@@ -51,7 +53,7 @@ namespace YTEditor
       auto compositionMatrix = mCurrentComposition->GetTransformMatrix();
       auto matrix = glm::value_ptr(compositionMatrix);
 
-      ImGuizmo::OPERATION operation;
+      ImGuizmo::OPERATION operation{};
 
       switch (mOperation)
       {

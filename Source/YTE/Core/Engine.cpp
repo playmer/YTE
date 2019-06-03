@@ -325,9 +325,9 @@ namespace YTE
     if (totalTime >= 0.5)
     {
       // FPS counter to the window name 
-      std::array<char, 256> buffer;
-      sprintf(buffer.data(), "FPS: %f", (counter / 0.5));
-      aWindow.SetWindowTitle(buffer.data());
+      fmt::MemoryWriter buffer;
+      buffer.write("FPS: {}", (counter / 0.5f));
+      aWindow.SetWindowTitle(buffer.c_str());
 
       totalTime = 0.0f;
       counter = 0;

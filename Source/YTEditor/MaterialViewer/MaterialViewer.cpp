@@ -99,6 +99,8 @@ namespace YTEditor
 
   void MaterialViewer::LoadMaterial(YTE::UBOs::Material const &aMaterial)
   {
+    YTE::UnusedArguments(aMaterial);
+
     this->Clear();
 
     // glm::vec3

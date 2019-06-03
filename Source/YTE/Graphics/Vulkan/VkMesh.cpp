@@ -127,12 +127,6 @@ namespace YTE
     bufferOrImages.emplace_back(GetBuffer(surface->GetUBOIlluminationBuffer(aView)));
     bufferOrImages.emplace_back(GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()));
 
-    // Add Texture Samplers
-    auto addTS = [&bufferOrImages](VkTexture *aData)
-    {
-    };
-
-
     for (auto texture : mTextures)
     {
       vkhlf::DescriptorImageInfo textureInfo{ 

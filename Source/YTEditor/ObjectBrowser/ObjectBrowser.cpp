@@ -156,7 +156,7 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
 
-    for (auto const& [name, child] : aEngineObj->GetCompositions())
+    for (auto const& [compositionName, child] : aEngineObj->GetCompositions())
     {
       AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
     }
@@ -186,7 +186,7 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
     
-    for (auto const&[name, child] : aEngineObj->GetCompositions())
+    for (auto const&[compositionName, child] : aEngineObj->GetCompositions())
     {
       AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
     }
@@ -207,7 +207,9 @@ namespace YTEditor
   void ObjectBrowser::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
                                            QTreeWidgetItem *aPrevious)
   {
-    ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
+    //ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
+    YTE::UnusedArguments(aPrevious);
+
     ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
     ArchetypeTools *archTools = GetMainWindow()->GetComponentBrowser().GetArchetypeTools();
@@ -554,20 +556,20 @@ namespace YTEditor
     return;
 
     // if the parent object has no children
-    if (aParentObj->GetCompositions().size() == 0)
-    {
-      return;
-    }
-
-    for (auto& cmp : aParentObj->GetCompositions())
-    {
-      ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
-
-      if (item)
-      {
-        LoadAllChildObjects(cmp.second.get(), item);
-      }
-    }
+    //if (aParentObj->GetCompositions().size() == 0)
+    //{
+    //  return;
+    //}
+    //
+    //for (auto& cmp : aParentObj->GetCompositions())
+    //{
+    //  ObjectItem * item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
+    //
+    //  if (item)
+    //  {
+    //    LoadAllChildObjects(cmp.second.get(), item);
+    //  }
+    //}
   }
 
   YTE::Composition* ObjectBrowser::GetCurrentObject()

@@ -85,11 +85,6 @@ namespace YTE
     return nullptr;
   }
 
-  std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
-  {
-    return aView->GetLightManager()->CreateLight();
-  }
-
   std::unique_ptr<InstantiatedInfluenceMap> Renderer::CreateWaterInfluenceMap(GraphicsView* aView)
   {
     UnusedArguments(aView);

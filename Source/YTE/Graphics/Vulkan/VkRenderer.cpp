@@ -451,6 +451,7 @@ namespace YTE
     UnusedArguments(aEvent);
 
     VkGraphicsDataUpdate update;
+    LogicUpdate update2;
 
     ++mTransferQueueData->mBufferedCommandBuffer;
     ++mGraphicsQueueData->mBufferedCommandBuffer;
@@ -466,18 +467,20 @@ namespace YTE
     
     // Currently the VkLightManager relies on this being sent, should have them do something else.
     SendEvent(Events::VkGraphicsDataUpdate, &update);
-    mUBOUpdates.Update(update.mTransferCBO);
-    
-    update.mCBO->end();
-    update.mTransferCBO->end();
-
-    mTransferQueueData->mQueue->submit(update.mTransferCBO, transferFence);
-    mGraphicsQueueData->mQueue->submit(update.mCBO, graphicsFence);
+    SendEvent(Events::GraphicsDataUpdate, &update2);
 
     for (auto &surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
     }
+
+    mUBOUpdates.Update(update.mTransferCBO);
+
+    update.mCBO->end();
+    update.mTransferCBO->end();
+
+    mTransferQueueData->mQueue->submit(update.mTransferCBO, transferFence);
+    mGraphicsQueueData->mQueue->submit(update.mCBO, graphicsFence);
 
     mDataUpdateRequired = false;
   }

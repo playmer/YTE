@@ -553,6 +553,8 @@ namespace YTE
 
     mVertexBuffer.Update(mData.mVertexData);
     mIndexBuffer.Update(mData.mIndexData);
+
+    DebugAssert((mData.mIndexData.size() % 3) == 0, "Index buffer must be divisible by 3.");
   }
 
   Submesh::Submesh(SubmeshData&& aRightData)

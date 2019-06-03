@@ -28,6 +28,8 @@ namespace YTEditor
   bool GameWindowEventFilter::eventFilter(QObject *aWatched,
                                           QEvent *aEvent)
   {
+    YTE::UnusedArguments(aWatched);
+
     QEvent::Type eventType = aEvent->type();
 
     if (eventType == QEvent::DragMove)

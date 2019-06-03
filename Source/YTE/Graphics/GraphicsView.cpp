@@ -77,7 +77,6 @@ namespace YTE
 
   GraphicsView::GraphicsView(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
-    , mLightManager{ this }
     , mActiveCamera{ nullptr }
     , mDrawerCombination{ DrawerTypeCombination::DefaultCombination }
     , mDrawerType{ DrawerTypes::DefaultDrawer }
@@ -90,6 +89,8 @@ namespace YTE
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
+
+    mLightManager.emplace(this);
 
     auto it = engine->GetWindows().find(mWindowName);
 

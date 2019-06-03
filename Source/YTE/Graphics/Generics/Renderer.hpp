@@ -51,7 +51,6 @@ namespace YTE
                                    ContiguousRange<SubmeshData> aSubmeshes,
 			                             bool aForceUpdate = false);
 
-    std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView);
     virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
 
     template <typename tType>

@@ -29,6 +29,8 @@ namespace YTE
 
     mGraphicsView->RegisterEvent<&InstantiatedLight::SurfaceLostEvent>(Events::SurfaceLost, this);
     mGraphicsView->RegisterEvent<&InstantiatedLight::SurfaceGainedEvent>(Events::SurfaceGained, this);
+
+    mManager->AddLight(this);
   }
 
   InstantiatedLight::~InstantiatedLight()

@@ -228,11 +228,11 @@ namespace YTEditor
     }
   }
 
-  void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent *aEvent)
+  void PhysicsHandler::OnMousePersist(YTE::MouseButtonEvent*)
   {
   }
 
-  void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent *aEvent)
+  void PhysicsHandler::OnMouseRelease(YTE::MouseButtonEvent* aEvent)
   {
     YTE::UnusedArguments(aEvent);
 

@@ -26,10 +26,9 @@ namespace YTE
 
     void SetView(GraphicsView* aView);
 
-    void LoadToGPU(GraphicsDataUpdate* aEvent);
+    void LoadToGPU(LogicUpdate* aEvent);
 
     void AddLight(InstantiatedLight *aLight);
-    std::unique_ptr<InstantiatedLight> CreateLight();
     void DestroyLight(InstantiatedLight* aLight);
 
     void SetLights(bool aOnOrOff);
