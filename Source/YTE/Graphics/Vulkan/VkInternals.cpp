@@ -104,7 +104,7 @@ namespace YTE
       enabledExtensions.emplace_back("VK_EXT_debug_report");
 
       // Enable standard validation layer to find as many errors as possible!
-      enabledLayers.push_back("VK_LAYER_LUNARG_standard_validation");
+      enabledLayers.push_back("VK_LAYER_KHRONOS_validation");
     }
 
     // Create a new vulkan instance using the required extensions
