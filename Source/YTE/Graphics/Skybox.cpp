@@ -158,7 +158,7 @@ namespace YTE
           sphere.mIndexData.emplace_back(c);
         }
 
-        sphere.mVertexData.push_back(vert);
+        sphere.mVertexData.AddVertex(vert);
       }
     }
 

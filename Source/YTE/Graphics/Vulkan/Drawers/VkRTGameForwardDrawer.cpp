@@ -151,8 +151,8 @@ namespace YTE
     cbo->end();
   }
 
-  static void RunPipelines(std::shared_ptr<vkhlf::CommandBuffer> &aCBO,
-                           std::vector<VkRTGameForwardDrawer::DrawData> &aShaders)
+  static void RunPipelines(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
+                           std::vector<VkRTGameForwardDrawer::DrawData>& aShaders)
   {
     YTEProfileFunction();
 
@@ -160,6 +160,8 @@ namespace YTE
       auto number = std::to_string(aShaders.size());
       YTEProfileBlock(number.c_str());
 
+      std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
+      std::vector<u64> vertexBufferOffsets;
       std::shared_ptr<vkhlf::Pipeline> *lastPipeline{ nullptr };
       float lastLineWidth = 1.0f;
 
@@ -185,21 +187,26 @@ namespace YTE
 
         {
           YTEProfileBlock("bindVertexBuffer");
+          auto& vbd = *(drawCall.mVertexBufferData);
 
-          if (nullptr != drawCall.mInstanceBuffer)
-          {
-            aCBO->bindVertexBuffers(
-              0,
-              { *drawCall.mVertexBuffer, *drawCall.mInstanceBuffer },
-              { 0, 0 });
-          }
-          else
-          {
-            aCBO->bindVertexBuffer(
-              0,
-              *drawCall.mVertexBuffer,
-              0);
-          }
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+
+          vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
+
+          aCBO->bindVertexBuffers(
+            0,
+            vertexBuffersToBind,
+            vertexBufferOffsets);
         }
 
         {
@@ -232,6 +239,8 @@ namespace YTE
             0,
             0);
         }
+
+        vertexBuffersToBind.clear();
       }
 
       aShaders.clear();
@@ -363,7 +372,7 @@ namespace YTE
             }
 
             toEmplaceInto->emplace_back(*toUseToDraw,
-                                        GetBuffer(trueSubmesh->mVertexBuffer),
+                                        trueSubmesh->mVertexBufferData,
                                         GetBuffer(trueSubmesh->mIndexBuffer),
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,

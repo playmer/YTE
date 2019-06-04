@@ -58,10 +58,10 @@ namespace YTE
     void RefreshInitialBufffers();
 
     int mEyeBufferIndex;
-    std::vector<Vertex> mInitialEyeVertexBuffer;
+    VertexData mInitialEyeVertexBuffer;
 
     int mMouthBufferIndex;
-    std::vector<Vertex> mInitialMouthVertexBuffer;
+    VertexData mInitialMouthVertexBuffer;
 
     FaceFrame* FindFrame(std::vector<FaceFrame>& aFrames, double time);
   };

@@ -65,9 +65,9 @@ namespace YTE
           auto i2 = data.mIndexData[i + 1];
           auto i3 = data.mIndexData[i + 2];
       
-          mTriangles.addTriangle(ToBullet(data.mVertexData[i1].mPosition),
-                                 ToBullet(data.mVertexData[i2].mPosition),
-                                 ToBullet(data.mVertexData[i3].mPosition));
+          mTriangles.addTriangle(ToBullet(data.mVertexData.mPositionData[i1]),
+                                 ToBullet(data.mVertexData.mPositionData[i2]),
+                                 ToBullet(data.mVertexData.mPositionData[i3]));
         }
       }
     }

@@ -104,7 +104,7 @@ namespace YTE
 
     submesh.mShaderSetName = imguiStr;
 
-    submesh.mVertexData.clear();
+    submesh.mVertexData.Clear();
     submesh.mIndexData.clear();
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
@@ -122,7 +122,7 @@ namespace YTE
         vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
         vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
         vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
-        submesh.mVertexData.emplace_back(vert);
+        submesh.mVertexData.AddVertex(vert);
       }
 
       for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
@@ -133,7 +133,7 @@ namespace YTE
 
     auto &instantiatedModel = mContext->GetInstantiatedModel();
 
-    if (submesh.mVertexData.empty())
+    if (submesh.mVertexData.mPositionData.empty())
     {
       instantiatedModel.reset();
       return;
@@ -220,9 +220,27 @@ namespace YTE
 
     auto submesh = mVkSubmesh->mSubmesh;
 
-    aCBO->bindVertexBuffer(0,
-                           GetBuffer(submesh->mVertexBuffer),
-                           0);
+
+    auto& vbd = submesh->mVertexBufferData;
+
+    std::vector<u64> vertexBufferOffsets;
+    std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
+
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+
+    vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
+
+    aCBO->bindVertexBuffers(0, vertexBuffersToBind, vertexBufferOffsets);
 
     aCBO->bindIndexBuffer(GetBuffer(submesh->mIndexBuffer),
                           0,

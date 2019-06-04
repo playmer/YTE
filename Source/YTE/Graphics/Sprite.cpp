@@ -154,12 +154,12 @@ namespace YTE
         // update the model
         auto mesh = mInstantiatedSprite->GetMesh();
 
-        mVertexData[0].mTextureCoordinates = uv0;
-        mVertexData[1].mTextureCoordinates = uv1;
-        mVertexData[2].mTextureCoordinates = uv2;
-        mVertexData[3].mTextureCoordinates = uv3;
+        mVertexData.mTextureCoordinatesData[0] = uv0;
+        mVertexData.mTextureCoordinatesData[1] = uv1;
+        mVertexData.mTextureCoordinatesData[2] = uv2;
+        mVertexData.mTextureCoordinatesData[3] = uv3;
         
-        mesh->UpdateVertices(0, mVertexData);
+        mesh->GetSubmeshes()[0].UpdateTextureCoordinatesBuffer(mVertexData.mTextureCoordinatesData);
 
         ++mCurrentIndex;
 
@@ -277,17 +277,15 @@ namespace YTE
     submesh.mShaderSetName = "Sprite";
 
     submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
-    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
-    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
     submesh.mCullBackFaces = false;
 
-    submesh.mVertexData.clear();
+    submesh.mVertexData.Clear();
 
-    submesh.mVertexData.emplace_back(vert0);
-    submesh.mVertexData.emplace_back(vert1);
-    submesh.mVertexData.emplace_back(vert2);
-    submesh.mVertexData.emplace_back(vert3);
+    submesh.mVertexData.AddVertex(vert0);
+    submesh.mVertexData.AddVertex(vert1);
+    submesh.mVertexData.AddVertex(vert2);
+    submesh.mVertexData.AddVertex(vert3);
 
     mVertexData = submesh.mVertexData;
 

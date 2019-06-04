@@ -3,6 +3,8 @@
 #ifndef YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 #define YTE_Graphics_Vulkan_Drawers_VkRTGameForwardDrawer_hpp
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
+
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
 
 namespace YTE
@@ -28,18 +30,18 @@ namespace YTE
 
     struct DrawData
     {
-      DrawData(std::shared_ptr<vkhlf::Pipeline> &aPipeline,
-               std::shared_ptr<vkhlf::Buffer> &aVertexBuffer,
-               std::shared_ptr<vkhlf::Buffer> &aIndexBuffer,
-               std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-               std::shared_ptr<vkhlf::DescriptorSet> &aDescriptorSet,
+      DrawData(std::shared_ptr<vkhlf::Pipeline>& aPipeline,
+               VertexBufferData& aVertexBuffer,
+               std::shared_ptr<vkhlf::Buffer>& aIndexBuffer,
+               std::shared_ptr<vkhlf::PipelineLayout>& aPipelineLayout,
+               std::shared_ptr<vkhlf::DescriptorSet>& aDescriptorSet,
                u32 aIndexCount,
                float aLineWidth,
                float aDepth )
         : mPipeline{ &aPipeline}
-        , mVertexBuffer{ &aVertexBuffer}
-        , mIndexBuffer{ &aIndexBuffer}
-        , mPipelineLayout{ &aPipelineLayout}
+        , mVertexBufferData{ &aVertexBuffer }
+        , mIndexBuffer{ &aIndexBuffer }
+        , mPipelineLayout{ &aPipelineLayout }
         , mDescriptorSet{ &aDescriptorSet }
         , mIndexCount{aIndexCount}
         , mLineWidth(aLineWidth)
@@ -48,8 +50,8 @@ namespace YTE
 
       }
 
-      std::shared_ptr<vkhlf::Pipeline> *mPipeline;
-      std::shared_ptr<vkhlf::Buffer> *mVertexBuffer;
+      std::shared_ptr<vkhlf::Pipeline>* mPipeline;
+      VertexBufferData* mVertexBufferData;
       std::shared_ptr<vkhlf::Buffer>* mIndexBuffer;
       std::shared_ptr<vkhlf::Buffer>* mInstanceBuffer = nullptr;
       std::shared_ptr<vkhlf::PipelineLayout> *mPipelineLayout;

@@ -78,28 +78,28 @@ namespace YTE
     for (auto&& [submesh, i] : enumerate(mesh->mParts))
     {
       FaceFrame* frame{ nullptr };
-      std::vector<Vertex> vertexBuffer;
+      std::vector<glm::vec3> textureCoordinates;
       
       if (submesh->mData.mMaterialName == "OnlyDiff_Eye")
       {
         frame = FindFrame(anim->eyeFrames, aEvent->time * anim->ticksPerSecond);
-        vertexBuffer = mInitialEyeVertexBuffer;
+        textureCoordinates = mInitialEyeVertexBuffer.mTextureCoordinatesData;
       }
       else if (submesh->mData.mMaterialName == "OnlyDiff_Mouth")
       {
         frame = FindFrame(anim->mouthFrames, aEvent->time * anim->ticksPerSecond);
-        vertexBuffer = mInitialMouthVertexBuffer;
+        textureCoordinates = mInitialMouthVertexBuffer.mTextureCoordinatesData;
       }
       
       if (frame)
       {
-        for (auto& vertex : vertexBuffer)
+        for (auto& textureCoordinate : textureCoordinates)
         {
-          vertex.mTextureCoordinates.x += frame->uv.x;
-          vertex.mTextureCoordinates.y += frame->uv.y;
+          textureCoordinate.x += frame->uv.x;
+          textureCoordinate.y += frame->uv.y;
         }
       
-        mesh->UpdateVertices(i, vertexBuffer);
+        mesh->GetSubmeshes()[i].UpdateTextureCoordinatesBuffer(textureCoordinates);
       }
     }
   }

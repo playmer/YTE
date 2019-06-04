@@ -424,10 +424,10 @@ namespace YTE
 
     submesh.mCullBackFaces = false;
 
-    submesh.mVertexData.emplace_back(vert0);
-    submesh.mVertexData.emplace_back(vert1);
-    submesh.mVertexData.emplace_back(vert2);
-    submesh.mVertexData.emplace_back(vert3);
+    submesh.mVertexData.AddVertex(vert0);
+    submesh.mVertexData.AddVertex(vert1);
+    submesh.mVertexData.AddVertex(vert2);
+    submesh.mVertexData.AddVertex(vert3);
 
     submesh.mIndexData = std::move(mIndices);
 

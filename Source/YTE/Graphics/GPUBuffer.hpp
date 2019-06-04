@@ -40,39 +40,39 @@ namespace YTE
 
     }
 
-    GPUBuffer(std::unique_ptr<GPUBufferBase> aUBO)
-      : mUBO{ std::move(aUBO) }
+    GPUBuffer(std::unique_ptr<GPUBufferBase> aBuffer)
+      : mBuffer{ std::move(aBuffer) }
     {
 
     }
 
     GPUBufferBase& GetBase()
     {
-      return *mUBO;
+      return *mBuffer;
     }
 
     void Update(tType const& aData)
     {
-      mUBO->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
     }
 
     void Update(tType const* aData, size_t aSize)
     {
-      mUBO->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
     }
 
     void Update(ContiguousRange<tType> aData)
     {
-      mUBO->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
     }
 
     void reset()
     {
-      mUBO.reset();
+      mBuffer.reset();
     }
 
   private:
-    std::unique_ptr<GPUBufferBase> mUBO;
+    std::unique_ptr<GPUBufferBase> mBuffer;
   };
 
   namespace GPUAllocation

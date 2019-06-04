@@ -33,7 +33,7 @@ namespace YTE
   void LineDrawer::Start()
   {
     mInstantiatedLines.reset();
-    mSubmesh.mVertexData.clear();
+    mSubmesh.mVertexData.Clear();
     mSubmesh.mIndexData.clear();
     mSubmesh.mShaderSetName = "Line";
   }
@@ -79,9 +79,9 @@ namespace YTE
     vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint1;
     
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     vert.mPosition = aPoint2;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
   }
@@ -95,10 +95,10 @@ namespace YTE
     Vertex vert;
     vert.mColor = glm::vec4{ aFromColor, 1.0f };
     vert.mPosition = aPoint1;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     vert.mColor = glm::vec4{ aToColor, 1.0f };
     vert.mPosition = aPoint2;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
   }
@@ -106,7 +106,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void LineDrawer::End()
   {
-    if (mSubmesh.mVertexData.empty())
+    if (mSubmesh.mVertexData.mPositionData.empty())
     {
       return;
     }
@@ -162,7 +162,7 @@ namespace YTE
   {
     mInstantiatedLines.reset();
 
-    mSubmesh.mVertexData.clear();
+    mSubmesh.mVertexData.Clear();
     mSubmesh.mIndexData.clear();
     mSubmesh.mShaderSetName = "Line";
   }
@@ -238,11 +238,11 @@ namespace YTE
     Vertex vert;
     vert.mColor = aColor;
     vert.mPosition = aPoint1;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     vert.mPosition = aPoint2;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     vert.mPosition = aPoint3;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
@@ -252,7 +252,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void TriangleDrawer::End()
   {
-    if (mSubmesh.mVertexData.empty())
+    if (mSubmesh.mVertexData.mPositionData.empty())
     {
       return;
     }
@@ -307,7 +307,7 @@ namespace YTE
   void CurveDrawer::Start()
   {
     mInstantiatedLines.reset();
-    mSubmesh.mVertexData.clear();
+    mSubmesh.mVertexData.Clear();
     mSubmesh.mIndexData.clear();
     mSubmesh.mShaderSetName = "Line";
   }
@@ -349,7 +349,7 @@ namespace YTE
     Vertex vert;
     vert.mColor = glm::vec4{ aColor, 1.0f };
     vert.mPosition = aPoint;
-    mSubmesh.mVertexData.emplace_back(vert);
+    mSubmesh.mVertexData.AddVertex(vert);
     mSubmesh.mIndexData.emplace_back(static_cast<u32>(mSubmesh.mIndexData.size()));
   }
 
@@ -357,7 +357,7 @@ namespace YTE
   // This will set the lines given since the last Start() call to be drawn.
   void CurveDrawer::End()
   {
-    if (mSubmesh.mVertexData.empty())
+    if (mSubmesh.mVertexData.mPositionData.empty())
     {
       return;
     }

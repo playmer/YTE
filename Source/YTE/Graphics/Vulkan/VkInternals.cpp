@@ -6,7 +6,7 @@
 
 namespace YTE
 {
-  constexpr bool cVulkanValidations = true;
+  constexpr bool cVulkanValidations = false;
 
 
   // debug report callback for vulkan
@@ -84,6 +84,7 @@ namespace YTE
   
     printf("%s\n", aMessage);
     assert(false == (aFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT));
+
     return VK_TRUE;
   }
 

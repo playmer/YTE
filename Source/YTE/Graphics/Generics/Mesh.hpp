@@ -180,6 +180,66 @@ namespace YTE
     }
   };
 
+  struct VertexData
+  {
+    void AddVertex(Vertex const& aVertex)
+    {
+      mPositionData.emplace_back(aVertex.mPosition);
+      mTextureCoordinatesData.emplace_back(aVertex.mTextureCoordinates);
+      mNormalData.emplace_back(aVertex.mNormal);
+      mColorData.emplace_back(aVertex.mColor);
+      mTangentData.emplace_back(aVertex.mTangent);
+      mBinormalData.emplace_back(aVertex.mBinormal);
+      mBitangentData.emplace_back(aVertex.mBitangent);
+      mBoneWeightsData.emplace_back(aVertex.mBoneWeights);
+      mBoneWeights2Data.emplace_back(aVertex.mBoneWeights2);
+      mBoneIDsData.emplace_back(aVertex.mBoneIDs);
+      mBoneIDs2Data.emplace_back(aVertex.mBoneIDs2);
+    }
+
+    void Clear()
+    {
+      mPositionData.clear();
+      mTextureCoordinatesData.clear();
+      mNormalData.clear();
+      mColorData.clear();
+      mTangentData.clear();
+      mBinormalData.clear();
+      mBitangentData.clear();
+      mBoneWeightsData.clear();
+      mBoneWeights2Data.clear();
+      mBoneIDsData.clear();
+      mBoneIDs2Data.clear();
+    }
+
+    std::vector<glm::vec3> mPositionData;
+    std::vector<glm::vec3> mTextureCoordinatesData;
+    std::vector<glm::vec3> mNormalData;
+    std::vector<glm::vec4> mColorData;
+    std::vector<glm::vec3> mTangentData;
+    std::vector<glm::vec3> mBinormalData;
+    std::vector<glm::vec3> mBitangentData;
+    std::vector<glm::vec3> mBoneWeightsData;
+    std::vector<glm::vec2> mBoneWeights2Data;
+    std::vector<glm::ivec3> mBoneIDsData;
+    std::vector<glm::ivec2> mBoneIDs2Data;
+  };
+
+  struct VertexBufferData
+  {
+    GPUBuffer<glm::vec3> mPositionBuffer;
+    GPUBuffer<glm::vec3> mTextureCoordinatesBuffer;
+    GPUBuffer<glm::vec3> mNormalBuffer;
+    GPUBuffer<glm::vec4> mColorBuffer;
+    GPUBuffer<glm::vec3> mTangentBuffer;
+    GPUBuffer<glm::vec3> mBinormalBuffer;
+    GPUBuffer<glm::vec3> mBitangentBuffer;
+    GPUBuffer<glm::vec3> mBoneWeightsBuffer;
+    GPUBuffer<glm::vec2> mBoneWeights2Buffer;
+    GPUBuffer<glm::ivec3> mBoneIDsBuffer;
+    GPUBuffer<glm::ivec2> mBoneIDs2Buffer;
+  };
+
   struct SubmeshData
   {
     enum class TextureType
@@ -214,20 +274,13 @@ namespace YTE
     };
 
     ShaderDescriptions mDescriptions;
-    std::vector<Vertex> mVertexData;
+    VertexData mVertexData;
     std::vector<u32> mIndexData;
     std::vector<TextureData> mTextureData;
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
     UBOs::Material mUBOMaterial;
-
-    //std::string mDiffuseMap;
-    //TextureViewType mDiffuseType = TextureViewType::e2D;
-    //std::string mNormalMap;
-    //TextureViewType mNormalType = TextureViewType::e2D;
-    //std::string mSpecularMap;
-    //TextureViewType mSpecularType = TextureViewType::e2D;
 
     Dimension mDimension;
 
@@ -259,6 +312,18 @@ namespace YTE
     // This will create the GPU buffers and calculate the dimensions.
     void Initialize();
 
+    YTE_Shared void UpdatePositionBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateTextureCoordinatesBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateNormalBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateColorBuffer(std::vector<glm::vec4> const& aData);
+    YTE_Shared void UpdateTangentBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBinormalBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBitangentBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBoneWeightsBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBoneWeights2Buffer(std::vector<glm::vec2> const& aData);
+    YTE_Shared void UpdateBoneIDsBuffer(std::vector<glm::ivec3> const& aData);
+    YTE_Shared void UpdateBoneIDs2Buffer(std::vector<glm::ivec2> const& aData);
+
     size_t GetTriangleCount() const
     {
       return mData.mIndexData.size() / 3;
@@ -275,18 +340,18 @@ namespace YTE
 
     ShaderDescriptions const& CreateShaderDescriptions();
 
-    void ResetTextureCoordinates();
+    YTE_Shared void ResetTextureCoordinates();
 
-    // You probably shouldn't call these functions as it won't recalculate the owning mesh's dimensions
-    void UpdateVertices(std::vector<Vertex> const& aVertices);
-    void UpdateVerticesAndIndices(std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices);
+    // Call this whenever you update thepositions buffer
+    YTE_Shared void RecalculateDimensions();
     
-    GPUBuffer<Vertex> mVertexBuffer;
+    VertexBufferData mVertexBufferData;
     GPUBuffer<u32> mIndexBuffer;
 
     SubmeshData mData;
 
   private:
+    void UpdateGPUVertexData();
     void CreateGPUBuffers();
 
     YTE_Shared Submesh& operator=(Submesh const& aSubmesh) = delete;
@@ -307,14 +372,11 @@ namespace YTE
                     const std::string &aFile,
                     ContiguousRange<SubmeshData> aSubmeshes);
 
-    YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
-                                           std::vector<Vertex> const& aVertices);
-    YTE_Shared virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, 
-                                                     std::vector<Vertex> const& aVertices, 
-                                                     std::vector<u32> const& aIndices);
-
     YTE_Shared virtual ~Mesh();
 
+    // Call this whenever you update a Submeshs positions buffer, but recalculate the submeshs 
+    // dimensions first.
+    YTE_Shared void RecalculateDimensions();
     YTE_Shared bool CanAnimate();
     YTE_Shared std::vector<Submesh>& GetSubmeshes();
 

@@ -19,17 +19,17 @@ namespace YTE
   {
     switch (aType)
     {
-    case SubmeshData::TextureType::Diffuse: return "DIFFUSE";
-    case SubmeshData::TextureType::Specular: return "SPECULAR";
-    case SubmeshData::TextureType::Ambient: return "AMBIENT";
-    case SubmeshData::TextureType::Emissive: return "EMISSIVE";
-    case SubmeshData::TextureType::Height: return "HEIGHT";
-    case SubmeshData::TextureType::Normal: return "NORMAL";
-    case SubmeshData::TextureType::Shininess: return "SHININESS";
-    case SubmeshData::TextureType::Opacity: return "OPACITY";
-    case SubmeshData::TextureType::Displacment: return "DISPLACEMENT";
-    case SubmeshData::TextureType::Lightmap: return "LIGHTMAP";
-    case SubmeshData::TextureType::Reflection: return "REFLECTION";
+      case SubmeshData::TextureType::Diffuse: return "DIFFUSE";
+      case SubmeshData::TextureType::Specular: return "SPECULAR";
+      case SubmeshData::TextureType::Ambient: return "AMBIENT";
+      case SubmeshData::TextureType::Emissive: return "EMISSIVE";
+      case SubmeshData::TextureType::Height: return "HEIGHT";
+      case SubmeshData::TextureType::Normal: return "NORMAL";
+      case SubmeshData::TextureType::Shininess: return "SHININESS";
+      case SubmeshData::TextureType::Opacity: return "OPACITY";
+      case SubmeshData::TextureType::Displacment: return "DISPLACEMENT";
+      case SubmeshData::TextureType::Lightmap: return "LIGHTMAP";
+      case SubmeshData::TextureType::Reflection: return "REFLECTION";
     }
 
     return "UNKNOWN";
@@ -79,15 +79,15 @@ namespace YTE
 
     auto& dimension = mSubMesh.mData.mDimension;
 
-    for (auto const& vertex : mSubMesh.mData.mVertexData)
+    for (auto const& position : mSubMesh.mData.mVertexData.mPositionData)
     {
-      dimension.mMax.x = fmax(vertex.mPosition.x, dimension.mMax.x);
-      dimension.mMax.y = fmax(vertex.mPosition.y, dimension.mMax.y);
-      dimension.mMax.z = fmax(vertex.mPosition.z, dimension.mMax.z);
+      dimension.mMax.x = fmax(position.x, dimension.mMax.x);
+      dimension.mMax.y = fmax(position.y, dimension.mMax.y);
+      dimension.mMax.z = fmax(position.z, dimension.mMax.z);
 
-      dimension.mMin.x = fmin(vertex.mPosition.x, dimension.mMin.x);
-      dimension.mMin.y = fmin(vertex.mPosition.y, dimension.mMin.y);
-      dimension.mMin.z = fmin(vertex.mPosition.z, dimension.mMin.z);
+      dimension.mMin.x = fmin(position.x, dimension.mMin.x);
+      dimension.mMin.y = fmin(position.y, dimension.mMin.y);
+      dimension.mMin.z = fmin(position.z, dimension.mMin.z);
     }
   }
 
@@ -517,18 +517,17 @@ namespace YTE
         boneIDs2 = glm::ivec2(0, 0);
       }
       
-      mData.mVertexData.emplace_back(
-        position,
-        textureCoordinates,
-        normal,
-        color,
-        tangent,
-        binormal,
-        bitangent,
-        boneWeights,
-        boneWeights2,
-        boneIDs,
-        boneIDs2);
+      mData.mVertexData.mPositionData.emplace_back(position);
+      mData.mVertexData.mTextureCoordinatesData.emplace_back(textureCoordinates);
+      mData.mVertexData.mNormalData.emplace_back(normal);
+      mData.mVertexData.mColorData.emplace_back(color);
+      mData.mVertexData.mTangentData.emplace_back(tangent);
+      mData.mVertexData.mBinormalData.emplace_back(binormal);
+      mData.mVertexData.mBitangentData.emplace_back(bitangent);
+      mData.mVertexData.mBoneWeightsData.emplace_back(boneWeights);
+      mData.mVertexData.mBoneWeights2Data.emplace_back(boneWeights2);
+      mData.mVertexData.mBoneIDsData.emplace_back(boneIDs);
+      mData.mVertexData.mBoneIDs2Data.emplace_back(boneIDs2);
 
       mData.mInitialTextureCoordinates.emplace_back(textureCoordinates);
     }
@@ -551,7 +550,7 @@ namespace YTE
 
     Initialize();
 
-    mVertexBuffer.Update(mData.mVertexData);
+    UpdateGPUVertexData();
     mIndexBuffer.Update(mData.mIndexData);
 
     DebugAssert((mData.mIndexData.size() % 3) == 0, "Index buffer must be divisible by 3.");
@@ -562,12 +561,12 @@ namespace YTE
   {
     Initialize();
 
-    mVertexBuffer.Update(mData.mVertexData);
+    UpdateGPUVertexData();
     mIndexBuffer.Update(mData.mIndexData);
   }
 
   Submesh::Submesh(Submesh&& aRight)
-    : mVertexBuffer{ std::move(aRight.mVertexBuffer) }
+    : mVertexBufferData{ std::move(aRight.mVertexBufferData) }
     , mIndexBuffer{std::move(aRight.mIndexBuffer) }
     , mData{ std::move(aRight.mData) }
   {
@@ -575,7 +574,7 @@ namespace YTE
 
   Submesh& Submesh::operator=(Submesh&& aRight)
   {
-    mVertexBuffer = std::move(aRight.mVertexBuffer);
+    mVertexBufferData = std::move(aRight.mVertexBufferData);
     mIndexBuffer = std::move(aRight.mIndexBuffer);
     mData = std::move(aRight.mData);
 
@@ -586,6 +585,22 @@ namespace YTE
   {
     CalculateSubMeshDimensions(*this);
     CreateGPUBuffers();
+  }
+
+
+  void Submesh::UpdateGPUVertexData()
+  {
+    mVertexBufferData.mPositionBuffer.Update(mData.mVertexData.mPositionData);
+    mVertexBufferData.mTextureCoordinatesBuffer.Update(mData.mVertexData.mTextureCoordinatesData);
+    mVertexBufferData.mNormalBuffer.Update(mData.mVertexData.mNormalData);
+    mVertexBufferData.mColorBuffer.Update(mData.mVertexData.mColorData);
+    mVertexBufferData.mTangentBuffer.Update(mData.mVertexData.mTangentData);
+    mVertexBufferData.mBinormalBuffer.Update(mData.mVertexData.mBinormalData);
+    mVertexBufferData.mBitangentBuffer.Update(mData.mVertexData.mBitangentData);
+    mVertexBufferData.mBoneWeightsBuffer.Update(mData.mVertexData.mBoneWeightsData);
+    mVertexBufferData.mBoneWeights2Buffer.Update(mData.mVertexData.mBoneWeights2Data);
+    mVertexBufferData.mBoneIDsBuffer.Update(mData.mVertexData.mBoneIDsData);
+    mVertexBufferData.mBoneIDs2Buffer.Update(mData.mVertexData.mBoneIDs2Data);
   }
 
 
@@ -615,18 +630,17 @@ namespace YTE
       descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
     }
 
-    descriptions.AddBinding<Vertex>(VertexInputRate::Vertex);
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
-    descriptions.AddAttribute<glm::vec4>(VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
-    descriptions.AddAttribute<glm::vec3>(VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
-    descriptions.AddAttribute<glm::vec2>(VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
-    descriptions.AddAttribute<glm::ivec3>(VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
-    descriptions.AddAttribute<glm::ivec2>(VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddBindingAndAttribute<glm::vec4>(VertexInputRate::Vertex, VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddBindingAndAttribute<glm::vec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddBindingAndAttribute<glm::ivec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddBindingAndAttribute<glm::ivec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
 
     // Model Buffer for Vertex shader. (Non-instanced Meshes)
     addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
@@ -634,16 +648,32 @@ namespace YTE
     return descriptions;
   }
 
+  template <typename T>
+  GPUBuffer<T> CreateBuffer(GPUAllocator* aAllocator, size_t aSize)
+  {
+    return aAllocator->CreateBuffer<T>(aSize,
+                                       GPUAllocation::BufferUsage::TransferDst |
+                                       GPUAllocation::BufferUsage::VertexBuffer,
+                                       GPUAllocation::MemoryProperty::DeviceLocal);
+  }
+
   void Submesh::CreateGPUBuffers()
   {
     auto allocator = mData.mMesh->mRenderer->GetAllocator(AllocatorTypes::Mesh);
 
-    // Create Vertex, Index, and Material buffers.
-    mVertexBuffer = allocator->CreateBuffer<Vertex>(mData.mVertexData.size(),
-                                                    GPUAllocation::BufferUsage::TransferDst |
-                                                    GPUAllocation::BufferUsage::VertexBuffer,
-                                                    GPUAllocation::MemoryProperty::DeviceLocal);
-
+    // Create Vertex and Index buffers.
+    mVertexBufferData.mPositionBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mPositionData.size());
+    mVertexBufferData.mTextureCoordinatesBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mTextureCoordinatesData.size());
+    mVertexBufferData.mNormalBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mNormalData.size());
+    mVertexBufferData.mColorBuffer = CreateBuffer<glm::vec4>(allocator, mData.mVertexData.mColorData.size());
+    mVertexBufferData.mTangentBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mTangentData.size());
+    mVertexBufferData.mBinormalBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBinormalData.size());
+    mVertexBufferData.mBitangentBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBitangentData.size());
+    mVertexBufferData.mBoneWeightsBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBoneWeightsData.size());
+    mVertexBufferData.mBoneWeights2Buffer = CreateBuffer<glm::vec2>(allocator, mData.mVertexData.mBoneWeights2Data.size());
+    mVertexBufferData.mBoneIDsBuffer = CreateBuffer<glm::ivec3>(allocator, mData.mVertexData.mBoneIDsData.size());
+    mVertexBufferData.mBoneIDs2Buffer = CreateBuffer<glm::ivec2>(allocator, mData.mVertexData.mBoneIDs2Data.size());
+    
     mIndexBuffer = allocator->CreateBuffer<u32>(mData.mIndexData.size(),
                                                 GPUAllocation::BufferUsage::TransferDst |
                                                 GPUAllocation::BufferUsage::IndexBuffer,
@@ -652,45 +682,118 @@ namespace YTE
 
   void Submesh::ResetTextureCoordinates()
   {
-    for (auto&& [vertex, i] : enumerate(mData.mVertexData))
+    for (auto&& [textureCoordinate, i] : enumerate(mData.mVertexData.mTextureCoordinatesData))
     {
-      vertex->mTextureCoordinates = mData.mInitialTextureCoordinates[i];
+      *textureCoordinate = mData.mInitialTextureCoordinates[i];
     }
   }
 
-  void Submesh::UpdateVertices(std::vector<Vertex> const& aVertices)
+  //void Submesh::UpdateVertices(VertexData const& aVertices)
+  //{
+  //  //DebugObjection(aVertices.size() != mData.mVertexData.size(), 
+  //  //               "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
+  //  //               mData.mVertexData.size(), 
+  //  //               aVertices.size());
+  //
+  //  mData.mVertexData = aVertices;
+  //
+  //  UpdateGPUVertexData();
+  //
+  //  CalculateSubMeshDimensions(*this);
+  //}
+  //
+  //void Submesh::UpdateVerticesAndIndices(VertexData const& aVertices, std::vector<u32> const& aIndices)
+  //{
+  //  //DebugObjection(aVertices.size() != mData.mVertexData.size(),
+  //  //               "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
+  //  //               mData.mVertexData.size(), 
+  //  //               aVertices.size());
+  //  //
+  //  //DebugObjection(aIndices.size() != mData.mIndexData.size(),
+  //  //               "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
+  //  //               mData.mIndexData.size(), 
+  //  //               aIndices.size());
+  //
+  //  mData.mVertexData = aVertices;
+  //  mData.mIndexData = aIndices;
+  //
+  //  UpdateGPUVertexData();
+  //  mIndexBuffer.Update(mData.mIndexData);
+  //
+  //  CalculateSubMeshDimensions(*this);
+  //}
+
+  void Submesh::RecalculateDimensions()
   {
-    DebugObjection(aVertices.size() != mData.mVertexData.size(), 
-                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-                   mData.mVertexData.size(), 
-                   aVertices.size());
+    CalculateSubMeshDimensions(*this);
+  }
 
-    mData.mVertexData = aVertices;
-
-    mVertexBuffer.Update(mData.mVertexData);
+  void Submesh::UpdatePositionBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mPositionData = aData;
+    mVertexBufferData.mPositionBuffer.Update(mData.mVertexData.mPositionData);
 
     CalculateSubMeshDimensions(*this);
   }
 
-  void Submesh::UpdateVerticesAndIndices(std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices)
+  void Submesh::UpdateTextureCoordinatesBuffer(std::vector<glm::vec3> const& aData)
   {
-    DebugObjection(aVertices.size() != mData.mVertexData.size(),
-                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-                   mData.mVertexData.size(), 
-                   aVertices.size());
+    mData.mVertexData.mTextureCoordinatesData = aData;
+    mVertexBufferData.mTextureCoordinatesBuffer.Update(mData.mVertexData.mTextureCoordinatesData);
+  }
 
-    DebugObjection(aIndices.size() != mData.mIndexData.size(),
-                   "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
-                   mData.mIndexData.size(), 
-                   aIndices.size());
+  void Submesh::UpdateNormalBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mNormalData = aData;
+    mVertexBufferData.mNormalBuffer.Update(mData.mVertexData.mNormalData);
+  }
 
-    mData.mVertexData = aVertices;
-    mData.mIndexData = aIndices;
+  void Submesh::UpdateColorBuffer(std::vector<glm::vec4> const& aData)
+  {
+    mData.mVertexData.mColorData = aData;
+    mVertexBufferData.mColorBuffer.Update(mData.mVertexData.mColorData);
+  }
 
-    mVertexBuffer.Update(mData.mVertexData);
-    mIndexBuffer.Update(mData.mIndexData);
+  void Submesh::UpdateTangentBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mTangentData = aData;
+    mVertexBufferData.mTangentBuffer.Update(mData.mVertexData.mTangentData);
+  }
 
-    CalculateSubMeshDimensions(*this);
+  void Submesh::UpdateBinormalBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBinormalData = aData;
+    mVertexBufferData.mBinormalBuffer.Update(mData.mVertexData.mBinormalData);
+  }
+
+  void Submesh::UpdateBitangentBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBitangentData = aData;
+    mVertexBufferData.mBitangentBuffer.Update(mData.mVertexData.mBitangentData);
+  }
+
+  void Submesh::UpdateBoneWeightsBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBoneWeightsData = aData;
+    mVertexBufferData.mBoneWeightsBuffer.Update(mData.mVertexData.mBoneWeightsData);
+  }
+
+  void Submesh::UpdateBoneWeights2Buffer(std::vector<glm::vec2> const& aData)
+  {
+    mData.mVertexData.mBoneWeights2Data = aData;
+    mVertexBufferData.mBoneWeights2Buffer.Update(mData.mVertexData.mBoneWeights2Data);
+  }
+
+  void Submesh::UpdateBoneIDsBuffer(std::vector<glm::ivec3> const& aData)
+  {
+    mData.mVertexData.mBoneIDsData = aData;
+    mVertexBufferData.mBoneIDsBuffer.Update(mData.mVertexData.mBoneIDsData);
+  }
+
+  void Submesh::UpdateBoneIDs2Buffer(std::vector<glm::ivec2> const& aData)
+  {
+    mData.mVertexData.mBoneIDs2Data = aData;
+    mVertexBufferData.mBoneIDs2Buffer.Update(mData.mVertexData.mBoneIDs2Data);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -809,24 +912,29 @@ namespace YTE
     mDimension = CalculateDimensions(mParts);
   }
 
-  void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex> const& aVertices)
+  //void Mesh::UpdateVertices(size_t aSubmeshIndex, VertexData const& aVertices)
+  //{
+  //  //DebugObjection(
+  //  //  aVertices.size() != mParts[aSubmeshIndex].mData.mVertexData.size(), 
+  //  //  "UpdateVertices cannot change the size of the vertex buffer from %i to %i", 
+  //  //  mParts[aSubmeshIndex].mData.mVertexData.size(), 
+  //  //  aVertices.size());
+  //
+  //
+  //  mParts[aSubmeshIndex].UpdateVertices(aVertices);
+  //
+  //  mDimension = CalculateDimensions(mParts);
+  //}
+  //
+  //void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, VertexData const& aVertices, std::vector<u32> const& aIndices)
+  //{
+  //  mParts[aSubmeshIndex].UpdateVerticesAndIndices(aVertices, aIndices);
+  //
+  //  mDimension = CalculateDimensions(mParts);
+  //}
+
+  void Mesh::RecalculateDimensions()
   {
-    DebugObjection(
-      aVertices.size() != mParts[aSubmeshIndex].mData.mVertexData.size(), 
-      "UpdateVertices cannot change the size of the vertex buffer from %i to %i", 
-      mParts[aSubmeshIndex].mData.mVertexData.size(), 
-      aVertices.size());
-
-
-    mParts[aSubmeshIndex].UpdateVertices(aVertices);
-
-    mDimension = CalculateDimensions(mParts);
-  }
-
-  void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex> const& aVertices, std::vector<u32> const& aIndices)
-  {
-    mParts[aSubmeshIndex].UpdateVerticesAndIndices(aVertices, aIndices);
-
     mDimension = CalculateDimensions(mParts);
   }
 

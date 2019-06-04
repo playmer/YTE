@@ -442,7 +442,7 @@ namespace YTE
 
     //void Append(ShaderDescriptions aDescriptions);
 
-    template <typename T>
+    template <typename tType>
     void AddAttribute(VertexFormat aFormat)
     {
       DebugObjection(mBindings.size() == 0,
@@ -458,21 +458,29 @@ namespace YTE
       mAttributes.emplace_back(toAdd);
 
       ++mLocation;
-      mVertexOffset += sizeof(T);
+      mVertexOffset += sizeof(tType);
     }
 
-    template <typename T>
-    void AddBinding(VertexInputRate aDescription)
+    template <typename tType>
+    void AddBinding(VertexInputRate aInputRate)
     {
       VertexInputBindingDescription toAdd;
       toAdd.binding = mBinding;
-      toAdd.inputRate = aDescription;
-      toAdd.stride = sizeof(T);
+      toAdd.inputRate = aInputRate;
+      toAdd.stride = sizeof(tType);
 
       mBindings.emplace_back(toAdd);
 
       ++mBinding;
       mVertexOffset = 0;
+    }
+
+
+    template <typename tType>
+    void AddBindingAndAttribute(VertexInputRate aInputRate, VertexFormat aFormat)
+    {
+      AddBinding<tType>(aInputRate);
+      AddAttribute<tType>(aFormat);
     }
 
     void AddDescriptor(DescriptorType aDescriptorType, ShaderStageFlags aStage, ImageLayout aLayout)

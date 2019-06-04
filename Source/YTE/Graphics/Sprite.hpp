@@ -122,7 +122,7 @@ namespace YTE
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
-    std::vector<Vertex> mVertexData;
+    VertexData mVertexData;
     bool mConstructing;
 
     bool mAnimating;

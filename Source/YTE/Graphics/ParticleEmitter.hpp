@@ -93,11 +93,9 @@ namespace YTE
     std::vector<float> mVarianceBuffer;
     size_t mVarianceIndex;
 
-    Renderer *mRenderer;
-
-    Transform *mCameraTransform;
-
-    Mesh *mMesh;
+    Renderer* mRenderer;
+    Transform* mCameraTransform;
+    Mesh* mMesh;
 
     std::string mTextureName; //
 

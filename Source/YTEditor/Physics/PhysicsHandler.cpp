@@ -316,9 +316,9 @@ namespace YTEditor
             auto i2 = data.mIndexData[i + 1];
             auto i3 = data.mIndexData[i + 2];
 
-            triangles.addTriangle(YTE::ToBullet(data.mVertexData[i1].mPosition),
-                                  YTE::ToBullet(data.mVertexData[i2].mPosition),
-                                  YTE::ToBullet(data.mVertexData[i3].mPosition));
+            triangles.addTriangle(YTE::ToBullet(data.mVertexData.mPositionData[i1]),
+                                  YTE::ToBullet(data.mVertexData.mPositionData[i2]),
+                                  YTE::ToBullet(data.mVertexData.mPositionData[i3]));
           }
         }
 
