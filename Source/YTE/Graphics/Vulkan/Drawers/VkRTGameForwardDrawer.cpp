@@ -189,17 +189,17 @@ namespace YTE
           YTEProfileBlock("bindVertexBuffer");
           auto& vbd = *(drawCall.mVertexBufferData);
 
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
-          vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+          if (vbd.mPositionBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+          if (vbd.mTextureCoordinatesBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+          if (vbd.mNormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+          if (vbd.mColorBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+          if (vbd.mTangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+          if (vbd.mBinormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+          if (vbd.mBitangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+          if (vbd.mBoneWeightsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+          if (vbd.mBoneWeights2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+          if (vbd.mBoneIDsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+          if (vbd.mBoneIDs2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
 
           vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
 

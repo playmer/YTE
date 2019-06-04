@@ -378,8 +378,6 @@ namespace YTE
       mTextureName = "Mats_Diffuse.png";
     }
 
-    ShaderDescriptions descriptions;
-
     std::string meshName = "__Sprite" + mTextureName;
 
     SubmeshData submesh;
@@ -421,6 +419,7 @@ namespace YTE
     //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
     submesh.mShaderSetName = "CPUParticles";
+    submesh.mDescriptionOverride = true;
 
     submesh.mCullBackFaces = false;
 
@@ -431,7 +430,49 @@ namespace YTE
 
     submesh.mIndexData = std::move(mIndices);
 
+    auto& descriptions = submesh.mDescriptions;
+
+    auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
+    };
+
+    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
+
+
+    // Descriptions for the textures we support based on which maps we found above:
+    for (auto sampler : submesh.mTextureData)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", SubmeshData::ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
+    }
+
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+
+    // Model Buffer for Vertex shader. (Non-instanced Meshes)
+    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
+
     mMesh = mRenderer->CreateSimpleMesh(meshName, submesh);
+
+    auto& vbd = mMesh->GetSubmeshes()[0].mVertexBufferData;
+
+    vbd.mColorBuffer.reset();
+    vbd.mTangentBuffer.reset();
+    vbd.mBinormalBuffer.reset();
+    vbd.mBitangentBuffer.reset();
+    vbd.mBoneWeightsBuffer.reset();
+    vbd.mBoneWeights2Buffer.reset();
+    vbd.mBoneIDsBuffer.reset();
+    vbd.mBoneIDs2Buffer.reset();
 
     mFreeParticles.clear();
   }

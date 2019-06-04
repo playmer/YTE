@@ -66,6 +66,11 @@ namespace YTE
       mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
     }
 
+    operator bool()
+    {
+      return mBuffer != nullptr;
+    }
+
     void reset()
     {
       mBuffer.reset();

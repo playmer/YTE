@@ -9,14 +9,6 @@
 layout (location = 0) in vec3 inPosition;
 layout (location = 1) in vec3 inTextureCoordinates;
 layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec4 inColor;
-layout (location = 4) in vec3 inTangent;
-layout (location = 5) in vec3 inBinormal;
-layout (location = 6) in vec3 inBitangent;
-layout (location = 7) in vec3 inBoneWeights;
-layout (location = 8) in vec2 inBoneWeights2;
-layout (location = 9) in ivec3 inBoneIDs;
-layout (location = 10) in ivec2 inBoneIDs2;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,41 +42,13 @@ const uint InfluenceType_Cubic = 2;
 const uint InfluenceType_Logarithmic = 3;
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// Instancing Issues
-#ifdef INSTANCING
-
-
-  layout (location = 11) in vec4 inMatrix0;
-  layout (location = 12) in vec4 inMatrix1;
-  layout (location = 13) in vec4 inMatrix2;
-  layout (location = 14) in vec4 inMatrix3;
-
-  struct 
-  {
-    mat4 mModelMatrix;
-  } Model;
-
-  Model.mModelMatrix[0] = inMatrix1;
-  Model.mModelMatrix[1] = inMatrix2;
-  Model.mModelMatrix[2] = inMatrix3;
-  Model.mModelMatrix[3] = inMatrix4;
-
-
-#else
-
-
-  // ========================
-  // Model Matrix Buffer
-  layout (binding = UBO_MODEL_BINDING) uniform UBOModel
-  {
-    mat4 mModelMatrix;
-    vec4 mDiffuseColor;
-  } Model;
-
-
-#endif
+// ========================
+// Model Matrix Buffer
+layout (binding = UBO_MODEL_BINDING) uniform UBOModel
+{
+  mat4 mModelMatrix;
+  vec4 mDiffuseColor;
+} Model;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -171,34 +135,6 @@ float saturate(float aValue)
   return clamp(aValue, 0.0f, 1.0f);
 }
 
-
-// ======================
-// Animate:
-// outputs a transform matrix for the shader to use with position of the vertex
-mat4 Animate()
-{
-  // Conditional is safe as all cores will following together per object
-  if (Animation.mHasAnimations)
-  {
-    mat4 boneTransform;
-    boneTransform  = Animation.mBones[inBoneIDs[0]] * inBoneWeights[0];
-    boneTransform += Animation.mBones[inBoneIDs[1]] * inBoneWeights[1];
-    boneTransform += Animation.mBones[inBoneIDs[2]] * inBoneWeights[2];
-    boneTransform += Animation.mBones[inBoneIDs2[0]] * inBoneWeights2[0];
-    boneTransform += Animation.mBones[inBoneIDs2[1]] * inBoneWeights2[1];
-    
-    // transpose is done since assimp does pre-transpose their matrices from
-    // maya
-    // TODO (Andrew): Remove this transpose when out own system is used for
-    // animation with our own data files
-    return (transpose(boneTransform));
-  }
-  else
-  {
-    return mat4(1.0f);
-  }
-}
-
 // ======================
 // CalculatePosition:
 // Position the vertex for the fragment shader and GPU
@@ -216,13 +152,13 @@ void CalculatePosition(mat4 aProjMat, vec4 aPos)
 // ======================
 // CalculateNormal:
 // Calculates the normal used for this vertex
-// takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
-vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNormal)
+// takes the view matrix, model matrix, and the normal value to calculate with
+vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, vec4 aNormal)
 {
   return normalize(
                     transpose(
                       inverse(
-                        /*mat3(aViewMat) */ mat3(aModelMat) * mat3(aAnimateMat)
+                        /*mat3(aViewMat) */ mat3(aModelMat)
                       )
                     )
                   * vec3(aNormal));
@@ -232,9 +168,9 @@ vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec4 aNorm
 // CalculateWorldPosition:
 // Calculates the position used for this vertex in world space
 // takes the model matrix, animation matrix, and the local position value to calculate with
-vec3 CalculateWorldPosition(mat4 aModelMat, mat4 aAnimateMat, vec4 aPosition)
+vec3 CalculateWorldPosition(mat4 aModelMat, vec4 aPosition)
 {
-  return vec3(aModelMat * aAnimateMat * aPosition);
+  return vec3(aModelMat * aPosition);
 }
 
 // ======================
@@ -343,14 +279,11 @@ InfluenceMappedData InfluenceMapping(vec3 position)
 // Entry point of shader
 void main() 
 {
-  // animation matrix calculation
-  mat4 boneTransform = Animate();
-
   // remaining output for fragment shader
   outTextureCoordinates = inTextureCoordinates.xy;
   outViewMatrix = View.mViewMatrix;
 
-  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
+  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, vec4(inPosition, 1.0f));
 
   InfluenceMappedData imd = InfluenceMapping(outPositionWorld);
   outPositionWorld = imd.mPos;
@@ -360,7 +293,6 @@ void main()
 
   outNormal = CalculateNormal(View.mViewMatrix,
                               Model.mModelMatrix,
-                              boneTransform, 
                               vec4(inNormal, 0.0f));
 
   CalculatePosition(View.mProjectionMatrix,

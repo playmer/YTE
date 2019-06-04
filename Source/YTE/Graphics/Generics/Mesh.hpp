@@ -27,6 +27,7 @@ namespace YTE
 {
   class Mesh;
 
+
   // vertices have the following components in them
   enum class VertexComponent
   {
@@ -258,6 +259,8 @@ namespace YTE
       Unknown
     };
 
+    static char const* ToShaderString(TextureType aType);
+
     struct TextureData
     {
       TextureData(std::string aName, TextureViewType aViewType, TextureType aSamplerType)
@@ -288,6 +291,7 @@ namespace YTE
     std::string mMaterialName;
     std::string mShaderSetName;
     Mesh* mMesh;
+    bool mDescriptionOverride = false;
     bool mCullBackFaces = true;
   };
 

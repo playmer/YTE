@@ -15,7 +15,7 @@
 
 namespace YTE
 {
-  char const* ToShaderString(SubmeshData::TextureType aType)
+  char const* SubmeshData::ToShaderString(TextureType aType)
   {
     switch (aType)
     {
@@ -608,6 +608,11 @@ namespace YTE
   {
     auto& descriptions = mData.mDescriptions;
 
+    if (mData.mDescriptionOverride)
+    {
+      return descriptions;
+    }
+
     auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
       descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, descriptions.GetBufferBinding()));
@@ -626,7 +631,7 @@ namespace YTE
     // Descriptions for the textures we support based on which maps we found above:
     for (auto sampler : mData.mTextureData)
     {
-      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", SubmeshData::ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
       descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
     }
 
