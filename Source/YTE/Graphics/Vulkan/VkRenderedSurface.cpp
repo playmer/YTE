@@ -255,10 +255,7 @@ namespace YTE
         aDescription,
         false);
                                     
-      DebugObjection(cpds.mValid == false,
-                  fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
-                              aShaderSetName, cpds.mErrorMessage)
-                  .c_str());
+      DebugObjection(cpds.mValid == false, cpds.mErrorMessage.c_str());
 
       piplineInfoPtr = &mShaderCreateInfos.emplace(aShaderSetName, cpds).first->second;
 

@@ -4,7 +4,6 @@
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedHeightmap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE

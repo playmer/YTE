@@ -139,13 +139,12 @@ layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Fragment Shader Inputs | Vertex Shader Outputs
-layout (location = 0) in vec3 inColor;
-layout (location = 1) in vec2 inTextureCoordinates;
-layout (location = 2) in vec3 inNormal;
-layout (location = 3) in vec4 inPosition;
-layout (location = 4) in vec3 inPositionWorld;
-layout (location = 5) in vec4 inDiffuse;
-layout (location = 6) in mat4 inViewMatrix; // 6 - 9
+layout (location = 0) in vec2 inTextureCoordinates;
+layout (location = 1) in vec3 inNormal;
+layout (location = 2) in vec4 inPosition;
+layout (location = 3) in vec3 inPositionWorld;
+layout (location = 4) in vec4 inDiffuse;
+layout (location = 5) in mat4 inViewMatrix; // 6 - 9
 
 
 // ========================

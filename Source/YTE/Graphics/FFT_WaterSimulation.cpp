@@ -17,7 +17,6 @@
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
-#include "YTE/Graphics/Generics/InstantiatedHeightmap.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
