@@ -4,7 +4,6 @@
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
@@ -272,13 +271,6 @@ namespace YTE
     return piplineInfoPtr;
   }
 
-  std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    mDataUpdateRequired = true;
-    auto map = GetViewData(aView)->mWaterInfluenceMapManager.CreateMap();
-    return std::move(map);
-  }
-
   void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
     YTEProfileFunction();
@@ -361,7 +353,7 @@ namespace YTE
       view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
       view.mView = aView;
       view.mView->GetLightManager()->SetView(aView);
-      view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
+      view.mView->GetWaterInfluenceMapManager()->SetView(aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
       view.mViewOrder = aView->GetOrder(); // default

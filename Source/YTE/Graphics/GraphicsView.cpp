@@ -91,6 +91,7 @@ namespace YTE
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
     mLightManager.emplace(this);
+    mWaterInfluenceMapManager.emplace(this);
 
     auto it = engine->GetWindows().find(mWindowName);
 

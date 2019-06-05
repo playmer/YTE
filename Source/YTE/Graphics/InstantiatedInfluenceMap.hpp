@@ -5,6 +5,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/Graphics/ForwardDeclarations.hpp"
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 
 namespace YTE
@@ -14,7 +16,9 @@ namespace YTE
   public:
     YTEDeclareType(InstantiatedInfluenceMap);
 
-    InstantiatedInfluenceMap();
+    InstantiatedInfluenceMap(GraphicsView* aView);
+
+    ~InstantiatedInfluenceMap();
 
     void SetInfluenceMapInformation(UBOs::WaterInfluenceMap &aMap)
     {
@@ -124,7 +128,18 @@ namespace YTE
     }
 
 
+    void SurfaceLostEvent(ViewChanged* aEvent);
+    void SurfaceGainedEvent(ViewChanged* aEvent);
+
+    void SetIndex(unsigned int aIndex)
+    {
+      mIndex = aIndex;
+    }
+
     UBOs::WaterInfluenceMap mInfluenceMapUBOData;
+    GraphicsView* mView;
+    WaterInfluenceMapManager* mManager;
+    unsigned int mIndex;
     bool mDataChanged;
   };
 }

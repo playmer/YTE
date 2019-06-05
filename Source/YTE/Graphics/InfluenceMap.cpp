@@ -496,7 +496,7 @@ namespace YTE
 
   void InfluenceMap::Create()
   {
-    mInstantiatedInfluenceMap = mRenderer->CreateWaterInfluenceMap(mGraphicsView);
+    mInstantiatedInfluenceMap = mGraphicsView->GetWaterInfluenceMapManager()->CreateMap();
 
     if (mUseTemp)
     {

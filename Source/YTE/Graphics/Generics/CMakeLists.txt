@@ -1,8 +1,6 @@
 target_sources(YTE
   PRIVATE
-  ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp

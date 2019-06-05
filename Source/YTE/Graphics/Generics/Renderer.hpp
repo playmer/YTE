@@ -51,8 +51,6 @@ namespace YTE
                                    ContiguousRange<SubmeshData> aSubmeshes,
 			                             bool aForceUpdate = false);
 
-    virtual std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
-
     template <typename tType>
     GPUBuffer<tType> CreateUBO(
       size_t aSize = 1, 

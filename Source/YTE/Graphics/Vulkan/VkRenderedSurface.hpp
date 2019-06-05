@@ -46,7 +46,6 @@ namespace YTE
 
     // Engine Side Data
     glm::vec4 mClearColor;
-    VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
@@ -87,9 +86,6 @@ namespace YTE
       std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
       VkShaderDescriptions &aDescription, 
       GraphicsView* aView);
-
-    std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
-
 
     void ReloadAllShaders();
 
@@ -154,11 +150,6 @@ namespace YTE
     void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
     {
       GetViewData(aView)->mClearColor = aColor;
-    }
-
-    VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
-    {
-      return &GetViewData(aView)->mWaterInfluenceMapManager;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)

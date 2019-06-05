@@ -10,6 +10,7 @@
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/LightManager.hpp"
+#include "YTE/Graphics/WaterInfluenceMapManager.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -107,6 +108,12 @@ namespace YTE
       return &(*mLightManager);
     }
 
+    WaterInfluenceMapManager* GetWaterInfluenceMapManager()
+    {
+      return &(*mWaterInfluenceMapManager);
+    }
+
+
     GPUBuffer<UBOs::View>& GetViewUBO()
     {
       return mViewUBO;
@@ -129,6 +136,7 @@ namespace YTE
 
   private:
     std::optional<LightManager> mLightManager;
+    std::optional<WaterInfluenceMapManager> mWaterInfluenceMapManager;
 
     GPUBuffer<UBOs::View> mViewUBO;
     GPUBuffer<UBOs::Illumination> mIlluminationUBO;

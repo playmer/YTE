@@ -29,6 +29,8 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/GraphicsView.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ImguiLayer.cpp
     ${CMAKE_CURRENT_LIST_DIR}/ImguiLayer.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedInfluenceMap.hpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedLight.cpp
     ${CMAKE_CURRENT_LIST_DIR}/InstantiatedLight.hpp
     ${CMAKE_CURRENT_LIST_DIR}/LightManager.cpp
@@ -51,6 +53,8 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/Skybox.hpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.cpp
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/WaterInfluenceMapManager.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/WaterInfluenceMapManager.hpp
     ${CMAKE_CURRENT_LIST_DIR}/UBOs.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vertex.hpp
 )

@@ -3,7 +3,6 @@
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -238,11 +237,6 @@ namespace YTE
   void VkRenderer::DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel)
   {
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
-  }
-
-  std::unique_ptr<InstantiatedInfluenceMap> VkRenderer::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    return static_unique_pointer_cast<InstantiatedInfluenceMap>(GetSurface(aView->GetWindow())->CreateWaterInfluenceMap(aView));
   }
 
   // Textures
@@ -569,12 +563,6 @@ namespace YTE
   {
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
-
-  VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
-  {
-    return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
-  }
-
 
   GPUAllocator* VkRenderer::MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize)
   {

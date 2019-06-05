@@ -80,7 +80,6 @@ namespace YTE
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aMeshFile) override;
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
     void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel) override;
-    std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
     VkTexture* CreateTexture(std::string const& aFilename, vk::ImageViewType aType);
     VkTexture* CreateTexture(std::string aName,
@@ -132,8 +131,6 @@ namespace YTE
     glm::vec4 GetClearColor(GraphicsView *aView);
     void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     VkRenderedSurface* GetSurface(Window *aWindow);
-
-    VkWaterInfluenceMapManager* GetAllWaterInfluenceMaps(GraphicsView *aView);
 
     Engine* GetEngine() const
     {

@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/Renderer.hpp"
@@ -115,10 +117,7 @@ namespace YTE
       mLightData.mLights[i] = mLightData.mLights[i + 1];
       mLights[i + 1]->mIndex -= 1;
 
-      // TODO: std::swap
-      InstantiatedLight* temp = mLights[i];
-      mLights[i] = mLights[i + 1];
-      mLights[i + 1] = temp;
+      std::swap(mLights[i], mLights[i + 1]);
     }
 
     mLights.pop_back();

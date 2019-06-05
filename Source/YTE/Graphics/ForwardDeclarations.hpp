@@ -14,6 +14,7 @@ namespace YTE
   class FFT_WaterSimulation;
   class InstantiatedModel;
   class InstantiatedLight;
+  class InstantiatedInfluenceMap;
   class LightManager;
   class Light;
   class Model;
@@ -23,6 +24,7 @@ namespace YTE
   class SimpleModel;
   class Sprite;
   class ViewChanged;
+  class WaterInfluenceMapManager;
 
   struct Instance;
 

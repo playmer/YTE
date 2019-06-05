@@ -107,7 +107,6 @@ namespace YTE
                                                     GraphicsView *aView)
   {
     auto device = mRenderer->mDevice;
-    auto surface = mRenderer->GetSurface(aView->GetWindow());
 
     SubMeshPipelineData pipelineData;
     pipelineData.mPipelineLayout = mPipelineInfo->mPipelineLayout;
@@ -125,7 +124,7 @@ namespace YTE
     bufferOrImages.emplace_back(aUBOSubmeshMaterial);
     bufferOrImages.emplace_back(GetBuffer(aView->GetLightManager()->GetUBOLightBuffer()));
     bufferOrImages.emplace_back(GetBuffer(aView->GetIlluminationUBO()));
-    bufferOrImages.emplace_back(GetBuffer(surface->GetWaterInfluenceMapManager(aView)->GetUBOMapBuffer()));
+    bufferOrImages.emplace_back(GetBuffer(aView->GetWaterInfluenceMapManager()->GetUBOMapBuffer()));
 
     for (auto texture : mTextures)
     {

@@ -19,9 +19,6 @@
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
-#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
-#include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
-#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -202,7 +199,7 @@ namespace YTE
 
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
-    mRenderer = static_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
+    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
   }
 
@@ -1026,9 +1023,7 @@ namespace YTE
       (*model)->UpdateUBOModel(mInstancingMatrices[i]);
     }
 
-    // TODO: Fix this, no vulkan should be here.
-    VkRenderer* vkrender = static_cast<VkRenderer*>(mRenderer);
-    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView)->mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
+    mGraphicsView->GetWaterInfluenceMapManager()->SetBaseHeight(mTransform->GetTranslation().y);
   }
 
 
@@ -1121,8 +1116,7 @@ namespace YTE
     point = firstMatrix.mModelMatrix * glm::vec4(position, 1);
 
     // influence maps [ MUST COPY THE SHADER LOGIC ]
-    auto manager = static_cast<VkRenderer*>(mRenderer)->GetAllWaterInfluenceMaps(mGraphicsView);
-    auto& data = manager->mWaterInformationData;
+    auto& data = mGraphicsView->GetWaterInfluenceMapManager()->mWaterInformationData;
 
     float HeightInfluence = 1.0f;
 

@@ -1,11 +1,11 @@
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
 
+#include "YTE/Graphics/InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/InstantiatedLight.hpp"
 
 namespace YTE
@@ -81,12 +81,6 @@ namespace YTE
   {
     UnusedArguments(aName, aSubmeshes, aForceUpdate);
 
-    return nullptr;
-  }
-
-  std::unique_ptr<InstantiatedInfluenceMap> Renderer::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    UnusedArguments(aView);
     return nullptr;
   }
 
