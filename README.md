@@ -32,12 +32,12 @@ mkdir build
 5.) Add an environment variable called Qt defined as `install_dir\5.9`
 ```
 
-4.) Installing Wwise 2017.1.0.6302
+4.) Installing Wwise 2017.1.1.6340
 ```
 1.) Go to the Wwise website and download their launcher: https://www.audiokinetic.com/download/
 2.) Open the launcher, you may need to make an account.
-3.) There should be a big blue button that says "Instal Wwise 2017.1.0.6302" click it.
-      - If not, navigate to install another version and find 2017.1.0.6302
+3.) There should be a big blue button that says "Install Wwise 2017.1.1.6340" click it.
+      - If not, navigate to install another version and find 2017.1.1.6340
 4.) Besides the defaults, you will want:
     Packages:
       - SDK (C++)
