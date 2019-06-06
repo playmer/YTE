@@ -45,7 +45,6 @@ namespace YTE
     std::string mName = "EMPTY";
 
     // Engine Side Data
-    glm::vec4 mClearColor;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
@@ -140,16 +139,6 @@ namespace YTE
     void SetRenderer(VkRenderer *aRenderer)
     {
       mRenderer = aRenderer;
-    }
-
-    glm::vec4 GetClearColor(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mClearColor;
-    }
-
-    void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
-    {
-      GetViewData(aView)->mClearColor = aColor;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)

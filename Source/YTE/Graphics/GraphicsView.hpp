@@ -54,10 +54,6 @@ namespace YTE
     YTE_Shared void UpdateView(Camera *aCamera, UBOs::View &aView);
     YTE_Shared void UpdateIllumination(UBOs::Illumination &aIllumination);
 
-    // Getters / Setters
-    YTE_Shared glm::vec4 GetClearColor();
-    YTE_Shared void SetClearColor(const glm::vec4 &aColor);
-
     Camera* GetActiveCamera()
     {
       return mActiveCamera;
@@ -132,6 +128,16 @@ namespace YTE
     UBOs::Illumination const& GetIlluminationUBOData()
     {
       return mIlluminationUBOData;
+    }
+
+    void SetClearColor(glm::vec4 aClearColor)
+    {
+      mClearColor = aClearColor;
+    }
+
+    glm::vec4 GetClearColor()
+    {
+      return mClearColor;
     }
 
   private:

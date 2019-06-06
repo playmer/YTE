@@ -128,8 +128,6 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    glm::vec4 GetClearColor(GraphicsView *aView);
-    void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     VkRenderedSurface* GetSurface(Window *aWindow);
 
     Engine* GetEngine() const

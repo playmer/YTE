@@ -84,16 +84,6 @@ namespace YTE
     return nullptr;
   }
 
-  glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
-  {
-    UnusedArguments(aView);
-    return glm::vec4{};
-  }
-
-  void Renderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
-  {
-    UnusedArguments(aView, aColor);
-  }
 
   void Renderer::SetLights(bool aOnOrOff)
   {

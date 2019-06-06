@@ -642,7 +642,7 @@ namespace YTE
       {
         YTEMetaProfileBlock(data.mName.c_str());
 
-        glm::vec4 col = data.mClearColor;
+        glm::vec4 col = data.mView->GetClearColor();
 
         colorValues[0] = col.x;
         colorValues[1] = col.y;
@@ -651,10 +651,10 @@ namespace YTE
         vk::ClearValue color{ colorValues };
 
         renderingCommandBuffer->beginRenderPass(data.mRenderTarget->GetRenderPass(),
-                                                 data.mRenderTarget->GetFrameBuffer(),
-                                                 vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
-                                                 { color, depthStencil },
-                                                 vk::SubpassContents::eSecondaryCommandBuffers);
+                                                data.mRenderTarget->GetFrameBuffer(),
+                                                vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
+                                                { color, depthStencil },
+                                                vk::SubpassContents::eSecondaryCommandBuffers);
 
         renderingCommandBuffer->executeCommands(data.mRenderTarget->GetCommands());
 

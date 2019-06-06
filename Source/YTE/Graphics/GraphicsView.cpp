@@ -188,16 +188,6 @@ namespace YTE
     mIlluminationUBO.Update(mIlluminationUBOData);
   }
 
-  glm::vec4 GraphicsView::GetClearColor()
-  {
-    if (nullptr == mWindow)
-    {
-      return mClearColor;
-    }
-
-    return mRenderer->GetClearColor(this);
-  }
-
   void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
     ViewChanged event;
@@ -256,18 +246,6 @@ namespace YTE
       mRenderer->RegisterView(this);
       SendEvent(Events::SurfaceGained, &event);
     }
-  }
-
-  void GraphicsView::SetClearColor(const glm::vec4 &aColor)
-  {
-    mClearColor = aColor;
-
-    if (nullptr == mWindow)
-    {
-      return;
-    }
-
-    mRenderer->SetClearColor(this, aColor);
   }
 
   void GraphicsView::SetOrder(float aOrder)

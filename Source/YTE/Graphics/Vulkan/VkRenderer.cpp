@@ -536,16 +536,6 @@ namespace YTE
     GetSurface(aView->GetWindow())->ViewOrderChanged(aView, aNewOrder);
   }
 
-  void VkRenderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
-  {
-    GetSurface(aView->GetWindow())->SetClearColor(aView, aColor);
-  }
-
-  glm::vec4 VkRenderer::GetClearColor(GraphicsView *aView)
-  {
-    return GetSurface(aView->GetWindow())->GetClearColor(aView);
-  }
-
   VkRenderedSurface* VkRenderer::GetSurface(Window *aWindow)
   {
     auto surface = mSurfaces.find(aWindow);
