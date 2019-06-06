@@ -17,26 +17,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 
+#include <QVBoxLayout>
+
 #include "YTEditor/Framework/Widget.hpp"
 
-class QScrollArea;
-class QVBoxLayout;
-class QGridLayout;
-
-namespace YTE
-{
-  class Composition;
-  class Component;
-}
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-  class YTELevelEditor;
-  class ArchetypeTools;
-  class ComponentWidget;
-  class ComponentTree;
-  class ComponentTools;
-
   class ComponentBrowser : public Framework::Widget
   {
   public:

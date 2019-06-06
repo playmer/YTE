@@ -143,8 +143,8 @@ namespace YTEditor
     YTE::Any modVal = YTE::Any(val);
 
     // notify that change has been made to object instance
-    MainWindow *mainWindow = mParentComponent->GetMainWindow();
-    ArchetypeTools *archTools = mainWindow->GetWidget<ComponentBrowser>()->GetArchetypeTools();
+    auto editor = mParentComponent->GetEditor();
+    ArchetypeTools *archTools = editor->GetWidget<ComponentBrowser>()->GetArchetypeTools();
     archTools->IncrementChanges();
   
     std::string name = mEngineProperty->GetName();
@@ -154,10 +154,10 @@ namespace YTEditor
                                                   cmp->GetGUID(),
                                                   oldVal,
                                                   modVal,
-                                                  mainWindow);
+                                                  mParentComponent->GetEditor()->GetMainWindow());
 
     // add property changed command to undo/redo
-    mainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     // actually change the property value engine-side
     BaseSaveToEngine();

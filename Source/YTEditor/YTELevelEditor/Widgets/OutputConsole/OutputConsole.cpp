@@ -23,7 +23,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/StandardLibrary/Utilities.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
@@ -66,11 +68,11 @@ namespace YTEditor
     textEdit->setTextColor(OutputConsole::Color::Black);
   }
 
-  OutputConsole::OutputConsole(MainWindow *aMainWindow)
-    : Widget(aMainWindow)
+  OutputConsole::OutputConsole(YTELevelEditor* aWorkspace)
+    : Widget(aWorkspace)
     , mLayout(nullptr)
     , mConsole(nullptr)
-    , mMainWindow(aMainWindow)
+    , mMainWindow(aWorkspace->GetMainWindow<YTEditorMainWindow>())
     , mHandler(this)
   {
     SetWindowSettings();
@@ -133,7 +135,7 @@ namespace YTEditor
     return "OutputConsole";
   }
 
-  Widget::DockArea OutputConsole::GetDefaultDockPosition() const
+  Framework::Widget::DockArea OutputConsole::GetDefaultDockArea() const
   {
     return Widget::DockArea::Bottom;
   }

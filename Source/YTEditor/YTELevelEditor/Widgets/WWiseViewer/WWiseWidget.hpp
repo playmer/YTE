@@ -11,12 +11,14 @@
 #include "YTEditor/Framework/MainWindow.hpp"
 #include "YTEditor/Framework/Widget.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
+
 namespace YTEditor
 {
-  class WWiseWidget : public Widget
+  class WWiseWidget : public Framework::Widget
   {
   public:
-    WWiseWidget(MainWindow *aParent, YTE::Engine *aEngine);
+    WWiseWidget(YTELevelEditor* aWorkspace, YTE::Engine* aEngine);
     ~WWiseWidget();
 
     AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
@@ -25,7 +27,7 @@ namespace YTEditor
 
     static std::string GetName();
 
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Framework::Widget::DockArea GetDefaultDockArea() const override;
 
   private:
 

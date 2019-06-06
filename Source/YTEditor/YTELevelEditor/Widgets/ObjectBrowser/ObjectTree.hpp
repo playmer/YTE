@@ -18,27 +18,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtreewidget.h>
 
-// old typedefs from sandbox project
-typedef QPair<QString, float> Property;
-typedef QVector<Property> Component;
-typedef QMap<QString, Component> Archetype;
+#include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Utilities.hpp"
 
-namespace YTE
-{
-  class Composition;
-  class String;
-}
+#include "YTE/Utilities/Utilities.hpp"
+
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-
-  class MainWindow;
-  class ObjectItem;
-
   class ObjectTree : public QTreeWidget
   {
   public:
-    ObjectTree(MainWindow *aMainWindow, QWidget *parent = nullptr);
+    ObjectTree(YTELevelEditor* aLevelEditor, QWidget* parent = nullptr);
     ~ObjectTree();
 
     ObjectItem* AddObject(const char *aCompositionName,
@@ -73,7 +67,10 @@ namespace YTEditor
 
     ObjectItem* FindItemByComposition(YTE::Composition *aComp);
 
-    MainWindow* GetMainWindow() const;
+    YTELevelEditor* GetLevelEditor() const
+    {
+      return mLevelEditor;
+    }
 
     std::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
 
@@ -93,7 +90,7 @@ namespace YTEditor
     void MoveToFrontOfCamera(YTE::Composition *aObject);
 
   private:
-    MainWindow *mMainWindow;
+    YTELevelEditor* mLevelEditor;
     void SetWidgetSettings();
 
     void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);

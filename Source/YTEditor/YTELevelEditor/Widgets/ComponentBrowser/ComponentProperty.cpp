@@ -55,7 +55,7 @@ namespace YTEditor
                                                   cmp->GetGUID(),
                                                   oldVal,
                                                   modVal,
-                                                  editor);
+                                                  editor->GetMainWindow());
 
     // put command on undo stack
     editor->GetUndoRedo()->InsertCommand(std::move(cmd));

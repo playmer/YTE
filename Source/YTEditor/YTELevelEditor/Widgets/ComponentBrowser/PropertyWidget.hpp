@@ -37,18 +37,18 @@ namespace YTEditor
   {
   public:
 
-    PropertyWidget(const std::string& name, 
-                   YTE::Property* property, 
-                   YTELevelEditor* editor, 
-                   QWidget* parent = nullptr)
-      : PropertyWidgetBase(parent)
-      , mEditor(editor)
-      , mProperty(property)
+    PropertyWidget(const std::string& aName, 
+                   YTE::Property* aProperty,
+                   YTELevelEditor* aEditor, 
+                   QWidget* aParent = nullptr)
+      : PropertyWidgetBase(aParent)
+      , mEditor(aEditor)
+      , mProperty(aProperty)
       , mValues(new QHBoxLayout(this))
-      , mPropertyName(name)
+      , mPropertyName(aName)
     {
       this->setLayout(mValues);
-      mLabel = new QLabel(name.c_str(), this);
+      mLabel = new QLabel(aName.c_str(), this);
       mValues->addWidget(mLabel);
 
       // check for the type and add the appropriate widgets

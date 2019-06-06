@@ -24,7 +24,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Attribute.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentProperty.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
@@ -94,7 +93,7 @@ namespace YTEditor
         QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
         header->setText(0, object.second.c_str());
 
-        HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor, mEngineComponent, header);
+        HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor->GetMainWindow(), mEngineComponent, header);
 
         QTreeWidgetItem *body = new QTreeWidgetItem(header);
         body->setFlags(Qt::NoItemFlags);
@@ -167,7 +166,7 @@ namespace YTEditor
   {
     if (aEvent->modifiers() == Qt::Modifier::CTRL && (aEvent->key() == Qt::Key_Z || aEvent->key() == Qt::Key_Y))
     {
-      mMainWindow->keyPressEvent(aEvent);
+      mEditor->GetMainWindow()->keyPressEvent(aEvent);
     }
     else
     {
@@ -193,7 +192,7 @@ namespace YTEditor
       QTreeWidgetItem *header = new QTreeWidgetItem(mTopItem);
       header->setText(0, object.second.c_str());
 
-      HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor, mEngineComponent, header);
+      HeaderListWidget *widg = new HeaderListWidget(object.first, object.second, mEditor->GetMainWindow(), mEngineComponent, header);
 
       QTreeWidgetItem *body = new QTreeWidgetItem(header);
       body->setFlags(Qt::NoItemFlags);

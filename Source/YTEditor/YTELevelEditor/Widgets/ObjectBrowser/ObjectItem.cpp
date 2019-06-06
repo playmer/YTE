@@ -23,11 +23,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -163,14 +167,14 @@ namespace YTEditor
             return false;
           }
 
-          YTE::Composition *engineObj = item->GetEngineObject();
+          YTE::Composition* engineObj = item->GetEngineObject();
 
-          OutputConsole* console = mTree->GetMainWindow()->GetWidget<OutputConsole>();
+          OutputConsole* console = mTree->GetLevelEditor()->GetWidget<OutputConsole>();
 
           auto name = item->text(0).toStdString();
-          auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, console, mTree);
+          auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mTree->GetLevelEditor()->GetWidget<ComponentBrowser>(), console);
 
-          mTree->GetMainWindow()->GetUndoRedo()->InsertCommand(std::move(cmd));
+          mTree->GetLevelEditor()->GetUndoRedo()->InsertCommand(std::move(cmd));
 
           ObjectItem *parent = dynamic_cast<ObjectItem*>(item->parent());
 

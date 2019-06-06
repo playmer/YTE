@@ -29,7 +29,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Meta/Meta.hpp"
 #include "YTE/Utilities/JsonHelpers.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
@@ -49,8 +48,8 @@ namespace YTEditor
   ComponentTree::ComponentTree(ComponentBrowser *parent)
     : QTreeWidget(parent)
     , mComponentBrowser(parent)
-    , mUndoRedo(mComponentBrowser->GetMainWindow()->GetUndoRedo())
-    , mOutputConsole(mComponentBrowser->GetMainWindow()->GetWidget<OutputConsole>())
+    , mUndoRedo(mComponentBrowser->GetWorkspace<YTELevelEditor>()->GetUndoRedo())
+    , mOutputConsole(mComponentBrowser->GetWorkspace()->GetWidget<OutputConsole>())
   {
     SetWindowSettings();
 
@@ -109,7 +108,7 @@ namespace YTEditor
     ComponentWidget *comp = new ComponentWidget(aType,
                                                 aName,
                                                 aEngineComp,
-                                                mComponentBrowser->GetMainWindow(),
+                                                mComponentBrowser->GetWorkspace<YTELevelEditor>(),
                                                 aTopItem);
 
     comp->setObjectName(aName);
@@ -184,8 +183,7 @@ namespace YTEditor
 
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType)
   {
-    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
-    ObjectBrowser *objBrowser = mainWindow->GetWidget<ObjectBrowser>();
+    ObjectBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
     YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
@@ -210,8 +208,7 @@ namespace YTEditor
 
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType, YTE::RSValue *aSerializedComponent)
   {
-    MainWindow *mainWindow = mComponentBrowser->GetMainWindow();
-    ObjectBrowser *objBrowser = mainWindow->GetWidget<ObjectBrowser>();
+    ObjectBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
     YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
@@ -284,8 +281,7 @@ namespace YTEditor
 
         if (compWidg->GetName() == "Model")
         {
-          MainWindow* mainWindow = mComponentBrowser->GetMainWindow();
-          mainWindow->GetWidget<MaterialViewer>()->LoadNoMaterial();
+          mComponentBrowser->GetWorkspace()->GetWidget<MaterialViewer>()->LoadNoMaterial();
         }
 
         compWidg->RemoveComponentFromEngine();
@@ -420,8 +416,7 @@ namespace YTEditor
 
     if (compWidg->GetName() == "Model")
     {
-      auto mainWin = mComponentBrowser->GetMainWindow();
-      auto matViewer = mainWin->GetWidget<MaterialViewer>();
+      auto matViewer = mComponentBrowser->GetWorkspace()->GetWidget<MaterialViewer>();
 
       if (matViewer)
       {

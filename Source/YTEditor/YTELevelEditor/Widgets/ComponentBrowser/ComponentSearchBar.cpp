@@ -23,7 +23,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
+#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentSearchBar.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTools.hpp"
@@ -32,6 +35,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
+
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -108,9 +114,10 @@ namespace YTEditor
     std::string stdName = aCompName.toStdString();
 
     ComponentBrowser &browser = mComponentTools->GetBrowser();
-    MainWindow *mainWin = browser.GetMainWindow();
 
-    ObjectBrowser *objBrowser = mainWin->GetWidget<ObjectBrowser>();
+    auto workspace = browser.GetWorkspace<YTELevelEditor>();
+
+    ObjectBrowser *objBrowser = workspace->GetWidget<ObjectBrowser>();
     YTE::Composition *currObj = objBrowser->GetCurrentObject();
 
     if (nullptr == currObj)
@@ -129,7 +136,7 @@ namespace YTEditor
 
     if (false == error.empty())
     {
-      mainWin->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red, error.c_str());
+      workspace->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red, error.c_str());
       return;
     }
 
@@ -138,15 +145,15 @@ namespace YTEditor
 
     if (type->GetName() == "Model")
     {
-      mainWin->GetPhysicsHandler().Remove(currObj);
-      mainWin->GetPhysicsHandler().Add(currObj);
+      workspace->GetPhysicsHandler()->Remove(currObj);
+      workspace->GetPhysicsHandler()->Add(currObj);
     }
 
     YTE::Model *model = objBrowser->GetCurrentObject()->GetComponent<YTE::Model>();
 
     if (model && model->GetMesh())
     {
-      auto matViewer = mainWin->GetWidget<MaterialViewer>();
+      auto matViewer = workspace->GetWidget<MaterialViewer>();
 
       if (matViewer)
       {

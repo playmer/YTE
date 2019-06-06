@@ -1,25 +1,28 @@
 #pragma once
 
-#include <memory>
-
 #include <qtoolbar.h>
+
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-namespace Framework
-{
+  namespace Framework
+  {
+    class ToolBar : public QToolBar
+    {
+    public:
 
-class Workspace;
+      ToolBar(MainWindow* aMainWindow);
 
-class ToolBar : public QToolBar
-{
-public:
-  ToolBar(Workspace* workspace);
+      std::vector<ToolBarButton*>& GetButtons();
 
-private:
-  friend class Workspace;
-  Workspace* mWorkspace;
-};
+    protected:
 
-} // End of Framework namespace
-} // End of Editor namespace
+      void AddButton(ToolBarButton* aButton);
+
+      MainWindow* mMainWindow;
+
+      std::vector<ToolBarButton*> mButtons;
+    };
+  }
+}

@@ -15,48 +15,48 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTEditor/YTELevelEditor/MenuBar/Menu.hpp"
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/Menu.hpp"
 
 namespace YTEditor
 {
-  class WindowsMenu : public Menu
+  class WindowsMenu : public Framework::Menu
   {
   public:
 
-    WindowsMenu(MainWindow * aMainWindow);
+    WindowsMenu(Framework::MainWindow * aMainWindow);
 
   private:
-
-    Menu *mObjectBrowserMenu;
-    Menu* MakeObjectBrowserMenu();
+    Framework::Menu* MakeObjectBrowserMenu();
     void OpenObjectBrowser();
     void CloseObjectBrowser();
 
-    Menu *mComponentBrowserMenu;
-    Menu* MakeComponentBrowserMenu();
+    Framework::Menu* MakeComponentBrowserMenu();
     void OpenComponentBrowser();
     void CloseComponentBrowser();
 
-    Menu *mOutputConsoleMenu;
-    Menu* MakeOutputConsoleMenu();
+    Framework::Menu* MakeOutputConsoleMenu();
     void OpenOutputConsole();
     void CloseOutputConsole();
 
-    Menu *mMaterialViewerMenu;
-    Menu* MakeMaterialViewerMenu();
+    Framework::Menu* MakeMaterialViewerMenu();
     void OpenMaterialViewer();
     void CloseMaterialViewer();
 
-    Menu *mFileViewerMenu;
-    Menu* MakeFileViewerMenu();
+    Framework::Menu* MakeFileViewerMenu();
     void OpenFileViewer();
     void CloseFileViewer();
 
-    Menu *mWWiseViewerMenu;
-    Menu* MakeWWiseViewerMenu();
+    Framework::Menu* MakeWWiseViewerMenu();
     void OpenWWiseViewer();
     void CloseWWiseViewer();
 
+    Framework::Menu* mObjectBrowserMenu;
+    Framework::Menu* mComponentBrowserMenu;
+    Framework::Menu* mOutputConsoleMenu;
+    Framework::Menu* mMaterialViewerMenu;
+    Framework::Menu* mFileViewerMenu;
+    Framework::Menu* mWWiseViewerMenu;
   };
 
 }

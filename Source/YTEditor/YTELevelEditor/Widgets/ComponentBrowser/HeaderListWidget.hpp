@@ -7,37 +7,21 @@
 
 #include "YTE/Core/Utilities.hpp"
 
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
 
-namespace YTE
-{
-  class Component;
-  class Type;
-  class Animator;
-}
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
-
-  class MainWindow;
-
-  template <class T>
-  class PropertyWidget;
-
-  class PropertyWidgetBase;
-
-  template <class T>
-  class HeaderListProperty;
-
-  class ComponentTree;
-
   class HeaderListWidget : public QFrame
   {
   public:
 
     HeaderListWidget(YTE::Object *aObject,
                      const std::string &aName,
-                     MainWindow *aMainWindow,
+                     Framework::MainWindow *aMainWindow,
                      YTE::Component *aComponent,
                      QTreeWidgetItem *aParent);
 
@@ -48,7 +32,7 @@ namespace YTEditor
 
     void keyPressEvent(QKeyEvent *aEvent);
 
-    MainWindow* GetMainWindow();
+    Framework::MainWindow* GetMainWindow();
 
     YTE::Component* GetEngineComponent();
 
@@ -58,25 +42,25 @@ namespace YTEditor
 
   private:
 
-    MainWindow *mMainWindow;
+    Framework::MainWindow* mMainWindow;
 
-    YTE::Component *mEngineComponent;
+    YTE::Component* mEngineComponent;
 
-    YTE::Object *mObject;
+    YTE::Object* mObject;
 
     std::string mHeaderName;
-    QVBoxLayout *mProperties;
+    QVBoxLayout* mProperties;
 
-    QTreeWidgetItem *mParentItem;
+    QTreeWidgetItem* mParentItem;
 
     std::vector<PropertyWidgetBase*> mPropertyWidgets;
 
-    void LoadProperties(YTE::Object *aObject);
+    void LoadProperties(YTE::Object* aObject);
 
     template <typename tType>
-    HeaderListProperty<tType>* AddProperty(const std::string aName, YTE::Property *aProp, YTE::Object *aObject)
+    HeaderListProperty<tType>* AddProperty(const std::string aName, YTE::Property* aProperty, YTE::Object* aObject)
     {
-      HeaderListProperty<tType> *prop = new HeaderListProperty<tType>(aName, mMainWindow, this, aProp, aObject);
+      HeaderListProperty<tType> *prop = new HeaderListProperty<tType>(aName, mMainWindow->GetWorkspace<YTELevelEditor>(), this, aProperty, aObject);
       mProperties->addWidget(prop);
       return prop;
     }
@@ -87,21 +71,21 @@ namespace YTEditor
   class HeaderListDelegate : public QStyledItemDelegate
   {
   public:
-    HeaderListDelegate(YTE::Animator *aAnimComp, ComponentTree *aTree, QWidget *aParent = nullptr);
+    HeaderListDelegate(YTE::Animator* aAnimComponent, ComponentTree* aTree, QWidget* aParent = nullptr);
 
-    void paint(QPainter *painter,
-      const QStyleOptionViewItem &option,
-      const QModelIndex &index) const override;
+    void paint(QPainter* aPainter,
+      QStyleOptionViewItem const& aOption,
+      QModelIndex const& aIndex) const override;
 
-    bool editorEvent(QEvent *event,
-      QAbstractItemModel *model,
-      const QStyleOptionViewItem &option,
-      const QModelIndex &index);
+    bool editorEvent(QEvent* aEvent,
+      QAbstractItemModel* aModel,
+      QStyleOptionViewItem const& aOption,
+      QModelIndex const& aIndex);
 
   private:
 
-    ComponentTree *mTree;
-    YTE::Animator *mAnimator;
+    ComponentTree* mTree;
+    YTE::Animator* mAnimator;
 
   };
 

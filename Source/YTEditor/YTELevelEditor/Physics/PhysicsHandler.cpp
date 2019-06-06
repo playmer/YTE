@@ -11,8 +11,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 
@@ -44,13 +45,13 @@ namespace YTEditor
     }
   }
 
-  PhysicsHandler::PhysicsHandler(YTE::Space *aSpace, YTE::Window *aWindow, MainWindow *aMainWindow)
-    : mSpace(aSpace)
-    , mWindow(aWindow)
-    , mMainWindow(aMainWindow)
-    , mIsHittingObject(false)
-    , mIsGizmoActive(false)
-    , mCurrentObj(nullptr)
+  PhysicsHandler::PhysicsHandler(YTE::Space* aSpace, YTE::Window* aWindow, YTELevelEditor* aLevelEditor)
+    : mSpace{ aSpace }
+    , mWindow{ aWindow }
+    , mLevelEditor{ aLevelEditor }
+    , mIsHittingObject{ false }
+    , mIsGizmoActive{ false }
+    , mCurrentObj{ nullptr }
   {
     // collision configuration contains default setup for memory , collision setup .
     // Advanced users can create their own configuration .
@@ -121,7 +122,7 @@ namespace YTEditor
 
   void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
   {
-    auto imguiLayerComposition = mMainWindow->GetImguiLayer();
+    auto imguiLayerComposition = mLevelEditor->GetImguiLayer();
     
     if (imguiLayerComposition)
     {
@@ -175,12 +176,12 @@ namespace YTEditor
       
       mCurrentObj = obj;
 
-      ObjectBrowser* browser = mMainWindow->GetWidget<ObjectBrowser>();
+      ObjectBrowser* browser = mLevelEditor->GetWidget<ObjectBrowser>();
       auto item = browser->FindItemByComposition(mCurrentObj);
 
       // TODO(Evan/Nick): change to setSelectedItem for drag select in future
       // TODO(NICK): this wants an ObjectTree and I'm DISAPPOINTING IT
-      browser->setCurrentItem(reinterpret_cast<QTreeWidgetItem*>(item), 0);
+      browser->setCurrentItem(item, 0);
 
       auto model = mCurrentObj->GetComponent<YTE::Model>();
 

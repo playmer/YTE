@@ -174,11 +174,13 @@ void YTELevelEditor::LoadCurrentLevelInfo()
     mImguiLayer->ToggleSerialize();
   }
 
+  
+
   mImguiLayer->AddComponent(YTE::GraphicsView::GetStaticType());
   auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
   view->SetOrder(100.f);
   view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
-  view->ChangeWindow(GetLevelWindow().mWindow);
+  view->ChangeWindow(mLevelWindow->mWindow);
 
   mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
@@ -230,7 +232,7 @@ void YTELevelEditor::PlayLevel()
 
   // Make actual "physical" window
   mRunningWindow = new SubWindow(nullptr, this);
-  mRunningWindowTab = createWindowContainer(mRunningWindow);
+  mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
   int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
   mCentralTabs->setCurrentIndex(index);
 
@@ -373,9 +375,9 @@ GameObjectMenu* YTELevelEditor::GetGameObjectMenu()
   return mGameObjectMenu;
 }
 
-PhysicsHandler& YTELevelEditor::GetPhysicsHandler()
+PhysicsHandler* YTELevelEditor::GetPhysicsHandler()
 {
-  return *mPhysicsHandler;
+  return mPhysicsHandler.get();
 }
 
 
@@ -384,31 +386,9 @@ GizmoToolbar* YTELevelEditor::GetGizmoToolbar()
   return mGizmoToolbar;
 }
 
-Preferences* YTELevelEditor::GetPreferences()
-{
-  return &mPreferences;
-}
-
 YTE::Composition * YTELevelEditor::GetEditorCamera()
 {
   return mEditorCamera;
-}
-
-// process serialized preferences file
-void YTELevelEditor::LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile)
-{
-  // create a default preferences file
-  mPreferences = Preferences();
-
-  if (aPrefFile)
-  {
-    mPreferences.Deserialize(std::move(aPrefFile));
-  }
-  else
-  {
-    // write out default file
-    mPreferences.WriteToFile();
-  }
 }
 
 void YTELevelEditor::ConstructSubWidgets()
@@ -450,9 +430,11 @@ void YTELevelEditor::ConstructGameWindows()
 
 void YTELevelEditor::ConstructToolbar()
 {
+  auto window = static_cast<YTEditorMainWindow*>(mMainWindow);
+
   mGizmoToolbar = AddToolBar<GizmoToolbar>(this);
 
-  if (!mPreferences.mNoGameToolbar)
+  if (!window->GetPreferences()->mNoGameToolbar)
   {
     mGameToolbar = AddToolBar<GameToolbar>(this);
   }

@@ -7,48 +7,46 @@
 
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/Widget.hpp"
-
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/Widget.hpp"
 
 namespace YTEditor
 {
-
-
   class FileViewerModel : public QFileSystemModel
   {
   public:
 
-    FileViewerModel(QWidget *aParent);
+    FileViewerModel(QWidget* aParent);
 
     Qt::DropActions supportedDragActions() const override;
 
     QStringList mimeTypes() const override;
 
-    QMimeData* mimeData(const QModelIndexList &indexes) const override;
+    QMimeData* mimeData(QModelIndexList const& indexes) const override;
 
-    bool canDropMimeData(const QMimeData *data,
+    bool canDropMimeData(QMimeData const* data,
                          Qt::DropAction action,
                          int row,
                          int column,
-                         const QModelIndex &parent) const override;
+                         QModelIndex const& parent) const override;
 
-    bool dropMimeData(const QMimeData *data,
+    bool dropMimeData(QMimeData const* data,
                       Qt::DropAction action,
                       int row,
                       int column,
-                      const QModelIndex &parent) override;
+                      QModelIndex const& parent) override;
 
   };
 
 
-  class FileViewer : public Widget
+  class FileViewer : public Framework::Widget
   {
   public:
 
-    FileViewer(MainWindow *aMainWindow);
+    FileViewer(Framework::MainWindow* aMainWindow);
 
     static std::string GetName();
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Widget::DockArea GetDefaultDockArea() const override;
 
   private:
     QTreeView mTree;

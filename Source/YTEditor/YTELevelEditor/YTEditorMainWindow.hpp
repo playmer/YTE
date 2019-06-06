@@ -22,6 +22,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 
 #include "YTEditor/Framework/MainWindow.hpp"
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 class QDockWidget;
 class QMenu;
@@ -36,14 +39,6 @@ namespace YTE
 
 namespace YTEditor
 {
-  class SubWindow;
-  class FileMenu;
-  class UndoRedo;
-  class Gizmo;
-  class GizmoToolbar;
-  class GameToolbar;
-  class GameObjectMenu;
-
   class Preferences
   {
   public:

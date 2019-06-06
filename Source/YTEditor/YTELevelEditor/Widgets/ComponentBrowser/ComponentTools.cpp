@@ -21,13 +21,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentSearchBar.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
@@ -55,8 +56,7 @@ namespace YTEditor
     mSearchBar = new ComponentSearchBar(this, this);
 
     // Get the component types
-    MainWindow * mainWindow = mBrowser->GetMainWindow();
-    YTE::Engine * engine = mainWindow->GetRunningEngine();
+    YTE::Engine * engine = static_cast<YTELevelEditor*>(mBrowser->GetWorkspace())->GetRunningEngine();
     YTE::ComponentSystem * system = engine->GetComponent<YTE::ComponentSystem>();
 
     auto compTypes = system->GetComponentTypes();

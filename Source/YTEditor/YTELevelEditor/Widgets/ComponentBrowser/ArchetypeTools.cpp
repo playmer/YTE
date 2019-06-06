@@ -26,12 +26,16 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 
 namespace YTEditor
@@ -112,8 +116,8 @@ namespace YTEditor
   void ArchetypeTools::Revert()
   {
     // diff RSValues to see if reloading is necessary
-    MainWindow *mainWin = mBrowser->GetMainWindow();
-    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+    //MainWindow *mainWin = mBrowser->GetMainWindow();
+    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
     YTE::Composition *obj = objectBrowser->GetCurrentObject();
 
@@ -132,14 +136,12 @@ namespace YTEditor
 
   void ArchetypeTools::RevertObject(YTE::Composition * aObject)
   {
-    MainWindow *mainWin = mBrowser->GetMainWindow();
-
     YTE::RSAllocator allocator;
     YTE::RSValue archValue = aObject->Serialize(allocator);
 
     YTE::String archName = aObject->GetArchetypeName();
 
-    YTE::RSValue *trueArchValue = mainWin->GetRunningEngine()->GetArchetype(archName);
+    YTE::RSValue *trueArchValue = mBrowser->GetWorkspace<YTELevelEditor>()->GetRunningEngine()->GetArchetype(archName);
 
     // if they're different, we need to reinstantiate all the objects
     if (archValue != *trueArchValue)
@@ -155,7 +157,7 @@ namespace YTEditor
       YTE::Composition *parent = aObject->GetParent();
       parent->RemoveComposition(aObject);
 
-      ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+      ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
       ObjectItem *item = objectBrowser->FindItemByComposition(aObject);
 
@@ -209,8 +211,7 @@ namespace YTEditor
     mIsArchetype = true;
     mIsDifferent = false;
 
-    MainWindow *mainWin = mBrowser->GetMainWindow();
-    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
     YTE::Composition *cmp = objectBrowser->GetCurrentObject();
 
@@ -241,7 +242,7 @@ namespace YTEditor
     newArch << archOut;
     newArch.close();
 
-    mBrowser->GetMainWindow()->SaveCurrentLevel();
+    mBrowser->GetWorkspace<YTELevelEditor>()->SaveCurrentLevel();
   }
 
   void ArchetypeTools::Overwrite()
@@ -249,8 +250,7 @@ namespace YTEditor
     std::string str = mArchNameBar->text().toStdString();
     YTE::String arch = str.c_str();
 
-    MainWindow *mainWin = mBrowser->GetMainWindow();
-    ObjectBrowser* objectBrowser = mainWin->GetWidget<ObjectBrowser>();
+    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
 
     auto items = objectBrowser->FindAllObjectsOfArchetype(arch);
 

@@ -25,6 +25,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
+#include <QCoreApplication>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -34,22 +35,27 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Utilities.hpp"
+
 #include "YTE/StandardLibrary/Range.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/MenuBar/ImportMenu.hpp"
-#include "YTEditor/MainWindow/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+#include "YTEditor/Framework/Workspace.hpp"
 
+#include "YTEditor/YTELevelEditor/MenuBar/ImportMenu.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace fs = std::experimental::filesystem;
 
 namespace YTEditor
 {
-
-  ImportMenu::ImportMenu(MainWindow *aMainWindow)
-    : Menu("Import", aMainWindow)
-    , mConsole(aMainWindow->GetWidget<OutputConsole>())
+  ImportMenu::ImportMenu(Framework::MainWindow* aMainWindow)
+    : Framework::Menu("Import", aMainWindow->GetWorkspace<YTELevelEditor>())
+    , mConsole(mWorkspace->GetWidget<OutputConsole>())
   {
     AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
     AddAction<ImportMenu>("Model", &ImportMenu::ImportModel, this);
@@ -122,9 +128,9 @@ namespace YTEditor
 
       if (nullptr == pScene)
       {
-        mMainWindow->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red,
-                                                 "Could not find a valid fbx named %s",
-                                                 stdAnimationDirectory.c_str());
+        mWorkspace->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red,
+                                                         "Could not find a valid fbx named %s",
+                                                         stdAnimationDirectory.c_str());
         return;
       }
 

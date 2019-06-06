@@ -2,18 +2,13 @@
 
 namespace YTEditor
 {
-namespace Framework
-{
+  namespace Framework
+  {
 
-Workspace::Workspace(MainWindow* mainWindow)
-: mMainWindow(mainWindow)
-{
-}
+    Workspace::Workspace(MainWindow* mainWindow)
+      : mMainWindow(mainWindow)
+    {
+    }
 
-MainWindow* Workspace::GetMainWindow() const
-{
-  return mMainWindow;
-}
-
-} // End of Framework namespace
+  } // End of Framework namespace
 } // End of Editor namespace

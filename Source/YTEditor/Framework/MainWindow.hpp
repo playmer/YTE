@@ -1,70 +1,83 @@
 #pragma once
 
 #include <map>
+#include <type_traits>
 #include <typeindex>
 #include <memory>
 
 #include <qmainwindow.h>
 
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+
 namespace YTEditor
 {
-namespace Framework
-{
-
-class Workspace;
-
-class MainWindow : public QMainWindow
-{
-public:
-  MainWindow();
-
-  /**
-  * Creates a workspace of given type
-  * Returns pointer to created workspace
-  */
-  template <typename T, typename... Args>
-  T* LoadWorkspace(Args&&... args);
-
-  /**
-  * Unloads a workspace
-  * Returns true if an instance is unloaded
-  * Returns false if no instance of given type is found
-  */
-  template <typename T>
-  bool UnloadWorkspace(T* workspace);
-
-private:
-  std::map<std::type_index, Framework::Workspace*> mWorkspaces;
-};
-
-template <typename T, typename... Args>
-T* MainWindow::LoadWorkspace(Args&&... args)
-{
-  auto inserted = mWorkspaces.emplace(std::type_index(typeid(T)), new T(std::forward<Args>(args)...));
-
-  if (inserted.second)
+  namespace Framework
   {
-    if (inserted.first->second->Initialize())
+    class MainWindow : public QMainWindow
     {
-      return static_cast<T*>(inserted.first->second);
-    }
-  }
-  return nullptr;
-}
+    public:
+      MainWindow();
 
-template <typename T>
-bool MainWindow::UnloadWorkspace(T* workspace)
-{
-  auto it = mWorkspaces.find(std::type_index(typeid(T)));
+      /**
+      * Creates a workspace of given type
+      * Returns pointer to created workspace
+      */
+      template <typename T, typename... Args>
+      T* LoadWorkspace(Args&& ... args)
+      {
+        static_assert(std::is_base_of_v<Workspace, T>, "The type passed to LoadWorkspace must be derived from Workspace.");
 
-  if (it != mWorkspaces.end())
-  {
-    it->second->Shutdown();
-    mWorkspaces.erase(it);
-    return true;
-  }
-  return false;
-}
+        auto inserted = mWorkspaces.emplace(std::type_index(typeid(T)), new T(std::forward<Args>(args)...));
 
-} // End of Framework namespace
+        if (inserted.second)
+        {
+          if (inserted.first->second->Initialize())
+          {
+            return static_cast<T*>(inserted.first->second);
+          }
+        }
+        return nullptr;
+      }
+
+      /**
+      * Unloads a workspace
+      * Returns true if an instance is unloaded
+      * Returns false if no instance of given type is found
+      */
+      template <typename T>
+      bool UnloadWorkspace(T* workspace)
+      {
+        static_assert(std::is_base_of_v<Workspace, T>, "The type passed to UnloadWorkspace must be derived from Workspace.");
+
+        auto it = mWorkspaces.find(std::type_index(typeid(T)));
+
+        if (it != mWorkspaces.end())
+        {
+          it->second->Shutdown();
+          mWorkspaces.erase(it);
+          return true;
+        }
+        return false;
+      }
+
+      template <typename T>
+      T* GetWorkspace()
+      {
+        static_assert(std::is_base_of_v<Workspace, T>, "The type passed to GetWorkSpace must be derived from Workspace.");
+
+        auto it = mWorkspaces.find(std::type_index(typeid(T)));
+
+        if (it != mWorkspaces.end())
+        {
+          return static_cast<T*>(it->second);
+        }
+
+        return nullptr;
+      }
+
+    private:
+      std::map<std::type_index, Framework::Workspace*> mWorkspaces;
+    };
+
+  } // End of Framework namespace
 } // End of Editor namespace

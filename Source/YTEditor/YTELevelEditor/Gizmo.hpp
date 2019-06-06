@@ -9,11 +9,11 @@
 #include "YTE/Physics/Transform.hpp"
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
+
+
 namespace YTEditor
 {
-  class MainWindow;
-  class Axis;
-
   class Gizmo : public YTE::EventHandler
   {
   public:
@@ -31,7 +31,7 @@ namespace YTEditor
       World
     };
 
-    Gizmo(MainWindow *aMainWindow, YTE::ImguiLayer *aLayer, YTE::Camera *aCamera);
+    Gizmo(YTELevelEditor* aLevelEditor, YTE::ImguiLayer* aLayer, YTE::Camera* aCamera);
 
     void Update(YTE::LogicUpdate *aEvent);
     void SnapToCurrentObject();
@@ -43,7 +43,7 @@ namespace YTEditor
     void SetMode(Mode aMode);
 
   protected:
-    MainWindow *mMainWindow;
+    YTELevelEditor* mLevelEditor;
     YTE::Camera *mCamera;
     YTE::ImguiLayer *mLayer;
     YTE::Transform *mCurrentComposition;

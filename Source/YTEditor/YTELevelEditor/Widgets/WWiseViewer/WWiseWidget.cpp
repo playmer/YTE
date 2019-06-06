@@ -125,8 +125,8 @@ namespace YTEditor
     WWiseWidget *mWidget;
   };
 
-  WWiseWidget::WWiseWidget(MainWindow *aMainWindow, YTE::Engine *aEngine)
-    : Widget(aMainWindow)
+  WWiseWidget::WWiseWidget(YTELevelEditor* aWorkspace, YTE::Engine* aEngine)
+    : Framework::Widget(aWorkspace)
     , mEngine(aEngine)
   {
     std::string name{ "WWiseWidget" };
@@ -334,7 +334,7 @@ namespace YTEditor
     return "WWiseWidget";
   }
 
-  Widget::DockArea WWiseWidget::GetDefaultDockPosition() const
+  Framework::Widget::DockArea WWiseWidget::GetDefaultDockArea() const
   {
     return Widget::DockArea::Right;
   }

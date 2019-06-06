@@ -23,22 +23,27 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
 
-#include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/MenuBar/GameObjectMenu.hpp"
+
+#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
 
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
-  GameObjectMenu::GameObjectMenu(MainWindow *aMainWindow)
-    : Menu("Game Object", aMainWindow)
-    , mObjectBrowser(mMainWindow->GetWidget<ObjectBrowser>())
-    , mComponentBrowser(aMainWindow->GetWidget<ComponentBrowser>())
+  GameObjectMenu::GameObjectMenu(Framework::MainWindow* aMainWindow)
+    : Framework::Menu("Game Object", aMainWindow->GetWorkspace<YTELevelEditor>())
+    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>())
+    , mComponentBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>())
     , mComponentTree(mComponentBrowser->GetComponentTree())
   {
     AddAction<GameObjectMenu>("Empty Object", &GameObjectMenu::CreateEmptyObject, this);
@@ -58,9 +63,9 @@ namespace YTEditor
     mObjectBrowser->AddObject("EmptyObject", "Empty");
   }
 
-  Menu* GameObjectMenu::Make3DObjectMenu()
+  Framework::Menu* GameObjectMenu::Make3DObjectMenu()
   {
-    Menu *menu = new Menu("3D Object", mMainWindow);
+    Menu *menu = new Menu("3D Object", mWorkspace);
 
     menu->AddAction<GameObjectMenu>("Cube", &GameObjectMenu::CreateCube, this);
     menu->AddAction<GameObjectMenu>("Sphere", &GameObjectMenu::CreateSphere, this);
@@ -94,9 +99,9 @@ namespace YTEditor
     mComponentTree->LoadGameObject(plane);
   }
 
-  Menu* GameObjectMenu::Make2DObjectMenu()
+  Framework::Menu* GameObjectMenu::Make2DObjectMenu()
   {
-    Menu *menu = new Menu("2D Object", mMainWindow);
+    Menu *menu = new Menu("2D Object", mWorkspace);
 
     menu->AddAction<GameObjectMenu>("Sprite", &GameObjectMenu::CreateSprite, this);
 
@@ -115,21 +120,44 @@ namespace YTEditor
     YTE::BoundType* spriteType = YTE::Sprite::GetStaticType();
     ComponentWidget *compWidget = mComponentTree->AddComponent(spriteType);
     
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
     
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
 
     mComponentTree->LoadGameObject(obj);
   }
 
-  Menu* GameObjectMenu::MakeLightMenu()
+  Framework::Menu* GameObjectMenu::MakeLightMenu()
   {
-    Menu *menu = new Menu("Light", mMainWindow);
+    auto menu = new Framework::Menu("Light", mWorkspace);
 
     menu->AddAction<GameObjectMenu>("Point Light", &GameObjectMenu::CreatePointLight, this);
     menu->AddAction<GameObjectMenu>("Directional Light", &GameObjectMenu::CreateDirectionalLight, this);
     menu->AddAction<GameObjectMenu>("Spotlight", &GameObjectMenu::CreateSpotlight, this);
+
+    return menu;
+  }
+
+  Framework::Menu* GameObjectMenu::MakeAudioMenu()
+  {
+    Menu* menu = new Framework::Menu("Audio", mWorkspace);
+
+    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener, this);
+    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener, this);
+
+    return menu;
+  }
+
+  Framework::Menu* GameObjectMenu::MakeUIMenu()
+  {
+    auto menu = new Framework::Menu("UI", mWorkspace);
+
+    menu->AddAction<GameObjectMenu>("Text", &GameObjectMenu::CreateText, this);
+    menu->AddAction<GameObjectMenu>("Image", &GameObjectMenu::CreateImage, this);
+    menu->AddAction<GameObjectMenu>("Button", &GameObjectMenu::CreateButton, this);
 
     return menu;
   }
@@ -168,22 +196,13 @@ namespace YTEditor
     YTE::Light *lightComponent = static_cast<YTE::Light*>(compWidget->GetEngineComponent());
     lightComponent->SetLightType(lightType);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
 
     return obj;
-  }
-
-  Menu* GameObjectMenu::MakeAudioMenu()
-  {
-    Menu *menu = new Menu("Audio", mMainWindow);
-
-    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener, this);
-    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener, this);
-
-    return menu;
   }
 
   void GameObjectMenu::CreateAudioEmitter()
@@ -201,10 +220,11 @@ namespace YTEditor
     YTE::BoundType* emitterType = YTE::WWiseEmitter::GetStaticType();
     mComponentTree->AddComponent(emitterType);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
     mComponentTree->LoadGameObject(obj);
   }
 
@@ -223,22 +243,12 @@ namespace YTEditor
     YTE::BoundType* listenerType = YTE::WWiseListener::GetStaticType();
     mComponentTree->AddComponent(listenerType);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
     mComponentTree->LoadGameObject(obj);
-  }
-
-  Menu* GameObjectMenu::MakeUIMenu()
-  {
-    Menu *menu = new Menu("UI", mMainWindow);
-
-    menu->AddAction<GameObjectMenu>("Text", &GameObjectMenu::CreateText, this);
-    menu->AddAction<GameObjectMenu>("Image", &GameObjectMenu::CreateImage, this);
-    menu->AddAction<GameObjectMenu>("Button", &GameObjectMenu::CreateButton, this);
-
-    return menu;
   }
 
   void GameObjectMenu::CreateText()
@@ -256,7 +266,8 @@ namespace YTEditor
 
   void GameObjectMenu::CreateParticleSystem()
   {
-    ObjectBrowser *objectBrowser = mMainWindow->GetWidget<ObjectBrowser>();
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    ObjectBrowser *objectBrowser = levelEditor->GetWidget<ObjectBrowser>();
     ObjectItem *item = objectBrowser->AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
     mObjectBrowser->MoveToFrontOfCamera(obj);
@@ -267,10 +278,10 @@ namespace YTEditor
     YTE::BoundType* particleType = YTE::ParticleEmitter::GetStaticType();
     mComponentTree->AddComponent(particleType);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
     mComponentTree->LoadGameObject(obj);
   }
 
@@ -289,10 +300,11 @@ namespace YTEditor
     YTE::BoundType* particleType = YTE::Camera::GetStaticType();
     mComponentTree->AddComponent(particleType);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
     mComponentTree->LoadGameObject(obj);
   }
 
@@ -313,10 +325,11 @@ namespace YTEditor
     YTE::Model *modelComponent = static_cast<YTE::Model*>(compWidget->GetEngineComponent());
     modelComponent->SetMesh(meshName);
 
-    mMainWindow->GetPhysicsHandler().Remove(obj);
-    mMainWindow->GetPhysicsHandler().Add(obj);
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+    levelEditor->GetPhysicsHandler()->Remove(obj);
+    levelEditor->GetPhysicsHandler()->Add(obj);
 
-    mMainWindow->GetGizmo()->SnapToCurrentObject();
+    levelEditor->GetGizmo()->SnapToCurrentObject();
 
     return obj;
   }

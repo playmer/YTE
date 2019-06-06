@@ -35,8 +35,10 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
@@ -44,17 +46,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
+
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 
 namespace YTEditor
 {
 
-  ObjectTree::ObjectTree(MainWindow *aMainWindow, QWidget *parent)
+  ObjectTree::ObjectTree(YTELevelEditor* aLevelEditor, QWidget *parent)
     : QTreeWidget(parent)
-    , mMainWindow(aMainWindow)
+    , mLevelEditor(aLevelEditor)
   {
     SetWidgetSettings();
 
@@ -88,15 +94,15 @@ namespace YTEditor
       return nullptr;
     }
 
-    auto space = mMainWindow->GetEditingLevel();
+    auto space = mLevelEditor->GetEditingLevel();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
-                                              mMainWindow->GetWidget<OutputConsole>(),
-                                              this);
+                                              mLevelEditor->GetWidget<OutputConsole>(),
+                                              mLevelEditor->GetWidget<ObjectBrowser>());
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, composition, aIndex);
   }
 
@@ -111,17 +117,17 @@ namespace YTEditor
     ObjectItem *aParentObj,
     int aIndex)
   {
-    auto spaces = mMainWindow->GetRunningEngine()->GetCompositions();
+    auto spaces = mLevelEditor->GetRunningEngine()->GetCompositions();
     auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
 
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
-                                              mMainWindow->GetWidget<OutputConsole>(),
-                                              this);
+                                              mLevelEditor->GetWidget<OutputConsole>(),
+                                              mLevelEditor->GetWidget<ObjectBrowser>());
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
   }
 
@@ -137,7 +143,7 @@ namespace YTEditor
       return nullptr;
     }
 
-    YTE::Composition *space = mMainWindow->GetEditingLevel();
+    YTE::Composition *space = mLevelEditor->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, this, aEngineObj, space);
 
@@ -170,7 +176,7 @@ namespace YTEditor
   {
     YTE::String name{ aItemName };
 
-    auto space = mMainWindow->GetEditingLevel();
+    auto space = mLevelEditor->GetEditingLevel();
 
     ObjectItem *item = new ObjectItem(name, aParentObj, aEngineObj, space);
 
@@ -210,7 +216,7 @@ namespace YTEditor
     ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
     ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
-    ArchetypeTools *archTools = GetMainWindow()->GetWidget<ComponentBrowser>()->GetArchetypeTools();
+    ArchetypeTools *archTools = mLevelEditor->GetWidget<ComponentBrowser>()->GetArchetypeTools();
 
     if (currObj && currObj->GetEngineObject())
     {
@@ -228,14 +234,14 @@ namespace YTEditor
       }
 
       // Load the new current object into the component browser
-      ComponentBrowser* componentBrowser = mMainWindow->GetWidget<ComponentBrowser>();
+      ComponentBrowser* componentBrowser = mLevelEditor->GetWidget<ComponentBrowser>();
       ComponentTree* componentTree = componentBrowser->GetComponentTree();
       componentTree->ClearComponents();
       componentTree->LoadGameObject(currObj->GetEngineObject());
 
       YTE::Model* model = currObj->GetEngineObject()->GetComponent<YTE::Model>();
 
-      auto matViewer = mMainWindow->GetWidget<MaterialViewer>();
+      auto matViewer = mLevelEditor->GetWidget<MaterialViewer>();
 
       if (matViewer && model && model->GetMesh())
       {
@@ -258,7 +264,7 @@ namespace YTEditor
 
       if (currTransform)
       {
-        Gizmo *giz = mMainWindow->GetGizmo();
+        Gizmo *giz = mLevelEditor->GetGizmo();
 
         if (giz)
         {
@@ -272,7 +278,8 @@ namespace YTEditor
   {
     QList<QTreeWidgetItem*> items = this->selectedItems();
 
-    OutputConsole *console = mMainWindow->GetWidget<OutputConsole>();
+    auto console = mLevelEditor->GetWidget<OutputConsole>();
+    auto browser = mLevelEditor->GetWidget<ObjectBrowser>();
 
     std::vector<YTE::GlobalUniqueIdentifier> newSelection;
     std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
@@ -293,8 +300,8 @@ namespace YTEditor
 
     if (mInsertSelectionChangedCmd)
     {
-      UndoRedo *undoRedo = mMainWindow->GetUndoRedo();
-      undoRedo->InsertCommand(std::make_unique<ObjectSelectionChangedCmd>(newSelection, oldSelection, this, console));
+      UndoRedo *undoRedo = mLevelEditor->GetUndoRedo();
+      undoRedo->InsertCommand(std::make_unique<ObjectSelectionChangedCmd>(newSelection, oldSelection, browser, console));
     }
 
     mSelectedItems = newSelection;
@@ -365,7 +372,7 @@ namespace YTEditor
     serialized.Accept(writer);    // Accept() traverses the DOM and generates Handler events.
     std::string levelInJson = sb.GetString();
 
-    YTE::Composition *duplicate = mMainWindow->GetEditingLevel()->AddComposition(&serialized, "Copy");
+    YTE::Composition *duplicate = mLevelEditor->GetEditingLevel()->AddComposition(&serialized, "Copy");
 
     YTE::String guid = duplicate->GetGUID().ToString();
     duplicate->SetName(guid);
@@ -450,9 +457,9 @@ namespace YTEditor
     YTE::Composition *engineObj = currItem->GetEngineObject();
 
     auto name = currItem->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mMainWindow->GetWidget<OutputConsole>(), mMainWindow->GetWidget<ObjectBrowser>());
+    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mLevelEditor->GetWidget<OutputConsole>(), mLevelEditor->GetWidget<ObjectBrowser>());
 
-    mMainWindow->GetUndoRedo()->InsertCommand(std::move(cmd));
+    mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
     // remove current object from engine
     currItem->DeleteFromEngine();
@@ -469,7 +476,7 @@ namespace YTEditor
   {
     if (YTE::Transform *transform = aObject->GetComponent<YTE::Transform>())
     {
-      YTE::Composition *camera = mMainWindow->GetEditorCamera();
+      YTE::Composition *camera = mLevelEditor->GetEditorCamera();
 
       YTE::Transform *camTransform = camera->GetComponent<YTE::Transform>();
       YTE::Orientation *orientation = camera->GetComponent<YTE::Orientation>();
@@ -486,7 +493,7 @@ namespace YTEditor
   void ObjectTree::RemoveObjectFromViewer(ObjectItem *aItem)
   {
     // clear the component viewer
-    mMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree()->ClearComponents();
+    mLevelEditor->GetWidget<ComponentBrowser>()->GetComponentTree()->ClearComponents();
 
     // hide and remove from the tree
     aItem->setHidden(true);
@@ -510,7 +517,7 @@ namespace YTEditor
 
     ObjectItem *currItem = dynamic_cast<ObjectItem*>(currentItem());
 
-    auto matViewer = mMainWindow->GetWidget<MaterialViewer>();
+    auto matViewer = mLevelEditor->GetWidget<MaterialViewer>();
 
     if (matViewer && currItem && currItem->GetEngineObject())
     {
@@ -534,7 +541,7 @@ namespace YTEditor
 
     if (topLevelItemCount() == 0)
     {
-      mMainWindow->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
+      mLevelEditor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
     }
   }
 
@@ -649,11 +656,6 @@ namespace YTEditor
     }
 
     return nullptr;
-  }
-
-  MainWindow * ObjectTree::GetMainWindow() const
-  {
-    return mMainWindow;
   }
 
   std::vector<ObjectItem*>* ObjectTree::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)

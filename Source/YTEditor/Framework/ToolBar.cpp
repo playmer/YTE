@@ -2,15 +2,15 @@
 
 namespace YTEditor
 {
-namespace Framework
-{
+  namespace Framework
+  {
 
-ToolBar::ToolBar(Workspace* workspace)
-: QToolBar()
-, mWorkspace(workspace)
-{
+    ToolBar::ToolBar(MainWindow* aMainWindow)
+      : QToolBar()
+      , mMainWindow(aMainWindow)
+    {
 
-}
+    }
 
-} // End of Framework namespace
+  } // End of Framework namespace
 } // End of Editor namespace

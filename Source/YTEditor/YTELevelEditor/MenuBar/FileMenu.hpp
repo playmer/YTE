@@ -14,14 +14,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTEditor/YTELevelEditor/MenuBar/Menu.hpp"
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/Menu.hpp"
 
 namespace YTEditor
 {
-  class FileMenu : public Menu
+  class FileMenu : public Framework::Menu
   {
   public:
-    FileMenu(MainWindow *aMainWindow);
+    FileMenu(Framework::MainWindow *aMainWindow);
     
     void SaveLevel();
 

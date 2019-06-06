@@ -1,133 +1,115 @@
+#pragma once
+
 #include "YTEditor/Framework/Workspace.hpp"
 
-#include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-
-class UndoRedo;
-class FileMenu;
-class GameObjectMenu;
-
-class Preferences
-{
-public:
-  Preferences();
-
-  void WriteToFile();
-  YTE::RSValue Serialize(YTE::RSAllocator &aAllocator);
-
-  void Deserialize(std::unique_ptr<YTE::RSDocument> aPrefFile);
-
-  bool mNoMaterialViewer;
-  bool mNoGameToolbar;
-};
-
-class YTELevelEditor : public Framework::Workspace
-{
-public:
-  YTELevelEditor(Framework::MainWindow* mainWindow);
-
-  UndoRedo* GetUndoRedo();
-
-  void UpdateEngine();
-
-  YTE::Space* GetEditingLevel();
-
-  YTE::Engine* GetRunningEngine() { return mRunningEngine; }
-
-  YTE::String& GetRunningLevelName() { return mRunningLevelName; }
-
-  void SetRunningSpaceName(YTE::String &aName);
-  YTE::String& GetRunningSpaceName();
-
-  void PlayLevel();
-  void PauseLevel(bool pauseState);
-  void StopLevel();
-
-  void CreateBlankLevel(const YTE::String& aLevelName);
-  void LoadLevel(YTE::String aLevelName);
-  void LoadCurrentLevelInfo();
-
-  void SaveCurrentLevel();
-
-  QApplication* GetApplication();
-
-  Gizmo* GetGizmo();
-
-  FileMenu* GetFileMenu();
-
-  GameObjectMenu* GetGameObjectMenu();
-
-  PhysicsHandler& GetPhysicsHandler();
-
-  Gizmo* CreateGizmo(YTE::Space *aSpace);
-  Gizmo* RemakeGizmo();
-  void DeleteGizmo();
-
-  GizmoToolbar* GetGizmoToolbar();
-
-  Preferences* GetPreferences();
-
-  YTE::Composition* GetEditorCamera();
-
-  YTE::Composition* GetImguiLayer()
+  class YTELevelEditor : public Framework::Workspace
   {
-    return mImguiLayer;
-  }
+  public:
+    YTELevelEditor(Framework::MainWindow* mainWindow);
 
-private:
+    UndoRedo* GetUndoRedo();
 
-  Preferences mPreferences;
+    void UpdateEngine();
 
-  // YTE GAME ENGINE
-  YTE::Engine *mRunningEngine;
-  YTE::String mRunningSpaceName;
-  YTE::String mRunningLevelName;
+    YTE::Space* GetEditingLevel();
 
-  YTE::Space *mEditingLevel;
-  YTE::Space *mRunningSpace;
+    YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
-  YTE::Composition *mEditorCamera;
-  YTE::Composition *mImguiLayer;
+    YTE::String& GetRunningLevelName() { return mRunningLevelName; }
 
-  QApplication *mApplication;
+    void SetRunningSpaceName(YTE::String &aName);
+    YTE::String& GetRunningSpaceName();
 
-  UndoRedo *mUndoRedo;
+    void PlayLevel();
+    void PauseLevel(bool pauseState);
+    void StopLevel();
 
-  std::unique_ptr<Gizmo> mGizmo;
-  float mGizmoScaleFactor;
+    void CreateBlankLevel(const YTE::String& aLevelName);
+    void LoadLevel(YTE::String aLevelName);
+    void LoadCurrentLevelInfo();
 
-  // Cstor helper functions and main subwindow vars
-  void LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile);
-  void ConstructSubWidgets();
-  void ConstructGameWindows();
-  void ConstructToolbar();
+    void SaveCurrentLevel();
 
-  std::unique_ptr<PhysicsHandler> mPhysicsHandler;
+    QApplication* GetApplication();
 
-  QTabWidget *mCentralTabs;
-  SubWindow *mLevelWindow;
+    Gizmo* GetGizmo();
 
-  QWidget *mRunningWindowTab;
-  SubWindow *mRunningWindow;
+    FileMenu* GetFileMenu();
 
-  std::vector<SubWindow*> mSubWindows;
-  /**************************************************/
+    GameObjectMenu* GetGameObjectMenu();
 
-  // Helper functions for menu bar //
-  void ConstructMenuBar();
+    PhysicsHandler* GetPhysicsHandler();
 
-  FileMenu *mFileMenu;
-  GameObjectMenu *mGameObjectMenu;
+    Gizmo* CreateGizmo(YTE::Space *aSpace);
+    Gizmo* RemakeGizmo();
+    void DeleteGizmo();
 
-  void closeEvent(QCloseEvent *event);
-  ////
+    GizmoToolbar* GetGizmoToolbar();
 
-  GizmoToolbar *mGizmoToolbar;
-  GameToolbar *mGameToolbar;
+    YTE::Composition* GetEditorCamera();
 
-};
+    YTE::Composition* GetImguiLayer()
+    {
+      return mImguiLayer;
+    }
 
+    SubWindow* GetLevelWindow()
+    {
+      return mLevelWindow;
+    }
+
+  private:
+    // YTE GAME ENGINE
+    YTE::Engine* mRunningEngine;
+    YTE::String mRunningSpaceName;
+    YTE::String mRunningLevelName;
+
+    YTE::Space* mEditingLevel;
+    YTE::Space* mRunningSpace;
+
+    YTE::Composition* mEditorCamera;
+    YTE::Composition* mImguiLayer;
+
+    QApplication *mApplication;
+
+    UndoRedo *mUndoRedo;
+
+    std::unique_ptr<Gizmo> mGizmo;
+    float mGizmoScaleFactor;
+
+    // Cstor helper functions and main subwindow vars
+    void LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile);
+    void ConstructSubWidgets();
+    void ConstructGameWindows();
+    void ConstructToolbar();
+
+    std::unique_ptr<PhysicsHandler> mPhysicsHandler;
+
+    QTabWidget* mCentralTabs;
+    SubWindow* mLevelWindow;
+
+    QWidget* mRunningWindowTab;
+    SubWindow* mRunningWindow;
+
+    std::vector<SubWindow*> mSubWindows;
+    /**************************************************/
+
+    // Helper functions for menu bar //
+    void ConstructMenuBar();
+
+    FileMenu *mFileMenu;
+    GameObjectMenu *mGameObjectMenu;
+
+    void closeEvent(QCloseEvent *event);
+    ////
+
+    GizmoToolbar* mGizmoToolbar;
+    GameToolbar* mGameToolbar;
+
+  };
 }
 

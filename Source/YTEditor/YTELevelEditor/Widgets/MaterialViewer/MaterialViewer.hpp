@@ -21,13 +21,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "glm/glm.hpp"
 
 #include "YTE/Core/Component.hpp"
+
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
+
 #include "YTE/Physics/ForwardDeclarations.hpp"
+
 #include "YTE/Platform/ForwardDeclarations.hpp"
+
 #include "YTE/Utilities/String/String.hpp"
 
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/Widget.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 class QVBoxLayout;
 class QWidget;
@@ -36,18 +44,10 @@ class QWindow;
 
 namespace YTEditor
 {
-
-  class MainWindow;
-  class SubWindow;
-
-  template <class T>
-  class PropertyWidget;
-  class PropertyWidgetBase;
-
   class MaterialViewer : public Framework::Widget
   {
   public:
-    MaterialViewer(MainWindow *mainWindow);
+    MaterialViewer(YTELevelEditor* aLevelEditor);
 
     void LoadMaterial(YTE::UBOs::Material const& aMaterial);
 
@@ -69,7 +69,7 @@ namespace YTEditor
     template <typename tType>
     PropertyWidget<tType>* AddProperty(const char *aName, YTE::Property *aProp)
     {
-      PropertyWidget<tType> *prop = new PropertyWidget<tType>(aName, aProp, mMainWindow, mContainerLayout->widget());
+      PropertyWidget<tType> *prop = new PropertyWidget<tType>(aName, aProp, mLevelEditor, mContainerLayout->widget());
       mContainerLayout->addWidget(prop);
       mContainer->setLayout(mContainerLayout);
       mProperties.push_back(prop);
@@ -82,7 +82,7 @@ namespace YTEditor
     void Clear();
     void ClearLayout();
 
-    MainWindow *mMainWindow;
+    YTELevelEditor* mLevelEditor;
 
     QComboBox *mComboBox;
     SubWindow *mMaterialWindow;

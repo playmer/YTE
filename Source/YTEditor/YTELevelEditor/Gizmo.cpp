@@ -6,8 +6,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Meta/Meta.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
@@ -15,15 +16,15 @@
 namespace YTEditor
 {
 
-  Gizmo::Gizmo(MainWindow *aMainWindow, YTE::ImguiLayer *aLayer, YTE::Camera *aCamera)
-    : mMainWindow{ aMainWindow }
+  Gizmo::Gizmo(YTELevelEditor* aLevelEditor, YTE::ImguiLayer *aLayer, YTE::Camera *aCamera)
+    : mLevelEditor{ aLevelEditor }
     , mCamera{ aCamera }
     , mLayer{ aLayer }
     , mOperation{ Operation::Select }
     , mMode{ Mode::World }
     , mCurrentComposition{ nullptr }
   {
-    aMainWindow->GetRunningEngine()->RegisterEvent<&Gizmo::Update>(YTE::Events::LogicUpdate, this);
+    aLevelEditor->GetRunningEngine()->RegisterEvent<&Gizmo::Update>(YTE::Events::LogicUpdate, this);
     mLayer->Enable(true);
   }
 
@@ -128,7 +129,7 @@ namespace YTEditor
 
   void Gizmo::SnapToCurrentObject()
   {
-    SetCurrentComposition(mMainWindow->GetWidget<ObjectBrowser>()->GetCurrentObject());
+    SetCurrentComposition(mLevelEditor->GetWidget<ObjectBrowser>()->GetCurrentObject());
   }
 
   void Gizmo::SetCurrentComposition(YTE::Composition *aComposition)

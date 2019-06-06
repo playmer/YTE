@@ -14,17 +14,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTEditor/YTELevelEditor/MenuBar/Menu.hpp"
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/Menu.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-  class ObjectBrowser;
-  class ComponentTree;
-
-  class LevelMenu : public Menu
+  class LevelMenu : public Framework::Menu
   {
   public:
-    LevelMenu(MainWindow *aMainWindow);
+    LevelMenu(Framework::MainWindow* aMainWindow);
 
   private:
 

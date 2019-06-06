@@ -14,7 +14,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qdockwidget.h>
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/WindowsMenu.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
@@ -23,11 +22,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
-  WindowsMenu::WindowsMenu(MainWindow * aMainWindow)
-    : Menu("Windows", aMainWindow)
+  WindowsMenu::WindowsMenu(Framework::MainWindow* aMainWindow)
+    : Menu("Windows", aMainWindow->GetWorkspace<YTELevelEditor>())
   {
     AddMenu(MakeObjectBrowserMenu());
     AddMenu(MakeComponentBrowserMenu());
@@ -37,9 +37,9 @@ namespace YTEditor
     AddMenu(MakeWWiseViewerMenu());
   }
 
-  Menu* WindowsMenu::MakeObjectBrowserMenu()
+  Framework::Menu* WindowsMenu::MakeObjectBrowserMenu()
   {
-    Menu *menu = new Menu("Object Browser", mMainWindow);
+    Menu *menu = new Framework::Menu("Object Browser", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenObjectBrowser, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseObjectBrowser, this);
@@ -49,17 +49,17 @@ namespace YTEditor
 
   void WindowsMenu::OpenObjectBrowser()
   {
-    mMainWindow->GetWidget<ObjectBrowser>()->show();
+    mWorkspace->GetWidget<ObjectBrowser>()->show();
   }
 
   void WindowsMenu::CloseObjectBrowser()
   {
-    mMainWindow->GetWidget<ObjectBrowser>()->hide();
+    mWorkspace->GetWidget<ObjectBrowser>()->hide();
   }
 
-  Menu* WindowsMenu::MakeComponentBrowserMenu()
+  Framework::Menu* WindowsMenu::MakeComponentBrowserMenu()
   {
-    Menu *menu = new Menu("Component Browser", mMainWindow);
+    auto menu = new Framework::Menu("Component Browser", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenComponentBrowser, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseComponentBrowser, this);
@@ -69,17 +69,17 @@ namespace YTEditor
 
   void WindowsMenu::OpenComponentBrowser()
   {
-    mMainWindow->GetWidget<ComponentBrowser>()->show();
+    mWorkspace->GetWidget<ComponentBrowser>()->show();
   }
 
   void WindowsMenu::CloseComponentBrowser()
   {
-    mMainWindow->GetWidget<ComponentBrowser>()->hide();
+    mWorkspace->GetWidget<ComponentBrowser>()->hide();
   }
 
-  Menu* WindowsMenu::MakeOutputConsoleMenu()
+  Framework::Menu* WindowsMenu::MakeOutputConsoleMenu()
   {
-    Menu* menu = new Menu("Output Console", mMainWindow);
+    auto menu = new Framework::Menu("Output Console", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenOutputConsole, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseOutputConsole, this);
@@ -89,17 +89,17 @@ namespace YTEditor
 
   void WindowsMenu::OpenOutputConsole()
   {
-    mMainWindow->GetWidget<OutputConsole>()->show();
+    mWorkspace->GetWidget<OutputConsole>()->show();
   }
 
   void WindowsMenu::CloseOutputConsole()
   {
-    mMainWindow->GetWidget<OutputConsole>()->hide();
+    mWorkspace->GetWidget<OutputConsole>()->hide();
   }
 
-  Menu* WindowsMenu::MakeMaterialViewerMenu()
+  Framework::Menu* WindowsMenu::MakeMaterialViewerMenu()
   {
-    Menu *menu = new Menu("Material Viewer", mMainWindow);
+    auto menu = new Framework::Menu("Material Viewer", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenMaterialViewer, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseMaterialViewer, this);
@@ -109,17 +109,17 @@ namespace YTEditor
 
   void WindowsMenu::OpenMaterialViewer()
   {
-    mMainWindow->GetWidget<MaterialViewer>()->show();
+    mWorkspace->GetWidget<MaterialViewer>()->show();
   }
 
   void WindowsMenu::CloseMaterialViewer()
   {
-    mMainWindow->GetWidget<MaterialViewer>()->hide();
+    mWorkspace->GetWidget<MaterialViewer>()->hide();
   }
 
-  Menu* WindowsMenu::MakeFileViewerMenu()
+  Framework::Menu* WindowsMenu::MakeFileViewerMenu()
   {
-    Menu *menu = new Menu("File Viewer", mMainWindow);
+    auto menu = new Framework::Menu("File Viewer", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenFileViewer, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseFileViewer, this);
@@ -129,17 +129,17 @@ namespace YTEditor
 
   void WindowsMenu::OpenFileViewer()
   {
-    mMainWindow->GetWidget<FileViewer>()->show();
+    mWorkspace->GetWidget<FileViewer>()->show();
   }
 
   void WindowsMenu::CloseFileViewer()
   {
-    mMainWindow->GetWidget<FileViewer>()->hide();
+    mWorkspace->GetWidget<FileViewer>()->hide();
   }
 
-  Menu* WindowsMenu::MakeWWiseViewerMenu()
+  Framework::Menu* WindowsMenu::MakeWWiseViewerMenu()
   {
-    Menu *menu = new Menu("WWise Viewer", mMainWindow);
+    auto menu = new Framework::Menu("WWise Viewer", mWorkspace);
 
     menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenWWiseViewer, this);
     menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseWWiseViewer, this);
@@ -149,11 +149,11 @@ namespace YTEditor
 
   void WindowsMenu::OpenWWiseViewer()
   {
-    mMainWindow->GetWidget<WWiseWidget>()->show();
+    mWorkspace->GetWidget<WWiseWidget>()->show();
   }
 
   void WindowsMenu::CloseWWiseViewer()
   {
-    mMainWindow->GetWidget<WWiseWidget>()->hide();
+    mWorkspace->GetWidget<WWiseWidget>()->hide();
   }
 }

@@ -17,17 +17,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qwidget.h>
 #include <qlayout.h>
 
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
+
 class QLabel;
 
 namespace YTEditor
 {
-  class ComponentBrowser;
-  class ComponentSearchBar;
-
   class ComponentTools : public QWidget
   {
   public:
-
     ComponentTools(ComponentBrowser *aParent = nullptr);
     ~ComponentTools();
 

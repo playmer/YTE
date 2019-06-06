@@ -17,25 +17,21 @@
 
 namespace YTEditor
 {
-
-  class MainWindow;
-  class HeaderListWidget;
-
   template <class T>
   class HeaderListProperty : public PropertyWidget<T>
   {
   public:
-    HeaderListProperty(const std::string& name, 
-                       YTELevelEditor* editor, 
-                       HeaderListWidget* parent, 
-                       YTE::Property* prop,
+    HeaderListProperty(const std::string& aName,
+                       YTELevelEditor* aEditor, 
+                       HeaderListWidget* aParent, 
+                       YTE::Property* aProperty,
                        YTE::Object* object)
-      : PropertyWidget<T>(name, prop, editor, parent)
-      , mHeaderWidget(parent)
-      , mEngineProp(prop)
+      : PropertyWidget<T>(aName, aProperty, aEditor, aParent)
+      , mHeaderWidget(aParent)
+      , mEngineProp(aProperty)
       , mObject(object)
     {
-      std::string const& tip = aProp->GetDocumentation();
+      std::string const& tip = aProperty->GetDocumentation();
 
       this->GetLabelWidget()->setToolTip(tip.c_str());
 

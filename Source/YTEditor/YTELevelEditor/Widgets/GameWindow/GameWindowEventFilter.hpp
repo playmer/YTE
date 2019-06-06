@@ -2,20 +2,19 @@
 
 #include <qobject.h>
 
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-  class MainWindow;
-
   class GameWindowEventFilter : public QObject
   {
   public:
-    GameWindowEventFilter(QObject *aParent, MainWindow *aMainWin);
+    GameWindowEventFilter(QObject *aParent, Framework::MainWindow *aMainWin);
 
     bool eventFilter(QObject *aWatched, QEvent *aEvent) override;
 
   private:
-    MainWindow *mMainWindow;
+    Framework::MainWindow *mMainWindow;
 
   };
 }

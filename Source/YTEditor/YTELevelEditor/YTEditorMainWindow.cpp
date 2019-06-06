@@ -163,7 +163,7 @@ namespace YTEditor
       self->UpdateEngine();
     });
 
-    ComponentTree* componentBrowser = GetWidget<ComponentBrowser>()->GetComponentTree();
+    ComponentTree* componentBrowser = GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>()->GetComponentTree();
     std::vector<ComponentWidget*> componentWidgets = componentBrowser->GetComponentWidgets();
 
     for (ComponentWidget* w : componentWidgets)
@@ -191,7 +191,8 @@ namespace YTEditor
   void YTEditorMainWindow::LoadCurrentLevelInfo()
   {
     YTE::Space *lvl = GetEditingLevel();
-    ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>();
+    auto editor = GetWorkspace<YTELevelEditor>();
+    ObjectBrowser* objectBrowser = editor->GetWidget<ObjectBrowser>();
 
     mRunningSpaceName = lvl->GetName();
     mRunningLevelName = lvl->GetLevelName();
@@ -203,7 +204,7 @@ namespace YTEditor
     // Set the name to the new level
     objectBrowser->setHeaderLabel(lvl->GetName().c_str());
 
-    ComponentBrowser* componentBrowser = GetWidget<ComponentBrowser>();
+    ComponentBrowser* componentBrowser = editor->GetWidget<ComponentBrowser>();
     componentBrowser->GetComponentTree()->ClearComponents();
     /////////////////////////////////////////////////////////////////////////////
 
@@ -245,7 +246,7 @@ namespace YTEditor
     auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
     view->SetOrder(100.f);
     view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
-    view->ChangeWindow(GetLevelWindow().mWindow);
+    view->ChangeWindow(editor->GetLevelWindow()->mWindow);
 
     mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
@@ -295,9 +296,11 @@ namespace YTEditor
       return;
     }
 
+    auto editor = GetWorkspace<YTELevelEditor>();
+
     // Make actual "physical" window
-    mRunningWindow = new SubWindow(nullptr, this);
-    mRunningWindowTab = createWindowContainer(mRunningWindow);
+    mRunningWindow = new SubWindow(nullptr, editor);
+    mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
     int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
     mCentralTabs->setCurrentIndex(index);
 
@@ -459,7 +462,7 @@ namespace YTEditor
         // duplicate current object
         if (aEvent->key() == Qt::Key_D)
         {
-          GetWidget<ObjectBrowser>()->DuplicateCurrentlySelected();
+          GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>()->DuplicateCurrentlySelected();
         }
       }
     }
@@ -554,23 +557,25 @@ namespace YTEditor
 
   void YTEditorMainWindow::ConstructSubWidgets()
   {
+    auto editor = GetWorkspace<YTELevelEditor>();
+
     // Object Browser
-    LoadWidget<ObjectBrowser>();
+    editor->AddWidget<ObjectBrowser>(editor);
 
     // Component Browser
-    LoadWidget<ComponentBrowser>();
+    editor->AddWidget<ComponentBrowser>(editor);
     
     // Output Console
-    LoadWidget<OutputConsole>();
+    editor->AddWidget<OutputConsole>(editor);
     
     // Material Viewer
-    LoadWidget<MaterialViewer>();
+    editor->AddWidget<MaterialViewer>(editor);
     
     // File Viewer
-    LoadWidget<FileViewer>();
+    editor->AddWidget<FileViewer>(this);
     
     // WWise Widget
-    LoadWidget<WWiseWidget>();
+    editor->AddWidget<WWiseWidget>(editor, editor->GetRunningEngine());
 
     // Game Windows
     ConstructGameWindows();
@@ -583,11 +588,13 @@ namespace YTEditor
     mCentralTabs->setTabsClosable(true);
     mCentralTabs->setUsesScrollButtons(true);
     this->setCentralWidget(mCentralTabs);
+
+    auto editor = GetWorkspace<YTELevelEditor>();
     
     auto &windows = mRunningEngine->GetWindows();
     auto it = windows.begin();
 
-    mLevelWindow = new SubWindow(it->second.get(), this);
+    mLevelWindow = new SubWindow(it->second.get(), editor);
 
     GameWindowEventFilter *filter = new GameWindowEventFilter(mLevelWindow, this);
     mLevelWindow->installEventFilter(filter);
@@ -627,10 +634,12 @@ namespace YTEditor
   {
     QMenuBar *menuBar = new QMenuBar(this);
 
+    auto editor = GetWorkspace<YTELevelEditor>();
+
     mFileMenu = new FileMenu(this);
     menuBar->addMenu(mFileMenu);
 
-    menuBar->addMenu(new EditMenu(this));
+    menuBar->addMenu(new EditMenu(editor));
     menuBar->addMenu(new WindowsMenu(this));
 
     mGameObjectMenu = new GameObjectMenu(this);
@@ -651,16 +660,18 @@ namespace YTEditor
     quitConfirm.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     quitConfirm.setDefaultButton(QMessageBox::Save);
 
+    auto editor = GetWorkspace<YTELevelEditor>();
+
     int reply = quitConfirm.exec();
 
     if (reply == QMessageBox::Save)
     {
       SaveCurrentLevel();
 
-      GetLevelWindow().mWindow->mEngine = nullptr;
-      GetLevelWindow().mWindow = nullptr;
+      editor->GetLevelWindow()->mWindow->mEngine = nullptr;
+      editor->GetLevelWindow()->mWindow = nullptr;
 
-      auto materialViewer = GetWidget<MaterialViewer>();
+      auto materialViewer = editor->GetWidget<MaterialViewer>();
 
       if (materialViewer)
       {
@@ -675,10 +686,10 @@ namespace YTEditor
     }
     else if (reply == QMessageBox::Discard)
     {
-      GetLevelWindow().mWindow->mEngine = nullptr;
-      GetLevelWindow().mWindow = nullptr;
+      editor->GetLevelWindow()->mWindow->mEngine = nullptr;
+      editor->GetLevelWindow()->mWindow = nullptr;
 
-      auto materialViewer = GetWidget<MaterialViewer>();
+      auto materialViewer = editor->GetWidget<MaterialViewer>();
 
       if (materialViewer)
       {

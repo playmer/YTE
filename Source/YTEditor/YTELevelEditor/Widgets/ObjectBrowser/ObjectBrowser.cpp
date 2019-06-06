@@ -35,7 +35,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
@@ -139,7 +138,7 @@ namespace YTEditor
     YTE::Composition *space = editor->GetEditingLevel();
 
     // TODO(NICK): NO MORE OBJECT TREE :(
-    ObjectItem *item = new ObjectItem(name, &mTree, aEngineObj, space);
+    ObjectItem *item = new ObjectItem(name, mTree, aEngineObj, space);
 
     // Add new item as a top level member in the tree hierarchy
     // (object should have no parent objects)
@@ -399,6 +398,44 @@ namespace YTEditor
     }
 
   }
+
+  void ObjectBrowser::setCurrentItem(ObjectItem* aItem)
+  {
+    mTree->setCurrentItem(aItem);
+  }
+
+  void ObjectBrowser::setCurrentItem(ObjectItem* aItem, int aColumn)
+  {
+    mTree->setCurrentItem(aItem, aColumn);
+  }
+
+
+  void ObjectBrowser::setItemSelected(ObjectItem* aItem, bool aSelected)
+  {
+    mTree->setItemSelected(aItem, aSelected);
+  }
+
+
+  void ObjectBrowser::clearSelection()
+  {
+    mTree->clearSelection();
+  }
+
+  int ObjectBrowser::indexOfTopLevelItem(ObjectItem* aObject)
+  {
+    return mTree->indexOfTopLevelItem(aObject);
+  }
+
+  ObjectItem* ObjectBrowser::topLevelItem(int index)
+  {
+    return static_cast<ObjectItem*>(mTree->topLevelItem(index));
+  }
+
+  void ObjectBrowser::setHeaderLabel(char const* aLabel)
+  {
+    mTree->setHeaderLabel(aLabel);
+  }
+
 
   ObjectItem* ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
   {

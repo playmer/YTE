@@ -15,11 +15,10 @@
 #include "YTE/Platform/Mouse.hpp"
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
+
 namespace YTEditor
 {
-
-  class MainWindow;
-
   struct PickerObject : public YTE::EventHandler
   {
     void ChangedPositionAndRotation(YTE::TransformChanged *aEvent);
@@ -35,21 +34,21 @@ namespace YTEditor
   class PhysicsHandler : public YTE::EventHandler
   {
   public:
-    PhysicsHandler(YTE::Space *aSpace, YTE::Window *aWindow, MainWindow *aMainWindow);
+    PhysicsHandler(YTE::Space* aSpace, YTE::Window* aWindow, YTELevelEditor* aLevelEditor);
 
-    void Add(YTE::Composition *aComposition);
-    void Remove(YTE::Composition *aComposition);
+    void Add(YTE::Composition* aComposition);
+    void Remove(YTE::Composition* aComposition);
 
     void Update();
 
-    void OnMousePress(YTE::MouseButtonEvent *aEvent);
-    void OnMousePersist(YTE::MouseButtonEvent *aEvent);
-    void OnMouseRelease(YTE::MouseButtonEvent *aEvent);
+    void OnMousePress(YTE::MouseButtonEvent* aEvent);
+    void OnMousePersist(YTE::MouseButtonEvent* aEvent);
+    void OnMouseRelease(YTE::MouseButtonEvent* aEvent);
 
-    void AddedComposition(YTE::CompositionAdded *aEvent);
-    void RemovedComposition(YTE::CompositionRemoved *aEvent);
+    void AddedComposition(YTE::CompositionAdded* aEvent);
+    void RemovedComposition(YTE::CompositionRemoved* aEvent);
 
-    void OnModelChanged(YTE::ModelChanged *aEvent);
+    void OnModelChanged(YTE::ModelChanged* aEvent);
 
   private:
     YTE::UniquePointer<btDefaultCollisionConfiguration> mCollisionConfiguration;
@@ -61,9 +60,9 @@ namespace YTEditor
     std::unordered_map<YTE::Composition*, std::unique_ptr<PickerObject>> mObjects;
     std::unordered_map<std::string, btTriangleMesh> mShapeCache;
 
-    YTE::Space *mSpace;
-    YTE::Window *mWindow;
-    MainWindow *mMainWindow;
+    YTE::Space* mSpace;
+    YTE::Window* mWindow;
+    YTELevelEditor* mLevelEditor;
 
     bool mIsHittingObject;
     bool mIsGizmoActive;

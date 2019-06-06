@@ -14,18 +14,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include "YTE/Utilities/Utilities.hpp"
+#include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Utilities.hpp"
+
 #include "YTE/Meta/Meta.hpp"
+
+#include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 
-
-namespace YTE
-{
-  class Composition;
-}
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
@@ -80,9 +79,9 @@ namespace YTEditor
   class AddComponentCmd : public Command
   {
   public:
-    AddComponentCmd(YTE::Component *aComponent,
-                    ComponentBrowser *aBrowser,
-                    OutputConsole *aConsole);
+    AddComponentCmd(YTE::Component* aComponent,
+                    ComponentBrowser* aBrowser,
+                    OutputConsole* aConsole);
     ~AddComponentCmd();
 
     void Execute() override;
@@ -102,9 +101,9 @@ namespace YTEditor
   class RemoveComponentCmd : public Command
   {
   public:
-    RemoveComponentCmd(YTE::Component *aComponent,
-                       ComponentBrowser *aBrowser,
-                       OutputConsole *aConsole);
+    RemoveComponentCmd(YTE::Component* aComponent,
+                       ComponentBrowser* aBrowser,
+                       OutputConsole* aConsole);
     ~RemoveComponentCmd();
 
     void Execute() override;
@@ -127,10 +126,10 @@ namespace YTEditor
   {
   public:
     ChangePropValCmd(std::string aPropName,
-      YTE::GlobalUniqueIdentifier aGUID,
-      YTE::Any aOldVal,
-      YTE::Any aNewVal,
-      MainWindow *aMainWindow);
+                     YTE::GlobalUniqueIdentifier aGUID,
+                     YTE::Any aOldVal,
+                     YTE::Any aNewVal,
+                     Framework::MainWindow* aMainWindow);
     ~ChangePropValCmd();
     void Execute() override;
     void UnExecute() override;
@@ -139,21 +138,21 @@ namespace YTEditor
     YTE::Any mPreviousValue;
     YTE::Any mModifiedValue;
     YTE::GlobalUniqueIdentifier mCompGUID;
-    ArchetypeTools *mArchTools;
-    MainWindow *mMainWindow;
+    ArchetypeTools* mArchTools;
+    Framework::MainWindow* mMainWindow;
   };
   
   class ObjectSelectionChangedCmd : public Command
   {
   public:
     ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
-      std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
-      ObjectBrowser *aBrowser,
-      OutputConsole *aConsole);
+                              std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
+                              ObjectBrowser* aBrowser,
+                              OutputConsole* aConsole);
     void Execute() override;
     void UnExecute() override;
   private:
-    ObjectBrowser * mObjectBrowser;
+    ObjectBrowser* mObjectBrowser;
     std::vector<YTE::GlobalUniqueIdentifier> mNewSelection;
     std::vector<YTE::GlobalUniqueIdentifier> mOldSelection;
   };

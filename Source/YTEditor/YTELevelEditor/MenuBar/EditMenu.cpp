@@ -13,7 +13,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 /******************************************************************************/
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/EditMenu.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"

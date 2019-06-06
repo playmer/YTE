@@ -1,33 +1,39 @@
 #include <filesystem>
 
 #include <qmimedata.h>
+#include <QEvent>
+#include <QDragEnterEvent>
 
 #include "YTE/Core/Space.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Physics/Orientation.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/GameObjectMenu.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 
 namespace YTEditor
 {
 
-  GameWindowEventFilter::GameWindowEventFilter(QObject *aParent, 
-                                               MainWindow *aMainWin)
+  GameWindowEventFilter::GameWindowEventFilter(QObject* aParent, 
+                                               Framework::MainWindow* aMainWin)
     : QObject(aParent)
     , mMainWindow(aMainWin)
   {
   }
 
-  bool GameWindowEventFilter::eventFilter(QObject *aWatched,
-                                          QEvent *aEvent)
+  bool GameWindowEventFilter::eventFilter(QObject* aWatched,
+                                          QEvent* aEvent)
   {
+    auto editor = mMainWindow->GetWorkspace<YTELevelEditor>();
+
     QEvent::Type eventType = aEvent->type();
 
     if (eventType == QEvent::DragMove)
@@ -75,14 +81,14 @@ namespace YTEditor
       std::string stem = droppedFile.stem().generic_string();
       std::string extension = droppedFile.extension().generic_string();
 
-      OutputConsole *console = mMainWindow->GetWidget<OutputConsole>();
+      OutputConsole *console = editor->GetWidget<OutputConsole>();
 
       // we can assume this is coming from model or animation folder
       if (extension == ".fbx")
       {
         if (parent == "Models")
         {
-          mMainWindow->GetGameObjectMenu()->MakeObject(stem.c_str(), filename.c_str());
+          editor->GetGameObjectMenu()->MakeObject(stem.c_str(), filename.c_str());
         }
         else if (parent == "Animations")
         {
@@ -93,7 +99,7 @@ namespace YTEditor
       {
         if (parent == "Archetypes")
         {
-          ObjectBrowser *objBrowser = mMainWindow->GetWidget<ObjectBrowser>();
+          ObjectBrowser *objBrowser = editor->GetWidget<ObjectBrowser>();
 
           ObjectItem *objItem = objBrowser->AddObject(stem.c_str(), stem.c_str());
           objBrowser->MoveToFrontOfCamera(objItem->GetEngineObject());
@@ -143,7 +149,7 @@ namespace YTEditor
 
       if (keyEvent->key() == Qt::Key_Delete)
       {
-        mMainWindow->GetWidget<ObjectBrowser>()->RemoveCurrentObject();
+        editor->GetWidget<ObjectBrowser>()->RemoveCurrentObject();
       }
     }
 

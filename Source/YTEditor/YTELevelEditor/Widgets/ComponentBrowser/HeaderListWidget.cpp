@@ -4,21 +4,21 @@
 #include "YTE/Meta/Attribute.hpp"
 #include "YTE/Core/Utilities.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidgetBase.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListProperty.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
+
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
 
 namespace YTEditor
 {
-
-
-  HeaderListWidget::HeaderListWidget(YTE::Object *aObject,
-                                     const std::string &aName,
-                                     MainWindow *aMainWindow,
-                                     YTE::Component *aComponent,
-                                     QTreeWidgetItem *aParent)
+  HeaderListWidget::HeaderListWidget(YTE::Object* aObject,
+                                     std::string const& aName,
+                                     Framework::MainWindow* aMainWindow,
+                                     YTE::Component* aComponent,
+                                     QTreeWidgetItem* aParent)
     : mMainWindow(aMainWindow)
     , mEngineComponent(aComponent)
     , mObject(aObject)
@@ -49,7 +49,7 @@ namespace YTEditor
   {
     if (aEvent->modifiers() == Qt::Modifier::CTRL && (aEvent->key() == Qt::Key_Z || aEvent->key() == Qt::Key_Y))
     {
-      mMainWindow->keyPressEvent(aEvent);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->keyPressEvent(aEvent);
     }
     else
     {
@@ -57,7 +57,7 @@ namespace YTEditor
     }
   }
 
-  MainWindow* HeaderListWidget::GetMainWindow()
+  Framework::MainWindow* HeaderListWidget::GetMainWindow()
   {
     return mMainWindow;
   }
@@ -230,8 +230,7 @@ namespace YTEditor
     button.state = QStyle::State_Enabled;
 
     // draw the button
-    QApplication::style()->drawControl(QStyle::CE_PushButton,
-      &button, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &button, painter);
   }
 
   bool HeaderListDelegate::editorEvent(QEvent *event,

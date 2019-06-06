@@ -19,21 +19,24 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/Camera.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/MenuBar/LevelMenu.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
 
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
+
 
 namespace YTEditor
 {
 
-  LevelMenu::LevelMenu(MainWindow *aMainWindow)
-    : Menu("Level", aMainWindow)
-    , mObjectBrowser(aMainWindow->GetWidget<ObjectBrowser>())
-    , mComponentTree(aMainWindow->GetWidget<ComponentBrowser>()->GetComponentTree())
+  LevelMenu::LevelMenu(Framework::MainWindow *aMainWindow)
+    : Menu("Level", aMainWindow->GetWorkspace<YTELevelEditor>())
+    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>())
+    , mComponentTree(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>()->GetComponentTree())
   {
     AddAction<LevelMenu>("Reload Level", &LevelMenu::SelectEngine, this);
     AddAction<LevelMenu>("Select Space", &LevelMenu::SelectSpace, this);
@@ -45,8 +48,10 @@ namespace YTEditor
 
   void LevelMenu::ReloadCurrentLevel()
   {
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // Get the space that represents the main session
-    YTE::Space *lvl = mMainWindow->GetEditingLevel();
+    YTE::Space *lvl = levelEditor->GetEditingLevel();
 
     //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
@@ -69,10 +74,12 @@ namespace YTEditor
 
   void LevelMenu::SelectSpace()
   {
-    // Get the space that represents the main session
-    YTE::Space *lvl = mMainWindow->GetEditingLevel();
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
 
-    auto objItem = mObjectBrowser->AddExistingComposition(mMainWindow->GetRunningLevelName().c_str(), lvl);
+    // Get the space that represents the main session
+    YTE::Space *lvl = levelEditor->GetEditingLevel();
+
+    auto objItem = mObjectBrowser->AddExistingComposition(levelEditor->GetRunningLevelName().c_str(), lvl);
 
     mObjectBrowser->setCurrentItem(objItem);
 
@@ -81,7 +88,9 @@ namespace YTEditor
 
   void LevelMenu::SelectCamera()
   {
-    auto view = mMainWindow->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
+    auto view = levelEditor->GetEditingLevel()->GetComponent<YTE::GraphicsView>();
     auto cameraComponent = view->GetActiveCamera();
     auto cameraObject = cameraComponent->GetOwner();
 
@@ -91,16 +100,16 @@ namespace YTEditor
   void LevelMenu::SelectEngine()
   {
     // Get all the compositions on the engine
-    YTE::Composition *engine = mMainWindow->GetRunningEngine();
+    YTE::Composition *engine = static_cast<YTELevelEditor*>(mWorkspace)->GetRunningEngine();
 
     mObjectBrowser->SelectNoItem();
 
     mComponentTree->LoadGameObject(engine);
   }
 
-  Menu* LevelMenu::MakeSetLightingMenu()
+  Framework::Menu* LevelMenu::MakeSetLightingMenu()
   {
-    Menu *menu = new Menu("Lighting", mMainWindow);
+    auto menu = new Framework::Menu("Lighting", mWorkspace);
 
     menu->AddAction<LevelMenu>("All Lights On", &LevelMenu::TurnLightsOn, this);
     menu->AddAction<LevelMenu>("All Lights Off", &LevelMenu::TurnLightsOff, this);
@@ -110,7 +119,7 @@ namespace YTEditor
 
   void LevelMenu::TurnLightsOn()
   {
-    auto engine = mMainWindow->GetRunningEngine();
+    auto engine = static_cast<YTELevelEditor*>(mWorkspace)->GetRunningEngine();
 
     auto graphics = engine->GetComponent<YTE::GraphicsSystem>();
 
@@ -121,7 +130,7 @@ namespace YTEditor
 
   void LevelMenu::TurnLightsOff()
   {
-    auto engine = mMainWindow->GetRunningEngine();
+    auto engine = static_cast<YTELevelEditor*>(mWorkspace)->GetRunningEngine();
 
     auto graphics = engine->GetComponent<YTE::GraphicsSystem>();
 

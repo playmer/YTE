@@ -3,12 +3,17 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
+
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
 
-  FileViewerModel::FileViewerModel(QWidget *aParent) : QFileSystemModel(aParent)
+  FileViewerModel::FileViewerModel(QWidget* aParent)
+    : QFileSystemModel(aParent)
   {
     
   }
@@ -141,7 +146,8 @@ namespace YTEditor
   }
 
 
-  FileViewer::FileViewer(MainWindow *aMainWindow) : Widget(aMainWindow)
+  FileViewer::FileViewer(Framework::MainWindow* aMainWindow)
+    : Framework::Widget(aMainWindow->GetWorkspace<YTELevelEditor>())
   {
     // create model that tells tree view how to look and act, we want to see folders and files
     FileViewerModel *fileModel = new FileViewerModel(this);
@@ -170,8 +176,8 @@ namespace YTEditor
     return "FileViewer";
   }
 
-  Widget::DockArea FileViewer::GetDefaultDockPosition() const
+  Framework::Widget::DockArea FileViewer::GetDefaultDockArea() const
   {
-    return Widget::DockArea::Bottom;
+    return Framework::Widget::DockArea::Bottom;
   }
 }

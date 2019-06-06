@@ -1,17 +1,14 @@
 #pragma once
 
-#include "YTEditor/YTELevelEditor/Toolbars/Toolbar.hpp"
+#include "YTEditor/Framework/ToolBar.hpp"
 
 namespace YTEditor
 {
-  class MainWindow;
-  class ToolbarButton;
-
-  class GizmoToolbar : public Toolbar
+  class GizmoToolbar : public Framework::ToolBar
   {
   public:
 
-    GizmoToolbar(MainWindow *aMainWindow);
+    GizmoToolbar(Framework::MainWindow *aMainWindow);
 
     void SetMode(int aMode);
 
@@ -25,19 +22,19 @@ namespace YTEditor
 
   private:
 
-    ToolbarButton *mSelect;
+    Framework::ToolBarButton *mSelect;
     void SelectToggled(bool checked);
 
-    ToolbarButton *mTranslate;
+    Framework::ToolBarButton *mTranslate;
     void TranslateToggled(bool checked);
 
-    ToolbarButton *mRotate;
+    Framework::ToolBarButton *mRotate;
     void RotateToggled(bool checked);
 
-    ToolbarButton *mScale;
+    Framework::ToolBarButton *mScale;
     void ScaleToggled(bool checked);
 
-    ToolbarButton *mSwitchAxesMode;
+    Framework::ToolBarButton *mSwitchAxesMode;
     void SwitchAxesModeToggled(bool checked);
   };
 

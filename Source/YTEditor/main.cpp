@@ -28,8 +28,9 @@
 #include "YTE/Physics/PhysicsSystem.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/ComponentFactoryInit.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
 #include "YTEditor/YTELevelEditor/ScriptBind.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
@@ -38,6 +39,7 @@
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
 
 // Helper function
 void SetDarkTheme(QApplication& app)
@@ -125,7 +127,7 @@ int main(int argc, char *argv[])
   }
 
   // Construct the main window
-  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app, std::move(prefsValue));
+  auto* mainWindow = new YTEditor::YTEditorMainWindow(&mainEngine, &app, std::move(prefsValue));
 
   //mainWindow->SetRunningSpaceName();
 

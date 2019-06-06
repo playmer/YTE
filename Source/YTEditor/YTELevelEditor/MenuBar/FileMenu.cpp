@@ -26,18 +26,21 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Utilities/String/String.hpp"
 
+#include "YTEditor/Framework/MainWindow.hpp"
+
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
-  FileMenu::FileMenu(MainWindow *aMainWindow)
-    : Menu("File", aMainWindow)
+  FileMenu::FileMenu(Framework::MainWindow* aMainWindow)
+    : Framework::Menu("File", aMainWindow->GetWorkspace<YTELevelEditor>())
   {
     // add menu options for creating, saving, and opening levels
     AddAction<FileMenu>("New Level", &FileMenu::NewLevel, this);
@@ -58,14 +61,16 @@ namespace YTEditor
 
   void FileMenu::NewLevel()
   {
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // delete the gizmo in the current level
-    mMainWindow->DeleteGizmo();
+    levelEditor->DeleteGizmo();
 
     // create a new empty level
-    mMainWindow->CreateBlankLevel("NewLevel");
+    levelEditor->CreateBlankLevel("NewLevel");
 
     // create a new gizmo and add it to the new level
-    mMainWindow->CreateGizmo(mMainWindow->GetEditingLevel());
+    levelEditor->CreateGizmo(levelEditor->GetEditingLevel());
   }
 
   void FileMenu::OpenLevel()
@@ -96,23 +101,27 @@ namespace YTEditor
     YTE::String yteFile = YTE::String();
     yteFile = file_without_extension;
 
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // delete gizmo from the current level
-    mMainWindow->DeleteGizmo();
+    levelEditor->DeleteGizmo();
 
     // load the selected level
-    mMainWindow->LoadLevel(file_without_extension);
+    levelEditor->LoadLevel(file_without_extension);
 
     // create a new gizmo and add it to the new level
-    mMainWindow->CreateGizmo(mMainWindow->GetEditingLevel());
+    levelEditor->CreateGizmo(levelEditor->GetEditingLevel());
   }
 
   void FileMenu::SaveLevel()
   {
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // get current level
-    YTE::Space *currLevel = mMainWindow->GetEditingLevel();
+    YTE::Space *currLevel = levelEditor->GetEditingLevel();
 
     // get name of current level
-    YTE::String lvlName = mMainWindow->GetRunningLevelName();
+    YTE::String lvlName = levelEditor->GetRunningLevelName();
 
     // save current level
     currLevel->SaveLevel(lvlName);
@@ -120,6 +129,8 @@ namespace YTEditor
 
   void FileMenu::SaveLevelAs()
   {
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // get path to assets folder
     std::string gamePath = YTE::Path::GetGamePath().String();
 
@@ -150,7 +161,7 @@ namespace YTEditor
     YTE::String yteFilename = file_without_extension;
 
     // get current level
-    YTE::Space *currLevel = mMainWindow->GetEditingLevel();
+    YTE::Space *currLevel = levelEditor->GetEditingLevel();
 
     // set name of current level
     currLevel->SetName(yteFilename);
@@ -177,7 +188,9 @@ namespace YTEditor
 
   void FileMenu::ExitEditor()
   {
+    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
+
     // close the editor
-    mMainWindow->close();
+    levelEditor->GetMainWindow()->close();
   }
 }

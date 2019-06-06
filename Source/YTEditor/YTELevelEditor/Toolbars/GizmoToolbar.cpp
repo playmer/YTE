@@ -4,38 +4,45 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
-#include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
+
+#include "YTEditor/Framework/ToolBarButton.hpp"
+
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
-#include "YTEditor/YTELevelEditor/Toolbars/ToolbarButton.hpp"
+
+#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+
+#include "YTEditor/YTELevelEditor/Gizmo.hpp"
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
 
-  GizmoToolbar::GizmoToolbar(MainWindow * aMainWindow) : Toolbar(aMainWindow)
+  GizmoToolbar::GizmoToolbar(Framework::MainWindow* aMainWindow)
+    : Framework::ToolBar(aMainWindow)
   {
     std::experimental::filesystem::path workingDir{ YTE::Path::GetEnginePath().String() };
     std::experimental::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/")};
 
     QString iconPath = (assetsDir.generic_string() + "select.png").c_str();
-    mSelect = new ToolbarButton(this, iconPath);
+    mSelect = new Framework::ToolBarButton(this, iconPath);
     mSelect->connect(mSelect, &QPushButton::toggled, this, &GizmoToolbar::SelectToggled);
 
     iconPath = (assetsDir.generic_string() + "translate.png").c_str();
-    mTranslate = new ToolbarButton(this, iconPath);
+    mTranslate = new Framework::ToolBarButton(this, iconPath);
     mTranslate->connect(mTranslate, &QPushButton::toggled, this, &GizmoToolbar::TranslateToggled);
 
     iconPath = (assetsDir.generic_string() + "rotate.png").c_str();
-    mRotate = new ToolbarButton(this, iconPath);
+    mRotate = new Framework::ToolBarButton(this, iconPath);
     mRotate->connect(mRotate, &QPushButton::toggled, this, &GizmoToolbar::RotateToggled);
 
     iconPath = (assetsDir.generic_string() + "scale.png").c_str();
-    mScale = new ToolbarButton(this, iconPath);
+    mScale = new Framework::ToolBarButton(this, iconPath);
     mScale->connect(mScale, &QPushButton::toggled, this, &GizmoToolbar::ScaleToggled);
 
     iconPath = (assetsDir.generic_string() + "switchAxes.png").c_str();
-    mSwitchAxesMode = new ToolbarButton(this, iconPath);
+    mSwitchAxesMode = new Framework::ToolBarButton(this, iconPath);
     mSwitchAxesMode->SetIsUncheckable(true);
     mSwitchAxesMode->SetIsResettable(false);
     mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);
@@ -50,7 +57,7 @@ namespace YTEditor
 
   void GizmoToolbar::SetMode(int aMode)
   {
-    if (mMainWindow->GetWidget<ObjectBrowser>()->GetCurrentObject() == nullptr)
+    if (mMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>()->GetCurrentObject() == nullptr)
     {
       aMode = Mode::Select;
     }
@@ -97,7 +104,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Select);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Select);
     }
   }
 
@@ -106,7 +113,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
     }
   }
 
@@ -115,7 +122,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
     }
   }
 
@@ -124,7 +131,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      mMainWindow->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
     }
   }
 
@@ -133,12 +140,12 @@ namespace YTEditor
     // if checked, it should be in local?
     if (checked)
     {
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::Local);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetMode(Gizmo::Mode::Local);
     }
     // otherwise, in world axes
     else
     {
-      mMainWindow->GetGizmo()->SetMode(Gizmo::Mode::World);
+      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetMode(Gizmo::Mode::World);
     }
   }
 

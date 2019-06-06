@@ -14,7 +14,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qtimer.h>
 #include <qwindow.h>
 
-
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
 
@@ -24,14 +23,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 
-#include "YTEditor/YTELevelEditor/MainWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+#include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
 namespace YTEditor
 {
 
-  SubWindow::SubWindow(YTE::Window *aWindow, MainWindow *aMainWindow)
-    : mWindow(aWindow), mMainWindow(aMainWindow)
+  SubWindow::SubWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor)
+    : mWindow{ aWindow }
+    , mLevelEditor{ aLevelEditor }
   {
   }
 
@@ -72,7 +74,7 @@ namespace YTEditor
       return;
     }
 
-    mMainWindow->keyPressEvent(aEvent);
+    mLevelEditor->GetMainWindow<YTEditorMainWindow>()->keyPressEvent(aEvent);
     aEvent->ignore();
   }
 

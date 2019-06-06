@@ -14,35 +14,36 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qwidget.h>
+#include <QWidget>
+#include <QGridLayout>
+#include <QTextEdit>
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/EventHandler.hpp"
+
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
 #include "YTEditor/Framework/Widget.hpp"
+
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 #include "YTEditor/YTEditorMeta.hpp"
 
-class QGridLayout;
-class QTextEdit;
-
 namespace YTEditor
 {
-  class MainWindow;
-  class OutputConsole; 
-
   class LogHandler : public YTE::EventHandler
   {
   public:
     YTEditorDeclareType(LogHandler);
-    LogHandler(OutputConsole *aConsole);
+    LogHandler(OutputConsole* aConsole);
 
     void HandleLog(YTE::LogEvent *aEvent);
 
   private:
-    OutputConsole *mConsole;
+    OutputConsole* mConsole;
   };
 
-  class OutputConsole : public Widget
+  class OutputConsole : public Framework::Widget
   {
   public:
 
@@ -57,7 +58,7 @@ namespace YTEditor
       static QColor Red;
     };
 
-    OutputConsole(MainWindow *aMainWindow);
+    OutputConsole(YTELevelEditor* aWorkspace);
     ~OutputConsole();
 
     void PrintToConsole(const char *aString);
@@ -67,19 +68,19 @@ namespace YTEditor
 
     QTextEdit* GetTextEdit() { return mConsole; }
 
-    MainWindow* GetMainWindow() { return mMainWindow; }
+    YTEditorMainWindow* GetMainWindow() { return mMainWindow; }
 
     static std::string GetName();
 
-    Widget::DockArea GetDefaultDockPosition() const override;
+    Widget::DockArea GetDefaultDockArea() const override;
 
   private:
     void SetWindowSettings();
     void ConstructInnerWidget();
 
-    QGridLayout *mLayout;
-    QTextEdit *mConsole;
-    MainWindow *mMainWindow;
+    QGridLayout* mLayout;
+    QTextEdit* mConsole;
+    YTEditorMainWindow* mMainWindow;
     LogHandler mHandler;
   };
 }

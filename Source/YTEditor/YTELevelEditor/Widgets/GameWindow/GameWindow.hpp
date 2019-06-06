@@ -18,15 +18,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
+
 namespace YTEditor
 {
-
-  class MainWindow;
-
   class SubWindow : public QWindow
   {
   public:
-    SubWindow(YTE::Window *aWindow, MainWindow *aMainWindow);
+    SubWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor);
 
     ~SubWindow();
 
@@ -38,7 +37,7 @@ namespace YTEditor
 
     YTE::Window *mWindow;
 
-    MainWindow *mMainWindow;
+    YTELevelEditor* mLevelEditor;
   };
 
 }

@@ -19,6 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qtreewidget.h>
 
 #include "YTEditor/Framework/Widget.hpp"
+
 #include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
@@ -45,36 +46,43 @@ namespace YTEditor
 
     void ClearObjectList();
 
-    ObjectItem* AddObject(const char *aCompositionName,
-                          const char *aArchetypeName,
+    ObjectItem* AddObject(char const* aCompositionName,
+                          char const* aArchetypeName,
                           int aIndex = 0);
 
-    ObjectItem* AddChildObject(const char *aCompositionName,
-                               const char *aArchetypeName,
-                               ObjectItem *aParentObj,
+    ObjectItem* AddChildObject(char const* aCompositionName,
+                               char const* aArchetypeName,
+                               ObjectItem* aParentObj,
                                int aIndex = 0);
 
-    ObjectItem* AddTreeItem(const char *aItemName,
-                            YTE::Composition *aEngineObj,
+    ObjectItem* AddTreeItem(char const* aItemName,
+                            YTE::Composition* aEngineObj,
                             int aIndex = 0,
                             bool aSetAsCurrent = true);
 
-    ObjectItem* AddTreeItem(const char *aItemName,
-                            ObjectItem * aParentObj,
-                            YTE::Composition *aEngineObj,
+    ObjectItem* AddTreeItem(char const* aItemName,
+                            ObjectItem* aParentObj,
+                            YTE::Composition* aEngineObj,
                             int aIndex = 0,
                             bool aSetAsCurrent = true);
 
-    ObjectItem* AddExistingComposition(const char *aCompositionName,
-                                       YTE::Composition *aComposition);
+    ObjectItem* AddExistingComposition(char const* aCompositionName,
+                                       YTE::Composition* aComposition);
 
     YTE::Composition* GetCurrentObject();
+    void setCurrentItem(ObjectItem* aItem);
+    void setCurrentItem(ObjectItem* aItem, int aColumn);
+    void setItemSelected(ObjectItem* aItem, bool aSelected);
+    void clearSelection();
+    ObjectItem* topLevelItem(int index);
+    void setHeaderLabel(char const* aLabel);
+    int indexOfTopLevelItem(ObjectItem* aObject);
 
-    void RemoveObjectFromViewer(ObjectItem *aItem);
+    void RemoveObjectFromViewer(ObjectItem* aItem);
 
-    ObjectItem* FindItemByComposition(YTE::Composition *aComp);
+    ObjectItem* FindItemByComposition(YTE::Composition* aComp);
 
-    std::vector<ObjectItem*> FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+    std::vector<ObjectItem*> FindAllObjectsOfArchetype(YTE::String& aArchetypeName);
 
     void SelectNoItem();
 
@@ -84,7 +92,7 @@ namespace YTEditor
 
     void SetInsertSelectionChangedCommand(bool isActive);
 
-    void MoveToFrontOfCamera(YTE::Composition *aObject);
+    void MoveToFrontOfCamera(YTE::Composition* aObject);
 
     static std::string GetName();
 
@@ -95,13 +103,13 @@ namespace YTEditor
 
     void SetWidgetSettings();
 
-    void dropEvent(QDropEvent *aEvent) override;
+    void dropEvent(QDropEvent* aEvent) override;
 
-    void keyPressEvent(QKeyEvent *aEvent);
+    void keyPressEvent(QKeyEvent* aEvent);
 
-    ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+    ObjectItem* SearchChildrenByComp(ObjectItem* aItem, YTE::Composition* aComp);
 
-    void FindObjectsByArchetypeInternal(YTE::String &archetypeName,
+    void FindObjectsByArchetypeInternal(YTE::String& archetypeName,
                                         std::vector<ObjectItem*>& result,
                                         ObjectItem* item);
 

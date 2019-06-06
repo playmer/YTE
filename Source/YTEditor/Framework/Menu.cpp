@@ -2,19 +2,19 @@
 
 namespace YTEditor
 {
-namespace Framework
-{
+  namespace Framework
+  {
 
-Menu::Menu(const char* header, Workspace* workspace)
-  : QMenu(header), mWorkspace(workspace)
-{
-  setToolTipsVisible(true);
-}
+    Menu::Menu(char const* header, Workspace* workspace)
+      : QMenu(header), mWorkspace(workspace)
+    {
+      setToolTipsVisible(true);
+    }
 
-void Menu::AddMenu(Menu* menu)
-{
-  addMenu(menu);
-}
+    void Menu::AddMenu(Menu* menu)
+    {
+      addMenu(menu);
+    }
 
-} // End of Framework namespace
+  } // End of Framework namespace
 } // End of Editor namespace

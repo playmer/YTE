@@ -16,7 +16,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Meta/ForwardDeclarations.hpp"
 
-#include "YTEditor/YTELevelEditor/MenuBar/Menu.hpp"
+#include "YTEditor/Framework/Menu.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -25,22 +27,18 @@ namespace YTE
 
 namespace YTEditor
 {
-  class ObjectBrowser;
-  class ComponentBrowser;
-  class ComponentTree;
-
-  class GameObjectMenu : public Menu
+  class GameObjectMenu : public Framework::Menu
   {
   public:
-    GameObjectMenu(MainWindow *aMainWindow);
+    GameObjectMenu(Framework::MainWindow* aMainWindow);
 
     YTE::Composition* MakeObject(std::string aName, std::string meshName);
 
   private:
     
-    ObjectBrowser *mObjectBrowser;
-    ComponentBrowser *mComponentBrowser;
-    ComponentTree *mComponentTree;
+    ObjectBrowser* mObjectBrowser;
+    ComponentBrowser* mComponentBrowser;
+    ComponentTree* mComponentTree;
 
     void CreateEmptyObject();
 
@@ -71,7 +69,6 @@ namespace YTEditor
     void CreateParticleSystem();
 
     void CreateCamera();
-
   };
 
 }

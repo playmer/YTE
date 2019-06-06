@@ -16,17 +16,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <filesystem>
 
-#include "YTEditor/MainWindow/MenuBar/Menu.hpp"
+#include "YTEditor/Framework/Menu.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
 namespace YTEditor
 {
-  class OutputConsole;
-
-  class ImportMenu : public Menu
+  class ImportMenu : public Framework::Menu
   {
   public:
 
-    ImportMenu(MainWindow *aMainWindow);
+    ImportMenu(Framework::MainWindow *aMainWindow);
 
   private:
 

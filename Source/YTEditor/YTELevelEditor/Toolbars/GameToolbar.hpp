@@ -1,26 +1,25 @@
 #pragma once
 
-#include "YTEditor/YTELevelEditor/Toolbars/Toolbar.hpp"
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+#include "YTEditor/Framework/ToolBar.hpp"
 
 namespace YTEditor
 {
-
-  class GameToolbar : public Toolbar
+  class GameToolbar : public Framework::ToolBar
   {
   public:
-    GameToolbar(MainWindow *aMainWindow);
+    GameToolbar(Framework::MainWindow* aMainWindow);
 
   private:
     
-    ToolbarButton *mPlay;
+    Framework::ToolBarButton *mPlay;
     void PlayToggled(bool checked);
 
-    ToolbarButton *mPause;
+    Framework::ToolBarButton *mPause;
     void PauseToggled(bool checked);
 
-    ToolbarButton *mStop;
+    Framework::ToolBarButton *mStop;
     void StopPressed();
 
   };
-
 }

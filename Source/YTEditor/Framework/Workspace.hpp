@@ -44,9 +44,12 @@ public:
   /**
   * Returns the MainWindow handling the workspace
   */
-  MainWindow* GetMainWindow() const;
+  template <typename tType = MainWindow>
+  tType* GetMainWindow() const
+  {
+    return static_cast<tType*>(mMainWindow);
+  }
 
-protected:
   /**
   * Creates a widget of given type
   * Returns pointer to created widget
@@ -103,7 +106,7 @@ protected:
   template <typename T>
   bool RemoveMenu(T* menu);
 
-private:
+protected:
   friend class MainWindow;
   MainWindow* mMainWindow;
 

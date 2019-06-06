@@ -1,4 +1,3 @@
-#include "YTEditor/MainWindow/MainWindow.hpp"
 #include "YTEditor/MainWindow/Toolbars/Toolbar.hpp"
 #include "YTEditor/MainWindow/Toolbars/ToolbarButton.hpp"
 

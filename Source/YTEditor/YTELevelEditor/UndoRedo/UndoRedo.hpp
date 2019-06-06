@@ -25,13 +25,13 @@ namespace YTEditor
   class Command
   {
   public:
-    Command(OutputConsole *aConsole) : mConsole(aConsole) {}
+    Command(OutputConsole* aConsole) : mConsole(aConsole) {}
     ~Command() {}
 
     virtual void Execute() {};
     virtual void UnExecute() {};
 
-    OutputConsole * mConsole;
+    OutputConsole* mConsole;
   };
 
   class UndoRedo
