@@ -114,3 +114,23 @@ Function(FindWWise aTarget)
   #message(DebugLibraries: ${staticLibraryDebug})
 
 endfunction()
+
+################################################################################
+# Find Mono
+################################################################################
+function(FindMono StaticLibrary IncludeDirectory)
+  set(MonoPath $ENV{MonoSDK})
+
+  if(NOT MonoPath) 
+    string(CONCAT MonoError "Please define the environment variable `MonoSDK` " 
+                            "with the path to the MonoSDK - i.e. export " 
+                            "MonoSDK = C:/Program Files/Mono") 
+                              
+    message(FATAL_ERROR ${MonoError}) 
+  endif() 
+
+  get_filename_component(MonoPath ${MonoPath} ABSOLUTE)
+
+  set(${StaticLibrary} ${MonoPath}/lib/mono-2.0-sgen.lib PARENT_SCOPE) 
+  set(${IncludeDirectory} ${MonoPath}/include/mono-2.0 PARENT_SCOPE)
+  endfunction()

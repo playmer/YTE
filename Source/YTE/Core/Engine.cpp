@@ -12,6 +12,8 @@
 #include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/ScriptBind.hpp"
 
+#include "YTE/CSharp/CSharpSystem.hpp"
+
 #include "YTE/Graphics/GraphicsSystem.hpp"
 
 #include "YTE/WWise//WWiseSystem.hpp"
@@ -105,10 +107,10 @@ namespace YTE
 
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
-
     mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
     mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
+    mComponents.Emplace(TypeId<CSharpSystem>(), std::make_unique<CSharpSystem>(this, nullptr));
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();
@@ -250,9 +252,9 @@ namespace YTE
 
     mDt = 0.016;
 
+    GetComponent<CSharpSystem>()->GenerateSolution();
     mInitialized = true;
   }
-
   
   // Updates the Space to the current frame.
   void Engine::Update()

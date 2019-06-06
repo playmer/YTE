@@ -15,6 +15,7 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/CSharp/CSharpSystem.hpp"
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -83,6 +84,8 @@ namespace YTE
     InitializeType<Space>();
     InitializeType<TestComponent>();
 
+    InitializeType<CSharpSystem>();
+    InitializeType<CSharpRedirect>();
     InitializeType<Event>();
     InitializeType<EventHandler>();
     InitializeType<LogicUpdate>();
