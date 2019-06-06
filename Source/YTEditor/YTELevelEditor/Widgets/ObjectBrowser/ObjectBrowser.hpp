@@ -69,6 +69,8 @@ namespace YTEditor
     ObjectItem* AddExistingComposition(char const* aCompositionName,
                                        YTE::Composition* aComposition);
 
+
+    void LoadAllChildObjects(YTE::Composition* aParentObj, ObjectItem* aParentItem);
     YTE::Composition* GetCurrentObject();
     void setCurrentItem(ObjectItem* aItem);
     void setCurrentItem(ObjectItem* aItem, int aColumn);

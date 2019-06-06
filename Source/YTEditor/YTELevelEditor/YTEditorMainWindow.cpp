@@ -416,7 +416,9 @@ namespace YTEditor
     // get the window 
     YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
-    mGizmo = std::make_unique<Gizmo>(this, 
+    auto editor = GetWorkspace<YTELevelEditor>();
+
+    mGizmo = std::make_unique<Gizmo>(editor,
                                      mImguiLayer->GetComponent<YTE::ImguiLayer>(),
                                      mEditorCamera->GetComponent<YTE::Camera>());
 

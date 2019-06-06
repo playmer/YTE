@@ -432,11 +432,11 @@ void YTELevelEditor::ConstructToolbar()
 {
   auto window = static_cast<YTEditorMainWindow*>(mMainWindow);
 
-  mGizmoToolbar = AddToolBar<GizmoToolbar>(this);
+  mGizmoToolbar = AddToolBar<GizmoToolbar>(GetMainWindow());
 
   if (!window->GetPreferences()->mNoGameToolbar)
   {
-    mGameToolbar = AddToolBar<GameToolbar>(this);
+    mGameToolbar = AddToolBar<GameToolbar>(GetMainWindow());
   }
 }
 

@@ -195,6 +195,26 @@ namespace YTEditor
     return item;
   }
 
+
+  void ObjectBrowser::LoadAllChildObjects(YTE::Composition* aParentObj, ObjectItem* aParentItem)
+  {
+    // if the parent object has no children
+    if (aParentObj->GetCompositions().size() == 0)
+    {
+      return;
+    }
+
+    for (auto& cmp : aParentObj->GetCompositions())
+    {
+      ObjectItem* item = AddTreeItem(cmp.first.c_str(), aParentItem, cmp.second.get(), 0, false);
+
+      if (item)
+      {
+        LoadAllChildObjects(cmp.second.get(), item);
+      }
+    }
+  }
+
   void ObjectBrowser::SetWidgetSettings()
   {
     setObjectName("ObjectBrowser");

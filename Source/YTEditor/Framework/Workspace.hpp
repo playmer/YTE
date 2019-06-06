@@ -198,11 +198,11 @@ template <typename T, typename... Args>
 T* Workspace::AddToolBar(Args&&... args)
 {
   // Create ToolBar
-  auto inserted = mToolBars.emplace({ std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...) });
+  auto inserted = mToolBars.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
 
   // Add ToolBar to MainWindow
-  mMainWindow->addToolBar(inserted->get());
-  return inserted->get();
+  //mMainWindow->addToolBar(inserted->second.get());
+  return static_cast<T*>(inserted->second.get());
 }
 
 template <typename T>

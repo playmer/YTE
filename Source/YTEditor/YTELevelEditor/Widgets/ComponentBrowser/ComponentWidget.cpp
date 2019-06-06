@@ -31,6 +31,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListProperty.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/HeaderListWidget.hpp"
 
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+
 
 namespace YTEditor
 {
@@ -166,7 +168,7 @@ namespace YTEditor
   {
     if (aEvent->modifiers() == Qt::Modifier::CTRL && (aEvent->key() == Qt::Key_Z || aEvent->key() == Qt::Key_Y))
     {
-      mEditor->GetMainWindow()->keyPressEvent(aEvent);
+      mEditor->GetMainWindow<YTEditorMainWindow>()->keyPressEvent(aEvent);
     }
     else
     {
