@@ -24,7 +24,7 @@ namespace YTEditor
   {
   public:
 
-    WindowsMenu(Framework::MainWindow * aMainWindow);
+    WindowsMenu(Framework::MainWindow* aMainWindow);
 
   private:
     Framework::Menu* MakeObjectBrowserMenu();

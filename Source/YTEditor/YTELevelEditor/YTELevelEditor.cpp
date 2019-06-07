@@ -393,12 +393,12 @@ YTE::Composition * YTELevelEditor::GetEditorCamera()
 
 void YTELevelEditor::ConstructSubWidgets()
 {
-  AddWidget<ObjectBrowser>();
-  AddWidget<ComponentBrowser>();
-  AddWidget<OutputConsole>();
-  AddWidget<MaterialViewer>();
-  AddWidget<FileViewer>();
-  AddWidget<WWiseWidget>();
+  AddWidget<ObjectBrowser>(this);
+  AddWidget<ComponentBrowser>(this);
+  AddWidget<OutputConsole>(this);
+  AddWidget<MaterialViewer>(this);
+  AddWidget<FileViewer>(mMainWindow);
+  AddWidget<WWiseWidget>(this, mRunningEngine);
 
   // Game Windows
   ConstructGameWindows();
@@ -442,15 +442,15 @@ void YTELevelEditor::ConstructToolbar()
 
 void YTELevelEditor::ConstructMenuBar()
 {
-  mFileMenu = AddMenu<FileMenu>(this);
+  mFileMenu = AddMenu<FileMenu>(mMainWindow);
 
   AddMenu<EditMenu>(this);
-  AddMenu<WindowsMenu>(this);
+  AddMenu<WindowsMenu>(mMainWindow);
 
-  mGameObjectMenu = AddMenu<GameObjectMenu>(this);
+  mGameObjectMenu = AddMenu<GameObjectMenu>(mMainWindow);
 
-  AddMenu<LevelMenu>(this);
-  AddMenu<ImportMenu>(this);
+  AddMenu<LevelMenu>(mMainWindow);
+  AddMenu<ImportMenu>(mMainWindow);
 }
 
 Preferences::Preferences()

@@ -25,9 +25,13 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qmimedata.h>
 
 #include "YTE/Core/Composition.hpp"
+
 #include "YTE/Core/Engine.hpp"
+
 #include "YTE/Graphics/Camera.hpp"
+
 #include "YTE/Physics/Orientation.hpp"
+
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTE/Graphics/Model.hpp"
@@ -117,7 +121,7 @@ namespace YTEditor
     ObjectItem *aParentObj,
     int aIndex)
   {
-    auto spaces = mLevelEditor->GetRunningEngine()->GetCompositions();
+    auto& spaces = mLevelEditor->GetRunningEngine()->GetCompositions();
     auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
@@ -156,7 +160,7 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
 
-    auto compMap = aEngineObj->GetCompositions();
+    auto& compMap = aEngineObj->GetCompositions();
 
     for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
@@ -188,7 +192,7 @@ namespace YTEditor
       this->setCurrentItem(item);
     }
 
-    auto compMap = aEngineObj->GetCompositions();
+    auto& compMap = aEngineObj->GetCompositions();
 
     for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {

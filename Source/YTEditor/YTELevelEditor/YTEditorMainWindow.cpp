@@ -125,7 +125,7 @@ namespace YTEditor
 
     // Get the space that represents the main session
     mEditingLevel = static_cast<YTE::Space*>(it_lvl->second.get());
-    mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
+    mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, GetWorkspace<YTELevelEditor>());
 
     aEngine->Initialize();
     mEditingLevel->SetIsEditorSpace(aEngine->IsEditor());

@@ -26,12 +26,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
-#include "YTE/Graphics/Camera.hpp"
+
 #include "YTE/Graphics/Generics/Mesh.hpp"
+
+#include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/Model.hpp"
-#include "YTE/Graphics/Model.hpp"
+
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/Utilities/String/String.hpp"
+
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
@@ -107,7 +109,7 @@ namespace YTEditor
   {
     YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
 
-    auto spaces = editor->GetRunningEngine()->GetCompositions();
+    auto& spaces = editor->GetRunningEngine()->GetCompositions();
     auto space = spaces.begin()->second.get();
 
     auto composition = space->AddComposition(aArchetypeName, aCompositionName);
@@ -149,7 +151,7 @@ namespace YTEditor
       mTree->setCurrentItem(item);
     }
 
-    auto compMap = aEngineObj->GetCompositions();
+    auto& compMap = aEngineObj->GetCompositions();
 
     for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
@@ -183,7 +185,7 @@ namespace YTEditor
       mTree->setCurrentItem(item);
     }
 
-    auto compMap = aEngineObj->GetCompositions();
+    auto& compMap = aEngineObj->GetCompositions();
 
     for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
     {
