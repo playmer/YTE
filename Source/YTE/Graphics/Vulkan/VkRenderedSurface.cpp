@@ -350,7 +350,9 @@ namespace YTE
 
       auto &view = emplaced.first->second;
 
-      view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
+      auto viewName = fmt::format("{}_{}", aView->GetOwner()->GetName().c_str(), aView->GetOwner()->GetGUID().ToIdentifierString());
+
+      view.mName = viewName;
       view.mView = aView;
       view.mView->GetLightManager()->SetView(aView);
       view.mView->GetWaterInfluenceMapManager()->SetView(aView);
