@@ -3,96 +3,20 @@
 ## Legal  : All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 ## Author : Joshua T. Fisher
 ################################################################################
-set(YTEditorSource main.cpp
-                   YTEditor.rc
-                   YTEditorMeta.hpp
-                   ForwardDeclarations.hpp
-                   ComponentBrowser/ArchetypeTools.hpp
-                   ComponentBrowser/ArchetypeTools.cpp
-                   ComponentBrowser/ColorPicker.cpp
-                   ComponentBrowser/ColorPicker.hpp
-                   ComponentBrowser/ComponentBrowser.hpp
-                   ComponentBrowser/ComponentBrowser.cpp
-                   ComponentBrowser/ComponentProperty.hpp
-                   ComponentBrowser/ComponentProperty.cpp
-                   ComponentBrowser/ComponentSearchBar.hpp
-                   ComponentBrowser/ComponentSearchBar.cpp
-                   ComponentBrowser/ComponentTools.hpp
-                   ComponentBrowser/ComponentTools.cpp
-                   ComponentBrowser/ComponentTree.hpp
-                   ComponentBrowser/ComponentTree.cpp
-                   ComponentBrowser/ComponentWidget.hpp
-                   ComponentBrowser/ComponentWidget.cpp
-                   ComponentBrowser/HeaderListProperty.hpp
-                   ComponentBrowser/HeaderListProperty.cpp
-                   ComponentBrowser/HeaderListWidget.hpp
-                   ComponentBrowser/HeaderListWidget.cpp
-                   ComponentBrowser/PropertyWidget.hpp
-                   ComponentBrowser/PropertyWidgetBase.hpp
-                   ComponentBrowser/SearchBarEventFilter.hpp
-                   ComponentBrowser/SearchBarEventFilter.cpp
-                   ComponentBrowser/CheckBox.hpp
-                   ComponentBrowser/LineEdit.hpp
-                   FileViewer/FileViewer.hpp
-                   FileViewer/FileViewer.cpp
-                   GameWindow/GameWindow.hpp
-                   GameWindow/GameWindow.cpp
-                   GameWindow/GameWindowEventFilter.hpp
-                   GameWindow/GameWindowEventFilter.cpp
-                   GameWindow/GameToolbar.hpp
-                   GameWindow/GameToolbar.cpp
-                   Gizmos/Gizmo.hpp
-                   Gizmos/Gizmo.cpp
-                   Gizmos/GizmoToolbar.hpp
-                   Gizmos/GizmoToolbar.cpp
-                   Gizmos/Translate.hpp
-                   Gizmos/Translate.cpp
-                   Gizmos/Scale.hpp
-                   Gizmos/Scale.cpp
-                   Gizmos/Rotate.hpp
-                   Gizmos/Rotate.cpp
-                   MainWindow/MainWindow.hpp
-                   MainWindow/MainWindow.cpp
-                   MainWindow/ScriptBind.hpp
-                   MainWindow/ScriptBind.cpp
-                   MainWindow/Toolbar.hpp
-                   MainWindow/Toolbar.cpp
-                   MainWindow/ToolbarButton.hpp
-                   MainWindow/ToolbarButton.cpp
-                   MainWindow/ComponentFactoryInit.hpp
-                   MainWindow/ComponentFactoryInit.cpp
-                   MaterialViewer/MaterialViewer.hpp
-                   MaterialViewer/MaterialViewer.cpp
-                   MenuBar/EditMenu.hpp
-                   MenuBar/EditMenu.cpp
-                   MenuBar/FileMenu.hpp
-                   MenuBar/FileMenu.cpp
-                   MenuBar/GameObjectMenu.hpp
-                   MenuBar/GameObjectMenu.cpp
-                   MenuBar/ImportMenu.hpp
-                   MenuBar/ImportMenu.cpp
-                   MenuBar/LevelMenu.hpp
-                   MenuBar/LevelMenu.cpp
-                   MenuBar/WindowsMenu.hpp
-                   MenuBar/WindowsMenu.cpp
-                   ObjectBrowser/ObjectBrowser.hpp
-                   ObjectBrowser/ObjectBrowser.cpp
-                   ObjectBrowser/ObjectItem.hpp
-                   ObjectBrowser/ObjectItem.cpp
-                   OutputConsole/OutputConsole.hpp
-                   OutputConsole/OutputConsole.cpp
-                   Physics/PhysicsHandler.hpp
-                   Physics/PhysicsHandler.cpp
-                   UndoRedo/Commands.hpp
-                   UndoRedo/Commands.cpp
-                   UndoRedo/UndoRedo.hpp
-                   UndoRedo/UndoRedo.cpp
-                   WWiseViewer/WWiseWidget.hpp
-                   WWiseViewer/WWiseWidget.cpp)
-                   
-add_executable(YTEditor ${YTEditorSource})
+add_executable(YTEditor "")
 
-target_include_directories(YTEditor 
+include(Framework/CMakeLists.txt)
+include(YTELevelEditor/CMakeLists.txt)
+
+target_sources(YTEditor
+  PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/YTEditor.rc
+    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/YTEditorMeta.hpp
+)
+
+target_include_directories(YTEditor
   PRIVATE
     ${Source_Root}
     ${ParentDirectory}
@@ -125,7 +49,7 @@ target_link_libraries(YTEditor YTEMain Qt5::Widgets)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
-YTE_Source_Group(YTEditor_Root YTEditor) 
+YTE_Source_Group(YTEditor_Root YTEditor)
 
 if ("${INSTALL_YTEDITOR}" STREQUAL "1")
   message(STATUS "YTEditor Install Target Enabled")
@@ -148,6 +72,10 @@ endif()
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # Have to do /LTCG here because it appears as though setting this property resets it.
   set_target_properties(YTEditor PROPERTIES LINK_FLAGS_PUBLISH "/SUBSYSTEM:WINDOWS /LTCG")
+
+  # I want to get clean of this warning, but don't want to fix it now. I think mostly can be fixed
+  # by using C++/SDL file loading and fmt.
+  target_compile_definitions(YTEditor PRIVATE _CRT_SECURE_NO_WARNINGS)
 
   target_compile_options(YTEditor PRIVATE 
     PUBLIC

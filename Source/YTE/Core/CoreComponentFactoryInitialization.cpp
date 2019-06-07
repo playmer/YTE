@@ -44,10 +44,6 @@
 #include "YTE/WWise/WWiseListener.hpp"
 #include "YTE/WWise/WWiseView.hpp"
 
-#include "YTEditor/Gizmos/Translate.hpp"
-#include "YTEditor/Gizmos/Scale.hpp"
-#include "YTEditor/Gizmos/Rotate.hpp"
-
 namespace YTE
 {
   using namespace std;

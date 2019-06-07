@@ -35,6 +35,4 @@ namespace YTEditor
 
   // Main Window
   struct ComponentFactoryHelper;
-  class MainWindow;
-
 }

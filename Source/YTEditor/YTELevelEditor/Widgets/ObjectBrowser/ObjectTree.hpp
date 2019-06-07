@@ -1,0 +1,115 @@
+/******************************************************************************/
+/*!
+\file   ObjectBrowser.hpp
+\author Nicholas Ammann
+\par    email: nicholas.ammann\@digipen.edu
+\par    Course: GAM 300
+\date   8/15/2017
+\brief
+The tree widget containing and displaying all objects in the level.
+
+All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
+*/
+/******************************************************************************/
+
+#pragma once
+
+#include <vector>
+
+#include <qtreewidget.h>
+
+#include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Utilities.hpp"
+
+#include "YTE/Utilities/Utilities.hpp"
+
+#include "YTEditor/Framework/ForwardDeclarations.hpp"
+
+#include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
+
+namespace YTEditor
+{
+  class ObjectTree : public QTreeWidget
+  {
+  public:
+    ObjectTree(YTELevelEditor* aLevelEditor, QWidget* parent = nullptr);
+    ~ObjectTree();
+
+    ObjectItem* AddObject(const char *aCompositionName,
+      const char *aArchetypeName,
+      int aIndex = 0);
+
+    ObjectItem* AddChildObject(const char *aCompositionName,
+      const char *aArchetypeName,
+      ObjectItem *aParentObj,
+      int aIndex = 0);
+
+    ObjectItem* AddTreeItem(const char *aItemName,
+      YTE::Composition *aEngineObj,
+      int aIndex = 0,
+      bool aSetAsCurrent = true);
+
+    ObjectItem* AddTreeItem(const char *aItemName,
+      ObjectItem * aParentObj,
+      YTE::Composition *aEngineObj,
+      int aIndex = 0,
+      bool aSetAsCurrent = true);
+
+    ObjectItem* AddExistingComposition(const char *aCompositionName,
+      YTE::Composition *aComposition);
+
+    void LoadAllChildObjects(YTE::Composition *aParentObj,
+      ObjectItem *aParentItem);
+
+    YTE::Composition* GetCurrentObject();
+
+    void RemoveObjectFromViewer(ObjectItem *aItem);
+
+    ObjectItem* FindItemByComposition(YTE::Composition *aComp);
+
+    YTELevelEditor* GetLevelEditor() const
+    {
+      return mLevelEditor;
+    }
+
+    std::vector<ObjectItem*>* FindAllObjectsOfArchetype(YTE::String &aArchetypeName);
+
+    void SelectNoItem();
+
+    void OnCurrentItemChanged(QTreeWidgetItem *current,
+      QTreeWidgetItem *previous);
+
+    void OnItemSelectionChanged();
+
+    void DuplicateCurrentlySelected();
+
+    void RemoveCurrentObject();
+
+    void SetInsertSelectionChangedCommand(bool isActive);
+
+    void MoveToFrontOfCamera(YTE::Composition *aObject);
+
+  private:
+    YTELevelEditor* mLevelEditor;
+    void SetWidgetSettings();
+
+    void OnItemTextChanged(QTreeWidgetItem *aItem, int aIndex);
+
+    void dropEvent(QDropEvent *aEvent) override;
+
+    void CreateContextMenu(const QPoint & pos);
+
+    void keyPressEvent(QKeyEvent *aEvent);
+
+    ObjectItem* SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp);
+
+    void FindObjectsByArchetypeInternal(YTE::String &aArchetypeName,
+      std::vector<ObjectItem*>* aResult,
+      ObjectItem* aItem);
+
+    std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;
+    bool mInsertSelectionChangedCmd;
+
+  };
+
+}
