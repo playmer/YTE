@@ -451,7 +451,14 @@ namespace YTE
       aRenderer->RequestTexture(textureName);
     }
 
-    mData.mShaderSetName = "Phong";
+    if (aSkeleton->HasBones())
+    {
+      mData.mShaderSetName = "AnimatedPhong";
+    }
+    else
+    {
+      mData.mShaderSetName = "Phong";
+    }
 
     // get the vertex data with bones (if provided)
     for (unsigned int j = 0; j < aMesh->mNumVertices; j++)

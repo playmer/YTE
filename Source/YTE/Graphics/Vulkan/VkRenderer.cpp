@@ -137,15 +137,94 @@ namespace YTE
     auto instance = mVulkanInternals->GetInstance();
     auto& physicalDevice = mVulkanInternals->GetPhysicalDevice();
 
-    auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
+    //auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
     //auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
-    auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
+    //auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
 
-    std::array deviceQueueCreateInfos{
-      vkhlf::DeviceQueueCreateInfo{ graphicsQueueFamilyIndices.GetFamily(), 0.0f},
-      //vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
-      vkhlf::DeviceQueueCreateInfo{ transferQueueFamilyIndices.GetFamily(), 0.0f},
-    };
+    //std::array deviceQueueCreateInfos{
+    //  vkhlf::DeviceQueueCreateInfo{ graphicsQueueFamilyIndices.GetFamily(), 0.0f},
+    //  //vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
+    //  vkhlf::DeviceQueueCreateInfo{ transferQueueFamilyIndices.GetFamily(), 0.0f},
+    //};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Desired queues need to be requested upon logical device creation
+    // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
+    // requests different queue types
+    std::vector<vkhlf::DeviceQueueCreateInfo> queueCreateInfos{};
+
+    // Get queue family indices for the requested queue family types
+    // Note that the indices may overlap depending on the implementation
+
+    const float defaultQueuePriority(0.0f);
+
+    // Graphics queue
+    auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
+    queueCreateInfos.emplace_back(graphicsQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+
+    // Dedicated compute queue
+    auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
+    if (computeQueueFamilyIndices.GetFamily() != graphicsQueueFamilyIndices.GetFamily())
+    {
+      // If compute family index differs, we need an additional queue create info for the compute queue
+      queueCreateInfos.emplace_back(computeQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+    }
+
+    // Dedicated transfer queue
+    auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
+    if ((transferQueueFamilyIndices.GetFamily() != graphicsQueueFamilyIndices.GetFamily()) && 
+        (transferQueueFamilyIndices.GetFamily() != computeQueueFamilyIndices.GetFamily()))
+    {
+      // If compute family index differs, we need an additional queue create info for the transfer queue
+      queueCreateInfos.emplace_back(transferQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
     vk::PhysicalDeviceFeatures enabledFeatures;
@@ -154,13 +233,13 @@ namespace YTE
     enabledFeatures.setFillModeNonSolid(true);
     enabledFeatures.setSamplerAnisotropy(true);
     
-    mDevice = physicalDevice->createDevice(deviceQueueCreateInfos,
+    mDevice = physicalDevice->createDevice(queueCreateInfos,
                                            nullptr,
                                            { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
                                            enabledFeatures);
 
     mGraphicsQueueData.emplace(mDevice, graphicsQueueFamilyIndices.GetFamily());
-    //mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
+    mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
     mTransferQueueData.emplace(mDevice, transferQueueFamilyIndices.GetFamily());
 
     MakeAllocator(AllocatorTypes::Mesh, 1024 * 1024);

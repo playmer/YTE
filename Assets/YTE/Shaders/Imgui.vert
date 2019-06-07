@@ -17,35 +17,15 @@ layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Instancing Issues
-#ifdef INSTANCING
-  layout (location = 11) in vec4 inMatrix0;
-  layout (location = 12) in vec4 inMatrix1;
-  layout (location = 13) in vec4 inMatrix2;
-  layout (location = 14) in vec4 inMatrix3;
-
-  struct 
-  {
-    mat4 mModelMatrix;
-  } Model;
-
-  Model.mModelMatrix[0] = inMatrix1;
-  Model.mModelMatrix[1] = inMatrix2;
-  Model.mModelMatrix[2] = inMatrix3;
-  Model.mModelMatrix[3] = inMatrix4;
-#else
-  // ========================
-  // Model Matrix Buffer
-  layout (binding = UBO_MODEL_BINDING) uniform UBOModel
-  {
-    mat4 mModelMatrix;
-    vec4 mDiffuseColor;
-  } Model;
-#endif
-
-
-///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
+
+// ========================
+// Model Matrix Buffer
+layout (binding = UBO_MODEL_BINDING) uniform UBOModel
+{
+  mat4 mModelMatrix;
+  vec4 mDiffuseColor;
+} Model;
 
 // ========================
 // View Buffer

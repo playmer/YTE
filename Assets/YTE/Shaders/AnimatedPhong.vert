@@ -18,7 +18,6 @@ layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
 
-
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
 
@@ -48,6 +47,8 @@ layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
   bool mHasAnimations;
 } Animation;
 
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // Vertex Shader Outputs | Fragment Shader Inputs
 layout (location = 0) out vec3 outColor;
@@ -55,9 +56,7 @@ layout (location = 1) out vec2 outTextureCoordinates;
 layout (location = 2) out vec3 outNormal;
 layout (location = 3) out vec4 outPosition;
 layout (location = 4) out vec3 outPositionWorld;
-layout (location = 5) out vec4 outDiffuse;
-layout (location = 6) out mat4 outViewMatrix; // 6 - 9
-
+layout (location = 5) out mat4 outViewMatrix; // 5 - 8
 
 // ========================
 // Positional Output of Vertex
@@ -68,38 +67,31 @@ out gl_PerVertex
 
 
 
-
-
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // Functions
-// ======================
-// CalculateNormal:
-// Calculates the normal used for this vertex
-// takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
-vec3 CalculateNormal(mat4 aModelMat, vec3 aNormal)
-{
-  return normalize(mat3(transpose(inverse(aModelMat))) * aNormal);
-}
+
 
 // ======================
-// CalculateWorldPosition:
-// Calculates the position used for this vertex in world space
-// takes the model matrix, animation matrix, and the local position value to calculate with
-vec3 CalculateWorldPosition(mat4 aModelMat, vec4 aPosition)
+// Animate:
+// outputs a transform matrix for the shader to use with position of the vertex
+mat4 Animate()
 {
-  return vec3(aModelMat * aPosition);
-}
-
-// ======================
-// CalculateViewPosition:
-// Calculates the position used for this vertex in view space
-// takes the view matrix and the world position value to calculate with
-vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
-{
-  return aViewMat * aPosition;
+  // Conditional is safe as all cores will following together per object
+  if (Animation.mHasAnimations)
+  {
+    mat4 boneTransform;
+    boneTransform  = Animation.mBones[inBoneIDs[0]] * inBoneWeights[0];
+    boneTransform += Animation.mBones[inBoneIDs[1]] * inBoneWeights[1];
+    boneTransform += Animation.mBones[inBoneIDs[2]] * inBoneWeights[2];
+    boneTransform += Animation.mBones[inBoneIDs2[0]] * inBoneWeights2[0];
+    boneTransform += Animation.mBones[inBoneIDs2[1]] * inBoneWeights2[1];
+    
+    return boneTransform;
+  }
+  else
+  {
+    return mat4(1.0f);
+  }
 }
 
 // ======================
@@ -116,35 +108,57 @@ void CalculatePosition(mat4 aProjMat, vec4 aPos)
   //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
 }
 
+// ======================
+// CalculateNormal:
+// Calculates the normal used for this vertex
+// takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
+vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec3 aNormal)
+{
+  return normalize(mat3(transpose(inverse(/*aViewMat */ aModelMat * aAnimateMat))) * aNormal);
+}
+
+// ======================
+// CalculateWorldPosition:
+// Calculates the position used for this vertex in world space
+// takes the model matrix, animation matrix, and the local position value to calculate with
+vec3 CalculateWorldPosition(mat4 aModelMat, mat4 aAnimateMat, vec4 aPosition)
+{
+  return vec3(aModelMat * aAnimateMat * aPosition);
+}
+
+// ======================
+// CalculateViewPosition:
+// Calculates the position used for this vertex in view space
+// takes the view matrix and the world position value to calculate with
+vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
+{
+  return aViewMat * aPosition;
+}
+
 
 // ======================
 // Main:
 // Entry point of shader
 void main() 
 {
+  // animation matrix calculation
+  mat4 boneTransform = Animate();
+
   // remaining output for fragment shader
   outColor = inColor.xyz;
-  outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
-  outDiffuse = Model.mDiffuseColor;
+  outTextureCoordinates = inTextureCoordinates.xy;
+
   outViewMatrix = View.mViewMatrix;
 
-  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, vec4(inPosition, 1.0f));
+  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
+
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
-  outNormal = CalculateNormal(Model.mModelMatrix,
+
+  outNormal = CalculateNormal(View.mViewMatrix,
+                              Model.mModelMatrix,
+                              boneTransform, 
                               inNormal);
+
   CalculatePosition(View.mProjectionMatrix,
                     outPosition);
-
-  // Unsure if this needs to be vec3/mat3 here.
-  //vec3 position = vec3(mat3(View.mViewMatrix * Model.mModelMatrix) * inPosition);
-  //gl_Position = vec4(View.mProjectionMatrix * vec4(position, 1.0));
-
-  //gl_Position = View.mProjectionMatrix * 
-  //              View.mViewMatrix       *
-  //              Model.mModelMatrix     *
-  //              vec4(inPosition, 1.0f);
-
-
-  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
 }
