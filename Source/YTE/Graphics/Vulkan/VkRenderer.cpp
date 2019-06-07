@@ -138,12 +138,12 @@ namespace YTE
     auto& physicalDevice = mVulkanInternals->GetPhysicalDevice();
 
     auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
-    auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
+    //auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
     auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
 
-    std::array<vkhlf::DeviceQueueCreateInfo, 3> deviceQueueCreateInfos{
+    std::array deviceQueueCreateInfos{
       vkhlf::DeviceQueueCreateInfo{ graphicsQueueFamilyIndices.GetFamily(), 0.0f},
-      vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
+      //vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
       vkhlf::DeviceQueueCreateInfo{ transferQueueFamilyIndices.GetFamily(), 0.0f},
     };
 
@@ -160,7 +160,7 @@ namespace YTE
                                            enabledFeatures);
 
     mGraphicsQueueData.emplace(mDevice, graphicsQueueFamilyIndices.GetFamily());
-    mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
+    //mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
     mTransferQueueData.emplace(mDevice, transferQueueFamilyIndices.GetFamily());
 
     MakeAllocator(AllocatorTypes::Mesh, 1024 * 1024);
