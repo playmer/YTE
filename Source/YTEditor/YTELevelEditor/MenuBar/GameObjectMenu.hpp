@@ -36,7 +36,7 @@ namespace YTEditor
 
   private:
     
-    ObjectBrowser* mObjectBrowser;
+    CompositionBrowser* mObjectBrowser;
     ComponentBrowser* mComponentBrowser;
     ComponentTree* mComponentTree;
 

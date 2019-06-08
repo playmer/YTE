@@ -9,7 +9,7 @@
 #include "YTEditor/Framework/MainWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
@@ -131,7 +131,7 @@ namespace YTEditor
 
   void Gizmo::SnapToCurrentObject()
   {
-    SetCurrentComposition(mLevelEditor->GetWidget<ObjectBrowser>()->GetCurrentObject());
+    SetCurrentComposition(mLevelEditor->GetWidget<CompositionBrowser>()->GetCurrentObject());
   }
 
   void Gizmo::SetCurrentComposition(YTE::Composition *aComposition)

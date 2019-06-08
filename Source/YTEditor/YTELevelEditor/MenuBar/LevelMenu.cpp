@@ -24,8 +24,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/MenuBar/LevelMenu.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
@@ -35,7 +35,7 @@ namespace YTEditor
 
   LevelMenu::LevelMenu(Framework::MainWindow *aMainWindow)
     : Menu("Level", aMainWindow->GetWorkspace<YTELevelEditor>())
-    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>())
+    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<CompositionBrowser>())
     , mComponentTree(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>()->GetComponentTree())
   {
     AddAction<LevelMenu>("Reload Level", &LevelMenu::SelectEngine, this);

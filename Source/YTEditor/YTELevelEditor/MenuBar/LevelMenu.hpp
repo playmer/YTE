@@ -28,7 +28,7 @@ namespace YTEditor
 
   private:
 
-    ObjectBrowser *mObjectBrowser;
+    CompositionBrowser *mObjectBrowser;
     ComponentTree *mComponentTree;
 
     Menu* MakeCurrentLevelMenu();

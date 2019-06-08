@@ -27,9 +27,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/Framework/MainWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
 
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
@@ -178,7 +178,7 @@ namespace YTEditor
           auto cmd = std::make_unique<RemoveObjectCmd>(
             engineObj, 
             console, 
-            mTree->GetLevelEditor()->GetWidget<ObjectBrowser>());
+            mTree->GetLevelEditor()->GetWidget<CompositionBrowser>());
 
           mTree->GetLevelEditor()->GetUndoRedo()->InsertCommand(std::move(cmd));
 

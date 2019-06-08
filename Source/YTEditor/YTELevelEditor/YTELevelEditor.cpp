@@ -57,8 +57,8 @@
 
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
@@ -75,8 +75,64 @@
 namespace YTEditor
 {
 
-  YTELevelEditor::YTELevelEditor(Framework::MainWindow* mainWindow) 
-    : Framework::Workspace(mainWindow)
+  YTELevelEditor::YTELevelEditor(YTEditorMainWindow* aMainWindow)
+    : Framework::Workspace(aMainWindow)
+    , mRunningEngine{ aMainWindow->GetRunningEngine() }
+    , mRunningSpaceName{ "" }
+    , mRunningLevelName{ "" }
+    , mEditingLevel{ nullptr }
+    , mRunningSpace{ nullptr }
+    , mEditorCamera{ nullptr }
+    , mImguiLayer{ nullptr }
+    , mApplication{ nullptr }
+    , mUndoRedo{ new UndoRedo() }
+    , mCentralTabs{ nullptr }
+    , mLevelWindow{ nullptr }
+    , mRunningWindowTab{ nullptr }
+    , mRunningWindow{ nullptr }
+    , mFileMenu{ nullptr }
+    , mGameObjectMenu{ nullptr }
+    , mGizmoToolbar{ nullptr }
+    , mGameToolbar{ nullptr }
+  {
+  }
+
+
+  bool YTELevelEditor::Initialize()
+  {
+    // Cstor helper functions and main subwindow vars
+    ConstructSubWidgets();
+    ConstructGameWindows();
+    ConstructToolbar();
+
+    // menu bar must be constructed after subwidgets b/c of cached pointers
+    ConstructMenuBar();
+
+    // Get all the compositions on the engine
+    auto& engineMap = mRunningEngine->GetCompositions();
+
+    // iterator to the main session space
+    auto it_lvl = engineMap.begin();
+
+    YTE::Window* yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+
+    mEditingLevel = static_cast<YTE::Space*>(it_lvl->second.get());
+    mPhysicsHandler = std::make_unique<PhysicsHandler>(mEditingLevel, yteWin, this);
+
+    mRunningEngine->Initialize();
+    mEditingLevel->SetIsEditorSpace(mRunningEngine->IsEditor());
+
+    //// This needs to happen after the engine has been initialized.
+
+    AddWidget<MaterialViewer>("Material Viewer", this);
+    AddWidget<WWiseWidget>("WWise Tool", this, mRunningEngine);
+
+    LoadCurrentLevelInfo();
+
+    return true;
+  }
+
+  void YTELevelEditor::Shutdown()
   {
 
   }
@@ -85,16 +141,20 @@ namespace YTEditor
   {
     if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
+      if (mLevelWindow)
+      {
+        mLevelWindow->Update();
+      }
+
+      if (mRunningWindow)
+      {
+        mRunningWindow->Update();
+      }
+
       mRunningEngine->Update();
     }
 
     mPhysicsHandler->Update();
-
-    auto self = this;
-    QTimer::singleShot(0, [self]()
-    {
-      self->UpdateEngine();
-    });
 
     ComponentTree* componentBrowser = GetWidget<ComponentBrowser>()->GetComponentTree();
     std::vector<ComponentWidget*> componentWidgets = componentBrowser->GetComponentWidgets();
@@ -124,7 +184,7 @@ namespace YTEditor
   void YTELevelEditor::LoadCurrentLevelInfo()
   {
     YTE::Space *lvl = GetEditingLevel();
-    ObjectBrowser* objectBrowser = GetWidget<ObjectBrowser>();
+    CompositionBrowser* objectBrowser = GetWidget<CompositionBrowser>();
 
     mRunningSpaceName = lvl->GetName();
     mRunningLevelName = lvl->GetLevelName();
@@ -231,12 +291,12 @@ namespace YTEditor
     }
 
     // Make actual "physical" window
-    mRunningWindow = new SubWindow(nullptr, this);
+    auto window = mRunningEngine->AddWindow("YTEditor Play Window");
+
+    mRunningWindow = new SubWindow(window, this);
     mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
     int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
     mCentralTabs->setCurrentIndex(index);
-
-    auto window = mRunningEngine->AddWindow("YTEditor Play Window");
 
     mRunningWindow->mWindow = window;
     window->mShouldBeRenderedTo = true;
@@ -393,12 +453,10 @@ namespace YTEditor
 
   void YTELevelEditor::ConstructSubWidgets()
   {
-    AddWidget<ObjectBrowser>(this);
-    AddWidget<ComponentBrowser>(this);
-    AddWidget<OutputConsole>(this);
-    AddWidget<MaterialViewer>(this);
-    AddWidget<FileViewer>(mMainWindow);
-    AddWidget<WWiseWidget>(this, mRunningEngine);
+    AddWidget<CompositionBrowser>("Composition Browser", this);
+    AddWidget<ComponentBrowser>("Component Browser", this);
+    AddWidget<OutputConsole>("Output Console", this);
+    AddWidget<FileViewer>("File Browser", mMainWindow);
 
     // Game Windows
     ConstructGameWindows();
@@ -442,6 +500,7 @@ namespace YTEditor
 
   void YTELevelEditor::ConstructMenuBar()
   {
+    //mMenus
     mFileMenu = AddMenu<FileMenu>(mMainWindow);
 
     AddMenu<EditMenu>(this);

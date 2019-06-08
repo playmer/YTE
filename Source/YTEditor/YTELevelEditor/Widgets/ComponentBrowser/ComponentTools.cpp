@@ -26,7 +26,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentSearchBar.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 

@@ -9,7 +9,10 @@ namespace YTEditor
   class YTELevelEditor : public Framework::Workspace
   {
   public:
-    YTELevelEditor(Framework::MainWindow* mainWindow);
+    YTELevelEditor(YTEditorMainWindow* aMainWindow);
+
+    bool Initialize() override;
+    void Shutdown() override;
 
     UndoRedo* GetUndoRedo();
 
@@ -33,6 +36,8 @@ namespace YTEditor
     void LoadCurrentLevelInfo();
 
     void SaveCurrentLevel();
+
+    void PostEngineInitilization();
 
     QApplication* GetApplication();
 
@@ -76,39 +81,37 @@ namespace YTEditor
 
     QApplication *mApplication;
 
-    UndoRedo *mUndoRedo;
-
-    std::unique_ptr<Gizmo> mGizmo;
-    float mGizmoScaleFactor;
-
-    // Cstor helper functions and main subwindow vars
-    void LoadPreferences(std::unique_ptr<YTE::RSDocument> aPrefFile);
-    void ConstructSubWidgets();
-    void ConstructGameWindows();
-    void ConstructToolbar();
-
-    std::unique_ptr<PhysicsHandler> mPhysicsHandler;
-
+    UndoRedo* mUndoRedo;
     QTabWidget* mCentralTabs;
     SubWindow* mLevelWindow;
 
     QWidget* mRunningWindowTab;
     SubWindow* mRunningWindow;
+    FileMenu* mFileMenu;
+    GameObjectMenu* mGameObjectMenu;
 
+    GizmoToolbar* mGizmoToolbar;
+    GameToolbar* mGameToolbar;
+
+    std::unique_ptr<Gizmo> mGizmo;
+    float mGizmoScaleFactor;
+
+    // Cstor helper functions and main subwindow vars
+    void ConstructSubWidgets();
+    void ConstructGameWindows();
+    void ConstructToolbar();
+
+    std::unique_ptr<PhysicsHandler> mPhysicsHandler;
     std::vector<SubWindow*> mSubWindows;
+
     /**************************************************/
 
     // Helper functions for menu bar //
     void ConstructMenuBar();
 
-    FileMenu *mFileMenu;
-    GameObjectMenu *mGameObjectMenu;
 
     void closeEvent(QCloseEvent *event);
     ////
-
-    GizmoToolbar* mGizmoToolbar;
-    GameToolbar* mGameToolbar;
 
   };
 }

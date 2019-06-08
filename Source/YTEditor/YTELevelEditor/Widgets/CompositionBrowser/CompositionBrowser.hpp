@@ -20,7 +20,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/Framework/Widget.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;
@@ -38,11 +38,11 @@ namespace YTEditor
   class YTELevelEditor;
   class ObjectItem;
 
-  class ObjectBrowser : public Framework::Widget
+  class CompositionBrowser : public Framework::Widget
   {
   public:
-    ObjectBrowser(YTELevelEditor* editor);
-    ~ObjectBrowser();
+    CompositionBrowser(YTELevelEditor* editor);
+    ~CompositionBrowser();
 
     void ClearObjectList();
 

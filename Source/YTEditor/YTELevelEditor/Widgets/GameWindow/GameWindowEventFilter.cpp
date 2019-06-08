@@ -11,8 +11,8 @@
 #include "YTEditor/YTELevelEditor/MenuBar/GameObjectMenu.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
 
@@ -101,7 +101,7 @@ namespace YTEditor
       {
         if (parent == "Archetypes")
         {
-          ObjectBrowser *objBrowser = editor->GetWidget<ObjectBrowser>();
+          CompositionBrowser *objBrowser = editor->GetWidget<CompositionBrowser>();
 
           ObjectItem *objItem = objBrowser->AddObject(stem.c_str(), stem.c_str());
           objBrowser->MoveToFrontOfCamera(objItem->GetEngineObject());
@@ -151,7 +151,7 @@ namespace YTEditor
 
       if (keyEvent->key() == Qt::Key_Delete)
       {
-        editor->GetWidget<ObjectBrowser>()->RemoveCurrentObject();
+        editor->GetWidget<CompositionBrowser>()->RemoveCurrentObject();
       }
     }
 

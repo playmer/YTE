@@ -32,8 +32,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
@@ -42,7 +42,7 @@ namespace YTEditor
 {
   GameObjectMenu::GameObjectMenu(Framework::MainWindow* aMainWindow)
     : Framework::Menu("Game Object", aMainWindow->GetWorkspace<YTELevelEditor>())
-    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>())
+    , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<CompositionBrowser>())
     , mComponentBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>())
     , mComponentTree(mComponentBrowser->GetComponentTree())
   {
@@ -267,7 +267,7 @@ namespace YTEditor
   void GameObjectMenu::CreateParticleSystem()
   {
     auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
-    ObjectBrowser *objectBrowser = levelEditor->GetWidget<ObjectBrowser>();
+    CompositionBrowser *objectBrowser = levelEditor->GetWidget<CompositionBrowser>();
     ObjectItem *item = objectBrowser->AddObject("Particle Emitter", "Empty");
     YTE::Composition *obj = item->GetEngineObject();
     mObjectBrowser->MoveToFrontOfCamera(obj);

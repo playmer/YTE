@@ -55,7 +55,7 @@ public:
   * Returns pointer to created widget
   */
   template <typename T, typename... Args>
-  T* AddWidget(Args&&... args);
+  T* AddWidget(char const* aName, Args&&... args);
 
   /**
   * Unloads one instance of a type of widget
@@ -152,15 +152,15 @@ std::vector<T*> Workspace::GetAllWidgets() const
 }
 
 template <typename T, typename... Args>
-T* Workspace::AddWidget(Args&&... args)
+T* Workspace::AddWidget(char const* aName, Args&&... args)
 {
   // Create Widget
-  std::multimap<std::type_index, std::unique_ptr<Widget> >::iterator inserted = mWidgets.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
+  auto inserted = mWidgets.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
 
   T* widget = static_cast<T*>(inserted->second.get());
 
   // Create dock to hold widget
-  widget->mDockWidget = std::make_unique<QDockWidget>();
+  widget->mDockWidget = std::make_unique<QDockWidget>(aName);
   widget->mDockWidget->setAllowedAreas(static_cast<Qt::DockWidgetArea>(widget->GetAllowedDockAreas()));
 
   // Tell dock what widget it's holding

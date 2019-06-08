@@ -47,8 +47,8 @@ namespace YTEditor
     mContainerLayout = new QVBoxLayout();
     mContainerLayout->setSpacing(0);
 
-    /*
-    mMaterialWindow = new SubWindow(nullptr, aMainWindow);
+    auto window = aLevelEditor->GetRunningEngine()->AddWindow("MaterialViewer");
+    mMaterialWindow = new SubWindow(window, aLevelEditor);
     QWidget *windowContainer = QWidget::createWindowContainer(mMaterialWindow);
 
     windowContainer->setMinimumHeight(100);
@@ -59,7 +59,7 @@ namespace YTEditor
     mBaseLayout->addWidget(mScrollArea);
 
     auto id = mMaterialWindow->winId();
-    aWindow->SetWindowId(reinterpret_cast<void*>(id));
+    window->SetWindowId(reinterpret_cast<void*>(id));
 
     this->setLayout(mBaseLayout);
 
@@ -73,11 +73,11 @@ namespace YTEditor
       [=](int index) { this->OnCurrentMaterialChanged(index); });
 
 
-    auto engine = aMainWindow->GetRunningEngine();
+    auto engine = aLevelEditor->GetRunningEngine();
 
     
     auto renderer = engine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-    renderer->RegisterWindowForDraw(aWindow);
+    renderer->RegisterWindowForDraw(window);
 
     YTE::String spaceName{ "MaterialViewer" };
     YTE::Space *space = engine->AddComposition<YTE::Space>(spaceName,
@@ -92,7 +92,6 @@ namespace YTEditor
     view->ChangeWindow(windowName);
 
     space->Initialize();
-    */
   }
 
   void MaterialViewer::LoadMaterial(YTE::UBOs::Material const &aMaterial)

@@ -10,7 +10,7 @@
 
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
 #include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
@@ -57,7 +57,7 @@ namespace YTEditor
 
   void GizmoToolbar::SetMode(int aMode)
   {
-    if (mMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ObjectBrowser>()->GetCurrentObject() == nullptr)
+    if (mMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<CompositionBrowser>()->GetCurrentObject() == nullptr)
     {
       aMode = Mode::Select;
     }
@@ -104,7 +104,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Select);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetOperation(Gizmo::Operation::Select);
     }
   }
 
@@ -113,7 +113,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetOperation(Gizmo::Operation::Translate);
     }
   }
 
@@ -122,7 +122,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetOperation(Gizmo::Operation::Rotate);
     }
   }
 
@@ -131,7 +131,7 @@ namespace YTEditor
     if (checked)
     {
       // set the gizmo mode to select
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetOperation(Gizmo::Operation::Scale);
     }
   }
 
@@ -140,12 +140,12 @@ namespace YTEditor
     // if checked, it should be in local?
     if (checked)
     {
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetMode(Gizmo::Mode::Local);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetMode(Gizmo::Mode::Local);
     }
     // otherwise, in world axes
     else
     {
-      static_cast<YTEditorMainWindow*>(mMainWindow)->GetGizmo()->SetMode(Gizmo::Mode::World);
+      mMainWindow->GetWorkspace<YTELevelEditor>()->GetGizmo()->SetMode(Gizmo::Mode::World);
     }
   }
 

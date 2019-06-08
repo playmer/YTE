@@ -33,7 +33,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/SearchBarEventFilter.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 
@@ -117,7 +117,7 @@ namespace YTEditor
 
     auto workspace = browser.GetWorkspace<YTELevelEditor>();
 
-    ObjectBrowser* objBrowser = workspace->GetWidget<ObjectBrowser>();
+    CompositionBrowser* objBrowser = workspace->GetWidget<CompositionBrowser>();
     YTE::Composition *currObj = objBrowser->GetCurrentObject();
 
     if (nullptr == currObj)

@@ -38,7 +38,7 @@
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 #include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
@@ -80,7 +80,7 @@ int YTE_Main(ApplicationArguments& aArguments)
   QApplication app(aArguments.mOriginalArgumentsSize, aArguments.mOriginalArguments);
 
   // RUNNING THE GAME
-  YTE::InitializeYTETypes();
+  //YTE::InitializeYTETypes();
 
   YTE::Engine mainEngine{
     {

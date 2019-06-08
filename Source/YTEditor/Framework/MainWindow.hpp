@@ -77,6 +77,7 @@ namespace YTEditor
 
     private:
       std::map<std::type_index, Framework::Workspace*> mWorkspaces;
+      QMenuBar* mMenuBar;
     };
 
   } // End of Framework namespace

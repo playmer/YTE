@@ -37,7 +37,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
@@ -183,7 +183,7 @@ namespace YTEditor
 
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType)
   {
-    ObjectBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+    CompositionBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
     YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
@@ -208,7 +208,7 @@ namespace YTEditor
 
   ComponentWidget* ComponentTree::InternalAddComponent(YTE::Type *aComponentType, YTE::RSValue *aSerializedComponent)
   {
-    ObjectBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+    CompositionBrowser *objBrowser = mComponentBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
     YTE::Composition *currentObj = objBrowser->GetCurrentObject();
 
@@ -507,7 +507,7 @@ namespace YTEditor
   {
     QObject *sourceObj = aEvent->source();
 
-    ObjectBrowser *objBrowser = dynamic_cast<ObjectBrowser*>(sourceObj);
+    CompositionBrowser *objBrowser = dynamic_cast<CompositionBrowser*>(sourceObj);
 
     if (objBrowser)
     {

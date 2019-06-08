@@ -18,7 +18,7 @@ namespace YTEditor
   class HeaderListProperty;
   class HeaderListWidget;
   class LogHandler;
-  class ObjectBrowser;
+  class CompositionBrowser;
   class ObjectItem;
   class ObjectTree;
   class OutputConsole;

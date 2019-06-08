@@ -47,9 +47,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectTree.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
 
@@ -104,7 +104,7 @@ namespace YTEditor
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
                                               mLevelEditor->GetWidget<OutputConsole>(),
-                                              mLevelEditor->GetWidget<ObjectBrowser>());
+                                              mLevelEditor->GetWidget<CompositionBrowser>());
 
     mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, composition, aIndex);
@@ -129,7 +129,7 @@ namespace YTEditor
 
     auto cmd = std::make_unique<AddObjectCmd>(composition,
                                               mLevelEditor->GetWidget<OutputConsole>(),
-                                              mLevelEditor->GetWidget<ObjectBrowser>());
+                                              mLevelEditor->GetWidget<CompositionBrowser>());
 
     mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
@@ -283,7 +283,7 @@ namespace YTEditor
     QList<QTreeWidgetItem*> items = this->selectedItems();
 
     auto console = mLevelEditor->GetWidget<OutputConsole>();
-    auto browser = mLevelEditor->GetWidget<ObjectBrowser>();
+    auto browser = mLevelEditor->GetWidget<CompositionBrowser>();
 
     std::vector<YTE::GlobalUniqueIdentifier> newSelection;
     std::vector<YTE::GlobalUniqueIdentifier> oldSelection;
@@ -461,7 +461,7 @@ namespace YTEditor
     YTE::Composition *engineObj = currItem->GetEngineObject();
 
     auto name = currItem->text(0).toStdString();
-    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mLevelEditor->GetWidget<OutputConsole>(), mLevelEditor->GetWidget<ObjectBrowser>());
+    auto cmd = std::make_unique<RemoveObjectCmd>(engineObj, mLevelEditor->GetWidget<OutputConsole>(), mLevelEditor->GetWidget<CompositionBrowser>());
 
     mLevelEditor->GetUndoRedo()->InsertCommand(std::move(cmd));
 

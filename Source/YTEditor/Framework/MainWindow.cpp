@@ -8,10 +8,11 @@ namespace YTEditor
 namespace Framework
 {
 
-MainWindow::MainWindow()
-{
-  QMainWindow::setMenuBar(new QMenuBar(this));
-}
+  MainWindow::MainWindow()
+    : mMenuBar{ new QMenuBar(this) }
+  {
+    QMainWindow::setMenuBar(mMenuBar);
+  }
 
 } // End of Framework namespace
 } // End of Editor namespace

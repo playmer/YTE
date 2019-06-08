@@ -6,7 +6,7 @@ namespace YTEditor
   {
 
     Workspace::Workspace(MainWindow* mainWindow)
-      : mMainWindow(mainWindow)
+      : mMainWindow{ mainWindow }
     {
     }
 

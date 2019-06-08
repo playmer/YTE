@@ -14,7 +14,7 @@
 #include "YTEditor/Framework/MainWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
 
 
@@ -176,7 +176,7 @@ namespace YTEditor
       
       mCurrentObj = obj;
 
-      ObjectBrowser* browser = mLevelEditor->GetWidget<ObjectBrowser>();
+      CompositionBrowser* browser = mLevelEditor->GetWidget<CompositionBrowser>();
       auto item = browser->FindItemByComposition(mCurrentObj);
 
       // TODO(Evan/Nick): change to setSelectedItem for drag select in future

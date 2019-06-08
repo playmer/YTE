@@ -30,7 +30,7 @@ namespace YTEditor
 {
 
   class ObjectItem;
-  class ObjectBrowser;
+  class CompositionBrowser;
   class ArchetypeTools;
 
 
@@ -39,7 +39,7 @@ namespace YTEditor
   public:
     AddObjectCmd(YTE::Composition *aObject,
                  OutputConsole *aConsole,
-                 ObjectBrowser *aBrowser);
+                 CompositionBrowser *aBrowser);
     ~AddObjectCmd();
 
     void Execute() override;
@@ -48,7 +48,7 @@ namespace YTEditor
   private:
     YTE::Composition *mComposition;
     YTE::GlobalUniqueIdentifier mParentGuid;
-    ObjectBrowser *mObjectBrowser;
+    CompositionBrowser *mObjectBrowser;
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
@@ -60,7 +60,7 @@ namespace YTEditor
   public:
     RemoveObjectCmd(YTE::Composition *aComposition,
                     OutputConsole *aConsole,
-                    ObjectBrowser *aBrowser);
+                    CompositionBrowser *aBrowser);
     ~RemoveObjectCmd();
 
     void Execute() override;
@@ -69,7 +69,7 @@ namespace YTEditor
   private:
     YTE::Composition *mComposition;
     YTE::GlobalUniqueIdentifier mParentGuid;
-    ObjectBrowser *mObjectBrowser;
+    CompositionBrowser *mObjectBrowser;
     YTE::RSValue mSerializedComposition;
     YTE::RSAllocator mAllocator;
     YTE::String mName;
@@ -147,12 +147,12 @@ namespace YTEditor
   public:
     ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
                               std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
-                              ObjectBrowser* aBrowser,
+                              CompositionBrowser* aBrowser,
                               OutputConsole* aConsole);
     void Execute() override;
     void UnExecute() override;
   private:
-    ObjectBrowser* mObjectBrowser;
+    CompositionBrowser* mObjectBrowser;
     std::vector<YTE::GlobalUniqueIdentifier> mNewSelection;
     std::vector<YTE::GlobalUniqueIdentifier> mOldSelection;
   };

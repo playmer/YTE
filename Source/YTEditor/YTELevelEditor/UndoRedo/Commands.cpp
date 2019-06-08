@@ -22,8 +22,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 
@@ -36,7 +36,7 @@ namespace YTEditor
 
   AddObjectCmd::AddObjectCmd(YTE::Composition *aComposition,
                              OutputConsole *aConsole,
-                             ObjectBrowser *aBrowser)
+                             CompositionBrowser *aBrowser)
     : Command(aConsole)
     , mComposition(aComposition)
     , mObjectBrowser(aBrowser)
@@ -98,7 +98,7 @@ namespace YTEditor
 
   RemoveObjectCmd::RemoveObjectCmd(YTE::Composition *aComposition,
                                    OutputConsole *aConsole,
-                                   ObjectBrowser *aBrowser)
+                                   CompositionBrowser *aBrowser)
     : Command(aConsole)
     , mComposition(aComposition)
     , mObjectBrowser(aBrowser)
@@ -185,7 +185,7 @@ namespace YTEditor
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    ObjectBrowser* objectBrowser = workspace->GetWidget<ObjectBrowser>();
+    CompositionBrowser* objectBrowser = workspace->GetWidget<CompositionBrowser>();
     ObjectItem* parentItem = objectBrowser->FindItemByComposition(parentObj);
     objectBrowser->setCurrentItem(parentItem);
 
@@ -253,7 +253,7 @@ namespace YTEditor
     YTE::Engine *engine = mainWindow->GetRunningEngine();
     YTE::Composition *parentObj = engine->GetCompositionByGUID(mParentGuid);
 
-    ObjectBrowser *objBrowser = workspace->GetWidget<ObjectBrowser>();
+    CompositionBrowser *objBrowser = workspace->GetWidget<CompositionBrowser>();
     ObjectItem *parentItem = objBrowser->FindItemByComposition(parentObj);
     objBrowser->setCurrentItem(parentItem);
 
@@ -321,7 +321,7 @@ namespace YTEditor
 
   ObjectSelectionChangedCmd::ObjectSelectionChangedCmd(std::vector<YTE::GlobalUniqueIdentifier> aNewSelection,
                                                        std::vector<YTE::GlobalUniqueIdentifier> aOldSelection,
-                                                       ObjectBrowser *aBrowser,
+                                                       CompositionBrowser *aBrowser,
                                                        OutputConsole *aConsole)
     : Command(aConsole)
     , mObjectBrowser(aBrowser)

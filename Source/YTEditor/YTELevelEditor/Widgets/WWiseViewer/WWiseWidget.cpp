@@ -343,7 +343,7 @@ namespace YTEditor
   {
     mLayout = new QVBoxLayout(this);
 
-    mScrollArea = new QScrollArea();
+    mScrollArea = new QScrollArea(this);
     mScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
     mSubWidget = new QWidget(mScrollArea);

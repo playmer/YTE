@@ -31,8 +31,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ArchetypeTools.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
@@ -117,7 +117,7 @@ namespace YTEditor
   {
     // diff RSValues to see if reloading is necessary
     //MainWindow *mainWin = mBrowser->GetMainWindow();
-    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+    CompositionBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
     YTE::Composition *obj = objectBrowser->GetCurrentObject();
 
@@ -157,7 +157,7 @@ namespace YTEditor
       YTE::Composition *parent = aObject->GetParent();
       parent->RemoveComposition(aObject);
 
-      ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+      CompositionBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
       ObjectItem *item = objectBrowser->FindItemByComposition(aObject);
 
@@ -211,7 +211,7 @@ namespace YTEditor
     mIsArchetype = true;
     mIsDifferent = false;
 
-    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+    CompositionBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
     YTE::Composition *cmp = objectBrowser->GetCurrentObject();
 
@@ -250,7 +250,7 @@ namespace YTEditor
     std::string str = mArchNameBar->text().toStdString();
     YTE::String arch = str.c_str();
 
-    ObjectBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<ObjectBrowser>();
+    CompositionBrowser* objectBrowser = mBrowser->GetWorkspace()->GetWidget<CompositionBrowser>();
 
     auto items = objectBrowser->FindAllObjectsOfArchetype(arch);
 

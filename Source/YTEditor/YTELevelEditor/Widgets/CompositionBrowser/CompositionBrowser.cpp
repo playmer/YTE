@@ -41,8 +41,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentTree.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/ObjectBrowser/ObjectItem.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 #include "YTEditor/YTELevelEditor/UndoRedo/UndoRedo.hpp"
@@ -53,9 +53,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  ObjectBrowser::ObjectBrowser(YTELevelEditor* editor)
-    : Widget(editor)
-    , mTree()
+  CompositionBrowser::CompositionBrowser(YTELevelEditor* aEditor)
+    : Widget(aEditor)
+    , mTree(new ObjectTree{ aEditor, this })
   {
     SetWidgetSettings();
 
@@ -63,16 +63,16 @@ namespace YTEditor
     //mTree.setItemDelegate(new ObjectItemDelegate(this));
   }
 
-  ObjectBrowser::~ObjectBrowser()
+  CompositionBrowser::~CompositionBrowser()
   {
   }
 
-  void ObjectBrowser::ClearObjectList()
+  void CompositionBrowser::ClearObjectList()
   {
     mTree->clear();
   }
 
-  ObjectItem* ObjectBrowser::AddObject(const char *aCompositionName,
+  ObjectItem* CompositionBrowser::AddObject(const char *aCompositionName,
     const char *aArchetypeName,
     int aIndex)
   {
@@ -96,13 +96,13 @@ namespace YTEditor
     return AddTreeItem(aCompositionName, composition, aIndex);
   }
 
-  ObjectItem* ObjectBrowser::AddExistingComposition(const char *aCompositionName,
+  ObjectItem* CompositionBrowser::AddExistingComposition(const char *aCompositionName,
     YTE::Composition *aComposition)
   {
     return AddTreeItem(aCompositionName, aComposition);
   }
 
-  ObjectItem* ObjectBrowser::AddChildObject(const char *aCompositionName,
+  ObjectItem* CompositionBrowser::AddChildObject(const char *aCompositionName,
     const char *aArchetypeName,
     ObjectItem *aParentObj,
     int aIndex)
@@ -123,7 +123,7 @@ namespace YTEditor
     return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
   }
 
-  ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
+  ObjectItem* CompositionBrowser::AddTreeItem(const char *aItemName,
     YTE::Composition *aEngineObj,
     int aIndex,
     bool aSetAsCurrent)
@@ -161,7 +161,7 @@ namespace YTEditor
     return item;
   }
 
-  ObjectItem* ObjectBrowser::AddTreeItem(const char *aItemName,
+  ObjectItem* CompositionBrowser::AddTreeItem(const char *aItemName,
     ObjectItem *aParentObj,
     YTE::Composition *aEngineObj,
     int aIndex,
@@ -202,7 +202,7 @@ namespace YTEditor
   }
 
 
-  void ObjectBrowser::LoadAllChildObjects(YTE::Composition* aParentObj, ObjectItem* aParentItem)
+  void CompositionBrowser::LoadAllChildObjects(YTE::Composition* aParentObj, ObjectItem* aParentItem)
   {
     YTE::UnusedArguments(aParentObj, aParentItem);
     return;
@@ -224,7 +224,7 @@ namespace YTEditor
     //}
   }
 
-  void ObjectBrowser::SetWidgetSettings()
+  void CompositionBrowser::SetWidgetSettings()
   {
     setObjectName("ObjectBrowser");
     setMinimumWidth(200);
@@ -236,7 +236,7 @@ namespace YTEditor
   }
 
 
-  void ObjectBrowser::DuplicateCurrentlySelected()
+  void CompositionBrowser::DuplicateCurrentlySelected()
   {
     YTE::Composition *currentObj = GetCurrentObject();
     if (currentObj == nullptr)
@@ -261,7 +261,7 @@ namespace YTEditor
     AddExistingComposition(guid.c_str(), duplicate);
   }
 
-  void ObjectBrowser::dropEvent(QDropEvent *aEvent)
+  void CompositionBrowser::dropEvent(QDropEvent *aEvent)
   {
     YTE::Composition *movedObj = GetCurrentObject();
 
@@ -280,7 +280,7 @@ namespace YTEditor
     //dropEvent(aEvent);
   }
 
-  void ObjectBrowser::RemoveCurrentObject()
+  void CompositionBrowser::RemoveCurrentObject()
   {
     if (mTree->topLevelItemCount() == 0)
     {
@@ -300,7 +300,7 @@ namespace YTEditor
     auto name = currItem->text(0).toStdString();
     auto cmd = std::make_unique<RemoveObjectCmd>(engineObj,
                                                  editor->GetWidget<OutputConsole>(),
-                                                 editor->GetWidget<ObjectBrowser>());
+                                                 editor->GetWidget<CompositionBrowser>());
 
     editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
@@ -310,12 +310,12 @@ namespace YTEditor
     RemoveObjectFromViewer(currItem);
   }
 
-  void ObjectBrowser::SetInsertSelectionChangedCommand(bool isActive)
+  void CompositionBrowser::SetInsertSelectionChangedCommand(bool isActive)
   {
     mInsertSelectionChangedCmd = isActive;
   }
 
-  void ObjectBrowser::MoveToFrontOfCamera(YTE::Composition *aObject)
+  void CompositionBrowser::MoveToFrontOfCamera(YTE::Composition *aObject)
   {
     if (YTE::Transform *transform = aObject->GetComponent<YTE::Transform>())
     {
@@ -334,17 +334,17 @@ namespace YTEditor
     }
   }
 
-  std::string ObjectBrowser::GetName()
+  std::string CompositionBrowser::GetName()
   {
     return "ObjectBrowser";
   }
 
-  Framework::Widget::DockArea ObjectBrowser::GetDefaultDockArea() const
+  Framework::Widget::DockArea CompositionBrowser::GetDefaultDockArea() const
   {
     return Widget::DockArea::Left;
   }
 
-  void ObjectBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
+  void CompositionBrowser::RemoveObjectFromViewer(ObjectItem *aItem)
   {
     // clear the component viewer
     YTELevelEditor* editor = GetWorkspace<YTELevelEditor>();
@@ -400,7 +400,7 @@ namespace YTEditor
     }
   }
 
-  void ObjectBrowser::keyPressEvent(QKeyEvent *aEvent)
+  void CompositionBrowser::keyPressEvent(QKeyEvent *aEvent)
   {
     if (aEvent->key() == Qt::Key_Delete)
     {
@@ -413,7 +413,7 @@ namespace YTEditor
     }
   }
 
-  YTE::Composition* ObjectBrowser::GetCurrentObject()
+  YTE::Composition* CompositionBrowser::GetCurrentObject()
   {
     auto objItem = dynamic_cast<ObjectItem*>(mTree->currentItem());
 
@@ -428,45 +428,45 @@ namespace YTEditor
 
   }
 
-  void ObjectBrowser::setCurrentItem(ObjectItem* aItem)
+  void CompositionBrowser::setCurrentItem(ObjectItem* aItem)
   {
     mTree->setCurrentItem(aItem);
   }
 
-  void ObjectBrowser::setCurrentItem(ObjectItem* aItem, int aColumn)
+  void CompositionBrowser::setCurrentItem(ObjectItem* aItem, int aColumn)
   {
     mTree->setCurrentItem(aItem, aColumn);
   }
 
 
-  void ObjectBrowser::setItemSelected(ObjectItem* aItem, bool aSelected)
+  void CompositionBrowser::setItemSelected(ObjectItem* aItem, bool aSelected)
   {
     mTree->setItemSelected(aItem, aSelected);
   }
 
 
-  void ObjectBrowser::clearSelection()
+  void CompositionBrowser::clearSelection()
   {
     mTree->clearSelection();
   }
 
-  int ObjectBrowser::indexOfTopLevelItem(ObjectItem* aObject)
+  int CompositionBrowser::indexOfTopLevelItem(ObjectItem* aObject)
   {
     return mTree->indexOfTopLevelItem(aObject);
   }
 
-  ObjectItem* ObjectBrowser::topLevelItem(int index)
+  ObjectItem* CompositionBrowser::topLevelItem(int index)
   {
     return static_cast<ObjectItem*>(mTree->topLevelItem(index));
   }
 
-  void ObjectBrowser::setHeaderLabel(char const* aLabel)
+  void CompositionBrowser::setHeaderLabel(char const* aLabel)
   {
     mTree->setHeaderLabel(aLabel);
   }
 
 
-  ObjectItem* ObjectBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
+  ObjectItem* CompositionBrowser::SearchChildrenByComp(ObjectItem *aItem, YTE::Composition *aComp)
   {
     for (int i = 0; i < aItem->childCount(); ++i)
     {
@@ -490,7 +490,7 @@ namespace YTEditor
     return nullptr;
   }
 
-  void ObjectBrowser::FindObjectsByArchetypeInternal(YTE::String &archetypeName,
+  void CompositionBrowser::FindObjectsByArchetypeInternal(YTE::String &archetypeName,
                                                      std::vector<ObjectItem*>& result,
                                                      ObjectItem* item)
   {
@@ -507,7 +507,7 @@ namespace YTEditor
     }
   }
 
-  ObjectItem* ObjectBrowser::FindItemByComposition(YTE::Composition *aComp)
+  ObjectItem* CompositionBrowser::FindItemByComposition(YTE::Composition *aComp)
   {
     for (int i = 0; i < mTree->topLevelItemCount(); ++i)
     {
@@ -531,7 +531,7 @@ namespace YTEditor
     return nullptr;
   }
 
-  std::vector<ObjectItem*> ObjectBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
+  std::vector<ObjectItem*> CompositionBrowser::FindAllObjectsOfArchetype(YTE::String &aArchetypeName)
   {
     std::vector<ObjectItem*> result;
 
@@ -551,7 +551,7 @@ namespace YTEditor
     return result;
   }
 
-  void ObjectBrowser::SelectNoItem()
+  void CompositionBrowser::SelectNoItem()
   {
     mTree->setCurrentItem(nullptr);
   }
