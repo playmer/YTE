@@ -1,3 +1,4 @@
+#include "YTEditor/Framework/ToolBarButton.hpp"
 #include "YTEditor/Framework/ToolBar.hpp"
 
 namespace YTEditor
@@ -10,6 +11,12 @@ namespace YTEditor
       , mMainWindow(aMainWindow)
     {
 
+    }
+
+    void ToolBar::AddButton(ToolBarButton* aButton)
+    {
+      auto action = this->addWidget(aButton);
+      mButtons.emplace_back(aButton);
     }
 
   } // End of Framework namespace

@@ -14,7 +14,10 @@ namespace YTEditor
 
       ToolBar(MainWindow* aMainWindow);
 
-      std::vector<ToolBarButton*>& GetButtons();
+      std::vector<ToolBarButton*>& GetButtons()
+      {
+        return mButtons;
+      }
 
     protected:
 

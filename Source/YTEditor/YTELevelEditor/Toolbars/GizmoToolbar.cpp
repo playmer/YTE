@@ -26,23 +26,23 @@ namespace YTEditor
     std::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/")};
 
     QString iconPath = (assetsDir.generic_string() + "select.png").c_str();
-    mSelect = new Framework::ToolBarButton(this, iconPath);
+    mSelect = new Framework::ToolBarButton(this, iconPath, "Select Gizmo");
     mSelect->connect(mSelect, &QPushButton::toggled, this, &GizmoToolbar::SelectToggled);
 
     iconPath = (assetsDir.generic_string() + "translate.png").c_str();
-    mTranslate = new Framework::ToolBarButton(this, iconPath);
+    mTranslate = new Framework::ToolBarButton(this, iconPath, "Translate Gizmo");
     mTranslate->connect(mTranslate, &QPushButton::toggled, this, &GizmoToolbar::TranslateToggled);
 
     iconPath = (assetsDir.generic_string() + "rotate.png").c_str();
-    mRotate = new Framework::ToolBarButton(this, iconPath);
+    mRotate = new Framework::ToolBarButton(this, iconPath, "Rotate Gizmo");
     mRotate->connect(mRotate, &QPushButton::toggled, this, &GizmoToolbar::RotateToggled);
 
     iconPath = (assetsDir.generic_string() + "scale.png").c_str();
-    mScale = new Framework::ToolBarButton(this, iconPath);
+    mScale = new Framework::ToolBarButton(this, iconPath, "Scale Gizmo");
     mScale->connect(mScale, &QPushButton::toggled, this, &GizmoToolbar::ScaleToggled);
 
     iconPath = (assetsDir.generic_string() + "switchAxes.png").c_str();
-    mSwitchAxesMode = new Framework::ToolBarButton(this, iconPath);
+    mSwitchAxesMode = new Framework::ToolBarButton(this, iconPath, "Switch Gizmo Axes");
     mSwitchAxesMode->SetIsUncheckable(true);
     mSwitchAxesMode->SetIsResettable(false);
     mSwitchAxesMode->connect(mSwitchAxesMode, &QPushButton::toggled, this, &GizmoToolbar::SwitchAxesModeToggled);

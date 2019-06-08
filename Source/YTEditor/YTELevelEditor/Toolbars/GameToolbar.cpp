@@ -19,17 +19,17 @@ YTEditor::GameToolbar::GameToolbar(Framework::MainWindow * aMainWindow)
   std::filesystem::path assetsDir{ workingDir.append("CreativeCommons_Icons/") };
 
   QString iconPath = (assetsDir.generic_string() + "play.png").c_str();
-  mPlay = new Framework::ToolBarButton(this, iconPath);
+  mPlay = new Framework::ToolBarButton(this, iconPath, "Play Game");
   mPlay->connect(mPlay, &QPushButton::toggled, this, &GameToolbar::PlayToggled);
 
   iconPath = (assetsDir.generic_string() + "pause.png").c_str();
-  mPause = new Framework::ToolBarButton(this, iconPath);
+  mPause = new Framework::ToolBarButton(this, iconPath, "Pause Game");
   mPause->connect(mPause, &QPushButton::toggled, this, &GameToolbar::PauseToggled);
   mPause->SetResetterMode(false);
   mPause->SetIsUncheckable(true);
 
   iconPath = (assetsDir.generic_string() + "stop.png").c_str();
-  mStop = new Framework::ToolBarButton(this, iconPath);
+  mStop = new Framework::ToolBarButton(this, iconPath, "Stop Game");
   mStop->connect(mStop, &QPushButton::pressed, this, &GameToolbar::StopPressed);
   mStop->setCheckable(false);
 

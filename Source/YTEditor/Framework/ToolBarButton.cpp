@@ -8,12 +8,14 @@ namespace YTEditor
 {
   namespace Framework
   {
-    ToolBarButton::ToolBarButton(ToolBar* aToolbar, QString aIconPath)
+    ToolBarButton::ToolBarButton(ToolBar* aToolbar, QString aIconPath, QString aActionName)
       : QPushButton(aToolbar)
-      , mToolbar(aToolbar)
-      , mIsResetter(true)
-      , mIsResettable(true)
-      , mIsUncheckable(false)
+      , mIconPath{ aIconPath }
+      , mActionName{ aActionName }
+      , mToolbar{ aToolbar }
+      , mIsResetter{ true }
+      , mIsResettable{ true }
+      , mIsUncheckable{ false }
     {
       setCheckable(true);
       setIconSize(QSize(20, 20));

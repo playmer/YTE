@@ -1,4 +1,4 @@
-#include <qpushbutton.h>
+#include <QPushButton>
 
 #include "YTEditor/Framework/ForwardDeclarations.hpp"
 
@@ -9,7 +9,7 @@ namespace YTEditor
     class ToolBarButton : public QPushButton
     {
     public:
-      ToolBarButton(ToolBar* aToolbar, QString aIconPath);
+      ToolBarButton(ToolBar* aToolbar, QString aIconPath, QString aActionName);
 
       void ResetOtherButtons();
 
@@ -19,17 +19,26 @@ namespace YTEditor
 
       void SetIsResettable(bool isResettable);
 
+      QString GetIcon()
+      {
+        return mIconPath;
+      }
+
+      QString GetActionName()
+      {
+        return mActionName;
+      }
+
     private:
+      void mousePressEvent(QMouseEvent* event) override;
+
+      QString mIconPath;
+      QString mActionName;
+      ToolBar* mToolbar;
 
       bool mIsResetter;
       bool mIsResettable;
-
       bool mIsUncheckable;
-
-      void mousePressEvent(QMouseEvent* event) override;
-
-      ToolBar* mToolbar;
-
     };
   }
 }
