@@ -70,10 +70,6 @@ namespace YTEditor
 
     FileMenu* GetFileMenu();
 
-    GameObjectMenu* GetGameObjectMenu();
-
-    GizmoToolbar* GetGizmoToolbar();
-
     Preferences* GetPreferences();
 
 
@@ -91,9 +87,6 @@ namespace YTEditor
 
     FileMenu* mFileMenu;
     GameObjectMenu* mGameObjectMenu;
-
-    GizmoToolbar* mGizmoToolbar;
-    GameToolbar* mGameToolbar;
 
     float mGizmoScaleFactor;
 

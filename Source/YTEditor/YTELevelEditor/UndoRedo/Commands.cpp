@@ -68,12 +68,12 @@ namespace YTEditor
     
     if (parentObj->GetType()->IsA<YTE::Space>())
     {
-      mObjectBrowser->AddTreeItem(name.c_str(), mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), mComposition, 0, true);
     }
     else
     {
       auto parent = mObjectBrowser->FindItemByComposition(parentObj);
-      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition, 0, true);
     }
   }
 
@@ -147,12 +147,12 @@ namespace YTEditor
 
     if (parentObj->GetType()->IsA<YTE::Space>())
     {
-      mObjectBrowser->AddTreeItem(name.c_str(), mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), mComposition, 0, true);
     }
     else
     {
       auto parent = mObjectBrowser->FindItemByComposition(parentObj);
-      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition);
+      mObjectBrowser->AddTreeItem(name.c_str(), parent, mComposition, 0, true);
     }
   }
 

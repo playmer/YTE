@@ -206,7 +206,7 @@ namespace YTEditor
 
   void ObjectTree::SetWidgetSettings()
   {
-    this->setObjectName("ObjectTree");
+    this->setObjectName("Composition Tree");
     this->setMinimumWidth(200);
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     this->setDragDropMode(QAbstractItemView::InternalMove);
@@ -217,7 +217,9 @@ namespace YTEditor
   void ObjectTree::OnCurrentItemChanged(QTreeWidgetItem *aCurrent,
     QTreeWidgetItem *aPrevious)
   {
-    ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
+    YTE::UnusedArguments(aPrevious);
+
+    //ObjectItem *prevObj = aPrevious ? static_cast<ObjectItem*>(aPrevious) : nullptr;
     ObjectItem *currObj = aCurrent ? static_cast<ObjectItem*>(aCurrent) : nullptr;
 
     ArchetypeTools *archTools = mLevelEditor->GetWidget<ComponentBrowser>()->GetArchetypeTools();

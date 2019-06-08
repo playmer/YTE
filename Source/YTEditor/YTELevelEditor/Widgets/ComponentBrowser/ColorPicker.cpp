@@ -34,6 +34,8 @@ namespace YTEditor
 
     void ColorPicker::clicked(bool aChecked)
     {
+      YTE::UnusedArguments(aChecked);
+
       auto options = QColorDialog::ColorDialogOptions();
 
       if (mAlpha)

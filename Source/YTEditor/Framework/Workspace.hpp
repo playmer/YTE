@@ -201,7 +201,7 @@ T* Workspace::AddToolBar(Args&&... args)
   auto inserted = mToolBars.emplace(std::type_index(typeid(T)), std::make_unique<T>(std::forward<Args>(args)...));
 
   // Add ToolBar to MainWindow
-  //mMainWindow->addToolBar(inserted->second.get());
+  mMainWindow->addToolBar(inserted->second.get());
   return static_cast<T*>(inserted->second.get());
 }
 

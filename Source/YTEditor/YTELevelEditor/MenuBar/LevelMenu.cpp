@@ -68,7 +68,7 @@ namespace YTEditor
       auto objName = composition->GetName();
 
       // Store the name and composition pointer in the object browser
-      ObjectItem *topItem = mObjectBrowser->AddExistingComposition(objName.c_str(), composition.get());
+      mObjectBrowser->AddExistingComposition(objName.c_str(), composition.get());
     }
   }
 

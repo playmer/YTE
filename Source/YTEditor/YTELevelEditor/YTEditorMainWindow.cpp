@@ -99,8 +99,6 @@ namespace YTEditor
     , mRunningWindowTab{ nullptr }
     , mFileMenu{ nullptr }
     , mGameObjectMenu{ nullptr }
-    , mGizmoToolbar{ nullptr }
-    , mGameToolbar{ nullptr }
     , mGizmoScaleFactor{ 1.0f }
   {
     DebugObjection(!aEngine,
@@ -182,22 +180,22 @@ namespace YTEditor
         // change to select gizmo
         if (aEvent->key() == Qt::Key_Q)
         {
-          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Select);
+          editor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Select);
         }
         // change to translate gizmo
         else if (aEvent->key() == Qt::Key_W)
         {
-          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Translate);
+          editor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Translate);
         }
         // change to rotate gizmo
         else if (aEvent->key() == Qt::Key_E)
         {
-          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Rotate);
+          editor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Rotate);
         }
         // change to scale gizmo
         else if (aEvent->key() == Qt::Key_R)
         {
-          mGizmoToolbar->SetMode(GizmoToolbar::Mode::Scale);
+          editor->GetGizmoToolbar()->SetMode(GizmoToolbar::Mode::Scale);
         }
       }
     }
@@ -210,16 +208,6 @@ namespace YTEditor
   FileMenu* YTEditorMainWindow::GetFileMenu()
   {
     return mFileMenu;
-  }
-
-  GameObjectMenu * YTEditorMainWindow::GetGameObjectMenu()
-  {
-    return mGameObjectMenu;
-  }
-
-  GizmoToolbar* YTEditorMainWindow::GetGizmoToolbar()
-  {
-    return mGizmoToolbar;
   }
 
   Preferences* YTEditorMainWindow::GetPreferences()

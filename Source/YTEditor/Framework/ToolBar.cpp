@@ -15,7 +15,7 @@ namespace YTEditor
 
     void ToolBar::AddButton(ToolBarButton* aButton)
     {
-      auto action = this->addWidget(aButton);
+      this->addWidget(aButton);
       mButtons.emplace_back(aButton);
     }
 

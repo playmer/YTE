@@ -253,10 +253,10 @@ namespace YTEditor
       // Get the name of the object
       YTE::String objName = cmp->second.get()->GetName();
 
-      YTE::Composition *engineObj = cmp->second.get();
+      //YTE::Composition *engineObj = cmp->second.get();
 
       // Store the name and composition pointer in the object browser
-      ObjectItem * topItem = objectBrowser->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
+      objectBrowser->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
     }
 
     // if there are objects in the level
@@ -394,10 +394,12 @@ namespace YTEditor
   }
   Gizmo* YTELevelEditor::CreateGizmo(YTE::Space *aSpace)
   {
+    YTE::UnusedArguments(aSpace);
+
     auto gizmo = RemakeGizmo();
 
     // get the window 
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
     gizmo->SetOperation(Gizmo::Operation::Select);
 
     return gizmo;
@@ -406,7 +408,7 @@ namespace YTEditor
   Gizmo* YTELevelEditor::RemakeGizmo()
   {
     // get the window 
-    YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
+    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
 
     mGizmo = std::make_unique<Gizmo>(this,
       mImguiLayer->GetComponent<YTE::ImguiLayer>(),

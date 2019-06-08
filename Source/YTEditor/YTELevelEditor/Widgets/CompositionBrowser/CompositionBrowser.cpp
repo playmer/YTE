@@ -93,13 +93,13 @@ namespace YTEditor
 
     editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
-    return AddTreeItem(aCompositionName, composition, aIndex);
+    return AddTreeItem(aCompositionName, composition, aIndex, true);
   }
 
   ObjectItem* CompositionBrowser::AddExistingComposition(const char *aCompositionName,
     YTE::Composition *aComposition)
   {
-    return AddTreeItem(aCompositionName, aComposition);
+    return AddTreeItem(aCompositionName, aComposition, 0, true);
   }
 
   ObjectItem* CompositionBrowser::AddChildObject(const char *aCompositionName,
@@ -120,7 +120,7 @@ namespace YTEditor
 
     editor->GetUndoRedo()->InsertCommand(std::move(cmd));
 
-    return AddTreeItem(aCompositionName, aParentObj, composition, aIndex);
+    return AddTreeItem(aCompositionName, aParentObj, composition, aIndex, true);
   }
 
   ObjectItem* CompositionBrowser::AddTreeItem(const char *aItemName,
@@ -154,8 +154,7 @@ namespace YTEditor
 
     for (auto const& [compositionName, child] : aEngineObj->GetCompositions())
     {
-      //AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
-      AddTreeItem(child->GetName().c_str(), item, child.get());
+      AddTreeItem(child->GetName().c_str(), item, child.get(), 0, aSetAsCurrent);
     }
 
     return item;
@@ -183,19 +182,9 @@ namespace YTEditor
       mTree->setCurrentItem(item);
     }
 
-    //auto& compMap = aEngineObj->GetCompositions();
-    //
-    //for (auto iter = compMap.begin(); iter != compMap.end(); iter++)
-    //{
-    //  YTE::Composition *child = iter->second.get();
-    //
-    //  AddTreeItem(child->GetName().c_str(), item, child);
-    //}
-
     for (auto const& [compositionName, child] : aEngineObj->GetCompositions())
     {
-      //AddTreeItem(child->GetName().c_str(), item, child.get(), aSetAsCurrent);
-      AddTreeItem(child->GetName().c_str(), item, child.get());
+      AddTreeItem(child->GetName().c_str(), item, child.get(), 0, aSetAsCurrent);
     }
 
     return item;
@@ -226,7 +215,7 @@ namespace YTEditor
 
   void CompositionBrowser::SetWidgetSettings()
   {
-    setObjectName("ObjectBrowser");
+    setObjectName("Composition Browser");
     setMinimumWidth(200);
     setContextMenuPolicy(Qt::CustomContextMenu);
     setMouseTracking(true);
@@ -496,7 +485,7 @@ namespace YTEditor
   {
     for (int i = 0; i < item->childCount(); ++i)
     {
-      ObjectItem* currentItem = dynamic_cast<ObjectItem*>(item->child(i));
+      //ObjectItem* currentItem = dynamic_cast<ObjectItem*>(item->child(i));
 
       if (item->GetEngineObject()->GetArchetypeName() == archetypeName)
       {
