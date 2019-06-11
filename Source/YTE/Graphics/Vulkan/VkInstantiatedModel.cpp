@@ -57,6 +57,7 @@ namespace YTE
   void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
   {
     UnusedArguments(aEvent);
+    mBuffers.clear();
     mSurface->DestroyModel(mView, this);
   }
 
@@ -85,12 +86,19 @@ namespace YTE
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
-    mPipelineData.emplace(aSubMesh, 
-                          aSubMesh->CreatePipelineData(GetBuffer(mModelUBO),
-                                                       GetBuffer(mAnimationUBO),
-                                                       GetBuffer(mModelMaterialUBO),
-                                                       GetBuffer(mSubmeshMaterialsUBO[aIndex].first),
-                                                       mView));
+    if (0 == mBuffers.size())
+    {
+      AddBuffer(&mView->GetViewUBO());
+      AddBuffer(&mAnimationUBO);
+      AddBuffer(&mModelMaterialUBO);
+      AddBuffer(&mSubmeshMaterialsUBO[aIndex].first);
+      AddBuffer(&mView->GetLightManager()->GetUBOLightBuffer());
+      AddBuffer(&mView->GetIlluminationUBO());
+      AddBuffer(&mView->GetWaterInfluenceMapManager()->GetUBOMapBuffer());
+      AddBuffer(&mModelUBO);
+    }
+
+    mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(this, mView));
   }
 }
 

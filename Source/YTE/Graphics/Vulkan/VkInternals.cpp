@@ -8,31 +8,50 @@ namespace YTE
 {
   constexpr bool cVulkanValidations = false;
 
-
-  // debug report callback for vulkan
+  //LogType ToYTE(vk::DebugUtilsMessageSeverityFlagBitsEXT aSeverity)
+  //{
+  //  switch (aSeverity)
+  //  {
+  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose: return LogType::Information;
+  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo: return LogType::Information;
+  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning: return LogType::Warning;
+  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError : return LogType::Error;
+  //  }
+  //
+  //  return LogType::Information;
+  //}
+  //
+  //// debug report callback for vulkan
   //VkBool32 VKAPI_PTR debugUtilsCallback(
   //  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
   //  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-  //  const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-  //  void* pUserData)
+  //  const VkDebugUtilsMessengerCallbackDataEXT* aCallbackData,
+  //  void* aUserData)
   //{
   //  //UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
   //
+  //  auto engine = static_cast<Engine*>(aUserData);
+  //
   //  vk::DebugUtilsMessageSeverityFlagBitsEXT severityFlag{ messageSeverity };
   //  vk::DebugUtilsMessageTypeFlagsEXT typeFlag{ messageTypes };
-  //  
   //
   //  auto text = fmt::format(
-  //    "Vulkan Layer {} Report, Severity {}:\n\t: ", 
+  //    "Vulkan Layer {} Report, Severity {}:\n\t: {}", 
   //    vk::to_string(typeFlag), 
-  //    vk::to_string(severityFlag));
+  //    vk::to_string(severityFlag),
+  //    aCallbackData->pMessage);
   //
+  //  engine->Log(ToYTE(severityFlag), text);
   //
   //  if constexpr (cVulkanValidations)
   //  {
-  //    __debugbreak();
-  //    assert(false == (severityFlag & vk::DebugUtilsMessageSeverityFlagBitsEXT::eError));
+  //    if (vk::DebugUtilsMessageSeverityFlagBitsEXT::eError == severityFlag)
+  //    {
+  //      __debugbreak();
+  //      assert(false);
+  //    }
   //  }
+  //
   //  return VK_TRUE;
   //}
 
@@ -84,7 +103,7 @@ namespace YTE
   
     printf("%s\n", aMessage);
     assert(false == (aFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT));
-
+  
     return VK_TRUE;
   }
 
@@ -127,21 +146,28 @@ namespace YTE
       mDebugReportCallback = mInstance->createDebugReportCallback(flags,
                                                                   &debugReportCallback);
 
-
-
-
-      //vk::DebugUtilsMessengerCreateFlagBitsEXT::
+      //auto severityFlags =
+      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+      //
+      //auto messageTypes =
+      //  vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+      //  vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+      //  vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
       //
       //vk::DebugUtilsMessengerCreateInfoEXT debugUtilsCreate(
-      //  //DebugUtilsMessengerCreateFlagsEXT flags_ = DebugUtilsMessengerCreateFlagsEXT(),
-      //  //DebugUtilsMessageSeverityFlagsEXT messageSeverity_ = DebugUtilsMessageSeverityFlagsEXT(),
-      //  //DebugUtilsMessageTypeFlagsEXT messageType_ = DebugUtilsMessageTypeFlagsEXT(),
-      //  //PFN_vkDebugUtilsMessengerCallbackEXT pfnUserCallback_ = nullptr,
-      //  //void* pUserData_ = nullptr
+      //  vk::DebugUtilsMessengerCreateFlagsEXT(),
+      //  severityFlags,
+      //  messageTypes,
+      //  debugUtilsCallback,
+      //  static_cast<void*>(aEngine)
       //);
       //
-      //instance.createDebugUtilsMessengerEXT(debugUtilsCreate);
-  }
+      //vk::Instance isntance = *mInstance;
+      //isntance.createDebugUtilsMessengerEXT(debugUtilsCreate);
+    }
 
     auto &windows = aEngine->GetWindows();
 

@@ -19,6 +19,11 @@ namespace YTE
 
     }
 
+    virtual ~GPUBufferBase()
+    {
+
+    }
+
     PrivateImplementationLocal<32>& GetData()
     {
       return mData;
@@ -76,8 +81,72 @@ namespace YTE
       mBuffer.reset();
     }
 
+    std::unique_ptr<GPUBufferBase> Steal()
+    {
+      return std::move(mBuffer);
+    }
+
   private:
     std::unique_ptr<GPUBufferBase> mBuffer;
+  };
+
+
+
+  template <typename tType>
+  class GPUBufferRef
+  {
+  public:
+    GPUBufferRef()
+    {
+
+    }
+
+    template <typename tType>
+    GPUBufferRef(GPUBuffer<tType>& aBuffer)
+      : mBuffer{ &(aBuffer.GetBase()) }
+    {
+
+    }
+
+    GPUBufferRef(GPUBufferBase& aBuffer)
+      : mBuffer{ &aBuffer }
+    {
+
+    }
+
+    GPUBufferRef(GPUBufferBase* aBuffer)
+      : mBuffer{ aBuffer }
+    {
+
+    }
+
+    GPUBufferBase& GetBase()
+    {
+      return *mBuffer;
+    }
+
+    void Update(tType const& aData)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+    }
+
+    void Update(tType const* aData, size_t aSize)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
+    }
+
+    void Update(ContiguousRange<tType> aData)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
+    }
+
+    operator bool()
+    {
+      return mBuffer != nullptr;
+    }
+
+  private:
+    GPUBufferBase* mBuffer;
   };
 
   namespace GPUAllocation

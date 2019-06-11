@@ -55,6 +55,7 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/TempDiffuseColoringComponent.hpp
     ${CMAKE_CURRENT_LIST_DIR}/WaterInfluenceMapManager.cpp
     ${CMAKE_CURRENT_LIST_DIR}/WaterInfluenceMapManager.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/UBOs.cpp
     ${CMAKE_CURRENT_LIST_DIR}/UBOs.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Vertex.hpp
 )

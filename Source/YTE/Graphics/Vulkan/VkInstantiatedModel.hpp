@@ -33,7 +33,6 @@ namespace YTE
     VkRenderedSurface *mSurface;
     GraphicsView *mView;
 
-    // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
 
     VkMesh* GetVkMesh()

@@ -100,10 +100,7 @@ namespace YTE
     return device->createDescriptorPool({}, 1, mDescriptorTypes);
   }
 
-  SubMeshPipelineData VkSubmesh::CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOModelMaterial,
-                                                    std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
+  SubMeshPipelineData VkSubmesh::CreatePipelineData(InstantiatedModel* aModel,
                                                     GraphicsView *aView)
   {
     auto device = mRenderer->mDevice;
@@ -117,14 +114,19 @@ namespace YTE
     // Add Uniform Buffers
     std::vector<VkShaderDescriptions::BufferOrImage> bufferOrImages;
 
+    for (auto& buffer : aModel->GetBuffers())
+    {
+      bufferOrImages.emplace_back(GetBuffer(buffer));
+    }
     
-    bufferOrImages.emplace_back(GetBuffer(aView->GetViewUBO()));
-    bufferOrImages.emplace_back(aUBOAnimation);
-    bufferOrImages.emplace_back(aUBOModelMaterial);
-    bufferOrImages.emplace_back(aUBOSubmeshMaterial);
-    bufferOrImages.emplace_back(GetBuffer(aView->GetLightManager()->GetUBOLightBuffer()));
-    bufferOrImages.emplace_back(GetBuffer(aView->GetIlluminationUBO()));
-    bufferOrImages.emplace_back(GetBuffer(aView->GetWaterInfluenceMapManager()->GetUBOMapBuffer()));
+    //bufferOrImages.emplace_back(GetBuffer(aView->GetViewUBO()));
+    //bufferOrImages.emplace_back(aUBOAnimation);
+    //bufferOrImages.emplace_back(aUBOModelMaterial);
+    //bufferOrImages.emplace_back(aUBOSubmeshMaterial);
+    //bufferOrImages.emplace_back(GetBuffer(aView->GetLightManager()->GetUBOLightBuffer()));
+    //bufferOrImages.emplace_back(GetBuffer(aView->GetIlluminationUBO()));
+    //bufferOrImages.emplace_back(GetBuffer(aView->GetWaterInfluenceMapManager()->GetUBOMapBuffer()));
+    //bufferOrImages.emplace_back(aUBOModel);
 
     for (auto texture : mTextures)
     {
@@ -136,7 +138,6 @@ namespace YTE
       bufferOrImages.emplace_back(textureInfo);
     }
 
-    bufferOrImages.emplace_back(aUBOModel);
     auto writeDescriptorSets = mPipelineInfo->mDescriptions.MakeWriteDescriptorSet(
       &pipelineData.mDescriptorSet,
       bufferOrImages);

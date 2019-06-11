@@ -34,6 +34,7 @@
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/InfluenceMap.hpp"
+#include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -192,5 +193,15 @@ namespace YTE
     InitializeType<Serializable>();
     InitializeType<EditorProperty>();
     InitializeType<DropDownStrings>();
+
+    InitializeType<UBOs::View>();
+    InitializeType<UBOs::Model>();
+    InitializeType<UBOs::Material>();
+    InitializeType<UBOs::Animation>();
+    InitializeType<UBOs::WaterInfluenceMap>();
+    InitializeType<UBOs::WaterInformationManager>();
+    InitializeType<UBOs::Light>();
+    InitializeType<UBOs::Illumination>();
+    InitializeType<UBOs::LightManager>();
   }
 }

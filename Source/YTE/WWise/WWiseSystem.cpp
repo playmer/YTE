@@ -627,12 +627,12 @@ namespace YTE
 
   void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
   {
-    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    //AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
   }
 
   void WWiseSystem::SendEvent(u64 aEvent, AkGameObjectID aObject)
   {
-    AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
+    //AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
   }
 
   void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)

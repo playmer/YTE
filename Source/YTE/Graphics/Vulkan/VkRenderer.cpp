@@ -137,32 +137,6 @@ namespace YTE
     auto instance = mVulkanInternals->GetInstance();
     auto& physicalDevice = mVulkanInternals->GetPhysicalDevice();
 
-    //auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
-    //auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
-    //auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
-
-    //std::array deviceQueueCreateInfos{
-    //  vkhlf::DeviceQueueCreateInfo{ graphicsQueueFamilyIndices.GetFamily(), 0.0f},
-    //  //vkhlf::DeviceQueueCreateInfo{ computeQueueFamilyIndices.GetFamily(), 0.0f},
-    //  vkhlf::DeviceQueueCreateInfo{ transferQueueFamilyIndices.GetFamily(), 0.0f},
-    //};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Desired queues need to be requested upon logical device creation
     // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
     // requests different queue types
@@ -170,7 +144,6 @@ namespace YTE
 
     // Get queue family indices for the requested queue family types
     // Note that the indices may overlap depending on the implementation
-
     const float defaultQueuePriority(0.0f);
 
     // Graphics queue
@@ -193,37 +166,6 @@ namespace YTE
       // If compute family index differs, we need an additional queue create info for the transfer queue
       queueCreateInfos.emplace_back(transferQueueFamilyIndices.GetFamily(), defaultQueuePriority);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
@@ -761,5 +703,23 @@ namespace YTE
 
     return static_unique_pointer_cast<GPUBufferBase>(std::move(base));
   }
+
+
+  std::shared_ptr<vkhlf::Buffer>& GetBuffer(InstantiatedModel::BufferRef& aBuffer)
+  {
+    GPUBufferBase* buffer;
+
+    if (auto ownedBuffer = std::get_if<InstantiatedModel::OwnedBuffer>(&aBuffer))
+    {
+      buffer = ownedBuffer->get();
+    }
+    else if (auto observedBuffer = std::get_if<InstantiatedModel::ObservedBuffer>(&aBuffer))
+    {
+      buffer = *observedBuffer;
+    }
+
+    return static_cast<VkUBO*>(buffer)->GetBuffer();
+  }
+
 }
 

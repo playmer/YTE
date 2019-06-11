@@ -3,6 +3,9 @@
 #ifndef YTE_Graphics_Generics_InstantiatedMesh_hpp
 #define YTE_Graphics_Generics_InstantiatedMesh_hpp
 
+#include <map>
+#include <variant>
+
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Graphics/GPUBuffer.hpp"
@@ -30,6 +33,10 @@ namespace YTE
   {
   public:
     YTEDeclareType(InstantiatedModel);
+
+    using OwnedBuffer  = std::unique_ptr<GPUBufferBase>;
+    using ObservedBuffer = GPUBufferBase *;
+    using BufferRef = std::variant<OwnedBuffer, ObservedBuffer>;
 
     YTE_Shared InstantiatedModel(Renderer* aRenderer);
 
@@ -116,7 +123,58 @@ namespace YTE
       return mModelMaterialUBO;
     }
 
+    template <typename tType>
+    GPUBufferRef<tType> GetBufferRef()
+    {
+      auto it = mTypeToIndex.find(TypeId<tType>());
+
+      if (it != mTypeToIndex.end())
+      {
+        if (auto ownedBuffer = std::get_if<OwnedBuffer>(&mBuffers[it->second]))
+        {
+          return GPUBufferRef<tType>{ **ownedBuffer };
+        }
+        else if (auto observedBuffer = std::get_if<ObservedBuffer>(&mBuffers[it->second]))
+        {
+          return GPUBufferRef<tType>{ **observedBuffer };
+        }
+      }
+
+      return { nullptr };
+    }
+
+    std::vector<std::variant<OwnedBuffer, ObservedBuffer>>& GetBuffers()
+    {
+      return mBuffers;
+    }
+
+    // Does not take ownership of the buffer
+    template <typename tType>
+    void AddBuffer(GPUBufferBase* aBufferRef)
+    {
+      mBuffers.emplace_back(aBufferRef);
+      mTypeToIndex.emplace(TypeId<tType>(), mBuffers.size());
+    }
+
+    // Does not takes ownership of the buffer
+    template <typename tType>
+    void AddBuffer(GPUBuffer<tType>* aBufferRef)
+    {
+      AddBuffer<tType>(&aBufferRef->GetBase());
+    }
+
+    // Takes ownership of the buffer
+    template <typename tType>
+    void AddBuffer(GPUBuffer<tType>& aBufferRef)
+    {
+      mBuffers.emplace_back(aBufferRef.Steal());
+      mTypeToIndex.emplace(TypeId<tType>(), mBuffers.size());
+    }
+
   protected:
+    std::vector<BufferRef> mBuffers;
+    std::multimap<Type*, size_t> mTypeToIndex;
+
     Renderer* mRenderer;
     Mesh *mMesh;
     GPUBuffer<UBOs::Model> mModelUBO;

@@ -10,8 +10,9 @@
 
 #include "YTE/Graphics/GPUBuffer.hpp"
 
-#include "YTE/Graphics/Generics/Texture.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -157,13 +158,10 @@ namespace YTE
 
     VkUBOUpdates mUBOUpdates;
   private:
-    bool mDataUpdateRequired = false;
-    // create a command pool for command buffer allocation
-    //std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
-
-    std::unique_ptr<VkInternals> mVulkanInternals;
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
-    Engine *mEngine;
+    std::unique_ptr<VkInternals> mVulkanInternals;
+    Engine* mEngine;
+    bool mDataUpdateRequired = false;
 
   };
 
@@ -202,6 +200,8 @@ namespace YTE
   {
     return static_cast<VkUBO*>(&aBuffer.GetBase())->GetBuffer();
   }
+
+  std::shared_ptr<vkhlf::Buffer>& GetBuffer(InstantiatedModel::BufferRef& aBuffer);
 
   struct VkGPUAllocatorData
   {
