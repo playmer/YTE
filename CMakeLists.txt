@@ -15,6 +15,13 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 project(YTE CXX C)
 
 ################################################################################
+# Set up some options
+################################################################################
+option(YTE_BUILD_DOCUMENTATION
+       "Determines if we should build documentation. Requires Doxygen and Sphinx."
+       OFF)
+
+################################################################################
 # Set up some variables that we'll be able to access anywhere.
 ################################################################################
 set(Repo_Root         ${CMAKE_CURRENT_SOURCE_DIR})
@@ -51,5 +58,9 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 ################################################################################
 add_subdirectory(Dependencies)
 add_subdirectory(Source)
+
+#if (YTE_BUILD_DOCUMENTATION)
+    add_subdirectory(Documentation)
+#endif()
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT YTEditor) 
