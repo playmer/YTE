@@ -27,7 +27,7 @@ file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
  
 # Only regenerate Doxygen when the Doxyfile or public headers change
 add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}
-                   DEPENDS ${CAT_CUTIFIER_PUBLIC_HEADERS}
+                   DEPENDS ${yteSources}
                    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE_OUT}
                    MAIN_DEPENDENCY ${DOXYFILE_OUT} ${DOXYFILE_IN}
                    COMMENT "Generating Documentation"
