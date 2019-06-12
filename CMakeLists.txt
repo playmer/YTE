@@ -25,6 +25,7 @@ option(YTE_BUILD_DOCUMENTATION
 # Set up some variables that we'll be able to access anywhere.
 ################################################################################
 set(Repo_Root         ${CMAKE_CURRENT_SOURCE_DIR})
+set(YTE_Repo_Root     ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMake_Include     ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(Dependencies_Root ${CMAKE_CURRENT_SOURCE_DIR}/Dependencies)
 set(YTE_Binary_Dir    ${CMAKE_CURRENT_SOURCE_DIR}/Output/Binary)
