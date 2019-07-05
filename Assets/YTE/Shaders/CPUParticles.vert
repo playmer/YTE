@@ -41,7 +41,7 @@ layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 
 ///////////////////////////////////////////////////////////////////////////////
 // Vertex Shader Outputs | Fragment Shader Inputs
-layout (location = 0) out vec2 outTextureCoordinates;
+layout (location = 0) out vec3 outTextureCoordinates;
 layout (location = 1) out vec3 outNormal;
 layout (location = 2) out vec4 outPosition;
 layout (location = 3) out vec3 outPositionWorld;
@@ -98,14 +98,13 @@ vec4 CalculateViewPosition(mat4 aViewMat, vec4 aPosition)
 void main() 
 {
   // remaining output for fragment shader
-  outTextureCoordinates = vec2(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y);
+  outTextureCoordinates = vec3(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y, inTextureCoordinates.z);
   outDiffuse = Model.mDiffuseColor;
   outViewMatrix = View.mViewMatrix;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, vec4(inPosition, 1.0f));
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
-  outNormal = CalculateNormal(Model.mModelMatrix,
-                              inNormal);
+  outNormal = CalculateNormal(Model.mModelMatrix, inNormal);
 
   gl_Position = View.mProjectionMatrix * outPosition;
 }

@@ -7,11 +7,11 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
 
 #include "YTE/Graphics/UBOs.hpp"
-
-#include "YTE/Graphics/Generics/Renderer.hpp"
 
 namespace YTE
 {
@@ -88,10 +88,22 @@ namespace YTE
     YTE_Shared void SetGravityValue(float aGravityVal);
 
   private:
+    SubmeshData mSubmesh;
     std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
     std::vector<std::unique_ptr<InstantiatedModel>> mFreeParticles;
     std::vector<float> mVarianceBuffer;
     size_t mVarianceIndex;
+
+    //std::vector<Particle> mSmolParticles;
+    std::unique_ptr<InstantiatedModel> mModel;
+    //std::vector<glm::vec3> mPositions;
+    //std::vector<glm::vec3> mNormals;
+    //std::vector<glm::vec3> mTextureCoordinates;
+    size_t mUsedParticles = 0;
+    size_t mCapacityParticles;
+
+    void RecreateMesh();
+
 
     Renderer* mRenderer;
     Transform* mCameraTransform;

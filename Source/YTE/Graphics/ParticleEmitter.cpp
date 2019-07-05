@@ -15,6 +15,8 @@
 
 namespace YTE
 {
+  inline constexpr bool cNewParticles = true;
+
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
     UnusedArguments(aComponent);
@@ -110,6 +112,8 @@ namespace YTE
   ParticleEmitter::ParticleEmitter(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
     , mVarianceIndex{0}
+    , mUsedParticles{ 0 }
+    , mCapacityParticles{ 0 }
     , mRenderer{ nullptr }
     , mTextureName{ "" }
     , mPosition{}
@@ -171,14 +175,53 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
 
+    //////////////////////////////////
+    // New Particles
+    glm::vec4 position0;
+    glm::vec4 position1;
+    glm::vec4 position2;
+    glm::vec4 position3;
+    glm::vec4 normal0;
+    glm::vec4 normal1;
+    glm::vec4 normal2;
+    glm::vec4 normal3;
+    glm::vec4 uv0;
+    glm::vec4 uv1;
+    glm::vec4 uv2;
+    glm::vec4 uv3;
+
+    glm::vec3 emptyPosition{ 0.0f, 0.0f, 0.0f };
+
+    position0 = { -0.5f, -0.5f, 0.0f, 1.0f };
+    position1 = {  0.5f, -0.5f, 0.0f, 1.0f };
+    position2 = {  0.5f,  0.5f, 0.0f, 1.0f };
+    position3 = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+    normal0 = { 0.0f, 0.0f, 1.0f, 1.0f };
+    normal2 = { 0.0f, 0.0f, 1.0f, 1.0f };
+    normal2 = { 0.0f, 0.0f, 1.0f, 1.0f };
+    normal3 = { 0.0f, 0.0f, 1.0f, 1.0f };
+
+    uv0 = { 0.0f, 0.0f, 0.0f, 1.0 };
+    uv1 = { 1.0f, 0.0f, 0.0f, 1.0 };
+    uv2 = { 1.0f, 1.0f, 0.0f, 1.0 };
+    uv3 = { 0.0f, 1.0f, 0.0f, 1.0 };
+
     // update the particles
     for (auto it = mParticles.begin(); it < mParticles.end(); ++it)
     {
       while (it < mParticles.end() && it->first.mLife <= 0.0f)
       {
-        it->second->SetVisibility(false);
-        mFreeParticles.emplace_back(std::move(it->second));
-        it = mParticles.erase(it);
+        if constexpr (false == cNewParticles)
+        {
+          it->second->SetVisibility(false);
+          mFreeParticles.emplace_back(std::move(it->second));
+          it = mParticles.erase(it);
+        }
+        else
+        {
+          --mUsedParticles;
+        }
       }
 
       if (it == mParticles.end())
@@ -202,10 +245,103 @@ namespace YTE
       particle.mUBO.mModelMatrix[3][0] = particle.mPosition.x;
       particle.mUBO.mModelMatrix[3][1] = particle.mPosition.y;
       particle.mUBO.mModelMatrix[3][2] = particle.mPosition.z;
-      modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife + 0.5f * mLifetime / mLifetime);
 
-      it->second->UpdateUBOModel(particle.mUBO);
-      it->second->UpdateUBOMaterial(&modelMaterial);
+      float opacity = static_cast<float>(particle.mLife + 0.5f * mLifetime / mLifetime);
+
+      if constexpr (false == cNewParticles)
+      {
+        modelMaterial.mDiffuse.w = opacity;
+
+        it->second->UpdateUBOModel(particle.mUBO);
+        it->second->UpdateUBOMaterial(&modelMaterial);
+      }
+    }
+
+    if constexpr (cNewParticles)
+    { 
+      if (mParticles.size())
+      {
+        auto& positions = mSubmesh.mVertexData.mPositionData;
+        auto& normals = mSubmesh.mVertexData.mNormalData;
+        auto& textureCoordinates = mSubmesh.mVertexData.mTextureCoordinatesData;
+        auto& indices = mSubmesh.mIndexData;
+
+        indices.clear();
+        positions.clear();
+        normals.clear();
+
+        size_t uvIndex = 0;
+        for (auto& [particle, model] : mParticles)
+        {
+          float opacity = static_cast<float>(particle.mLife + 0.5f * mLifetime / mLifetime);
+
+          positions.emplace_back(particle.mUBO.mModelMatrix * position0);
+          positions.emplace_back(particle.mUBO.mModelMatrix * position1);
+          positions.emplace_back(particle.mUBO.mModelMatrix * position2);
+          positions.emplace_back(particle.mUBO.mModelMatrix * position3);
+
+          auto normalMatrix = glm::mat3(glm::transpose(glm::inverse(particle.mUBO.mModelMatrix)));
+
+          normals.emplace_back(glm::normalize(normalMatrix * normal0));
+          normals.emplace_back(glm::normalize(normalMatrix * normal1));
+          normals.emplace_back(glm::normalize(normalMatrix * normal2));
+          normals.emplace_back(glm::normalize(normalMatrix * normal3));
+
+          // Update the texture coordinates.
+          textureCoordinates[uvIndex + 0].z = opacity;
+          textureCoordinates[uvIndex + 1].z = opacity;
+          textureCoordinates[uvIndex + 2].z = opacity;
+          textureCoordinates[uvIndex + 3].z = opacity;
+
+          uvIndex += 4;
+        }
+
+        auto emptyParticles = static_cast<i64>(mCapacityParticles) - static_cast<i64>(mUsedParticles);
+
+        // This should always just be rewritten completely for now. This could be optimized to always be 
+        // filled with the correct data, since it never actually changes.
+        for (i64 i = 0; i < mCapacityParticles; ++i)
+        {
+          indices.insert(indices.end(), { 0, 1, 2, 2, 3, 0 });
+        }
+
+        if (emptyParticles > 0)
+        {
+          positions.insert(positions.end(), static_cast<size_t>(emptyParticles * 4), emptyPosition);
+        }
+
+        for (i64 i = 0; i < emptyParticles; ++i)
+        {
+          normals.insert(normals.end(), { normal0, normal1,normal2,normal3 });
+          //normals.emplace_back(normal0);
+          //normals.emplace_back(normal1);
+          //normals.emplace_back(normal2);
+          //normals.emplace_back(normal3);
+        }
+
+        for (i64 i = 0; i < emptyParticles; ++i)
+        {
+          textureCoordinates.insert(textureCoordinates.end(), { uv0, uv1, uv2, uv3 });
+          //textureCoordinates.emplace_back(uv0);
+          //textureCoordinates.emplace_back(uv1);
+          //textureCoordinates.emplace_back(uv2);
+          //textureCoordinates.emplace_back(uv3);
+        }
+
+        //if (mParticles.size() > mCapacityParticles)
+        //{
+        //  RecreateMesh();
+        //}
+        //else
+        //{
+        //  auto& submesh = mMesh->GetSubmeshes()[0];
+        //  auto& bufferData = submesh.mVertexBufferData;
+        //  bufferData.mPositionBuffer.Update(positions);
+        //  bufferData.mNormalBuffer.Update(normals);
+        //  bufferData.mTextureCoordinatesBuffer.Update(textureCoordinates);
+        //  submesh.mIndexBuffer.Update(indices);
+        //}
+      }
     }
 
     // time to make some new particles
@@ -214,6 +350,11 @@ namespace YTE
       // create the required particles
       for (int i = 0; i < mEmitCount; ++i)
       {
+        if (cNewParticles)
+        {
+          ++mUsedParticles;
+        }
+
         CreateParticle();
       }
 
@@ -378,9 +519,7 @@ namespace YTE
       mTextureName = "Mats_Diffuse.png";
     }
 
-    std::string meshName = "__Sprite" + mTextureName;
-
-    SubmeshData submesh;
+    mSubmesh.mName = "__Sprite" + mTextureName;
 
     Vertex vert0;
     Vertex vert1;
@@ -407,30 +546,30 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
 
-    submesh.mUBOMaterial = modelMaterial;
+    mSubmesh.mUBOMaterial = modelMaterial;
 
     std::vector<u32> mIndices{
       0, 1, 2,
       2, 3, 0
     };
 
-    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    mSubmesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
     //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
     //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
-    submesh.mShaderSetName = "CPUParticles";
-    submesh.mDescriptionOverride = true;
+    mSubmesh.mShaderSetName = "CPUParticles";
+    mSubmesh.mDescriptionOverride = true;
 
-    submesh.mCullBackFaces = false;
+    mSubmesh.mCullBackFaces = false;
 
-    submesh.mVertexData.AddVertex(vert0);
-    submesh.mVertexData.AddVertex(vert1);
-    submesh.mVertexData.AddVertex(vert2);
-    submesh.mVertexData.AddVertex(vert3);
+    mSubmesh.mVertexData.AddVertex(vert0);
+    mSubmesh.mVertexData.AddVertex(vert1);
+    mSubmesh.mVertexData.AddVertex(vert2);
+    mSubmesh.mVertexData.AddVertex(vert3);
 
-    submesh.mIndexData = std::move(mIndices);
+    mSubmesh.mIndexData = std::move(mIndices);
 
-    auto& descriptions = submesh.mDescriptions;
+    auto& descriptions = mSubmesh.mDescriptions;
 
     auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
@@ -448,7 +587,7 @@ namespace YTE
     addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
 
     // Descriptions for the textures we support based on which maps we found above:
-    for (auto sampler : submesh.mTextureData)
+    for (auto sampler : mSubmesh.mTextureData)
     {
       descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", SubmeshData::ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
       descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
@@ -458,7 +597,17 @@ namespace YTE
     descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
     descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
 
-    mMesh = mRenderer->CreateSimpleMesh(meshName, submesh);
+    RecreateMesh();
+  }
+
+  void ParticleEmitter::RecreateMesh()
+  {
+    // We make a copy here because CreateSimpleMesh steals our data away.
+    auto submesh = mSubmesh;
+
+    mCapacityParticles = mSubmesh.mVertexData.mPositionData.size();
+
+    mMesh = mRenderer->CreateSimpleMesh(mSubmesh.mName, submesh, true);
 
     auto& vbd = mMesh->GetSubmeshes()[0].mVertexBufferData;
 
@@ -471,23 +620,30 @@ namespace YTE
     vbd.mBoneIDsBuffer.reset();
     vbd.mBoneIDs2Buffer.reset();
 
-    mFreeParticles.clear();
+
+    if constexpr (false == cNewParticles)
+    {
+      mFreeParticles.clear();
+    }
   }
 
   void ParticleEmitter::CreateParticle()
   {
     std::unique_ptr<InstantiatedModel> model;
-
-    if (mFreeParticles.empty())
+    
+    if constexpr (false == cNewParticles)
     {
-      model = mRenderer->CreateModel(mGraphicsView, mMesh);
-      model->mType = ShaderType::AlphaBlendShader;
-    }
-    else
-    {
-      model = std::move(mFreeParticles.back());
-      mFreeParticles.pop_back();
-      model->SetVisibility(true);
+      if (mFreeParticles.empty())
+      {
+        model = mRenderer->CreateModel(mGraphicsView, mMesh);
+        model->mType = ShaderType::AlphaBlendShader;
+      }
+      else
+      {
+        model = std::move(mFreeParticles.back());
+        mFreeParticles.pop_back();
+        model->SetVisibility(true);
+      }
     }
 
     float randomX = Variance();
@@ -525,12 +681,20 @@ namespace YTE
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
 
-    modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife / mLifetime);
 
-    model->UpdateUBOMaterial(&modelMaterial);
-    model->UpdateUBOModel(particle.mUBO);
+    if constexpr (cNewParticles)
+    {
+      mParticles.emplace_back(particle, nullptr);
+    }
+    else
+    {
+      modelMaterial.mDiffuse.w = static_cast<float>(particle.mLife / mLifetime);
 
-    mParticles.emplace_back(particle, std::move(model));
+      model->UpdateUBOMaterial(&modelMaterial);
+      model->UpdateUBOModel(particle.mUBO);
+
+      mParticles.emplace_back(particle, std::move(model));
+    }
   }
 
   void ParticleEmitter::OnTransformChanged(TransformChanged *aEvent)

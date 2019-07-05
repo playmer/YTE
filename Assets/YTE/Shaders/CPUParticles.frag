@@ -139,7 +139,7 @@ layout (binding = UBO_DIFFUSE_BINDING) uniform sampler2D diffuseSampler;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Fragment Shader Inputs | Vertex Shader Outputs
-layout (location = 0) in vec2 inTextureCoordinates;
+layout (location = 0) in vec3 inTextureCoordinates;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec4 inPosition;
 layout (location = 3) in vec3 inPositionWorld;
@@ -395,6 +395,8 @@ vec4 Phong(vec4 aNormal, vec4 aPosition, vec4 aPositionWorld, vec2 aUV)
 void main()
 {
   outFragColor = vec4(1.0f,1.0f,1.0f,1.0f);
+
+  ModelMaterial.mDiffuse.w = inTextureCoordinates.z;
 
   if (Lights.mActive < 0.5f)
   {
