@@ -15,8 +15,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qscrollarea.h>
-#include <qlayout.h>
+#include <QScrollArea>
+#include <QLayout>
 
 #include "glm/glm.hpp"
 
@@ -55,7 +55,7 @@ namespace YTEditor
 
     void LoadNoMaterial();
 
-    SubWindow* GetSubWindow();
+    YTEWindow* GetSubWindow();
 
     static std::string GetName();
 
@@ -69,11 +69,11 @@ namespace YTEditor
     template <typename tType>
     PropertyWidget<tType>* AddProperty(const char *aName, YTE::Property *aProp)
     {
-      PropertyWidget<tType> *prop = new PropertyWidget<tType>(aName, aProp, mLevelEditor, mContainerLayout->widget());
-      mContainerLayout->addWidget(prop);
+      auto property = new PropertyWidget<tType>(aName, aProp, mLevelEditor, mContainerLayout->widget());
+      mContainerLayout->addWidget(property);
       mContainer->setLayout(mContainerLayout);
-      mProperties.push_back(prop);
-      return prop;
+      mProperties.push_back(property);
+      return property;
     }
 
     //void AddVec3Property(const char * aName, glm::vec3 const& aVec);
@@ -84,13 +84,13 @@ namespace YTEditor
 
     YTELevelEditor* mLevelEditor;
 
-    QComboBox *mComboBox;
-    SubWindow *mMaterialWindow;
+    QComboBox* mComboBox;
+    YTEWindow* mMaterialWindow;
 
-    QGridLayout *mBaseLayout;
-    QScrollArea *mScrollArea;
-    QWidget *mContainer;
-    QVBoxLayout *mContainerLayout;
+    QGridLayout* mBaseLayout;
+    QScrollArea* mScrollArea;
+    QWidget* mContainer;
+    QVBoxLayout* mContainerLayout;
 
     std::vector<PropertyWidgetBase*> mProperties;
     YTE::String mCurrentMaterialName;

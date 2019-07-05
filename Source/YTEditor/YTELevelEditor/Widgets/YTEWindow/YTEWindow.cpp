@@ -1,12 +1,12 @@
 /******************************************************************************/
 /*!
-\file   GameWindow.cpp
+\file   YTEWindow.cpp
 \author Joshua Fisher
 \par    email: j.fisher\@digipen.edu
 \par    Course: GAM 300
 \date   8/15/2017
 \brief
-Implementation of the GameWindow that displays the running game.
+Implementation of the YTEWindow that displays the running game.
 All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
@@ -19,7 +19,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Engine.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
@@ -27,17 +27,17 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTEditor
 {
 
-  SubWindow::SubWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor)
+  YTEWindow::YTEWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor)
     : mWindow{ aWindow }
     , mLevelEditor{ aLevelEditor }
   {
   }
 
-  SubWindow::~SubWindow()
+  YTEWindow::~YTEWindow()
   {
   }
 
-  void SubWindow::resizeEvent(QResizeEvent* aEvent)
+  void YTEWindow::resizeEvent(QResizeEvent* aEvent)
   {
     if (nullptr == mWindow)
     {
@@ -62,7 +62,7 @@ namespace YTEditor
     }
   }
 
-  void SubWindow::Update()
+  void YTEWindow::Update()
   {
     if (nullptr == mWindow)
     {
@@ -75,7 +75,7 @@ namespace YTEditor
     mWindow->SetInternalPosition(topLeft.x(), topLeft.y());
   }
 
-  void SubWindow::keyPressEvent(QKeyEvent* aEvent)
+  void YTEWindow::keyPressEvent(QKeyEvent* aEvent)
   {
     if (nullptr == mWindow)
     {
@@ -86,12 +86,12 @@ namespace YTEditor
     aEvent->ignore();
   }
 
-  void SubWindow::focusInEvent(QFocusEvent*)
+  void YTEWindow::focusInEvent(QFocusEvent*)
   {
     mLevelEditor->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(mWindow);
   }
 
-  void SubWindow::focusOutEvent(QFocusEvent*)
+  void YTEWindow::focusOutEvent(QFocusEvent*)
   {
     mLevelEditor->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(nullptr);
   }

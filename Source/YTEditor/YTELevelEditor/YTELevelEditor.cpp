@@ -52,8 +52,8 @@
 
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/GameWindowEventFilter.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 
@@ -100,7 +100,7 @@ namespace YTEditor
 
   bool YTELevelEditor::Initialize()
   {
-    // Cstor helper functions and main subwindow vars
+    // Cstor helper functions and main YTEWindow vars
     ConstructGameWindows();
     ConstructSubWidgets();
     ConstructToolbar();
@@ -289,13 +289,18 @@ namespace YTEditor
     // Make actual "physical" window
     auto window = mRunningEngine->AddWindow("YTEditor Play Window");
 
-    mRunningWindow = new SubWindow(window, this);
+    mRunningWindow = new YTEWindow(window, this);
     mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
+    mRunningWindowTab->setWindowTitle("Level Player");
 
     auto toolWindowManager = GetMainWindow()->GetToolWindowManager();
 
     auto area = toolWindowManager->areaOf(mLevelWindowWidget);
-    ToolWindowManager::AreaReference areaToPlace{ ToolWindowManager::AreaReferenceType::AddTo, area };
+    ToolWindowManager::AreaReference areaToPlace{ 
+      ToolWindowManager::AreaReferenceType::AddTo, 
+      area,
+      ToolWindowManager::ToolWindowProperty::HideCloseButton
+    };
 
     toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace);
 
@@ -349,7 +354,6 @@ namespace YTEditor
 
     GetMainWindow()->GetToolWindowManager()->removeToolWindow(mRunningWindowTab);
 
-    delete mRunningWindowTab;
     mRunningWindowTab = nullptr;
 
     mRunningEngine->RemoveWindow(window);
@@ -466,7 +470,7 @@ namespace YTEditor
     auto &windows = mRunningEngine->GetWindows();
     auto it = windows.begin();
 
-    mLevelWindow = new SubWindow(it->second.get(), this);
+    mLevelWindow = new YTEWindow(it->second.get(), this);
 
     auto mainWindow = GetMainWindow();
 
@@ -474,7 +478,13 @@ namespace YTEditor
     mLevelWindow->installEventFilter(filter);
 
     mLevelWindowWidget = mainWindow->createWindowContainer(mLevelWindow);
-    mainWindow->GetToolWindowManager()->addToolWindow(mLevelWindowWidget, ToolWindowManager::EmptySpace);
+    mLevelWindowWidget->setWindowTitle("Level Editor");
+
+    mainWindow->GetToolWindowManager()->addToolWindow(
+      mLevelWindowWidget, 
+      ToolWindowManager::EmptySpace,
+      ToolWindowManager::ToolWindowProperty::HideCloseButton
+    );
 
     auto id = mLevelWindow->winId();
 

@@ -12,8 +12,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
 /******************************************************************************/
 
-#include <qcombobox.h>
-#include <qwindow.h>
+#include <QComboBox>
+#include <QWindow>
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
@@ -25,7 +25,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
@@ -49,7 +49,7 @@ namespace YTEditor
     mContainerLayout->setSpacing(0);
 
     auto window = aLevelEditor->GetRunningEngine()->AddWindow("MaterialViewer");
-    mMaterialWindow = new SubWindow(window, aLevelEditor);
+    mMaterialWindow = new YTEWindow(window, aLevelEditor);
     QWidget *windowContainer = QWidget::createWindowContainer(mMaterialWindow);
 
     windowContainer->setMinimumHeight(100);
@@ -146,7 +146,7 @@ namespace YTEditor
     this->Clear();
   }
 
-  SubWindow* MaterialViewer::GetSubWindow()
+  YTEWindow* MaterialViewer::GetSubWindow()
   {
     return mMaterialWindow;
   }

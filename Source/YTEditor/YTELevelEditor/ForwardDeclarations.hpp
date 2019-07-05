@@ -26,7 +26,7 @@ namespace YTEditor
   class PropertyWidgetBase;
   template <class T>
   class PropertyWidget;
-  class SubWindow;
+  class YTEWindow;
   class UndoRedo;
   class YTEditorMainWindow;
   class YTELevelEditor;

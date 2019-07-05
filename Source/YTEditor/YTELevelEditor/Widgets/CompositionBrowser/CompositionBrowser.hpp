@@ -16,7 +16,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <vector>
 
-#include <qtreewidget.h>
+#include <QTreeWidget>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Utilities.hpp"
@@ -24,8 +24,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/Framework/Widget.hpp"
-
-#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
 
 // old typedefs from sandbox project
 typedef QPair<QString, float> Property;

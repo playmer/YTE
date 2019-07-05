@@ -30,7 +30,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
 #include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 

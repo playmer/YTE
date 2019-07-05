@@ -62,7 +62,7 @@ namespace YTEditor
       return mImguiLayer;
     }
 
-    SubWindow* GetLevelWindow()
+    YTEWindow* GetLevelWindow()
     {
       return mLevelWindow;
     }
@@ -88,10 +88,10 @@ namespace YTEditor
 
     UndoRedo* mUndoRedo;
 
-    SubWindow* mLevelWindow;
+    YTEWindow* mLevelWindow;
     QWidget* mLevelWindowWidget;
 
-    SubWindow* mRunningWindow;
+    YTEWindow* mRunningWindow;
     QWidget* mRunningWindowTab;
 
     FileMenu* mFileMenu;
@@ -109,7 +109,7 @@ namespace YTEditor
     void ConstructToolbar();
 
     std::unique_ptr<PhysicsHandler> mPhysicsHandler;
-    std::vector<SubWindow*> mSubWindows;
+    std::vector<YTEWindow*> mSubWindows;
 
     /**************************************************/
 

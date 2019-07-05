@@ -1,6 +1,6 @@
 #include "YTE/StandardLibrary/FileSystem.hpp"
 
-#include <qmimedata.h>
+#include <QMimeData>
 #include <QEvent>
 #include <QDragEnterEvent>
 
@@ -14,7 +14,7 @@
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/GameWindowEventFilter.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 

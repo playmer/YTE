@@ -5,7 +5,7 @@
 \par    Course: GAM 300
 \date   8/15/2017
 \brief
-The subwindow displaying the running game.
+The YTEWindow displaying the running game.
 
 All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 */
@@ -13,8 +13,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #pragma once
 
-#include <qwidget.h>
-#include <qwindow.h>
+#include <QWidget>
+#include <QWindow>
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
@@ -22,12 +22,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  class SubWindow : public QWindow
+  class YTEWindow : public QWindow
   {
   public:
-    SubWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor);
+    YTEWindow(YTE::Window *aWindow, YTELevelEditor* aLevelEditor);
 
-    ~SubWindow();
+    ~YTEWindow();
 
     void Update();
 

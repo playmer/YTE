@@ -29,7 +29,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectItem.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
 
 #include "YTEditor/YTELevelEditor/UndoRedo/Commands.hpp"
 

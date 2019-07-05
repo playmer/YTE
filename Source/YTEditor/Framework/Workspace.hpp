@@ -4,8 +4,8 @@
 #include <typeindex>
 #include <memory>
 
-#include <qdockwidget.h>
-#include <qmenubar.h>
+#include <QDockWidget>
+#include <QMenuBar>
 
 #include "YTEditor/Framework/MainWindow.hpp"
 #include "YTEditor/Framework/Menu.hpp"

@@ -37,7 +37,7 @@
 #include "YTEditor/YTELevelEditor/ScriptBind.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 

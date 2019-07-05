@@ -6,9 +6,8 @@
 
 target_sources(YTEditor
 PRIVATE  
-  ${CMAKE_CURRENT_LIST_DIR}/GameWindow.cpp
   ${CMAKE_CURRENT_LIST_DIR}/GameWindowEventFilter.cpp
-#  PUBLIC
-  ${CMAKE_CURRENT_LIST_DIR}/GameWindow.hpp
   ${CMAKE_CURRENT_LIST_DIR}/GameWindowEventFilter.hpp
+  ${CMAKE_CURRENT_LIST_DIR}/YTEWindow.cpp
+  ${CMAKE_CURRENT_LIST_DIR}/YTEWindow.hpp
 )

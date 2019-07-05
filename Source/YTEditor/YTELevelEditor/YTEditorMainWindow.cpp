@@ -68,8 +68,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindowEventFilter.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/GameWindowEventFilter.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 
