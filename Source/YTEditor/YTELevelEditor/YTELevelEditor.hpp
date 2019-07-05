@@ -67,6 +67,11 @@ namespace YTEditor
       return mLevelWindow;
     }
 
+    QWidget* GetLevelWindowWidget()
+    {
+      return mLevelWindowWidget;
+    }
+
   private:
     // YTE GAME ENGINE
     YTE::Engine* mRunningEngine;
@@ -82,11 +87,13 @@ namespace YTEditor
     QApplication *mApplication;
 
     UndoRedo* mUndoRedo;
-    QTabWidget* mCentralTabs;
-    SubWindow* mLevelWindow;
 
-    QWidget* mRunningWindowTab;
+    SubWindow* mLevelWindow;
+    QWidget* mLevelWindowWidget;
+
     SubWindow* mRunningWindow;
+    QWidget* mRunningWindowTab;
+
     FileMenu* mFileMenu;
     GameObjectMenu* mGameObjectMenu;
 

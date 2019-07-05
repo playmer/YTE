@@ -216,12 +216,8 @@ namespace YTEditor
   void CompositionBrowser::SetWidgetSettings()
   {
     setObjectName("Composition Browser");
-    setMinimumWidth(200);
-    setContextMenuPolicy(Qt::CustomContextMenu);
-    setMouseTracking(true);
-
-    mTree->setDragDropMode(QAbstractItemView::InternalMove);
-    mTree->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    //setContextMenuPolicy(Qt::CustomContextMenu);
+    //setMouseTracking(true);
   }
 
 
@@ -328,9 +324,15 @@ namespace YTEditor
     return "ObjectBrowser";
   }
 
-  Framework::Widget::DockArea CompositionBrowser::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference CompositionBrowser::GetToolArea()
   {
-    return Widget::DockArea::Left;
+    auto workspace = GetWorkspace<YTELevelEditor>();
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(workspace->GetLevelWindowWidget());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::LeftWindowSide,
+      area
+    };
   }
 
   void CompositionBrowser::RemoveObjectFromViewer(ObjectItem *aItem)

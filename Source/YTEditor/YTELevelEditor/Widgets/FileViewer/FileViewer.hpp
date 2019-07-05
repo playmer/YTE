@@ -46,7 +46,7 @@ namespace YTEditor
     FileViewer(Framework::MainWindow* aMainWindow);
 
     static std::string GetName();
-    Widget::DockArea GetDefaultDockArea() const override;
+    ToolWindowManager::AreaReference GetToolArea() override;
 
   private:
     QTreeView mTree;

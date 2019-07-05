@@ -206,8 +206,7 @@ namespace YTEditor
 
   void ObjectTree::SetWidgetSettings()
   {
-    this->setObjectName("Composition Tree");
-    this->setMinimumWidth(200);
+    //this->setObjectName("Composition Tree");
     this->setContextMenuPolicy(Qt::CustomContextMenu);
     this->setDragDropMode(QAbstractItemView::InternalMove);
     this->setMouseTracking(true);

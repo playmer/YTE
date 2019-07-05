@@ -45,7 +45,7 @@ find_package(Qt5Widgets)
 
 YTE_Target_Set_LTCG(YTEditor)
 
-target_link_libraries(YTEditor YTEMain Qt5::Widgets assimp)
+target_link_libraries(YTEditor YTEMain Qt5::Widgets toolwindowmanager assimp)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 

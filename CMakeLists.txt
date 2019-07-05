@@ -60,8 +60,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory(Dependencies)
 add_subdirectory(Source)
 
-#if (YTE_BUILD_DOCUMENTATION)
+if (YTE_BUILD_DOCUMENTATION)
     add_subdirectory(Documentation)
-#endif()
+endif()
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT YTEditor) 

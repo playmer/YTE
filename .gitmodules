@@ -28,3 +28,6 @@
 [submodule "Dependencies/basis_universal"]
 	path = Dependencies/basis_universal
 	url = https://github.com/playmer/basis_universal.git
+[submodule "Dependencies/toolwindowmanager"]
+	path = Dependencies/toolwindowmanager
+	url = https://github.com/baldurk/toolwindowmanager

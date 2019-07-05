@@ -35,7 +35,7 @@ namespace YTEditor
     ArchetypeTools* GetArchetypeTools();
 
     static std::string GetName();
-    Framework::Widget::DockArea GetDefaultDockArea() const override;
+    ToolWindowManager::AreaReference GetToolArea() override;
 
   private:
 

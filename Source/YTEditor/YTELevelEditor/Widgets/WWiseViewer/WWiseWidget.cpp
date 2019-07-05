@@ -10,6 +10,7 @@
 
 #include "YTE/Core/Engine.hpp"
 
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 
 namespace YTEditor
@@ -334,9 +335,14 @@ namespace YTEditor
     return "WWiseWidget";
   }
 
-  Framework::Widget::DockArea WWiseWidget::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference WWiseWidget::GetToolArea()
   {
-    return Widget::DockArea::Right;
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(mWorkspace->GetWidget<ComponentBrowser>());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::BottomOf,
+      area
+    };
   }
 
   void WWiseWidget::ConstructSubWidgets()

@@ -9,9 +9,12 @@ namespace Framework
 {
 
   MainWindow::MainWindow()
-    : mMenuBar{ new QMenuBar(this) }
+    : mMenuBar{ new QMenuBar{ this } }
+    , mWindowManager{ new ToolWindowManager{ this } }
   {
     QMainWindow::setMenuBar(mMenuBar);
+
+    setCentralWidget(mWindowManager);
   }
 
 } // End of Framework namespace

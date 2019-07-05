@@ -23,6 +23,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/Framework/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/PropertyWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/GameWindow/GameWindow.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
@@ -155,9 +156,15 @@ namespace YTEditor
     return "MaterialViewer";
   }
 
-  Framework::Widget::DockArea MaterialViewer::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference MaterialViewer::GetToolArea()
   {
-    return Widget::DockArea::Right;
+    auto workspace = GetWorkspace<YTELevelEditor>();
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(workspace->GetWidget<ComponentBrowser>());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::BottomOf,
+      area
+    };
   }
 
   void MaterialViewer::OnCurrentMaterialChanged(int aIndex)

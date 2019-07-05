@@ -6,6 +6,7 @@
 #include "YTEditor/Framework/MainWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
 
@@ -176,8 +177,14 @@ namespace YTEditor
     return "FileViewer";
   }
 
-  Framework::Widget::DockArea FileViewer::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference FileViewer::GetToolArea()
   {
-    return Framework::Widget::DockArea::Bottom;
+    auto workspace = GetWorkspace<YTELevelEditor>();
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(workspace->GetWidget<OutputConsole>());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::RightOf,
+      area
+    };
   }
 }

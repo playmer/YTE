@@ -63,9 +63,15 @@ namespace YTEditor
     return "ComponentBrowser";
   }
 
-  Framework::Widget::DockArea ComponentBrowser::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference ComponentBrowser::GetToolArea()
   {
-    return DockArea::Right;
+    auto workspace = GetWorkspace<YTELevelEditor>();
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(workspace->GetLevelWindowWidget());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::RightWindowSide,
+      area
+    };
   }
 
   void ComponentBrowser::SetWindowSettings()

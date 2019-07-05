@@ -5,22 +5,22 @@
 #include <fstream>
 #include <thread>
 
-#include <qtimer.h>
-#include <qprogressdialog.h>
-#include <qdockwidget.h>
-#include <qtextedit.h>
-#include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qaction.h>
-#include <qfile.h>
-#include <qapplication.h>
-#include <qdir.h>
-#include <qfilesystemmodel.h>
-#include <qpushbutton.h>
-#include <qfiledialog.h>
-#include <qdesktopservices.h>
-#include <qevent.h>
-#include <qmessagebox.h>
+#include <QTimer>
+#include <QProgressDialog>
+#include <QDockWidget>
+#include <QTextEdit>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QAction>
+#include <QFile>
+#include <QApplication>
+#include <QDir>
+#include <QFileSystemModel>
+#include <QPushButton>
+#include <QFileDialog>
+#include <QDesktopServices>
+#include <QEvent>
+#include <QMessageBox>
 
 #include "crunch/inc/crnlib.h"
 
@@ -85,11 +85,11 @@ namespace YTEditor
     , mEditorCamera{ nullptr }
     , mImguiLayer{ nullptr }
     , mApplication{ nullptr }
-    , mUndoRedo{ new UndoRedo() }
-    , mCentralTabs{ nullptr }
+    , mUndoRedo{ new UndoRedo{} }
     , mLevelWindow{ nullptr }
-    , mRunningWindowTab{ nullptr }
+    , mLevelWindowWidget{ nullptr }
     , mRunningWindow{ nullptr }
+    , mRunningWindowTab{ nullptr }
     , mFileMenu{ nullptr }
     , mGameObjectMenu{ nullptr }
     , mGizmoToolbar{ nullptr }
@@ -101,8 +101,8 @@ namespace YTEditor
   bool YTELevelEditor::Initialize()
   {
     // Cstor helper functions and main subwindow vars
-    ConstructSubWidgets();
     ConstructGameWindows();
+    ConstructSubWidgets();
     ConstructToolbar();
 
     // menu bar must be constructed after subwidgets b/c of cached pointers
@@ -159,13 +159,11 @@ namespace YTEditor
     ComponentTree* componentBrowser = GetWidget<ComponentBrowser>()->GetComponentTree();
     std::vector<ComponentWidget*> componentWidgets = componentBrowser->GetComponentWidgets();
 
-    for (ComponentWidget* w : componentWidgets)
+    for (auto widget : componentWidgets)
     {
-      std::vector<PropertyWidgetBase*> properties = w->GetPropertyWidgets();
-
-      for (auto prop : properties)
+      for (auto property : widget->GetPropertyWidgets())
       {
-        prop->ReloadValueFromEngine();
+        property->ReloadValueFromEngine();
       }
     }
 
@@ -234,8 +232,6 @@ namespace YTEditor
       mImguiLayer->ToggleSerialize();
     }
 
-  
-
     mImguiLayer->AddComponent(YTE::GraphicsView::GetStaticType());
     auto view = mImguiLayer->GetComponent<YTE::GraphicsView>();
     view->SetOrder(100.f);
@@ -295,8 +291,13 @@ namespace YTEditor
 
     mRunningWindow = new SubWindow(window, this);
     mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
-    int index = mCentralTabs->addTab(mRunningWindowTab, "Game");
-    mCentralTabs->setCurrentIndex(index);
+
+    auto toolWindowManager = GetMainWindow()->GetToolWindowManager();
+
+    auto area = toolWindowManager->areaOf(mLevelWindowWidget);
+    ToolWindowManager::AreaReference areaToPlace{ ToolWindowManager::AreaReferenceType::AddTo, area };
+
+    toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace);
 
     mRunningWindow->mWindow = window;
     window->mShouldBeRenderedTo = true;
@@ -346,8 +347,7 @@ namespace YTEditor
     window->mShouldBeRenderedTo = false;
     renderer->DeregisterWindowFromDraw(window);
 
-    int runningIndex = mCentralTabs->indexOf(mRunningWindowTab);
-    mCentralTabs->removeTab(runningIndex);
+    GetMainWindow()->GetToolWindowManager()->removeToolWindow(mRunningWindowTab);
 
     delete mRunningWindowTab;
     mRunningWindowTab = nullptr;
@@ -459,29 +459,22 @@ namespace YTEditor
     AddWidget<ComponentBrowser>("Component Browser", this);
     AddWidget<OutputConsole>("Output Console", this);
     AddWidget<FileViewer>("File Browser", mMainWindow);
-
-    // Game Windows
-    ConstructGameWindows();
   }
 
   void YTELevelEditor::ConstructGameWindows()
   {
-    mCentralTabs = new QTabWidget();
-    mCentralTabs->setMovable(true);
-    mCentralTabs->setTabsClosable(true);
-    mCentralTabs->setUsesScrollButtons(true);
-    GetMainWindow()->setCentralWidget(mCentralTabs);
-
     auto &windows = mRunningEngine->GetWindows();
     auto it = windows.begin();
 
     mLevelWindow = new SubWindow(it->second.get(), this);
 
-    GameWindowEventFilter *filter = new GameWindowEventFilter(mLevelWindow, GetMainWindow());
+    auto mainWindow = GetMainWindow();
+
+    GameWindowEventFilter *filter = new GameWindowEventFilter(mLevelWindow, mainWindow);
     mLevelWindow->installEventFilter(filter);
 
-    auto widget = GetMainWindow()->createWindowContainer(mLevelWindow);
-    mCentralTabs->addTab(widget, "Level");
+    mLevelWindowWidget = mainWindow->createWindowContainer(mLevelWindow);
+    mainWindow->GetToolWindowManager()->addToolWindow(mLevelWindowWidget, ToolWindowManager::EmptySpace);
 
     auto id = mLevelWindow->winId();
 

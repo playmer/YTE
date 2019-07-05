@@ -59,7 +59,7 @@ namespace YTEditor
 
     static std::string GetName();
 
-    Widget::DockArea GetDefaultDockArea() const override;
+    ToolWindowManager::AreaReference GetToolArea() override;
 
   private:
 

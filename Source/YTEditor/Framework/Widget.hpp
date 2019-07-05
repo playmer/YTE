@@ -2,47 +2,42 @@
 
 #include <memory>
 
-#include <qwidget.h>
-#include <qdockwidget.h>
+#include <QWidget>
+#include <QDockWidget>
+
+#include "ToolWindowManager.h"
+
 
 namespace YTEditor
 {
-namespace Framework
-{
-
-class Workspace;
-
-class Widget : public QWidget
-{
-public:
-  Widget(Workspace* workspace);
-
-  enum DockArea
+  namespace Framework
   {
-    Left = Qt::LeftDockWidgetArea,
-    Right = Qt::RightDockWidgetArea,
-    Top = Qt::TopDockWidgetArea,
-    Bottom = Qt::BottomDockWidgetArea,
-    All = Qt::AllDockWidgetAreas
-  };
+    class Workspace;
 
-  virtual DockArea GetDefaultDockArea() const = 0;
-  virtual DockArea GetAllowedDockAreas() const;
+    class Widget : public QWidget
+    {
+    public:
+      Widget(Workspace* workspace);
 
-  template <typename T = Workspace>
-  T * GetWorkspace() const
-  {
-    return static_cast<T*>(mWorkspace);
-  }
+      virtual ToolWindowManager::AreaReference GetToolArea() = 0;
 
-protected:
-  std::unique_ptr<QDockWidget> mDockWidget;
+      virtual ToolWindowManager::ToolWindowProperty GetToolProperties()
+      {
+        return ToolWindowManager::ToolWindowProperty(0);
+      };
 
-private:
-  friend class Workspace;
-  Workspace* mWorkspace;
-};
+      template <typename T = Workspace>
+      T * GetWorkspace() const
+      {
+        return static_cast<T*>(mWorkspace);
+      }
 
+    protected:
+      std::unique_ptr<QDockWidget> mDockWidget;
+      Workspace* mWorkspace;
 
-} // End of Framework namespace
+    private:
+      friend class Workspace;
+    };
+  } // End of Framework namespace
 } // End of Editor namespace

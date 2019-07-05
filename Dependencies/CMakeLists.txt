@@ -31,6 +31,12 @@ endif()
 
 
 ##########################################################################
+# Turn off/configure various parts of toolwindowmanager.
+option (TWM_BUILD_EXAMPLE "Build example" OFF)
+
+add_subdirectory(toolwindowmanager)
+
+##########################################################################
 # Turn off/configure various parts of basis_universal.
 option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 option(BUILD_TESTS "Build test applications" OFF)

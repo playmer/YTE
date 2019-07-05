@@ -111,13 +111,13 @@ protected:
   MainWindow* mMainWindow;
 
   // Widgets
-  std::multimap<std::type_index, std::unique_ptr<Widget> > mWidgets;
+  std::multimap<std::type_index, std::unique_ptr<Widget>> mWidgets;
 
   // Toolbars
-  std::multimap<std::type_index, std::unique_ptr<ToolBar> > mToolBars;
+  std::multimap<std::type_index, std::unique_ptr<ToolBar>> mToolBars;
 
   // Menus
-  std::map<std::type_index, std::unique_ptr<Menu> > mMenus;
+  std::map<std::type_index, std::unique_ptr<Menu>> mMenus;
 };
 
 
@@ -159,15 +159,14 @@ T* Workspace::AddWidget(char const* aName, Args&&... args)
 
   T* widget = static_cast<T*>(inserted->second.get());
 
-  // Create dock to hold widget
-  widget->mDockWidget = std::make_unique<QDockWidget>(aName);
-  widget->mDockWidget->setAllowedAreas(static_cast<Qt::DockWidgetArea>(widget->GetAllowedDockAreas()));
+  widget->setWindowTitle(aName);
 
-  // Tell dock what widget it's holding
-  widget->mDockWidget->setWidget(widget);
+  mMainWindow->GetToolWindowManager()->addToolWindow(
+    widget,
+    widget->GetToolArea(), 
+    widget->GetToolProperties()
+  );
 
-  // Add dock to main window
-  mMainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(widget->GetDefaultDockArea()), widget->mDockWidget.get());
   return widget;
 }
 

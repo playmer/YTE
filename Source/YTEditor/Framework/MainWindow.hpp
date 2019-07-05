@@ -5,7 +5,9 @@
 #include <typeindex>
 #include <memory>
 
-#include <qmainwindow.h>
+#include <QMainWindow>
+
+#include "ToolWindowManager.h"
 
 #include "YTEditor/Framework/ForwardDeclarations.hpp"
 
@@ -75,9 +77,15 @@ namespace YTEditor
         return nullptr;
       }
 
+      ToolWindowManager* GetToolWindowManager()
+      {
+        return mWindowManager;
+      }
+
     private:
       std::map<std::type_index, Framework::Workspace*> mWorkspaces;
       QMenuBar* mMenuBar;
+      ToolWindowManager* mWindowManager;
     };
 
   } // End of Framework namespace

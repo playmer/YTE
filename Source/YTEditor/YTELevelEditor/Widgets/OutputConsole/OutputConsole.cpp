@@ -26,6 +26,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/Framework/MainWindow.hpp"
 
 #include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
 namespace YTEditor
@@ -98,15 +99,6 @@ namespace YTEditor
     PrintToConsole(formatted.c_str());
   }
 
-
-  static QColor White;
-  static QColor Black;
-  static QColor Blue;
-  static QColor Green;
-  static QColor Yellow;
-  static QColor Orange;
-  static QColor Red;
-
   QColor OutputConsole::Color::White{ 255, 255, 255 };
   QColor OutputConsole::Color::Black{ 0, 0, 0 };
   QColor OutputConsole::Color::Blue{ 0, 0, 255 };
@@ -135,9 +127,15 @@ namespace YTEditor
     return "OutputConsole";
   }
 
-  Framework::Widget::DockArea OutputConsole::GetDefaultDockArea() const
+  ToolWindowManager::AreaReference OutputConsole::GetToolArea()
   {
-    return Widget::DockArea::Bottom;
+    auto workspace = GetWorkspace<YTELevelEditor>();
+    auto area = mWorkspace->GetMainWindow()->GetToolWindowManager()->areaOf(workspace->GetLevelWindowWidget());
+
+    return ToolWindowManager::AreaReference{
+      ToolWindowManager::AreaReferenceType::BottomWindowSide,
+      area
+    };
   }
 
   void OutputConsole::SetWindowSettings()
