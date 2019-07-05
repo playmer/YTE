@@ -35,11 +35,11 @@ namespace YTEditor
 {
 
   MaterialViewer::MaterialViewer(YTELevelEditor* aLevelEditor)
-    : Framework::Widget(aLevelEditor)
-    , mComboBox(new QComboBox(this))
-    , mMaterialWindow(nullptr)
-    , mContainer(new QWidget(this))
-    , mCurrentSubMeshes(nullptr)
+    : Widget{ aLevelEditor }
+    , mComboBox{ new QComboBox{this} }
+    , mMaterialWindow{nullptr}
+    , mContainer{ new QWidget{this} }
+    , mCurrentSubMeshes{ nullptr }
   {
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
 

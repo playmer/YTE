@@ -25,7 +25,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  class ComponentBrowser : public Framework::Widget
+  class ComponentBrowser : public Framework::Widget<QWidget>
   {
   public:
     ComponentBrowser(YTELevelEditor* editor);

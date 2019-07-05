@@ -148,7 +148,7 @@ namespace YTEditor
 
 
   FileViewer::FileViewer(Framework::MainWindow* aMainWindow)
-    : Framework::Widget(aMainWindow->GetWorkspace<YTELevelEditor>())
+    : Widget{ aMainWindow->GetWorkspace<YTELevelEditor>() }
   {
     // create model that tells tree view how to look and act, we want to see folders and files
     FileViewerModel *fileModel = new FileViewerModel(this);

@@ -44,7 +44,7 @@ class QWindow;
 
 namespace YTEditor
 {
-  class MaterialViewer : public Framework::Widget
+  class MaterialViewer : public Framework::Widget<QWidget>
   {
   public:
     MaterialViewer(YTELevelEditor* aLevelEditor);

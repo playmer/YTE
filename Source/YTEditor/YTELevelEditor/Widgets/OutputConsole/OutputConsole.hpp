@@ -43,7 +43,7 @@ namespace YTEditor
     OutputConsole* mConsole;
   };
 
-  class OutputConsole : public Framework::Widget
+  class OutputConsole : public Framework::Widget<QWidget>
   {
   public:
 

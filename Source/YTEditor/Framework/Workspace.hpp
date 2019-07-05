@@ -111,7 +111,7 @@ protected:
   MainWindow* mMainWindow;
 
   // Widgets
-  std::multimap<std::type_index, std::unique_ptr<Widget>> mWidgets;
+  std::multimap<std::type_index, std::unique_ptr<QWidget>> mWidgets;
 
   // Toolbars
   std::multimap<std::type_index, std::unique_ptr<ToolBar>> mToolBars;

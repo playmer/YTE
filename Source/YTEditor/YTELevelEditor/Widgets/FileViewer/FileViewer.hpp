@@ -39,7 +39,7 @@ namespace YTEditor
   };
 
 
-  class FileViewer : public Framework::Widget
+  class FileViewer : public Framework::Widget<QWidget>
   {
   public:
 

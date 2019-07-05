@@ -16,7 +16,7 @@
 
 namespace YTEditor
 {
-  class WWiseWidget : public Framework::Widget
+  class WWiseWidget : public Framework::Widget<QWidget>
   {
   public:
     WWiseWidget(YTELevelEditor* aWorkspace, YTE::Engine* aEngine);

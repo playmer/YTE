@@ -127,8 +127,8 @@ namespace YTEditor
   };
 
   WWiseWidget::WWiseWidget(YTELevelEditor* aWorkspace, YTE::Engine* aEngine)
-    : Framework::Widget(aWorkspace)
-    , mEngine(aEngine)
+    : Widget{ aWorkspace }
+    , mEngine{ aEngine }
   {
     std::string name{ "WWiseWidget" };
     mSystem = mEngine->GetComponent<YTE::WWiseSystem>();

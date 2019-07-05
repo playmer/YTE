@@ -38,7 +38,7 @@ namespace YTEditor
   class YTELevelEditor;
   class ObjectItem;
 
-  class CompositionBrowser : public Framework::Widget
+  class CompositionBrowser : public Framework::Widget<QTreeWidget>
   {
   public:
     CompositionBrowser(YTELevelEditor* editor);

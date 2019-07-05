@@ -7,6 +7,8 @@
 
 #include "ToolWindowManager.h"
 
+//#include "YTEditor/Framework/Workspace.hpp"
+
 
 namespace YTEditor
 {
@@ -14,10 +16,17 @@ namespace YTEditor
   {
     class Workspace;
 
-    class Widget : public QWidget
+    // tType must derive from QWidget
+    template <typename tInheritingType = QWidget>
+    class Widget : public tInheritingType
     {
     public:
-      Widget(Workspace* workspace);
+      Widget(Workspace* aWorkspace)
+        : tInheritingType{}
+        , mWorkspace{ aWorkspace }
+      {
+
+      }
 
       virtual ToolWindowManager::AreaReference GetToolArea() = 0;
 
@@ -26,10 +35,10 @@ namespace YTEditor
         return ToolWindowManager::ToolWindowProperty(0);
       };
 
-      template <typename T = Workspace>
-      T * GetWorkspace() const
+      template <typename tType = Workspace>
+      tType* GetWorkspace() const
       {
-        return static_cast<T*>(mWorkspace);
+        return static_cast<tType*>(mWorkspace);
       }
 
     protected:

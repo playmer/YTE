@@ -9,6 +9,7 @@ namespace YTEditor
         class MenuBar;
         class ToolBar;
         class ToolBarButton;
+        template <typename tInheritingType>
         class Widget;
         class Workspace;
     } // namespace Framework
