@@ -18,6 +18,11 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include <qtreewidget.h>
 
+#include "YTE/Core/ForwardDeclarations.hpp"
+#include "YTE/Core/Utilities.hpp"
+
+#include "YTE/Utilities/Utilities.hpp"
+
 #include "YTEditor/Framework/Widget.hpp"
 
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/ObjectTree.hpp"
@@ -38,7 +43,7 @@ namespace YTEditor
   class YTELevelEditor;
   class ObjectItem;
 
-  class CompositionBrowser : public Framework::Widget<QTreeWidget>
+  class CompositionBrowser : public Framework::Widget<QTreeWidget> //Framework::Widget<QTreeWidget>
   {
   public:
     CompositionBrowser(YTELevelEditor* editor);
@@ -100,24 +105,28 @@ namespace YTEditor
 
     ToolWindowManager::AreaReference GetToolArea() override;
 
+    YTELevelEditor* GetLevelEditor()
+    {
+      return mLevelEditor;
+    }
+
   private:
-    ObjectTree* mTree;
+    void CreateContextMenu(const QPoint& pos);
+    void OnCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void OnItemSelectionChanged();
+    void OnItemTextChanged(QTreeWidgetItem* aItem, int aIndex);
 
+  private:
     void SetWidgetSettings();
-
     void dropEvent(QDropEvent* aEvent) override;
-
     void keyPressEvent(QKeyEvent* aEvent);
-
     ObjectItem* SearchChildrenByComp(ObjectItem* aItem, YTE::Composition* aComp);
-
     void FindObjectsByArchetypeInternal(YTE::String& archetypeName,
                                         std::vector<ObjectItem*>& result,
                                         ObjectItem* item);
 
     std::vector<YTE::GlobalUniqueIdentifier> mSelectedItems;
+    YTELevelEditor* mLevelEditor;
     bool mInsertSelectionChangedCmd;
-
   };
-
 }

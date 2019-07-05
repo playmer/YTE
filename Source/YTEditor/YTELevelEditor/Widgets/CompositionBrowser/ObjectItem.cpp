@@ -37,14 +37,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTEditor
 {
-  ObjectItem::ObjectItem(YTE::String &aItemName,
-    ObjectTree *aParentTree,
-    YTE::Composition *aEngineObj,
-    YTE::Composition *aEngineLevel)
-    : QTreeWidgetItem(aParentTree),
-    mObjectTree(aParentTree),
-    mEngineObject(aEngineObj),
-    mEngineLevel(aEngineLevel)
+  ObjectItem::ObjectItem(YTE::String& aItemName,
+    CompositionBrowser* aParentTree,
+    YTE::Composition*aEngineObj,
+    YTE::Composition* aEngineLevel)
+    : QTreeWidgetItem(aParentTree)
+    , mObjectTree(aParentTree)
+    , mEngineObject(aEngineObj)
+    , mEngineLevel(aEngineLevel)
   {
     QSignalBlocker blocker(mObjectTree);
     setText(0, aItemName.c_str());
@@ -52,13 +52,13 @@ namespace YTEditor
   }
 
   ObjectItem::ObjectItem(YTE::String &aItemName,
-    ObjectItem *aParentItem,
-    YTE::Composition *aEngineObj,
-    YTE::Composition *aEngineLevel)
-    : QTreeWidgetItem(aParentItem),
-    mObjectTree(aParentItem->GetObjectTree()),
-    mEngineObject(aEngineObj),
-    mEngineLevel(aEngineLevel)
+    ObjectItem* aParentItem,
+    YTE::Composition* aEngineObj,
+    YTE::Composition* aEngineLevel)
+    : QTreeWidgetItem(aParentItem)
+    , mObjectTree(aParentItem->GetObjectTree())
+    , mEngineObject(aEngineObj)
+    , mEngineLevel(aEngineLevel)
   {
     QSignalBlocker blocker(mObjectTree);
     setText(0, aItemName.c_str());
@@ -89,7 +89,7 @@ namespace YTEditor
     mEngineObject = nullptr;
   }
 
-  ObjectTree* ObjectItem::GetObjectTree() const
+  CompositionBrowser* ObjectItem::GetObjectTree() const
   {
     return mObjectTree;
   }
@@ -104,8 +104,9 @@ namespace YTEditor
     mEngineObject = aComposition;
   }
 
-  ObjectItemDelegate::ObjectItemDelegate(ObjectTree *aBrowser, QWidget * aParent)
-    : QStyledItemDelegate(aParent), mTree(aBrowser)
+  ObjectItemDelegate::ObjectItemDelegate(CompositionBrowser *aBrowser, QWidget * aParent)
+    : QStyledItemDelegate(aParent)
+    , mTree(aBrowser)
   {
   }
 

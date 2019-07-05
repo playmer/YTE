@@ -20,7 +20,6 @@ namespace YTEditor
   class LogHandler;
   class CompositionBrowser;
   class ObjectItem;
-  class ObjectTree;
   class OutputConsole;
   class PhysicsHandler;
   class Preferences;

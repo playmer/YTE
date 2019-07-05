@@ -28,35 +28,34 @@ namespace YTE
 
 namespace YTEditor
 {
-
-  class ObjectTree;
+  class CompositionBrowser;
 
   class ObjectItem : public QTreeWidgetItem
   {
   public:
-    ObjectItem(YTE::String &aItemName,
-      ObjectTree *aParentTree,
-      YTE::Composition *aEngineObj,
-      YTE::Composition *aEngineLevel);
+    ObjectItem(YTE::String& aItemName,
+      CompositionBrowser* aParentTree,
+      YTE::Composition* aEngineObj,
+      YTE::Composition* aEngineLevel);
 
-    ObjectItem(YTE::String &aItemName,
-      ObjectItem *aParentItem,
-      YTE::Composition *aEngineObj,
-      YTE::Composition *aEngineLevel);
+    ObjectItem(YTE::String& aItemName,
+      ObjectItem* aParentItem,
+      YTE::Composition* aEngineObj,
+      YTE::Composition* aEngineLevel);
 
     ~ObjectItem();
 
     void Rename(YTE::String &aName);
     void DeleteFromEngine(YTE::Composition *aParentObj = nullptr);
 
-    ObjectTree *GetObjectTree() const;
+    CompositionBrowser *GetObjectTree() const;
     YTE::Composition *GetEngineObject() const;
 
     void SetEngineObject(YTE::Composition *aComposition);
 
   private:
 
-    ObjectTree* mObjectTree;
+    CompositionBrowser* mObjectTree;
     YTE::Composition* mEngineObject;
     YTE::Composition* mEngineLevel;
   };
@@ -64,7 +63,7 @@ namespace YTEditor
   class ObjectItemDelegate : public QStyledItemDelegate
   {
   public:
-    ObjectItemDelegate(ObjectTree* aBrowser, QWidget* aParent = nullptr);
+    ObjectItemDelegate(CompositionBrowser* aBrowser, QWidget* aParent = nullptr);
 
     void paint(QPainter *painter,
       const QStyleOptionViewItem &option,
@@ -76,7 +75,7 @@ namespace YTEditor
       const QModelIndex &index);
 
   private:
-    ObjectTree *mTree;
+    CompositionBrowser *mTree;
 
   };
 
