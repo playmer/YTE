@@ -74,6 +74,8 @@ namespace YTEditor
       this, &CompositionBrowser::OnItemTextChanged);
 
     setItemDelegate(new ObjectItemDelegate(this));
+
+    setMinimumSize(200, 200);
   }
 
   CompositionBrowser::~CompositionBrowser()

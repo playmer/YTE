@@ -292,6 +292,7 @@ namespace YTEditor
     mRunningWindow = new YTEWindow(window, this);
     mRunningWindowTab = QWidget::createWindowContainer(mRunningWindow);
     mRunningWindowTab->setWindowTitle("Level Player");
+    mRunningWindowTab->setMinimumSize(480, 320);
 
     auto toolWindowManager = GetMainWindow()->GetToolWindowManager();
 
@@ -479,6 +480,7 @@ namespace YTEditor
 
     mLevelWindowWidget = mainWindow->createWindowContainer(mLevelWindow);
     mLevelWindowWidget->setWindowTitle("Level Editor");
+    mLevelWindowWidget->setMinimumSize(480, 320);
 
     mainWindow->GetToolWindowManager()->addToolWindow(
       mLevelWindowWidget, 
