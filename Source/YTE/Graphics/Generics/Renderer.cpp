@@ -77,7 +77,7 @@ namespace YTE
     return nullptr;
   }
   
-  Mesh* Renderer::CreateSimpleMesh(std::string &aName, ContiguousRange<SubmeshData> aSubmeshes, bool aForceUpdate)
+  Mesh* Renderer::CreateSimpleMesh(std::string const& aName, ContiguousRange<SubmeshData> aSubmeshes, bool aForceUpdate)
   {
     UnusedArguments(aName, aSubmeshes, aForceUpdate);
 

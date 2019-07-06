@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Put this file in %USERPROFILE%\My Documents\Visual Studio 2013\Visualizers\-->
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+    <Type Name="YTE::Component">
+        <DisplayString>{GetStaticType(), s}</DisplayString>
+    </Type>
+    <Type Name="YTE::Composition">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+    <Type Name="YTE::Space">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+    <Type Name="YTE::String">
+        <DisplayString>{mNode->mData, s}</DisplayString>
+		<Expand>
+			<Item Name="Data">mNode->mData</Item>
+			<Item Name="Size">mNode->mSize</Item>
+			<Item Name="ReferenceCount">mNode->mReferenceCount</Item>
+			<Item Name="Hash">mNode->mHash</Item>
+		</Expand>
+    </Type>
+    <Type Name="YTE::Type">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+    <Type Name="YTE::Property">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+    <Type Name="YTE::Field">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+    <Type Name="YTE::Function">
+        <DisplayString>{mName, s}</DisplayString>
+    </Type>
+</AutoVisualizer>

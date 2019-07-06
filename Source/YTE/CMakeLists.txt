@@ -71,7 +71,9 @@ target_link_libraries(YTE
     STB
 ) 
 
-
+target_sources(YTE INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/YTE.natvis
+)
 
 set_target_properties(YTE
                       PROPERTIES

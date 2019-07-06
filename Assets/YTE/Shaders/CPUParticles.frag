@@ -323,7 +323,10 @@ LightingData SampleMaterialsAndTextures(vec2 aUV, inout vec4 aNormal)
   LightingData lightData;
 
   // diffuse
-  lightData.mDiffMat = SubmeshMaterial.mDiffuse * ModelMaterial.mDiffuse;
+  vec4 modelDiffuse = ModelMaterial.mDiffuse;
+  modelDiffuse.w =  inTextureCoordinates.z;
+
+  lightData.mDiffMat = SubmeshMaterial.mDiffuse * modelDiffuse;
   lightData.mDiffTexture  = texture(diffuseSampler, aUV) * lightData.mDiffMat;
 
   if (lightData.mDiffTexture.w <= 0.001f)
@@ -396,12 +399,14 @@ void main()
 {
   outFragColor = vec4(1.0f,1.0f,1.0f,1.0f);
 
-  ModelMaterial.mDiffuse.w = inTextureCoordinates.z;
+  vec4 modelDiffuse = ModelMaterial.mDiffuse;
+  modelDiffuse.w =  inTextureCoordinates.z;
 
   if (Lights.mActive < 0.5f)
   {
-    vec4 color = texture(diffuseSampler, inTextureCoordinates) * ModelMaterial.mDiffuse;
+    vec4 color = texture(diffuseSampler, inTextureCoordinates.xy) * modelDiffuse;
     outFragColor = color;
+    //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 
     if (outFragColor.w <= 0.001f)
     {
@@ -412,11 +417,16 @@ void main()
   }
   else
   {
-    vec4 color = Phong(vec4(normalize(inNormal), 0.0f), inPosition, vec4(inPositionWorld, 1.0f), 
-                       inTextureCoordinates.xy) *
-                 ModelMaterial.mDiffuse;
+    vec4 color = Phong(
+      vec4(normalize(inNormal), 0.0f), 
+      inPosition, 
+      vec4(inPositionWorld, 1.0f), 
+      inTextureCoordinates.xy);
+
+    color = color * modelDiffuse;
   
     outFragColor = color;
+    //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
     
     if (outFragColor.w <= 0.001f)
     {

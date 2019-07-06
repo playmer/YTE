@@ -81,6 +81,10 @@ target_compile_definitions(glm
     GLM_FORCE_SILENT_WARNINGS
 )
 
+target_sources(glm INTERFACE
+  ${CMAKE_CURRENT_SOURCE_DIR}/glm/util/glm.natvis
+)
+
 #target_include_directories(glm INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/glm)
 
 ##########################################################################

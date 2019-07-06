@@ -305,7 +305,13 @@ namespace YTE
             auto position = modelMatrix * origin;
             auto radiusScale = detail::ExtractMaximumUniformScale(modelMatrix);
 
-            auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
+            bool visible = true;
+
+            // TODO: Need to bugfix this.
+            if (CompilerConfiguration::Debug())
+            {
+              auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
+            }
 
             if ((visible == false) || (false == model->GetVisibility()))
             {

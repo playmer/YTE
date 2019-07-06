@@ -47,7 +47,7 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType);
 
-    virtual Mesh* CreateSimpleMesh(std::string& aName,
+    virtual Mesh* CreateSimpleMesh(std::string const& aName,
                                    ContiguousRange<SubmeshData> aSubmeshes,
 			                             bool aForceUpdate = false);
 

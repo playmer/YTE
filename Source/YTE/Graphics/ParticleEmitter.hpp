@@ -88,18 +88,30 @@ namespace YTE
     YTE_Shared void SetGravityValue(float aGravityVal);
 
   private:
+    // In this pass we decide which particles must be deleted and then remove them.
+    // we also update the remaining life of remaining particles.
+    void DeleteParticlesPass(float aDt);
+    // In this pass we create a model matrix for each particle.
+    void UpdateParticlesPass(float aDt);
+    // In this pass we create a new Model and Mesh if we've exceeded our current capacity.
+    void RecreateMeshIfNeededPass();
+    // In this pass we update the buffers in the Mesh.
+    void UpdateParticleMesh();
+    // In this pass we create new particles.
+    void NewParticlesPass(float aDt);
+
+    // We fill the buffers with "empty" data up to the number of particles we currently need.
+    void FillBuffersToRequired();
+
+
+
     SubmeshData mSubmesh;
-    std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
-    std::vector<std::unique_ptr<InstantiatedModel>> mFreeParticles;
+    std::vector<Particle> mParticles;
     std::vector<float> mVarianceBuffer;
+    std::vector<glm::mat4> mParticleMatrices;
     size_t mVarianceIndex;
 
-    //std::vector<Particle> mSmolParticles;
     std::unique_ptr<InstantiatedModel> mModel;
-    //std::vector<glm::vec3> mPositions;
-    //std::vector<glm::vec3> mNormals;
-    //std::vector<glm::vec3> mTextureCoordinates;
-    size_t mUsedParticles = 0;
     size_t mCapacityParticles;
 
     void RecreateMesh();

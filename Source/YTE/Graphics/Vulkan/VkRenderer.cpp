@@ -403,7 +403,7 @@ namespace YTE
     return meshPtr;
   }
   
-  Mesh* VkRenderer::CreateSimpleMesh(std::string &aName,
+  Mesh* VkRenderer::CreateSimpleMesh(std::string const& aName,
                                      ContiguousRange<SubmeshData> aSubmeshes,
 		                                 bool aForceUpdate)
   {

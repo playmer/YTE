@@ -13,8 +13,8 @@ namespace YTE
   class GPUBufferBase
   {
   public:
-    GPUBufferBase(size_t aSize)
-      : mArraySize{ aSize }
+    GPUBufferBase(size_t aSizeInBytes)
+      : mSizeInBytes{ aSizeInBytes }
     {
 
     }
@@ -31,9 +31,14 @@ namespace YTE
 
     virtual void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) = 0;
 
+    size_t GetSizeInBytes()
+    {
+      return mSizeInBytes;
+    }
+
   protected:
     PrivateImplementationLocal<32> mData;
-    size_t mArraySize;
+    size_t mSizeInBytes;
   };
 
   template <typename tType>
@@ -58,17 +63,29 @@ namespace YTE
 
     void Update(tType const& aData)
     {
-      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+      auto bytes = sizeof(tType);
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), bytes, 0);
     }
 
     void Update(tType const* aData, size_t aSize)
     {
-      mBuffer->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
+      auto bytes = sizeof(tType) * aSize;
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData), bytes, 0);
     }
 
     void Update(ContiguousRange<tType> aData)
     {
-      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
+      auto bytes = sizeof(tType) * aData.size();
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), bytes, 0);
     }
 
     operator bool()

@@ -104,7 +104,7 @@ namespace YTE
                            TextureType aType) override;
         
     VkMesh* CreateMesh(std::string &aFilename);
-    Mesh* CreateSimpleMesh(std::string &aName,
+    Mesh* CreateSimpleMesh(std::string const& aName,
                            ContiguousRange<SubmeshData> aSubmeshes,
 		                       bool aForceUpdate = false) override;
 
