@@ -707,7 +707,7 @@ namespace YTE
 
   std::shared_ptr<vkhlf::Buffer>& GetBuffer(InstantiatedModel::BufferRef& aBuffer)
   {
-    GPUBufferBase* buffer;
+    GPUBufferBase* buffer{nullptr};
 
     if (auto ownedBuffer = std::get_if<InstantiatedModel::OwnedBuffer>(&aBuffer))
     {
@@ -716,6 +716,10 @@ namespace YTE
     else if (auto observedBuffer = std::get_if<InstantiatedModel::ObservedBuffer>(&aBuffer))
     {
       buffer = *observedBuffer;
+    }
+    else
+    {
+      DebugAssert(false, "We could not retrieve a GPUBuffer from the given BufferRef.");
     }
 
     return static_cast<VkUBO*>(buffer)->GetBuffer();
