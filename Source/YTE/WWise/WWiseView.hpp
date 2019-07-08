@@ -18,11 +18,6 @@
 
 namespace YTE
 {
-  inline AkVector MakeAkVec(glm::vec3 aVector)
-  {
-    return AkVector{ aVector.x, aVector.y, aVector.z };
-  }
-
   class WWiseListenerChanged : public Event
   {
   public:

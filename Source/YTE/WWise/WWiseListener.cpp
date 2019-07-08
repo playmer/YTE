@@ -7,8 +7,9 @@
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
-#include "YTE/WWise//WWiseView.hpp"
-#include "YTE/WWise//WWiseListener.hpp"
+#include "YTE/WWise/Utilities.hpp"
+#include "YTE/WWise/WWiseView.hpp"
+#include "YTE/WWise/WWiseListener.hpp"
 
 namespace YTE
 {

@@ -7,6 +7,7 @@
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
 
+#include "YTE/WWise/Utilities.hpp"
 #include "YTE/WWise/WWiseEmitter.hpp"
 #include "YTE/WWise/WWiseListener.hpp"
 #include "YTE/WWise/WWiseSystem.hpp"

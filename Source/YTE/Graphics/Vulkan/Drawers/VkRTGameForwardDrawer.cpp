@@ -310,7 +310,7 @@ namespace YTE
             // TODO: Need to bugfix this.
             if (CompilerConfiguration::Debug())
             {
-              auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
+              visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
             }
 
             if ((visible == false) || (false == model->GetVisibility()))

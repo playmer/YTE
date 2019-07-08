@@ -310,7 +310,7 @@ namespace YTE
     }
   }
 
-  void ParticleEmitter::Update(LogicUpdate *aEvent)
+  void ParticleEmitter::Update(LogicUpdate* aEvent)
   {
     YTEProfileFunction();
 
@@ -328,7 +328,7 @@ namespace YTE
 
 
   // In this pass we decide which particles must be deleted and then remove them.
-  void ParticleEmitter::DeleteParticlesPass(float aDt)
+  void ParticleEmitter::DeleteParticlesPass(double aDt)
   {
     auto startToRemove = std::remove_if(
       mParticles.begin(), 
@@ -344,7 +344,7 @@ namespace YTE
   }
 
   // In this pass we create a model matrix for each particle.
-  void ParticleEmitter::UpdateParticlesPass(float aDt)
+  void ParticleEmitter::UpdateParticlesPass(double aDt)
   {
     glm::quat camRot = mCameraTransform->GetWorldRotation();
     mParticleMatrices.clear();
@@ -546,7 +546,7 @@ namespace YTE
   }
 
   // In this pass we create new particles.
-  void ParticleEmitter::NewParticlesPass(float aDt)
+  void ParticleEmitter::NewParticlesPass(double aDt)
   {
     mTimer -= aDt;
 

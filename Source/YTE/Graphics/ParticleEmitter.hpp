@@ -90,15 +90,15 @@ namespace YTE
   private:
     // In this pass we decide which particles must be deleted and then remove them.
     // we also update the remaining life of remaining particles.
-    void DeleteParticlesPass(float aDt);
+    void DeleteParticlesPass(double aDt);
     // In this pass we create a model matrix for each particle.
-    void UpdateParticlesPass(float aDt);
+    void UpdateParticlesPass(double aDt);
     // In this pass we create a new Model and Mesh if we've exceeded our current capacity.
     void RecreateMeshIfNeededPass();
     // In this pass we update the buffers in the Mesh.
     void UpdateParticleMesh();
     // In this pass we create new particles.
-    void NewParticlesPass(float aDt);
+    void NewParticlesPass(double aDt);
 
     // We fill the buffers with "empty" data up to the number of particles we currently need.
     void FillBuffersToRequired();
