@@ -22,7 +22,7 @@ namespace YTEditor
     WWiseWidget(YTELevelEditor* aWorkspace, YTE::Engine* aEngine);
     ~WWiseWidget();
 
-    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
+    YTE::WwiseObject OwnerId() { return reinterpret_cast<YTE::WwiseObject>(this); };
 
     void LoadEvents();
 

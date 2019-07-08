@@ -1,4 +1,5 @@
 #include "AK/SoundEngine/Common/AkSoundEngine.h"
+#include "AK/SoundEngine/Common/AkTypes.h"
 
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
@@ -37,6 +38,8 @@ namespace YTE
   WWiseEmitter::WWiseEmitter(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
+    mEmitterPosition.ConstructAndGet<AkSoundPosition>();
+
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
 
     auto view = mSpace->GetComponent<WWiseView>();
@@ -89,14 +92,16 @@ namespace YTE
 
     if (transform != nullptr)
     {
+      auto self = mEmitterPosition.Get<AkSoundPosition>();
+
       mOwner->RegisterEvent<&WWiseEmitter::OnPositionChange>(Events::PositionChanged, this);
       mOwner->RegisterEvent<&WWiseEmitter::OnOrientationChange>(Events::OrientationChanged, this);
-      mEmitterPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
+      self->SetPosition(MakeAkVec(transform->GetTranslation()));
 
       auto orientation = mOwner->GetComponent<Orientation>();
 
-      mEmitterPosition.SetOrientation(MakeAkVec(orientation->GetForwardVector()),
-                                      MakeAkVec(orientation->GetUpVector()));
+      self->SetOrientation(MakeAkVec(orientation->GetForwardVector()),
+                           MakeAkVec(orientation->GetUpVector()));
     }
 
     SetEmitterPosition();
@@ -110,22 +115,25 @@ namespace YTE
 
   void WWiseEmitter::OnPositionChange(const TransformChanged *aEvent)
   {
+    auto self = mEmitterPosition.Get<AkSoundPosition>();
     //std::cout << "Emitter Orientation changed\n";
-    mEmitterPosition.SetPosition(MakeAkVec(aEvent->Position));
+    self->SetPosition(MakeAkVec(aEvent->Position));
     SetEmitterPosition();
   }
 
   void WWiseEmitter::OnOrientationChange(const OrientationChanged *aEvent)
   {
-    //std::cout << "Emitter Orientation changed\n";
-    mEmitterPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
-                                    MakeAkVec(aEvent->UpVector));
+    auto self = mEmitterPosition.Get<AkSoundPosition>();
+
+    self->SetOrientation(MakeAkVec(aEvent->ForwardVector),
+                         MakeAkVec(aEvent->UpVector));
 
     SetEmitterPosition();
   }
 
   void WWiseEmitter::SetEmitterPosition()
   {
-    AK::SoundEngine::SetPosition(OwnerId(), mEmitterPosition);
+    auto self = mEmitterPosition.Get<AkSoundPosition>();
+    AK::SoundEngine::SetPosition(OwnerId(), *self);
   }
 }

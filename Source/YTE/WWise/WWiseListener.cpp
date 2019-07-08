@@ -26,6 +26,7 @@ namespace YTE
   WWiseListener::WWiseListener(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
   {
+    mListenerPosition.ConstructAndGet<AkListenerPosition>();
     AK::SoundEngine::RegisterGameObj(OwnerId(), mOwner->GetName().c_str());
     AK::SoundEngine::SetListenerSpatialization(OwnerId(), true, AkChannelConfig{});
 
@@ -48,38 +49,44 @@ namespace YTE
 
   void WWiseListener::Initialize()
   {
+    auto self = mListenerPosition.Get<AkListenerPosition>();
+
     auto transform = mOwner->GetComponent<Transform>();
 
     mOwner->RegisterEvent<&WWiseListener::OnPositionChange>(Events::PositionChanged, this);
     mOwner->RegisterEvent<&WWiseListener::OnOrientationChange>(Events::OrientationChanged, this);
-    mListenerPosition.SetPosition(MakeAkVec(transform->GetTranslation()));
+    self->SetPosition(MakeAkVec(transform->GetTranslation()));
 
     auto orientation = mOwner->GetComponent<Orientation>();
-    mListenerPosition.SetOrientation(MakeAkVec(orientation->GetForwardVector()),
-                                     MakeAkVec(orientation->GetUpVector()));
+    self->SetOrientation(MakeAkVec(orientation->GetForwardVector()),
+                         MakeAkVec(orientation->GetUpVector()));
 
     SetListenerPosition();
   }
 
   void WWiseListener::OnPositionChange(const TransformChanged *aEvent)
   {
-    //std::cout << "Listener Position changed\n";
-    mListenerPosition.SetPosition(MakeAkVec(aEvent->Position));
+    auto self = mListenerPosition.Get<AkListenerPosition>();
+
+    self->SetPosition(MakeAkVec(aEvent->Position));
 
     SetListenerPosition();
   }
 
   void WWiseListener::OnOrientationChange(const OrientationChanged *aEvent)
   {
-    //std::cout << "Listener Orientation changed\n";
-    mListenerPosition.SetOrientation(MakeAkVec(aEvent->ForwardVector),
-                                     MakeAkVec(aEvent->UpVector));
+    auto self = mListenerPosition.Get<AkListenerPosition>();
+
+    self->SetOrientation(MakeAkVec(aEvent->ForwardVector),
+                         MakeAkVec(aEvent->UpVector));
 
     SetListenerPosition();
   }
 
   void WWiseListener::SetListenerPosition()
   {
-    AK::SoundEngine::SetPosition(OwnerId(), mListenerPosition);
+    auto self = mListenerPosition.Get<AkListenerPosition>();
+
+    AK::SoundEngine::SetPosition(OwnerId(), *self);
   }
 }

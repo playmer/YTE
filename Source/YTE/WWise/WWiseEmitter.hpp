@@ -3,11 +3,13 @@
 #ifndef YTE_WWise_WWiseEmitter_h
 #define YTE_WWise_WWiseEmitter_h
 
-#include "AK/SoundEngine/Common/AkTypes.h"
-
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
+
 #include "YTE/WWise/WWiseView.hpp"
+
+#include "YTE/WWise/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -29,18 +31,17 @@ namespace YTE
     YTE_Shared void Initialize() override;
 
 
-    inline AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(mOwner); };
+    inline WwiseObject OwnerId() { return reinterpret_cast<WwiseObject>(mOwner); };
 
   private:
     void SetEmitterPosition();
     void OnPositionChange(const TransformChanged *aEvent);
     void OnOrientationChange(const OrientationChanged *aEvent);
 
-    AkSoundPosition mEmitterPosition;
+    PrivateImplementationLocal<128> mEmitterPosition;
     int mListenerId;
 
     std::string mSound;
-    //bool mPlaying;
     float mVolume;
   };
 }

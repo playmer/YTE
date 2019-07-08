@@ -64,6 +64,8 @@
 
 #undef UNICODE
 
+#include "AK/SoundEngine/Common/AkTypes.h"
+
 #include <fstream>
 #include <iostream>
 #include "YTE/StandardLibrary/FileSystem.hpp"
@@ -187,7 +189,7 @@ namespace YTE
     
 
     //// Register the main listener.
-    // AkGameObjectID MY_DEFAULT_LISTENER = reinterpret_cast<AkGameObjectID>(this);
+    // WwiseObject MY_DEFAULT_LISTENER = reinterpret_cast<WwiseObject>(this);
     //auto check = AK::SoundEngine::RegisterGameObj(MY_DEFAULT_LISTENER, "My Default Listener");
     //UnusedArguments(check);
     //assert(check == AK_Success);
@@ -197,7 +199,7 @@ namespace YTE
   }
 
 
-  u8 WWiseSystem::RegisterListener(AkGameObjectID aId, std::string &aName)
+  u8 WWiseSystem::RegisterListener(WwiseObject aId, std::string& aName)
   {
     if (0 != mAvailableListeners.size())
     {
@@ -211,20 +213,20 @@ namespace YTE
     return 9;
   }
 
-  void WWiseSystem::DeregisterListener(AkGameObjectID aId, u8 aListener)
+  void WWiseSystem::DeregisterListener(WwiseObject aId, u8 aListener)
   {
     DeregisterObject(aId);
     mAvailableListeners.emplace_back(aListener);
   }
 
-  void WWiseSystem::RegisterObject(AkGameObjectID aId, std::string &aName)
+  void WWiseSystem::RegisterObject(WwiseObject aId, std::string &aName)
   {
-    auto check = AK::SoundEngine::RegisterGameObj(aId, aName.c_str());
+    auto check = AK::SoundEngine::RegisterGameObj(static_cast<AkGameObjectID>(aId), aName.c_str());
     UnusedArguments(check);
     assert(check == AK_Success);
   }
 
-  void WWiseSystem::DeregisterObject(AkGameObjectID aId)
+  void WWiseSystem::DeregisterObject(WwiseObject aId)
   {
     auto check = AK::SoundEngine::UnregisterGameObj(aId);
     UnusedArguments(check);
@@ -596,9 +598,14 @@ namespace YTE
   {
     auto &bank{ mBanks[aFilename] };
 
+    AkBankID id;
+
     AKRESULT eResult = AK::SoundEngine::LoadBank(aFilename.c_str(),
                                                  AK_DEFAULT_POOL_ID, 
-                                                 bank.mBankID);
+                                                 id);
+
+    bank.mBankID = static_cast<WwiseBank>(id);
+
     UnusedArguments(eResult);
     //assert(eResult == AK_Success);
     return bank;
@@ -625,22 +632,22 @@ namespace YTE
     }
   }
 
-  void WWiseSystem::SendEvent(const std::string &aEvent, AkGameObjectID aObject)
+  void WWiseSystem::SendEvent(const std::string &aEvent, WwiseObject aObject)
   {
     AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
   }
 
-  void WWiseSystem::SendEvent(u64 aEvent, AkGameObjectID aObject)
+  void WWiseSystem::SendEvent(u64 aEvent, WwiseObject aObject)
   {
     AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
   }
 
-  void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, AkGameObjectID aId)
+  void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, WwiseObject aId)
   {
     AK::SoundEngine::SetSwitch(aSwitchGroup.c_str(), aSwitch.c_str(), aId);
   }
 
-  void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, AkGameObjectID aId)
+  void WWiseSystem::SetSwitch(u64 aSwitchGroupId, u64 aSwitchId, WwiseObject aId)
   {
     AK::SoundEngine::SetSwitch(static_cast<AkSwitchGroupID>(aSwitchGroupId), static_cast<AkSwitchStateID>(aSwitchId), aId);
   }

@@ -14,6 +14,8 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
+#include "YTE/WWise/ForwardDeclarations.hpp"
+
 namespace YTE
 {
   inline AkVector MakeAkVec(glm::vec3 aVector)
@@ -34,7 +36,7 @@ namespace YTE
   {
   public:
     YTEDeclareType(WWiseView);
-    WWiseView(Composition *aOwner, Space *aSpace)
+    WWiseView(Composition* aOwner, Space* aSpace)
       : Component(aOwner, aSpace)
     {
       
@@ -45,7 +47,7 @@ namespace YTE
       return mLastActiveListener;
     }
 
-    void SetActiveListener(WWiseListener *aListener)
+    void SetActiveListener(WWiseListener* aListener)
     {
       mLastActiveListener = aListener;
 
@@ -56,7 +58,7 @@ namespace YTE
     }
 
   private:
-    WWiseListener *mLastActiveListener;
+    WWiseListener* mLastActiveListener;
   };
 
 } // end yte namespace

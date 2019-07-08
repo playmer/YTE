@@ -3,11 +3,13 @@
 #ifndef YTE_WWise_WWiseListener_h
 #define YTE_WWise_WWiseListener_h
 
-#include "AK/SoundEngine/Common/AkTypes.h"
-
 #include "YTE/Core/Component.hpp"
 
 #include "YTE/Physics/Transform.hpp"
+
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
+
+#include "YTE/WWise/ForwardDeclarations.hpp"
 
 namespace YTE
 {
@@ -22,14 +24,14 @@ namespace YTE
 
     YTE_Shared void Initialize() override;
 
-    AkGameObjectID OwnerId() { return reinterpret_cast<AkGameObjectID>(this); };
+    WwiseObject OwnerId() { return reinterpret_cast<WwiseObject>(this); };
 
   private:
     void SetListenerPosition();
     void OnPositionChange(const TransformChanged *aEvent);
     void OnOrientationChange(const OrientationChanged *aEvent);
 
-    AkListenerPosition mListenerPosition;
+    PrivateImplementationLocal<128> mListenerPosition;
   };
 }
 
