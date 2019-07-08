@@ -24,7 +24,8 @@ namespace YTE
   public:
     YTEDeclareType(MouseButtonEvent);
 
-    glm::i32vec2 WorldCoordinates;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
     MouseButtons Button;
     Mouse *SendingMouse;
   };
@@ -35,7 +36,8 @@ namespace YTE
   public:
     YTEDeclareType(MouseWheelEvent);
 
-    glm::i32vec2 WorldCoordinates;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
     glm::vec2 ScrollMovement;
     Mouse *SendingMouse;
   };
@@ -45,7 +47,8 @@ namespace YTE
   public:
     YTEDeclareType(MouseMoveEvent);
 
-    glm::i32vec2 WorldCoordinates;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
     Mouse *SendingMouse;
   };
 
@@ -73,12 +76,13 @@ namespace YTE
     YTE_Shared bool AnyButtonDown();
     YTE_Shared bool IsButtonDown(MouseButtons aButton);
     YTE_Shared bool WasButtonDown(MouseButtons aButton);
-    YTE_Shared glm::i32vec2 GetCursorPosition();
-    YTE_Shared void SetCursorPosition(glm::i32vec2 aPosition);
+    YTE_Shared glm::i32vec2 GetPositionInWindowCoordinates();
+    YTE_Shared glm::i32vec2 GetPositionInScreenCoordinates();
+    YTE_Shared void SetCursorPositionInScreenCoordinates(glm::i32vec2 aPosition);
 
   private:
-    glm::i32vec2 mPosition;
-    glm::i32vec2 mPrevPosition;
+    glm::i32vec2 mWindowCoordinates;
+    glm::i32vec2 mPreviousWindowCoordinates;
     Window* mWindow;
     bool* mMouseCurrent;
     bool* mMousePrevious;

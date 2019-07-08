@@ -272,17 +272,15 @@ namespace YTE
     , mPosition{}
     , mPositionOffset{}
     , mInitVelocity{0.0f, 1.0f, 0.0f}
-    , mVelocityVariance{1.0f, 1.0f, 1.0f}
+    , mVelocityVariance{0.0f, 0.0f, 0.0f}
     , mLifetime{3.0f}
     , mLifetimeVariance{0.0f}
     , mColor{1.0f, 1.0f, 1.0f, 1.0f}
     , mParticleScale{0.1f, 0.1f, 0.1f}
     , mParticleScaleVariance{}
-    , mEmitterScale{1.0f, 1.0f, 1.0f}
-    //, mEmitRate{0.0f}
-    //, mEmitCount{ 0.0f }
-    , mEmitRate{ 0.50f }
-    , mEmitCount{ 10.0f }
+    , mEmitterScale{0.0f, 0.0f, 0.0f}
+    , mEmitRate{0.0f}
+    , mEmitCount{ 0.0f }
     , mUseGravity{false}
     , mGravityValue{1.0f}
   {

@@ -7,6 +7,23 @@
 
 namespace YTE
 {
+  struct PlatformEventHolder
+  {
+    PlatformEventHolder(std::string const& aEventType,
+                        EventHandler* aObject,
+                        Event* aEvent)
+      : mEventType{aEventType}
+      , mObject{aObject}
+      , mEvent{aEvent}
+    {
+
+    }
+
+    std::string const& mEventType;
+    EventHandler* mObject;
+    Event* mEvent;
+  };
+
   class PlatformManager
   {
   public:
@@ -58,6 +75,7 @@ namespace YTE
   private:
     PrivateImplementationDynamic mData;
     std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
+    std::vector<PlatformEventHolder> mEvents;
     Engine* mEngine;
     Window* mMouseFocusedWindow;
     Window* mKeyboardFocusedWindow;

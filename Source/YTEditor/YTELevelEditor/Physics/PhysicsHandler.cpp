@@ -156,7 +156,7 @@ namespace YTEditor
 
     btVector3 rayTo = getRayTo(
       uboView,
-      rayFrom, aEvent->WorldCoordinates,
+      rayFrom, aEvent->WindowCoordinates,
       mWindow->GetWidth(),
       mWindow->GetHeight(),
       camera->GetFarPlane());

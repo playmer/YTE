@@ -130,7 +130,7 @@ namespace YTE
 
     // TODO: Technically we should only do this when the window is focused, but
     //       we don't currently know that for windows in the editor.
-    auto position = mouse.GetCursorPosition();
+    auto position = mouse.GetPositionInWindowCoordinates();
     io.MousePos = ImVec2((float)position.x, (float)position.y);
 
     //Mouse buttons : left, right, middle
@@ -240,10 +240,10 @@ namespace YTE
     ImGuizmo::Enable(enable);
   }
 
-  void ImguiLayer::DecomposeMatrixToComponents(const float *matrix, 
-                                               float *translation, 
-                                               float *rotation, 
-                                               float *scale)
+  void ImguiLayer::DecomposeMatrixToComponents(float const* matrix, 
+                                               float* translation, 
+                                               float* rotation, 
+                                               float* scale)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuizmo::DecomposeMatrixToComponents(matrix,
@@ -252,9 +252,9 @@ namespace YTE
                                           scale);
   }
 
-  void ImguiLayer::RecomposeMatrixFromComponents(const float *translation, 
-                                                 const float *rotation, 
-                                                 const float *scale, 
+  void ImguiLayer::RecomposeMatrixFromComponents(float const* translation, 
+                                                 float const* rotation, 
+                                                 float const* scale, 
                                                  float *matrix)
   {
     ImGui::SetCurrentContext(mContext);
@@ -270,14 +270,14 @@ namespace YTE
     ImGuizmo::SetRect(x, y, width, height);
   }
 
-  void ImguiLayer::DrawCube(const float *view, const float *projection, float *matrix)
+  void ImguiLayer::DrawCube(float const* view, float const* projection, float* matrix)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuizmo::DrawCube(view, projection, matrix);
   }
 
-  void ImguiLayer::Manipulate(const float *view,
-                              const float *projection,
+  void ImguiLayer::Manipulate(float const* view,
+                              float const* projection,
                               ImGuizmo::OPERATION operation,
                               ImGuizmo::MODE mode,
                               float *matrix,

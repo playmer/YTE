@@ -73,10 +73,9 @@ namespace YTE
     return toReturn;
   }
   
-  void Mouse::SetCursorPosition(glm::i32vec2 aPosition)
+  void Mouse::SetCursorPositionInScreenCoordinates(glm::i32vec2 aPosition)
   {
-    auto self = mWindow->mData.Get<WindowData>();
-    SDL_WarpMouseGlobal(aPosition.x + self->mX, aPosition.y + self->mY);
+    SDL_WarpMouseGlobal(aPosition.x, aPosition.y);
   }
 
 
