@@ -208,7 +208,6 @@ namespace YTE
     mWindow->mKeyboard.RegisterEvent<&GraphicsView::KeyPressed>(Events::KeyPress, this);
 
     SetClearColor(mClearColor);
-    mConstructing = false;
   }
 
   GraphicsView::~GraphicsView()
@@ -236,6 +235,7 @@ namespace YTE
 
   void GraphicsView::NativeInitialize()
   {
+    mConstructing = false;
   }
 
 

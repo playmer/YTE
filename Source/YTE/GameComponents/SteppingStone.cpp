@@ -11,7 +11,8 @@ namespace YTE
 {
   YTEDefineType(SteppingStone)
   {
-    YTERegisterType(SteppingStone);
+    RegisterType<SteppingStone>();
+    TypeBuilder<SteppingStone> builder;
   }
 
   static inline float RandomFloat(float a, float b, std::default_random_engine &e)
@@ -29,8 +30,7 @@ namespace YTE
   }
 
   SteppingStone::SteppingStone(Composition *aOwner, 
-                                Space *aSpace, 
-                                RSValue *aProperties)
+                                Space *aSpace)
     : Component{ aOwner, aSpace }
     , mSpriteOwner{ nullptr }
     , mLayer{ nullptr }
@@ -40,34 +40,35 @@ namespace YTE
     , mTimeTracker{ 0.75 }
     , e{ r() }
   {
-    YTEUnusedArgument(aProperties);
   }
 
   void SteppingStone::Start()
   {
     // Add the imgui layer to the level.
-    YTE::String imguiName{ "ImguiEditorLayer" };
-    auto layer = mSpace->AddComposition<YTE::Composition>(imguiName,
-                                                          mOwner->GetEngine(),
-                                                          imguiName,
-                                                          mSpace);
+    //YTE::String imguiName{ "ImguiEditorLayer" };
+    //auto layer = mSpace->AddComposition<YTE::Composition>(imguiName,
+    //                                                      mOwner->GetEngine(),
+    //                                                      imguiName,
+    //                                                      mSpace);
+    //
+    //if (layer->ShouldSerialize())
+    //{
+    //  layer->ToggleSerialize();
+    //}
+    //
+    //layer->AddComponent(YTE::GraphicsView::GetStaticType());
+    //auto view = layer->GetComponent<YTE::GraphicsView>();
+    //view->SetOrder(100.f);
+    //view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
+    //view->ChangeWindow(mSpace->GetComponent<GraphicsView>()->GetWindow());
+    //
+    //mLayer = static_cast<ImguiLayer*>(layer->AddComponent(TypeId<ImguiLayer>()));
+    //
+    //view->SetDrawerType("ImguiDrawer");
 
-    if (layer->ShouldSerialize())
-    {
-      layer->ToggleSerialize();
-    }
+    mLayer = mSpace->FindFirstCompositionByName("MenuLayer")->GetComponent<ImguiLayer>();
 
-    layer->AddComponent(YTE::GraphicsView::GetStaticType());
-    auto view = layer->GetComponent<YTE::GraphicsView>();
-    view->SetOrder(100.f);
-    view->SetClearColor(glm::vec4{ 0.f, 0.f, 0.f, 0.f });
-    view->ChangeWindow(mSpace->GetComponent<GraphicsView>()->GetWindow());
-
-    mLayer = static_cast<ImguiLayer*>(layer->AddComponent(TypeId<ImguiLayer>()));
-
-    view->SetDrawerType("ImguiDrawer");
-
-    mSpace->YTERegister(Events::LogicUpdate, this, &SteppingStone::Update);
+    mSpace->RegisterEvent<&SteppingStone::Update>(Events::LogicUpdate, this);
   }
 
   static i64 Mod(i64 a, i64 b)
@@ -89,9 +90,8 @@ namespace YTE
     }
   }
 
-  void SteppingStone::Update(LogicUpdate *aUpdate)
+  void SteppingStone::Update(LogicUpdate* aUpdate)
   {
-    YTEUnusedArgument(aUpdate);
     mLayer->Begin("Stepping Stone");
     mLayer->InputInt("K", &mK);
     mLayer->InputInt("N", &mN);

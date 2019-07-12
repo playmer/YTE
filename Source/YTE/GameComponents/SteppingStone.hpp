@@ -14,7 +14,7 @@ namespace YTE
   public:
     YTEDeclareType(SteppingStone);
 
-    SteppingStone(Composition *aOwner, Space *aSpace, RSValue *aProperties);
+    SteppingStone(Composition* aOwner, Space* aSpace);
 
     void Start() override;
 

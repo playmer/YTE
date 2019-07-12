@@ -22,7 +22,8 @@ namespace YTE
   
     YTE_Shared Space(Engine *aEngine, RSValue *aProperties);
     YTE_Shared void Load();
-    YTE_Shared void Load(RSValue *aLevel, bool aInitialize = true);
+    YTE_Shared void Load(RSValue* aLevel, bool aInitialize = true);
+    YTE_Shared void PreLogicUpdate(LogicUpdate* aEvent);
     YTE_Shared void Update(LogicUpdate *aEvent);
     YTE_Shared ~Space();
 

@@ -65,7 +65,14 @@ namespace YTE
 
     auto window = mView->GetWindow();
 
-    mOwner->GetEngine()->RegisterEvent<&ImguiLayer::ImguiUpdate>(Events::PreLogicUpdate, this);
+    Composition* toRegisterTo{ mSpace };
+
+    if (mOwner->GetName() == "ImguiEditorLayer")
+    {
+      toRegisterTo = mOwner->GetEngine();
+    }
+
+    toRegisterTo->RegisterEvent<&ImguiLayer::ImguiUpdate>(Events::PreLogicUpdate, this);
     
     window->mMouse.RegisterEvent<&ImguiLayer::MouseScrollCallback>(Events::MouseScroll, this);
     window->mKeyboard.RegisterEvent<&ImguiLayer::KeyPressCallback>(Events::KeyPress, this);
