@@ -31,7 +31,9 @@ namespace YTE
     virtual void Start() { };
     virtual void Deinitialize() { };
 
+    Space const* GetSpace() const { return mSpace; }
     Space* GetSpace() { return mSpace; }
+    Composition const* GetOwner() const { return mOwner; }
     Composition* GetOwner() { return mOwner; }
 
     void Deserialize(RSValue* aProperties) override
@@ -46,7 +48,7 @@ namespace YTE
 
     YTE_Shared void DebugBreak();
 
-    YTE_Shared GlobalUniqueIdentifier& GetGUID();
+    YTE_Shared GlobalUniqueIdentifier const& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
   protected:

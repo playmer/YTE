@@ -3,11 +3,12 @@
 #ifndef YTE_Utilities_Utilites_h
 #define YTE_Utilities_Utilites_h
 
-#include <vector>
-#include <string>
-#include "YTE/StandardLibrary/FileSystem.hpp"
-
 #include <bitset>
+#include <functional>
+#include <string>
+#include <string_view>
+#include "YTE/StandardLibrary/FileSystem.hpp"
+#include <vector>
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -27,10 +28,21 @@ namespace YTE
     YTE_Shared std::string ToString() const;
     YTE_Shared std::string ToIdentifierString() const;
 
-    YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGuid) const;
+
+    //static size_t Hash(GlobalUniqueIdentifier const& aGuid)
+    //{
+    //  //std::byte const* begin = reinterpret_cast<std::byte const*>(&aGuid);
+    //  //std::basic_string_view<std::byte> test{ begin, begin + sizeof(GlobalUniqueIdentifier) };
+    //
+    //  char const* begin = reinterpret_cast<char const*>(&aGuid);
+    //  std::basic_string_view<char> test{ begin, sizeof(GlobalUniqueIdentifier) };
+    //
+    //  std::hash(test);
+    //}
 
 
-    //       u32           u16         u16        u16            u32         u16
+    //|------u32-----|   |--u16-|   |--u16-|   |--u16-|   |-----u32------||--u16-|
     //(xx)(xx)(xx)(xx) - (xx)(xx) - (Mx)(xx) - (Nx)(xx) - (xx)(xx)(xx)(xx)(xx)(xx)
     u32 mPart1;
     u16 mPart2;

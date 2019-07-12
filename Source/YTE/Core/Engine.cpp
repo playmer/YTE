@@ -522,7 +522,7 @@ namespace YTE
     return collision;
   }
 
-  Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
     YTEProfileFunction();
 
@@ -575,7 +575,7 @@ namespace YTE
   {
     YTEProfileFunction();
 
-    GlobalUniqueIdentifier &guid = aComponent->GetGUID();
+    auto& guid = aComponent->GetGUID();
 
     Component* collision = CheckForComponentGUIDCollision(guid);
 
@@ -588,7 +588,7 @@ namespace YTE
     return collision;
   }
 
-  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
     YTEProfileFunction();
 

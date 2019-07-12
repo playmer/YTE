@@ -16,80 +16,6 @@ namespace YTE
 
   namespace detail
   {
-    // Adapted From Sascha Willems
-    // https://github.com/SaschaWillems/Vulkan/blob/master/base/frustum.hpp
-    class Frustum
-    {
-    public:
-      enum side { LEFT = 0, RIGHT = 1, TOP = 2, BOTTOM = 3, BACK = 4, FRONT = 5 };
-      std::array<glm::vec4, 6> mPlanes;
-      glm::vec3 mCameraPosition;
-
-      void Update(glm::mat4 const& aClipSpace, glm::vec4 const& aCameraPosition)
-      {
-        mCameraPosition = glm::vec3(aCameraPosition);
-
-        mPlanes[LEFT].x = aClipSpace[0].w + aClipSpace[0].x;
-        mPlanes[LEFT].y = aClipSpace[1].w + aClipSpace[1].x;
-        mPlanes[LEFT].z = aClipSpace[2].w + aClipSpace[2].x;
-        mPlanes[LEFT].w = aClipSpace[3].w + aClipSpace[3].x;
-
-        mPlanes[RIGHT].x = aClipSpace[0].w - aClipSpace[0].x;
-        mPlanes[RIGHT].y = aClipSpace[1].w - aClipSpace[1].x;
-        mPlanes[RIGHT].z = aClipSpace[2].w - aClipSpace[2].x;
-        mPlanes[RIGHT].w = aClipSpace[3].w - aClipSpace[3].x;
-
-        mPlanes[TOP].x = aClipSpace[0].w - aClipSpace[0].y;
-        mPlanes[TOP].y = aClipSpace[1].w - aClipSpace[1].y;
-        mPlanes[TOP].z = aClipSpace[2].w - aClipSpace[2].y;
-        mPlanes[TOP].w = aClipSpace[3].w - aClipSpace[3].y;
-
-        mPlanes[BOTTOM].x = aClipSpace[0].w + aClipSpace[0].y;
-        mPlanes[BOTTOM].y = aClipSpace[1].w + aClipSpace[1].y;
-        mPlanes[BOTTOM].z = aClipSpace[2].w + aClipSpace[2].y;
-        mPlanes[BOTTOM].w = aClipSpace[3].w + aClipSpace[3].y;
-
-        mPlanes[BACK].x = aClipSpace[0].w + aClipSpace[0].z;
-        mPlanes[BACK].y = aClipSpace[1].w + aClipSpace[1].z;
-        mPlanes[BACK].z = aClipSpace[2].w + aClipSpace[2].z;
-        mPlanes[BACK].w = aClipSpace[3].w + aClipSpace[3].z;
-
-        mPlanes[FRONT].x = aClipSpace[0].w - aClipSpace[0].z;
-        mPlanes[FRONT].y = aClipSpace[1].w - aClipSpace[1].z;
-        mPlanes[FRONT].z = aClipSpace[2].w - aClipSpace[2].z;
-        mPlanes[FRONT].w = aClipSpace[3].w - aClipSpace[3].z;
-
-        for (auto i = 0; i < mPlanes.size(); i++)
-        {
-          float length = sqrtf(mPlanes[i].x * mPlanes[i].x + mPlanes[i].y * mPlanes[i].y + mPlanes[i].z * mPlanes[i].z);
-          mPlanes[i] /= length;
-        }
-      }
-
-      bool CheckSphere(glm::vec3 aPosition, float aRadius)
-      {
-        YTEProfileFunction();
-
-        // Check to see if Camera is within the sphere, if so, just draw it.
-        auto distance = glm::length(mCameraPosition - aPosition);
-
-        if (distance < aRadius)
-        {
-          return true;
-        }
-
-        // Next check to see if the sphere is within the planes.
-        for (auto i = 0; i < mPlanes.size(); i++)
-        {
-          if ((mPlanes[i].x * aPosition.x) + (mPlanes[i].y * aPosition.y) + (mPlanes[i].z * aPosition.z) + mPlanes[i].w <= -aRadius)
-          {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-
     // Derived from https://math.stackexchange.com/a/1463487
     float ExtractMaximumUniformScale(glm::mat4 const& aModelMatrix)
     {
@@ -100,13 +26,6 @@ namespace YTE
       return std::max(x, std::max(y, z));
     }
   }
-
-
-
-
-
-
-
 
 
   VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,
@@ -256,8 +175,7 @@ namespace YTE
     auto toClipSpace = viewUbo.mProjectionMatrix *
                        viewUbo.mViewMatrix;
 
-    detail::Frustum frustum;
-    frustum.Update(toClipSpace, viewUbo.mCameraPosition);
+    auto& frustum = mParentViewData->mView->GetFrustum();
 
     glm::vec4 origin{ 0.f,0.f,0.f,1.f };
     float depth{ 0.0f };

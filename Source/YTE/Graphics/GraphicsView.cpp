@@ -2,11 +2,93 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
 namespace YTE
 {
+  void Frustum::Update(UBOs::View const& aView)
+  {
+    //, glm::vec4 const& aCameraPosition;
+    glm::mat4 const& clipSpace = aView.mProjectionMatrix * aView.mViewMatrix;
+
+    mCameraPosition = glm::vec3(aView.mCameraPosition);
+
+    mPlanes[LEFT].x = clipSpace[0].w + clipSpace[0].x;
+    mPlanes[LEFT].y = clipSpace[1].w + clipSpace[1].x;
+    mPlanes[LEFT].z = clipSpace[2].w + clipSpace[2].x;
+    mPlanes[LEFT].w = clipSpace[3].w + clipSpace[3].x;
+
+    mPlanes[RIGHT].x = clipSpace[0].w - clipSpace[0].x;
+    mPlanes[RIGHT].y = clipSpace[1].w - clipSpace[1].x;
+    mPlanes[RIGHT].z = clipSpace[2].w - clipSpace[2].x;
+    mPlanes[RIGHT].w = clipSpace[3].w - clipSpace[3].x;
+
+    mPlanes[TOP].x = clipSpace[0].w - clipSpace[0].y;
+    mPlanes[TOP].y = clipSpace[1].w - clipSpace[1].y;
+    mPlanes[TOP].z = clipSpace[2].w - clipSpace[2].y;
+    mPlanes[TOP].w = clipSpace[3].w - clipSpace[3].y;
+
+    mPlanes[BOTTOM].x = clipSpace[0].w + clipSpace[0].y;
+    mPlanes[BOTTOM].y = clipSpace[1].w + clipSpace[1].y;
+    mPlanes[BOTTOM].z = clipSpace[2].w + clipSpace[2].y;
+    mPlanes[BOTTOM].w = clipSpace[3].w + clipSpace[3].y;
+
+    //mPlanes[BACK].x = /*clipSpace[0].w +*/ clipSpace[0].z;
+    //mPlanes[BACK].y = /*clipSpace[1].w +*/ clipSpace[1].z;
+    //mPlanes[BACK].z = /*clipSpace[2].w +*/ clipSpace[2].z;
+    //mPlanes[BACK].w = /*clipSpace[3].w +*/ clipSpace[3].z;
+
+    mPlanes[BACK].x = clipSpace[0].w + clipSpace[0].z;
+    mPlanes[BACK].y = clipSpace[1].w + clipSpace[1].z;
+    mPlanes[BACK].z = clipSpace[2].w + clipSpace[2].z;
+    mPlanes[BACK].w = clipSpace[3].w + clipSpace[3].z;
+
+    mPlanes[FRONT].x = clipSpace[0].w - clipSpace[0].z;
+    mPlanes[FRONT].y = clipSpace[1].w - clipSpace[1].z;
+    mPlanes[FRONT].z = clipSpace[2].w - clipSpace[2].z;
+    mPlanes[FRONT].w = clipSpace[3].w - clipSpace[3].z;
+
+    for (auto i = 0; i < mPlanes.size(); i++)
+    {
+      //glm::vec3 this_normal(mPlanes[i].x, mPlanes[i].y, mPlanes[i].z);
+      //float d = mPlanes[i].w;
+      //float length_normal = glm::length(this_normal);
+      //this_normal /= -length_normal;
+      //d /= length_normal;
+      //
+      //const glm::vec4 this_plane(this_normal, d);
+      //mPlanes[i] = this_plane;
+
+      float length = sqrtf(mPlanes[i].x * mPlanes[i].x + mPlanes[i].y * mPlanes[i].y + mPlanes[i].z * mPlanes[i].z);
+      mPlanes[i] /= length;
+    }
+  }
+
+  bool Frustum::CheckSphere(glm::vec3 aPosition, float aRadius)
+  {
+    YTEProfileFunction();
+
+    // Check to see if Camera is within the sphere, if so, just draw it.
+    auto distance = glm::length(mCameraPosition - aPosition);
+
+    if (distance < aRadius)
+    {
+      return true;
+    }
+
+    // Next check to see if the sphere is within the planes.
+    for (auto i = 0; i < mPlanes.size(); i++)
+    {
+      if ((mPlanes[i].x * aPosition.x) + (mPlanes[i].y * aPosition.y) + (mPlanes[i].z * aPosition.z) + mPlanes[i].w <= -aRadius)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static std::vector<std::string> PopulateDrawerTypeDropDownList(Component *aComponent)
   {
     UnusedArguments(aComponent);
@@ -165,7 +247,7 @@ namespace YTE
     }
   }
 
-  void GraphicsView::UpdateView(Camera *aCamera, UBOs::View &aView)
+  void GraphicsView::UpdateView(Camera const* aCamera, UBOs::View const& aView)
   {
     if (aCamera != mActiveCamera)
     {
@@ -180,6 +262,13 @@ namespace YTE
 
     mViewUBOData = aView;
     mViewUBO.Update(mViewUBOData);
+    mFrustum.Update(aView);
+
+    // Draw frustum planes.
+    if (mDebugDrawer)
+    {
+
+    }
   }
   
   void GraphicsView::UpdateIllumination(UBOs::Illumination& aIllumination)

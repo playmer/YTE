@@ -337,7 +337,7 @@ namespace YTE
     {
         particle.mLife -= aDt;
 
-        return particle.mLife <= 0.0f;
+        return (particle.mLife < 0.0f);
     });
 
     mParticles.erase(startToRemove, mParticles.end());
@@ -541,6 +541,7 @@ namespace YTE
     bufferData.mNormalBuffer.Update(normals);
     bufferData.mTextureCoordinatesBuffer.Update(textureCoordinates);
     submesh.mIndexBuffer.Update(indices);
+    submesh.mData.mIndexData = indices;
 
     mMesh->RecalculateDimensions();
   }

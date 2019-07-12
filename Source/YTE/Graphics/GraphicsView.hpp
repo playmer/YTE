@@ -43,6 +43,21 @@ namespace YTE
     Window *ChangingWindow;
   };
 
+
+  // Adapted From Sascha Willems
+  // https://github.com/SaschaWillems/Vulkan/blob/master/base/frustum.hpp
+  class Frustum
+  {
+  public:
+    enum side { LEFT = 0, RIGHT = 1, TOP = 2, BOTTOM = 3, BACK = 4, FRONT = 5 };
+    std::array<glm::vec4, 6> mPlanes;
+    glm::vec3 mCameraPosition;
+
+
+    void Update(UBOs::View const& aView);
+    bool CheckSphere(glm::vec3 aPosition, float aRadius);
+  };
+
   class GraphicsView : public Component
   {
   public:
@@ -51,7 +66,7 @@ namespace YTE
     YTE_Shared ~GraphicsView();
 
     YTE_Shared void NativeInitialize() override;
-    YTE_Shared void UpdateView(Camera *aCamera, UBOs::View &aView);
+    YTE_Shared void UpdateView(Camera const* aCamera, UBOs::View const& aView);
     YTE_Shared void UpdateIllumination(UBOs::Illumination &aIllumination);
 
     Camera* GetActiveCamera()
@@ -75,6 +90,11 @@ namespace YTE
     Renderer* GetRenderer()
     {
       return mRenderer;
+    }
+
+    Frustum& GetFrustum()
+    {
+      return mFrustum;
     }
 
     float GetOrder()
@@ -149,12 +169,13 @@ namespace YTE
 
     UBOs::View mViewUBOData;
     UBOs::Illumination mIlluminationUBOData;
-
-    Camera *mActiveCamera;
+    std::unique_ptr<LineDrawer> mDebugDrawer;
+    Frustum mFrustum;
+    Camera* mActiveCamera;
     DrawerTypeCombination mDrawerCombination;
     DrawerTypes mDrawerType;
-    Window *mWindow;
-    Renderer *mRenderer;
+    Window* mWindow;
+    Renderer* mRenderer;
     std::string mWindowName;
     glm::vec4 mClearColor;
     i32 mSuperSampling;

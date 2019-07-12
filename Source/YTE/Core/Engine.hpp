@@ -150,12 +150,12 @@ namespace YTE
     size_t GetFrame() { return mFrame; }
 
     YTE_Shared Composition* StoreCompositionGUID(Composition *aComposition);
-    YTE_Shared Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 
     YTE_Shared Component* StoreComponentGUID(Component *aComponent);
-    YTE_Shared Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
 

@@ -45,8 +45,7 @@ layout (location = 0) out vec3 outTextureCoordinates;
 layout (location = 1) out vec3 outNormal;
 layout (location = 2) out vec4 outPosition;
 layout (location = 3) out vec3 outPositionWorld;
-layout (location = 4) out vec4 outDiffuse;
-layout (location = 5) out mat4 outViewMatrix; // 6 - 9
+layout (location = 4) out mat4 outViewMatrix; // 6 - 9
 
 
 // ========================
@@ -99,7 +98,6 @@ void main()
 {
   // remaining output for fragment shader
   outTextureCoordinates = vec3(inTextureCoordinates.x, 1.0 - inTextureCoordinates.y, inTextureCoordinates.z);
-  outDiffuse = Model.mDiffuseColor;
   outViewMatrix = View.mViewMatrix;
 
   outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, vec4(inPosition, 1.0f));

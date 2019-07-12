@@ -90,7 +90,7 @@ namespace YTE
     return total;
   }
 
-  bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID)
+  bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID) const
   {
     if (this->mPart1 == aGUID.mPart1 &&
         this->mPart2 == aGUID.mPart2 &&

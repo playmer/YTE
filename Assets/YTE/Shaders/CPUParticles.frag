@@ -143,8 +143,7 @@ layout (location = 0) in vec3 inTextureCoordinates;
 layout (location = 1) in vec3 inNormal;
 layout (location = 2) in vec4 inPosition;
 layout (location = 3) in vec3 inPositionWorld;
-layout (location = 4) in vec4 inDiffuse;
-layout (location = 5) in mat4 inViewMatrix; // 6 - 9
+layout (location = 4) in mat4 inViewMatrix; // 6 - 9
 
 
 // ========================
@@ -404,16 +403,12 @@ void main()
 
   if (Lights.mActive < 0.5f)
   {
-    vec4 color = texture(diffuseSampler, inTextureCoordinates.xy) * modelDiffuse;
-    outFragColor = color;
-    //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    outFragColor = texture(diffuseSampler, inTextureCoordinates.xy) * modelDiffuse;
 
     if (outFragColor.w <= 0.001f)
     {
       discard;
     }
-    
-    //outFragColor.w = color.w;
   }
   else
   {
@@ -423,18 +418,11 @@ void main()
       vec4(inPositionWorld, 1.0f), 
       inTextureCoordinates.xy);
 
-    color = color * modelDiffuse;
-  
-    outFragColor = color;
-    //outFragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-    
+    outFragColor = color * modelDiffuse;
+
     if (outFragColor.w <= 0.001f)
     {
       discard;
     }
-    
-    //outFragColor.w = color.w;
   }
-
-  //outFragColor = vec4(1.0f,1.0f,1.0f,1.0f);
 }

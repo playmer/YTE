@@ -8,6 +8,7 @@ namespace YTE
   class Animator;
   class Animation;
   class Camera;
+  class CurveDrawer;
   class GraphicsDataUpdate;
   class GraphicsSystem;
   class GraphicsView;
@@ -17,12 +18,14 @@ namespace YTE
   class InstantiatedInfluenceMap;
   class LightManager;
   class Light;
+  class LineDrawer;
   class Model;
   class ModelChanged;
   class Renderer;
   class ParticleEmitter;
   class SimpleModel;
   class Sprite;
+  class TriangleDrawer;
   class ViewChanged;
   class WaterInfluenceMapManager;
 

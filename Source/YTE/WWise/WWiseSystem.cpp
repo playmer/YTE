@@ -632,17 +632,17 @@ namespace YTE
     }
   }
 
-  void WWiseSystem::SendEvent(const std::string &aEvent, WwiseObject aObject)
+  void WWiseSystem::SendEvent(std::string const& aEvent, WwiseObject aObject)
   {
-    AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
+    //AK::SoundEngine::PostEvent(aEvent.c_str(), aObject);
   }
 
   void WWiseSystem::SendEvent(u64 aEvent, WwiseObject aObject)
   {
-    AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
+    //AK::SoundEngine::PostEvent(static_cast<AkUniqueID>(aEvent), aObject);
   }
 
-  void WWiseSystem::SetSwitch(const std::string &aSwitchGroup, const std::string &aSwitch, WwiseObject aId)
+  void WWiseSystem::SetSwitch(std::string const& aSwitchGroup, std::string const& aSwitch, WwiseObject aId)
   {
     AK::SoundEngine::SetSwitch(aSwitchGroup.c_str(), aSwitch.c_str(), aId);
   }
@@ -652,7 +652,7 @@ namespace YTE
     AK::SoundEngine::SetSwitch(static_cast<AkSwitchGroupID>(aSwitchGroupId), static_cast<AkSwitchStateID>(aSwitchId), aId);
   }
 
-  void WWiseSystem::SetState(const std::string &aStateGroup, const std::string &aState)
+  void WWiseSystem::SetState(std::string const& aStateGroup, std::string const& aState)
   {
     AK::SoundEngine::SetState(aStateGroup.c_str(), aState.c_str());
   }
@@ -662,7 +662,7 @@ namespace YTE
     AK::SoundEngine::SetState(static_cast<AkStateGroupID>(aStateGroupId), static_cast<AkStateID>(aStateId));
   }
 
-  u64 WWiseSystem::GetSoundIDFromString(const std::string& aName)
+  u64 WWiseSystem::GetSoundIDFromString(std::string const& aName)
   {
     for (auto &bank : mBanks)
     {
