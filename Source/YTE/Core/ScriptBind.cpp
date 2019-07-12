@@ -15,6 +15,8 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/GameComponents/SteppingStone.hpp"
+
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/Camera.hpp"
@@ -84,6 +86,7 @@ namespace YTE
     InitializeType<Space>();
     InitializeType<TestComponent>();
 
+    InitializeType<SteppingStone>();
     InitializeType<Event>();
     InitializeType<EventHandler>();
     InitializeType<LogicUpdate>();

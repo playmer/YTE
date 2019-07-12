@@ -6,6 +6,7 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/GameComponents/SteppingStone.hpp"
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FacialAnimator.hpp"
@@ -59,6 +60,7 @@ namespace YTE
     helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
 
+    helper.CreateComponentFactory<SteppingStone>();
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();
     helper.CreateComponentFactory<FlybyCamera>();

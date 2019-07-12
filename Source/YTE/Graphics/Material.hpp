@@ -191,6 +191,11 @@ namespace YTE
     static RSValue ModelMaterialSerializer(RSAllocator &aAllocator, Object *aOwner);
     static void ModelMaterialDeserializer(RSValue &aValue, Object *aOwner);
 
+    MaterialRepresentation& GetModelMaterial()
+    {
+      return mModelMaterial;
+    }
+
   private:
     //Renderer *mRenderer;
     //Window *mWindow;
