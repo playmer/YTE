@@ -541,6 +541,9 @@ namespace YTE
     bufferData.mNormalBuffer.Update(normals);
     bufferData.mTextureCoordinatesBuffer.Update(textureCoordinates);
     submesh.mIndexBuffer.Update(indices);
+
+    // Should fix this in the core engine, but we use this index data for counting the indices.
+    // Ideally we use some other way to count them.
     submesh.mData.mIndexData = indices;
 
     mMesh->RecalculateDimensions();
