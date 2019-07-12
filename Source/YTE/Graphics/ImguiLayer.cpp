@@ -26,6 +26,7 @@ namespace YTE
 
   ImguiLayer::~ImguiLayer()
   {
+    SetCurrentContext();
     ImGui::DestroyContext(mContext);
   }
 

@@ -1,0 +1,130 @@
+{
+    "Archetype": "",
+    "Compositions": {
+        "Camera": {
+            "Archetype": "",
+            "Compositions": {},
+            "Components": {
+                "Transform": {
+                    "Rotation": {
+                        "Quaternion": {
+                            "x": "0",
+                            "y": "0",
+                            "z": "0",
+                            "w": "3F800000"
+                        }
+                    },
+                    "Scale": {
+                        "Vector3": {
+                            "x": "3F800000",
+                            "y": "3F800000",
+                            "z": "3F800000"
+                        }
+                    },
+                    "Translation": {
+                        "Vector3": {
+                            "x": "0",
+                            "y": "0",
+                            "z": "41A00000"
+                        }
+                    }
+                },
+                "Camera": {
+                    "FarPlane": "469C4000",
+                    "FieldOfViewY": "42340000",
+                    "Fog Coefficients": {
+                        "Vector3": {
+                            "x": "3F800000",
+                            "y": "3DCCCCCD",
+                            "z": "0"
+                        }
+                    },
+                    "Fog Color": {
+                        "Vector3": {
+                            "x": "3F000000",
+                            "y": "3F000000",
+                            "z": "3F000000"
+                        }
+                    },
+                    "Fog Near/Far": {
+                        "Vector2": {
+                            "x": "461C4000",
+                            "y": "469C4000"
+                        }
+                    },
+                    "Global Illumination": {
+                        "Vector3": {
+                            "x": "3DCCCCCD",
+                            "y": "3DCCCCCD",
+                            "z": "3DCCCCCD"
+                        }
+                    },
+                    "NearPlane": "3DCCCCCD",
+                    "UseOrthographicProjection": false
+                },
+                "Orientation": {},
+                "FlybyCamera": {
+                    "MovementSpeed": "41200000"
+                }
+            }
+        },
+        "EmptyObject": {
+            "Archetype": "Empty",
+            "Compositions": {},
+            "Components": {
+                "Transform": {
+                    "Rotation": {
+                        "Quaternion": {
+                            "x": "0",
+                            "y": "0",
+                            "z": "0",
+                            "w": "3F800000"
+                        }
+                    },
+                    "Scale": {
+                        "Vector3": {
+                            "x": "3F800000",
+                            "y": "3F800000",
+                            "z": "3F800000"
+                        }
+                    },
+                    "Translation": {
+                        "Vector3": {
+                            "x": "0",
+                            "y": "0",
+                            "z": "0"
+                        }
+                    }
+                },
+                "SteppingStone": {}
+            }
+        }
+    },
+    "Components": {
+        "PhysicsSystem": {
+            "Gravity": {
+                "Vector3": {
+                    "x": "0",
+                    "y": "0",
+                    "z": "0"
+                }
+            }
+        },
+        "GraphicsView": {
+            "WindowName": "Yours Truly Engine",
+            "ClearColor": {
+                "Vector4": {
+                    "x": "3E6147AE",
+                    "y": "3E6147AE",
+                    "z": "3E6147AE",
+                    "w": "3F800000"
+                }
+            },
+            "DrawerCombination": "DefaultCombination",
+            "DrawerType": "GameForwardDrawer",
+            "Order": "0"
+        },
+        "ActionManager": {},
+        "WWiseView": {}
+    }
+}
