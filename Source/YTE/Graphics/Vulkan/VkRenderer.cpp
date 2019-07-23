@@ -616,10 +616,6 @@ namespace YTE
     {
       toReturn = toReturn | vk::MemoryPropertyFlagBits::eLazilyAllocated;
     }
-    if (0 != (value & ToU64(GPUAllocation::MemoryProperty::Protected)))
-    {
-      toReturn = toReturn | vk::MemoryPropertyFlagBits::eProtected;
-    }
 
     return toReturn;
   }
