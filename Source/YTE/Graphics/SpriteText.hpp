@@ -167,6 +167,7 @@ namespace YTE
       return toReturn;
     }
 
+    bool mConstructing;
   private:
     Renderer *mRenderer;
     Window *mWindow;
@@ -185,7 +186,6 @@ namespace YTE
     BoundingBox mBoundingBox;
 
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
-    bool mConstructing;
 
     YTE_Shared void PrepareFont();
   };
