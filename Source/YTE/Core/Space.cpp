@@ -63,6 +63,7 @@ namespace YTE
       mEngine->GetWindow()->RegisterEvent<&Space::WindowMinimizedOrRestoredHandler>(Events::WindowMinimizedOrRestored, this);
     }
 
+    mEngine->RegisterEvent<&Space::PreLogicUpdate>(Events::PreLogicUpdate, this);
     mEngine->RegisterEvent<&Space::Update>(Events::SpaceUpdate, this);
 
     if (nullptr != aProperties)
@@ -232,6 +233,13 @@ namespace YTE
     }
   }
 
+  void Space::PreLogicUpdate(LogicUpdate* aEvent)
+  {
+    YTEProfileFunction();
+
+    SendEvent(Events::PreLogicUpdate, aEvent);
+  }
+
   // Updates the Space to the current frame.
   void Space::Update(LogicUpdate* aEvent)
   {
@@ -279,7 +287,6 @@ namespace YTE
       SendEvent(Events::PhysicsUpdate, aEvent);
     }
 
-    // TODO: Move the frame update calls to the graphics system
     SendEvent(Events::FrameUpdate, aEvent);
 
     // Don't send the LogicUpdate Event if the space is paused.

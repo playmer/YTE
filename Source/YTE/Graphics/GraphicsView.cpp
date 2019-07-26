@@ -468,14 +468,7 @@ namespace YTE
       dt = DrawerTypes::GameForwardDrawer;
     }
 
-    if (dt == mDrawerType)
-    {
-      return;
-    }
-    else
-    {
-      mDrawerType = dt;
-    }
+    mDrawerType = dt;
 
     if (mConstructing == false)
     {

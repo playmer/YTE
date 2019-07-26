@@ -24,14 +24,12 @@ namespace YTEditor
     , mMode{ Mode::World }
     , mCurrentComposition{ nullptr }
   {
-    aLevelEditor->GetRunningEngine()->RegisterEvent<&Gizmo::Update>(YTE::Events::LogicUpdate, this);
+    aLevelEditor->GetEditingLevel()->RegisterEvent<&Gizmo::Update>(YTE::Events::LogicUpdate, this);
     mLayer->Enable(true);
   }
 
-  void Gizmo::Update(YTE::LogicUpdate* aEvent)
+  void Gizmo::Update(YTE::LogicUpdate*)
   {
-    YTE::UnusedArguments(aEvent);
-
     if ((Operation::Select != mOperation) && (nullptr != mCurrentComposition))
     {
       ImGuiIO& io = mLayer->GetIO();

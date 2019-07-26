@@ -39,6 +39,7 @@ namespace YTE
       std::vector<size_t> mColorAttachments;
       std::string mName;
       DrawerTypeCombination mCombinationType;
+      DrawerTypes mDrawerType;
       float mOrder;
 
       bool operator<(RenderTargetData& rhs)

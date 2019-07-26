@@ -3,6 +3,7 @@
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
+#include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
@@ -382,9 +383,19 @@ namespace YTE
     YTEProfileFunction();
 
     auto viewData = GetViewData(aView);
-    viewData->mRenderTarget.reset();
-    viewData->mRenderTarget = CreateRenderTarget(aDrawerType, viewData, aCombination);
-    viewData->mRenderTarget->SetView(viewData);
+    auto& renderTarget = GetViewData(aView)->mRenderTarget;
+
+    if (auto renderTargetData = renderTarget->GetRenderTargetData();
+        renderTargetData->mCombinationType == aCombination &&
+        renderTargetData->mDrawerType == aDrawerType)
+    {
+      return;
+    }
+
+    renderTarget.reset();
+    renderTarget = CreateRenderTarget(aDrawerType, viewData, aCombination);
+    renderTarget->GetRenderTargetData()->mDrawerType = aDrawerType;
+    renderTarget->SetView(viewData);
 
     // reset swapchain's references to render target frame buffers
     std::vector<VkRenderTarget*> rts;

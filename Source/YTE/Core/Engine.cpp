@@ -273,21 +273,25 @@ namespace YTE
     {
       SetFrameRate(*window.second, mDt);
     }
-
-    mPlatform.Update();
     
     LogicUpdate updateEvent;
     updateEvent.Dt = mDt;
 
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
+    // Imgui forces this to be here.
+    // TODO: Figure out a cleaner way to handle things like Imgui.
+    SendEvent(Events::PreLogicUpdate, &updateEvent);
+
+    // Split into Update, to retrieve events, and "SendEvents"
+    // which actually sends the events out.
+    mPlatform.Update();
+
     SendEvent(Events::AnimationUpdate, &updateEvent);
 
     GetComponent<WWiseSystem>()->Update(mDt);
   
     mGamepadSystem.Update(mDt);
-
-    SendEvent(Events::PreLogicUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
     SendEvent(Events::SpaceUpdate, &updateEvent);
 
