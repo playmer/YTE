@@ -108,9 +108,6 @@ namespace YTEditor
 
     // load the selected level
     levelEditor->LoadLevel(file_without_extension);
-
-    // create a new gizmo and add it to the new level
-    levelEditor->CreateGizmo(levelEditor->GetEditingLevel());
   }
 
   void FileMenu::SaveLevel()

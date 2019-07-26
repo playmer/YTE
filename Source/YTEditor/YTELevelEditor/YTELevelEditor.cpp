@@ -94,6 +94,7 @@ namespace YTEditor
     , mGameObjectMenu{ nullptr }
     , mGizmoToolbar{ nullptr }
     , mGameToolbar{ nullptr }
+    , mLoading{false}
   {
   }
 
@@ -137,10 +138,34 @@ namespace YTEditor
 
   }
 
+  bool YTELevelEditor::KeepLoading()
+  {
+    if (false == mLoading)
+    {
+      return false;
+    }
+
+    YTE::Space* mainSession = GetEditingLevel();
+
+    if (false == mainSession->GetFinishedLoading())
+    {
+      mRunningEngine->Update();
+      return true;
+    }
+
+    LoadCurrentLevelInfo();
+    mLoading = false;
+  }
+
   void YTELevelEditor::UpdateEngine()
   {
     if (mRunningEngine != nullptr && mRunningEngine->KeepRunning())
     {
+      if (KeepLoading())
+      {
+        return;
+      }
+
       if (mLevelWindow)
       {
         mLevelWindow->Update();
@@ -166,7 +191,6 @@ namespace YTEditor
         property->ReloadValueFromEngine();
       }
     }
-
   }
 
   YTE::Space* YTELevelEditor::GetEditingLevel()
@@ -240,26 +264,11 @@ namespace YTEditor
 
     mImguiLayer->AddComponent(YTE::ImguiLayer::GetStaticType());
 
-    // Get all compositions on the main session (should be levels)
-    auto& objMap = lvl->GetCompositions();
-
-    // Iterate through all the objects in the map / on the level
-    for (auto cmp = objMap.begin(); cmp != objMap.end(); cmp++)
-    {
-      // Get the name of the object
-      YTE::String objName = cmp->second.get()->GetName();
-
-      //YTE::Composition *engineObj = cmp->second.get();
-
-      // Store the name and composition pointer in the object browser
-      objectBrowser->AddTreeItem(objName.Data(), cmp->second.get(), 0, false);
-    }
-
-    // if there are objects in the level
-    if (objMap.size() != 0)
-    {
-      objectBrowser->setCurrentItem(objectBrowser->topLevelItem(0));
-    }
+    // Store the name and composition pointer in the object browser
+    objectBrowser->AddTreeItem(lvl->GetName().c_str(), lvl, 0, false);
+    auto spaceItem = objectBrowser->topLevelItem(0);
+    objectBrowser->setCurrentItem(spaceItem);
+    objectBrowser->setItemExpanded(spaceItem, true);
 
     CreateGizmo(mEditingLevel);
   }
@@ -384,13 +393,7 @@ namespace YTEditor
     mainSession->LoadLevel(aLevelName, true);
 
     mRunningEngine->Update();
-
-    while (false == mainSession->GetFinishedLoading())
-    {
-      mRunningEngine->Update();
-    }
-
-    LoadCurrentLevelInfo();
+    mLoading = true;
   }
 
   QApplication* YTELevelEditor::GetApplication()
@@ -403,8 +406,6 @@ namespace YTEditor
 
     auto gizmo = RemakeGizmo();
 
-    // get the window 
-    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
     gizmo->SetOperation(Gizmo::Operation::Select);
 
     return gizmo;
@@ -412,9 +413,6 @@ namespace YTEditor
 
   Gizmo* YTELevelEditor::RemakeGizmo()
   {
-    // get the window 
-    //YTE::Window *yteWin = mRunningEngine->GetWindows().at("Yours Truly Engine").get();
-
     mGizmo = std::make_unique<Gizmo>(this,
       mImguiLayer->GetComponent<YTE::ImguiLayer>(),
       mEditorCamera->GetComponent<YTE::Camera>());

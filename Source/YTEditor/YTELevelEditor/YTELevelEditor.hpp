@@ -102,6 +102,7 @@ namespace YTEditor
 
     std::unique_ptr<Gizmo> mGizmo;
     float mGizmoScaleFactor;
+    bool mLoading;
 
     // Cstor helper functions and main subwindow vars
     void ConstructSubWidgets();
@@ -115,6 +116,7 @@ namespace YTEditor
 
     // Helper functions for menu bar //
     void ConstructMenuBar();
+    bool KeepLoading();
 
 
     void closeEvent(QCloseEvent *event);

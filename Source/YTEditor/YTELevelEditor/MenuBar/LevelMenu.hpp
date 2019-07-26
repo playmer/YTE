@@ -28,8 +28,8 @@ namespace YTEditor
 
   private:
 
-    CompositionBrowser *mObjectBrowser;
-    ComponentTree *mComponentTree;
+    CompositionBrowser* mObjectBrowser;
+    ComponentTree* mComponentTree;
 
     Menu* MakeCurrentLevelMenu();
     void ReloadCurrentLevel();

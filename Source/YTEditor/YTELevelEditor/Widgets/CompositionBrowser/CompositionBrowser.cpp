@@ -531,7 +531,7 @@ namespace YTEditor
   {
     for (int i = 0; i < topLevelItemCount(); ++i)
     {
-      ObjectItem *item = dynamic_cast<ObjectItem*>(topLevelItem(i));
+      ObjectItem *item = topLevelItem(i);
 
       if (item->GetEngineObject() == aComp)
       {

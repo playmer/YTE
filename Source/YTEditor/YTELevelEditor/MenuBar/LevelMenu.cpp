@@ -38,9 +38,9 @@ namespace YTEditor
     , mObjectBrowser(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<CompositionBrowser>())
     , mComponentTree(aMainWindow->GetWorkspace<YTELevelEditor>()->GetWidget<ComponentBrowser>()->GetComponentTree())
   {
-    AddAction<LevelMenu>("Reload Level", &LevelMenu::SelectEngine, this);
+    //AddAction<LevelMenu>("Reload Level", &LevelMenu::ReloadCurrentLevel, this);
     AddAction<LevelMenu>("Select Space", &LevelMenu::SelectSpace, this);
-    AddAction<LevelMenu>("Select Engine", &LevelMenu::SelectEngine, this);
+    //AddAction<LevelMenu>("Select Engine", &LevelMenu::SelectEngine, this);
     AddAction<LevelMenu>("Select Camera", &LevelMenu::SelectCamera, this);
     
     AddMenu(MakeSetLightingMenu());
@@ -51,39 +51,26 @@ namespace YTEditor
     auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
 
     // Get the space that represents the main session
-    YTE::Space *lvl = levelEditor->GetEditingLevel();
+    YTE::Space* space = levelEditor->GetEditingLevel();
 
-    //////////////////////////////////////////////////////////////////////////////
     // Clear the items (names and composition pointers) from the current object browser
     mObjectBrowser->ClearObjectList();
 
-    // Set the name to the new level
-    mObjectBrowser->setHeaderLabel(lvl->GetName().c_str());
-    /////////////////////////////////////////////////////////////////////////////
-
-    // Iterate through all the objects in the map / on the level
-    for (auto const& [name, composition] : lvl->GetCompositions())
-    {
-      // Get the name of the object
-      auto objName = composition->GetName();
-
-      // Store the name and composition pointer in the object browser
-      mObjectBrowser->AddExistingComposition(objName.c_str(), composition.get());
-    }
+    // Reload the level
+    mObjectBrowser->setHeaderLabel(space->GetName().c_str());
+    mObjectBrowser->AddTreeItem(space->GetName().c_str(), space, 0, false);
+    auto spaceItem = mObjectBrowser->topLevelItem(0);
+    mObjectBrowser->setCurrentItem(spaceItem);
+    mObjectBrowser->setItemExpanded(spaceItem, true);
   }
 
   void LevelMenu::SelectSpace()
   {
     auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
 
-    // Get the space that represents the main session
-    YTE::Space *lvl = levelEditor->GetEditingLevel();
-
-    auto objItem = mObjectBrowser->AddExistingComposition(levelEditor->GetRunningLevelName().c_str(), lvl);
-
-    mObjectBrowser->setCurrentItem(objItem);
-
-    mComponentTree->LoadGameObject(lvl);
+    auto spaceItem = mObjectBrowser->FindItemByComposition(levelEditor->GetEditingLevel());
+    mObjectBrowser->setCurrentItem(spaceItem);
+    mObjectBrowser->setItemExpanded(spaceItem, true);
   }
 
   void LevelMenu::SelectCamera()
@@ -94,18 +81,20 @@ namespace YTEditor
     auto cameraComponent = view->GetActiveCamera();
     auto cameraObject = cameraComponent->GetOwner();
 
-    mComponentTree->LoadGameObject(cameraObject);
+    auto cameraItem = mObjectBrowser->FindItemByComposition(cameraObject);
+    mObjectBrowser->setCurrentItem(cameraItem);
+    mObjectBrowser->setItemExpanded(cameraItem, true);
   }
 
-  void LevelMenu::SelectEngine()
-  {
-    // Get all the compositions on the engine
-    YTE::Composition *engine = static_cast<YTELevelEditor*>(mWorkspace)->GetRunningEngine();
-
-    mObjectBrowser->SelectNoItem();
-
-    mComponentTree->LoadGameObject(engine);
-  }
+  //void LevelMenu::SelectEngine()
+  //{
+  //  // Get all the compositions on the engine
+  //  YTE::Composition *engine = static_cast<YTELevelEditor*>(mWorkspace)->GetRunningEngine();
+  //
+  //  mObjectBrowser->SelectNoItem();
+  //
+  //  mComponentTree->LoadGameObject(engine);
+  //}
 
   Framework::Menu* LevelMenu::MakeSetLightingMenu()
   {
