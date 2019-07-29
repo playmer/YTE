@@ -181,11 +181,12 @@ namespace YTEditor
     return mTopItem;
   }
 
-  void ComponentWidget::LoadProperty(YTE::Component &aComponent, bool aProperty, std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp)
+  void ComponentWidget::LoadProperty(YTE::Component& aComponent, bool aProperty, std::pair<const std::string, std::unique_ptr<YTE::Property>> &aProp)
   {
     auto getter = aProp.second.get()->GetGetter();
+    auto componentPtr = &aComponent;
 
-    YTE::Any value = getter->Invoke(&aComponent);
+    YTE::Any value = getter->Invoke(componentPtr);
 
     if (auto redirectAttrib = aProp.second->GetAttribute<YTE::RedirectObject>();
         nullptr != redirectAttrib)

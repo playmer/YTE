@@ -57,7 +57,7 @@ namespace YTE
     for (auto propertiesIt = aProperties->MemberBegin(); propertiesIt < aProperties->MemberEnd(); ++propertiesIt)
     {
       std::string propertyName = propertiesIt->name.GetString();
-      RSValue *value = &propertiesIt->value;
+      RSValue *jsonValue = &propertiesIt->value;
 
       Property *namedProperty = Object::GetProperty(propertyName, aType);
 
@@ -68,7 +68,7 @@ namespace YTE
             false == deserializedEditorHeader &&
             listerAttribute->GetName() == propertiesIt->name.GetString())
         {
-          listerAttribute->Deserialize(*value, aSelf);
+          listerAttribute->Deserialize(*jsonValue, aSelf);
           deserializedEditorHeader = true;
           continue;
         }
@@ -84,7 +84,7 @@ namespace YTE
       if (auto redirectAttribute = namedProperty->GetAttribute<RedirectObject>();
           nullptr != redirectAttribute)
       {
-        redirectAttribute->Deserialize(*value, aSelf);
+        redirectAttribute->Deserialize(*jsonValue, aSelf);
         continue;
       }
 
@@ -95,11 +95,13 @@ namespace YTE
       // Type is a float
       if (setterType == TypeId<float>())
       {
-        setter->Invoke(aSelf, ValueAsFloat(value));
+        auto value = ValueAsFloat(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       else if (setterType == TypeId<double>())
       {
-        setter->Invoke(aSelf, ValueAsDouble(value));
+        auto value = ValueAsDouble(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       else if (setterType->GetEnumOf())
       {
@@ -119,7 +121,7 @@ namespace YTE
           aType->GetName().c_str(),
           namedProperty->GetName().c_str());
 
-        auto enumValue = enumType->GetFirstProperty(value->GetString());
+        auto enumValue = enumType->GetFirstProperty(jsonValue->GetString());
 
         UnusedArguments(enumValue);
 
@@ -140,44 +142,50 @@ namespace YTE
       // Type is an int.
       else if (setterType == TypeId<i32>())
       {
-        setter->Invoke(aSelf, value->GetInt());
+        auto value = jsonValue->GetInt();
+        setter->Invoke(aSelf, value);
       }
       // Type is a string.
       else if (setterType == TypeId<String>())
       {
-        String string = value->GetString();
+        String string = jsonValue->GetString();
         setter->Invoke(aSelf, string);
       }
       // Type is a string.
       else if (setterType == TypeId<std::string>())
       {
-        std::string string = value->GetString();
-        setter->Invoke(aSelf, string);
+        std::string value = jsonValue->GetString();
+        setter->Invoke(aSelf, value);
       }
       // Type is a Boolean.
       else if (setterType == TypeId<bool>())
       {
-        setter->Invoke(aSelf, value->GetBool());
+        auto value = jsonValue->GetBool();
+        setter->Invoke(aSelf, value);
       }
       // Type is a Real2.
       else if (setterType == TypeId<glm::vec2>())
       {
-        setter->Invoke(aSelf, ValueAsReal2(value));
+        auto value = ValueAsReal2(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       // Type is a Real3.
       else if (setterType == TypeId<glm::vec3>())
       {
-        setter->Invoke(aSelf, ValueAsReal3(value));
+        auto value = ValueAsReal3(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       // Type is a Real4.
       else if (setterType == TypeId<glm::vec4>())
       {
-        setter->Invoke(aSelf, ValueAsReal4(value));
+        auto value = ValueAsReal4(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       // Type is a Quaternion.
       else if (setterType == TypeId<glm::quat>())
       {
-        setter->Invoke(aSelf, ValueAsQuaternion(value));
+        auto value = ValueAsQuaternion(jsonValue);
+        setter->Invoke(aSelf, value);
       }
       // Type is invalid.
       else
@@ -273,11 +281,25 @@ namespace YTE
       // Type is a string.
       else if (propertyType == TypeId<String>())
       {
+        //auto jsonSerializer = propertyType->GetFirstFunction("JsonSerialize");
+        //auto anyVoid = static_cast<void*>(&any);
+        //auto propertyValueVoid = static_cast<void*>(&propertyValue);
+        //auto allocatorVoid = static_cast<void*>(&aAllocator);
+        //
+        //jsonSerializer->Invoke(anyVoid, propertyValueVoid, allocatorVoid);
+
         auto &value = any.As<String>();
         propertyValue.SetString(value.c_str(), static_cast<RSSizeType>(value.Size()), aAllocator);
       }
       else if (propertyType == TypeId<std::string>())
       {
+        //auto jsonSerializer = propertyType->GetFirstFunction("JsonSerialize");
+        //auto anyVoid = static_cast<void*>(&any);
+        //auto propertyValueVoid = static_cast<void*>(&propertyValue);
+        //auto allocatorVoid = static_cast<void*>(&aAllocator);
+        //
+        //jsonSerializer->Invoke(anyVoid, propertyValueVoid, allocatorVoid);
+
         auto &value = any.As<std::string>();
         propertyValue.SetString(value.c_str(), static_cast<RSSizeType>(value.size()), aAllocator);
       }

@@ -7,8 +7,10 @@ namespace YTEditor
   void HeaderListProperty<QStringList>::BaseSaveToEngine()
   {
     QStringList value = this->GetPropertyValues();
+    auto stdString = value[0].toStdString();
+
     YTE::Function *setter = mEngineProp->GetSetter();
-    setter->Invoke(mObject, value[0].toStdString());
+    setter->Invoke(mObject, stdString);
   }
 
 

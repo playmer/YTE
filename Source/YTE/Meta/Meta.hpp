@@ -123,7 +123,7 @@ namespace YTE
 
       std::unique_ptr<YTE::Function> enumGetter;
 
-      if (isSigned)
+      if constexpr (isSigned)
       {
         constexpr i64 value = (i64)tEnumValue;
 

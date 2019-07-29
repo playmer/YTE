@@ -14,7 +14,8 @@ namespace YTEditor
     std::string value = strList[0].toStdString();
 
     // set engine property value to new string
-    mSetter->Invoke(mParentComponent->GetEngineComponent(), value);
+    auto component = mParentComponent->GetEngineComponent();
+    mSetter->Invoke(component, value);
   }
 
 
@@ -25,7 +26,8 @@ namespace YTEditor
     YTE::Component* cmp = mParentComponent->GetEngineComponent();
 
     // current value on engine side
-    YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
+    auto component = mParentComponent->GetEngineComponent();
+    YTE::Any oldVal = mGetter->Invoke(component);
 
     YTELevelEditor* editor = mParentComponent->GetEditor();
     ComponentBrowser* componentBrowser = editor->GetWidget<ComponentBrowser>();
@@ -67,9 +69,10 @@ namespace YTEditor
   template <>
   void ComponentProperty<QStringList>::ReloadValueFromEngine()
   {
-    YTE::Any currentString = mGetter->Invoke(mParentComponent->GetEngineComponent());
+    auto component = mParentComponent->GetEngineComponent();
 
-    mSetter->Invoke(mParentComponent->GetEngineComponent(), currentString);
+    YTE::Any currentString = mGetter->Invoke(component);
+    mSetter->Invoke(component, currentString);
   }
 
 

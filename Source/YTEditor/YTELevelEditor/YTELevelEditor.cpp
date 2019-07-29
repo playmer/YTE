@@ -155,6 +155,8 @@ namespace YTEditor
 
     LoadCurrentLevelInfo();
     mLoading = false;
+
+    return false;
   }
 
   void YTELevelEditor::UpdateEngine()

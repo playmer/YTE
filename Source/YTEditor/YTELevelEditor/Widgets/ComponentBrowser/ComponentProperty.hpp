@@ -133,10 +133,10 @@ namespace YTEditor
   template <class T>
   void ComponentProperty<T>::SaveToEngine()
   {
-    YTE::Component *cmp = mParentComponent->GetEngineComponent();
+    YTE::Component* cmp = mParentComponent->GetEngineComponent();
 
     // get current value on engine-side
-    YTE::Any oldVal = mGetter->Invoke(mParentComponent->GetEngineComponent());
+    YTE::Any oldVal = mGetter->Invoke(cmp);
 
     //get current value editor-side
     T val = this->GetPropertyValues();
@@ -170,7 +170,8 @@ namespace YTEditor
     T value = this->GetPropertyValues();
 
     // call setter to change value engine-side
-    mSetter->Invoke(mParentComponent->GetEngineComponent(), value);
+    auto component = mParentComponent->GetEngineComponent();
+    mSetter->Invoke(component, value);
   }
 
 
@@ -199,7 +200,8 @@ namespace YTEditor
     }
 
     // otherwise get the current value engine-side
-    YTE::Any updatedValue = mGetter->Invoke(mParentComponent->GetEngineComponent());
+    auto component = mParentComponent->GetEngineComponent();
+    YTE::Any updatedValue = mGetter->Invoke(component);
 
     // update value in editor to accurately reflect engine
     this->SetValue(updatedValue.As<T>());
