@@ -47,16 +47,16 @@ namespace YTEditor
     void OpenFileViewer();
     void CloseFileViewer();
 
-    Framework::Menu* MakeWWiseViewerMenu();
-    void OpenWWiseViewer();
-    void CloseWWiseViewer();
+    //Framework::Menu* MakeWWiseViewerMenu();
+    //void OpenWWiseViewer();
+    //void CloseWWiseViewer();
 
     Framework::Menu* mObjectBrowserMenu;
     Framework::Menu* mComponentBrowserMenu;
     Framework::Menu* mOutputConsoleMenu;
     Framework::Menu* mMaterialViewerMenu;
     Framework::Menu* mFileViewerMenu;
-    Framework::Menu* mWWiseViewerMenu;
+    //Framework::Menu* mWWiseViewerMenu;
   };
 
 }

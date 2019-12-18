@@ -34,6 +34,8 @@ namespace YTE
     auto self = mData.ConstructAndGet<PlatformData::SharedObject_Data>();
     auto module = SDL_LoadObject(aFile.c_str());
 
+    printf("%s", SDL_GetError());
+
     if (nullptr != module)
     {
       self->mModule = module;

@@ -20,8 +20,9 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTE/Graphics/Light.hpp"
 #include "YTE/Graphics/ParticleEmitter.hpp"
 #include "YTE/Physics/Orientation.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
-#include "YTE/WWise/WWiseListener.hpp"
+
+//#include "YTEPlugin/Engine/WWiseEmitter.hpp"
+//#include "YTEPlugin/Engine/WWiseListener.hpp"
 
 #include "YTEditor/Framework/MainWindow.hpp"
 
@@ -51,7 +52,6 @@ namespace YTEditor
     AddMenu(Make3DObjectMenu());
     AddMenu(Make2DObjectMenu());
     AddMenu(MakeLightMenu());
-    AddMenu(MakeAudioMenu());
 
     AddAction<GameObjectMenu>("Particle Emitter", &GameObjectMenu::CreateParticleSystem, this);
 
@@ -141,16 +141,6 @@ namespace YTEditor
     return menu;
   }
 
-  Framework::Menu* GameObjectMenu::MakeAudioMenu()
-  {
-    Menu* menu = new Framework::Menu("Audio", mWorkspace);
-
-    menu->AddAction<GameObjectMenu>("Audio Emitter", &GameObjectMenu::CreateAudioListener, this);
-    menu->AddAction<GameObjectMenu>("Audio Listener", &GameObjectMenu::CreateAudioListener, this);
-
-    return menu;
-  }
-
   Framework::Menu* GameObjectMenu::MakeUIMenu()
   {
     auto menu = new Framework::Menu("UI", mWorkspace);
@@ -203,52 +193,6 @@ namespace YTEditor
     levelEditor->GetGizmo()->SnapToCurrentObject();
 
     return obj;
-  }
-
-  void GameObjectMenu::CreateAudioEmitter()
-  {
-    ObjectItem *item = mObjectBrowser->AddObject("Audio Emitter", "Empty");
-    YTE::Composition *obj = item->GetEngineObject();
-    mObjectBrowser->MoveToFrontOfCamera(obj);
-
-    YTE::Type* transform = YTE::Transform::GetStaticType();
-    mComponentTree->AddComponent(transform);
-
-    YTE::Type* orientation = YTE::Orientation::GetStaticType();
-    mComponentTree->AddComponent(orientation);
-
-    YTE::Type* emitterType = YTE::WWiseEmitter::GetStaticType();
-    mComponentTree->AddComponent(emitterType);
-
-    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
-    levelEditor->GetPhysicsHandler()->Remove(obj);
-    levelEditor->GetPhysicsHandler()->Add(obj);
-
-    levelEditor->GetGizmo()->SnapToCurrentObject();
-    mComponentTree->LoadGameObject(obj);
-  }
-
-  void GameObjectMenu::CreateAudioListener()
-  {
-    ObjectItem *item = mObjectBrowser->AddObject("Audio Listener", "Empty");
-    YTE::Composition *obj = item->GetEngineObject();
-    mObjectBrowser->MoveToFrontOfCamera(obj);
-
-    YTE::Type* transform = YTE::Transform::GetStaticType();
-    mComponentTree->AddComponent(transform);
-
-    YTE::Type* orientation = YTE::Orientation::GetStaticType();
-    mComponentTree->AddComponent(orientation);
-
-    YTE::Type* listenerType = YTE::WWiseListener::GetStaticType();
-    mComponentTree->AddComponent(listenerType);
-
-    auto levelEditor = static_cast<YTELevelEditor*>(mWorkspace);
-    levelEditor->GetPhysicsHandler()->Remove(obj);
-    levelEditor->GetPhysicsHandler()->Add(obj);
-
-    levelEditor->GetGizmo()->SnapToCurrentObject();
-    mComponentTree->LoadGameObject(obj);
   }
 
   void GameObjectMenu::CreateText()

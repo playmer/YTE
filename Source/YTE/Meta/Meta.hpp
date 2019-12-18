@@ -181,10 +181,10 @@ namespace YTE
   template <typename tType>
   void RegisterType()
   {
-    auto type = YTE::TypeId<tType>();
+    auto type = ::YTE::TypeId<tType>();
     Type::AddGlobalType(type->GetName(), type);
 
     TypeBuilder<tType> builder;
-    builder.template Function<&::YTE::TypeId<tType>>("GetStaticType");
+    //builder.Function<&::YTE::TypeId<tType>>("GetStaticType");
   }
 }

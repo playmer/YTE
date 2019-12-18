@@ -62,7 +62,7 @@
 
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
+//#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 
 #include "YTEditor/YTELevelEditor/Toolbars/GameToolbar.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
@@ -126,7 +126,7 @@ namespace YTEditor
     //// This needs to happen after the engine has been initialized.
 
     AddWidget<MaterialViewer>("Material Viewer", this);
-    AddWidget<WWiseWidget>("WWise Tool", this, mRunningEngine);
+    //AddWidget<WWiseWidget>("WWise Tool", this, mRunningEngine);
 
     LoadCurrentLevelInfo();
 

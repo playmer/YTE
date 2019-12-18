@@ -45,9 +45,9 @@ mkdir build
       - Under Microsoft, choose Windows
 ```
 
-5.) Installing Vulkan 1.1.92.1
+5.) Installing Vulkan 1.1.126.0
 ```
-1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.1.92.1 installer for your platform
+1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.1.126.0 installer for your platform
 2.) Install, all of the default options should be fine
 ```
 

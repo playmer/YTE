@@ -40,10 +40,6 @@
 
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTE/WWise/WWiseEmitter.hpp"
-#include "YTE/WWise/WWiseListener.hpp"
-#include "YTE/WWise/WWiseView.hpp"
-
 namespace YTE
 {
   using namespace std;
@@ -51,10 +47,6 @@ namespace YTE
   void CoreComponentFactoryInitilization(Engine *aEngine, FactoryMap &aComponentFactories)
   {
     YTE::ComponentFactoryHelper helper{aEngine, &aComponentFactories };
-
-    helper.CreateComponentFactory<WWiseEmitter>();
-    helper.CreateComponentFactory<WWiseListener>();
-    helper.CreateComponentFactory<WWiseView>();
 
     helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();

@@ -8,7 +8,6 @@ include(${CMAKE_CURRENT_LIST_DIR}/MenuBar/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/Physics/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/Toolbars/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/UndoRedo/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/Widgets/CMakeLists.txt)
 
 target_sources(YTEditor
 PRIVATE  

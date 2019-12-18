@@ -43,7 +43,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Source_Root}/cmake/modules/")
 ## Includes
 ################################################################################
 include(${CMake_Include}/AddFile.cmake)
-include(${CMake_Include}/FindDependency.cmake)
+#include(${CMake_Include}/FindDependency.cmake)
 include(${CMake_Include}/YTE_Source_Group.cmake)
 include(${CMake_Include}/YTE_Target_Precompiled_Headers.cmake)
 include(${CMake_Include}/YTE_Target_Folder.cmake)

@@ -19,7 +19,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/YTELevelEditor/Widgets/MaterialViewer/MaterialViewer.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
-#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 #include "YTEditor/YTELevelEditor/Widgets/FileViewer/FileViewer.hpp"
 
 #include "YTEditor/YTELevelEditor/YTELevelEditor.hpp"
@@ -34,7 +33,7 @@ namespace YTEditor
     AddMenu(MakeOutputConsoleMenu());
     AddMenu(MakeMaterialViewerMenu());
     AddMenu(MakeFileViewerMenu());
-    AddMenu(MakeWWiseViewerMenu());
+    //AddMenu(MakeWWiseViewerMenu());
   }
 
   Framework::Menu* WindowsMenu::MakeObjectBrowserMenu()
@@ -137,23 +136,23 @@ namespace YTEditor
     mWorkspace->GetWidget<FileViewer>()->hide();
   }
 
-  Framework::Menu* WindowsMenu::MakeWWiseViewerMenu()
-  {
-    auto menu = new Framework::Menu("WWise Viewer", mWorkspace);
-
-    menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenWWiseViewer, this);
-    menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseWWiseViewer, this);
-
-    return menu;
-  }
-
-  void WindowsMenu::OpenWWiseViewer()
-  {
-    mWorkspace->GetWidget<WWiseWidget>()->show();
-  }
-
-  void WindowsMenu::CloseWWiseViewer()
-  {
-    mWorkspace->GetWidget<WWiseWidget>()->hide();
-  }
+  //Framework::Menu* WindowsMenu::MakeWWiseViewerMenu()
+  //{
+  //  auto menu = new Framework::Menu("WWise Viewer", mWorkspace);
+  //
+  //  menu->AddAction<WindowsMenu>("Show", &WindowsMenu::OpenWWiseViewer, this);
+  //  menu->AddAction<WindowsMenu>("Hide", &WindowsMenu::CloseWWiseViewer, this);
+  //
+  //  return menu;
+  //}
+  //
+  //void WindowsMenu::OpenWWiseViewer()
+  //{
+  //  mWorkspace->GetWidget<WWiseWidget>()->show();
+  //}
+  //
+  //void WindowsMenu::CloseWWiseViewer()
+  //{
+  //  mWorkspace->GetWidget<WWiseWidget>()->hide();
+  //}
 }

@@ -120,8 +120,14 @@ namespace YTEditor
     return aRayFrom + YTE::ToBullet(rayDirectionWorld) * aFar;
   }
 
-  void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent *aEvent)
+  void PhysicsHandler::OnMousePress(YTE::MouseButtonEvent* aEvent)
   {
+      // If we're currently loading we don't want to try to select anything.
+    if (mLevelEditor->IsLoading())
+    {
+        return;
+    }
+
     auto imguiLayerComposition = mLevelEditor->GetImguiLayer();
     
     if (imguiLayerComposition)

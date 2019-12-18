@@ -60,11 +60,6 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#include "YTE/WWise/WWiseSystem.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
-#include "YTE/WWise/WWiseListener.hpp"
-#include "YTE/WWise/WWiseView.hpp"
-
 namespace YTE
 {
   void InitializeYTETypes()
@@ -150,11 +145,6 @@ namespace YTE
     InitializeType<GamepadSystem>();
     InitializeType<XboxController>();
     InitializeType<Window>();
-    
-    InitializeType<WWiseSystem>();
-    InitializeType<WWiseEmitter>();
-    InitializeType<WWiseListener>();
-    InitializeType<WWiseView>();
     
     InitializeType<void>();
     InitializeType<bool>();

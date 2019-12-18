@@ -19,7 +19,7 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTE/WWise/WWiseView.hpp"
+//#include "YTE/WWise/WWiseView.hpp"
 
 namespace YTE
 {
@@ -301,7 +301,7 @@ namespace YTE
 
     mLevelName = aLevelName;
 
-    AddComponent<WWiseView>();
+    //AddComponent<WWiseView>();
     auto graphicsView = AddComponent<GraphicsView>();
     graphicsView->ChangeWindow("Yours Truly Engine");
     graphicsView->NativeInitialize();

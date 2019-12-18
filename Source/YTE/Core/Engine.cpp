@@ -14,8 +14,6 @@
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 
-#include "YTE/WWise//WWiseSystem.hpp"
-
 namespace YTE
 {
   namespace fs = std::filesystem;
@@ -107,7 +105,6 @@ namespace YTE
     mLastFrame = mBegin;
 
     mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
-    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
     mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
 
     fs::path archetypesPath = Path::GetGamePath().String();
@@ -283,8 +280,6 @@ namespace YTE
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
 
-    GetComponent<WWiseSystem>()->Update(mDt);
-  
     mGamepadSystem.Update(mDt);
 
     SendEvent(Events::PreLogicUpdate, &updateEvent);
@@ -388,6 +383,8 @@ namespace YTE
     fs::create_directories(gamePath, error);
 
 
+    std::vector<std::string> paths;
+
     for (auto& itemIt : fs::directory_iterator(gamePath))
     {
       fs::path item{ itemIt };
@@ -396,9 +393,15 @@ namespace YTE
       
       if (".dll" == extension)
       {
-        auto path = item.u8string();
-        mPlugins[path] = std::make_unique<PluginWrapper>(this, path);
+        paths.emplace_back(item.u8string());
       }
+    }
+
+    std::reverse(paths.begin(), paths.end());
+
+    for (auto& path : paths)
+    {
+      mPlugins[path] = std::make_unique<PluginWrapper>(this, path);
     }
   }
 

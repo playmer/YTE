@@ -72,6 +72,11 @@ namespace YTEditor
       return mLevelWindowWidget;
     }
 
+    bool IsLoading()
+    {
+        return mLoading;
+    }
+
   private:
     // YTE GAME ENGINE
     YTE::Engine* mRunningEngine;

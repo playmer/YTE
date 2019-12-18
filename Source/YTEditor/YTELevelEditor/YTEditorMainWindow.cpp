@@ -78,7 +78,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
-#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
+//#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
 
 #include "YTEditor/YTELevelEditor/Toolbars/GameToolbar.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"

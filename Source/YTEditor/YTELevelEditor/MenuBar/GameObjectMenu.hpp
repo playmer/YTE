@@ -57,10 +57,6 @@ namespace YTEditor
     void CreateSpotlight();
     YTE::Composition* MakeLight(std::string lightType);
 
-    Menu* MakeAudioMenu();
-    void CreateAudioEmitter();
-    void CreateAudioListener();
-
     Menu* MakeUIMenu();
     void CreateText();
     void CreateImage();
