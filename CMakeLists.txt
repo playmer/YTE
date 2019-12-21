@@ -6,7 +6,7 @@
 ################################################################################
 # Set up the required version of cmake and policies related to versions.
 ################################################################################
-cmake_minimum_required(VERSION 3.9.1 FATAL_ERROR) 
+cmake_minimum_required(VERSION 3.16.1 FATAL_ERROR) 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)  
 
 ################################################################################

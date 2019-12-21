@@ -1,19 +1,14 @@
-﻿################################################################################
-## This source file is a part of YTEditor.
-## Legal  : All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-## Author : Joshua T. Fisher
-################################################################################
-add_executable(YTEditor "")
+﻿add_executable(YTEditor "")
 
-include(Framework/CMakeLists.txt)
-include(YTELevelEditor/CMakeLists.txt)
+add_subdirectory(Framework)
+add_subdirectory(YTELevelEditor)
 
 target_sources(YTEditor
   PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/main.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/YTEditor.rc
-    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/YTEditorMeta.hpp
+    main.cpp
+    YTEditor.rc
+    ForwardDeclarations.hpp
+    YTEditorMeta.hpp
 )
 
 target_include_directories(YTEditor

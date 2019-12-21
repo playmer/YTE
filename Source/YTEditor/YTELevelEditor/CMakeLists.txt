@@ -1,25 +1,20 @@
-################################################################################
-## This source file is a part of YTEditor.
-## Legal  : All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-## Author : Nicholas Ammann
-################################################################################
-
-include(${CMAKE_CURRENT_LIST_DIR}/MenuBar/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/Physics/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/Toolbars/CMakeLists.txt)
-include(${CMAKE_CURRENT_LIST_DIR}/UndoRedo/CMakeLists.txt)
+add_subdirectory(MenuBar)
+add_subdirectory(Physics)
+add_subdirectory(Toolbars)
+add_subdirectory(UndoRedo)
+add_subdirectory(Widgets)
 
 target_sources(YTEditor
 PRIVATE  
-  ${CMAKE_CURRENT_LIST_DIR}/ComponentFactoryInit.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/ComponentFactoryInit.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Gizmo.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/Gizmo.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/YTEditorMainWindow.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/YTEditorMainWindow.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/ScriptBind.cpp
-  ${CMAKE_CURRENT_LIST_DIR}/YTELevelEditor.hpp
-  ${CMAKE_CURRENT_LIST_DIR}/YTELevelEditor.cpp
+  ComponentFactoryInit.hpp
+  ComponentFactoryInit.cpp
+  ForwardDeclarations.hpp
+  Gizmo.hpp
+  Gizmo.cpp
+  ScriptBind.hpp
+  ScriptBind.cpp
+  YTEditorMainWindow.hpp
+  YTEditorMainWindow.cpp
+  YTELevelEditor.hpp
+  YTELevelEditor.cpp
 )
