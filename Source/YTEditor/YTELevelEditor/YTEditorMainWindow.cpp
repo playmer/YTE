@@ -42,12 +42,14 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
+#include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/ImguiLayer.hpp"
+#include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Utilities/Utilities.hpp"
 
 #include "YTEditor/YTELevelEditor/Gizmo.hpp"
@@ -78,8 +80,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
 
-//#include "YTEditor/YTELevelEditor/Widgets/WWiseViewer/WWiseWidget.hpp"
-
 #include "YTEditor/YTELevelEditor/Toolbars/GameToolbar.hpp"
 #include "YTEditor/YTELevelEditor/Toolbars/GizmoToolbar.hpp"
 
@@ -109,6 +109,8 @@ namespace YTEditor
     SetWindowSettings();
 
     LoadWorkspace<YTELevelEditor>(this);
+
+    LoadPlugins();
 
     auto self = this;
     QTimer::singleShot(0, [self]()
@@ -213,6 +215,60 @@ namespace YTEditor
   Preferences* YTEditorMainWindow::GetPreferences()
   {
     return &mPreferences;
+  }
+
+  void YTEditorMainWindow::LoadPlugins()
+  {
+    namespace fs = std::filesystem;
+
+    fs::path gamePath = YTE::Path::GetGamePath().String();
+    gamePath /= "EditorPlugins";
+
+    if constexpr(YTE::CompilerConfiguration::Debug())
+    {
+      gamePath /= "Debug";
+    }
+    else if constexpr(YTE::CompilerConfiguration::MinSizeRel())
+    {
+      gamePath /= "MinSizeRel";
+    }
+    else if constexpr(YTE::CompilerConfiguration::RelWithDebInfo())
+    {
+      gamePath /= "RelWithDebInfo";
+    }
+    else if constexpr(YTE::CompilerConfiguration::Release())
+    {
+      gamePath /= "Release";
+    }
+    else if constexpr(YTE::CompilerConfiguration::Publish())
+    {
+      gamePath /= "Publish";
+    }
+
+    std::error_code error;
+    fs::create_directories(gamePath, error);
+
+
+    std::vector<std::string> paths;
+
+    for (auto& itemIt : fs::directory_iterator(gamePath))
+    {
+      fs::path item{ itemIt };
+
+      auto extension = item.extension();
+      
+      if (".dll" == extension)
+      {
+        paths.emplace_back(item.u8string());
+      }
+    }
+
+    std::reverse(paths.begin(), paths.end());
+
+    for (auto& path : paths)
+    {
+      mPlugins[path] = std::make_unique<YTE::PluginWrapper>(mRunningEngine, path);
+    }
   }
 
   // process serialized preferences file

@@ -1,24 +1,22 @@
-﻿add_executable(YTEditor "")
+﻿add_library(YTEditor SHARED)
 
 add_subdirectory(Framework)
 add_subdirectory(YTELevelEditor)
 
 target_sources(YTEditor
   PRIVATE
-    main.cpp
-    YTEditor.rc
     ForwardDeclarations.hpp
+    EditorPlugin.cpp
+    EditorPlugin.hpp
     YTEditorMeta.hpp
 )
 
 target_include_directories(YTEditor
-  PRIVATE
+  PUBLIC
     ${Source_Root}
     ${ParentDirectory}
     ${Dependencies_Root}/assimp/include
 )
-
-set_target_properties(YTEditor PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTE_Assets_Root}/Bin)
 
 set_target_properties(YTEditor
                       PROPERTIES
@@ -40,29 +38,17 @@ find_package(Qt5Widgets)
 
 YTE_Target_Set_LTCG(YTEditor)
 
-target_link_libraries(YTEditor YTEMain Qt5::Widgets toolwindowmanager assimp)
+target_link_libraries(YTEditor 
+  PUBLIC 
+    YTEMain 
+    Qt5::Widgets 
+    toolwindowmanager 
+    assimp
+)
 
 target_compile_definitions(YTEditor PRIVATE YTEditor_Internal=1)
 
 YTE_Source_Group(YTEditor_Root YTEditor)
-
-if ("${INSTALL_YTEDITOR}" STREQUAL "1")
-  message(STATUS "YTEditor Install Target Enabled")
-  Install(TARGETS YTEditor
-  RUNTIME DESTINATION BIN
-  LIBRARY DESTINATION BIN
-  ARCHIVE DESTINATION BIN
-  COMPONENT applications)
-
-  add_custom_command(
-      TARGET YTEditor POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different
-          $<TARGET_FILE:Qt5::Widgets>
-          $<TARGET_FILE_DIR:YTEditor>)
-
-  Install(PROGRAMS "$<TARGET_FILE_DIR:YTEditor>/Qt5Widgets.dll" 
-  DESTINATION BIN)
-endif()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   # Have to do /LTCG here because it appears as though setting this property resets it.

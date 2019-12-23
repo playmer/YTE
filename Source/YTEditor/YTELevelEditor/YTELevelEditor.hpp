@@ -4,58 +4,58 @@
 
 #include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
+#include "YTEditor/YTEditorMeta.hpp"
+
 namespace YTEditor
 {
   class YTELevelEditor : public Framework::Workspace
   {
   public:
-    YTELevelEditor(YTEditorMainWindow* aMainWindow);
+    YTEditor_Shared YTELevelEditor(YTEditorMainWindow* aMainWindow);
 
-    bool Initialize() override;
-    void Shutdown() override;
+    YTEditor_Shared bool Initialize() override;
+    YTEditor_Shared void Shutdown() override;
 
-    UndoRedo* GetUndoRedo();
+    YTEditor_Shared UndoRedo* GetUndoRedo();
 
-    void UpdateEngine();
+    YTEditor_Shared void UpdateEngine();
 
-    YTE::Space* GetEditingLevel();
+    YTEditor_Shared YTE::Space* GetEditingLevel();
 
     YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
     YTE::String& GetRunningLevelName() { return mRunningLevelName; }
 
-    void SetRunningSpaceName(YTE::String &aName);
-    YTE::String& GetRunningSpaceName();
+    YTEditor_Shared void SetRunningSpaceName(YTE::String &aName);
+    YTEditor_Shared YTE::String& GetRunningSpaceName();
 
-    void PlayLevel();
-    void PauseLevel(bool pauseState);
-    void StopLevel();
+    YTEditor_Shared void PlayLevel();
+    YTEditor_Shared void PauseLevel(bool pauseState);
+    YTEditor_Shared void StopLevel();
 
-    void CreateBlankLevel(const YTE::String& aLevelName);
-    void LoadLevel(YTE::String aLevelName);
-    void LoadCurrentLevelInfo();
+    YTEditor_Shared void CreateBlankLevel(const YTE::String& aLevelName);
+    YTEditor_Shared void LoadLevel(YTE::String aLevelName);
+    YTEditor_Shared void LoadCurrentLevelInfo();
 
-    void SaveCurrentLevel();
+    YTEditor_Shared void SaveCurrentLevel();
+    
+    YTEditor_Shared QApplication* GetApplication();
 
-    void PostEngineInitilization();
+    YTEditor_Shared Gizmo* GetGizmo();
 
-    QApplication* GetApplication();
+    YTEditor_Shared FileMenu* GetFileMenu();
 
-    Gizmo* GetGizmo();
+    YTEditor_Shared GameObjectMenu* GetGameObjectMenu();
 
-    FileMenu* GetFileMenu();
+    YTEditor_Shared PhysicsHandler* GetPhysicsHandler();
 
-    GameObjectMenu* GetGameObjectMenu();
+    YTEditor_Shared Gizmo* CreateGizmo(YTE::Space *aSpace);
+    YTEditor_Shared Gizmo* RemakeGizmo();
+    YTEditor_Shared void DeleteGizmo();
 
-    PhysicsHandler* GetPhysicsHandler();
+    YTEditor_Shared GizmoToolbar* GetGizmoToolbar();
 
-    Gizmo* CreateGizmo(YTE::Space *aSpace);
-    Gizmo* RemakeGizmo();
-    void DeleteGizmo();
-
-    GizmoToolbar* GetGizmoToolbar();
-
-    YTE::Composition* GetEditorCamera();
+    YTEditor_Shared YTE::Composition* GetEditorCamera();
 
     YTE::Composition* GetImguiLayer()
     {

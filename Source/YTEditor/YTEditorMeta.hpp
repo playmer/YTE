@@ -16,14 +16,14 @@
   #endif
 #endif
 
-#define YTEditorDeclareType(Name)                                     \
-void Dummy() {}                                                       \
-typedef decltype(::YTE::GetDummy(&Name::Dummy)) TempSelfType;         \
-typedef decltype(::YTE::GetSelfType<TempSelfType>(nullptr)) BaseType; \
-typedef TempSelfType SelfType;                                        \
-YTEditor_Shared static ::YTE::Type sType;                                  \
-YTEditor_Shared static ::YTE::Type* GetStaticType() { return &sType; };    \
-YTEditor_Shared ::YTE::Type* GetType() { return &sType; };                 \
+#define YTEditorDeclareType(Name)                                       \
+void Dummy() {}                                                         \
+typedef decltype(::YTE::GetDummy(&Name::Dummy)) TempSelfType;           \
+typedef decltype(::YTE::GetSelfType<TempSelfType>(nullptr)) BaseType;   \
+typedef TempSelfType SelfType;                                          \
+YTEditor_Shared static ::YTE::Type sType;                               \
+YTEditor_Shared static ::YTE::Type* GetStaticType() { return &sType; }; \
+YTEditor_Shared ::YTE::Type* GetType() { return &sType; };              \
 YTEditor_Shared static void InitializeType();
 
 

@@ -5,7 +5,9 @@
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
 #include "YTE/Core/Utilities.hpp"
 
+#include "YTEditor/YTEditorMeta.hpp"
+
 namespace YTEditor
 {
-  void ComponentFactoryInitialization(YTE::Engine *aEngine, YTE::FactoryMap &currComponentFactories);
+  YTEditor_Shared void ComponentFactoryInitialization(YTE::Engine *aEngine, YTE::FactoryMap &currComponentFactories);
 }

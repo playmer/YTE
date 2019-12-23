@@ -17,6 +17,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <qevent.h>
 #include <qapplication.h>
 
+#include "YTE/Core/Plugin.hpp"
+
 #include "YTE/Utilities/String/String.hpp"
 
 #include "YTEditor/YTELevelEditor/Physics/PhysicsHandler.hpp"
@@ -25,6 +27,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include "YTEditor/Framework/ForwardDeclarations.hpp"
 
 #include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
+
+#include "YTEditor/YTEditorMeta.hpp"
 
 class QDockWidget;
 class QMenu;
@@ -57,24 +61,25 @@ namespace YTEditor
   class YTEditorMainWindow : public Framework::MainWindow
   {
   public:
-    YTEditorMainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
-    ~YTEditorMainWindow();
+    YTEditor_Shared YTEditorMainWindow(YTE::Engine *aEngine, QApplication *aQApp, std::unique_ptr<YTE::RSDocument> aPrefFile = nullptr);
+    YTEditor_Shared ~YTEditorMainWindow();
 
-    void UpdateEngine();
+    YTEditor_Shared void UpdateEngine();
 
     YTE::Engine* GetRunningEngine() { return mRunningEngine; }
 
-    QApplication* GetApplication();
+    YTEditor_Shared QApplication* GetApplication();
 
-    void keyPressEvent(QKeyEvent *aEvent);
+    YTEditor_Shared void keyPressEvent(QKeyEvent *aEvent);
 
-    FileMenu* GetFileMenu();
+    YTEditor_Shared FileMenu* GetFileMenu();
 
-    Preferences* GetPreferences();
-
+    YTEditor_Shared Preferences* GetPreferences();
+    
+    YTEditor_Shared void LoadPlugins();
 
   private:
-
+    std::unordered_map<std::string, std::unique_ptr<YTE::PluginWrapper>> mPlugins;
     Preferences mPreferences;
 
     // YTE GAME ENGINE

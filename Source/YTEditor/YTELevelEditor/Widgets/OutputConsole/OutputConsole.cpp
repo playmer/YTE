@@ -1,17 +1,3 @@
-/******************************************************************************/
-/*!
-\file   OutputConsole.cpp
-\author Joshua Fisher
-\par    email: j.fisher\@digipen.edu
-\par    Course: GAM 300
-\date   8/15/2017
-\brief
-Implementation of the output console and its print functions.
-
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include <stdarg.h> /* va_list, va_start, va_end*/
 #include <stdio.h>
 

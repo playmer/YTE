@@ -1,6 +1,5 @@
 namespace YTEditor
 {
-
   // Component Browser
   class ArchetypeTools;
   class ComponentBrowser;
@@ -35,4 +34,6 @@ namespace YTEditor
 
   // Main Window
   struct ComponentFactoryHelper;
+
+  class YTEditorMainWindow;
 }

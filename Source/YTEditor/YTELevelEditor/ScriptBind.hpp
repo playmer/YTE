@@ -1,6 +1,8 @@
 #pragma once
 
+#include "YTEditor/YTEditorMeta.hpp"
+
 namespace YTEditor
 {
-  void InitializeYTEditorTypes();
+  YTEditor_Shared void InitializeYTEditorTypes();
 }

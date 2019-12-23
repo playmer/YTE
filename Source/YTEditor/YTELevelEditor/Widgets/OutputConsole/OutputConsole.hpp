@@ -1,17 +1,3 @@
-/******************************************************************************/
-/*!
-\file   OutputConsole.hpp
-\author Joshua Fisher, Nicholas Ammann
-\par    email: j.fisher\@digipen.edu, nicholas.ammann\@digipen.edu
-\par    Course: GAM 300
-\date   8/15/2017
-\brief
-The debug output console widget contained by the main window.
-
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #pragma once
 
 #include <QWidget>
@@ -35,9 +21,9 @@ namespace YTEditor
   {
   public:
     YTEditorDeclareType(LogHandler);
-    LogHandler(OutputConsole* aConsole);
+    YTEditor_Shared LogHandler(OutputConsole* aConsole);
 
-    void HandleLog(YTE::LogEvent *aEvent);
+    YTEditor_Shared void HandleLog(YTE::LogEvent* aEvent);
 
   private:
     OutputConsole* mConsole;
@@ -58,21 +44,21 @@ namespace YTEditor
       static QColor Red;
     };
 
-    OutputConsole(YTELevelEditor* aWorkspace);
-    ~OutputConsole();
+    YTEditor_Shared OutputConsole(YTELevelEditor* aWorkspace);
+    YTEditor_Shared ~OutputConsole();
 
-    void PrintToConsole(const char *aString);
+    YTEditor_Shared void PrintToConsole(const char *aString);
 
-    void PrintLn(const char *aFormat, ...);
-    void PrintLnC(QColor aColor, const char *aFormat, ...);
+    YTEditor_Shared void PrintLn(const char *aFormat, ...);
+    YTEditor_Shared void PrintLnC(QColor aColor, const char *aFormat, ...);
 
     QTextEdit* GetTextEdit() { return mConsole; }
 
     YTEditorMainWindow* GetMainWindow() { return mMainWindow; }
 
-    static std::string GetName();
+    YTEditor_Shared static std::string GetName();
 
-    ToolWindowManager::AreaReference GetToolArea() override;
+    YTEditor_Shared ToolWindowManager::AreaReference GetToolArea() override;
 
   private:
     void SetWindowSettings();
