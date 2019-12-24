@@ -28,6 +28,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTEditor/YTELevelEditor/ForwardDeclarations.hpp"
 
+#include "YTEditor/EditorPlugin.hpp"
 #include "YTEditor/YTEditorMeta.hpp"
 
 class QDockWidget;
@@ -79,7 +80,7 @@ namespace YTEditor
     YTEditor_Shared void LoadPlugins();
 
   private:
-    std::unordered_map<std::string, std::unique_ptr<YTE::PluginWrapper>> mPlugins;
+    std::unordered_map<std::string, std::unique_ptr<EditorPluginWrapper>> mPlugins;
     Preferences mPreferences;
 
     // YTE GAME ENGINE

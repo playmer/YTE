@@ -56,6 +56,8 @@ namespace YTEditor
 
     YTEditor_Shared void Reload();
 
+    YTEditor_Shared bool IsLoaded();
+
     private:
     void LoadPlugin();
 

@@ -52,4 +52,9 @@ namespace YTEditor
 
     LoadPlugin();
   }
+  
+  bool EditorPluginWrapper::IsLoaded()
+  {
+    return mSharedObject.GetLoaded();
+  }
 }

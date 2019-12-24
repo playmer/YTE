@@ -53,6 +53,8 @@ namespace YTE
 
     YTE_Shared void Reload();
 
+    YTE_Shared bool IsLoaded();
+
     private:
     void LoadPlugin();
 

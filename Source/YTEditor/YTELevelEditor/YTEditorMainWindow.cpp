@@ -262,12 +262,66 @@ namespace YTEditor
         paths.emplace_back(item.u8string());
       }
     }
-
-    std::reverse(paths.begin(), paths.end());
-
-    for (auto& path : paths)
+    
+    // Plugins to load
+    if (paths.size())
     {
-      mPlugins[path] = std::make_unique<YTE::PluginWrapper>(mRunningEngine, path);
+      // You don't want to know why I'm doing this, but I'll tell you anyway.
+      //
+      // Plugins sometimes have dependencies. The game plugin relying on a plugin for middlewares
+      // as an example. And those plugins could depend on even more plugins.
+      //
+      // But handling those dependencies would require writing some sort of file structure for defining them. 
+      // So instead, we're just going to try to load plugins, and if we fail, we continue, hoping that the next
+      // iteration will have loaded their dependency (or a dependency of their dependency, etc).
+      //
+      // At some point, we should probably do that work. We'll also need to topologically sort them, have fun 
+      // future maintainter
+      std::vector<size_t> indicesToDelete;
+      bool somethingChanged = true;
+      while (somethingChanged)
+      {
+        for (auto& [path, i] : YTE::enumerate(paths))
+        {
+          auto plugin = std::make_unique<EditorPluginWrapper>(this, *path);
+
+          if (plugin->IsLoaded())
+          {
+            mPlugins[*path] = std::move(plugin);
+            indicesToDelete.emplace_back(i);
+          }
+        }
+
+        // Delete the loaded plugins paths.
+        // We remove in reverse order so indexes don't change.
+        std::reverse(indicesToDelete.begin(), indicesToDelete.end());
+        for (auto& index : indicesToDelete)
+        {
+          paths.erase(paths.begin() + index);
+        }
+
+        // Nothing changed, we should abort.
+        if (indicesToDelete.size() == 0)
+        {
+          somethingChanged = false;
+        }
+
+        indicesToDelete.clear();
+      }
+    }
+
+    // If there are still plugins to load, we need to report that as an error to the user.
+    if (paths.size())
+    {
+      std::string pluginErrors = "Could not load the following plugins:\n";
+
+      for (auto& path : paths)
+      {
+        pluginErrors += path;
+        pluginErrors += '\n';
+      }
+
+      mRunningEngine->Log(YTE::LogType::Error, pluginErrors);
     }
   }
 
