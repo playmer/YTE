@@ -4,12 +4,14 @@
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
+#include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/ImguiLayer.hpp"
 #include "YTE/Graphics/Light.hpp"
@@ -50,10 +52,13 @@ namespace YTE
 
     helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
+    
+    helper.CreateComponentFactory<JobSystem>();
 
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();
     helper.CreateComponentFactory<FlybyCamera>();
+    helper.CreateComponentFactory<GraphicsSystem>();
     helper.CreateComponentFactory<GraphicsView>();
     helper.CreateComponentFactory<ImguiLayer>();
     helper.CreateComponentFactory<Light>();

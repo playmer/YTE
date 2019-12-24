@@ -84,6 +84,7 @@ set_target_properties(YTE
 YTE_Source_Group(YTE_Root YTE)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+  target_compile_definitions(YTE PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
   target_compile_options(YTE PRIVATE 
     PUBLIC
       -permissive- -std:c++17 -MP

@@ -22,7 +22,7 @@ namespace YTE
     void FactorySetup(FactorySetupCallback aFunctionPtr);
     void BoundTypeChangedHandler(BoundTypeChanged *aEvent);
 
-    std::pair<StringComponentFactory *, UniquePointer<Component>> 
+    std::pair<StringComponentFactory *, ComponentOwner> 
       MakeComponent(Type *aType, Composition *aOwner);
 
     template<typename T>

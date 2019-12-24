@@ -59,6 +59,13 @@ namespace YTE
 
   static String cEngineName{ "Engine" };
 
+
+  template <typename ComponentType>
+  static void DestructsComponent(Component* aComponent)
+  {
+    static_cast<ComponentType*>(aComponent)->~ComponentType();
+  }
+
   Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
     : Composition{ this, cEngineName, nullptr }
     , mCompositionsByGUID{}
@@ -104,8 +111,8 @@ namespace YTE
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
 
-    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
-    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
+    AddComponent<JobSystem>();
+    AddComponent<GraphicsSystem>();
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();

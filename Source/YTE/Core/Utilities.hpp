@@ -62,7 +62,6 @@ namespace YTE
   using FactorySetupCallback = void(*)(FactoryMap &);
 
   using CompositionMap = OrderedMultiMap<String, std::unique_ptr<Composition>>;
-  using ComponentMap   = OrderedMap<Type*, std::unique_ptr<Component>>;
 }
 
 YTEDeclareExternalType(glm::i32vec2);

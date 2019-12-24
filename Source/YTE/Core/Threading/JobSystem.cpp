@@ -13,7 +13,7 @@ namespace YTE
   }
 
 
-  JobSystem::JobSystem(Composition * aOwner /*= nullptr*/)
+  JobSystem::JobSystem(Composition * aOwner /*= nullptr*/, Space*)
     : Component(aOwner, nullptr)
     , mForegroundWorker()
     , mPool()

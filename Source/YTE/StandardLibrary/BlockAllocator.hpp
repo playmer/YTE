@@ -35,6 +35,11 @@ namespace YTE
       BlockAllocator<value_type> *mAllocator;
     };
 
+    BlockAllocator()
+    {
+
+    }
+
     Deleter GetDeleter()
     {
       return Deleter(this);
@@ -94,8 +99,8 @@ namespace YTE
       }
 
     private:
-      size_type mSize;
-      Node *mHead;
+      size_type mSize = 0;
+      Node *mHead = nullptr;
     };
 
     void AllocateIfNeeded()
@@ -114,7 +119,7 @@ namespace YTE
 
     std::list<array_type> mData;
     FreeList mFreeList;
-    size_type mSize;
+    size_type mSize = 0;
 
   };
 }

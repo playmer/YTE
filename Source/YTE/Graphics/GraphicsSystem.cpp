@@ -31,7 +31,7 @@ namespace YTE
 
 
 
-  GraphicsSystem::GraphicsSystem(Composition *aOwner)
+  GraphicsSystem::GraphicsSystem(Composition *aOwner, Space*)
     : Component(aOwner, nullptr)
     , mEngine(static_cast<Engine*>(aOwner))
     , mVulkanSuccess(0)

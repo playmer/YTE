@@ -17,7 +17,7 @@ namespace YTE
   public:
     YTEDeclareType(JobSystem);
 
-    YTE_Shared JobSystem(Composition *aOwner);
+    YTE_Shared JobSystem(Composition *aOwner, Space*);
     YTE_Shared ~JobSystem();
     YTE_Shared void Initialize();
     YTE_Shared void WaitThisThread(JobHandle& aJobHandle);
