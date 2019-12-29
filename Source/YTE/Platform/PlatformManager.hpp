@@ -1,27 +1,39 @@
 #pragma once
 
 #include <optional>
+#include <variant>
 
 #include "YTE/Core/ForwardDeclarations.hpp"
+
+#include "YTE/Platform/GamepadSystem.hpp"
+#include "YTE/Platform/Gamepad.hpp"
 #include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {
   struct PlatformEventHolder
   {
-    PlatformEventHolder(std::string const& aEventType,
-                        EventHandler* aObject,
-                        Event* aEvent)
-      : mEventType{aEventType}
-      , mObject{aObject}
-      , mEvent{aEvent}
-    {
 
-    }
+    //PlatformEventHolder(std::string const& aEventType,
+    //                    EventHandler* aObject,
+    //                    Event* aEvent)
+    //  : mEventType{aEventType}
+    //  , mObject{aObject}
+    //  , mEvent{aEvent}
+    //{
+    //
+    //}
 
     std::string const& mEventType;
     EventHandler* mObject;
-    Event* mEvent;
+    std::variant<
+      GamepadFlickEvent,
+      GamepadStickEvent,
+      GamepadButtonEvent,
+      MouseButtonEvent,
+      MouseWheelEvent,
+      MouseMoveEvent,
+      KeyboardEvent> mEvent;
   };
 
   class PlatformManager
@@ -72,7 +84,13 @@ namespace YTE
       return mEngine;
     }
 
+    GamepadSystem* GetGamepadSystem()
+    {
+      return &mGamepadSystem;
+    }
+
   private:
+    GamepadSystem mGamepadSystem;
     PrivateImplementationDynamic mData;
     std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
     std::vector<PlatformEventHolder> mEvents;

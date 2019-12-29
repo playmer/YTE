@@ -74,12 +74,16 @@ namespace YTE
 
     virtual void ResetView(GraphicsView *aView);
 
+    /////////////////////////////////
+    // Assets
     Mesh* RequestMesh(const std::string &aMeshFile);
     Texture* RequestTexture(const std::string &aFilename);
 
     Mesh* GetBaseMesh(const std::string &aFilename);
     Texture* GetBaseTexture(const std::string &aFilename);
 
+    /////////////////////////////////
+    // Allocation
     GPUAllocator* GetAllocator(std::string const& aAllocatorType)
     {
       if (auto it = mAllocators.find(aAllocatorType); it != mAllocators.end())
@@ -91,6 +95,24 @@ namespace YTE
     }
 
     virtual GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) = 0;
+
+    
+    /////////////////////////////////
+    // Command Buffers
+    
+    //class CommandBuffer
+    //{
+    //public:
+    // void SetViewport(glm::vec2 aPosition, glm::vec2 aDimensions, float aMinDepth, float aMaxDepth);
+    // void SetScissor(glm::ivec2 aOffset, glm::uvec2 aExtent);
+    // void SetLineWidth(float aWidth);
+    // void BindVertexBuffers(ContiguousArray<GPUBufferBase> aBuffers, ContiguousArray<u64> aBufferOffset);
+    // void BindIndexBuffers(ContiguousArray<GPUBufferBase> aBuffers, ContiguousArray<u64> aBufferOffset);
+    // void DrawIndexed(u32 aIndexCount, u32 aInstanceCount, u32 aFirstIndex, i32 aVertexOffset, u32 aFirstInstance);
+    //private:
+    //
+    //  std::vector<>
+    //};
 
   protected:
 

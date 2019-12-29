@@ -7,5 +7,5 @@
 
 namespace YTE
 {
-    void SDLCALL PlatformManagerBlockedUpdate(void* aUserData, SDL_Window* aWindow);
+  void SDLCALL PlatformManagerBlockedUpdate(void* aUserData, SDL_Window* aWindow);
 }

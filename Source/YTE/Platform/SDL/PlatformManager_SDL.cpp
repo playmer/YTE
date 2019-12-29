@@ -2,129 +2,16 @@
 
 #include "YTE/Core/Engine.hpp"
 
+#include "YTE/Platform/SDL/Gamepad_SDL.hpp"
+#include "YTE/Platform/SDL/GamepadSystem_SDL.hpp"
+#include "YTE/Platform/SDL/PlatformManager_SDL.hpp"
 #include "YTE/Platform/SDL/Keyboard_SDL.hpp"
 #include "YTE/Platform/SDL/Mouse_SDL.hpp"
 #include "YTE/Platform/SDL/Window_SDL.hpp"
 
+#include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/PlatformManager.hpp"
 #include "YTE/Platform/Window.hpp"
-
-
-// GamePadManager.hpp
-namespace YTE
-{
-  struct GamePadManager
-  {
-  public:
-    GamePadManager();
-
-    inline PrivateImplementationDynamic* GetData()
-    {
-      return &mData;
-    }
-
-  private:
-    PrivateImplementationDynamic mData;
-  };
-}
-
-// GamePadManager_SDL.hpp
-namespace YTE
-{
-  void GamePadManagerEventHandler(SDL_JoyDeviceEvent aEvent);
-
-  struct ControllerData
-  {
-    char const* mName;
-    SDL_GameController* mController;
-    int mIndex;
-  };
-}
-
-// GamePadManager_SDL.cpp
-#include <map>
-
-namespace YTE
-{
-  struct GamePadManagerData
-  {
-    std::map<int, ControllerData> mControllers;
-  };
-
-  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent, GamePadManager* aManager)
-  {
-    auto self = aManager->GetData()->Get<GamePadManagerData>();
-    SDL_GameController * pad;
-    switch (aEvent.type)
-    {
-      case SDL_JOYDEVICEADDED:
-      {
-        auto errorIsGameController = SDL_IsGameController(aEvent.which);
-
-        if (errorIsGameController)
-        {
-          pad = SDL_GameControllerOpen(aEvent.which);
-
-          if (pad)
-          {
-            printf("Device Added: %s\n", SDL_GameControllerName(pad));
-          }
-        }
-
-        break;
-      }
-      case SDL_JOYDEVICEREMOVED:
-      {
-        pad = SDL_GameControllerOpen(aEvent.which);
-        printf("Device Removed: %s\n", SDL_GameControllerName(pad));
-        return;
-      }
-    }
-  }
-
-  GamePadManager::GamePadManager()
-  {
-    mData.ConstructAndGet<GamePadManager>();
-  }
-}
-
-
-// GamePad.hpp
-namespace YTE
-{
-  struct GamePad
-  {
-  public:
-    GamePad();
-
-  private:
-  };
-}
-
-// GamePad_SDL.hpp
-namespace YTE
-{
-  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent);
-}
-
-// GamePad_SDL.cpp
-#include <map>
-
-namespace YTE
-{
-
-  void GamePadEventHandler(SDL_JoyDeviceEvent aEvent, GamePad* aGamePad)
-  {
-    auto self = aGamePad->GetData()->Get<ControllerData>();
-    
-  }
-}
-
-
-
-
-
-
 
 namespace YTE
 {
@@ -153,21 +40,28 @@ namespace YTE
     , mIsUpdating{ false }
   {
     mData.ConstructAndGet<PlatformManagerData>();
+
+    // Need to update once on construction to set up any pre-existing controllers.
+    Update();
   }
 
   void PlatformManager::Update()
   {
     mIsUpdating = true;
 
-    //auto size = SDL_NumJoysticks();
-
-    //printf("Controllers: %d\n", size);
-
-
+    auto gamepadSystem = mGamepadSystem.mData.Get<GamepadSystemData>();
+    
+    mGamepadSystem.PreUpdateGamepads();
 
     if (false == mEngine->IsEditor())
     {
       SDL_PumpEvents();
+    }
+    // The controller won't get events added to the event queue if we're not calling SDL_PumpEvents,
+    // so we need to manually update the SDL system for polling game controllers.
+    else 
+    {
+      SDL_GameControllerUpdate();
     }
 
     auto self = mData.Get<PlatformManagerData>();
@@ -184,6 +78,7 @@ namespace YTE
     {
       switch (event.type)
       {
+          // Keyboard Events
         case SDL_KEYDOWN:       // Key pressed
         case SDL_KEYUP:         // Key released
         case SDL_TEXTEDITING:   // Keyboard text editing (composition)
@@ -197,7 +92,7 @@ namespace YTE
 
           break;
         }
-
+          // Mouse Events
         case SDL_MOUSEMOTION:     // Mouse moved
         case SDL_MOUSEBUTTONDOWN: // Mouse button pressed
         case SDL_MOUSEBUTTONUP:   // Mouse button released
@@ -210,7 +105,7 @@ namespace YTE
 
           break;
         }
-
+          // Window Events
         case SDL_WINDOWEVENT:
         {
           SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID);
@@ -221,10 +116,39 @@ namespace YTE
 
           break;
         }
-        case SDL_JOYDEVICEADDED:
-        case SDL_JOYDEVICEREMOVED:
+          // Joypad Events
+        case SDL_CONTROLLERDEVICEADDED:
+        case SDL_CONTROLLERDEVICEREMOVED:
+        case SDL_CONTROLLERDEVICEREMAPPED:
         {
-          GamePadEventHandler(event.jdevice);
+          gamepadSystem->ControllerDeviceEvent(event.cdevice, &mGamepadSystem);
+          break;
+        }
+          // Controller Events
+        case SDL_CONTROLLERAXISMOTION:
+        {
+          auto motionEvent = event.caxis;
+
+          if (auto it = mGamepadSystem.mGamepads.find(motionEvent.which); 
+              it != mGamepadSystem.mGamepads.end())
+          {
+            auto gamepadData = it->second.mData.Get<GamepadData>();
+            gamepadData->ControllerMotionEvent(motionEvent);
+          }
+          break;
+        }
+        case SDL_CONTROLLERBUTTONDOWN:
+        case SDL_CONTROLLERBUTTONUP:
+        {
+          auto buttonEvent = event.cbutton;
+
+          if (auto it = mGamepadSystem.mGamepads.find(buttonEvent.which); 
+              it != mGamepadSystem.mGamepads.end())
+          {
+            auto gamepadData = it->second.mData.Get<GamepadData>();
+            gamepadData->ControllerButtonEvent(buttonEvent);
+          }
+
           break;
         }
       }
@@ -234,6 +158,8 @@ namespace YTE
     {
       window->Update();
     }
+
+    mGamepadSystem.UpdateGamepads(mEngine->GetDt());
 
     eventQueue.clear();
 

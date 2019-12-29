@@ -87,9 +87,14 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
   target_compile_definitions(YTE PUBLIC _ENABLE_EXTENDED_ALIGNED_STORAGE)
   target_compile_options(YTE PRIVATE 
     PUBLIC
-      -permissive- -std:c++17 -MP
+      -permissive- 
+      -std:c++17 
+      -MP
+      -wd4127 # Abseil, expression is constant
+      -wd4324 # Abseil, structure was padded for alignment
     PRIVATE
-      -WX- -W4
+      -WX- 
+      -W4
   )
 else()
   target_compile_options(YTE PRIVATE -std=c++17)

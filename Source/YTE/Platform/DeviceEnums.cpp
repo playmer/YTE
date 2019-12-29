@@ -3,39 +3,26 @@
 /*******************************************************************************
 YTE Enums
 *******************************************************************************/
-YTEDefineExternalType(YTE::ControllerId)
+YTEDefineExternalType(YTE::GamepadButtons)
 {
-  RegisterType<YTE::ControllerId>();
-  TypeBuilder<YTE::ControllerId> builder;
+  RegisterType<YTE::GamepadButtons>();
+  TypeBuilder<YTE::GamepadButtons> builder;
 
-  builder.Enum<ControllerId::Xbox_P1>("Xbox_P1");
-  builder.Enum<ControllerId::Xbox_P2>("Xbox_P2");
-  builder.Enum<ControllerId::Xbox_P3>("Xbox_P3");
-  builder.Enum<ControllerId::Xbox_P4>("Xbox_P4");
-  builder.Enum<ControllerId::Xbox_Controllers_Number>("Xbox_Controllers_Number");
-  builder.Enum<ControllerId::Unknown>("Unknown");
-}
-
-YTEDefineExternalType(YTE::XboxButtons)
-{
-  RegisterType<YTE::XboxButtons>();
-  TypeBuilder<YTE::XboxButtons> builder;
-
-  builder.Enum<XboxButtons::DPAD_Up>("DPAD_Up");
-  builder.Enum<XboxButtons::DPAD_Down>("DPAD_Down");
-  builder.Enum<XboxButtons::DPAD_Left>("DPAD_Left");
-  builder.Enum<XboxButtons::DPAD_Right>("DPAD_Right");
-  builder.Enum<XboxButtons::Start>("Start");
-  builder.Enum<XboxButtons::Back>("Back");
-  builder.Enum<XboxButtons::LeftStick>("LeftStick");
-  builder.Enum<XboxButtons::RightStick>("RightStick");
-  builder.Enum<XboxButtons::LeftShoulder>("LeftShoulder");
-  builder.Enum<XboxButtons::RightShoulder>("RightShoulder");
-  builder.Enum<XboxButtons::A>("A");
-  builder.Enum<XboxButtons::B>("B");
-  builder.Enum<XboxButtons::X>("X");
-  builder.Enum<XboxButtons::Y>("Y");
-  builder.Enum<XboxButtons::Unknown>("Unknown");
+  builder.Enum<GamepadButtons::DPAD_Up>("DPAD_Up");
+  builder.Enum<GamepadButtons::DPAD_Down>("DPAD_Down");
+  builder.Enum<GamepadButtons::DPAD_Left>("DPAD_Left");
+  builder.Enum<GamepadButtons::DPAD_Right>("DPAD_Right");
+  builder.Enum<GamepadButtons::Start>("Start");
+  builder.Enum<GamepadButtons::Back>("Back");
+  builder.Enum<GamepadButtons::LeftStick>("LeftStick");
+  builder.Enum<GamepadButtons::RightStick>("RightStick");
+  builder.Enum<GamepadButtons::LeftShoulder>("LeftShoulder");
+  builder.Enum<GamepadButtons::RightShoulder>("RightShoulder");
+  builder.Enum<GamepadButtons::A>("A");
+  builder.Enum<GamepadButtons::B>("B");
+  builder.Enum<GamepadButtons::X>("X");
+  builder.Enum<GamepadButtons::Y>("Y");
+  builder.Enum<GamepadButtons::Unknown>("Unknown");
 }
 
 

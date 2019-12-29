@@ -9,7 +9,12 @@ function(YTE_Target_Folder_Recursive aTarget aFolderDelimiter)
         get_target_property(targetType ${linkLibrary} TYPE)
 
         if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
-          set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
+              
+          get_target_property(aliasedLibrary ${linkLibrary} ALIASED_TARGET)
+                
+          if (aliasedLibrary STREQUAL "aliasedLibrary-NOTFOUND")
+            set_target_properties(${linkLibrary} PROPERTIES FOLDER ${aFolderDelimiter})
+          endif()
         endif ()
 
         YTE_Target_Folder_Recursive(${linkLibrary} ${aFolderDelimiter}/${linkLibrary}_Dependencies)
@@ -51,15 +56,38 @@ macro(YTE_Cleanup_Orphan_Targets aFolder)
   endforeach()
 endmacro(YTE_Cleanup_Orphan_Targets)
 
+function(YTE_Is_Not_Interface_Alias_Or_Imported aTarget aReturn)
+  if (TARGET ${aTarget})
+        
+    get_target_property(libraryType ${aTarget} TYPE)
+
+    if (NOT libraryType STREQUAL "INTERFACE_LIBRARY")
+      get_target_property(importedTarget ${aTarget} IMPORTED)
+
+      if (NOT importedTarget)
+        
+        get_target_property(aliasedTarget ${aTarget} ALIASED_TARGET)
+      
+        if (aliasedTarget STREQUAL "aliasedTarget-NOTFOUND")
+          set(${aReturn} TRUE)
+        endif ()
+      endif()
+    endif ()
+  endif()
+endfunction()
+
 
 function(YTE_Target_Set_LTCG aTarget)
   set(targetLinkLibraries "")
   get_target_property(libraryType ${aTarget} TYPE)
+  get_target_property(aliasedTarget ${aTarget} ALIASED_TARGET)
 
   if (NOT libraryType STREQUAL "INTERFACE_LIBRARY")
-    target_compile_options(${aTarget} PRIVATE $<$<CONFIG:Publish>:/GL>)
-    set_target_properties(${aTarget} PROPERTIES LINK_FLAGS_PUBLISH /LTCG)
-    get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+    if (aliasedTarget STREQUAL "aliasedTarget-NOTFOUND")
+      target_compile_options(${aTarget} PRIVATE $<$<CONFIG:Publish>:/GL>)
+      set_target_properties(${aTarget} PROPERTIES LINK_FLAGS_PUBLISH /LTCG)
+      get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+    endif()
   endif()
 
   foreach(linkLibrary ${targetLinkLibraries})
@@ -71,12 +99,14 @@ function(YTE_Target_Set_LTCG aTarget)
         get_target_property(importedTarget ${linkLibrary} IMPORTED)
 
         if (NOT importedTarget)
-          
-          if (MSVC)
-            target_compile_options(${linkLibrary} PRIVATE $<$<CONFIG:Publish>:/GL>)
-            set_target_properties(${linkLibrary} PROPERTIES STATIC_LIBRARY_FLAGS_PUBLISH /LTCG)
-          else()
-            target_compile_options(${linkLibrary} PRIVATE -fPIC)
+          get_target_property(aliasedLibrary ${linkLibrary} ALIASED_TARGET)
+          if (aliasedLibrary STREQUAL "aliasedLibrary-NOTFOUND")
+            if (MSVC)
+              target_compile_options(${linkLibrary} PRIVATE $<$<CONFIG:Publish>:/GL>)
+              set_target_properties(${linkLibrary} PROPERTIES STATIC_LIBRARY_FLAGS_PUBLISH /LTCG)
+            else()
+              target_compile_options(${linkLibrary} PRIVATE -fPIC)
+            endif()
           endif()
         endif()
       endif ()
@@ -91,13 +121,20 @@ function(YTE_Target_Set_Outputs aTarget aLibraryDirectory aBinaryDirectory)
   get_target_property(targetType ${aTarget} TYPE)
 
   if (NOT targetType STREQUAL "INTERFACE_LIBRARY")
-    set_target_properties(${aTarget}
-                          PROPERTIES
-                          ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
-                          LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
-                          RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
-
+        
+    get_target_property(aliasedTarget ${aTarget} ALIASED_TARGET)
+          
+    if (aliasedTarget STREQUAL "aliasedTarget-NOTFOUND")
+      set_target_properties(${aTarget}
+                            PROPERTIES
+                            ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
+                            LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
+                            RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
+    endif()
+    
     get_target_property(targetLinkLibraries ${aTarget} LINK_LIBRARIES)
+  else()
+    get_target_property(targetLinkLibraries ${aTarget} INTERFACE_LINK_LIBRARIES)
   endif()
 
   foreach(linkLibrary ${targetLinkLibraries})
@@ -105,11 +142,16 @@ function(YTE_Target_Set_Outputs aTarget aLibraryDirectory aBinaryDirectory)
       get_target_property(libraryType ${linkLibrary} TYPE)
 
       if (NOT libraryType STREQUAL "INTERFACE_LIBRARY")
-        set_target_properties(${linkLibrary}
-                              PROPERTIES
-                              ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
-                              LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
-                              RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
+        
+        get_target_property(aliasedLibrary ${linkLibrary} ALIASED_TARGET)
+        
+        if (aliasedLibrary STREQUAL "aliasedLibrary-NOTFOUND")
+          set_target_properties(${linkLibrary}
+                                PROPERTIES
+                                ARCHIVE_OUTPUT_DIRECTORY ${aLibraryDirectory}
+                                LIBRARY_OUTPUT_DIRECTORY ${aLibraryDirectory}
+                                RUNTIME_OUTPUT_DIRECTORY ${aBinaryDirectory})
+        endif()
       endif()
       
       YTE_Target_Set_Outputs(${linkLibrary} ${aLibraryDirectory} ${aBinaryDirectory})

@@ -54,7 +54,6 @@ namespace YTE
     TypeBuilder<Engine> builder;
     builder.Function<&Engine::EndExecution>("EndExecution")
       .SetDocumentation("End the execution of the program before the beginning of the next frame.");
-    builder.Property<&Engine::GetGamepadSystem, NoSetter>("GamepadSystem");
   }
 
   static String cEngineName{ "Engine" };
@@ -286,9 +285,6 @@ namespace YTE
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
-
-    mGamepadSystem.Update(mDt);
-
     SendEvent(Events::PreLogicUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
     SendEvent(Events::SpaceUpdate, &updateEvent);

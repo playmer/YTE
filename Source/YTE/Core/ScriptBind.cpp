@@ -86,9 +86,9 @@ namespace YTE
     InitializeType<MouseMoveEvent>();
     InitializeType<MouseWheelEvent>();
     InitializeType<KeyboardEvent>();
-    InitializeType<XboxButtonEvent>();
-    InitializeType<XboxFlickEvent>();
-    InitializeType<XboxStickEvent>();
+    InitializeType<GamepadButtonEvent>();
+    InitializeType<GamepadFlickEvent>();
+    InitializeType<GamepadStickEvent>();
     InitializeType<TransformChanged>();
     InitializeType<OrientationChanged>();
     InitializeType<CollisionEvent>();
@@ -143,7 +143,7 @@ namespace YTE
     InitializeType<Keyboard>();
     InitializeType<Mouse>();
     InitializeType<GamepadSystem>();
-    InitializeType<XboxController>();
+    InitializeType<Gamepad>();
     InitializeType<Window>();
     
     InitializeType<void>();
@@ -167,8 +167,7 @@ namespace YTE
     InitializeType<glm::vec4>();
     InitializeType<glm::quat>();
     InitializeType<btIDebugDraw::DebugDrawModes>();
-    InitializeType<YTE::ControllerId>();
-    InitializeType<YTE::XboxButtons>();
+    InitializeType<YTE::GamepadButtons>();
     InitializeType<YTE::MouseButtons>();
     InitializeType<YTE::Keys>();
 

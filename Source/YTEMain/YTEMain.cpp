@@ -15,6 +15,7 @@ int SDL_main(int aArgumentsSize, char** aArguments)
     return 1;
   }
 
+  SDL_GameControllerEventState(SDL_QUERY);
   SDL_Vulkan_LoadLibrary(nullptr);
 
   YTE::InitializeYTETypes();

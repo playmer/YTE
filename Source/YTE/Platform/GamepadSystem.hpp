@@ -5,10 +5,16 @@
 
 #include <array>
 
+#include "YTE/Platform/ForwardDeclarations.hpp"
 #include "YTE/Platform/Gamepad.hpp"
+
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
 
 namespace YTE
 {
+  struct GamepadSystemData;
+  class PlatformManager;
+
   class GamepadSystem
   {
   public:
@@ -16,16 +22,19 @@ namespace YTE
       
     YTE_Shared GamepadSystem();
 
-    YTE_Shared void Update(double aDt);
-    YTE_Shared void CheckForControllers(bool aChecking) { mChecking = aChecking; };
-    YTE_Shared XboxController* GetXboxController(ControllerId aId);
+    YTE_Shared Gamepad* GetGamepad(i64 aId);
 
   private:
-    void UpdateXboxControllers(double aDt);
+    friend GamepadSystemData;
+    friend PlatformManager;
 
-    std::array<std::pair<XboxController, double>, 4> mXboxControllers;
-    bool mChecking;
+    void PlatformInitialize();
+    void UpdateGamepads(double aDt);
+    // Call PreUpdate before pumping the event queue.
+    void PreUpdateGamepads();
 
+    std::unordered_map<i64, Gamepad> mGamepads;
+    PrivateImplementationLocal<32> mData;
   };
 }
 

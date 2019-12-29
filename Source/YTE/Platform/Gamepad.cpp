@@ -2,61 +2,61 @@
 
 namespace YTE
 {
-  YTEDefineEvent(XboxStickFlicked);
-  YTEDefineEvent(XboxStickEvent);
-  YTEDefineEvent(XboxButtonPress);
-  YTEDefineEvent(XboxButtonRelease);
-  YTEDefineEvent(XboxButtonPersist);
+  YTEDefineEvent(GamepadStickFlicked);
+  YTEDefineEvent(GamepadStickEvent);
+  YTEDefineEvent(GamepadButtonPress);
+  YTEDefineEvent(GamepadButtonRelease);
+  YTEDefineEvent(GamepadButtonPersist);
 
-  YTEDefineType(XboxFlickEvent)
+  YTEDefineType(GamepadFlickEvent)
   {
-    RegisterType<XboxFlickEvent>();
-    TypeBuilder<XboxFlickEvent> builder;
-    builder.Field<&XboxFlickEvent::FlickDirection>("FlickDirection", PropertyBinding::Get);
-    builder.Field<&XboxFlickEvent::FlickedStick>("FlickedStick", PropertyBinding::Get);
-    builder.Field<&XboxFlickEvent::Controller>("Controller", PropertyBinding::Get);
+    RegisterType<GamepadFlickEvent>();
+    TypeBuilder<GamepadFlickEvent> builder;
+    builder.Field<&GamepadFlickEvent::FlickDirection>("FlickDirection", PropertyBinding::Get);
+    builder.Field<&GamepadFlickEvent::FlickedStick>("FlickedStick", PropertyBinding::Get);
+    builder.Field<&GamepadFlickEvent::Controller>("Controller", PropertyBinding::Get);
   }
   
-  YTEDefineType(XboxStickEvent)
+  YTEDefineType(GamepadStickEvent)
   {
-    RegisterType<XboxStickEvent>();
-    TypeBuilder<XboxStickEvent> builder;
-    builder.Field<&XboxStickEvent::StickDirection>("StickDirection", PropertyBinding::Get);
-    builder.Field<&XboxStickEvent::Stick>("Stick", PropertyBinding::Get);
-    builder.Field<&XboxStickEvent::Controller>("Controller", PropertyBinding::Get);
+    RegisterType<GamepadStickEvent>();
+    TypeBuilder<GamepadStickEvent> builder;
+    builder.Field<&GamepadStickEvent::StickDirection>("StickDirection", PropertyBinding::Get);
+    builder.Field<&GamepadStickEvent::Stick>("Stick", PropertyBinding::Get);
+    builder.Field<&GamepadStickEvent::Controller>("Controller", PropertyBinding::Get);
   }
 
-  YTEDefineType(XboxButtonEvent)
+  YTEDefineType(GamepadButtonEvent)
   {
-    RegisterType<XboxButtonEvent>();
-    TypeBuilder<XboxButtonEvent> builder;
-    builder.Field<&XboxButtonEvent::Button>("Button", PropertyBinding::GetSet);
-    builder.Field<&XboxButtonEvent::Controller>("Controller", PropertyBinding::GetSet);
+    RegisterType<GamepadButtonEvent>();
+    TypeBuilder<GamepadButtonEvent> builder;
+    builder.Field<&GamepadButtonEvent::Button>("Button", PropertyBinding::GetSet);
+    builder.Field<&GamepadButtonEvent::Controller>("Controller", PropertyBinding::GetSet);
   }
 
 
-  YTEDefineType(XboxController)
+  YTEDefineType(Gamepad)
   {
-    RegisterType<XboxController>();
-    TypeBuilder<XboxController> builder;
-    builder.Property<&XboxController::GetId, NoSetter>("Id");
-    builder.Property<&XboxController::GetLeftStick, NoSetter>("LeftStick");
-    builder.Property<&XboxController::GetRightStick, NoSetter>("RightStick");
-    builder.Property<&XboxController::GetLeftTrigger, NoSetter>("LeftTrigger");
-    builder.Property<&XboxController::GetRightTrigger, NoSetter>("RightTrigger");
-    builder.Property<&XboxController::Active, NoSetter>("Active");
+    RegisterType<Gamepad>();
+    TypeBuilder<Gamepad> builder;
+    builder.Property<&Gamepad::GetId, NoSetter>("Id");
+    builder.Property<&Gamepad::GetLeftStick, NoSetter>("LeftStick");
+    builder.Property<&Gamepad::GetRightStick, NoSetter>("RightStick");
+    builder.Property<&Gamepad::GetLeftTrigger, NoSetter>("LeftTrigger");
+    builder.Property<&Gamepad::GetRightTrigger, NoSetter>("RightTrigger");
+    builder.Property<&Gamepad::Active, NoSetter>("Active");
     
-    builder.Function<&XboxController::IsButtonDown>("IsButtonDown")
+    builder.Function<&Gamepad::IsButtonDown>("IsButtonDown")
       .SetParameterNames("aButton")
       .SetDocumentation("Finds if the given button is pressed right now.");
-    builder.Function<&XboxController::WasButtonDown>("WasButtonDown")
+    builder.Function<&Gamepad::WasButtonDown>("WasButtonDown")
       .SetParameterNames("aButton")
       .SetDocumentation("Finds if the given button is pressed last frame.");
-    builder.Function<&XboxController::Vibrate>("Vibrate")
-      .SetParameterNames("aLeftSpeed", "aRightSpeed")
+    builder.Function<&Gamepad::Vibrate>("Vibrate")
+      .SetParameterNames("aVibration")
       .SetDocumentation("Sets the controllers motors to vibrate via the specified amounts.");
-    builder.Function<&XboxController::VibrateForTime>("VibrateForTime")
-      .SetParameterNames("aLeftSpeed", "aRightSpeed", "aTime")
+    builder.Function<&Gamepad::VibrateForTime>("VibrateForTime")
+      .SetParameterNames("aVibration", "aTime")
       .SetDocumentation("The controller will vibrate for the given amount of time. If called again, will choose the higher vibration.");
   }
 
@@ -66,44 +66,162 @@ namespace YTE
   //////////////////////////////
   // Constructors
   //////////////////////////////
-  XboxController::XboxController()
+  Gamepad::Gamepad()
   {
-    std::memset(mButtonArrayOne, 0, sizeof(mButtonArrayOne));
-    std::memset(mButtonArrayTwo, 0, sizeof(mButtonArrayTwo));
-
-    mCurrentButtons = mButtonArrayOne;
-    mPreviousButtons = mButtonArrayTwo;
+    mCurrentButtons.fill(false);
+    mPreviousButtons.fill(false);
 
     mLeftStickFlicked = false;
     mRightStickFlicked = false;
-    mLeftVibe = 0.0f;
-    mRightVibe = 0.0f;
+    mVibration = 0.0f;
   }
 
 
-  XboxController::~XboxController()
+  Gamepad::~Gamepad()
   {
-    Vibrate(0.0f, 0.0f);
+    Vibrate(0.0f);
+  }
+
+  void Gamepad::PreUpdate()
+  {
+    mPreviousLeftStick = mLeftStick;
+    mPreviousRightStick = mRightStick;
+    mPreviousButtons = mCurrentButtons;
+  }
+
+  void Gamepad::Update(double aDt)
+  {
+    GamepadButtonEvent event;
+    constexpr auto gamepadButtons = EnumCast(GamepadButtons::Gamepad_Buttons_Number);
+
+    for (size_t i = 0; i < gamepadButtons; ++i)
+    {
+      const auto currentState = mCurrentButtons[i];
+      const auto previousState = mPreviousButtons[i];
+
+      event.Button = static_cast<GamepadButtons>(i);
+      event.Controller = this;
+
+      /* Key has been persisted */
+      if (currentState && previousState)
+      {
+        SendEvent(Events::GamepadButtonPersist, &event);
+      }
+      /* Key has been pressed */
+      else if (currentState)
+      {
+        SendEvent(Events::GamepadButtonPress, &event);
+      }
+      /* Key has been released */
+      else if (!currentState && previousState)
+      {
+        SendEvent(Events::GamepadButtonRelease, &event);
+      }
+    }
+
+    // Evelyn, the genius gave the great point that comparing these to the prev stick value would 
+    // function as a true stick change (and could save some event constructions in the case
+    // of a stick being held in the same position that is not zero)
+    {
+      GamepadStickEvent stickEvent;
+      stickEvent.Controller = this;
+
+      auto sendStickEvent = [this, &stickEvent](glm::vec2 aStick, GamepadButtons aStickButton)
+      {
+        stickEvent.StickDirection = aStick;
+        stickEvent.Stick = aStickButton;
+        SendEvent(Events::GamepadStickEvent, &stickEvent);
+      };
+
+      // Left Stick not zero
+      if (mLeftStick.x != 0.0f || mLeftStick.y != 0.0f)
+      {
+        sendStickEvent(mLeftStick, GamepadButtons::LeftStick);
+      }
+      // Right Stick not zero
+      if (mRightStick.x != 0.0f || mRightStick.y != 0.0f)
+      {
+        sendStickEvent(mRightStick, GamepadButtons::RightStick);
+      }
+      // Left Stick recentered, this allows gameplay to depend on a stick returning to zero
+      if (mLeftStick.x == 0.0f && mLeftStick.y == 0.0f && mPreviousLeftStick.x != 0.0f && mPreviousLeftStick.y != 0.0f)
+      {
+        sendStickEvent(mLeftStick, GamepadButtons::LeftStick);
+      }
+      // Right Stick recentered, this allows gameplay to depend on a stick returning to zero
+      if (mRightStick.x == 0.0f && mRightStick.y == 0.0f && mPreviousRightStick.x != 0.0f && mPreviousRightStick.y != 0.0f)
+      {
+        sendStickEvent(mRightStick, GamepadButtons::RightStick);
+      }
+    }
+
+    //Stick flicking
+    {
+      GamepadFlickEvent flickEvent;
+      flickEvent.Controller = this;
+      
+      auto sendStickEvent = [this, &flickEvent](glm::vec2 aStick, GamepadButtons aStickButton)
+      {
+        flickEvent.FlickDirection = glm::normalize(aStick);
+        flickEvent.FlickedStick = aStickButton;
+        SendEvent(Events::GamepadStickFlicked, &flickEvent);
+      };
+
+      bool leftStickFlicked = (glm::length(mLeftStick) >= cFlickMagnitude);
+      bool rightStickFlicked = (glm::length(mRightStick) >= cFlickMagnitude);
+
+      if (leftStickFlicked && !mLeftStickFlicked)
+      {
+        sendStickEvent(mLeftStick, GamepadButtons::LeftStick);
+      }
+
+      if (rightStickFlicked && !mRightStickFlicked)
+      {
+        sendStickEvent(mRightStick, GamepadButtons::RightStick);
+      }
+
+      mLeftStickFlicked = leftStickFlicked;
+      mRightStickFlicked = rightStickFlicked;
+    }
+
+    float vibration = 0.0f;
+
+    for (auto &vibe : mVibrations)
+    {
+      if (vibe.mVibration > vibration)
+      {
+        vibration = vibe.mVibration;
+      }
+
+      vibe.mTime -= aDt;
+    }
+
+    if (mVibrations.size() > 0 && (vibration != mVibration))
+    {
+      mVibration = vibration;
+      Vibrate(vibration);
+    }
+    else if ((mVibration != 0.0f) && (mVibrations.size() == 0))
+    {
+      mVibration = 0.0f;
+      Vibrate(0.0f);
+    }
+
+    auto iterator = std::remove_if(mVibrations.begin(), mVibrations.end(),
+                                   [](const Vibration &aVibe) { return aVibe.mTime < 0.0f; });
+
+    mVibrations.erase(iterator, mVibrations.end());
   }
 
   //////////////////////////////
   // Getters/Setters
   //////////////////////////////
-  bool XboxController::IsButtonDown(XboxButtons aButton)
+  bool Gamepad::IsButtonDown(GamepadButtons aButton)
   {
     return mCurrentButtons[static_cast<size_t>(aButton)];
   }
-  bool XboxController::WasButtonDown(XboxButtons aButton)
+  bool Gamepad::WasButtonDown(GamepadButtons aButton)
   {
     return mPreviousButtons[static_cast<size_t>(aButton)];
-  }
-
-  void XboxController::VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime)
-  {
-    Vibration vibe;
-    vibe.mLeft = aLeftSpeed;
-    vibe.mRight = aRightSpeed;
-    vibe.mTime = aTime;
-    mVibrations.push_back(vibe);
   }
 }

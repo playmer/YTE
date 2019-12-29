@@ -1,9 +1,16 @@
+
+
 add_subdirectory(crunch)
 add_subdirectory(fmt)
 add_subdirectory(kiss_fft)
 #add_subdirectory(LuaJIT)
 add_subdirectory(stb)
 add_subdirectory(imgui)
+
+
+##########################################################################
+# Turn off/configure various parts of SDL
+set(SDL_SHARED_ENABLED_BY_DEFAULT ON)
 add_subdirectory(SDL)
 
 ##########################################################################
