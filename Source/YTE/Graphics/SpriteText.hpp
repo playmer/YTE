@@ -172,11 +172,13 @@ namespace YTE
     float mFontSize;
     float mLineLength;
 
-    Font mFontInfo;
+    Font* mFontInfo;
     BoundingBox mBoundingBox;
 
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
     bool mConstructing;
+
+    static std::map<std::string, Font> sFonts;
 
     YTE_Shared void PrepareFont();
   };

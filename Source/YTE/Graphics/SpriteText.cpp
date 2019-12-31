@@ -17,6 +17,8 @@
 
 namespace YTE
 {
+  std::map<std::string, Font> SpriteText::sFonts;
+
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
     UnusedArguments(aComponent);
@@ -111,6 +113,7 @@ namespace YTE
     , mLineLength(0.0f)
     , mConstructing(true)
   {
+    OPTICK_EVENT();
     mFontSize = 1.f;
   }
 
@@ -176,7 +179,7 @@ namespace YTE
     u32 lastIndex = 0;
     float offsetX = 0, offsetY = 0;
 
-    float sizeFactor = mFontSize / mFontInfo.mSize;
+    float sizeFactor = mFontSize / mFontInfo->mSize;
 
     submesh.mShaderSetName = "SpriteText";
 
@@ -206,10 +209,10 @@ namespace YTE
 
       stbtt_aligned_quad quad;
 
-      stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), 
-                          mFontInfo.mAtlasWidth, 
-                          mFontInfo.mAtlasHeight, 
-                          mText[i] - mFontInfo.mFirstChar, 
+      stbtt_GetPackedQuad(mFontInfo->mCharInfo.get(), 
+                          mFontInfo->mAtlasWidth, 
+                          mFontInfo->mAtlasHeight, 
+                          mText[i] - mFontInfo->mFirstChar, 
                           &offsetX, 
                           &offsetY, 
                           &quad, 
@@ -316,7 +319,7 @@ namespace YTE
         }
 
           // Line feed
-        offsetY += mFontInfo.mSize;
+        offsetY += mFontInfo->mSize;
       }
     }
 
@@ -405,8 +408,34 @@ namespace YTE
 
   void SpriteText::PrepareFont()
   {
+    OPTICK_EVENT();
+
+    {
+
+    }
+
       // Build the font atlas
     std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
+    
+    size_t extensionPos = mFontName.size() - 4;
+    std::string texName = mFontName;
+    texName.replace(extensionPos, 6, "64.png");
+
+    filesystem::path outPath = Path::GetGamePath().String();
+    outPath = outPath.parent_path() / "Textures" / "Originals" / texName;
+    
+      // This function is partially wrong and needs to be fixed by doing PrepareFont + baking to a basis texture in the editor.
+      // We do still need to do the runtime work for stbtruetype, though we may require less work.
+    if (auto it = sFonts.find(texName);
+        it != sFonts.end())
+    {
+      mFontInfo = &it->second;
+      mTextureName = texName;
+      return;
+    }
+
+    auto& fontInfo = sFonts[texName];
+
     std::ifstream file(pathName, std::ios::binary | std::ios::ate);
 
     if (!file.is_open())
@@ -418,30 +447,22 @@ namespace YTE
     file.read(reinterpret_cast<char*>(&bytes[0]), size);
     file.close();
 
-    auto atlasData = std::make_unique<unsigned char[]>(mFontInfo.mAtlasWidth * mFontInfo.mAtlasHeight);
-    mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
+    auto atlasData = std::make_unique<unsigned char[]>(fontInfo.mAtlasWidth * fontInfo.mAtlasHeight);
+    fontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(fontInfo.mCharCount);
 
     stbtt_pack_context context;
-    if (!stbtt_PackBegin(&context, atlasData.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 0, 1, nullptr))
+    if (!stbtt_PackBegin(&context, atlasData.get(), fontInfo.mAtlasWidth, fontInfo.mAtlasHeight, 0, 1, nullptr))
       std::cout << fmt::format("SpriteText: Failed to initialize font!") << std::endl;
 
     stbtt_PackSetOversampling(&context, 2, 2);
-    if (!stbtt_PackFontRange(&context, bytes.data(), 0, mFontInfo.mSize, mFontInfo.mFirstChar, mFontInfo.mCharCount, mFontInfo.mCharInfo.get()))
+    if (!stbtt_PackFontRange(&context, bytes.data(), 0, fontInfo.mSize, fontInfo.mFirstChar, fontInfo.mCharCount, fontInfo.mCharInfo.get()))
       std::cout << fmt::format("SpriteText: Failed to pack font") << std::endl;
 
     stbtt_PackEnd(&context);
 
-      // If the font texture does not already exist on disk, save it to disk for lookup
-    size_t extensionPos = mFontName.size() - 4;
-    std::string texName = mFontName;
-    texName.replace(extensionPos, 6, "64.png");
-
-    filesystem::path outPath = Path::GetGamePath().String();
-    outPath = outPath.parent_path() / "Textures/Originals" / texName;
-
     if (!filesystem::exists(outPath))
     {
-      stbi_write_png(outPath.string().c_str(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 1, atlasData.get(), mFontInfo.mAtlasWidth);
+      stbi_write_png(outPath.string().c_str(), fontInfo.mAtlasWidth, fontInfo.mAtlasHeight, 1, atlasData.get(), fontInfo.mAtlasWidth);
     }
 
       // Set our mTextureName (used to confirm we have a texture to read into)

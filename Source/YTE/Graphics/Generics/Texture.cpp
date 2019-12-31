@@ -115,6 +115,7 @@ namespace YTE
     auto file = filePath.u8string();
     mTexture = Path::GetTexturePath(Path::GetEnginePath(), file);
 
+
     if (false == fs::exists(mTexture))
     {
       mTexture = fs::path(Path::GetTexturePath(Path::GetGamePath(), file)).u8string();

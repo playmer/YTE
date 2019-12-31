@@ -275,6 +275,8 @@ namespace YTE
 
   void Skeleton::VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform)
   {
+    OPTICK_EVENT();
+
     std::string nodeName(aNode->mName.data);
     glm::mat4 globalTrans = aParentTransform * ToGlm(aNode->mTransformation);
 
@@ -852,10 +854,16 @@ namespace YTE
       }
     }
 
-    auto meshScene = Importer.ReadFile(meshFile.c_str(),
-      aiProcess_Triangulate |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
+    aiScene const* meshScene = nullptr;
+
+    {
+      OPTICK_EVENT_DYNAMIC("Importing Mesh");
+
+      meshScene = Importer.ReadFile(meshFile.c_str(),
+        aiProcess_Triangulate |
+        aiProcess_CalcTangentSpace |
+        aiProcess_GenSmoothNormals);
+    }
 
     if (meshScene)
     {
@@ -863,6 +871,8 @@ namespace YTE
       // vertices.
       if (false == Skeleton::HasBones(meshScene))
       {
+        OPTICK_EVENT_DYNAMIC("Applying aiProcess_PreTransformVertices");
+
         Importer.ApplyPostProcessing(
           //aiProcess_Triangulate |
           //aiProcess_GenSmoothNormals |
@@ -947,6 +957,8 @@ namespace YTE
 
   void Mesh::RecalculateDimensions()
   {
+    OPTICK_EVENT();
+
     mDimension = CalculateDimensions(mParts);
   }
 
@@ -975,6 +987,8 @@ namespace YTE
 
   void Mesh::ResetTextureCoordinates()
   {
+    OPTICK_EVENT();
+
     for (auto& submesh : mParts)
     {
       submesh.ResetTextureCoordinates();
