@@ -615,7 +615,7 @@ namespace YTE
   {
     auto& descriptions = mData.mDescriptions;
 
-    if (mData.mDescriptionOverride)
+    if (mData.mDescriptionOverride || mData.mDescriptionsCreated)
     {
       return descriptions;
     }
@@ -654,6 +654,8 @@ namespace YTE
     descriptions.AddBindingAndAttribute<glm::vec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
     descriptions.AddBindingAndAttribute<glm::ivec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
     descriptions.AddBindingAndAttribute<glm::ivec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
+
+    mData.mDescriptionsCreated = true;
 
     return descriptions;
   }

@@ -167,6 +167,14 @@ namespace YTEditor
     };
   }
 
+  
+  ToolWindowManager::ToolWindowProperty MaterialViewer::GetToolProperties()
+  {
+    return ToolWindowManager::ToolWindowProperty::DisableDraggableTab |
+           ToolWindowManager::ToolWindowProperty::DisallowFloatWindow |
+           ToolWindowManager::ToolWindowProperty::DisallowUserDocking;
+  }
+
   void MaterialViewer::OnCurrentMaterialChanged(int aIndex)
   {
     if (aIndex < mCurrentSubMeshes->size())

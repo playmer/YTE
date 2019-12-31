@@ -292,6 +292,7 @@ namespace YTE
     std::string mShaderSetName;
     Mesh* mMesh;
     bool mDescriptionOverride = false;
+    bool mDescriptionsCreated = false;
     bool mCullBackFaces = true;
   };
 

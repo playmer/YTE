@@ -293,6 +293,11 @@ namespace YTE
     {
       return;
     }
+    
+    // Despite this not being a window related function, SDL will just...unload this library if
+    // a Vulkan related Window is destroyed, which causes issues with future Windows, so we need
+    // to load it every time...just in case.
+    SDL_Vulkan_LoadLibrary(nullptr);
 
     SDL_SetWindowResizable(self->mWindow, SDL_TRUE);
 
@@ -339,11 +344,17 @@ namespace YTE
     auto self = mData.Get<WindowData>();
 
     self->mWindow = SDL_CreateWindowFrom(aId);
-
+    
+    // Despite this not being a window related function, SDL will just...unload this library if
+    // a Vulkan related Window is destroyed, which causes issues with future Windows, so we need
+    // to load it every time...just in case.
+    SDL_Vulkan_LoadLibrary(nullptr);
     Detail::ChangeSDLWindowFlags(self->mWindow);
     SDL_SetWindowData(self->mWindow, "YTE_Window", this);
 
     SDL_GetWindowSize(self->mWindow, &self->mWidth, &self->mHeight);
+    
+    self->mWindowId = SDL_GetWindowID(self->mWindow);
 
     mShouldBeRenderedTo = true;
   }

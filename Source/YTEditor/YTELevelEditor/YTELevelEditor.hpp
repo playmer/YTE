@@ -77,6 +77,9 @@ namespace YTEditor
         return mLoading;
     }
 
+    // This is so the YTEWindow can report if it's being removed.
+    void YTEWindowRemoved(YTEWindow* aWindow);
+
   private:
     // YTE GAME ENGINE
     YTE::Engine* mRunningEngine;

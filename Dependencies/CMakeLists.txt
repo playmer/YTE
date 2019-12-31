@@ -10,7 +10,14 @@ add_subdirectory(imgui)
 
 ##########################################################################
 # Turn off/configure various parts of SDL
-set(SDL_SHARED_ENABLED_BY_DEFAULT ON)
+option(SDL_SHARED_ENABLED_BY_DEFAULT "We need the SDL dll" ON)
+
+# See the following for info
+# https://bugzilla.libsdl.org/show_bug.cgi?id=4759
+# https://developercommunity.visualstudio.com/content/problem/711317/unexpected-implicit-memset-in-release-optimized-bu.html
+#
+# Note that despite these being resolved at time of this commit, this issue is not actually resolved,
+option(LIBC "A bug in I guess MSVC causes us to need to use LIBC with SDL." ON)
 add_subdirectory(SDL)
 
 ##########################################################################

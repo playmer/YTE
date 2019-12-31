@@ -119,11 +119,11 @@ target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONF
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_ENGINE_CONFIG="./Config">)
 
 # Set the defines needed for YTE::CompilerOptions
-target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_DEBUG=1>)
-target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_DEBUG=0>)
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<OR:$<CONFIG:PUBLISH>,$<CONFIG:RELEASE>>>:YTE_DEBUG=1>)
+target_compile_definitions(YTE PUBLIC $<$<OR:$<CONFIG:PUBLISH>,$<CONFIG:RELEASE>>:YTE_DEBUG=0>)
 
-target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_RELEASE=0>)
-target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_RELEASE=1>)
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<OR:$<CONFIG:PUBLISH>,$<CONFIG:RELEASE>>>:YTE_RELEASE=0>)
+target_compile_definitions(YTE PUBLIC $<$<OR:$<CONFIG:PUBLISH>,$<CONFIG:RELEASE>>:YTE_RELEASE=1>)
 
 # Set the defines needed for YTE::CompilerConfiguration
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:DEBUG>>:YTE_CONFIG_DEBUG=0>)

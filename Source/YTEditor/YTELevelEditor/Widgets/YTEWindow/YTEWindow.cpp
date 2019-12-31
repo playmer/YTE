@@ -35,6 +35,7 @@ namespace YTEditor
 
   YTEWindow::~YTEWindow()
   {
+    mLevelEditor->YTEWindowRemoved(this);
   }
 
   void YTEWindow::resizeEvent(QResizeEvent* aEvent)

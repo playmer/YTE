@@ -310,11 +310,13 @@ namespace YTEditor
     auto area = toolWindowManager->areaOf(mLevelWindowWidget);
     ToolWindowManager::AreaReference areaToPlace{ 
       ToolWindowManager::AreaReferenceType::AddTo, 
-      area,
-      ToolWindowManager::ToolWindowProperty::HideCloseButton
+      area
     };
 
-    toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace);
+    toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace, 
+      ToolWindowManager::ToolWindowProperty::DisableDraggableTab | 
+      ToolWindowManager::ToolWindowProperty::DisallowFloatWindow | 
+      ToolWindowManager::ToolWindowProperty::DisallowUserDocking);
 
     mRunningWindow->mWindow = window;
     window->mShouldBeRenderedTo = true;
@@ -355,21 +357,31 @@ namespace YTEditor
     if (!mRunningSpace) {
       return;
     }
-    auto renderer = mRunningEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
-    auto window = mRunningSpace->GetComponent<YTE::GraphicsView>()->GetWindow();
-
-    mRunningEngine->RemoveComposition(mRunningSpace);
-    mRunningEngine->Update();
-
-    window->mShouldBeRenderedTo = false;
-    renderer->DeregisterWindowFromDraw(window);
 
     GetMainWindow()->GetToolWindowManager()->removeToolWindow(mRunningWindowTab);
+  }
+
+  void YTELevelEditor::YTEWindowRemoved(YTEWindow* aWindow)
+  {
+    auto underlyingWindow = aWindow->mWindow;
+
+    if (nullptr != underlyingWindow)
+    {
+      auto renderer = underlyingWindow->mEngine->GetComponent<YTE::GraphicsSystem>()->GetRenderer();
+
+      if (underlyingWindow == mRunningWindow->mWindow)
+      {
+        mRunningEngine->RemoveComposition(mRunningSpace);
+        mRunningEngine->Update();
+      }
+
+      underlyingWindow->mShouldBeRenderedTo = false;
+      renderer->DeregisterWindowFromDraw(underlyingWindow);
+      mRunningEngine->RemoveWindow(underlyingWindow);
+    }
 
     mRunningWindowTab = nullptr;
-
-    mRunningEngine->RemoveWindow(window);
-
+    mRunningWindow = nullptr;
     mRunningSpace = nullptr;
   }
 
@@ -482,10 +494,16 @@ namespace YTEditor
     mLevelWindowWidget->setWindowTitle("Level Editor");
     mLevelWindowWidget->setMinimumSize(480, 320);
 
+    // We're disabling movement on this to prevent a crash when you move them around/undock them.
+    //
+    // Note: The Play Game window and materials window have the same limitation, if you fix this, fix those too.
     mainWindow->GetToolWindowManager()->addToolWindow(
       mLevelWindowWidget, 
       ToolWindowManager::EmptySpace,
-      ToolWindowManager::ToolWindowProperty::HideCloseButton
+      ToolWindowManager::ToolWindowProperty::HideCloseButton// |
+      //ToolWindowManager::ToolWindowProperty::DisableDraggableTab | 
+      //ToolWindowManager::ToolWindowProperty::DisallowFloatWindow | 
+      //ToolWindowManager::ToolWindowProperty::DisallowUserDocking
     );
 
     auto id = mLevelWindow->winId();

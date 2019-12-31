@@ -110,9 +110,25 @@ namespace YTE
         {
           SDL_Window* sdlWindow = SDL_GetWindowFromID(event.window.windowID);
 
-          auto window = static_cast<Window*>(SDL_GetWindowData(sdlWindow, "YTE_Window"));
+          if (nullptr != sdlWindow)
+          {
+            auto window = static_cast<Window*>(SDL_GetWindowData(sdlWindow, "YTE_Window"));
 
-          WindowEventHandler(event.window, this, window);
+            WindowEventHandler(event.window, this, window);
+          }
+          //else // Try to find the window, might have been destroyed.
+          //{
+          //  for (auto& [name, window] : mWindows)
+          //  {
+          //    auto windowData = window->mData.Get<WindowData>();
+          //  
+          //    if (windowData->mWindowId == event.window.windowID)
+          //    {
+          //      printf("ohgosh");
+          //    }
+          //  }
+          //  printf("ohno");
+          //}
 
           break;
         }
