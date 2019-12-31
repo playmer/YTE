@@ -6,6 +6,7 @@ add_subdirectory(kiss_fft)
 #add_subdirectory(LuaJIT)
 add_subdirectory(stb)
 add_subdirectory(imgui)
+add_subdirectory(optick)
 
 
 ##########################################################################

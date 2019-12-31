@@ -56,7 +56,7 @@ namespace YTE
 
   void VkRenderTarget::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     CreateRenderPass();
     CreateFrameBuffer();
@@ -66,7 +66,7 @@ namespace YTE
 
   VkRenderTarget::~VkRenderTarget()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
@@ -95,7 +95,7 @@ namespace YTE
 
   void VkRenderTarget::Resize(vk::Extent2D& aExtent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mData.mExtent = aExtent;
     CreateFrameBuffer();
@@ -110,7 +110,7 @@ namespace YTE
 
   void VkRenderTarget::CreateFrameBuffer()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
@@ -239,7 +239,7 @@ namespace YTE
 
   void VkRenderTarget::CreateRenderPass()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // Attachment Descriptions
     vk::AttachmentDescription colorAttachment{ {},

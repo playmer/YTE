@@ -58,7 +58,7 @@ namespace YTE
 
   void Window::Update()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     PlatformUpdate();
 
     // We want to handle the situation where the mouse is 

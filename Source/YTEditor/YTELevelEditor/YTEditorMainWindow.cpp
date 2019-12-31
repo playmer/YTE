@@ -125,6 +125,8 @@ namespace YTEditor
 
   void YTEditorMainWindow::UpdateEngine()
   {
+    OPTICK_FRAME("YTEditorMainThread");
+
     auto editor = GetWorkspace<YTELevelEditor>();
 
     editor->UpdateEngine();

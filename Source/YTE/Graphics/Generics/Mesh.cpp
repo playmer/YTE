@@ -75,7 +75,7 @@ namespace YTE
 
   void CalculateSubMeshDimensions(Submesh& mSubMesh)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto& dimension = mSubMesh.mData.mDimension;
 
@@ -93,7 +93,7 @@ namespace YTE
 
   Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     Dimension toReturn;
 
     for (auto& part : mParts)
@@ -147,7 +147,7 @@ namespace YTE
 
   void Skeleton::Initialize(aiScene const* aScene)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     // find number of vertices to initialize the skeleton
     u32 numMeshes = aScene->mNumMeshes;
     u32 vertCount = 0;
@@ -186,7 +186,7 @@ namespace YTE
 
   void Skeleton::LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     DebugObjection(aMesh->mNumBones >= BoneConstants::MaxBones,
                    "Animated models cannot have more than %d bones, %s mesh has %d bones.",
                    BoneConstants::MaxBones, aMesh->mName.C_Str(), aMesh->mNumBones);
@@ -326,7 +326,7 @@ namespace YTE
     Skeleton* aSkeleton,
     uint32_t aBoneStartingVertexOffset)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mData.mMesh = aYTEMesh;
 
@@ -821,7 +821,7 @@ namespace YTE
     : mRenderer{aRenderer}
     , mInstanced(false)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     Assimp::Importer Importer;
 
     std::string filename = aFile; // TODO: don't actually make a copy lol
@@ -908,7 +908,7 @@ namespace YTE
     : mRenderer{aRenderer}
     , mInstanced(false)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     mName = aFile;
 
     mParts.reserve(aSubmeshes.size());

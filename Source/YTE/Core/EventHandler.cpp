@@ -17,7 +17,8 @@ namespace YTE
 
   void EventHandler::SendEvent(const std::string &aName, Event *aEvent)
   {
-    YTEProfileName(aName);
+    OPTICK_EVENT();
+    OPTICK_TAG("SendEvent: ", aName.c_str());
 
     auto &&list = mEventLists[aName];
 

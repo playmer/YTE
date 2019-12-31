@@ -42,7 +42,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aView->mName,
                      aCombinationType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Initialize();
   }
@@ -53,7 +53,7 @@ namespace YTE
 
   void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     ++(*mCBOB);
 
@@ -73,11 +73,13 @@ namespace YTE
   static void RunPipelines(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
                            std::vector<VkRTGameForwardDrawer::DrawData>& aShaders)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     {
       auto number = std::to_string(aShaders.size());
-      YTEProfileBlock(number.c_str());
+      
+      OPTICK_EVENT();
+      OPTICK_TAG("DrawDatas:", number.c_str());
 
       std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
       std::vector<u64> vertexBufferOffsets;
@@ -88,7 +90,7 @@ namespace YTE
       {
         if (lastPipeline != drawCall.mPipeline)
         {
-          YTEProfileBlock("bindPipeline");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindPipeline");
 
           aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
                              *drawCall.mPipeline);
@@ -98,14 +100,14 @@ namespace YTE
 
         if (lastLineWidth != drawCall.mLineWidth)
         {
-          YTEProfileBlock("setLineWidth");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: setLineWidth");
 
           aCBO->setLineWidth(drawCall.mLineWidth);
           lastLineWidth = drawCall.mLineWidth;
         }
 
         {
-          YTEProfileBlock("bindVertexBuffer");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindVertexBuffer");
           auto& vbd = *(drawCall.mVertexBufferData);
 
           if (vbd.mPositionBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
@@ -129,7 +131,7 @@ namespace YTE
         }
 
         {
-          YTEProfileBlock("bindIndexBuffer");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindIndexBuffer");
 
           aCBO->bindIndexBuffer(
             *drawCall.mIndexBuffer,
@@ -138,7 +140,7 @@ namespace YTE
         }
 
         {
-          YTEProfileBlock("bindDescriptorSets");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindDescriptorSets");
 
           aCBO->bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
@@ -149,7 +151,7 @@ namespace YTE
         }
 
         {
-          YTEProfileBlock("drawIndexed");
+          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: drawIndexed");
 
           aCBO->drawIndexed(
             drawCall.mIndexCount,
@@ -169,7 +171,7 @@ namespace YTE
   void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
                                      std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto const& viewUbo = mParentViewData->mView->GetViewUBOData();
     auto toClipSpace = viewUbo.mProjectionMatrix *
@@ -312,7 +314,7 @@ namespace YTE
     // space, then sorts their z (depth). It's not perfect, but solves
     // most naive issues (UI sorting issues, most particle issues).
     {
-      YTEProfileBlock("Sorting Alpha");
+      OPTICK_EVENT_DYNAMIC("Sorting Alpha");
 
       std::sort(mAlphaBlendShader.begin(), 
                 mAlphaBlendShader.end(), 
@@ -323,37 +325,37 @@ namespace YTE
     }
 
     {
-      YTEProfileBlock("Triangles");
+      OPTICK_EVENT_DYNAMIC("Drawing Triangles");
 
       RunPipelines(aCBO, mTriangles);
     }
 
     {
-      YTEProfileBlock("Lines");
+      OPTICK_EVENT_DYNAMIC("Drawing Lines");
 
       RunPipelines(aCBO, mLines);
     }
 
     {
-      YTEProfileBlock("Curves");
+      OPTICK_EVENT_DYNAMIC("Drawing Curves");
 
       RunPipelines(aCBO, mCurves);
     }
 
     {
-      YTEProfileBlock("ShaderNoCull");
+      OPTICK_EVENT_DYNAMIC("Drawing ShaderNoCull");
 
       RunPipelines(aCBO, mShaderNoCull);
     }
 
     {
-      YTEProfileBlock("AdditiveBlendShader");
+      OPTICK_EVENT_DYNAMIC("Drawing AdditiveBlendShader");
 
       RunPipelines(aCBO, mAdditiveBlendShader);
     }
 
     {
-      YTEProfileBlock("AlphaBlendShader");
+      OPTICK_EVENT_DYNAMIC("Drawing AlphaBlendShader");
 
       RunPipelines(aCBO, mAlphaBlendShader);
     }

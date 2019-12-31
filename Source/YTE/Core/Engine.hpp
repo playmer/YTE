@@ -80,7 +80,7 @@ namespace YTE
     YTE_Shared void Initialize(InitializeEvent*) override;
     void Initialize()
     {
-      YTEProfileFunction();
+      OPTICK_EVENT();
       InitializeEvent event;
       event.CheckRunInEditor = true;
       Initialize(&event);

@@ -23,7 +23,7 @@ namespace YTE
   Texture::Texture(std::string const&aFile) 
     : mType{TextureLayout::InvalidLayout}
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     Load(aFile);
   }
 
@@ -32,7 +32,7 @@ namespace YTE
   Texture::Texture(const char *aFile) 
     : mType{ TextureLayout::InvalidLayout }
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     std::string f(aFile);
     Load(f);
   }
@@ -96,7 +96,7 @@ namespace YTE
 
   void Texture::Load(std::string const& aFile)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     fs::path filePath{ aFile };
 
     auto extension = filePath.extension();

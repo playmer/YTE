@@ -68,7 +68,7 @@ namespace YTE
 
   bool Frustum::CheckSphere(glm::vec3 aPosition, float aRadius)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // Check to see if Camera is within the sphere, if so, just draw it.
     auto distance = glm::length(mCameraPosition - aPosition);

@@ -78,12 +78,6 @@ namespace YTE
   {
     namespace fs = std::filesystem;
 
-    if constexpr (YTE_CAN_PROFILE)
-    {
-      //EASY_PROFILER_ENABLE;
-      profiler::startListen();
-    }
-
     const char *pathToUse{ nullptr };
 
     for (auto path : aConfigFilePath)
@@ -97,7 +91,7 @@ namespace YTE
       }
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
     
     auto enginePath = Path::SetEnginePath(fs::current_path().string());
 
@@ -156,7 +150,7 @@ namespace YTE
 
   void Engine::Deserialize(RSValue *aValue)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't an Engine.");
     DebugObjection(false == aValue->HasMember("Windows") || 
@@ -200,7 +194,7 @@ namespace YTE
 
   Window* Engine::AddWindow(const char *aName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto& windows = GetWindows();
 
@@ -222,7 +216,7 @@ namespace YTE
 
   void Engine::RemoveWindow(Window * aWindow)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto& windows = GetWindows();
 
@@ -238,7 +232,7 @@ namespace YTE
 
   void Engine::Initialize(InitializeEvent*)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (auto &component : mComponents)
     {
@@ -260,7 +254,6 @@ namespace YTE
   // Updates the Space to the current frame.
   void Engine::Update()
   {
-    YTEProfileFunction();
     using namespace std::chrono;
     duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
@@ -340,23 +333,18 @@ namespace YTE
   // Cleans up anything in the Space.
   Engine::~Engine()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mCompositions.Clear();
 
     mComponents.Clear();
 
     mPlugins.clear();
-
-    if constexpr (YTE_CAN_PROFILE)
-    {
-      profiler::stopListen();
-    }
   }
 
   void Engine::LoadPlugins()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     fs::path gamePath = Path::GetGamePath().String();
     gamePath /= "Plugins";
@@ -469,7 +457,7 @@ namespace YTE
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (false == mEditorMode)
     {
@@ -512,7 +500,7 @@ namespace YTE
   
   RSDocument* Engine::GetLevel(String &aLevel)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (false == mEditorMode)
     {
@@ -567,7 +555,7 @@ namespace YTE
 
   Composition* Engine::StoreCompositionGUID(Composition *aComposition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     GlobalUniqueIdentifier &guid = aComposition->GetGUID();
     
@@ -584,7 +572,7 @@ namespace YTE
 
   Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mCompositionsByGUID.find(aGUID.ToString());
 
@@ -598,7 +586,7 @@ namespace YTE
 
   Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     std::string guid = aGUID.ToString();
     auto it = mCompositionsByGUID.find(guid);
@@ -613,7 +601,7 @@ namespace YTE
 
   bool Engine::RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mCompositionsByGUID.size() == 0)
     {
@@ -633,7 +621,7 @@ namespace YTE
 
   Component* Engine::StoreComponentGUID(Component *aComponent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto& guid = aComponent->GetGUID();
 
@@ -650,7 +638,7 @@ namespace YTE
 
   Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mComponentsByGUID.find(aGUID.ToString());
 
@@ -664,7 +652,7 @@ namespace YTE
 
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     std::string guid = aGUID.ToString();
     auto it = mComponentsByGUID.find(guid);
@@ -679,7 +667,7 @@ namespace YTE
 
   bool Engine::RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mComponentsByGUID.size() == 0)
     {

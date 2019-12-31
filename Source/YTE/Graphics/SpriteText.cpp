@@ -150,7 +150,7 @@ namespace YTE
 
   void SpriteText::CreateSpriteText()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     if (nullptr != mInstantiatedSprite)
     {
       mInstantiatedSprite.reset();

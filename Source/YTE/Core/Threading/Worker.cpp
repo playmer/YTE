@@ -64,6 +64,8 @@ namespace YTE
 
   void Worker::Run()
   {
+    OPTICK_THREAD("JobSystemWorker");
+
     while (mState != WorkerState::Stopped)
     {
       ExecuteNext();

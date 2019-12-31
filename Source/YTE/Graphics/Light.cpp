@@ -132,7 +132,7 @@ namespace YTE
 
   void Light::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)

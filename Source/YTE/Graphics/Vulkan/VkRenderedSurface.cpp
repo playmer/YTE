@@ -43,7 +43,7 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto internals = mRenderer->GetVkInternals();
 
@@ -80,7 +80,7 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mCanPresent)
     {
@@ -107,7 +107,7 @@ namespace YTE
   // Models
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
@@ -118,7 +118,7 @@ namespace YTE
 
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mDataUpdateRequired = true;
 
@@ -130,7 +130,7 @@ namespace YTE
 
   void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(aModel->GetVkMesh())].push_back(aModel);
@@ -154,7 +154,7 @@ namespace YTE
       return;
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -177,7 +177,7 @@ namespace YTE
       return;
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -273,7 +273,7 @@ namespace YTE
 
   void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(mRenderer->GetVkInternals()->GetPhysicalDevice(),
                                                                          mSurface);
@@ -324,7 +324,7 @@ namespace YTE
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     UnusedArguments(aEvent);
 
@@ -340,7 +340,7 @@ namespace YTE
                                        DrawerTypes aDrawerType,
                                        DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -379,7 +379,7 @@ namespace YTE
                                              DrawerTypes aDrawerType,
                                              DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget.reset();
@@ -402,7 +402,7 @@ namespace YTE
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
                                                     DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget->SetCombinationType(aCombination);
@@ -423,7 +423,7 @@ namespace YTE
 
   void VkRenderedSurface::DeregisterView(GraphicsView *aView)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -447,7 +447,7 @@ namespace YTE
 
   void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -472,7 +472,7 @@ namespace YTE
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     UnusedArguments(aEvent);
 
     if (mWindow->IsMinimized() || mViewData.empty())
@@ -582,7 +582,7 @@ namespace YTE
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     //{
     //  YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
@@ -611,11 +611,11 @@ namespace YTE
 
     // build secondaries
     {
-      YTEMetaProfileBlock("Building Secondary Command Buffers");
+      OPTICK_EVENT_DYNAMIC("Building Secondary Command Buffers");
 
       for (auto const& [view, data] : mViewData)
       {
-        YTEMetaProfileBlock(data.mName.c_str());
+        OPTICK_EVENT_DYNAMIC(data.mName.c_str());
         
         data.mRenderTarget->RenderFull(mRenderer->mMeshes);
       }
@@ -623,7 +623,7 @@ namespace YTE
 
     // render to screen;
     {
-      YTEMetaProfileBlock("Building Secondary Command Buffers");
+      OPTICK_EVENT_DYNAMIC("Building Secondary Command Buffers");
 
       mRenderToScreen->RenderFull(extent);
     }
@@ -638,11 +638,11 @@ namespace YTE
     // render all first pass render targets
     // wait on present semaphore for first render
     {
-      YTEMetaProfileBlock("Building Primary Command Buffer");
+      OPTICK_EVENT_DYNAMIC("Building Primary Command Buffer");
 
       for (auto const&[view, data] : mViewData)
       {
-        YTEMetaProfileBlock(data.mName.c_str());
+        OPTICK_EVENT_DYNAMIC(data.mName.c_str());
 
         glm::vec4 col = data.mView->GetClearColor();
 
@@ -692,7 +692,7 @@ namespace YTE
                              mRenderCompleteSemaphore };
 
     {
-      YTEMetaProfileBlock("Waiting on fences.");
+      OPTICK_EVENT_DYNAMIC("Waiting on fences.");
 
       auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
 
@@ -700,7 +700,7 @@ namespace YTE
     }
 
     {
-      YTEMetaProfileBlock("Submitting to the Queue");
+      OPTICK_EVENT_DYNAMIC("Submitting to the Queue");
 
       mRenderer->mGraphicsQueueData->mQueue->submit(submit, renderingFence);
     }

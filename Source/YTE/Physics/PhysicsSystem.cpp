@@ -150,7 +150,7 @@ namespace YTE
   void PhysicsSystem::OnPhysicsUpdate(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mDynamicsWorld->updateAabbs();
     mDynamicsWorld->stepSimulation(static_cast<float>(aEvent->Dt), 10);

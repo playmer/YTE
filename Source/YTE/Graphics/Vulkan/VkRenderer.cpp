@@ -44,12 +44,14 @@ namespace YTE
 
   void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aCommandBuffer)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     std::lock_guard<std::mutex> lock(mAddingMutex);
 
     auto bytes = std::to_string(mData.size());
     auto size = mData.size();
-    YTEProfileBlock(bytes.c_str());
+    
+    OPTICK_EVENT();
+    OPTICK_TAG("Bytes to copy", bytes.c_str());
 
     if (0 == size)
     {
@@ -491,7 +493,7 @@ namespace YTE
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mDataUpdateRequired)
     {

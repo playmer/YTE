@@ -73,7 +73,7 @@ namespace YTE
 
   void Space::Initialize(InitializeEvent* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     aEvent->CheckRunInEditor = mIsEditorSpace;
 
@@ -97,7 +97,7 @@ namespace YTE
 
   void Space::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     InitializeEvent event;
     event.CheckRunInEditor = mIsEditorSpace;
@@ -118,7 +118,7 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     if (mStartingLevel.Empty())
     {
       CreateBlankLevel("NewLevel");
@@ -134,7 +134,7 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load(RSValue* aLevel, bool aInitialize)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     mCompositions.Clear();
     ComponentClear();
       
@@ -181,7 +181,7 @@ namespace YTE
                     IntrusiveList<Composition>& aFrom,
                     IntrusiveList<Composition>* aTo)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (aFrom.Empty())
     {
@@ -235,7 +235,7 @@ namespace YTE
   // Updates the Space to the current frame.
   void Space::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     SendEvent(Events::SpaceUpdate, aEvent);
     SendEvent(Events::DeletionUpdate, aEvent);

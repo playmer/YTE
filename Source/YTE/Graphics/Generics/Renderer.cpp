@@ -128,7 +128,7 @@ namespace YTE
 
   Mesh * Renderer::GetBaseMesh(const std::string & aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     auto mesh = RequestMesh(aFilename);
     if (mesh)
     {
@@ -175,7 +175,7 @@ namespace YTE
 
   Texture* Renderer::GetBaseTexture(const std::string &aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     auto texture = RequestTexture(aFilename);
     if (texture)
     {
@@ -222,7 +222,7 @@ namespace YTE
 
   Mesh* Renderer::RequestMesh(const std::string &aMeshFile)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting mesh: {}", aMeshFile));
     
     std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
@@ -253,7 +253,7 @@ namespace YTE
 
   Texture* Renderer::RequestTexture(const std::string &aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting texture: {}", aFilename));
     std::shared_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
     auto baseIt = mBaseTextures.find(aFilename);

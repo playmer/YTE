@@ -7,9 +7,7 @@
 #include <memory>
 #include <unordered_map>
 
-#if YTE_CAN_PROFILE
-  #include <easy/profiler.h>
-#endif
+#include "optick.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -33,22 +31,6 @@
 
 #include "YTE/Core/StaticIntents.hpp"
 
-#if YTE_CAN_PROFILE 
-  #define YTEProfileName(aName) EASY_BLOCK(aName)
-  #define YTEProfileFunction() EASY_FUNCTION(profiler::colors::Red)
-  #define YTEProfileBlock(aName) EASY_BLOCK(aName, profiler::colors::Red)
-#else
-  namespace profiler
-  {
-    inline void startListen(uint16_t = 1) {}
-    inline void stopListen() { }
-    inline void dumpBlocksToFile(char const*) {};
-  }
-
-  #define YTEProfileName(aName)
-  #define YTEProfileFunction()
-  #define YTEProfileBlock(aName)
-#endif
 
 namespace YTE
 {

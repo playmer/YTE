@@ -237,7 +237,7 @@ namespace YTE
 
   void Camera::Update(LogicUpdate *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (this == mGraphicsView->GetActiveCamera())
     {

@@ -53,7 +53,7 @@ namespace YTE
 
   void VkImguiDrawer::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mView = mParentViewData->mView;
     auto owner = mView->GetOwner();
@@ -89,7 +89,7 @@ namespace YTE
   void VkImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
   {
     UnusedArguments(aUpdate);
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mContext->SetCurrentContext();
 
@@ -109,7 +109,7 @@ namespace YTE
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
-      YTEProfileBlock("VkImgui CommandList Building");
+      OPTICK_EVENT_DYNAMIC("VkImgui CommandList Building");
 
       const ImDrawList* cmd_list = drawData->CmdLists[n];
 
@@ -177,7 +177,7 @@ namespace YTE
   {
     UnusedArguments(aMeshes);
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     ++(*mCBOB);
     auto [commandBuffer, renderingFence] = **mCBOB;
@@ -189,7 +189,7 @@ namespace YTE
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mContext->SetCurrentContext();
     auto drawData = ImGui::GetDrawData();

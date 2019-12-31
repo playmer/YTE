@@ -24,24 +24,15 @@ target_include_directories(YTE
     ${ParentDirectory}
 )
 
-# Find the EasyProfiler library
-set(EasyProfilerSDKPath $ENV{EasyProfilerSDK})
-if(EasyProfilerSDKPath)
-  set(CMAKE_PREFIX_PATH ${EasyProfilerSDKPath}/lib/cmake/easy_profiler/)
-  find_package(easy_profiler REQUIRED)
-  target_link_libraries(YTE PUBLIC easy_profiler)
-  target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CAN_PROFILE=1>)
-  target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CAN_PROFILE=0>)
+option(YTE_PROFILER_ENABLED "Allows profiler to be used." ON)
 
-  set(EasyProfilerBeingUsed TRUE)
-  message(used: ${EasyProfilerBeingUsed})
-endif()
-
-if(EasyProfilerBeingUsed)
+if(YTE_PROFILER_ENABLED)
+  target_link_libraries(YTE PUBLIC OptickCore)
   target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CAN_PROFILE=1>)
   target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CAN_PROFILE=0>)
 else()
   target_compile_definitions(YTE PUBLIC YTE_CAN_PROFILE=0)
+  target_compile_definitions(YTE PUBLIC USE_OPTICK=0)
 endif()
 
 target_link_libraries(YTE

@@ -452,7 +452,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Render()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // evaluate the current position for the waves
     WaveGeneration();
@@ -594,7 +594,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::WaveGeneration()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto self = mData.Get<KissFFTData>();
 
@@ -980,7 +980,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::CreateTransform()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mTransform == nullptr)
     {
@@ -1013,7 +1013,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::AdjustPositions()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     CreateTransform();
 
@@ -1030,7 +1030,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mResetNeeded)
     {
@@ -1046,7 +1046,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::EditorUpdate(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (!mSpace->GetEngine()->IsEditor())
     {
@@ -1257,7 +1257,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::UpdateHeightmap()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // update
     auto& submesh = mMesh->GetSubmeshes()[0];

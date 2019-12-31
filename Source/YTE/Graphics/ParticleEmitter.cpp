@@ -312,7 +312,7 @@ namespace YTE
 
   void ParticleEmitter::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     double dt = GetSpace()->GetEngine()->GetDt();
 

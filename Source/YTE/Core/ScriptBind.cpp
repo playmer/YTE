@@ -64,7 +64,7 @@ namespace YTE
 {
   void InitializeYTETypes()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     basist::basisu_transcoder_init();
 

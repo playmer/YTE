@@ -293,7 +293,7 @@ namespace YTE
 
   void Model::Create()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     std::string MeshName = RemoveExtension(mMeshName);
     std::string name = mOwner->GetName().c_str();
 

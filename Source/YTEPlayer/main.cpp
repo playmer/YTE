@@ -15,7 +15,7 @@ int YTE_Main(ApplicationArguments&)
   //  profiler::startListen();
   //}
   //
-  //YTEProfileFunction();
+  //OPTICK_EVENT();
 
   using namespace std::chrono_literals;
   std::this_thread::sleep_for(7s);
@@ -31,6 +31,7 @@ int YTE_Main(ApplicationArguments&)
   
   while (mainEngine.KeepRunning())
   {
+    OPTICK_FRAME("YTEPlayerMainThread");
     mainEngine.Update();
   }
 
