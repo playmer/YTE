@@ -36,7 +36,7 @@ namespace YTE
     , mEngine(static_cast<Engine*>(aOwner))
     , mVulkanSuccess(0)
   {
-    
+    OPTICK_EVENT();
   }
 
 
@@ -57,6 +57,7 @@ namespace YTE
 
   void GraphicsSystem::Initialize()
   {
+    OPTICK_EVENT();
     // TODO (Andrew): Figure out a way to choose the dummy renderer. Perhaps if an exception is thrown?
     mRenderer = static_cast<std::unique_ptr<Renderer>>(std::make_unique<VkRenderer>(mEngine));
     return;

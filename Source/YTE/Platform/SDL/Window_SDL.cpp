@@ -61,6 +61,8 @@ namespace YTE
 
   void DoResize(Window* aWindow)
   {
+    OPTICK_EVENT();
+
     if (true == aWindow->mEngine->IsEditor())
     {
       return;
@@ -238,6 +240,8 @@ namespace YTE
     : mMouse{ this }
     , mEngine { aEngine }
   {
+    OPTICK_EVENT();
+
     DeserializeByType(aProperties, this, TypeId<Window>());
 
     static std::string defaultName = "Yours Truly Engine";
@@ -341,6 +345,8 @@ namespace YTE
 
   void Window::SetWindowId(void* aId)
   {
+    OPTICK_EVENT();
+
     auto self = mData.Get<WindowData>();
 
     self->mWindow = SDL_CreateWindowFrom(aId);
@@ -460,6 +466,8 @@ namespace YTE
 
   std::any Window::SetUpVulkanWindow(void* aSetup)
   {
+    OPTICK_EVENT();
+
     auto self = mData.Get<WindowData>();
 
     auto instance = static_cast<vkhlf::Instance*>(aSetup);

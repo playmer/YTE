@@ -131,6 +131,8 @@ namespace YTE
     , mVulkanInternals{ std::make_unique<VkInternals>() }
     , mEngine{ aEngine }
   {
+    OPTICK_EVENT();
+
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
 
     // vulkan is initialized, initialize the engine
@@ -265,6 +267,8 @@ namespace YTE
   // Textures
   VkTexture* VkRenderer::CreateTexture(std::string const& aFilename, vk::ImageViewType aType)
   {
+    OPTICK_EVENT();
+
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
 
@@ -298,6 +302,8 @@ namespace YTE
                                        u32 aLayerCount,
                                        vk::ImageViewType aVulkanType)
   {
+    OPTICK_EVENT();
+
     auto textureIt = mTextures.find(aName);
     VkTexture *texturePtr{ nullptr };
 
@@ -380,6 +386,8 @@ namespace YTE
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
+    OPTICK_EVENT();
+
     auto baseMesh = GetBaseMesh(aFilename);
 
     auto meshIt = mMeshes.find(aFilename);
@@ -409,6 +417,8 @@ namespace YTE
                                      ContiguousRange<SubmeshData> aSubmeshes,
 		                                 bool aForceUpdate)
   {
+    OPTICK_EVENT();
+
     auto meshIt = mMeshes.find(aName);
 
     VkMesh *meshPtr{ nullptr };
@@ -455,6 +465,7 @@ namespace YTE
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
+    OPTICK_EVENT();
 
     VkGraphicsDataUpdate update;
     LogicUpdate update2;

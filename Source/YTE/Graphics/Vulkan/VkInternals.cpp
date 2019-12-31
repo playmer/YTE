@@ -110,6 +110,8 @@ namespace YTE
 
   std::shared_ptr<vkhlf::Surface> VkInternals::InitializeVulkan(Engine *aEngine)
   {
+    OPTICK_EVENT();
+
     std::vector<std::string>  enabledExtensions, enabledLayers;
 
     enabledExtensions.emplace_back("VK_KHR_surface");
@@ -128,10 +130,13 @@ namespace YTE
     }
 
     // Create a new vulkan instance using the required extensions
-    mInstance = vkhlf::Instance::create("Yours Truly Engine",
-                                        1,
-                                        enabledLayers,
-                                        enabledExtensions);
+    {
+      OPTICK_EVENT_DYNAMIC("Creating Vulkan Instance");
+      mInstance = vkhlf::Instance::create("Yours Truly Engine",
+                                          1,
+                                          enabledLayers,
+                                          enabledExtensions);
+    }
 
     if constexpr(CompilerOptions::Debug() && cVulkanValidations)
     {
@@ -200,6 +205,8 @@ namespace YTE
 
   std::shared_ptr<vkhlf::Surface> VkInternals::CreateSurface(Window *aWindow)
   {
+    OPTICK_EVENT();
+
     auto surface = std::any_cast<std::shared_ptr<vkhlf::Surface>>(aWindow->SetUpVulkanWindow(static_cast<void*>(mInstance.get())));
     auto indices = QueueFamilyIndices::FindQueueFamilies(mMainDevice, vk::QueueFlagBits::eGraphics);
 
@@ -215,6 +222,8 @@ namespace YTE
 
   void VkInternals::SelectDevice(std::shared_ptr<vkhlf::Surface> aSurface)
   {
+    OPTICK_EVENT();
+
     // Find a physical device with presentation support
     DebugObjection(mInstance->getPhysicalDeviceCount() == 0,
       "We can't find any graphics devices!");
