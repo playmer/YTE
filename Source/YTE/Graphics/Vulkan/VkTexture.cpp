@@ -18,7 +18,7 @@ namespace fs = std::filesystem;
 
 namespace YTE
 {
-  basist::etc1_global_selector_codebook const* GetGlobalBasisCodebook()
+  static basist::etc1_global_selector_codebook const* GetGlobalBasisCodebook()
   {
     using namespace basist;
     static basist::etc1_global_selector_codebook codebook(g_global_selector_cb_size, g_global_selector_cb);
@@ -41,87 +41,14 @@ namespace YTE
     , mVulkanType{ aVulkanType }
     , mTexture{ aTexture }
   {
+    OPTICK_EVENT();
+
     Initialize();
   }
 
   void VkTexture::Initialize()
   {
-    if (TextureLayout::RGBA != mTexture->mType)
-    {
-      mTexture->mType = TextureLayout::Bc7_Unorm_Opaque;
-
-      basist::basisu_transcoder transcoder{ GetGlobalBasisCodebook() };
-      basist::basisu_file_info info;
-
-      if (!transcoder.validate_file_checksums(
-        mTexture->mData.data(),
-        static_cast<u32>(mTexture->mData.size()),
-        true))
-      {
-        __debugbreak();
-        return;
-      }
-
-      if (!transcoder.get_file_info(
-        mTexture->mData.data(),
-        static_cast<u32>(mTexture->mData.size()),
-        info))
-      {
-        __debugbreak();
-        return;
-      }
-
-      if (info.m_has_alpha_slices)
-      {
-        mTexture->mType = TextureLayout::Bc3_Unorm;
-      }
-
-      if (
-        1 != info.m_image_mipmap_levels.size() ||
-        1 != info.m_total_images)
-      {
-        __debugbreak();
-        return;
-      }
-
-      mTexture->mMipLevels = info.m_image_mipmap_levels[0];
-
-      basist::basisu_image_info imageInfo;
-      if (!transcoder.get_image_info(
-        mTexture->mData.data(),
-        static_cast<u32>(mTexture->mData.size()),
-        imageInfo,
-        0))
-      {
-        __debugbreak();
-        return;
-      }
-
-      auto constexpr transcoderFormat = basist::transcoder_texture_format::cTFBC3;
-      auto const textureFormat = basist::basis_get_basisu_texture_format(transcoderFormat);
-
-      basist::basisu_image_level_info levelInfo;
-
-      if (!transcoder.get_image_level_info(
-        mTexture->mData.data(),
-        static_cast<u32>(mTexture->mData.size()),
-        levelInfo,
-        0,
-        0))
-      {
-        __debugbreak();
-        return;
-      }
-
-      mTexture->mWidth = levelInfo.m_orig_width;
-      mTexture->mHeight = levelInfo.m_orig_height;
-
-      mTexture->mBytesPerBlock = basisu::get_bytes_per_block(textureFormat);
-
-      mTexture->mBlockWidth = basisu::get_block_width(textureFormat);
-      mTexture->mBlockHeight = basisu::get_block_height(textureFormat);
-
-    }
+    OPTICK_EVENT();
 
     auto device = mRenderer->mDevice;
 
@@ -234,6 +161,8 @@ namespace YTE
 
   void VkTexture::LoadToVulkan(VkGraphicsDataUpdate* aEvent)
   {
+    OPTICK_EVENT();
+
     auto update = aEvent->mCBO;
     // create a temporary upload image and fill it with pixel data. 
     // The destructor of MappedImage will put the transfer into the command buffer.
@@ -254,50 +183,24 @@ namespace YTE
       case TextureLayout::Bc3_Srgb:
       case TextureLayout::Bc3_Unorm:
       case TextureLayout::Bc7_Unorm_Opaque:
-      {
-        basist::basisu_transcoder transcoder{ GetGlobalBasisCodebook() };
-        basist::basisu_file_info info;
+      {        
+        // Adapted from: https://stackoverflow.com/questions/36138217/unable-to-create-image-from-compressed-texture-data-s3tc
+        u32 const blockSize =  mTexture->mBytesPerBlock;
+        u32 const widthBlocks = width / mTexture->mBlockWidth;
+        u32 const heightBlocks = height / mTexture->mBlockHeight;
 
-        auto transcoderFormat = basist::transcoder_texture_format::cTFBC7_M6_OPAQUE_ONLY;
+        for (u32 y = 0; y < heightBlocks; ++y)
+        {          
+          auto* rowPtr = dataWriter + y * layout.rowPitch;
 
-        if (TextureLayout::Bc3_Unorm == mTexture->mType ||
-          TextureLayout::Bc3_Srgb == mTexture->mType)
-        {
-          transcoderFormat = basist::transcoder_texture_format::cTFBC3;
-        }
+          u8 const* rowSrc = dataReader + y * basisRowPitch;
 
-        auto const textureFormat = basist::basis_get_basisu_texture_format(transcoderFormat);
-
-        auto const blocksX = (mTexture->mWidth + mTexture->mBlockWidth - 1) / mTexture->mBlockWidth;
-        auto const blocksY = (mTexture->mHeight + mTexture->mBlockHeight - 1) / mTexture->mBlockHeight;
-
-        auto const totalBlocks = blocksX * blocksY;
-
-        auto const qwordsPerBlock = basisu::get_qwords_per_block(textureFormat);
-
-        size_t const sizeInBytes = totalBlocks * qwordsPerBlock * sizeof(u64);
-
-        if (!transcoder.start_transcoding(
-          mTexture->mData.data(),
-          static_cast<u32>(mTexture->mData.size())))
-        {
-          __debugbreak();
-          return;
-        }
-
-        if (!transcoder.transcode_image_level(
-          mTexture->mData.data(),
-          static_cast<u32>(mTexture->mData.size()),
-          0,
-          0,
-          dataWriter,
-          totalBlocks,
-          transcoderFormat,
-          0,
-          static_cast<u32>(layout.rowPitch / basist::basis_get_bytes_per_block(transcoderFormat))))
-        {
-          __debugbreak();
-          return;
+          for (u32 x = 0; x < widthBlocks; ++x)
+          {
+            auto* pxDest = rowPtr + x * blockSize;
+            u8 const* pxSrc = rowSrc + x * blockSize;
+            memcpy(pxDest, pxSrc, blockSize);
+          }
         }
 
         break;

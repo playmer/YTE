@@ -62,12 +62,18 @@
 
 namespace YTE
 {
-  void InitializeYTETypes()
+  void InitializeBasis()
   {
     OPTICK_EVENT();
 
     basist::basisu_transcoder_init();
+  }
 
+  void InitializeYTETypes()
+  {
+    OPTICK_EVENT();
+
+    InitializeBasis();
 
     InitializeType<ActionManager>();
     InitializeType<Component>();

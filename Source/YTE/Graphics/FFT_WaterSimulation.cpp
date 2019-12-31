@@ -597,6 +597,13 @@ namespace YTE
     OPTICK_EVENT();
 
     auto self = mData.Get<KissFFTData>();
+    
+    auto hTildeArray = self->mH_Tilde.GetComplexArray();
+    auto tildeSlopeX = self->mH_TildeSlopeX.GetComplexArray();
+    auto tildeSlopeZ = self->mH_TildeSlopeZ.GetComplexArray();
+    
+    auto tildeDX = self->mH_TildeDX.GetComplexArray();
+    auto tildeDZ = self->mH_TildeDZ.GetComplexArray();
 
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
@@ -632,21 +639,21 @@ namespace YTE
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
-        auto &h_Tilde = self->mH_Tilde[vertex];
+        auto &h_Tilde = hTildeArray[vertex];
 
         h_Tilde = Calc_hTilde(x, z);
-        self->mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
-        self->mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
+        tildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
+        tildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
 
         if (floatNotZero(kLen))
         {
-          self->mH_TildeDX[vertex] = complex(0.0f, 0.0f);
+          tildeDX[vertex] = complex(0.0f, 0.0f);
           self->mH_TildeDZ[vertex] = complex(0.0f, 0.0f);
         }
         else
         {
-          self->mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
-          self->mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
+          tildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
+          tildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
         }
       }
     }
@@ -694,8 +701,8 @@ namespace YTE
         }
         else
         {
-          auto &hTildeDX = self->mH_TildeDX[tilde];
-          auto &hTildeDZ = self->mH_TildeDZ[tilde];
+          auto &hTildeDX = tildeDX[tilde];
+          auto &hTildeDZ = tildeDZ[tilde];
 
           // displacement update
           hTildeDX *= sign;
@@ -708,8 +715,8 @@ namespace YTE
 
 
         // normal update
-        auto &hTildeSlopeX = self->mH_TildeSlopeX[tilde];
-        auto &hTildeSlopeZ = self->mH_TildeSlopeZ[tilde];
+        auto &hTildeSlopeX = tildeSlopeX[tilde];
+        auto &hTildeSlopeZ = tildeSlopeZ[tilde];
         hTildeSlopeX *= sign;
         hTildeSlopeZ *= sign;
         computationalVertex.mNormal = glm::normalize(glm::vec3(-(hTildeSlopeX.mReal),
@@ -717,9 +724,9 @@ namespace YTE
                                                                -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, 
-                                                   complex_kfft& aH_TildeDX, 
-                                                   complex_kfft& aH_TildeDZ, 
+        auto tiling = [&vertex, &tilde, &useNoDis](WaterComputationalVertex* aVertices, 
+                                                   YTE::complex* aH_TildeDX, 
+                                                   YTE::complex* aH_TildeDZ, 
                                                    int aIndex)
         {
           auto &vertexAtIndex = aVertices[aIndex];
@@ -751,19 +758,19 @@ namespace YTE
         {
           //int index = squared(mGridSize) - 1;
           int index = mGridSize + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
         if (x == 0)
         {
           //int index = vertex + (mGridSize - 1);
           int index = vertex + mGridSize;
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
         if (z == 0)
         {
           //int index = vertex + (mGridSize * (mGridSize - 1));
           int index = vertex + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
 
 

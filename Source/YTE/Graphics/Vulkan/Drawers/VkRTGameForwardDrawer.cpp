@@ -74,12 +74,10 @@ namespace YTE
                            std::vector<VkRTGameForwardDrawer::DrawData>& aShaders)
   {
     OPTICK_EVENT();
+    auto number = std::to_string(aShaders.size());
+    OPTICK_TAG("DrawDatas:", number.c_str());
 
     {
-      auto number = std::to_string(aShaders.size());
-      
-      OPTICK_EVENT();
-      OPTICK_TAG("DrawDatas:", number.c_str());
 
       std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
       std::vector<u64> vertexBufferOffsets;

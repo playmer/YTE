@@ -8,6 +8,8 @@ add_subdirectory(stb)
 add_subdirectory(imgui)
 add_subdirectory(optick)
 
+target_compile_definitions(OptickCore PUBLIC OPTICK_ENABLE_COMPRESSION=0)
+
 
 ##########################################################################
 # Turn off/configure various parts of SDL

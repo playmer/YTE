@@ -1044,6 +1044,7 @@ namespace YTE
   Component* Composition::AddComponent(Type *aType, bool aCheckRunInEditor)
   {
     OPTICK_EVENT();
+    OPTICK_TAG("Type: ", aType->GetName().c_str());
 
     // TODO: Output this to a debug logger. If this happens in game in the editor, 
     //       it won't be currently displayed.

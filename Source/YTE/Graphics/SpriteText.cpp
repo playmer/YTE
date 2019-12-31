@@ -121,6 +121,7 @@ namespace YTE
 
   void SpriteText::AssetInitialize()
   {
+    OPTICK_EVENT();
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
     if (mTextureName.empty())
@@ -135,6 +136,7 @@ namespace YTE
 
   void SpriteText::NativeInitialize()
   {
+    OPTICK_EVENT();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 

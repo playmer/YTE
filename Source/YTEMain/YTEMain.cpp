@@ -8,16 +8,34 @@
 #include "YTEMain/YTEMain.hpp"
 
 
-int SDL_main(int aArgumentsSize, char** aArguments)
+bool InitializeSDL()
 {
+  OPTICK_EVENT();
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-    return 1;
+    return static_cast<bool>(1);
   }
 
   SDL_GameControllerEventState(SDL_QUERY);
+}
 
+void InitializeYTETypes()
+{
+  OPTICK_EVENT();
   YTE::InitializeYTETypes();
+}
+
+int SDL_main(int aArgumentsSize, char** aArguments)
+{
+  OPTICK_START_CAPTURE();
+  OPTICK_THREAD("MainThread");
+  
+  if (!InitializeSDL())
+  {
+    return 1;
+  }
+
+  InitializeYTETypes();
 
   ApplicationArguments arguments{ aArgumentsSize, aArguments };
 

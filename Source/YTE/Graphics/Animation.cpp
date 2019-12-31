@@ -188,6 +188,7 @@ namespace YTE
 
   std::vector<char> WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
   {
+    OPTICK_EVENT();
     std::string fileName = aName;
     fileName += ".YTEAnimation";
 
@@ -279,6 +280,7 @@ namespace YTE
 
   std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName)
   {
+    OPTICK_EVENT();
     AnimationData data;
     FileReader file{ aName };
 
@@ -365,6 +367,8 @@ namespace YTE
                                double aAnimationTime, 
                                AnimationData::Node const& aNode)
   {
+    OPTICK_EVENT();
+
     glm::vec3 scale;
     if (aNode.mScaleKeySize == 1)
     {
@@ -403,6 +407,8 @@ namespace YTE
                                   double aAnimationTime,
                                   AnimationData::Node const& aNode)
   {
+    OPTICK_EVENT();
+
     glm::quat rot;
 
     if (aNode.mRotationKeySize == 1)
@@ -444,6 +450,8 @@ namespace YTE
                                      double aAnimationTime,
                                      AnimationData::Node const& aNode)
   {
+    OPTICK_EVENT();
+
     glm::vec3 trans;
     if (1 == aNode.mTranslationKeySize)
     {
@@ -626,14 +634,17 @@ namespace YTE
 
   AnimationData GetAnimationData(std::string &aFile)
   {
+    OPTICK_EVENT();
     auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
 
-
-    //auto aniFileYTE = aniFile + ".YTEAnimation";
-    //
-    //auto[readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
-    //
-    //return std::move(readFile);
+    auto aniFileYTE = aniFile + ".YTEAnimation";
+    
+    if (std::filesystem::exists(aniFileYTE))
+    {
+      auto[readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
+    
+      return std::move(readFile);
+    }
 
 
     Assimp::Importer importer;
@@ -710,6 +721,7 @@ namespace YTE
     : mPlayOverTime{ true }
     , mData{ GetAnimationData(aFile) }
   {
+    OPTICK_EVENT();
     mAnimationIndex = aAnimationIndex;
 
     mName = aFile;
@@ -723,6 +735,7 @@ namespace YTE
 
   void Animation::Initialize(Model *aModel, Engine *aEngine)
   {
+    OPTICK_EVENT();
     mEngine = aEngine;
     mModel = aModel;
     mMeshSkeleton = &mModel->GetMesh()->mSkeleton;
@@ -770,6 +783,7 @@ namespace YTE
 
   void Animation::Animate()
   {
+    OPTICK_EVENT();
     glm::mat4 identity;
     ReadAnimation(mData.mNodes.front(), identity);
   }
@@ -777,12 +791,14 @@ namespace YTE
   void Animation::ReadAnimation(AnimationData::Node const& aNode, 
                                 glm::mat4 const& aParentTransform)
   {
+    OPTICK_EVENT();
     glm::mat4 nodeTransformation = mData.mTransformations[aNode.mTransformationOffset];
 
     if (aNode.mTranslationKeySize &&
         aNode.mScaleKeySize && 
         aNode.mRotationKeySize)
     {
+      OPTICK_EVENT_DYNAMIC("Animation Interpolation");
       auto numKeys = aNode.mTranslationKeySize;
     
       auto startKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
@@ -808,18 +824,22 @@ namespace YTE
     
     glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
 
-    auto name = std::string_view{ mData.mNames.data() + aNode.mNameOffset,
-                                  aNode.mNameSize };
-
-    auto bones = mMeshSkeleton->GetBones();
-    auto bone = bones->find(name);
-    if (bone != bones->end())
     {
-      uint32_t boneIndex = bone->second;
-      mMeshSkeleton->GetBoneData()[boneIndex].mFinalTransformation =
-        mMeshSkeleton->GetGlobalInverseTransform() *
-        globalTransformation *
-        mMeshSkeleton->GetBoneData()[boneIndex].mOffset;
+      OPTICK_EVENT_DYNAMIC("Looking For Bone");
+
+      auto name = std::string_view{ mData.mNames.data() + aNode.mNameOffset,
+                                    aNode.mNameSize };
+
+      auto bones = mMeshSkeleton->GetBones();
+      auto bone = bones->find(name);
+      if (bone != bones->end())
+      {
+        uint32_t boneIndex = bone->second;
+        mMeshSkeleton->GetBoneData()[boneIndex].mFinalTransformation =
+          mMeshSkeleton->GetGlobalInverseTransform() *
+          globalTransformation *
+          mMeshSkeleton->GetBoneData()[boneIndex].mOffset;
+      }
     }
     
     // visit the rest of the bone children
@@ -861,6 +881,7 @@ namespace YTE
     , mDefaultAnimation(nullptr)
     , mCurrentAnimation(nullptr)
   {
+    OPTICK_EVENT();
     mEngine = aSpace->GetEngine();
   }
 
@@ -884,6 +905,7 @@ namespace YTE
 
   void Animator::Initialize()
   {
+    OPTICK_EVENT();
     mModel = mOwner->GetComponent<Model>();
 
     for (auto it : mAnimations)
@@ -896,6 +918,7 @@ namespace YTE
 
   void Animator::Update(LogicUpdate *aEvent)
   {
+    OPTICK_EVENT();
     if (!mCurrentAnimation)
     {
       if (!mNextAnimations.empty())
@@ -954,6 +977,7 @@ namespace YTE
 
   void Animator::PlayAnimationSet(std::string aAnimation)
   {
+    OPTICK_EVENT();
     std::string initFile = aAnimation + "_Init.fbx";
     std::string loopFile = aAnimation + "_Loop.fbx";
     std::string exitFile = aAnimation + "_Exit.fbx";
@@ -965,6 +989,7 @@ namespace YTE
 
   void Animator::AddNextAnimation(std::string aAnimation)
   {
+    OPTICK_EVENT();
     auto it = mAnimations.find(aAnimation);
 
     // animation doesn't exist on this animator component
@@ -979,6 +1004,7 @@ namespace YTE
 
   void Animator::SetDefaultAnimation(std::string aAnimation)
   {
+    OPTICK_EVENT();
     auto it = mAnimations.find(aAnimation);
 
     // animation doesn't exist on this animator component
@@ -992,6 +1018,7 @@ namespace YTE
 
   void Animator::SetCurrentAnimation(std::string aAnimation)
   {
+    OPTICK_EVENT();
     auto it = mAnimations.find(aAnimation);
 
     // animation doesn't exist on this animator component
@@ -1005,11 +1032,13 @@ namespace YTE
 
   void Animator::SetCurrentPlayOverTime(bool aPlayOverTime)
   {
+    OPTICK_EVENT();
     mCurrentAnimation->SetPlayOverTime(aPlayOverTime);
   }
 
   void Animator::SetCurrentAnimTime(double aTime)
   {
+    OPTICK_EVENT();
     mCurrentAnimation->SetCurrentTime(aTime);
 
     KeyFrameChanged keyChange;
@@ -1048,6 +1077,7 @@ namespace YTE
 
   Animation* Animator::AddAnimation(std::string aName)
   {
+    OPTICK_EVENT();
     Animation* anim = InternalAddAnimation(aName);
 
     anim->Initialize(mOwner->GetComponent<Model>(), mEngine);
@@ -1062,6 +1092,7 @@ namespace YTE
 
   Animation* Animator::InternalAddAnimation(std::string aName)
   {
+    OPTICK_EVENT();
     std::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
@@ -1077,6 +1108,7 @@ namespace YTE
 
   void Animator::RemoveAnimation(Animation *aAnimation)
   {
+    OPTICK_EVENT();
     for (auto it = mAnimations.begin(); it != mAnimations.end(); ++it)
     {
       if (it->second == aAnimation)
@@ -1094,6 +1126,7 @@ namespace YTE
 
   RSValue Animator::Serializer(RSAllocator &aAllocator, Object *aOwner)
   {
+    OPTICK_EVENT();
     auto owner = static_cast<Animator*>(aOwner);
 
     RSValue animations;
@@ -1119,6 +1152,7 @@ namespace YTE
 
   void Animator::Deserializer(RSValue &aValue, Object *aOwner)
   {
+    OPTICK_EVENT();
     auto owner = static_cast<Animator*>(aOwner);
 
     for (auto valueIt = aValue.MemberBegin(); valueIt < aValue.MemberEnd(); ++valueIt)

@@ -77,6 +77,7 @@ namespace YTE
 
   protected:
     void Load(std::string const& aFile);
+    void Decode();
   };
 }
 
