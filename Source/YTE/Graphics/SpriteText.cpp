@@ -410,10 +410,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    {
-
-    }
-
       // Build the font atlas
     std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
     
@@ -467,5 +463,6 @@ namespace YTE
 
       // Set our mTextureName (used to confirm we have a texture to read into)
     mTextureName = texName;
+    mFontInfo = &fontInfo;
   }
 }
