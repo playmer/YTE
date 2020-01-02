@@ -39,6 +39,8 @@ namespace YTE
     : mType{ TextureLayout::InvalidLayout }
   {
     OPTICK_EVENT();
+    OPTICK_TAG("Texture: ", aFile);
+
     std::string f(aFile);
     Load(f);
   }
@@ -114,7 +116,6 @@ namespace YTE
 
     auto file = filePath.u8string();
     mTexture = Path::GetTexturePath(Path::GetEnginePath(), file);
-
 
     if (false == fs::exists(mTexture))
     {
@@ -213,9 +214,6 @@ namespace YTE
       mBlockHeight = basisu::get_block_height(textureFormat);
 
     }
-
-
-    // FIX
 
     switch (mType)
     {

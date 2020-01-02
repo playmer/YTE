@@ -418,6 +418,7 @@ namespace YTE
 		                                 bool aForceUpdate)
   {
     OPTICK_EVENT();
+    OPTICK_TAG("Texture: ", aName.c_str());
 
     auto meshIt = mMeshes.find(aName);
 

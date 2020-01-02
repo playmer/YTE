@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <fstream>
 
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -15,6 +14,8 @@
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Model.hpp"
+
+#include "YTE/StandardLibrary/File.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -108,70 +109,6 @@ namespace YTE
              sclp * aStart.z + sclq * end.z };
   }
 
-  struct FileWriter
-  {
-    template<typename tType>
-    static constexpr size_t GetSize()
-    {
-      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
-    }
-
-    FileWriter(std::string const& aFile)
-      : mFile{ aFile, std::ios::binary }
-    {
-      if (false == mFile.bad())
-      {
-        mOpened = true;
-      }
-    }
-
-    ~FileWriter()
-    {
-      mFile.write(mData.data(), mData.size());
-      mFile.close();
-    }
-
-    template <size_t aSize>
-    void MemoryCopy(char const* aSource, size_t aNumber = 1)
-    {
-      size_t bytesToCopy = aSize * aNumber;
-      mData.reserve(mData.size() + bytesToCopy);
-
-      for (size_t i = 0; i < bytesToCopy; ++i)
-      {
-        mData.emplace_back(*(aSource++));
-      }
-    }
-
-    template <typename tType>
-    char const* SourceCast(tType const* aSource)
-    {
-      return reinterpret_cast<char const*>(aSource);
-    }
-
-    template<typename tType>
-    void Write(tType const& aValue)
-    {
-      MemoryCopy<GetSize<tType>()>(SourceCast(&aValue));
-    }
-
-    template<typename tType>
-    void Write(tType const* aValue)
-    {
-      MemoryCopy<GetSize<tType>()>(SourceCast(aValue));
-    }
-
-    template<typename tType>
-    void Write(tType const* aValue, size_t aSize)
-    {
-      MemoryCopy<GetSize<tType>()>(SourceCast(aValue), aSize);
-    }
-
-    std::ofstream mFile;
-    std::vector<char> mData;
-    bool mOpened = false;
-  };
-
   struct AnimationFileHeader
   {
     // The "header" of the file.
@@ -222,61 +159,6 @@ namespace YTE
 
     return file.mData;
   }
-
-  struct FileReader
-  {
-    FileReader(std::string const& aFile)
-    {
-      std::ifstream file(aFile, std::ios::binary | std::ios::ate);
-      std::streamsize size = file.tellg();
-      file.seekg(0, std::ios::beg);
-
-      mData.resize(size);
-      file.read(mData.data(), size);
-      assert(false == file.bad());
-
-      if (false == file.bad())
-      {
-        mOpened = true;
-      }
-    }
-
-    template<typename tType>
-    static constexpr size_t GetSize()
-    {
-      return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
-    }
-
-    template<typename tType>
-    tType& Read()
-    {
-      auto bytesToRead = GetSize<tType>();
-
-      assert((mBytesRead + bytesToRead) <= mData.size());
-
-      auto &value = *reinterpret_cast<tType*>(mData.data() + mBytesRead);
-
-      mBytesRead += bytesToRead;
-
-      return value;
-    }
-    
-    template<typename tType>
-    void Read(tType* aBuffer, size_t aSize)
-    {
-      auto bytesToRead = GetSize<tType>() * aSize;
-      assert((mBytesRead + bytesToRead) <= mData.size());
-
-      memcpy(aBuffer, mData.data() + mBytesRead, bytesToRead);
-    
-      mBytesRead += bytesToRead;
-    }
-
-    std::vector<char> mData;
-    size_t mBytesRead = 0;
-    bool mOpened = false;
-  };
-
 
   std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName)
   {

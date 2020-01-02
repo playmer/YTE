@@ -30,26 +30,26 @@ namespace YTE
 
     Renderer(Engine *aEngine);
     virtual ~Renderer();
-    virtual void DeregisterWindowFromDraw(Window *aWindow);
-    virtual void RegisterWindowForDraw(Window *aWindow);
-    virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView,
-                                                           std::string &aMeshFile);
-    virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
-    virtual void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel);
+    YTE_Shared virtual void DeregisterWindowFromDraw(Window *aWindow);
+    YTE_Shared virtual void RegisterWindowForDraw(Window *aWindow);
+    YTE_Shared virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView,
+                                                                      std::string &aMeshFile);
+    YTE_Shared virtual std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh);
+    YTE_Shared virtual void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel);
 
-    virtual Texture* CreateTexture(std::string &aFilename, TextureType aType);
-    virtual Texture* CreateTexture(std::string aName,
-                                   std::vector<u8> aData,
-                                   TextureLayout aLayout,
-                                   u32 aWidth,
-                                   u32 aHeight,
-                                   u32 aMipLevels,
-                                   u32 aLayerCount,
-                                   TextureType aType);
+    YTE_Shared virtual Texture* CreateTexture(std::string &aFilename, TextureType aType);
+    YTE_Shared virtual Texture* CreateTexture(std::string aName,
+                                              std::vector<u8> aData,
+                                              TextureLayout aLayout,
+                                              u32 aWidth,
+                                              u32 aHeight,
+                                              u32 aMipLevels,
+                                              u32 aLayerCount,
+                                              TextureType aType);
 
-    virtual Mesh* CreateSimpleMesh(std::string const& aName,
-                                   ContiguousRange<SubmeshData> aSubmeshes,
-			                             bool aForceUpdate = false);
+    YTE_Shared virtual Mesh* CreateSimpleMesh(std::string const& aName,
+                                              ContiguousRange<SubmeshData> aSubmeshes,
+			                                        bool aForceUpdate = false);
 
     template <typename tType>
     GPUBuffer<tType> CreateUBO(
@@ -64,23 +64,23 @@ namespace YTE
                                             aProperty);
     }
 
-    virtual void SetLights(bool aOnOrOff);  // true for on, false for off
-    virtual void RegisterView(GraphicsView *aView);
-    virtual void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
-    virtual void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
-    virtual void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination);
-    virtual void DeregisterView(GraphicsView *aView);
-    virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
+    YTE_Shared virtual void SetLights(bool aOnOrOff);  // true for on, false for off
+    YTE_Shared virtual void RegisterView(GraphicsView *aView);
+    YTE_Shared virtual void RegisterView(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    YTE_Shared virtual void SetViewDrawingType(GraphicsView *aView, DrawerTypes aDrawerType, DrawerTypeCombination aCombination);
+    YTE_Shared virtual void SetViewCombinationType(GraphicsView *aView, DrawerTypeCombination aCombination);
+    YTE_Shared virtual void DeregisterView(GraphicsView *aView);
+    YTE_Shared virtual void ViewOrderChanged(GraphicsView *aView, float aNewOrder);
 
-    virtual void ResetView(GraphicsView *aView);
+    YTE_Shared virtual void ResetView(GraphicsView *aView);
 
     /////////////////////////////////
     // Assets
-    Mesh* RequestMesh(const std::string &aMeshFile);
-    Texture* RequestTexture(const std::string &aFilename);
+    YTE_Shared Mesh* RequestMesh(const std::string &aMeshFile);
+    YTE_Shared Texture* RequestTexture(const std::string &aFilename);
 
-    Mesh* GetBaseMesh(const std::string &aFilename);
-    Texture* GetBaseTexture(const std::string &aFilename);
+    YTE_Shared Mesh* GetBaseMesh(const std::string &aFilename);
+    YTE_Shared Texture* GetBaseTexture(const std::string &aFilename);
 
     /////////////////////////////////
     // Allocation

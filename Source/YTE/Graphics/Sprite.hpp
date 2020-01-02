@@ -32,6 +32,7 @@ namespace YTE
 
     void SetTexture(std::string &aTexture)
     {
+      OPTICK_EVENT();
       if (aTexture != mTextureName &&
           0 != aTexture.size())
       {

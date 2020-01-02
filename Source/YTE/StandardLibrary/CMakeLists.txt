@@ -7,6 +7,8 @@ target_sources(YTE
     ${CMAKE_CURRENT_LIST_DIR}/BlockAllocator.hpp
     ${CMAKE_CURRENT_LIST_DIR}/ConstexprString.hpp
     ${CMAKE_CURRENT_LIST_DIR}/Delegate.hpp
+    ${CMAKE_CURRENT_LIST_DIR}/File.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/File.hpp
     ${CMAKE_CURRENT_LIST_DIR}/FileSystem.hpp
     ${CMAKE_CURRENT_LIST_DIR}/FunctionDelegate.hpp
     ${CMAKE_CURRENT_LIST_DIR}/IntrusiveList.hpp

@@ -81,6 +81,7 @@ namespace YTE
     , mTimeAccumulated{ 0.0 }
     , mCurrentIndex{ 0 }
   {
+    OPTICK_EVENT();
   }
 
   Sprite::~Sprite()
@@ -90,6 +91,7 @@ namespace YTE
 
   void Sprite::AssetInitialize()
   {
+    OPTICK_EVENT();
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
     mConstructing = false;
@@ -106,6 +108,7 @@ namespace YTE
 
   void Sprite::Initialize()
   {
+    OPTICK_EVENT();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
@@ -119,6 +122,7 @@ namespace YTE
 
   void Sprite::Update(LogicUpdate *aUpdate)
   {
+    OPTICK_EVENT();
     auto delta = mSpeed / mFrames;
 
     if (mInstantiatedSprite)
