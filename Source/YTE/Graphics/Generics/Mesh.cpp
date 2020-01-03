@@ -299,7 +299,7 @@ namespace YTE
     }
   }
 
-  SubmeshData::TextureType ToYTE(aiTextureType aType)
+  static SubmeshData::TextureType ToYTE(aiTextureType aType)
   {
     switch (aType)
     {
@@ -889,7 +889,7 @@ namespace YTE
 
     mDimension = CalculateDimensions(mParts);
 
-    WriteMeshToFile(meshFile, *this);
+    //WriteMeshToFile(meshFile, *this);
   }
 
   Mesh::Mesh(Renderer* aRenderer,

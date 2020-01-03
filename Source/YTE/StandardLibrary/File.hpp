@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "YTE/Platform/TargetDefinitions.hpp"
+
 namespace YTE
 {
 
@@ -16,8 +18,8 @@ namespace YTE
       return sizeof(std::aligned_storage_t<sizeof(tType), alignof(tType)>);
     }
 
-    FileWriter(std::string const& aFile);
-    ~FileWriter();
+    YTE_Shared FileWriter(std::string const& aFile);
+    YTE_Shared ~FileWriter();
 
     template <size_t aSize>
     void MemoryCopy(char const* aSource, size_t aNumber = 1)
@@ -62,7 +64,7 @@ namespace YTE
   
   struct FileReader
   {
-    FileReader(std::string const& aFile);
+    YTE_Shared FileReader(std::string const& aFile);
 
     template<typename tType>
     static constexpr size_t GetSize()

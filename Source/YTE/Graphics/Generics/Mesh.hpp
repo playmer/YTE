@@ -27,7 +27,6 @@ namespace YTE
 {
   class Mesh;
 
-
   // vertices have the following components in them
   enum class VertexComponent
   {
@@ -402,6 +401,9 @@ namespace YTE
     Mesh(Mesh const&) = delete;
     Mesh& operator=(Mesh const&) = delete;
   };
+  
+  YTE_Shared void CalculateSubMeshDimensions(Submesh& mSubMesh);
+  YTE_Shared Dimension CalculateDimensions(std::vector<Submesh> const& mParts);
 }
 
 #endif
