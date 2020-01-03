@@ -12,6 +12,9 @@ namespace YTE
     TypeBuilder<JobSystem> builder;
   }
 
+  
+  std::thread::id JobSystem::cMainThreadId;
+  static bool gMainThreadIdSet = false;
 
   JobSystem::JobSystem(Composition * aOwner /*= nullptr*/, Space*)
     : Component(aOwner, nullptr)
@@ -19,7 +22,11 @@ namespace YTE
     , mPool()
     , mAsync(false)
   {
-    
+    if (false == gMainThreadIdSet)
+    {
+      cMainThreadId = std::this_thread::get_id();
+      gMainThreadIdSet = true;
+    }
   }
 
   JobSystem::~JobSystem()
@@ -45,8 +52,11 @@ namespace YTE
   void JobSystem::Initialize()
   {
     mOwner->RegisterEvent<&JobSystem::Update>(Events::FrameUpdate, this);
+
+    // Use hardware_concurrency for multithreaded, use 1 for single threaded.
     size_t workerCount = std::thread::hardware_concurrency();
     //size_t workerCount = 1;
+
     std::vector<Worker*> workers;
 
     for (auto i = 0; i < workerCount - 1; ++i)

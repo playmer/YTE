@@ -91,16 +91,7 @@ mat4 Animate()
 // takes the view matrix, model matrix, animation matrix, and the normal value to calculate with
 vec3 CalculateNormal(mat4 aViewMat, mat4 aModelMat, mat4 aAnimateMat, vec3 aNormal)
 {
-  return normalize(mat3(transpose(inverse(/*aViewMat */ aModelMat * aAnimateMat))) * aNormal);
-}
-
-// ======================
-// CalculateWorldPosition:
-// Calculates the position used for this vertex in world space
-// takes the model matrix, animation matrix, and the local position value to calculate with
-vec3 CalculateWorldPosition(mat4 aModelMat, mat4 aAnimateMat, vec4 aPosition)
-{
-  return vec3(aModelMat * aAnimateMat * aPosition);
+  return normalize(mat3(transpose(inverse(/*aViewMat */ aModelMat /* * aAnimateMat*/))) * aNormal);
 }
 
 // ======================
@@ -132,11 +123,8 @@ void main()
 
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
 
-  outNormal = CalculateNormal(View.mViewMatrix,
-                              Model.mModelMatrix,
-                              boneTransform, 
-                              inNormal);
-
+  outNormal = normalize(mat3(transpose(inverse(/* View.mViewMatrix * */ Model.mModelMatrix * boneTransform))) * inNormal);
+  //outNormal = normalize(mat3(transpose(inverse(/* View.mViewMatrix * */ Model.mModelMatrix /* * boneTransform*/))) * inNormal);
 
   gl_Position = View.mProjectionMatrix * outPosition;
 }

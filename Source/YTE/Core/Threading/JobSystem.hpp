@@ -17,6 +17,11 @@ namespace YTE
   public:
     YTEDeclareType(JobSystem);
 
+    // Be sure this is constructed on the main thread, otherwise things might get a bit confused.
+    // The foreground runner won't work correctly, and anything relying on MainThreadId won't,
+    // get the correct id.
+    //
+    // The first JobSystem constructed sets the cMainThreadId for the rest of the program.
     YTE_Shared JobSystem(Composition *aOwner, Space*);
     YTE_Shared ~JobSystem();
     YTE_Shared void Initialize();
@@ -39,12 +44,20 @@ namespace YTE
       QueueJobInternal(newJob);
       return JobHandle(newJob);
     }
+
+    static std::thread::id MainThreadId()
+    {
+      return cMainThreadId;
+    }
+
   private:
     void QueueJobInternal(Job* aJob);
 
     Worker::WorkerID mForegroundWorker;
     std::unordered_map<Worker::WorkerID, Worker*> mPool;
     bool mAsync;
+
+    static std::thread::id cMainThreadId;
   };
 
 }

@@ -5,6 +5,8 @@
 
 #include "YTE/Core/AssetLoader.hpp"
 
+#include "YTE/Core/Threading/JobSystem.hpp"
+
 #include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
@@ -105,6 +107,7 @@ namespace YTE
   void Texture::Load(std::string const& aFile)
   {
     OPTICK_EVENT();
+
     fs::path filePath{ aFile };
 
     auto extension = filePath.extension();
@@ -124,6 +127,11 @@ namespace YTE
 
     // TODO (Josh): mmap?
     //auto const dataToRead = ReadFileToVector(textureFile);
+    
+    if (std::this_thread::get_id() == JobSystem::MainThreadId())
+    {
+      printf("Decoding the following texture on the main thread: %s\n", mTexture.c_str());
+    }
 
     if (!read_file_to_vec(mTexture.c_str(), mData))
     {

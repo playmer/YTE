@@ -38,6 +38,7 @@ namespace YTE
     mView = mOwner->GetComponent<GraphicsView>();
     mView->SetDrawerCombinationType("AlphaBlend");
     mView->SetDrawerType("ImguiDrawer");
+
   }
 
   const char* ImguiLayer::GetClipboardTextImplementation(void *aSelf)
