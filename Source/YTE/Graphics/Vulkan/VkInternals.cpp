@@ -131,7 +131,7 @@ namespace YTE
 
     // Create a new vulkan instance using the required extensions
     {
-      OPTICK_EVENT_DYNAMIC("Creating Vulkan Instance");
+      OPTICK_EVENT("Creating Vulkan Instance");
       mInstance = vkhlf::Instance::create("Yours Truly Engine",
                                           1,
                                           enabledLayers,

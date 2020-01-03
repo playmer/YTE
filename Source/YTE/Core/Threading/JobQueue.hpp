@@ -5,7 +5,7 @@
 
 #include "YTE/Core/Threading/Job.hpp"
 
-//TODO (Evan): Replace JobQueue with circular array
+//TODO (Evelyn): Replace JobQueue with circular array
 // less locks and more performant
 namespace YTE
 {

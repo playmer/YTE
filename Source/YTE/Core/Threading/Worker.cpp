@@ -116,6 +116,8 @@ namespace YTE
 
   Job* Worker::GetJob()
   {
+    OPTICK_EVENT();
+
     Job* job = mQueue.Pop();
     if (job)
     {
@@ -123,12 +125,12 @@ namespace YTE
     }
     else if (!mCoworkers.empty())
     {
-      // TODO(Evan): make choosing the coworker to rob smarter
+      // TODO(Evelyn): make choosing the coworker to rob smarter
       int index = std::rand() % mCoworkers.size();
       return mCoworkers[index]->StealFrom();
     }
 
-    // TODO(Evan): Is this what it should do?
+    // TODO(Evelyn): Is this what it should do?
     return nullptr;
   }
 

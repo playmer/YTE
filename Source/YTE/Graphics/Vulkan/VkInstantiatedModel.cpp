@@ -20,6 +20,8 @@ namespace YTE
     , mSurface{aSurface}
     , mView{ aView }
   {
+    OPTICK_EVENT();
+
     mVkMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     mMesh = mVkMesh->mMesh;
 
@@ -39,6 +41,8 @@ namespace YTE
     , mView{ aView }
     , mVkMesh{aMesh}
   {
+    OPTICK_EVENT();
+
     mMesh = mVkMesh->mMesh;
 
     Create();
@@ -63,6 +67,8 @@ namespace YTE
 
   void VkInstantiatedModel::SurfaceGainedEvent(ViewChanged *aEvent)
   {
+    OPTICK_EVENT();
+
     mView = aEvent->View;
     mSurface = static_cast<VkRenderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
     CreateShader();
@@ -71,6 +77,8 @@ namespace YTE
 
   void VkInstantiatedModel::CreateShader()
   {
+    OPTICK_EVENT();
+
     mPipelineData.clear();
 
     // create descriptor sets
@@ -86,6 +94,8 @@ namespace YTE
 
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
+    OPTICK_EVENT();
+
     if (0 == mBuffers.size())
     {
       AddBuffer(&mView->GetViewUBO());

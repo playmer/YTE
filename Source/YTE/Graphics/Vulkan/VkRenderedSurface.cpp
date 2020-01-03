@@ -492,6 +492,8 @@ namespace YTE
 
   void VkRenderedSurface::PresentFrame()
   {
+    OPTICK_EVENT();
+
     if (mCanPresent == false)
     {
       return;
@@ -502,15 +504,22 @@ namespace YTE
 
     auto [graphicsCommandBuffer, graphicsFence] = **mRenderingCBOB;
 
-    waitOnFence(mRenderer->mDevice, { graphicsFence });
-    
-    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueueData->mQueue, mRenderCompleteSemaphore) == false)
     {
-      // create Framebuffer & Swapchain
-      WindowResize event;
-      event.height = mWindow->GetHeight();
-      event.width = mWindow->GetWidth();
-      ResizeEvent(&event);
+      OPTICK_EVENT("Waiting on rendering fence");
+      waitOnFence(mRenderer->mDevice, { graphicsFence });
+    }
+    
+    {
+      OPTICK_EVENT("Presenting");
+
+      if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueueData->mQueue, mRenderCompleteSemaphore) == false)
+      {
+        // create Framebuffer & Swapchain
+        WindowResize event;
+        event.height = mWindow->GetHeight();
+        event.width = mWindow->GetWidth();
+        ResizeEvent(&event);
+      }
     }
 
     mCanPresent = false;
@@ -611,7 +620,7 @@ namespace YTE
 
     // build secondaries
     {
-      OPTICK_EVENT_DYNAMIC("Building Secondary Command Buffers");
+      OPTICK_EVENT("Building Secondary Command Buffers");
 
       for (auto const& [view, data] : mViewData)
       {
@@ -623,7 +632,7 @@ namespace YTE
 
     // render to screen;
     {
-      OPTICK_EVENT_DYNAMIC("Building Secondary Command Buffers");
+      OPTICK_EVENT("Building Secondary Command Buffers");
 
       mRenderToScreen->RenderFull(extent);
     }
@@ -638,7 +647,7 @@ namespace YTE
     // render all first pass render targets
     // wait on present semaphore for first render
     {
-      OPTICK_EVENT_DYNAMIC("Building Primary Command Buffer");
+      OPTICK_EVENT("Building Primary Command Buffer");
 
       for (auto const&[view, data] : mViewData)
       {
@@ -692,7 +701,7 @@ namespace YTE
                              mRenderCompleteSemaphore };
 
     {
-      OPTICK_EVENT_DYNAMIC("Waiting on fences.");
+      OPTICK_EVENT("Waiting on fences.");
 
       auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
 
@@ -700,7 +709,7 @@ namespace YTE
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Submitting to the Queue");
+      OPTICK_EVENT("Submitting to the Queue");
 
       mRenderer->mGraphicsQueueData->mQueue->submit(submit, renderingFence);
     }

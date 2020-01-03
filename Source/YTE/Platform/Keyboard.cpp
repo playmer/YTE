@@ -40,6 +40,8 @@ namespace YTE
 
   void Keyboard::Update()
   {
+    OPTICK_EVENT();
+
     KeyboardEvent keyEvent;
 
     for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)

@@ -87,6 +87,11 @@ namespace YTE
     template<typename tType>
     void Read(tType* aBuffer, size_t aSize)
     {
+      if (aSize == 0)
+      {
+        return;
+      }
+
       auto bytesToRead = GetSize<tType>() * aSize;
       assert((mBytesRead + bytesToRead) <= mData.size());
 

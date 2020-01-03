@@ -44,7 +44,6 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
-  bool mHasAnimations;
 } Animation;
 
 ///////////////////////////////////////////////////////////////////////////////

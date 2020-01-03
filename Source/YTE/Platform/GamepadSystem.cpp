@@ -33,6 +33,7 @@ namespace YTE
 
   void GamepadSystem::UpdateGamepads(double aDt)
   {
+    OPTICK_EVENT();
     for (auto& [instanceId, gamepad] : mGamepads)
     {
       gamepad.Update(aDt);

@@ -22,8 +22,9 @@ namespace YTE
     YTE_Shared void Initialize();
     YTE_Shared void WaitThisThread(JobHandle& aJobHandle);
     YTE_Shared void Update(LogicUpdate *aUpdate);
+    YTE_Shared void Join();
 
-    // TODO(Evan): Finish FunctionDelegate to allow lambda support
+    // TODO(Evelyn): Finish FunctionDelegate to allow lambda support
 
     JobHandle QueueJobThisThread(std::function<Any(JobHandle&)>&& aJob)
     {

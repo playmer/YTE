@@ -1,3 +1,4 @@
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include "YTE/StandardLibrary/File.hpp"
 
 namespace YTE
@@ -20,17 +21,26 @@ namespace YTE
     
   FileReader::FileReader(std::string const& aFile)
   {
-    std::ifstream file(aFile, std::ios::binary | std::ios::ate);
-    std::streamsize size = file.tellg();
-    file.seekg(0, std::ios::beg);
-
-    mData.resize(size);
-    file.read(mData.data(), size);
-    assert(false == file.bad());
-
-    if (false == file.bad())
+    if (!std::filesystem::exists(aFile))
     {
-      mOpened = true;
+      return;
+    }
+
+    std::ifstream file(aFile, std::ios::binary | std::ios::ate);
+
+    if (file.is_open())
+    {
+      std::streamsize size = file.tellg();
+      file.seekg(0, std::ios::beg);
+
+      mData.resize(size);
+      file.read(mData.data(), size);
+      assert(false == file.bad());
+
+      if (false == file.bad())
+      {
+        mOpened = true;
+      }
     }
   }
 }

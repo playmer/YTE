@@ -11,6 +11,8 @@
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
+#include "YTE/StandardLibrary/File.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
@@ -161,7 +163,7 @@ namespace YTE
 //    mVertexErrorAdds.resize(vertCount);
 //#endif
 
-    mNumBones = 0;
+    u32 numBones = 0;
 
     auto globalInverse = aScene->mRootNode->mTransformation;
     mGlobalInverseTransform = ToGlm(globalInverse.Inverse());
@@ -173,7 +175,7 @@ namespace YTE
 
       if (0 < mesh->mNumBones)
       {
-        LoadBoneData(mesh, startingVertex);
+        LoadBoneData(numBones, mesh, startingVertex);
       }
 
       startingVertex += mesh->mNumVertices;
@@ -184,7 +186,7 @@ namespace YTE
 
 
 
-  void Skeleton::LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex)
+  void Skeleton::LoadBoneData(u32& mBonesSoFar, const aiMesh* aMesh, uint32_t aVertexStartingIndex)
   {
     OPTICK_EVENT();
     DebugObjection(aMesh->mNumBones >= BoneConstants::MaxBones,
@@ -203,8 +205,8 @@ namespace YTE
       if (boneIt == mBones.end())
       {
         // insert new bone
-        index = mNumBones;
-        ++mNumBones;
+        index = mBonesSoFar;
+        ++mBonesSoFar;
         mBones[boneName] = index;
         mBoneData.emplace_back(ToGlm(bone->mOffsetMatrix));
       }
@@ -258,16 +260,17 @@ namespace YTE
 
   void Skeleton::PreTransform(const aiScene* aScene)
   {
+    OPTICK_EVENT();
+
     // setup parent transforms
     glm::mat4 identity;
 
     // recursive step
     VisitNodes(aScene->mRootNode, identity);
 
-    mDefaultOffsets.mHasAnimation = 1;
-    for (uint32_t i = 0; i < mNumBones; ++i)
+    for (auto& [boneData, i] : enumerate(mBoneData))
     {
-      mDefaultOffsets.mBones[i] = mBoneData[i].mFinalTransformation;
+      mDefaultOffsets.mBones[i] = boneData->mFinalTransformation;
     }
   }
 
@@ -702,41 +705,6 @@ namespace YTE
     }
   }
 
-  //void Submesh::UpdateVertices(VertexData const& aVertices)
-  //{
-  //  //DebugObjection(aVertices.size() != mData.mVertexData.size(), 
-  //  //               "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-  //  //               mData.mVertexData.size(), 
-  //  //               aVertices.size());
-  //
-  //  mData.mVertexData = aVertices;
-  //
-  //  UpdateGPUVertexData();
-  //
-  //  CalculateSubMeshDimensions(*this);
-  //}
-  //
-  //void Submesh::UpdateVerticesAndIndices(VertexData const& aVertices, std::vector<u32> const& aIndices)
-  //{
-  //  //DebugObjection(aVertices.size() != mData.mVertexData.size(),
-  //  //               "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-  //  //               mData.mVertexData.size(), 
-  //  //               aVertices.size());
-  //  //
-  //  //DebugObjection(aIndices.size() != mData.mIndexData.size(),
-  //  //               "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
-  //  //               mData.mIndexData.size(), 
-  //  //               aIndices.size());
-  //
-  //  mData.mVertexData = aVertices;
-  //  mData.mIndexData = aIndices;
-  //
-  //  UpdateGPUVertexData();
-  //  mIndexBuffer.Update(mData.mIndexData);
-  //
-  //  CalculateSubMeshDimensions(*this);
-  //}
-
   void Submesh::RecalculateDimensions()
   {
     CalculateSubMeshDimensions(*this);
@@ -818,13 +786,16 @@ namespace YTE
 
   }
 
+  
+  bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh);
+  void WriteMeshToFile(std::string const& aName, Mesh const& aMesh);
+
   Mesh::Mesh(Renderer *aRenderer,
              const std::string &aFile)
     : mRenderer{aRenderer}
     , mInstanced(false)
   {
     OPTICK_EVENT();
-    Assimp::Importer Importer;
 
     std::string filename = aFile; // TODO: don't actually make a copy lol
     std::string meshFile;
@@ -854,10 +825,17 @@ namespace YTE
       }
     }
 
+    if (ReadMeshFromFile(meshFile, *this))
+    {
+      return;
+    }
+
+    Assimp::Importer Importer;
+
     aiScene const* meshScene = nullptr;
 
     {
-      OPTICK_EVENT_DYNAMIC("Importing Mesh");
+      OPTICK_EVENT("Importing Mesh");
 
       meshScene = Importer.ReadFile(meshFile.c_str(),
         aiProcess_Triangulate |
@@ -871,7 +849,7 @@ namespace YTE
       // vertices.
       if (false == Skeleton::HasBones(meshScene))
       {
-        OPTICK_EVENT_DYNAMIC("Applying aiProcess_PreTransformVertices");
+        OPTICK_EVENT("Applying aiProcess_PreTransformVertices");
 
         Importer.ApplyPostProcessing(
           //aiProcess_Triangulate |
@@ -910,6 +888,8 @@ namespace YTE
     }
 
     mDimension = CalculateDimensions(mParts);
+
+    WriteMeshToFile(meshFile, *this);
   }
 
   Mesh::Mesh(Renderer* aRenderer,
@@ -972,7 +952,7 @@ namespace YTE
     return mSkeleton.HasBones();
   }
 
-  std::vector<YTE::Submesh>& Mesh::GetSubmeshes()
+  std::vector<Submesh>& Mesh::GetSubmeshes()
   {
     return mParts;
   }
@@ -993,5 +973,280 @@ namespace YTE
     {
       submesh.ResetTextureCoordinates();
     }
+  }
+
+  struct SkeletonHeader
+  {
+    u64 mBoneDataSize;
+    u64 mVertexSkeletonDataSize;
+    u64 mBoneMappingSize;
+  };
+  
+  void WriteSkeletonToFile(std::string const& aName, Skeleton const& aSkeleton)
+  {
+    std::string fileName = aName;
+    fileName += ".YTESkeleton";
+
+    FileWriter file{ fileName };
+
+    if (file.mOpened)
+    {
+      SkeletonHeader skeletonHeader;
+        
+      skeletonHeader.mBoneMappingSize = static_cast<size_t>(aSkeleton.mBones.size());;
+      skeletonHeader.mBoneDataSize = static_cast<size_t>(aSkeleton.mBoneData.size());
+      skeletonHeader.mVertexSkeletonDataSize = static_cast<size_t>(aSkeleton.mVertexSkeletonData.size());
+
+      // The "header" of the file.
+      file.Write(skeletonHeader);
+      file.Write(aSkeleton.mGlobalInverseTransform);
+      file.Write(aSkeleton.mDefaultOffsets);
+
+      file.Write(aSkeleton.mBoneData.data(), aSkeleton.mBoneData.size());
+      file.Write(aSkeleton.mVertexSkeletonData.data(), aSkeleton.mVertexSkeletonData.size());
+
+      for (auto& [key, bone] : aSkeleton.mBones)
+      {
+        file.Write(static_cast<u64>(bone));
+        file.Write(static_cast<u64>(key.size()));
+        file.Write(key.data(), key.size());
+      }
+    }
+  }
+  
+  void ReadSkeletonFromFile(std::string const& aName, Skeleton& aSkeleton)
+  {
+    std::string fileName = aName + ".YTESkeleton";
+
+    FileReader file{ fileName };
+
+    if (file.mOpened)
+    {
+      SkeletonHeader skeletonHeader = file.Read<SkeletonHeader>();
+        
+      aSkeleton.mBoneData.resize(static_cast<size_t>(skeletonHeader.mBoneDataSize));
+      aSkeleton.mVertexSkeletonData.resize(static_cast<size_t>(skeletonHeader.mVertexSkeletonDataSize));
+
+      aSkeleton.mGlobalInverseTransform = file.Read<glm::mat4>();
+      aSkeleton.mDefaultOffsets = file.Read<UBOs::Animation>();
+
+      file.Read(aSkeleton.mBoneData.data(), aSkeleton.mBoneData.size());
+      file.Read(aSkeleton.mVertexSkeletonData.data(), aSkeleton.mVertexSkeletonData.size());
+
+      for (u64 i = 0 ; i < skeletonHeader.mBoneMappingSize; ++i)
+      {
+        auto bone = file.Read<u64>();
+        auto keySize = static_cast<size_t>(file.Read<u64>());
+
+        std::string boneName;
+        boneName.resize(keySize);
+        file.Read<>(boneName.data(), keySize);
+
+        aSkeleton.mBones.emplace(std::move(boneName), static_cast<u32>(bone));
+      }
+    }
+  }
+  
+  struct SubmeshHeader
+  {
+    u64 mNumberOfPositions;
+    u64 mNumberOfTextureCoordinates;
+    u64 mNumberOfNormals;
+    u64 mNumberOfColors;
+    u64 mNumberOfTangents;
+    u64 mNumberOfBinormals;
+    u64 mNumberOfBitangents;
+    u64 mNumberOfBoneWeights;
+    u64 mNumberOfBoneWeights2;
+    u64 mNumberOfBoneIds;
+    u64 mNumberOfBoneIds2;
+    u64 mNumberOfIndices;
+    u64 mNameSize;
+    u64 mMaterialNameSize;
+    u64 mShaderSetNameSize;
+    u64 mNumberOfTextures;
+  };
+
+  struct MeshHeader
+  {
+    u64 mNumberOfSubmeshes;
+    u64 mHasSkeleton;
+  };
+
+  struct TextureDataHeader
+  {
+    u64 mStringSize;
+    TextureViewType mViewType = TextureViewType::e2D;
+    SubmeshData::TextureType mSamplerType;
+  };
+
+  void WriteMeshToFile(std::string const& aName, Mesh const& aMesh)
+  {
+    OPTICK_EVENT();
+    std::string fileName = aName;
+    fileName += ".YTEMesh";
+
+    if (aMesh.mSkeleton.HasBones())
+    {
+      WriteSkeletonToFile(aName, aMesh.mSkeleton);
+    }
+
+    FileWriter file{ fileName };
+
+    if (file.mOpened)
+    {
+      auto& submeshes = aMesh.mParts;
+
+      MeshHeader meshHeader;
+      meshHeader.mNumberOfSubmeshes = submeshes.size();
+      meshHeader.mHasSkeleton = aMesh.mSkeleton.HasBones();
+
+      // The "header" of the file.
+      file.Write(meshHeader);
+      file.Write(aMesh.mDimension);
+
+      // Write submesh data, submesh data always starts with a submesh header.
+      for (auto& submesh : submeshes)
+      {
+        auto& submeshData = submesh.mData;
+        auto& vertexData = submeshData.mVertexData;
+
+        SubmeshHeader submeshHeader;
+        
+        submeshHeader.mNumberOfPositions = static_cast<u64>(vertexData.mPositionData.size());
+        submeshHeader.mNumberOfTextureCoordinates = static_cast<u64>(vertexData.mTextureCoordinatesData.size());
+        submeshHeader.mNumberOfNormals = static_cast<u64>(vertexData.mNormalData.size());
+        submeshHeader.mNumberOfColors = static_cast<u64>(vertexData.mColorData.size());
+        submeshHeader.mNumberOfTangents = static_cast<u64>(vertexData.mTangentData.size());
+        submeshHeader.mNumberOfBinormals = static_cast<u64>(vertexData.mBinormalData.size());
+        submeshHeader.mNumberOfBitangents = static_cast<u64>(vertexData.mBitangentData.size());
+        submeshHeader.mNumberOfBoneWeights = static_cast<u64>(vertexData.mBoneWeightsData.size());
+        submeshHeader.mNumberOfBoneWeights2 = static_cast<u64>(vertexData.mBoneWeights2Data.size());
+        submeshHeader.mNumberOfBoneIds = static_cast<u64>(vertexData.mBoneIDsData.size());
+        submeshHeader.mNumberOfBoneIds2 = static_cast<u64>(vertexData.mBoneIDs2Data.size());
+        submeshHeader.mNumberOfIndices = static_cast<u64>(submeshData.mIndexData.size());
+        
+        submeshHeader.mNameSize = submeshData.mName.size();
+        submeshHeader.mMaterialNameSize = submeshData.mMaterialName.size();
+        submeshHeader.mShaderSetNameSize = submeshData.mShaderSetName.size();
+        submeshHeader.mNumberOfTextures = submeshData.mTextureData.size();
+
+        file.Write(submeshHeader);
+
+        file.Write(submeshData.mName.data(), submeshData.mName.size());
+        file.Write(submeshData.mMaterialName.data(), submeshData.mMaterialName.size());
+        file.Write(submeshData.mShaderSetName.data(), submeshData.mShaderSetName.size());
+        
+        file.Write(vertexData.mPositionData.data(), vertexData.mPositionData.size());
+        file.Write(vertexData.mTextureCoordinatesData.data(), vertexData.mTextureCoordinatesData.size());
+        file.Write(vertexData.mNormalData.data(), vertexData.mNormalData.size());
+        file.Write(vertexData.mColorData.data(), vertexData.mColorData.size());
+        file.Write(vertexData.mTangentData.data(), vertexData.mTangentData.size());
+        file.Write(vertexData.mBinormalData.data(), vertexData.mBinormalData.size());
+        file.Write(vertexData.mBitangentData.data(), vertexData.mBitangentData.size());
+        file.Write(vertexData.mBoneWeightsData.data(), vertexData.mBoneWeightsData.size());
+        file.Write(vertexData.mBoneWeights2Data.data(), vertexData.mBoneWeights2Data.size());
+        file.Write(vertexData.mBoneIDsData.data(), vertexData.mBoneIDsData.size());
+        file.Write(vertexData.mBoneIDs2Data.data(), vertexData.mBoneIDs2Data.size());
+        file.Write(submeshData.mIndexData.data(), submeshData.mIndexData.size());
+
+        file.Write(submeshData.mUBOMaterial);
+        file.Write(submeshData.mDimension);
+
+        for (auto& texture : submeshData.mTextureData)
+        {
+          file.Write(TextureDataHeader{ texture.mName.size(), texture.mViewType, texture.mSamplerType });
+
+          file.Write(texture.mName.data(), texture.mName.size());
+        }
+      }
+    }
+  }
+
+  bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh)
+  {
+    OPTICK_EVENT();
+    std::string fileName = aName + ".YTEMesh";
+    
+    FileReader file{ fileName };
+
+    if (!file.mOpened)
+    {
+      return false;
+    }
+
+    auto meshHeader = file.Read<MeshHeader>();
+    aMesh.mDimension = file.Read<Dimension>();
+    aMesh.mParts.resize(static_cast<size_t>(meshHeader.mNumberOfSubmeshes));
+
+    for (u64 i = 0; i < meshHeader.mNumberOfSubmeshes; ++i)
+    {
+      auto& submesh = aMesh.mParts[static_cast<size_t>(i)];
+      auto& submeshData = submesh.mData;
+      auto& vertexData = submeshData.mVertexData;
+
+      auto submeshHeader = file.Read<SubmeshHeader>();
+
+      submeshData.mName.resize(submeshHeader.mNameSize);
+      submeshData.mMaterialName.resize(submeshHeader.mMaterialNameSize);
+      submeshData.mShaderSetName.resize(submeshHeader.mShaderSetNameSize);
+      vertexData.mPositionData.resize(submeshHeader.mNumberOfPositions);
+      vertexData.mTextureCoordinatesData.resize(submeshHeader.mNumberOfTextureCoordinates);
+      vertexData.mNormalData.resize(submeshHeader.mNumberOfNormals);
+      vertexData.mColorData.resize(submeshHeader.mNumberOfColors);
+      vertexData.mTangentData.resize(submeshHeader.mNumberOfTangents);
+      vertexData.mBinormalData.resize(submeshHeader.mNumberOfBinormals);
+      vertexData.mBitangentData.resize(submeshHeader.mNumberOfBitangents);
+      vertexData.mBoneWeightsData.resize(submeshHeader.mNumberOfBoneWeights);
+      vertexData.mBoneWeights2Data.resize(submeshHeader.mNumberOfBoneWeights2);
+      vertexData.mBoneIDsData.resize(submeshHeader.mNumberOfBoneIds);
+      vertexData.mBoneIDs2Data.resize(submeshHeader.mNumberOfBoneIds2);
+      submeshData.mIndexData.resize(submeshHeader.mNumberOfIndices);
+      submeshData.mTextureData.resize(submeshHeader.mNumberOfTextures);
+
+      file.Read(submeshData.mName.data(), submeshData.mName.size());
+      file.Read(submeshData.mMaterialName.data(), submeshData.mMaterialName.size());
+      file.Read(submeshData.mShaderSetName.data(), submeshData.mShaderSetName.size());
+
+      file.Read(vertexData.mPositionData.data(), vertexData.mPositionData.size());
+      file.Read(vertexData.mTextureCoordinatesData.data(), vertexData.mTextureCoordinatesData.size());
+      file.Read(vertexData.mNormalData.data(), vertexData.mNormalData.size());
+      file.Read(vertexData.mColorData.data(), vertexData.mColorData.size());
+      file.Read(vertexData.mTangentData.data(), vertexData.mTangentData.size());
+      file.Read(vertexData.mBinormalData.data(), vertexData.mBinormalData.size());
+      file.Read(vertexData.mBitangentData.data(), vertexData.mBitangentData.size());
+      file.Read(vertexData.mBoneWeightsData.data(), vertexData.mBoneWeightsData.size());
+      file.Read(vertexData.mBoneWeights2Data.data(), vertexData.mBoneWeights2Data.size());
+      file.Read(vertexData.mBoneIDsData.data(), vertexData.mBoneIDsData.size());
+      file.Read(vertexData.mBoneIDs2Data.data(), vertexData.mBoneIDs2Data.size());
+      file.Read(submeshData.mIndexData.data(), submeshData.mIndexData.size());
+
+      submeshData.mUBOMaterial =  file.Read<UBOs::Material>();
+      submeshData.mDimension = file.Read<Dimension>();
+        
+      for (auto& texture : submeshData.mTextureData)
+      {
+        auto textureDataHeader = file.Read<TextureDataHeader>();
+        texture.mSamplerType = textureDataHeader.mSamplerType;
+        texture.mViewType = textureDataHeader.mViewType;
+
+        texture.mName.resize(textureDataHeader.mStringSize);
+        file.Read(texture.mName.data(), texture.mName.size());
+      }
+
+      submeshData.mInitialTextureCoordinates = vertexData.mTextureCoordinatesData;
+        
+      submeshData.mMesh = &aMesh;
+      submesh.CreateGPUBuffers();
+      submesh.UpdateGPUVertexData();
+      submesh.mIndexBuffer.Update(submeshData.mIndexData);
+    }
+
+    if (meshHeader.mHasSkeleton)
+    {
+      ReadSkeletonFromFile(aName, aMesh.mSkeleton);
+    }
+
+    return true;
   }
 }

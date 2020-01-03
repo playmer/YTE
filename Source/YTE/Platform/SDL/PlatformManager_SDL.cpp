@@ -47,6 +47,8 @@ namespace YTE
 
   void PlatformManager::Update()
   {
+    OPTICK_EVENT();
+
     mIsUpdating = true;
 
     auto gamepadSystem = mGamepadSystem.mData.Get<GamepadSystemData>();

@@ -117,7 +117,6 @@ namespace YTE
       }
 
       glm::mat4 mBones[BoneConstants::MaxBones];
-      u32 mHasAnimation = 0;    // 0 is false, 1 is true
     };
 
 

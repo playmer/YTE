@@ -50,7 +50,7 @@ namespace YTE
   };
 
 
-  enum class TextureViewType
+  enum class TextureViewType : u32
   {
     e2D,
     eCube
@@ -115,9 +115,9 @@ namespace YTE
 
     YTE_Shared void Initialize(const aiScene* aScene);
 
-    YTE_Shared void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
+    YTE_Shared void LoadBoneData(u32& mBonesSoFar, const aiMesh* aMesh, uint32_t aVertexStartingIndex);
 
-    bool HasBones()
+    bool HasBones() const
     {
       return !mBones.empty();
     }
@@ -147,16 +147,16 @@ namespace YTE
       return &mBones;
     }
 
+    std::vector<BoneData> mBoneData;
+    std::vector<VertexSkeletonData> mVertexSkeletonData;
+    std::map<std::string, uint32_t, std::less<>> mBones;
+
+    glm::mat4 mGlobalInverseTransform;
+    UBOs::Animation mDefaultOffsets;
+
   private:
     YTE_Shared void PreTransform(const aiScene* aScene);
     YTE_Shared void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
-
-    std::map<std::string, uint32_t, std::less<>> mBones;
-    std::vector<BoneData> mBoneData;
-    uint32_t mNumBones;
-    glm::mat4 mGlobalInverseTransform;
-    std::vector<VertexSkeletonData> mVertexSkeletonData;
-    UBOs::Animation mDefaultOffsets;
     //#ifdef _DEBUG
     //    std::vector<unsigned int> mVertexErrorAdds;
     //#endif.
@@ -243,7 +243,7 @@ namespace YTE
 
   struct SubmeshData
   {
-    enum class TextureType
+    enum class TextureType : u32
     {
       Diffuse,
       Specular,
@@ -263,6 +263,7 @@ namespace YTE
 
     struct TextureData
     {
+      TextureData() = default;
       TextureData(std::string aName, TextureViewType aViewType, TextureType aSamplerType)
         : mName{ aName }
         , mViewType{ aViewType }
@@ -355,10 +356,10 @@ namespace YTE
 
     SubmeshData mData;
 
-  private:
     void UpdateGPUVertexData();
     void CreateGPUBuffers();
 
+  private:
     YTE_Shared Submesh& operator=(Submesh const& aSubmesh) = delete;
     YTE_Shared Submesh(Submesh const& aSubmesh) = delete;
   };

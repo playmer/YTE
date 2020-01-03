@@ -254,6 +254,8 @@ namespace YTE
   // Updates the Space to the current frame.
   void Engine::Update()
   {
+    OPTICK_EVENT();
+
     using namespace std::chrono;
     duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
@@ -328,6 +330,12 @@ namespace YTE
   void Engine::EndExecution()
   {
     mShouldRun = false;
+    auto jobSystem = GetComponent<JobSystem>();
+
+    if (jobSystem)
+    {
+      jobSystem->Join();
+    }
   };
 
   // Cleans up anything in the Space.

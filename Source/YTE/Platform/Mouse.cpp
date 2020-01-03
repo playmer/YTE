@@ -71,6 +71,8 @@ namespace YTE
 
   void Mouse::Update()
   {
+    OPTICK_EVENT();
+
     MouseButtonEvent mouseEvent;
     mouseEvent.WindowCoordinates = mWindowCoordinates;
     mouseEvent.ScreenCoordinates = mWindowCoordinates + mWindow->GetPosition();

@@ -91,6 +91,8 @@ namespace YTE
 
   void Gamepad::Update(double aDt)
   {
+    OPTICK_EVENT();
+
     GamepadButtonEvent event;
     constexpr auto gamepadButtons = EnumCast(GamepadButtons::Gamepad_Buttons_Number);
 

@@ -1145,7 +1145,7 @@ namespace YTE
     OPTICK_EVENT();
 
     auto parent = GetParent();
-    // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
+    // TODO (Evelyn): Figure out how we want to handle default re-parenting children of the engine
     // and default re-parenting of spaces
     if (aNewParent == nullptr && (parent == mEngine || this == mSpace))
     {

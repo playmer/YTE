@@ -4,7 +4,7 @@
 
 #include <functional>
 
-// TODO (Evan): Actually finish this class
+// TODO (Evelyn): Actually finish this class
 // Easiest way would probably be to bind a member function
 // to the delegate it inherits from
 namespace YTE

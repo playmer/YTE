@@ -229,7 +229,7 @@ namespace YTE
     }
   }
 
-  // TODO(Evan): Make this stage files to be unloaded instead of doing it right away <3
+  // TODO(Evelyn): Make this stage files to be unloaded instead of doing it right away <3
   bool AssetLoader::UnloadAsset(std::shared_ptr<Asset> aAsset)
   {
     auto &mapContainer = mAssets[EnumCast(aAsset->GetType())];

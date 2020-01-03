@@ -88,7 +88,7 @@ namespace YTE
       {
         if (lastPipeline != drawCall.mPipeline)
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindPipeline");
+          OPTICK_EVENT("CommandBuffer Recording: bindPipeline");
 
           aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
                              *drawCall.mPipeline);
@@ -98,14 +98,14 @@ namespace YTE
 
         if (lastLineWidth != drawCall.mLineWidth)
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: setLineWidth");
+          OPTICK_EVENT("CommandBuffer Recording: setLineWidth");
 
           aCBO->setLineWidth(drawCall.mLineWidth);
           lastLineWidth = drawCall.mLineWidth;
         }
 
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindVertexBuffer");
+          OPTICK_EVENT("CommandBuffer Recording: bindVertexBuffer");
           auto& vbd = *(drawCall.mVertexBufferData);
 
           if (vbd.mPositionBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
@@ -129,7 +129,7 @@ namespace YTE
         }
 
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindIndexBuffer");
+          OPTICK_EVENT("CommandBuffer Recording: bindIndexBuffer");
 
           aCBO->bindIndexBuffer(
             *drawCall.mIndexBuffer,
@@ -138,7 +138,7 @@ namespace YTE
         }
 
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: bindDescriptorSets");
+          OPTICK_EVENT("CommandBuffer Recording: bindDescriptorSets");
 
           aCBO->bindDescriptorSets(
             vk::PipelineBindPoint::eGraphics,
@@ -149,7 +149,7 @@ namespace YTE
         }
 
         {
-          OPTICK_EVENT_DYNAMIC("CommandBuffer Recording: drawIndexed");
+          OPTICK_EVENT("CommandBuffer Recording: drawIndexed");
 
           aCBO->drawIndexed(
             drawCall.mIndexCount,
@@ -312,7 +312,7 @@ namespace YTE
     // space, then sorts their z (depth). It's not perfect, but solves
     // most naive issues (UI sorting issues, most particle issues).
     {
-      OPTICK_EVENT_DYNAMIC("Sorting Alpha");
+      OPTICK_EVENT("Sorting Alpha");
 
       std::sort(mAlphaBlendShader.begin(), 
                 mAlphaBlendShader.end(), 
@@ -323,37 +323,37 @@ namespace YTE
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing Triangles");
+      OPTICK_EVENT("Drawing Triangles");
 
       RunPipelines(aCBO, mTriangles);
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing Lines");
+      OPTICK_EVENT("Drawing Lines");
 
       RunPipelines(aCBO, mLines);
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing Curves");
+      OPTICK_EVENT("Drawing Curves");
 
       RunPipelines(aCBO, mCurves);
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing ShaderNoCull");
+      OPTICK_EVENT("Drawing ShaderNoCull");
 
       RunPipelines(aCBO, mShaderNoCull);
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing AdditiveBlendShader");
+      OPTICK_EVENT("Drawing AdditiveBlendShader");
 
       RunPipelines(aCBO, mAdditiveBlendShader);
     }
 
     {
-      OPTICK_EVENT_DYNAMIC("Drawing AlphaBlendShader");
+      OPTICK_EVENT("Drawing AlphaBlendShader");
 
       RunPipelines(aCBO, mAlphaBlendShader);
     }

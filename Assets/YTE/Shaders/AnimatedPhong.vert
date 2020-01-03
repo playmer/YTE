@@ -44,7 +44,6 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
-  bool mHasAnimations;
 } Animation;
 
 
@@ -76,36 +75,14 @@ out gl_PerVertex
 // outputs a transform matrix for the shader to use with position of the vertex
 mat4 Animate()
 {
-  // Conditional is safe as all cores will following together per object
-  if (Animation.mHasAnimations)
-  {
-    mat4 boneTransform;
-    boneTransform  = Animation.mBones[inBoneIDs[0]] * inBoneWeights[0];
-    boneTransform += Animation.mBones[inBoneIDs[1]] * inBoneWeights[1];
-    boneTransform += Animation.mBones[inBoneIDs[2]] * inBoneWeights[2];
-    boneTransform += Animation.mBones[inBoneIDs2[0]] * inBoneWeights2[0];
-    boneTransform += Animation.mBones[inBoneIDs2[1]] * inBoneWeights2[1];
-    
-    return boneTransform;
-  }
-  else
-  {
-    return mat4(1.0f);
-  }
-}
-
-// ======================
-// CalculatePosition:
-// Position the vertex for the fragment shader and GPU
-// takes the projection matrix, and the view position value to calculate with
-void CalculatePosition(mat4 aProjMat, vec4 aPos)
-{
-  // Initial Position Update
-  gl_Position = aProjMat        * 
-                aPos;
-
-  // Vulkan Specific Coordinate System Fix (fixes the depth of the vertex)
-  //gl_Position.z = (gl_Position.z + gl_Position.w) / 2.0f;  
+  mat4 boneTransform;
+  boneTransform  = Animation.mBones[inBoneIDs[0]] * inBoneWeights[0];
+  boneTransform += Animation.mBones[inBoneIDs[1]] * inBoneWeights[1];
+  boneTransform += Animation.mBones[inBoneIDs[2]] * inBoneWeights[2];
+  boneTransform += Animation.mBones[inBoneIDs2[0]] * inBoneWeights2[0];
+  boneTransform += Animation.mBones[inBoneIDs2[1]] * inBoneWeights2[1];
+  
+  return boneTransform;
 }
 
 // ======================
@@ -150,7 +127,8 @@ void main()
 
   outViewMatrix = View.mViewMatrix;
 
-  outPositionWorld = CalculateWorldPosition(Model.mModelMatrix, boneTransform, vec4(inPosition, 1.0f));
+  outPositionWorld = vec3(Model.mModelMatrix * boneTransform * vec4(inPosition, 1.0f));
+  //outPositionWorld = vec3(Model.mModelMatrix * vec4(inPosition, 1.0f));
 
   outPosition = CalculateViewPosition(View.mViewMatrix, vec4(outPositionWorld, 1.0f));
 
@@ -159,6 +137,6 @@ void main()
                               boneTransform, 
                               inNormal);
 
-  CalculatePosition(View.mProjectionMatrix,
-                    outPosition);
+
+  gl_Position = View.mProjectionMatrix * outPosition;
 }

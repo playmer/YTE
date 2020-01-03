@@ -109,7 +109,7 @@ namespace YTE
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
-      OPTICK_EVENT_DYNAMIC("VkImgui CommandList Building");
+      OPTICK_EVENT("VkImgui CommandList Building");
 
       const ImDrawList* cmd_list = drawData->CmdLists[n];
 

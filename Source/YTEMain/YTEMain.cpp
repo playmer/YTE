@@ -27,8 +27,8 @@ void InitializeYTETypes()
 
 int SDL_main(int aArgumentsSize, char** aArguments)
 {
-  OPTICK_START_CAPTURE();
-  OPTICK_THREAD("MainThread");
+  //OPTICK_START_CAPTURE();
+  //OPTICK_THREAD("MainThread");
   
   if (!InitializeSDL())
   {

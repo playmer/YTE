@@ -527,6 +527,8 @@ namespace YTE
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
+    OPTICK_EVENT();
+
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
@@ -594,6 +596,7 @@ namespace YTE
     auto allocator = std::make_unique<VkGPUAllocator>(aBlockSize, this);
     auto toReturn = allocator.get();
 
+    std::unique_lock<std::shared_mutex> baseLock(mAllocatorsMutex);
     mAllocators.emplace(aAllocatorType, std::move(allocator));
 
     return toReturn;
@@ -697,6 +700,8 @@ namespace YTE
                                                                       GPUAllocation::BufferUsage aUsage, 
                                                                       GPUAllocation::MemoryProperty aProperties)
   {
+    OPTICK_EVENT();
+
     auto self = mData.Get<VkGPUAllocatorData>();
 
     auto base = std::make_unique<VkUBO>(aSize);

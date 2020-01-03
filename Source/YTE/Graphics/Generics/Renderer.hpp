@@ -86,6 +86,8 @@ namespace YTE
     // Allocation
     GPUAllocator* GetAllocator(std::string const& aAllocatorType)
     {
+      std::shared_lock<std::shared_mutex> reqLock(mAllocatorsMutex);
+
       if (auto it = mAllocators.find(aAllocatorType); it != mAllocators.end())
       {
         return it->second.get();
@@ -127,6 +129,7 @@ namespace YTE
     std::shared_mutex mBaseTexturesMutex;
 
     std::unordered_map<std::string, std::unique_ptr<GPUAllocator>> mAllocators;
+    std::shared_mutex mAllocatorsMutex;
 
     std::unordered_set<std::string> mRequests;
     JobSystem *mJobSystem;

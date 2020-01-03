@@ -185,8 +185,8 @@ namespace YTEditor
       CompositionBrowser* browser = mLevelEditor->GetWidget<CompositionBrowser>();
       auto item = browser->FindItemByComposition(mCurrentObj);
 
-      // TODO(Evan/Nick): change to setSelectedItem for drag select in future
-      // TODO(NICK): this wants an ObjectTree and I'm DISAPPOINTING IT
+      // TODO(Evelyn/Nick): change to setSelectedItem for drag select in future
+      // TODO(Nick): this wants an ObjectTree and I'm DISAPPOINTING IT
       browser->setCurrentItem(item, 0);
 
       auto model = mCurrentObj->GetComponent<YTE::Model>();

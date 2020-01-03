@@ -24,8 +24,8 @@ int YTE_Main(ApplicationArguments&)
     mainEngine.Update();
   }
 
-  OPTICK_STOP_CAPTURE();
-  OPTICK_SAVE_CAPTURE("capture.opt");
+  //OPTICK_STOP_CAPTURE();
+  //OPTICK_SAVE_CAPTURE("capture.opt");
 
   return 0;
 }

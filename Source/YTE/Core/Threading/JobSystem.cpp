@@ -24,6 +24,11 @@ namespace YTE
 
   JobSystem::~JobSystem()
   {
+    Join();
+  }
+
+  void JobSystem::Join()
+  {
     for (auto& worker : mPool)
     {
       worker.second->Join();
@@ -33,12 +38,15 @@ namespace YTE
     {
       delete worker.second;
     }
+
+    mPool.clear();
   }
 
   void JobSystem::Initialize()
   {
     mOwner->RegisterEvent<&JobSystem::Update>(Events::FrameUpdate, this);
     size_t workerCount = std::thread::hardware_concurrency();
+    //size_t workerCount = 1;
     std::vector<Worker*> workers;
 
     for (auto i = 0; i < workerCount - 1; ++i)

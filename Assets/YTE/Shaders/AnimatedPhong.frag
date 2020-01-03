@@ -429,4 +429,6 @@ void main()
     vec3 selectionColor = vec3(1.0f, 1.0f, 0.0f);
     outFragColor = vec4(mix(outFragColor.xyz, selectionColor, saturate(1.0f - luminance)), previousAlpha);
   }
+
+  //outFragColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

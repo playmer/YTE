@@ -609,7 +609,6 @@ namespace YTE
     mName = aFile;
     mCurrentAnimationTime = 0.0f;
 
-    mUBOAnimationData.mHasAnimation = true;
     mElapsedTime = 0.0;
 
     mSpeed = 1.0f;
@@ -680,7 +679,7 @@ namespace YTE
         aNode.mScaleKeySize && 
         aNode.mRotationKeySize)
     {
-      OPTICK_EVENT_DYNAMIC("Animation Interpolation");
+      OPTICK_EVENT("Animation Interpolation");
       auto numKeys = aNode.mTranslationKeySize;
     
       auto startKey = mData.mTranslationKeys[aNode.mTranslationKeyOffset + 0];
@@ -707,7 +706,7 @@ namespace YTE
     glm::mat4 globalTransformation = aParentTransform * nodeTransformation;
 
     {
-      OPTICK_EVENT_DYNAMIC("Looking For Bone");
+      OPTICK_EVENT("Looking For Bone");
 
       auto name = std::string_view{ mData.mNames.data() + aNode.mNameOffset,
                                     aNode.mNameSize };
