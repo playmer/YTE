@@ -18,7 +18,7 @@ message(YTEPlayer runtime dir: ${YTE_Binary_Dir})
 
 YTE_Source_Group(YTEPlayer_Root YTEPlayer)
 
-target_link_libraries(YTEPlayer PRIVATE YTEMain)
+target_link_libraries(YTEPlayer PRIVATE YTEMain SDL2main)
 
 #Set the working directory and startup project. 
 set_target_properties(YTEPlayer PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${YTE_Assets_Root}/Bin)

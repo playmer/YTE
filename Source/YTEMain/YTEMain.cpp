@@ -1,5 +1,6 @@
 #include "SDL.h"
 #include "SDL_vulkan.h"
+#include "SDL_main.h"
 
 #include "YTE/Core/Engine.hpp"
 
@@ -11,12 +12,18 @@
 bool InitializeSDL()
 {
   OPTICK_EVENT();
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0) {
+  //if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0) {
+  //  SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+  //  return static_cast<bool>(1);
+  //}
+
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
     return static_cast<bool>(1);
   }
 
-  SDL_GameControllerEventState(SDL_QUERY);
+  //int state = SDL_GameControllerEventState(SDL_QUERY);
+
 }
 
 void InitializeYTETypes()
@@ -25,7 +32,7 @@ void InitializeYTETypes()
   YTE::InitializeYTETypes();
 }
 
-int SDL_main(int aArgumentsSize, char** aArguments)
+int main(int aArgumentsSize, char** aArguments)
 {
   //OPTICK_START_CAPTURE();
   //OPTICK_THREAD("MainThread");
@@ -34,7 +41,7 @@ int SDL_main(int aArgumentsSize, char** aArguments)
   {
     return 1;
   }
-
+ 
   InitializeYTETypes();
 
   ApplicationArguments arguments{ aArgumentsSize, aArguments };

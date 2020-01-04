@@ -48,8 +48,8 @@ namespace YTE
 
 
     // invalid, command buffers dont do well if there are more copies being used
-    VkCBOB(VkCBOB& rhs) = delete;
-    VkCBOB& operator=(VkCBOB& rhs) = delete;
+    //VkCBOB(VkCBOB& rhs) = delete;
+    //VkCBOB& operator=(VkCBOB& rhs) = delete;
 
 
     // dtor

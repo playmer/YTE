@@ -323,7 +323,11 @@ namespace YTE
     case VertexFormat::G16B16R163Plane444UnormKHR: return vk::Format::eG16B16R163Plane444UnormKHR;
     }
 
-    __debugbreak();
+    #if YTE_Windows
+      __debugbreak();
+    #else
+      __builtin_trap();
+    #endif
 
     return vk::Format::eUndefined;
   }
@@ -336,7 +340,11 @@ namespace YTE
     case VertexInputRate::Instance: return vk::VertexInputRate::eInstance;
     };
 
-    __debugbreak();
+    #if YTE_Windows
+      __debugbreak();
+    #else
+      __builtin_trap();
+    #endif
     return {};
   }
 
@@ -359,7 +367,11 @@ namespace YTE
     case DescriptorType::AccelerationStructureNV: return vk::DescriptorType::eAccelerationStructureNV;
     };
 
-    __debugbreak();
+    #if YTE_Windows
+      __debugbreak();
+    #else
+      __builtin_trap();
+    #endif
     return {};
   }
 
@@ -386,7 +398,11 @@ namespace YTE
     case ImageLayout::DepthAttachmentStencilReadOnlyOptimalKHR: return vk::ImageLayout::eDepthAttachmentStencilReadOnlyOptimalKHR;
     }
 
-    __debugbreak();
+    #if YTE_Windows
+      __debugbreak();
+    #else
+      __builtin_trap();
+    #endif
     return vk::ImageLayout::eUndefined;
   }
 

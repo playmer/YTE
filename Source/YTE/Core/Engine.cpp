@@ -82,12 +82,18 @@ namespace YTE
 
     for (auto path : aConfigFilePath)
     {
-      auto file = GetConfigPath(path);
-
-      if (fs::exists(file))
+      try
       {
-        pathToUse = path;
-        break;
+        auto file = GetConfigPath(path);
+
+        if (fs::exists(file))
+        {
+          pathToUse = path;
+          break;
+        }
+      }
+      catch(const std::exception& e)
+      {
       }
     }
 

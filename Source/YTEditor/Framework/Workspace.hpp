@@ -177,7 +177,7 @@ bool Workspace::RemoveWidget(T* widget)
 
   for (auto it = range.first; it != range.second; ++it)
   {
-    if (it->get() == widget)
+    if (it->second.get() == widget)
     {
       mWidgets.erase(it);
       return true;
@@ -211,7 +211,7 @@ bool Workspace::RemoveToolBar(T* toolbar)
 
   for (auto it = range.first; it != range.second; ++it)
   {
-    if (it->get() == toolbar)
+    if (it->second.get() == toolbar)
     {
       mToolBars.erase(it);
       return true;

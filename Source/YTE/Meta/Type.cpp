@@ -35,7 +35,7 @@ namespace YTE
       .SetDocumentation("Unqualified size of the Type.");
   }
 
-  inline Type::~Type()
+  Type::~Type()
   {
 
   }

@@ -22,8 +22,6 @@
 #include <QEvent>
 #include <QMessageBox>
 
-#include "crunch/inc/crnlib.h"
-
 #include "stb/stb_image.h"
 
 #include "YTE/Core/Engine.hpp"

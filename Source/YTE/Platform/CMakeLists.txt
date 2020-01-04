@@ -28,15 +28,15 @@ endif()
 include(${CMAKE_CURRENT_LIST_DIR}/SDL/CMakeLists.txt)
 
 # Now add in the files per platform.
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  include(${CMAKE_CURRENT_LIST_DIR}/Win32/CMakeLists.txt)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  include(${CMAKE_CURRENT_LIST_DIR}/Linux/CMakeLists.txt)
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  set(YTE_Darwin "YTE_Darwin=1")
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "Android")
-  set(YTE_Android "YTE_Android=1")
-endif()
+#if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+#  include(${CMAKE_CURRENT_LIST_DIR}/Win32/CMakeLists.txt)
+#elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+#  include(${CMAKE_CURRENT_LIST_DIR}/Linux/CMakeLists.txt)
+#elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+#  set(YTE_Darwin "YTE_Darwin=1")
+#elseif(${CMAKE_SYSTEM_NAME} MATCHES "Android")
+#  set(YTE_Android "YTE_Android=1")
+#endif()
 
 target_sources(YTE
   PRIVATE  
