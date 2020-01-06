@@ -889,7 +889,7 @@ namespace YTE
 
     mDimension = CalculateDimensions(mParts);
 
-    //WriteMeshToFile(meshFile, *this);
+    WriteMeshToFile(meshFile, *this);
   }
 
   Mesh::Mesh(Renderer* aRenderer,

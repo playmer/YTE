@@ -30,7 +30,7 @@
 	url = https://github.com/playmer/basis_universal.git
 [submodule "Dependencies/toolwindowmanager"]
 	path = Dependencies/toolwindowmanager
-	url = https://github.com/baldurk/toolwindowmanager
+	url = https://github.com/playmer/toolwindowmanager
 [submodule "Dependencies/optick"]
 	path = Dependencies/optick
 	url = https://github.com/bombomby/optick.git

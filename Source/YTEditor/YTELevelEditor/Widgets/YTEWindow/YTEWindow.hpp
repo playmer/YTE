@@ -1,16 +1,3 @@
-/*!
-\file   GameWindow.hpp
-\author Nicholas Ammann
-\par    email: nicholas.ammann\@digipen.edu
-\par    Course: GAM 300
-\date   8/15/2017
-\brief
-The YTEWindow displaying the running game.
-
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #pragma once
 
 #include <QWidget>
@@ -35,7 +22,7 @@ namespace YTEditor
     void keyPressEvent(QKeyEvent* aEvent) override;
     void focusInEvent(QFocusEvent*) override;
     void focusOutEvent(QFocusEvent*) override;
-
+    void mouseMoveEvent(QMouseEvent* event) override;
 
     YTE::Window* mWindow;
     YTELevelEditor* mLevelEditor;

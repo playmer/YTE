@@ -1,18 +1,6 @@
-/******************************************************************************/
-/*!
-\file   YTEWindow.cpp
-\author Joshua Fisher
-\par    email: j.fisher\@digipen.edu
-\par    Course: GAM 300
-\date   8/15/2017
-\brief
-Implementation of the YTEWindow that displays the running game.
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#include <qevent.h>
-#include <qtimer.h>
-#include <qwindow.h>
+#include <QEvent>
+#include <QTimer>
+#include <QWindow>
 
 #include "YTE/Platform/TargetDefinitions.hpp"
 #include "YTE/Platform/Window.hpp"
@@ -95,6 +83,13 @@ namespace YTEditor
   void YTEWindow::focusOutEvent(QFocusEvent*)
   {
     mLevelEditor->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(nullptr);
+  }
+
+  void YTEWindow::mouseMoveEvent(QMouseEvent* event)
+  {
+    auto text = fmt::format("Window Id: {}\n", winId());
+
+    printf("%s", text.c_str());
   }
 
 }

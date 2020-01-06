@@ -60,7 +60,7 @@ namespace YTEditor
     static std::string GetName();
 
     ToolWindowManager::AreaReference GetToolArea() override;
-    ToolWindowManager::ToolWindowProperty GetToolProperties() override;
+    //ToolWindowManager::ToolWindowProperty GetToolProperties() override;
 
   private:
 

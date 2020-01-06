@@ -47,8 +47,8 @@ namespace YTE
     OPTICK_EVENT();
     std::lock_guard<std::mutex> lock(mAddingMutex);
 
-    auto bytes = std::to_string(mData.size());
-    auto size = mData.size();
+    auto const bytes = std::to_string(mData.size());
+    auto const size = mData.size();
     
     OPTICK_EVENT();
     OPTICK_TAG("Bytes to copy", bytes.c_str());
@@ -58,7 +58,7 @@ namespace YTE
       return;
     }
 
-    if ((nullptr == mMappingBuffer) || size < mMappingBuffer->getSize())
+    if ((nullptr == mMappingBuffer) || size > mMappingBuffer->getSize())
     {
       auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
     
@@ -68,6 +68,11 @@ namespace YTE
                                                         nullptr, 
                                                         vk::MemoryPropertyFlagBits::eHostVisible,
                                                         allocator);
+    }
+
+    if (size > mMappingBuffer->getSize())
+    {
+      __debugbreak();
     }
     
     void* pData = mMappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);

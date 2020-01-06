@@ -313,10 +313,10 @@ namespace YTEditor
       area
     };
 
-    toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace, 
-      ToolWindowManager::ToolWindowProperty::DisableDraggableTab | 
-      ToolWindowManager::ToolWindowProperty::DisallowFloatWindow | 
-      ToolWindowManager::ToolWindowProperty::DisallowUserDocking);
+    toolWindowManager->addToolWindow(mRunningWindowTab, areaToPlace);
+      //ToolWindowManager::ToolWindowProperty::DisableDraggableTab | 
+      //ToolWindowManager::ToolWindowProperty::DisallowFloatWindow | 
+      //ToolWindowManager::ToolWindowProperty::DisallowUserDocking);
 
     mRunningWindow->mWindow = window;
     window->mShouldBeRenderedTo = true;
@@ -380,8 +380,12 @@ namespace YTEditor
       mRunningEngine->RemoveWindow(underlyingWindow);
     }
 
-    mRunningWindowTab = nullptr;
-    mRunningWindow = nullptr;
+    if (mRunningWindow == aWindow)
+    {
+      mRunningWindowTab = nullptr;
+      mRunningWindow = nullptr;
+    }
+
     mRunningSpace = nullptr;
   }
 
@@ -498,9 +502,9 @@ namespace YTEditor
     //
     // Note: The Play Game window and materials window have the same limitation, if you fix this, fix those too.
     mainWindow->GetToolWindowManager()->addToolWindow(
-      mLevelWindowWidget, 
-      ToolWindowManager::EmptySpace,
-      ToolWindowManager::ToolWindowProperty::HideCloseButton// |
+      mLevelWindowWidget,
+      ToolWindowManager::EmptySpace
+      //ToolWindowManager::ToolWindowProperty::HideCloseButton// |
       //ToolWindowManager::ToolWindowProperty::DisableDraggableTab | 
       //ToolWindowManager::ToolWindowProperty::DisallowFloatWindow | 
       //ToolWindowManager::ToolWindowProperty::DisallowUserDocking

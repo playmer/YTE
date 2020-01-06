@@ -18,15 +18,6 @@ namespace fs = std::filesystem;
 
 namespace YTE
 {
-  static basist::etc1_global_selector_codebook const* GetGlobalBasisCodebook()
-  {
-    using namespace basist;
-    static basist::etc1_global_selector_codebook codebook(g_global_selector_cb_size, g_global_selector_cb);
-
-    return &codebook;
-  }
-
-
   YTEDefineType(VkTexture)
   {
     RegisterType<VkTexture>();

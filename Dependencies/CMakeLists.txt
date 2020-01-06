@@ -55,12 +55,13 @@ add_subdirectory(toolwindowmanager)
 
 ##########################################################################
 # Turn off/configure various parts of basis_universal.
-option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
-option(BUILD_TESTS "Build test applications" OFF)
-option(BASISU_BUILD_TOOL "Build the tool" OFF)
-option(BASISU_INSTALL "Installs basis universal" OFF)
-option(BASISU_INSTALL_TOOL "Installs the tool" OFF)
-option(BASISU_OPENMP "Allows OpenMP support" OFF)
+#option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
+#option(BUILD_TESTS "Build test applications" OFF)
+#option(BASISU_BUILD_TOOL "Build the tool" OFF)
+#option(BASISU_INSTALL "Installs basis universal" OFF)
+#option(BASISU_INSTALL_TOOL "Installs the tool" OFF)
+#option(BASISU_OPENMP "Allows OpenMP support" OFF)
+option(BASISU_NO_ITERATOR_DEBUG_LEVEL "We don't want basisu to change the iterator debug level" TRUE)
 
 add_subdirectory(basis_universal)
 
