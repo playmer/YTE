@@ -5,6 +5,8 @@
 
 #include <sstream>
 
+#include "YTE/StandardLibrary/TypeTraits.hpp"
+
 namespace YTE
 {
   ///////////////////////////////
@@ -21,7 +23,7 @@ namespace YTE
       std::string hex = aValue->GetString();
 
       unsigned int x = std::stoul(hex, nullptr, 16);
-      return *reinterpret_cast<float*>(&x);
+      return bit_cast<float>(x);
     }
 
     return 0.0f;
@@ -38,7 +40,7 @@ namespace YTE
       std::string hex = aValue->GetString();
 
       unsigned long long x = std::stoull(hex, nullptr, 16);
-      return *reinterpret_cast<double*>(&x);
+      return bit_cast<double>(x);
     }
 
     return 0.0f;
