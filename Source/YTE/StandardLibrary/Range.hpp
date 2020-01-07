@@ -63,7 +63,7 @@ namespace YTE
     tType& at(size_t aIndex) { return *(mBegin + aIndex); }
     tType const& at(size_t aIndex) const { return *(mBegin + aIndex); }
 
-    typename size_t size() const { return mEnd - mBegin; }
+    size_t size() const { return mEnd - mBegin; }
   protected:
     tType* mBegin;
     tType* mEnd;

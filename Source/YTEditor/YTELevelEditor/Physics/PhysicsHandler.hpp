@@ -1,6 +1,7 @@
 #pragma once
 
 #include "btBulletDynamicsCommon.h"
+#include "BulletCollision/CollisionDispatch/btGhostObject.h"
 
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Composition.hpp"

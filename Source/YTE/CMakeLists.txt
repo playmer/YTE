@@ -49,7 +49,6 @@ target_link_libraries(YTE
     BulletInverseDynamics
     BulletSoftBody
     LinearMath
-    crn
     fmt
     glm
     imgui
@@ -94,7 +93,11 @@ endif()
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
   target_compile_options(YTE PRIVATE 
     PUBLIC
-      /std:c++17
+      -std=c++17
+      -W0
+      -Wno-everything
+      #-Wno-inconsistent-missing-override
+      #-Wno-unsequenced
   )
 endif()
 

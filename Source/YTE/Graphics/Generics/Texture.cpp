@@ -135,7 +135,11 @@ namespace YTE
 
     if (!read_file_to_vec(mTexture.c_str(), mData))
     {
-      __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
       return;
     }
 
@@ -158,7 +162,11 @@ namespace YTE
         static_cast<u32>(mData.size()),
         true))
       {
+      #if YTE_Windows
         __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
@@ -167,7 +175,11 @@ namespace YTE
         static_cast<u32>(mData.size()),
         info))
       {
+      #if YTE_Windows
         __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
@@ -180,7 +192,11 @@ namespace YTE
         1 != info.m_image_mipmap_levels.size() ||
         1 != info.m_total_images)
       {
+      #if YTE_Windows
         __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
@@ -193,7 +209,11 @@ namespace YTE
         imageInfo,
         0))
       {
+      #if YTE_Windows
         __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
@@ -209,7 +229,11 @@ namespace YTE
         0,
         0))
       {
+      #if YTE_Windows
         __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
@@ -266,7 +290,11 @@ namespace YTE
           mData.data(),
           static_cast<u32>(mData.size())))
         {
-          __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
           return;
         }
 
@@ -281,7 +309,11 @@ namespace YTE
           0,
           0/*static_cast<u32>(layout.rowPitch / basist::basis_get_bytes_per_block(transcoderFormat))*/))
         {
-          __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
           return;
         }
 

@@ -1,5 +1,6 @@
 #include "SDL.h"
 #include "SDL_vulkan.h"
+#include "SDL_main.h"
 
 #include "YTE/Core/Engine.hpp"
 
@@ -26,7 +27,7 @@ void InitializeYTETypes()
   YTE::InitializeYTETypes();
 }
 
-int SDL_main(int aArgumentsSize, char** aArguments)
+int main(int aArgumentsSize, char** aArguments)
 {
   //OPTICK_START_CAPTURE();
   //OPTICK_THREAD("MainThread");
@@ -35,7 +36,7 @@ int SDL_main(int aArgumentsSize, char** aArguments)
   {
     return 1;
   }
-
+ 
   InitializeYTETypes();
 
   ApplicationArguments arguments{ aArgumentsSize, aArguments };

@@ -60,7 +60,6 @@ namespace YTE
       new (data) tType(aValue);
     }
 
-    template <>
     explicit Any(Any& aValue)
     {
       mType = TypeId<Any>();
@@ -96,12 +95,12 @@ namespace YTE
       aType->GetCopyConstructor()(object, data);
     }
 
-    Any(void* object, Type* type, bool)
-    {
-      mType = type;
-      byte* data = AllocateData(type->GetStoredSize());
-      type->GetCopyConstructor()(object, data);
-    }
+    //Any(void* object, Type* type, bool)
+    //{
+    //  mType = type;
+    //  byte* data = AllocateData(type->GetStoredSize());
+    //  type->GetCopyConstructor()(object, data);
+    //}
 
     ////////////////////////////////////////////////////////////
     // Moves

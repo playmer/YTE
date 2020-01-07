@@ -1,6 +1,3 @@
-
-
-add_subdirectory(crunch)
 add_subdirectory(fmt)
 add_subdirectory(kiss_fft)
 #add_subdirectory(LuaJIT)
@@ -8,7 +5,7 @@ add_subdirectory(stb)
 add_subdirectory(imgui)
 add_subdirectory(optick)
 
-target_compile_definitions(OptickCore PUBLIC OPTICK_ENABLE_COMPRESSION=0)
+#target_compile_definitions(OptickCore PUBLIC OPTICK_ENABLE_COMPRESSION=0)
 
 
 ##########################################################################
@@ -20,7 +17,7 @@ option(SDL_SHARED_ENABLED_BY_DEFAULT "We need the SDL dll" ON)
 # https://developercommunity.visualstudio.com/content/problem/711317/unexpected-implicit-memset-in-release-optimized-bu.html
 #
 # Note that despite these being resolved at time of this commit, this issue is not actually resolved,
-option(LIBC "A bug in I guess MSVC causes us to need to use LIBC with SDL." ON)
+#option(LIBC "A bug in I guess MSVC causes us to need to use LIBC with SDL." ON)
 add_subdirectory(SDL)
 
 ##########################################################################
@@ -162,7 +159,6 @@ target_compile_options(BulletDynamics        PRIVATE ${disableWarning})
 target_compile_options(BulletInverseDynamics PRIVATE ${disableWarning})
 target_compile_options(BulletSoftBody        PRIVATE ${disableWarning})
 target_compile_options(LinearMath            PRIVATE ${disableWarning})
-target_compile_options(crn                   PRIVATE ${disableWarning})
 target_compile_options(imgui                 PRIVATE ${disableWarning})
 target_compile_options(fmt                   PRIVATE ${disableWarning})
 target_compile_options(STB                   PRIVATE ${disableWarning})
@@ -194,7 +190,6 @@ set_target_properties(
   BulletInverseDynamics
   BulletSoftBody
   LinearMath
-  crn
   fmt
   imgui
   KissFFT

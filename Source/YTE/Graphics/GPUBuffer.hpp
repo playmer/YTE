@@ -118,7 +118,6 @@ namespace YTE
 
     }
 
-    template <typename tType>
     GPUBufferRef(GPUBuffer<tType>& aBuffer)
       : mBuffer{ &(aBuffer.GetBase()) }
     {

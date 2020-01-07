@@ -36,8 +36,6 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <QEvent>
 #include <QMessageBox>
 
-#include "crunch/inc/crnlib.h"
-
 #include "stb/stb_image.h"
 
 #include "BulletCollision/CollisionDispatch/btGhostObject.h"

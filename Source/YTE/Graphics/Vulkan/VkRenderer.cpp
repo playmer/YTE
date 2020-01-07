@@ -514,7 +514,11 @@ namespace YTE
 
     if (mDataUpdateRequired)
     {
-      __debugbreak();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
       //GraphicsDataUpdate(aEvent);
     }
 

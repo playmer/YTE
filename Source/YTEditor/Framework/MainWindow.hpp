@@ -46,21 +46,21 @@ namespace YTEditor
       * Returns true if an instance is unloaded
       * Returns false if no instance of given type is found
       */
-      template <typename T>
-      bool UnloadWorkspace(T* workspace)
-      {
-        static_assert(std::is_base_of_v<Workspace, T>, "The type passed to UnloadWorkspace must be derived from Workspace.");
-
-        auto it = mWorkspaces.find(std::type_index(typeid(T)));
-
-        if (it != mWorkspaces.end())
-        {
-          it->second->Shutdown();
-          mWorkspaces.erase(it);
-          return true;
-        }
-        return false;
-      }
+      //template <typename T>
+      //bool UnloadWorkspace(T* workspace)
+      //{
+      //  static_assert(std::is_base_of_v<Workspace, T>, "The type passed to UnloadWorkspace must be derived from Workspace.");
+      //
+      //  auto it = mWorkspaces.find(std::type_index(typeid(T)));
+      //
+      //  if (it != mWorkspaces.end())
+      //  {
+      //    it->second->Shutdown();
+      //    mWorkspaces.erase(it);
+      //    return true;
+      //  }
+      //  return false;
+      //}
 
       template <typename T>
       T* GetWorkspace()
