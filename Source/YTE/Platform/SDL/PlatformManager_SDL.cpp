@@ -159,6 +159,8 @@ namespace YTE
         case SDL_CONTROLLERBUTTONUP:
         {
           auto buttonEvent = event.cbutton;
+          
+          printf("Event: %d, Button: %d\n", event.type, buttonEvent.button);
 
           if (auto it = mGamepadSystem.mGamepads.find(buttonEvent.which); 
               it != mGamepadSystem.mGamepads.end())

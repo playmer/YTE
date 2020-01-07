@@ -340,7 +340,7 @@ namespace YTEditor
     YTE::LogicUpdate update;
     update.Dt = 0.0f;
     YTE::InitializeEvent event;
-    mRunningSpace->Initialize(&event);
+    //mRunningSpace->Initialize(&event);
     mRunningSpace->Update(&update);
   }
 

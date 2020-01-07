@@ -84,12 +84,4 @@ namespace YTEditor
   {
     mLevelEditor->GetRunningEngine()->GetPlatformManager()->SetKeyboardFocusedWindow(nullptr);
   }
-
-  void YTEWindow::mouseMoveEvent(QMouseEvent* event)
-  {
-    auto text = fmt::format("Window Id: {}\n", winId());
-
-    printf("%s", text.c_str());
-  }
-
 }

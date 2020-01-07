@@ -15,7 +15,8 @@ bool InitializeSDL()
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
     return static_cast<bool>(1);
   }
-
+  
+  SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
   SDL_GameControllerEventState(SDL_QUERY);
 }
 

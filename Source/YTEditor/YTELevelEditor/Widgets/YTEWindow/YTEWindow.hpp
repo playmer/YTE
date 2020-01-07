@@ -22,7 +22,6 @@ namespace YTEditor
     void keyPressEvent(QKeyEvent* aEvent) override;
     void focusInEvent(QFocusEvent*) override;
     void focusOutEvent(QFocusEvent*) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
 
     YTE::Window* mWindow;
     YTELevelEditor* mLevelEditor;
