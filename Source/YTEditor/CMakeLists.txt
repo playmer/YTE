@@ -40,7 +40,8 @@ YTE_Target_Set_LTCG(YTEditor)
 
 target_link_libraries(YTEditor 
   PUBLIC 
-    YTEMain 
+    YTEMain
+    YTETools
     Qt5::Widgets 
     toolwindowmanager 
     assimp

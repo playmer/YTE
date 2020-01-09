@@ -1,23 +1,22 @@
 target_sources(YTE
   PRIVATE
-#  PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/Unicode/UTF8.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Any.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Array.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/BlockAllocator.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/ConstexprString.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Delegate.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/File.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/File.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/FileSystem.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/FunctionDelegate.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/IntrusiveList.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Iterator.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Multiset.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/OrderedMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/OrderedMultiMap.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/PrivateImplementation.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Range.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/TypeTraits.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Utilities.hpp
+    Unicode/UTF8.cpp
+    Any.hpp
+    Array.hpp
+    BlockAllocator.hpp
+    ConstexprString.hpp
+    Delegate.hpp
+    File.cpp
+    File.hpp
+    FileSystem.hpp
+    FunctionDelegate.hpp
+    IntrusiveList.hpp
+    Iterator.hpp
+    Multiset.hpp
+    OrderedMap.hpp
+    OrderedMultiMap.hpp
+    PrivateImplementation.hpp
+    Range.hpp
+    TypeTraits.hpp
+    Utilities.hpp
 )

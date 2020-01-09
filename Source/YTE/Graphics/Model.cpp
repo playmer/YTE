@@ -138,8 +138,6 @@ namespace YTE
     mRenderer->RequestMesh(mMeshName);
   }
 
-
-
   void Model::NativeInitialize()
   {
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
@@ -152,8 +150,6 @@ namespace YTE
     Create();
   }
 
-
-
   void Model::Reload()
   {
     if (mConstructing)
@@ -163,22 +159,6 @@ namespace YTE
     Destroy();
     Create();
   }
-
-
-
-  bool Model::CanAnimate()
-  {
-    if (mInstantiatedModel)
-    {
-      return mInstantiatedModel->GetMesh()->CanAnimate();
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
 
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
@@ -192,8 +172,6 @@ namespace YTE
       mInstantiatedModel->UpdateUBOModel(mUBOModel);
     }
   }
-
-
 
   void Model::SetMesh(std::string &aName)
   {
@@ -226,8 +204,6 @@ namespace YTE
       Create();
     }
   }
-
-
 
   void Model::SetShading(std::string const &aName)
   {
@@ -276,9 +252,6 @@ namespace YTE
     }
   }
 
-
-
-
   Mesh* Model::GetMesh()
   {
     if (mInstantiatedModel)
@@ -288,8 +261,6 @@ namespace YTE
 
     return nullptr;
   }
-
-
 
   void Model::Create()
   {

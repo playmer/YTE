@@ -16,13 +16,6 @@
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
-// forward declarations for assimp
-struct aiScene;
-struct aiMesh;
-struct aiNode;
-
-
-
 namespace YTE
 {
   class Mesh;
@@ -109,13 +102,6 @@ namespace YTE
       }
     };
 
-
-    static YTE_Shared bool HasBones(const aiScene* aScene);
-
-    YTE_Shared void Initialize(const aiScene* aScene);
-
-    YTE_Shared void LoadBoneData(u32& mBonesSoFar, const aiMesh* aMesh, uint32_t aVertexStartingIndex);
-
     bool HasBones() const
     {
       return !mBones.empty();
@@ -154,8 +140,6 @@ namespace YTE
     UBOs::Animation mDefaultOffsets;
 
   private:
-    YTE_Shared void PreTransform(const aiScene* aScene);
-    YTE_Shared void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
     //#ifdef _DEBUG
     //    std::vector<unsigned int> mVertexErrorAdds;
     //#endif.
@@ -301,14 +285,6 @@ namespace YTE
   {
   public:
     YTE_Shared Submesh() = default;
-
-    YTE_Shared Submesh(Renderer* aRenderer,
-                       Mesh* aYTEMesh,
-                       aiScene const* aScene,
-                       aiMesh const* aMesh,
-                       Skeleton* aSkeleton,
-                       uint32_t aBoneStartingVertexOffset);
-
     YTE_Shared Submesh(SubmeshData&& aSubmesh);
     YTE_Shared Submesh(Submesh&& aSubmesh);
     YTE_Shared Submesh& operator=(Submesh&& aSubmesh);
@@ -402,6 +378,51 @@ namespace YTE
     Mesh& operator=(Mesh const&) = delete;
   };
   
+  /////////////////////////////////
+  // File Headers
+  /////////////////////////////////
+  struct SkeletonHeader
+  {
+    YTE::u64 mBoneDataSize;
+    YTE::u64 mVertexSkeletonDataSize;
+    YTE::u64 mBoneMappingSize;
+  };
+
+  struct SubmeshHeader
+  {
+    YTE::u64 mNumberOfPositions;
+    YTE::u64 mNumberOfTextureCoordinates;
+    YTE::u64 mNumberOfNormals;
+    YTE::u64 mNumberOfColors;
+    YTE::u64 mNumberOfTangents;
+    YTE::u64 mNumberOfBinormals;
+    YTE::u64 mNumberOfBitangents;
+    YTE::u64 mNumberOfBoneWeights;
+    YTE::u64 mNumberOfBoneWeights2;
+    YTE::u64 mNumberOfBoneIds;
+    YTE::u64 mNumberOfBoneIds2;
+    YTE::u64 mNumberOfIndices;
+    YTE::u64 mNameSize;
+    YTE::u64 mMaterialNameSize;
+    YTE::u64 mShaderSetNameSize;
+    YTE::u64 mNumberOfTextures;
+  };
+
+  struct MeshHeader
+  {
+    YTE::u64 mNumberOfSubmeshes;
+    YTE::u64 mHasSkeleton;
+  };
+
+  struct TextureDataHeader
+  {
+    YTE::u64 mStringSize;
+    YTE::TextureViewType mViewType = YTE::TextureViewType::e2D;
+    YTE::SubmeshData::TextureType mSamplerType;
+  };
+  
+  YTE_Shared void ReadSkeletonFromFile(std::string const& aName, Skeleton& aSkeleton);
+  YTE_Shared bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh);
   YTE_Shared void CalculateSubMeshDimensions(Submesh& mSubMesh);
   YTE_Shared Dimension CalculateDimensions(std::vector<Submesh> const& mParts);
 }

@@ -1,16 +1,15 @@
-add_library(YTE SHARED "")
+add_library(YTE SHARED)
 
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
-include(Core/CMakeLists.txt)
-include(Graphics/CMakeLists.txt)
-include(Physics/CMakeLists.txt)
-include(Math/CMakeLists.txt)
-include(Meta/CMakeLists.txt)
-include(Platform/CMakeLists.txt)
-include(StandardLibrary/CMakeLists.txt)
-include(Utilities/CMakeLists.txt)
-#include(WWise/CMakeLists.txt)
+add_subdirectory(Core)
+add_subdirectory(Graphics)
+add_subdirectory(Physics)
+add_subdirectory(Math)
+add_subdirectory(Meta)
+add_subdirectory(Platform)
+add_subdirectory(StandardLibrary)
+add_subdirectory(Utilities)
 
 target_include_directories(YTE 
   PUBLIC
@@ -19,7 +18,6 @@ target_include_directories(YTE
     ${Dependencies_Root}/assimp/contrib/rapidjson/include
     ${Dependencies_Root}/basis_universal/src
     ${Dependencies_Root}/bullet3/src
-    #${Dependencies_Root}/glm
     ${Source_Root}
     ${ParentDirectory}
 )
@@ -57,7 +55,6 @@ target_link_libraries(YTE
     assimp
     glslang
     KissFFT
-    #LuaJIT
     STB
 ) 
 
@@ -80,8 +77,8 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
       -permissive- 
       -std:c++17 
       -MP
-      -wd4127 # Abseil, expression is constant
-      -wd4324 # Abseil, structure was padded for alignment
+      #-wd4127 # Abseil, expression is constant
+      #-wd4324 # Abseil, structure was padded for alignment
     PRIVATE
       -WX- 
       -W4
@@ -100,13 +97,6 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
       #-Wno-unsequenced
   )
 endif()
-
-target_compile_definitions(YTE PUBLIC ${YTE_Windows})
-target_compile_definitions(YTE PUBLIC ${YTE_Linux})
-target_compile_definitions(YTE PUBLIC ${YTE_Darwin})
-target_compile_definitions(YTE PUBLIC ${YTE_Android})
-target_compile_definitions(YTE PUBLIC ${YTE_x64})
-target_compile_definitions(YTE PUBLIC ${YTE_x86})
 
 target_compile_definitions(YTE PUBLIC _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_ENGINE_CONFIG="../../../../../Assets/Bin/Config">)

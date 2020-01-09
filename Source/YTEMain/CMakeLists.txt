@@ -1,9 +1,4 @@
-################################################################################
-## This source file is a part of YTEMain.
-## Legal  : All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-## Author : Joshua T. Fisher
-################################################################################
-add_library(YTEMain STATIC "")
+add_library(YTEMain STATIC)
 
 target_sources(YTEMain 
   PRIVATE
@@ -27,3 +22,4 @@ YTE_Source_Group(YTEMain_Root YTEMain)
 YTE_Target_Set_LTCG(YTEMain)
 
 target_link_libraries(YTEMain PUBLIC YTE SDL2main SDL2)
+

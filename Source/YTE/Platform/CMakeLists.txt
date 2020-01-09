@@ -16,6 +16,11 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Android")
   set(YTE_Android "YTE_Android=1")
 endif()
 
+target_compile_definitions(YTE PUBLIC ${YTE_Windows})
+target_compile_definitions(YTE PUBLIC ${YTE_Linux})
+target_compile_definitions(YTE PUBLIC ${YTE_Darwin})
+target_compile_definitions(YTE PUBLIC ${YTE_Android})
+
 # This might fail on Apple, but also maybe not? Not sure they have any 
 # x86 bit targets left
 if (CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -24,14 +29,16 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(YTE_x64 YTE_x64=1)
 endif()
 
+target_compile_definitions(YTE PUBLIC ${YTE_x64})
+target_compile_definitions(YTE PUBLIC ${YTE_x86})
 
-include(${CMAKE_CURRENT_LIST_DIR}/SDL/CMakeLists.txt)
+add_subdirectory(SDL)
 
 # Now add in the files per platform.
 #if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-#  include(${CMAKE_CURRENT_LIST_DIR}/Win32/CMakeLists.txt)
+#  add_subdirectory(Win32)
 #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-#  include(${CMAKE_CURRENT_LIST_DIR}/Linux/CMakeLists.txt)
+#  add_subdirectory(Linux)
 #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 #  set(YTE_Darwin "YTE_Darwin=1")
 #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Android")
@@ -40,21 +47,21 @@ include(${CMAKE_CURRENT_LIST_DIR}/SDL/CMakeLists.txt)
 
 target_sources(YTE
   PRIVATE  
-    ${CMAKE_CURRENT_LIST_DIR}/DeviceEnums.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/DeviceEnums.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/DialogBox.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Gamepad.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Gamepad.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/GamepadSystem.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/GamepadSystem.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Keyboard.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Keyboard.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Mouse.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Mouse.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/PlatformManager.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/SharedObject.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/TargetDefinitions.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Window.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Window.hpp
+    DeviceEnums.cpp
+    DeviceEnums.hpp
+    DialogBox.hpp
+    ForwardDeclarations.hpp
+    Gamepad.cpp
+    Gamepad.hpp
+    GamepadSystem.cpp
+    GamepadSystem.hpp
+    Keyboard.cpp
+    Keyboard.hpp
+    Mouse.cpp
+    Mouse.hpp
+    PlatformManager.hpp
+    SharedObject.hpp
+    TargetDefinitions.hpp
+    Window.cpp
+    Window.hpp
 )

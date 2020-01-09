@@ -1,14 +1,14 @@
 target_sources(YTE
   PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/ForwardDeclarations.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/InstantiatedModel.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Mesh.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Mesh.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Renderer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Renderer.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Shader.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Shader.hpp
-    ${CMAKE_CURRENT_LIST_DIR}/Texture.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/Texture.hpp
+    ForwardDeclarations.hpp
+    InstantiatedModel.cpp
+    InstantiatedModel.hpp
+    Mesh.cpp
+    Mesh.hpp
+    Renderer.cpp
+    Renderer.hpp
+    Shader.cpp
+    Shader.hpp
+    Texture.cpp
+    Texture.hpp
 )
