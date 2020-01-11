@@ -16,14 +16,14 @@ cd lambplanet
 mkdir build
 ```
     
-2.) Installing CMake 3.10:
+2.) Installing CMake 3.16.1:
   * On Windows:
 ```
 1.) https://cmake.org/download/
 2.) Select the appropriate installer for your device (version doesn't matter as long as it's at least 3.10)
 ```
 
-3.) Installing Qt 5.9.0
+3.) Installing Qt 5.14.0
 ```
 1.) https://info.qt.io/download-qt-for-application-development
 2.) When prompted for install directory, choose wherever you like. I will reference this location as `install_dir`
