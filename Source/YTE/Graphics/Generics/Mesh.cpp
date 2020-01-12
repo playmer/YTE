@@ -1,9 +1,3 @@
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"

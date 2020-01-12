@@ -14,10 +14,9 @@ add_subdirectory(Utilities)
 target_include_directories(YTE 
   PUBLIC
     ${Dependencies_Root}
-    ${Dependencies_Root}/assimp/include
-    ${Dependencies_Root}/assimp/contrib/rapidjson/include
     ${Dependencies_Root}/basis_universal/src
     ${Dependencies_Root}/bullet3/src
+    ${Dependencies_Root}/rapidjson/include
     ${Source_Root}
     ${ParentDirectory}
 )
@@ -52,7 +51,6 @@ target_link_libraries(YTE
     imgui
     VkHLF
   PRIVATE
-    assimp
     glslang
     KissFFT
     STB

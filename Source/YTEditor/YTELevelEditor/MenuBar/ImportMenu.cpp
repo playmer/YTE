@@ -62,7 +62,7 @@ namespace YTEditor
     : Framework::Menu("Import", aMainWindow->GetWorkspace<YTELevelEditor>())
     , mConsole(mWorkspace->GetWidget<OutputConsole>())
   {
-    //AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
+    AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
     AddAction<ImportMenu>("Model", &ImportMenu::ImportModel, this);
     //AddAction<ImportMenu>("Texture", &ImportMenu::ImportTexture, this);
   }
@@ -100,111 +100,75 @@ namespace YTEditor
 
   void ImportMenu::ImportAnimation()
   {
-    //QFileDialog dialog(nullptr);
-    //dialog.setFileMode(QFileDialog::ExistingFiles);
-    //dialog.setNameFilter(tr("Animations (*.fbx)"));
-    //dialog.setDirectory(QDir::homePath());
-    //
-    //QStringList files;
-    //
-    //if (dialog.exec())
-    //{
-    //  files = dialog.selectedFiles();
-    //}
-    //
-    //if (files.isEmpty())
-    //{
-    //  return;
-    //}
-    //
-    //for (auto filename : files)
-    //{
-    //
-    //  namespace fs = std::filesystem;
-    //  auto stdFileName = filename.toStdString();
-    //  fs::path animationFile{ stdFileName };
-    //  animationFile = fs::canonical(animationFile);
-    //  fs::path animationDirectory = animationFile.parent_path();
-    //  std::string stdAnimationDirectory = animationDirectory.string();
-    //
-    //  Assimp::Importer Importer;
-    //
-    //  auto pScene = Importer.ReadFile(stdFileName, 0);
-    //
-    //  if (nullptr == pScene)
-    //  {
-    //    mWorkspace->GetWidget<OutputConsole>()->PrintLnC(OutputConsole::Color::Red,
-    //                                                     "Could not find a valid fbx named %s",
-    //                                                     stdAnimationDirectory.c_str());
-    //    return;
-    //  }
-    //
-    //  if (pScene->mNumAnimations == 0)
-    //  {
-    //    mConsole->PrintLnC(OutputConsole::Color::Red,
-    //                       "No animations are found in file %s",
-    //                       stdAnimationDirectory.c_str());
-    //    return;
-    //  }
-    //
-    //  mConsole->PrintLnC(OutputConsole::Color::Green,
-    //                     "Importing Animation: %s",
-    //                     stdAnimationDirectory.c_str());
-    //
-    //  for (unsigned int i = 0; i < pScene->mNumAnimations; i++)
-    //  {
-    //    auto animation = pScene->mAnimations[i];
-    //    std::string animationName = animation->mName.data;
-    //
-    //    mConsole->PrintLnC(OutputConsole::Color::Green,
-    //                       "Animation Name (%s), Animation Index (%i):",
-    //                       animationName.c_str(),
-    //                       i);
-    //  }
-    //
-    //  fs::path workingDir{ YTE::Path::GetGamePath().String() };
-    //  fs::path assetsDir{ workingDir.parent_path() };
-    //  fs::path animationDir{ assetsDir / L"Animations" };
-    //
-    //  std::error_code code;
-    //
-    //  fs::copy(animationFile,
-    //           animationDir / animationFile.filename(),
-    //           fs::copy_options::recursive |
-    //           fs::copy_options::overwrite_existing,
-    //           code);
-    //
-    //
-    //  // copy the face animation files if they exist
-    //  fs::path animStem = animationFile;
-    //  animStem.replace_extension("");
-    //
-    //  fs::path eyePath(animStem.string() + "_EyeAnim.txt");
-    //  std::ifstream eyeFile(eyePath);
-    //
-    //  if (eyeFile.good())
-    //  {
-    //    fs::copy(eyePath,
-    //             animationDir / eyePath.filename(),
-    //             fs::copy_options::recursive |
-    //             fs::copy_options::overwrite_existing,
-    //             code);
-    //  }
-    //  eyeFile.close();
-    //
-    //  fs::path mouthPath(animStem.string() + "_MouthAnim.txt");
-    //  std::ifstream mouthFile(mouthPath);
-    //
-    //  if (mouthFile.good())
-    //  {
-    //    fs::copy(mouthPath,
-    //             animationDir / mouthPath.filename(),
-    //             fs::copy_options::recursive |
-    //             fs::copy_options::overwrite_existing,
-    //             code);
-    //  }
-    //  mouthFile.close();
-    //}
+    
+    // Construct a file dialog for selecting the correct file
+    
+    QFileDialog dialog(nullptr);
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    dialog.setNameFilter(tr("Models (*.fbx)"));
+    dialog.setDirectory(QDir::homePath());
+    
+    QStringList files;
+    
+    if (dialog.exec())
+    {
+      files = dialog.selectedFiles();
+    }
+    
+    if (files.isEmpty())
+    {
+      return;
+    }
+    
+    for (auto filename : files)
+    {
+      auto stdFileName = filename.toStdString();
+      fs::path animationFile{ stdFileName };
+      animationFile = fs::canonical(animationFile);
+
+      auto file = animationFile.u8string();
+
+      YTE::AnimationData animation = YTE::Tools::ImportAnimation(file);
+      
+      fs::path workingDir{ YTE::Path::GetGamePath().String() };
+      fs::path assetsDir{ workingDir.parent_path() };
+      fs::path animationDir{ assetsDir / L"Animations" };
+
+      fs::path pathToFile = file;
+      YTE::Tools::WriteAnimationDataToFile((animationDir / pathToFile.filename().replace_extension("").stem()).u8string(), animation);
+
+      // copy the face animation files if they exist
+      fs::path animStem = animationFile;
+      animStem.replace_extension("");
+      
+      fs::path eyePath(animStem.string() + "_EyeAnim.txt");
+      std::ifstream eyeFile(eyePath);
+      
+      std::error_code code;
+      
+      if (eyeFile.good())
+      {
+        fs::copy(eyePath,
+                 animationDir / eyePath.filename(),
+                 fs::copy_options::recursive |
+                 fs::copy_options::overwrite_existing,
+                 code);
+      }
+      eyeFile.close();
+      
+      fs::path mouthPath(animStem.string() + "_MouthAnim.txt");
+      std::ifstream mouthFile(mouthPath);
+      
+      if (mouthFile.good())
+      {
+        fs::copy(mouthPath,
+                 animationDir / mouthPath.filename(),
+                 fs::copy_options::recursive |
+                 fs::copy_options::overwrite_existing,
+                 code);
+      }
+      mouthFile.close();
+    }
   }
 
   void ImportMenu::ImportModel()

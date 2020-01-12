@@ -18,6 +18,7 @@ PRIVATE
 target_include_directories(YTETools 
   PRIVATE
     ${Source_Root}
+    ${Dependencies_Root}/assimp/include
 )
 
 target_compile_definitions(YTETools PRIVATE YTETools_Internal=1)

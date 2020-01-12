@@ -1,8 +1,5 @@
 #pragma once
 
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
 #include "YTE/Core/Component.hpp"

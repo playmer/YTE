@@ -34,3 +34,6 @@
 [submodule "Dependencies/optick"]
 	path = Dependencies/optick
 	url = https://github.com/bombomby/optick.git
+[submodule "Dependencies/rapidjson"]
+	path = Dependencies/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

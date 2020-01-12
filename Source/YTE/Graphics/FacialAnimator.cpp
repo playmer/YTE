@@ -1,9 +1,5 @@
 #include <fstream>
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
 

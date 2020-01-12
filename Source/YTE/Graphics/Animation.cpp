@@ -1,11 +1,5 @@
 #include <algorithm>
 
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
@@ -21,144 +15,43 @@
 
 namespace YTE
 {
-  static inline
-  glm::vec3 ToGlm(aiVector3D const* aVector)
-  {
-    return { aVector->x, aVector->y ,aVector->z };
-  }
-
-  static inline
-  glm::vec3 ToGlm(aiColor3D const* aVector)
-  {
-    return { aVector->r, aVector->g ,aVector->b };
-  }
-
-  static inline
-  glm::quat ToGlm(aiQuaternion const* aQuat)
-  {
-    glm::quat quaternion;
-
-    quaternion.x = aQuat->x;
-    quaternion.y = aQuat->y;
-    quaternion.z = aQuat->z;
-    quaternion.w = aQuat->w;
-
-    return quaternion;
-  }
-
-  static inline
-  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
-  {
-    return glm::transpose(glm::make_mat4(&aMatrix.a1));
-  }
-
-  static inline
-  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
-  {
-    auto transposed = glm::transpose(aMatrix);
-    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
-  }
-
-  // The following is a glmification of the assimp aiQuaterniont<TReal>::Interpolate
-  // function.
-  // TODO (Joshua): Investigate glm::mix function after we've updated glm.
-  // We've preserved the following comments from assimps writing of the function:
-  // ---------------------------------------------------------------------------
-  // Performs a spherical interpolation between two quaternions
-  // Implementation adopted from the gmtl project. All others I found on the net fail in some cases.
-  // Congrats, gmtl!
-  inline glm::quat interpolate(glm::quat const& aStart, glm::quat const& aEnd, float aFactor)
-  {
-    // calc cosine theta
-    float cosom = glm::dot(aStart, aEnd);
-
-    // adjust signs (if necessary)
-    glm::quat end = aEnd;
-    if (cosom < 0.0f)
-    {
-      cosom = -cosom;
-      end.x = -end.x;   // Reverse all signs
-      end.y = -end.y;
-      end.z = -end.z;
-      end.w = -end.w;
-    }
-
-    // Calculate coefficients
-    float sclp;
-    float sclq;
-    if ((1.0f - cosom) > 0.0001f) // 0.0001 -> some epsillon
-    {
-      // Standard case (slerp)
-      float omega;
-      float sinom;
-      omega = std::acos(cosom); // extract theta from dot product's cos theta
-      sinom = std::sin(omega);
-      sclp = std::sin((1.0f - aFactor) * omega) / sinom;
-      sclq = std::sin(aFactor * omega) / sinom;
-    }
-    else
-    {
-      // Very close, do linear interp (because it's faster)
-      sclp = 1.0f - aFactor;
-      sclq = aFactor;
-    }
-
-    return { sclp * aStart.w + sclq * end.w,
-             sclp * aStart.x + sclq * end.x,
-             sclp * aStart.y + sclq * end.y,
-             sclp * aStart.z + sclq * end.z };
-  }
-
-  struct AnimationFileHeader
-  {
-    // The "header" of the file.
-    u64 mNodeSize;
-    u64 mTransformationsSize;
-    u64 mChildrenSize;
-    u64 mTranslationKeysSize;
-    u64 mScaleKeysSize;
-    u64 mRotationKeysSize;
-    u64 mNamesSize;
-    double mDuration;
-    double mTicksPerSecond;
-  };
-
-  std::vector<char> WriteAnimationDataToFile(std::string const& aName, AnimationData const& aData)
-  {
-    OPTICK_EVENT();
-    std::string fileName = aName;
-    fileName += ".YTEAnimation";
-
-    FileWriter file{ fileName };
-
-    if (file.mOpened)
-    {
-      AnimationFileHeader header;
-
-      header.mNodeSize = aData.mNodes.size();
-      header.mTransformationsSize = aData.mTransformations.size();
-      header.mChildrenSize = aData.mChildren.size();
-      header.mTranslationKeysSize = aData.mTranslationKeys.size();
-      header.mScaleKeysSize = aData.mScaleKeys.size();
-      header.mRotationKeysSize = aData.mRotationKeys.size();
-      header.mNamesSize = aData.mNames.size();
-      header.mDuration = aData.mDuration;
-      header.mTicksPerSecond = aData.mTicksPerSecond;
-
-      // The "header" of the file.
-      file.Write(header);
-
-      file.Write(aData.mNodes.data(), aData.mNodes.size());
-      file.Write(aData.mTransformations.data(), aData.mTransformations.size());
-      file.Write(aData.mChildren.data(), aData.mChildren.size());
-      file.Write(aData.mTranslationKeys.data(), aData.mTranslationKeys.size());
-      file.Write(aData.mScaleKeys.data(), aData.mScaleKeys.size());
-      file.Write(aData.mRotationKeys.data(), aData.mRotationKeys.size());
-      file.Write(aData.mNames.data(), aData.mNames.size());
-    }
-
-    return file.mData;
-  }
+//  static inline
+//  glm::vec3 ToGlm(aiVector3D const* aVector)
+//  {
+//    return { aVector->x, aVector->y ,aVector->z };
+//  }
+//
+//  static inline
+//  glm::vec3 ToGlm(aiColor3D const* aVector)
+//  {
+//    return { aVector->r, aVector->g ,aVector->b };
+//  }
+//
+//  static inline
+//  glm::quat ToGlm(aiQuaternion const* aQuat)
+//  {
+//    glm::quat quaternion;
+//
+//    quaternion.x = aQuat->x;
+//    quaternion.y = aQuat->y;
+//    quaternion.z = aQuat->z;
+//    quaternion.w = aQuat->w;
+//
+//    return quaternion;
+//  }
+//
+//  static inline
+//  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
+//  {
+//    return glm::transpose(glm::make_mat4(&aMatrix.a1));
+//  }
+//
+//  static inline
+//  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
+//  {
+//    auto transposed = glm::transpose(aMatrix);
+//    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
+//  }
 
   std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName)
   {
@@ -195,52 +88,7 @@ namespace YTE
       file.Read<char>(data.mNames.data(), data.mNames.size());
     }
 
-
     return { std::move(data), std::move(file.mData) };
-  }
-
-  bool Equal(AnimationData const& aLeft, AnimationData const& aRight)
-  {
-    auto nodes = aLeft.mNodes == aRight.mNodes;
-    auto transformations = aLeft.mTransformations == aRight.mTransformations;
-    auto children = aLeft.mChildren == aRight.mChildren;
-    auto translations = aLeft.mTranslationKeys == aRight.mTranslationKeys;
-    auto scales = aLeft.mScaleKeys == aRight.mScaleKeys;
-    auto rotations = aLeft.mRotationKeys == aRight.mRotationKeys;
-    auto names = aLeft.mNames == aRight.mNames;
-    auto durations = aLeft.mDuration == aRight.mDuration;
-    auto ticks = aLeft.mTicksPerSecond == aRight.mTicksPerSecond;
-
-    return nodes && transformations && children && translations && scales && rotations && names && durations && ticks;
-  }
-
-  AnimationData TestWritingAndReading(std::string const& aFile, AnimationData const& aOriginalData)
-  {
-    auto aniFileYTE = aFile + ".YTEAnimation";
-
-    auto writtenFileData = WriteAnimationDataToFile(aFile, aOriginalData);
-
-    auto [readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
-
-    if (writtenFileData != readFileData)
-    {
-      #if YTE_Windows
-        __debugbreak();
-      #else
-        __builtin_trap();
-      #endif
-    }
-
-    if (false == Equal(aOriginalData, readFile))
-    {
-      #if YTE_Windows
-        __debugbreak();
-      #else
-        __builtin_trap();
-      #endif
-    }
-
-    return readFile;
   }
 
 
@@ -320,7 +168,7 @@ namespace YTE
       auto const& start = frame.mRotation;
       auto const& end = nextFrame.mRotation;
       
-      rot = interpolate(start, end, delta);
+      rot = animation_interpolate(start, end, delta);
       glm::normalize(rot);
     }
 
@@ -369,27 +217,6 @@ namespace YTE
 
 
 
-
-
-
-
-
-
-
-
-  const aiNodeAnim* FindNodeAnimation(aiAnimation *aAnimation, const char *aName)
-  {
-    for (uint32_t i = 0; i < aAnimation->mNumChannels; ++i)
-    {
-      const aiNodeAnim *anim = aAnimation->mChannels[i];
-
-      if (!strcmp(anim->mNodeName.data, aName))
-      {
-        return anim;
-      }
-    }
-    return nullptr;
-  }
 
 
 
@@ -444,164 +271,9 @@ namespace YTE
       .SetDocumentation("True if the animation should play with respect to time.");
   }
 
-  template <typename tContainer, typename tKey>
-  void InsertKeys(tContainer& aContainer, tKey const* aBegin, tKey const* aEnd)
-  {
-    for (auto it = aBegin; it < aEnd; ++it)
-    {
-      aContainer.emplace_back(it->mTime, ToGlm(&it->mValue));
-    }
-  }
-  
-  static inline
-  void MakeNodes(aiAnimation *aAssimpAnimation,
-                 aiNode *aAssimpNode,
-                 AnimationData& aData,
-                 size_t aNodeIndex)
-  {
-    AnimationData::Node& node = aData.mNodes[aNodeIndex];
-
-    node.mTransformationOffset = aData.mTransformations.size();
-    aData.mTransformations.emplace_back(ToGlm(aAssimpNode->mTransformation));
-
-    size_t nameLength = aAssimpNode->mName.length;
-
-    node.mNameOffset = aData.mNames.size();
-    node.mNameSize = nameLength;
-    for (size_t i = 0; i < aAssimpNode->mName.length; ++i)
-    {
-      aData.mNames.emplace_back(*(aAssimpNode->mName.C_Str() + i));
-    }
-    
-    // Null terminate the string.
-    aData.mNames.emplace_back('\0');
-
-    aiNodeAnim const* animKeys = FindNodeAnimation(aAssimpAnimation, aAssimpNode->mName.data);
-
-    if (animKeys)
-    {
-      node.mTranslationKeyOffset = aData.mTranslationKeys.size();
-      node.mTranslationKeySize = animKeys->mNumPositionKeys;
-      InsertKeys(aData.mTranslationKeys, animKeys->mPositionKeys, animKeys->mPositionKeys + animKeys->mNumPositionKeys);
-
-      node.mScaleKeyOffset = aData.mScaleKeys.size();
-      node.mScaleKeySize = animKeys->mNumScalingKeys;
-      InsertKeys(aData.mScaleKeys, animKeys->mScalingKeys, animKeys->mScalingKeys + animKeys->mNumScalingKeys);
-
-      node.mRotationKeyOffset = aData.mRotationKeys.size();
-      node.mRotationKeySize = animKeys->mNumRotationKeys;
-      InsertKeys(aData.mRotationKeys, animKeys->mRotationKeys, animKeys->mRotationKeys + animKeys->mNumRotationKeys);
-    }
-
-    node.mChildrenOffset = aData.mChildren.size();
-    node.mChildrenSize = aAssimpNode->mNumChildren;
-
-    // Add the children nodes to the AnimationData.
-    // NOTE: node can now be potentially invalidated, so we no longer use it.
-    for (uint32_t i = 0; i < aAssimpNode->mNumChildren; ++i)
-    {
-      aData.mChildren.emplace_back(aData.mNodes.size());
-      aData.mNodes.emplace_back(AnimationData::Node{});
-    }
-
-    // Process the children added
-    for (size_t i = 0; i < aAssimpNode->mNumChildren; ++i)
-    {
-      MakeNodes(aAssimpAnimation, 
-                aAssimpNode->mChildren[i], 
-                aData, 
-                aData.mChildren[i + aData.mNodes[aNodeIndex].mChildrenOffset]);
-    }
-  }
-
-  AnimationData GetAnimationData(std::string &aFile)
-  {
-    OPTICK_EVENT();
-    auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
-
-    auto aniFileYTE = aniFile + ".YTEAnimation";
-    
-    if (std::filesystem::exists(aniFileYTE))
-    {
-      auto[readFile, readFileData] = ReadAnimationDataFromFile(aniFileYTE);
-    
-      return std::move(readFile);
-    }
-
-
-    Assimp::Importer importer;
-    
-    {
-      auto scene = importer.ReadFile(aniFile.c_str(),
-                                     aiProcess_Triangulate |
-                                     aiProcess_CalcTangentSpace |
-                                     aiProcess_GenSmoothNormals);
-    
-      UnusedArguments(scene);
-    
-      DebugObjection(scene == nullptr,
-                     "Failed to load animation file %s from assimp",
-                     aniFile.c_str());
-    
-      DebugObjection(scene->HasAnimations() == false,
-                     "Failed to find animations in scene loaded from %s",
-                     aniFile.c_str());
-    
-      auto animation = scene->mAnimations[0];
-    
-      AnimationData data;
-      AnimationData::Node node;
-    
-      data.mNodes.emplace_back(node);
-    
-      MakeNodes(animation, scene->mRootNode, data, 0);
-    
-      data.mTicksPerSecond = animation->mTicksPerSecond;
-      data.mDuration = animation->mDuration;
-    
-      return std::move(TestWritingAndReading(aniFile, data));
-    }
-
-    //if (filesystem::exists(aniFileYTE))
-    //{
-    //  return std::move(ReadAnimationDataFromFile(aniFileYTE));
-    //}
-    //else
-    //{
-    //  auto scene = importer.ReadFile(aniFile.c_str(),
-    //                                 aiProcess_Triangulate |
-    //                                 aiProcess_CalcTangentSpace |
-    //                                 aiProcess_GenSmoothNormals);
-    //
-    //  DebugObjection(scene == nullptr,
-    //                 "Failed to load animation file %s from assimp",
-    //                 aniFile.c_str());
-    //
-    //  DebugObjection(scene->HasAnimations() == false,
-    //                 "Failed to find animations in scene loaded from %s",
-    //                 aniFile.c_str());
-    //
-    //  auto animation = scene->mAnimations[0];
-    //
-    //  AnimationData data;
-    //  AnimationData::Node node;
-    //
-    //  data.mNodes.emplace_back(node);
-    //
-    //  MakeNodes(animation, scene->mRootNode, data, 0);
-    //
-    //  data.mTicksPerSecond = animation->mTicksPerSecond;
-    //  data.mDuration = animation->mDuration;
-    //
-    //  WriteAnimationDataToFile(aniFile, data);
-    //
-    //  return std::move(data);
-    //}
-  }
-
   Animation::Animation(std::string &aFile, uint32_t aAnimationIndex)
     : mPlayOverTime{ true }
-    , mData{ GetAnimationData(aFile) }
+    , mData{ ReadAnimationFromFile(aFile) }
   {
     OPTICK_EVENT();
     mAnimationIndex = aAnimationIndex;
@@ -859,9 +531,9 @@ namespace YTE
   void Animator::PlayAnimationSet(std::string aAnimation)
   {
     OPTICK_EVENT();
-    std::string initFile = aAnimation + "_Init.fbx";
-    std::string loopFile = aAnimation + "_Loop.fbx";
-    std::string exitFile = aAnimation + "_Exit.fbx";
+    std::string initFile = aAnimation + "_Init.YTEAnimation";
+    std::string loopFile = aAnimation + "_Loop.YTEAnimation";
+    std::string exitFile = aAnimation + "_Exit.YTEAnimation";
 
     AddNextAnimation(initFile);
     AddNextAnimation(loopFile);
@@ -977,7 +649,7 @@ namespace YTE
     std::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
-    if (exten != ".fbx")
+    if (exten != ".YTEAnimation")
     {
       return nullptr;
     }
@@ -1042,5 +714,20 @@ namespace YTE
 
       DeserializeByType(&(valueIt->value), animation, animation->GetType());
     }
+  }
+
+  AnimationData ReadAnimationFromFile(std::string& aFile)
+  {
+    OPTICK_EVENT();
+    auto aniFile = Path::GetAnimationPath(Path::GetGamePath(), aFile);
+
+    if (std::filesystem::exists(aniFile))
+    {
+      auto [readFile, readFileData] = ReadAnimationDataFromFile(aniFile);
+
+      return std::move(readFile);
+    }
+
+    return AnimationData{};
   }
 }
