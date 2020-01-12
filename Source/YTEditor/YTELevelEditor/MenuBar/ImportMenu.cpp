@@ -21,13 +21,15 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <fstream>
 #include <thread>
 
-#include <qprogressdialog.h>
-#include <qfiledialog.h>
-#include <QSlider>
 #include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
 #include <QCoreApplication>
+#include <QDialogButtonBox>
+#include <QFileDialog>
+#include <QHeaderView>
+#include <QProgressDialog>
+#include <QSlider>
+#include <QTableWidget>
+#include <QVBoxLayout>
 
 #include "stb/stb_image.h"
 
@@ -64,7 +66,7 @@ namespace YTEditor
   {
     AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
     AddAction<ImportMenu>("Model", &ImportMenu::ImportModel, this);
-    //AddAction<ImportMenu>("Texture", &ImportMenu::ImportTexture, this);
+    AddAction<ImportMenu>("Texture", &ImportMenu::ImportTexture, this);
   }
 
   // CRN/DDS compression callback function.
@@ -442,4 +444,121 @@ namespace YTEditor
 //
 //    return true;
 //  }
+
+  enum { absoluteFileNameRole = Qt::UserRole + 1 };
+
+  class ImportTexturesDialog : public QDialog
+  {
+  public:
+    static QSize myGetQTableWidgetSize(QTableWidget *t) {
+       int w = t->verticalHeader()->width() + 4; // +4 seems to be needed
+       for (int i = 0; i < t->columnCount(); i++)
+          w += t->columnWidth(i); // seems to include gridline (on my machine)
+       int h = t->horizontalHeader()->height() + 4;
+       for (int i = 0; i < t->rowCount(); i++)
+          h += t->rowHeight(i);
+       return QSize(w, h);
+    }
+
+    ImportTexturesDialog(QWidget* aParent, std::vector<std::string> aTextures)
+      : QDialog{ aParent }
+    {
+      mLayout = new QVBoxLayout(this);
+      // NormalMap(false) | LinearSpace(false) | TextureName
+      mTexturesTable = new QTableWidget(0, 3);
+      QStringList labels;
+      labels.push_back("Normal Map");
+      labels.push_back("Linear Space");
+      labels.push_back("Texture Name");
+      mTexturesTable->setHorizontalHeaderLabels(labels);
+      
+      mLayout->addWidget(mTexturesTable);
+
+      for (auto& texture : aTextures)
+      {
+        QCheckBox* normalMapCheckBox = new QCheckBox("", this);
+        QCheckBox* linearSpaceCheckBox  = new QCheckBox("", this);
+
+        QLabel* textureNameItem = new QLabel(texture.c_str(), this);
+
+        int insertionRow = mTexturesTable->rowCount();
+        mTexturesTable->insertRow(insertionRow);
+        mTexturesTable->setCellWidget(insertionRow, 0, normalMapCheckBox);
+        mTexturesTable->setCellWidget(insertionRow, 1, linearSpaceCheckBox);
+        mTexturesTable->setCellWidget(insertionRow, 2, textureNameItem);
+      }
+
+      mTexturesTable->resizeColumnsToContents();
+
+      mTexturesTable->setMaximumSize(myGetQTableWidgetSize(mTexturesTable));
+      mTexturesTable->setMinimumSize(mTexturesTable->maximumSize()); // optional
+
+      mDialogButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+       
+      mLayout->addWidget(mDialogButtons);
+    }
+
+  //private slots:
+  //    void browse();
+  //    void find();
+  //    void animateFindClick();
+  //    void openFileOfItem(int row, int column);
+  //    void contextMenu(const QPoint &pos);
+
+  private:
+    QDialogButtonBox* mDialogButtons;
+    QTableWidget* mTexturesTable;
+    QVBoxLayout* mLayout;
+
+    QDir currentDir;
+  };
+
+  
+  void ImportMenu::ImportTexture()
+  {
+    // Construct a file dialog for selecting the correct file
+    QFileDialog dialog(nullptr);
+    dialog.setFileMode(QFileDialog::ExistingFiles);
+    dialog.setNameFilter(tr("Images (*.png)"));
+    dialog.setDirectory(QDir::homePath());
+    
+    QStringList files;
+    
+    if (dialog.exec())
+    {
+      files = dialog.selectedFiles();
+    }
+    
+    if (files.isEmpty())
+    {
+      return;
+    }
+
+    std::vector<std::string> textureNames;
+    
+    for (auto& filename : files)
+    {
+      auto stdFileName = filename.toStdString();
+      fs::path animationFile{ stdFileName };
+      animationFile = fs::canonical(animationFile);
+
+      auto file = animationFile.u8string();
+
+      textureNames.emplace_back(file);
+
+      //YTE::AnimationData animation = YTE::Tools::ImportAnimation(file);
+      //
+      //fs::path workingDir{ YTE::Path::GetGamePath().String() };
+      //fs::path assetsDir{ workingDir.parent_path() };
+      //fs::path animationDir{ assetsDir / L"Animations" };
+      //
+      //fs::path pathToFile = file;
+      //YTE::Tools::WriteAnimationDataToFile((animationDir / pathToFile.filename().replace_extension("").stem()).u8string(), animation);
+    }
+
+    auto dialogue = new ImportTexturesDialog(this, textureNames);
+    dialogue->setModal(true);
+    dialogue->exec();
+  }
+
 }

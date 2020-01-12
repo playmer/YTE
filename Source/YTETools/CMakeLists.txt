@@ -38,4 +38,5 @@ PUBLIC
   YTE
 PRIVATE
   assimp
+  basisu_encoder
 )

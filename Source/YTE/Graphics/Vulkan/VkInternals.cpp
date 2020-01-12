@@ -6,7 +6,7 @@
 
 namespace YTE
 {
-  constexpr bool cVulkanValidations = true;
+  constexpr bool cVulkanValidations = false;
 
   //LogType ToYTE(vk::DebugUtilsMessageSeverityFlagBitsEXT aSeverity)
   //{
