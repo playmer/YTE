@@ -99,9 +99,18 @@ namespace YTEditor
     TextureHelper TextureFileChecks(std::string aTexture);
     bool CompressTextureFile(TextureHelper &aTexture);
     bool CopyTextureFile(TextureHelper &aTexture);
-    void ImportTexture();
-    void ImportAnimation();
-    void ImportModel();
+
+    // Opens an explorer dialog for picking texture files to import.
+    void ImportTextures();
+    
+    // Opens an explorer dialog for picking Animation files to import.
+    void ImportAnimations();
+    
+    // Opens an explorer dialog for picking Model files to import.
+    void ImportModels();
+
+    // Open Texture Dialog to import textures with various options.
+    void ImportTexturesDialogOptions(std::vector<std::string> const& aFiles);
 
   };
 

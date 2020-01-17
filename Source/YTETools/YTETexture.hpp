@@ -1,5 +1,7 @@
 #pragma once
 
+#include "YTETools/YTEToolsMeta.hpp"
+
 namespace YTE::Tools 
 {
   struct TextureImportSettings
@@ -15,6 +17,6 @@ namespace YTE::Tools
     // Turn this on if the texture isn't sRGB (thus it's linear)
     bool LinearSpaceTexture = false;
   };
-
-  std::vector<u8> ImportTexture(std::string const& aFile, TextureImportSettings aTextureImporting);
+  
+  YTETools_Shared void ImportTextureToFile(std::string const& aFileToRead, std::string const& aFileToOutput, TextureImportSettings aTextureImporting);
 }

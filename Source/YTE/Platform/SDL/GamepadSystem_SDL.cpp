@@ -68,7 +68,7 @@ namespace YTE
         //  auto data = it->second.mData.Get<GamepadData>();
         //
         //}
-        puts("Remaped\n");
+        puts("Remapped\n");
         break;
       }
     }

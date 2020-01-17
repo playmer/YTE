@@ -15,12 +15,60 @@
 
 namespace YTE::Tools
 {
+  // We search for the correct path to the texture.
+  static std::string FindTexturePath(std::string const& aPath, std::filesystem::path const& aMeshDirectory)
+  {
+    std::filesystem::path path{ aPath };
+
+    // First just check the given path itself.
+    if (std::filesystem::exists(path))
+    {
+      return path.u8string();
+    }
+    
+    // Then check to see if it's in a path relative to the mesh.
+    path = aMeshDirectory / path;
+
+    if (std::filesystem::exists(path))
+    {
+      return path.u8string();
+    }
+    
+    // Then check to see if it's in the same folder as the mesh.
+    path = aMeshDirectory / path.filename();
+
+    if (std::filesystem::exists(path))
+    {
+      return path.u8string();
+    }
+
+    // Then check if it's in the working directory.
+    path = path.filename();
+
+    if (std::filesystem::exists(path))
+    {
+      return path.u8string();
+    }
+
+    // If it's not in any of those, just return nothing.
+    return std::string{};
+  }
+
+  // We change the extension to .basis since we're importing, and remove the extraneous pathing information.
+  static std::string NormalizeTexturePath(std::string const& aPath)
+  {
+    std::filesystem::path path{ aPath };
+    return path.filename().replace_extension(".basis").u8string();
+  }
+
   void ImportSubMesh(YTE::Mesh* aYTEMesh, 
                      YTE::Submesh& aSubmesh, 
                      const aiScene* aScene, 
                      const aiMesh* aMesh, 
                      YTE::Skeleton* aSkeleton, 
-                     uint32_t aBoneStartingVertexOffset)
+                     uint32_t aBoneStartingVertexOffset,
+                     std::filesystem::path const& aRootDirectory,
+                     std::set<std::string>& aTextures)
   {
     OPTICK_EVENT();
 
@@ -142,7 +190,11 @@ namespace YTE::Tools
         textureName = defaultTexture;
       }
 
-      aSubmesh.mData.mTextureData.emplace_back(textureName, YTE::TextureViewType::e2D, ToYTE(type));
+      // The textures we look to import, we need the correct path of, we accept relative/absolute paths,
+      // as well as searching for the file in the same directory as the model we're loading.
+      aTextures.emplace(FindTexturePath(textureName, aRootDirectory));
+
+      aSubmesh.mData.mTextureData.emplace_back(NormalizeTexturePath(textureName), YTE::TextureViewType::e2D, ToYTE(type));
     }
 
     if (aSkeleton->HasBones())
@@ -255,7 +307,7 @@ namespace YTE::Tools
   }
 
   
-  void ImportMesh(YTE::Mesh& aMesh, const std::string &aFile)
+  void ImportMesh(YTE::Mesh& aMesh, const std::string &aFile, std::set<std::string>& aTextures)
   {
     OPTICK_EVENT();
 
@@ -293,23 +345,28 @@ namespace YTE::Tools
         SkeletonInitialize(aMesh.mSkeleton, meshScene);
       }
 
+      std::filesystem::path filePath{aFile};
+      std::filesystem::path directory{ "" };
+      
+      if (filePath.has_root_directory())
+      {
+        directory = filePath.root_directory();
+      }
+
       aMesh.mParts.clear();
       aMesh.mParts.reserve(meshScene->mNumMeshes);
-
-      //printf("Mesh FileName: %s\n", aFile.c_str());
-
       aMesh.mParts.resize(static_cast<size_t>(meshScene->mNumMeshes));
 
       // Load Mesh
       YTE::u32 startingVertex = 0;
       for (size_t i = 0; i < aMesh.mParts.size(); i++)
       {
-        ImportSubMesh(&aMesh, aMesh.mParts[i], meshScene, meshScene->mMeshes[i], &aMesh.mSkeleton, startingVertex);
+        ImportSubMesh(&aMesh, aMesh.mParts[i], meshScene, meshScene->mMeshes[i], &aMesh.mSkeleton, startingVertex, directory, aTextures);
 
         startingVertex += meshScene->mMeshes[i]->mNumVertices;
       }
 
-      aMesh.mName = aFile;
+      aMesh.mName = filePath.filename().u8string();
     }
 
     aMesh.mDimension = YTE::CalculateDimensions(aMesh.mParts);

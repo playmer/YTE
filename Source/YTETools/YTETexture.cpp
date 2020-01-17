@@ -7,7 +7,7 @@
 
 namespace YTE::Tools 
 {
-  std::vector<u8> ImportTexture(std::string const& aFile, TextureImportSettings aTextureImporting)
+  void ImportTextureToFile(std::string const& aFileToRead, std::string const& aFileToOutput, TextureImportSettings aTextureImporting)
   {
     basisu::basis_compressor_params compressorParameters;
     
@@ -33,6 +33,10 @@ namespace YTE::Tools
 
     compressor.init(compressorParameters);
 
-    return compressor.get_output_basis_file();
+    auto& basisData = compressor.get_output_basis_file();
+
+    FileWriter writer{ aFileToOutput };
+
+    writer.Write(basisData.data(), basisData.size());
   }
 }

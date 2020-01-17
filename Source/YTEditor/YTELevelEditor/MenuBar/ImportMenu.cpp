@@ -64,9 +64,9 @@ namespace YTEditor
     : Framework::Menu("Import", aMainWindow->GetWorkspace<YTELevelEditor>())
     , mConsole(mWorkspace->GetWidget<OutputConsole>())
   {
-    AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimation, this);
-    AddAction<ImportMenu>("Model", &ImportMenu::ImportModel, this);
-    AddAction<ImportMenu>("Texture", &ImportMenu::ImportTexture, this);
+    AddAction<ImportMenu>("Animation", &ImportMenu::ImportAnimations, this);
+    AddAction<ImportMenu>("Model", &ImportMenu::ImportModels, this);
+    AddAction<ImportMenu>("Texture", &ImportMenu::ImportTextures, this);
   }
 
   // CRN/DDS compression callback function.
@@ -100,7 +100,7 @@ namespace YTEditor
 //    return true;
 //  }
 
-  void ImportMenu::ImportAnimation()
+  void ImportMenu::ImportAnimations()
   {
     
     // Construct a file dialog for selecting the correct file
@@ -173,10 +173,9 @@ namespace YTEditor
     }
   }
 
-  void ImportMenu::ImportModel()
+  void ImportMenu::ImportModels()
   {
     // Construct a file dialog for selecting the correct file
-    
     QFileDialog dialog(nullptr);
     dialog.setFileMode(QFileDialog::ExistingFiles);
     dialog.setNameFilter(tr("Models (*.fbx)"));
@@ -193,6 +192,8 @@ namespace YTEditor
     {
       return;
     }
+
+    std::set<std::string> texturesFromMaterials;
     
     for (auto filename : files)
     {
@@ -206,11 +207,15 @@ namespace YTEditor
 
       auto file = meshFile.u8string();
 
-      YTE::Tools::ImportMesh(mesh, file);
+      YTE::Tools::ImportMesh(mesh, file, texturesFromMaterials);
 
       fs::path pathToFile = file;
       YTE::Tools::WriteMeshToFile(pathToFile.stem().u8string(), mesh);
     }
+
+    std::vector<std::string> texturesToImport{texturesFromMaterials.begin(), texturesFromMaterials.end()};
+
+    ImportTexturesDialogOptions(texturesToImport);
   }
 
 //  void ImportMenu::ImportTexture()
@@ -447,6 +452,21 @@ namespace YTEditor
 
   enum { absoluteFileNameRole = Qt::UserRole + 1 };
 
+  struct ToConvert
+  {
+    ToConvert(std::string aName, YTE::Tools::TextureImportSettings aSettings, bool aShouldConvert)
+      : mName{aName}
+      , mSettings{aSettings}
+      , mShouldConvert{aShouldConvert}
+    {
+
+    }
+
+    std::string mName;
+    YTE::Tools::TextureImportSettings mSettings;
+    bool mShouldConvert;
+  };
+
   class ImportTexturesDialog : public QDialog
   {
   public:
@@ -460,13 +480,16 @@ namespace YTEditor
        return QSize(w, h);
     }
 
-    ImportTexturesDialog(QWidget* aParent, std::vector<std::string> aTextures)
+    ImportTexturesDialog(QWidget* aParent, std::vector<std::string> const& aTextures)
       : QDialog{ aParent }
     {
+      InitializeData(aTextures);
+
       mLayout = new QVBoxLayout(this);
       // NormalMap(false) | LinearSpace(false) | TextureName
-      mTexturesTable = new QTableWidget(0, 3);
+      mTexturesTable = new QTableWidget(0, 4);
       QStringList labels;
+      labels.push_back("Convert");
       labels.push_back("Normal Map");
       labels.push_back("Linear Space");
       labels.push_back("Texture Name");
@@ -474,18 +497,42 @@ namespace YTEditor
       
       mLayout->addWidget(mTexturesTable);
 
-      for (auto& texture : aTextures)
+      for (auto& textureToConvert : mTexturesToConvert)
       {
+        QCheckBox* convertThisTexture = new QCheckBox("", this);
         QCheckBox* normalMapCheckBox = new QCheckBox("", this);
         QCheckBox* linearSpaceCheckBox  = new QCheckBox("", this);
+        
+        convertThisTexture->setChecked(textureToConvert.mShouldConvert);
+        normalMapCheckBox->setChecked(textureToConvert.mSettings.NormalMap);
+        linearSpaceCheckBox->setChecked(textureToConvert.mSettings.LinearSpaceTexture);
+        
+        this->connect(convertThisTexture, &QCheckBox::stateChanged, [&textureToConvert]()
+        {
+          textureToConvert.mShouldConvert = !textureToConvert.mShouldConvert;
+        });
 
-        QLabel* textureNameItem = new QLabel(texture.c_str(), this);
+        this->connect(normalMapCheckBox, &QCheckBox::stateChanged, [&textureToConvert]()
+        {
+          textureToConvert.mSettings.NormalMap = !textureToConvert.mSettings.NormalMap;
+        });
+        
+        this->connect(linearSpaceCheckBox, &QCheckBox::stateChanged, [&textureToConvert]()
+        {
+          textureToConvert.mSettings.LinearSpaceTexture = !textureToConvert.mSettings.LinearSpaceTexture;
+        });
+        
+        this->connect(this, &QDialog::accepted, this, &ImportTexturesDialog::Accepted);
+        this->connect(this, &QDialog::rejected, this, &ImportTexturesDialog::Rejected);
+
+        QLabel* textureNameItem = new QLabel(textureToConvert.mName.c_str(), this);
 
         int insertionRow = mTexturesTable->rowCount();
         mTexturesTable->insertRow(insertionRow);
-        mTexturesTable->setCellWidget(insertionRow, 0, normalMapCheckBox);
-        mTexturesTable->setCellWidget(insertionRow, 1, linearSpaceCheckBox);
-        mTexturesTable->setCellWidget(insertionRow, 2, textureNameItem);
+        mTexturesTable->setCellWidget(insertionRow, 0, convertThisTexture);
+        mTexturesTable->setCellWidget(insertionRow, 1, normalMapCheckBox);
+        mTexturesTable->setCellWidget(insertionRow, 2, linearSpaceCheckBox);
+        mTexturesTable->setCellWidget(insertionRow, 3, textureNameItem);
       }
 
       mTexturesTable->resizeColumnsToContents();
@@ -494,6 +541,9 @@ namespace YTEditor
       mTexturesTable->setMinimumSize(mTexturesTable->maximumSize()); // optional
 
       mDialogButtons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
+      
+      this->connect(mDialogButtons, &QDialogButtonBox::accepted, this, &QDialog::accept);
+      this->connect(mDialogButtons, &QDialogButtonBox::rejected, this, &QDialog::reject);
        
       mLayout->addWidget(mDialogButtons);
     }
@@ -505,7 +555,38 @@ namespace YTEditor
   //    void openFileOfItem(int row, int column);
   //    void contextMenu(const QPoint &pos);
 
+    std::vector<ToConvert>& GetTexturesToConvert()
+    {
+      return mTexturesToConvert;
+    }
+    
+    void Accepted()
+    {
+      auto removeIt = std::remove_if(mTexturesToConvert.begin(), mTexturesToConvert.end(), [](ToConvert const& aValue)
+      {
+        return aValue.mShouldConvert == false;
+      });
+
+      mTexturesToConvert.erase(removeIt, mTexturesToConvert.end());
+    }
+
+    void Rejected()
+    {
+      mTexturesToConvert.clear();
+    }
+
   private:
+
+    void InitializeData(std::vector<std::string> const& aTextures)
+    {
+      for (auto& texture : aTextures)
+      {
+        mTexturesToConvert.emplace_back(texture, YTE::Tools::TextureImportSettings{}, true);
+      }
+    }
+
+    std::vector<ToConvert> mTexturesToConvert;
+
     QDialogButtonBox* mDialogButtons;
     QTableWidget* mTexturesTable;
     QVBoxLayout* mLayout;
@@ -514,7 +595,7 @@ namespace YTEditor
   };
 
   
-  void ImportMenu::ImportTexture()
+  void ImportMenu::ImportTextures()
   {
     // Construct a file dialog for selecting the correct file
     QFileDialog dialog(nullptr);
@@ -545,20 +626,22 @@ namespace YTEditor
       auto file = animationFile.u8string();
 
       textureNames.emplace_back(file);
-
-      //YTE::AnimationData animation = YTE::Tools::ImportAnimation(file);
-      //
-      //fs::path workingDir{ YTE::Path::GetGamePath().String() };
-      //fs::path assetsDir{ workingDir.parent_path() };
-      //fs::path animationDir{ assetsDir / L"Animations" };
-      //
-      //fs::path pathToFile = file;
-      //YTE::Tools::WriteAnimationDataToFile((animationDir / pathToFile.filename().replace_extension("").stem()).u8string(), animation);
     }
 
-    auto dialogue = new ImportTexturesDialog(this, textureNames);
-    dialogue->setModal(true);
-    dialogue->exec();
+    ImportTexturesDialogOptions(textureNames);
   }
 
+  
+  void ImportMenu::ImportTexturesDialogOptions(std::vector<std::string> const& aFiles)
+  {
+    auto dialogue = new ImportTexturesDialog(this, aFiles);
+    dialogue->setModal(true);
+    dialogue->exec();
+
+    for (auto& [path, options, shouldConvert] : dialogue->GetTexturesToConvert())
+    {
+      std::string outputFilePath;
+      YTE::Tools::ImportTextureToFile(path, outputFilePath, options);
+    }
+  }
 }

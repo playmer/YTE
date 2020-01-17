@@ -18,7 +18,6 @@ namespace YTE
   struct PlatformManagerData
   {
     std::vector<SDL_Event> mEvents;
-    std::vector<SDL_GameController*> mControllers;
   };
 
   void SDLCALL PlatformManagerBlockedUpdate(void* aUserData, SDL_Window*)
