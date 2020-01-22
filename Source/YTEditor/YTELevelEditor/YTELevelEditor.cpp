@@ -330,7 +330,7 @@ namespace YTEditor
     auto value = mainSession->Serialize(allocator);
 
     mRunningSpace = mRunningEngine->AddComposition<YTE::Space>("YTEditor Play Space", mRunningEngine, nullptr);
-    mRunningSpace->Load(&value, false);
+    mRunningSpace->Load(&value);
 
     auto graphicsView = mRunningSpace->GetComponent<YTE::GraphicsView>();
     graphicsView->ChangeWindow("YTEditor Play Window");

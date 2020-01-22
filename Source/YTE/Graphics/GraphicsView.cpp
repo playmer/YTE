@@ -130,7 +130,8 @@ namespace YTE
 
     builder.Field<&GraphicsView::mWindowName>("WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .SetDocumentation("If empty, we look for a parent GraphicsView and use it's Window. We also listen to change events and change accordingly.");
 
     builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>("Order")
       .AddAttribute<EditorProperty>()
@@ -175,18 +176,8 @@ namespace YTE
     mLightManager.emplace(this);
     mWaterInfluenceMapManager.emplace(this);
 
-    auto it = engine->GetWindows().find(mWindowName);
-
-    if (it != engine->GetWindows().end())
-    {
-      mWindow = it->second.get();
-    }
-    else
-    {
-      mWindow = mOwner->GetEngine()->GetWindow();
-    }
-
-    if (mWindow == nullptr)
+    // If we didn't find a window, bail out.
+    if (false == DetermineDefaultWindow())
     {
       return;
     }
@@ -214,6 +205,50 @@ namespace YTE
   GraphicsView::~GraphicsView()
   {
     mRenderer->DeregisterView(this);
+  }
+
+  bool GraphicsView::DetermineDefaultWindow()
+  {
+    auto engine = mSpace->GetEngine();
+
+    auto it = engine->GetWindows().find(mWindowName);
+
+    if (it != engine->GetWindows().end())
+    {
+      mWindow = it->second.get();
+    }
+    else if (mWindowName.empty())
+    {
+      Composition* parent = mOwner;
+
+      do
+      {
+        auto view = parent->GetComponent<GraphicsView>();
+
+        if (view)
+        {
+          mWindow = view->mWindow;
+          mWindowName = view->mWindowName;
+          view->RegisterEvent<&GraphicsView::ParentSurfaceGained>(Events::SurfaceGained, this);
+          view->RegisterEvent<&GraphicsView::ParentSurfaceLost>(Events::SurfaceLost, this);
+          break;
+        }
+        parent = parent->GetParent();
+      } while ((parent != nullptr) && (parent != engine));
+    }
+
+    // If we didn't find a window, just grab the primary one from the engine.
+    if (nullptr == mWindow)
+    {
+      mWindow = mOwner->GetEngine()->GetWindow();
+    }
+
+    if (mWindow)
+    {
+      return true;
+    }
+    
+    return false;
   }
 
   // https://stackoverflow.com/a/108340
@@ -294,6 +329,36 @@ namespace YTE
 
     mWindow = it->second.get();
 
+    event.ChangingWindow = mWindow;
+
+    if (false == mConstructing)
+    {
+      mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
+    }
+  }
+  
+  void GraphicsView::ParentSurfaceLost(ViewChanged* aEvent)
+  {
+    ViewChanged event;
+    event.View = this;
+
+    event.ChangingWindow = nullptr;
+
+    if (false == mConstructing)
+    {
+      SendEvent(Events::SurfaceLost, &event);
+      mRenderer->DeregisterView(this);
+    }
+  }
+
+  void GraphicsView::ParentSurfaceGained(ViewChanged* aEvent)
+  {
+    ViewChanged event;
+    event.View = this;
+
+    mWindow = aEvent->ChangingWindow;
+    mWindowName = aEvent->View->mWindowName;
     event.ChangingWindow = mWindow;
 
     if (false == mConstructing)

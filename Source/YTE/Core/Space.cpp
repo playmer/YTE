@@ -132,9 +132,22 @@ namespace YTE
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.
-  void Space::Load(RSValue* aLevel, bool aInitialize)
+  void Space::Load(RSValue* aLevel, Space* aInitializeVia)
   {
     OPTICK_EVENT();
+
+    bool mustSeriallyInitialize = false;
+
+    if (nullptr == aInitializeVia)
+    {
+      aInitializeVia = this;
+    }
+
+    if (aInitializeVia->GetFinishedLoading())
+    {
+      mustSeriallyInitialize = true;
+    }
+
     mCompositions.Clear();
     ComponentClear();
       
@@ -147,7 +160,7 @@ namespace YTE
       printf("We could not deserialize the level provided.\n");
     }
       
-    if (aInitialize)
+    if (mustSeriallyInitialize)
     {
       Initialize();
     }
@@ -155,7 +168,7 @@ namespace YTE
     {
       for (auto const&[name, composition] : mCompositions)
       {
-        ConnectNodes(this, composition.get());
+        ConnectNodes(aInitializeVia, composition.get());
       }
 
 
@@ -244,7 +257,7 @@ namespace YTE
     {
       mLevelName = mLoadingName;
       SetName(mLoadingName);
-      Load(mLevelToLoad, false);
+      Load(mLevelToLoad);
     }
 
     if (false == mFinishedLoading)
@@ -362,7 +375,11 @@ namespace YTE
   {
     auto newSpace = AddComposition<Space>(aLevelName, mEngine, nullptr);
     newSpace->mOwner = this;
-    newSpace->Load(mEngine->GetLevel(aLevelName));
+
+    newSpace->Load(mEngine->GetLevel(aLevelName), this);
+
+    ConnectNodes(mSpace, this);
+
     auto ourView = GetComponent<GraphicsView>();
     auto newView = newSpace->GetComponent<GraphicsView>();
 

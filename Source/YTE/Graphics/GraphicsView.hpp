@@ -161,6 +161,11 @@ namespace YTE
     }
 
   private:
+    bool DetermineDefaultWindow();
+
+    void ParentSurfaceLost(ViewChanged* aEvent);
+    void ParentSurfaceGained(ViewChanged* aEvent);
+
     std::optional<LightManager> mLightManager;
     std::optional<WaterInfluenceMapManager> mWaterInfluenceMapManager;
 
