@@ -43,7 +43,8 @@ namespace YTE
     YTEDeclareType(Keyboard);
 
     YTE_Shared Keyboard();
-
+    
+    YTE_Shared void PreUpdate();
     YTE_Shared void Update();
     YTE_Shared void UpdateKey(Keys aKey, bool aDown);
     YTE_Shared void ForceAllKeysUp();
@@ -52,6 +53,11 @@ namespace YTE
     YTE_Shared bool IsKeyDown(Keys aKey);
     YTE_Shared bool WasKeyDown(Keys aKey);
 
+    // This 
+    YTE_Shared void SetText(char const*);
+    YTE_Shared void AddText(char const*);
+    YTE_Shared std::string const& GetText();
+    
     bool *mKeysPrevious;
     bool *mKeysCurrent;
 
@@ -59,6 +65,7 @@ namespace YTE
   private:
     bool mArrayOne[static_cast<size_t>(Keys::Keys_Number)];
     bool mArrayTwo[static_cast<size_t>(Keys::Keys_Number)];
+    std::string mText;
   };
 }
 

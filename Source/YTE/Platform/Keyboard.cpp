@@ -37,6 +37,11 @@ namespace YTE
     mKeysCurrent = mArrayOne;
     mKeysPrevious = mArrayTwo;
   }
+  
+  void Keyboard::PreUpdate()
+  {
+    mText.clear();
+  }
 
   void Keyboard::Update()
   {
@@ -112,8 +117,24 @@ namespace YTE
   {
     return mKeysCurrent[static_cast<int>(aKey)];
   }
+
   bool Keyboard::WasKeyDown(Keys aKey)
   {
     return mKeysPrevious[static_cast<int>(aKey)];
+  }
+  
+  void Keyboard::AddText(char const* aText)
+  {
+    mText += aText;
+  }
+  
+  void Keyboard::SetText(char const* aText)
+  {
+    mText = aText;
+  }
+
+  std::string const& Keyboard::GetText()
+  {
+    return mText;
   }
 }

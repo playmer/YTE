@@ -156,6 +156,7 @@ namespace YTE
         // Keyboard text input
       case SDL_TEXTINPUT:
       {
+        aKeyboard->AddText(aEvent.text.text);
         break;
       }
 

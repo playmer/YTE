@@ -84,7 +84,8 @@ namespace YTE
     YTE_Shared void* GetWindowId();
 
     YTE_Shared ~Window();
-
+    
+    YTE_Shared void PreUpdate();
     YTE_Shared void PlatformUpdate();
     YTE_Shared void Update();
 

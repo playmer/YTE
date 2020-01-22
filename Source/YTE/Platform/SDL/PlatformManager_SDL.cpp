@@ -53,6 +53,11 @@ namespace YTE
     auto gamepadSystem = mGamepadSystem.mData.Get<GamepadSystemData>();
     
     mGamepadSystem.PreUpdateGamepads();
+    
+    for (auto& [name, window] : mWindows)
+    {
+      window->PreUpdate();
+    }
 
     if (false == mEngine->IsEditor())
     {

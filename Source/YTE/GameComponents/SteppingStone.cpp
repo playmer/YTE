@@ -11,7 +11,8 @@ namespace YTE
 {
   YTEDefineType(SteppingStone)
   {
-    YTERegisterType(SteppingStone);
+    RegisterType<SteppingStone>();
+    TypeBuilder<SteppingStone> builder;
   }
 
   static inline float RandomFloat(float a, float b, std::default_random_engine &e)
@@ -28,9 +29,7 @@ namespace YTE
     return dist(e);
   }
 
-  SteppingStone::SteppingStone(Composition *aOwner, 
-                                Space *aSpace, 
-                                RSValue *aProperties)
+  SteppingStone::SteppingStone(Composition *aOwner, Space *aSpace)
     : Component{ aOwner, aSpace }
     , mSpriteOwner{ nullptr }
     , mLayer{ nullptr }
@@ -40,7 +39,6 @@ namespace YTE
     , mTimeTracker{ 0.75 }
     , e{ r() }
   {
-    YTEUnusedArgument(aProperties);
   }
 
   void SteppingStone::Start()
@@ -67,7 +65,7 @@ namespace YTE
 
     view->SetDrawerType("ImguiDrawer");
 
-    mSpace->YTERegister(Events::LogicUpdate, this, &SteppingStone::Update);
+    mSpace->RegisterEvent<&SteppingStone::Update>(Events::LogicUpdate, this);
   }
 
   static i64 Mod(i64 a, i64 b)
@@ -91,13 +89,20 @@ namespace YTE
 
   void SteppingStone::Update(LogicUpdate *aUpdate)
   {
-    YTEUnusedArgument(aUpdate);
+    UnusedArguments(aUpdate);
+
+    auto previousTimeToChange = mTimeToChange;
     mLayer->Begin("Stepping Stone");
     mLayer->InputInt("K", &mK);
     mLayer->InputInt("N", &mN);
     mLayer->InputFloat("Seconds to Change", &mTimeToChange);
     auto reset = mLayer->Button("Reset");
     mLayer->End();
+
+    if (previousTimeToChange != mTimeToChange)
+    {
+      mTimeTracker = 0.0f;
+    }
 
     if ((mColors.size() != mK) ||
         (mSprites.size() != mN))

@@ -3,6 +3,7 @@ add_library(YTE SHARED)
 get_filename_component(ParentDirectory ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
 add_subdirectory(Core)
+add_subdirectory(GameComponents)
 add_subdirectory(Graphics)
 add_subdirectory(Physics)
 add_subdirectory(Math)

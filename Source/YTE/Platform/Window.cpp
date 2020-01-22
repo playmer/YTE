@@ -55,6 +55,11 @@ namespace YTE
 
     return false;
   }
+  
+  void Window::PreUpdate()
+  {
+    mKeyboard.PreUpdate();
+  }
 
   void Window::Update()
   {

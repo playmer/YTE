@@ -73,6 +73,8 @@ namespace YTE
     window->mKeyboard.RegisterEvent<&ImguiLayer::KeyReleaseCallback>(Events::KeyRelease, this);
     window->mKeyboard.RegisterEvent<&ImguiLayer::CharacterTypedCallback>(Events::CharacterTyped, this);
 
+    
+
     io.KeyMap[ImGuiKey_Tab] = EnumCast<int>(Keys::Tab);
     io.KeyMap[ImGuiKey_LeftArrow] = EnumCast<int>(Keys::Left);
     io.KeyMap[ImGuiKey_RightArrow] = EnumCast<int>(Keys::Right);
@@ -139,6 +141,16 @@ namespace YTE
     io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
     io.MouseDown[1] = mouse.IsButtonDown(MouseButtons::Right);
     io.MouseDown[2] = mouse.IsButtonDown(MouseButtons::Middle);
+
+    if (window)
+    {
+      auto& text = window->mKeyboard.GetText();
+
+      if (false == text.empty())
+      {
+        io.AddInputCharactersUTF8(text.c_str());
+      }
+    }
 
     io.ImeWindowHandle = window->GetWindowId();
 
