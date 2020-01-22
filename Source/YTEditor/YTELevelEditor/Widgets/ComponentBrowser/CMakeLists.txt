@@ -1,0 +1,29 @@
+target_sources(YTEditor
+PRIVATE  
+  ArchetypeTools.cpp
+  ArchetypeTools.hpp
+  CheckBox.hpp
+  ColorPicker.cpp
+  ColorPicker.hpp
+  ComponentBrowser.cpp
+  ComponentBrowser.hpp
+  ComponentProperty.cpp
+  ComponentProperty.hpp
+  ComponentSearchBar.cpp
+  ComponentSearchBar.hpp
+  ComponentTools.cpp
+  ComponentTools.hpp
+  ComponentTree.cpp
+  ComponentTree.hpp
+  ComponentWidget.cpp
+  ComponentWidget.hpp
+  HeaderListProperty.cpp
+  HeaderListProperty.hpp
+  HeaderListWidget.cpp
+  HeaderListWidget.hpp
+  LineEdit.hpp
+  PropertyWidget.hpp
+  PropertyWidgetBase.hpp
+  SearchBarEventFilter.cpp
+  SearchBarEventFilter.hpp
+)

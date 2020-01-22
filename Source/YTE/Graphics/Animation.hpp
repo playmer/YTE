@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Animation_hpp
@@ -17,11 +12,6 @@
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/UBOs.hpp"
-
-struct aiScene;
-struct aiNodeAnim;
-struct aiNode;
-struct aiAnimation;
 
 namespace YTE
 {
@@ -232,6 +222,7 @@ namespace YTE
     YTE_Shared ~Animator();
 
     YTE_Shared void Initialize() override;
+    YTE_Shared void Deinitialize() override;
 
     YTE_Shared void Update(LogicUpdate* aEvent);
 
@@ -267,6 +258,73 @@ namespace YTE
 
     std::map<std::string, Animation*> mAnimations;
   };
+  
+  struct AnimationFileHeader
+  {
+    // The "header" of the file.
+    u64 mNodeSize;
+    u64 mTransformationsSize;
+    u64 mChildrenSize;
+    u64 mTranslationKeysSize;
+    u64 mScaleKeysSize;
+    u64 mRotationKeysSize;
+    u64 mNamesSize;
+    double mDuration;
+    double mTicksPerSecond;
+  };
+  
+  YTE_Shared std::pair<AnimationData, std::vector<char>> ReadAnimationDataFromFile(std::string const& aName);
+  YTE_Shared AnimationData ReadAnimationFromFile(std::string& aFile);
+  
+  // The following is a glmification of the assimp aiQuaterniont<TReal>::Interpolate
+  // function.
+  // TODO (Joshua): Investigate glm::mix function after we've updated glm.
+  // We've preserved the following comments from assimps writing of the function:
+  // ---------------------------------------------------------------------------
+  // Performs a spherical interpolation between two quaternions
+  // Implementation adopted from the gmtl project. All others I found on the net fail in some cases.
+  // Congrats, gmtl!
+  inline glm::quat animation_interpolate(glm::quat const& aStart, glm::quat const& aEnd, float aFactor)
+  {
+    // calc cosine theta
+    float cosom = glm::dot(aStart, aEnd);
+
+    // adjust signs (if necessary)
+    glm::quat end = aEnd;
+    if (cosom < 0.0f)
+    {
+      cosom = -cosom;
+      end.x = -end.x;   // Reverse all signs
+      end.y = -end.y;
+      end.z = -end.z;
+      end.w = -end.w;
+    }
+
+    // Calculate coefficients
+    float sclp;
+    float sclq;
+    if ((1.0f - cosom) > 0.0001f) // 0.0001 -> some epsillon
+    {
+      // Standard case (slerp)
+      float omega;
+      float sinom;
+      omega = std::acos(cosom); // extract theta from dot product's cos theta
+      sinom = std::sin(omega);
+      sclp = std::sin((1.0f - aFactor) * omega) / sinom;
+      sclq = std::sin(aFactor * omega) / sinom;
+    }
+    else
+    {
+      // Very close, do linear interp (because it's faster)
+      sclp = 1.0f - aFactor;
+      sclq = aFactor;
+    }
+
+    return { sclp * aStart.w + sclq * end.w,
+             sclp * aStart.x + sclq * end.x,
+             sclp * aStart.y + sclq * end.y,
+             sclp * aStart.z + sclq * end.z };
+  }
 }
 
 #endif

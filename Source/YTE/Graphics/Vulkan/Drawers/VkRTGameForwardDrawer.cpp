@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -21,80 +16,6 @@ namespace YTE
 
   namespace detail
   {
-    // Adapted From Sascha Willems
-    // https://github.com/SaschaWillems/Vulkan/blob/master/base/frustum.hpp
-    class Frustum
-    {
-    public:
-      enum side { LEFT = 0, RIGHT = 1, TOP = 2, BOTTOM = 3, BACK = 4, FRONT = 5 };
-      std::array<glm::vec4, 6> mPlanes;
-      glm::vec3 mCameraPosition;
-
-      void Update(glm::mat4 const& aClipSpace, glm::vec4 const& aCameraPosition)
-      {
-        mCameraPosition = glm::vec3(aCameraPosition);
-
-        mPlanes[LEFT].x = aClipSpace[0].w + aClipSpace[0].x;
-        mPlanes[LEFT].y = aClipSpace[1].w + aClipSpace[1].x;
-        mPlanes[LEFT].z = aClipSpace[2].w + aClipSpace[2].x;
-        mPlanes[LEFT].w = aClipSpace[3].w + aClipSpace[3].x;
-
-        mPlanes[RIGHT].x = aClipSpace[0].w - aClipSpace[0].x;
-        mPlanes[RIGHT].y = aClipSpace[1].w - aClipSpace[1].x;
-        mPlanes[RIGHT].z = aClipSpace[2].w - aClipSpace[2].x;
-        mPlanes[RIGHT].w = aClipSpace[3].w - aClipSpace[3].x;
-
-        mPlanes[TOP].x = aClipSpace[0].w - aClipSpace[0].y;
-        mPlanes[TOP].y = aClipSpace[1].w - aClipSpace[1].y;
-        mPlanes[TOP].z = aClipSpace[2].w - aClipSpace[2].y;
-        mPlanes[TOP].w = aClipSpace[3].w - aClipSpace[3].y;
-
-        mPlanes[BOTTOM].x = aClipSpace[0].w + aClipSpace[0].y;
-        mPlanes[BOTTOM].y = aClipSpace[1].w + aClipSpace[1].y;
-        mPlanes[BOTTOM].z = aClipSpace[2].w + aClipSpace[2].y;
-        mPlanes[BOTTOM].w = aClipSpace[3].w + aClipSpace[3].y;
-
-        mPlanes[BACK].x = aClipSpace[0].w + aClipSpace[0].z;
-        mPlanes[BACK].y = aClipSpace[1].w + aClipSpace[1].z;
-        mPlanes[BACK].z = aClipSpace[2].w + aClipSpace[2].z;
-        mPlanes[BACK].w = aClipSpace[3].w + aClipSpace[3].z;
-
-        mPlanes[FRONT].x = aClipSpace[0].w - aClipSpace[0].z;
-        mPlanes[FRONT].y = aClipSpace[1].w - aClipSpace[1].z;
-        mPlanes[FRONT].z = aClipSpace[2].w - aClipSpace[2].z;
-        mPlanes[FRONT].w = aClipSpace[3].w - aClipSpace[3].z;
-
-        for (auto i = 0; i < mPlanes.size(); i++)
-        {
-          float length = sqrtf(mPlanes[i].x * mPlanes[i].x + mPlanes[i].y * mPlanes[i].y + mPlanes[i].z * mPlanes[i].z);
-          mPlanes[i] /= length;
-        }
-      }
-
-      bool CheckSphere(glm::vec3 aPosition, float aRadius)
-      {
-        YTEProfileFunction();
-
-        // Check to see if Camera is within the sphere, if so, just draw it.
-        auto distance = glm::length(mCameraPosition - aPosition);
-
-        if (distance < aRadius)
-        {
-          return true;
-        }
-
-        // Next check to see if the sphere is within the planes.
-        for (auto i = 0; i < mPlanes.size(); i++)
-        {
-          if ((mPlanes[i].x * aPosition.x) + (mPlanes[i].y * aPosition.y) + (mPlanes[i].z * aPosition.z) + mPlanes[i].w <= -aRadius)
-          {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-
     // Derived from https://math.stackexchange.com/a/1463487
     float ExtractMaximumUniformScale(glm::mat4 const& aModelMatrix)
     {
@@ -105,13 +26,6 @@ namespace YTE
       return std::max(x, std::max(y, z));
     }
   }
-
-
-
-
-
-
-
 
 
   VkRTGameForwardDrawer::VkRTGameForwardDrawer(VkRenderedSurface *aSurface,
@@ -128,7 +42,7 @@ namespace YTE
                      "VkRTGameForwardDrawer_" + aView->mName,
                      aCombinationType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Initialize();
   }
@@ -139,27 +53,34 @@ namespace YTE
 
   void VkRTGameForwardDrawer::RenderFull(std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
+    ++(*mCBOB);
+
+    auto [graphicsCommandBuffer, graphicsFence] = **mCBOB;
+    auto& cbo = graphicsCommandBuffer;
+
     cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, 
                mRenderPass,
                0,
                GetFrameBuffer());
+
     Render(cbo, aMeshes);
+
     cbo->end();
   }
 
-  static void RunPipelines(std::shared_ptr<vkhlf::CommandBuffer> &aCBO,
-                           std::vector<VkRTGameForwardDrawer::DrawData> &aShaders)
+  static void RunPipelines(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
+                           std::vector<VkRTGameForwardDrawer::DrawData>& aShaders)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+    auto number = std::to_string(aShaders.size());
+    OPTICK_TAG("DrawDatas:", number.c_str());
 
     {
-      auto number = std::to_string(aShaders.size());
-      YTEProfileBlock(number.c_str());
 
+      std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
+      std::vector<u64> vertexBufferOffsets;
       std::shared_ptr<vkhlf::Pipeline> *lastPipeline{ nullptr };
       float lastLineWidth = 1.0f;
 
@@ -167,7 +88,7 @@ namespace YTE
       {
         if (lastPipeline != drawCall.mPipeline)
         {
-          YTEProfileBlock("bindPipeline");
+          OPTICK_EVENT("CommandBuffer Recording: bindPipeline");
 
           aCBO->bindPipeline(vk::PipelineBindPoint::eGraphics,
                              *drawCall.mPipeline);
@@ -177,47 +98,68 @@ namespace YTE
 
         if (lastLineWidth != drawCall.mLineWidth)
         {
-          YTEProfileBlock("setLineWidth");
+          OPTICK_EVENT("CommandBuffer Recording: setLineWidth");
 
           aCBO->setLineWidth(drawCall.mLineWidth);
           lastLineWidth = drawCall.mLineWidth;
         }
 
         {
-          YTEProfileBlock("bindVertexBuffer");
+          OPTICK_EVENT("CommandBuffer Recording: bindVertexBuffer");
+          auto& vbd = *(drawCall.mVertexBufferData);
 
-          aCBO->bindVertexBuffer(0,
-                                 *drawCall.mVertexBuffer,
-                                 0);
+          if (vbd.mPositionBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+          if (vbd.mTextureCoordinatesBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+          if (vbd.mNormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+          if (vbd.mColorBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+          if (vbd.mTangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+          if (vbd.mBinormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+          if (vbd.mBitangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+          if (vbd.mBoneWeightsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+          if (vbd.mBoneWeights2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+          if (vbd.mBoneIDsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+          if (vbd.mBoneIDs2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+
+          vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
+
+          aCBO->bindVertexBuffers(
+            0,
+            vertexBuffersToBind,
+            vertexBufferOffsets);
         }
 
         {
-          YTEProfileBlock("bindIndexBuffer");
+          OPTICK_EVENT("CommandBuffer Recording: bindIndexBuffer");
 
-          aCBO->bindIndexBuffer(*drawCall.mIndexBuffer,
-                                0,
-                                vk::IndexType::eUint32);
+          aCBO->bindIndexBuffer(
+            *drawCall.mIndexBuffer,
+            0,
+            vk::IndexType::eUint32);
         }
 
         {
-          YTEProfileBlock("bindDescriptorSets");
+          OPTICK_EVENT("CommandBuffer Recording: bindDescriptorSets");
 
-          aCBO->bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                   *drawCall.mPipelineLayout,
-                                   0,
-                                   *drawCall.mDescriptorSet,
-                                   nullptr); 
+          aCBO->bindDescriptorSets(
+            vk::PipelineBindPoint::eGraphics,
+            *drawCall.mPipelineLayout,
+            0,
+            *drawCall.mDescriptorSet,
+            nullptr); 
         }
 
         {
-          YTEProfileBlock("drawIndexed");
+          OPTICK_EVENT("CommandBuffer Recording: drawIndexed");
 
-          aCBO->drawIndexed(static_cast<u32>(drawCall.mIndexCount),
-                            1,
-                            0,
-                            0,
-                            0);
+          aCBO->drawIndexed(
+            drawCall.mIndexCount,
+            drawCall.mInstanceCount,
+            0,
+            0,
+            0);
         }
+
+        vertexBuffersToBind.clear();
       }
 
       aShaders.clear();
@@ -227,13 +169,13 @@ namespace YTE
   void VkRTGameForwardDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO,
                                      std::unordered_map<std::string, std::unique_ptr<VkMesh>>& aMeshes)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    auto toClipSpace = mParentViewData->mViewUBOData.mProjectionMatrix *
-                       mParentViewData->mViewUBOData.mViewMatrix;
+    auto const& viewUbo = mParentViewData->mView->GetViewUBOData();
+    auto toClipSpace = viewUbo.mProjectionMatrix *
+                       viewUbo.mViewMatrix;
 
-    detail::Frustum frustum;
-    frustum.Update(toClipSpace, mParentViewData->mViewUBOData.mCameraPosition);
+    auto& frustum = mParentViewData->mView->GetFrustum();
 
     glm::vec4 origin{ 0.f,0.f,0.f,1.f };
     float depth{ 0.0f };
@@ -267,10 +209,11 @@ namespace YTE
         for (auto it = range.first; it != range.second; ++it)
         {
           auto &submesh = it->second;
+          auto trueSubmesh = submesh->mSubmesh;
 
           for (auto &model : models)
           {
-            auto submeshDimension = submesh->mSubmesh->mDimension;
+            auto submeshDimension = trueSubmesh->mData.mDimension;
             auto subMeshPosition = submeshDimension.GetCenter();
             auto modelMatrix = model->GetUBOModelData().mModelMatrix;
             modelMatrix[3][0] += subMeshPosition.x;
@@ -280,7 +223,13 @@ namespace YTE
             auto position = modelMatrix * origin;
             auto radiusScale = detail::ExtractMaximumUniformScale(modelMatrix);
 
-            auto visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
+            bool visible = true;
+
+            // TODO: Need to bugfix this.
+            if (CompilerConfiguration::Debug())
+            {
+              visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
+            }
 
             if ((visible == false) || (false == model->GetVisibility()))
             {
@@ -347,11 +296,11 @@ namespace YTE
             }
 
             toEmplaceInto->emplace_back(*toUseToDraw,
-                                        GetBuffer(submesh->mVertexBuffer),
-                                        GetBuffer(submesh->mIndexBuffer),
+                                        trueSubmesh->mVertexBufferData,
+                                        GetBuffer(trueSubmesh->mIndexBuffer),
                                         data.mPipelineLayout,
                                         data.mDescriptorSet,
-                                        static_cast<u32>(submesh->mIndexCount),
+                                        static_cast<u32>(trueSubmesh->mData.mIndexData.size()),
                                         model->mLineWidth,
                                         depth);
           }
@@ -363,7 +312,7 @@ namespace YTE
     // space, then sorts their z (depth). It's not perfect, but solves
     // most naive issues (UI sorting issues, most particle issues).
     {
-      YTEProfileBlock("Sorting Alpha");
+      OPTICK_EVENT("Sorting Alpha");
 
       std::sort(mAlphaBlendShader.begin(), 
                 mAlphaBlendShader.end(), 
@@ -374,37 +323,37 @@ namespace YTE
     }
 
     {
-      YTEProfileBlock("Triangles");
+      OPTICK_EVENT("Drawing Triangles");
 
       RunPipelines(aCBO, mTriangles);
     }
 
     {
-      YTEProfileBlock("Lines");
+      OPTICK_EVENT("Drawing Lines");
 
       RunPipelines(aCBO, mLines);
     }
 
     {
-      YTEProfileBlock("Curves");
+      OPTICK_EVENT("Drawing Curves");
 
       RunPipelines(aCBO, mCurves);
     }
 
     {
-      YTEProfileBlock("ShaderNoCull");
+      OPTICK_EVENT("Drawing ShaderNoCull");
 
       RunPipelines(aCBO, mShaderNoCull);
     }
 
     {
-      YTEProfileBlock("AdditiveBlendShader");
+      OPTICK_EVENT("Drawing AdditiveBlendShader");
 
       RunPipelines(aCBO, mAdditiveBlendShader);
     }
 
     {
-      YTEProfileBlock("AlphaBlendShader");
+      OPTICK_EVENT("Drawing AlphaBlendShader");
 
       RunPipelines(aCBO, mAlphaBlendShader);
     }

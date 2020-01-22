@@ -1,20 +1,11 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkImgui.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRTGameForwardDrawer.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
-#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
@@ -52,15 +43,12 @@ namespace YTE
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto internals = mRenderer->GetVkInternals();
 
-    auto baseDevice = static_cast<vk::PhysicalDevice>(*(internals->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
+    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(internals->GetPhysicalDevice(),
+                                                                         mSurface);
     auto formats = supportDetails.Formats();
 
     // If the format list includes just one entry of VK_FORMAT_UNDEFINED,
@@ -76,14 +64,9 @@ namespace YTE
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 
     mRenderCompleteSemaphore = mRenderer->mDevice->createSemaphore();
-    mCubemapComplete = mRenderer->mDevice->createSemaphore();
-    //mRenderPass1 = mRenderer->mDevice->createSemaphore();
-    //mRenderPass2 = mDevice->createSemaphore();
-    //mRenderPass3 = mDevice->createSemaphore();
 
-    mAnimationUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
-    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mCommandPool);
+    mTransferBufferedCommandBuffer = std::make_unique<VkCBOB<3, false>>(mRenderer->mTransferQueueData->mCommandPool);
+    mRenderingCBOB = std::make_unique<VkCBOB<3, false>>(mRenderer->mGraphicsQueueData->mCommandPool);
 
     // create Framebuffer & Swapchain
     WindowResize event;
@@ -97,7 +80,7 @@ namespace YTE
 
   VkRenderedSurface::~VkRenderedSurface()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mCanPresent)
     {
@@ -107,26 +90,6 @@ namespace YTE
     mViewData.clear();
     mShaderCreateInfos.clear();
     mRenderToScreen.reset();
-  }
-  
-  void VkRenderedSurface::UpdateSurfaceViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    YTEProfileFunction();
-
-    auto view = GetViewData(aView);
-    view->mViewUBOData = aUBOView;
-    view->mViewUBO.Update(view->mViewUBOData);
-    //mRenderer->mUBOUpdates.Add(view->mViewUBO, view->mViewUBOData);
-  }
-
-  void VkRenderedSurface::UpdateSurfaceIlluminationBuffer(GraphicsView *aView, UBOs::Illumination& aIllumination)
-  {
-    YTEProfileFunction();
-
-    auto view = GetViewData(aView);
-    view->mIlluminationUBOData = aIllumination;
-    view->mIlluminationUBO.Update(view->mIlluminationUBOData);
-    //mRenderer->mUBOUpdates.Add(view->mIlluminationUBO, view->mIlluminationUBOData);
   }
 
   void VkRenderedSurface::PrintSurfaceFormats(std::vector<vk::SurfaceFormatKHR> &aFormats)
@@ -144,7 +107,7 @@ namespace YTE
   // Models
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, std::string &aModelFile)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mDataUpdateRequired = true;
     auto model = std::make_unique<VkInstantiatedModel>(aModelFile, this, aView);
@@ -155,7 +118,7 @@ namespace YTE
 
   std::unique_ptr<VkInstantiatedModel> VkRenderedSurface::CreateModel(GraphicsView *aView, Mesh *aMesh)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mDataUpdateRequired = true;
 
@@ -167,7 +130,7 @@ namespace YTE
 
   void VkRenderedSurface::AddModel(VkInstantiatedModel *aModel)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aModel->mView)->mInstantiatedModels;
     instantiatedModels[static_cast<VkMesh*>(aModel->GetVkMesh())].push_back(aModel);
@@ -191,7 +154,7 @@ namespace YTE
       return;
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -214,7 +177,7 @@ namespace YTE
       return;
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
@@ -232,14 +195,42 @@ namespace YTE
     }
   }
 
-  // Shader
-  VkShader* VkRenderedSurface::CreateShader(std::string &aShaderSetName,
-                                            std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                                            VkShaderDescriptions &aDescription,
-                                            GraphicsView* aView)
+
+  VkCreatePipelineDataSet* VkRenderedSurface::IfShaderExistsCreateOnView(
+    std::string& aShaderSetName,
+    GraphicsView* aView)
   {
     auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
-    VkShader *shaderPtr{ nullptr };
+    ViewData* view = GetViewData(aView);
+    auto viewShaderIt = view->mShaders.find(aShaderSetName);
+
+    if (shaderIt == mShaderCreateInfos.end())
+    {
+      return nullptr;
+    }
+    else if (viewShaderIt == view->mShaders.end() && shaderIt != mShaderCreateInfos.end())
+    {
+      auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
+      view->mShaders[aShaderSetName] = std::move(shader);
+
+      return &shaderIt->second;
+    }
+    else
+    {
+      return &shaderIt->second;
+    }
+  }
+
+  // Shader
+  VkCreatePipelineDataSet* VkRenderedSurface::CreateShader(
+    std::string &aShaderSetName,
+    std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+    std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+    VkShaderDescriptions &aDescription,
+    GraphicsView* aView)
+  {
+    auto shaderIt = mShaderCreateInfos.find(aShaderSetName);
+    VkCreatePipelineDataSet* piplineInfoPtr{ nullptr };
     ViewData *view = GetViewData(aView);
     auto viewShaderIt = view->mShaders.find(aShaderSetName);
 
@@ -248,79 +239,44 @@ namespace YTE
     {
       auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
 
-      shaderPtr = shader.get();
+      piplineInfoPtr = &shaderIt->second;
 
       view->mShaders[aShaderSetName] = std::move(shader);
     }
     // If surface doesn't have shader
     else if (shaderIt == mShaderCreateInfos.end())
     {
-      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(aShaderSetName,
-                                                          this,
-                                                          aPipelineLayout,
-                                                          aDescription,
-                                                          false);
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(
+        aShaderSetName,
+        this,
+        aDescriptorSetLayout,
+        aPipelineLayout,
+        aDescription,
+        false);
                                     
-      DebugObjection(cpds.mValid == false,
-                  fmt::format("Shader {} failed to compile and had no previously compiled shader to use.                                      Compilation Message:                                      {}",
-                              aShaderSetName, cpds.mErrorMessage)
-                  .c_str());
+      DebugObjection(cpds.mValid == false, cpds.mErrorMessage.c_str());
 
-      mShaderCreateInfos.emplace(aShaderSetName, cpds);
+      piplineInfoPtr = &mShaderCreateInfos.emplace(aShaderSetName, cpds).first->second;
 
       auto shader = std::make_unique<VkShader>(mShaderCreateInfos[aShaderSetName], view);
-
-      shaderPtr = shader.get();
-
+      
       view->mShaders[aShaderSetName] = std::move(shader);
-      //mDataUpdateRequired = true; // shades do not load data
     }
     // otherwise both have the shader
     else
     {
-      shaderPtr = view->mShaders[aShaderSetName].get();
+      piplineInfoPtr = &shaderIt->second;
     }
 
-    return shaderPtr;
-  }
-
-
-
-  std::unique_ptr<VkInstantiatedLight> VkRenderedSurface::CreateLight(GraphicsView* aView)
-  {
-    mDataUpdateRequired = true;
-    auto light = GetViewData(aView)->mLightManager.CreateLight();
-    return std::move(light);
-  }
-
-  std::unique_ptr<VkInstantiatedInfluenceMap> VkRenderedSurface::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    mDataUpdateRequired = true;
-    auto map = GetViewData(aView)->mWaterInfluenceMapManager.CreateMap();
-    return std::move(map);
-  }
-
-
-  std::shared_ptr<vkhlf::CommandPool>& VkRenderedSurface::GetCommandPool()
-  {
-    return mRenderer->mCommandPool;
-  }
-
-  std::shared_ptr<vkhlf::Queue>& VkRenderedSurface::GetGraphicsQueue()
-  {
-    return mRenderer->mGraphicsQueue;
+    return piplineInfoPtr;
   }
 
   void VkRenderedSurface::ResizeInternal(bool aConstructing)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    auto baseDevice = static_cast<vk::PhysicalDevice>
-                                  (*(mRenderer->GetVkInternals()->GetPhysicalDevice().get()));
-    vk::SurfaceKHR baseSurfaceKhr = static_cast<vk::SurfaceKHR>(*mSurface);
-
-    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(baseDevice,
-                                                                         baseSurfaceKhr);
+    auto supportDetails = SwapChainSupportDetails::QuerySwapChainSupport(mRenderer->GetVkInternals()->GetPhysicalDevice(),
+                                                                         mSurface);
 
     auto extent = supportDetails.Capabilities().currentExtent;
 
@@ -368,7 +324,7 @@ namespace YTE
 
   void VkRenderedSurface::ResizeEvent(WindowResize *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     UnusedArguments(aEvent);
 
@@ -384,7 +340,7 @@ namespace YTE
                                        DrawerTypes aDrawerType,
                                        DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -392,42 +348,14 @@ namespace YTE
     {
       auto emplaced = mViewData.try_emplace(aView);
 
-
-      //auto uboAllocator = mRenderer->mAllocators[AllocatorTypes::UniformBufferObject];
-      //auto buffer = mRenderer->mDevice->createBuffer(sizeof(UBOs::View),
-      //                                    vk::BufferUsageFlagBits::eTransferDst |
-      //                                    vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                    vk::SharingMode::eExclusive,
-      //                                    nullptr,
-      //                                    vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                    uboAllocator);
-      //auto buffer2 = mRenderer->mDevice->createBuffer(sizeof(UBOs::Illumination),
-      //                                     vk::BufferUsageFlagBits::eTransferDst |
-      //                                     vk::BufferUsageFlagBits::eUniformBuffer,
-      //                                     vk::SharingMode::eExclusive,
-      //                                     nullptr,
-      //                                     vk::MemoryPropertyFlagBits::eDeviceLocal,
-      //                                     uboAllocator);
-
       auto &view = emplaced.first->second;
 
-      
+      auto viewName = fmt::format("{}_{}", aView->GetOwner()->GetName().c_str(), aView->GetOwner()->GetGUID().ToIdentifierString());
 
-      auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
-      
-      view.mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
-                                                             GPUAllocation::BufferUsage::TransferDst |
-                                                             GPUAllocation::BufferUsage::UniformBuffer,
-                                                             GPUAllocation::MemoryProperty::DeviceLocal);
-      view.mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
-                                                                             GPUAllocation::BufferUsage::TransferDst |
-                                                                             GPUAllocation::BufferUsage::UniformBuffer,
-                                                                             GPUAllocation::MemoryProperty::DeviceLocal);
-
-      view.mName = aView->GetOwner()->GetGUID().ToIdentifierString();
+      view.mName = viewName;
       view.mView = aView;
-      view.mLightManager.SetSurfaceAndView(this, aView);
-      view.mWaterInfluenceMapManager.SetSurfaceAndView(this, aView);
+      view.mView->GetLightManager()->SetView(aView);
+      view.mView->GetWaterInfluenceMapManager()->SetView(aView);
       view.mRenderTarget = CreateRenderTarget(aDrawerType, &view, aCombination);
       view.mRenderTarget->SetView(&view);
       view.mViewOrder = aView->GetOrder(); // default
@@ -451,7 +379,7 @@ namespace YTE
                                              DrawerTypes aDrawerType,
                                              DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget.reset();
@@ -474,7 +402,7 @@ namespace YTE
   void VkRenderedSurface::SetViewCombinationType(GraphicsView *aView,
                                                     DrawerTypeCombination aCombination)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto viewData = GetViewData(aView);
     viewData->mRenderTarget->SetCombinationType(aCombination);
@@ -495,7 +423,7 @@ namespace YTE
 
   void VkRenderedSurface::DeregisterView(GraphicsView *aView)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -519,7 +447,7 @@ namespace YTE
 
   void VkRenderedSurface::ViewOrderChanged(GraphicsView *aView, float aNewOrder)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto it = mViewData.find(aView);
 
@@ -544,7 +472,7 @@ namespace YTE
 
   void VkRenderedSurface::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     UnusedArguments(aEvent);
 
     if (mWindow->IsMinimized() || mViewData.empty())
@@ -564,21 +492,34 @@ namespace YTE
 
   void VkRenderedSurface::PresentFrame()
   {
+    OPTICK_EVENT();
+
     if (mCanPresent == false)
     {
       return;
     }
 
     // wait till rendering is complete
-    mRenderer->mGraphicsQueue->waitIdle();
-    
-    if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueue, mRenderCompleteSemaphore) == false)
+    //mRenderer->mGraphicsQueueData->mQueue->waitIdle();
+
+    auto [graphicsCommandBuffer, graphicsFence] = **mRenderingCBOB;
+
     {
-      // create Framebuffer & Swapchain
-      WindowResize event;
-      event.height = mWindow->GetHeight();
-      event.width = mWindow->GetWidth();
-      ResizeEvent(&event);
+      OPTICK_EVENT("Waiting on rendering fence");
+      waitOnFence(mRenderer->mDevice, { graphicsFence });
+    }
+    
+    {
+      OPTICK_EVENT("Presenting");
+
+      if (mRenderToScreen->PresentFrame(mRenderer->mGraphicsQueueData->mQueue, mRenderCompleteSemaphore) == false)
+      {
+        // create Framebuffer & Swapchain
+        WindowResize event;
+        event.height = mWindow->GetHeight();
+        event.width = mWindow->GetWidth();
+        ResizeEvent(&event);
+      }
     }
 
     mCanPresent = false;
@@ -587,8 +528,12 @@ namespace YTE
   void VkRenderedSurface::GraphicsDataUpdate()
   {
     VkGraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+
+    ++(*mTransferBufferedCommandBuffer);
+
+    auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
+
+    update.mCBO = transferCommandBuffer;
 
     update.mCBO->begin();
 
@@ -596,7 +541,9 @@ namespace YTE
 
     update.mCBO->end();
 
-    vkhlf::submitAndWait(mRenderer->mGraphicsQueue, update.mCBO);
+    mRenderer->mTransferQueueData->mQueue->submit(update.mCBO, transferFence);
+
+    mDataUpdateRequired = false;
   }
 
 
@@ -607,11 +554,13 @@ namespace YTE
     // reconstruct
     for (auto &shader : mShaderCreateInfos)
     {
-      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(shader.second.mName,
-                                                          this,
-                                                          shader.second.mPipelineLayout,
-                                                          shader.second.mDescriptions,
-                                                          true);
+      VkCreatePipelineDataSet cpds = VkShader::CreateInfo(
+        shader.second.mName,
+        this,
+        shader.second.mDescriptorSetLayout,
+        shader.second.mPipelineLayout,
+        shader.second.mDescriptions,
+        true);
 
       // failed to compile, error already posted, just reuse the shader
       if (cpds.mValid)
@@ -636,18 +585,18 @@ namespace YTE
   {
     for (auto& view : mViewData)
     {
-      view.second.mLightManager.SetLights(aOnOrOff);
+      view.first->GetLightManager()->SetLights(aOnOrOff);
     }
   }
 
   void VkRenderedSurface::RenderFrameForSurface()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    {
-      YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
-      mRenderer->mGraphicsQueue->waitIdle();
-    }
+    //{
+    //  YTEMetaProfileBlock("mRenderer->mGraphicsQueue->waitIdle()");
+    //  mRenderer->mGraphicsQueueData->mQueue->waitIdle();
+    //}
 
     if (mWindow->mKeyboard.IsKeyDown(Keys::Control) && mWindow->mKeyboard.IsKeyDown(Keys::R))
     {
@@ -656,7 +605,12 @@ namespace YTE
 
     if (mDataUpdateRequired)
     {
-      GraphicsDataUpdate();
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+      //GraphicsDataUpdate();
     }
 
     
@@ -665,50 +619,45 @@ namespace YTE
     vk::ClearDepthStencilValue depthStencil{1.0f, 0};
 
     auto &extent = mRenderToScreen->GetExtent();
-    mRenderingCBOB->NextCommandBuffer();
+    ++(*mRenderingCBOB);
 
 
     // build secondaries
     {
-      YTEMetaProfileBlock("Building Secondary Command Buffers");
+      OPTICK_EVENT("Building Secondary Command Buffers");
 
       for (auto const& [view, data] : mViewData)
       {
-        YTEMetaProfileBlock(data.mName.c_str());
+        OPTICK_EVENT_DYNAMIC(data.mName.c_str());
         
         data.mRenderTarget->RenderFull(mRenderer->mMeshes);
-        data.mRenderTarget->MoveToNextEvent();
       }
     }
 
     // render to screen;
     {
-      YTEMetaProfileBlock("Building Secondary Command Buffers");
+      OPTICK_EVENT("Building Secondary Command Buffers");
 
       mRenderToScreen->RenderFull(extent);
-      mRenderToScreen->MoveToNextEvent();
     }
 
-    // cube map render
     std::vector<std::shared_ptr<vkhlf::Semaphore>> waitSemaphores = { mRenderToScreen->GetPresentSemaphore() };
 
-
     // build primary
-    auto cbo = mRenderingCBOB->GetCurrentCBO();
-    cbo->begin();
+    auto [renderingCommandBuffer, renderingFence] = **mRenderingCBOB;
+
+    renderingCommandBuffer->begin();
 
     // render all first pass render targets
     // wait on present semaphore for first render
     {
-      YTEMetaProfileBlock("Building Primary Command Buffer");
+      OPTICK_EVENT("Building Primary Command Buffer");
 
       for (auto const&[view, data] : mViewData)
       {
-        YTEMetaProfileBlock(data.mName.c_str());
+        OPTICK_EVENT_DYNAMIC(data.mName.c_str());
 
-        data.mRenderTarget->ExecuteSecondaryEvent(cbo);
-
-        glm::vec4 col = data.mClearColor;
+        glm::vec4 col = data.mView->GetClearColor();
 
         colorValues[0] = col.x;
         colorValues[1] = col.y;
@@ -716,15 +665,15 @@ namespace YTE
         colorValues[3] = col.w;
         vk::ClearValue color{ colorValues };
 
-        cbo->beginRenderPass(data.mRenderTarget->GetRenderPass(),
-                             data.mRenderTarget->GetFrameBuffer(),
-                             vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
-                             { color, depthStencil },
-                             vk::SubpassContents::eSecondaryCommandBuffers);
+        renderingCommandBuffer->beginRenderPass(data.mRenderTarget->GetRenderPass(),
+                                                data.mRenderTarget->GetFrameBuffer(),
+                                                vk::Rect2D({ 0, 0 }, data.mRenderTarget->GetRenderTargetData()->mExtent),
+                                                { color, depthStencil },
+                                                vk::SubpassContents::eSecondaryCommandBuffers);
 
-        data.mRenderTarget->ExecuteCommands(cbo);
+        renderingCommandBuffer->executeCommands(data.mRenderTarget->GetCommands());
 
-        cbo->endRenderPass();
+        renderingCommandBuffer->endRenderPass();
       }
     }
 
@@ -734,32 +683,39 @@ namespace YTE
     colorValues[3] = 1.0f;
     vk::ClearValue color{ colorValues };
 
-    mRenderToScreen->ExecuteSecondaryEvent(cbo);
+    renderingCommandBuffer->beginRenderPass(mRenderToScreen->GetRenderPass(),
+                                            mRenderToScreen->GetFrameBuffer(),
+                                            vk::Rect2D({ 0, 0 }, extent),
+                                            { color, depthStencil },
+                                            vk::SubpassContents::eSecondaryCommandBuffers);
 
-    cbo->beginRenderPass(mRenderToScreen->GetRenderPass(),
-                         mRenderToScreen->GetFrameBuffer(),
-                         vk::Rect2D({ 0, 0 }, extent),
-                         { color, depthStencil },
-                         vk::SubpassContents::eSecondaryCommandBuffers);
 
-    mRenderToScreen->ExecuteCommands(cbo);
+    renderingCommandBuffer->executeCommands(mRenderToScreen->GetCommands());
 
-    cbo->endRenderPass();
+    renderingCommandBuffer->endRenderPass();
     
-    cbo->end();
+    renderingCommandBuffer->end();
 
     vk::ArrayProxy<const std::shared_ptr<vkhlf::Semaphore>> vkWaitSemaphores(waitSemaphores);
 
     // submit
     vkhlf::SubmitInfo submit{ vkWaitSemaphores,
-                              { vk::PipelineStageFlagBits::eColorAttachmentOutput },
-                              cbo,
-                              mRenderCompleteSemaphore };
+                             { vk::PipelineStageFlagBits::eColorAttachmentOutput },
+                             renderingCommandBuffer,
+                             mRenderCompleteSemaphore };
 
     {
-      YTEMetaProfileBlock("Submitting to the Queue");
+      OPTICK_EVENT("Waiting on fences.");
 
-      mRenderer->mGraphicsQueue->submit(submit);
+      auto [transferCommandBuffer, transferFence] = **mTransferBufferedCommandBuffer;
+
+      waitOnFence(mRenderer->mDevice, { transferFence });
+    }
+
+    {
+      OPTICK_EVENT("Submitting to the Queue");
+
+      mRenderer->mGraphicsQueueData->mQueue->submit(submit, renderingFence);
     }
 
     mCanPresent = true;

@@ -1,12 +1,6 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Math
-///////////////////
 #pragma once
 #ifndef YTE_Math_Complex_hpp
 #define YTE_Math_Complex_hpp
-
-
 
 
 // --------------------------

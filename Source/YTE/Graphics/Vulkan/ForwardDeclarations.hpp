@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_ForwardDeclarations_hpp
@@ -23,6 +18,7 @@ namespace YTE
   class VkRenderer;
   class VkRenderedSurface;
   struct ViewData;
+  struct VkCreatePipelineDataSet;
   class VkShader;
   class VkSubmesh;
   class VkTexture;

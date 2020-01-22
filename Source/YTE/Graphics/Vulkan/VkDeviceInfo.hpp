@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkUtils_hpp
@@ -18,8 +13,8 @@ namespace YTE
   {
   public:
     // statics
-    static QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice aDevice);
-    static void AddRequiredExtension(const char *aExtension);
+    static QueueFamilyIndices FindQueueFamilies(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice, vk::QueueFlags aQueueFlag);
+    static void AddRequiredExtension(char const* aExtension);
     static void ClearRequiredExtensions();
 
     QueueFamilyIndices()
@@ -29,11 +24,11 @@ namespace YTE
     }
     
     bool IsComplete();
-    bool IsDeviceSuitable(vk::PhysicalDevice aDevice, vk::SurfaceKHR aSurface);
-    bool CheckDeviceExtensionSupport(vk::PhysicalDevice aDevice);
+    bool IsDeviceSuitable(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice, std::shared_ptr<vkhlf::Surface>& aSurface);
+    bool CheckDeviceExtensionSupport(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice);
 
     // Getter
-    u32 GetGraphicsFamily()
+    u32 GetFamily()
     {
       return mGraphicsFamily;
     }
@@ -49,14 +44,14 @@ namespace YTE
   {
   public:
     // statics
-    static SwapChainSupportDetails QuerySwapChainSupport(vk::PhysicalDevice aDevice,
-                                                         vk::SurfaceKHR aSurface)
+    static SwapChainSupportDetails QuerySwapChainSupport(std::shared_ptr<vkhlf::PhysicalDevice>& aDevice,
+                                                         std::shared_ptr<vkhlf::Surface>& aSurface)
     {
       SwapChainSupportDetails details;
 
-      details.mCapabilities = aDevice.getSurfaceCapabilitiesKHR(aSurface);
-      details.mFormats = aDevice.getSurfaceFormatsKHR(aSurface);
-      details.mPresentModes = aDevice.getSurfacePresentModesKHR(aSurface);
+      details.mCapabilities = aDevice->getSurfaceCapabilities(aSurface);
+      details.mFormats = aDevice->getSurfaceFormats(aSurface);
+      details.mPresentModes = aDevice->getSurfacePresentModes(aSurface);
 
       return details;
     }

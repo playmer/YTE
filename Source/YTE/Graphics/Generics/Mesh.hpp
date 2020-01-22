@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Generics_Mesh_hpp
@@ -12,21 +7,19 @@
 
 #include "YTE/Core/EventHandler.hpp"
 
+#include "YTE/Graphics/Generics/Shader.hpp"
+
+#include "YTE/Graphics/GPUBuffer.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
 #include "YTE/Graphics/UBOs.hpp"
 #include "YTE/Graphics/Vertex.hpp"
 
 #include "YTE/Platform/ForwardDeclarations.hpp"
 
-// forward declarations for assimp
-struct aiScene;
-struct aiMesh;
-struct aiNode;
-
-
-
 namespace YTE
 {
+  class Mesh;
+
   // vertices have the following components in them
   enum class VertexComponent
   {
@@ -49,7 +42,7 @@ namespace YTE
   };
 
 
-  enum class TextureViewType
+  enum class TextureViewType : u32
   {
     e2D,
     eCube
@@ -109,11 +102,7 @@ namespace YTE
       }
     };
 
-    YTE_Shared bool Initialize(const aiScene* aScene);
-
-    YTE_Shared void LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex);
-
-    bool HasBones()
+    bool HasBones() const
     {
       return !mBones.empty();
     }
@@ -143,16 +132,14 @@ namespace YTE
       return &mBones;
     }
 
-  private:
-    YTE_Shared void PreTransform(const aiScene* aScene);
-    YTE_Shared void VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform);
-
-    std::map<std::string, uint32_t, std::less<>> mBones;
     std::vector<BoneData> mBoneData;
-    uint32_t mNumBones;
-    glm::mat4 mGlobalInverseTransform;
     std::vector<VertexSkeletonData> mVertexSkeletonData;
+    std::map<std::string, uint32_t, std::less<>> mBones;
+
+    glm::mat4 mGlobalInverseTransform;
     UBOs::Animation mDefaultOffsets;
+
+  private:
     //#ifdef _DEBUG
     //    std::vector<unsigned int> mVertexErrorAdds;
     //#endif.
@@ -177,80 +164,200 @@ namespace YTE
     }
   };
 
-  // Submesh class contains all the data of the actual submesh
-  class Submesh
+  struct VertexData
   {
-  public:
-    YTE_Shared Submesh() = default;
-
-    YTE_Shared Submesh(Renderer *aRenderer,
-                       const aiScene *aScene,
-                       const aiMesh *aMesh,
-                       Skeleton *aSkeleton,
-                       uint32_t aBoneStartingVertexOffset);
-
-    virtual ~Submesh()
+    void AddVertex(Vertex const& aVertex)
     {
-      
+      mPositionData.emplace_back(aVertex.mPosition);
+      mTextureCoordinatesData.emplace_back(aVertex.mTextureCoordinates);
+      mNormalData.emplace_back(aVertex.mNormal);
+      mColorData.emplace_back(aVertex.mColor);
+      mTangentData.emplace_back(aVertex.mTangent);
+      mBinormalData.emplace_back(aVertex.mBinormal);
+      mBitangentData.emplace_back(aVertex.mBitangent);
+      mBoneWeightsData.emplace_back(aVertex.mBoneWeights);
+      mBoneWeights2Data.emplace_back(aVertex.mBoneWeights2);
+      mBoneIDsData.emplace_back(aVertex.mBoneIDs);
+      mBoneIDs2Data.emplace_back(aVertex.mBoneIDs2);
     }
 
-    size_t GetTriangleCount()
+    void Clear()
     {
-      return mIndexBuffer.size() / 3;
+      mPositionData.clear();
+      mTextureCoordinatesData.clear();
+      mNormalData.clear();
+      mColorData.clear();
+      mTangentData.clear();
+      mBinormalData.clear();
+      mBitangentData.clear();
+      mBoneWeightsData.clear();
+      mBoneWeights2Data.clear();
+      mBoneIDsData.clear();
+      mBoneIDs2Data.clear();
     }
 
-    glm::uvec3 GetTriangle(size_t aIndex)
+    std::vector<glm::vec3> mPositionData;
+    std::vector<glm::vec3> mTextureCoordinatesData;
+    std::vector<glm::vec3> mNormalData;
+    std::vector<glm::vec4> mColorData;
+    std::vector<glm::vec3> mTangentData;
+    std::vector<glm::vec3> mBinormalData;
+    std::vector<glm::vec3> mBitangentData;
+    std::vector<glm::vec3> mBoneWeightsData;
+    std::vector<glm::vec2> mBoneWeights2Data;
+    std::vector<glm::ivec3> mBoneIDsData;
+    std::vector<glm::ivec2> mBoneIDs2Data;
+  };
+
+  struct VertexBufferData
+  {
+    GPUBuffer<glm::vec3> mPositionBuffer;
+    GPUBuffer<glm::vec3> mTextureCoordinatesBuffer;
+    GPUBuffer<glm::vec3> mNormalBuffer;
+    GPUBuffer<glm::vec4> mColorBuffer;
+    GPUBuffer<glm::vec3> mTangentBuffer;
+    GPUBuffer<glm::vec3> mBinormalBuffer;
+    GPUBuffer<glm::vec3> mBitangentBuffer;
+    GPUBuffer<glm::vec3> mBoneWeightsBuffer;
+    GPUBuffer<glm::vec2> mBoneWeights2Buffer;
+    GPUBuffer<glm::ivec3> mBoneIDsBuffer;
+    GPUBuffer<glm::ivec2> mBoneIDs2Buffer;
+  };
+
+  struct SubmeshData
+  {
+    enum class TextureType : u32
     {
-      glm::uvec3 tri;
-      tri.x = (glm::uint)mIndexBuffer[aIndex];
-      tri.y = (glm::uint)mIndexBuffer[aIndex + 1];
-      tri.z = (glm::uint)mIndexBuffer[aIndex + 2];
-      return tri;
-    }
+      Diffuse,
+      Specular,
+      Normal,
+      Ambient,
+      Emissive,
+      Height,
+      Shininess,
+      Opacity,
+      Displacment,
+      Lightmap,
+      Reflection,
+      Unknown
+    };
 
-    void ResetTextureCoordinates();
+    static char const* ToShaderString(TextureType aType);
 
-    std::vector<Vertex> mVertexBuffer;
-    std::vector<u32> mIndexBuffer;
+    struct TextureData
+    {
+      TextureData() = default;
+      TextureData(std::string aName, TextureViewType aViewType, TextureType aSamplerType)
+        : mName{ aName }
+        , mViewType{ aViewType }
+        , mSamplerType{ aSamplerType }
+      {
+
+      }
+
+      std::string mName;
+      TextureViewType mViewType = TextureViewType::e2D;
+      TextureType mSamplerType;
+    };
+
+    ShaderDescriptions mDescriptions;
+    VertexData mVertexData;
+    std::vector<u32> mIndexData;
+    std::vector<TextureData> mTextureData;
 
     std::vector<glm::vec3> mInitialTextureCoordinates;
 
     UBOs::Material mUBOMaterial;
-
-    std::string mDiffuseMap;
-    TextureViewType mDiffuseType = TextureViewType::e2D;
-    std::string mNormalMap;
-    TextureViewType mNormalType = TextureViewType::e2D;
-    std::string mSpecularMap;
-    TextureViewType mSpecularType = TextureViewType::e2D;
 
     Dimension mDimension;
 
     std::string mName;
     std::string mMaterialName;
     std::string mShaderSetName;
+    Mesh* mMesh;
+    bool mDescriptionOverride = false;
+    bool mDescriptionsCreated = false;
     bool mCullBackFaces = true;
+  };
+
+  // Submesh class contains all the data of the actual submesh
+  class Submesh
+  {
+  public:
+    YTE_Shared Submesh() = default;
+    YTE_Shared Submesh(SubmeshData&& aSubmesh);
+    YTE_Shared Submesh(Submesh&& aSubmesh);
+    YTE_Shared Submesh& operator=(Submesh&& aSubmesh);
+
+    // Call this if you've built up a default constructed Submesh. 
+    // This will create the GPU buffers and calculate the dimensions.
+    void Initialize();
+
+    YTE_Shared void UpdatePositionBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateTextureCoordinatesBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateNormalBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateColorBuffer(std::vector<glm::vec4> const& aData);
+    YTE_Shared void UpdateTangentBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBinormalBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBitangentBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBoneWeightsBuffer(std::vector<glm::vec3> const& aData);
+    YTE_Shared void UpdateBoneWeights2Buffer(std::vector<glm::vec2> const& aData);
+    YTE_Shared void UpdateBoneIDsBuffer(std::vector<glm::ivec3> const& aData);
+    YTE_Shared void UpdateBoneIDs2Buffer(std::vector<glm::ivec2> const& aData);
+
+    size_t GetTriangleCount() const
+    {
+      return mData.mIndexData.size() / 3;
+    }
+
+    glm::uvec3 GetTriangle(size_t aIndex) const
+    {
+      glm::uvec3 tri;
+      tri.x = (glm::uint)mData.mIndexData[aIndex];
+      tri.y = (glm::uint)mData.mIndexData[aIndex + 1];
+      tri.z = (glm::uint)mData.mIndexData[aIndex + 2];
+      return tri;
+    }
+
+    ShaderDescriptions const& CreateShaderDescriptions();
+
+    YTE_Shared void ResetTextureCoordinates();
+
+    // Call this whenever you update thepositions buffer
+    YTE_Shared void RecalculateDimensions();
+    
+    VertexBufferData mVertexBufferData;
+    GPUBuffer<u32> mIndexBuffer;
+
+    SubmeshData mData;
+
+    void UpdateGPUVertexData();
+    void CreateGPUBuffers();
+
+  private:
+    YTE_Shared Submesh& operator=(Submesh const& aSubmesh) = delete;
+    YTE_Shared Submesh(Submesh const& aSubmesh) = delete;
   };
 
   class Mesh : public EventHandler
   {
   public:
     YTEDeclareType(Mesh);
+    
+    YTE_Shared Mesh();
 
     YTE_Shared Mesh(Renderer *aRenderer,
                     const std::string &aFile);
 
-    YTE_Shared Mesh(const std::string &aFile,
-                    std::vector<Submesh> &aSubmeshes);
-
-    YTE_Shared virtual void UpdateVertices(size_t aSubmeshIndex, 
-                                           std::vector<Vertex>& aVertices);
-    YTE_Shared virtual void UpdateVerticesAndIndices(size_t aSubmeshIndex, 
-                                                     std::vector<Vertex>& aVertices, 
-                                                     std::vector<u32>& aIndices);
+    YTE_Shared Mesh(Renderer* aRenderer, 
+                    const std::string &aFile,
+                    ContiguousRange<SubmeshData> aSubmeshes);
 
     YTE_Shared virtual ~Mesh();
 
+    // Call this whenever you update a Submeshs positions buffer, but recalculate the submeshs 
+    // dimensions first.
+    YTE_Shared void RecalculateDimensions();
     YTE_Shared bool CanAnimate();
     YTE_Shared std::vector<Submesh>& GetSubmeshes();
 
@@ -261,10 +368,63 @@ namespace YTE
 
     std::string mName;
     std::vector<Submesh> mParts;
+    Renderer* mRenderer;
     Skeleton mSkeleton;
     Dimension mDimension;
     bool mInstanced;
+
+  private:
+    Mesh(Mesh const&) = delete;
+    Mesh& operator=(Mesh const&) = delete;
   };
+  
+  /////////////////////////////////
+  // File Headers
+  /////////////////////////////////
+  struct SkeletonHeader
+  {
+    YTE::u64 mBoneDataSize;
+    YTE::u64 mVertexSkeletonDataSize;
+    YTE::u64 mBoneMappingSize;
+  };
+
+  struct SubmeshHeader
+  {
+    YTE::u64 mNumberOfPositions;
+    YTE::u64 mNumberOfTextureCoordinates;
+    YTE::u64 mNumberOfNormals;
+    YTE::u64 mNumberOfColors;
+    YTE::u64 mNumberOfTangents;
+    YTE::u64 mNumberOfBinormals;
+    YTE::u64 mNumberOfBitangents;
+    YTE::u64 mNumberOfBoneWeights;
+    YTE::u64 mNumberOfBoneWeights2;
+    YTE::u64 mNumberOfBoneIds;
+    YTE::u64 mNumberOfBoneIds2;
+    YTE::u64 mNumberOfIndices;
+    YTE::u64 mNameSize;
+    YTE::u64 mMaterialNameSize;
+    YTE::u64 mShaderSetNameSize;
+    YTE::u64 mNumberOfTextures;
+  };
+
+  struct MeshHeader
+  {
+    YTE::u64 mNumberOfSubmeshes;
+    YTE::u64 mHasSkeleton;
+  };
+
+  struct TextureDataHeader
+  {
+    YTE::u64 mStringSize;
+    YTE::TextureViewType mViewType = YTE::TextureViewType::e2D;
+    YTE::SubmeshData::TextureType mSamplerType;
+  };
+  
+  YTE_Shared void ReadSkeletonFromFile(std::string const& aName, Skeleton& aSkeleton);
+  YTE_Shared bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh);
+  YTE_Shared void CalculateSubMeshDimensions(Submesh& mSubMesh);
+  YTE_Shared Dimension CalculateDimensions(std::vector<Submesh> const& mParts);
 }
 
 #endif

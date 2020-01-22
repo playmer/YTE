@@ -4,8 +4,8 @@ include_directories(${ParentDirectory} ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(imgui 
     ImGuizmo.cpp
     ImGuizmo.h
-    ImSequencer.cpp
-    ImSequencer.h
+    #ImSequencer.cpp
+    #ImSequencer.h
     imconfig.h
     imgui.cpp
     imgui.h

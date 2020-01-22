@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
- * \author Isaac Dayton
- * \date   2015-11-20
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #ifndef YTE_Physics_PhysicsSystem_hpp
 #define YTE_Physics_PhysicsSystem_hpp
 

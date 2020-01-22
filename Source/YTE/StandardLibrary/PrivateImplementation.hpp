@@ -1,6 +1,3 @@
-//////////////////////////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////////////////////////
 #pragma once
 
 #ifndef PrivateImplementation_hpp
@@ -57,7 +54,7 @@ namespace YTE
     template <typename tType>
     tType* Get()
     {
-      if (GenericDestruct<tType> != mDestructor)
+      if (&GenericDestruct<tType> != mDestructor)
       {
         return nullptr;
       }

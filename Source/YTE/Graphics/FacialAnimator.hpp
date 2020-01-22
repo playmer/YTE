@@ -1,12 +1,4 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #pragma once
-
-#include "assimp/types.h"
-#include "assimp/vector3.h"
 
 #include "YTE/Core/EventHandler.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
@@ -63,13 +55,12 @@ namespace YTE
     void RefreshInitialBufffers();
 
     int mEyeBufferIndex;
-    std::vector<Vertex> mInitialEyeVertexBuffer;
+    VertexData mInitialEyeVertexBuffer;
 
     int mMouthBufferIndex;
-    std::vector<Vertex> mInitialMouthVertexBuffer;
+    VertexData mInitialMouthVertexBuffer;
 
-    FaceFrame* FindEyeFrame(FaceAnim *anim, double time);
-    FaceFrame* FindMouthFrame(FaceAnim *anim, double time);
+    FaceFrame* FindFrame(std::vector<FaceFrame>& aFrames, double time);
   };
 }
 

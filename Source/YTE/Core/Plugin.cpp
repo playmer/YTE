@@ -22,7 +22,11 @@ namespace YTE
 
   PluginWrapper::~PluginWrapper()
   {
-    mPlugin->Unload();
+    if (mPlugin)
+    {
+      mPlugin->Unload();
+    }
+
     mPlugin.reset();
   }
 
@@ -51,5 +55,10 @@ namespace YTE
     mSharedObject.ReloadLibrary();
 
     LoadPlugin();
+  }
+
+  bool PluginWrapper::IsLoaded()
+  {
+    return mSharedObject.GetLoaded();
   }
 }

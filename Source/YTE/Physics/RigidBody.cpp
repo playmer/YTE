@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-11-20
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
 
@@ -59,10 +51,10 @@ namespace YTE
       .SetParameterNames("aImpulse", "aRelativePositon")
       .SetDocumentation("Applies an impulse to the RigidBody.");
 
-    builder.Function<SelectOverload<void (RigidBody::*) (const glm::vec3&),&RigidBody::SetVelocity>()>("SetVelocity")
+    builder.Function<SelectOverload<void (RigidBody::*) (const glm::vec3&)>(&RigidBody::SetVelocity)>("SetVelocity")
       .SetParameterNames("aVelocityVector")
       .SetDocumentation("Sets the object velocity from a Real3 of values");
-    builder.Function<SelectOverload<void (RigidBody::*) (float, float, float),&RigidBody::SetVelocity>()>("SetVelocity")
+    builder.Function<SelectOverload<void (RigidBody::*) (float, float, float)>(&RigidBody::SetVelocity)>("SetVelocity")
       .SetParameterNames("aVelX", "aVelY","aVelZ")
       .SetDocumentation("Sets the object velocity from three float values");
   }

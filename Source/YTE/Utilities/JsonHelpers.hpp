@@ -1,17 +1,11 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Utilities_JsonHelpers_h
 #define YTE_Utilities_JsonHelpers_h
 
 #include <sstream>
+
+#include "YTE/StandardLibrary/TypeTraits.hpp"
 
 namespace YTE
 {
@@ -29,7 +23,7 @@ namespace YTE
       std::string hex = aValue->GetString();
 
       unsigned int x = std::stoul(hex, nullptr, 16);
-      return *reinterpret_cast<float*>(&x);
+      return bit_cast<float>(x);
     }
 
     return 0.0f;
@@ -46,7 +40,7 @@ namespace YTE
       std::string hex = aValue->GetString();
 
       unsigned long long x = std::stoull(hex, nullptr, 16);
-      return *reinterpret_cast<double*>(&x);
+      return bit_cast<double>(x);
     }
 
     return 0.0f;

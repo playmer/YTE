@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2016-03-06
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
@@ -59,21 +51,23 @@ namespace YTE
     
     if (mesh != nullptr)
     {
-      for (auto &submesh : mesh->mParts)
+      for (auto const& submesh : mesh->mParts)
       {
-        DebugAssert((submesh.mIndexBuffer.size() % 3) == 0, "Index buffer must be divisible by 3.");
+        auto const& data = submesh.mData;
 
-        auto indexSize = submesh.mIndexBuffer.size();
+        DebugAssert((data.mIndexData.size() % 3) == 0, "Index buffer must be divisible by 3.");
+
+        auto indexSize = data.mIndexData.size();
       
         for (size_t i = 0; i < indexSize; i += 3)
         {
-          auto i1 = submesh.mIndexBuffer.at(i + 0);
-          auto i2 = submesh.mIndexBuffer.at(i + 1);
-          auto i3 = submesh.mIndexBuffer.at(i + 2);
+          auto i1 = data.mIndexData[i + 0];
+          auto i2 = data.mIndexData[i + 1];
+          auto i3 = data.mIndexData[i + 2];
       
-          mTriangles.addTriangle(ToBullet(submesh.mVertexBuffer.at(i1).mPosition),
-                                 ToBullet(submesh.mVertexBuffer.at(i2).mPosition),
-                                 ToBullet(submesh.mVertexBuffer.at(i3).mPosition));
+          mTriangles.addTriangle(ToBullet(data.mVertexData.mPositionData[i1]),
+                                 ToBullet(data.mVertexData.mPositionData[i2]),
+                                 ToBullet(data.mVertexData.mPositionData[i3]));
         }
       }
     }

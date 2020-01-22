@@ -1,15 +1,10 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include <utility>
+
+#include "YTE/Core/Engine.hpp"
 
 #include "YTE/Platform/Keyboard.hpp"
 #include "YTE/Platform/Mouse.hpp"
+#include "YTE/Platform/Window.hpp"
 
 namespace YTE
 {
@@ -23,7 +18,8 @@ namespace YTE
   {
     RegisterType<MouseWheelEvent>();
     TypeBuilder<MouseWheelEvent> builder;
-    builder.Field<&MouseWheelEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::WindowCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseWheelEvent::ScreenCoordinates>("ScreenCoordinates", PropertyBinding::Get);
     builder.Field<&MouseWheelEvent::ScrollMovement>("ScrollMovement", PropertyBinding::Get);
   }
 
@@ -31,7 +27,8 @@ namespace YTE
   {
     RegisterType<MouseButtonEvent>();
     TypeBuilder<MouseButtonEvent> builder;
-    builder.Field<&MouseButtonEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::WindowCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseButtonEvent::ScreenCoordinates>("ScreenCoordinates", PropertyBinding::Get);
     builder.Field<&MouseButtonEvent::Button>("Button", PropertyBinding::Get);
   }
 
@@ -39,7 +36,8 @@ namespace YTE
   {
     RegisterType<MouseMoveEvent>();
     TypeBuilder<MouseMoveEvent> builder;
-    builder.Field<&MouseMoveEvent::WorldCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseMoveEvent::WindowCoordinates>("WorldCoordinates", PropertyBinding::Get);
+    builder.Field<&MouseMoveEvent::ScreenCoordinates>("ScreenCoordinates", PropertyBinding::Get);
   }
 
   YTEDefineType(Mouse)
@@ -53,16 +51,19 @@ namespace YTE
       .SetParameterNames("aButton")
       .SetDocumentation("Finds if the given button is pressed last frame.");
     
-    builder.Property<&Mouse::GetCursorPosition, NoSetter>("CursorPosition")
+    builder.Property<&Mouse::GetPositionInWindowCoordinates, NoSetter>("CursorPositionInWindowCoordinates")
+      .SetDocumentation("Gets the current cursor position in window coordinates.");
+
+    builder.Property<&Mouse::GetPositionInScreenCoordinates, NoSetter>("CursorPositionInScreenCoordinates")
       .SetDocumentation("Gets the current cursor position in screen coordinates.");
   }
 
-  Mouse::Mouse()
-    : mPositionChanged(false)
+  Mouse::Mouse(Window* aWindow)
+    : mPositionChanged{ false }
+    , mWindow{aWindow}
   {
     std::memset(mArrayOne, 0, sizeof(mArrayOne));
     std::memset(mArrayTwo, 0, sizeof(mArrayTwo));
-    mLRSwapped = GetLRSwapped();
 
     mMouseCurrent = mArrayOne;
     mMousePrevious = mArrayTwo;
@@ -70,15 +71,18 @@ namespace YTE
 
   void Mouse::Update()
   {
+    OPTICK_EVENT();
+
     MouseButtonEvent mouseEvent;
-    mouseEvent.WorldCoordinates = mPosition;
+    mouseEvent.WindowCoordinates = mWindowCoordinates;
+    mouseEvent.ScreenCoordinates = mWindowCoordinates + mWindow->GetPosition();
 
     for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
     {
       if (mMouseCurrent[i] && mMousePrevious[i])
       {
         mouseEvent.Button = static_cast<MouseButtons>(i);
-        mouseEvent.Mouse = this;
+        mouseEvent.SendingMouse = this;
 
         SendEvent(Events::MousePersist, &mouseEvent);
       }
@@ -95,6 +99,12 @@ namespace YTE
 
   void Mouse::UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition)
   {
+    UpdatePosition(aPosition);
+    UpdateButton(aButton, aDown);
+  }
+
+  void Mouse::UpdateButton(MouseButtons aButton, bool aDown)
+  {
     size_t index = EnumCast(aButton);
 
     // Button got resent.
@@ -102,8 +112,6 @@ namespace YTE
     {
       return;
     }
-
-    UpdatePosition(aPosition);
 
     mMousePrevious[index] = mMouseCurrent[index];
 
@@ -122,56 +130,41 @@ namespace YTE
 
     MouseButtonEvent mouseEvent;
     mouseEvent.Button = aButton;
-    mouseEvent.WorldCoordinates = aPosition;
-    mouseEvent.Mouse = this;
+    mouseEvent.WindowCoordinates = mWindowCoordinates;
+    mouseEvent.ScreenCoordinates = mWindowCoordinates + mWindow->GetPosition();
+    mouseEvent.SendingMouse = this;
 
     SendEvent(*state, &mouseEvent);
   }
 
-
-  void Mouse::UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition)
+  void Mouse::UpdateWheel(glm::vec2 aWheelMove)
   {
-    UpdatePosition(aPosition);
-
     MouseWheelEvent mouseEvent;
     mouseEvent.ScrollMovement = aWheelMove;
-    mouseEvent.WorldCoordinates = aPosition;
+    mouseEvent.WindowCoordinates = mWindowCoordinates;
+    mouseEvent.ScreenCoordinates = mWindowCoordinates + mWindow->GetPosition();
 
     SendEvent(Events::MouseScroll, &mouseEvent);
   }
 
   void Mouse::UpdatePosition(glm::i32vec2 aPosition)
   {
-    
-    if (mPosition != aPosition)
+    if (mWindowCoordinates != aPosition)
     {
-      mPrevPosition = mPosition;
-      mPosition = aPosition;
+      mPreviousWindowCoordinates = mWindowCoordinates;
+      mWindowCoordinates = aPosition;
       mPositionChanged = true;
     }
-
   }
 
   glm::i32vec2 Mouse::GetPositionDelta()
   {
-    return mPosition - mPrevPosition;
+    return mWindowCoordinates - mPreviousWindowCoordinates;
   }
 
   glm::i32vec2 Mouse::GetPrevPosition()
   {
-    return mPrevPosition;
-  }
-
-  void Mouse::UpdateAllButtons(glm::i32vec2 aRelativePosition)
-  {
-    for (size_t i = 0; i < EnumCast(MouseButtons::Mouse_Buttons_Number); ++i)
-    {
-      auto button = static_cast<MouseButtons>(i);
-      auto osButton = TranslateFromMouseButtonToOsKey(button);
-      auto key = TranslateFromOsToOurKey(osButton);
-      auto down = CheckKey(key);
-      UpdateButton(button, down, aRelativePosition);
-    }
+    return mPreviousWindowCoordinates;
   }
 
   bool Mouse::AnyButtonDown()
@@ -197,8 +190,13 @@ namespace YTE
     return mMousePrevious[EnumCast(aButton)];
   }
 
-  glm::i32vec2 Mouse::GetCursorPosition()
+  glm::i32vec2 Mouse::GetPositionInWindowCoordinates()
   {
-    return mPosition;
+    return mWindowCoordinates;
+  }
+
+  glm::i32vec2 Mouse::GetPositionInScreenCoordinates()
+  {
+    return mWindowCoordinates + mWindow->GetPosition();
   }
 }

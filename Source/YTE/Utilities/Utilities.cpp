@@ -1,7 +1,3 @@
-/*****************************************************************************
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-\author Joshua T. Fisher
-******************************************************************************/
 #include <functional>
 #include <string>
 #include <fstream>
@@ -10,7 +6,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 #include <memory>
 #include <random>
 #include <cstdlib>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <stdarg.h> /* va_list, va_start, va_end*/
 #include <stdio.h>
 #include <random>
@@ -22,10 +18,10 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 namespace YTE
 {
-  std::wstring cWorkingDirectory = std::experimental::filesystem::current_path();
+  std::wstring cWorkingDirectory = std::filesystem::current_path().wstring();
 
-  template <typename tType>
-  tType randomInteger(std::default_random_engine &e)
+  template <typename tType, typename tRandomEngine>
+  tType randomInteger(tRandomEngine &e)
   {
     std::uniform_int_distribution<tType> dist{ std::numeric_limits<tType>::min(), std::numeric_limits<tType>::max() };
 
@@ -94,7 +90,7 @@ namespace YTE
     return total;
   }
 
-  bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID)
+  bool GlobalUniqueIdentifier::operator==(GlobalUniqueIdentifier const& aGUID) const
   {
     if (this->mPart1 == aGUID.mPart1 &&
         this->mPart2 == aGUID.mPart2 &&
@@ -160,7 +156,7 @@ namespace YTE
     return finalPath;
   }
 
-  #ifdef YTE_Windows
+  #if YTE_Windows
     static int vasprintf(char **strPtr, const char *aFormatString, va_list argv)
     {
       int needed = vsnprintf((*strPtr = nullptr), 0, aFormatString, argv);
@@ -192,20 +188,8 @@ namespace YTE
     return Format(aFormatString, variadicArguments);
   }
 
-  /******************************************************************************/
-  /*!
-  \brief
-  As the name.
-  Based on a StackOverflow:
-  http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
-
-  \param name
-  Name of the file to read.
-
-  \return
-  Success or failure.
-  */
-  /******************************************************************************/
+  // Based on a StackOverflow:
+  // http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
   bool ReadFileToString(std::string const &file, std::string &output)
   {
     std::ifstream stream(file);
@@ -213,32 +197,50 @@ namespace YTE
     if (!stream.fail())
     {
       stream.seekg(0, std::ios::end);
-      output.reserve(static_cast<unsigned int>(stream.tellg()));
+      output.reserve(output.size() +  static_cast<unsigned int>(stream.tellg()));
       stream.seekg(0, std::ios::beg);
 
-      output.assign((std::istreambuf_iterator<char>(stream)),
-	      std::istreambuf_iterator<char>());
+      output.insert(output.end(), std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
       return true;
     }
 
     return false;
   }
 
+  // Based on:
+  // http://insanecoding.blogspot.com/2011/11/how-to-read-in-file-in-c.html
+  std::vector<byte> ReadFileToVector(std::string const& file)
+  {
+    std::basic_ifstream<byte, std::char_traits<byte>> stream(file);
+    std::vector<byte> output;
+
+    if (!stream.fail())
+    {
+      stream.seekg(0, std::ios::end);
+      output.resize(static_cast<size_t>(stream.tellg()));
+      stream.seekg(0, std::ios::beg);
+      stream.read(output.data(), output.size());
+      stream.close();
+    }
+
+    return std::move(output);
+  }
+
   void StringToFloats(std::string &file, std::vector<float> &output)
   {
     auto strPointer = file.c_str();
   
-    while (*strPointer != NULL)
+    while ('\0' != *strPointer)
     {
       if (*strPointer != ',')
       {
         output.push_back(static_cast<float>(atof(strPointer)));
 
-        while (*strPointer != NULL && *strPointer != ',')
+        while (('\0' != *strPointer) && (*strPointer != ','))
         {
           ++strPointer;
         }
-        if (*strPointer == NULL)
+        if ('\0' == *strPointer)
         {
           output.pop_back();
           return;
@@ -251,19 +253,23 @@ namespace YTE
     output.pop_back();
   }
 
-  std::wstring GetFileOfType(const wchar_t *aFileType, const wchar_t *aDirectory, 
-                             const char *aFile, const wchar_t *aFileExtension)
+  std::string GetFileOfType(const char *aFileType, const char *aDirectory, 
+                             const char *aFile, const char *aFileExtension)
   {
     std::string convert(aFile);
-    std::wstring toReturn = L"../";
+    std::string toReturn = "../";
 
-    toReturn = toReturn + aDirectory + L"/" +
-                std::wstring(convert.begin(), convert.end()) +
+    toReturn = toReturn + aDirectory + "/" +
+                std::string(convert.begin(), convert.end()) +
                 aFileExtension;
 
-    toReturn = std::experimental::filesystem::canonical(toReturn, cWorkingDirectory);
+    std::filesystem::path basePath{ cWorkingDirectory };
+    std::filesystem::path toReturnPath{ toReturn };
+    std::filesystem::path baseAndToReturn = basePath / toReturnPath;
 
-    //DebugObjection(std::experimental::filesystem::exists(toReturn) == false, 
+    toReturn = std::filesystem::canonical(baseAndToReturn).u8string();
+
+    //DebugObjection(std::filesystem::exists(toReturn) == false, 
     //            "%S of with name of \"%s\" doesn't exist", aFileType, aFile);
     UnusedArguments(aFileType);
 
@@ -273,7 +279,7 @@ namespace YTE
 
   std::string GetConfigPath(const String &name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name.c_str(), L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name.c_str(), ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;
@@ -282,7 +288,7 @@ namespace YTE
 
   std::string GetConfigPath(const char *name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name, L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name, ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;
@@ -291,7 +297,7 @@ namespace YTE
 
   std::string GetConfigPath(const std::string &name)
   {
-    auto wpath = GetFileOfType(L"Config", L"Bin", name.c_str(), L".json");
+    auto wpath = GetFileOfType("Config", "Bin", name.c_str(), ".json");
     std::string str{ wpath.begin(), wpath.end() };
 
     return str;
@@ -304,10 +310,10 @@ namespace YTE
       return false;
     }
 
-    std::experimental::filesystem::path pathName{ aPath.String() };
+    std::filesystem::path pathName{ aPath.String() };
     pathName.append(aDirectory);
     pathName.append(aFile);
-    return std::experimental::filesystem::exists(pathName);
+    return std::filesystem::exists(pathName);
   }
     
   /////////////////////////////////////////////////

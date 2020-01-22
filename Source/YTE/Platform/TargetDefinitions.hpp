@@ -1,33 +1,19 @@
-/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
 #pragma once
 
 #include <type_traits>
 
-#ifdef _WIN32
-    // If _WIN32 is defined, we're on Windows.
-  #define YTE_Windows 1
-
-    // If _WIN64 is defined, we're on x64.
-  #ifdef _WIN64
-    #define YTE_x64 1
-
-    // Else we're on 32 bit.
+#if YTE_Windows
+  #if defined(YTE_Internal)
+    #define YTE_Shared __declspec( dllexport )
   #else
-    #define YTE_x86
+    #define YTE_Shared __declspec( dllimport )
   #endif
-#endif
-
-#if defined(YTE_Windows) && defined(YTE_Internal)
-  #define YTE_Shared __declspec( dllexport )
-#elif defined(YTE_Windows)
-  #define YTE_Shared __declspec( dllimport )
+#elif YTE_Linux
+  #if defined(YTE_Internal)
+    #define YTE_Shared __attribute__((visibility("default")))
+  #else
+    #define YTE_Shared
+  #endif
 #endif
 
 namespace YTE
@@ -38,6 +24,24 @@ namespace YTE
       using Windows = std::integral_constant<bool, true>;
       using Linux = std::integral_constant<bool, false>;
       using Android = std::integral_constant<bool, false>;
+      using MacOS = std::integral_constant<bool, false>;
+      using iOS = std::integral_constant<bool, false>;
+    #elif YTE_Linux
+      using Windows = std::integral_constant<bool, false>;
+      using Linux = std::integral_constant<bool, true>;
+      using Android = std::integral_constant<bool, false>;
+      using MacOS = std::integral_constant<bool, false>;
+      using iOS = std::integral_constant<bool, false>;
+    #elif YTE_Darwin
+      using Windows = std::integral_constant<bool, false>;
+      using Linux = std::integral_constant<bool, false>;
+      using Android = std::integral_constant<bool, false>;
+      using MacOS = std::integral_constant<bool, true>;
+      using iOS = std::integral_constant<bool, false>;
+    #elif YTE_Android
+      using Windows = std::integral_constant<bool, false>;
+      using Linux = std::integral_constant<bool, false>;
+      using Android = std::integral_constant<bool, true>;
       using MacOS = std::integral_constant<bool, false>;
       using iOS = std::integral_constant<bool, false>;
     #else // Otherwise we're no known platform.

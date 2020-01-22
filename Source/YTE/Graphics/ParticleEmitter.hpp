@@ -7,11 +7,11 @@
 
 #include "YTE/Core/Component.hpp"
 
+#include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
 
 #include "YTE/Graphics/UBOs.hpp"
-
-#include "YTE/Graphics/Generics/Renderer.hpp"
 
 namespace YTE
 {
@@ -88,16 +88,38 @@ namespace YTE
     YTE_Shared void SetGravityValue(float aGravityVal);
 
   private:
-    std::vector<std::pair<Particle, std::unique_ptr<InstantiatedModel>>> mParticles;
-    std::vector<std::unique_ptr<InstantiatedModel>> mFreeParticles;
+    // In this pass we decide which particles must be deleted and then remove them.
+    // we also update the remaining life of remaining particles.
+    void DeleteParticlesPass(double aDt);
+    // In this pass we create a model matrix for each particle.
+    void UpdateParticlesPass(double aDt);
+    // In this pass we create a new Model and Mesh if we've exceeded our current capacity.
+    void RecreateMeshIfNeededPass();
+    // In this pass we update the buffers in the Mesh.
+    void UpdateParticleMesh();
+    // In this pass we create new particles.
+    void NewParticlesPass(double aDt);
+
+    // We fill the buffers with "empty" data up to the number of particles we currently need.
+    void FillBuffersToRequired();
+
+
+
+    SubmeshData mSubmesh;
+    std::vector<Particle> mParticles;
     std::vector<float> mVarianceBuffer;
+    std::vector<glm::mat4> mParticleMatrices;
     size_t mVarianceIndex;
 
-    Renderer *mRenderer;
+    std::unique_ptr<InstantiatedModel> mModel;
+    size_t mCapacityParticles;
 
-    Transform *mCameraTransform;
+    void RecreateMesh();
 
-    Mesh *mMesh;
+
+    Renderer* mRenderer;
+    Transform* mCameraTransform;
+    Mesh* mMesh;
 
     std::string mTextureName; //
 

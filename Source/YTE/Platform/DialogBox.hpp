@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_DialogBox_h
@@ -49,8 +41,8 @@ namespace YTE
   #define debugbreak __builtin_trap
 #endif
 
-#ifdef YTE_Windows
-  #ifndef NDEBUG
+#if YTE_Windows
+  #if YTE_DEBUG
     #define DebugObjection(aCondition, aString, ...)                    \
     do                                                                  \
     {                                                                   \
@@ -85,7 +77,7 @@ namespace YTE
       }                                                                 \
     } while (false)
 
-#define DebugAssert(aCondition, aString, ...) DebugObjection(!(aCondition), aString, __VA_ARGS__)
+    #define DebugAssert(aCondition, aString, ...) DebugObjection(!(aCondition), aString, __VA_ARGS__)
   #else
     #define DebugObjection(aCondition, aString, ...)
     #define DebugAssert(aCondition, aString, ...)

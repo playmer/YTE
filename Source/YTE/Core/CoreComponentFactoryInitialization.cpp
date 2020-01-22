@@ -1,23 +1,18 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-12-14
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
 
 #include "YTE/Core/Actions/ActionManager.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ComponentFactory.hpp"
 #include "YTE/Core/ComponentSystem.hpp"
+#include "YTE/Core/Threading/JobSystem.hpp"
 #include "YTE/Core/TestComponent.hpp"
 
+#include "YTE/GameComponents/SteppingStone.hpp"
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/FacialAnimator.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
+#include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/ImguiLayer.hpp"
 #include "YTE/Graphics/Light.hpp"
@@ -48,14 +43,6 @@
 
 #include "YTE/Utilities/String/String.hpp"
 
-#include "YTE/WWise/WWiseEmitter.hpp"
-#include "YTE/WWise/WWiseListener.hpp"
-#include "YTE/WWise/WWiseView.hpp"
-
-#include "YTEditor/Gizmos/Translate.hpp"
-#include "YTEditor/Gizmos/Scale.hpp"
-#include "YTEditor/Gizmos/Rotate.hpp"
-
 namespace YTE
 {
   using namespace std;
@@ -64,16 +51,16 @@ namespace YTE
   {
     YTE::ComponentFactoryHelper helper{aEngine, &aComponentFactories };
 
-    helper.CreateComponentFactory<WWiseEmitter>();
-    helper.CreateComponentFactory<WWiseListener>();
-    helper.CreateComponentFactory<WWiseView>();
-
     helper.CreateComponentFactory<ActionManager>();
     helper.CreateComponentFactory<TestComponent>();
+    
+    helper.CreateComponentFactory<JobSystem>();
 
+    helper.CreateComponentFactory<SteppingStone>();
     helper.CreateComponentFactory<Camera>();
     helper.CreateComponentFactory<FacialAnimator>();
     helper.CreateComponentFactory<FlybyCamera>();
+    helper.CreateComponentFactory<GraphicsSystem>();
     helper.CreateComponentFactory<GraphicsView>();
     helper.CreateComponentFactory<ImguiLayer>();
     helper.CreateComponentFactory<Light>();

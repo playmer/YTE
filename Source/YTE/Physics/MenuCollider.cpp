@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
- * \author Isaac Dayton
- * \date   2015-11-27
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
@@ -31,17 +23,17 @@ namespace YTE
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
 
-    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&),&MenuCollider::SetSize>()>("SetSize")
+    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&)>(&MenuCollider::SetSize)>("SetSize")
       .SetParameterNames("size")
       .SetDocumentation("Sets the size of the box collider from a Real3");
-    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float),&MenuCollider::SetSize>()>("SetSize")
+    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float)>(&MenuCollider::SetSize)>("SetSize")
       .SetParameterNames("x", "y", "z")
       .SetDocumentation("Sets the size of the box collider from three Reals X, Y, and Z");
 
-    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&),&MenuCollider::SetOffset>()>("SetOffset")
+    builder.Function<SelectOverload<void (MenuCollider::*) (const glm::vec3&)>(&MenuCollider::SetOffset)>("SetOffset")
       .SetParameterNames("offset")
       .SetDocumentation("Sets the position offset of the box collider from a Real3 of x, y, and z coordinates");
-    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float),&MenuCollider::SetOffset>()>("SetOffset")
+    builder.Function<SelectOverload<void (MenuCollider::*) (float, float, float)>(&MenuCollider::SetOffset)>("SetOffset")
       .SetParameterNames("x", "y", "z")
       .SetDocumentation("Sets the position offset of the box collider from three Reals X, Y, and Z");
   }

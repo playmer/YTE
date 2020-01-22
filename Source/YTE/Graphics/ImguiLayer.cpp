@@ -1,4 +1,3 @@
-//#include "imgui.h"
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/ImguiLayer.hpp"
@@ -27,6 +26,7 @@ namespace YTE
 
   ImguiLayer::~ImguiLayer()
   {
+    SetCurrentContext();
     ImGui::DestroyContext(mContext);
   }
 
@@ -39,6 +39,7 @@ namespace YTE
     mView = mOwner->GetComponent<GraphicsView>();
     mView->SetDrawerCombinationType("AlphaBlend");
     mView->SetDrawerType("ImguiDrawer");
+
   }
 
   const char* ImguiLayer::GetClipboardTextImplementation(void *aSelf)
@@ -71,6 +72,8 @@ namespace YTE
     window->mKeyboard.RegisterEvent<&ImguiLayer::KeyPressCallback>(Events::KeyPress, this);
     window->mKeyboard.RegisterEvent<&ImguiLayer::KeyReleaseCallback>(Events::KeyRelease, this);
     window->mKeyboard.RegisterEvent<&ImguiLayer::CharacterTypedCallback>(Events::CharacterTyped, this);
+
+    
 
     io.KeyMap[ImGuiKey_Tab] = EnumCast<int>(Keys::Tab);
     io.KeyMap[ImGuiKey_LeftArrow] = EnumCast<int>(Keys::Left);
@@ -131,13 +134,23 @@ namespace YTE
 
     // TODO: Technically we should only do this when the window is focused, but
     //       we don't currently know that for windows in the editor.
-    auto position = mouse.GetCursorPosition();
+    auto position = mouse.GetPositionInWindowCoordinates();
     io.MousePos = ImVec2((float)position.x, (float)position.y);
 
     //Mouse buttons : left, right, middle
     io.MouseDown[0] = mouse.IsButtonDown(MouseButtons::Left);
     io.MouseDown[1] = mouse.IsButtonDown(MouseButtons::Right);
     io.MouseDown[2] = mouse.IsButtonDown(MouseButtons::Middle);
+
+    if (window)
+    {
+      auto& text = window->mKeyboard.GetText();
+
+      if (false == text.empty())
+      {
+        io.AddInputCharactersUTF8(text.c_str());
+      }
+    }
 
     io.ImeWindowHandle = window->GetWindowId();
 
@@ -162,7 +175,7 @@ namespace YTE
     //ShowMetricsWindow();
   }
 
-  void ImguiLayer::MouseScrollCallback(MouseWheelEvent *aEvent)
+  void ImguiLayer::MouseScrollCallback(MouseWheelEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -170,7 +183,7 @@ namespace YTE
     io.MouseWheel += (float)aEvent->ScrollMovement.y;
   }
 
-  void ImguiLayer::KeyPressCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::KeyPressCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -184,7 +197,7 @@ namespace YTE
     //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
-  void ImguiLayer::KeyReleaseCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::KeyReleaseCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuiIO& io = ImGui::GetIO();
@@ -198,7 +211,7 @@ namespace YTE
     //io.KeySuper = io.KeysDown[EnumCast(Keys::)];
   }
 
-  void ImguiLayer::CharacterTypedCallback(KeyboardEvent *aEvent)
+  void ImguiLayer::CharacterTypedCallback(KeyboardEvent* aEvent)
   {
     ImGui::SetCurrentContext(mContext);
 
@@ -241,10 +254,10 @@ namespace YTE
     ImGuizmo::Enable(enable);
   }
 
-  void ImguiLayer::DecomposeMatrixToComponents(const float *matrix, 
-                                               float *translation, 
-                                               float *rotation, 
-                                               float *scale)
+  void ImguiLayer::DecomposeMatrixToComponents(float const* matrix, 
+                                               float* translation, 
+                                               float* rotation, 
+                                               float* scale)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuizmo::DecomposeMatrixToComponents(matrix,
@@ -253,9 +266,9 @@ namespace YTE
                                           scale);
   }
 
-  void ImguiLayer::RecomposeMatrixFromComponents(const float *translation, 
-                                                 const float *rotation, 
-                                                 const float *scale, 
+  void ImguiLayer::RecomposeMatrixFromComponents(float const* translation, 
+                                                 float const* rotation, 
+                                                 float const* scale, 
                                                  float *matrix)
   {
     ImGui::SetCurrentContext(mContext);
@@ -271,14 +284,14 @@ namespace YTE
     ImGuizmo::SetRect(x, y, width, height);
   }
 
-  void ImguiLayer::DrawCube(const float *view, const float *projection, float *matrix)
+  void ImguiLayer::DrawCube(float const* view, float const* projection, float* matrix)
   {
     ImGui::SetCurrentContext(mContext);
     ImGuizmo::DrawCube(view, projection, matrix);
   }
 
-  void ImguiLayer::Manipulate(const float *view,
-                              const float *projection,
+  void ImguiLayer::Manipulate(float const* view,
+                              float const* projection,
                               ImGuizmo::OPERATION operation,
                               ImGuizmo::MODE mode,
                               float *matrix,

@@ -1,11 +1,4 @@
-﻿/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2014-04-30
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
 #ifndef YTE_Core_Component_Initialization_h
 #define YTE_Core_Component_Initialization_h

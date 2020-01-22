@@ -1,0 +1,6 @@
+add_subdirectory(CompositionBrowser)
+add_subdirectory(ComponentBrowser)
+add_subdirectory(FileViewer)
+add_subdirectory(YTEWindow)
+add_subdirectory(MaterialViewer)
+add_subdirectory(OutputConsole)

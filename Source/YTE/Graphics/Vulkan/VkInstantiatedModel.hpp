@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkInstantiatedModel_hpp
@@ -32,16 +27,12 @@ namespace YTE
     YTE_Shared void SurfaceLostEvent(ViewChanged *aEvent);
     YTE_Shared void SurfaceGainedEvent(ViewChanged *aEvent);
 
-    YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices) override;
-    YTE_Shared void UpdateMesh(size_t aIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices) override;
-
     // Takes the submesh, as well as the index of the submesh.
     YTE_Shared void CreateDescriptorSet(VkSubmesh *aMesh, size_t mIndex);
     
     VkRenderedSurface *mSurface;
     GraphicsView *mView;
 
-    // These are only needed if we're not instanced, otherwise lives on VkSubmesh.
     std::unordered_map<VkSubmesh*, SubMeshPipelineData> mPipelineData;
 
     VkMesh* GetVkMesh()

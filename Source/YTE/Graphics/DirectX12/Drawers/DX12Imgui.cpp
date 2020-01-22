@@ -17,7 +17,7 @@
 #include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/DirectX12/Drawers/DX12Imgui.hpp"
 #include "YTE/Graphics/DirectX12/DX12Renderer.hpp"
-#include "YTE/Graphics/DirectX12/Dx12RenderedSurface.hpp"
+#include "YTE/Graphics/DirectX12/DX12RenderedSurface.hpp"
 #include "YTE/Graphics/DirectX12/DX12InstantiatedModel.hpp"
 #include "YTE/Graphics/DirectX12/DX12Shader.hpp"
 

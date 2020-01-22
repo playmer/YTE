@@ -1,9 +1,4 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -143,8 +138,6 @@ namespace YTE
     mRenderer->RequestMesh(mMeshName);
   }
 
-
-
   void Model::NativeInitialize()
   {
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
@@ -157,8 +150,6 @@ namespace YTE
     Create();
   }
 
-
-
   void Model::Reload()
   {
     if (mConstructing)
@@ -168,22 +159,6 @@ namespace YTE
     Destroy();
     Create();
   }
-
-
-
-  bool Model::CanAnimate()
-  {
-    if (mInstantiatedModel)
-    {
-      return mInstantiatedModel->GetMesh()->CanAnimate();
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
 
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
@@ -198,8 +173,6 @@ namespace YTE
     }
   }
 
-
-
   void Model::SetMesh(std::string &aName)
   {
     if (aName.empty() || aName == mMeshName)
@@ -207,7 +180,7 @@ namespace YTE
       return;
     }
 
-    std::experimental::filesystem::path path(aName);
+    std::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
     if (aName == "None")
@@ -231,8 +204,6 @@ namespace YTE
       Create();
     }
   }
-
-
 
   void Model::SetShading(std::string const &aName)
   {
@@ -281,9 +252,6 @@ namespace YTE
     }
   }
 
-
-
-
   Mesh* Model::GetMesh()
   {
     if (mInstantiatedModel)
@@ -294,11 +262,9 @@ namespace YTE
     return nullptr;
   }
 
-
-
   void Model::Create()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     std::string MeshName = RemoveExtension(mMeshName);
     std::string name = mOwner->GetName().c_str();
 

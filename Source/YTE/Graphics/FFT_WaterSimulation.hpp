@@ -1,7 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
 #pragma once
 #ifndef YTE_Graphics_FFT_WaterSimulation_hpp
 #define YTE_Graphics_FFT_WaterSimulation_hpp
@@ -12,6 +8,8 @@
 // YTE
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/ForwardDeclarations.hpp"
+
+#include "YTE/Graphics/Generics/Mesh.hpp"
 
 #include "YTE/Graphics/BaseModel.hpp"
 #include "YTE/Graphics/ForwardDeclarations.hpp"
@@ -246,16 +244,6 @@ namespace YTE
     {
       return mStepsCount;
     }
-    InstantiatedHeightmap* GetHeightmap(int i)
-    {
-      if (i < mInstantiatedHeightmap.size())
-      {
-        return mInstantiatedHeightmap[i].get();
-      }
-      return nullptr;
-    }
-
-    YTE_Shared const std::vector<Vertex>& GetVertices();
 
   private:
     YTE_Shared void CreateHeightmap();
@@ -274,18 +262,13 @@ namespace YTE
     float mVertexDistanceZ;  
     double mTimeDilationEffect;
     double mTime;
-    bool mReset;
     std::vector<UBOs::Model> mInstancingMatrices;
     std::string mRenderModeStr;
-    bool mResetNeeded;
     int mInstanceCount;
     JobSystem* mJobSystem;
 
-    bool mRunWithEngineUpdate;
-    bool mRunInSteps;
     int mSteps;
     int mStepsCount;
-    bool mConstructing;
 
 
 
@@ -308,23 +291,28 @@ namespace YTE
     void SetUseNoDisplacement(bool a) { UseNoDisplacement = a; }
     // END FROM CONNOR
 
-
     // drawing information
     std::vector<WaterComputationalVertex> mComputationalVertices; // vertices
-    std::vector<Vertex> mVertices; // vertices
+    VertexData mVertices; // vertices
     std::vector<unsigned int> mIndices;     // indices
 
     PrivateImplementationLocal<256> mData;
 
-    // vulkan specific
-    Renderer *mRenderer;
-    std::vector<std::unique_ptr<InstantiatedHeightmap>> mInstantiatedHeightmap;
+    std::vector<std::unique_ptr<InstantiatedModel>> mInstantiatedModels;
     std::string mShaderSetName;
-    GraphicsView *mGraphicsView;
 
-    // YTE specific
-    Window *mWindow;
-    Transform *mTransform;
+    Window* mWindow;
+    GraphicsView* mGraphicsView;
+    Renderer* mRenderer;
+    Mesh* mMesh;
+    Transform* mTransform;
+
+
+    bool mReset;
+    bool mResetNeeded;
+    bool mRunWithEngineUpdate;
+    bool mRunInSteps;
+    bool mConstructing;
   };
 }
 

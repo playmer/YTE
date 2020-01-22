@@ -1,10 +1,3 @@
-#version 450
-
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_BONES 64
@@ -24,46 +17,16 @@ layout (location = 8) in vec2 inBoneWeights2;
 layout (location = 9) in ivec3 inBoneIDs;
 layout (location = 10) in ivec2 inBoneIDs2;
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// Instancing Issues
-#ifdef INSTANCING
-
-
-  layout (location = 11) in vec4 inMatrix0;
-  layout (location = 12) in vec4 inMatrix1;
-  layout (location = 13) in vec4 inMatrix2;
-  layout (location = 14) in vec4 inMatrix3;
-
-  struct 
-  {
-    mat4 mModelMatrix;
-  } Model;
-
-  Model.mModelMatrix[0] = inMatrix1;
-  Model.mModelMatrix[1] = inMatrix2;
-  Model.mModelMatrix[2] = inMatrix3;
-  Model.mModelMatrix[3] = inMatrix4;
-
-
-#else
-
-
-  // ========================
-  // Model Matrix Buffer
-  layout (binding = UBO_MODEL_BINDING) uniform UBOModel
-  {
-    mat4 mModelMatrix;
-    vec4 mDiffuseColor;
-  } Model;
-
-
-#endif
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // UBO Buffers
+
+// ========================
+// Model Matrix Buffer
+layout (binding = UBO_MODEL_BINDING) uniform UBOModel
+{
+  mat4 mModelMatrix;
+  vec4 mDiffuseColor;
+} Model;
 
 // ========================
 // View Buffer
@@ -80,7 +43,6 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
-  bool mHasAnimations;
 } Animation;
 
 

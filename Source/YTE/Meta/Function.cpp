@@ -44,7 +44,7 @@ namespace YTE
     }
   }
 
-  Any Function::Invoke(std::vector<Any> &aArguments) const
+  Any Function::Invoke(ContiguousRange<Any> aArguments) const
   {
     if (mParameters.size() != aArguments.size())
     {

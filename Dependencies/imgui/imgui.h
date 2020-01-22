@@ -37,8 +37,11 @@
 // Helpers
 // Some compilers support applying printf-style warnings to user functions.
 #if defined(__clang__) || defined(__GNUC__)
-#define IM_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
-#define IM_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
+// TODO: Figure out why this doesn't work on clang
+//#define IM_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))
+//#define IM_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
+#define IM_FMTARGS(FMT)
+#define IM_FMTLIST(FMT)
 #else
 #define IM_FMTARGS(FMT)
 #define IM_FMTLIST(FMT)

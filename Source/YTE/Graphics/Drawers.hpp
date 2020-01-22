@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2018/01/19
-*
-* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #pragma once
 
 #include "fmt/format.h"
@@ -63,7 +54,7 @@ namespace YTE
     UBOs::Model mUBOModel;
 
     std::string mMeshName;
-    std::vector<Submesh> mSubmeshes;
+    SubmeshData mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
     float mLineWidth = 5.0f;
@@ -109,7 +100,7 @@ namespace YTE
     UBOs::Model mUBOModel;
 
     std::string mMeshName;
-    std::vector<Submesh> mSubmeshes;
+    SubmeshData mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
 
@@ -156,7 +147,7 @@ namespace YTE
     UBOs::Model mUBOModel;
 
     std::string mMeshName;
-    std::vector<Submesh> mSubmeshes;
+    SubmeshData mSubmesh;
     std::unique_ptr<InstantiatedModel> mInstantiatedLines;
     glm::vec3 mColor{ 1.0f, 1.0f, 1.0f };
     float mLineWidth = 5.0f;

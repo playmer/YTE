@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-12-14
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Types_h
@@ -15,9 +7,7 @@
 #include <memory>
 #include <unordered_map>
 
-#if YTE_CAN_PROFILE
-  #include <easy/profiler.h>
-#endif
+#include "optick.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -41,22 +31,6 @@
 
 #include "YTE/Core/StaticIntents.hpp"
 
-#if YTE_CAN_PROFILE 
-  #define YTEProfileName(aName) EASY_BLOCK(aName)
-  #define YTEProfileFunction() EASY_FUNCTION(profiler::colors::Red)
-  #define YTEProfileBlock(aName) EASY_BLOCK(aName, profiler::colors::Red)
-#else
-  namespace profiler
-  {
-    inline void startListen(uint16_t = 1) {}
-    inline void stopListen() { }
-    inline void dumpBlocksToFile(char const*) {};
-  }
-
-  #define YTEProfileName(aName)
-  #define YTEProfileFunction()
-  #define YTEProfileBlock(aName)
-#endif
 
 namespace YTE
 {
@@ -66,13 +40,10 @@ namespace YTE
   template <typename Type, typename Deleter = std::default_delete<Type>> 
   using UniquePointer = std::unique_ptr<Type, Deleter>;
 
-  using BoundType = Type;
-
-  using FactoryMap = OrderedMap<BoundType*, UniquePointer<StringComponentFactory>>;
+  using FactoryMap = OrderedMap<Type*, UniquePointer<StringComponentFactory>>;
   using FactorySetupCallback = void(*)(FactoryMap &);
 
   using CompositionMap = OrderedMultiMap<String, std::unique_ptr<Composition>>;
-  using ComponentMap   = OrderedMap<Type*, std::unique_ptr<Component>>;
 }
 
 YTEDeclareExternalType(glm::i32vec2);

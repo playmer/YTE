@@ -1,7 +1,3 @@
-//////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Material_hpp
@@ -194,6 +190,11 @@ namespace YTE
     static std::pair<YTE::Object*, std::string> ModelMaterialGetObject(YTE::Object *aSelf);
     static RSValue ModelMaterialSerializer(RSAllocator &aAllocator, Object *aOwner);
     static void ModelMaterialDeserializer(RSValue &aValue, Object *aOwner);
+
+    MaterialRepresentation& GetModelMaterial()
+    {
+      return mModelMaterial;
+    }
 
   private:
     //Renderer *mRenderer;

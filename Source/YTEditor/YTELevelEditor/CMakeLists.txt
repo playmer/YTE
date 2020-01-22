@@ -1,0 +1,20 @@
+add_subdirectory(MenuBar)
+add_subdirectory(Physics)
+add_subdirectory(Toolbars)
+add_subdirectory(UndoRedo)
+add_subdirectory(Widgets)
+
+target_sources(YTEditor
+PRIVATE  
+  ComponentFactoryInit.hpp
+  ComponentFactoryInit.cpp
+  ForwardDeclarations.hpp
+  Gizmo.hpp
+  Gizmo.cpp
+  ScriptBind.hpp
+  ScriptBind.cpp
+  YTEditorMainWindow.hpp
+  YTEditorMainWindow.cpp
+  YTELevelEditor.hpp
+  YTELevelEditor.cpp
+)

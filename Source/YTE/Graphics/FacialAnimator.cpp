@@ -1,13 +1,4 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include <fstream>
-
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -19,7 +10,7 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 namespace YTE
 {
@@ -80,45 +71,31 @@ namespace YTE
 
     Mesh *mesh = instModel->GetMesh();
 
-    for (int i = 0; i < mesh->mParts.size(); i++)
+    for (auto&& [submesh, i] : enumerate(mesh->mParts))
     {
-      Submesh &submesh = mesh->mParts[i];
-
-      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      FaceFrame* frame{ nullptr };
+      std::vector<glm::vec3> textureCoordinates;
+      
+      if (submesh->mData.mMaterialName == "OnlyDiff_Eye")
       {
-        FaceFrame *eyeFrame = FindEyeFrame(anim, aEvent->time * anim->ticksPerSecond);
-
-        if (eyeFrame)
-        {
-          std::vector<Vertex> eyeBuffer = mInitialEyeVertexBuffer;
-
-          for (int j = 0; j < mInitialEyeVertexBuffer.size(); j++)
-          {
-            eyeBuffer[j].mTextureCoordinates.x += eyeFrame->uv.x;
-            eyeBuffer[j].mTextureCoordinates.y += eyeFrame->uv.y;
-          }
-
-          instModel->UpdateMesh(i, eyeBuffer);
-          //mesh->UpdateVertices(i, eyeBuffer);
-        }
+        frame = FindFrame(anim->eyeFrames, aEvent->time * anim->ticksPerSecond);
+        textureCoordinates = mInitialEyeVertexBuffer.mTextureCoordinatesData;
       }
-      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      else if (submesh->mData.mMaterialName == "OnlyDiff_Mouth")
       {
-        FaceFrame *mouthFrame = FindMouthFrame(anim, aEvent->time * anim->ticksPerSecond);
-
-        if (mouthFrame)
+        frame = FindFrame(anim->mouthFrames, aEvent->time * anim->ticksPerSecond);
+        textureCoordinates = mInitialMouthVertexBuffer.mTextureCoordinatesData;
+      }
+      
+      if (frame)
+      {
+        for (auto& textureCoordinate : textureCoordinates)
         {
-          std::vector<Vertex> mouthBuffer = mInitialMouthVertexBuffer;
-
-          for (int j = 0; j < mInitialMouthVertexBuffer.size(); j++)
-          {
-            mouthBuffer[j].mTextureCoordinates.x += mouthFrame->uv.x;
-            mouthBuffer[j].mTextureCoordinates.y += mouthFrame->uv.y;
-          }
-
-          instModel->UpdateMesh(i, mouthBuffer);
-          //mesh->UpdateVertices(i, mouthBuffer);
+          textureCoordinate.x += frame->uv.x;
+          textureCoordinate.y += frame->uv.y;
         }
+      
+        mesh->GetSubmeshes()[i].UpdateTextureCoordinatesBuffer(textureCoordinates);
       }
     }
   }
@@ -152,43 +129,28 @@ namespace YTE
     {
       Submesh &submesh = mesh->mParts[i];
 
-      if (submesh.mMaterialName == "OnlyDiff_Eye")
+      if (submesh.mData.mMaterialName == "OnlyDiff_Eye")
       {
         mEyeBufferIndex = i;
-        mInitialEyeVertexBuffer = submesh.mVertexBuffer;
+        mInitialEyeVertexBuffer = submesh.mData.mVertexData;
       }
-      else if (submesh.mMaterialName == "OnlyDiff_Mouth")
+      else if (submesh.mData.mMaterialName == "OnlyDiff_Mouth")
       {
         mMouthBufferIndex = i;
-        mInitialMouthVertexBuffer = submesh.mVertexBuffer;
+        mInitialMouthVertexBuffer = submesh.mData.mVertexData;
       }
     }
 
     instModel->mType = ShaderType::AlphaBlendShader;
   }
 
-  FaceFrame* FacialAnimator::FindEyeFrame(FaceAnim *anim, double time)
+  FaceFrame* FacialAnimator::FindFrame(std::vector<FaceFrame>& aFrames, double time)
   {
-    // find correct frame
-    for (int k = 0; k < anim->eyeFrames.size(); k++)
+    for (auto& frame : aFrames)
     {
-      if (anim->eyeFrames[k].time > time)
+      if (frame.time > time)
       {
-        return &anim->eyeFrames[k];
-      }
-    }
-
-    return nullptr;
-  }
-
-  FaceFrame* FacialAnimator::FindMouthFrame(FaceAnim *anim, double time)
-  {
-    // find correct frame
-    for (int k = 0; k < anim->mouthFrames.size(); k++)
-    {
-      if (anim->mouthFrames[k].time > time)
-      {
-        return &anim->mouthFrames[k];
+        return &frame;
       }
     }
 
@@ -203,7 +165,7 @@ namespace YTE
     std::string animDir = assetsDir.string() + "/Animations/" + animationFilename;
 
     // check to see if there is a facial animation for this animation
-    std::experimental::filesystem::path animPath(animDir);
+    std::filesystem::path animPath(animDir);
     animPath.replace_extension("");
 
     std::string eyePath(animPath.string() + "_EyeAnim.txt");

@@ -1,18 +1,12 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedLight.hpp"
-#include "YTE/Graphics/Generics/InstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
+#include "YTE/Graphics/Generics/Renderer.hpp"
 #include "YTE/Graphics/Generics/Texture.hpp"
 
-
-#include "YTE/Graphics/Generics/Renderer.hpp"
+#include "YTE/Graphics/InstantiatedInfluenceMap.hpp"
+#include "YTE/Graphics/InstantiatedLight.hpp"
 
 namespace YTE
 {
@@ -83,63 +77,13 @@ namespace YTE
     return nullptr;
   }
   
-  Mesh* Renderer::CreateSimpleMesh(std::string &aName, std::vector<Submesh> &aSubmeshes, bool aForceUpdate)
+  Mesh* Renderer::CreateSimpleMesh(std::string const& aName, ContiguousRange<SubmeshData> aSubmeshes, bool aForceUpdate)
   {
     UnusedArguments(aName, aSubmeshes, aForceUpdate);
 
     return nullptr;
   }
 
-  std::unique_ptr<InstantiatedLight> Renderer::CreateLight(GraphicsView* aView)
-  {
-    UnusedArguments(aView);
-    return nullptr;
-  }
-
-  std::unique_ptr<InstantiatedInfluenceMap> Renderer::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    UnusedArguments(aView);
-    return nullptr;
-  }
-
-
-
-  void Renderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    UnusedArguments(aView, aUBOView);
-  }
-
-  void Renderer::UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination)
-  {
-    UnusedArguments(aView, aIllumination);
-  }
-
-
-  void Renderer::GraphicsDataUpdate(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-  void Renderer::FrameUpdate(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-  void Renderer::PresentFrame(LogicUpdate *aEvent)
-  {
-    UnusedArguments(aEvent);
-  }
-
-  glm::vec4 Renderer::GetClearColor(GraphicsView *aView)
-  {
-    UnusedArguments(aView);
-    return glm::vec4{};
-  }
-
-  void Renderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
-  {
-    UnusedArguments(aView, aColor);
-  }
 
   void Renderer::SetLights(bool aOnOrOff)
   {
@@ -184,7 +128,7 @@ namespace YTE
 
   Mesh * Renderer::GetBaseMesh(const std::string & aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     auto mesh = RequestMesh(aFilename);
     if (mesh)
     {
@@ -231,7 +175,7 @@ namespace YTE
 
   Texture* Renderer::GetBaseTexture(const std::string &aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     auto texture = RequestTexture(aFilename);
     if (texture)
     {
@@ -278,7 +222,7 @@ namespace YTE
 
   Mesh* Renderer::RequestMesh(const std::string &aMeshFile)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting mesh: {}", aMeshFile));
     
     std::shared_lock<std::shared_mutex> baseLock(mBaseMeshesMutex);
@@ -309,7 +253,7 @@ namespace YTE
 
   Texture* Renderer::RequestTexture(const std::string &aFilename)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     //((Engine*)mJobSystem->GetOwner())->Log(LogType::Information, fmt::format("Requesting texture: {}", aFilename));
     std::shared_lock<std::shared_mutex> baseLock(mBaseTexturesMutex);
     auto baseIt = mBaseTextures.find(aFilename);

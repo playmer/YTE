@@ -1,12 +1,8 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
+#include "YTE/Graphics/InstantiatedLight.hpp"
 #include "YTE/Graphics/Light.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
@@ -136,7 +132,7 @@ namespace YTE
 
   void Light::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     UnusedArguments(aEvent);
 
     if (mTransform && mSetTransform == false)
@@ -482,7 +478,7 @@ namespace YTE
 
   void Light::Create()
   {
-    mInstantiatedLight = mRenderer->CreateLight(mGraphicsView);
+    mInstantiatedLight = std::make_unique<InstantiatedLight>(mGraphicsView);
 
     if (mUseTemp)
     {

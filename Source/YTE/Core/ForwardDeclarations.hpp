@@ -24,6 +24,8 @@ namespace YTE
   template <typename T> class ComponentFactory;
   class ComponentSystem;
   class StringComponentFactory;
+  class Event;
+  class EventHandler;
   class JobHandle;
   class JobSystem;
 } // End yte namespace

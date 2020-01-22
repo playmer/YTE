@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_DeviceEnums_h
@@ -18,22 +10,13 @@
 
 namespace YTE
 {
-  enum class ControllerId : uint32_t
-  {
-    Xbox_P1,
-    Xbox_P2,
-    Xbox_P3,
-    Xbox_P4,
-    Xbox_Controllers_Number,
-    Unknown
-  };
-
-  enum class XboxButtons : uint32_t
+  enum class GamepadButtons : uint32_t
   {
     DPAD_Up,
     DPAD_Down,
     DPAD_Left,
     DPAD_Right,
+    Guide,
     Start,
     Back,
     LeftStick,
@@ -44,7 +27,7 @@ namespace YTE
     B,
     X,
     Y,
-    Xbox_Buttons_Number,
+    Gamepad_Buttons_Number,
     Unknown
   };
 
@@ -202,18 +185,18 @@ namespace YTE
   ///////////////////////////////////////
   // Static Functions
   ///////////////////////////////////////
-  inline XboxButtons& operator++(XboxButtons &aButton)
+  inline GamepadButtons& operator++(GamepadButtons &aButton)
   {
-    using IntType = std::underlying_type<XboxButtons>::type;
+    using IntType = std::underlying_type<GamepadButtons>::type;
 
-    aButton = static_cast<XboxButtons>(static_cast<IntType>(aButton) + 1);
+    aButton = static_cast<GamepadButtons>(static_cast<IntType>(aButton) + 1);
 
     return aButton;
   }
 
-  inline XboxButtons operator++(XboxButtons &aButton, int)
+  inline GamepadButtons operator++(GamepadButtons &aButton, int)
   {
-    XboxButtons result = aButton;
+    GamepadButtons result = aButton;
     ++aButton;
     return result;
   }
@@ -252,8 +235,7 @@ namespace YTE
   }
 }
 
-YTEDeclareExternalType(YTE::ControllerId);
-YTEDeclareExternalType(YTE::XboxButtons);
+YTEDeclareExternalType(YTE::GamepadButtons);
 YTEDeclareExternalType(YTE::MouseButtons);
 YTEDeclareExternalType(YTE::Keys);
 

@@ -48,10 +48,12 @@ namespace YTE
     };
 
     public:
-    PluginWrapper(Engine* aEngine, std::string const& aPluginFileName);
-    ~PluginWrapper();
+    YTE_Shared PluginWrapper(Engine* aEngine, std::string const& aPluginFileName);
+    YTE_Shared ~PluginWrapper();
 
-    void Reload();
+    YTE_Shared void Reload();
+
+    YTE_Shared bool IsLoaded();
 
     private:
     void LoadPlugin();

@@ -1,13 +1,5 @@
-﻿/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
-#include <memory_resource>
 #include <array>
 #include <list>
 
@@ -16,16 +8,12 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 namespace YTE
 {
   template <typename T, size_t S = 128>
-  class BlockAllocator : std::allocator<T>
+  class BlockAllocator
   {
   public:
     using value_type = T;
     using pointer = T*;
-    /*using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;*/
     using size_type = std::size_t;
-    //using difference_type = std::ptrdiff_t;
     using storage_type = typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type;
     using array_type = std::array<storage_type, S>;
 
@@ -46,6 +34,11 @@ namespace YTE
     private:
       BlockAllocator<value_type> *mAllocator;
     };
+
+    BlockAllocator()
+    {
+
+    }
 
     Deleter GetDeleter()
     {
@@ -106,8 +99,8 @@ namespace YTE
       }
 
     private:
-      size_type mSize;
-      Node *mHead;
+      size_type mSize = 0;
+      Node *mHead = nullptr;
     };
 
     void AllocateIfNeeded()
@@ -126,7 +119,7 @@ namespace YTE
 
     std::list<array_type> mData;
     FreeList mFreeList;
-    size_type mSize;
+    size_type mSize = 0;
 
   };
 }

@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Threading/Worker.hpp"
 
 namespace YTE
@@ -70,6 +64,8 @@ namespace YTE
 
   void Worker::Run()
   {
+    OPTICK_THREAD("JobSystemWorker");
+
     while (mState != WorkerState::Stopped)
     {
       ExecuteNext();
@@ -120,6 +116,8 @@ namespace YTE
 
   Job* Worker::GetJob()
   {
+    OPTICK_EVENT();
+
     Job* job = mQueue.Pop();
     if (job)
     {
@@ -127,12 +125,12 @@ namespace YTE
     }
     else if (!mCoworkers.empty())
     {
-      // TODO(Evan): make choosing the coworker to rob smarter
+      // TODO(Evelyn): make choosing the coworker to rob smarter
       int index = std::rand() % mCoworkers.size();
       return mCoworkers[index]->StealFrom();
     }
 
-    // TODO(Evan): Is this what it should do?
+    // TODO(Evelyn): Is this what it should do?
     return nullptr;
   }
 

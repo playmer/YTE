@@ -4,7 +4,7 @@
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 #include "YTE/Graphics/Model.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Vulkan/VKInstantiatedModel.hpp"
+#include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 
 namespace YTE
 {

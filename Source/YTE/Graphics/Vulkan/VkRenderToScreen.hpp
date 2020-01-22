@@ -1,12 +1,9 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkRenderToScreen_hpp
 #define YTE_Graphics_Vulkan_VkRenderToScreen_hpp
+
+#include <optional>
 
 #include "YTE/Core/EventHandler.hpp"
 
@@ -15,7 +12,6 @@
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
 #include "YTE/Graphics/Vulkan/VkCommandBufferBuffer.hpp"
-#include "YTE/Graphics/Vulkan/VkCommandBufferEventBuffer.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
 
 namespace YTE
@@ -57,9 +53,7 @@ namespace YTE
 
     void LoadToVulkan();
 
-    void MoveToNextEvent();
-    void ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
-    void ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer> &aCBO);
+    vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> GetCommands();
 
     // gettors / settors
     std::shared_ptr<vkhlf::RenderPass> &GetRenderPass()
@@ -91,8 +85,7 @@ namespace YTE
     std::vector<VkRenderTarget::RenderTargetData*> mRenderTargetData;
     std::unique_ptr<ScreenQuad> mScreenQuad;
     std::unique_ptr<ScreenShader> mScreenShader;
-    std::unique_ptr<VkCBOB<3, true>> mCBOB;
-    std::unique_ptr<VkCBEB<3>> mCBEB;
+    std::optional<VkCBOB<3, true>> mCBOB;
     std::unique_ptr<vkhlf::FramebufferSwapchain> mFrameBufferSwapChain;
     VkRenderedSurface *mSurface;
     VkRenderer *mRenderer;

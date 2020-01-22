@@ -1,11 +1,7 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-12-14
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
+#define BASISU_DEVEL_MESSAGES 1
+
+#include "transcoder/basisu_transcoder.h"
+
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Core/Actions/ActionManager.hpp"
@@ -18,6 +14,8 @@
 #include "YTE/Core/Threading/JobSystem.hpp"
 
 #include "YTE/Core/EventHandler.hpp"
+
+#include "YTE/GameComponents/SteppingStone.hpp"
 
 #include "YTE/Graphics/Animation.hpp"
 #include "YTE/Graphics/BaseModel.hpp"
@@ -38,6 +36,7 @@
 #include "YTE/Graphics/TempDiffuseColoringComponent.hpp"
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
 #include "YTE/Graphics/InfluenceMap.hpp"
+#include "YTE/Graphics/UBOs.hpp"
 
 #include "YTE/Physics/BoxCollider.hpp"
 #include "YTE/Physics/Body.hpp"
@@ -63,16 +62,20 @@
 #include "YTE/Platform/GamepadSystem.hpp"
 #include "YTE/Platform/Window.hpp"
 
-#include "YTE/WWise/WWiseSystem.hpp"
-#include "YTE/WWise/WWiseEmitter.hpp"
-#include "YTE/WWise/WWiseListener.hpp"
-#include "YTE/WWise/WWiseView.hpp"
-
 namespace YTE
 {
+  void InitializeBasis()
+  {
+    OPTICK_EVENT();
+
+    basist::basisu_transcoder_init();
+  }
+
   void InitializeYTETypes()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+
+    InitializeBasis();
 
     InitializeType<ActionManager>();
     InitializeType<Component>();
@@ -84,6 +87,7 @@ namespace YTE
     InitializeType<Space>();
     InitializeType<TestComponent>();
 
+    InitializeType<SteppingStone>();
     InitializeType<Event>();
     InitializeType<EventHandler>();
     InitializeType<LogicUpdate>();
@@ -91,9 +95,9 @@ namespace YTE
     InitializeType<MouseMoveEvent>();
     InitializeType<MouseWheelEvent>();
     InitializeType<KeyboardEvent>();
-    InitializeType<XboxButtonEvent>();
-    InitializeType<XboxFlickEvent>();
-    InitializeType<XboxStickEvent>();
+    InitializeType<GamepadButtonEvent>();
+    InitializeType<GamepadFlickEvent>();
+    InitializeType<GamepadStickEvent>();
     InitializeType<TransformChanged>();
     InitializeType<OrientationChanged>();
     InitializeType<CollisionEvent>();
@@ -148,13 +152,8 @@ namespace YTE
     InitializeType<Keyboard>();
     InitializeType<Mouse>();
     InitializeType<GamepadSystem>();
-    InitializeType<XboxController>();
+    InitializeType<Gamepad>();
     InitializeType<Window>();
-    
-    InitializeType<WWiseSystem>();
-    InitializeType<WWiseEmitter>();
-    InitializeType<WWiseListener>();
-    InitializeType<WWiseView>();
     
     InitializeType<void>();
     InitializeType<bool>();
@@ -177,8 +176,7 @@ namespace YTE
     InitializeType<glm::vec4>();
     InitializeType<glm::quat>();
     InitializeType<btIDebugDraw::DebugDrawModes>();
-    InitializeType<YTE::ControllerId>();
-    InitializeType<YTE::XboxButtons>();
+    InitializeType<YTE::GamepadButtons>();
     InitializeType<YTE::MouseButtons>();
     InitializeType<YTE::Keys>();
 
@@ -193,5 +191,15 @@ namespace YTE
     InitializeType<Serializable>();
     InitializeType<EditorProperty>();
     InitializeType<DropDownStrings>();
+
+    InitializeType<UBOs::View>();
+    InitializeType<UBOs::Model>();
+    InitializeType<UBOs::Material>();
+    InitializeType<UBOs::Animation>();
+    InitializeType<UBOs::WaterInfluenceMap>();
+    InitializeType<UBOs::WaterInformationManager>();
+    InitializeType<UBOs::Light>();
+    InitializeType<UBOs::Illumination>();
+    InitializeType<UBOs::LightManager>();
   }
 }

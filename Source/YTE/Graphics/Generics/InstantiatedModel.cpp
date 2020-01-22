@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
@@ -48,9 +43,9 @@ namespace YTE
       auto& submesh = *submeshIt;
 
       mSubmeshMaterialsUBO.emplace_back(mRenderer->CreateUBO<UBOs::Material>(), 
-                                        submesh.mUBOMaterial);
+                                        submesh.mData.mUBOMaterial);
 
-      UpdateUBOSubmeshMaterial(&submesh.mUBOMaterial, i);
+      UpdateUBOSubmeshMaterial(&submesh.mData.mUBOMaterial, i);
     }
   }
 

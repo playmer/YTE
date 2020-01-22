@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_Window_h
@@ -63,7 +55,7 @@ namespace YTE
     YTE_Shared Window(Engine *aEngine);
 
     YTE_Shared void SetResolution(u32 aWidth, u32 aHeight);
-    YTE_Shared void SetFullscreen(bool aFullscreen, bool aMetro);
+    YTE_Shared void SetFullscreen(bool aFullscreen);
     YTE_Shared void SetWindowTitle(const char *aString);
 
     YTE_Shared bool IsMinimized();
@@ -75,12 +67,15 @@ namespace YTE
     YTE_Shared u32 GetHeight();
     YTE_Shared u32 GetWidth();
 
-    YTE_Shared void SetHeight(u32 aHeight);
-    YTE_Shared void SetWidth(u32 aWidth);
+    // Does not change the Window width/height, just the internal representation
+    // of the sizes, this is an escape hatch for editor mode.
+    YTE_Shared void SetInternalDimensions(u32 aWidth, u32 aHeight);
 
+    // Does not change the Window position, just the internal representation
+    // of where the window is, this is an escape hatch for editor mode.
+    YTE_Shared void SetInternalPosition(i32 aX, i32 aY);
     YTE_Shared glm::i32vec2 GetPosition();
 
-    //YTE_Shared std::shared_ptr<vkhlf::Surface> SetUpVulkanWindow(void *aSetup);
     YTE_Shared std::any SetUpVulkanWindow(void *aSetup);
 
     YTE_Shared void SetCursorVisibility(bool aShow);
@@ -89,7 +84,8 @@ namespace YTE
     YTE_Shared void* GetWindowId();
 
     YTE_Shared ~Window();
-
+    
+    YTE_Shared void PreUpdate();
     YTE_Shared void PlatformUpdate();
     YTE_Shared void Update();
 

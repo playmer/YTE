@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_Keyboard_hpp
@@ -32,7 +24,7 @@ namespace YTE
 
     Keys Key;
     u32 CharacterTyped;
-    Keyboard *Keyboard;
+    Keyboard *SendingKeyboard;
   };
 
   YTE_Shared Keys TranslateFromOsToOurKey(uint64_t aOsKey);
@@ -43,7 +35,7 @@ namespace YTE
   YTE_Shared void SetClipboardText(std::string &aText);
 
   // Checks key with OS.
-  YTE_Shared bool CheckKey(Keys aKey);
+  //YTE_Shared bool CheckKey(Keys aKey);
 
   class Keyboard : public EventHandler
   {
@@ -51,7 +43,8 @@ namespace YTE
     YTEDeclareType(Keyboard);
 
     YTE_Shared Keyboard();
-
+    
+    YTE_Shared void PreUpdate();
     YTE_Shared void Update();
     YTE_Shared void UpdateKey(Keys aKey, bool aDown);
     YTE_Shared void ForceAllKeysUp();
@@ -60,6 +53,11 @@ namespace YTE
     YTE_Shared bool IsKeyDown(Keys aKey);
     YTE_Shared bool WasKeyDown(Keys aKey);
 
+    // This 
+    YTE_Shared void SetText(char const*);
+    YTE_Shared void AddText(char const*);
+    YTE_Shared std::string const& GetText();
+    
     bool *mKeysPrevious;
     bool *mKeysCurrent;
 
@@ -67,6 +65,7 @@ namespace YTE
   private:
     bool mArrayOne[static_cast<size_t>(Keys::Keys_Number)];
     bool mArrayTwo[static_cast<size_t>(Keys::Keys_Number)];
+    std::string mText;
   };
 }
 

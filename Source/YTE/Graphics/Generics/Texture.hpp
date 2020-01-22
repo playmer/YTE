@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Generics_Texture_hpp
@@ -15,8 +10,11 @@ namespace YTE
   enum class TextureLayout
   {
     RGBA,
-    DXT1_sRGB,
-    DXT5_sRGB
+    Bc1_Rgba_Srgb,
+    Bc3_Srgb,
+    Bc3_Unorm,
+    Bc7_Unorm_Opaque,
+    InvalidLayout
   };
 
   enum class TextureType
@@ -46,12 +44,15 @@ namespace YTE
             u32 aHeight, 
             u32 aMipLevels, 
             u32 aLayerCount)
-      : mWidth{aWidth}
-      , mHeight(aHeight)
-      , mMipLevels(aMipLevels)
-      , mLayerCount(aLayerCount)
-      , mData{ std::move(aData) }
-      , mType{aType}
+      : mData{ std::move(aData) }
+      , mWidth{ aWidth }
+      , mHeight{ aHeight }
+      , mMipLevels{ aMipLevels }
+      , mLayerCount{ aLayerCount }
+      , mBlockWidth{ 0 }
+      , mBlockHeight{ 0 }
+      , mBytesPerBlock{ 0 }
+      , mType{ aType }
     {
 
     }
@@ -61,22 +62,22 @@ namespace YTE
       
     }
 
+
+    std::vector<u8> mData;
+    std::string mTexture;
+
     u32 mWidth;
     u32 mHeight;
     u32 mMipLevels;
     u32 mLayerCount;
-
-    std::vector<u8> mData;
-
-    std::string mTexturePath;
-    std::string mTextureFileName;
-
+    u32 mBlockWidth;
+    u32 mBlockHeight;
+    u32 mBytesPerBlock;
     TextureLayout mType;
 
-
-
   protected:
-    void Load(std::string &aFile);
+    void Load(std::string const& aFile);
+    void Decode();
   };
 }
 

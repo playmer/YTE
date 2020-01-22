@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkCommandBufferBuffer_hpp
@@ -25,6 +20,11 @@ namespace YTE
       mSize = tBufferCount;
       mIndex = 0;
       mIsSecondary = tIsSecondary;
+      auto& device = aPool->get<vkhlf::Device>();
+
+      // Device is conditionally unused in the case of a tIsSecondary VkCBOB.
+      UnusedArguments(device);
+
       for (size_t i = 0; i < mSize; ++i)
       {
         if (mIsSecondary)
@@ -35,14 +35,21 @@ namespace YTE
         {
           mCBOs[i] = aPool->allocateCommandBuffer(vk::CommandBufferLevel::ePrimary);
         }
+
+        // We don't require fences on secondary buffers.
+        if constexpr (false == tIsSecondary)
+        {
+          mFences[i] = device->createFence(false);
+        }
+
         mHasBeenUsed[i] = false;
       }
     }
 
 
     // invalid, command buffers dont do well if there are more copies being used
-    VkCBOB(VkCBOB& rhs) = delete;
-    VkCBOB& operator=(VkCBOB& rhs) = delete;
+    //VkCBOB(VkCBOB& rhs) = delete;
+    //VkCBOB& operator=(VkCBOB& rhs) = delete;
 
 
     // dtor
@@ -54,6 +61,39 @@ namespace YTE
       //}
     }
     
+
+    void operator++()
+    {
+      NextCommandBuffer();
+    }
+
+    void operator++(int)
+    {
+      NextCommandBuffer();
+    }
+
+    //std::shared_ptr<vkhlf::CommandBuffer>& GetCBO()
+    //{
+    //  return mCBOs[mIndex];
+    //}
+    //
+    //std::shared_ptr<vkhlf::CommandBuffer>& operator*()
+    //{
+    //  return mCBOs[mIndex];
+    //}
+
+
+    std::pair<std::shared_ptr<vkhlf::CommandBuffer>&, std::shared_ptr<vkhlf::Fence>&> operator*()
+    {
+      return { mCBOs[mIndex], mFences[mIndex] };
+    }
+
+    size_t size()
+    {
+      return mSize;
+    }
+
+  private:
     // Increments the current CBO and resets the one before it
     void NextCommandBuffer()
     {
@@ -70,34 +110,19 @@ namespace YTE
       }
 
       mCBOs[mIndex]->reset(vk::CommandBufferResetFlagBits::eReleaseResources);
+
+
+      if constexpr (false == tIsSecondary)
+      {
+        mFences[mIndex]->reset();
+      }
     }
 
-    void operator++()
-    {
-      NextCommandBuffer();
-    }
 
-    void operator++(int)
-    {
-      NextCommandBuffer();
-    }
 
-    std::shared_ptr<vkhlf::CommandBuffer>& GetCurrentCBO()
-    {
-      return mCBOs[mIndex];
-    }
-    std::shared_ptr<vkhlf::CommandBuffer>& operator*()
-    {
-      return mCBOs[mIndex];
-    }
 
-    size_t size()
-    {
-      return mSize;
-    }
-
-  private:
     std::array<std::shared_ptr<vkhlf::CommandBuffer>, tBufferCount> mCBOs;
+    std::array<std::shared_ptr<vkhlf::Fence>, tBufferCount> mFences;
     std::array<bool, tBufferCount> mHasBeenUsed;
     size_t mIndex;
     size_t mSize = tBufferCount;

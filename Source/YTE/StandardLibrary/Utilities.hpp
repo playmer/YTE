@@ -1,10 +1,7 @@
-//////////////////////////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////////////////////////
 #pragma once
 
-#ifndef Utilities_hpp
-#define Utilities_hpp
+#ifndef YTE_StandardLibrary_Utilities_hpp
+#define YTE_StandardLibrary_Utilities_hpp
 
 #include <cstdint>
 #include <cstddef>

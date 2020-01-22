@@ -4,9 +4,7 @@
 #include <type_traits>
 #include <vector>
 
-#if YTE_CAN_PROFILE
-#include <easy/profiler.h>
-#endif
+#include "optick.h"
 
 #include "YTE/StandardLibrary/OrderedMultiMap.hpp"
 #include "YTE/StandardLibrary/OrderedMap.hpp"
@@ -19,20 +17,6 @@
 #include "YTE/Platform/TargetDefinitions.hpp"
 
 #include "YTE/Utilities/String/String.hpp"
-
-
-// This is duplicated functionality needed for files that can't rely on the profiling where it is
-// this functionality should be moved elsewhere so we don't have to duplicate it here.
-#if YTE_CAN_PROFILE 
-  #define YTEMetaProfileName(aName) EASY_BLOCK(aName)
-  #define YTEMetaProfileFunction() EASY_FUNCTION(profiler::colors::Red)
-  #define YTEMetaProfileBlock(aName) EASY_BLOCK(aName, profiler::colors::Red)
-#else
-  #define YTEMetaProfileName(aName)
-  #define YTEMetaProfileFunction()
-  #define YTEMetaProfileBlock(aName)
-#endif
-
 
 namespace YTE
 {
@@ -578,7 +562,7 @@ void Name::InitializeType()
   template<typename tType>
   inline void InitializeType()
   {
-    YTEMetaProfileFunction();
+    OPTICK_EVENT();
     TypeIdentification<tType>::InitializeType();
   }
 }

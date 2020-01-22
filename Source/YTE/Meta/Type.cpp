@@ -2,6 +2,8 @@
 #include "YTE/Meta/Meta.hpp"
 #include "YTE/Meta/Type.hpp"
 
+#include "YTE/Core/Utilities.hpp"
+
 namespace YTE
 {
   std::unordered_map<std::string, Type*> Type::sGlobalTypes;
@@ -33,7 +35,7 @@ namespace YTE
       .SetDocumentation("Unqualified size of the Type.");
   }
 
-  inline Type::~Type()
+  Type::~Type()
   {
 
   }
@@ -238,13 +240,48 @@ namespace YTE
     RegisterType<Field>();
     TypeBuilder<Field> builder;
   }
-}
 
+  YTEDefineType(Any)
+  {
+    RegisterType<Any>();
+    TypeBuilder<Any> builder;
+  }
+
+  void SerializeYteString(void* aAnyToSerialize, void* aValue, void* aAllocator)
+  {
+    auto any = static_cast<Any*>(aAnyToSerialize);
+    auto value = static_cast<RSValue*>(aValue);
+    auto allocator = static_cast<RSAllocator*>(aAllocator);
+
+    auto& returnValue = any->As<String>();
+    value->SetString(returnValue.c_str(), static_cast<RSSizeType>(returnValue.Size()), *allocator);
+  }
+
+  void SerializeStdString(void* aAnyToSerialize, void* aValue, void* aAllocator)
+  {
+    auto any = static_cast<Any*>(aAnyToSerialize);
+    auto value = static_cast<RSValue*>(aValue);
+    auto allocator = static_cast<RSAllocator*>(aAllocator);
+
+    auto& returnValue = any->As<std::string>();
+    value->SetString(returnValue.c_str(), static_cast<RSSizeType>(returnValue.size()), *allocator);
+  }
+}
 
 YTEDefineExternalType(YTE::String)
 {
   RegisterType<YTE::String>();
   TypeBuilder<YTE::String> builder;
+
+  builder.Function<&YTE::SerializeYteString>("JsonSerialize");
+}
+
+YTEDefineExternalType(std::string)
+{
+  RegisterType<std::string>();
+  TypeBuilder<std::string> builder;
+
+  builder.Function<&YTE::SerializeStdString>("JsonSerialize");
 }
 
 YTEDefineExternalType(YTE::s8)
@@ -323,10 +360,4 @@ YTEDefineExternalType(double)
 {
   RegisterType<double>();
   TypeBuilder<double> builder;
-}
-
-YTEDefineExternalType(std::string)
-{
-  RegisterType<std::string>();
-  TypeBuilder<std::string> builder;
 }

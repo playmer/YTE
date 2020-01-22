@@ -1,6 +1,5 @@
 namespace YTEditor
 {
-
   // Component Browser
   class ArchetypeTools;
   class ComponentBrowser;
@@ -22,7 +21,7 @@ namespace YTEditor
 
   class FileViewer;
   
-  class SubWindow;
+  class YTEWindow;
 
   // Gizmos
   class Axis;
@@ -35,6 +34,6 @@ namespace YTEditor
 
   // Main Window
   struct ComponentFactoryHelper;
-  class MainWindow;
 
+  class YTEditorMainWindow;
 }

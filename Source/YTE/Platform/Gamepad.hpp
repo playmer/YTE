@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_Gamepad_h
@@ -14,68 +6,76 @@
 #include "YTE/Core/EventHandler.hpp"
 
 #include "YTE/Platform/DeviceEnums.hpp"
+#include "YTE/Platform/ForwardDeclarations.hpp"
+
+#include "YTE/StandardLibrary/PrivateImplementation.hpp"
+
 namespace YTE
 {
-  YTEDeclareEvent(XboxStickFlicked);
-  YTEDeclareEvent(XboxStickEvent);
-  YTEDeclareEvent(XboxButtonPress);
-  YTEDeclareEvent(XboxButtonRelease);
-  YTEDeclareEvent(XboxButtonPersist);
+  YTEDeclareEvent(GamepadStickFlicked);
+  YTEDeclareEvent(GamepadStickEvent);
+  YTEDeclareEvent(GamepadButtonPress);
+  YTEDeclareEvent(GamepadButtonRelease);
+  YTEDeclareEvent(GamepadButtonPersist);
 
-  class XboxController;
-  class XboxFlickEvent : public Event
+  class Gamepad;
+  class GamepadFlickEvent : public Event
   {
   public:
-    YTEDeclareType(XboxFlickEvent);
+    YTEDeclareType(GamepadFlickEvent);
 
     glm::vec2 FlickDirection;
-    XboxButtons FlickedStick;
-    XboxController *Controller;
+    GamepadButtons FlickedStick;
+    Gamepad* Controller;
   };
 
-  class XboxStickEvent : public Event
+  class GamepadStickEvent : public Event
   {
   public:
-    YTEDeclareType(XboxStickEvent);
+    YTEDeclareType(GamepadStickEvent);
 
     glm::vec2 StickDirection;
-    XboxButtons Stick;
-    XboxController *Controller;
+    GamepadButtons Stick;
+    Gamepad* Controller;
   };
 
-  class XboxButtonEvent : public Event
+  class GamepadButtonEvent : public Event
   {
   public:
-    YTEDeclareType(XboxButtonEvent);
+    YTEDeclareType(GamepadButtonEvent);
 
-    XboxButtons Button;
-    XboxController *Controller;
+    GamepadButtons Button;
+    Gamepad* Controller;
   };
-
-  class XboxControllerState;
 
   struct Vibration
   {
-    float mLeft;
-    float mRight;
+    float mVibration;
     double mTime;
   };
 
+  
+  uint64_t TranslateFromOurToOSGamepadButton(GamepadButtons aOurButton);
+  GamepadButtons TranslateFromOsGamepadButtonToOurs(uint64_t aOsButton);
 
-  class XboxController : public EventHandler
+
+  class Gamepad : public EventHandler
   {
   public:
-    YTEDeclareType(XboxController);
+    YTEDeclareType(Gamepad);
 
-    YTE_Shared XboxController();
-    YTE_Shared ~XboxController();
+    YTE_Shared Gamepad();
+    YTE_Shared ~Gamepad();
 
-    YTE_Shared void UpdateState(XboxControllerState *state, double aDt);
-    YTE_Shared void Vibrate(float aLeftSpeed, float aRightSpeed);
-    YTE_Shared void VibrateForTime(float aLeftSpeed, float aRightSpeed, double aTime);
+    // aVibration: The amount to vibrate, a float between 0 and 1.
+    YTE_Shared void Vibrate(float aVibration);
 
-    YTE_Shared bool IsButtonDown(XboxButtons aButton);
-    YTE_Shared bool WasButtonDown(XboxButtons aButton);
+    // aVibration: The amount to vibrate, a float between 0 and 1.
+    // aTime: A number of seconds.
+    YTE_Shared void VibrateForTime(float aVibration, double aTime);
+
+    YTE_Shared bool IsButtonDown(GamepadButtons aButton);
+    YTE_Shared bool WasButtonDown(GamepadButtons aButton);
     inline bool Active() { return mActive; };
     inline glm::vec2 GetLeftStick() { return mLeftStick; };
     inline glm::vec2 GetRightStick() { return mRightStick; };
@@ -85,23 +85,36 @@ namespace YTE
 
     uint8_t mGamepadIndex;
   private:
-    void ProcessButton(void *aState, size_t aOsButton, XboxButtons aOurKey);
+    friend GamepadSystem;
+    friend GamepadSystemData;
+    friend GamepadData;
+    friend PlatformManager;
+
+    void PlatformUpdate();
+
+    // Call PreUpdate before pumping the event queue.
+    void PreUpdate();
     
-    XboxController& operator=(XboxController&);
+    // Call Update after pumping the event queue.
+    void Update(double aDt);
+    
+    
+    Gamepad& operator=(Gamepad&);
 
-    bool mButtonArrayOne[static_cast<size_t>(XboxButtons::Xbox_Buttons_Number)];
-    bool mButtonArrayTwo[static_cast<size_t>(XboxButtons::Xbox_Buttons_Number)];
+    // true means the button is/was down.
+    std::array<bool, EnumCast(GamepadButtons::Gamepad_Buttons_Number)> mPreviousButtons;
+    std::array<bool, EnumCast(GamepadButtons::Gamepad_Buttons_Number)> mCurrentButtons;
 
-    bool *mCurrentButtons;
-    bool *mPreviousButtons;
+    PrivateImplementationLocal<56> mData;
 
-    float mLeftVibe;
-    float mRightVibe;
+    std::vector<Vibration> mVibrations;
 
     glm::vec2 mLeftStick;
     glm::vec2 mRightStick;
     glm::vec2 mPreviousLeftStick;
     glm::vec2 mPreviousRightStick;
+    
+    float mVibration;
 
     float mLeftTrigger;
     float mRightTrigger;
@@ -110,8 +123,6 @@ namespace YTE
     bool mRightStickFlicked;
 
     bool mActive;
-
-    std::vector<Vibration> mVibrations;
 
     const float cFlickMagnitude = 0.8f;
     const float cMaxRumble = 65535.0f;

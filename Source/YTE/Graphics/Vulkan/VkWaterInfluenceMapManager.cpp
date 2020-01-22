@@ -1,8 +1,3 @@
-/////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
@@ -28,9 +23,9 @@ namespace YTE
                                                                      GPUAllocation::MemoryProperty::DeviceLocal);
 
 
-    mMaps.reserve(YTE_Graphics_WaterInformationCount);
+    mMaps.reserve(UBOs::WaterInformationCount);
 
-    for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
+    for (int i = 0; i < UBOs::WaterInformationCount; ++i)
     {
       mMapUse[i] = 0;
     }
@@ -52,9 +47,9 @@ namespace YTE
                                                                      GPUAllocation::BufferUsage::UniformBuffer,
                                                                      GPUAllocation::MemoryProperty::DeviceLocal);
 
-    mMaps.reserve(YTE_Graphics_WaterInformationCount);
+    mMaps.reserve(UBOs::WaterInformationCount);
 
-    for (int i = 0; i < YTE_Graphics_WaterInformationCount; ++i)
+    for (int i = 0; i < UBOs::WaterInformationCount; ++i)
     {
       mMapUse[i] = 0;
     }
@@ -85,7 +80,7 @@ namespace YTE
 
   void VkWaterInfluenceMapManager::AddMap(VkInstantiatedInfluenceMap *aMap)
   {
-    if (mWaterInformationData.mNumberOfInfluences == YTE_Graphics_WaterInformationCount)
+    if (mWaterInformationData.mNumberOfInfluences == UBOs::WaterInformationCount)
     {
       DebugObjection(true, "Water Influence Map Manager is full, no new maps can be added, you may safely continue, no map was added");
     }
@@ -99,7 +94,7 @@ namespace YTE
 
   std::unique_ptr<VkInstantiatedInfluenceMap> VkWaterInfluenceMapManager::CreateMap()
   {
-    if (mWaterInformationData.mNumberOfInfluences == YTE_Graphics_WaterInformationCount)
+    if (mWaterInformationData.mNumberOfInfluences == UBOs::WaterInformationCount)
     {
       DebugObjection(true , "Water Influence Map Manager is full, no new maps can be added, you may safely continue, no map was added");
       return nullptr;

@@ -35,14 +35,14 @@ namespace YTE
     }
 
     template<typename FieldPointerType, FieldPointerType aFieldPointer>
-    static Any Getter(std::vector<Any>& aArguments)
+    static Any Getter(ContiguousRange<Any> aArguments)
     {
       auto self = aArguments.at(0).As<typename DecomposeFieldPointer<FieldPointerType>::ObjectType*>();
       return Any(self->*aFieldPointer);
     }
 
     template<typename FieldPointerType, FieldPointerType aFieldPointer>
-    static Any Setter(std::vector<Any>& aArguments)
+    static Any Setter(ContiguousRange<Any> aArguments)
     {
       auto self = aArguments.at(0).As<typename DecomposeFieldPointer<FieldPointerType>::ObjectType*>();
       self->*aFieldPointer = aArguments.at(1).As<typename DecomposeFieldPointer<FieldPointerType>::FieldType>();
