@@ -30,16 +30,16 @@ namespace YTE
 
     YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGuid) const;
 
-    //static size_t Hash(GlobalUniqueIdentifier const& aGuid)
-    //{
-    //  //std::byte const* begin = reinterpret_cast<std::byte const*>(&aGuid);
-    //  //std::basic_string_view<std::byte> test{ begin, begin + sizeof(GlobalUniqueIdentifier) };
-    //
-    //  char const* begin = reinterpret_cast<char const*>(&aGuid);
-    //  std::basic_string_view<char> test{ begin, sizeof(GlobalUniqueIdentifier) };
-    //
-    //  std::hash(test);
-    //}
+    YTE_Shared static size_t Hash(GlobalUniqueIdentifier const& aGuid)
+    {
+      //std::byte const* begin = reinterpret_cast<std::byte const*>(&aGuid);
+      //std::basic_string_view<std::byte> test{ begin, begin + sizeof(GlobalUniqueIdentifier) };
+    
+      char const* begin = reinterpret_cast<char const*>(&aGuid);
+      std::string_view test{ begin, sizeof(GlobalUniqueIdentifier) };
+    
+      return std::hash<std::string_view>{}(test);
+    }
 
 
     //|------u32-----|   |--u16-|   |--u16-|   |--u16-|   |-----u32------||--u16-|
@@ -70,6 +70,17 @@ namespace YTE
   YTE_Shared std::string RemoveExtension(const std::string & filename);
 
   YTE_Shared filesystem::path relativeTo(filesystem::path from, filesystem::path to);
+}
+
+namespace std
+{
+  template<> struct hash<YTE::GlobalUniqueIdentifier>
+  {
+    std::size_t operator()(YTE::GlobalUniqueIdentifier const& aGuid) const noexcept
+    {
+      return YTE::GlobalUniqueIdentifier::Hash(aGuid);
+    }
+  };
 }
 
 #endif

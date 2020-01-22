@@ -578,7 +578,8 @@ namespace YTE
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
+      //mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
+      mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID(), aComposition));
     }
 
     return collision;
@@ -588,22 +589,23 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    auto it = mCompositionsByGUID.find(aGUID.ToString());
+    //auto it = mCompositionsByGUID.find(aGUID.ToString());
+    auto it = mCompositionsByGUID.find(aGUID);
 
-    if (it == mCompositionsByGUID.end())
+    if (it != mCompositionsByGUID.end())
     {
-      return nullptr;
+      return it->second;
     }
-
-    return it->second;
+    
+    return nullptr;
   }
 
   Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
   {
     OPTICK_EVENT();
 
-    std::string guid = aGUID.ToString();
-    auto it = mCompositionsByGUID.find(guid);
+    //std::string guid = aGUID.ToString();
+    auto it = mCompositionsByGUID.find(aGUID);
 
     if (it == mCompositionsByGUID.end())
     {
@@ -622,15 +624,16 @@ namespace YTE
       return false;
     }
 
-    auto it = mCompositionsByGUID.find(aGUID.ToString());
+    //auto it = mCompositionsByGUID.find(aGUID.ToString());
+    auto it = mCompositionsByGUID.find(aGUID);
 
-    if (it == mCompositionsByGUID.end())
+    if (it != mCompositionsByGUID.end())
     {
-      return false;
+      mCompositionsByGUID.erase(it);
+      return true;
     }
 
-    mCompositionsByGUID.erase(aGUID.ToString());
-    return true;
+    return false;
   }
 
   Component* Engine::StoreComponentGUID(Component *aComponent)
@@ -644,7 +647,8 @@ namespace YTE
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
+      //mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
+      mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID(), aComponent));
     }
 
     return collision;
@@ -654,22 +658,23 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    auto it = mComponentsByGUID.find(aGUID.ToString());
+    //auto it = mComponentsByGUID.find(aGUID.ToString());
+    auto it = mComponentsByGUID.find(aGUID);
 
-    if (it == mComponentsByGUID.end())
+    if (it != mComponentsByGUID.end())
     {
-      return nullptr;
+      return it->second;
     }
-
-    return it->second;
+    
+    return nullptr;
   }
 
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
   {
     OPTICK_EVENT();
 
-    std::string guid = aGUID.ToString();
-    auto it = mComponentsByGUID.find(guid);
+    //std::string guid = aGUID.ToString();
+    auto it = mComponentsByGUID.find(aGUID);
 
     if (it == mComponentsByGUID.end())
     {
@@ -688,15 +693,15 @@ namespace YTE
       return false;
     }
 
-    auto it = mComponentsByGUID.find(aGUID.ToString());
+    auto it = mComponentsByGUID.find(aGUID);
 
-    if (it == mComponentsByGUID.end())
+    if (it != mComponentsByGUID.end())
     {
-      return false;
+      mComponentsByGUID.erase(it);
+      return true;
     }
-
-    mComponentsByGUID.erase(aGUID.ToString());
-    return true;
+    
+    return false;
   }
 
   void Engine::Log(LogType aType, std::string_view aLog)

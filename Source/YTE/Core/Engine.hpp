@@ -169,8 +169,8 @@ namespace YTE
 
   private:
     // all compositions and components mapped to GUIDs (represented as strings)
-    std::unordered_map<std::string, Composition*> mCompositionsByGUID;
-    std::unordered_map<std::string, Component*> mComponentsByGUID;
+    std::unordered_map<GlobalUniqueIdentifier, Composition*> mCompositionsByGUID;
+    std::unordered_map<GlobalUniqueIdentifier, Component*> mComponentsByGUID;
 
     PlatformManager mPlatform;
     ComponentSystem mComponentSystem;
