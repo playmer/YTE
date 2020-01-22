@@ -109,35 +109,13 @@ namespace YTE
   void Space::DeletionUpdate(LogicUpdate *aUpdate)
   {
     OPTICK_EVENT();
-    
-    // Delete Attached Components
-    //auto componentRange = mEngine->mComponentsToRemove.FindAll(this);
-    //
-    //if (componentRange.IsRange())
-    //{
-    //  for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
-    //  {
-    //    end->second->second->Deinitialize();
-    //    RemoveComponentInternal(end->second);
-    //  }
-    //}
-    //
-    //mEngine->mComponentsToRemove.Erase(componentRange);
-    //
-    //// Delete Attached Compositions
-    //auto compositionRange = mEngine->mCompositionsToRemove.FindAll(this);
-    //
-    //mEngine->mCompositionsToRemove.Erase(compositionRange);
-    //
-    //// Stop handling deletions, as we've completed all of them thus far.
-    //GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
-    //SendEvent(Events::DeletionUpdate, aUpdate);
 
     if (mCompositionDeletionList.Empty() && mComponentDeletionList.Empty())
     {
       return;
     }
     
+    /////////////////////////////////////////////////////////////////
     // Delete Compositions
     {
       auto it = mCompositionDeletionList.begin();
@@ -185,6 +163,7 @@ namespace YTE
       }
     }
 
+    /////////////////////////////////////////////////////////////////
     // Delete Components
     {
       auto it = mComponentDeletionList.begin();

@@ -127,7 +127,6 @@ namespace YTE
     , mName{ aName }
     , mInitializationHook{this}
     , mShouldSerialize{ true }
-    //, mBeingDeleted{ false }
     , mGUID{}
   {
     OPTICK_EVENT();
@@ -142,7 +141,6 @@ namespace YTE
     , mName{}
     , mInitializationHook{ this }
     , mShouldSerialize{ true }
-    //, mBeingDeleted{ false }
     , mGUID{}
   {
     OPTICK_EVENT();
@@ -179,7 +177,6 @@ namespace YTE
     {
       CompositionRemoved event;
       event.mComposition = this;
-      //mBeingDeleted = true;
 
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }
@@ -279,53 +276,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    //if (auto collider = GetColliderFromObject(this);
-    //    collider != nullptr && collider->GetType()->GetAttribute<RunInEditor>())
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      collider->GetType()->GetAttribute<RunInEditor>())
-    //  {
-    //    collider->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto ghostBody = GetComponent<GhostBody>();
-    //    ghostBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<GhostBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    ghostBody->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto collisionBody = GetComponent<CollisionBody>();
-    //    collisionBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<CollisionBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    collisionBody->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto rigidBody = GetComponent<GhostBody>();
-    //    rigidBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<RigidBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    rigidBody->PhysicsInitialize();
-    //  }
-    //}
-
-    //auto transform = GetComponent<Transform>();
-    //if (transform != nullptr) transform->PhysicsInitialize();
-
-    //++physInit;
-
-    //SendEvent(Events::PhysicsInitialize, aEvent);
-    
     HandleInitialization<&Component::PhysicsInitialize>(Events::PhysicsInitialize,
                                                         aEvent,
                                                         this);
@@ -1166,23 +1116,6 @@ namespace YTE
     return parent;
   }
 
-  //bool Composition::ParentBeingDeleted()
-  //{
-  //  OPTICK_EVENT();
-  //
-  //  for (Composition *parent = GetParent();
-  //       nullptr != parent;
-  //       parent = parent->GetParent())
-  //  {
-  //    if (true == parent->mBeingDeleted)
-  //    {
-  //      return true;
-  //    }
-  //  }
-  //
-  //  return false;
-  //}
-
   void  Composition::RemoveCompositionInternal(CompositionMap::iterator &aComposition)
   {
     mCompositions.Erase(aComposition);
@@ -1191,24 +1124,6 @@ namespace YTE
   void Composition::RemoveComposition(Composition *aComposition)
   {
     OPTICK_EVENT();
-
-    //auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
-    //                {
-    //                  return aLhs.get() == aRhs; 
-    //                };
-    //
-    //auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
-    //                                                aComposition, 
-    //                                                compare);
-    //
-    //if (iter != mCompositions.end())
-    //{
-    //  InitializeEvent deinit;
-    //  aComposition->Deinitialize(&deinit);
-    //  mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
-    //  mCompositions.Erase(iter);
-    //}
-
 
     // We must be the composition's direct owner, currently if a composition's direct owner is a Space, then mOwner will
     // be nullptr and we must check their Parent instead.
@@ -1231,20 +1146,6 @@ namespace YTE
   void Composition::RemoveComponent(Type *aComponent)
   {
     OPTICK_EVENT();
-
-    //auto iter = mComponents.Find(aComponent);
-    //
-    //if (iter != mComponents.end())
-    //{
-    //  mEngine->mComponentsToRemove.Emplace(this, iter);
-    //}
-    //
-    //mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
-    //                                      mDependencyOrder.end(),
-    //                                      [aComponent](Type* aType) { return aType == aComponent; }),
-    //                       mDependencyOrder.end());
-    //
-    //GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
     
     auto iter = mComponents.Find(aComponent);
     

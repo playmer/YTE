@@ -228,9 +228,6 @@ namespace YTE
     YTE_Shared GlobalUniqueIdentifier& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
-    //bool GetIsBeingDeleted() const { return mBeingDeleted; }
-
-
     std::vector<Type*> const& GetDependencyOrder()
     {
       return mDependencyOrder;
@@ -256,8 +253,7 @@ namespace YTE
     YTE_Shared Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
                                                    RSValue* aSerialization, 
                                                    String aObjectName);
-    //YTE_Shared bool ParentBeingDeleted();
-
+    
     CompositionMap mCompositions;
     ComponentMap mComponents;
     std::vector<Type*> mDependencyOrder;
@@ -271,13 +267,10 @@ namespace YTE
     IntrusiveList<Composition>::Hook mInitializationHook;
 
     bool mShouldSerialize;
-    //bool mBeingDeleted;
 
     Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
-
-    //int physInit = 0;
   };
 }
 
