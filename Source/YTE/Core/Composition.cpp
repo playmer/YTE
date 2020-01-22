@@ -127,7 +127,7 @@ namespace YTE
     , mName{ aName }
     , mInitializationHook{this}
     , mShouldSerialize{ true }
-    , mBeingDeleted{ false }
+    //, mBeingDeleted{ false }
     , mGUID{}
   {
     OPTICK_EVENT();
@@ -142,7 +142,7 @@ namespace YTE
     , mName{}
     , mInitializationHook{ this }
     , mShouldSerialize{ true }
-    , mBeingDeleted{ false }
+    //, mBeingDeleted{ false }
     , mGUID{}
   {
     OPTICK_EVENT();
@@ -179,7 +179,7 @@ namespace YTE
     {
       CompositionRemoved event;
       event.mComposition = this;
-      mBeingDeleted = true;
+      //mBeingDeleted = true;
 
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }
@@ -322,7 +322,7 @@ namespace YTE
     //auto transform = GetComponent<Transform>();
     //if (transform != nullptr) transform->PhysicsInitialize();
 
-    ++physInit;
+    //++physInit;
 
     //SendEvent(Events::PhysicsInitialize, aEvent);
     
@@ -388,34 +388,6 @@ namespace YTE
     OPTICK_EVENT();
 
     (void)dt;
-  }
-
-  void Composition::DeletionUpdate(LogicUpdate *aUpdate)
-  {
-    OPTICK_EVENT();
-
-    // Delete Attached Components
-    auto componentRange = mEngine->mComponentsToRemove.FindAll(this);
-
-    if (componentRange.IsRange())
-    {
-      for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
-      {
-        end->second->second->Deinitialize();
-        RemoveComponentInternal(end->second);
-      }
-    }
-
-    mEngine->mComponentsToRemove.Erase(componentRange);
-
-    // Delete Attached Compositions
-    auto compositionRange = mEngine->mCompositionsToRemove.FindAll(this);
-
-    mEngine->mCompositionsToRemove.Erase(compositionRange);
-
-    // Stop handling deletions, as we've completed all of them thus far.
-    GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
-    SendEvent(Events::DeletionUpdate, aUpdate);
   }
 
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
@@ -1194,22 +1166,22 @@ namespace YTE
     return parent;
   }
 
-  bool Composition::ParentBeingDeleted()
-  {
-    OPTICK_EVENT();
-
-    for (Composition *parent = GetParent();
-         nullptr != parent;
-         parent = parent->GetParent())
-    {
-      if (true == parent->mBeingDeleted)
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
+  //bool Composition::ParentBeingDeleted()
+  //{
+  //  OPTICK_EVENT();
+  //
+  //  for (Composition *parent = GetParent();
+  //       nullptr != parent;
+  //       parent = parent->GetParent())
+  //  {
+  //    if (true == parent->mBeingDeleted)
+  //    {
+  //      return true;
+  //    }
+  //  }
+  //
+  //  return false;
+  //}
 
   void  Composition::RemoveCompositionInternal(CompositionMap::iterator &aComposition)
   {
@@ -1220,24 +1192,35 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
-                    {
-                      return aLhs.get() == aRhs; 
-                    };
+    //auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+    //                {
+    //                  return aLhs.get() == aRhs; 
+    //                };
+    //
+    //auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
+    //                                                aComposition, 
+    //                                                compare);
+    //
+    //if (iter != mCompositions.end())
+    //{
+    //  InitializeEvent deinit;
+    //  aComposition->Deinitialize(&deinit);
+    //  mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
+    //  mCompositions.Erase(iter);
+    //}
 
-    auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
-                                                    aComposition, 
-                                                    compare);
 
-    if (iter != mCompositions.end())
+    // We must be the composition's direct owner, currently if a composition's direct owner is a Space, then mOwner will
+    // be nullptr and we must check their Parent instead.
+    if (this == aComposition->mOwner ||
+        (nullptr == aComposition->mOwner && this == aComposition->GetParent()))
     {
-      InitializeEvent deinit;
-      aComposition->Deinitialize(&deinit);
-      mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
-      mCompositions.Erase(iter);
+      return;
     }
 
-    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
+    InitializeEvent deinit;
+    aComposition->Deinitialize(&deinit);
+    mSpace->GetCompositionDeletionList().InsertBack(aComposition->mInitializationHook);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -1249,19 +1232,27 @@ namespace YTE
   {
     OPTICK_EVENT();
 
+    //auto iter = mComponents.Find(aComponent);
+    //
+    //if (iter != mComponents.end())
+    //{
+    //  mEngine->mComponentsToRemove.Emplace(this, iter);
+    //}
+    //
+    //mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
+    //                                      mDependencyOrder.end(),
+    //                                      [aComponent](Type* aType) { return aType == aComponent; }),
+    //                       mDependencyOrder.end());
+    //
+    //GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
+    
     auto iter = mComponents.Find(aComponent);
-
+    
     if (iter != mComponents.end())
     {
-      mEngine->mComponentsToRemove.Emplace(this, iter);
+      iter->second->Deinitialize();
+      mSpace->GetComponentDeletionList().InsertBack(iter->second->GetDeletionHook());
     }
-
-    mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
-                                          mDependencyOrder.end(),
-                                          [aComponent](Type* aType) { return aType == aComponent; }),
-                           mDependencyOrder.end());
-
-    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void Composition::RemoveComponent(Component *aComponent)
@@ -1274,12 +1265,10 @@ namespace YTE
   void Composition::Remove()
   {
     OPTICK_EVENT();
-
-    if (false == ParentBeingDeleted())
-    {
-      mBeingDeleted = true;
-      GetParent()->RemoveComposition(this);
-    }
+    
+    InitializeEvent deinit;
+    Deinitialize(&deinit);
+    mSpace->GetCompositionDeletionList().InsertBack(mInitializationHook);
   }
 
   RSValue Composition::RemoveSerialized(RSAllocator &aAllocator)

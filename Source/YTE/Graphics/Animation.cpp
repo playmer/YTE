@@ -440,13 +440,6 @@ namespace YTE
 
   Animator::~Animator()
   {
-    if (mOwner->GetIsBeingDeleted() == false)
-    {
-      if (mModel->GetInstantiatedModel().size())
-      {
-        mModel->GetInstantiatedModel()[0]->SetDefaultAnimationOffset();
-      }
-    }
 
     for (auto it : mAnimations)
     {
@@ -467,6 +460,14 @@ namespace YTE
     }
 
     mEngine->RegisterEvent<&Animator::Update>(Events::AnimationUpdate, this);
+  }
+  
+  void Animator::Deinitialize()
+  {
+    for (auto& model : mModel->GetInstantiatedModel())
+    {
+      model->SetDefaultAnimationOffset();
+    }
   }
 
   void Animator::Update(LogicUpdate *aEvent)

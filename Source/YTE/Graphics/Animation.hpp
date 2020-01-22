@@ -222,6 +222,7 @@ namespace YTE
     YTE_Shared ~Animator();
 
     YTE_Shared void Initialize() override;
+    YTE_Shared void Deinitialize() override;
 
     YTE_Shared void Update(LogicUpdate* aEvent);
 

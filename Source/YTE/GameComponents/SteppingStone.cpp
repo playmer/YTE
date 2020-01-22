@@ -191,6 +191,14 @@ namespace YTE
 
   void SteppingStone::AllocateObjects()
   {
+    for (auto& vec : mSprites)
+    {
+      for (auto& composition : vec)
+      {
+        composition->Remove();
+      }
+    }
+
     mSprites.clear();
     mColors.clear();
 

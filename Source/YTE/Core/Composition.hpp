@@ -82,7 +82,7 @@ namespace YTE
     YTE_Shared virtual void Initialize(InitializeEvent* aEvent);
     YTE_Shared virtual void Deinitialize(InitializeEvent* aEvent);
     YTE_Shared virtual void Start(InitializeEvent* aEvent);
-    YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
+    //YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
@@ -228,7 +228,7 @@ namespace YTE
     YTE_Shared GlobalUniqueIdentifier& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
-    bool GetIsBeingDeleted() const { return mBeingDeleted; }
+    //bool GetIsBeingDeleted() const { return mBeingDeleted; }
 
 
     std::vector<Type*> const& GetDependencyOrder()
@@ -256,7 +256,7 @@ namespace YTE
     YTE_Shared Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
                                                    RSValue* aSerialization, 
                                                    String aObjectName);
-    YTE_Shared bool ParentBeingDeleted();
+    //YTE_Shared bool ParentBeingDeleted();
 
     CompositionMap mCompositions;
     ComponentMap mComponents;
@@ -271,13 +271,13 @@ namespace YTE
     IntrusiveList<Composition>::Hook mInitializationHook;
 
     bool mShouldSerialize;
-    bool mBeingDeleted;
+    //bool mBeingDeleted;
 
     Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
 
-    int physInit = 0;
+    //int physInit = 0;
   };
 }
 

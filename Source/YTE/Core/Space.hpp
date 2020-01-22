@@ -25,6 +25,8 @@ namespace YTE
     YTE_Shared void Load(RSValue *aLevel, Space* aInitializeVia = nullptr);
     YTE_Shared void Update(LogicUpdate *aEvent);
     YTE_Shared ~Space();
+    
+    YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
 
     YTE_Shared void Initialize(InitializeEvent *aEvent) override;
     YTE_Shared void Initialize();
@@ -50,6 +52,16 @@ namespace YTE
       return mFinishedLoading;
     }
 
+    YTE_Shared IntrusiveList<Composition>& GetCompositionDeletionList()
+    {
+      return mCompositionDeletionList;
+    }
+
+    YTE_Shared IntrusiveList<Component>& GetComponentDeletionList()
+    {
+      return mComponentDeletionList;
+    }
+
   private:
     void WindowLostOrGainedFocusHandler(const WindowFocusLostOrGained *aEvent);
     void WindowMinimizedOrRestoredHandler(const WindowMinimizedOrRestored *aEvent);
@@ -65,6 +77,9 @@ namespace YTE
     IntrusiveList<Composition> mPhysicsInitialize;
     IntrusiveList<Composition> mInitialize;
     IntrusiveList<Composition> mStart;
+
+    IntrusiveList<Composition> mCompositionDeletionList;
+    IntrusiveList<Component> mComponentDeletionList;
       
     bool mPaused = false;
     bool mPriorToMinimize = false;

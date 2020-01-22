@@ -51,9 +51,15 @@ namespace YTE
     YTE_Shared GlobalUniqueIdentifier const& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
+    YTE_Shared IntrusiveList<Component>::Hook& GetDeletionHook()
+    {
+      return mDeletionHook;
+    };
+
   protected:
     Composition *mOwner;
     Space *mSpace;
+    IntrusiveList<Component>::Hook mDeletionHook;
 
     GlobalUniqueIdentifier mGUID;
   };

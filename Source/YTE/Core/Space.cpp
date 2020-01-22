@@ -64,6 +64,7 @@ namespace YTE
     }
 
     mEngine->RegisterEvent<&Space::Update>(Events::SpaceUpdate, this);
+    mEngine->RegisterEvent<&Space::DeletionUpdate>(Events::DeletionUpdate, this);
 
     if (nullptr != aProperties)
     {
@@ -102,6 +103,128 @@ namespace YTE
     InitializeEvent event;
     event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
+  }
+  
+
+  void Space::DeletionUpdate(LogicUpdate *aUpdate)
+  {
+    OPTICK_EVENT();
+    
+    // Delete Attached Components
+    //auto componentRange = mEngine->mComponentsToRemove.FindAll(this);
+    //
+    //if (componentRange.IsRange())
+    //{
+    //  for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
+    //  {
+    //    end->second->second->Deinitialize();
+    //    RemoveComponentInternal(end->second);
+    //  }
+    //}
+    //
+    //mEngine->mComponentsToRemove.Erase(componentRange);
+    //
+    //// Delete Attached Compositions
+    //auto compositionRange = mEngine->mCompositionsToRemove.FindAll(this);
+    //
+    //mEngine->mCompositionsToRemove.Erase(compositionRange);
+    //
+    //// Stop handling deletions, as we've completed all of them thus far.
+    //GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
+    //SendEvent(Events::DeletionUpdate, aUpdate);
+
+    if (mCompositionDeletionList.Empty() && mComponentDeletionList.Empty())
+    {
+      return;
+    }
+    
+    // Delete Compositions
+    {
+      auto it = mCompositionDeletionList.begin();
+
+      while (it.NextHook() != &mCompositionDeletionList.mHead)
+      {
+        // While technically the next hook, this hook pointer represents the delegate we're
+        // about to invoke.
+        auto current = it.NextHook();
+
+        {
+          auto &composition = *it;
+          auto& compositionOwnerCompositions = composition.GetParent()->GetCompositions();
+      
+          auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+                          {
+                            return aLhs.get() == aRhs; 
+                          };
+          auto iter = compositionOwnerCompositions.FindIteratorByPointer(composition.GetName(),
+                                                                         &composition, 
+                                                                         compare);
+
+          if (iter != compositionOwnerCompositions.end())
+          {
+            compositionOwnerCompositions.Erase(iter);
+          }
+        }
+
+        // We need to check to see if we're reached the end due to some number of events
+        // (including the current) removing itself from the list.
+        if (it.NextHook() == &mCompositionDeletionList.mHead)
+        {
+          break;
+        }
+
+        // We check to see if our current next hook is the same. If it isn't it means an
+        // event has removed itself, so we redo this loop without incrementing.
+        if (false == it.IsNextSame(current))
+        {
+          continue;
+        }
+
+        // We don't need to iterate our iterator, we can just remove the current
+        current->Unlink();
+      }
+    }
+
+    // Delete Components
+    {
+      auto it = mComponentDeletionList.begin();
+
+      while (it.NextHook() != &mComponentDeletionList.mHead)
+      {
+        // While technically the next hook, this hook pointer represents the delegate we're
+        // about to invoke.
+        auto current = it.NextHook();
+
+        {
+          auto &component = *it;
+          auto& componentOwnerComponents = component.GetOwner()->GetComponents();
+      
+          auto iter = componentOwnerComponents.Find(component.GetType());
+    
+          if (iter != componentOwnerComponents.end())
+          {
+            componentOwnerComponents.Erase(iter);
+          }
+        }
+
+        // We need to check to see if we're reached the end due to some number of events
+        // (including the current) removing itself from the list.
+        if (it.NextHook() == &mComponentDeletionList.mHead)
+        {
+          break;
+        }
+
+        // We check to see if our current next hook is the same. If it isn't it means an
+        // event has removed itself, so we redo this loop without incrementing.
+        if (false == it.IsNextSame(current))
+        {
+          continue;
+        }
+
+        // We don't need to iterate our iterator, we can just remove the current
+        current->Unlink();
+      }
+    }
   }
 
   void Space::ConnectNodes(Space* aSpace, Composition* aComposition)
