@@ -74,6 +74,8 @@ namespace YTE
 
     VkRenderer(Engine *aEngine);
     ~VkRenderer() override;
+    
+    void DeletionUpdate(LogicUpdate* aUpdate);
 
     void DeregisterWindowFromDraw(Window *aWindow) override;
     void RegisterWindowForDraw(Window *aWindow) override;
@@ -151,6 +153,8 @@ namespace YTE
     std::shared_ptr<vkhlf::Device> mDevice;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+
+    std::vector<VkMesh*> mMeshesMarkedForDelete;
 
     std::optional<VkQueueData> mGraphicsQueueData;
     std::optional<VkQueueData> mComputeQueueData;

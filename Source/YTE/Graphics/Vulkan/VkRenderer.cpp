@@ -226,6 +226,7 @@ namespace YTE
     mEngine->RegisterEvent<&VkRenderer::FrameUpdate>(Events::FrameUpdate, this);
     mEngine->RegisterEvent<&VkRenderer::GraphicsDataUpdate>(Events::GraphicsDataUpdate, this);
     mEngine->RegisterEvent<&VkRenderer::PresentFrame>(Events::PresentFrame, this);
+    mEngine->RegisterEvent<&VkRenderer::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   VkRenderer::~VkRenderer()
@@ -233,6 +234,62 @@ namespace YTE
     mSurfaces.clear();
     mTextures.clear();
     mMeshes.clear();
+  }
+  
+  void VkRenderer::DeletionUpdate(LogicUpdate* aUpdate)
+  {
+    //if (1 != mMeshesMarkedForDelete.size())
+    //{
+    //  __debugbreak();
+    //}
+
+    // First remove any meshs that have instances in any views.
+    auto itToRemove = std::remove_if(mMeshesMarkedForDelete.begin(),
+      mMeshesMarkedForDelete.end(),
+      [this](VkMesh* aMesh)
+    {
+      bool existsInView = false;
+
+      [this, &existsInView, aMesh]()
+      {
+        for (auto& [window, surface] : mSurfaces)
+        {
+          for (auto& [view, viewData] : surface->GetViews())
+          {
+            if (viewData.mInstantiatedModels.end() != viewData.mInstantiatedModels.find(aMesh))
+            {
+              existsInView = true;
+              return;
+            }
+          }
+        }
+      }();
+
+      return existsInView;
+    });
+
+    mMeshesMarkedForDelete.erase(itToRemove, mMeshesMarkedForDelete.end());
+
+    // Now we can remove any remaining meshes marked for delete from the GPU side.
+    for (auto& vkMeshToDelete : mMeshesMarkedForDelete)
+    {
+      auto& name = vkMeshToDelete->mMesh->mName;
+
+      // Remove from GPU side first, since the name reference is from the CPU side.
+      mMeshes.erase(name);
+
+      // Remove CPU side as well.
+      mBaseMeshesMutex.lock();
+      auto baseMeshIt = mBaseMeshes.find(name);
+
+      if (baseMeshIt != mBaseMeshes.end())
+      {
+        mBaseMeshes.erase(baseMeshIt);
+      }
+      mBaseMeshesMutex.unlock();
+    }
+
+    mMeshesMarkedForDelete.clear();
   }
 
   void VkRenderer::RegisterWindowForDraw(Window *aWindow)
@@ -434,11 +491,11 @@ namespace YTE
       auto baseMesh = std::make_unique<Mesh>(this, aName, aSubmeshes);
 
       mBaseMeshesMutex.lock();
-      auto it = mBaseMeshes.find(aName);
+      auto baseMeshIt = mBaseMeshes.find(aName);
 
-      if (it != mBaseMeshes.end())
+      if (baseMeshIt != mBaseMeshes.end())
       {
-        mBaseMeshes.erase(it);
+        mBaseMeshes.erase(baseMeshIt);
       }
 
       auto ret = mBaseMeshes.emplace(aName, std::move(baseMesh));
@@ -448,11 +505,19 @@ namespace YTE
       // create mesh
       auto mesh = std::make_unique<VkMesh>(baseMeshPtr, this);
 
-      auto it2 = mMeshes.find(aName);
+      auto vkMeshIt = mMeshes.find(aName);
 
-      if (it2 != mMeshes.end())
+      if (vkMeshIt != mMeshes.end())
       {
-        mMeshes.erase(it2);
+        // If we've marked this mesh for deletion, we need to remove it from the deletion list.
+        auto toDeleteIt = std::find(mMeshesMarkedForDelete.begin(), mMeshesMarkedForDelete.end(), vkMeshIt->second.get());
+
+        if (toDeleteIt != mMeshesMarkedForDelete.end())
+        {
+          mMeshesMarkedForDelete.erase(toDeleteIt);
+        }
+
+        mMeshes.erase(vkMeshIt);
       }
 
       auto ret2 = mMeshes.emplace(aName, std::move(mesh));

@@ -195,13 +195,15 @@ namespace YTE
     {
       for (auto &mesh : aMeshes)
       {
-        auto &models = instantiatedModels[mesh.second.get()];
+        auto instantiatedModelsIt = instantiatedModels.find(mesh.second.get());
         
         // We can early out on this mesh if there are no models that use it.
-        if (models.empty())
+        if (instantiatedModelsIt ==  instantiatedModels.end())
         {
           continue;
         }
+
+        auto &models = instantiatedModelsIt->second;
 
         // We get the sub meshes that use the current shader
         auto range = mesh.second->mSubmeshMap.equal_range(shader.first);

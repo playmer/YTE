@@ -578,7 +578,6 @@ namespace YTE
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      //mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
       mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID(), aComposition));
     }
 
@@ -589,7 +588,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    //auto it = mCompositionsByGUID.find(aGUID.ToString());
     auto it = mCompositionsByGUID.find(aGUID);
 
     if (it != mCompositionsByGUID.end())
@@ -604,7 +602,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    //std::string guid = aGUID.ToString();
     auto it = mCompositionsByGUID.find(aGUID);
 
     if (it == mCompositionsByGUID.end())
@@ -624,7 +621,6 @@ namespace YTE
       return false;
     }
 
-    //auto it = mCompositionsByGUID.find(aGUID.ToString());
     auto it = mCompositionsByGUID.find(aGUID);
 
     if (it != mCompositionsByGUID.end())
@@ -647,7 +643,6 @@ namespace YTE
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      //mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
       mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID(), aComponent));
     }
 
@@ -658,7 +653,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    //auto it = mComponentsByGUID.find(aGUID.ToString());
     auto it = mComponentsByGUID.find(aGUID);
 
     if (it != mComponentsByGUID.end())
@@ -673,7 +667,6 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    //std::string guid = aGUID.ToString();
     auto it = mComponentsByGUID.find(aGUID);
 
     if (it == mComponentsByGUID.end())

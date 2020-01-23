@@ -158,15 +158,32 @@ namespace YTE
 
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
-    auto mesh = instantiatedModels.find(aModel->GetVkMesh());
+    auto meshIt = instantiatedModels.find(aModel->GetVkMesh());
 
-    if (mesh != instantiatedModels.end())
+    if (meshIt != instantiatedModels.end())
     {
+      auto& [vkMesh, vkMeshInstances] = *meshIt;
+
+      // Take a copy to the vkMesh pointer since we're about to erase the above reference.
+      auto vkMeshPtr = vkMesh;
+
       // Remove this instance from the map.
-      mesh->second.erase(std::remove(mesh->second.begin(), 
-                                     mesh->second.end(), 
-                                     aModel),
-                         mesh->second.end());
+      vkMeshInstances.erase(std::remove(vkMeshInstances.begin(), 
+                                        vkMeshInstances.end(), 
+                                        aModel),
+                            vkMeshInstances.end());
+
+      if (vkMeshInstances.empty())
+      {
+        instantiatedModels.erase(meshIt);
+
+        auto& markedForDelete = mRenderer->mMeshesMarkedForDelete;
+
+        if (markedForDelete.end() == std::find(markedForDelete.begin(), markedForDelete.end(), vkMeshPtr))
+        {
+          mRenderer->mMeshesMarkedForDelete.emplace_back(vkMeshPtr);
+        }
+      }
     }
   }
 
