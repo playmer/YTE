@@ -177,7 +177,7 @@ namespace YTE
       }
     }
 
-    YTE_Shared void SendEvent(const std::string &aName, Event *aEvent);
+    YTE_Shared void SendEvent(std::string const& aName, Event *aEvent);
 
     EventHandler() {}
     EventHandler(const EventHandler& aEventHandler)

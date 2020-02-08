@@ -153,6 +153,8 @@ namespace YTE
     std::shared_ptr<vkhlf::Device> mDevice;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
+    
+    std::vector<std::unique_ptr<VkMesh>> mVkMeshesToDelete;
 
     std::vector<VkMesh*> mMeshesMarkedForDelete;
 
@@ -186,6 +188,12 @@ namespace YTE
 
     void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) override
     {
+        // Unsure if we should allow calling Update with no data, but it does make things easier right now.
+      if (aBytes == 0)
+      {
+        return;
+      }
+
       auto self = mData.Get<VkUBOData>();
 
       self->mRenderer->mUBOUpdates.Add(self->mBuffer, aPointer, aBytes, aOffset);

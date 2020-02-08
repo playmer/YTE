@@ -123,6 +123,8 @@ namespace YTE
     std::unordered_map<std::string, std::unique_ptr<Mesh>> mBaseMeshes;
     std::shared_mutex mBaseMeshesMutex;
 
+    std::vector<std::unique_ptr<Mesh>> mMeshesToDelete;
+
     std::unordered_map<std::string, JobHandle> mRequestedTextures;
     std::shared_mutex mRequestedTexturesMutex;
     std::unordered_map<std::string, std::unique_ptr<Texture>> mBaseTextures;

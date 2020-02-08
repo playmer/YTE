@@ -84,6 +84,12 @@ namespace YTE
     owner->GetEngine()->RegisterEvent<&VkImguiDrawer::PreFrameUpdate>(Events::PreFrameUpdate, this);
   }
 
+  template <typename T>
+  size_t VectorSizeInBytes(std::vector<T> const& aVec)
+  {
+    return sizeof(T) * aVec.size();
+  }
+
   static const std::string imguiStr{ "Imgui" };
 
   void VkImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
@@ -93,19 +99,19 @@ namespace YTE
 
     mContext->SetCurrentContext();
 
-    auto submesh = mContext->GetSubmeshData();
+    auto& submeshData = mContext->GetSubmeshData();
 
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
 
-    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    submeshData.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
     //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
     //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
-    submesh.mShaderSetName = imguiStr;
+    submeshData.mShaderSetName = imguiStr;
 
-    submesh.mVertexData.Clear();
-    submesh.mIndexData.clear();
+    submeshData.mVertexData.Clear();
+    submeshData.mIndexData.clear();
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
@@ -116,45 +122,57 @@ namespace YTE
       for (int i = 0; i < cmd_list->VtxBuffer.Size; ++i)
       {
         auto &theirVert = cmd_list->VtxBuffer.Data[i];
-        Vertex vert;
         auto color = ImVec4(ImColor(theirVert.col));
 
-        vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
-        vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
-        vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
-        submesh.mVertexData.AddVertex(vert);
+        submeshData.mVertexData.mPositionData.emplace_back(theirVert.pos.x, theirVert.pos.y, 0.0f);
+        submeshData.mVertexData.mTextureCoordinatesData.emplace_back(theirVert.uv.x, theirVert.uv.y, 0.0f);
+        submeshData.mVertexData.mColorData.emplace_back(color.x, color.y, color.z, color.w);
       }
 
       for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
       {
-        submesh.mIndexData.emplace_back(cmd_list->IdxBuffer.Data[i]);
+        submeshData.mIndexData.emplace_back(cmd_list->IdxBuffer.Data[i]);
       }
     }
 
-    auto &instantiatedModel = mContext->GetInstantiatedModel();
-    
-    // TODO: Shouldn't have to reset here, but we're doing some weird stuff that's clashing with the
-    //       VkRenderers need to clean up deleted things. So we need to mark the Mesh for deletion
-    //       (by deleting the only instance that exists, ie: this one) so that we can safely remove it
-    //       from the deletion list when we do the force update in CreateSimpleMesh.
-    //
-    //       The ImguiRenderer needs to fix this on their side such that we're updating an existing mesh
-    //       with a variable number of verts, but right now we're waiting for the Renderer to have that
-    //       capability. (Although maybe the particle system is already doing that? Unsure.
-    //
-    //       The renderer side needs to simply get smarter about how the Force update is in regards to 
-    //       objects that get deleted out from under it. Maybe all objects need to be delay deleted and 
-    //       we give them temporary new names on force delete, unsure.
-    instantiatedModel.reset();
-
-    if (submesh.mVertexData.mPositionData.empty())
+    if (submeshData.mVertexData.mPositionData.empty())
     {
       return;
     }
 
     auto renderer = mSurface->GetRenderer();
-    auto mesh = renderer->CreateSimpleMesh(mModelName, submesh, true);
-    instantiatedModel = renderer->CreateModel(mView, mesh);
+
+    auto &instantiatedModel = mContext->GetInstantiatedModel();
+
+    Submesh* submesh = nullptr;
+    VertexBufferData* imguiVertexData = nullptr;
+    GPUBuffer<u32>* imguiIndexData = nullptr;
+    
+    if (nullptr != instantiatedModel.get())
+    {
+      submesh = &(instantiatedModel->GetMesh()->GetSubmeshes()[0]);
+      imguiVertexData = &(submesh->mVertexBufferData);
+      imguiIndexData = &(submesh->mIndexBuffer);
+    }
+    
+    if ((nullptr != imguiVertexData) &&
+        (imguiVertexData->mPositionBuffer.GetSizeInBytes() >= VectorSizeInBytes(submeshData.mVertexData.mPositionData)) &&
+        (imguiVertexData->mTextureCoordinatesBuffer.GetSizeInBytes() >= VectorSizeInBytes(submeshData.mVertexData.mTextureCoordinatesData)) &&
+        (imguiVertexData->mColorBuffer.GetSizeInBytes() >= VectorSizeInBytes(submeshData.mVertexData.mColorData)))
+    {
+      submesh->mData.mIndexData = submeshData.mIndexData;
+      submesh->mData.mVertexData = submeshData.mVertexData;
+
+      imguiVertexData->mPositionBuffer.Update(submeshData.mVertexData.mPositionData);
+      imguiVertexData->mTextureCoordinatesBuffer.Update(submeshData.mVertexData.mTextureCoordinatesData);
+      imguiVertexData->mColorBuffer.Update(submeshData.mVertexData.mColorData);
+      imguiIndexData->Update(submeshData.mIndexData);
+    }
+    else
+    {
+      auto mesh = renderer->CreateSimpleMesh(mModelName, submeshData, true);
+      instantiatedModel = renderer->CreateModel(mView, mesh);
+    }
 
     UBOs::Model modelUBO;
 
@@ -238,18 +256,18 @@ namespace YTE
 
     std::vector<u64> vertexBufferOffsets;
     std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
-
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
-    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+    
+    if (vbd.mPositionBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+    if (vbd.mTextureCoordinatesBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+    if (vbd.mNormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+    if (vbd.mColorBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+    if (vbd.mTangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+    if (vbd.mBinormalBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+    if (vbd.mBitangentBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+    if (vbd.mBoneWeightsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+    if (vbd.mBoneWeights2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+    if (vbd.mBoneIDsBuffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+    if (vbd.mBoneIDs2Buffer) vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
 
     vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
 

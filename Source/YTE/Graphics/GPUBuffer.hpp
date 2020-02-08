@@ -56,6 +56,11 @@ namespace YTE
 
     }
 
+    size_t GetSizeInBytes()
+    {
+        return mBuffer->GetSizeInBytes();
+    }
+
     GPUBufferBase& GetBase()
     {
       return *mBuffer;
@@ -90,7 +95,8 @@ namespace YTE
 
     operator bool()
     {
-      return mBuffer != nullptr;
+      //return (nullptr != mBuffer) && (0 != mBuffer->GetSizeInBytes());
+      return nullptr != mBuffer;
     }
 
     void reset()

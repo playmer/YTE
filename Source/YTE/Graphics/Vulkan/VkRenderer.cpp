@@ -288,6 +288,10 @@ namespace YTE
       }
       mBaseMeshesMutex.unlock();
     }
+    
+    // These are meshes that we needed to take ownership of to delay delete.
+    mVkMeshesToDelete.clear();
+    mMeshesToDelete.clear();
 
     mMeshesMarkedForDelete.clear();
   }
@@ -495,6 +499,7 @@ namespace YTE
 
       if (baseMeshIt != mBaseMeshes.end())
       {
+        mMeshesToDelete.emplace_back(std::move(baseMeshIt->second));
         mBaseMeshes.erase(baseMeshIt);
       }
 
@@ -517,6 +522,7 @@ namespace YTE
           mMeshesMarkedForDelete.erase(toDeleteIt);
         }
 
+        mVkMeshesToDelete.emplace_back(std::move(vkMeshIt->second));
         mMeshes.erase(vkMeshIt);
       }
 
@@ -785,12 +791,15 @@ namespace YTE
     auto usage = ToVulkan(aUsage);
     auto properties = ToVulkan(aProperties);
     
-    uboData->mBuffer = self->mDevice->createBuffer(aSize,
-                                                   ToVulkan(aUsage),
-                                                   vk::SharingMode::eExclusive,
-                                                   nullptr,
-                                                   ToVulkan(aProperties),
-                                                   self->mAllocator);
+    //if (aSize > 0)
+    {
+        uboData->mBuffer = self->mDevice->createBuffer(aSize,
+                                                       ToVulkan(aUsage),
+                                                       vk::SharingMode::eExclusive,
+                                                       nullptr,
+                                                       ToVulkan(aProperties),
+                                                       self->mAllocator);
+    }
 
     uboData->mRenderer = self->mRenderer;
 

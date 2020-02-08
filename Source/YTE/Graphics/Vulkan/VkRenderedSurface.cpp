@@ -141,11 +141,17 @@ namespace YTE
     return mRenderer->mDevice;
   }
 
-  //std::shared_ptr<vkhlf::DeviceMemoryAllocator>& VkRenderedSurface::GetAllocator(const std::string aName)
-  //{
-  //  return mRenderer->GetAllocator(aName);
-  //}
-
+  // Check to see if the mesh we're looking for is _not_ contained within the container.
+  static bool NoDeletedVkMesh(std::vector<std::unique_ptr<VkMesh>> const& aMeshesToDelete, VkMesh const* aMeshToLookFor)
+  {
+    return std::find_if(
+      aMeshesToDelete.begin(),
+      aMeshesToDelete.end(),
+      [aMeshToLookFor](std::unique_ptr<VkMesh> const& aMesh)
+    {
+        return aMeshToLookFor == aMesh.get();
+    }) == aMeshesToDelete.end();
+  }
 
   void VkRenderedSurface::DestroyModel(GraphicsView *aView, VkInstantiatedModel *aModel)
   {
@@ -159,8 +165,9 @@ namespace YTE
     auto &instantiatedModels = GetViewData(aView)->mInstantiatedModels;
 
     auto meshIt = instantiatedModels.find(aModel->GetVkMesh());
-
-    if (meshIt != instantiatedModels.end())
+    
+    // Check to see if this mesh has been added to one of our deletion lists.
+    if ((meshIt != instantiatedModels.end()) && NoDeletedVkMesh(mRenderer->mVkMeshesToDelete, aModel->GetVkMesh()))
     {
       auto& [vkMesh, vkMeshInstances] = *meshIt;
 

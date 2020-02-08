@@ -675,6 +675,20 @@ namespace YTE
     mCapacityParticles = mParticles.size();
 
     std::string name = submesh.mName;
+    
+    // TODO: Shouldn't have to reset here, but we're doing some weird stuff that's clashing with the
+    //       VkRenderers need to clean up deleted things. So we need to mark the Mesh for deletion
+    //       (by deleting the only instance that exists, ie: this one) so that we can safely remove it
+    //       from the deletion list when we do the force update in CreateSimpleMesh.
+    //
+    //       The ParticleEmitter needs to fix this on their side such that we're updating an existing mesh
+    //       with a variable number of verts, but right now we're waiting for the Renderer to have that
+    //       capability. (Although maybe the particle system is already doing that? Unsure.
+    //
+    //       The renderer side needs to simply get smarter about how the Force update is in regards to 
+    //       objects that get deleted out from under it. Maybe all objects need to be delay deleted and 
+    //       we give them temporary new names on force delete, unsure.
+    //mModel.reset();
 
     mMesh = mRenderer->CreateSimpleMesh(name, submesh, true);
 
