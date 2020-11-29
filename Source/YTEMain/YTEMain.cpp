@@ -14,11 +14,13 @@ bool InitializeSDL()
   OPTICK_EVENT();
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0) {
     SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
-    return static_cast<bool>(1);
+    return false;
   }
   
   SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
   SDL_GameControllerEventState(SDL_QUERY);
+
+  return true;
 }
 
 void InitializeYTETypes()
