@@ -312,6 +312,7 @@ namespace YTE
 
   void ParticleEmitter::Update(LogicUpdate* aEvent)
   {
+    UnusedArguments(aEvent);
     OPTICK_EVENT();
 
     double dt = GetSpace()->GetEngine()->GetDt();

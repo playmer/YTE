@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <stb/stb_truetype.h>
 
 #include "fmt/format.h"
@@ -158,11 +160,18 @@ namespace YTE
       return toReturn;
     }
 
+    void SetColor(glm::vec4 aColor)
+    {
+      mColor = aColor;
+    }
+
   private:
     Renderer *mRenderer;
     Window *mWindow;
     Transform *mTransform;
     UBOs::Model mUBOModel;
+
+    std::optional<glm::vec4> mColor; // TODO, HUGE HACK, PLEASE FIX;
 
     std::string mText;
     std::string mFontName;

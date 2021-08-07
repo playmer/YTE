@@ -132,11 +132,24 @@ namespace YTE
       auto iterator = mComponents.Find(TypeId<tComponentType>());
 
       if (iterator == mComponents.end())
-      {
         return nullptr;
-      }
 
       return static_cast<tComponentType*>(iterator->second.get());
+    }
+    
+    template <typename tComponentType>
+    bool HasComponent()
+    {
+      static_assert(std::is_base_of<Component, tComponentType>() &&
+                    !std::is_same<Component, tComponentType>(),
+                    "Type must be derived from YTE::Component");
+      
+      auto iterator = mComponents.Find(TypeId<tComponentType>());
+
+      if (iterator == mComponents.end())
+        return false;
+
+      return true;
     }
 
     YTE_Shared void RemoveComponent(Component* aComponent);

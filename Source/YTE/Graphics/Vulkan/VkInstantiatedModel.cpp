@@ -96,17 +96,19 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    if (0 == mBuffers.size())
+    if (0 != mBuffers.size())
     {
-      AddBuffer(&mView->GetViewUBO());
-      AddBuffer(&mAnimationUBO);
-      AddBuffer(&mModelMaterialUBO);
-      AddBuffer(&mSubmeshMaterialsUBO[aIndex].first);
-      AddBuffer(&mView->GetLightManager()->GetUBOLightBuffer());
-      AddBuffer(&mView->GetIlluminationUBO());
-      AddBuffer(&mView->GetWaterInfluenceMapManager()->GetUBOMapBuffer());
-      AddBuffer(&mModelUBO);
+      mBuffers.clear();
     }
+    
+    AddBuffer(&mView->GetViewUBO());
+    AddBuffer(&mAnimationUBO);
+    AddBuffer(&mModelMaterialUBO);
+    AddBuffer(&mSubmeshMaterialsUBO[aIndex].first);
+    AddBuffer(&mView->GetLightManager()->GetUBOLightBuffer());
+    AddBuffer(&mView->GetIlluminationUBO());
+    AddBuffer(&mView->GetWaterInfluenceMapManager()->GetUBOMapBuffer());
+    AddBuffer(&mModelUBO);
 
     mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(this, mView));
   }

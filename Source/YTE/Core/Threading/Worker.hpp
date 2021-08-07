@@ -20,7 +20,7 @@ namespace YTE
     };
     typedef std::thread::id WorkerID;
     Worker();
-    ~Worker();
+    virtual ~Worker();
     virtual void Init() = 0;
     virtual void Join() = 0;
     void Pause();

@@ -720,12 +720,14 @@ namespace YTE
     auto usage = ToVulkan(aUsage);
     auto properties = ToVulkan(aProperties);
     
+    self->mDeviceAllocationMutex.lock();
     uboData->mBuffer = self->mDevice->createBuffer(aSize,
                                                    ToVulkan(aUsage),
                                                    vk::SharingMode::eExclusive,
                                                    nullptr,
                                                    ToVulkan(aProperties),
                                                    self->mAllocator);
+    self->mDeviceAllocationMutex.unlock();
 
     uboData->mRenderer = self->mRenderer;
 

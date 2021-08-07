@@ -126,6 +126,7 @@ namespace YTE
   {
     OPTICK_EVENT();
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mConstructing = false;
 
     if (mTextureName.empty())
     {
@@ -133,8 +134,6 @@ namespace YTE
     }
 
     mRenderer->RequestTexture(mTextureName);
-
-    mConstructing = false;
   }
 
   void SpriteText::NativeInitialize()
@@ -372,6 +371,10 @@ namespace YTE
 
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOMaterialData().mDiffuse;
+
+    if (mColor.has_value())
+      mUBOModel.mDiffuseColor = mColor.value();
+
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     mInstantiatedSprite->SetVisibility(mVisibility);
 

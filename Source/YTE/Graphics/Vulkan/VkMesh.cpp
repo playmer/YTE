@@ -82,33 +82,30 @@ namespace YTE
       aView);
   }
 
-
-  std::shared_ptr<vkhlf::DescriptorPool> VkSubmesh::MakePool()
-  {
-    auto device = mRenderer->mDevice;
-
-    // Create the descriptor set and pipeline layouts.
-    mDescriptorTypes.emplace_back(
-      vk::DescriptorType::eUniformBuffer, 
-      mPipelineInfo->mDescriptions.CountDescriptorsOfType(vk::DescriptorType::eUniformBuffer));
-
-    if (0 != mSamplerTypes.size())
-    {
-      mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(mSamplerTypes.size()));
-    }
-
-    return device->createDescriptorPool({}, 1, mDescriptorTypes);
-  }
-
   SubMeshPipelineData VkSubmesh::CreatePipelineData(InstantiatedModel* aModel,
                                                     GraphicsView *aView)
   {
+    UnusedArguments(aView);
     auto device = mRenderer->mDevice;
+
 
     SubMeshPipelineData pipelineData;
     pipelineData.mPipelineLayout = mPipelineInfo->mPipelineLayout;
-    pipelineData.mDescriptorSet = device->allocateDescriptorSet(
-      MakePool(),
+    
+    if (mDescriptorTypes.empty())
+    {
+      mDescriptorTypes.emplace_back(
+        vk::DescriptorType::eUniformBuffer, 
+        mPipelineInfo->mDescriptions.CountDescriptorsOfType(vk::DescriptorType::eUniformBuffer));
+
+      if (0 != mSubmesh->mData.mTextureData.size())
+      {
+        mDescriptorTypes.emplace_back(vk::DescriptorType::eCombinedImageSampler, static_cast<u32>(mSubmesh->mData.mTextureData.size()));
+      }
+    }
+
+    pipelineData.mDescriptorSet = mRenderer->GetSurface(aView->GetWindow())->mPoolManager.AllocateDescriptorSet(
+      mDescriptorTypes, 
       mPipelineInfo->mDescriptorSetLayout);
 
     // Add Uniform Buffers

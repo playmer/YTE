@@ -225,6 +225,11 @@ namespace YTE
 
     }
 
+    virtual ~GPUAllocator()
+    {
+
+    }
+
     // Creates a ubo of the given type, aSize allows you to make an array of them.
     // Size must be at least 1
     template <typename tType>
@@ -239,7 +244,7 @@ namespace YTE
       return GPUBuffer<tType>(std::move(buffer));
     }
 
-    PrivateImplementationLocal<64>& GetData()
+    PrivateImplementationLocal<128>& GetData()
     {
       return mData;
     }
@@ -250,7 +255,7 @@ namespace YTE
                                                                 GPUAllocation::MemoryProperty aProperties) = 0;
 
   protected:
-    PrivateImplementationLocal<64> mData;
+    PrivateImplementationLocal<128> mData;
     size_t mBlockSize;
   };
 

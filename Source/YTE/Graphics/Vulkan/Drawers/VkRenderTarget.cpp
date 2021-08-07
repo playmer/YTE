@@ -217,7 +217,7 @@ namespace YTE
 
     // create view
     vk::ComponentMapping defaultMap;
-    subresourceRange = { vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil, 0, 1, 0, layers };
+    subresourceRange = { vk::ImageAspectFlagBits::eDepth, 0, 1, 0, layers };
 
 
     auto depthView = depthImage->createImageView(vk::ImageViewType::e2D,

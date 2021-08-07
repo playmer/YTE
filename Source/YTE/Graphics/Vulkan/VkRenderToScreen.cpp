@@ -467,9 +467,9 @@ namespace YTE
       return;
     }
 
-    auto pool = device->createDescriptorPool({}, 1, descriptorTypes);
-
-    mDescriptorSet = device->allocateDescriptorSet(pool, mDescriptorSetLayout);
+    mDescriptorSet = mParent->mSurface->mPoolManager.AllocateDescriptorSet(
+      descriptorTypes, 
+      mDescriptorSetLayout);
 
     std::vector<vkhlf::WriteDescriptorSet> wdss;
 

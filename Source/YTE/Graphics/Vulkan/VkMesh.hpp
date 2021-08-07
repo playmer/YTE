@@ -31,7 +31,6 @@ namespace YTE
     void Destroy();
 
     void CreateShader(GraphicsView *aView);
-    std::shared_ptr<vkhlf::DescriptorPool> MakePool();
     SubMeshPipelineData CreatePipelineData(InstantiatedModel* aModel,
                                            GraphicsView *aView);
 

@@ -124,5 +124,8 @@ target_compile_definitions(YTE PUBLIC $<$<CONFIG:RELEASE>:YTE_CONFIG_RELEASE=1>)
 target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:YTE_CONFIG_PUBLISH=0>)
 target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:YTE_CONFIG_PUBLISH=1>)
 
+target_compile_definitions(YTE PUBLIC $<$<NOT:$<CONFIG:PUBLISH>>:USE_OPTICK=1>)
+target_compile_definitions(YTE PUBLIC $<$<CONFIG:PUBLISH>:USE_OPTICK=0>)
+
 # Set the define needed for proper DLL import/export.
 target_compile_definitions(YTE PRIVATE YTE_Internal=1)

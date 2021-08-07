@@ -1,18 +1,3 @@
-/******************************************************************************/
-/*!
-\file   LevelMenu.cpp
-\author Nicholas Ammann
-\par    email: nicholas.ammann\@digipen.edu
-\par    Course: GAM 300
-\date   8/15/2017
-\brief
-Implementation of the level menu in the menu bar.
-
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
-
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Utilities.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"

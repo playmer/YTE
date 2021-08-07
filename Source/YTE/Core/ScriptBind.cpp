@@ -82,6 +82,7 @@ namespace YTE
     InitializeType<ComponentSystem>();
     InitializeType<Composition>();
     InitializeType<Engine>();
+    InitializeType<EngineConfig>();
     InitializeType<JobSystem>();
     InitializeType<Object>();
     InitializeType<Space>();

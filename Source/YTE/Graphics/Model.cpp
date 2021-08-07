@@ -119,19 +119,20 @@ namespace YTE
     mEngine = mSpace->GetEngine();
     mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-    std::string MeshName = RemoveExtension(mMeshName);
+    // We use this to check for existance, because I haven't gone through the trouble of renaming things yet
+    std::string MeshName = mMeshName + ".YTEMesh";
     std::string name = mOwner->GetName().c_str();
 
-    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+    bool success = FileCheck(Path::GetGamePath(), "Models", MeshName);
 
     if (false == success)
     {
-      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+      success = FileCheck(Path::GetEnginePath(), "Models", MeshName);
     }
 
     if (false == success)
     {
-      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), MeshName.c_str());
       return;
     }
 
@@ -265,19 +266,20 @@ namespace YTE
   void Model::Create()
   {
     OPTICK_EVENT();
-    std::string MeshName = RemoveExtension(mMeshName);
+    // We use this to check for existance, because I haven't gone through the trouble of renaming things yet
+    std::string meshName = mMeshName + ".YTEMesh";
     std::string name = mOwner->GetName().c_str();
 
-    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+    bool success = FileCheck(Path::GetGamePath(), "Models", meshName);
 
     if (false == success)
     {
-      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+      success = FileCheck(Path::GetEnginePath(), "Models", meshName);
     }
 
     if (false == success)
     {
-      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), meshName.c_str());
       return;
     }
 

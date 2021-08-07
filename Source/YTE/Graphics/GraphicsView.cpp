@@ -70,10 +70,11 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    // Check to see if Camera is within the sphere, if so, just draw it.
-    auto distance = glm::length(mCameraPosition - aPosition);
+    if (mDontCull)
+      return true;
 
-    if (distance < aRadius)
+    // Check to see if Camera is within the sphere, if so, just draw it.
+    if (glm::length(mCameraPosition - aPosition) < aRadius)
     {
       return true;
     }
@@ -273,12 +274,20 @@ namespace YTE
   {
   }
 
+  size_t gFrameSet = 0;
+  bool gLockView = false;
 
   void GraphicsView::KeyPressed(KeyboardEvent *aUpdate)
   {
     if (aUpdate->Key == Keys::F1)
     {
       SetOrder(-mOrder);
+    }
+    
+    if (aUpdate->Key == Keys::F5 && (gFrameSet != mSpace->GetEngine()->GetFrame()))
+    {
+      gLockView = !gLockView;
+      gFrameSet = mSpace->GetEngine()->GetFrame();
     }
   }
 
@@ -297,7 +306,9 @@ namespace YTE
 
     mViewUBOData = aView;
     mViewUBO.Update(mViewUBOData);
-    mFrustum.Update(aView);
+
+    if (!gLockView)
+      mFrustum.Update(aView);
 
     // Draw frustum planes.
     if (mDebugDrawer)
@@ -340,6 +351,8 @@ namespace YTE
   
   void GraphicsView::ParentSurfaceLost(ViewChanged* aEvent)
   {
+    UnusedArguments(aEvent);
+
     ViewChanged event;
     event.View = this;
 

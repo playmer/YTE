@@ -108,6 +108,7 @@ namespace YTE
 
   void Space::DeletionUpdate(LogicUpdate *aUpdate)
   {
+    UnusedArguments(aUpdate);
     OPTICK_EVENT();
 
     if (mCompositionDeletionList.Empty() && mComponentDeletionList.Empty())
@@ -119,8 +120,9 @@ namespace YTE
     // Delete Compositions
     {
       auto it = mCompositionDeletionList.begin();
+      auto end = mCompositionDeletionList.end();
 
-      while (it.NextHook() != &mCompositionDeletionList.mHead)
+      while ((it != end) && (it.NextHook() != &mCompositionDeletionList.mHead))
       {
         // While technically the next hook, this hook pointer represents the delegate we're
         // about to invoke.
@@ -167,8 +169,9 @@ namespace YTE
     // Delete Components
     {
       auto it = mComponentDeletionList.begin();
+      auto end = mComponentDeletionList.end();
 
-      while (it.NextHook() != &mComponentDeletionList.mHead)
+      while ((it != end) && (it.NextHook() != &mComponentDeletionList.mHead))
       {
         // While technically the next hook, this hook pointer represents the delegate we're
         // about to invoke.

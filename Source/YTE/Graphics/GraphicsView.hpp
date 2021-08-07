@@ -52,7 +52,7 @@ namespace YTE
     enum side { LEFT = 0, RIGHT = 1, TOP = 2, BOTTOM = 3, BACK = 4, FRONT = 5 };
     std::array<glm::vec4, 6> mPlanes;
     glm::vec3 mCameraPosition;
-
+    bool mDontCull = false;
 
     void Update(UBOs::View const& aView);
     bool CheckSphere(glm::vec3 aPosition, float aRadius);
@@ -100,6 +100,12 @@ namespace YTE
     float GetOrder()
     {
       return mOrder;
+    }
+
+    // defaults to true.
+    void FrustumCulling(bool aEnable)
+    {
+      mFrustum.mDontCull = !aEnable;
     }
 
     YTE_Shared void SetOrder(float aOrder);

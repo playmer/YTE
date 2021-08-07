@@ -311,7 +311,7 @@ namespace YTE
   {
     OPTICK_EVENT();
 
-    std::string filename = aFile; // TODO: don't actually make a copy lol
+    std::string filename = aFile + ".YTEMesh"; // TODO: don't actually make a copy lol
     std::string meshFile;
 
     // check that the mesh file exists in the game assets folder

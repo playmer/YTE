@@ -157,6 +157,8 @@ namespace YTE
     std::optional<VkQueueData> mTransferQueueData;
 
     VkUBOUpdates mUBOUpdates;
+
+    std::mutex mTextureAllocationMutex;
   private:
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
     std::unique_ptr<VkInternals> mVulkanInternals;
@@ -217,6 +219,7 @@ namespace YTE
 
     std::shared_ptr<vkhlf::DeviceMemoryAllocator> mAllocator;
     std::shared_ptr<vkhlf::Device> mDevice;
+    std::mutex mDeviceAllocationMutex;
     VkRenderer* mRenderer;
   };
 

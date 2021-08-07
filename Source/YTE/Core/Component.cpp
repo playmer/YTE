@@ -22,7 +22,10 @@ namespace YTE
   }
 
   Component::Component(Composition *aOwner, Space *aSpace)
-    : mOwner(aOwner), mSpace(aSpace), mGUID()
+    : mOwner{ aOwner } 
+    , mSpace{ aSpace } 
+    , mDeletionHook{ this }
+    , mGUID{}
   {
     Engine *engine = mOwner->GetEngine();
 

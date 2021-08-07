@@ -35,7 +35,7 @@ namespace YTE
     float mTimeToChange;
     float mTimeTracker;
 
-    std::random_device r;
-    std::default_random_engine e{ r() };
+    std::random_device mRandomDevice;
+    std::default_random_engine mRandomEngine{ mRandomDevice() };
   };
 }

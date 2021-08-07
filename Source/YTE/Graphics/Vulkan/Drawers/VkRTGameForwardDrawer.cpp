@@ -213,21 +213,21 @@ namespace YTE
 
           for (auto &model : models)
           {
-            auto submeshDimension = trueSubmesh->mData.mDimension;
-            auto subMeshPosition = submeshDimension.GetCenter();
-            auto modelMatrix = model->GetUBOModelData().mModelMatrix;
-            modelMatrix[3][0] += subMeshPosition.x;
-            modelMatrix[3][1] += subMeshPosition.y;
-            modelMatrix[3][2] += subMeshPosition.z;
-
-            auto position = modelMatrix * origin;
-            auto radiusScale = detail::ExtractMaximumUniformScale(modelMatrix);
-
             bool visible = true;
-
-            // TODO: Need to bugfix this.
+            
+            // TODO: Need to bugfix this frustum culling.
             if (CompilerConfiguration::Debug())
             {
+              auto submeshDimension = trueSubmesh->mData.mDimension;
+              auto subMeshPosition = submeshDimension.GetCenter();
+              auto modelMatrix = model->GetUBOModelData().mModelMatrix;
+              modelMatrix[3][0] += subMeshPosition.x;
+              modelMatrix[3][1] += subMeshPosition.y;
+              modelMatrix[3][2] += subMeshPosition.z;
+
+              auto position = modelMatrix * origin;
+              auto radiusScale = detail::ExtractMaximumUniformScale(modelMatrix);
+
               visible = frustum.CheckSphere(glm::vec3(position), submeshDimension.GetRadius() * radiusScale);
             }
 

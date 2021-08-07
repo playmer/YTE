@@ -34,11 +34,167 @@ namespace YTE
     GetStaticType()->AddAttribute<RunInEditor>();
   }
 
+  
+  DescriptorPoolManager::DescriptorPoolManager(VkRenderedSurface* aSurface)
+    : mSurface{aSurface}
+  {
+
+  }
+  
+  auto DescriptorPoolManager::AllocateDescriptorSet(
+    std::vector<vk::DescriptorPoolSize> const& aDescriptor,
+    std::shared_ptr<vkhlf::DescriptorSetLayout>& aLayout)
+    -> std::shared_ptr<vkhlf::DescriptorSet>
+  {
+    OPTICK_EVENT();
+    PoolInfo* info = nullptr;
+
+    std::lock_guard lock{ mPoolMutex };
+    std::string descriptorIdentifier;
+    StringFromDescriptors(aDescriptor, descriptorIdentifier);
+    auto& device = mSurface->GetDevice();
+    
+    auto it = mPools.find(descriptorIdentifier);
+    if (it != mPools.end())
+    {
+      auto subPoolIt = std::find_if(it->second.begin(), it->second.end(), [](PoolInfo& subPool)
+      {
+        return subPool.mAvailible != 0;
+      });
+
+      if (subPoolIt != it->second.end())
+      {
+        info = &(*subPoolIt);
+      }
+    }
+
+    //std::cout << descriptorIdentifier << "\n";
+    //
+    //if (info != nullptr)
+    //  std::cout << "\tFound existing pool\n";
+
+    if (info == nullptr)
+    {
+      auto descriptorCopy = aDescriptor;
+
+      for (auto& item : descriptorCopy)
+      {
+        item.descriptorCount *= 40;
+      }
+
+      info = &mPools[descriptorIdentifier].emplace_back(PoolInfo{});
+      info->mPool = device->createDescriptorPool({}, 40, descriptorCopy);
+      info->mAvailible = 40;
+    }
+
+    DebugObjection(info == nullptr, "info must be initialized by this point.");
+
+    --(info->mAvailible);
+
+    //std::cout << "\tDescriptors\n";
+    //for (auto& item : aDescriptor)
+    //{
+    //  std::cout << "\t\t" << vk::to_string(item.type) << ": " << std::to_string(item.descriptorCount) << "\n";
+    //}
+    //
+    //std::cout << "\tLayout\n";
+    //for (auto& item : aLayout->getBindings())
+    //{
+    //  std::cout << "\t\t" << fmt::format("Descriptor({}); Flags({}); Samplers({}); Binding({})", vk::to_string(item.descriptorType), vk::to_string(item.stageFlags), item.immutableSamplers.size(), item.binding) << "\n";
+    //}
+
+    return mSurface->GetDevice()->allocateDescriptorSet(info->mPool, aLayout);
+  }
+
+  
+  void DescriptorPoolManager::StringFromDescriptors(std::vector<vk::DescriptorPoolSize> const& aDescriptor, std::string& aOut)
+  {
+    for (auto& poolSize : aDescriptor)
+    {
+      char const* name = nullptr;
+      switch (poolSize.type)
+      {  
+        case vk::DescriptorType::eSampler: 
+        {
+          name = "S";
+          break;
+        }
+        case vk::DescriptorType::eCombinedImageSampler: 
+        {
+          name = "CIS";
+          break;
+        }
+        case vk::DescriptorType::eSampledImage: 
+        {
+          name = "SaI";
+          break;
+        }
+        case vk::DescriptorType::eStorageImage: 
+        {
+          name = "SI";
+          break;
+        }
+        case vk::DescriptorType::eUniformTexelBuffer: 
+        {
+          name = "UTB";
+          break;
+        }
+        case vk::DescriptorType::eStorageTexelBuffer: 
+        {
+          name = "STB";
+          break;
+        }
+        case vk::DescriptorType::eUniformBuffer: 
+        {
+          name = "UB";
+          break;
+        }
+        case vk::DescriptorType::eStorageBuffer: 
+        {
+          name = "SB";
+          break;
+        }
+        case vk::DescriptorType::eUniformBufferDynamic: 
+        {
+          name = "UBD";
+          break;
+        }
+        case vk::DescriptorType::eStorageBufferDynamic: 
+        {
+          name = "SBD";
+          break;
+        }
+        case vk::DescriptorType::eInputAttachment: 
+        {
+          name = "IA";
+          break;
+        }
+      }
+      
+      aOut += fmt::format("{}{}", name, poolSize.descriptorCount);
+    }
+  }
+
+
+  vk::Format findSupportedFormat(std::shared_ptr<vkhlf::PhysicalDevice> aDevice, const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features) {
+    for (vk::Format format : candidates) {
+        vk::FormatProperties props = aDevice->getFormatProperties(format);
+
+        if (tiling == vk::ImageTiling::eLinear && (props.linearTilingFeatures & features) == features) {
+            return format;
+        } else if (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+
+    throw std::runtime_error("failed to find supported format!");
+}
 
   VkRenderedSurface::VkRenderedSurface(Window *aWindow,
                                        VkRenderer *aRenderer,
                                        std::shared_ptr<vkhlf::Surface> &aSurface)
-    : mWindow(aWindow)
+    : mPoolManager{this}
+    , mWindow(aWindow)
     , mRenderer(aRenderer)
     , mSurface(aSurface)
     , mDataUpdateRequired(true)
@@ -59,7 +215,15 @@ namespace YTE
                                                                  formats[0].format;
 
     PrintSurfaceFormats(formats);
-    mDepthFormat = vk::Format::eD24UnormS8Uint;
+    mDepthFormat = findSupportedFormat(aRenderer->mDevice->get<vkhlf::PhysicalDevice>(), { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint }, vk::ImageTiling::eOptimal, vk::FormatFeatureFlagBits::eDepthStencilAttachment);
+
+    //std::array<vk::Format, 3> depthFormats = 
+    //{
+    //  
+    //aRenderer->mDevice->get<vkhlf::PhysicalDevice>()->getFormatProperties()
+    //  mDepthFormat = vk::Format::eD24UnormS8Uint;
+    //}
+
 
     mRenderToScreen = std::make_unique<VkRenderToScreen>(mWindow, mRenderer, this, mColorFormat, mDepthFormat, mSurface, "RenderToScreen");
 

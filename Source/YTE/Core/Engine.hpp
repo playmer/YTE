@@ -68,6 +68,16 @@ namespace YTE
 
   YTEDeclareEvent(LogEvent);
 
+  class EngineConfig : public Object
+  {
+  public:
+    YTEDeclareType(EngineConfig);
+
+    std::string PreferredGpu;
+    bool ValidationLayers = false;
+
+  };
+
   class Engine : public Composition
   {
   public:
@@ -164,6 +174,11 @@ namespace YTE
       return &mComponentSystem;
     }
 
+    YTE_Shared auto GetConfig() -> EngineConfig const&
+    {
+      return mConfig;
+    }
+
     OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
@@ -182,6 +197,7 @@ namespace YTE
     std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrame;
 
     std::unordered_map<std::string, std::unique_ptr<PluginWrapper>> mPlugins;
+    EngineConfig mConfig;
 
     double mDt;
     size_t mFrame;

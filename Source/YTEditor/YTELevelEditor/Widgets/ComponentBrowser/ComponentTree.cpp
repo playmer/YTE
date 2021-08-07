@@ -117,12 +117,16 @@ namespace YTEditor
 
   void ComponentTree::SetItemToCollapsedColor(QTreeWidgetItem *aItem)
   {
-    aItem->setBackgroundColor(0, "#191919");
+    QColor color(25, 25, 25);
+    QBrush brush(color);
+    aItem->setBackground(0, brush);
   }
 
   void ComponentTree::SetItemToExpandedColor(QTreeWidgetItem *aItem)
   {
-    aItem->setBackgroundColor(0, "#383838");
+    QColor color(56, 56, 56);
+    QBrush brush(color);
+    aItem->setBackground(0, brush);
   }
 
   QTreeWidgetItem* ComponentTree::FindComponentItem(YTE::Type *aComponentType)

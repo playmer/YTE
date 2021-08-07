@@ -48,6 +48,16 @@ namespace YTE
     builder.Field<&BoundTypeChanged::aNewType>("NewType", PropertyBinding::GetSet);
   }
 
+  YTEDefineType(EngineConfig)
+  {
+    RegisterType<EngineConfig>();
+    TypeBuilder<EngineConfig> builder;
+    builder.Field<&EngineConfig::PreferredGpu>("PreferredGpu", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+    builder.Field<&EngineConfig::ValidationLayers>("ValidationLayers", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+  }
+
   YTEDefineType(Engine)
   {
     RegisterType<Engine>();
@@ -94,6 +104,7 @@ namespace YTE
       }
       catch(const std::exception& e)
       {
+        UnusedArguments(e);
       }
     }
 
@@ -183,6 +194,8 @@ namespace YTE
         platformWindows.emplace(windowName, std::make_unique<Window>(this));
       }
     }
+
+    Object::DeserializeByType(&(*aValue)["EngineConfig"], &mConfig, EngineConfig::GetStaticType());
 
     if (!mEditorMode)
     {

@@ -57,7 +57,7 @@ namespace YTE
     mCompletedJobs = mNotDeletedJobs;
   }
 
-  void Worker::AddCoworker(Worker * aWorker)
+  void Worker::AddCoworker(Worker* aWorker)
   {
     mCoworkers.push_back(aWorker);
   }
@@ -76,7 +76,7 @@ namespace YTE
 
   void Worker::YieldThread()
   {
-    // TODO (Evan): Time tasks to figure out sleep length
+    // TODO (Evelyn): Time tasks to figure out sleep length
     std::this_thread::sleep_for(std::chrono::microseconds(500));
   }
 
@@ -126,8 +126,16 @@ namespace YTE
     else if (!mCoworkers.empty())
     {
       // TODO(Evelyn): make choosing the coworker to rob smarter
-      int index = std::rand() % mCoworkers.size();
-      return mCoworkers[index]->StealFrom();
+      //int index = std::rand() % mCoworkers.size();
+      //return mCoworkers[index]->StealFrom();
+
+      // Alternative solution, ideally, we would randomly select a coworker
+      // to look at first.
+      for (auto coworker : mCoworkers)
+      {
+        job = coworker->StealFrom();
+        if (job) return job;
+      }
     }
 
     // TODO(Evelyn): Is this what it should do?
@@ -158,7 +166,8 @@ namespace YTE
       YieldThread();
     }
 
-    mThread.join();
+    if (mThread.joinable())
+      mThread.join();
   }
 
   Worker::WorkerID BackgroundWorker::GetID()

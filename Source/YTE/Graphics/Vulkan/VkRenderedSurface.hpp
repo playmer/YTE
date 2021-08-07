@@ -3,6 +3,9 @@
 #ifndef YTE_Graphics_Vulkan_VkRendererdSurface_hpp
 #define YTE_Graphics_Vulkan_VkRendererdSurface_hpp
 
+#include <map>
+#include <mutex>
+
 #include "YTE/Core/Utilities.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -50,6 +53,30 @@ namespace YTE
     std::unique_ptr<VkRenderTarget> mRenderTarget;
     GraphicsView *mView;
     float mViewOrder;
+  };
+
+  class DescriptorPoolManager
+  {
+  public:
+    DescriptorPoolManager(VkRenderedSurface* aSurface);
+
+  
+    void StringFromDescriptors(std::vector<vk::DescriptorPoolSize> const& aDescriptor, std::string& aOut);
+
+    struct PoolInfo
+    {
+      std::shared_ptr<vkhlf::DescriptorPool> mPool;
+      size_t mAvailible;
+    };
+
+    auto AllocateDescriptorSet(std::vector<vk::DescriptorPoolSize> const& aDescriptor, std::shared_ptr<vkhlf::DescriptorSetLayout>& aLayout) -> std::shared_ptr<vkhlf::DescriptorSet>; 
+
+    std::unordered_map<std::string, std::vector<PoolInfo>> mPools;
+    std::mutex mPoolMutex;
+    VkRenderedSurface* mSurface;
+
+  private:
+    void MakePool();
   };
 
   class VkRenderedSurface : public EventHandler
@@ -172,6 +199,8 @@ namespace YTE
     {
       return GetViewData(aView)->mRenderTarget.get();
     }
+
+    DescriptorPoolManager mPoolManager;
 
   private:
     void ResizeInternal(bool aConstructing = false);

@@ -37,7 +37,7 @@ namespace YTE
     , mN{ 2 }
     , mTimeToChange{ 0.75 }
     , mTimeTracker{ 0.75 }
-    , e{ r() }
+    , mRandomEngine{ mRandomDevice() }
   {
   }
 
@@ -81,7 +81,7 @@ namespace YTE
       {
         auto material = sprite->GetComponent<Material>();
 
-        auto colorIndex = randomSizeT(0, mColors.size() - 1, e);
+        auto colorIndex = randomSizeT(0, mColors.size() - 1, mRandomEngine);
         material->GetModelMaterial().SetDiffuse(mColors[colorIndex]);
       }
     }
@@ -126,8 +126,8 @@ namespace YTE
       return;
     }
 
-    auto x = randomSizeT(0, mN - 1, e);
-    auto y = randomSizeT(0, mN - 1, e);
+    auto x = randomSizeT(0, mN - 1, mRandomEngine);
+    auto y = randomSizeT(0, mN - 1, mRandomEngine);
 
     i64 iOffset;
     i64 jOffset;
@@ -138,8 +138,8 @@ namespace YTE
       iOffset = 0;
       jOffset = 0;
 
-      auto xAxis = randomSizeT(0, 2, e);
-      auto yAxis = randomSizeT(0, 2, e);
+      auto xAxis = randomSizeT(0, 2, mRandomEngine);
+      auto yAxis = randomSizeT(0, 2, mRandomEngine);
 
       if (0 == xAxis)
       {
@@ -209,9 +209,9 @@ namespace YTE
 
     for (size_t i = 0; i < mK; ++i)
     {
-      auto r = RandomFloat(0.0f, 1.0f, e);
-      auto g = RandomFloat(0.0f, 1.0f, e);
-      auto b = RandomFloat(0.0f, 1.0f, e);
+      auto r = RandomFloat(0.0f, 1.0f, mRandomEngine);
+      auto g = RandomFloat(0.0f, 1.0f, mRandomEngine);
+      auto b = RandomFloat(0.0f, 1.0f, mRandomEngine);
       mColors.emplace_back(glm::vec3{ r, g, b });
     }
 
@@ -254,7 +254,7 @@ namespace YTE
 
         auto material = static_cast<Material*>(textComposition->AddComponent(TypeId<Material>()));
 
-        auto colorIndex = randomSizeT(0, mColors.size() - 1, e);
+        auto colorIndex = randomSizeT(0, mColors.size() - 1, mRandomEngine);
         material->GetModelMaterial().SetDiffuse(mColors[colorIndex]);
 
         sprites.emplace_back(textComposition);

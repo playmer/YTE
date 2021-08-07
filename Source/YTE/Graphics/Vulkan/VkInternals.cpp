@@ -6,107 +6,53 @@
 
 namespace YTE
 {
-  constexpr bool cVulkanValidations = false;
+  constexpr bool cVulkanValidations = true;
 
-  //LogType ToYTE(vk::DebugUtilsMessageSeverityFlagBitsEXT aSeverity)
-  //{
-  //  switch (aSeverity)
-  //  {
-  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose: return LogType::Information;
-  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo: return LogType::Information;
-  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning: return LogType::Warning;
-  //    case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError : return LogType::Error;
-  //  }
-  //
-  //  return LogType::Information;
-  //}
-  //
-  //// debug report callback for vulkan
-  //VkBool32 VKAPI_PTR debugUtilsCallback(
-  //  VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-  //  VkDebugUtilsMessageTypeFlagsEXT messageTypes,
-  //  const VkDebugUtilsMessengerCallbackDataEXT* aCallbackData,
-  //  void* aUserData)
-  //{
-  //  //UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
-  //
-  //  auto engine = static_cast<Engine*>(aUserData);
-  //
-  //  vk::DebugUtilsMessageSeverityFlagBitsEXT severityFlag{ messageSeverity };
-  //  vk::DebugUtilsMessageTypeFlagsEXT typeFlag{ messageTypes };
-  //
-  //  auto text = fmt::format(
-  //    "Vulkan Layer {} Report, Severity {}:\n\t: {}", 
-  //    vk::to_string(typeFlag), 
-  //    vk::to_string(severityFlag),
-  //    aCallbackData->pMessage);
-  //
-  //  engine->Log(ToYTE(severityFlag), text);
-  //
-  //  if constexpr (cVulkanValidations)
-  //  {
-  //    if (vk::DebugUtilsMessageSeverityFlagBitsEXT::eError == severityFlag)
-  //    {
-  //      __debugbreak();
-  //      assert(false);
-  //    }
-  //  }
-  //
-  //  return VK_TRUE;
-  //}
-
-  static VKAPI_ATTR
-  VkBool32 VKAPI_CALL debugReportCallback(VkDebugReportFlagsEXT aFlags,
-                                          VkDebugReportObjectTypeEXT aObjectType,
-                                          uint64_t aObject,
-                                          size_t aLocation,
-                                          int32_t aMessageCode,
-                                          const char* aLayerPrefix,
-                                          const char* aMessage,
-                                          void *aUserData)
+  LogType ToYTE(vk::DebugUtilsMessageSeverityFlagBitsEXT aSeverity)
   {
-    UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
-  
-    switch (aFlags)
+    switch (aSeverity)
     {
-      case VK_DEBUG_REPORT_INFORMATION_BIT_EXT:
-      {
-        printf("INFORMATION: %s\n", aMessage);
-        return VK_FALSE;
-      }
-      case VK_DEBUG_REPORT_WARNING_BIT_EXT:
-      {
-        printf("WARNING: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT:
-      {
-        printf("PERFORMANCE WARNING: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_ERROR_BIT_EXT:
-      {
-        printf("\n\nERROR: ");
-        break;
-      }
-      case VK_DEBUG_REPORT_DEBUG_BIT_EXT:
-      {
-        printf("DEBUG: %s\n", aMessage);
-        return VK_FALSE;
-      }
-      default:
-      {
-        printf("Unknown Flag (%u): ", aFlags);
-        break;
-      }
+      case vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose: return LogType::Information;
+      case vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo: return LogType::Information;
+      case vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning: return LogType::Warning;
+      case vk::DebugUtilsMessageSeverityFlagBitsEXT::eError : return LogType::Error;
     }
   
-    printf("%s\n", aMessage);
-    assert(false == (aFlags & VK_DEBUG_REPORT_ERROR_BIT_EXT));
+    return LogType::Information;
+  }
+  
+  // Debug Utils callback for vulkan
+  VkBool32 VKAPI_PTR debugUtilsCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT messageTypes,
+    const VkDebugUtilsMessengerCallbackDataEXT* aCallbackData,
+    void* aUserData)
+  {
+    //UnusedArguments(aObjectType, aObject, aLocation, aMessageCode, aLayerPrefix, aUserData, aObjectType);
+    auto engine = static_cast<Engine*>(aUserData);
+  
+    vk::DebugUtilsMessageSeverityFlagBitsEXT severityFlag = static_cast<vk::DebugUtilsMessageSeverityFlagBitsEXT>(messageSeverity);
+    vk::DebugUtilsMessageTypeFlagsEXT typeFlag = static_cast<vk::DebugUtilsMessageTypeFlagsEXT>(messageTypes);
+  
+    auto text = fmt::format(
+      "Vulkan Layer {} Report, Severity {}:\n\t: {}", 
+      vk::to_string(typeFlag), 
+      vk::to_string(severityFlag),
+      aCallbackData->pMessage);
+  
+    engine->Log(ToYTE(severityFlag), text);
+  
+    if (vk::DebugUtilsMessageSeverityFlagBitsEXT::eError == severityFlag)
+    {
+      // If you're hitting this and it's not causing an issue, you should probably turn off
+      // cVulkanValidations, apologies that it's on. If it is causing an issue and it's beyond
+      // you, contact Joshua T. Fisher.
+      __debugbreak();
+      assert(false);
+    }
   
     return VK_TRUE;
   }
-
 
   std::shared_ptr<vkhlf::Surface> VkInternals::InitializeVulkan(Engine *aEngine)
   {
@@ -137,41 +83,29 @@ namespace YTE
                                           enabledLayers,
                                           enabledExtensions);
     }
-
-    if constexpr(CompilerOptions::Debug() && cVulkanValidations)
+    
+    if (aEngine->GetConfig().ValidationLayers)
     {
-      vk::DebugReportFlagsEXT flags(//vk::DebugReportFlagBitsEXT::eInformation
-                                    vk::DebugReportFlagBitsEXT::eWarning |
-                                    vk::DebugReportFlagBitsEXT::ePerformanceWarning |
-                                    vk::DebugReportFlagBitsEXT::eError |
-                                    vk::DebugReportFlagBitsEXT::eDebug);
+      constexpr auto severityFlags =
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
       
-      auto instance = static_cast<vk::Instance>(*mInstance);
+      constexpr auto messageTypes =
+        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+        vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+        vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
       
-      mDebugReportCallback = mInstance->createDebugReportCallback(flags,
-                                                                  &debugReportCallback);
-
-      //auto severityFlags =
-      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
-      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo |
-      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
-      //  vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
-      //
-      //auto messageTypes =
-      //  vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
-      //  vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
-      //  vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance;
-      //
-      //vk::DebugUtilsMessengerCreateInfoEXT debugUtilsCreate(
-      //  vk::DebugUtilsMessengerCreateFlagsEXT(),
-      //  severityFlags,
-      //  messageTypes,
-      //  debugUtilsCallback,
-      //  static_cast<void*>(aEngine)
-      //);
-      //
-      //vk::Instance isntance = *mInstance;
-      //isntance.createDebugUtilsMessengerEXT(debugUtilsCreate);
+      vk::DebugUtilsMessengerCreateInfoEXT debugUtilsCreate(
+        vk::DebugUtilsMessengerCreateFlagsEXT(),
+        severityFlags,
+        messageTypes,
+        debugUtilsCallback,
+        static_cast<void*>(aEngine)
+      );
+      
+      mDebugUtilsMessenger = mInstance->createDebugUtilsMessenger(debugUtilsCreate);
     }
 
     auto &windows = aEngine->GetWindows();
@@ -187,7 +121,7 @@ namespace YTE
       }
     }
 
-    SelectDevice(surface);
+    SelectDevice(aEngine, surface);
 
     // initialize physical devices
     auto baseDevice = static_cast<vk::PhysicalDevice>(*mMainDevice);
@@ -220,7 +154,7 @@ namespace YTE
 
 
 
-  void VkInternals::SelectDevice(std::shared_ptr<vkhlf::Surface> aSurface)
+  void VkInternals::SelectDevice(Engine* aEngine, std::shared_ptr<vkhlf::Surface> aSurface)
   {
     OPTICK_EVENT();
 
@@ -269,9 +203,24 @@ namespace YTE
       FindDeviceOfType(vk::PhysicalDeviceType::eOther);
     }
 
+    std::string const& deviceName = aEngine->GetConfig().PreferredGpu;
+
+    auto it = std::find_if(mPhysicalDevices.begin(), mPhysicalDevices.end(), [&deviceName](std::shared_ptr<vkhlf::PhysicalDevice> aDevice)
+    {
+      auto props = aDevice->getProperties();
+      if (deviceName == props.deviceName.data())
+        return true;
+
+      return false;
+    });
+
+    if (it != mPhysicalDevices.end())
+      mMainDevice = *it;
+
+
     DebugObjection(nullptr == mMainDevice, "We can't find a suitible graphics device!");
 
-    printf("Chosen Device: %s\n", mMainDevice->getProperties().deviceName);
+    printf("Chosen Device: %s\n", mMainDevice->getProperties().deviceName.data());
   }
 
 
@@ -295,7 +244,7 @@ namespace YTE
 
     printf("\nDevice:");
 
-    printf("  Device Name: %s\n", props.deviceName);
+    printf("  Device Name: %s\n", props.deviceName.data());
     printf("  Device ID: %u\n", props.deviceID);
     printf("  Driver Version: %u\n", props.driverVersion);
     printf("  Vendor ID: %u\n", props.vendorID);
