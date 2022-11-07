@@ -17,7 +17,6 @@ namespace YTE
     // ctor
     VkCBOB(std::shared_ptr<vkhlf::CommandPool>& aPool)
     {
-      mSize = tBufferCount;
       mIndex = 0;
       mIsSecondary = tIsSecondary;
       auto& device = aPool->get<vkhlf::Device>();
@@ -25,7 +24,7 @@ namespace YTE
       // Device is conditionally unused in the case of a tIsSecondary VkCBOB.
       UnusedArguments(device);
 
-      for (size_t i = 0; i < mSize; ++i)
+      for (size_t i = 0; i < tBufferCount; ++i)
       {
         if (mIsSecondary)
         {
@@ -55,7 +54,7 @@ namespace YTE
     // dtor
     ~VkCBOB()
     {
-      //for (size_t i = 0; i < mSize; ++i)
+      //for (size_t i = 0; i < tBufferCount; ++i)
       //{
       //  mCBOs[i].reset();
       //}
@@ -90,7 +89,7 @@ namespace YTE
 
     size_t size()
     {
-      return mSize;
+      return tBufferCount;
     }
 
   private:
@@ -98,7 +97,7 @@ namespace YTE
     void NextCommandBuffer()
     {
       mIndex += 1;
-      if (mIndex >= mSize)
+      if (mIndex >= tBufferCount)
       {
         mIndex = 0;
       }
@@ -125,7 +124,6 @@ namespace YTE
     std::array<std::shared_ptr<vkhlf::Fence>, tBufferCount> mFences;
     std::array<bool, tBufferCount> mHasBeenUsed;
     size_t mIndex;
-    size_t mSize = tBufferCount;
     bool mIsSecondary = tIsSecondary;
   };
 }

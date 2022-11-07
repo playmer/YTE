@@ -207,17 +207,14 @@ namespace YTE
 
   struct VkGPUAllocatorData
   {
-    VkGPUAllocatorData(std::shared_ptr<vkhlf::DeviceMemoryAllocator>& aAllocator,
-                       std::shared_ptr<vkhlf::Device>& aDevice,
+    VkGPUAllocatorData(std::shared_ptr<vkhlf::Device>& aDevice,
                        VkRenderer* aRenderer)
-      : mAllocator{aAllocator}
-      , mDevice{ aDevice }
+      : mDevice{ aDevice }
       , mRenderer{ aRenderer }
     {
 
     }
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator> mAllocator;
     std::shared_ptr<vkhlf::Device> mDevice;
     std::mutex mDeviceAllocationMutex;
     VkRenderer* mRenderer;
@@ -232,11 +229,6 @@ namespace YTE
                                                         GPUAllocation::BufferUsage aUse, 
                                                         GPUAllocation::MemoryProperty aProperties) override;
   };
-
-  inline std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(GPUAllocator* aBuffer)
-  {
-    return aBuffer->GetData().Get<VkGPUAllocatorData>()->mAllocator;
-  }
 }
 
 

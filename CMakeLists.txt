@@ -56,6 +56,17 @@ include(${CMake_Include}/YTE_Target_Folder.cmake)
 ################################################################################
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if (CMAKE_SYSTEM_NAME STREQUAL Windows)
+  # Find the QtWidgets library
+  set(QtPath $ENV{Qt})
+  if(NOT QtPath) 
+    message(FATAL_ERROR "Please define the environment variable `Qt` with the path to Qt 5.9.0 - i.e. export Qt = C:/Qt/5.9")
+  endif()
+
+  set(CMAKE_PREFIX_PATH ${QtPath}/msvc2017_64/)
+  message(STATUS "CMAKE_PREFIX_PATH: ${CMAKE_PREFIX_PATH}")
+endif()
+
 ################################################################################
 ## Call the CMakeLists.txt in our engine folder, and game folder.
 ################################################################################

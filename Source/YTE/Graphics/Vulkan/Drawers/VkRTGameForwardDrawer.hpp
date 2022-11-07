@@ -50,6 +50,17 @@ namespace YTE
 
       }
 
+      bool operator<(const DrawData& aRight)
+      {
+
+        return mPipeline < aRight.mPipeline&&
+          mPipelineLayout < aRight.mPipelineLayout&&
+          mDescriptorSet < aRight.mDescriptorSet&&
+          mVertexBufferData < aRight.mVertexBufferData&&
+          mIndexBuffer < aRight.mIndexBuffer&&
+          mInstanceBuffer < aRight.mInstanceBuffer;
+      }
+
       std::shared_ptr<vkhlf::Pipeline>* mPipeline;
       VertexBufferData* mVertexBufferData;
       std::shared_ptr<vkhlf::Buffer>* mIndexBuffer;

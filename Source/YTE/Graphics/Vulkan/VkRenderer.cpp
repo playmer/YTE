@@ -60,14 +60,11 @@ namespace YTE
 
     if ((nullptr == mMappingBuffer) || size > mMappingBuffer->getSize())
     {
-      auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
-    
       mMappingBuffer = mRenderer->mDevice->createBuffer(size,
                                                         vk::BufferUsageFlagBits::eTransferSrc, 
                                                         vk::SharingMode::eExclusive, 
                                                         nullptr, 
-                                                        vk::MemoryPropertyFlagBits::eHostVisible,
-                                                        allocator);
+                                                        vk::MemoryPropertyFlagBits::eHostVisible);
     }
 
     if (size > mMappingBuffer->getSize())
@@ -176,7 +173,6 @@ namespace YTE
       queueCreateInfos.emplace_back(transferQueueFamilyIndices.GetFamily(), defaultQueuePriority);
     }
 
-
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
     vk::PhysicalDeviceFeatures enabledFeatures;
     enabledFeatures.setTextureCompressionBC(true);
@@ -184,7 +180,8 @@ namespace YTE
     enabledFeatures.setFillModeNonSolid(true);
     enabledFeatures.setSamplerAnisotropy(true);
     
-    mDevice = physicalDevice->createDevice(queueCreateInfos,
+    mDevice = physicalDevice->createDevice(*instance, 
+                                           queueCreateInfos,
                                            nullptr,
                                            { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
                                            enabledFeatures);
@@ -615,8 +612,7 @@ namespace YTE
     : GPUAllocator{aBlockSize}
   {
     auto device = aRenderer->mDevice;
-    auto allocator = std::make_shared<vkhlf::DeviceMemoryAllocator>(device, aBlockSize, nullptr);
-    mData.ConstructAndGet<VkGPUAllocatorData>(allocator, device, aRenderer);
+    mData.ConstructAndGet<VkGPUAllocatorData>(device, aRenderer);
   }
 
   template <typename tType>
@@ -725,8 +721,7 @@ namespace YTE
                                                    ToVulkan(aUsage),
                                                    vk::SharingMode::eExclusive,
                                                    nullptr,
-                                                   ToVulkan(aProperties),
-                                                   self->mAllocator);
+                                                   ToVulkan(aProperties));
     self->mDeviceAllocationMutex.unlock();
 
     uboData->mRenderer = self->mRenderer;

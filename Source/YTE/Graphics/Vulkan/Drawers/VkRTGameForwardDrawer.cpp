@@ -82,6 +82,12 @@ namespace YTE
       std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
       std::vector<u64> vertexBufferOffsets;
       std::shared_ptr<vkhlf::Pipeline> *lastPipeline{ nullptr };
+      std::shared_ptr<vkhlf::PipelineLayout>* lastPipelineLayout = nullptr;
+      std::shared_ptr<vkhlf::DescriptorSet>* lastDescriptorSet = nullptr;
+      VertexBufferData* lastVertexBufferData = nullptr;
+      std::shared_ptr<vkhlf::Buffer>* lastIndexBuffer = nullptr;
+      std::shared_ptr<vkhlf::Buffer>* lastInstanceBuffer = nullptr;
+
       float lastLineWidth = 1.0f;
 
       for (auto &drawCall : aShaders)
@@ -104,6 +110,7 @@ namespace YTE
           lastLineWidth = drawCall.mLineWidth;
         }
 
+        if (lastVertexBufferData != drawCall.mVertexBufferData)
         {
           OPTICK_EVENT("CommandBuffer Recording: bindVertexBuffer");
           auto& vbd = *(drawCall.mVertexBufferData);
@@ -126,8 +133,10 @@ namespace YTE
             0,
             vertexBuffersToBind,
             vertexBufferOffsets);
+          lastVertexBufferData = drawCall.mVertexBufferData;
         }
 
+        if (lastIndexBuffer != drawCall.mIndexBuffer)
         {
           OPTICK_EVENT("CommandBuffer Recording: bindIndexBuffer");
 
@@ -135,8 +144,10 @@ namespace YTE
             *drawCall.mIndexBuffer,
             0,
             vk::IndexType::eUint32);
+          lastIndexBuffer = drawCall.mIndexBuffer;
         }
 
+        if ((lastPipelineLayout != drawCall.mPipelineLayout) || (lastDescriptorSet != drawCall.mDescriptorSet))
         {
           OPTICK_EVENT("CommandBuffer Recording: bindDescriptorSets");
 
@@ -146,6 +157,8 @@ namespace YTE
             0,
             *drawCall.mDescriptorSet,
             nullptr); 
+          lastPipelineLayout = drawCall.mPipelineLayout;
+          lastDescriptorSet = drawCall.mDescriptorSet;
         }
 
         {
@@ -320,6 +333,30 @@ namespace YTE
       {
         return aLeft.mDepth > aRight.mDepth;
       });
+    }
+
+
+    {
+      OPTICK_EVENT("Sorting Alpha");
+
+      std::sort(mAlphaBlendShader.begin(),
+        mAlphaBlendShader.end(),
+        [](DrawData const& aLeft, DrawData const& aRight)
+        {
+          return aLeft.mDepth > aRight.mDepth;
+        });
+    }
+
+    {
+      OPTICK_EVENT("Sorting Triangles");
+
+      std::sort(mTriangles.begin(), mTriangles.end());
+    }
+
+    {
+      OPTICK_EVENT("Sorting ShaderNoCull");
+
+      std::sort(mShaderNoCull.begin(), mShaderNoCull.end());
     }
 
     {

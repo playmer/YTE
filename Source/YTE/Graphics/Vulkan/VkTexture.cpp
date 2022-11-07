@@ -43,8 +43,6 @@ namespace YTE
 
     auto device = mRenderer->mDevice;
 
-    auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::Texture));
-
     // 1. init image
     vk::Format format;
 
@@ -105,8 +103,7 @@ namespace YTE
       vk::SharingMode::eExclusive,
       {},
       vk::ImageLayout::eUndefined,
-      vk::MemoryPropertyFlagBits::eDeviceLocal,
-      allocator);
+      vk::MemoryPropertyFlagBits::eDeviceLocal);
 
     mRenderer->RegisterEvent<&VkTexture::LoadToVulkan>(Events::VkGraphicsDataUpdate, this);
 

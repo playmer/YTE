@@ -473,7 +473,6 @@ namespace YTE
 
     std::vector<vkhlf::WriteDescriptorSet> wdss;
 
-    constexpr auto unibuf = vk::DescriptorType::eUniformBuffer;
     auto &ds = mDescriptorSet;
 
     // We must reset binding to 0, as the previous value was for setting up the layout binding 

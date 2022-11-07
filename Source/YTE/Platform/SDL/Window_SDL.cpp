@@ -463,7 +463,15 @@ namespace YTE
 
     return{ self->mX, self->mY };
   }
+}
 
+
+
+
+#include "vkhlf/Instance.h"
+
+namespace YTE
+{
   std::any Window::SetUpVulkanWindow(void* aSetup)
   {
     OPTICK_EVENT();

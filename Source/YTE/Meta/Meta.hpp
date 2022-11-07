@@ -126,14 +126,23 @@ namespace YTE
       if constexpr (isSigned)
       {
         constexpr i64 value = (i64)tEnumValue;
+        constexpr auto fn = ReturnValue<value>;
 
-        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+        printf("fuck 1: %s\n", aName);
+
+        auto intermediate = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<fn>(aName);
+
+        enumGetter = std::move(intermediate);
       }
       else
       {
         constexpr u64 value = (u64)tEnumValue;
+        constexpr auto fn = ReturnValue<value>;
 
-        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+        printf("fuck 2: %s\n", aName);
+        auto intermediate = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<fn>(aName);
+
+        enumGetter = std::move(intermediate);
       }
 
       auto property = std::make_unique<YTE::Property>(aName, std::move(enumGetter), NoSetter);
