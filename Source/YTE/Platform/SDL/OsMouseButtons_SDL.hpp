@@ -1,0 +1,5 @@
+ProcessKey(, Left)
+ProcessKey(, Right)
+ProcessKey(, Middle)
+ProcessKey(, Back)
+ProcessKey(, Forward)

@@ -1,0 +1,16 @@
+target_sources(YTEditor
+PRIVATE
+  ForwardDeclarations.hpp
+  MainWindow.cpp
+  MainWindow.hpp
+  Menu.cpp
+  Menu.hpp
+  ToolBar.cpp
+  ToolBar.hpp
+  ToolBarButton.cpp
+  ToolBarButton.hpp
+  Widget.cpp
+  Widget.hpp
+  Workspace.cpp
+  Workspace.hpp
+)

@@ -1,21 +1,14 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   6/7/2015
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Utilities_Utilites_h
 #define YTE_Utilities_Utilites_h
 
-#include <vector>
-#include <string>
-#include <filesystem>
-
 #include <bitset>
+#include <functional>
+#include <string>
+#include <string_view>
+#include "YTE/StandardLibrary/FileSystem.hpp"
+#include <vector>
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -23,7 +16,7 @@
 
 namespace YTE
 {
-  namespace filesystem = std::experimental::filesystem;
+  namespace filesystem = std::filesystem;
 
   YTE_Shared extern std::wstring cWorkingDirectory;
 
@@ -35,10 +28,21 @@ namespace YTE
     YTE_Shared std::string ToString() const;
     YTE_Shared std::string ToIdentifierString() const;
 
-    YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGUID);
+    YTE_Shared bool operator==(GlobalUniqueIdentifier const& aGuid) const;
+
+    YTE_Shared static size_t Hash(GlobalUniqueIdentifier const& aGuid)
+    {
+      //std::byte const* begin = reinterpret_cast<std::byte const*>(&aGuid);
+      //std::basic_string_view<std::byte> test{ begin, begin + sizeof(GlobalUniqueIdentifier) };
+    
+      char const* begin = reinterpret_cast<char const*>(&aGuid);
+      std::string_view test{ begin, sizeof(GlobalUniqueIdentifier) };
+    
+      return std::hash<std::string_view>{}(test);
+    }
 
 
-    //       u32           u16         u16        u16            u32         u16
+    //|------u32-----|   |--u16-|   |--u16-|   |--u16-|   |-----u32------||--u16-|
     //(xx)(xx)(xx)(xx) - (xx)(xx) - (Mx)(xx) - (Nx)(xx) - (xx)(xx)(xx)(xx)(xx)(xx)
     u32 mPart1;
     u16 mPart2;
@@ -51,7 +55,8 @@ namespace YTE
   // Adapted from http://ysonggit.github.io/coding/2014/12/16/split-a-string-using-c.html
   YTE_Shared std::vector<std::string> split(const std::string &aString, char aDelimiter, bool aIgnoreEmpty);
 
-  YTE_Shared bool ReadFileToString(std::string const &file, std::string &output);
+  YTE_Shared bool ReadFileToString(std::string const& file, std::string& output);
+  YTE_Shared std::vector<byte> ReadFileToVector(std::string const& file);
   YTE_Shared void StringToFloats(std::string &file, std::vector<float> &output);
 
   YTE_Shared std::string Format(const char *aFormatString, ...);
@@ -65,6 +70,17 @@ namespace YTE
   YTE_Shared std::string RemoveExtension(const std::string & filename);
 
   YTE_Shared filesystem::path relativeTo(filesystem::path from, filesystem::path to);
+}
+
+namespace std
+{
+  template<> struct hash<YTE::GlobalUniqueIdentifier>
+  {
+    std::size_t operator()(YTE::GlobalUniqueIdentifier const& aGuid) const noexcept
+    {
+      return YTE::GlobalUniqueIdentifier::Hash(aGuid);
+    }
+  };
 }
 
 #endif

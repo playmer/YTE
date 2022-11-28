@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include <chrono>
 #include <vector>
 
@@ -18,17 +12,29 @@ namespace YTE
     TypeBuilder<JobSystem> builder;
   }
 
+  
+  std::thread::id JobSystem::cMainThreadId;
+  static bool gMainThreadIdSet = false;
 
-  JobSystem::JobSystem(Composition * aOwner /*= nullptr*/)
+  JobSystem::JobSystem(Composition * aOwner /*= nullptr*/, Space*)
     : Component(aOwner, nullptr)
     , mForegroundWorker()
     , mPool()
     , mAsync(false)
   {
-    
+    if (false == gMainThreadIdSet)
+    {
+      cMainThreadId = std::this_thread::get_id();
+      gMainThreadIdSet = true;
+    }
   }
 
   JobSystem::~JobSystem()
+  {
+    Join();
+  }
+
+  void JobSystem::Join()
   {
     for (auto& worker : mPool)
     {
@@ -39,12 +45,18 @@ namespace YTE
     {
       delete worker.second;
     }
+
+    mPool.clear();
   }
 
   void JobSystem::Initialize()
   {
     mOwner->RegisterEvent<&JobSystem::Update>(Events::FrameUpdate, this);
+
+    // Use hardware_concurrency for multithreaded, use 1 for single threaded.
     size_t workerCount = std::thread::hardware_concurrency();
+    //size_t workerCount = 1;
+
     std::vector<Worker*> workers;
 
     for (auto i = 0; i < workerCount - 1; ++i)

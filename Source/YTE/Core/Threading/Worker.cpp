@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Threading/Worker.hpp"
 
 namespace YTE
@@ -63,13 +57,15 @@ namespace YTE
     mCompletedJobs = mNotDeletedJobs;
   }
 
-  void Worker::AddCoworker(Worker * aWorker)
+  void Worker::AddCoworker(Worker* aWorker)
   {
     mCoworkers.push_back(aWorker);
   }
 
   void Worker::Run()
   {
+    OPTICK_THREAD("JobSystemWorker");
+
     while (mState != WorkerState::Stopped)
     {
       ExecuteNext();
@@ -80,7 +76,7 @@ namespace YTE
 
   void Worker::YieldThread()
   {
-    // TODO (Evan): Time tasks to figure out sleep length
+    // TODO (Evelyn): Time tasks to figure out sleep length
     std::this_thread::sleep_for(std::chrono::microseconds(500));
   }
 
@@ -120,6 +116,8 @@ namespace YTE
 
   Job* Worker::GetJob()
   {
+    OPTICK_EVENT();
+
     Job* job = mQueue.Pop();
     if (job)
     {
@@ -127,12 +125,20 @@ namespace YTE
     }
     else if (!mCoworkers.empty())
     {
-      // TODO(Evan): make choosing the coworker to rob smarter
-      int index = std::rand() % mCoworkers.size();
-      return mCoworkers[index]->StealFrom();
+      // TODO(Evelyn): make choosing the coworker to rob smarter
+      //int index = std::rand() % mCoworkers.size();
+      //return mCoworkers[index]->StealFrom();
+
+      // Alternative solution, ideally, we would randomly select a coworker
+      // to look at first.
+      for (auto coworker : mCoworkers)
+      {
+        job = coworker->StealFrom();
+        if (job) return job;
+      }
     }
 
-    // TODO(Evan): Is this what it should do?
+    // TODO(Evelyn): Is this what it should do?
     return nullptr;
   }
 
@@ -160,7 +166,8 @@ namespace YTE
       YieldThread();
     }
 
-    mThread.join();
+    if (mThread.joinable())
+      mThread.join();
   }
 
   Worker::WorkerID BackgroundWorker::GetID()

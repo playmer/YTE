@@ -12,14 +12,67 @@ namespace YTE
   class Any
   {
   public:
+    YTEDeclareType(Any);
+
 
     template <typename ...Arguments>
-    static std::vector<Any> FromVariadic(Arguments...aArguments);
+    static std::array<Any, sizeof...(Arguments)> FromVariadic(Arguments&&... aArguments);
 
+
+    ////////////////////////////////////////////////////////////
+    // User Facing Construction
+    ////////////////////////////////////////////////////////////
     Any()
     {
       mType = nullptr;
       memset(mData, 0, sizeof(mData));
+    }
+
+    void ConstructFrom(void* aObject, Type* aType)
+    {
+      Clear();
+      mType = aType;
+      byte* data = AllocateData(aType->GetStoredSize());
+      aType->GetCopyConstructor()(aObject, data);
+    }
+
+    template <typename tType>
+    explicit Any(tType&& aValue)
+    {
+      mType = TypeId<tType>();
+      byte* data = AllocateData(sizeof(tType));
+      new (data) tType(aValue);
+    }
+
+    template <typename tType>
+    explicit Any(tType const&& aValue)
+    {
+      mType = TypeId<tType>();
+      byte* data = AllocateData(sizeof(tType));
+      new (data) tType(aValue);
+    }
+
+    template <typename tType>
+    explicit Any(tType& aValue)
+    {
+      mType = TypeId<tType>();
+      byte* data = AllocateData(sizeof(tType));
+      new (data) tType(aValue);
+    }
+
+    explicit Any(Any& aValue)
+    {
+      mType = TypeId<Any>();
+      byte* data = AllocateData(sizeof(Any));
+      new (data) Any(static_cast<Any const&>(aValue));
+    }
+
+    template <typename tType>
+    explicit Any(tType const& aValue)
+    {
+      mType = TypeId<tType>();
+      byte* data = AllocateData(sizeof(tType));
+      new (data) tType(aValue);
     }
 
     template<typename T>
@@ -42,15 +95,23 @@ namespace YTE
       aType->GetCopyConstructor()(object, data);
     }
 
-    Any(void* object, Type* type, bool)
+    //Any(void* object, Type* type, bool)
+    //{
+    //  mType = type;
+    //  byte* data = AllocateData(type->GetStoredSize());
+    //  type->GetCopyConstructor()(object, data);
+    //}
+
+    ////////////////////////////////////////////////////////////
+    // Moves
+    ////////////////////////////////////////////////////////////
+    Any(Any&& aRight)
+      : mType(nullptr)
     {
-      mType = type;
-      byte* data = AllocateData(type->GetStoredSize());
-      type->GetCopyConstructor()(object, data);
+      (*this) = aRight;
     }
 
-
-    Any& operator=(Any &&aRight)
+    Any& operator=(Any&& aRight)
     {
       Clear();
 
@@ -65,13 +126,16 @@ namespace YTE
       return (*this);
     }
 
-    Any(Any &&aRight)
+    ////////////////////////////////////////////////////////////
+    // Copies
+    ////////////////////////////////////////////////////////////
+    Any(Any const& aRight)
       : mType(nullptr)
     {
       (*this) = aRight;
     }
 
-    Any& operator=(const Any &aRight)
+    Any& operator=(Any const& aRight)
     {
       Clear();
 
@@ -84,28 +148,6 @@ namespace YTE
       }
 
       return (*this);
-    }
-
-    Any(const Any &aRight)
-      : mType(nullptr)
-    {
-      (*this) = aRight;
-    }
-
-    void ConstructFrom(void* aObject, Type* aType)
-    {
-      Clear();
-      mType = aType;
-      byte* data = AllocateData(aType->GetStoredSize());
-      aType->GetCopyConstructor()(aObject, data);
-    }
-
-    template <typename T>
-    explicit Any(const T& value)
-    {
-      mType = TypeId<T>();
-      byte* data = AllocateData(sizeof(T));
-      new (data) T(value);
     }
 
     byte* AllocateData(size_t size)
@@ -206,35 +248,10 @@ namespace YTE
     };
   };
 
-
-
-
-
-  template <typename... Rest> struct ParseAndAddArguments;
-
-  template <>
-  struct ParseAndAddArguments<>
+  template <typename ...tArguments>
+  std::array<Any, sizeof...(tArguments)> Any::FromVariadic(tArguments&&... aArguments)
   {
-    inline static void Parse(std::vector<Any> &)
-    {
-    }
-  };
-
-  template <typename First, typename... Rest>
-  struct ParseAndAddArguments<First, Rest...>
-  {
-    inline static void Parse(std::vector<Any> &aArguments, First aFirst, Rest ...aRest)
-    {
-      aArguments.emplace_back(aFirst);
-      ParseAndAddArguments<Rest...>::Parse(aArguments, aRest...);
-    }
-  };
-
-  template <typename ...Arguments>
-  std::vector<Any> Any::FromVariadic(Arguments...aArguments)
-  {
-    std::vector<Any> arguments;
-    ParseAndAddArguments<Arguments...>::Parse(arguments, aArguments...);
+    std::array<Any, sizeof...(tArguments)> arguments{std::forward<tArguments>(aArguments)...};
 
     return arguments;
   }

@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
 #include "YTE/Graphics/Vulkan/VkMesh.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
@@ -25,6 +20,8 @@ namespace YTE
     , mSurface{aSurface}
     , mView{ aView }
   {
+    OPTICK_EVENT();
+
     mVkMesh = mSurface->GetRenderer()->CreateMesh(aModelFile);
     mMesh = mVkMesh->mMesh;
 
@@ -44,6 +41,8 @@ namespace YTE
     , mView{ aView }
     , mVkMesh{aMesh}
   {
+    OPTICK_EVENT();
+
     mMesh = mVkMesh->mMesh;
 
     Create();
@@ -62,11 +61,14 @@ namespace YTE
   void VkInstantiatedModel::SurfaceLostEvent(ViewChanged *aEvent)
   {
     UnusedArguments(aEvent);
+    mBuffers.clear();
     mSurface->DestroyModel(mView, this);
   }
 
   void VkInstantiatedModel::SurfaceGainedEvent(ViewChanged *aEvent)
   {
+    OPTICK_EVENT();
+
     mView = aEvent->View;
     mSurface = static_cast<VkRenderer*>(mView->GetRenderer())->GetSurface(mView->GetWindow());
     CreateShader();
@@ -75,6 +77,8 @@ namespace YTE
 
   void VkInstantiatedModel::CreateShader()
   {
+    OPTICK_EVENT();
+
     mPipelineData.clear();
 
     // create descriptor sets
@@ -88,27 +92,25 @@ namespace YTE
     }
   }
 
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
-                                       std::vector<Vertex>& aVertices)
-  {
-    mVkMesh->UpdateVertices(aIndex, aVertices);
-  }
-
-  void VkInstantiatedModel::UpdateMesh(size_t aIndex, 
-                                       std::vector<Vertex>& aVertices,
-                                       std::vector<u32>& aIndices)
-  {
-    mVkMesh->UpdateVerticesAndIndices(aIndex, aVertices, aIndices);
-  }
-
   void VkInstantiatedModel::CreateDescriptorSet(VkSubmesh *aSubMesh, size_t aIndex)
   {
-    mPipelineData.emplace(aSubMesh, 
-                          aSubMesh->CreatePipelineData(GetBuffer(mModelUBO),
-                                                       GetBuffer(mAnimationUBO),
-                                                       GetBuffer(mModelMaterialUBO),
-                                                       GetBuffer(mSubmeshMaterialsUBO[aIndex].first),
-                                                       mView));
+    OPTICK_EVENT();
+
+    if (0 != mBuffers.size())
+    {
+      mBuffers.clear();
+    }
+    
+    AddBuffer(&mView->GetViewUBO());
+    AddBuffer(&mAnimationUBO);
+    AddBuffer(&mModelMaterialUBO);
+    AddBuffer(&mSubmeshMaterialsUBO[aIndex].first);
+    AddBuffer(&mView->GetLightManager()->GetUBOLightBuffer());
+    AddBuffer(&mView->GetIlluminationUBO());
+    AddBuffer(&mView->GetWaterInfluenceMapManager()->GetUBOMapBuffer());
+    AddBuffer(&mModelUBO);
+
+    mPipelineData.emplace(aSubMesh, aSubMesh->CreatePipelineData(this, mView));
   }
 }
 

@@ -1,7 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
 #include <iostream>
 #include <fstream>
 
@@ -21,12 +17,8 @@
 #include "YTE/Graphics/GraphicsView.hpp" 
 #include "YTE/Graphics/GraphicsSystem.hpp" 
 #include "YTE/Graphics/FFT_WaterSimulation.hpp"
-#include "YTE/Graphics/Generics/InstantiatedHeightmap.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
-#include "YTE/Graphics/Vulkan/VkRenderer.hpp"
-#include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
-#include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 
 #include "YTE/Physics/Orientation.hpp"
 #include "YTE/Physics/Transform.hpp"
@@ -188,7 +180,6 @@ namespace YTE
     , mTimeDilationEffect(1.0f)           // no time dilation at all
     , mTime(0.0f)                         // we start with no time
     , mReset(false)                       // dont reset
-    , mTransform(nullptr)
     , mShaderSetName("FFT_WaterSimulation")
     , mResetNeeded(true)
     , mRunWithEngineUpdate(true)
@@ -197,6 +188,7 @@ namespace YTE
     , mStepsCount(5)
     , mInstanceCount(1)
     , mConstructing(true)
+    , mTransform(nullptr)
   {
     auto self = mData.ConstructAndGet<KissFFTData>();
 
@@ -207,20 +199,20 @@ namespace YTE
 
     auto engine = aSpace->GetEngine();
     mGraphicsView = mSpace->GetComponent<GraphicsView>();
-    mRenderer = static_cast<VkRenderer*>(engine->GetComponent<GraphicsSystem>()->GetRenderer());
+    mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
   }
 
-  static std::string water{ "water.png" };
-  static std::string foam{ "foam.png" };
-  static std::string perlinNoise{ "copywritePerlinNoiseTextureNormal.png" };
+  static std::string cWaterTextureName{ "water.png" };
+  static std::string cFoamTextureName{ "foam.png" };
+  static std::string cPerlinNoiseTextureName{ "copywritePerlinNoiseTextureNormal.png" };
 
   // ------------------------------------
   void FFT_WaterSimulation::AssetInitialize()
   {
-    mRenderer->RequestTexture(water);
-    mRenderer->RequestTexture(foam);
-    mRenderer->RequestTexture(perlinNoise);
+    mRenderer->RequestTexture(cWaterTextureName);
+    mRenderer->RequestTexture(cFoamTextureName);
+    mRenderer->RequestTexture(cPerlinNoiseTextureName);
   }
 
   // ------------------------------------
@@ -268,7 +260,17 @@ namespace YTE
 
     mComputationalVertices.resize(squared(mGridSizePlus1));
     mIndices.reserve((squared(mGridSize) * 6));
-    mVertices.resize(squared(mGridSizePlus1));
+    mVertices.mPositionData.resize(squared(mGridSizePlus1));
+    mVertices.mNormalData.resize(squared(mGridSizePlus1));
+    mVertices.mTextureCoordinatesData.resize(squared(mGridSizePlus1));
+    mVertices.mColorData.resize(squared(mGridSizePlus1));
+    mVertices.mTangentData.resize(squared(mGridSizePlus1));
+    mVertices.mBinormalData.resize(squared(mGridSizePlus1));
+    mVertices.mBitangentData.resize(squared(mGridSizePlus1));
+    mVertices.mBoneWeightsData.resize(squared(mGridSizePlus1));
+    mVertices.mBoneWeights2Data.resize(squared(mGridSizePlus1));
+    mVertices.mBoneIDsData.resize(squared(mGridSizePlus1));
+    mVertices.mBoneIDs2Data.resize(squared(mGridSizePlus1));
 
     mInstancingMatrices.resize(squared(mInstanceCount));
 
@@ -301,8 +303,8 @@ namespace YTE
         mComputationalVertices[vertex].mHTilde0 = glm::vec3(ht0.mReal, ht0.mImaginary, 0.0f);
         mComputationalVertices[vertex].mHTilde0mkConjugate = glm::vec3(ht0conj.mReal,
                                                                        ht0conj.mImaginary, 0.0f);
-        mVertices[vertex].mTextureCoordinates.x = static_cast<float>(x) / static_cast<float>((mGridSize / 2));
-        mVertices[vertex].mTextureCoordinates.y = static_cast<float>(z) / static_cast<float>((mGridSize / 2));
+        mVertices.mTextureCoordinatesData[vertex].x = static_cast<float>(x) / static_cast<float>((mGridSize / 2));
+        mVertices.mTextureCoordinatesData[vertex].y = static_cast<float>(z) / static_cast<float>((mGridSize / 2));
 
         // sets positions, and uses the length parameter to space out the grid in 3D space
         // x - (gridSize / 2.0f) = the physical position of the vertex without length expansion
@@ -450,7 +452,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::Render()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // evaluate the current position for the waves
     WaveGeneration();
@@ -592,9 +594,16 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::WaveGeneration()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto self = mData.Get<KissFFTData>();
+    
+    auto hTildeArray = self->mH_Tilde.GetComplexArray();
+    auto tildeSlopeX = self->mH_TildeSlopeX.GetComplexArray();
+    auto tildeSlopeZ = self->mH_TildeSlopeZ.GetComplexArray();
+    
+    auto tildeDX = self->mH_TildeDX.GetComplexArray();
+    auto tildeDZ = self->mH_TildeDZ.GetComplexArray();
 
     // loop all of the vertices and do something similar to the h_D_and_n func
     for (int z = 0; z < mGridSize; ++z)
@@ -630,21 +639,21 @@ namespace YTE
         float kLen = glm::length(k);
         int vertex = z * mGridSize + x;
 
-        auto &h_Tilde = self->mH_Tilde[vertex];
+        auto &h_Tilde = hTildeArray[vertex];
 
         h_Tilde = Calc_hTilde(x, z);
-        self->mH_TildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
-        self->mH_TildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
+        tildeSlopeX[vertex] = h_Tilde * complex(0, k.x);    
+        tildeSlopeZ[vertex] = h_Tilde * complex(0, k.y); 
 
         if (floatNotZero(kLen))
         {
-          self->mH_TildeDX[vertex] = complex(0.0f, 0.0f);
+          tildeDX[vertex] = complex(0.0f, 0.0f);
           self->mH_TildeDZ[vertex] = complex(0.0f, 0.0f);
         }
         else
         {
-          self->mH_TildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
-          self->mH_TildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
+          tildeDX[vertex] = h_Tilde * complex(0, -(k.x) / kLen);
+          tildeDZ[vertex] = h_Tilde * complex(0, -(k.y) / kLen);
         }
       }
     }
@@ -664,13 +673,14 @@ namespace YTE
         int vertex = z * mGridSizePlus1 + x; // accessor to the vertex
 
         auto &computationalVertex = mComputationalVertices[vertex];
-        auto &vertexAtMainIndex = mVertices[vertex];
+        auto& positionAtMainIndex = mVertices.mPositionData[vertex];
+        auto& normalAtMainIndex = mVertices.mNormalData[vertex];
 
         if (z >= mGridSize || x >= mGridSize)
         {
           // update draw list
-          vertexAtMainIndex.mPosition = computationalVertex.mPosition;
-          vertexAtMainIndex.mNormal = computationalVertex.mNormal;
+          positionAtMainIndex = computationalVertex.mPosition;
+          normalAtMainIndex = computationalVertex.mNormal;
           continue;
         }
 
@@ -691,8 +701,8 @@ namespace YTE
         }
         else
         {
-          auto &hTildeDX = self->mH_TildeDX[tilde];
-          auto &hTildeDZ = self->mH_TildeDZ[tilde];
+          auto &hTildeDX = tildeDX[tilde];
+          auto &hTildeDZ = tildeDZ[tilde];
 
           // displacement update
           hTildeDX *= sign;
@@ -705,8 +715,8 @@ namespace YTE
 
 
         // normal update
-        auto &hTildeSlopeX = self->mH_TildeSlopeX[tilde];
-        auto &hTildeSlopeZ = self->mH_TildeSlopeZ[tilde];
+        auto &hTildeSlopeX = tildeSlopeX[tilde];
+        auto &hTildeSlopeZ = tildeSlopeZ[tilde];
         hTildeSlopeX *= sign;
         hTildeSlopeZ *= sign;
         computationalVertex.mNormal = glm::normalize(glm::vec3(-(hTildeSlopeX.mReal),
@@ -714,9 +724,9 @@ namespace YTE
                                                                -(hTildeSlopeZ.mReal)));
         // tiling
         bool useNoDis = UseNoDisplacement;
-        auto tiling = [&vertex, &tilde, &useNoDis](std::vector<WaterComputationalVertex>& aVertices, 
-                                                   complex_kfft& aH_TildeDX, 
-                                                   complex_kfft& aH_TildeDZ, 
+        auto tiling = [&vertex, &tilde, &useNoDis](WaterComputationalVertex* aVertices, 
+                                                   YTE::complex* aH_TildeDX, 
+                                                   YTE::complex* aH_TildeDZ, 
                                                    int aIndex)
         {
           auto &vertexAtIndex = aVertices[aIndex];
@@ -748,26 +758,26 @@ namespace YTE
         {
           //int index = squared(mGridSize) - 1;
           int index = mGridSize + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
         if (x == 0)
         {
           //int index = vertex + (mGridSize - 1);
           int index = vertex + mGridSize;
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
         if (z == 0)
         {
           //int index = vertex + (mGridSize * (mGridSize - 1));
           int index = vertex + (mGridSizePlus1 * mGridSize);
-          tiling(mComputationalVertices, self->mH_TildeDX, self->mH_TildeDZ, index);
+          tiling(mComputationalVertices.data(), tildeDX, tildeDZ, index);
         }
 
 
 
         // update draw list
-        vertexAtMainIndex.mPosition = computationalVertex.mPosition;
-        vertexAtMainIndex.mNormal = computationalVertex.mNormal;
+        positionAtMainIndex = computationalVertex.mPosition;
+        normalAtMainIndex = computationalVertex.mNormal;
       }
     }
   }
@@ -977,7 +987,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::CreateTransform()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mTransform == nullptr)
     {
@@ -1010,25 +1020,24 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::AdjustPositions()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     CreateTransform();
-    
-    for (int i = 0; i < mInstantiatedHeightmap.size(); ++i)
+
+    for (auto& [model, i] : enumerate(mInstantiatedModels))
     {
       // TODO: We can save on data here UpdateUBOModel actually makes a copy here, we have no need to store these.
-      mInstantiatedHeightmap[i]->GetInstantiatedModel()->UpdateUBOModel(mInstancingMatrices[i]);
+      (*model)->UpdateUBOModel(mInstancingMatrices[i]);
     }
 
-    VkRenderer* vkrender = static_cast<VkRenderer*>(mRenderer);
-    vkrender->GetSurface(mGraphicsView->GetWindow())->GetViewData(mGraphicsView)->mWaterInfluenceMapManager.SetBaseHeight(mTransform->GetTranslation().y);
+    mGraphicsView->GetWaterInfluenceMapManager()->SetBaseHeight(mTransform->GetTranslation().y);
   }
 
 
   // ------------------------------------
   void FFT_WaterSimulation::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mResetNeeded)
     {
@@ -1044,7 +1053,7 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::EditorUpdate(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (!mSpace->GetEngine()->IsEditor())
     {
@@ -1104,18 +1113,17 @@ namespace YTE
 
     unsigned int index = z_coord * mGridSizePlus1 + x_coord;
 
-    while (index > mVertices.size())
+    while (index > mVertices.mPositionData.size())
     {
-      index -= static_cast<unsigned int>(mVertices.size());
+      index -= static_cast<unsigned int>(mVertices.mPositionData.size());
     }
 
-    auto vert = mVertices[index];
+    auto position = mVertices.mPositionData[index];
 
-    point = firstMatrix.mModelMatrix * glm::vec4(vert.mPosition, 1);
+    point = firstMatrix.mModelMatrix * glm::vec4(position, 1);
 
     // influence maps [ MUST COPY THE SHADER LOGIC ]
-    auto manager = static_cast<VkRenderer*>(mRenderer)->GetAllWaterInfluenceMaps(mGraphicsView);
-    auto& data = manager->mWaterInformationData;
+    auto& data = mGraphicsView->GetWaterInfluenceMapManager()->mWaterInformationData;
 
     float HeightInfluence = 1.0f;
 
@@ -1169,13 +1177,6 @@ namespace YTE
     return glm::vec3(point.x, point.y, point.z);
   }
 
-
-  // ------------------------------------
-  const std::vector<Vertex>& FFT_WaterSimulation::GetVertices()
-  {
-    return mVertices;
-  }
-  
   // ------------------------------------
   void FFT_WaterSimulation::CreateHeightmap()
   {
@@ -1184,18 +1185,71 @@ namespace YTE
     std::string name = fmt::format("{}_heightmap_{}", guid, mGridSize);
     int size = squared(mInstanceCount);
 
+    SubmeshData submesh;
+    submesh.mDescriptionOverride = true;
+    submesh.mDescriptions;
+
+    submesh.mUBOMaterial.mDiffuse = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    submesh.mUBOMaterial.mSpecular = glm::vec4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    submesh.mUBOMaterial.mShininess = 200.0f;
+
+    submesh.mShaderSetName = mShaderSetName;
+
+    submesh.mCullBackFaces = true;
+
+    submesh.mVertexData = mVertices;
+    submesh.mIndexData = mIndices;
+
+    submesh.mTextureData.emplace_back(cWaterTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    submesh.mTextureData.emplace_back(cFoamTextureName, TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    submesh.mTextureData.emplace_back(cPerlinNoiseTextureName, TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
+    auto& descriptions = submesh.mDescriptions;
+
+    auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
+    };
+
+    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
+    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
+
+    // Descriptions for the textures we support based on which maps we found above:
+    for (auto sampler : submesh.mTextureData)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", SubmeshData::ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
+    }
+
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+
+
+    mMesh = mRenderer->CreateSimpleMesh(name, submesh);
+
+    auto& vbd = mMesh->GetSubmeshes()[0].mVertexBufferData;
+
+      
+    vbd.mColorBuffer.reset();
+    vbd.mTangentBuffer.reset();
+    vbd.mBinormalBuffer.reset();
+    vbd.mBitangentBuffer.reset();
+    vbd.mBoneWeightsBuffer.reset();
+    vbd.mBoneWeights2Buffer.reset();
+    vbd.mBoneIDsBuffer.reset();
+    vbd.mBoneIDs2Buffer.reset();
+
     for (int i = 0; i < size; ++i)
     {
-      mInstantiatedHeightmap.push_back(std::make_unique<InstantiatedHeightmap>());
-        mInstantiatedHeightmap[i]->Initialize(name,
-          mVertices,
-          mIndices,
-          mShaderSetName,
-          mGraphicsView,
-          mRenderer,
-          water,
-          foam,
-          perlinNoise);
+      mInstantiatedModels.emplace_back(mRenderer->CreateModel(mGraphicsView, mMesh));
     }
   }
 
@@ -1203,22 +1257,23 @@ namespace YTE
   // ------------------------------------
   void FFT_WaterSimulation::DestroyHeightmap()
   {
-    for (int i = 0; i < mInstantiatedHeightmap.size(); ++i)
-    {
-      mInstantiatedHeightmap[i].reset(nullptr);
-    }
-
-    mInstantiatedHeightmap.clear();
+    mInstantiatedModels.clear();
   }
 
 
   // ------------------------------------
   void FFT_WaterSimulation::UpdateHeightmap()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // update
-    mInstantiatedHeightmap[0]->UpdateMesh(mVertices, mIndices);
+    auto& submesh = mMesh->GetSubmeshes()[0];
+    submesh.UpdatePositionBuffer(mVertices.mPositionData);
+    submesh.UpdateNormalBuffer(mVertices.mNormalData);
+    submesh.UpdateTextureCoordinatesBuffer(mVertices.mTextureCoordinatesData);
+
+    submesh.RecalculateDimensions();
+    mMesh->RecalculateDimensions();
   }
 
 
@@ -1231,26 +1286,20 @@ namespace YTE
     AdjustPositions();
   }
 
-
-
   // ------------------------------------
   std::vector<InstantiatedModel*> FFT_WaterSimulation::GetInstantiatedModel()
   {
-    if (mInstantiatedHeightmap.size())
+    std::vector<InstantiatedModel*> models;
+    models.reserve(mInstantiatedModels.size());
+
+    for (auto& model: mInstantiatedModels)
     {
-      std::vector<InstantiatedModel*> models;
-      for (size_t i = 0; i < mInstantiatedHeightmap.size(); ++i)
-      {
-        models.push_back(mInstantiatedHeightmap[i]->GetInstantiatedModel());
-      }
-      return models;
+      models.emplace_back(model.get());
     }
 
-    return { };
+    return models;
   }
 
-  
-  
   // ------------------------------------
   void FFT_WaterSimulation::ReloadShaders()
   {

@@ -1,9 +1,4 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 #include "YTE/Core/Engine.hpp"
@@ -124,26 +119,25 @@ namespace YTE
     mEngine = mSpace->GetEngine();
     mRenderer = mEngine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-    std::string MeshName = RemoveExtension(mMeshName);
+    // We use this to check for existance, because I haven't gone through the trouble of renaming things yet
+    std::string MeshName = mMeshName + ".YTEMesh";
     std::string name = mOwner->GetName().c_str();
 
-    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+    bool success = FileCheck(Path::GetGamePath(), "Models", MeshName);
 
     if (false == success)
     {
-      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+      success = FileCheck(Path::GetEnginePath(), "Models", MeshName);
     }
 
     if (false == success)
     {
-      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), MeshName.c_str());
       return;
     }
 
     mRenderer->RequestMesh(mMeshName);
   }
-
-
 
   void Model::NativeInitialize()
   {
@@ -157,8 +151,6 @@ namespace YTE
     Create();
   }
 
-
-
   void Model::Reload()
   {
     if (mConstructing)
@@ -168,22 +160,6 @@ namespace YTE
     Destroy();
     Create();
   }
-
-
-
-  bool Model::CanAnimate()
-  {
-    if (mInstantiatedModel)
-    {
-      return mInstantiatedModel->GetMesh()->CanAnimate();
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-
 
   void Model::TransformUpdate(TransformChanged *aEvent)
   {
@@ -198,8 +174,6 @@ namespace YTE
     }
   }
 
-
-
   void Model::SetMesh(std::string &aName)
   {
     if (aName.empty() || aName == mMeshName)
@@ -207,7 +181,7 @@ namespace YTE
       return;
     }
 
-    std::experimental::filesystem::path path(aName);
+    std::filesystem::path path(aName);
     std::string exten = path.extension().generic_string();
 
     if (aName == "None")
@@ -231,8 +205,6 @@ namespace YTE
       Create();
     }
   }
-
-
 
   void Model::SetShading(std::string const &aName)
   {
@@ -281,9 +253,6 @@ namespace YTE
     }
   }
 
-
-
-
   Mesh* Model::GetMesh()
   {
     if (mInstantiatedModel)
@@ -294,24 +263,23 @@ namespace YTE
     return nullptr;
   }
 
-
-
   void Model::Create()
   {
-    YTEProfileFunction();
-    std::string MeshName = RemoveExtension(mMeshName);
+    OPTICK_EVENT();
+    // We use this to check for existance, because I haven't gone through the trouble of renaming things yet
+    std::string meshName = mMeshName + ".YTEMesh";
     std::string name = mOwner->GetName().c_str();
 
-    bool success = FileCheck(Path::GetGamePath(), "Models", mMeshName);
+    bool success = FileCheck(Path::GetGamePath(), "Models", meshName);
 
     if (false == success)
     {
-      success = FileCheck(Path::GetEnginePath(), "Models", mMeshName);
+      success = FileCheck(Path::GetEnginePath(), "Models", meshName);
     }
 
     if (false == success)
     {
-      printf("Model (%s): Model of name %s is not found.", name.c_str(), mMeshName.c_str());
+      printf("Model (%s): Model of name %s is not found.", name.c_str(), meshName.c_str());
       return;
     }
 

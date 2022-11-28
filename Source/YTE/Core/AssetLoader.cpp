@@ -1,4 +1,4 @@
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
 
@@ -6,7 +6,7 @@
 
 namespace YTE
 {
-  namespace fs = std::experimental::filesystem;
+  namespace fs = std::filesystem;
 
   Path::Path(std::string aPath) : mPath(aPath)
   {
@@ -29,13 +29,27 @@ namespace YTE
   // TODO: Support unicode file aPaths ... eventually ... maybe
   const Path& Path::SetGamePath(std::string aPath)
   {
-    sGamePath = (aPath.back() != '/') ? Path(aPath + '/') : Path(aPath);
+    fs::path path{ aPath };
+
+    if (true == path.has_stem())
+    {
+      path.append("");
+    }
+
+    sGamePath = Path(path.u8string());
     return sGamePath;
   }
 
   const Path& Path::SetEnginePath(std::string aPath)
   {
-    sEnginePath = (aPath.back() != '/') ? Path(aPath + '/') : Path(aPath);
+    fs::path path{ aPath };
+
+    if (true == path.has_stem())
+    {
+      path.append("");
+    }
+
+    sEnginePath = Path(path.u8string());
     return sEnginePath;
   }
 
@@ -69,15 +83,6 @@ namespace YTE
     return path.string();
   }
 
-  std::string Path::GetWWisePath(const Path& aPath, const std::string &aName)
-  {
-    fs::path path{ aPath.mPath };
-    path.append("WWise");
-    path.append(aName);
-
-    return path.string();
-  }
-
   std::string Path::GetShaderPath(const Path& aPath, const std::string &aName)
   {
     fs::path path{ aPath.mPath };
@@ -91,6 +96,15 @@ namespace YTE
   {
     fs::path path{ aPath.mPath };
     path.append("Models");
+    path.append(aName);
+
+    return path.string();
+  }
+  
+  std::string Path::GetSkeletonPath(const Path& aPath, const std::string &aName)
+  {
+    fs::path path{ aPath.mPath };
+    path.append("Skeletons");
     path.append(aName);
 
     return path.string();
@@ -111,7 +125,7 @@ namespace YTE
     path.append("Textures");
     path.append(aName);
 
-    return path.string();
+    return path.u8string();
   }
 
   std::string Path::GetTextsDirectory(const Path& aPath)
@@ -215,7 +229,7 @@ namespace YTE
     }
   }
 
-  // TODO(Evan): Make this stage files to be unloaded instead of doing it right away <3
+  // TODO(Evelyn): Make this stage files to be unloaded instead of doing it right away <3
   bool AssetLoader::UnloadAsset(std::shared_ptr<Asset> aAsset)
   {
     auto &mapContainer = mAssets[EnumCast(aAsset->GetType())];

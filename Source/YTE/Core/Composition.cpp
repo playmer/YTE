@@ -76,10 +76,15 @@ namespace YTE
     builder.Function<&Composition::Remove>("Remove")
       .SetDocumentation("Removes the composition from it's owner. This is delayed until the next frame.");
 
-    builder.Function<SelectOverload<Component* (Composition::*)(BoundType*),&Composition::GetComponent>()>("GetComponent")
+    //auto getComponentFunction = SelectOverload<Component* (Composition::*)(Type*),&Composition::GetComponent>();
+    //builder.Function<getComponentFunction>("GetComponent")
+    //  .SetParameterNames("aType")
+    //  .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
+
+    builder.Function<SelectOverload<Component* (Composition::*)(Type*)>(&Composition::GetComponent)>("GetComponent")
       .SetParameterNames("aType")
       .SetDocumentation("Gets a component via the typeid of the component you want. Should use this.Owner.ComponentType instead.");
-    builder.Function<SelectOverload<Component*(Composition::*)(BoundType *, bool),&Composition::AddComponent>()>("AddComponent")
+    builder.Function<SelectOverload<Component*(Composition::*)(Type *, bool)>(&Composition::AddComponent)>("AddComponent")
       .SetParameterNames("aType", "aCheckRunInEditor")
       .SetDocumentation("Adds a component via the typeid of the component you want.");
 
@@ -103,7 +108,7 @@ namespace YTE
       .SetDocumentation("Checks to see if a component's dependencies are met. (Eg. so it can be added to the composition. "
                         "Returns info string if it is, empty otherwise.");
 
-    builder.Function<SelectOverload<Composition*(Composition::*)(String, String),&Composition::AddComposition>()>("AddObject")
+    builder.Function<SelectOverload<Composition*(Composition::*)(String, String)>(&Composition::AddComposition)>("AddObject")
       .SetParameterNames("aArchetype", "aName")
       .SetDocumentation("Adds an archetype to this Composition via the name of the Archetype. It takes the name of the object to name it.");
     builder.Function<&Composition::AddCompositionAtPosition>("AddObjectAtPosition")
@@ -122,10 +127,9 @@ namespace YTE
     , mName{ aName }
     , mInitializationHook{this}
     , mShouldSerialize{ true }
-    , mBeingDeleted{ false }
     , mGUID{}
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Create();
   };
@@ -137,17 +141,16 @@ namespace YTE
     , mName{}
     , mInitializationHook{ this }
     , mShouldSerialize{ true }
-    , mBeingDeleted{ false }
     , mGUID{}
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Create();
   };
 
   void Composition::Create()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mEngine->RegisterEvent<&Composition::BoundTypeChangedHandler>(Events::BoundTypeChanged, this);
 
@@ -166,7 +169,7 @@ namespace YTE
 
   Composition::~Composition()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mEngine->RemoveCompositionGUID(mGUID);
 
@@ -174,7 +177,6 @@ namespace YTE
     {
       CompositionRemoved event;
       event.mComposition = this;
-      mBeingDeleted = true;
 
       mSpace->SendEvent(Events::CompositionRemoved, &event);
     }
@@ -185,7 +187,7 @@ namespace YTE
 
   void Composition::ComponentClear()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (auto typeIt = mDependencyOrder.rbegin();
          typeIt < mDependencyOrder.rend();
@@ -201,7 +203,7 @@ namespace YTE
 
   void Composition::BoundTypeChangedHandler(BoundTypeChanged *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto iterator = mComponents.Find(aEvent->aOldType);
 
@@ -216,7 +218,7 @@ namespace YTE
                             InitializeEvent* aEvent,
                             Composition* aComposition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (auto &type : aComposition->GetDependencyOrder())
     {
@@ -239,7 +241,7 @@ namespace YTE
 
   void Composition::AssetInitialize(InitializeEvent *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Composition *collision = mEngine->StoreCompositionGUID(this);
 
@@ -263,7 +265,7 @@ namespace YTE
 
   void Composition::NativeInitialize(InitializeEvent *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     
     HandleInitialization<&Component::NativeInitialize>(Events::NativeInitialize,
                                                        aEvent,
@@ -272,55 +274,8 @@ namespace YTE
 
   void Composition::PhysicsInitialize(InitializeEvent *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    //if (auto collider = GetColliderFromObject(this);
-    //    collider != nullptr && collider->GetType()->GetAttribute<RunInEditor>())
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      collider->GetType()->GetAttribute<RunInEditor>())
-    //  {
-    //    collider->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto ghostBody = GetComponent<GhostBody>();
-    //    ghostBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<GhostBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    ghostBody->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto collisionBody = GetComponent<CollisionBody>();
-    //    collisionBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<CollisionBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    collisionBody->PhysicsInitialize();
-    //  }
-    //}
-    //
-    //if (auto rigidBody = GetComponent<GhostBody>();
-    //    rigidBody != nullptr)
-    //{
-    //  if (aEvent->CheckRunInEditor &&
-    //      TypeId<RigidBody>()->GetAttribute<RunInEditor>())
-    //  {
-    //    rigidBody->PhysicsInitialize();
-    //  }
-    //}
-
-    //auto transform = GetComponent<Transform>();
-    //if (transform != nullptr) transform->PhysicsInitialize();
-
-    ++physInit;
-
-    //SendEvent(Events::PhysicsInitialize, aEvent);
-    
     HandleInitialization<&Component::PhysicsInitialize>(Events::PhysicsInitialize,
                                                         aEvent,
                                                         this);
@@ -328,7 +283,7 @@ namespace YTE
 
   void Composition::Initialize(InitializeEvent *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     HandleInitialization<&Component::Initialize>(Events::Initialize,
                                                  aEvent,
@@ -345,7 +300,7 @@ namespace YTE
 
   void Composition::Deinitialize(InitializeEvent* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (auto it = mDependencyOrder.rbegin(); it != mDependencyOrder.rend(); ++it)
     {
@@ -359,7 +314,8 @@ namespace YTE
       }
 
       {
-        YTEProfileBlock(type->GetName().c_str());
+        OPTICK_EVENT();
+        OPTICK_TAG("Deinitialize Composition:", type->GetName().c_str());
         component->Deinitialize();
       }
     }
@@ -369,7 +325,7 @@ namespace YTE
 
   void Composition::Start(InitializeEvent* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     HandleInitialization<&Component::Start>(Events::Start,
                                             aEvent,
@@ -379,42 +335,14 @@ namespace YTE
 
   void Composition::Update(double dt)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     (void)dt;
   }
 
-  void Composition::DeletionUpdate(LogicUpdate *aUpdate)
-  {
-    YTEProfileFunction();
-
-    // Delete Attached Components
-    auto componentRange = mEngine->mComponentsToRemove.FindAll(this);
-
-    if (componentRange.IsRange())
-    {
-      for (auto end = componentRange.end() - 1; end >= componentRange.begin(); --end)
-      {
-        end->second->second->Deinitialize();
-        RemoveComponentInternal(end->second);
-      }
-    }
-
-    mEngine->mComponentsToRemove.Erase(componentRange);
-
-    // Delete Attached Compositions
-    auto compositionRange = mEngine->mCompositionsToRemove.FindAll(this);
-
-    mEngine->mCompositionsToRemove.Erase(compositionRange);
-
-    // Stop handling deletions, as we've completed all of them thus far.
-    GetSpaceOrEngine()->DeregisterEvent<&Composition::BoundTypeChangedHandler>(Events::DeletionUpdate,  this);
-    SendEvent(Events::DeletionUpdate, aUpdate);
-  }
-
   Composition* Composition::AddCompositionInternal(String aArchetype, String aObjectName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // If a Composition is just below the Space, we currently guarantee their mOwner is
     // nullptr.
@@ -439,7 +367,7 @@ namespace YTE
 
   Composition* Composition::AddCompositionInternal(std::unique_ptr<Composition> mComposition, RSValue *aSerialization, String aObjectName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mComposition->mName = aObjectName;
 
@@ -479,7 +407,7 @@ namespace YTE
   Composition* Composition::AddComposition(RSValue* aSerialization, 
                                            String aObjectName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // If a Composition is just below the Space, we currently guarantee their mOwner is
     // nullptr.
@@ -515,7 +443,7 @@ namespace YTE
   Composition* Composition::AddComposition(String aArchetype, 
                                            String aObjectName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto composition = AddCompositionInternal(aArchetype, aObjectName);
 
@@ -539,7 +467,7 @@ namespace YTE
                                                      String aObjectName, 
                                                      glm::vec3 aPosition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Composition *composition = AddCompositionInternal(aArchetype, aObjectName);
 
@@ -568,7 +496,7 @@ namespace YTE
 
   void Composition::Deserialize(RSValue *aValue)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     RSStringBuffer buffer;
     RSPrettyWriter writer(buffer);
@@ -618,7 +546,7 @@ namespace YTE
          ++componentIt)
     {
       std::string componentTypeName = componentIt->name.GetString();
-      BoundType *componentType = Type::GetGlobalType(componentTypeName);
+      Type *componentType = Type::GetGlobalType(componentTypeName);
 
       AddComponent(componentType, &componentIt->value);
     }
@@ -666,7 +594,7 @@ namespace YTE
 
   RSValue Composition::Serialize(RSAllocator &aAllocator)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     RSValue toReturn;
     toReturn.SetObject();
@@ -718,9 +646,9 @@ namespace YTE
     return toReturn;
   }
 
-  Component* Composition::GetComponent(BoundType *aType)
+  Component* Composition::GetComponent(Type *aType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto iterator = mComponents.Find(aType);
 
@@ -735,7 +663,7 @@ namespace YTE
 
   Composition* Composition::FindFirstCompositionByName(String const &aName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto iterator = mCompositions.FindFirst(aName);
 
@@ -749,7 +677,7 @@ namespace YTE
 
   Composition* Composition::FindLastCompositionByName(String const &aName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto iterator = mCompositions.FindLast(aName);
 
@@ -763,7 +691,7 @@ namespace YTE
 
   CompositionMap::range Composition::FindAllCompositionsByName(String const &aName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto compositions = mCompositions.FindAll(aName);
     return compositions;
@@ -847,7 +775,7 @@ namespace YTE
 
   std::vector<Type*> GetDependencyOrder(Composition *aComposition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Graph dependencyGraph;
 
@@ -892,10 +820,10 @@ namespace YTE
   }
 
 
-  std::string Composition::CheckDependencies(std::set<BoundType*> aTypesAvailible, 
-                                             BoundType *aTypeToCheck)
+  std::string Composition::CheckDependencies(std::set<Type*> aTypesAvailible, 
+                                             Type *aTypeToCheck)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     std::string toReturn;
 
@@ -953,12 +881,12 @@ namespace YTE
     return toReturn;
   }
 
-  std::string Composition::IsDependecy(BoundType *aType)
+  std::string Composition::IsDependecy(Type *aType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    std::vector<BoundType*> typesWithAProblem;
-    std::set<BoundType*> typesAvailible;
+    std::vector<Type*> typesWithAProblem;
+    std::set<Type*> typesAvailible;
 
     for (auto &component : mComponents)
     {
@@ -1004,11 +932,11 @@ namespace YTE
     return toReturn;
   }
 
-  std::string Composition::HasDependencies(BoundType *aType)
+  std::string Composition::HasDependencies(Type *aType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    std::set<BoundType*> typesAvailible;
+    std::set<Type*> typesAvailible;
 
     for (auto const&[type, component] : mComponents)
     {
@@ -1018,9 +946,9 @@ namespace YTE
     return CheckDependencies(typesAvailible, aType);
   }
 
-  Component* Composition::GetDerivedComponent(BoundType *aType)
+  Component* Composition::GetDerivedComponent(Type *aType)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto componentType = TypeId<Component>();
 
@@ -1035,9 +963,10 @@ namespace YTE
     return nullptr;
   }
 
-  Component* Composition::AddComponent(BoundType *aType, bool aCheckRunInEditor)
+  Component* Composition::AddComponent(Type *aType, bool aCheckRunInEditor)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+    OPTICK_TAG("Type: ", aType->GetName().c_str());
 
     // TODO: Output this to a debug logger. If this happens in game in the editor, 
     //       it won't be currently displayed.
@@ -1065,48 +994,46 @@ namespace YTE
     return component;
   }
 
-  Component* Composition::AddComponent(BoundType *aType, RSValue *aProperties)
+  Component* Composition::AddComponent(Type *aType, RSValue *aProperties)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+    OPTICK_TAG("Adding Component:", aType->GetName().c_str());
+    
+    Component *toReturn = nullptr;
+
+    auto iterator = mComponents.Find(aType);
+
+    if (iterator == mComponents.end())
     {
-      YTEProfileBlock(aType->GetName().c_str());
+      auto addFactory = mEngine->GetComponentSystem()->GetComponentFactory(aType);
 
-      Component *toReturn = nullptr;
-
-      auto iterator = mComponents.Find(aType);
-
-      if (iterator == mComponents.end())
+      if (nullptr == addFactory)
       {
-        auto addFactory = mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
-
-        if (nullptr == addFactory)
+        if (aType)
         {
-          if (aType)
-          {
-            mEngine->Log(LogType::Warning,
-              fmt::format("A factory of the type named {} could not be found. \n"
-                "Perhaps it needs to be added to CoreComponentFactoryInitialization",
-                aType->GetName()));
-          }
-
-          return nullptr;
+          mEngine->Log(LogType::Warning,
+            fmt::format("A factory of the type named {} could not be found. \n"
+              "Perhaps it needs to be added to CoreComponentFactoryInitialization",
+              aType->GetName()));
         }
 
-        auto component = addFactory->MakeComponent(this, mSpace);
-        toReturn = component.get();
-
-        DeserializeByType(aProperties, toReturn, aType);
-
-        mComponents.Emplace(aType, std::move(component));
-      }
-      else
-      {
-        toReturn = iterator->second.get();
-        toReturn->Deserialize(aProperties);
+        return nullptr;
       }
 
-      return toReturn;
+      auto component = addFactory->MakeComponent(this, mSpace);
+      toReturn = component.get();
+
+      DeserializeByType(aProperties, toReturn, aType);
+
+      mComponents.Emplace(aType, std::move(component));
     }
+    else
+    {
+      toReturn = iterator->second.get();
+      toReturn->Deserialize(aProperties);
+    }
+
+    return toReturn;
   }
 
   void Composition::SetOwner(Composition *aOwner)
@@ -1118,7 +1045,7 @@ namespace YTE
   // Space or Engine.
   Composition* Composition::GetParent()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Composition *parent = mOwner;
 
@@ -1127,7 +1054,7 @@ namespace YTE
       parent = mSpace;
     }
 
-    if (this == parent || parent == nullptr)
+    if ((this != mEngine) && (this == parent || parent == nullptr))
     {
       parent = mEngine;
     }
@@ -1137,10 +1064,10 @@ namespace YTE
 
   void Composition::ReParent(Composition *aNewParent /* = nullptr */)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     auto parent = GetParent();
-    // TODO (Evan): Figure out how we want to handle default re-parenting children of the engine
+    // TODO (Evelyn): Figure out how we want to handle default re-parenting children of the engine
     // and default re-parenting of spaces
     if (aNewParent == nullptr && (parent == mEngine || this == mSpace))
     {
@@ -1177,7 +1104,7 @@ namespace YTE
   // Get the parent Space or Engine.
   Composition* Composition::GetSpaceOrEngine()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     Composition *parent = mSpace;
 
@@ -1189,23 +1116,6 @@ namespace YTE
     return parent;
   }
 
-  bool Composition::ParentBeingDeleted()
-  {
-    YTEProfileFunction();
-
-    for (Composition *parent = GetParent();
-         nullptr != parent;
-         parent = GetParent())
-    {
-      if (true == parent->mBeingDeleted)
-      {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   void  Composition::RemoveCompositionInternal(CompositionMap::iterator &aComposition)
   {
     mCompositions.Erase(aComposition);
@@ -1213,26 +1123,19 @@ namespace YTE
   
   void Composition::RemoveComposition(Composition *aComposition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
-                    {
-                      return aLhs.get() == aRhs; 
-                    };
-
-    auto iter = mCompositions.FindIteratorByPointer(aComposition->mName,
-                                                    aComposition, 
-                                                    compare);
-
-    if (iter != mCompositions.end())
+    // We must be the composition's direct owner, currently if a composition's direct owner is a Space, then mOwner will
+    // be nullptr and we must check their Parent instead.
+    if (this == aComposition->mOwner ||
+        (nullptr == aComposition->mOwner && this == aComposition->GetParent()))
     {
-      InitializeEvent deinit;
-      aComposition->Deinitialize(&deinit);
-      mEngine->mCompositionsToRemove.Emplace(this, std::move(iter->second));
-      mCompositions.Erase(iter);
+      return;
     }
 
-    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
+    InitializeEvent deinit;
+    aComposition->Deinitialize(&deinit);
+    mSpace->GetCompositionDeletionList().InsertBack(aComposition->mInitializationHook);
   }
 
   void  Composition::RemoveComponentInternal(ComponentMap::iterator &aComponent)
@@ -1240,41 +1143,33 @@ namespace YTE
     mComponents.Erase(aComponent);
   }
 
-  void Composition::RemoveComponent(BoundType *aComponent)
+  void Composition::RemoveComponent(Type *aComponent)
   {
-    YTEProfileFunction();
-
+    OPTICK_EVENT();
+    
     auto iter = mComponents.Find(aComponent);
-
+    
     if (iter != mComponents.end())
     {
-      mEngine->mComponentsToRemove.Emplace(this, iter);
+      iter->second->Deinitialize();
+      mSpace->GetComponentDeletionList().InsertBack(iter->second->GetDeletionHook());
     }
-
-    mDependencyOrder.erase(std::remove_if(mDependencyOrder.begin(),
-                                          mDependencyOrder.end(),
-                                          [aComponent](Type* aType) { return aType == aComponent; }),
-                           mDependencyOrder.end());
-
-    GetSpaceOrEngine()->RegisterEvent<&Composition::DeletionUpdate>(Events::DeletionUpdate, this);
   }
 
   void Composition::RemoveComponent(Component *aComponent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     RemoveComponent(aComponent->GetType());
   }
 
   void Composition::Remove()
   {
-    YTEProfileFunction();
-
-    if (false == ParentBeingDeleted())
-    {
-      mBeingDeleted = true;
-      GetParent()->RemoveComposition(this);
-    }
+    OPTICK_EVENT();
+    
+    InitializeEvent deinit;
+    Deinitialize(&deinit);
+    mSpace->GetCompositionDeletionList().InsertBack(mInitializationHook);
   }
 
   RSValue Composition::RemoveSerialized(RSAllocator &aAllocator)
@@ -1337,7 +1232,7 @@ namespace YTE
 
   bool Composition::SetGUID(GlobalUniqueIdentifier aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     bool collision = mEngine->CheckForCompositionGUIDCollision(aGUID);
 
@@ -1355,7 +1250,7 @@ namespace YTE
 
   StringComponentFactory* Composition::GetFactoryFromEngine(Type* aType)
   {
-    return mEngine->GetComponent<ComponentSystem>()->GetComponentFactory(aType);
+    return mEngine->GetComponentSystem()->GetComponentFactory(aType);
   }
 }
 

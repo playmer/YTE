@@ -12,7 +12,7 @@ namespace YTE
     YTEDeclareType(Function)
     Function(Function&) = delete;
 
-    using CallingFunction = Any(*)(std::vector<Any>& arguments);
+    using CallingFunction = Any(*)(ContiguousRange<Any>);
 
     struct Parameter
     {
@@ -23,15 +23,17 @@ namespace YTE
     };
 
     YTE_Shared Function(const char *aName, Type *aReturnType, Type *aOwningType);
-    YTE_Shared Any Invoke(std::vector<Any> &aArguments) const;
+    YTE_Shared Any Invoke(ContiguousRange<Any> aArguments) const;
 
     // Will return default constructed Any if the arguments fail.
     template <typename ...tArguments>
-    Any Invoke(tArguments...aArguments) const
+    Any Invoke(tArguments&... aArguments) const
     {
-      auto args = Any::FromVariadic<tArguments...>(aArguments...);
+      std::array<Any, sizeof...(tArguments)> arguments{ Any(std::forward<tArguments>(aArguments))... };
 
-      return Invoke(args);
+      ContiguousRange<Any> range = ContiguousRange<Any>(arguments.data(), arguments.data() + arguments.size());
+
+      return Invoke(range);
     }
 
     YTE_Shared void AddParameter(Type *aType, const char *aName = "");
@@ -85,7 +87,7 @@ namespace YTE
     template <typename tFunctionSignature>
     struct FunctionBinding
     {
-      using CallingType = Any(*)(std::vector<Any>&);
+      using CallingType = Any(*)(ContiguousRange<Any>);
 
       template <typename Return, typename = void>
       struct FunctionInvoker {};
@@ -97,7 +99,7 @@ namespace YTE
       struct FunctionInvoker<tReturn(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           size_t i = 0;
 
@@ -115,7 +117,7 @@ namespace YTE
       struct FunctionInvoker<tReturn(tArguments...), EnableIf::IsVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           size_t i = 0;
 
@@ -187,7 +189,7 @@ namespace YTE
       struct FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsNotVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           auto self = aArguments.at(0).As<tObject*>();
 
@@ -207,7 +209,7 @@ namespace YTE
       struct FunctionInvoker<tReturn(tObject::*)(tArguments...), EnableIf::IsVoid<tReturn>>
       {
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           auto self = aArguments.at(0).As<tObject*>();
 
@@ -278,7 +280,7 @@ namespace YTE
       struct FunctionMaker<tReturn(*)(tArguments...)>
       {
         inline static
-        std::unique_ptr<Function> MakeFunction(const char *aName)
+        std::unique_ptr<Function> MakeFunction(char const* aName)
         {
           auto function = std::make_unique<Function>(aName,
                                                      TypeId<tReturn>(),
@@ -290,9 +292,15 @@ namespace YTE
         }
 
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
+        }
+
+        template <tFunctionSignature tFunction>
+        constexpr static Function::CallingFunction GetInvoker()
+        {
+          return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>;
         }
       };
 
@@ -323,7 +331,7 @@ namespace YTE
       struct FunctionMaker<tReturn(tObject::*)(tArguments...)>
       {
         inline static
-          std::unique_ptr<Function> MakeFunction(const char *aName)
+        std::unique_ptr<Function> MakeFunction(char const* aName)
         {
           auto function = std::make_unique<Function>(aName,
                                                      TypeId<tReturn>(),
@@ -335,9 +343,15 @@ namespace YTE
         }
 
         template <tFunctionSignature tFunction>
-        inline static Any Invoke(std::vector<Any>& aArguments)
+        inline static Any Invoke(ContiguousRange<Any> aArguments)
         {
           return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
+        }
+
+        template <tFunctionSignature tFunction>
+        constexpr static Function::CallingFunction GetInvoker()
+        {
+          return FunctionInvoker<tFunctionSignature>::template Invoke<tFunction>;
         }
       };
 
@@ -363,12 +377,18 @@ namespace YTE
       };
 
       template <tFunctionSignature tFunction>
-      static Any Caller(std::vector<Any>& aArguments)
+      static Any Caller(ContiguousRange<Any> aArguments)
       {
         return FunctionMaker<tFunctionSignature>::template Invoke<tFunction>(aArguments);
       }
 
-      static std::unique_ptr<Function> BindPassedFunction(const char *aName,
+      template <tFunctionSignature tFunction>
+      constexpr static Function::CallingFunction GetCallingFunction()
+      {
+        return FunctionMaker<tFunctionSignature>::template GetInvoker<tFunction>();
+      }
+
+      static std::unique_ptr<Function> BindPassedFunction(char const* aName,
                                                           CallingType aCaller)
       {
         auto function = FunctionMaker<tFunctionSignature>::MakeFunction(aName);
@@ -379,11 +399,11 @@ namespace YTE
       }
 
       template <tFunctionSignature tFunction>
-      static std::unique_ptr<Function> BindFunction(const char *aName)
+      static std::unique_ptr<Function> BindFunction(char const* aName)
       {
         auto function = FunctionMaker<tFunctionSignature>::MakeFunction(aName);
 
-        function->SetCaller(Caller<tFunction>);
+        function->SetCaller(GetCallingFunction<tFunction>());
 
         return std::move(function);
       }
@@ -393,7 +413,7 @@ namespace YTE
     struct FunctionBinding<std::nullptr_t>
     {
       template <std::nullptr_t BoundFunc>
-      static std::unique_ptr<Function> BindFunction(const char *aName)
+      static std::unique_ptr<Function> BindFunction(char const* aName)
       {
         UnusedArguments(aName);
 

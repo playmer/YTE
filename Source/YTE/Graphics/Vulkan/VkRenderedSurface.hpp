@@ -1,12 +1,10 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkRendererdSurface_hpp
 #define YTE_Graphics_Vulkan_VkRendererdSurface_hpp
+
+#include <map>
+#include <mutex>
 
 #include "YTE/Core/Utilities.hpp"
 
@@ -16,7 +14,6 @@
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 #include "YTE/Graphics/Vulkan/VkShaderDescriptions.hpp"
-#include "YTE/Graphics/Vulkan/VkLightManager.hpp"
 #include "YTE/Graphics/Vulkan/VkWaterInfluenceMapManager.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderToScreen.hpp"
 #include "YTE/Graphics/Vulkan/Drawers/VkRenderTarget.hpp"
@@ -36,6 +33,7 @@ namespace YTE
   public:
     YTEDeclareType(VkGraphicsDataUpdate);
     std::shared_ptr<vkhlf::CommandBuffer> mCBO;
+    std::shared_ptr<vkhlf::CommandBuffer> mTransferCBO;
   };
 
 
@@ -47,24 +45,38 @@ namespace YTE
 
     }
 
-    // Buffers
-    GPUBuffer<Vertex> mVertexBuffer;
-    GPUBuffer<u32> mIndexBuffer;
-    GPUBuffer<UBOs::View> mViewUBO;
-    GPUBuffer<UBOs::Illumination> mIlluminationUBO;
     std::string mName = "EMPTY";
 
     // Engine Side Data
-    glm::vec4 mClearColor;
-    UBOs::View mViewUBOData;
-    UBOs::Illumination mIlluminationUBOData;
-    VkLightManager mLightManager;
-    VkWaterInfluenceMapManager mWaterInfluenceMapManager;
     std::unordered_map<VkMesh*, std::vector<VkInstantiatedModel*>> mInstantiatedModels;
     std::unordered_map<std::string, std::unique_ptr<VkShader>> mShaders;
     std::unique_ptr<VkRenderTarget> mRenderTarget;
     GraphicsView *mView;
     float mViewOrder;
+  };
+
+  class DescriptorPoolManager
+  {
+  public:
+    DescriptorPoolManager(VkRenderedSurface* aSurface);
+
+  
+    void StringFromDescriptors(std::vector<vk::DescriptorPoolSize> const& aDescriptor, std::string& aOut);
+
+    struct PoolInfo
+    {
+      std::shared_ptr<vkhlf::DescriptorPool> mPool;
+      size_t mAvailible;
+    };
+
+    auto AllocateDescriptorSet(std::vector<vk::DescriptorPoolSize> const& aDescriptor, std::shared_ptr<vkhlf::DescriptorSetLayout>& aLayout) -> std::shared_ptr<vkhlf::DescriptorSet>; 
+
+    std::unordered_map<std::string, std::vector<PoolInfo>> mPools;
+    std::mutex mPoolMutex;
+    VkRenderedSurface* mSurface;
+
+  private:
+    void MakePool();
   };
 
   class VkRenderedSurface : public EventHandler
@@ -93,15 +105,13 @@ namespace YTE
     
     void DestroyMeshAndModel(GraphicsView *aView, VkInstantiatedModel *aModel);
     
-
-    VkShader* CreateShader(std::string &aShaderSetName,
-                           std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
-                           VkShaderDescriptions &aDescription, 
-                           GraphicsView* aView);
-
-    std::unique_ptr<VkInstantiatedLight> CreateLight(GraphicsView *aView);
-    std::unique_ptr<VkInstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView);
-
+    VkCreatePipelineDataSet* IfShaderExistsCreateOnView(std::string& aShaderSetName, GraphicsView* aView);
+    VkCreatePipelineDataSet* CreateShader(
+      std::string& aShaderSetName,
+      std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+      std::shared_ptr<vkhlf::PipelineLayout> &aPipelineLayout,
+      VkShaderDescriptions &aDescription, 
+      GraphicsView* aView);
 
     void ReloadAllShaders();
 
@@ -148,19 +158,6 @@ namespace YTE
       return GetViewData(aView)->mRenderTarget->GetRenderPass();
     }
 
-    GPUBuffer<UBOs::View>& GetUBOViewBuffer(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mViewUBO;
-    }
-
-    GPUBuffer<UBOs::Illumination>& GetUBOIlluminationBuffer(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mIlluminationUBO;
-    }
-
-    std::shared_ptr<vkhlf::CommandPool>& GetCommandPool();
-    std::shared_ptr<vkhlf::Queue>& GetGraphicsQueue();
-
     void SetWindow(Window *aWindow)
     {
       mWindow = aWindow;
@@ -169,26 +166,6 @@ namespace YTE
     void SetRenderer(VkRenderer *aRenderer)
     {
       mRenderer = aRenderer;
-    }
-
-    glm::vec4 GetClearColor(GraphicsView *aView)
-    {
-      return GetViewData(aView)->mClearColor;
-    }
-
-    void SetClearColor(GraphicsView *aView, glm::vec4 aColor)
-    {
-      GetViewData(aView)->mClearColor = aColor;
-    }
-
-    VkLightManager* GetLightManager(GraphicsView *aView)
-    {
-      return &GetViewData(aView)->mLightManager;
-    }
-
-    VkWaterInfluenceMapManager* GetWaterInfluenceMapManager(GraphicsView *aView)
-    {
-      return &GetViewData(aView)->mWaterInfluenceMapManager;
     }
 
     std::vector<VkInstantiatedModel*>& GetInstantiatedModels(GraphicsView *aView, VkMesh *aMesh)
@@ -223,10 +200,7 @@ namespace YTE
       return GetViewData(aView)->mRenderTarget.get();
     }
 
-    std::shared_ptr<vkhlf::CommandBuffer> const& GetRenderingCBOB()
-    {
-      return mRenderingCBOB->GetCurrentCBO();
-    }
+    DescriptorPoolManager mPoolManager;
 
   private:
     void ResizeInternal(bool aConstructing = false);
@@ -253,19 +227,13 @@ namespace YTE
     std::map<GraphicsView*, ViewData> mViewData;
     std::unordered_map<std::string, VkCreatePipelineDataSet> mShaderCreateInfos;
 
-    // loaders
-    std::unique_ptr<VkCBOB<3, false>> mAnimationUpdateCBOB;
-    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
+    // Queue related
+    std::unique_ptr<VkCBOB<3, false>> mTransferBufferedCommandBuffer;
     std::unique_ptr<VkCBOB<3, false>> mRenderingCBOB;
 
-    // rendering blocks
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass1;
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass2;
-    //std::shared_ptr<vkhlf::Semaphore> mRenderPass3;
-    std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
-    std::shared_ptr<vkhlf::Semaphore> mCubemapComplete;
-    // final semaphore is in the swapchain
 
+    // rendering blocks
+    std::shared_ptr<vkhlf::Semaphore> mRenderCompleteSemaphore;
 
     // Engine Data
     bool mDataUpdateRequired;

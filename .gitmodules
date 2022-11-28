@@ -16,6 +16,21 @@
 [submodule "Dependencies/bullet3"]
 	path = Dependencies/bullet3
 	url = https://github.com/playmer/bullet3.git
-[submodule "Dependencies/crunch"]
-	path = Dependencies/crunch
-	url = https://github.com/playmer/crunch.git
+[submodule "Dependencies/SDL"]
+	path = Dependencies/SDL
+	url = https://github.com/playmer/SDL.git
+[submodule "Dependencies/glm"]
+	path = Dependencies/glm
+	url = https://github.com/playmer/glm.git
+[submodule "Dependencies/basis_universal"]
+	path = Dependencies/basis_universal
+	url = https://github.com/playmer/basis_universal.git
+[submodule "Dependencies/toolwindowmanager"]
+	path = Dependencies/toolwindowmanager
+	url = https://github.com/playmer/toolwindowmanager
+[submodule "Dependencies/optick"]
+	path = Dependencies/optick
+	url = https://github.com/bombomby/optick.git
+[submodule "Dependencies/rapidjson"]
+	path = Dependencies/rapidjson
+	url = https://github.com/Tencent/rapidjson.git

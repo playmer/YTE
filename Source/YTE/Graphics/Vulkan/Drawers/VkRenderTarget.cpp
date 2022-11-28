@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan - Drawers
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
@@ -37,8 +32,7 @@ namespace YTE
     mData.mName = aName;
     mData.mCombinationType = aCombination;
     mData.mOrder = aView->mView->GetOrder();
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetRenderer()->mGraphicsQueueData->mCommandPool);
   }
 
 
@@ -56,14 +50,13 @@ namespace YTE
   {
     mData.mName = aName;
     mData.mCombinationType = aCombination;
-    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetCommandPool());
-    mCBEB = std::make_unique<VkCBEB<3>>(mSurface->GetDevice());
+    mCBOB = std::make_unique<VkCBOB<3, true>>(mSurface->GetRenderer()->mGraphicsQueueData->mCommandPool);
   }
 
 
   void VkRenderTarget::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     CreateRenderPass();
     CreateFrameBuffer();
@@ -73,7 +66,7 @@ namespace YTE
 
   VkRenderTarget::~VkRenderTarget()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
@@ -102,7 +95,7 @@ namespace YTE
 
   void VkRenderTarget::Resize(vk::Extent2D& aExtent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mData.mExtent = aExtent;
     CreateFrameBuffer();
@@ -115,24 +108,9 @@ namespace YTE
     UnusedArguments(aMeshes);
   }
 
-
-
-  void VkRenderTarget::MoveToNextEvent()
-  {
-    mCBEB->NextEvent();
-  }
-
-
-
-  void VkRenderTarget::ExecuteSecondaryEvent(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
-  {
-    auto& e = mCBEB->GetCurrentEvent();
-    aCBO->setEvent(e, vk::PipelineStageFlagBits::eBottomOfPipe);
-  }
-
   void VkRenderTarget::CreateFrameBuffer()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (int i = 0; i < mData.mAttachments.size(); ++i)
     {
@@ -239,7 +217,7 @@ namespace YTE
 
     // create view
     vk::ComponentMapping defaultMap;
-    subresourceRange = { vk::ImageAspectFlagBits::eDepth | vk::ImageAspectFlagBits::eStencil, 0, 1, 0, layers };
+    subresourceRange = { vk::ImageAspectFlagBits::eDepth, 0, 1, 0, layers };
 
 
     auto depthView = depthImage->createImageView(vk::ImageViewType::e2D,
@@ -261,7 +239,7 @@ namespace YTE
 
   void VkRenderTarget::CreateRenderPass()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     // Attachment Descriptions
     vk::AttachmentDescription colorAttachment{ {},
@@ -273,7 +251,7 @@ namespace YTE
                                                vk::AttachmentLoadOp::eDontCare,
                                                vk::AttachmentStoreOp::eDontCare, // stencil
                                                vk::ImageLayout::eUndefined,
-                                               vk::ImageLayout::ePresentSrcKHR };
+                                               vk::ImageLayout::eShaderReadOnlyOptimal };
 
     vk::AttachmentDescription depthAttachment{ {},
                                                mDepthFormat,
@@ -328,9 +306,8 @@ namespace YTE
     mRenderPass = mSurface->GetDevice()->createRenderPass(attachmentDescriptions, subpass, subpassDependencies);
   }
 
-  void VkRenderTarget::ExecuteCommands(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
+  vk::ArrayProxy<const std::shared_ptr<vkhlf::CommandBuffer>> VkRenderTarget::GetCommands()
   {
-    aCBO->executeCommands(mCBOB->GetCurrentCBO());
+    return (**mCBOB).first;
   }
-
 }

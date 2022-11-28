@@ -12,23 +12,13 @@ namespace YTE
 {
   inline constexpr std::nullptr_t NoGetter = nullptr;
   inline constexpr std::nullptr_t NoSetter = nullptr;
-
-  template <typename tFunctionSignature, tFunctionSignature tBoundFunction>
-  constexpr auto SelectOverload()
+  
+  template <typename tFunctionSignature>
+  constexpr auto SelectOverload(tFunctionSignature aBoundFunction) -> tFunctionSignature
   {
-    return tBoundFunction;
+    return aBoundFunction;
   }
 
-  namespace Detail
-  {
-    // This is needed to workaround a bug in MSVC relating to using
-    // decltype on auto template parameters. It will sometimes not
-    // deduce the correct type and thus fail some template matching
-    // attempts that should succeed.
-    // Bug reported here: https://developercommunity.visualstudio.com/content/problem/248892/failed-template-matching-with-auto-parameter.html
-    // Can be removed when bug is fixed.
-    template<typename T> T GetTypeMSVCWorkaround(T);
-  }
 
   template <typename tType>
   class TypeBuilder
@@ -82,10 +72,10 @@ namespace YTE
         return *this;
       }
 
-      template <typename tType, typename... tArguments>
+      template <typename tAttributeType, typename... tArguments>
       FunctionBuilder& AddAttribute(tArguments&& ...aArguments)
       {
-        mFunction->AddAttribute<tType>(std::forward<tArguments>(aArguments)...);
+        mFunction->AddAttribute<tAttributeType>(std::forward<tArguments>(aArguments)...);
 
         return *this;
       }
@@ -97,7 +87,7 @@ namespace YTE
     template <auto tBoundFunction>
     auto Function(char const* aName)
     {
-      using FunctionSignature = decltype(Detail::GetTypeMSVCWorkaround(tBoundFunction));
+      using FunctionSignature = decltype(tBoundFunction);
       auto function = Detail::Meta::FunctionBinding<FunctionSignature>:: template BindFunction<tBoundFunction>(aName);
       function->SetOwningType(TypeId<tType>());
 
@@ -133,17 +123,26 @@ namespace YTE
 
       std::unique_ptr<YTE::Function> enumGetter;
 
-      if (isSigned)
+      if constexpr (isSigned)
       {
         constexpr i64 value = (i64)tEnumValue;
+        constexpr auto fn = ReturnValue<value>;
 
-        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+        printf("fuck 1: %s\n", aName);
+
+        auto intermediate = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<fn>(aName);
+
+        enumGetter = std::move(intermediate);
       }
       else
       {
         constexpr u64 value = (u64)tEnumValue;
+        constexpr auto fn = ReturnValue<value>;
 
-        enumGetter = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<ReturnValue<value>>(aName);
+        printf("fuck 2: %s\n", aName);
+        auto intermediate = Detail::Meta::FunctionBinding<decltype(ReturnValue<value>)>:: template BindFunction<fn>(aName);
+
+        enumGetter = std::move(intermediate);
       }
 
       auto property = std::make_unique<YTE::Property>(aName, std::move(enumGetter), NoSetter);
@@ -189,12 +188,13 @@ namespace YTE
   };
 
   template <typename tType>
-  void RegisterType()
+  TypeBuilder<tType> RegisterType()
   {
-    auto type = YTE::TypeId<tType>();
+    auto type = ::YTE::TypeId<tType>();
     Type::AddGlobalType(type->GetName(), type);
 
     TypeBuilder<tType> builder;
-    builder.template Function<&::YTE::TypeId<tType>>("GetStaticType");
+    //builder.Function<&::YTE::TypeId<tType>>("GetStaticType");
+    return builder;
   }
 }

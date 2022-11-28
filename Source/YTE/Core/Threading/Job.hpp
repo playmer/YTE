@@ -1,10 +1,5 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
+
 #include <atomic>
 #include <memory>
 

@@ -1,13 +1,8 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
+
 #ifndef YTE_Actions_Action_hpp
 #define YTE_Actions_Action_hpp
+
 #include <functional>
 
 #include "YTE/Utilities/Utilities.hpp"
@@ -44,7 +39,7 @@ namespace YTE
       mC = f - mB;                              \
     }                                           \
   }                                             \
-  void operator()()                             \
+  void operator()() override                    \
   {                                             \
     Ease(mValue, mB, mC, mT, mD);               \
   }                                             \
@@ -70,7 +65,7 @@ namespace YTE
     YTE_Shared float Increment(float dt);
     YTE_Shared bool IsDone() const;
     YTE_Shared virtual void Init();
-    YTE_Shared virtual Action * Clone() const;
+    YTE_Shared virtual Action* Clone() const;
     YTE_Shared virtual void operator() ();
     YTE_Shared virtual ~Action();
   protected:
@@ -91,7 +86,7 @@ namespace YTE
         "Action_CRTP is for curiously recurring template pattern use only");
     }
 
-    Action * Clone() const override
+    Action* Clone() const override
     { 
       return new tActionType(*reinterpret_cast<tActionType*>(mDerivedAction));
     }

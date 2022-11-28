@@ -7,6 +7,8 @@
  */
 /******************************************************************************/
 
+#include <SDL/include/SDL.h>
+
 #include <qapplication.h>
 #include <qmainwindow.h>
 #include <qdockwidget.h>
@@ -22,25 +24,26 @@
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Space.hpp"
 #include "YTE/Core/Utilities.hpp"
-
 #include "YTE/Graphics/Camera.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 #include "YTE/Graphics/FlybyCamera.hpp"
-
 #include "YTE/Physics/PhysicsSystem.hpp"
-
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTEditor/ComponentBrowser/ComponentBrowser.hpp"
-#include "YTEditor/ComponentBrowser/ComponentWidget.hpp"
-#include "YTEditor/GameWindow/GameWindow.hpp"
-#include "YTEditor/MainWindow/ComponentFactoryInit.hpp"
-#include "YTEditor/MainWindow/MainWindow.hpp"
-#include "YTEditor/MainWindow/ScriptBind.hpp"
-#include "YTEditor/MenuBar/FileMenu.hpp"
-#include "YTEditor/ObjectBrowser/ObjectBrowser.hpp"
-#include "YTEditor/OutputConsole/OutputConsole.hpp"
+#include "YTEditor/Framework/MainWindow.hpp"
 
+#include "YTEditor/YTELevelEditor/ComponentFactoryInit.hpp"
+#include "YTEditor/YTELevelEditor/MenuBar/FileMenu.hpp"
+#include "YTEditor/YTELevelEditor/ScriptBind.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/ComponentBrowser/ComponentWidget.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/YTEWindow/YTEWindow.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/CompositionBrowser/CompositionBrowser.hpp"
+#include "YTEditor/YTELevelEditor/Widgets/OutputConsole/OutputConsole.hpp"
+
+#include "YTEditor/YTELevelEditor/YTEditorMainWindow.hpp"
+
+#include "YTEMain/YTEMain.hpp"
 
 // Helper function
 void SetDarkTheme(QApplication& app)
@@ -67,17 +70,17 @@ void SetDarkTheme(QApplication& app)
   app.setStyleSheet("QToolTip { color: #101010; background-color: #2a82da; border: 1px solid white; }");
 }
 
-int main(int argc, char *argv[])
+int YTE_Main(ApplicationArguments& aArguments)
 {
   QCoreApplication::addLibraryPath("./");
   QCoreApplication::addLibraryPath("C:/Qt/5.9/msvc2017_64/bin");
   QCoreApplication::addLibraryPath("C:/Qt/5.9/msvc2017_64/plugins");
 
   // Construct the application
-  QApplication app(argc, argv);
+  QApplication app(aArguments.mOriginalArgumentsSize, aArguments.mOriginalArguments);
 
   // RUNNING THE GAME
-  YTE::InitializeYTETypes();
+  //YTE::InitializeYTETypes();
 
   YTE::Engine mainEngine{
     {
@@ -91,7 +94,7 @@ int main(int argc, char *argv[])
   YTEditor::InitializeYTEditorTypes();
 
   // then create factories for them
-  YTE::ComponentSystem *componentSystem = mainEngine.GetComponent<YTE::ComponentSystem>();
+  YTE::ComponentSystem *componentSystem = mainEngine.GetComponentSystem();
   YTE::FactoryMap *factoryMap = componentSystem->GetComponentFactories();
   YTEditor::ComponentFactoryInitialization(&mainEngine, *factoryMap);
 
@@ -128,7 +131,7 @@ int main(int argc, char *argv[])
   }
 
   // Construct the main window
-  YTEditor::MainWindow *mainWindow = new YTEditor::MainWindow(&mainEngine, &app, std::move(prefsValue));
+  auto* mainWindow = new YTEditor::YTEditorMainWindow(&mainEngine, &app, std::move(prefsValue));
 
   //mainWindow->SetRunningSpaceName();
 

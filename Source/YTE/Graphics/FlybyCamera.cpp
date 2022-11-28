@@ -121,7 +121,7 @@ namespace YTE
   {
     if (MouseButtons::Right == aEvent->Button)
     {
-      mMouseInitialPosition = aEvent->WorldCoordinates + mWindow->GetPosition();
+	    mMouseInitialPositionInScreenCoordinates = aEvent->ScreenCoordinates;
       mMouseHeld = true;
       mWindow->SetCursorVisibility(false);
     }
@@ -131,10 +131,9 @@ namespace YTE
   {
     if (mMouseHeld)
     {
-      auto screenCoordinates = mWindow->GetPosition() + aEvent->WorldCoordinates;
+      mMouseDelta = aEvent->ScreenCoordinates - mMouseInitialPositionInScreenCoordinates;
 
-      mMouseDelta = screenCoordinates - mMouseInitialPosition;
-      mMouse->SetCursorPosition(mMouseInitialPosition);
+      mMouse->SetCursorPositionInScreenCoordinates(mMouseInitialPositionInScreenCoordinates);
     }
   }
 
@@ -142,8 +141,8 @@ namespace YTE
   {
     if (MouseButtons::Right == aEvent->Button)
     {
-      mMouseInitialPosition = glm::ivec2{ 0, 0 };
-      mMouseDelta = mMouseInitialPosition;
+      mMouseInitialPositionInScreenCoordinates = glm::ivec2{ 0, 0 };
+      mMouseDelta = mMouseInitialPositionInScreenCoordinates;
       mMouseHeld = false;
       mWindow->SetCursorVisibility(true);
     }

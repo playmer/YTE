@@ -1,14 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
-#include "assimp/scene.h"
-#include "assimp/types.h"
-#include "assimp/vector3.h"
-
 #include "glm/gtc/type_ptr.hpp"
 
 #include "YTE/Core/AssetLoader.hpp"
@@ -16,48 +5,76 @@
 #include "YTE/Graphics/Generics/Mesh.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
 
+#include "YTE/StandardLibrary/File.hpp"
+
 #include "YTE/Utilities/Utilities.hpp"
 
 namespace YTE
 {
-  static inline
-  glm::vec3 ToGlm(const aiVector3D *aVector)
+  char const* SubmeshData::ToShaderString(TextureType aType)
   {
-    return { aVector->x, aVector->y ,aVector->z };
+    switch (aType)
+    {
+      case SubmeshData::TextureType::Diffuse: return "DIFFUSE";
+      case SubmeshData::TextureType::Specular: return "SPECULAR";
+      case SubmeshData::TextureType::Ambient: return "AMBIENT";
+      case SubmeshData::TextureType::Emissive: return "EMISSIVE";
+      case SubmeshData::TextureType::Height: return "HEIGHT";
+      case SubmeshData::TextureType::Normal: return "NORMAL";
+      case SubmeshData::TextureType::Shininess: return "SHININESS";
+      case SubmeshData::TextureType::Opacity: return "OPACITY";
+      case SubmeshData::TextureType::Displacment: return "DISPLACEMENT";
+      case SubmeshData::TextureType::Lightmap: return "LIGHTMAP";
+      case SubmeshData::TextureType::Reflection: return "REFLECTION";
+    }
+
+    return "UNKNOWN";
   }
 
-  static inline
-  glm::vec3 ToGlm(const aiColor3D *aVector)
+  void CalculateSubMeshDimensions(Submesh& mSubMesh)
   {
-    return { aVector->r, aVector->g ,aVector->b };
+    OPTICK_EVENT();
+
+    auto& dimension = mSubMesh.mData.mDimension;
+
+    for (auto const& position : mSubMesh.mData.mVertexData.mPositionData)
+    {
+      dimension.mMax.x = fmax(position.x, dimension.mMax.x);
+      dimension.mMax.y = fmax(position.y, dimension.mMax.y);
+      dimension.mMax.z = fmax(position.z, dimension.mMax.z);
+
+      dimension.mMin.x = fmin(position.x, dimension.mMin.x);
+      dimension.mMin.y = fmin(position.y, dimension.mMin.y);
+      dimension.mMin.z = fmin(position.z, dimension.mMin.z);
+    }
   }
 
-  static inline
-  glm::quat ToGlm(const aiQuaternion *aQuat)
+  Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
   {
-    glm::quat quaternion;
+    OPTICK_EVENT();
+    Dimension toReturn;
 
-    quaternion.x = aQuat->x;
-    quaternion.y = aQuat->y;
-    quaternion.z = aQuat->z;
-    quaternion.w = aQuat->w;
+    for (auto& part : mParts)
+    {
+      auto& dimension = part.mData.mDimension;
 
-    return quaternion;
+      toReturn.mMax.x = fmax(dimension.mMax.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(dimension.mMax.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(dimension.mMax.z, toReturn.mMax.z);
+      toReturn.mMax.x = fmax(dimension.mMin.x, toReturn.mMax.x);
+      toReturn.mMax.y = fmax(dimension.mMin.y, toReturn.mMax.y);
+      toReturn.mMax.z = fmax(dimension.mMin.z, toReturn.mMax.z);
+
+      toReturn.mMin.x = fmin(dimension.mMax.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(dimension.mMax.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(dimension.mMax.z, toReturn.mMin.z);
+      toReturn.mMin.x = fmin(dimension.mMin.x, toReturn.mMin.x);
+      toReturn.mMin.y = fmin(dimension.mMin.y, toReturn.mMin.y);
+      toReturn.mMin.z = fmin(dimension.mMin.z, toReturn.mMin.z);
+    }
+
+    return toReturn;
   }
-
-  static inline
-  glm::mat4 ToGlm(const aiMatrix4x4 &aMatrix)
-  {
-    return glm::transpose(glm::make_mat4(&aMatrix.a1));
-  }
-
-  static inline
-  aiMatrix4x4 ToAssimp(const glm::mat4 &aMatrix)
-  {
-    auto transposed = glm::transpose(aMatrix);
-    return *(reinterpret_cast<aiMatrix4x4*>(glm::value_ptr(transposed)));
-  }
-
 
   YTEDefineType(Mesh)
   {
@@ -65,415 +82,236 @@ namespace YTE
     TypeBuilder<Mesh> builder;
   }
 
-  bool Skeleton::Initialize(const aiScene* aScene)
+  //////////////////////////////////////////////////////////////////////////////
+  // Submesh
+  //////////////////////////////////////////////////////////////////////////////
+  Submesh::Submesh(SubmeshData&& aRightData)
+    : mData{ std::move(aRightData) }
   {
-    YTEProfileFunction();
-    // find number of vertices to initialize the skeleton
-    uint32_t numMeshes = aScene->mNumMeshes;
-    uint32_t vertCount = 0;
-    for (uint32_t i = 0; i < numMeshes; ++i)
-    {
-      vertCount += aScene->mMeshes[i]->mNumVertices;
-    }
+    Initialize();
 
-    mVertexSkeletonData.resize(vertCount);
-//#ifdef _DEBUG
-//    mVertexErrorAdds.resize(vertCount);
-//#endif
-
-    mNumBones = 0;
-
-    auto globalInverse = aScene->mRootNode->mTransformation;
-    mGlobalInverseTransform = ToGlm(globalInverse.Inverse());
-
-    bool bonesFound = false;
-    uint32_t startingVertex = 0;
-    for (uint32_t i = 0; i < numMeshes; ++i)
-    {
-      aiMesh *m = aScene->mMeshes[i];
-      if (m->mNumBones > 0)
-      {
-        LoadBoneData(m, startingVertex);
-        bonesFound = true;
-      }
-      startingVertex += m->mNumVertices;
-    }
-
-    if (bonesFound)
-    {
-      PreTransform(aScene);
-    }
-
-    return bonesFound;
+    UpdateGPUVertexData();
+    mIndexBuffer.Update(mData.mIndexData);
   }
 
-
-
-  void Skeleton::LoadBoneData(const aiMesh* aMesh, uint32_t aVertexStartingIndex)
+  Submesh::Submesh(Submesh&& aRight)
+    : mVertexBufferData{ std::move(aRight.mVertexBufferData) }
+    , mIndexBuffer{std::move(aRight.mIndexBuffer) }
+    , mData{ std::move(aRight.mData) }
   {
-    YTEProfileFunction();
-    DebugObjection(aMesh->mNumBones >= BoneConstants::MaxBones,
-                   "Animated models cannot have more than %d bones, %s mesh has %d bones.",
-                   BoneConstants::MaxBones, aMesh->mName.C_Str(), aMesh->mNumBones);
-
-    for (uint32_t i = 0; i < aMesh->mNumBones; ++i)
-    {
-      uint32_t index = 0;
-
-      auto bone = aMesh->mBones[i];
-      std::string boneName(bone->mName.data);
-
-      // try to find bone by name
-      auto boneIt = mBones.find(boneName);
-      if (boneIt == mBones.end())
-      {
-        // insert new bone
-        index = mNumBones;
-        ++mNumBones;
-        mBones[boneName] = index;
-        mBoneData.emplace_back(ToGlm(bone->mOffsetMatrix));
-      }
-      else
-      {
-        // use existing bone
-        index = boneIt->second;
-      }
-
-      // get the weights and vertex IDs from the bone data
-      for (uint32_t b = 0; b < bone->mNumWeights; ++b)
-      {
-        auto weight = bone->mWeights[b];
-        uint32_t id = aVertexStartingIndex + weight.mVertexId;
-//#ifdef _DEBUG
-//        if (mVertexSkeletonData[id].AddBone(index, weight.mWeight) == false)
-//        {
-//          mVertexErrorAdds[id] += 1;
-//        }
-//#else
-        mVertexSkeletonData[id].AddBone(index, weight.mWeight);
-//#endif
-      }
-    }
-
-    // loop errors
-//#if defined(_DEBUG) && defined(BSTDULAF)
-//    for (size_t i = 0; i < mVertexErrorAdds.size(); ++i)
-//    {
-//      if (mVertexErrorAdds[i] != 0)
-//      {
-//        std::cout << "Warning: Vertex " << i << " did not add " << mVertexErrorAdds[i] << " of extra bones to the skeleton." << std::endl;
-//        std::cout << "\t\tVertex Bone Information: \n\t\t\tWeights: "
-//                  << mVertexSkeletonData[i].mWeights[0] << ",\t"
-//                  << mVertexSkeletonData[i].mWeights[1] << ",\t"
-//                  << mVertexSkeletonData[i].mWeights[2] << ",\t"
-//                  << mVertexSkeletonData[i].mWeights[3] << "\n\t\t\t     IDs: "
-//                  << mVertexSkeletonData[i].mWeights[4] << "\n\t\t\t     IDs: "
-//                  << mVertexSkeletonData[i].mIDs[0] << ",\t"
-//                  << mVertexSkeletonData[i].mIDs[1] << ",\t"
-//                  << mVertexSkeletonData[i].mIDs[2] << ",\t"
-//                  << mVertexSkeletonData[i].mIDs[3] << "\t"
-//                  << mVertexSkeletonData[i].mIDs[4] << "\n\n";
-//
-//      }
-//    }
-//#endif
   }
 
-
-
-  void Skeleton::PreTransform(const aiScene* aScene)
+  Submesh& Submesh::operator=(Submesh&& aRight)
   {
-    // setup parent transforms
-    glm::mat4 identity;
+    mVertexBufferData = std::move(aRight.mVertexBufferData);
+    mIndexBuffer = std::move(aRight.mIndexBuffer);
+    mData = std::move(aRight.mData);
 
-    // recursive step
-    VisitNodes(aScene->mRootNode, identity);
-
-    mDefaultOffsets.mHasAnimation = 1;
-    for (uint32_t i = 0; i < mNumBones; ++i)
-    {
-      mDefaultOffsets.mBones[i] = mBoneData[i].mFinalTransformation;
-    }
+    return *this;
   }
 
-
-
-  void Skeleton::VisitNodes(const aiNode* aNode, glm::mat4 const& aParentTransform)
+  void Submesh::Initialize()
   {
-    std::string nodeName(aNode->mName.data);
-    glm::mat4 globalTrans = aParentTransform * ToGlm(aNode->mTransformation);
-
-    auto index = mBones.find(nodeName);
-
-    if (index != mBones.end())
-    {
-      mBoneData[index->second].mFinalTransformation = 
-        mGlobalInverseTransform *
-        globalTrans *
-        mBoneData[index->second].mOffset;
-    }
-
-    for (uint32_t i = 0; i < aNode->mNumChildren; ++i)
-    {
-      VisitNodes(aNode->mChildren[i], globalTrans);
-    }
+    CalculateSubMeshDimensions(*this);
+    CreateGPUBuffers();
   }
 
-
-
-  Submesh::Submesh(Renderer *aRenderer,
-                   const aiScene *aScene,
-                   const aiMesh *aMesh,
-                   Skeleton* aSkeleton,
-                   uint32_t aBoneStartingVertexOffset)
+  void Submesh::UpdateGPUVertexData()
   {
-    YTEProfileFunction();
+    mVertexBufferData.mPositionBuffer.Update(mData.mVertexData.mPositionData);
+    mVertexBufferData.mTextureCoordinatesBuffer.Update(mData.mVertexData.mTextureCoordinatesData);
+    mVertexBufferData.mNormalBuffer.Update(mData.mVertexData.mNormalData);
+    mVertexBufferData.mColorBuffer.Update(mData.mVertexData.mColorData);
+    mVertexBufferData.mTangentBuffer.Update(mData.mVertexData.mTangentData);
+    mVertexBufferData.mBinormalBuffer.Update(mData.mVertexData.mBinormalData);
+    mVertexBufferData.mBitangentBuffer.Update(mData.mVertexData.mBitangentData);
+    mVertexBufferData.mBoneWeightsBuffer.Update(mData.mVertexData.mBoneWeightsData);
+    mVertexBufferData.mBoneWeights2Buffer.Update(mData.mVertexData.mBoneWeights2Data);
+    mVertexBufferData.mBoneIDsBuffer.Update(mData.mVertexData.mBoneIDsData);
+    mVertexBufferData.mBoneIDs2Buffer.Update(mData.mVertexData.mBoneIDs2Data);
+  }
 
-    aiColor3D pColor(0.f, 0.f, 0.f);
-    aScene->mMaterials[aMesh->mMaterialIndex]->Get(AI_MATKEY_COLOR_DIFFUSE,
-      pColor);
+  ShaderDescriptions const& Submesh::CreateShaderDescriptions()
+  {
+    auto& descriptions = mData.mDescriptions;
 
-    const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-    auto material = aScene->mMaterials[aMesh->mMaterialIndex];
-
-    aiString name;
-
-    aiColor3D Diffuse;
-    aiColor3D Ambient;
-    aiColor3D Specular;
-    aiColor3D Emissive;
-    aiColor3D Transparent;
-    aiColor3D Reflective;
-
-    material->Get(AI_MATKEY_COLOR_DIFFUSE, Diffuse);
-    material->Get(AI_MATKEY_COLOR_AMBIENT, Ambient);
-    material->Get(AI_MATKEY_COLOR_SPECULAR, Specular);
-    material->Get(AI_MATKEY_COLOR_EMISSIVE, Emissive);
-    material->Get(AI_MATKEY_COLOR_TRANSPARENT, Transparent);
-    material->Get(AI_MATKEY_COLOR_REFLECTIVE, Reflective);
-
-    mUBOMaterial.mDiffuse = glm::vec4(ToGlm(&Diffuse), 1.0f);
-    mUBOMaterial.mAmbient = glm::vec4(ToGlm(&Ambient), 1.0f);
-    mUBOMaterial.mSpecular = glm::vec4(ToGlm(&Specular), 1.0f);
-    mUBOMaterial.mEmissive = glm::vec4(ToGlm(&Emissive), 1.0f);
-    mUBOMaterial.mTransparent = glm::vec4(ToGlm(&Transparent), 1.0f);
-    mUBOMaterial.mReflective = glm::vec4(ToGlm(&Reflective), 1.0f);
-    mUBOMaterial.mFlags = 0;
-
-    material->Get(AI_MATKEY_NAME, name);
-    material->Get(AI_MATKEY_OPACITY, mUBOMaterial.mOpacity);
-    material->Get(AI_MATKEY_SHININESS, mUBOMaterial.mShininess);
-    material->Get(AI_MATKEY_SHININESS_STRENGTH, mUBOMaterial.mShininessStrength);
-    material->Get(AI_MATKEY_REFLECTIVITY, mUBOMaterial.mReflectivity);
-    material->Get(AI_MATKEY_REFRACTI, mUBOMaterial.mReflectiveIndex);
-    material->Get(AI_MATKEY_BUMPSCALING, mUBOMaterial.mBumpScaling);
-
-    mName = aMesh->mName.C_Str();
-    mMaterialName = name.C_Str();
-
-    // TODO (Andrew): Add ability to provide a shader if wanted
-    //mShaderSetName = mMaterialName.substr(0, mMaterialName.find_first_of('_'));
-
-    aiString diffuse;
-    aiString specular;
-    aiString normals;
-
-    material->GetTexture(aiTextureType_DIFFUSE, 0, &diffuse);
-    material->GetTexture(aiTextureType_SPECULAR, 0, &specular);
-    material->GetTexture(aiTextureType_NORMALS, 0, &normals);
-
-    std::string defaultTexture{ "white.png" };
-
-    mDiffuseMap = defaultTexture;
-    mSpecularMap = defaultTexture;
-    mNormalMap = defaultTexture;
-
-    if (0 != diffuse.length)
+    if (mData.mDescriptionOverride || mData.mDescriptionsCreated)
     {
-      mDiffuseMap = diffuse.C_Str();
-      aRenderer->RequestTexture(mDiffuseMap);
+      return descriptions;
     }
 
-    if (0 != specular.length)
+    auto addUBO = [&descriptions](char const* aName, DescriptorType aDescriptorType, ShaderStageFlags aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
-      mSpecularMap = specular.C_Str();
-      aRenderer->RequestTexture(mSpecularMap);
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", aName, descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(aDescriptorType, aStage, aBufferSize, aBufferOffset);
+    };
+
+    addUBO("VIEW", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::View));
+    addUBO("ANIMATION_BONE", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Animation));
+    addUBO("MODEL_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("SUBMESH_MATERIAL", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Material));
+    addUBO("LIGHTS", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::LightManager));
+    addUBO("ILLUMINATION", DescriptorType::UniformBuffer, ShaderStageFlags::Fragment, sizeof(UBOs::Illumination));
+    addUBO("WATER", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::WaterInformationManager));
+    addUBO("MODEL", DescriptorType::UniformBuffer, ShaderStageFlags::Vertex, sizeof(UBOs::Model));
+
+
+    // Descriptions for the textures we support based on which maps we found above:
+    for (auto sampler : mData.mTextureData)
+    {
+      descriptions.AddPreludeLine(fmt::format("#define UBO_{}_BINDING {}", SubmeshData::ToShaderString(sampler.mSamplerType), descriptions.GetBufferBinding()));
+      descriptions.AddDescriptor(DescriptorType::CombinedImageSampler, ShaderStageFlags::Fragment, ImageLayout::ShaderReadOnlyOptimal);
     }
 
-    if (0 != normals.length)
-    {
-      mNormalMap = normals.C_Str();
-      mUBOMaterial.mUsesNormalTexture = 1; // true
-      aRenderer->RequestTexture(mNormalMap);
-    }
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mPosition;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTextureCoordinates;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mNormal;
+    descriptions.AddBindingAndAttribute<glm::vec4>(VertexInputRate::Vertex, VertexFormat::R32G32B32A32Sfloat); //glm::vec4 mColor;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mTangent;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBinormal;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec3 mBitangent;
+    descriptions.AddBindingAndAttribute<glm::vec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sfloat);    //glm::vec4 mBoneWeights;
+    descriptions.AddBindingAndAttribute<glm::vec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sfloat);       //glm::vec2 mBoneWeights2;
+    descriptions.AddBindingAndAttribute<glm::ivec3>(VertexInputRate::Vertex, VertexFormat::R32G32B32Sint);     //glm::ivec4 mBoneIDs;
+    descriptions.AddBindingAndAttribute<glm::ivec2>(VertexInputRate::Vertex, VertexFormat::R32G32Sint);        //glm::ivec4 mBoneIDs;
 
-    mShaderSetName = "Phong";
+    mData.mDescriptionsCreated = true;
 
-    // get the vertex data with bones (if provided)
-    for (unsigned int j = 0; j < aMesh->mNumVertices; j++)
-    {
-      const aiVector3D *pPos = aMesh->mVertices + j;
-      const aiVector3D *pNormal = aMesh->mNormals + j;
-      const aiVector3D *pTexCoord = &Zero3D;
-      const aiVector3D *pTangent = &Zero3D;
-      const aiVector3D *pBiTangent = &Zero3D;
+    return descriptions;
+  }
 
-      if (aMesh->HasTextureCoords(0))
-      {
-        pTexCoord = aMesh->mTextureCoords[0] + j;
-      }
+  template <typename T>
+  GPUBuffer<T> CreateBuffer(GPUAllocator* aAllocator, size_t aSize)
+  {
+    return aAllocator->CreateBuffer<T>(aSize,
+                                       GPUAllocation::BufferUsage::TransferDst |
+                                       GPUAllocation::BufferUsage::VertexBuffer,
+                                       GPUAllocation::MemoryProperty::DeviceLocal);
+  }
 
-      if (aMesh->HasTangentsAndBitangents())
-      {
-        pTangent = aMesh->mTangents + j;
-        pBiTangent = aMesh->mBitangents + j;
-      }
+  void Submesh::CreateGPUBuffers()
+  {
+    auto allocator = mData.mMesh->mRenderer->GetAllocator(AllocatorTypes::Mesh);
 
-      auto position = ToGlm(pPos);
-
-      // NOTE: We do this to invert the uvs to what the texture would expect.
-      auto textureCoordinates = glm::vec3{ pTexCoord->x,
-                                           1.0f - pTexCoord->y,
-                                           pTexCoord->z };
-
-      auto normal = ToGlm(pNormal);
-      auto color = glm::vec4{ ToGlm(&pColor), 1.0f };
-      auto tangent = ToGlm(pTangent);
-      auto binormal = glm::cross(tangent, normal);
-      auto bitangent = ToGlm(pBiTangent);
-
-      glm::vec3 boneWeights;
-      glm::vec2 boneWeights2;
-      glm::ivec3 boneIDs;
-      glm::ivec2 boneIDs2;
-
-      if (aSkeleton->HasBones())
-      {
-        auto vertexData = aSkeleton->GetVertexBoneData()[aBoneStartingVertexOffset + j];
-
-        // has bones, now we find the weights for this vertex
-        for (uint32_t i = 0; i < BoneConstants::MaxBonesPerVertex1; ++i)
-        {
-          boneWeights[i] = vertexData.mWeights[i];
-          boneIDs[i] = vertexData.mIDs[i];
-        }
-
-        for (uint32_t i = 0; i < BoneConstants::MaxBonesPerVertex2; ++i)
-        {
-          boneWeights2[i] = vertexData.mWeights[BoneConstants::MaxBonesPerVertex1 + i];
-          boneIDs2[i] = vertexData.mIDs[BoneConstants::MaxBonesPerVertex1 + i];
-        }
-      }
-      else
-      {
-        // no bones, so default weights
-        boneWeights = glm::vec3(0.0f, 0.0f, 0.0f);
-        boneWeights2 = glm::vec2(0.0f, 0.0f);
-        boneIDs = glm::ivec3(0, 0, 0);
-        boneIDs2 = glm::ivec2(0, 0);
-      }
-      
-      mVertexBuffer.emplace_back(position,
-        textureCoordinates,
-        normal,
-        color,
-        tangent,
-        binormal,
-        bitangent,
-        boneWeights,
-        boneWeights2,
-        boneIDs,
-        boneIDs2);
-
-      mInitialTextureCoordinates.emplace_back(textureCoordinates);
-
-      mDimension.mMax.x = fmax(pPos->x, mDimension.mMax.x);
-      mDimension.mMax.y = fmax(pPos->y, mDimension.mMax.y);
-      mDimension.mMax.z = fmax(pPos->z, mDimension.mMax.z);
-                               
-      mDimension.mMin.x = fmin(pPos->x, mDimension.mMin.x);
-      mDimension.mMin.y = fmin(pPos->y, mDimension.mMin.y);
-      mDimension.mMin.z = fmin(pPos->z, mDimension.mMin.z);
-    }
-
-    uint32_t indexBase = static_cast<uint32_t>(mIndexBuffer.size());
-
-    for (unsigned int j = 0; j < aMesh->mNumFaces; j++)
-    {
-      const aiFace &Face = aMesh->mFaces[j];
-
-      if (Face.mNumIndices != 3)
-      {
-        continue;
-      }
-
-      mIndexBuffer.push_back(indexBase + Face.mIndices[0]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[1]);
-      mIndexBuffer.push_back(indexBase + Face.mIndices[2]);
-    }
+    // Create Vertex and Index buffers.
+    mVertexBufferData.mPositionBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mPositionData.size());
+    mVertexBufferData.mTextureCoordinatesBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mTextureCoordinatesData.size());
+    mVertexBufferData.mNormalBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mNormalData.size());
+    mVertexBufferData.mColorBuffer = CreateBuffer<glm::vec4>(allocator, mData.mVertexData.mColorData.size());
+    mVertexBufferData.mTangentBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mTangentData.size());
+    mVertexBufferData.mBinormalBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBinormalData.size());
+    mVertexBufferData.mBitangentBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBitangentData.size());
+    mVertexBufferData.mBoneWeightsBuffer = CreateBuffer<glm::vec3>(allocator, mData.mVertexData.mBoneWeightsData.size());
+    mVertexBufferData.mBoneWeights2Buffer = CreateBuffer<glm::vec2>(allocator, mData.mVertexData.mBoneWeights2Data.size());
+    mVertexBufferData.mBoneIDsBuffer = CreateBuffer<glm::ivec3>(allocator, mData.mVertexData.mBoneIDsData.size());
+    mVertexBufferData.mBoneIDs2Buffer = CreateBuffer<glm::ivec2>(allocator, mData.mVertexData.mBoneIDs2Data.size());
+    
+    mIndexBuffer = allocator->CreateBuffer<u32>(mData.mIndexData.size(),
+                                                GPUAllocation::BufferUsage::TransferDst |
+                                                GPUAllocation::BufferUsage::IndexBuffer,
+                                                GPUAllocation::MemoryProperty::DeviceLocal);
   }
 
   void Submesh::ResetTextureCoordinates()
   {
-    for (size_t i = 0; i < mVertexBuffer.size(); i++)
+    for (auto&& [textureCoordinate, i] : enumerate(mData.mVertexData.mTextureCoordinatesData))
     {
-      mVertexBuffer[i].mTextureCoordinates = mInitialTextureCoordinates[i];
+      *textureCoordinate = mData.mInitialTextureCoordinates[i];
     }
   }
 
-  void CalculateSubMeshDimensions(std::vector<Submesh> &mParts)
+  void Submesh::RecalculateDimensions()
   {
-    YTEProfileFunction();
-    for (auto &part : mParts)
-    {
-      for (auto const& vertex : part.mVertexBuffer)
-      {
-        part.mDimension.mMax.x = fmax(vertex.mPosition.x, part.mDimension.mMax.x);
-        part.mDimension.mMax.y = fmax(vertex.mPosition.y, part.mDimension.mMax.y);
-        part.mDimension.mMax.z = fmax(vertex.mPosition.z, part.mDimension.mMax.z);
-
-        part.mDimension.mMin.x = fmin(vertex.mPosition.x, part.mDimension.mMin.x);
-        part.mDimension.mMin.y = fmin(vertex.mPosition.y, part.mDimension.mMin.y);
-        part.mDimension.mMin.z = fmin(vertex.mPosition.z, part.mDimension.mMin.z);
-      }
-    }
+    CalculateSubMeshDimensions(*this);
   }
 
-  Dimension CalculateDimensions(std::vector<Submesh> const& mParts)
+  void Submesh::UpdatePositionBuffer(std::vector<glm::vec3> const& aData)
   {
-    YTEProfileFunction();
-    Dimension toReturn;
+    mData.mVertexData.mPositionData = aData;
+    mVertexBufferData.mPositionBuffer.Update(mData.mVertexData.mPositionData);
 
-    for (auto &part : mParts)
-    {
-      toReturn.mMax.x = fmax(part.mDimension.mMax.x, toReturn.mMax.x);
-      toReturn.mMax.y = fmax(part.mDimension.mMax.y, toReturn.mMax.y);
-      toReturn.mMax.z = fmax(part.mDimension.mMax.z, toReturn.mMax.z);
-      toReturn.mMax.x = fmax(part.mDimension.mMin.x, toReturn.mMax.x);
-      toReturn.mMax.y = fmax(part.mDimension.mMin.y, toReturn.mMax.y);
-      toReturn.mMax.z = fmax(part.mDimension.mMin.z, toReturn.mMax.z);
-
-      toReturn.mMin.x = fmin(part.mDimension.mMax.x, toReturn.mMin.x);
-      toReturn.mMin.y = fmin(part.mDimension.mMax.y, toReturn.mMin.y);
-      toReturn.mMin.z = fmin(part.mDimension.mMax.z, toReturn.mMin.z);
-      toReturn.mMin.x = fmin(part.mDimension.mMin.x, toReturn.mMin.x);
-      toReturn.mMin.y = fmin(part.mDimension.mMin.y, toReturn.mMin.y);
-      toReturn.mMin.z = fmin(part.mDimension.mMin.z, toReturn.mMin.z);
-    }
-
-    return toReturn;
+    CalculateSubMeshDimensions(*this);
   }
+
+  void Submesh::UpdateTextureCoordinatesBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mTextureCoordinatesData = aData;
+    mVertexBufferData.mTextureCoordinatesBuffer.Update(mData.mVertexData.mTextureCoordinatesData);
+  }
+
+  void Submesh::UpdateNormalBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mNormalData = aData;
+    mVertexBufferData.mNormalBuffer.Update(mData.mVertexData.mNormalData);
+  }
+
+  void Submesh::UpdateColorBuffer(std::vector<glm::vec4> const& aData)
+  {
+    mData.mVertexData.mColorData = aData;
+    mVertexBufferData.mColorBuffer.Update(mData.mVertexData.mColorData);
+  }
+
+  void Submesh::UpdateTangentBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mTangentData = aData;
+    mVertexBufferData.mTangentBuffer.Update(mData.mVertexData.mTangentData);
+  }
+
+  void Submesh::UpdateBinormalBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBinormalData = aData;
+    mVertexBufferData.mBinormalBuffer.Update(mData.mVertexData.mBinormalData);
+  }
+
+  void Submesh::UpdateBitangentBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBitangentData = aData;
+    mVertexBufferData.mBitangentBuffer.Update(mData.mVertexData.mBitangentData);
+  }
+
+  void Submesh::UpdateBoneWeightsBuffer(std::vector<glm::vec3> const& aData)
+  {
+    mData.mVertexData.mBoneWeightsData = aData;
+    mVertexBufferData.mBoneWeightsBuffer.Update(mData.mVertexData.mBoneWeightsData);
+  }
+
+  void Submesh::UpdateBoneWeights2Buffer(std::vector<glm::vec2> const& aData)
+  {
+    mData.mVertexData.mBoneWeights2Data = aData;
+    mVertexBufferData.mBoneWeights2Buffer.Update(mData.mVertexData.mBoneWeights2Data);
+  }
+
+  void Submesh::UpdateBoneIDsBuffer(std::vector<glm::ivec3> const& aData)
+  {
+    mData.mVertexData.mBoneIDsData = aData;
+    mVertexBufferData.mBoneIDsBuffer.Update(mData.mVertexData.mBoneIDsData);
+  }
+
+  void Submesh::UpdateBoneIDs2Buffer(std::vector<glm::ivec2> const& aData)
+  {
+    mData.mVertexData.mBoneIDs2Data = aData;
+    mVertexBufferData.mBoneIDs2Buffer.Update(mData.mVertexData.mBoneIDs2Data);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Mesh
+  //////////////////////////////////////////////////////////////////////////////
+  Mesh::Mesh()
+  {
+
+  }
+
+  
+  bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh);
 
   Mesh::Mesh(Renderer *aRenderer,
              const std::string &aFile)
-    : mInstanced(false)
+    : mRenderer{aRenderer}
+    , mInstanced(false)
   {
-    YTEProfileFunction();
-    Assimp::Importer Importer;
-    Assimp::Importer ImporterCol;
+    OPTICK_EVENT();
 
-    std::string filename = aFile; // TODO: don't actually make a copy lol
+    std::string filename = aFile + ".YTEMesh"; // TODO: don't actually make a copy lol
     std::string meshFile;
 
     // check that the mesh file exists in the game assets folder
@@ -501,95 +339,38 @@ namespace YTE
       }
     }
 
-    auto pScene = Importer.ReadFile(meshFile.c_str(),
-      aiProcess_Triangulate |
-      //aiProcess_PreTransformVertices |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
-
-    auto pColliderScene = ImporterCol.ReadFile(meshFile.c_str(),
-      aiProcess_Triangulate |
-      aiProcess_PreTransformVertices |
-      aiProcess_CalcTangentSpace |
-      aiProcess_GenSmoothNormals);
-
-    if (pScene)
+    if (ReadMeshFromFile(meshFile, *this))
     {
-      // Load bone data
-      bool hasBones = mSkeleton.Initialize(pScene);
+      return;
+    }
+  }
 
-      // extra setup
-      glm::vec3 scale(1.0f);
-      glm::vec2 uvscale(1.0f);
-      glm::vec3 center(0.0f);
+  Mesh::Mesh(Renderer* aRenderer,
+             std::string const& aFile,
+             ContiguousRange<SubmeshData> aSubmeshes)
+    : mRenderer{aRenderer}
+    , mInstanced(false)
+  {
+    OPTICK_EVENT();
+    mName = aFile;
 
-      auto pMeshScene = pScene;
-      if (!hasBones)
-      {
-        pMeshScene = pColliderScene;
-      }
+    mParts.reserve(aSubmeshes.size());
 
-      mParts.clear();
-      mParts.reserve(pMeshScene->mNumMeshes);
+    for (auto& submeshData : aSubmeshes)
+    {
+      submeshData.mMesh = this;
+      auto& submesh = mParts.emplace_back(std::move(submeshData));
 
-      //printf("Mesh FileName: %s\n", aFile.c_str());
-
-      uint32_t numMeshes = pMeshScene->mNumMeshes;
-
-      // Load Mesh
-      uint32_t startingVertex = 0;
-      for (u32 i = 0; i < numMeshes; i++)
-      {
-        mParts.emplace_back(aRenderer, 
-                            pMeshScene, 
-                            pMeshScene->mMeshes[i], 
-                            &mSkeleton, 
-                            startingVertex);
-        startingVertex += pMeshScene->mMeshes[i]->mNumVertices;
-      }
-
-      mName = aFile;
+      CalculateSubMeshDimensions(submesh);
     }
 
     mDimension = CalculateDimensions(mParts);
   }
 
-  Mesh::Mesh(const std::string &aFile,
-             std::vector<Submesh> &aSubmeshes)
-    : mInstanced(false)
+  void Mesh::RecalculateDimensions()
   {
-    YTEProfileFunction();
-    mName = aFile;
-    mParts = aSubmeshes;
+    OPTICK_EVENT();
 
-    CalculateSubMeshDimensions(mParts);
-    mDimension = CalculateDimensions(mParts);
-  }
-
-  void Mesh::UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices)
-  {
-    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), "UpdateVertices cannot change the size of the vertex buffer from %i to %i", mParts[aSubmeshIndex].mVertexBuffer.size(), aVertices.size());
-    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
-
-    CalculateSubMeshDimensions(mParts);
-    mDimension = CalculateDimensions(mParts);
-  }
-
-  void Mesh::UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices)
-  {
-    DebugObjection(aVertices.size() != mParts[aSubmeshIndex].mVertexBuffer.size(), 
-                   "UpdateVerticesAndIndices cannot change the size of the vertex buffer from %i to %i", 
-                   mParts[aSubmeshIndex].mVertexBuffer.size(), 
-                   aVertices.size());
-    DebugObjection(aIndices.size() != mParts[aSubmeshIndex].mIndexBuffer.size(), 
-                   "UpdateVerticesAndIndices cannot change the size of the index buffer from %i to %i", 
-                   mParts[aSubmeshIndex].mIndexBuffer.size(), 
-                   aIndices.size());
-
-    mParts[aSubmeshIndex].mVertexBuffer = aVertices;
-    mParts[aSubmeshIndex].mIndexBuffer = aIndices;
-
-    CalculateSubMeshDimensions(mParts);
     mDimension = CalculateDimensions(mParts);
   }
 
@@ -603,7 +384,7 @@ namespace YTE
     return mSkeleton.HasBones();
   }
 
-  std::vector<YTE::Submesh>& Mesh::GetSubmeshes()
+  std::vector<Submesh>& Mesh::GetSubmeshes()
   {
     return mParts;
   }
@@ -612,15 +393,137 @@ namespace YTE
   {
     for (auto &sub : mParts)
     {
-      sub.mCullBackFaces = aCulling;
+      sub.mData.mCullBackFaces = aCulling;
     }
   }
 
   void Mesh::ResetTextureCoordinates()
   {
-    for (auto& submesh : GetSubmeshes())
+    OPTICK_EVENT();
+
+    for (auto& submesh : mParts)
     {
       submesh.ResetTextureCoordinates();
     }
+  }
+
+  void ReadSkeletonFromFile(std::string const& aName, Skeleton& aSkeleton)
+  {
+    std::string fileName = aName + ".YTESkeleton";
+
+    FileReader file{ fileName };
+
+    if (file.mOpened)
+    {
+      SkeletonHeader skeletonHeader = file.Read<SkeletonHeader>();
+        
+      aSkeleton.mBoneData.resize(static_cast<size_t>(skeletonHeader.mBoneDataSize));
+      aSkeleton.mVertexSkeletonData.resize(static_cast<size_t>(skeletonHeader.mVertexSkeletonDataSize));
+
+      aSkeleton.mGlobalInverseTransform = file.Read<glm::mat4>();
+      aSkeleton.mDefaultOffsets = file.Read<UBOs::Animation>();
+
+      file.Read(aSkeleton.mBoneData.data(), aSkeleton.mBoneData.size());
+      file.Read(aSkeleton.mVertexSkeletonData.data(), aSkeleton.mVertexSkeletonData.size());
+
+      for (u64 i = 0 ; i < skeletonHeader.mBoneMappingSize; ++i)
+      {
+        auto bone = file.Read<u64>();
+        auto keySize = static_cast<size_t>(file.Read<u64>());
+
+        std::string boneName;
+        boneName.resize(keySize);
+        file.Read<>(boneName.data(), keySize);
+
+        aSkeleton.mBones.emplace(std::move(boneName), static_cast<u32>(bone));
+      }
+    }
+  }
+
+  bool ReadMeshFromFile(std::string const& aName, Mesh& aMesh)
+  {
+    OPTICK_EVENT();
+    std::string fileName = aName + ".YTEMesh";
+    
+    FileReader file{ fileName };
+
+    if (!file.mOpened)
+    {
+      return false;
+    }
+
+    auto meshHeader = file.Read<MeshHeader>();
+    aMesh.mDimension = file.Read<Dimension>();
+    aMesh.mParts.resize(static_cast<size_t>(meshHeader.mNumberOfSubmeshes));
+
+    for (u64 i = 0; i < meshHeader.mNumberOfSubmeshes; ++i)
+    {
+      auto& submesh = aMesh.mParts[static_cast<size_t>(i)];
+      auto& submeshData = submesh.mData;
+      auto& vertexData = submeshData.mVertexData;
+
+      auto submeshHeader = file.Read<SubmeshHeader>();
+
+      submeshData.mName.resize(submeshHeader.mNameSize);
+      submeshData.mMaterialName.resize(submeshHeader.mMaterialNameSize);
+      submeshData.mShaderSetName.resize(submeshHeader.mShaderSetNameSize);
+      vertexData.mPositionData.resize(submeshHeader.mNumberOfPositions);
+      vertexData.mTextureCoordinatesData.resize(submeshHeader.mNumberOfTextureCoordinates);
+      vertexData.mNormalData.resize(submeshHeader.mNumberOfNormals);
+      vertexData.mColorData.resize(submeshHeader.mNumberOfColors);
+      vertexData.mTangentData.resize(submeshHeader.mNumberOfTangents);
+      vertexData.mBinormalData.resize(submeshHeader.mNumberOfBinormals);
+      vertexData.mBitangentData.resize(submeshHeader.mNumberOfBitangents);
+      vertexData.mBoneWeightsData.resize(submeshHeader.mNumberOfBoneWeights);
+      vertexData.mBoneWeights2Data.resize(submeshHeader.mNumberOfBoneWeights2);
+      vertexData.mBoneIDsData.resize(submeshHeader.mNumberOfBoneIds);
+      vertexData.mBoneIDs2Data.resize(submeshHeader.mNumberOfBoneIds2);
+      submeshData.mIndexData.resize(submeshHeader.mNumberOfIndices);
+      submeshData.mTextureData.resize(submeshHeader.mNumberOfTextures);
+
+      file.Read(submeshData.mName.data(), submeshData.mName.size());
+      file.Read(submeshData.mMaterialName.data(), submeshData.mMaterialName.size());
+      file.Read(submeshData.mShaderSetName.data(), submeshData.mShaderSetName.size());
+
+      file.Read(vertexData.mPositionData.data(), vertexData.mPositionData.size());
+      file.Read(vertexData.mTextureCoordinatesData.data(), vertexData.mTextureCoordinatesData.size());
+      file.Read(vertexData.mNormalData.data(), vertexData.mNormalData.size());
+      file.Read(vertexData.mColorData.data(), vertexData.mColorData.size());
+      file.Read(vertexData.mTangentData.data(), vertexData.mTangentData.size());
+      file.Read(vertexData.mBinormalData.data(), vertexData.mBinormalData.size());
+      file.Read(vertexData.mBitangentData.data(), vertexData.mBitangentData.size());
+      file.Read(vertexData.mBoneWeightsData.data(), vertexData.mBoneWeightsData.size());
+      file.Read(vertexData.mBoneWeights2Data.data(), vertexData.mBoneWeights2Data.size());
+      file.Read(vertexData.mBoneIDsData.data(), vertexData.mBoneIDsData.size());
+      file.Read(vertexData.mBoneIDs2Data.data(), vertexData.mBoneIDs2Data.size());
+      file.Read(submeshData.mIndexData.data(), submeshData.mIndexData.size());
+
+      submeshData.mUBOMaterial =  file.Read<UBOs::Material>();
+      submeshData.mDimension = file.Read<Dimension>();
+        
+      for (auto& texture : submeshData.mTextureData)
+      {
+        auto textureDataHeader = file.Read<TextureDataHeader>();
+        texture.mSamplerType = textureDataHeader.mSamplerType;
+        texture.mViewType = textureDataHeader.mViewType;
+
+        texture.mName.resize(textureDataHeader.mStringSize);
+        file.Read(texture.mName.data(), texture.mName.size());
+      }
+
+      submeshData.mInitialTextureCoordinates = vertexData.mTextureCoordinatesData;
+        
+      submeshData.mMesh = &aMesh;
+      submesh.CreateGPUBuffers();
+      submesh.UpdateGPUVertexData();
+      submesh.mIndexBuffer.Update(submeshData.mIndexData);
+    }
+
+    if (meshHeader.mHasSkeleton)
+    {
+      ReadSkeletonFromFile(aName, aMesh.mSkeleton);
+    }
+
+    return true;
   }
 }

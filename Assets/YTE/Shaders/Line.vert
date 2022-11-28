@@ -1,10 +1,3 @@
-#version 450
-
-#extension GL_ARB_separate_shader_objects : enable
-#extension GL_ARB_shading_language_420pack : enable
-
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // Defines
 #define MAX_BONES 64
@@ -79,7 +72,6 @@ layout (binding = UBO_VIEW_BINDING) uniform UBOView
 layout (binding = UBO_ANIMATION_BONE_BINDING) uniform UBOAnimation
 {
   mat4 mBones[MAX_BONES];
-  bool mHasAnimations;
 } Animation;
 
 ///////////////////////////////////////////////////////////////////////////////

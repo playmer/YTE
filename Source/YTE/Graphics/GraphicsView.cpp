@@ -2,11 +2,94 @@
 #include "YTE/Core/Space.hpp"
 
 #include "YTE/Graphics/Camera.hpp"
+#include "YTE/Graphics/Drawers.hpp"
 #include "YTE/Graphics/GraphicsSystem.hpp"
 #include "YTE/Graphics/GraphicsView.hpp"
 
 namespace YTE
 {
+  void Frustum::Update(UBOs::View const& aView)
+  {
+    //, glm::vec4 const& aCameraPosition;
+    glm::mat4 const& clipSpace = aView.mProjectionMatrix * aView.mViewMatrix;
+
+    mCameraPosition = glm::vec3(aView.mCameraPosition);
+
+    mPlanes[LEFT].x = clipSpace[0].w + clipSpace[0].x;
+    mPlanes[LEFT].y = clipSpace[1].w + clipSpace[1].x;
+    mPlanes[LEFT].z = clipSpace[2].w + clipSpace[2].x;
+    mPlanes[LEFT].w = clipSpace[3].w + clipSpace[3].x;
+
+    mPlanes[RIGHT].x = clipSpace[0].w - clipSpace[0].x;
+    mPlanes[RIGHT].y = clipSpace[1].w - clipSpace[1].x;
+    mPlanes[RIGHT].z = clipSpace[2].w - clipSpace[2].x;
+    mPlanes[RIGHT].w = clipSpace[3].w - clipSpace[3].x;
+
+    mPlanes[TOP].x = clipSpace[0].w - clipSpace[0].y;
+    mPlanes[TOP].y = clipSpace[1].w - clipSpace[1].y;
+    mPlanes[TOP].z = clipSpace[2].w - clipSpace[2].y;
+    mPlanes[TOP].w = clipSpace[3].w - clipSpace[3].y;
+
+    mPlanes[BOTTOM].x = clipSpace[0].w + clipSpace[0].y;
+    mPlanes[BOTTOM].y = clipSpace[1].w + clipSpace[1].y;
+    mPlanes[BOTTOM].z = clipSpace[2].w + clipSpace[2].y;
+    mPlanes[BOTTOM].w = clipSpace[3].w + clipSpace[3].y;
+
+    //mPlanes[BACK].x = /*clipSpace[0].w +*/ clipSpace[0].z;
+    //mPlanes[BACK].y = /*clipSpace[1].w +*/ clipSpace[1].z;
+    //mPlanes[BACK].z = /*clipSpace[2].w +*/ clipSpace[2].z;
+    //mPlanes[BACK].w = /*clipSpace[3].w +*/ clipSpace[3].z;
+
+    mPlanes[BACK].x = clipSpace[0].w + clipSpace[0].z;
+    mPlanes[BACK].y = clipSpace[1].w + clipSpace[1].z;
+    mPlanes[BACK].z = clipSpace[2].w + clipSpace[2].z;
+    mPlanes[BACK].w = clipSpace[3].w + clipSpace[3].z;
+
+    mPlanes[FRONT].x = clipSpace[0].w - clipSpace[0].z;
+    mPlanes[FRONT].y = clipSpace[1].w - clipSpace[1].z;
+    mPlanes[FRONT].z = clipSpace[2].w - clipSpace[2].z;
+    mPlanes[FRONT].w = clipSpace[3].w - clipSpace[3].z;
+
+    for (auto i = 0; i < mPlanes.size(); i++)
+    {
+      //glm::vec3 this_normal(mPlanes[i].x, mPlanes[i].y, mPlanes[i].z);
+      //float d = mPlanes[i].w;
+      //float length_normal = glm::length(this_normal);
+      //this_normal /= -length_normal;
+      //d /= length_normal;
+      //
+      //const glm::vec4 this_plane(this_normal, d);
+      //mPlanes[i] = this_plane;
+
+      float length = sqrtf(mPlanes[i].x * mPlanes[i].x + mPlanes[i].y * mPlanes[i].y + mPlanes[i].z * mPlanes[i].z);
+      mPlanes[i] /= length;
+    }
+  }
+
+  bool Frustum::CheckSphere(glm::vec3 aPosition, float aRadius)
+  {
+    OPTICK_EVENT();
+
+    if (mDontCull)
+      return true;
+
+    // Check to see if Camera is within the sphere, if so, just draw it.
+    if (glm::length(mCameraPosition - aPosition) < aRadius)
+    {
+      return true;
+    }
+
+    // Next check to see if the sphere is within the planes.
+    for (auto i = 0; i < mPlanes.size(); i++)
+    {
+      if ((mPlanes[i].x * aPosition.x) + (mPlanes[i].y * aPosition.y) + (mPlanes[i].z * aPosition.z) + mPlanes[i].w <= -aRadius)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
   static std::vector<std::string> PopulateDrawerTypeDropDownList(Component *aComponent)
   {
     UnusedArguments(aComponent);
@@ -48,7 +131,8 @@ namespace YTE
 
     builder.Field<&GraphicsView::mWindowName>("WindowName", PropertyBinding::GetSet)
       .AddAttribute<EditorProperty>()
-      .AddAttribute<Serializable>();
+      .AddAttribute<Serializable>()
+      .SetDocumentation("If empty, we look for a parent GraphicsView and use it's Window. We also listen to change events and change accordingly.");
 
     builder.Property<&GraphicsView::GetOrder, &GraphicsView::SetOrder>("Order")
       .AddAttribute<EditorProperty>()
@@ -77,34 +161,39 @@ namespace YTE
 
   GraphicsView::GraphicsView(Composition *aOwner, Space *aSpace)
     : Component(aOwner, aSpace)
-    , mActiveCamera(nullptr)
-    , mDrawerCombination(DrawerTypeCombination::DefaultCombination)
-    , mDrawerType(DrawerTypes::DefaultDrawer)
-    , mWindow(nullptr)
-    , mClearColor(0.22f, 0.22f, 0.22f, 1.0f)
-    , mSuperSampling(1)
-    , mOrder(0.0f)
-    , mConstructing(true)
-    , mInitialized(false)
+    , mActiveCamera{ nullptr }
+    , mDrawerCombination{ DrawerTypeCombination::DefaultCombination }
+    , mDrawerType{ DrawerTypes::DefaultDrawer }
+    , mWindow{ nullptr }
+    , mClearColor{ 0.22f, 0.22f, 0.22f, 1.0f }
+    , mSuperSampling{ 1 }
+    , mOrder{ 0.0f }
+    , mConstructing{ true }
+    , mInitialized{ false }
   {
     auto engine = aSpace->GetEngine();
     mRenderer = engine->GetComponent<GraphicsSystem>()->GetRenderer();
 
-    auto it = engine->GetWindows().find(mWindowName);
+    mLightManager.emplace(this);
+    mWaterInfluenceMapManager.emplace(this);
 
-    if (it != engine->GetWindows().end())
-    {
-      mWindow = it->second.get();
-    }
-    else
-    {
-      mWindow = mOwner->GetEngine()->GetWindow();
-    }
-
-    if (mWindow == nullptr)
+    // If we didn't find a window, bail out.
+    if (false == DetermineDefaultWindow())
     {
       return;
     }
+
+    auto uboAllocator = mRenderer->GetAllocator(AllocatorTypes::UniformBufferObject);
+      
+    mViewUBO = uboAllocator->CreateBuffer<UBOs::View>(1,
+                                                      GPUAllocation::BufferUsage::TransferDst |
+                                                      GPUAllocation::BufferUsage::UniformBuffer,
+                                                      GPUAllocation::MemoryProperty::DeviceLocal);
+
+    mIlluminationUBO = uboAllocator->CreateBuffer<UBOs::Illumination>(1,
+                                                                      GPUAllocation::BufferUsage::TransferDst |
+                                                                      GPUAllocation::BufferUsage::UniformBuffer,
+                                                                      GPUAllocation::MemoryProperty::DeviceLocal);
 
     mRenderer->RegisterView(this, mDrawerType, mDrawerCombination);
 
@@ -117,6 +206,50 @@ namespace YTE
   GraphicsView::~GraphicsView()
   {
     mRenderer->DeregisterView(this);
+  }
+
+  bool GraphicsView::DetermineDefaultWindow()
+  {
+    auto engine = mSpace->GetEngine();
+
+    auto it = engine->GetWindows().find(mWindowName);
+
+    if (it != engine->GetWindows().end())
+    {
+      mWindow = it->second.get();
+    }
+    else if (mWindowName.empty())
+    {
+      Composition* parent = mOwner;
+
+      do
+      {
+        auto view = parent->GetComponent<GraphicsView>();
+
+        if (view)
+        {
+          mWindow = view->mWindow;
+          mWindowName = view->mWindowName;
+          view->RegisterEvent<&GraphicsView::ParentSurfaceGained>(Events::SurfaceGained, this);
+          view->RegisterEvent<&GraphicsView::ParentSurfaceLost>(Events::SurfaceLost, this);
+          break;
+        }
+        parent = parent->GetParent();
+      } while ((parent != nullptr) && (parent != engine));
+    }
+
+    // If we didn't find a window, just grab the primary one from the engine.
+    if (nullptr == mWindow)
+    {
+      mWindow = mOwner->GetEngine()->GetWindow();
+    }
+
+    if (mWindow)
+    {
+      return true;
+    }
+    
+    return false;
   }
 
   // https://stackoverflow.com/a/108340
@@ -141,6 +274,8 @@ namespace YTE
   {
   }
 
+  size_t gFrameSet = 0;
+  bool gLockView = false;
 
   void GraphicsView::KeyPressed(KeyboardEvent *aUpdate)
   {
@@ -148,9 +283,15 @@ namespace YTE
     {
       SetOrder(-mOrder);
     }
+    
+    if (aUpdate->Key == Keys::F5 && (gFrameSet != mSpace->GetEngine()->GetFrame()))
+    {
+      gLockView = !gLockView;
+      gFrameSet = mSpace->GetEngine()->GetFrame();
+    }
   }
 
-  void GraphicsView::UpdateView(Camera *aCamera, UBOs::View &aView)
+  void GraphicsView::UpdateView(Camera const* aCamera, UBOs::View const& aView)
   {
     if (aCamera != mActiveCamera)
     {
@@ -163,29 +304,30 @@ namespace YTE
       return;
     }
 
-    mRenderer->UpdateWindowViewBuffer(this, aView);
+    mViewUBOData = aView;
+    mViewUBO.Update(mViewUBOData);
+
+    if (!gLockView)
+      mFrustum.Update(aView);
+
+    // Draw frustum planes.
+    if (mDebugDrawer)
+    {
+
+    }
   }
   
   void GraphicsView::UpdateIllumination(UBOs::Illumination& aIllumination)
   {
-    mRenderer->UpdateWindowIlluminationBuffer(this, aIllumination);
-  }
-
-  glm::vec4 GraphicsView::GetClearColor()
-  {
-    if (nullptr == mWindow)
-    {
-      return mClearColor;
-    }
-
-    return mRenderer->GetClearColor(this);
+    mIlluminationUBOData = aIllumination;
+    mIlluminationUBO.Update(mIlluminationUBOData);
   }
 
   void GraphicsView::ChangeWindow(const std::string &aWindowName)
   {
     ViewChanged event;
     event.View = this;
-    event.Window = nullptr;
+    event.ChangingWindow = nullptr;
 
     if (false == mConstructing)
     {
@@ -198,7 +340,39 @@ namespace YTE
 
     mWindow = it->second.get();
 
-    event.Window = mWindow;
+    event.ChangingWindow = mWindow;
+
+    if (false == mConstructing)
+    {
+      mRenderer->RegisterView(this);
+      SendEvent(Events::SurfaceGained, &event);
+    }
+  }
+  
+  void GraphicsView::ParentSurfaceLost(ViewChanged* aEvent)
+  {
+    UnusedArguments(aEvent);
+
+    ViewChanged event;
+    event.View = this;
+
+    event.ChangingWindow = nullptr;
+
+    if (false == mConstructing)
+    {
+      SendEvent(Events::SurfaceLost, &event);
+      mRenderer->DeregisterView(this);
+    }
+  }
+
+  void GraphicsView::ParentSurfaceGained(ViewChanged* aEvent)
+  {
+    ViewChanged event;
+    event.View = this;
+
+    mWindow = aEvent->ChangingWindow;
+    mWindowName = aEvent->View->mWindowName;
+    event.ChangingWindow = mWindow;
 
     if (false == mConstructing)
     {
@@ -215,14 +389,14 @@ namespace YTE
 
     if (mConstructing && nullptr == mWindow)
     {
-      event.Window = aWindow;
+      event.ChangingWindow = aWindow;
       mWindow = aWindow;
       NativeInitialize();
       SendEvent(Events::SurfaceGained, &event);
       return;
     }
 
-    event.Window = nullptr;
+    event.ChangingWindow = nullptr;
 
     if (false == mConstructing)
     {
@@ -232,25 +406,13 @@ namespace YTE
 
     mWindow = aWindow;
     mWindowName = aWindow->mName;
-    event.Window = mWindow;
+    event.ChangingWindow = mWindow;
 
     if (false == mConstructing)
     {
       mRenderer->RegisterView(this);
       SendEvent(Events::SurfaceGained, &event);
     }
-  }
-
-  void GraphicsView::SetClearColor(const glm::vec4 &aColor)
-  {
-    mClearColor = aColor;
-
-    if (nullptr == mWindow)
-    {
-      return;
-    }
-
-    mRenderer->SetClearColor(this, aColor);
   }
 
   void GraphicsView::SetOrder(float aOrder)

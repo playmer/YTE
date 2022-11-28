@@ -4,7 +4,6 @@
 #include "YTE/Graphics/Sprite.hpp"
 #include "YTE/Graphics/SpriteText.hpp"
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
-#include "YTE/Graphics/Generics/InstantiatedHeightmap.hpp"
 #include "YTE/Graphics/Generics/Mesh.hpp"
 
 namespace YTE
@@ -14,48 +13,48 @@ namespace YTE
     RegisterType<MaterialRepresentation>();
     TypeBuilder<MaterialRepresentation> builder;
 
-    builder.Property<&GetDiffuse, &SetDiffuse>("Diffuse")
+    builder.Property<&MaterialRepresentation::GetDiffuse, &MaterialRepresentation::SetDiffuse>("Diffuse")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetAmbient, &SetAmbient>("Ambient")
+    builder.Property<&MaterialRepresentation::GetAmbient, &MaterialRepresentation::SetAmbient>("Ambient")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetSpecular, &SetSpecular>("Specular")
+    builder.Property<&MaterialRepresentation::GetSpecular, &MaterialRepresentation::SetSpecular>("Specular")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetEmissive, &SetEmissive>("Emissive")
+    builder.Property<&MaterialRepresentation::GetEmissive, &MaterialRepresentation::SetEmissive>("Emissive")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    builder.Property<&GetTransparent, &SetTransparent>("Transparent")
+    builder.Property<&MaterialRepresentation::GetTransparent, &MaterialRepresentation::SetTransparent>("Transparent")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>()
       .AddAttribute<EditableColor>();
-    //builder.Property<&GetReflective, &SetReflective>("Reflective")
+    //builder.Property<&MaterialRepresentation::GetReflective, &MaterialRepresentation::SetReflective>("Reflective")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetOpacity, &SetOpacity>("Opacity")
+    //builder.Property<&MaterialRepresentation::GetOpacity, &MaterialRepresentation::SetOpacity>("Opacity")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    builder.Property<&GetShininess, &SetShininess>("Shininess")
+    builder.Property<&MaterialRepresentation::GetShininess, &MaterialRepresentation::SetShininess>("Shininess")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    builder.Property<&GetShininessStrength, &SetShininessStrength>("ShininessStrength")
+    builder.Property<&MaterialRepresentation::GetShininessStrength, &MaterialRepresentation::SetShininessStrength>("ShininessStrength")
       .AddAttribute<EditorProperty>()
       .AddAttribute<Serializable>();
-    //builder.Property<&GetReflectivity, &SetReflectivity>("Reflectivity")
+    //builder.Property<&MaterialRepresentation::GetReflectivity, &MaterialRepresentation::SetReflectivity>("Reflectivity")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetReflectiveIndex, &SetReflectiveIndex>("ReflectiveIndex")
+    //builder.Property<&MaterialRepresentation::GetReflectiveIndex, &MaterialRepresentation::SetReflectiveIndex>("ReflectiveIndex")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetBumpScaling, &SetBumpScaling>("BumpScaling")
+    //builder.Property<&MaterialRepresentation::GetBumpScaling, &MaterialRepresentation::SetBumpScaling>("BumpScaling")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
-    //builder.Property<&GetIsEditorObject, &SetIsEditorObject>("IsEditorObject")
+    //builder.Property<&MaterialRepresentation::GetIsEditorObject, &MaterialRepresentation::SetIsEditorObject>("IsEditorObject")
     //  .AddAttribute<EditorProperty>()
     //  .AddAttribute<Serializable>();
   }
@@ -163,7 +162,7 @@ namespace YTE
 
           for (auto[submesh, i] : enumerate(mesh->mParts))
           {
-            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mUBOMaterial,
+            auto materialRep = std::make_unique<MaterialRepresentation>(submesh->mData.mUBOMaterial,
                                                                         this,
                                                                         i,
                                                                         &(*submesh));
@@ -219,7 +218,7 @@ namespace YTE
     for (auto &materialIt : self->mSubmeshMaterials)
     {
       std::string name = materialIt->GetSubmesh() ? 
-                          materialIt->GetSubmesh()->mMaterialName :
+                          materialIt->GetSubmesh()->mData.mMaterialName :
                           "";
 
       materials.emplace_back(std::make_pair(materialIt.get(), name));
@@ -260,7 +259,7 @@ namespace YTE
 
       if (submeshMaterial->GetSubmesh())
       {
-        name = submeshMaterial->GetSubmesh()->mMaterialName;
+        name = submeshMaterial->GetSubmesh()->mData.mMaterialName;
       }
 
       materialName.SetString(name.c_str(),

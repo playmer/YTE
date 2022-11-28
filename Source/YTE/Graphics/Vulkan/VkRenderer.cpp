@@ -1,15 +1,8 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 
 #include "YTE/Graphics/Vulkan/VkInstantiatedModel.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedLight.hpp"
-#include "YTE/Graphics/Vulkan/VkInstantiatedInfluenceMap.hpp"
 #include "YTE/Graphics/Vulkan/VkInternals.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderer.hpp"
 #include "YTE/Graphics/Vulkan/VkRenderedSurface.hpp"
@@ -19,6 +12,16 @@
 
 namespace YTE
 {
+  void waitOnFence(std::shared_ptr<vkhlf::Device>& aDevice, vk::ArrayProxy<std::shared_ptr<vkhlf::Fence> const> aFences)
+  {
+    vk::Result vkRes;
+    do
+    {
+      vkRes = aDevice->waitForFences(aFences, true, 0);
+    } while (vkRes == vk::Result::eTimeout);
+    assert(vkRes == vk::Result::eSuccess);
+  }
+
   VkUBOUpdates::VkUBOReference::VkUBOReference(std::shared_ptr<vkhlf::Buffer> const& aBuffer,
                                                size_t aBufferOffset,
                                                size_t aSize)
@@ -34,32 +37,39 @@ namespace YTE
                          size_t aSize, 
                          size_t aOffset)
   {
+    std::lock_guard<std::mutex> lock(mAddingMutex);
     mReferences.emplace_back(aBuffer, aOffset, aSize);
     mData.insert(mData.end(), aData, aData + aSize);
   }
 
   void VkUBOUpdates::Update(std::shared_ptr<vkhlf::CommandBuffer>& aCommandBuffer)
   {
-    YTEProfileFunction();
-    auto bytes = std::to_string(mData.size());
-    auto size = mData.size();
-    YTEProfileBlock(bytes.c_str());
+    OPTICK_EVENT();
+    std::lock_guard<std::mutex> lock(mAddingMutex);
+
+    auto const bytes = std::to_string(mData.size());
+    auto const size = mData.size();
+    
+    OPTICK_EVENT();
+    OPTICK_TAG("Bytes to copy", bytes.c_str());
 
     if (0 == size)
     {
       return;
     }
 
-    if ((nullptr == mMappingBuffer) || size < mMappingBuffer->getSize())
+    if ((nullptr == mMappingBuffer) || size > mMappingBuffer->getSize())
     {
-      auto& allocator = GetAllocator(mRenderer->GetAllocator(AllocatorTypes::BufferUpdates));
-    
       mMappingBuffer = mRenderer->mDevice->createBuffer(size,
                                                         vk::BufferUsageFlagBits::eTransferSrc, 
                                                         vk::SharingMode::eExclusive, 
                                                         nullptr, 
-                                                        vk::MemoryPropertyFlagBits::eHostVisible,
-                                                        allocator);
+                                                        vk::MemoryPropertyFlagBits::eHostVisible);
+    }
+
+    if (size > mMappingBuffer->getSize())
+    {
+      __debugbreak();
     }
     
     void* pData = mMappingBuffer->get<vkhlf::DeviceMemory>()->map(0, VK_WHOLE_SIZE);
@@ -94,6 +104,15 @@ namespace YTE
     mReferences.clear();
   }
 
+  VkQueueData::VkQueueData(std::shared_ptr<vkhlf::Device>& aDevice, u32 aGraphicsFamily)
+    : mQueue{ aDevice->getQueue(aGraphicsFamily, 0) }
+    , mCommandPool{ aDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
+                                               aGraphicsFamily) }
+    , mBufferedCommandBuffer{ mCommandPool }
+  {
+
+  }
+
   YTEDefineType(VkRenderer)
   {
     RegisterType<VkRenderer>();
@@ -114,17 +133,45 @@ namespace YTE
     , mVulkanInternals{ std::make_unique<VkInternals>() }
     , mEngine{ aEngine }
   {
+    OPTICK_EVENT();
+
     auto firstSurface = mVulkanInternals->InitializeVulkan(aEngine);
 
     // vulkan is initialized, initialize the engine
     auto& windows = aEngine->GetWindows();
 
     auto instance = mVulkanInternals->GetInstance();
+    auto& physicalDevice = mVulkanInternals->GetPhysicalDevice();
 
+    // Desired queues need to be requested upon logical device creation
+    // Due to differing queue family configurations of Vulkan implementations this can be a bit tricky, especially if the application
+    // requests different queue types
+    std::vector<vkhlf::DeviceQueueCreateInfo> queueCreateInfos{};
 
-    auto family = mVulkanInternals->GetQueueFamilies().GetGraphicsFamily();
-    vkhlf::DeviceQueueCreateInfo deviceCreate{family,
-                                              0.0f};
+    // Get queue family indices for the requested queue family types
+    // Note that the indices may overlap depending on the implementation
+    const float defaultQueuePriority(0.0f);
+
+    // Graphics queue
+    auto graphicsQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eGraphics);
+    queueCreateInfos.emplace_back(graphicsQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+
+    // Dedicated compute queue
+    auto computeQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eCompute);
+    if (computeQueueFamilyIndices.GetFamily() != graphicsQueueFamilyIndices.GetFamily())
+    {
+      // If compute family index differs, we need an additional queue create info for the compute queue
+      queueCreateInfos.emplace_back(computeQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+    }
+
+    // Dedicated transfer queue
+    auto transferQueueFamilyIndices = QueueFamilyIndices::FindQueueFamilies(physicalDevice, vk::QueueFlagBits::eTransfer);
+    if ((transferQueueFamilyIndices.GetFamily() != graphicsQueueFamilyIndices.GetFamily()) && 
+        (transferQueueFamilyIndices.GetFamily() != computeQueueFamilyIndices.GetFamily()))
+    {
+      // If compute family index differs, we need an additional queue create info for the transfer queue
+      queueCreateInfos.emplace_back(transferQueueFamilyIndices.GetFamily(), defaultQueuePriority);
+    }
 
     // Create a new device with the VK_KHR_SWAPCHAIN_EXTENSION enabled.
     vk::PhysicalDeviceFeatures enabledFeatures;
@@ -133,17 +180,15 @@ namespace YTE
     enabledFeatures.setFillModeNonSolid(true);
     enabledFeatures.setSamplerAnisotropy(true);
     
-    mDevice = mVulkanInternals->GetPhysicalDevice()->createDevice(deviceCreate,
-                                                                  nullptr,
-                                                                  { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
-                                                                  enabledFeatures);
+    mDevice = physicalDevice->createDevice(*instance, 
+                                           queueCreateInfos,
+                                           nullptr,
+                                           { VK_KHR_SWAPCHAIN_EXTENSION_NAME },
+                                           enabledFeatures);
 
-    mCommandPool = mDevice->createCommandPool(vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
-                                              mVulkanInternals->GetQueueFamilies().GetGraphicsFamily());
-    mGraphicsDataUpdateCBOB = std::make_unique<VkCBOB<3, false>>(mCommandPool);
-
-    mGraphicsQueue = mDevice->getQueue(family, 0);
-
+    mGraphicsQueueData.emplace(mDevice, graphicsQueueFamilyIndices.GetFamily());
+    mComputeQueueData.emplace(mDevice, computeQueueFamilyIndices.GetFamily());
+    mTransferQueueData.emplace(mDevice, transferQueueFamilyIndices.GetFamily());
 
     MakeAllocator(AllocatorTypes::Mesh, 1024 * 1024);
     MakeAllocator(AllocatorTypes::Texture, 4096 * 4096);
@@ -221,19 +266,11 @@ namespace YTE
     GetSurface(aView->GetWindow())->DestroyMeshAndModel(aView, static_cast<VkInstantiatedModel*>(aModel));
   }
 
-  std::unique_ptr<InstantiatedLight> VkRenderer::CreateLight(GraphicsView* aView)
-  {
-    return static_unique_pointer_cast<InstantiatedLight>(GetSurface(aView->GetWindow())->CreateLight(aView));
-  }
-
-  std::unique_ptr<InstantiatedInfluenceMap> VkRenderer::CreateWaterInfluenceMap(GraphicsView* aView)
-  {
-    return static_unique_pointer_cast<InstantiatedInfluenceMap>(GetSurface(aView->GetWindow())->CreateWaterInfluenceMap(aView));
-  }
-
   // Textures
-  VkTexture* VkRenderer::CreateTexture(std::string &aFilename, vk::ImageViewType aType)
+  VkTexture* VkRenderer::CreateTexture(std::string const& aFilename, vk::ImageViewType aType)
   {
+    OPTICK_EVENT();
+
     auto textureIt = mTextures.find(aFilename);
     VkTexture *texturePtr{ nullptr };
 
@@ -267,6 +304,8 @@ namespace YTE
                                        u32 aLayerCount,
                                        vk::ImageViewType aVulkanType)
   {
+    OPTICK_EVENT();
+
     auto textureIt = mTextures.find(aName);
     VkTexture *texturePtr{ nullptr };
 
@@ -309,22 +348,26 @@ namespace YTE
     return texturePtr;
   }
 
-  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  vk::ImageViewType ToVkType(TextureType aTextureType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
+    switch (aTextureType)
     {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
+      case TextureType::e1D: return vk::ImageViewType::e1D; break;
+      case TextureType::e2D: return  vk::ImageViewType::e2D; break;
+      case TextureType::e3D: return  vk::ImageViewType::e3D; break;
+      case TextureType::eCube: return  vk::ImageViewType::eCube; break;
+      case TextureType::e1DArray: return  vk::ImageViewType::e1DArray; break;
+      case TextureType::e2DArray: return  vk::ImageViewType::e2DArray; break;
+      case TextureType::eCubeArray: return  vk::ImageViewType::eCubeArray; break;
     }
 
-    auto texture = CreateTexture(aFilename, type);
+    DebugAssert(false, "Bad value passed");
+    return vk::ImageViewType::e1D;
+  }
+
+  Texture* VkRenderer::CreateTexture(std::string &aFilename, TextureType aType)
+  {
+    auto texture = CreateTexture(aFilename, ToVkType(aType));
     return texture->mTexture;
   }
 
@@ -337,20 +380,7 @@ namespace YTE
                                    u32 aLayerCount,
                                    TextureType aType)
   {
-    vk::ImageViewType type{ vk::ImageViewType::e2D };
-
-    switch (aType)
-    {
-      case TextureType::e1D: type = vk::ImageViewType::e1D; break;
-      case TextureType::e2D: type = vk::ImageViewType::e2D; break;
-      case TextureType::e3D: type = vk::ImageViewType::e3D; break;
-      case TextureType::eCube: type = vk::ImageViewType::eCube; break;
-      case TextureType::e1DArray: type = vk::ImageViewType::e1DArray; break;
-      case TextureType::e2DArray: type = vk::ImageViewType::e2DArray; break;
-      case TextureType::eCubeArray: type = vk::ImageViewType::eCubeArray; break;
-    }
-
-    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, type);
+    auto texture = CreateTexture(aName, aData, aLayout, aWidth, aHeight, aMipLevels, aLayerCount, ToVkType(aType));
 
     return texture->mTexture;
   }
@@ -358,6 +388,8 @@ namespace YTE
   // Meshes
   VkMesh* VkRenderer::CreateMesh(std::string &aFilename)
   {
+    OPTICK_EVENT();
+
     auto baseMesh = GetBaseMesh(aFilename);
 
     auto meshIt = mMeshes.find(aFilename);
@@ -383,18 +415,20 @@ namespace YTE
     return meshPtr;
   }
   
-  Mesh* VkRenderer::CreateSimpleMesh(std::string &aName,
-                                     std::vector<Submesh> &aSubmeshes,
+  Mesh* VkRenderer::CreateSimpleMesh(std::string const& aName,
+                                     ContiguousRange<SubmeshData> aSubmeshes,
 		                                 bool aForceUpdate)
   {
+    OPTICK_EVENT();
+    OPTICK_TAG("Texture: ", aName.c_str());
+
     auto meshIt = mMeshes.find(aName);
 
     VkMesh *meshPtr{ nullptr };
 
     if (aForceUpdate || meshIt == mMeshes.end())
     {
-      auto baseMesh = std::make_unique<Mesh>(aName,
-                                             aSubmeshes);
+      auto baseMesh = std::make_unique<Mesh>(this, aName, aSubmeshes);
 
       mBaseMeshesMutex.lock();
       auto it = mBaseMeshes.find(aName);
@@ -431,53 +465,64 @@ namespace YTE
     return meshPtr->mMesh;
   }
 
-
-  void VkRenderer::UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView)
-  {
-    GetSurface(aView->GetWindow())->UpdateSurfaceViewBuffer(aView, aUBOView);
-  }
-
-
-
-  void VkRenderer::UpdateWindowIlluminationBuffer(GraphicsView* aView, UBOs::Illumination& aIllumination)
-  {
-    GetSurface(aView->GetWindow())->UpdateSurfaceIlluminationBuffer(aView, aIllumination);
-  }
-
-
-
   void VkRenderer::GraphicsDataUpdate(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
+    OPTICK_EVENT();
 
     VkGraphicsDataUpdate update;
-    mGraphicsDataUpdateCBOB->NextCommandBuffer();
-    update.mCBO = mGraphicsDataUpdateCBOB->GetCurrentCBO();
+    LogicUpdate update2;
 
+    ++mTransferQueueData->mBufferedCommandBuffer;
+    ++mGraphicsQueueData->mBufferedCommandBuffer;
+
+    auto [transferCommandBuffer, transferFence] = *mTransferQueueData->mBufferedCommandBuffer;
+    auto [graphicsCommandBuffer, graphicsFence] = *mGraphicsQueueData->mBufferedCommandBuffer;
+
+    update.mTransferCBO = transferCommandBuffer;
+    update.mCBO = graphicsCommandBuffer;
+
+    update.mTransferCBO->begin();
     update.mCBO->begin();
-
+    
     // Currently the VkLightManager relies on this being sent, should have them do something else.
     SendEvent(Events::VkGraphicsDataUpdate, &update);
-    mUBOUpdates.Update(update.mCBO);
-
-    update.mCBO->end();
-
-    vkhlf::submitAndWait(mGraphicsQueue, update.mCBO);
+    SendEvent(Events::GraphicsDataUpdate, &update2);
 
     for (auto &surface : mSurfaces)
     {
       surface.second->GraphicsDataUpdate();
     }
+
+    mUBOUpdates.Update(update.mTransferCBO);
+
+    update.mCBO->end();
+    update.mTransferCBO->end();
+
+    mTransferQueueData->mQueue->submit(update.mTransferCBO, transferFence);
+    mGraphicsQueueData->mQueue->submit(update.mCBO, graphicsFence);
+
+    mDataUpdateRequired = false;
   }
 
   void VkRenderer::FrameUpdate(LogicUpdate *aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mDataUpdateRequired)
     {
-      GraphicsDataUpdate(aEvent);
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+      //GraphicsDataUpdate(aEvent);
     }
+
+    auto [transferCommandBuffer, transferFence] = *mTransferQueueData->mBufferedCommandBuffer;
+    auto [graphicsCommandBuffer, graphicsFence] = *mGraphicsQueueData->mBufferedCommandBuffer;
+
+    waitOnFence(mDevice, { transferFence , graphicsFence });
 
     for (auto& surface : mSurfaces)
     {
@@ -488,6 +533,8 @@ namespace YTE
   void VkRenderer::PresentFrame(LogicUpdate *aEvent)
   {
     UnusedArguments(aEvent);
+    OPTICK_EVENT();
+
     for (auto &surface : mSurfaces)
     {
       surface.second->PresentFrame();
@@ -532,16 +579,6 @@ namespace YTE
     GetSurface(aView->GetWindow())->ViewOrderChanged(aView, aNewOrder);
   }
 
-  void VkRenderer::SetClearColor(GraphicsView *aView, const glm::vec4 &aColor)
-  {
-    GetSurface(aView->GetWindow())->SetClearColor(aView, aColor);
-  }
-
-  glm::vec4 VkRenderer::GetClearColor(GraphicsView *aView)
-  {
-    return GetSurface(aView->GetWindow())->GetClearColor(aView);
-  }
-
   VkRenderedSurface* VkRenderer::GetSurface(Window *aWindow)
   {
     auto surface = mSurfaces.find(aWindow);
@@ -560,17 +597,12 @@ namespace YTE
     GetSurface(aView->GetWindow())->ResizeEvent(nullptr);
   }
 
-  VkWaterInfluenceMapManager* VkRenderer::GetAllWaterInfluenceMaps(GraphicsView *aView)
-  {
-    return &GetSurface(aView->GetWindow())->GetViewData(aView)->mWaterInfluenceMapManager;
-  }
-
-
   GPUAllocator* VkRenderer::MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize)
   {
     auto allocator = std::make_unique<VkGPUAllocator>(aBlockSize, this);
     auto toReturn = allocator.get();
 
+    std::unique_lock<std::shared_mutex> baseLock(mAllocatorsMutex);
     mAllocators.emplace(aAllocatorType, std::move(allocator));
 
     return toReturn;
@@ -580,8 +612,7 @@ namespace YTE
     : GPUAllocator{aBlockSize}
   {
     auto device = aRenderer->mDevice;
-    auto allocator = std::make_shared<vkhlf::DeviceMemoryAllocator>(device, aBlockSize, nullptr);
-    mData.ConstructAndGet<VkGPUAllocatorData>(allocator, device, aRenderer);
+    mData.ConstructAndGet<VkGPUAllocatorData>(device, aRenderer);
   }
 
   template <typename tType>
@@ -674,6 +705,8 @@ namespace YTE
                                                                       GPUAllocation::BufferUsage aUsage, 
                                                                       GPUAllocation::MemoryProperty aProperties)
   {
+    OPTICK_EVENT();
+
     auto self = mData.Get<VkGPUAllocatorData>();
 
     auto base = std::make_unique<VkUBO>(aSize);
@@ -683,16 +716,39 @@ namespace YTE
     auto usage = ToVulkan(aUsage);
     auto properties = ToVulkan(aProperties);
     
+    self->mDeviceAllocationMutex.lock();
     uboData->mBuffer = self->mDevice->createBuffer(aSize,
                                                    ToVulkan(aUsage),
                                                    vk::SharingMode::eExclusive,
                                                    nullptr,
-                                                   ToVulkan(aProperties),
-                                                   self->mAllocator);
+                                                   ToVulkan(aProperties));
+    self->mDeviceAllocationMutex.unlock();
 
     uboData->mRenderer = self->mRenderer;
 
     return static_unique_pointer_cast<GPUBufferBase>(std::move(base));
   }
+
+
+  std::shared_ptr<vkhlf::Buffer>& GetBuffer(InstantiatedModel::BufferRef& aBuffer)
+  {
+    GPUBufferBase* buffer{nullptr};
+
+    if (auto ownedBuffer = std::get_if<InstantiatedModel::OwnedBuffer>(&aBuffer))
+    {
+      buffer = ownedBuffer->get();
+    }
+    else if (auto observedBuffer = std::get_if<InstantiatedModel::ObservedBuffer>(&aBuffer))
+    {
+      buffer = *observedBuffer;
+    }
+    else
+    {
+      DebugAssert(false, "We could not retrieve a GPUBuffer from the given BufferRef.");
+    }
+
+    return static_cast<VkUBO*>(buffer)->GetBuffer();
+  }
+
 }
 

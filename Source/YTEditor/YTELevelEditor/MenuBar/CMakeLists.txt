@@ -1,0 +1,15 @@
+target_sources(YTEditor
+PRIVATE  
+  EditMenu.cpp
+  EditMenu.hpp
+  FileMenu.cpp
+  FileMenu.hpp
+  GameObjectMenu.cpp
+  GameObjectMenu.hpp
+  ImportMenu.cpp
+  ImportMenu.hpp
+  LevelMenu.cpp
+  LevelMenu.hpp
+  WindowsMenu.cpp
+  WindowsMenu.hpp
+)

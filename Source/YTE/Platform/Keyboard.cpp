@@ -1,13 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
-
 #include "YTE/Platform/Keyboard.hpp"
 
 namespace YTE
@@ -47,9 +37,16 @@ namespace YTE
     mKeysCurrent = mArrayOne;
     mKeysPrevious = mArrayTwo;
   }
+  
+  void Keyboard::PreUpdate()
+  {
+    mText.clear();
+  }
 
   void Keyboard::Update()
   {
+    OPTICK_EVENT();
+
     KeyboardEvent keyEvent;
 
     for (size_t i = 0; i < EnumCast(Keys::Keys_Number); ++i)
@@ -57,7 +54,7 @@ namespace YTE
       if (mKeysCurrent[i] && mKeysPrevious[i])
       {
         keyEvent.Key = static_cast<Keys>(i);
-        keyEvent.Keyboard = this;
+        keyEvent.SendingKeyboard = this;
 
         SendEvent(Events::KeyPersist, &keyEvent);
       }
@@ -95,7 +92,7 @@ namespace YTE
 
     KeyboardEvent keyboardEvent;
     keyboardEvent.Key = aKey;
-    keyboardEvent.Keyboard = this;
+    keyboardEvent.SendingKeyboard = this;
 
     SendEvent(*state, &keyboardEvent);
   }
@@ -120,8 +117,24 @@ namespace YTE
   {
     return mKeysCurrent[static_cast<int>(aKey)];
   }
+
   bool Keyboard::WasKeyDown(Keys aKey)
   {
     return mKeysPrevious[static_cast<int>(aKey)];
+  }
+  
+  void Keyboard::AddText(char const* aText)
+  {
+    mText += aText;
+  }
+  
+  void Keyboard::SetText(char const* aText)
+  {
+    mText = aText;
+  }
+
+  std::string const& Keyboard::GetText()
+  {
+    return mText;
   }
 }

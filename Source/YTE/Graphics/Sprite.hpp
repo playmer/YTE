@@ -32,6 +32,7 @@ namespace YTE
 
     void SetTexture(std::string &aTexture)
     {
+      OPTICK_EVENT();
       if (aTexture != mTextureName &&
           0 != aTexture.size())
       {
@@ -122,7 +123,7 @@ namespace YTE
 
     std::string mTextureName;
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
-    Submesh mSubmesh;
+    VertexData mVertexData;
     bool mConstructing;
 
     bool mAnimating;

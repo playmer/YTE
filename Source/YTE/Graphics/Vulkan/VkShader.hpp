@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkShader_hpp
@@ -16,52 +11,53 @@ namespace YTE
 {
   struct VkCreatePipelineDataSet
   {
-    VkCreatePipelineDataSet(std::shared_ptr<vkhlf::PipelineCache> aPipelineCache,
-                            vk::PipelineCreateFlags aFlags,
-                            std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> aVertexStage,
-                            std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> aFragmentStage,
-                            vkhlf::PipelineVertexInputStateCreateInfo aVertexInput,
-                            vk::PipelineInputAssemblyStateCreateInfo aAssembly,
-                            vk::Optional<const vk::PipelineTessellationStateCreateInfo> aTessalationState,
-                            vkhlf::PipelineViewportStateCreateInfo aViewport,
-                            vk::PipelineRasterizationStateCreateInfo aRasterizationNoCull,
-                            vk::PipelineRasterizationStateCreateInfo aRasterizationCullBack,
-                            vkhlf::PipelineMultisampleStateCreateInfo aMultiSample,
-                            vk::PipelineDepthStencilStateCreateInfo aEnableDepthStencil,
-                            vk::PipelineDepthStencilStateCreateInfo aDisableDepthStencil,
-                            vkhlf::PipelineColorBlendStateCreateInfo aNoColorBlend,
-                            vkhlf::PipelineColorBlendStateCreateInfo aAlphaColorBlend,
-                            vkhlf::PipelineColorBlendStateCreateInfo aAdditiveColorBlend,
-                            vkhlf::PipelineDynamicStateCreateInfo aDynamicState,
-                            std::shared_ptr<vkhlf::PipelineLayout> aPipelineLayout,
-                            std::string aName,
-                            std::string aErrorMessage,
-                            VkRenderedSurface* aSurface,
-                            VkShaderDescriptions aDescriptions,
-                            bool aValid)
-      : mPipelineCache(aPipelineCache)
-      , mFlags(aFlags)
-      , mVertexStage(aVertexStage)
-      , mFragmentStage(aFragmentStage)
-      , mVertexInput(aVertexInput)
-      , mAssembly(aAssembly)
-      , mTessalationState(aTessalationState)
-      , mViewport(aViewport)
-      , mRasterizationNoCull(aRasterizationNoCull)
-      , mRasterizationCullBack(aRasterizationCullBack)
-      , mMultiSample(aMultiSample)
-      , mEnableDepthStencil(aEnableDepthStencil)
-      , mDisableDepthStencil(aDisableDepthStencil)
-      , mNoColorBlend(aNoColorBlend)
-      , mAlphaColorBlend(aAlphaColorBlend)
-      , mAdditiveColorBlend(aAdditiveColorBlend)
-      , mDynamicState(aDynamicState)
-      , mPipelineLayout(aPipelineLayout)
-      , mName(aName)
-      , mErrorMessage(aErrorMessage)
-      , mSurface(aSurface)
-      , mDescriptions(aDescriptions)
-      , mValid(aValid)
+    VkCreatePipelineDataSet(
+      std::shared_ptr<vkhlf::PipelineCache> aPipelineCache,
+      vk::PipelineCreateFlags aFlags,
+      std::vector<vkhlf::PipelineShaderStageCreateInfo>& aStages,
+      vkhlf::PipelineVertexInputStateCreateInfo aVertexInput,
+      vk::PipelineInputAssemblyStateCreateInfo aAssembly,
+      vk::Optional<const vk::PipelineTessellationStateCreateInfo> aTessalationState,
+      vkhlf::PipelineViewportStateCreateInfo aViewport,
+      vk::PipelineRasterizationStateCreateInfo aRasterizationNoCull,
+      vk::PipelineRasterizationStateCreateInfo aRasterizationCullBack,
+      vkhlf::PipelineMultisampleStateCreateInfo aMultiSample,
+      vk::PipelineDepthStencilStateCreateInfo aEnableDepthStencil,
+      vk::PipelineDepthStencilStateCreateInfo aDisableDepthStencil,
+      vkhlf::PipelineColorBlendStateCreateInfo aNoColorBlend,
+      vkhlf::PipelineColorBlendStateCreateInfo aAlphaColorBlend,
+      vkhlf::PipelineColorBlendStateCreateInfo aAdditiveColorBlend,
+      vkhlf::PipelineDynamicStateCreateInfo aDynamicState,
+      std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+      std::shared_ptr<vkhlf::PipelineLayout> aPipelineLayout,
+      std::string aName,
+      std::string aErrorMessage,
+      VkRenderedSurface* aSurface,
+      VkShaderDescriptions& aDescriptions,
+      bool aValid)      
+      : mPipelineCache{ aPipelineCache }
+      , mFlags{ aFlags }
+      , mStages{ std::move(aStages) }
+      , mVertexInput{ aVertexInput }
+      , mAssembly{ aAssembly }
+      , mTessalationState{ aTessalationState }
+      , mViewport{ aViewport }
+      , mRasterizationNoCull{ aRasterizationNoCull }
+      , mRasterizationCullBack{ aRasterizationCullBack }
+      , mMultiSample{ aMultiSample }
+      , mEnableDepthStencil{ aEnableDepthStencil }
+      , mDisableDepthStencil{ aDisableDepthStencil }
+      , mNoColorBlend{ aNoColorBlend }
+      , mAlphaColorBlend{ aAlphaColorBlend }
+      , mAdditiveColorBlend{ aAdditiveColorBlend }
+      , mDynamicState{ aDynamicState }
+      , mDescriptorSetLayout{ aDescriptorSetLayout }
+      , mPipelineLayout{ aPipelineLayout }
+      , mName{ aName }
+      , mErrorMessage{ aErrorMessage }
+      , mSurface{ aSurface }
+      , mDescriptions{ std::move(aDescriptions) }
+      , mValid{ aValid }
     {
 
     }
@@ -81,8 +77,7 @@ namespace YTE
     // construction
     std::shared_ptr<vkhlf::PipelineCache> mPipelineCache = nullptr;
     vk::PipelineCreateFlags mFlags;
-    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> mVertexStage = nullptr;
-    std::shared_ptr<vkhlf::PipelineShaderStageCreateInfo> mFragmentStage = nullptr;
+    std::vector<vkhlf::PipelineShaderStageCreateInfo> mStages;
     vkhlf::PipelineVertexInputStateCreateInfo mVertexInput = { {}, {} };
     vk::PipelineInputAssemblyStateCreateInfo mAssembly;
     vk::Optional<const vk::PipelineTessellationStateCreateInfo> mTessalationState = nullptr;
@@ -97,6 +92,7 @@ namespace YTE
     vkhlf::PipelineColorBlendStateCreateInfo mAdditiveColorBlend = { false, vk::LogicOp::eAnd, {}, {} };
     vkhlf::PipelineDynamicStateCreateInfo mDynamicState = { {} };
     std::shared_ptr<vkhlf::PipelineLayout> mPipelineLayout = nullptr;
+    std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout = nullptr;
 
     // data / reconstruction
     std::string mName = "";
@@ -114,11 +110,13 @@ namespace YTE
     VkShader(VkCreatePipelineDataSet& aInfo, ViewData* aView);
     ~VkShader() override;
 
-    static VkCreatePipelineDataSet CreateInfo(std::string &aName,
-                                              VkRenderedSurface *aSurface,
-                                              std::shared_ptr<vkhlf::PipelineLayout> aLayout,
-                                              VkShaderDescriptions &aDescriptions,
-                                              bool aReload);
+    static VkCreatePipelineDataSet CreateInfo(
+      std::string const&aName,
+      VkRenderedSurface* aSurface,
+      std::shared_ptr<vkhlf::DescriptorSetLayout> aDescriptorSetLayout,
+      std::shared_ptr<vkhlf::PipelineLayout> aLayout,
+      VkShaderDescriptions &aDescriptions,
+      bool aReload);
 
     void Load(VkCreatePipelineDataSet& aInfo);
 
@@ -131,6 +129,7 @@ namespace YTE
     std::shared_ptr<vkhlf::Pipeline> mShaderNoCull;
     std::shared_ptr<vkhlf::Pipeline> mAlphaBlendShader;
     std::shared_ptr<vkhlf::Pipeline> mAdditiveBlendShader;
+
     VkRenderedSurface *mSurface;
     ViewData* mView;
   };

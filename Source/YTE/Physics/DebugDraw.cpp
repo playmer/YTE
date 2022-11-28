@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include "YTE/Physics/DebugDraw.hpp"
 #include "YTE/Physics/PhysicsSystem.hpp"
 
@@ -108,23 +99,23 @@ YTEDefineExternalType(btIDebugDraw::DebugDrawModes)
   RegisterType<btIDebugDraw::DebugDrawModes>();
   TypeBuilder<btIDebugDraw::DebugDrawModes> builder;
 
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP>("DisableBulletLCP");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawAabb>("DrawAabb");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits>("DrawConstraintLimits");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraints>("DrawConstraints");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawContactPoints>("DrawContactPoints");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFeaturesText>("DrawFeaturesText");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFrames>("DrawFrames");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawNormals>("DrawNormals");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawText>("DrawText");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawWireframe>("DrawWireframe");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableCCD>("EnableCCD");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableSatComparison>("EnableSatComparison");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_FastWireframe>("FastWireframe");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoDeactivation>("NoDeactivation");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoHelpText>("NoHelpText");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_ProfileTimings>("ProfileTimings");
-  builder.Enum<btIDebugDraw::DebugDrawModes::DBG_MAX_DEBUG_DRAW_MODE>("MAX_DEBUG_DRAW_MODE");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DisableBulletLCP>("DisableBulletLCP");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawAabb>("DrawAabb");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraintLimits>("DrawConstraintLimits");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawConstraints>("DrawConstraints");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawContactPoints>("DrawContactPoints");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFeaturesText>("DrawFeaturesText");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawFrames>("DrawFrames");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawNormals>("DrawNormals");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawText>("DrawText");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_DrawWireframe>("DrawWireframe");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableCCD>("EnableCCD");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_EnableSatComparison>("EnableSatComparison");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_FastWireframe>("FastWireframe");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoDeactivation>("NoDeactivation");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_NoHelpText>("NoHelpText");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_ProfileTimings>("ProfileTimings");
+  //builder.Enum<btIDebugDraw::DebugDrawModes::DBG_MAX_DEBUG_DRAW_MODE>("MAX_DEBUG_DRAW_MODE");
 }
 
 

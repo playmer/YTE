@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2015-10-28
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/Composition.hpp"
 #include "YTE/Core/Engine.hpp"
 #include "YTE/Core/Space.hpp"
@@ -21,7 +13,7 @@ namespace YTE
   {
     RegisterType<OrientationChanged>();
     TypeBuilder<OrientationChanged> builder;
-    builder.Field<&OrientationChanged::Orientation>("Orientation", PropertyBinding::Get);
+    builder.Field<&OrientationChanged::ChangedOrientation>("Orientation", PropertyBinding::Get);
     builder.Field<&OrientationChanged::ForwardVector>("ForwardVector", PropertyBinding::Get);
     builder.Field<&OrientationChanged::RightVector>("RightVector", PropertyBinding::Get);
     builder.Field<&OrientationChanged::UpVector>("UpVector", PropertyBinding::Get);
@@ -79,7 +71,7 @@ namespace YTE
     mUpVector      = glm::normalize(rotation * upReset);
 
     OrientationChanged newOrientation;
-    newOrientation.Orientation = this;
+    newOrientation.ChangedOrientation = this;
     newOrientation.ForwardVector = mForwardVector;
     newOrientation.RightVector = mRightVector;
     newOrientation.UpVector = mUpVector;

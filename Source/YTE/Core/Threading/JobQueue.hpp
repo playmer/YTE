@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #include <deque>
@@ -11,7 +5,7 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Core/Threading/Job.hpp"
 
-//TODO (Evan): Replace JobQueue with circular array
+//TODO (Evelyn): Replace JobQueue with circular array
 // less locks and more performant
 namespace YTE
 {

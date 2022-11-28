@@ -1,6 +1,3 @@
-//////////////////////////////////////////////
-// Author: Joshua T. Fisher
-//////////////////////////////////////////////
 #pragma once
 
 #ifndef YTE_Graphics_GraphicsSystem_hpp
@@ -34,7 +31,7 @@ namespace YTE
   public:
     YTEDeclareType(GraphicsSystem);
 
-    GraphicsSystem(Composition *aOwner);
+    GraphicsSystem(Composition *aOwner, Space*);
     ~GraphicsSystem();
 
     void SetUpWindow(Window *aWindow);

@@ -1,19 +1,18 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkRenderer_hpp
 #define YTE_Graphics_Vulkan_VkRenderer_hpp
 
+#include <optional>
 #include <unordered_map>
+
+#include "YTE/Core/ForwardDeclarations.hpp"
 
 #include "YTE/Graphics/GPUBuffer.hpp"
 
-#include "YTE/Graphics/Generics/Texture.hpp"
+#include "YTE/Graphics/Generics/InstantiatedModel.hpp"
 #include "YTE/Graphics/Generics/Renderer.hpp"
+#include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Graphics/Vulkan/ForwardDeclarations.hpp"
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
@@ -21,6 +20,7 @@
 
 namespace YTE
 {
+  void waitOnFence(std::shared_ptr<vkhlf::Device>& aDevice, vk::ArrayProxy<std::shared_ptr<vkhlf::Fence> const> aFences);
 
   struct VkUBOUpdates
   {
@@ -52,10 +52,19 @@ namespace YTE
     void Update(std::shared_ptr<vkhlf::CommandBuffer>& aBuffer);
 
     std::vector<u8> mData;
+    std::mutex mAddingMutex;
     std::vector<VkUBOReference> mReferences;
     std::shared_ptr<vkhlf::Buffer> mMappingBuffer;
     VkRenderer* mRenderer;
-    //size_t mBytesLastUsed = 0;
+  };
+
+  struct VkQueueData
+  {
+    VkQueueData(std::shared_ptr<vkhlf::Device>& aDevice, u32 aGraphicsFamily);
+
+    std::shared_ptr<vkhlf::Queue> mQueue;
+    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
+    VkCBOB<3, false> mBufferedCommandBuffer;
   };
 
   class VkRenderer : public Renderer
@@ -72,10 +81,8 @@ namespace YTE
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, std::string &aMeshFile) override;
     std::unique_ptr<InstantiatedModel> CreateModel(GraphicsView *aView, Mesh *aMesh) override;
     void DestroyMeshAndModel(GraphicsView *aView, InstantiatedModel *aModel) override;
-    std::unique_ptr<InstantiatedLight> CreateLight(GraphicsView *aView) override;
-    std::unique_ptr<InstantiatedInfluenceMap> CreateWaterInfluenceMap(GraphicsView *aView) override;
 
-    VkTexture* CreateTexture(std::string &aFilename, vk::ImageViewType aType);
+    VkTexture* CreateTexture(std::string const& aFilename, vk::ImageViewType aType);
     VkTexture* CreateTexture(std::string aName,
                              std::vector<u8> aData,
                              TextureLayout aType,
@@ -96,12 +103,9 @@ namespace YTE
                            u32 aLayerCount,
                            TextureType aType) override;
         
-    void UpdateWindowViewBuffer(GraphicsView *aView, UBOs::View &aUBOView) override;
-    void UpdateWindowIlluminationBuffer(GraphicsView *aView, UBOs::Illumination &aIllumination) override;
-
     VkMesh* CreateMesh(std::string &aFilename);
-    Mesh* CreateSimpleMesh(std::string &aName,
-                           std::vector<Submesh> &aSubmeshes,
+    Mesh* CreateSimpleMesh(std::string const& aName,
+                           ContiguousRange<SubmeshData> aSubmeshes,
 		                       bool aForceUpdate = false) override;
 
     void ResetView(GraphicsView *aView);
@@ -110,9 +114,9 @@ namespace YTE
     /////////////////////////////////
     // Events
     /////////////////////////////////
-    void GraphicsDataUpdate(LogicUpdate *aEvent) override;
-    void FrameUpdate(LogicUpdate *aEvent) override;
-    void PresentFrame(LogicUpdate *aEvent) override;
+    void GraphicsDataUpdate(LogicUpdate *aEvent);
+    void FrameUpdate(LogicUpdate *aEvent);
+    void PresentFrame(LogicUpdate *aEvent);
 
     void SetLights(bool aOnOrOff);
     void RegisterView(GraphicsView *aView) override;
@@ -125,11 +129,7 @@ namespace YTE
     /////////////////////////////////
     // Getter / Setter
     /////////////////////////////////
-    glm::vec4 GetClearColor(GraphicsView *aView);
-    void SetClearColor(GraphicsView *aView, const glm::vec4 &aColor) override;
     VkRenderedSurface* GetSurface(Window *aWindow);
-
-    VkWaterInfluenceMapManager* GetAllWaterInfluenceMaps(GraphicsView *aView);
 
     Engine* GetEngine() const
     {
@@ -149,21 +149,21 @@ namespace YTE
     GPUAllocator* MakeAllocator(std::string const& aAllocatorType, size_t aBlockSize) override;
 
     std::shared_ptr<vkhlf::Device> mDevice;
-    //std::unordered_map<std::string, std::shared_ptr<vkhlf::DeviceMemoryAllocator>> mAllocators;
     std::unordered_map<std::string, std::unique_ptr<VkTexture>> mTextures;
     std::unordered_map<std::string, std::unique_ptr<VkMesh>> mMeshes;
-    std::shared_ptr<vkhlf::Queue> mGraphicsQueue;
-    std::shared_ptr<vkhlf::CommandPool> mCommandPool;
+
+    std::optional<VkQueueData> mGraphicsQueueData;
+    std::optional<VkQueueData> mComputeQueueData;
+    std::optional<VkQueueData> mTransferQueueData;
 
     VkUBOUpdates mUBOUpdates;
-  private:
-    bool mDataUpdateRequired = false;
-    // create a command pool for command buffer allocation
-    std::unique_ptr<VkCBOB<3, false>> mGraphicsDataUpdateCBOB;
 
-    std::unique_ptr<VkInternals> mVulkanInternals;
+    std::mutex mTextureAllocationMutex;
+  private:
     std::unordered_map<Window*, std::unique_ptr<VkRenderedSurface>> mSurfaces;
-    Engine *mEngine;
+    std::unique_ptr<VkInternals> mVulkanInternals;
+    Engine* mEngine;
+    bool mDataUpdateRequired = false;
 
   };
 
@@ -203,20 +203,20 @@ namespace YTE
     return static_cast<VkUBO*>(&aBuffer.GetBase())->GetBuffer();
   }
 
+  std::shared_ptr<vkhlf::Buffer>& GetBuffer(InstantiatedModel::BufferRef& aBuffer);
+
   struct VkGPUAllocatorData
   {
-    VkGPUAllocatorData(std::shared_ptr<vkhlf::DeviceMemoryAllocator>& aAllocator,
-                       std::shared_ptr<vkhlf::Device>& aDevice,
+    VkGPUAllocatorData(std::shared_ptr<vkhlf::Device>& aDevice,
                        VkRenderer* aRenderer)
-      : mAllocator{aAllocator}
-      , mDevice{ aDevice }
+      : mDevice{ aDevice }
       , mRenderer{ aRenderer }
     {
 
     }
 
-    std::shared_ptr<vkhlf::DeviceMemoryAllocator> mAllocator;
     std::shared_ptr<vkhlf::Device> mDevice;
+    std::mutex mDeviceAllocationMutex;
     VkRenderer* mRenderer;
   };
 
@@ -229,11 +229,6 @@ namespace YTE
                                                         GPUAllocation::BufferUsage aUse, 
                                                         GPUAllocation::MemoryProperty aProperties) override;
   };
-
-  inline std::shared_ptr<vkhlf::DeviceMemoryAllocator>& GetAllocator(GPUAllocator* aBuffer)
-  {
-    return aBuffer->GetData().Get<VkGPUAllocatorData>()->mAllocator;
-  }
 }
 
 

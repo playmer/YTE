@@ -1,14 +1,13 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 #define YTE_Graphics_Vulkan_VkShaderDescriptions_hpp
 
+#include <variant>
+
 #include "fmt/format.h"
+
+#include "YTE/Graphics/Generics/Shader.hpp"
 
 #include "YTE/Graphics/Vulkan/VkFunctionLoader.hpp"
 
@@ -17,15 +16,24 @@
 
 namespace YTE
 {
+  vk::Format to_vulkan(VertexFormat aFormat);
+  vk::VertexInputRate to_vulkan(VertexInputRate aType);
+  vk::DescriptorType to_vulkan(DescriptorType aType);
+  vk::ImageLayout to_vulkan(ImageLayout aLayout);
+  vk::ShaderStageFlags to_vulkan(ShaderStageFlags aFlags);
+
   class VkShaderDescriptions
   {
   public:
-    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8, size_t aNumberOfSamplers = 0)
+    using BufferOrImage = std::variant<std::shared_ptr<vkhlf::Buffer>, vkhlf::DescriptorImageInfo>;
+
+    VkShaderDescriptions(size_t aNumberOfBindings = 2, size_t aNumberOfAttributes = 8)
     {
       mBindings.reserve(aNumberOfBindings);
       mAttributes.reserve(aNumberOfAttributes);
-      mSamplers.reserve(aNumberOfSamplers);
     }
+
+    VkShaderDescriptions(ShaderDescriptions const& aDescriptions);
 
     template <typename T>
     void AddAttribute(vk::Format aFormat)
@@ -47,17 +55,6 @@ namespace YTE
     }
 
     template <typename T>
-    void AddSpecializationEntry(T &aValue)
-    {
-      vk::SpecializationMapEntry entry;
-      entry.constantID = mConstant;
-      entry.size = sizeof(T);
-
-      mEntries.emplace_back(entry);
-      ++mConstant;
-    }
-
-    template <typename T>
     void AddBinding(vk::VertexInputRate aDescription)
     {
       vk::VertexInputBindingDescription toAdd;
@@ -71,20 +68,37 @@ namespace YTE
       mVertexOffset = 0;
     }
 
-    void AddSampler(std::string aSampler)
+    void AddTextureDescriptor(vk::DescriptorType aDescriptorType, vk::ImageLayout aLayout, vk::ShaderStageFlagBits aStage)
     {
-      mSamplers.emplace_back(aSampler);
+      vkhlf::DescriptorImageInfo descriptorTextureInfo{ nullptr, nullptr, aLayout };
+      mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, descriptorTextureInfo, nullptr);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
+
+      ++mBufferBinding;
     }
 
-
-    template <typename T>
-    void AddBuffer(std::string_view aName, 
-                   vk::DescriptorType aType, 
-                   vk::ShaderStageFlagBits aShader)
+    void AddDescriptor(vk::DescriptorType aDescriptorType, vk::ShaderStageFlagBits aStage, size_t aBufferSize, size_t aBufferOffset = 0)
     {
+      vkhlf::DescriptorBufferInfo descriptorBufferInfo{ nullptr, aBufferOffset, aBufferSize };
+      mWriteDescriptorSet.emplace_back(nullptr, mBufferBinding, 0, 1, aDescriptorType, nullptr, descriptorBufferInfo);
+      mDescriptorSetLayout.emplace_back(mBufferBinding, aDescriptorType, aStage, nullptr);
 
+      ++mBufferBinding;
+    }
 
-      mDescriptorSetLayout.emplace_back(mBufferBinding++, aType, aShader, nullptr);
+    u32 CountDescriptorsOfType(vk::DescriptorType aType) const
+    {
+      u32 ofType{ 0 };
+
+      for (auto const& descriptor : mDescriptorSetLayout)
+      {
+        if (descriptor.descriptorType == aType)
+        {
+          ++ofType;
+        }
+      }
+
+      return ofType;
     }
 
 
@@ -111,16 +125,6 @@ namespace YTE
       return mAttributes.size();
     }
 
-    std::string* SamplerData()
-    {
-      return mSamplers.data();
-    }
-
-    size_t SamplerSize()
-    {
-      return mSamplers.size();
-    }
-
     std::vector<vk::VertexInputBindingDescription>& Bindings()
     {
       return mBindings;
@@ -129,17 +133,6 @@ namespace YTE
     std::vector<vk::VertexInputAttributeDescription>& Attributes()
     {
       return mAttributes;
-    }
-
-    std::vector<std::string>& Samplers()
-    {
-      return mSamplers;
-    }
-
-
-    std::unique_ptr<vkhlf::SpecializationInfo> PipelineShaderStageCreateInfo()
-    {
-      return std::make_unique<vkhlf::SpecializationInfo>(mEntries, mData);
     }
 
     void AddPreludeLine(std::string_view aLine)
@@ -160,22 +153,40 @@ namespace YTE
       return w.str();
     }
 
-  private:
-
-    template <typename T>
-    void CopyEntryData(T &aValue)
+    std::vector<vkhlf::DescriptorSetLayoutBinding>& DescriptorSetLayout()
     {
-      auto current = mData.size();
-      
-      mData.resize(current + sizeof(T), 0);
-
-      std::memcpy(mData.data() + current, static_cast<void*>(&aValue), sizeof(T));
+      return mDescriptorSetLayout;
     }
 
+    std::vector<vkhlf::WriteDescriptorSet> MakeWriteDescriptorSet(
+      std::shared_ptr<vkhlf::DescriptorSet>* aDescriptorSet, 
+      std::vector<BufferOrImage> aBuffersOrImages)
+    {
+      //assert(aBuffersOrImages.size() == mWriteDescriptorSet.size());
+      auto newSet = mWriteDescriptorSet;
+
+      for (auto [set, i] : enumerate(newSet))
+      {
+        if (auto buffer = std::get_if<std::shared_ptr<vkhlf::Buffer>>(&aBuffersOrImages[i]))
+        {
+          newSet[i].bufferInfo->buffer = *buffer;
+        }
+        else if (auto image = std::get_if<vkhlf::DescriptorImageInfo>(&aBuffersOrImages[i]))
+        {
+          newSet[i].imageInfo->sampler = image->sampler;
+          newSet[i].imageInfo->imageView = image->imageView;
+          newSet[i].imageInfo->imageLayout = image->imageLayout;
+        }
+        newSet[i].dstSet = *aDescriptorSet;
+      }
+
+      return newSet;
+    }
+
+  private:
     // Vertex Input Data
     std::vector<vk::VertexInputBindingDescription> mBindings;
     std::vector<vk::VertexInputAttributeDescription> mAttributes;
-    std::vector<std::string> mSamplers;
     std::vector<std::string> mLines;
     u32 mBinding = 0;
     u32 mVertexOffset = 0;
@@ -184,20 +195,9 @@ namespace YTE
 
     // Buffer Data
     std::vector<vkhlf::DescriptorSetLayoutBinding> mDescriptorSetLayout;
+    std::vector<vkhlf::WriteDescriptorSet> mWriteDescriptorSet;
     u32 mBufferBinding = 0;
 
-
-    std::vector<vk::SpecializationMapEntry> mEntries;
-    std::vector<byte> mData;
-  };
-
-
-  class VkDescriptorSet
-  {
-
-  private:
-    std::vector<vkhlf::DescriptorSetLayoutBinding> dslbs;
-    std::vector<vk::DescriptorPoolSize> descriptorTypes;
   };
 }
 

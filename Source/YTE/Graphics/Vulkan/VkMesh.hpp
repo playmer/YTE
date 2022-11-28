@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VkMesh_hpp
@@ -35,37 +30,23 @@ namespace YTE
     void Create();
     void Destroy();
 
-    void LoadToVulkan();
-
     void CreateShader(GraphicsView *aView);
-    std::shared_ptr<vkhlf::DescriptorPool> MakePool();
-    SubMeshPipelineData CreatePipelineData(std::shared_ptr<vkhlf::Buffer> &aUBOModel,
-                                           std::shared_ptr<vkhlf::Buffer> &aUBOAnimation,
-                                           std::shared_ptr<vkhlf::Buffer> &aUBOModelMaterial,
-                                           std::shared_ptr<vkhlf::Buffer> &aUBOSubmeshMaterial,
+    SubMeshPipelineData CreatePipelineData(InstantiatedModel* aModel,
                                            GraphicsView *aView);
 
-
-    GPUBuffer<Vertex> mVertexBuffer;
-    GPUBuffer<u32> mIndexBuffer;
-
-    std::shared_ptr<vkhlf::DescriptorSetLayout> mDescriptorSetLayout;
     std::vector<vk::DescriptorPoolSize> mDescriptorTypes;
+    std::vector<const char*> mSamplerTypes;
 
     // Needed if instanced, otherwise this lives per-model.
     SubMeshPipelineData mPipelineData;
 
-    VkTexture *mDiffuseTexture;
-    VkTexture *mSpecularTexture;
-    VkTexture *mNormalTexture;
+    std::vector<VkTexture*> mTextures;
 
-    VkShaderDescriptions mDescriptions;
     VkRenderer *mRenderer;
     
     VkMesh *mMesh;
     Submesh *mSubmesh;
-
-    u64 mIndexCount;
+    VkCreatePipelineDataSet* mPipelineInfo;
   };
 
   class VkMesh : public EventHandler
@@ -79,11 +60,6 @@ namespace YTE
     ~VkMesh();
     
     VkMesh(const VkMesh &aMesh) = delete;
-
-    void UpdateVertices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices);
-    void UpdateVerticesAndIndices(size_t aSubmeshIndex, std::vector<Vertex>& aVertices, std::vector<u32>& aIndices);
-
-    void LoadToVulkan();
 
     std::vector<std::unique_ptr<VkSubmesh>> mSubmeshes;
     std::unordered_multimap<std::string, VkSubmesh*> mSubmeshMap;

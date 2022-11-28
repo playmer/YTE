@@ -1,26 +1,91 @@
 #pragma once
 
+#include <array>
+#include <vector>
+
 namespace YTE
 {
-  template <typename TemplateType>
+  template <typename tType>
   class Range
   {
   public:
-    Range(const TemplateType &aBegin, const TemplateType &aEnd)
-      : mBegin(aBegin), mEnd(aEnd) {};
+    Range(tType const& aBegin, tType const& aEnd)
+      : mBegin(aBegin), mEnd(aEnd) 
+    {
+    }
 
     bool IsRange() { return mBegin != mEnd; }
 
-    const TemplateType begin() const { return mBegin; }
-    const TemplateType end() const { return mEnd; }
-    TemplateType begin() { return mBegin; }
-    TemplateType end() { return mEnd; }
+    const tType begin() const { return mBegin; }
+    const tType end() const { return mEnd; }
+    tType begin() { return mBegin; }
+    tType end() { return mEnd; }
 
-    typename TemplateType::difference_type size() const { return mEnd - mBegin; }
+    typename tType::difference_type size() const { return mEnd - mBegin; }
   protected:
-    TemplateType mBegin;
-    TemplateType mEnd;
+    tType mBegin;
+    tType mEnd;
   };
+
+
+  template <typename tType>
+  class ContiguousRange
+  {
+  public:
+    ContiguousRange(std::vector<tType>& aContainer)
+      : mBegin(aContainer.data())
+      , mEnd(aContainer.data() + aContainer.size())
+    {
+    }
+
+    ContiguousRange(tType& aValue)
+      : mBegin(&aValue)
+      , mEnd(&aValue + 1)
+    {
+    }
+
+    ContiguousRange(tType* aBegin, tType* aEnd)
+      : mBegin(aBegin)
+      , mEnd(aEnd)
+    {
+    }
+
+    bool IsRange() { return mBegin != mEnd; }
+
+    tType const* begin() const { return mBegin; }
+    tType const* end() const { return mEnd; }
+    tType* begin() { return mBegin; }
+    tType* end() { return mEnd; }
+
+    tType& operator[](size_t aIndex) { return *(mBegin + aIndex); }
+    tType const& operator[](size_t aIndex) const { return *(mBegin + aIndex); }
+
+    tType& at(size_t aIndex) { return *(mBegin + aIndex); }
+    tType const& at(size_t aIndex) const { return *(mBegin + aIndex); }
+
+    size_t size() const { return mEnd - mBegin; }
+  protected:
+    tType* mBegin;
+    tType* mEnd;
+  };
+
+  template <typename tType>
+  ContiguousRange<tType> MakeContiguousRange(std::vector<tType> aContainer)
+  {
+    return ContiguousRange<tType>(&*aContainer.begin(), &*aContainer.end());
+  }
+
+  //template<typename tType, size_t tElementCount>
+  //ContiguousRange<tType> MakeContiguousRange(std::array<tType, tElementCount> aContainer)
+  //{
+  //  return ContiguousRange<tType>(&*aContainer.begin(), &*aContainer.end());
+  //}
+
+  template <typename tType>
+  ContiguousRange<tType> MakeContiguousRange(tType& aValue)
+  {
+    return ContiguousRange<tType>(&aValue, &aValue + 1);
+  }
   
   namespace detail
   {

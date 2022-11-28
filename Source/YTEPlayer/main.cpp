@@ -1,40 +1,33 @@
-﻿/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   2015-10-26
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
+﻿#include <thread>
+
 #include "YTE/Core/Engine.hpp"
+
+#include "YTEMain/YTEMain.hpp"
 
 using namespace std;
 
-int main(int, char*[])
+//int SDL_main(int, char*[])
+int YTE_Main(ApplicationArguments&)
 {
-  //if constexpr (YTE_CAN_PROFILE)
-  //{
-  //  EASY_PROFILER_ENABLE;
-  //  profiler::startListen();
-  //}
-  //
-  //YTEProfileFunction();
-
-  YTE::InitializeYTETypes();
-  
   YTE::Engine mainEngine{
     { 
       "../../../../../Assets/Bin/Config",
       "./Config"
     } 
   };
+
+  
   
   mainEngine.Initialize();
   
   while (mainEngine.KeepRunning())
   {
+    OPTICK_FRAME("MainThread");
     mainEngine.Update();
   }
+
+  //OPTICK_STOP_CAPTURE();
+  //OPTICK_SAVE_CAPTURE("capture.opt");
 
   return 0;
 }

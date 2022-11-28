@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-6-7
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Platform_Mouse_h
@@ -32,9 +24,10 @@ namespace YTE
   public:
     YTEDeclareType(MouseButtonEvent);
 
-    glm::i32vec2 WorldCoordinates;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
     MouseButtons Button;
-    Mouse *Mouse;
+    Mouse *SendingMouse;
   };
 
 
@@ -43,9 +36,10 @@ namespace YTE
   public:
     YTEDeclareType(MouseWheelEvent);
 
-    glm::i32vec2 WorldCoordinates;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
     glm::vec2 ScrollMovement;
-    Mouse *Mouse;
+    Mouse *SendingMouse;
   };
 
   class MouseMoveEvent : public Event
@@ -53,25 +47,25 @@ namespace YTE
   public:
     YTEDeclareType(MouseMoveEvent);
 
-    glm::i32vec2 WorldCoordinates;
-    Mouse *Mouse;
+    glm::i32vec2 WindowCoordinates;
+    glm::i32vec2 ScreenCoordinates;
+    Mouse *SendingMouse;
   };
 
   YTE_Shared glm::i32vec2 GetMousePosition();
-  YTE_Shared bool GetLRSwapped();
   YTE_Shared void SurveyMouse(bool *aMouse);
-  YTE_Shared uint64_t TranslateFromMouseButtonToOsKey(MouseButtons aOsKey);
 
   class Mouse : public EventHandler
   {
   public:
     YTEDeclareType(Mouse);
 
-    YTE_Shared Mouse();
+    YTE_Shared Mouse(Window* aWindow);
 
     YTE_Shared void Update();
     YTE_Shared void UpdateButton(MouseButtons aButton, bool aDown, glm::i32vec2 aPosition);
-    YTE_Shared void UpdateWheel(glm::vec2 aWheelMove, glm::i32vec2 aPosition);
+    YTE_Shared void UpdateButton(MouseButtons aButton, bool aDown);
+    YTE_Shared void UpdateWheel(glm::vec2 aWheelMove);
     YTE_Shared void UpdatePosition(glm::i32vec2 aPosition);
 
     YTE_Shared glm::i32vec2 GetPositionDelta();
@@ -82,22 +76,22 @@ namespace YTE
     YTE_Shared bool AnyButtonDown();
     YTE_Shared bool IsButtonDown(MouseButtons aButton);
     YTE_Shared bool WasButtonDown(MouseButtons aButton);
-    YTE_Shared glm::i32vec2 GetCursorPosition();
-    YTE_Shared void SetCursorPosition(glm::i32vec2 aPosition);
+    YTE_Shared glm::i32vec2 GetPositionInWindowCoordinates();
+    YTE_Shared glm::i32vec2 GetPositionInScreenCoordinates();
+    YTE_Shared void SetCursorPositionInScreenCoordinates(glm::i32vec2 aPosition);
 
   private:
-    glm::i32vec2 mPosition;
-    glm::i32vec2 mPrevPosition;
+    glm::i32vec2 mWindowCoordinates;
+    glm::i32vec2 mPreviousWindowCoordinates;
+    Window* mWindow;
+    bool* mMouseCurrent;
+    bool* mMousePrevious;
 
     bool mPositionChanged;
 
-    bool *mMouseCurrent;
-    bool *mMousePrevious;
 
     bool mArrayOne[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
     bool mArrayTwo[static_cast<size_t>(MouseButtons::Mouse_Buttons_Number)];
-
-    bool mLRSwapped;
   };
 }
 

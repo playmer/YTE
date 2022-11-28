@@ -53,7 +53,7 @@ namespace YTE
 
   void VkImguiDrawer::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mView = mParentViewData->mView;
     auto owner = mView->GetOwner();
@@ -89,25 +89,27 @@ namespace YTE
   void VkImguiDrawer::PreFrameUpdate(LogicUpdate *aUpdate)
   {
     UnusedArguments(aUpdate);
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mContext->SetCurrentContext();
 
-    auto &submesh = mContext->GetSubmesh();
+    auto submesh = mContext->GetSubmeshData();
 
     ImGui::Render();
     auto drawData = ImGui::GetDrawData();
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
     submesh.mShaderSetName = imguiStr;
 
-    submesh.mVertexBuffer.clear();
-    submesh.mIndexBuffer.clear();
+    submesh.mVertexData.Clear();
+    submesh.mIndexData.clear();
 
     for (int n = 0; n < drawData->CmdListsCount; n++)
     {
-      YTEProfileBlock("VkImgui CommandList Building");
+      OPTICK_EVENT("VkImgui CommandList Building");
 
       const ImDrawList* cmd_list = drawData->CmdLists[n];
 
@@ -120,27 +122,25 @@ namespace YTE
         vert.mPosition = glm::vec3{ theirVert.pos.x, theirVert.pos.y, 0.0f };
         vert.mTextureCoordinates = glm::vec3{ theirVert.uv.x, theirVert.uv.y, 0.0f };
         vert.mColor = glm::vec4{ color.x, color.y, color.z, color.w };
-        submesh.mVertexBuffer.emplace_back(vert);
+        submesh.mVertexData.AddVertex(vert);
       }
 
       for (int i = 0; i < cmd_list->IdxBuffer.Size; ++i)
       {
-        submesh.mIndexBuffer.emplace_back(cmd_list->IdxBuffer.Data[i]);
+        submesh.mIndexData.emplace_back(cmd_list->IdxBuffer.Data[i]);
       }
     }
 
     auto &instantiatedModel = mContext->GetInstantiatedModel();
 
-    if (submesh.mVertexBuffer.empty())
+    if (submesh.mVertexData.mPositionData.empty())
     {
       instantiatedModel.reset();
       return;
     }
 
-    std::vector<Submesh> submeshes{ submesh };
-
     auto renderer = mSurface->GetRenderer();
-    auto mesh = renderer->CreateSimpleMesh(mModelName, submeshes, true);
+    auto mesh = renderer->CreateSimpleMesh(mModelName, submesh, true);
     instantiatedModel = renderer->CreateModel(mView, mesh);
 
     UBOs::Model modelUBO;
@@ -177,18 +177,19 @@ namespace YTE
   {
     UnusedArguments(aMeshes);
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    mCBOB->NextCommandBuffer();
-    auto cbo = mCBOB->GetCurrentCBO();
-    cbo->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
-    Render(cbo);
-    cbo->end();
+    ++(*mCBOB);
+    auto [commandBuffer, renderingFence] = **mCBOB;
+
+    commandBuffer->begin(vk::CommandBufferUsageFlagBits::eRenderPassContinue, mRenderPass);
+    Render(commandBuffer);
+    commandBuffer->end();
   }
 
   void VkImguiDrawer::Render(std::shared_ptr<vkhlf::CommandBuffer>& aCBO)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mContext->SetCurrentContext();
     auto drawData = ImGui::GetDrawData();
@@ -217,11 +218,31 @@ namespace YTE
                              mPipelineData->mDescriptorSet,
                              nullptr);
 
-    aCBO->bindVertexBuffer(0,
-                           GetBuffer(mVkSubmesh->mVertexBuffer),
-                           0);
+    auto submesh = mVkSubmesh->mSubmesh;
 
-    aCBO->bindIndexBuffer(GetBuffer(mVkSubmesh->mIndexBuffer),
+
+    auto& vbd = submesh->mVertexBufferData;
+
+    std::vector<u64> vertexBufferOffsets;
+    std::vector<std::shared_ptr<vkhlf::Buffer>> vertexBuffersToBind;
+
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mPositionBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTextureCoordinatesBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mNormalBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mColorBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mTangentBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBinormalBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBitangentBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeightsBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneWeights2Buffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDsBuffer));
+    vertexBuffersToBind.emplace_back(GetBuffer(vbd.mBoneIDs2Buffer));
+
+    vertexBufferOffsets.resize(vertexBuffersToBind.size(), 0);
+
+    aCBO->bindVertexBuffers(0, vertexBuffersToBind, vertexBufferOffsets);
+
+    aCBO->bindIndexBuffer(GetBuffer(submesh->mIndexBuffer),
                           0,
                           vk::IndexType::eUint32);
 

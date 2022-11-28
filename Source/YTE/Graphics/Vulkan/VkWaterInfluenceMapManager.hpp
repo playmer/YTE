@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Vulkan
-///////////////////
-
 #pragma once
 
 #ifndef YTE_Graphics_Vulkan_VKWaterInfluenceMapManager_hpp
@@ -59,7 +54,7 @@ namespace YTE
     GPUBuffer<UBOs::WaterInformationManager> mBuffer;
     VkRenderedSurface* mSurface;
     GraphicsView* mGraphicsView;
-    unsigned char mMapUse[YTE_Graphics_WaterInformationCount];
+    unsigned char mMapUse[UBOs::WaterInformationCount];
     bool mUpdateRequired;
   };
 }

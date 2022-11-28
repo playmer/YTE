@@ -1,8 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics
-///////////////////
-
 #include "YTE/Core/Engine.hpp"
 
 #include "YTE/Graphics/GraphicsView.hpp"
@@ -501,7 +496,7 @@ namespace YTE
 
   void InfluenceMap::Create()
   {
-    mInstantiatedInfluenceMap = mRenderer->CreateWaterInfluenceMap(mGraphicsView);
+    mInstantiatedInfluenceMap = mGraphicsView->GetWaterInfluenceMapManager()->CreateMap();
 
     if (mUseTemp)
     {

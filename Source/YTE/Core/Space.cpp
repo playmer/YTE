@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2015-10-26
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include <memory>
 #include <iostream>
 #include <fstream>
@@ -27,7 +19,7 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Utilities/Utilities.hpp"
 
-#include "YTE/WWise/WWiseView.hpp"
+//#include "YTE/WWise/WWiseView.hpp"
 
 namespace YTE
 {
@@ -72,6 +64,7 @@ namespace YTE
     }
 
     mEngine->RegisterEvent<&Space::Update>(Events::SpaceUpdate, this);
+    mEngine->RegisterEvent<&Space::DeletionUpdate>(Events::DeletionUpdate, this);
 
     if (nullptr != aProperties)
     {
@@ -81,7 +74,7 @@ namespace YTE
 
   void Space::Initialize(InitializeEvent* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     aEvent->CheckRunInEditor = mIsEditorSpace;
 
@@ -105,11 +98,115 @@ namespace YTE
 
   void Space::Initialize()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     InitializeEvent event;
     event.CheckRunInEditor = mIsEditorSpace;
     Initialize(&event);
+  }
+  
+
+  void Space::DeletionUpdate(LogicUpdate *aUpdate)
+  {
+    UnusedArguments(aUpdate);
+    OPTICK_EVENT();
+
+    if (mCompositionDeletionList.Empty() && mComponentDeletionList.Empty())
+    {
+      return;
+    }
+    
+    /////////////////////////////////////////////////////////////////
+    // Delete Compositions
+    {
+      auto it = mCompositionDeletionList.begin();
+      auto end = mCompositionDeletionList.end();
+
+      while ((it != end) && (it.NextHook() != &mCompositionDeletionList.mHead))
+      {
+        // While technically the next hook, this hook pointer represents the delegate we're
+        // about to invoke.
+        auto current = it.NextHook();
+
+        {
+          auto &composition = *it;
+          auto& compositionOwnerCompositions = composition.GetParent()->GetCompositions();
+      
+          auto compare = [](UniquePointer<Composition> &aLhs, Composition *aRhs)-> bool
+                          {
+                            return aLhs.get() == aRhs; 
+                          };
+          auto iter = compositionOwnerCompositions.FindIteratorByPointer(composition.GetName(),
+                                                                         &composition, 
+                                                                         compare);
+
+          if (iter != compositionOwnerCompositions.end())
+          {
+            compositionOwnerCompositions.Erase(iter);
+          }
+        }
+
+        // We need to check to see if we're reached the end due to some number of events
+        // (including the current) removing itself from the list.
+        if (it.NextHook() == &mCompositionDeletionList.mHead)
+        {
+          break;
+        }
+
+        // We check to see if our current next hook is the same. If it isn't it means an
+        // event has removed itself, so we redo this loop without incrementing.
+        if (false == it.IsNextSame(current))
+        {
+          continue;
+        }
+
+        // We don't need to iterate our iterator, we can just remove the current
+        current->Unlink();
+      }
+    }
+
+    /////////////////////////////////////////////////////////////////
+    // Delete Components
+    {
+      auto it = mComponentDeletionList.begin();
+      auto end = mComponentDeletionList.end();
+
+      while ((it != end) && (it.NextHook() != &mComponentDeletionList.mHead))
+      {
+        // While technically the next hook, this hook pointer represents the delegate we're
+        // about to invoke.
+        auto current = it.NextHook();
+
+        {
+          auto &component = *it;
+          auto& componentOwnerComponents = component.GetOwner()->GetComponents();
+      
+          auto iter = componentOwnerComponents.Find(component.GetType());
+    
+          if (iter != componentOwnerComponents.end())
+          {
+            componentOwnerComponents.Erase(iter);
+          }
+        }
+
+        // We need to check to see if we're reached the end due to some number of events
+        // (including the current) removing itself from the list.
+        if (it.NextHook() == &mComponentDeletionList.mHead)
+        {
+          break;
+        }
+
+        // We check to see if our current next hook is the same. If it isn't it means an
+        // event has removed itself, so we redo this loop without incrementing.
+        if (false == it.IsNextSame(current))
+        {
+          continue;
+        }
+
+        // We don't need to iterate our iterator, we can just remove the current
+        current->Unlink();
+      }
+    }
   }
 
   void Space::ConnectNodes(Space* aSpace, Composition* aComposition)
@@ -126,7 +223,7 @@ namespace YTE
   // the current Space and loads level in place.
   void Space::Load()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     if (mStartingLevel.Empty())
     {
       CreateBlankLevel("NewLevel");
@@ -140,9 +237,22 @@ namespace YTE
 
   // Loads a level into the current Space. If already loaded, destroys 
   // the current Space and loads level in place.
-  void Space::Load(RSValue* aLevel, bool aInitialize)
+  void Space::Load(RSValue* aLevel, Space* aInitializeVia)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+
+    bool mustSeriallyInitialize = false;
+
+    if (nullptr == aInitializeVia)
+    {
+      aInitializeVia = this;
+    }
+
+    if (aInitializeVia->GetFinishedLoading())
+    {
+      mustSeriallyInitialize = true;
+    }
+
     mCompositions.Clear();
     ComponentClear();
       
@@ -155,7 +265,7 @@ namespace YTE
       printf("We could not deserialize the level provided.\n");
     }
       
-    if (aInitialize)
+    if (mustSeriallyInitialize)
     {
       Initialize();
     }
@@ -163,7 +273,7 @@ namespace YTE
     {
       for (auto const&[name, composition] : mCompositions)
       {
-        ConnectNodes(this, composition.get());
+        ConnectNodes(aInitializeVia, composition.get());
       }
 
 
@@ -189,7 +299,7 @@ namespace YTE
                     IntrusiveList<Composition>& aFrom,
                     IntrusiveList<Composition>* aTo)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (aFrom.Empty())
     {
@@ -243,7 +353,7 @@ namespace YTE
   // Updates the Space to the current frame.
   void Space::Update(LogicUpdate* aEvent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     SendEvent(Events::SpaceUpdate, aEvent);
     SendEvent(Events::DeletionUpdate, aEvent);
@@ -252,7 +362,7 @@ namespace YTE
     {
       mLevelName = mLoadingName;
       SetName(mLoadingName);
-      Load(mLevelToLoad, false);
+      Load(mLevelToLoad);
     }
 
     if (false == mFinishedLoading)
@@ -309,7 +419,7 @@ namespace YTE
 
     mLevelName = aLevelName;
 
-    AddComponent<WWiseView>();
+    //AddComponent<WWiseView>();
     auto graphicsView = AddComponent<GraphicsView>();
     graphicsView->ChangeWindow("Yours Truly Engine");
     graphicsView->NativeInitialize();
@@ -349,8 +459,10 @@ namespace YTE
     std::wstring pathWStr{ path.begin(), path.end() };
     
     level = pathWStr + L"Levels/" + level + L".json";
-    
-    level = std::experimental::filesystem::canonical(level, cWorkingDirectory);
+
+    std::filesystem::path basePath{ cWorkingDirectory };
+    std::filesystem::path levelPath{ level };
+    std::filesystem::path baseAndLevel = basePath / levelPath;
     
     RSStringBuffer sb;
     RSPrettyWriter writer(sb);
@@ -358,7 +470,7 @@ namespace YTE
     std::string levelInJson = sb.GetString();
     
     std::ofstream levelToSave;
-    levelToSave.open(level);
+    levelToSave.open(std::filesystem::canonical(baseAndLevel));
     levelToSave << levelInJson;
     levelToSave.close();
   }
@@ -368,7 +480,11 @@ namespace YTE
   {
     auto newSpace = AddComposition<Space>(aLevelName, mEngine, nullptr);
     newSpace->mOwner = this;
-    newSpace->Load(mEngine->GetLevel(aLevelName));
+
+    newSpace->Load(mEngine->GetLevel(aLevelName), this);
+
+    ConnectNodes(mSpace, this);
+
     auto ourView = GetComponent<GraphicsView>();
     auto newView = newSpace->GetComponent<GraphicsView>();
 

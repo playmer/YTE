@@ -16,14 +16,14 @@ cd lambplanet
 mkdir build
 ```
     
-2.) Installing CMake 3.10:
+2.) Installing CMake 3.16.1:
   * On Windows:
 ```
 1.) https://cmake.org/download/
 2.) Select the appropriate installer for your device (version doesn't matter as long as it's at least 3.10)
 ```
 
-3.) Installing Qt 5.9.0
+3.) Installing Qt 5.14.0
 ```
 1.) https://info.qt.io/download-qt-for-application-development
 2.) When prompted for install directory, choose wherever you like. I will reference this location as `install_dir`
@@ -32,12 +32,12 @@ mkdir build
 5.) Add an environment variable called Qt defined as `install_dir\5.9`
 ```
 
-4.) Installing Wwise 2017.1.0.6302
+4.) Installing Wwise 2017.1.1.6340
 ```
 1.) Go to the Wwise website and download their launcher: https://www.audiokinetic.com/download/
 2.) Open the launcher, you may need to make an account.
-3.) There should be a big blue button that says "Instal Wwise 2017.1.0.6302" click it.
-      - If not, navigate to install another version and find 2017.1.0.6302
+3.) There should be a big blue button that says "Install Wwise 2017.1.1.6340" click it.
+      - If not, navigate to install another version and find 2017.1.1.6340
 4.) Besides the defaults, you will want:
     Packages:
       - SDK (C++)
@@ -45,9 +45,9 @@ mkdir build
       - Under Microsoft, choose Windows
 ```
 
-5.) Installing Vulkan 1.1.92.1
+5.) Installing Vulkan 1.1.126.0
 ```
-1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.1.92.1 installer for your platform
+1.) Follow this link (https://vulkan.lunarg.com/sdk/home) and download the 1.1.126.0 installer for your platform
 2.) Install, all of the default options should be fine
 ```
 

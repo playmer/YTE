@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2015-10-28
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Utilities_Orientation_hpp
@@ -25,7 +17,7 @@ namespace YTE
   public:
     YTEDeclareType(OrientationChanged);
 
-    Orientation *Orientation;
+    Orientation *ChangedOrientation;
     glm::vec3 ForwardVector;
     glm::vec3 RightVector;
     glm::vec3 UpVector;

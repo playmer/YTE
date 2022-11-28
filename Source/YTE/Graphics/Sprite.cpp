@@ -22,7 +22,7 @@ namespace YTE
 
     filesystem::path fsPath = Path::GetGamePath().String();
 
-    filesystem::path finalPath = fsPath.parent_path() / L"Textures/Originals";
+    filesystem::path finalPath = fsPath.parent_path() / "Textures";
 
     std::vector<std::string> result;
 
@@ -81,6 +81,7 @@ namespace YTE
     , mTimeAccumulated{ 0.0 }
     , mCurrentIndex{ 0 }
   {
+    OPTICK_EVENT();
   }
 
   Sprite::~Sprite()
@@ -90,9 +91,12 @@ namespace YTE
 
   void Sprite::AssetInitialize()
   {
+    OPTICK_EVENT();
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
 
     mConstructing = false;
+
+    //mTextureName = "MENU_BUTTON_Yes.basis";
 
     if (mTextureName.empty())
     {
@@ -104,6 +108,7 @@ namespace YTE
 
   void Sprite::Initialize()
   {
+    OPTICK_EVENT();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
@@ -117,6 +122,7 @@ namespace YTE
 
   void Sprite::Update(LogicUpdate *aUpdate)
   {
+    OPTICK_EVENT();
     auto delta = mSpeed / mFrames;
 
     if (mInstantiatedSprite)
@@ -152,12 +158,12 @@ namespace YTE
         // update the model
         auto mesh = mInstantiatedSprite->GetMesh();
 
-        mSubmesh.mVertexBuffer[0].mTextureCoordinates = uv0;
-        mSubmesh.mVertexBuffer[1].mTextureCoordinates = uv1;
-        mSubmesh.mVertexBuffer[2].mTextureCoordinates = uv2;
-        mSubmesh.mVertexBuffer[3].mTextureCoordinates = uv3;
+        mVertexData.mTextureCoordinatesData[0] = uv0;
+        mVertexData.mTextureCoordinatesData[1] = uv1;
+        mVertexData.mTextureCoordinatesData[2] = uv2;
+        mVertexData.mTextureCoordinatesData[3] = uv3;
         
-        mesh->UpdateVertices(0, mSubmesh.mVertexBuffer);
+        mesh->GetSubmeshes()[0].UpdateTextureCoordinatesBuffer(mVertexData.mTextureCoordinatesData);
 
         ++mCurrentIndex;
 
@@ -218,7 +224,7 @@ namespace YTE
 
   void Sprite::CreateSprite()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     if (nullptr != mInstantiatedSprite)
     {
       mInstantiatedSprite.reset();
@@ -268,32 +274,34 @@ namespace YTE
     modelMaterial.mSpecular = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mEmissive = glm::vec4{ 0.0f, 0.0f, 0.0f, 1.0f };
     modelMaterial.mShininess = 1.0f;
-    mSubmesh.mUBOMaterial = modelMaterial;
+
+    SubmeshData submesh;
+    submesh.mUBOMaterial = modelMaterial;
     
-    mSubmesh.mDiffuseMap = mTextureName;
-    mSubmesh.mDiffuseType = TextureViewType::e2D;
-    mSubmesh.mShaderSetName = "Sprite";
+    submesh.mShaderSetName = "Sprite";
 
-    mSubmesh.mCullBackFaces = false;
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
 
-    mSubmesh.mVertexBuffer.clear();
+    submesh.mCullBackFaces = false;
 
-    mSubmesh.mVertexBuffer.emplace_back(vert0);
-    mSubmesh.mVertexBuffer.emplace_back(vert1);
-    mSubmesh.mVertexBuffer.emplace_back(vert2);
-    mSubmesh.mVertexBuffer.emplace_back(vert3);
+    submesh.mVertexData.Clear();
 
-    mSubmesh.mIndexBuffer.clear();
-    mSubmesh.mIndexBuffer = {
+    submesh.mVertexData.AddVertex(vert0);
+    submesh.mVertexData.AddVertex(vert1);
+    submesh.mVertexData.AddVertex(vert2);
+    submesh.mVertexData.AddVertex(vert3);
+
+    mVertexData = submesh.mVertexData;
+
+    submesh.mIndexData.clear();
+    submesh.mIndexData = {
       0, 1, 2,
       2, 3, 0
     };
 
-    std::vector<Submesh> submeshes{ mSubmesh };
-
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 

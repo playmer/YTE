@@ -1,14 +1,3 @@
-/******************************************************************************/
-/*!
-\file   Engine.hpp
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2014-04-30
-\brief
-  This file contains Space, which is what a level will be loaded into.
-  All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Engine_hpp
@@ -23,8 +12,7 @@
 #include "YTE/Core/Plugin.hpp"
 #include "YTE/Core/Space.hpp"
 
-#include "YTE/Platform/GamepadSystem.hpp"
-#include "YTE/Platform/Window.hpp"
+#include "YTE/Platform/PlatformManager.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -58,8 +46,8 @@ namespace YTE
   public:
     YTEDeclareType(BoundTypeChanged);
 
-    BoundType *aOldType;
-    BoundType *aNewType;
+    Type *aOldType;
+    Type *aNewType;
   };
 
   enum class LogType
@@ -80,6 +68,16 @@ namespace YTE
 
   YTEDeclareEvent(LogEvent);
 
+  class EngineConfig : public Object
+  {
+  public:
+    YTEDeclareType(EngineConfig);
+
+    std::string PreferredGpu;
+    bool ValidationLayers = false;
+
+  };
+
   class Engine : public Composition
   {
   public:
@@ -92,7 +90,7 @@ namespace YTE
     YTE_Shared void Initialize(InitializeEvent*) override;
     void Initialize()
     {
-      YTEProfileFunction();
+      OPTICK_EVENT();
       InitializeEvent event;
       event.CheckRunInEditor = true;
       Initialize(&event);
@@ -124,9 +122,11 @@ namespace YTE
 
     Window* GetWindow()
     {
-      if (mWindows.size())
+      auto window = mPlatform.GetPrimaryWindow();
+      
+      if (window.has_value())
       {
-        return mWindows.begin()->second.get();
+        return *window;
       }
       
       return nullptr;
@@ -135,11 +135,11 @@ namespace YTE
 
     std::unordered_map<std::string, std::unique_ptr<Window>>& GetWindows()
     {
-      return mWindows;
+      return mPlatform.GetWindows();
     }
 
 
-    inline GamepadSystem *GetGamepadSystem() { return &mGamepadSystem; }
+    inline PlatformManager* GetPlatformManager() { return &mPlatform; }
     YTE_Shared RSDocument* GetArchetype(String &aArchetype);
     YTE_Shared std::unordered_map<String, UniquePointer<RSDocument>>* GetArchetypes(void);
     YTE_Shared RSDocument* GetLevel(String &aLevel);
@@ -158,25 +158,37 @@ namespace YTE
     size_t GetFrame() { return mFrame; }
 
     YTE_Shared Composition* StoreCompositionGUID(Composition *aComposition);
-    YTE_Shared Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Composition* CheckForCompositionGUIDCollision(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared Composition* GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared bool RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID);
 
     YTE_Shared Component* StoreComponentGUID(Component *aComponent);
-    YTE_Shared Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier &aGUID);
+    YTE_Shared Component* CheckForComponentGUIDCollision(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared Component* GetComponentByGUID(GlobalUniqueIdentifier const& aGUID);
     YTE_Shared bool RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID);
 
     YTE_Shared void Log(LogType aType, std::string_view aLog);
 
+    YTE_Shared ComponentSystem* GetComponentSystem()
+    {
+      return &mComponentSystem;
+    }
+
+    YTE_Shared auto GetConfig() -> EngineConfig const&
+    {
+      return mConfig;
+    }
 
     OrderedMultiMap<Composition*, std::unique_ptr<Composition>> mCompositionsToRemove;
     OrderedMultiMap<Composition*, ComponentMap::iterator> mComponentsToRemove;
 
   private:
-    GamepadSystem mGamepadSystem;
+    // all compositions and components mapped to GUIDs (represented as strings)
+    std::unordered_map<GlobalUniqueIdentifier, Composition*> mCompositionsByGUID;
+    std::unordered_map<GlobalUniqueIdentifier, Component*> mComponentsByGUID;
 
-    std::unordered_map<std::string, std::unique_ptr<Window>> mWindows;
+    PlatformManager mPlatform;
+    ComponentSystem mComponentSystem;
 
     std::unordered_map<String, UniquePointer<RSDocument>> mArchetypes;
     std::unordered_map<String, UniquePointer<RSDocument>> mLevels;
@@ -184,12 +196,8 @@ namespace YTE
     std::chrono::time_point<std::chrono::high_resolution_clock> mBegin;
     std::chrono::time_point<std::chrono::high_resolution_clock> mLastFrame;
 
-    // all compositions and components mapped to GUIDs (represented as strings)
-    std::unordered_map<std::string, Composition*> mCompositionsByGUID;
-    std::unordered_map<std::string, Component*> mComponentsByGUID;
-
-
     std::unordered_map<std::string, std::unique_ptr<PluginWrapper>> mPlugins;
+    EngineConfig mConfig;
 
     double mDt;
     size_t mFrame;

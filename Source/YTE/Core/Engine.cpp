@@ -1,16 +1,7 @@
-/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\date   2015-09-19
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include <iostream>
 #include <fstream>
 #include <memory>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
@@ -23,11 +14,9 @@ All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
 
 #include "YTE/Graphics/GraphicsSystem.hpp"
 
-#include "YTE/WWise//WWiseSystem.hpp"
-
 namespace YTE
 {
-  namespace fs = std::experimental::filesystem;
+  namespace fs = std::filesystem;
 
   YTEDefineEvent(LogicUpdate);
   YTEDefineEvent(PhysicsUpdate);
@@ -59,48 +48,67 @@ namespace YTE
     builder.Field<&BoundTypeChanged::aNewType>("NewType", PropertyBinding::GetSet);
   }
 
+  YTEDefineType(EngineConfig)
+  {
+    RegisterType<EngineConfig>();
+    TypeBuilder<EngineConfig> builder;
+    builder.Field<&EngineConfig::PreferredGpu>("PreferredGpu", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+    builder.Field<&EngineConfig::ValidationLayers>("ValidationLayers", PropertyBinding::GetSet)
+      .AddAttribute<Serializable>();
+  }
+
   YTEDefineType(Engine)
   {
     RegisterType<Engine>();
     TypeBuilder<Engine> builder;
     builder.Function<&Engine::EndExecution>("EndExecution")
       .SetDocumentation("End the execution of the program before the beginning of the next frame.");
-    builder.Property<&Engine::GetGamepadSystem, NoSetter>("GamepadSystem");
   }
 
   static String cEngineName{ "Engine" };
 
+
+  template <typename ComponentType>
+  static void DestructsComponent(Component* aComponent)
+  {
+    static_cast<ComponentType*>(aComponent)->~ComponentType();
+  }
+
   Engine::Engine(std::vector<const char *> aConfigFilePath, bool aEditorMode)
     : Composition{ this, cEngineName, nullptr }
-    , mFrame{ 0 }
     , mCompositionsByGUID{}
     , mComponentsByGUID{}
+    , mPlatform{ this }
+    , mComponentSystem{ this }
+    , mFrame{ 0 }
     , mShouldRun{ true }
     , mEditorMode{ aEditorMode }
     , mInitialized{ false }
   {
-    namespace fs = std::experimental::filesystem;
-
-    if constexpr (YTE_CAN_PROFILE)
-    {
-      //EASY_PROFILER_ENABLE;
-      profiler::startListen();
-    }
+    namespace fs = std::filesystem;
 
     const char *pathToUse{ nullptr };
 
     for (auto path : aConfigFilePath)
     {
-      auto file = GetConfigPath(path);
-
-      if (fs::exists(file))
+      try
       {
-        pathToUse = path;
-        break;
+        auto file = GetConfigPath(path);
+
+        if (fs::exists(file))
+        {
+          pathToUse = path;
+          break;
+        }
+      }
+      catch(const std::exception& e)
+      {
+        UnusedArguments(e);
       }
     }
 
-    YTEProfileFunction();
+    OPTICK_EVENT();
     
     auto enginePath = Path::SetEnginePath(fs::current_path().string());
 
@@ -113,10 +121,8 @@ namespace YTE
     mBegin = std::chrono::high_resolution_clock::now();
     mLastFrame = mBegin;
 
-    mComponents.Emplace(TypeId<JobSystem>(), std::make_unique<JobSystem>(this));
-    mComponents.Emplace(TypeId<ComponentSystem>(), std::make_unique<ComponentSystem>(this));
-    mComponents.Emplace(TypeId<WWiseSystem>(), std::make_unique<WWiseSystem>(this));
-    mComponents.Emplace(TypeId<GraphicsSystem>(), std::make_unique<GraphicsSystem>(this));
+    AddComponent<JobSystem>();
+    AddComponent<GraphicsSystem>();
 
     fs::path archetypesPath = Path::GetGamePath().String();
     archetypesPath = archetypesPath.parent_path();
@@ -161,7 +167,7 @@ namespace YTE
 
   void Engine::Deserialize(RSValue *aValue)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     DebugObjection(false == aValue->IsObject(), "We're trying to serialize something that isn't an Engine.");
     DebugObjection(false == aValue->HasMember("Windows") || 
@@ -177,15 +183,19 @@ namespace YTE
     {
       std::string windowName = windowsIt->name.GetString();
 
+      auto& platformWindows = GetWindows();
+
       if (false == mEditorMode)
       {
-        mWindows.emplace(windowName, std::make_unique<Window>(this, &windowsIt->value));
+        platformWindows.emplace(windowName, std::make_unique<Window>(this, &windowsIt->value));
       }
       else
       {
-        mWindows.emplace(windowName, std::make_unique<Window>(this));
+        platformWindows.emplace(windowName, std::make_unique<Window>(this));
       }
     }
+
+    Object::DeserializeByType(&(*aValue)["EngineConfig"], &mConfig, EngineConfig::GetStaticType());
 
     if (!mEditorMode)
     {
@@ -203,18 +213,20 @@ namespace YTE
 
   Window* Engine::AddWindow(const char *aName)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+
+    auto& windows = GetWindows();
 
     if (false == mEditorMode)
     {
-      auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this, nullptr));
+      auto toReturn = windows.emplace(aName, std::make_unique<Window>(this, nullptr));
       toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
     }
     else
     {
-      auto toReturn = mWindows.emplace(aName, std::make_unique<Window>(this));
+      auto toReturn = windows.emplace(aName, std::make_unique<Window>(this));
       toReturn.first->second->mName = aName;
 
       return toReturn.first->second.get();
@@ -223,13 +235,15 @@ namespace YTE
 
   void Engine::RemoveWindow(Window * aWindow)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    for (auto it = mWindows.begin(); it != mWindows.end(); ++it) 
+    auto& windows = GetWindows();
+
+    for (auto it = windows.begin(); it != windows.end(); ++it)
     {
       if (it->second.get() == aWindow)
       {
-        mWindows.erase(it);
+        windows.erase(it);
         return;
       }
     }
@@ -237,7 +251,7 @@ namespace YTE
 
   void Engine::Initialize(InitializeEvent*)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     for (auto &component : mComponents)
     {
@@ -259,7 +273,8 @@ namespace YTE
   // Updates the Space to the current frame.
   void Engine::Update()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+
     using namespace std::chrono;
     duration<double> time_span = duration_cast<duration<double>>(high_resolution_clock::now() - mLastFrame);
     mLastFrame = high_resolution_clock::now();
@@ -271,11 +286,12 @@ namespace YTE
       mDt = 0.016;
     }
 
-    for (auto &window : mWindows)
+    for (auto &window : GetWindows())
     {
       SetFrameRate(*window.second, mDt);
-      window.second->Update();
     }
+
+    mPlatform.Update();
     
     LogicUpdate updateEvent;
     updateEvent.Dt = mDt;
@@ -283,12 +299,6 @@ namespace YTE
     SendEvent(Events::DeletionUpdate, &updateEvent);
 
     SendEvent(Events::AnimationUpdate, &updateEvent);
-    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
-
-    GetComponent<WWiseSystem>()->Update(mDt);
-  
-    mGamepadSystem.Update(mDt);
-
     SendEvent(Events::PreLogicUpdate, &updateEvent);
     SendEvent(Events::LogicUpdate, &updateEvent);
     SendEvent(Events::SpaceUpdate, &updateEvent);
@@ -301,6 +311,7 @@ namespace YTE
     }
 
     SendEvent(Events::PreFrameUpdate, &updateEvent);
+    SendEvent(Events::GraphicsDataUpdate, &updateEvent);
     SendEvent(Events::FrameUpdate, &updateEvent);
     SendEvent(Events::PresentFrame, &updateEvent);
 
@@ -326,9 +337,9 @@ namespace YTE
     if (totalTime >= 0.5)
     {
       // FPS counter to the window name 
-      std::array<char, 64> buffer;
-      sprintf_s(buffer.data(), buffer.size(), "FPS: %f", (counter / 0.5));
-      aWindow.SetWindowTitle(buffer.data());
+      fmt::MemoryWriter buffer;
+      buffer.write("FPS: {}", (counter / 0.5f));
+      aWindow.SetWindowTitle(buffer.c_str());
 
       totalTime = 0.0f;
       counter = 0;
@@ -338,26 +349,29 @@ namespace YTE
   void Engine::EndExecution()
   {
     mShouldRun = false;
+    auto jobSystem = GetComponent<JobSystem>();
+
+    if (jobSystem)
+    {
+      jobSystem->Join();
+    }
   };
 
   // Cleans up anything in the Space.
   Engine::~Engine()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     mCompositions.Clear();
 
-    mPlugins.clear();
+    mComponents.Clear();
 
-    if constexpr (YTE_CAN_PROFILE)
-    {
-      profiler::stopListen();
-    }
+    mPlugins.clear();
   }
 
   void Engine::LoadPlugins()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     fs::path gamePath = Path::GetGamePath().String();
     gamePath /= "Plugins";
@@ -387,6 +401,8 @@ namespace YTE
     fs::create_directories(gamePath, error);
 
 
+    std::vector<std::string> paths;
+
     for (auto& itemIt : fs::directory_iterator(gamePath))
     {
       fs::path item{ itemIt };
@@ -395,9 +411,69 @@ namespace YTE
       
       if (".dll" == extension)
       {
-        auto path = item.u8string();
-        mPlugins[path] = std::make_unique<PluginWrapper>(this, path);
+        paths.emplace_back(item.u8string());
       }
+    }
+
+    // Plugins to load
+    if (paths.size())
+    {
+      // You don't want to know why I'm doing this, but I'll tell you anyway.
+      //
+      // Plugins sometimes have dependencies. The game plugin relying on a plugin for middlewares
+      // as an example. And those plugins could depend on even more plugins.
+      //
+      // But handling those dependencies would require writing some sort of file structure for defining them. 
+      // So instead, we're just going to try to load plugins, and if we fail, we continue, hoping that the next
+      // iteration will have loaded their dependency (or a dependency of their dependency, etc).
+      //
+      // At some point, we should probably do that work. We'll also need to topologically sort them, have fun 
+      // future maintainter
+      std::vector<size_t> indicesToDelete;
+      bool somethingChanged = true;
+      while (somethingChanged)
+      {
+        for (auto& [path, i] : enumerate(paths))
+        {
+          auto plugin = std::make_unique<PluginWrapper>(this, *path);
+
+          if (plugin->IsLoaded())
+          {
+            mPlugins[*path] = std::move(plugin);
+            indicesToDelete.emplace_back(i);
+          }
+        }
+
+        // Delete the loaded plugins paths.
+        // We remove in reverse order so indexes don't change.
+        std::reverse(indicesToDelete.begin(), indicesToDelete.end());
+        for (auto& index : indicesToDelete)
+        {
+          paths.erase(paths.begin() + index);
+        }
+
+        // Nothing changed, we should abort.
+        if (indicesToDelete.size() == 0)
+        {
+          somethingChanged = false;
+        }
+
+        indicesToDelete.clear();
+      }
+    }
+
+    // If there are still plugins to load, we need to report that as an error to the user.
+    if (paths.size())
+    {
+      std::string pluginErrors = "Could not load the following plugins:\n";
+
+      for (auto& path : paths)
+      {
+        pluginErrors += path;
+        pluginErrors += '\n';
+      }
+
+      Log(LogType::Error, pluginErrors);
     }
   }
 
@@ -408,7 +484,7 @@ namespace YTE
   
   RSDocument* Engine::GetArchetype(String &aArchetype)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (false == mEditorMode)
     {
@@ -451,7 +527,7 @@ namespace YTE
   
   RSDocument* Engine::GetLevel(String &aLevel)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (false == mEditorMode)
     {
@@ -506,7 +582,7 @@ namespace YTE
 
   Composition* Engine::StoreCompositionGUID(Composition *aComposition)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     GlobalUniqueIdentifier &guid = aComposition->GetGUID();
     
@@ -515,32 +591,34 @@ namespace YTE
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
+      //mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID().ToString(), aComposition));
+      mCompositionsByGUID.emplace(std::make_pair(aComposition->GetGUID(), aComposition));
     }
 
     return collision;
   }
 
-  Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Composition* Engine::CheckForCompositionGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    auto it = mCompositionsByGUID.find(aGUID.ToString());
+    //auto it = mCompositionsByGUID.find(aGUID.ToString());
+    auto it = mCompositionsByGUID.find(aGUID);
 
-    if (it == mCompositionsByGUID.end())
+    if (it != mCompositionsByGUID.end())
     {
-      return nullptr;
+      return it->second;
     }
-
-    return it->second;
+    
+    return nullptr;
   }
 
   Composition* Engine::GetCompositionByGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    std::string guid = aGUID.ToString();
-    auto it = mCompositionsByGUID.find(guid);
+    //std::string guid = aGUID.ToString();
+    auto it = mCompositionsByGUID.find(aGUID);
 
     if (it == mCompositionsByGUID.end())
     {
@@ -552,61 +630,64 @@ namespace YTE
 
   bool Engine::RemoveCompositionGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mCompositionsByGUID.size() == 0)
     {
       return false;
     }
 
-    auto it = mCompositionsByGUID.find(aGUID.ToString());
+    //auto it = mCompositionsByGUID.find(aGUID.ToString());
+    auto it = mCompositionsByGUID.find(aGUID);
 
-    if (it == mCompositionsByGUID.end())
+    if (it != mCompositionsByGUID.end())
     {
-      return false;
+      mCompositionsByGUID.erase(it);
+      return true;
     }
 
-    mCompositionsByGUID.erase(aGUID.ToString());
-    return true;
+    return false;
   }
 
   Component* Engine::StoreComponentGUID(Component *aComponent)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    GlobalUniqueIdentifier &guid = aComponent->GetGUID();
+    auto& guid = aComponent->GetGUID();
 
     Component* collision = CheckForComponentGUIDCollision(guid);
 
     // GUID has NOT already been used for a composition
     if (!collision)
     {
-      mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
+      //mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID().ToString(), aComponent));
+      mComponentsByGUID.emplace(std::make_pair(aComponent->GetGUID(), aComponent));
     }
 
     return collision;
   }
 
-  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier& aGUID)
+  Component* Engine::CheckForComponentGUIDCollision(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    auto it = mComponentsByGUID.find(aGUID.ToString());
+    //auto it = mComponentsByGUID.find(aGUID.ToString());
+    auto it = mComponentsByGUID.find(aGUID);
 
-    if (it == mComponentsByGUID.end())
+    if (it != mComponentsByGUID.end())
     {
-      return nullptr;
+      return it->second;
     }
-
-    return it->second;
+    
+    return nullptr;
   }
 
   Component* Engine::GetComponentByGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
-    std::string guid = aGUID.ToString();
-    auto it = mComponentsByGUID.find(guid);
+    //std::string guid = aGUID.ToString();
+    auto it = mComponentsByGUID.find(aGUID);
 
     if (it == mComponentsByGUID.end())
     {
@@ -618,22 +699,22 @@ namespace YTE
 
   bool Engine::RemoveComponentGUID(GlobalUniqueIdentifier const& aGUID)
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
 
     if (mComponentsByGUID.size() == 0)
     {
       return false;
     }
 
-    auto it = mComponentsByGUID.find(aGUID.ToString());
+    auto it = mComponentsByGUID.find(aGUID);
 
-    if (it == mComponentsByGUID.end())
+    if (it != mComponentsByGUID.end())
     {
-      return false;
+      mComponentsByGUID.erase(it);
+      return true;
     }
-
-    mComponentsByGUID.erase(aGUID.ToString());
-    return true;
+    
+    return false;
   }
 
   void Engine::Log(LogType aType, std::string_view aLog)

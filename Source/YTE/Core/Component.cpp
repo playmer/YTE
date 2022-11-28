@@ -18,11 +18,14 @@ namespace YTE
     builder.Function<&Component::Remove>("Remove")
       .SetDocumentation("Removes the component from its owner. This is delayed until the next frame.");
   
-    builder.Property<&Component::GetOwner, NoSetter>("Owner");
+    builder.Property<SelectOverload<Composition*(Component::*)()>(&Component::GetOwner), NoSetter>("Owner");
   }
 
   Component::Component(Composition *aOwner, Space *aSpace)
-    : mOwner(aOwner), mSpace(aSpace), mGUID()
+    : mOwner{ aOwner } 
+    , mSpace{ aSpace } 
+    , mDeletionHook{ this }
+    , mGUID{}
   {
     Engine *engine = mOwner->GetEngine();
 
@@ -67,7 +70,7 @@ namespace YTE
     debugbreak();
   }
 
-  GlobalUniqueIdentifier& Component::GetGUID()
+  GlobalUniqueIdentifier const& Component::GetGUID()
   {
     return mGUID;
   }

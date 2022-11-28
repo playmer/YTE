@@ -69,11 +69,11 @@ namespace YTE
     }
 
     private:
-    void Platform_Move(SharedObject&& aToMove);
-    void Platform_LoadLibrary(std::string const& aFile);
-    void Platform_UnLoadLibrary();
-    void* Platform_GetVoidFunction(std::string const& aName);
-    bool Platform_GetLoaded();
+    YTE_Shared void Platform_Move(SharedObject&& aToMove);
+    YTE_Shared void Platform_LoadLibrary(std::string const& aFile);
+    YTE_Shared void Platform_UnLoadLibrary();
+    YTE_Shared void* Platform_GetVoidFunction(std::string const& aName);
+    YTE_Shared bool Platform_GetLoaded();
 
     PrivateImplementationLocal<32> mData;
     std::string mFile;

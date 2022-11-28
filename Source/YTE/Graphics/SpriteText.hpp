@@ -1,13 +1,6 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2018/01/19
-*
-* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #pragma once
+
+#include <optional>
 
 #include <stb/stb_truetype.h>
 
@@ -167,11 +160,18 @@ namespace YTE
       return toReturn;
     }
 
+    void SetColor(glm::vec4 aColor)
+    {
+      mColor = aColor;
+    }
+
   private:
     Renderer *mRenderer;
     Window *mWindow;
     Transform *mTransform;
     UBOs::Model mUBOModel;
+
+    std::optional<glm::vec4> mColor; // TODO, HUGE HACK, PLEASE FIX;
 
     std::string mText;
     std::string mFontName;
@@ -181,11 +181,13 @@ namespace YTE
     float mFontSize;
     float mLineLength;
 
-    Font mFontInfo;
+    Font* mFontInfo;
     BoundingBox mBoundingBox;
 
     std::unique_ptr<InstantiatedModel> mInstantiatedSprite;
     bool mConstructing;
+
+    static std::map<std::string, Font> sFonts;
 
     YTE_Shared void PrepareFont();
   };

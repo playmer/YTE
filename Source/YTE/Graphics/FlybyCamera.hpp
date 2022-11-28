@@ -34,7 +34,7 @@ namespace YTE
     Transform *mTransform;
     Orientation *mOrientation;
     glm::vec3 mMovementDirection;
-    glm::ivec2 mMouseInitialPosition{0, 0};
+    glm::ivec2 mMouseInitialPositionInScreenCoordinates{0, 0};
     glm::ivec2 mMouseDelta;
     Window *mWindow;
     Mouse *mMouse;

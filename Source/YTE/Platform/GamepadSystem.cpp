@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
- * \author Joshua T. Fisher
- * \date   2015-6-7
- *
- * \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
- */
-/******************************************************************************/
 #include "YTE/Core/ScriptBind.hpp"
 
 #include "YTE/Platform/GamepadSystem.hpp"
@@ -17,35 +9,42 @@ namespace YTE
     RegisterType<GamepadSystem>();
     TypeBuilder<GamepadSystem> builder;
 
-    builder.Function<&GamepadSystem::GetXboxController>("GetXboxController")
-      .SetParameterNames("aController")
-      .SetDocumentation("Gets you the given controller. Warning: Controller may not be plugged in/active.");
+    //builder.Function<&GamepadSystem::GetXboxController>("GetXboxController")
+    //  .SetParameterNames("aController")
+    //  .SetDocumentation("Gets you the given controller. Warning: Controller may not be plugged in/active.");
   }
 
   GamepadSystem::GamepadSystem()
-    : mChecking{ true }
   {
-    for (uint8_t i = 0; i < 4; ++i)
-    {
-      mXboxControllers[i].first.mGamepadIndex = i;
+    PlatformInitialize();
+  }
 
-      // Make the second higher than 4 so that it updates the controllers immediately.
-      mXboxControllers[i].second = 5.0f;
+  Gamepad* GamepadSystem::GetGamepad(i64 aId)
+  {
+    auto it = mGamepads.find(aId);
+
+    if (it != mGamepads.end())
+    {
+      return &it->second;
+    }
+
+    return nullptr;
+  }
+
+  void GamepadSystem::UpdateGamepads(double aDt)
+  {
+    OPTICK_EVENT();
+    for (auto& [instanceId, gamepad] : mGamepads)
+    {
+      gamepad.Update(aDt);
     }
   }
 
-  void GamepadSystem::Update(double aDt)
+  void GamepadSystem::PreUpdateGamepads()
   {
-    UpdateXboxControllers(aDt);
-  }
-    
-  XboxController* GamepadSystem::GetXboxController(ControllerId aId)
-  {
-    if (aId >= ControllerId::Xbox_Controllers_Number)
+    for (auto& [instanceId, gamepad] : mGamepads)
     {
-      return nullptr;
+      gamepad.PreUpdate();
     }
-
-    return &mXboxControllers.at(static_cast<size_t>(aId)).first;
   }
 }

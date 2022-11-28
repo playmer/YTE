@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Joshua T. Fisher
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Component_hpp
@@ -37,7 +31,9 @@ namespace YTE
     virtual void Start() { };
     virtual void Deinitialize() { };
 
+    Space const* GetSpace() const { return mSpace; }
     Space* GetSpace() { return mSpace; }
+    Composition const* GetOwner() const { return mOwner; }
     Composition* GetOwner() { return mOwner; }
 
     void Deserialize(RSValue* aProperties) override
@@ -52,12 +48,18 @@ namespace YTE
 
     YTE_Shared void DebugBreak();
 
-    YTE_Shared GlobalUniqueIdentifier& GetGUID();
+    YTE_Shared GlobalUniqueIdentifier const& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
+
+    YTE_Shared IntrusiveList<Component>::Hook& GetDeletionHook()
+    {
+      return mDeletionHook;
+    };
 
   protected:
     Composition *mOwner;
     Space *mSpace;
+    IntrusiveList<Component>::Hook mDeletionHook;
 
     GlobalUniqueIdentifier mGUID;
   };

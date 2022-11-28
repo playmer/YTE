@@ -13,8 +13,13 @@ namespace YTE
   class GPUBufferBase
   {
   public:
-    GPUBufferBase(size_t aSize)
-      : mArraySize{ aSize }
+    GPUBufferBase(size_t aSizeInBytes)
+      : mSizeInBytes{ aSizeInBytes }
+    {
+
+    }
+
+    virtual ~GPUBufferBase()
     {
 
     }
@@ -26,9 +31,14 @@ namespace YTE
 
     virtual void Update(u8 const* aPointer, size_t aBytes, size_t aOffset) = 0;
 
+    size_t GetSizeInBytes()
+    {
+      return mSizeInBytes;
+    }
+
   protected:
     PrivateImplementationLocal<32> mData;
-    size_t mArraySize;
+    size_t mSizeInBytes;
   };
 
   template <typename tType>
@@ -40,34 +50,119 @@ namespace YTE
 
     }
 
-    GPUBuffer(std::unique_ptr<GPUBufferBase> aUBO)
-      : mUBO{ std::move(aUBO) }
+    GPUBuffer(std::unique_ptr<GPUBufferBase> aBuffer)
+      : mBuffer{ std::move(aBuffer) }
     {
 
     }
 
     GPUBufferBase& GetBase()
     {
-      return *mUBO;
+      return *mBuffer;
     }
 
     void Update(tType const& aData)
     {
-      mUBO->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+      auto bytes = sizeof(tType);
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), bytes, 0);
     }
 
     void Update(tType const* aData, size_t aSize)
     {
-      mUBO->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
+      auto bytes = sizeof(tType) * aSize;
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData), bytes, 0);
+    }
+
+    void Update(ContiguousRange<tType> aData)
+    {
+      auto bytes = sizeof(tType) * aData.size();
+
+      DebugAssert(bytes <= mBuffer->GetSizeInBytes(), "We should always have enough bytes.");
+
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), bytes, 0);
+    }
+
+    operator bool()
+    {
+      return mBuffer != nullptr;
     }
 
     void reset()
     {
-      mUBO.reset();
+      mBuffer.reset();
+    }
+
+    std::unique_ptr<GPUBufferBase> Steal()
+    {
+      return std::move(mBuffer);
     }
 
   private:
-    std::unique_ptr<GPUBufferBase> mUBO;
+    std::unique_ptr<GPUBufferBase> mBuffer;
+  };
+
+
+
+  template <typename tType>
+  class GPUBufferRef
+  {
+  public:
+    GPUBufferRef()
+    {
+
+    }
+
+    GPUBufferRef(GPUBuffer<tType>& aBuffer)
+      : mBuffer{ &(aBuffer.GetBase()) }
+    {
+
+    }
+
+    GPUBufferRef(GPUBufferBase& aBuffer)
+      : mBuffer{ &aBuffer }
+    {
+
+    }
+
+    GPUBufferRef(GPUBufferBase* aBuffer)
+      : mBuffer{ aBuffer }
+    {
+
+    }
+
+    GPUBufferBase& GetBase()
+    {
+      return *mBuffer;
+    }
+
+    void Update(tType const& aData)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(&aData), sizeof(tType), 0);
+    }
+
+    void Update(tType const* aData, size_t aSize)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData), sizeof(tType) * aSize, 0);
+    }
+
+    void Update(ContiguousRange<tType> aData)
+    {
+      mBuffer->Update(reinterpret_cast<u8 const*>(aData.begin()), sizeof(tType) * aData.size(), 0);
+    }
+
+    operator bool()
+    {
+      return mBuffer != nullptr;
+    }
+
+  private:
+    GPUBufferBase* mBuffer;
   };
 
   namespace GPUAllocation
@@ -130,6 +225,11 @@ namespace YTE
 
     }
 
+    virtual ~GPUAllocator()
+    {
+
+    }
+
     // Creates a ubo of the given type, aSize allows you to make an array of them.
     // Size must be at least 1
     template <typename tType>
@@ -144,7 +244,7 @@ namespace YTE
       return GPUBuffer<tType>(std::move(buffer));
     }
 
-    PrivateImplementationLocal<64>& GetData()
+    PrivateImplementationLocal<128>& GetData()
     {
       return mData;
     }
@@ -155,7 +255,7 @@ namespace YTE
                                                                 GPUAllocation::MemoryProperty aProperties) = 0;
 
   protected:
-    PrivateImplementationLocal<64> mData;
+    PrivateImplementationLocal<128> mData;
     size_t mBlockSize;
   };
 

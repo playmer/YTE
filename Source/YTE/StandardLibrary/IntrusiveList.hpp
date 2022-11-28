@@ -1,11 +1,4 @@
-﻿/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
 #include <iterator>
 
@@ -37,7 +30,7 @@ namespace YTE
                        "When constructing a Hook, Owner must be valid.");
       }
 
-      Hook(Hook &aHook) = delete;
+      Hook(Hook const &aHook) = delete;
 
       Hook(Hook &&aHook, OwnerType *aOwner)
         : mPrevious(aHook.mPrevious)

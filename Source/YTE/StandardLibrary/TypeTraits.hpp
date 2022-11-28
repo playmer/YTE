@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <tuple>
 
 #include "YTE/StandardLibrary/Utilities.hpp"
@@ -466,5 +467,40 @@ namespace YTE
   constexpr decltype(tValue) ReturnValue()
   {
     return tValue;
+  }
+
+  // helper for the below bitcast impl.
+  template< class T >
+  struct remove_cvref {
+      typedef std::remove_cv_t<std::remove_reference_t<T>> type;
+  };
+
+  template< class T >
+  using remove_cvref_t = typename remove_cvref<T>::type;
+
+  // temporary pre-standard bitcast implementation from beached (and Seph and slurps-mad-rips)
+  // Will replace with std::bit_cast when available.
+  template<typename To, typename From>
+  [[nodiscard]] To
+  bit_cast( From &&from ) noexcept( std::is_nothrow_constructible_v<To> ) {
+
+    static_assert( std::is_trivially_copyable_v<remove_cvref_t<From>>,
+                   "From type must be trivially copiable" );
+    static_assert( std::is_trivially_copyable_v<remove_cvref_t<To>>,
+                   "To type must be trivially copiable" );
+    static_assert( sizeof( From ) == sizeof( To ),
+                   "Sizes of From and To types must be the same" );
+    static_assert( std::is_default_constructible_v<To>,
+                   "To type must be default constructible" );
+
+    auto result = std::aligned_storage_t<sizeof( To ), alignof( To )>{};
+    return *static_cast<To *>( memcpy( &result, &from, sizeof( To ) ) );
+  }
+
+  template<typename To, typename From>
+  [[nodiscard]] To bit_cast( From const *const from ) noexcept(
+    std::is_nothrow_constructible_v<To> ) {
+
+    return bit_cast<To>( *from );
   }
 }

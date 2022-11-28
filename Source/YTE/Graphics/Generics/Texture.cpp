@@ -1,160 +1,326 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Graphics - Generics
-///////////////////
-
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <fstream>
 
-//#include "crunch/inc/crnlib.h"
-#include "crunch/inc/crn_decomp.h"
-#include "stb/stb_image.h"
+#include "transcoder/basisu_transcoder.h"
 
 #include "YTE/Core/AssetLoader.hpp"
+
+#include "YTE/Core/Threading/JobSystem.hpp"
 
 #include "YTE/Graphics/Generics/Texture.hpp"
 
 #include "YTE/Utilities/Utilities.hpp"
 
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 namespace YTE
 {
+  static basist::etc1_global_selector_codebook const* GetGlobalBasisCodebook()
+  {
+    using namespace basist;
+    static basist::etc1_global_selector_codebook codebook(g_global_selector_cb_size, g_global_selector_cb);
+
+    return &codebook;
+  }
+
   YTEDefineType(Texture)
   {
     RegisterType<Texture>();
     TypeBuilder<Texture> builder;
   }
 
-
-
-  Texture::Texture(const std::string &aFile)
+  Texture::Texture(std::string const&aFile) 
+    : mType{TextureLayout::InvalidLayout}
   {
-    YTEProfileFunction();
-    std::string name = aFile; // TODO: don't actually make a copy lol
-    Load(name);
+    OPTICK_EVENT();
+    Load(aFile);
   }
 
-  
-
-  Texture::Texture(const char *aFile)
+  Texture::Texture(const char *aFile) 
+    : mType{ TextureLayout::InvalidLayout }
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
+    OPTICK_TAG("Texture: ", aFile);
+
     std::string f(aFile);
     Load(f);
   }
 
-
-
-  void Texture::Load(std::string &aFile)
+  bool read_file_to_vec(const char* pFilename, std::vector<u8>& data)
   {
-    YTEProfileFunction();
-    fs::path file{ aFile };
+    FILE* pFile = nullptr;
+#ifdef _WIN32
+    fopen_s(&pFile, pFilename, "rb");
+#else
+    pFile = fopen(pFilename, "rb");
+#endif
+    if (!pFile)
+      return false;
 
-    std::string textureName{ file.stem().string() };
-
-    //TODO (Josh): Make Crunch work.
-    //file = L"Crunch" / file.filename().concat(L".crn");
-    auto textureFile = Path::GetTexturePath(Path::GetEnginePath(), aFile);
-
-    if (false == fs::exists(textureFile))
+    fseek(pFile, 0, SEEK_END);
+#ifdef _WIN32
+    int64_t filesize = _ftelli64(pFile);
+#else
+    int64_t filesize = ftello(pFile);
+#endif
+    if (filesize < 0)
     {
-      file = L"Originals" / file.filename();
-      std::string fileStr{ file.string() };
-
-      textureFile = Path::GetTexturePath(Path::GetGamePath(), fileStr);
+      fclose(pFile);
+      return false;
     }
+    fseek(pFile, 0, SEEK_SET);
 
-    fs::path type{ textureFile };
-    type = type.extension();
-
-    if (type == L".png" || type == L".jpg")
+    if (sizeof(size_t) == sizeof(uint32_t))
     {
-      int texWidth, texHeight, texChannels;
-
-      stbi_uc* loadedFile = stbi_load(textureFile.c_str(),
-                                      &texWidth,
-                                      &texHeight,
-                                      &texChannels,
-                                      STBI_rgb_alpha);
-      DebugObjection(texWidth <= 0,
-                     "Texture: %s, has negative width!",
-                     aFile.c_str());
-
-      DebugObjection(texHeight <= 0,
-                     "Texture: %s, has negative height!",
-                     aFile.c_str());
-
-      mWidth = static_cast<u32>(texWidth);
-      mHeight = static_cast<u32>(texHeight);
-
-      //DebugObjection(texChannels < 4, 
-      //            "Texture: %s, has only %d channels, we require 4 (RGBA)", 
-      //            aFile.c_str(), 
-      //            texChannels);
-      DebugObjection(loadedFile == nullptr,
-                     "Failed to load texture: %s",
-                     aFile.c_str());
-
-      size_t size = mWidth * mHeight * STBI_rgb_alpha;
-      mData.resize(size);
-
-      memcpy(mData.data(), loadedFile, size);
-      stbi_image_free(loadedFile),
-
-      mType = TextureLayout::RGBA;
-    }
-    else if (type == L".crn")
-    {
-      file = L"Crunch" / file.filename();
-      std::string fileStr{ file.string() };
-
-      std::ifstream fileToRead(textureFile, std::ios::binary | std::ios::ate);
-      std::streamsize streamSize = fileToRead.tellg();
-      fileToRead.seekg(0, std::ios::beg);
-      mData.resize(streamSize, 0);
-
-      if (fileToRead.read(reinterpret_cast<char*>(mData.data()), streamSize).bad())
+      if (filesize > 0x70000000)
       {
+        // File might be too big to load safely in one alloc
+        fclose(pFile);
+        return false;
+      }
+    }
+
+    data.resize((size_t)filesize);
+
+    if (filesize)
+    {
+      if (fread(&data[0], 1, (size_t)filesize, pFile) != (size_t)filesize)
+      {
+        fclose(pFile);
+        return false;
+      }
+    }
+
+    fclose(pFile);
+    return true;
+  }
+
+
+  //bool read_file_to_vec(const char* pFilename, std::vector<u8>& data)
+  //{
+  //
+  //}
+
+
+
+  void Texture::Load(std::string const& aFile)
+  {
+    OPTICK_EVENT();
+
+    fs::path filePath{ aFile };
+
+    auto extension = filePath.extension();
+
+    if (".basis" != extension)
+    {
+      filePath = filePath.filename().stem().concat(".basis");
+    }
+
+    auto file = filePath.u8string();
+    mTexture = Path::GetTexturePath(Path::GetEnginePath(), file);
+
+    if (false == fs::exists(mTexture))
+    {
+      mTexture = fs::path(Path::GetTexturePath(Path::GetGamePath(), file)).u8string();
+    }
+
+    // TODO (Josh): mmap?
+    //auto const dataToRead = ReadFileToVector(textureFile);
+    
+    if (std::this_thread::get_id() == JobSystem::MainThreadId())
+    {
+      printf("Decoding the following texture on the main thread: %s\n", mTexture.c_str());
+    }
+
+    if (!read_file_to_vec(mTexture.c_str(), mData))
+    {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+      return;
+    }
+
+    Decode();
+  }
+
+  void Texture::Decode()
+  {
+    OPTICK_EVENT();
+
+    if (TextureLayout::RGBA != mType)
+    {
+      mType = TextureLayout::Bc7_Unorm_Opaque;
+
+      basist::basisu_transcoder transcoder{ GetGlobalBasisCodebook() };
+      basist::basisu_file_info info;
+
+      if (!transcoder.validate_file_checksums(
+        mData.data(),
+        static_cast<u32>(mData.size()),
+        true))
+      {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
-      crnd::crn_texture_info info;
-      info.m_struct_size = sizeof(crnd::crn_texture_info);
-
-      if (false == crnd_get_texture_info(mData.data(), static_cast<u32>(mData.size()), &info))
+      if (!transcoder.get_file_info(
+        mData.data(),
+        static_cast<u32>(mData.size()),
+        info))
       {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
         return;
       }
 
-      u32 ddsSize{ static_cast<u32>(mData.size()) };
-      auto dds = crn_decompress_crn_to_dds(mData.data(), ddsSize);
-
-      mData.clear();
-      mData.resize(ddsSize);
-      memcpy(mData.data(), dds, ddsSize);
-
-      // TODO (Josh): Be sure this is safe.
-      free(dds);
-
-      mWidth = info.m_width;
-      mHeight = info.m_height;
-
-      switch (info.m_format)
+      if (info.m_has_alpha_slices)
       {
-        case cCRNFmtDXT1:
+        mType = TextureLayout::Bc3_Unorm;
+      }
+
+      if (
+        1 != info.m_image_mipmap_levels.size() ||
+        1 != info.m_total_images)
+      {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+        return;
+      }
+
+      mMipLevels = info.m_image_mipmap_levels[0];
+
+      basist::basisu_image_info imageInfo;
+      if (!transcoder.get_image_info(
+        mData.data(),
+        static_cast<u32>(mData.size()),
+        imageInfo,
+        0))
+      {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+        return;
+      }
+
+      auto constexpr transcoderFormat = basist::transcoder_texture_format::cTFBC3;
+      auto const textureFormat = basist::basis_get_basisu_texture_format(transcoderFormat);
+
+      basist::basisu_image_level_info levelInfo;
+
+      if (!transcoder.get_image_level_info(
+        mData.data(),
+        static_cast<u32>(mData.size()),
+        levelInfo,
+        0,
+        0))
+      {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+        return;
+      }
+
+      mWidth = levelInfo.m_orig_width;
+      mHeight = levelInfo.m_orig_height;
+
+      mBytesPerBlock = basisu::get_bytes_per_block(textureFormat);
+
+      mBlockWidth = basisu::get_block_width(textureFormat);
+      mBlockHeight = basisu::get_block_height(textureFormat);
+
+    }
+
+    switch (mType)
+    {
+      case TextureLayout::Bc1_Rgba_Srgb:
+      case TextureLayout::Bc3_Srgb:
+      case TextureLayout::Bc3_Unorm:
+      case TextureLayout::Bc7_Unorm_Opaque:
+      {
+        std::vector<u8> decodedTexture;
+
+        auto const height = mHeight;
+        auto const width = mWidth;
+
+        auto const basisRowPitch = mBytesPerBlock * ((width + 3) / 4);
+
+        basist::basisu_transcoder transcoder{ GetGlobalBasisCodebook() };
+        basist::basisu_file_info info;
+
+        auto transcoderFormat = basist::transcoder_texture_format::cTFBC7_M6_OPAQUE_ONLY;
+
+        if (TextureLayout::Bc3_Unorm == mType ||
+          TextureLayout::Bc3_Srgb == mType)
         {
-          mType = TextureLayout::DXT1_sRGB;
-          break;
+          transcoderFormat = basist::transcoder_texture_format::cTFBC3;
         }
-        case cCRNFmtDXT5:
+
+        auto const textureFormat = basist::basis_get_basisu_texture_format(transcoderFormat);
+
+        auto const blocksX = (mWidth + mBlockWidth - 1) / mBlockWidth;
+        auto const blocksY = (mHeight + mBlockHeight - 1) / mBlockHeight;
+
+        auto const totalBlocks = blocksX * blocksY;
+
+        auto const qwordsPerBlock = basisu::get_qwords_per_block(textureFormat);
+
+        size_t const sizeInBytes = totalBlocks * qwordsPerBlock * sizeof(u64);
+        
+        decodedTexture.resize(sizeInBytes);
+        uint8_t* dataWriter = decodedTexture.data();
+
+        if (!transcoder.start_transcoding(
+          mData.data(),
+          static_cast<u32>(mData.size())))
         {
-          mType = TextureLayout::DXT5_sRGB;
-          break;
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+          return;
         }
+
+        if (!transcoder.transcode_image_level(
+          mData.data(),
+          static_cast<u32>(mData.size()),
+          0,
+          0,
+          dataWriter,
+          totalBlocks,
+          transcoderFormat,
+          0,
+          0/*static_cast<u32>(layout.rowPitch / basist::basis_get_bytes_per_block(transcoderFormat))*/))
+        {
+      #if YTE_Windows
+        __debugbreak();
+      #else
+        __builtin_trap();
+      #endif
+          return;
+        }
+
+        mData = decodedTexture;
+
+        break;
       }
     }
   }
-
 }

@@ -127,12 +127,12 @@ function(YTE_Target_Precompiled_Headers aTarget)
       ${pathToSource}
   )
 
-  if (${MSVC})
+  if (${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     target_compile_options(${aTarget} PRIVATE "/Yu${pathToPrivateHeader}"
                                               "/FI${pathToPrivateHeader}"
                                               "/Fp${precompiledObj}")
   else()
-    message(SEND_ERROR "YTE_Target_Precompiled_Headers doesn't currently support anything but MSVC.")
+    message("YTE_Target_Precompiled_Headers doesn't currently support anything but MSVC.")
   endif()
 
   set_source_files_properties(${pathToPrivateHeader} PROPERTIES GENERATED ON)

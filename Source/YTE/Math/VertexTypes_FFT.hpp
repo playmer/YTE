@@ -1,7 +1,3 @@
-///////////////////
-// Author: Andrew Griffin
-// YTE - Utilities
-///////////////////
 #pragma once
 #ifndef YTE_Math_VertexTypes_FFT_hpp
 #define YTE_Math_VertexTypes_FFT_hpp

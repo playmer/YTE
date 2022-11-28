@@ -118,10 +118,10 @@ namespace YTE
     mUBOModel.mModelMatrix = glm::scale(mUBOModel.mModelMatrix, mTransform->GetScale());
   }
 
-  Submesh CreateSphere(u32 aSubdivisions, const std::string &aTextureName)
+  SubmeshData CreateSphere(u32 aSubdivisions, const std::string &aTextureName)
   {
     float subdivisions = static_cast<float>(aSubdivisions);
-    Submesh sphere;
+    SubmeshData sphere;
     
     const float pi = glm::pi<float>();
     const float tau = 2.0f * pi;
@@ -149,24 +149,27 @@ namespace YTE
           u32 c{ (i)*(aSubdivisions + 1) + (j) };
           u32 d{ (i)*(aSubdivisions + 1) + (j - 1) };
           
-          sphere.mIndexBuffer.emplace_back(c);
-          sphere.mIndexBuffer.emplace_back(b);
-          sphere.mIndexBuffer.emplace_back(a);
+          sphere.mIndexData.emplace_back(c);
+          sphere.mIndexData.emplace_back(b);
+          sphere.mIndexData.emplace_back(a);
           
-          sphere.mIndexBuffer.emplace_back(a);
-          sphere.mIndexBuffer.emplace_back(d);
-          sphere.mIndexBuffer.emplace_back(c);
+          sphere.mIndexData.emplace_back(a);
+          sphere.mIndexData.emplace_back(d);
+          sphere.mIndexData.emplace_back(c);
         }
 
-        sphere.mVertexBuffer.push_back(vert);
+        sphere.mVertexData.AddVertex(vert);
       }
     }
 
-    sphere.mDiffuseMap = aTextureName;
-    sphere.mDiffuseType = TextureViewType::e2D;
+    sphere.mTextureData.emplace_back(aTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //sphere.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
+
+
     sphere.mShaderSetName = "Skybox";
 
-    return sphere;
+    return std::move(sphere);
   }
 
 
@@ -177,7 +180,7 @@ namespace YTE
       return;
     }
 
-    std::experimental::filesystem::path path(aTexture);
+    std::filesystem::path path(aTexture);
     std::string extension = path.extension().u8string();
 
     if (aTexture == "None")
@@ -215,33 +218,31 @@ namespace YTE
       return;
     }
 
-    bool success = FileCheck(Path::GetGamePath(), "Textures/Originals", mTextureName);
-
-    if (false == success)
-    {
-      success = FileCheck(Path::GetEnginePath(), "Textures/Originals", mTextureName);
-    }
-
-    if (false == success)
-    {
-      auto log = fmt::format("Skybox ({}): Texture of name {} is not found.", 
-                             mOwner->GetName().c_str(), 
-                             mTextureName);
-
-      mOwner->GetEngine()->Log(LogType::Warning, log);
-      return;
-    }
+    //bool success = FileCheck(Path::GetGamePath(), "Textures/Originals", mTextureName);
+    //
+    //if (false == success)
+    //{
+    //  success = FileCheck(Path::GetEnginePath(), "Textures/Originals", mTextureName);
+    //}
+    //
+    //if (false == success)
+    //{
+    //  auto log = fmt::format("Skybox ({}): Texture of name {} is not found.", 
+    //                         mOwner->GetName().c_str(), 
+    //                         mTextureName);
+    //
+    //  mOwner->GetEngine()->Log(LogType::Warning, log);
+    //  return;
+    //}
 
     std::string meshName = "__SkyBox";
     meshName += mTextureName;
 
-    auto submesh = CreateSphere(128, mTextureName);
-
-    std::vector<Submesh> submeshes{ submesh };
+    auto submesh = CreateSphere(8, mTextureName);
 
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh);
 
     mInstantiatedSkybox = mRenderer->CreateModel(view, mesh);
     CreateTransform();

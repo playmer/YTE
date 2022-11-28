@@ -1,11 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Joshua T. Fisher
-* \date   2015-12-14
-*
-* \copyright All content 2016 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #include "YTE/Core/ComponentSystem.hpp"
 #include "YTE/Core/Component.hpp"
 #include "YTE/Core/CoreComponentFactoryInitilization.hpp"
@@ -47,8 +39,8 @@ namespace YTE
     }
   }
     
-  std::pair<StringComponentFactory *, UniquePointer<Component>>
-    ComponentSystem::MakeComponent(BoundType *aType, Composition *aOwner)
+  std::pair<StringComponentFactory *, ComponentOwner>
+    ComponentSystem::MakeComponent(Type *aType, Composition *aOwner)
   {
     auto it = mComponentFactories.Find(aType);
 

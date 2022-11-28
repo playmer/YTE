@@ -1,5 +1,5 @@
 #include <array>
-#include <filesystem>
+#include "YTE/StandardLibrary/FileSystem.hpp"
 #include <fstream>
 
 #include "YTE/Core/AssetLoader.hpp"
@@ -12,7 +12,7 @@
 
 #include "YTE/Utilities/Utilities.hpp"
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 namespace YTE
 {

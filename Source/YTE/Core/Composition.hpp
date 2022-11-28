@@ -1,18 +1,3 @@
-
-/******************************************************************************/
-/*!
-\file   Composition.hpp
-\author Joshua T. Fisher
-\par    email: j.fisher\@digipen.edu
-\par    Course: GAM 200
-\date   10/23/2014
-\brief
-This file contains the declaration of various functions included in our
-Component library.
-
-All content (c) 2016 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 
 #ifndef YTE_Core_Composition_hpp
@@ -97,7 +82,7 @@ namespace YTE
     YTE_Shared virtual void Initialize(InitializeEvent* aEvent);
     YTE_Shared virtual void Deinitialize(InitializeEvent* aEvent);
     YTE_Shared virtual void Start(InitializeEvent* aEvent);
-    YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
+    //YTE_Shared void DeletionUpdate(LogicUpdate* aUpdate);
 
     void ToggleSerialize() { mShouldSerialize = !mShouldSerialize; };
     bool ShouldSerialize() const { return mShouldSerialize; };
@@ -147,11 +132,24 @@ namespace YTE
       auto iterator = mComponents.Find(TypeId<tComponentType>());
 
       if (iterator == mComponents.end())
-      {
         return nullptr;
-      }
 
       return static_cast<tComponentType*>(iterator->second.get());
+    }
+    
+    template <typename tComponentType>
+    bool HasComponent()
+    {
+      static_assert(std::is_base_of<Component, tComponentType>() &&
+                    !std::is_same<Component, tComponentType>(),
+                    "Type must be derived from YTE::Component");
+      
+      auto iterator = mComponents.Find(TypeId<tComponentType>());
+
+      if (iterator == mComponents.end())
+        return false;
+
+      return true;
     }
 
     YTE_Shared void RemoveComponent(Component* aComponent);
@@ -164,23 +162,23 @@ namespace YTE
     YTE_Shared std::string HasDependencies(Type* aComponent);
 
     // Gets all Components of the given type that are part of or childed to this composition.
-    template <typename ComponentType>
-    std::vector<ComponentType*> GetComponents()
+    template <typename tComponentType>
+    std::vector<tComponentType*> GetComponents()
     {
-      static_assert(std::is_base_of<Component, ComponentType>() &&
-                    !std::is_same<Component, ComponentType>());
+      static_assert(std::is_base_of<Component, tComponentType>() &&
+                    !std::is_same<Component, tComponentType>());
       // This function traverses all compositions and retrieves
       // all the components of the templated type.
-      std::vector<ComponentType*> components;
+      std::vector<tComponentType*> components;
 
       for (auto const& [name, composition] : mCompositions)
       {
-        auto moreComponents = composition->GetComponents<ComponentType>();
+        auto moreComponents = composition->template GetComponents<tComponentType>();
 
         components.insert(components.end(), moreComponents.begin(), moreComponents.end());
       }
 
-      auto component = GetComponent<ComponentType>();
+      auto component = GetComponent<tComponentType>();
 
       if (component != nullptr)
       {
@@ -243,9 +241,6 @@ namespace YTE
     YTE_Shared GlobalUniqueIdentifier& GetGUID();
     YTE_Shared bool SetGUID(GlobalUniqueIdentifier aGUID);
 
-    bool GetIsBeingDeleted() const { return mBeingDeleted; }
-
-
     std::vector<Type*> const& GetDependencyOrder()
     {
       return mDependencyOrder;
@@ -262,8 +257,8 @@ namespace YTE
     YTE_Shared StringComponentFactory* GetFactoryFromEngine(Type* aType);
 
     YTE_Shared void ComponentClear();
-    YTE_Shared std::string CheckDependencies(std::set<BoundType*> aTypesAvailible, 
-                                             BoundType* aTypeToCheck);
+    YTE_Shared std::string CheckDependencies(std::set<Type*> aTypesAvailible, 
+                                             Type* aTypeToCheck);
 
     YTE_Shared void RemoveCompositionInternal(CompositionMap::iterator& aComposition);
     YTE_Shared void RemoveComponentInternal(ComponentMap::iterator& aComponent);
@@ -271,8 +266,7 @@ namespace YTE
     YTE_Shared Composition* AddCompositionInternal(std::unique_ptr<Composition> mComposition, 
                                                    RSValue* aSerialization, 
                                                    String aObjectName);
-    YTE_Shared bool ParentBeingDeleted();
-
+    
     CompositionMap mCompositions;
     ComponentMap mComponents;
     std::vector<Type*> mDependencyOrder;
@@ -286,13 +280,10 @@ namespace YTE
     IntrusiveList<Composition>::Hook mInitializationHook;
 
     bool mShouldSerialize;
-    bool mBeingDeleted;
 
     Composition* mOwner;
     Composition(const Composition &) = delete;
     Composition& operator=(const Composition& rhs) = delete;
-
-    int physInit = 0;
   };
 }
 

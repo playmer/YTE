@@ -1,12 +1,3 @@
-/******************************************************************************/
-/*!
-* \author Isaac Dayton
-* \date   2018/01/19
-*
-* \copyright All content 2018 DigiPen (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-
 #include <fstream>
 
 #include <stb/stb_image_write.h>
@@ -26,6 +17,8 @@
 
 namespace YTE
 {
+  std::map<std::string, Font> SpriteText::sFonts;
+
   static std::vector<std::string> PopulateDropDownList(Component *aComponent)
   {
     UnusedArguments(aComponent);
@@ -120,6 +113,7 @@ namespace YTE
     , mLineLength(0.0f)
     , mConstructing(true)
   {
+    OPTICK_EVENT();
     mFontSize = 1.f;
   }
 
@@ -130,7 +124,9 @@ namespace YTE
 
   void SpriteText::AssetInitialize()
   {
+    OPTICK_EVENT();
     mRenderer = mOwner->GetEngine()->GetComponent<GraphicsSystem>()->GetRenderer();
+    mConstructing = false;
 
     if (mTextureName.empty())
     {
@@ -138,12 +134,11 @@ namespace YTE
     }
 
     mRenderer->RequestTexture(mTextureName);
-
-    mConstructing = false;
   }
 
   void SpriteText::NativeInitialize()
   {
+    OPTICK_EVENT();
     mWindow = mSpace->GetComponent<GraphicsView>()->GetWindow();
     mTransform = mOwner->GetComponent<Transform>();
 
@@ -159,7 +154,7 @@ namespace YTE
 
   void SpriteText::CreateSpriteText()
   {
-    YTEProfileFunction();
+    OPTICK_EVENT();
     if (nullptr != mInstantiatedSprite)
     {
       mInstantiatedSprite.reset();
@@ -178,17 +173,18 @@ namespace YTE
     std::string meshName = "__SpriteText";
     meshName += mOwner->GetGUID().ToString();
 
-    Submesh submesh;
-    std::vector<Submesh> submeshes;
+    SubmeshData submesh;
 
     u32 lastIndex = 0;
     float offsetX = 0, offsetY = 0;
 
-    float sizeFactor = mFontSize / mFontInfo.mSize;
+    float sizeFactor = mFontSize / mFontInfo->mSize;
 
-    submesh.mDiffuseMap = mTextureName;
-    submesh.mDiffuseType = TextureViewType::e2D;
     submesh.mShaderSetName = "SpriteText";
+
+    submesh.mTextureData.emplace_back(mTextureName, TextureViewType::e2D, SubmeshData::TextureType::Diffuse);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Specular);
+    //submesh.mTextureData.emplace_back("white.png", TextureViewType::e2D, SubmeshData::TextureType::Normal);
 
     submesh.mCullBackFaces = false;
 
@@ -212,10 +208,10 @@ namespace YTE
 
       stbtt_aligned_quad quad;
 
-      stbtt_GetPackedQuad(mFontInfo.mCharInfo.get(), 
-                          mFontInfo.mAtlasWidth, 
-                          mFontInfo.mAtlasHeight, 
-                          mText[i] - mFontInfo.mFirstChar, 
+      stbtt_GetPackedQuad(mFontInfo->mCharInfo.get(), 
+                          mFontInfo->mAtlasWidth, 
+                          mFontInfo->mAtlasHeight, 
+                          mText[i] - mFontInfo->mFirstChar, 
                           &offsetX, 
                           &offsetY, 
                           &quad, 
@@ -271,17 +267,17 @@ namespace YTE
       vert2.mTextureCoordinates = { quad.s1, 1.0f - quad.t0, 0.0f };  // Top-right (UVs)
       vert3.mTextureCoordinates = { quad.s0, 1.0f - quad.t0, 0.0f };  // Top-left (UVs)
 
-      submesh.mVertexBuffer.emplace_back(vert0);
-      submesh.mVertexBuffer.emplace_back(vert1);
-      submesh.mVertexBuffer.emplace_back(vert2);
-      submesh.mVertexBuffer.emplace_back(vert3);
+      submesh.mVertexData.AddVertex(vert0);
+      submesh.mVertexData.AddVertex(vert1);
+      submesh.mVertexData.AddVertex(vert2);
+      submesh.mVertexData.AddVertex(vert3);
 
-      submesh.mIndexBuffer.push_back(lastIndex);
-      submesh.mIndexBuffer.push_back(lastIndex + 1);
-      submesh.mIndexBuffer.push_back(lastIndex + 2);
-      submesh.mIndexBuffer.push_back(lastIndex);
-      submesh.mIndexBuffer.push_back(lastIndex + 2);
-      submesh.mIndexBuffer.push_back(lastIndex + 3);
+      submesh.mIndexData.push_back(lastIndex);
+      submesh.mIndexData.push_back(lastIndex + 1);
+      submesh.mIndexData.push_back(lastIndex + 2);
+      submesh.mIndexData.push_back(lastIndex);
+      submesh.mIndexData.push_back(lastIndex + 2);
+      submesh.mIndexData.push_back(lastIndex + 3);
 
       lastIndex += 4;
       ++i;
@@ -301,48 +297,48 @@ namespace YTE
         else
         {
           int vertCursor = lastIndex - (4 * (i - cursor));
-          float shiftAmount = (submesh.mVertexBuffer[vertCursor].mPosition.x - mBoundingBox.xMin);
+          float shiftAmount = (submesh.mVertexData.mPositionData[vertCursor].x - mBoundingBox.xMin);
 
             // Shrink our bounding box to fit the wrapped text
-          mBoundingBox.xMax = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+          mBoundingBox.xMax = submesh.mVertexData.mPositionData[vertCursor - 2].x;
 
           while (cursor < i)
           {
-            submesh.mVertexBuffer[vertCursor].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 1].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 2].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
-            submesh.mVertexBuffer[vertCursor + 3].mPosition -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData.mPositionData[vertCursor] -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData.mPositionData[vertCursor + 1] -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData.mPositionData[vertCursor + 2] -= glm::vec3(shiftAmount, mFontSize, 0.0f);
+            submesh.mVertexData.mPositionData[vertCursor + 3] -= glm::vec3(shiftAmount, mFontSize, 0.0f);
 
             vertCursor += 4;
             ++cursor;
           }
 
-          offsetX = (submesh.mVertexBuffer[vertCursor - 2].mPosition.x / sizeFactor) - sizeFactor;
-          currMaxX = submesh.mVertexBuffer[vertCursor - 2].mPosition.x;
+          offsetX = (submesh.mVertexData.mPositionData[vertCursor - 2].x / sizeFactor) - sizeFactor;
+          currMaxX = submesh.mVertexData.mPositionData[vertCursor - 2].x;
         }
 
           // Line feed
-        offsetY += mFontInfo.mSize;
+        offsetY += mFontInfo->mSize;
       }
     }
 
       // Apply alignment
-    for (auto &verts : submesh.mVertexBuffer)
+    for (auto& position : submesh.mVertexData.mPositionData)
     {
         // Offsets the text to account for leaving the anchor at the bottom-left of the first row
-      verts.mPosition.y -= maxCharHeight;
+      position.y -= maxCharHeight;
 
         // Before this switch, text is top-left aligned
       switch (mAlignX)
       {
         case AlignmentX::Center:
         {
-          verts.mPosition.x -= ((mBoundingBox.xMax - mBoundingBox.xMin) / 2.0f);
+          position.x -= ((mBoundingBox.xMax - mBoundingBox.xMin) / 2.0f);
           break;
         }
         case AlignmentX::Right:
         {
-          verts.mPosition.x -= (mBoundingBox.xMax - mBoundingBox.xMin);
+          position.x -= (mBoundingBox.xMax - mBoundingBox.xMin);
           break;
         }
       }
@@ -351,23 +347,21 @@ namespace YTE
       {
         case AlignmentY::Center:
         {
-          verts.mPosition.y += ((mBoundingBox.yMax - mBoundingBox.yMin) / 2.0f);
+          position.y += ((mBoundingBox.yMax - mBoundingBox.yMin) / 2.0f);
           break;
         }
         case AlignmentY::Bottom:
         {
-          verts.mPosition.y += (mBoundingBox.yMax - mBoundingBox.yMin);
+          position.y += (mBoundingBox.yMax - mBoundingBox.yMin);
           break;
         }
       }
       
     }
 
-    submeshes.emplace_back(submesh);
-
     auto view = mSpace->GetComponent<GraphicsView>();
 
-    auto mesh = mRenderer->CreateSimpleMesh(meshName, submeshes, true);
+    auto mesh = mRenderer->CreateSimpleMesh(meshName, submesh, true);
 
     mInstantiatedSprite = mRenderer->CreateModel(view, mesh);
 
@@ -377,6 +371,10 @@ namespace YTE
 
     CreateTransform();
     mUBOModel.mDiffuseColor = mInstantiatedSprite->GetUBOMaterialData().mDiffuse;
+
+    if (mColor.has_value())
+      mUBOModel.mDiffuseColor = mColor.value();
+
     mInstantiatedSprite->UpdateUBOModel(mUBOModel);
     mInstantiatedSprite->SetVisibility(mVisibility);
 
@@ -413,8 +411,30 @@ namespace YTE
 
   void SpriteText::PrepareFont()
   {
+    OPTICK_EVENT();
+
       // Build the font atlas
     std::string pathName = std::string("C:\\Windows\\Fonts\\") + mFontName;
+    
+    size_t extensionPos = mFontName.size() - 4;
+    std::string texName = mFontName;
+    texName.replace(extensionPos, 6, "64.png");
+
+    filesystem::path outPath = Path::GetGamePath().String();
+    outPath = outPath.parent_path() / "Textures" / "Originals" / texName;
+    
+      // This function is partially wrong and needs to be fixed by doing PrepareFont + baking to a basis texture in the editor.
+      // We do still need to do the runtime work for stbtruetype, though we may require less work.
+    if (auto it = sFonts.find(texName);
+        it != sFonts.end())
+    {
+      mFontInfo = &it->second;
+      mTextureName = texName;
+      return;
+    }
+
+    auto& fontInfo = sFonts[texName];
+
     std::ifstream file(pathName, std::ios::binary | std::ios::ate);
 
     if (!file.is_open())
@@ -426,33 +446,26 @@ namespace YTE
     file.read(reinterpret_cast<char*>(&bytes[0]), size);
     file.close();
 
-    auto atlasData = std::make_unique<unsigned char[]>(mFontInfo.mAtlasWidth * mFontInfo.mAtlasHeight);
-    mFontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(mFontInfo.mCharCount);
+    auto atlasData = std::make_unique<unsigned char[]>(fontInfo.mAtlasWidth * fontInfo.mAtlasHeight);
+    fontInfo.mCharInfo = std::make_unique<stbtt_packedchar[]>(fontInfo.mCharCount);
 
     stbtt_pack_context context;
-    if (!stbtt_PackBegin(&context, atlasData.get(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 0, 1, nullptr))
+    if (!stbtt_PackBegin(&context, atlasData.get(), fontInfo.mAtlasWidth, fontInfo.mAtlasHeight, 0, 1, nullptr))
       std::cout << fmt::format("SpriteText: Failed to initialize font!") << std::endl;
 
     stbtt_PackSetOversampling(&context, 2, 2);
-    if (!stbtt_PackFontRange(&context, bytes.data(), 0, mFontInfo.mSize, mFontInfo.mFirstChar, mFontInfo.mCharCount, mFontInfo.mCharInfo.get()))
+    if (!stbtt_PackFontRange(&context, bytes.data(), 0, fontInfo.mSize, fontInfo.mFirstChar, fontInfo.mCharCount, fontInfo.mCharInfo.get()))
       std::cout << fmt::format("SpriteText: Failed to pack font") << std::endl;
 
     stbtt_PackEnd(&context);
 
-      // If the font texture does not already exist on disk, save it to disk for lookup
-    size_t extensionPos = mFontName.size() - 4;
-    std::string texName = mFontName;
-    texName.replace(extensionPos, 6, "64.png");
-
-    filesystem::path outPath = Path::GetGamePath().String();
-    outPath = outPath.parent_path() / "Textures/Originals" / texName;
-
     if (!filesystem::exists(outPath))
     {
-      stbi_write_png(outPath.string().c_str(), mFontInfo.mAtlasWidth, mFontInfo.mAtlasHeight, 1, atlasData.get(), mFontInfo.mAtlasWidth);
+      stbi_write_png(outPath.string().c_str(), fontInfo.mAtlasWidth, fontInfo.mAtlasHeight, 1, atlasData.get(), fontInfo.mAtlasWidth);
     }
 
       // Set our mTextureName (used to confirm we have a texture to read into)
     mTextureName = texName;
+    mFontInfo = &fontInfo;
   }
 }

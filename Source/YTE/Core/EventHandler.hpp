@@ -1,11 +1,4 @@
-﻿/******************************************************************************/
-/*!
-\author Evan T. Collier
-\date   2015-10-26
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
-#pragma once
+﻿#pragma once
 
 #ifndef YTE_Core_EventHandler_hpp
 #define YTE_Core_EventHandler_hpp
@@ -14,6 +7,8 @@ All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
 #include <iostream>
 #include <memory>
 #include <set>
+#include <string>
+#include <string_view>
 #include <map>
 #include <vector>
 
@@ -106,7 +101,7 @@ namespace YTE
 
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
-      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+      static_assert(1 == CountFunctionArguments<tFunctionType>::Size(),
                     "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
@@ -151,7 +146,7 @@ namespace YTE
 
       static_assert(std::is_member_function_pointer_v<tFunctionType>,
                     "tFunctionType must be a member function pointer from the type of tObjectType.");
-      static_assert(1 == CountFunctionArguments<tFunctionType>::template Size(),
+      static_assert(1 == CountFunctionArguments<tFunctionType>::Size(),
                     "tFunctionType must have exactly one argument. A pointer to an object of a type derived from YTE::Event.");
       static_assert(std::is_base_of<EventHandler, tObjectType>::value,
                     "tObjectType must be derived from YTE::EventHandler");
@@ -197,27 +192,6 @@ namespace YTE
     }
 
   protected:
-    struct StdStringRefWrapperEquality
-    {
-      bool operator()(const std::reference_wrapper<const std::string>& aLeft,
-                      const std::reference_wrapper<const std::string>& aRight) const
-      {
-        return aLeft.get() == aRight.get();
-      }
-
-      bool operator()(const std::reference_wrapper<std::string>& aLeft,
-                      const std::string &aRight) const
-      {
-        return aLeft.get() == aRight;
-      }
-
-      bool operator()(const std::string &aLeft,
-                      const std::reference_wrapper<std::string> &aRight) const
-      {
-        return aLeft == aRight.get();
-      }
-    };
-
     struct EventList
     {
       EventList()
@@ -231,10 +205,7 @@ namespace YTE
     };
 
     std::vector<UniqueEvent> mHooks;
-    std::unordered_map<std::reference_wrapper<const std::string>, 
-                       EventList,
-                       std::hash<std::string>, 
-                       StdStringRefWrapperEquality> mEventLists;
+    std::unordered_map<std::string_view, EventList> mEventLists;
 
     YTE_Shared static std::map<std::string, BlockAllocator<EventDelegate>> cDelegateAllocators;
   };

@@ -1,9 +1,3 @@
-/******************************************************************************/
-/*!
-\author Evan T. Collier
-All content (c) 2017 DigiPen  (USA) Corporation, all rights reserved.
-*/
-/******************************************************************************/
 #pragma once
 #include <thread>
 
@@ -26,7 +20,7 @@ namespace YTE
     };
     typedef std::thread::id WorkerID;
     Worker();
-    ~Worker();
+    virtual ~Worker();
     virtual void Init() = 0;
     virtual void Join() = 0;
     void Pause();
